@@ -546,8 +546,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--no-egmr", action="store_true", help="Skip EGMR decisions"
     )
-    parser.add_argument(
-        "--direct", action="store_true",
+    parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -560,7 +559,6 @@ if __name__ == "__main__":
         since = date(int(args.since), 1, 1)
 
     scraper = BGELeitentscheideScraper(
-        
         include_egmr=not args.no_egmr,
     )
 

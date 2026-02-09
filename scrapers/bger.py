@@ -360,7 +360,7 @@ class BgerScraper(BaseScraper):
     WINDOW_DAYS = 4
     MAX_RETRIES = 5  # pow.php redirect retries
 
-    def __init__(self, state_dir: Path | None = None):
+    def __init__(self, state_dir: Path = Path("state")):
         super().__init__(state_dir=state_dir)
         self._pow: dict | None = None
         self._session_cookies: dict = {}
@@ -423,6 +423,13 @@ class BgerScraper(BaseScraper):
             fixed_url = resp.url.replace("pow.php", "index.php")
             return self._get_with_pow(fixed_url, retry + 1)
 
+        # Check for help page redirect (another form of PoW rejection)
+        if "help-hilfe" in resp.url and retry < self.MAX_RETRIES:
+            logger.info(f"Help page redirect (PoW rejected), re-mining ({retry+1}/{self.MAX_RETRIES})")
+            self._pow = mine_pow(POW_DIFFICULTY)
+            self._session_cookies = make_pow_cookies(self._pow)
+            return self._get_with_pow(url, retry + 1)
+
         # Check for empty/garbage response (not the PoW page but still bad)
         if len(resp.text) < 200 and retry < self.MAX_RETRIES:
             # Re-mine PoW and retry
@@ -448,6 +455,8 @@ class BgerScraper(BaseScraper):
             Search AZA in 4-day windows (German only — all decisions appear).
             Falls back to daily windows if >100 results per window.
         """
+        if isinstance(since_date, str):
+            since_date = date.fromisoformat(since_date)
         if since_date and since_date < date.today() - timedelta(days=14):
             logger.info(f"Backfill mode from {since_date}")
             self._init_session()
@@ -725,25 +734,30 @@ class BgerScraper(BaseScraper):
         max_page = min((total + 9) // 10, 10)  # Cap at 10 pages
 
         for page in range(2, max_page + 1):
-            # Build paginated URL
-            page_url = re.sub(
-                r"(&page=\d+)?$",
-                f"&page={page}",
-                soup.find("form", action=True)["action"]
-                if soup.find("form", action=True)
-                else "",
+            # Always construct URL from known search template — never
+            # extract from response HTML (PoW redirects produce garbage URLs)
+            von_str = search_date.strftime("%d.%m.%Y")
+            page_url = (
+                AZA_SEARCH_URL.format(von=von_str, bis=von_str)
+                + f"&page={page}"
             )
-            if not page_url:
-                # Reconstruct from current search params
-                von_str = search_date.strftime("%d.%m.%Y")
-                page_url = (
-                    AZA_SEARCH_URL.format(von=von_str, bis=von_str)
-                    + f"&page={page}"
-                )
 
             try:
                 resp = self._get_with_pow(page_url)
                 page_soup = BeautifulSoup(resp.text, "html.parser")
+
+                # Verify we got actual results, not a PoW/help redirect
+                if self._is_no_results(page_soup) and "help" in resp.url:
+                    logger.warning(
+                        f"Pagination page {page}: got help page redirect, "
+                        f"PoW may have expired"
+                    )
+                    # Re-mine PoW and retry once
+                    self._pow = None
+                    self._ensure_pow()
+                    resp = self._get_with_pow(page_url)
+                    page_soup = BeautifulSoup(resp.text, "html.parser")
+
                 yield from self._parse_search_results(
                     page_soup, lang, fallback_date=search_date
                 )
@@ -1035,16 +1049,22 @@ class BgerScraper(BaseScraper):
     # ═══════════════════════════════════════════════════════════════════════
 
     # BGer docket — new format: 6B_1234/2025, 12T_1/2020
-    DOCKET_RE = re.compile(r"\b(\d{1,2}[A-Z]_\d+/\d{4})\b")
+    # Also matches space-separated from search results: "1C 372/2024"
+    DOCKET_RE = re.compile(r"\b(\d{1,2}[A-Z][_ ]\d+/\d{4})\b")
     # Old format (pre-BGG, before 2007): 6S.123/2005
     DOCKET_OLD_RE = re.compile(r"\b(\d[A-Z]\.\d+/\d{4})\b")
 
     def _extract_docket(self, text: str) -> str | None:
-        """Extract a BGer docket number from text or URL."""
+        """Extract a BGer docket number from text or URL.
+        
+        Normalizes space-separated dockets (from search results) to
+        underscore format: '1C 372/2024' → '1C_372/2024'
+        """
         for pattern in [self.DOCKET_RE, self.DOCKET_OLD_RE]:
             m = pattern.search(text)
             if m:
-                return m.group(1)
+                # Normalize spaces to underscores for consistent IDs
+                return m.group(1).replace(" ", "_")
         return None
 
     def _make_jump_url(self, stub: dict) -> str | None:

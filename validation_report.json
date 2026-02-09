@@ -1,0 +1,149 @@
+{
+  "BStGer": {
+    "court": "bstger",
+    "import": true,
+    "instantiate": true,
+    "discover": true,
+    "fetch": true,
+    "decisions": [
+      {
+        "decision_id": "bstger_CA.2025.41",
+        "issues": [],
+        "warnings": [
+          "empty optional: title",
+          "empty optional: legal_area"
+        ],
+        "full_text_len": 137419
+      },
+      {
+        "decision_id": "bstger_BB.2025.125",
+        "issues": [],
+        "warnings": [
+          "empty optional: title",
+          "empty optional: legal_area"
+        ],
+        "full_text_len": 197533
+      },
+      {
+        "decision_id": "bstger_RR.2025.146",
+        "issues": [],
+        "warnings": [
+          "empty optional: title",
+          "empty optional: legal_area"
+        ],
+        "full_text_len": 313609
+      }
+    ],
+    "error": null,
+    "duration_s": 12.3
+  },
+  "BVGer": {
+    "court": "bvger",
+    "import": true,
+    "instantiate": true,
+    "discover": true,
+    "fetch": true,
+    "decisions": [
+      {
+        "decision_id": "bvger_D-5825_2025",
+        "issues": [],
+        "warnings": [
+          "empty optional: legal_area"
+        ],
+        "full_text_len": 9105
+      },
+      {
+        "decision_id": "bvger_D-3949_2023",
+        "issues": [],
+        "warnings": [
+          "empty optional: legal_area"
+        ],
+        "full_text_len": 17372
+      },
+      {
+        "decision_id": "bvger_D-3947_2023",
+        "issues": [],
+        "warnings": [
+          "empty optional: legal_area"
+        ],
+        "full_text_len": 15725
+      }
+    ],
+    "error": null,
+    "duration_s": 21.1
+  },
+  "BPatGer": {
+    "court": "bpatger",
+    "import": true,
+    "instantiate": true,
+    "discover": true,
+    "fetch": true,
+    "decisions": [
+      {
+        "decision_id": "bpatger_O2023_012",
+        "issues": [],
+        "warnings": [],
+        "full_text_len": 117
+      },
+      {
+        "decision_id": "bpatger_O2023_007",
+        "issues": [],
+        "warnings": [],
+        "full_text_len": 109
+      }
+    ],
+    "error": null,
+    "duration_s": 48.1
+  },
+  "BGE": {
+    "court": "bge",
+    "import": true,
+    "instantiate": true,
+    "discover": true,
+    "fetch": true,
+    "decisions": [
+      {
+        "decision_id": "bge_151 I 93",
+        "issues": [],
+        "warnings": [
+          "empty optional: title",
+          "empty optional: legal_area",
+          "empty optional: decision_type"
+        ],
+        "full_text_len": 15936
+      },
+      {
+        "decision_id": "bge_151 I 101",
+        "issues": [],
+        "warnings": [
+          "empty optional: title",
+          "empty optional: legal_area",
+          "empty optional: decision_type"
+        ],
+        "full_text_len": 27949
+      },
+      {
+        "decision_id": "bge_151 I 113",
+        "issues": [],
+        "warnings": [
+          "empty optional: title",
+          "empty optional: legal_area",
+          "empty optional: decision_type"
+        ],
+        "full_text_len": 58216
+      }
+    ],
+    "error": null,
+    "duration_s": 54.2
+  },
+  "BGer": {
+    "court": "bger",
+    "import": true,
+    "instantiate": true,
+    "discover": true,
+    "fetch": false,
+    "decisions": [],
+    "error": null,
+    "duration_s": 308.9
+  }
+}
