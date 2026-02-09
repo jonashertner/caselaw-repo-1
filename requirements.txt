@@ -12,6 +12,9 @@ huggingface-hub>=0.20
 fastapi>=0.104
 uvicorn>=0.24
 
+# MCP server
+mcp>=1.0
+
 # BGer PoW encryption (optional)
 pycryptodome>=3.20
 

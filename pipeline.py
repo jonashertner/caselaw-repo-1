@@ -46,8 +46,8 @@ def get_scraper_registry() -> dict:
     registry = {}
 
     try:
-        from scrapers.bger import BGerScraper
-        registry["bger"] = BGerScraper
+        from scrapers.bger import BgerScraper
+        registry["bger"] = BgerScraper
     except ImportError as e:
         logger.warning(f"BGer scraper not available: {e}")
 
@@ -297,57 +297,124 @@ def import_to_fts5(output_dir: Path, db_path: Path | None = None) -> None:
             decision_id TEXT PRIMARY KEY,
             court TEXT NOT NULL,
             canton TEXT NOT NULL,
+            chamber TEXT,
             docket_number TEXT NOT NULL,
             decision_date TEXT NOT NULL,
+            publication_date TEXT,
             language TEXT NOT NULL,
             title TEXT,
+            legal_area TEXT,
             regeste TEXT,
             full_text TEXT,
+            decision_type TEXT,
+            outcome TEXT,
             source_url TEXT,
+            pdf_url TEXT,
+            cited_decisions TEXT,
             scraped_at TEXT,
             json_data TEXT
         );
 
+        CREATE INDEX IF NOT EXISTS idx_decisions_court ON decisions(court);
+        CREATE INDEX IF NOT EXISTS idx_decisions_canton ON decisions(canton);
+        CREATE INDEX IF NOT EXISTS idx_decisions_date ON decisions(decision_date);
+        CREATE INDEX IF NOT EXISTS idx_decisions_language ON decisions(language);
+        CREATE INDEX IF NOT EXISTS idx_decisions_docket ON decisions(docket_number);
+
         CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
-            decision_id,
+            decision_id UNINDEXED,
             court,
+            canton,
             docket_number,
+            language,
             title,
             regeste,
             full_text,
             content=decisions,
-            content_rowid=rowid
+            content_rowid=rowid,
+            tokenize='unicode61 remove_diacritics 2'
         );
+
+        -- Triggers to keep FTS in sync with main table
+        CREATE TRIGGER IF NOT EXISTS decisions_ai AFTER INSERT ON decisions BEGIN
+            INSERT INTO decisions_fts(rowid, decision_id, court, canton,
+                docket_number, language, title, regeste, full_text)
+            VALUES (new.rowid, new.decision_id, new.court, new.canton,
+                new.docket_number, new.language, new.title, new.regeste,
+                new.full_text);
+        END;
+
+        CREATE TRIGGER IF NOT EXISTS decisions_ad AFTER DELETE ON decisions BEGIN
+            INSERT INTO decisions_fts(decisions_fts, rowid, decision_id, court,
+                canton, docket_number, language, title, regeste, full_text)
+            VALUES ('delete', old.rowid, old.decision_id, old.court, old.canton,
+                old.docket_number, old.language, old.title, old.regeste,
+                old.full_text);
+        END;
+
+        CREATE TRIGGER IF NOT EXISTS decisions_au AFTER UPDATE ON decisions BEGIN
+            INSERT INTO decisions_fts(decisions_fts, rowid, decision_id, court,
+                canton, docket_number, language, title, regeste, full_text)
+            VALUES ('delete', old.rowid, old.decision_id, old.court, old.canton,
+                old.docket_number, old.language, old.title, old.regeste,
+                old.full_text);
+            INSERT INTO decisions_fts(rowid, decision_id, court, canton,
+                docket_number, language, title, regeste, full_text)
+            VALUES (new.rowid, new.decision_id, new.court, new.canton,
+                new.docket_number, new.language, new.title, new.regeste,
+                new.full_text);
+        END;
     """)
 
     # Import from daily shards
     daily_dir = output_dir / "data" / "daily"
     if not daily_dir.exists():
+        conn.close()
         return
 
     imported = 0
+    skipped = 0
     for parquet_file in sorted(daily_dir.glob("*.parquet")):
         try:
             table = pq.read_table(parquet_file)
             for batch in table.to_batches():
                 for row in batch.to_pylist():
                     try:
+                        # Skip if already exists
+                        exists = conn.execute(
+                            "SELECT 1 FROM decisions WHERE decision_id = ?",
+                            (row["decision_id"],),
+                        ).fetchone()
+                        if exists:
+                            skipped += 1
+                            continue
+
                         conn.execute(
-                            """INSERT OR REPLACE INTO decisions
-                            (decision_id, court, canton, docket_number, decision_date,
-                             language, title, regeste, full_text, source_url, scraped_at, json_data)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                            """INSERT INTO decisions
+                            (decision_id, court, canton, chamber, docket_number,
+                             decision_date, publication_date, language, title,
+                             legal_area, regeste, full_text, decision_type,
+                             outcome, source_url, pdf_url, cited_decisions,
+                             scraped_at, json_data)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                             (
                                 row["decision_id"],
                                 row["court"],
                                 row["canton"],
+                                row.get("chamber"),
                                 row["docket_number"],
                                 row["decision_date"],
+                                row.get("publication_date"),
                                 row["language"],
                                 row.get("title"),
+                                row.get("legal_area"),
                                 row.get("regeste"),
                                 row.get("full_text"),
+                                row.get("decision_type"),
+                                row.get("outcome"),
                                 row.get("source_url"),
+                                row.get("pdf_url"),
+                                row.get("cited_decisions"),
                                 row.get("scraped_at"),
                                 json.dumps(row, default=str),
                             ),
@@ -355,15 +422,18 @@ def import_to_fts5(output_dir: Path, db_path: Path | None = None) -> None:
                         imported += 1
                     except Exception as e:
                         logger.warning(f"Failed to import {row.get('decision_id', '?')}: {e}")
+            conn.commit()
         except Exception as e:
             logger.warning(f"Failed to read {parquet_file}: {e}")
 
-    # Rebuild FTS index
-    conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('rebuild')")
+    # Optimize FTS index
+    conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
     conn.commit()
     conn.close()
 
-    logger.info(f"FTS5 import complete. {imported} decisions imported to {db_path}")
+    logger.info(
+        f"FTS5 import complete. {imported} new, {skipped} skipped → {db_path}"
+    )
 
 
 # ============================================================
@@ -377,7 +447,7 @@ def run_pipeline(
     max_per_court: int | None = None,
     output_dir: Path = Path("output"),
     do_upload: bool = False,
-    hf_repo: str = "your-org/swiss-caselaw",
+    hf_repo: str = "voilaj/swiss-caselaw",
     do_fts5: bool = False,
     do_consolidate: bool = False,
 ) -> dict:
@@ -480,7 +550,7 @@ Available courts: bger, bge, bvger, bstger, bpatger, zh_obergericht
     parser.add_argument(
         "--hf-repo",
         type=str,
-        default="your-org/swiss-caselaw",
+        default="voilaj/swiss-caselaw",
         help="HuggingFace dataset repo",
     )
     parser.add_argument("--fts5", action="store_true", help="Import to SQLite FTS5")
