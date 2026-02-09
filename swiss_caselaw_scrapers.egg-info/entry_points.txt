@@ -1,0 +1,2 @@
+[console_scripts]
+swiss-caselaw = pipeline:main

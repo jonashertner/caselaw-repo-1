@@ -1,0 +1,81 @@
+name: Daily Swiss Caselaw Scrape
+
+on:
+  schedule:
+    # Daily at 02:15 UTC (03:15 CET / 04:15 CEST)
+    - cron: '15 2 * * *'
+  workflow_dispatch:
+    inputs:
+      courts:
+        description: 'Comma-separated court codes (default: all)'
+        required: false
+        default: ''
+      max_per_court:
+        description: 'Max decisions per court'
+        required: false
+        default: ''
+
+env:
+  HF_TOKEN: ${{ secrets.HF_TOKEN }}
+  HF_REPO: ${{ vars.HF_REPO || 'your-org/swiss-caselaw' }}
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Restore scraper state (which decisions already scraped)
+      - name: Restore state
+        uses: actions/cache@v4
+        with:
+          path: output/state
+          key: scraper-state-${{ github.run_number }}
+          restore-keys: |
+            scraper-state-
+
+      # Restore previous daily shards (for consolidation)
+      - name: Restore output data
+        uses: actions/cache@v4
+        with:
+          path: output/data
+          key: output-data-${{ github.run_number }}
+          restore-keys: |
+            output-data-
+
+      - name: Run scraper pipeline
+        run: |
+          ARGS="--scrape --upload --hf-repo $HF_REPO"
+          
+          if [ -n "${{ github.event.inputs.courts }}" ]; then
+            ARGS="$ARGS --courts ${{ github.event.inputs.courts }}"
+          fi
+          
+          if [ -n "${{ github.event.inputs.max_per_court }}" ]; then
+            ARGS="$ARGS --max ${{ github.event.inputs.max_per_court }}"
+          fi
+          
+          python pipeline.py $ARGS
+
+      # Monthly consolidation (1st of each month)
+      - name: Monthly consolidation
+        if: github.event.schedule != '' && (github.event.schedule == '15 2 1 * *' || github.event_name == 'workflow_dispatch')
+        run: python pipeline.py --consolidate --upload --hf-repo $HF_REPO
+
+      - name: Upload scrape logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrape-logs-${{ github.run_number }}
+          path: output/state/*.jsonl
+          retention-days: 30

@@ -1,0 +1,19 @@
+# Core
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=4.9
+pydantic>=2.0
+
+# Data pipeline
+pyarrow>=14.0
+huggingface-hub>=0.20
+
+# API server (optional)
+fastapi>=0.104
+uvicorn>=0.24
+
+# BGer PoW encryption (optional)
+pycryptodome>=3.20
+
+# PDF text extraction (optional)
+pymupdf>=1.23

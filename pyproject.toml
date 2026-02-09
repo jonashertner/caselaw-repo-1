@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swiss-caselaw-scrapers"
+version = "0.1.0"
+description = "Scraping framework for Swiss federal and cantonal court decisions"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{name = "Jonas Hertner"}]
+
+dependencies = [
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "lxml>=4.9",
+    "pydantic>=2.0",
+    "pyarrow>=14.0",
+    "huggingface-hub>=0.20",
+]
+
+[project.optional-dependencies]
+crypto = ["pycryptodome>=3.20"]
+pdf = ["pymupdf>=1.23"]
+api = ["fastapi>=0.104", "uvicorn>=0.24"]
+dev = ["pytest>=7.0", "ruff>=0.1"]
+all = ["swiss-caselaw-scrapers[crypto,pdf,api,dev]"]
+
+[tool.setuptools.packages.find]
+include = ["scrapers*"]
+
+[tool.setuptools]
+py-modules = ["pipeline", "base_scraper", "models", "fts5_server"]
+
+[project.scripts]
+swiss-caselaw = "pipeline:main"
