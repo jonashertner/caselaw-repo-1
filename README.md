@@ -1,191 +1,233 @@
-# Swiss Caselaw
+# Swiss Jurisprudence Open Access Dataset
 
-Open infrastructure for Swiss court decisions — scraping, search, and analysis.
+Open infrastructure for Swiss court decisions — scraping, full-text search, and bulk analysis.
 
-**Goal:** A comprehensive, daily-updated, freely accessible dataset of all published Swiss court decisions (federal and cantonal), with intelligent full-text search for practitioners and bulk access for researchers.
+**200,000+ decisions scraped. 760,000+ target. Daily updates.**
 
-## Current Status
+This project collects every published court decision in Switzerland — federal and cantonal — and makes them freely available as a structured, searchable dataset. Court decisions are public records under Swiss law (BGE 133 I 106, BGE 139 I 129).
 
-**Phase 1 complete.** The scraping framework and all federal court scrapers are built and validated against live servers (Feb 2026). No dataset has been published yet — that requires running the scrapers over historical data, which is Phase 3.
+## Use the dataset
 
-### What exists today
+### Option 1 — Download (researchers, data scientists)
 
-- Unified scraping framework (models, pipeline, state management, rate limiting)
-- 5 federal court scrapers, validated against live endpoints:
+The full dataset is available on HuggingFace in Parquet format. One file per court, ~30 structured fields per decision, including full text.
 
-| Court | Decisions | Coverage | Platform | Status |
-|-------|-----------|----------|----------|--------|
-| **BGer** — Federal Supreme Court | ~250,000 | 2000–present | Eurospider (SHA-256 PoW) | ✅ Validated, 30/31 tests |
-| **BGE** — Published leading cases | ~15,000 | 1954–present | Eurospider CLIR | ✅ Built |
-| **BVGer** — Federal Administrative Court | ~50,000 | 2007–present | Weblaw API + jurispub fallback | ✅ Rewritten, dual-mode |
-| **BStGer** — Federal Criminal Court | ~5,000 | 2005–present | Weblaw JSON API | ✅ API confirmed live |
-| **BPatGer** — Federal Patent Court | ~250 | 2012–present | TYPO3 HTML | ✅ Selectors verified |
+```python
+from datasets import load_dataset
 
-- Cantonal court registry (all 26 cantons mapped by platform type)
-- Three cantonal base classes covering ~90% of cantonal platforms
-- One cantonal scraper implemented (ZH Obergericht)
+# Load all courts
+ds = load_dataset("voilaj/swiss-caselaw")
 
-### What does not exist yet
+# Load a single court
+bger = load_dataset("voilaj/swiss-caselaw", data_files="bger.parquet")
 
-- The remaining ~24 cantonal scrapers
-- The actual dataset (requires multi-day historical scraping runs)
-- HuggingFace dataset publication
-- MCP server for practitioner access
-- Daily automation (GitHub Actions)
+# Filter in pandas
+import pandas as pd
+df = pd.read_parquet("hf://datasets/voilaj/swiss-caselaw/bger.parquet")
+df_2024 = df[df["decision_date"] >= "2024-01-01"]
+```
 
----
+### Option 2 — Search from Claude (lawyers, researchers, anyone)
 
-## Roadmap
+Connect the dataset to Claude and ask questions in natural language. The MCP server downloads the database automatically on first use (~800 MB).
 
-### Phase 1 — Framework + Federal Courts ✅
+1. **Install Claude** — download [Claude for Desktop](https://claude.ai/download) or install Claude Code (`npm install -g @anthropic-ai/claude-code`)
 
-Build the core infrastructure and scrapers for all 4 federal courts plus BGE.
+2. **Install Python dependencies**
+   ```bash
+   pip install mcp huggingface-hub pyarrow
+   ```
 
-### Phase 2 — Cantonal Courts
+3. **Connect the dataset**
+   ```bash
+   claude mcp add swiss-caselaw -- python3 mcp_server.py
+   ```
 
-Implement scrapers for all 26 cantons. Three platform base classes already handle the heavy lifting:
+4. **Ask questions** — Claude can now search across all Swiss court decisions:
+   - *"Find BGer decisions on tenant eviction from 2024"*
+   - *"What did the BVGer rule on asylum from Eritrea?"*
+   - *"Show me the full text of 6B_1234/2023"*
 
-| Platform | Base Class | Cantons | Effort |
-|----------|-----------|---------|--------|
-| Weblaw (query_ticket) | `base_weblaw.py` | AG, ZG, NW, OW, LU, SG, FR, AR, GR, JU, AI, SZ, VS, BL | ~10 lines config each |
-| Tribuna (GWT-RPC) | `base_tribuna.py` | TI, GE, BS, NE, GL, SO, VD, SH | ~10 lines config each |
-| Vaadin | `base_vaadin.py` | BE, TG, partial ZH, SH | ~10 lines config each |
-| Custom | individual | ZH (VerwG), UR | ~100 lines each |
+### Option 3 — Query directly (developers)
 
-Most cantonal scrapers are thin configuration layers over the base classes. The registry in `scrapers/cantonal/registry.py` has URLs, platform types, and coverage dates for every canton.
+Clone the repo and use the Python tools directly.
 
-### Phase 3 — Historical Backfill + Dataset Publication
+```bash
+git clone https://github.com/jonashertner/caselaw-repo-1.git
+cd caselaw-repo-1
+pip install -e ".[all]"
 
-Run all scrapers over their full historical range. Estimated corpus:
+# Build or update the local search database
+python build_fts5.py --output output --db output/decisions.db
 
-| Source | Est. decisions | Time range |
-|--------|---------------|------------|
-| Federal courts | ~320,000 | 1954–2026 |
-| Cantonal courts | ~500,000+ | varies |
-| **Total** | **~800,000+** | |
+# Search from Python
+import sqlite3
+conn = sqlite3.connect("output/decisions.db")
+results = conn.execute("""
+    SELECT decision_id, court, decision_date, snippet(decisions_fts, 7, '»', '«', '…', 40)
+    FROM decisions_fts
+    WHERE decisions_fts MATCH 'Mietrecht AND Kündigung'
+    ORDER BY bm25(decisions_fts)
+    LIMIT 10
+""").fetchall()
+```
 
-Publish as a Parquet dataset on HuggingFace Hub with monthly shards, versioned releases, and a standardised schema. The pipeline already supports incremental Parquet export and shard management.
+## What's in the dataset
 
-### Phase 4 — Daily Updates + Search
+Every decision is a structured record with ~30 fields:
 
-- **GitHub Actions** workflow: nightly scrape → incremental Parquet → HuggingFace push
-- **FTS5 full-text search** index (SQLite) for local deployment
-- **MCP server** exposing the dataset to Claude and other LLM tools:
-  - `search_decisions(query, court, date_range, language)` — semantic + keyword search
-  - `get_decision(decision_id)` — full text + metadata
-  - `cite_check(docket_number)` — find all decisions citing a given ruling
-  - `court_statistics(court, year)` — aggregate analytics
+| Field | Description |
+|-------|-------------|
+| `decision_id` | Unique key: `{court}_{docket_normalized}` |
+| `court` | Court code (`bger`, `bvger`, `zh_obergericht`, ...) |
+| `canton` | `CH` (federal) or two-letter cantonal code |
+| `docket_number` | Original case number (`6B_1234/2025`, `A-668/2020`) |
+| `decision_date` | Date of the ruling |
+| `language` | `de`, `fr`, `it`, or `rm` |
+| `full_text` | Complete decision text |
+| `regeste` | Legal headnote / summary |
+| `title` | Subject matter |
+| `legal_area` | Area of law |
+| `decision_type` | Urteil, Beschluss, Verfügung, ... |
+| `outcome` | Gutheissung, Abweisung, Nichteintreten, ... |
+| `judges` | Panel composition |
+| `cited_decisions` | Extracted citation references |
+| `source_url` | Permanent link to the original |
+| ... | + 15 more fields (chamber, clerks, abstracts, appeal info, PDF URL, ...) |
 
-The MCP server is the highest-value access layer for practitioners — it lets you query Swiss caselaw directly from Claude, Cursor, or any MCP-compatible tool.
+Full schema: [`models.py`](models.py)
 
-### Phase 5 — Research Access + Analysis
+## Court coverage
 
-- Bulk download via HuggingFace (`datasets` library, Parquet, or CSV)
-- Citation graph (which decisions cite which, across all courts)
-- Judicial analytics (outcome rates by court/chamber/year, processing times, language distribution)
-- Judge/clerk extraction and panel composition analysis
+### Federal courts
 
----
+| Court | Code | Decisions | Coverage | Source |
+|-------|------|-----------|----------|--------|
+| Federal Supreme Court | `bger` | ~250,000 | 2000–present | bger.ch (Eurospider) |
+| BGE Leading Cases | `bge` | ~15,000 | 1954–present | search.bger.ch |
+| Federal Administrative Court | `bvger` | ~91,000 | 2007–present | bvger.weblaw.ch |
+| Federal Criminal Court | `bstger` | ~5,000 | 2005–present | bstger.weblaw.ch |
+| Federal Patent Court | `bpatger` | ~250 | 2012–present | bundespatentgericht.ch |
+
+### Cantonal courts
+
+| Canton | Courts | Decisions | Source |
+|--------|--------|-----------|--------|
+| Zürich (ZH) | Obergericht, Verwaltungsgericht, Sozialversicherungsgericht, Baurekursgericht, Steuerrekursgericht | ~100,000 | zh.ch, entscheidsuche.ch |
+| Aargau (AG) | Alle Gerichte | ~10,000 | decwork.ag.ch |
+| Basel-Stadt (BS) | Alle Gerichte | ~10,000 | entscheidsuche.ch |
+| Genève (GE) | Tous les tribunaux | ~88,000 | entscheidsuche.ch |
+| Ticino (TI) | Tutti i tribunali | ~58,000 | entscheidsuche.ch |
+| Vaud (VD) | Tous les tribunaux | ~71,000 | entscheidsuche.ch |
+| + 20 more | via entscheidsuche.ch | ~150,000+ | entscheidsuche.ch |
+
+Target: all 26 cantons. See [`scrapers/cantonal/registry.py`](scrapers/cantonal/registry.py) for the full mapping.
 
 ## Architecture
 
 ```
-pipeline.py                  ← Orchestrator: scrape → Parquet → HuggingFace → FTS5
-├── base_scraper.py          ← Abstract base (rate limiting, state, sessions)
-├── models.py                ← Unified Decision schema (Pydantic)
-├── scrapers/
-│   ├── bger.py              ← BGer (SHA-256 PoW, AZA search, 4-day windowing)
-│   ├── bge.py               ← BGE Leitentscheide (CLIR, volumes I-V, trilingual)
-│   ├── bvger.py             ← BVGer (Weblaw API primary, jurispub.admin.ch fallback)
-│   ├── bstger.py            ← BStGer (Weblaw JSON API, adaptive date windows)
-│   ├── bpatger.py           ← BPatGer (TYPO3 listing pages + detail scraping)
-│   └── cantonal/
-│       ├── registry.py      ← All 26 cantons: platform, URLs, coverage
-│       ├── base_weblaw.py   ← Weblaw query_ticket base (14 cantons)
-│       ├── base_tribuna.py  ← Tribuna GWT-RPC base (8 cantons)
-│       ├── base_vaadin.py   ← Vaadin base (4 cantons)
-│       └── zh_obergericht.py
-├── fts5_server.py           ← Full-text search server (placeholder)
-├── test_parsing.py          ← Offline parsing tests
-├── test_bger_live.py        ← BGer live validation (31 tests)
-├── test_federal_live.py     ← BVGer/BStGer/BPatGer live validation
-├── requirements.txt
-└── pyproject.toml
+Court websites
+     │
+     ▼
+┌─────────────────────────┐
+│  Scrapers               │  5 federal + cantonal scrapers
+│  (BaseScraper + models) │  Rate-limited, stateful, resumable
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│  JSONL files            │  output/decisions/{court}.jsonl
+│  (one per court)        │  Append-only, crash-safe
+└────────────┬────────────┘
+             │
+     ┌───────┴───────┐
+     ▼               ▼
+┌──────────┐   ┌──────────────┐
+│ Parquet  │   │ SQLite FTS5  │
+│ export   │   │ full-text    │
+│          │   │ search index │
+└────┬─────┘   └──────┬───────┘
+     │                │
+     ▼                ▼
+┌──────────┐   ┌──────────────┐
+│ Hugging  │   │ MCP server   │
+│ Face     │   │ (Claude,     │
+│ dataset  │   │  Cursor)     │
+└──────────┘   └──────────────┘
 ```
 
-## Data Model
+### Key files
 
-Every scraper produces a `Decision` object with this schema:
+| File | Purpose |
+|------|---------|
+| `models.py` | Unified `Decision` schema (Pydantic, 30 fields) |
+| `base_scraper.py` | Abstract base: rate limiting, sessions, PoW, state |
+| `run_scraper.py` | Run a single scraper with JSONL persistence |
+| `pipeline.py` | Orchestrator: scrape → Parquet → HuggingFace → FTS5 |
+| `build_fts5.py` | Build SQLite FTS5 search database from JSONL/Parquet |
+| `export_parquet.py` | JSONL → deduplicated Parquet (one file per court) |
+| `generate_stats.py` | Database → `docs/stats.json` for the dashboard |
+| `mcp_server.py` | MCP server for Claude/Cursor integration |
+| `publish.py` | Daily cron pipeline (ingest → FTS5 → Parquet → HF → stats → git push) |
+| `scrapers/` | Federal court scrapers (bger, bge, bvger, bstger, bpatger) |
+| `scrapers/cantonal/` | Cantonal scrapers + registry + platform base classes |
+| `docs/index.html` | Public statistics dashboard |
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `decision_id` | str | Unique key: `{court}_{docket_normalized}` |
-| `court` | str | `bger`, `bvger`, `bstger`, `bpatger`, `zh_obergericht`, ... |
-| `canton` | str | `CH` (federal) or two-letter cantonal code |
-| `chamber` | str? | Court division / Abteilung |
-| `docket_number` | str | Original format: `6B_1234/2025`, `A-668/2020` |
-| `decision_date` | date | Date of the ruling |
-| `publication_date` | date? | When published online |
-| `language` | str | `de`, `fr`, `it`, `rm` |
-| `full_text` | str | Complete decision text |
-| `title` | str? | Short title or Stichwort |
-| `regeste` | str? | Headnote / Regeste |
-| `abstract_de`, `abstract_fr`, `abstract_it` | str? | Trilingual abstracts (BGE only) |
-| `legal_area` | str? | Rechtsgebiet |
-| `decision_type` | str? | Urteil, Beschluss, Verfügung, ... |
-| `outcome` | str? | Gutheissung, Abweisung, Nichteintreten, ... |
-| `judges` | str? | Panel composition |
-| `clerks` | str? | Gerichtsschreiber |
-| `collection` | str? | BGE reference if published as leading case |
-| `appeal_info` | str? | Appeal status, BGer reference |
-| `cited_decisions` | list[str] | Extracted BGE and docket references |
-| `source_url` | str | Permanent link to original |
-| `pdf_url` | str? | Direct PDF download link |
-| `scraped_at` | datetime | When scraped |
-
-## Quick Start
+## Running the scrapers
 
 ```bash
-git clone https://github.com/jonashertner/caselaw-repo.git
-cd caselaw-repo
+# Install
+git clone https://github.com/jonashertner/caselaw-repo-1.git
+cd caselaw-repo-1
 pip install -e ".[all]"
 
-# Smoke test: scrape 5 recent BGer decisions
-python pipeline.py --scrape --courts bger --max 5 -v
+# Scrape 5 recent decisions from any court
+python run_scraper.py bger --max 5 -v
+python run_scraper.py bvger --since 2026-01-01 --max 10 -v
 
-# Run live validation tests
-python test_federal_live.py
+# Full historical scrape (takes hours/days)
+python run_scraper.py bger --since 2000-01-01 -v
 
-# Scrape specific courts with date filter
-python pipeline.py --scrape --courts bger,bstger,bvger --since 2026-01-01 --max 20
+# Build search database from scraped JSONL
+python build_fts5.py --output output --db output/decisions.db
 
-# Individual scraper with debug output
-python scrapers/bger.py --max 3 -v
-python scrapers/bstger.py --since 2026-01-01 --max 5 -v
-python scrapers/bvger.py --since 2026-01-01 --max 5 -v
-python scrapers/bpatger.py --max 5 -v
+# Export to Parquet for HuggingFace
+python export_parquet.py --input output/decisions --output output/dataset
+
+# Generate dashboard statistics
+python generate_stats.py --db output/decisions.db --output docs/stats.json
 ```
 
-## Technical Notes
+## Technical notes
 
-**BGer Proof-of-Work.** The Federal Supreme Court's Eurospider platform requires a SHA-256 proof-of-work cookie. Without it, requests redirect to `pow.php`. The scraper mines a nonce where `SHA256(fingerprint + nonce)` has 16 leading zero bits (~65k hashes, under 1 second). This is only needed for `search.bger.ch`, not for `relevancy.bger.ch` direct fetches.
+**BGer Proof-of-Work.** The Federal Supreme Court's Eurospider platform requires a SHA-256 proof-of-work cookie. The scraper mines a nonce where `SHA256(fingerprint + nonce)` has 16 leading zero bits (~65k hashes, under 1 second). This is only needed for `search.bger.ch`, not for `relevancy.bger.ch` direct fetches.
 
-**BVGer dual-mode.** BVGer migrated from ICEfaces (jurispub.admin.ch) to Weblaw Lawsearch v4 (bvger.weblaw.ch) in 2023. Both platforms remain active as of Feb 2026. The scraper tries the Weblaw JSON API first and falls back to ICEfaces automatically. The old platform may be shut down without notice.
+**BVGer dual-mode.** BVGer migrated from ICEfaces (jurispub.admin.ch) to Weblaw Lawsearch v4 (bvger.weblaw.ch) in 2023. Both platforms remain active as of Feb 2026. The scraper tries the Weblaw JSON API first and falls back to ICEfaces automatically.
 
-**Rate limiting.** All scrapers enforce a minimum 3-second delay between requests. BVGer and BStGer use adaptive date windowing (start with 64-day ranges, halve if results exceed 100) to avoid overwhelming the APIs.
+**Rate limiting.** All scrapers enforce a minimum 2-second delay between requests. BVGer and BStGer use adaptive date windowing (start with 64-day ranges, halve if results exceed 100) to avoid overwhelming the APIs.
 
-**Court decisions are public records** under Swiss law. The Bundesgericht has consistently held that court decisions must be made accessible to the public (BGE 133 I 106, BGE 139 I 129). This project scrapes only publicly available, officially published decisions.
+**Entscheidsuche.ch.** Cantonal decisions are sourced from [entscheidsuche.ch](https://entscheidsuche.ch), a public directory of Swiss court decisions operated by volunteers. The download script (`scrapers/entscheidsuche_download.py`) fetches JSON+HTML files from 52 court spiders covering all 26 cantons.
+
+**Legal basis.** Court decisions are public records under Swiss law. The Bundesgericht has consistently held that court decisions must be made accessible to the public (BGE 133 I 106, BGE 139 I 129). This project scrapes only publicly available, officially published decisions.
+
+## Daily automation
+
+The `publish.py` script runs as a daily cron job on a VPS:
+
+```bash
+# Crontab entry
+15 3 * * * cd /opt/caselaw/repo && python3 publish.py >> logs/publish.log 2>&1
+```
+
+It runs 6 steps in sequence: ingest new data → rebuild FTS5 → export Parquet → upload to HuggingFace → regenerate stats → git push dashboard.
 
 ## Contributing
 
-Contributions are welcome, particularly:
+Contributions are welcome:
 
-- Cantonal scraper implementations (most are ~10 lines of config over the base classes)
-- Test coverage for existing scrapers
-- MCP server implementation
-- Data quality improvements (better outcome detection, judge extraction, citation parsing)
-
-See `scrapers/cantonal/registry.py` for which cantons still need scrapers.
+- **Cantonal scrapers** — most are ~10 lines of config over the base classes. See `scrapers/cantonal/registry.py`
+- **Data quality** — better outcome detection, judge extraction, citation parsing
+- **Tests** — validation against live court endpoints
 
 ## License
 
