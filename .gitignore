@@ -13,3 +13,7 @@ state/
 .vscode/
 .idea/
 *.DS_Store
+output/
+logs/
+!docs/
+!docs/**

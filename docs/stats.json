@@ -1,0 +1,81 @@
+{
+  "total": 25,
+  "by_court": [
+    {
+      "court": "bge",
+      "canton": "CH",
+      "count": 5,
+      "earliest": "2025-01-01",
+      "latest": "2025-01-01",
+      "languages": [
+        "fr",
+        "de"
+      ]
+    },
+    {
+      "court": "bger",
+      "canton": "CH",
+      "count": 5,
+      "earliest": "2025-12-01",
+      "latest": "2025-12-01",
+      "languages": [
+        "it",
+        "fr",
+        "de"
+      ]
+    },
+    {
+      "court": "bpatger",
+      "canton": "CH",
+      "count": 5,
+      "earliest": "2025-06-12",
+      "latest": "2025-12-04",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "bstger",
+      "canton": "CH",
+      "count": 5,
+      "earliest": "2025-12-02",
+      "latest": "2025-12-19",
+      "languages": [
+        "de",
+        "fr"
+      ]
+    },
+    {
+      "court": "bvger",
+      "canton": "CH",
+      "count": 5,
+      "earliest": "2025-12-01",
+      "latest": "2025-12-04",
+      "languages": [
+        "de"
+      ]
+    }
+  ],
+  "by_canton": [
+    {
+      "canton": "CH",
+      "name": "Schweiz / Suisse",
+      "count": 25
+    }
+  ],
+  "by_language": {
+    "de": 19,
+    "fr": 5,
+    "it": 1
+  },
+  "by_year": {
+    "2025": 25
+  },
+  "recent_daily": {},
+  "date_range": {
+    "earliest": "2025-01-01",
+    "latest": "2025-12-19"
+  },
+  "court_count": 5,
+  "generated_at": "2026-02-12T02:15:28.562439+00:00"
+}

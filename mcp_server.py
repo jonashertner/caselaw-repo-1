@@ -80,13 +80,19 @@ MAX_LIMIT = 100
 # ── Database ──────────────────────────────────────────────────
 
 def get_db() -> sqlite3.Connection:
-    """Get a connection to the local SQLite database."""
+    """Get a connection to the local SQLite database.
+
+    On first run, automatically downloads from HuggingFace and builds the index.
+    """
     if not DB_PATH.exists():
-        raise FileNotFoundError(
-            f"Database not found at {DB_PATH}. "
-            f"Run the 'update_database' tool or: "
-            f"python3 pipeline.py --scrape --fts5 --output {DATA_DIR}"
-        )
+        logger.info("Database not found — downloading from HuggingFace (first run)...")
+        result = update_from_huggingface()
+        logger.info(result)
+        if not DB_PATH.exists():
+            raise FileNotFoundError(
+                f"Database not found at {DB_PATH}. "
+                f"Automatic download failed. Try running the 'update_database' tool manually."
+            )
     conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA query_only = ON")  # read-only for safety
