@@ -161,15 +161,15 @@ def step_4_upload_hf(dry_run: bool = False) -> bool:
             )
             logger.info("  Uploaded dataset card")
 
-        # Upload Parquet files
-        for pf in parquet_files:
-            api.upload_file(
-                path_or_fileobj=str(pf),
-                path_in_repo=pf.name,
-                repo_id=HF_REPO_ID,
-                repo_type="dataset",
-            )
-            logger.info(f"  Uploaded {pf.name}")
+        # Upload Parquet files to data/ directory (batch upload)
+        logger.info(f"  Uploading {len(parquet_files)} Parquet files to data/...")
+        api.upload_folder(
+            folder_path=str(DATASET_DIR),
+            path_in_repo="data",
+            repo_id=HF_REPO_ID,
+            repo_type="dataset",
+            allow_patterns="*.parquet",
+        )
 
         logger.info(f"  Uploaded {len(parquet_files)} files to {HF_REPO_ID}")
         return True
