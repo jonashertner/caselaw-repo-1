@@ -70,10 +70,11 @@ def generate_stats(db_path: Path) -> dict:
         for r in courts
     ]
 
-    # By canton
+    # By canton (exclude CH — federal courts are not a canton)
     cantons = conn.execute("""
         SELECT canton, COUNT(*) as count
         FROM decisions
+        WHERE canton != 'CH'
         GROUP BY canton
         ORDER BY count DESC
     """).fetchall()
