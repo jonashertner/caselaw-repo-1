@@ -47,28 +47,16 @@ SCRAPERS = {
     "zh_sozialversicherungsgericht": ("scrapers.cantonal.zh_sozialversicherungsgericht", "ZHSozialversicherungsgerichtScraper"),
     "zh_baurekursgericht": ("scrapers.cantonal.zh_baurekursgericht", "ZHBaurekursgerichtScraper"),
     "zh_steuerrekursgericht": ("scrapers.cantonal.zh_steuerrekursgericht", "ZHSteuerrekursgerichtScraper"),
-    # Cantonal — Weblaw Vaadin
-    "bl_gerichte": ("scrapers.cantonal.bl_gerichte", "BLGerichteScraper"),
-    "sg_gerichte": ("scrapers.cantonal.sg_gerichte", "SGGerichteScraper"),
-    # Cantonal — Weblaw query_ticket
-    "be_steuerrekurs": ("scrapers.cantonal.be_steuerrekurs", "BESteuerrekursScraper"),
-    "be_anwaltsaufsicht": ("scrapers.cantonal.be_anwaltsaufsicht", "BEAnwaltsaufsichtScraper"),
     # Cantonal — Tribuna GWT-RPC
     "be_verwaltungsgericht": ("scrapers.cantonal.be_verwaltungsgericht", "BEVerwaltungsgerichtScraper"),
     "be_zivilstraf": ("scrapers.cantonal.be_zivilstraf", "BEZivilStrafScraper"),
     "fr_gerichte": ("scrapers.cantonal.fr_gerichte", "FRGerichteScraper"),
     "gr_gerichte": ("scrapers.cantonal.gr_gerichte", "GRGerichteScraper"),
     "zg_verwaltungsgericht": ("scrapers.cantonal.zg_gerichte", "ZGVerwaltungsgerichtScraper"),
-    "sz_gerichte": ("scrapers.cantonal.sz_gerichte", "SZGerichteScraper"),
-    "sz_verwaltungsgericht": ("scrapers.cantonal.sz_verwaltungsgericht", "SZVerwaltungsgerichtScraper"),
-    "ju_gerichte": ("scrapers.cantonal.ju_gerichte", "JUGerichteScraper"),
     # Cantonal — Weblaw LEv4
     "ar_gerichte": ("scrapers.cantonal.ar_gerichte", "ARGerichteScraper"),
-    # Cantonal — Weblaw Vaadin (additional)
-    "ow_gerichte": ("scrapers.cantonal.ow_gerichte", "OWGerichteScraper"),
     # Cantonal — FindInfo / Omnis
     "ti_gerichte": ("scrapers.cantonal.ti_gerichte", "TIGerichteScraper"),
-    "ne_gerichte": ("scrapers.cantonal.ne_gerichte", "NEGerichteScraper"),
     "gl_gerichte": ("scrapers.cantonal.gl_gerichte", "GLGerichteScraper"),
     # Cantonal — Custom platforms
     "vd_gerichte": ("scrapers.cantonal.vd_gerichte", "VDGerichteScraper"),
