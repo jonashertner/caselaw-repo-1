@@ -9,7 +9,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-sys.path.insert(0, "/home/claude/caselaw")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from models import Decision, extract_citations, make_decision_id, detect_language, parse_date
 
