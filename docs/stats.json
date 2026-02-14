@@ -910,11 +910,6 @@
   ],
   "by_canton": [
     {
-      "canton": "CH",
-      "name": "Schweiz / Suisse",
-      "count": 347339
-    },
-    {
       "canton": "ZH",
       "name": "Zürich",
       "count": 125598
@@ -1183,5 +1178,5 @@
     "latest": "2026-03-02"
   },
   "court_count": 88,
-  "generated_at": "2026-02-14T09:09:27.492657+00:00"
+  "generated_at": "2026-02-14T09:33:13.010717+00:00"
 }
