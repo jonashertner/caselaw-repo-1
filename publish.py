@@ -29,7 +29,7 @@ import logging
 import subprocess
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger("publish")
@@ -215,7 +215,7 @@ def step_6_git_push(dry_run: bool = False) -> bool:
         logger.info("  No changes to stats.json, skipping")
         return True
 
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     if dry_run:
         logger.info(f"  [dry-run] would commit and push stats.json ({today})")
@@ -261,7 +261,7 @@ def main():
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
 
-    logger.info(f"=== Swiss Caselaw publish pipeline — {datetime.utcnow().isoformat()} ===")
+    logger.info(f"=== Swiss Caselaw publish pipeline — {datetime.now(timezone.utc).isoformat()} ===")
 
     if args.dry_run:
         logger.info("DRY RUN — no changes will be made")

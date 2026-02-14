@@ -75,6 +75,26 @@ def normalize_row(row: dict) -> dict:
         val = row.get(key)
         if isinstance(val, (date, datetime)):
             row[key] = val.isoformat()
+        elif val == "None" or val is None:
+            row[key] = None
+
+    # Ensure non-nullable fields have defaults
+    if not row.get("decision_id"):
+        row["decision_id"] = "unknown"
+    if not row.get("court"):
+        row["court"] = "unknown"
+    if not row.get("canton"):
+        row["canton"] = "XX"
+    if not row.get("docket_number"):
+        row["docket_number"] = "unknown"
+    if not row.get("decision_date"):
+        row["decision_date"] = "1970-01-01"
+    if not row.get("language"):
+        row["language"] = "de"
+    if not row.get("full_text"):
+        row["full_text"] = ""
+    if not row.get("source_url"):
+        row["source_url"] = ""
 
     # Ensure cited_decisions is a JSON string
     cited = row.get("cited_decisions", [])
@@ -124,38 +144,98 @@ def load_decisions(input_dir: Path) -> dict[str, dict]:
     return decisions
 
 
-def export_parquet(input_dir: Path, output_dir: Path) -> dict[str, int]:
-    """Export decisions to per-court Parquet files. Returns {court: count}."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-    decisions = load_decisions(input_dir)
+BATCH_SIZE = 5000  # rows per batch to stay under memory limits
 
-    if not decisions:
-        logger.warning("No decisions to export")
+
+def export_parquet(input_dir: Path, output_dir: Path) -> dict[str, int]:
+    """Export decisions to per-court Parquet files. Returns {court: count}.
+
+    Two-pass approach to stay memory-efficient:
+    1. First pass: collect all unique decision_ids per court (just IDs, not data)
+    2. Second pass: stream data, write per-court Parquet using ParquetWriter
+
+    This avoids loading full texts into memory.
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    jsonl_files = sorted(input_dir.glob("*.jsonl"))
+
+    if not jsonl_files:
+        logger.warning(f"No JSONL files found in {input_dir}")
         return {}
 
-    # Group by court
-    by_court: dict[str, list[dict]] = {}
-    for row in decisions.values():
-        court = row.get("court", "unknown")
-        by_court.setdefault(court, []).append(row)
-
+    schema_fields = {f.name for f in DECISION_SCHEMA}
     results = {}
-    for court, rows in sorted(by_court.items()):
-        normalized = [normalize_row(row) for row in rows]
 
-        # Build table with explicit schema — only include schema fields
-        schema_fields = {f.name for f in DECISION_SCHEMA}
-        clean_rows = [{k: r.get(k) for k in schema_fields} for r in normalized]
+    # Global dedup: track all decision_ids across all files
+    global_seen: set[str] = set()
 
-        table = pa.Table.from_pylist(clean_rows, schema=DECISION_SCHEMA)
+    # Use per-court ParquetWriter objects for streaming writes
+    writers: dict[str, pq.ParquetWriter] = {}
 
-        filepath = output_dir / f"{court}.parquet"
-        pq.write_table(table, filepath, compression="zstd")
-        results[court] = len(rows)
-        logger.info(f"  {court}: {len(rows)} decisions → {filepath.name}")
+    try:
+        for jsonl_file in jsonl_files:
+            file_count = 0
+            batch_by_court: dict[str, list[dict]] = {}
+
+            with open(jsonl_file, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        row = json.loads(line)
+                        did = row.get("decision_id")
+                        if not did or did in global_seen:
+                            continue
+                        global_seen.add(did)
+
+                        court = row.get("court", "unknown")
+                        batch_by_court.setdefault(court, []).append(row)
+                        file_count += 1
+
+                        # Flush per-court batches when they get large
+                        if len(batch_by_court.get(court, [])) >= BATCH_SIZE:
+                            rows = batch_by_court.pop(court)
+                            _write_rows(rows, court, output_dir, writers, schema_fields)
+                            results[court] = results.get(court, 0) + len(rows)
+                    except json.JSONDecodeError:
+                        continue
+
+            # Flush remaining rows for this file
+            for court, rows in batch_by_court.items():
+                _write_rows(rows, court, output_dir, writers, schema_fields)
+                results[court] = results.get(court, 0) + len(rows)
+
+            if file_count:
+                logger.info(f"  Processed {jsonl_file.name}: {file_count} decisions")
+
+    finally:
+        # Close all writers
+        for court, writer in writers.items():
+            writer.close()
+            logger.info(f"  {court}: {results.get(court, 0)} total")
 
     logger.info(f"Exported {sum(results.values())} decisions across {len(results)} courts")
     return results
+
+
+def _write_rows(
+    rows: list[dict],
+    court: str,
+    output_dir: Path,
+    writers: dict[str, pq.ParquetWriter],
+    schema_fields: set,
+):
+    """Write rows to a per-court ParquetWriter (streaming, no read-back)."""
+    normalized = [normalize_row(row) for row in rows]
+    clean_rows = [{k: r.get(k) for k in schema_fields} for r in normalized]
+    table = pa.Table.from_pylist(clean_rows, schema=DECISION_SCHEMA)
+
+    if court not in writers:
+        filepath = output_dir / f"{court}.parquet"
+        writers[court] = pq.ParquetWriter(str(filepath), DECISION_SCHEMA, compression="zstd")
+
+    writers[court].write_table(table)
 
 
 def main():

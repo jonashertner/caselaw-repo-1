@@ -1,35 +1,186 @@
 {
-  "total": 25,
+  "total": 917713,
   "by_court": [
-    {
-      "court": "bge",
-      "canton": "CH",
-      "count": 5,
-      "earliest": "2025-01-01",
-      "latest": "2025-01-01",
-      "languages": [
-        "fr",
-        "de"
-      ]
-    },
     {
       "court": "bger",
       "canton": "CH",
-      "count": 5,
-      "earliest": "2025-12-01",
-      "latest": "2025-12-01",
+      "count": 173474,
+      "earliest": "1996-01-19",
+      "latest": "2026-02-03",
       "languages": [
-        "it",
+        "de",
+        "fr",
+        "it"
+      ]
+    },
+    {
+      "court": "bvger",
+      "canton": "CH",
+      "count": 91162,
+      "earliest": "2007-01-25",
+      "latest": "2026-02-04",
+      "languages": [
+        "de",
+        "fr",
+        "it"
+      ]
+    },
+    {
+      "court": "ge_gerichte",
+      "canton": "GE",
+      "count": 77754,
+      "earliest": "1993-02-16",
+      "latest": "2026-01-27",
+      "languages": [
+        "fr",
+        "de",
+        "it"
+      ]
+    },
+    {
+      "court": "vd_findinfo",
+      "canton": "VD",
+      "count": 74866,
+      "earliest": "2008-02-26",
+      "latest": "2025-12-21",
+      "languages": [
         "fr",
         "de"
       ]
     },
     {
-      "court": "bpatger",
+      "court": "ti_gerichte",
+      "canton": "TI",
+      "count": 58125,
+      "earliest": "1995-01-03",
+      "latest": "2026-02-13",
+      "languages": [
+        "it",
+        "de",
+        "fr"
+      ]
+    },
+    {
+      "court": "bge",
       "canton": "CH",
-      "count": 5,
-      "earliest": "2025-06-12",
-      "latest": "2025-12-04",
+      "count": 45049,
+      "earliest": "1954-01-01",
+      "latest": "2025-12-11",
+      "languages": [
+        "fr",
+        "de",
+        "it"
+      ]
+    },
+    {
+      "court": "zh_gerichte",
+      "canton": "ZH",
+      "count": 33672,
+      "earliest": "1980-04-15",
+      "latest": "2026-01-26",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_sozialversicherungsgericht",
+      "canton": "ZH",
+      "count": 33523,
+      "earliest": "2000-03-13",
+      "latest": "2025-08-28",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "vd_omni",
+      "canton": "VD",
+      "count": 28032,
+      "earliest": "1984-11-15",
+      "latest": "2026-02-09",
+      "languages": [
+        "de",
+        "fr",
+        "it"
+      ]
+    },
+    {
+      "court": "zh_obergericht",
+      "canton": "ZH",
+      "count": 27179,
+      "earliest": "1980-04-15",
+      "latest": "2026-01-26",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ch_vb",
+      "canton": "CH",
+      "count": 23032,
+      "earliest": "1982-01-01",
+      "latest": "2016-10-27",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_verwaltungsgericht",
+      "canton": "ZH",
+      "count": 22741,
+      "earliest": "1990-09-25",
+      "latest": "None",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "gr_gerichte",
+      "canton": "GR",
+      "count": 20976,
+      "earliest": "0000-00-00",
+      "latest": "2026-02-13",
+      "languages": [
+        "de",
+        "it"
+      ]
+    },
+    {
+      "court": "bl_gerichte",
+      "canton": "BL",
+      "count": 16907,
+      "earliest": "2000-01-28",
+      "latest": "None",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "fr_gerichte",
+      "canton": "FR",
+      "count": 13956,
+      "earliest": "0000-00-00",
+      "latest": "2026-02-09",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "sg_gerichte",
+      "canton": "SG",
+      "count": 12565,
+      "earliest": "2001-03-20",
+      "latest": "2026-01-20",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "sg_publikationen",
+      "canton": "SG",
+      "count": 12186,
+      "earliest": "2001-03-20",
+      "latest": "2024-04-29",
       "languages": [
         "de"
       ]
@@ -37,20 +188,719 @@
     {
       "court": "bstger",
       "canton": "CH",
-      "count": 5,
-      "earliest": "2025-12-02",
-      "latest": "2025-12-19",
+      "count": 11413,
+      "earliest": "2004-01-01",
+      "latest": "2026-01-20",
+      "languages": [
+        "de",
+        "it",
+        "fr"
+      ]
+    },
+    {
+      "court": "ag_gerichte",
+      "canton": "AG",
+      "count": 11240,
+      "earliest": "1940-12-09",
+      "latest": "None",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "be_verwaltungsgericht",
+      "canton": "BE",
+      "count": 11112,
+      "earliest": "0000-00-00",
+      "latest": "2026-01-28",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "be_zivilstraf",
+      "canton": "BE",
+      "count": 10613,
+      "earliest": "0000-00-00",
+      "latest": "2026-02-13",
       "languages": [
         "de",
         "fr"
       ]
     },
     {
-      "court": "bvger",
+      "court": "vs_gerichte",
+      "canton": "VS",
+      "count": 10572,
+      "earliest": "2002-10-18",
+      "latest": "2026-01-27",
+      "languages": [
+        "de",
+        "fr",
+        "it"
+      ]
+    },
+    {
+      "court": "so_gerichte",
+      "canton": "SO",
+      "count": 8867,
+      "earliest": "1972-01-01",
+      "latest": "2026-02-09",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "bs_gerichte",
+      "canton": "BS",
+      "count": 8678,
+      "earliest": "2002-06-02",
+      "latest": "2026-02-06",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "bs_appellationsgericht",
+      "canton": "BS",
+      "count": 7955,
+      "earliest": "2002-06-02",
+      "latest": "2026-02-06",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ne_gerichte",
+      "canton": "NE",
+      "count": 7391,
+      "earliest": "1994-04-29",
+      "latest": "2025-12-22",
+      "languages": [
+        "fr",
+        "de"
+      ]
+    },
+    {
+      "court": "lu_gerichte",
+      "canton": "LU",
+      "count": 7364,
+      "earliest": "1990-03-08",
+      "latest": "2025-11-10",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ar_gerichte",
+      "canton": "AR",
+      "count": 4839,
+      "earliest": "1901-07-29",
+      "latest": "2023-07-12",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_handelsgericht",
+      "canton": "ZH",
+      "count": 4648,
+      "earliest": "2001-05-21",
+      "latest": "2025-09-30",
+      "languages": [
+        "de",
+        "it"
+      ]
+    },
+    {
+      "court": "vd_gerichte",
+      "canton": "VD",
+      "count": 4545,
+      "earliest": "2024-09-19",
+      "latest": "2026-02-13",
+      "languages": [
+        "fr"
+      ]
+    },
+    {
+      "court": "sz_gerichte",
+      "canton": "SZ",
+      "count": 3191,
+      "earliest": "0000-00-00",
+      "latest": "2025-12-23",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zg_verwaltungsgericht",
+      "canton": "ZG",
+      "count": 2566,
+      "earliest": "2019-12-17",
+      "latest": "2026-03-02",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "tg_obergericht",
+      "canton": "TG",
+      "count": 2450,
+      "earliest": "1946-01-01",
+      "latest": "2025-01-29",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_verwaltungsgericht",
+      "canton": "AG",
+      "count": 2374,
+      "earliest": "1999-04-22",
+      "latest": "2026-01-26",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ow_gerichte",
+      "canton": "OW",
+      "count": 2205,
+      "earliest": "2015-11-26",
+      "latest": "2022-12-19",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "be_bvd",
+      "canton": "BE",
+      "count": 2094,
+      "earliest": "2003-05-06",
+      "latest": "2025-12-11",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "bs_sozialversicherungsgericht",
+      "canton": "BS",
+      "count": 2063,
+      "earliest": "2017-09-12",
+      "latest": "2025-12-09",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "sz_verwaltungsgericht",
+      "canton": "SZ",
+      "count": 2027,
+      "earliest": "2010-09-21",
+      "latest": "2025-11-26",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_strafgericht",
+      "canton": "AG",
+      "count": 1902,
+      "earliest": "1999-08-20",
+      "latest": "2026-01-21",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_versicherungsgericht",
+      "canton": "AG",
+      "count": 1850,
+      "earliest": "2000-08-22",
+      "latest": "2026-01-15",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_zivilgericht",
+      "canton": "AG",
+      "count": 1692,
+      "earliest": "1999-10-01",
+      "latest": "2026-01-26",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ur_gerichte",
+      "canton": "UR",
+      "count": 1491,
+      "earliest": "0000-01-01",
+      "latest": "2026-02-13",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_kassationsgericht",
+      "canton": "ZH",
+      "count": 1454,
+      "earliest": "2003-05-05",
+      "latest": "2012-06-25",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "gl_gerichte",
+      "canton": "GL",
+      "count": 1394,
+      "earliest": "2012-02-17",
+      "latest": "2026-02-13",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zg_obergericht",
+      "canton": "ZG",
+      "count": 1183,
+      "earliest": "0000-00-00",
+      "latest": "2025-12-16",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "tg_gerichte",
+      "canton": "TG",
+      "count": 1174,
+      "earliest": "1880-04-11",
+      "latest": "2024-01-01",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "edoeb",
       "canton": "CH",
-      "count": 5,
-      "earliest": "2025-12-01",
+      "count": 1160,
+      "earliest": "1994-11-21",
+      "latest": "2026-01-13",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "finma",
+      "canton": "CH",
+      "count": 1158,
+      "earliest": "2008-11-20",
+      "latest": "None",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_spezialverwaltungsgericht",
+      "canton": "AG",
+      "count": 1154,
+      "earliest": "2000-02-03",
+      "latest": "2025-11-26",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_baurekursgericht",
+      "canton": "ZH",
+      "count": 1137,
+      "earliest": "1991-09-17",
+      "latest": "2025-12-10",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ju_gerichte",
+      "canton": "JU",
+      "count": 1052,
+      "earliest": "0000-00-00",
+      "latest": "2026-01-12",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_steuerrekursgericht",
+      "canton": "ZH",
+      "count": 877,
+      "earliest": "2009-01-15",
+      "latest": "2025-12-08",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "be_weitere",
+      "canton": "BE",
+      "count": 840,
+      "earliest": "2002-05-31",
+      "latest": "2025-12-18",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "sh_obergericht",
+      "canton": "SH",
+      "count": 721,
+      "earliest": "2000-02-24",
+      "latest": "2025-12-16",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "sh_gerichte",
+      "canton": "SH",
+      "count": 699,
+      "earliest": "2000-02-24",
+      "latest": "2026-01-28",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "nw_gerichte",
+      "canton": "NW",
+      "count": 508,
+      "earliest": "0000-08-16",
+      "latest": "2026-02-05",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "bge_egmr",
+      "canton": "CH",
+      "count": 474,
+      "earliest": "2026-01-01",
+      "latest": "2026-01-01",
+      "languages": [
+        "fr",
+        "de"
+      ]
+    },
+    {
+      "court": "be_steuerrekurs",
+      "canton": "BE",
+      "count": 343,
+      "earliest": "2015-09-15",
+      "latest": "2025-12-16",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_handelsgericht",
+      "canton": "AG",
+      "count": 309,
+      "earliest": "2001-04-04",
+      "latest": "2026-01-21",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_regierungsrat",
+      "canton": "AG",
+      "count": 289,
+      "earliest": "2000-02-16",
+      "latest": "2025-03-05",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_zuerich",
+      "canton": "ZH",
+      "count": 268,
+      "earliest": "2000-10-26",
+      "latest": "2026-01-15",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_baugesetzgebung",
+      "canton": "AG",
+      "count": 198,
+      "earliest": "1993-09-20",
+      "latest": "2021-08-20",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "bpatger",
+      "canton": "CH",
+      "count": 189,
+      "earliest": "2012-02-02",
       "latest": "2025-12-04",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_departement_bvu",
+      "canton": "AG",
+      "count": 131,
+      "earliest": "2000-01-05",
+      "latest": "2025-06-16",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "weko",
+      "canton": "CH",
+      "count": 117,
+      "earliest": "2009-04-27",
+      "latest": "None",
+      "languages": [
+        "de",
+        "fr",
+        "it"
+      ]
+    },
+    {
+      "court": "ai_gerichte",
+      "canton": "AI",
+      "count": 116,
+      "earliest": "1995-01-01",
+      "latest": "2026-02-05",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "be_anwaltsaufsicht",
+      "canton": "BE",
+      "count": 72,
+      "earliest": "0000-00-00",
+      "latest": "2025-08-21",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_anwaltskommission",
+      "canton": "AG",
+      "count": 62,
+      "earliest": "2000-06-27",
+      "latest": "2020-12-01",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_departement_vi",
+      "canton": "AG",
+      "count": 58,
+      "earliest": "2000-01-06",
+      "latest": "2022-12-13",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ta_sst",
+      "canton": "CH",
+      "count": 49,
+      "earliest": "2024-10-10",
+      "latest": "2025-10-03",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_winterthur",
+      "canton": "ZH",
+      "count": 29,
+      "earliest": "2014-06-26",
+      "latest": "2025-06-11",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_departement_gs",
+      "canton": "AG",
+      "count": 22,
+      "earliest": "2023-01-12",
+      "latest": "2025-03-20",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_aufsichtskommission",
+      "canton": "AG",
+      "count": 21,
+      "earliest": "2000-12-01",
+      "latest": "2011-04-11",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_departement_bks",
+      "canton": "AG",
+      "count": 17,
+      "earliest": "2000-04-27",
+      "latest": "2024-08-15",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ch_bundesrat",
+      "canton": "CH",
+      "count": 14,
+      "earliest": "2012-10-17",
+      "latest": "2025-10-08",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_dietikon",
+      "canton": "ZH",
+      "count": 14,
+      "earliest": "2012-06-18",
+      "latest": "2024-12-10",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_horgen",
+      "canton": "ZH",
+      "count": 13,
+      "earliest": "2011-10-27",
+      "latest": "2023-10-03",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_pfaeffikon",
+      "canton": "ZH",
+      "count": 13,
+      "earliest": "2020-08-19",
+      "latest": "2025-06-10",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_buelach",
+      "canton": "ZH",
+      "count": 10,
+      "earliest": "2007-06-04",
+      "latest": "2024-07-05",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_weitere",
+      "canton": "AG",
+      "count": 8,
+      "earliest": "2001-12-05",
+      "latest": "2019-02-19",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_meilen",
+      "canton": "ZH",
+      "count": 6,
+      "earliest": "2010-12-21",
+      "latest": "2023-07-05",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_dielsdorf",
+      "canton": "ZH",
+      "count": 5,
+      "earliest": "2009-08-10",
+      "latest": "2024-01-19",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_justizgericht",
+      "canton": "AG",
+      "count": 4,
+      "earliest": "2017-07-15",
+      "latest": "2023-12-21",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_hinwil",
+      "canton": "ZH",
+      "count": 3,
+      "earliest": "2019-05-06",
+      "latest": "2023-07-06",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_uster",
+      "canton": "ZH",
+      "count": 3,
+      "earliest": "2013-07-04",
+      "latest": "2025-06-11",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_bezirksgericht_affoltern",
+      "canton": "ZH",
+      "count": 2,
+      "earliest": "2020-06-22",
+      "latest": "2022-09-20",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "ag_justizleitung",
+      "canton": "AG",
+      "count": 1,
+      "earliest": "2002-06-19",
+      "latest": "2002-06-19",
+      "languages": [
+        "de"
+      ]
+    },
+    {
+      "court": "zh_mietgericht",
+      "canton": "ZH",
+      "count": 1,
+      "earliest": "2025-10-13",
+      "latest": "2025-10-13",
       "languages": [
         "de"
       ]
@@ -60,22 +910,275 @@
     {
       "canton": "CH",
       "name": "Schweiz / Suisse",
-      "count": 25
+      "count": 347291
+    },
+    {
+      "canton": "ZH",
+      "name": "Zürich",
+      "count": 125598
+    },
+    {
+      "canton": "VD",
+      "name": "Vaud",
+      "count": 107443
+    },
+    {
+      "canton": "GE",
+      "name": "Genève",
+      "count": 77754
+    },
+    {
+      "canton": "TI",
+      "name": "Ticino",
+      "count": 58125
+    },
+    {
+      "canton": "BE",
+      "name": "Bern",
+      "count": 25074
+    },
+    {
+      "canton": "SG",
+      "name": "St. Gallen",
+      "count": 24751
+    },
+    {
+      "canton": "AG",
+      "name": "Aargau",
+      "count": 21332
+    },
+    {
+      "canton": "GR",
+      "name": "Graubünden",
+      "count": 20976
+    },
+    {
+      "canton": "BS",
+      "name": "Basel-Stadt",
+      "count": 18696
+    },
+    {
+      "canton": "BL",
+      "name": "Basel-Landschaft",
+      "count": 16907
+    },
+    {
+      "canton": "FR",
+      "name": "Fribourg",
+      "count": 13956
+    },
+    {
+      "canton": "VS",
+      "name": "Valais",
+      "count": 10572
+    },
+    {
+      "canton": "SO",
+      "name": "Solothurn",
+      "count": 8867
+    },
+    {
+      "canton": "NE",
+      "name": "Neuchâtel",
+      "count": 7391
+    },
+    {
+      "canton": "LU",
+      "name": "Luzern",
+      "count": 7364
+    },
+    {
+      "canton": "SZ",
+      "name": "Schwyz",
+      "count": 5218
+    },
+    {
+      "canton": "AR",
+      "name": "Appenzell Ausserrhoden",
+      "count": 4839
+    },
+    {
+      "canton": "ZG",
+      "name": "Zug",
+      "count": 3749
+    },
+    {
+      "canton": "TG",
+      "name": "Thurgau",
+      "count": 3624
+    },
+    {
+      "canton": "OW",
+      "name": "Obwalden",
+      "count": 2205
+    },
+    {
+      "canton": "UR",
+      "name": "Uri",
+      "count": 1491
+    },
+    {
+      "canton": "SH",
+      "name": "Schaffhausen",
+      "count": 1420
+    },
+    {
+      "canton": "GL",
+      "name": "Glarus",
+      "count": 1394
+    },
+    {
+      "canton": "JU",
+      "name": "Jura",
+      "count": 1052
+    },
+    {
+      "canton": "NW",
+      "name": "Nidwalden",
+      "count": 508
+    },
+    {
+      "canton": "AI",
+      "name": "Appenzell Innerrhoden",
+      "count": 116
     }
   ],
   "by_language": {
-    "de": 19,
-    "fr": 5,
-    "it": 1
+    "de": 546348,
+    "fr": 291761,
+    "it": 79604
   },
   "by_year": {
-    "2025": 25
+    "1880": 1,
+    "1901": 39,
+    "1905": 260,
+    "1907": 19,
+    "1912": 1,
+    "1913": 9,
+    "1915": 4,
+    "1916": 1,
+    "1924": 1,
+    "1930": 1,
+    "1931": 1,
+    "1933": 1,
+    "1937": 4,
+    "1939": 1,
+    "1940": 2,
+    "1945": 1,
+    "1946": 1,
+    "1947": 3,
+    "1948": 4,
+    "1949": 5,
+    "1950": 2,
+    "1951": 2,
+    "1952": 2,
+    "1953": 4,
+    "1954": 451,
+    "1955": 544,
+    "1956": 416,
+    "1957": 450,
+    "1958": 415,
+    "1959": 473,
+    "1960": 418,
+    "1961": 396,
+    "1962": 372,
+    "1963": 402,
+    "1964": 382,
+    "1965": 441,
+    "1966": 402,
+    "1967": 410,
+    "1968": 404,
+    "1969": 476,
+    "1970": 571,
+    "1971": 668,
+    "1972": 929,
+    "1973": 892,
+    "1974": 905,
+    "1975": 1018,
+    "1976": 885,
+    "1977": 899,
+    "1978": 864,
+    "1979": 912,
+    "1980": 939,
+    "1981": 940,
+    "1982": 1677,
+    "1983": 1447,
+    "1984": 1353,
+    "1985": 1494,
+    "1986": 1600,
+    "1987": 1608,
+    "1988": 1713,
+    "1989": 1693,
+    "1990": 1798,
+    "1991": 2253,
+    "1992": 2428,
+    "1993": 2631,
+    "1994": 2504,
+    "1995": 4116,
+    "1996": 4089,
+    "1997": 3916,
+    "1998": 4200,
+    "1999": 4109,
+    "2000": 9689,
+    "2001": 10423,
+    "2002": 10987,
+    "2003": 15361,
+    "2004": 16485,
+    "2005": 17743,
+    "2006": 18796,
+    "2007": 24506,
+    "2008": 25974,
+    "2009": 28791,
+    "2010": 30401,
+    "2011": 31286,
+    "2012": 36690,
+    "2013": 36860,
+    "2014": 38325,
+    "2015": 41057,
+    "2016": 42153,
+    "2017": 43224,
+    "2018": 44879,
+    "2019": 45692,
+    "2020": 45640,
+    "2021": 57019,
+    "2022": 45791,
+    "2023": 43248,
+    "2024": 42242,
+    "2025": 41865,
+    "2026": 3336
   },
-  "recent_daily": {},
+  "recent_daily": {
+    "2026-01-15": 58,
+    "2026-01-16": 37,
+    "2026-01-19": 67,
+    "2026-01-20": 54,
+    "2026-01-21": 76,
+    "2026-01-22": 49,
+    "2026-01-23": 31,
+    "2026-01-26": 47,
+    "2026-01-27": 29,
+    "2026-01-28": 31,
+    "2026-01-29": 40,
+    "2026-01-30": 25,
+    "2026-02-01": 1,
+    "2026-02-02": 15,
+    "2026-02-03": 16,
+    "2026-02-04": 18,
+    "2026-02-05": 28,
+    "2026-02-06": 15,
+    "2026-02-07": 12,
+    "2026-02-09": 6,
+    "2026-02-10": 12,
+    "2026-02-11": 13,
+    "2026-02-12": 20,
+    "2026-02-13": 1619,
+    "2026-03-02": 1,
+    "None": 5430
+  },
   "date_range": {
-    "earliest": "2025-01-01",
-    "latest": "2025-12-19"
+    "earliest": "1880-04-11",
+    "latest": "2026-03-02"
   },
-  "court_count": 5,
-  "generated_at": "2026-02-12T02:15:28.562439+00:00"
+  "court_count": 88,
+  "generated_at": "2026-02-14T00:20:13.823031+00:00"
 }

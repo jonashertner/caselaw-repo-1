@@ -95,11 +95,14 @@ def generate_stats(db_path: Path) -> dict:
     """).fetchall()
     stats["by_language"] = {r["language"]: r["count"] for r in languages}
 
-    # By year (all years)
+    # By year (all years, filter invalid dates)
     years = conn.execute("""
         SELECT substr(decision_date, 1, 4) as year, COUNT(*) as count
         FROM decisions
-        WHERE decision_date IS NOT NULL AND length(decision_date) >= 4
+        WHERE decision_date IS NOT NULL
+          AND decision_date != 'None'
+          AND length(decision_date) >= 4
+          AND substr(decision_date, 1, 4) BETWEEN '1800' AND '2100'
         GROUP BY year
         ORDER BY year ASC
     """).fetchall()
@@ -115,10 +118,14 @@ def generate_stats(db_path: Path) -> dict:
     """).fetchall()
     stats["recent_daily"] = {r["day"]: r["count"] for r in recent}
 
-    # Date range
+    # Date range (filter out invalid dates)
     date_range = conn.execute("""
         SELECT MIN(decision_date) as earliest, MAX(decision_date) as latest
         FROM decisions
+        WHERE decision_date IS NOT NULL
+          AND decision_date != 'None'
+          AND decision_date > '1800-01-01'
+          AND decision_date < '2100-01-01'
     """).fetchone()
     stats["date_range"] = {
         "earliest": date_range["earliest"],
