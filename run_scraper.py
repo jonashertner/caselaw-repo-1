@@ -70,6 +70,8 @@ SCRAPERS = {
     "tg_gerichte": ("scrapers.cantonal.tg_gerichte", "TGGerichteScraper"),
     "sh_gerichte": ("scrapers.cantonal.sh_gerichte", "SHGerichteScraper"),
     "ur_gerichte": ("scrapers.cantonal.ur_gerichte", "URGerichteScraper"),
+    # Cantonal — ICMS
+    "nw_gerichte": ("scrapers.cantonal.nw_gerichte", "NWGerichteScraper"),
     # Cantonal — TYPO3/DIAM
     "sg_publikationen": ("scrapers.cantonal.sg_publikationen", "SGPublikationenScraper"),
 }
