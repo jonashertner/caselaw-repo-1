@@ -42,6 +42,11 @@ SCRAPERS = {
     "ai_gerichte": ("scrapers.cantonal.ai_gerichte", "AIGerichteScraper"),
     "bs_gerichte": ("scrapers.cantonal.bs_gerichte", "BSGerichteScraper"),
     "zh_gerichte": ("scrapers.cantonal.zh_gerichte", "ZHGerichteScraper"),
+    "zh_obergericht": ("scrapers.cantonal.zh_obergericht", "ZHObergerichtScraper"),
+    "zh_verwaltungsgericht": ("scrapers.cantonal.zh_verwaltungsgericht", "ZHVerwaltungsgerichtScraper"),
+    "zh_sozialversicherungsgericht": ("scrapers.cantonal.zh_sozialversicherungsgericht", "ZHSozialversicherungsgerichtScraper"),
+    "zh_baurekursgericht": ("scrapers.cantonal.zh_baurekursgericht", "ZHBaurekursgerichtScraper"),
+    "zh_steuerrekursgericht": ("scrapers.cantonal.zh_steuerrekursgericht", "ZHSteuerrekursgerichtScraper"),
     # Cantonal — Weblaw Vaadin
     "bl_gerichte": ("scrapers.cantonal.bl_gerichte", "BLGerichteScraper"),
     "sg_gerichte": ("scrapers.cantonal.sg_gerichte", "SGGerichteScraper"),
