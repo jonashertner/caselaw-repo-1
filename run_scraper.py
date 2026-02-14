@@ -53,11 +53,14 @@ SCRAPERS = {
     "fr_gerichte": ("scrapers.cantonal.fr_gerichte", "FRGerichteScraper"),
     "gr_gerichte": ("scrapers.cantonal.gr_gerichte", "GRGerichteScraper"),
     "zg_verwaltungsgericht": ("scrapers.cantonal.zg_gerichte", "ZGVerwaltungsgerichtScraper"),
+    "sz_gerichte": ("scrapers.cantonal.sz_gerichte", "SZGerichteScraper"),
+    "sz_verwaltungsgericht": ("scrapers.cantonal.sz_verwaltungsgericht", "SZVerwaltungsgerichtScraper"),
     # Cantonal — Weblaw LEv4
     "ar_gerichte": ("scrapers.cantonal.ar_gerichte", "ARGerichteScraper"),
     # Cantonal — FindInfo / Omnis
     "ti_gerichte": ("scrapers.cantonal.ti_gerichte", "TIGerichteScraper"),
     "gl_gerichte": ("scrapers.cantonal.gl_gerichte", "GLGerichteScraper"),
+    "ne_gerichte": ("scrapers.cantonal.ne_gerichte", "NEGerichteScraper"),
     # Cantonal — Custom platforms
     "vd_gerichte": ("scrapers.cantonal.vd_gerichte", "VDGerichteScraper"),
     "so_gerichte": ("scrapers.cantonal.so_gerichte", "SOGerichteScraper"),

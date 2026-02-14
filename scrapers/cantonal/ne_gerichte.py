@@ -50,11 +50,11 @@ RESULTS_PER_PAGE = 20  # Server default; higher values may not work
 # Fixed CGI parameters
 BASE_PARAMS = {
     "OmnisPlatform": "WINDOWS",
-    "WebServerUrl": "jurisprudence.ne.ch",
+    "WebServerUrl": "",
     "WebServerScript": "/scripts/omnisapi.dll",
     "OmnisLibrary": "JURISWEB",
     "OmnisClass": "rtFindinfoWebHtmlService",
-    "OmnisServer": "JURISWEB,localhost:7000",
+    "OmnisServer": "JURISWEB,7000",
     "Schema": "NE_WEB",
     "Parametername": "NEWEB",
 }
@@ -65,7 +65,7 @@ RE_TOTAL_FR = re.compile(r"de\s+(\d+)\s+", re.IGNORECASE)
 RE_NF30_KEY = re.compile(r"nF30_KEY=(\d+)")
 RE_W10_KEY = re.compile(r"W10_KEY=(\d+)")
 RE_DATE = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
-RE_DOCKET = re.compile(r"([A-Z]{2,5}[\._]\d{4}[\._]\d+)")
+RE_DOCKET = re.compile(r"([A-Z]{2,5}[\._]\d{4}[\._]\d+(?:/\d+)?)")
 
 
 def _parse_swiss_date(text):
@@ -124,45 +124,46 @@ class NEGerichteScraper(BaseScraper):
     TIMEOUT = 60
     MAX_ERRORS = 100
 
+    _session_initialized = False
+
     @property
     def court_code(self):
         return "ne_gerichte"
+
+    def _init_session(self):
+        """Load the search template to initialize the Omnis session."""
+        if self._session_initialized:
+            return
+        try:
+            self._rate_limit()
+            self.session.get(
+                CGI_URL,
+                params={
+                    **BASE_PARAMS,
+                    "Aufruf": "loadTemplate",
+                    "cTemplate": "search.html",
+                    "cSprache": "FRE",
+                },
+                timeout=self.TIMEOUT,
+            )
+            self._session_initialized = True
+            logger.info("NE: session initialized")
+        except Exception as e:
+            logger.warning(f"NE: session init failed: {e}")
 
     def discover_new(self, since_date=None) -> Iterator[dict]:
         if since_date and isinstance(since_date, str):
             since_date = date.fromisoformat(since_date)
 
-        total_yielded = 0
-        today = date.today()
-        start_year = since_date.year if since_date else 1989
+        self._init_session()
 
-        for year in range(today.year, start_year - 1, -1):
-            logger.info(f"NE: searching {year}")
-            count = 0
-            for stub in self._discover_year(year):
-                if not self.state.is_known(stub["decision_id"]):
-                    if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
-                        continue
-                    total_yielded += 1
-                    count += 1
-                    yield stub
-            if count > 0:
-                logger.info(f"NE: {year}: {count} new stubs")
-
-        logger.info(f"NE: discovery complete: {total_yielded} new stubs")
-
-    def _discover_year(self, year: int) -> Iterator[dict]:
-        """Discover decisions for a specific year."""
+        # Single search for all decisions (no year filter needed)
         formdata = dict(BASE_PARAMS)
         formdata.update({
-            "Aufruf": "searchAndDisplay",
-            "cTemplate": "simple/search_result.fiw",
+            "Aufruf": "validate",
+            "cTemplate": "search_resulttable.html",
+            "cTemplate_ValidationError": "search.html",
             "cSprache": "FRE",
-            "cSuchstring": "",
-            "bSelectAll": "1",
-            "bInstanzInt": "all",
-            "dEntscheiddatumVon": f"01.01.{year}",
-            "dEntscheiddatumBis": f"31.12.{year}",
             "nSeite": "1",
             "nAnzahlTrefferProSeite": str(RESULTS_PER_PAGE),
         })
@@ -170,32 +171,37 @@ class NEGerichteScraper(BaseScraper):
         try:
             r = self.post(CGI_URL, data=formdata)
         except Exception as e:
-            logger.error(f"NE: search failed for {year}: {e}")
+            logger.error(f"NE: initial search failed: {e}")
             return
 
         html = r.text
         total_hits = self._parse_total(html)
         if not total_hits:
+            logger.warning("NE: could not determine total hits")
             return
 
-        logger.debug(f"NE: {year}: {total_hits} hits")
+        logger.info(f"NE: {total_hits} total decisions, {(total_hits + RESULTS_PER_PAGE - 1) // RESULTS_PER_PAGE} pages")
 
-        # Extract session key for pagination
         session_key = self._extract_session_key(html)
+        total_yielded = 0
 
         # Parse page 1
         for stub in self._parse_result_page(html):
-            yield stub
+            if not self.state.is_known(stub["decision_id"]):
+                if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
+                    continue
+                total_yielded += 1
+                yield stub
 
-        # Paginate
+        # Paginate through remaining pages
         if total_hits > RESULTS_PER_PAGE and session_key:
             total_pages = (total_hits + RESULTS_PER_PAGE - 1) // RESULTS_PER_PAGE
             for page in range(2, total_pages + 1):
                 try:
                     params = dict(BASE_PARAMS)
                     params.update({
-                        "Aufruf": "searchAndDisplay",
-                        "cTemplate": "simple/search_result.fiw",
+                        "Aufruf": "validate",
+                        "cTemplate": "search_resulttable.html",
                         "cSprache": "FRE",
                         "nSeite": str(page),
                         "nAnzahlTrefferProSeite": str(RESULTS_PER_PAGE),
@@ -204,23 +210,32 @@ class NEGerichteScraper(BaseScraper):
                     })
                     r = self.get(CGI_URL, params=params)
                     for stub in self._parse_result_page(r.text):
-                        yield stub
+                        if not self.state.is_known(stub["decision_id"]):
+                            if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
+                                continue
+                            total_yielded += 1
+                            yield stub
                 except Exception as e:
-                    logger.error(f"NE: page {page} failed for {year}: {e}")
+                    logger.error(f"NE: page {page} failed: {e}")
                     break
 
+                if page % 20 == 0:
+                    logger.info(f"NE: scanned {page}/{total_pages} pages, yielded {total_yielded} new stubs")
+
+        logger.info(f"NE: discovery complete: {total_yielded} new stubs")
+
     def _parse_total(self, html: str) -> int | None:
-        """Extract total hit count."""
-        # French: "N de M décisions trouvées" or German: "von N gefundenen"
+        """Extract total hit count from result page."""
+        # Pattern: "de 7439 fiche(s) trouvée(s)"
+        m = re.search(r"de\s+(\d+)\s+fiche", html)
+        if m:
+            return int(m.group(1))
+        # Pattern: "nAnzahlTreffer=7439"
+        m = re.search(r"nAnzahlTreffer=(\d+)", html)
+        if m:
+            return int(m.group(1))
+        # German: "von N gefundenen"
         m = RE_TOTAL.search(html)
-        if m:
-            return int(m.group(1))
-        # Try alternate French pattern
-        m = re.search(r"de\s+(\d+)\s+d[eé]cisions?\s+trouv[eé]", html)
-        if m:
-            return int(m.group(1))
-        # Try generic number after "von" or "de"
-        m = re.search(r"(?:von|de)\s+(\d+)", html)
         if m:
             return int(m.group(1))
         return None
@@ -280,17 +295,17 @@ class NEGerichteScraper(BaseScraper):
         return (
             f"{CGI_URL}?"
             f"OmnisPlatform=WINDOWS"
-            f"&WebServerUrl=jurisprudence.ne.ch"
+            f"&WebServerUrl="
             f"&WebServerScript=/scripts/omnisapi.dll"
             f"&OmnisLibrary=JURISWEB"
             f"&OmnisClass=rtFindinfoWebHtmlService"
-            f"&OmnisServer=JURISWEB,localhost:7000"
+            f"&OmnisServer=JURISWEB,7000"
             f"&Parametername=NEWEB"
             f"&Schema=NE_WEB"
             f"&Aufruf=getMarkupDocument"
             f"&cSprache=FRE"
             f"&nF30_KEY={nf30_key}"
-            f"&cTemplate=simple/search_result_document.html"
+            f"&Template=search_result_document.html"
         )
 
     def fetch_decision(self, stub: dict) -> Decision | None:
