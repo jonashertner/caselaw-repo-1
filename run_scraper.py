@@ -74,6 +74,12 @@ SCRAPERS = {
     "nw_gerichte": ("scrapers.cantonal.nw_gerichte", "NWGerichteScraper"),
     # Cantonal — TYPO3/DIAM
     "sg_publikationen": ("scrapers.cantonal.sg_publikationen", "SGPublikationenScraper"),
+    # Cantonal — Swisslex
+    "bl_gerichte": ("scrapers.cantonal.bl_gerichte", "BLGerichteScraper"),
+    # Cantonal — Tribuna (JU)
+    "ju_gerichte": ("scrapers.cantonal.ju_gerichte", "JUGerichteScraper"),
+    # Cantonal — Weblaw Vaadin
+    "ow_gerichte": ("scrapers.cantonal.ow_gerichte", "OWGerichteScraper"),
 }
 
 
