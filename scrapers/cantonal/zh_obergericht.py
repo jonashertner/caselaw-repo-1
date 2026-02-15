@@ -23,7 +23,7 @@ Adapt by:
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -166,7 +166,7 @@ class ZHObergerichtScraper(BaseScraper):
                 full_text=self.clean_text(full_text) if full_text else "(detail fetch needed)",
                 source_url=stub.get("url", RESULT_PAGE_URL),
                 cited_decisions=extract_citations(full_text) if full_text else [],
-                scraped_at=datetime.utcnow(),
+                scraped_at=datetime.now(timezone.utc),
             )
             return decision
 

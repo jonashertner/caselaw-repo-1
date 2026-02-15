@@ -4,6 +4,7 @@
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
+[![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://jonashertner.github.io/caselaw-repo-1/)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-dataset-blue)](https://huggingface.co/datasets/voilaj/swiss-caselaw)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -94,15 +95,43 @@ The same server works with any MCP-compatible client. For Claude Desktop or Curs
 |------|-------------|
 | `search_decisions` | Full-text search with filters (court, canton, language, date range) |
 | `get_decision` | Fetch a single decision by docket number or ID |
-| `list_courts` | List all 93 courts with decision counts |
+| `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |
 | `update_database` | Re-download the latest data from HuggingFace |
+
+### Search quality benchmark
+
+Use a fixed golden query set to track search relevance over time:
+
+```bash
+python3 benchmarks/run_search_benchmark.py \
+  --db ~/.swiss-caselaw/decisions.db \
+  -k 10 \
+  --json-output benchmarks/latest_search_benchmark.json
+```
+
+Metrics:
+- `MRR@k`
+- `Recall@k`
+- `nDCG@k`
+- `Hit@1`
+
+You can enforce minimum quality gates (non-zero exit on failure):
+
+```bash
+python3 benchmarks/run_search_benchmark.py \
+  --db ~/.swiss-caselaw/decisions.db \
+  -k 10 \
+  --min-mrr 0.70 \
+  --min-recall 0.80 \
+  --min-ndcg 0.90
+```
 
 ---
 
 ## 2. Download the dataset
 
-The full dataset is on [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) as Parquet files — one file per court, 30 fields per decision including complete decision text.
+The full dataset is on [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) as Parquet files — one file per court, 34 fields per decision including complete decision text.
 
 ### With Python (datasets library)
 
@@ -193,13 +222,13 @@ curl -X POST "https://datasets-server.huggingface.co/search?dataset=voilaj/swiss
   -d '{"query": "SELECT docket_number, decision_date, language FROM data WHERE court = '\''bger'\'' LIMIT 10"}'
 ```
 
-> Note: The REST API serves the auto-converted version of the dataset. For per-court Parquet files with the full 30-field schema, use the [download method](#2-download-the-dataset) above.
+> Note: The REST API serves the auto-converted version of the dataset. For per-court Parquet files with the full 34-field schema, use the [download method](#2-download-the-dataset) above.
 
 ---
 
 ## What's in each decision
 
-Every decision has 30 structured fields:
+Every decision has 34 structured fields:
 
 ### Core fields
 
@@ -223,7 +252,7 @@ Every decision has 30 structured fields:
 | `title` | string | Subject line (Gegenstand) |
 | `outcome` | string | Result: Gutheissung, Abweisung, Nichteintreten, ... |
 | `decision_type` | string | Type: Urteil, Beschluss, Verfügung, ... |
-| `cited_decisions` | list | Extracted references to other decisions |
+| `cited_decisions` | string | JSON array of cited decision references |
 | `bge_reference` | string | BGE collection reference if published |
 | `abstract_de` | string | German abstract (primarily BGE) |
 | `abstract_fr` | string | French abstract |
@@ -248,6 +277,10 @@ Every decision has 30 structured fields:
 | `pdf_url` | string | Direct URL to PDF |
 | `external_id` | string | Cross-reference ID |
 | `scraped_at` | datetime | When this decision was scraped |
+| `source` | string | Data source (`entscheidsuche`, `direct_scrape`) |
+| `source_id` | string | Source-specific ID (e.g. Signatur) |
+| `source_spider` | string | Source spider/scraper name |
+| `content_hash` | string | MD5 of full_text for deduplication |
 | `has_full_text` | bool | Whether `full_text` is non-empty |
 | `text_length` | int | Character count of `full_text` |
 
@@ -269,7 +302,7 @@ Full schema definition: [`models.py`](models.py)
 
 ### Cantonal courts
 
-88 courts across all 26 cantons. The largest cantonal collections:
+Courts across all 26 cantons. The largest cantonal collections:
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|
@@ -296,7 +329,7 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
   bvger.ch              │   rate-limited,        └──► FTS5 DB ──► MCP Server
   cantonal portals      │   resumable)                                     │
   entscheidsuche.ch     │                                                  │
-                        │  01:00 UTC  scrape     04:00 UTC  publish        │
+                        │  01:00 UTC  scrape     03:15 UTC  publish        │
                         └──────────────────────────────────────────────────┘
 ```
 
@@ -306,9 +339,9 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
 
 2. **Deduplicate** — Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata.
 
-3. **Build search index** (04:00 UTC) — All JSONL files are loaded into a SQLite FTS5 database for full-text search. This powers the MCP server.
+3. **Build search index** (03:15 UTC) — All JSONL files are loaded into a SQLite FTS5 database for full-text search. This powers the MCP server.
 
-4. **Export** — JSONL files are converted to Parquet (one file per court) with a fixed 30-field schema.
+4. **Export** — JSONL files are converted to Parquet (one file per court) with a fixed 34-field schema.
 
 5. **Upload** — Parquet files are pushed to HuggingFace. The MCP server and `datasets` library pick up the new data automatically.
 
@@ -348,7 +381,7 @@ python run_scraper.py zh_gerichte --max 10 -v
 
 Output is written to `output/decisions/{court}.jsonl` — one JSON object per line, one file per court. The scraper remembers what it has already fetched (state stored in `state/`), so you can run it repeatedly to get only new decisions.
 
-Available court codes: `bger`, `bge`, `bvger`, `bstger`, `bpatger`, `ag_gerichte`, `ai_gerichte`, `ar_gerichte`, `be_zivilstraf`, `bl_gerichte`, `bs_gerichte`, `fr_gerichte`, `ge_gerichte`, `gl_gerichte`, `gr_gerichte`, `ju_gerichte`, `lu_gerichte`, `ne_gerichte`, `nw_gerichte`, `ow_gerichte`, `sg_publikationen`, `sh_gerichte`, `so_gerichte`, `sz_gerichte`, `tg_gerichte`, `ti_gerichte`, `ur_gerichte`, `vd_gerichte`, `vs_gerichte`, `zh_gerichte`, `zh_verwaltungsgericht`, `zh_sozialversicherungsgericht`, and more. Run `python run_scraper.py --help` for the full list.
+38 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://jonashertner.github.io/caselaw-repo-1/) for per-court statistics.
 
 ### Build a local search database
 
@@ -356,7 +389,7 @@ Available court codes: `bger`, `bge`, `bvger`, `bstger`, `bpatger`, `ag_gerichte
 python build_fts5.py --output output -v
 ```
 
-This reads all JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. For 1M decisions, this takes about 3 hours and produces a ~48 GB database.
+This reads all JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. For 1M decisions, this takes about 3 hours and produces a ~43 GB database.
 
 ### Export to Parquet
 

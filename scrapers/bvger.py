@@ -33,7 +33,7 @@ import logging
 import random
 import re
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Iterator
 
 from bs4 import BeautifulSoup
@@ -230,7 +230,7 @@ class BVGerScraper(BaseScraper):
                 source_url=source_url,
                 pdf_url=pdf_url,
                 cited_decisions=extract_citations(full_text) if full_text else [],
-                scraped_at=datetime.utcnow(),
+                scraped_at=datetime.now(timezone.utc),
             )
         except Exception as e:
             logger.error(

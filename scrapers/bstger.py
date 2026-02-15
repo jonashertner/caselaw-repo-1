@@ -22,7 +22,7 @@ import json
 import logging
 import random
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -295,7 +295,7 @@ class BStGerScraper(BaseScraper):
                 source_url=f"{HOST}/cache?id={leid}&guiLanguage={lang}" if leid else f"{HOST}/",
                 pdf_url=stub.get("pdf_url"),
                 cited_decisions=extract_citations(full_text) if full_text else [],
-                scraped_at=datetime.utcnow(),
+                scraped_at=datetime.now(timezone.utc),
             )
             return decision
 

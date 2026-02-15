@@ -29,55 +29,35 @@ from pathlib import Path
 
 logger = logging.getLogger("build_fts5")
 
-from db_schema import SCHEMA_SQL
+from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS
 
 
 def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
-    """Insert a single decision. Returns True if inserted, False if skipped."""
+    """Insert a single decision. Returns True if inserted, False if skipped (duplicate)."""
     try:
-        exists = conn.execute(
-            "SELECT 1 FROM decisions WHERE decision_id = ?",
-            (row["decision_id"],),
-        ).fetchone()
-        if exists:
-            return False
-
         # Handle cited_decisions — could be list or JSON string
         cited = row.get("cited_decisions", [])
         if isinstance(cited, list):
             cited = json.dumps(cited)
+        row["cited_decisions"] = cited
 
-        conn.execute(
-            """INSERT INTO decisions
-            (decision_id, court, canton, chamber, docket_number,
-             decision_date, publication_date, language, title,
-             legal_area, regeste, full_text, decision_type,
-             outcome, source_url, pdf_url, cited_decisions,
-             scraped_at, json_data)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            (
-                row["decision_id"],
-                row["court"],
-                row["canton"],
-                row.get("chamber"),
-                row["docket_number"],
-                str(row["decision_date"]),
-                str(row["publication_date"]) if row.get("publication_date") else None,
-                row["language"],
-                row.get("title"),
-                row.get("legal_area"),
-                row.get("regeste"),
-                row.get("full_text"),
-                row.get("decision_type"),
-                row.get("outcome"),
-                row.get("source_url", ""),
-                row.get("pdf_url"),
-                cited,
-                str(row.get("scraped_at", "")),
-                json.dumps(row, default=str),
-            ),
-        )
-        return True
+        # json_data: full row as JSON blob
+        row["json_data"] = json.dumps(row, default=str)
+
+        # Build values tuple matching INSERT_COLUMNS order.
+        # Convert None-like values properly (avoid storing literal "None" strings).
+        def _val(col: str):
+            v = row.get(col)
+            if v is None or v == "None":
+                return None
+            if col in ("decision_date", "publication_date", "scraped_at") and v:
+                return str(v) if v else None
+            return v
+
+        values = tuple(_val(col) for col in INSERT_COLUMNS)
+
+        cursor = conn.execute(INSERT_OR_IGNORE_SQL, values)
+        return cursor.rowcount > 0
     except Exception as e:
         logger.warning(f"Failed to import {row.get('decision_id', '?')}: {e}")
         return False

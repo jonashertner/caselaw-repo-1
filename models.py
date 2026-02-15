@@ -8,7 +8,7 @@ Unified Decision schema for all Swiss court scrapers.
 from __future__ import annotations
 
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
@@ -106,7 +106,7 @@ class Decision(BaseModel):
 
     # === Provenance ===
     scraped_at: datetime = Field(
-        default_factory=datetime.utcnow, description="When this was scraped"
+        default_factory=lambda: datetime.now(timezone.utc), description="When this was scraped"
     )
     # Optional external identifier for cross-referencing with other databases
     external_id: Optional[str] = Field(

@@ -35,11 +35,11 @@ Full text, structured metadata, four languages. Updated daily.
 This dataset contains over one million Swiss court decisions scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). It covers:
 
 - **5 federal courts**: Federal Supreme Court (BGer), Federal Administrative Court (BVGer), Federal Criminal Court (BStGer), Federal Patent Court (BPatGer), plus BGE leading cases
-- **88 cantonal courts** across all 26 cantons
+- **Cantonal courts** across all 26 cantons
 - **4 languages**: German, French, Italian, Romansh
 - **Temporal range**: 1880 to present
 
-Each decision includes the complete decision text alongside 30 structured metadata fields (court, canton, docket number, date, language, legal area, judges, citations, and more).
+Each decision includes the complete decision text alongside 34 structured metadata fields (court, canton, docket number, date, language, legal area, judges, citations, and more).
 
 ## Quick Start
 
@@ -111,8 +111,12 @@ See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-sear
 | 26 | `cited_decisions` | string | JSON array of cited references |
 | 27 | `scraped_at` | string | Scrape timestamp |
 | 28 | `external_id` | string | External cross-reference ID |
-| 29 | `has_full_text` | bool | Whether full text is non-empty |
-| 30 | `text_length` | int | Character count of full_text |
+| 29 | `source` | string | Data source: `entscheidsuche`, `direct_scrape` |
+| 30 | `source_id` | string | Source-specific ID (e.g. Signatur) |
+| 31 | `source_spider` | string | Source spider/scraper name |
+| 32 | `content_hash` | string | MD5 hash of full_text for deduplication |
+| 33 | `has_full_text` | bool | Whether full text is non-empty |
+| 34 | `text_length` | int | Character count of full_text |
 
 ## Court Coverage
 
@@ -126,7 +130,7 @@ See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-sear
 | Federal Criminal Court | `bstger` | ~11,000 | 2005–present |
 | Federal Patent Court | `bpatger` | ~100 | 2012–present |
 
-### Cantonal Courts (88 courts across 26 cantons)
+### Cantonal Courts (26 cantons)
 
 All 26 cantons: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 

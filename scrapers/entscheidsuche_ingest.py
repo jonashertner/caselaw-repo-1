@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -390,7 +390,7 @@ def build_decision(
         "source_url": source_url,
         "pdf_url": pdf_url,
         "cited_decisions": [],
-        "scraped_at": datetime.utcnow().isoformat() + "Z",
+        "scraped_at": datetime.now(timezone.utc).isoformat(),
         # Extra fields for provenance
         "source": "entscheidsuche",
         "entscheidsuche_signatur": signatur,

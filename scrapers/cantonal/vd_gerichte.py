@@ -27,7 +27,7 @@ from __future__ import annotations
 
 import logging
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Iterator
 
@@ -157,7 +157,7 @@ class VDGerichteScraper(BaseScraper):
                     last_day = 31
                 else:
                     next_month = date(year, month + 1, 1)
-                    last_day = (next_month - __import__('datetime').timedelta(days=1)).day
+                    last_day = (next_month - timedelta(days=1)).day
 
                 date_from = [year, month, 1]
                 date_to = [year, month, last_day]

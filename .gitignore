@@ -15,6 +15,9 @@ state/
 *.DS_Store
 output/
 logs/
+benchmarks/latest_search_benchmark.json
 !docs/
 !docs/**
 docs/GOAL_*.md
+scrapers/probe_*
+scrapers/scrape_*

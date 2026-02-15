@@ -139,7 +139,7 @@ BGER_HEADERS = {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 POW_DIFFICULTY = 16  # bits — required by Eurospider
-POW_AES_KEY = "9f3c1a8e7b4d62f1e0b5c47a2d8f93bc"  # 128-bit, from CH_BGer.py line 176
+POW_AES_KEY = "9f3c1a8e7b4d62f1e0b5c47a2d8f93bc"  # From BGer's public JavaScript (not a secret)
 
 
 def _has_leading_zero_bits(b: bytes, difficulty_bits: int) -> bool:
@@ -317,7 +317,6 @@ OUTCOME_PATTERNS: list[tuple[str, str]] = [
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Language detection word lists
 # Language detection word lists
 # ═══════════════════════════════════════════════════════════════════════════════
 

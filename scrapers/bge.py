@@ -34,10 +34,9 @@ from __future__ import annotations
 import logging
 import re
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterator
-from urllib.parse import quote, urlencode
 
 from bs4 import BeautifulSoup
 
@@ -568,7 +567,7 @@ class BGELeitentscheideScraper(BaseScraper):
                 collection=stub.get("bge_reference"),
                 source_url=source_url,
                 cited_decisions=extract_citations(full_text),
-                scraped_at=datetime.utcnow(),
+                scraped_at=datetime.now(timezone.utc),
             )
 
             return decision

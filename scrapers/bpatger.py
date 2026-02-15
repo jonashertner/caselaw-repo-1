@@ -23,7 +23,7 @@ Rate limiting: 3 seconds
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -287,7 +287,7 @@ class BPatGerScraper(BaseScraper):
                 source_url=stub["url"],
                 pdf_url=pdf_url,
                 cited_decisions=[],
-                scraped_at=datetime.utcnow(),
+                scraped_at=datetime.now(timezone.utc),
             )
             return decision
 

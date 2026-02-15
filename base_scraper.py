@@ -146,7 +146,8 @@ def make_pow_cookies(difficulty: int = 16) -> dict[str, str]:
     """
     Generate a complete set of PoW cookies for BGer Eurospider.
 
-    AES-CBC decryption for BGer Eurospider PoW fingerprint.
+    Optionally encrypts the fingerprint using AES-CBC with the public key
+    from BGer's client-side JavaScript (CH_BGer.py).
 
     Returns:
         Dict of cookie name -> cookie value.
@@ -162,7 +163,7 @@ def make_pow_cookies(difficulty: int = 16) -> dict[str, str]:
     }
 
     # Optional AES-CBC encryption of powData
-    # Known key for BGer PoW: 9f3c1a8e7b4d62f1e0b5c47a2d8f93bc
+    # Key extracted from BGer's publicly served JavaScript (not a secret)
     # This is optional — basic PoW cookies work without it
     try:
         from Crypto.Cipher import AES
@@ -378,8 +379,5 @@ class BaseScraper(ABC):
     @staticmethod
     def normalize_url(href: str, base: str) -> str:
         """Ensure URL is absolute."""
-        if href.startswith("http"):
-            return href
-        if href.startswith("/"):
-            return f"{base}{href}"
-        return f"{base}/{href}"
+        from urllib.parse import urljoin
+        return urljoin(base, href)

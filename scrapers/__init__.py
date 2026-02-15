@@ -7,6 +7,9 @@ The canonical list lives in run_scraper.SCRAPERS — this module delegates to it
 from __future__ import annotations
 
 import importlib
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_registry() -> dict:
@@ -22,8 +25,8 @@ def get_registry() -> dict:
         try:
             module = importlib.import_module(module_name)
             registry[court_code] = getattr(module, class_name)
-        except Exception:
-            pass  # skip unavailable scrapers silently
+        except Exception as e:
+            logger.debug(f"Skipping {court_code}: {e}")
     return registry
 
 

@@ -37,7 +37,7 @@ CANTON_NAMES = {
 
 def generate_stats(db_path: Path) -> dict:
     """Query the FTS5 database and return comprehensive statistics."""
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
     conn.row_factory = sqlite3.Row
 
     stats: dict = {}
