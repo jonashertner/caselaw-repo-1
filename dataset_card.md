@@ -67,13 +67,17 @@ print(f"{len(df_recent)} decisions since 2024")
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude or Cursor for natural-language search:
+Connect the dataset to Claude Code for natural-language search:
 
 ```bash
-claude mcp add swiss-caselaw -- uvx mcp-swiss-caselaw
+pip install mcp pydantic huggingface-hub pyarrow
+git clone https://github.com/jonashertner/caselaw-repo-1.git
+claude mcp add swiss-caselaw -- python3 /path/to/caselaw-repo-1/mcp_server.py
 ```
 
 Then ask: *"Find BGer decisions on tenant eviction from 2024"*
+
+See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
 
 ## Schema
 
@@ -163,4 +167,4 @@ MIT License. The underlying court decisions are public domain under Swiss law.
 
 - **Dashboard**: [jonashertner.github.io/caselaw-repo-1](https://jonashertner.github.io/caselaw-repo-1/) — live coverage statistics
 - **GitHub**: [github.com/jonashertner/caselaw-repo-1](https://github.com/jonashertner/caselaw-repo-1) — source code, scrapers, pipeline
-- **MCP Server**: `uvx mcp-swiss-caselaw` — full-text search for Claude and Cursor
+- **MCP Server**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) — full-text search for Claude Code
