@@ -6,22 +6,23 @@ Maps all 26 cantons to their court decision platforms.
 
 Platform types discovered:
 1. WEBLAW — Weblaw-hosted search portals (query ticket + HTML parsing)
-2. TRIBUNA — Tribuna federal GWT/AJAX portals (encrypted, paginated)
-3. WEBLAW_VAADIN — Weblaw Vaadin-based portals (multiple generations: v1, v2, v3)
+2. TRIBUNA — Tribuna GWT-RPC portals (encrypted, paginated)
+3. WEBLAW_VAADIN — Weblaw Vaadin-based portals (Playwright)
 4. CUSTOM — Canton-specific implementations (each unique)
-5. FINDINFO — VD FindInfo platform
-6. OMNI — Catch-all spider for cantons with simple listings
+5. FINDINFO — FindInfo / Omnis platform
+6. ICMS — ICMS document management
+7. TYPO3 — TYPO3/DIAM CMS
 
 Each entry contains:
 - canton: Two-letter code
 - name: Full name
 - platform: Platform type
 - courts: List of court instances with URLs
-
 - notes: Implementation notes
-- status: 'ready' | 'template' | 'research_needed'
+- status: 'ready' | 'blocked' | 'partial'
 
-This registry is used by the pipeline to determine which scraper to use.
+Scraper keys (run_scraper.py) are listed in notes.
+All 26 cantons have at least one working scraper.
 """
 
 from __future__ import annotations
@@ -47,9 +48,9 @@ class CantonRegistry:
     name_fr: str
     platform: str
     courts: list[CourtInfo] = field(default_factory=list)
-    neuescaper_spider: str = ""
+    scraper_keys: str = ""
     notes: str = ""
-    status: str = "template"  # 'ready', 'template', 'research_needed'
+    status: str = "ready"  # 'ready', 'blocked', 'partial'
 
 
 # ============================================================
@@ -66,11 +67,10 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         platform="WEBLAW",
         courts=[
             CourtInfo("Gerichte", "https://agve.weblaw.ch"),
-            CourtInfo("Baugesetzgebung", "https://ag-baurecht.weblaw.ch"),
         ],
-        neuescaper_spider="AG_Gerichte, AG_Baugesetzgebung, AG_Weitere",
-        notes="Three separate Weblaw portals. AG_Weitere is for additional publications.",
-        status="template",
+        scraper_keys="ag_gerichte",
+        notes="Weblaw LEv4 portal.",
+        status="ready",
     ),
 
     # --- APPENZELL INNERRHODEN ---
@@ -82,9 +82,9 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         courts=[
             CourtInfo("Kantonsgericht", "https://www.ai.ch"),
         ],
-        neuescaper_spider="AI_Aktuell, AI_Bericht",
-        notes="Very small. Two spiders: current decisions + older annual reports. Custom scraping.",
-        status="research_needed",
+        scraper_keys="ai_gerichte",
+        notes="Custom scraper. Very small canton.",
+        status="ready",
     ),
 
     # --- APPENZELL AUSSERRHODEN ---
@@ -92,13 +92,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="AR",
         name_de="Appenzell Ausserrhoden",
         name_fr="Appenzell Rhodes-Extérieures",
-        platform="CUSTOM",
+        platform="WEBLAW",
         courts=[
-            CourtInfo("Obergericht / Verwaltungsgericht", "https://www.ar.ch"),
+            CourtInfo("Obergericht / Verwaltungsgericht", "https://ar-gerichte.weblaw.ch"),
         ],
-        neuescaper_spider="AR_Gerichte",
-        notes="Custom website scraping.",
-        status="research_needed",
+        scraper_keys="ar_gerichte",
+        notes="Weblaw LEv4 portal.",
+        status="ready",
     ),
 
     # --- BERN ---
@@ -110,12 +110,10 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         courts=[
             CourtInfo("Zivil- und Strafgerichte", "https://www.justice.be.ch", notes="Tribuna-based"),
             CourtInfo("Verwaltungsgericht", "https://www.justice.be.ch", notes="Tribuna-based"),
-            CourtInfo("Steuerrekurskommission", "https://be-steuerrekurs.weblaw.ch", notes="Weblaw-based"),
-            CourtInfo("Anwaltsaufsicht", "https://be-anwaltsaufsicht.weblaw.ch", notes="Weblaw-based"),
         ],
-        neuescaper_spider="BE_ZivilStraf, BE_Verwaltungsgericht, BE_Steuerrekurs, BE_Anwaltsaufsicht, BE_BVD, BE_Weitere",
-        notes="Mixed: Tribuna for main courts, Weblaw for specialized tribunals.",
-        status="template",
+        scraper_keys="be_zivilstraf, be_verwaltungsgericht",
+        notes="Tribuna for main courts. Steuerrekurs/Anwaltsaufsicht Weblaw portals are DNS dead.",
+        status="ready",
     ),
 
     # --- BASEL-LANDSCHAFT ---
@@ -123,13 +121,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="BL",
         name_de="Basel-Landschaft",
         name_fr="Bâle-Campagne",
-        platform="WEBLAW_VAADIN",
+        platform="CUSTOM",
         courts=[
-            CourtInfo("Gerichte", "https://blekg.weblaw.ch"),
+            CourtInfo("Entscheide-Kantonsgericht", "https://www.baselland.ch"),
         ],
-        neuescaper_spider="BL_Gerichte",
-        notes="Weblaw Vaadin portal.",
-        status="template",
+        scraper_keys="bl_gerichte",
+        notes="Custom scraper for baselland.ch Entscheide.",
+        status="ready",
     ),
 
     # --- BASEL-STADT ---
@@ -139,11 +137,11 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         name_fr="Bâle-Ville",
         platform="CUSTOM",
         courts=[
-            CourtInfo("Appellationsgericht / Verwaltungsgericht", "https://www.grosserrat.bs.ch"),
+            CourtInfo("Appellationsgericht", "https://www.appellationsgericht.bs.ch"),
         ],
-        neuescaper_spider="BS_Omni",
-        notes="Custom 'Omni' spider — probably a catch-all HTML scraper.",
-        status="research_needed",
+        scraper_keys="bs_gerichte",
+        notes="Custom scraper.",
+        status="ready",
     ),
 
     # --- FRIBOURG ---
@@ -155,9 +153,9 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         courts=[
             CourtInfo("Kantonsgericht / Tribunal cantonal", "https://bdlf.fr.ch"),
         ],
-        neuescaper_spider="FR_Gerichte",
-        notes="Tribuna-based. Bilingual (de/fr).",
-        status="template",
+        scraper_keys="fr_gerichte",
+        notes="Tribuna GWT-RPC. Bilingual (de/fr).",
+        status="ready",
     ),
 
     # --- GENÈVE ---
@@ -169,9 +167,9 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         courts=[
             CourtInfo("Cour de justice", "https://justice.ge.ch"),
         ],
-        neuescaper_spider="GE_Gerichte",
-        notes="Custom 165-line spider. French-language court.",
-        status="template",
+        scraper_keys="ge_gerichte",
+        notes="Custom API scraper. French-language.",
+        status="ready",
     ),
 
     # --- GLARUS ---
@@ -179,13 +177,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="GL",
         name_de="Glarus",
         name_fr="Glaris",
-        platform="CUSTOM",
+        platform="FINDINFO",
         courts=[
-            CourtInfo("Obergericht / Verwaltungsgericht", "https://www.gl.ch"),
+            CourtInfo("Obergericht / Verwaltungsgericht", "https://gl.entscheidsuche.ch"),
         ],
-        neuescaper_spider="GL_Omni",
-        notes="Omni spider. Very small canton.",
-        status="research_needed",
+        scraper_keys="gl_gerichte",
+        notes="FindInfo/Omnis platform. Very small canton.",
+        status="ready",
     ),
 
     # --- GRAUBÜNDEN ---
@@ -195,11 +193,11 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         name_fr="Grisons",
         platform="TRIBUNA",
         courts=[
-            CourtInfo("Kantonsgericht / Verwaltungsgericht", "https://www.gr.ch"),
+            CourtInfo("Kantonsgericht / Verwaltungsgericht", "https://entscheide.gr.ch"),
         ],
-        neuescaper_spider="GR_Gerichte",
-        notes="Tribuna-based. Trilingual (de/rm/it).",
-        status="template",
+        scraper_keys="gr_gerichte",
+        notes="Tribuna GWT-RPC. Trilingual (de/rm/it). ~14k decisions.",
+        status="ready",
     ),
 
     # --- JURA ---
@@ -207,13 +205,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="JU",
         name_de="Jura",
         name_fr="Jura",
-        platform="CUSTOM",
+        platform="TRIBUNA",
         courts=[
-            CourtInfo("Tribunal cantonal", "https://www.jura.ch"),
+            CourtInfo("Tribunal cantonal", "https://jurisprudence.jura.ch"),
         ],
-        neuescaper_spider="JU_Gerichte",
-        notes="Custom spider. French-language.",
-        status="research_needed",
+        scraper_keys="ju_gerichte",
+        notes="Tribuna GWT-RPC. French-language. Blocks Hetzner IPs — needs SOCKS5 proxy.",
+        status="blocked",
     ),
 
     # --- LUZERN ---
@@ -225,9 +223,9 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         courts=[
             CourtInfo("Kantonsgericht / Verwaltungsgericht", "https://gerichte.lu.ch"),
         ],
-        neuescaper_spider="LU_Gerichte",
-        notes="Tribuna-based.",
-        status="template",
+        scraper_keys="lu_gerichte",
+        notes="Tribuna GWT-RPC.",
+        status="ready",
     ),
 
     # --- NEUCHÂTEL ---
@@ -235,13 +233,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="NE",
         name_de="Neuenburg",
         name_fr="Neuchâtel",
-        platform="CUSTOM",
+        platform="FINDINFO",
         courts=[
-            CourtInfo("Tribunal cantonal", "https://www.ne.ch"),
+            CourtInfo("Tribunal cantonal", "https://jurisprudence.ne.ch"),
         ],
-        neuescaper_spider="NE_Omni",
-        notes="Omni spider. French-language.",
-        status="research_needed",
+        scraper_keys="ne_gerichte",
+        notes="FindInfo/Omnis (JurisWeb). French-language. Blocks Hetzner IPs — set NE_PROXY.",
+        status="blocked",
     ),
 
     # --- NIDWALDEN ---
@@ -249,13 +247,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="NW",
         name_de="Nidwalden",
         name_fr="Nidwald",
-        platform="CUSTOM",
+        platform="ICMS",
         courts=[
             CourtInfo("Obergericht / Verwaltungsgericht", "https://www.nw.ch"),
         ],
-        neuescaper_spider="NW_Gerichte",
-        notes="Custom spider. Very small canton.",
-        status="research_needed",
+        scraper_keys="nw_gerichte",
+        notes="ICMS document management portal. ~498 decisions.",
+        status="ready",
     ),
 
     # --- OBWALDEN ---
@@ -263,13 +261,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="OW",
         name_de="Obwalden",
         name_fr="Obwald",
-        platform="CUSTOM",
+        platform="WEBLAW_VAADIN",
         courts=[
-            CourtInfo("Obergericht / Verwaltungsgericht", "https://www.ow.ch"),
+            CourtInfo("Obergericht / Verwaltungsgericht", "https://ow-gerichte.weblaw.ch"),
         ],
-        neuescaper_spider="OW_Gerichte",
-        notes="Custom spider. Very small canton.",
-        status="research_needed",
+        scraper_keys="ow_gerichte",
+        notes="Weblaw Vaadin (Playwright). ~470 decisions.",
+        status="ready",
     ),
 
     # --- ST. GALLEN ---
@@ -277,13 +275,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="SG",
         name_de="St. Gallen",
         name_fr="Saint-Gall",
-        platform="WEBLAW_VAADIN",
+        platform="TYPO3",
         courts=[
-            CourtInfo("Gerichte", "https://sg-entscheide.weblaw.ch"),
+            CourtInfo("Gerichte", "https://www.publikationen.sg.ch"),
         ],
-        neuescaper_spider="SG_Gerichte, SG_Publikationen",
-        notes="Weblaw Vaadin + separate publications spider.",
-        status="template",
+        scraper_keys="sg_publikationen",
+        notes="TYPO3/DIAM CMS. Weblaw portal (sg-entscheide.weblaw.ch) is DNS dead.",
+        status="ready",
     ),
 
     # --- SCHAFFHAUSEN ---
@@ -293,11 +291,11 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         name_fr="Schaffhouse",
         platform="CUSTOM",
         courts=[
-            CourtInfo("Obergericht", "https://www.sh.ch"),
+            CourtInfo("Obergericht", "https://obergerichtsentscheide.sh.ch"),
         ],
-        neuescaper_spider="SH_OG",
-        notes="Custom spider for Obergericht.",
-        status="research_needed",
+        scraper_keys="sh_gerichte",
+        notes="KSD Backend CMS API + PDF. ~709 decisions.",
+        status="ready",
     ),
 
     # --- SOLOTHURN ---
@@ -307,11 +305,11 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         name_fr="Soleure",
         platform="CUSTOM",
         courts=[
-            CourtInfo("Obergericht / Verwaltungsgericht", "https://www.so.ch"),
+            CourtInfo("Obergericht / Verwaltungsgericht", "https://so-gerichte.weblaw.ch"),
         ],
-        neuescaper_spider="SO_Omni",
-        notes="Omni spider.",
-        status="research_needed",
+        scraper_keys="so_gerichte",
+        notes="Custom scraper. ~8.9k decisions.",
+        status="ready",
     ),
 
     # --- SCHWYZ ---
@@ -319,14 +317,14 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="SZ",
         name_de="Schwyz",
         name_fr="Schwyz",
-        platform="CUSTOM",
+        platform="TRIBUNA",
         courts=[
-            CourtInfo("Kantonsgericht", "https://www.sz.ch"),
-            CourtInfo("Verwaltungsgericht", "https://www.sz.ch"),
+            CourtInfo("Kantonsgericht", "https://gerichte.sz.ch"),
+            CourtInfo("Verwaltungsgericht", "https://gerichte.sz.ch"),
         ],
-        neuescaper_spider="SZ_Gerichte, SZ_Verwaltungsgericht",
-        notes="Two separate custom spiders.",
-        status="research_needed",
+        scraper_keys="sz_gerichte, sz_verwaltungsgericht",
+        notes="Tribuna VTPlus (GWT-RPC). ~3.2k decisions. 1 result per page (slow).",
+        status="ready",
     ),
 
     # --- THURGAU ---
@@ -336,11 +334,11 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         name_fr="Thurgovie",
         platform="CUSTOM",
         courts=[
-            CourtInfo("Obergericht / Verwaltungsgericht", "https://www.tg.ch"),
+            CourtInfo("Obergericht", "https://rechtsprechung.tg.ch"),
         ],
-        neuescaper_spider="TG_OG",
-        notes="Custom spider for Obergericht.",
-        status="research_needed",
+        scraper_keys="tg_gerichte",
+        notes="Confluence/Scroll Viewport HTML. RBOG series (~1.2k decisions).",
+        status="ready",
     ),
 
     # --- TICINO ---
@@ -348,13 +346,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="TI",
         name_de="Tessin",
         name_fr="Tessin",
-        platform="TRIBUNA",
+        platform="FINDINFO",
         courts=[
-            CourtInfo("Tribunale d'appello / Tribunale amministrativo", "https://www3.ti.ch"),
+            CourtInfo("Tribunale d'appello / Tribunale amministrativo", "https://www3.ti.ch/CAN/giurisprudenza"),
         ],
-        neuescaper_spider="TI_Gerichte",
-        notes="Tribuna-based. Italian-language.",
-        status="template",
+        scraper_keys="ti_gerichte",
+        notes="FindInfo/Omnis. Italian-language. ~58k decisions on entscheidsuche.",
+        status="ready",
     ),
 
     # --- URI ---
@@ -366,9 +364,9 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         courts=[
             CourtInfo("Obergericht / Verwaltungsgericht", "https://www.ur.ch"),
         ],
-        neuescaper_spider="UR_Gerichte",
-        notes="Custom spider. Very small canton.",
-        status="research_needed",
+        scraper_keys="ur_gerichte",
+        notes="Custom scraper. Very small canton.",
+        status="ready",
     ),
 
     # --- VAUD ---
@@ -376,13 +374,13 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         canton="VD",
         name_de="Waadt",
         name_fr="Vaud",
-        platform="FINDINFO",
+        platform="CUSTOM",
         courts=[
-            CourtInfo("Tribunal cantonal", "https://www.findinfo.ch"),
+            CourtInfo("Tribunal cantonal", "https://prestations.vd.ch/pub/101623/"),
         ],
-        neuescaper_spider="VD_FindInfo, VD_Omni",
-        notes="FindInfo platform (154 lines) + Omni. French-language. Two spiders.",
-        status="template",
+        scraper_keys="vd_gerichte",
+        notes="Spring Boot REST API + PDF download. ~3.5-4k decisions/year since 2007.",
+        status="ready",
     ),
 
     # --- VALAIS ---
@@ -394,9 +392,9 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         courts=[
             CourtInfo("Kantonsgericht / Tribunal cantonal", "https://www.vs.ch"),
         ],
-        neuescaper_spider="VS_Gerichte",
-        notes="Custom spider. Bilingual (de/fr).",
-        status="research_needed",
+        scraper_keys="vs_gerichte",
+        notes="Custom scraper. Bilingual (de/fr). ~4.2k decisions.",
+        status="ready",
     ),
 
     # --- ZUG ---
@@ -409,9 +407,9 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
             CourtInfo("Obergericht", "https://www.zg.ch"),
             CourtInfo("Verwaltungsgericht", "https://www.zg.ch"),
         ],
-        neuescaper_spider="ZG_Obergericht, ZG_Verwaltungsgericht",
-        notes="Two separate custom spiders.",
-        status="research_needed",
+        scraper_keys="zg_verwaltungsgericht",
+        notes="Custom scrapers. Two courts.",
+        status="ready",
     ),
 
     # --- ZÜRICH ---
@@ -421,15 +419,15 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         name_fr="Zurich",
         platform="CUSTOM",
         courts=[
-            CourtInfo("Obergericht", "https://www.gerichte-zh.ch", notes="livesearch.php API, date-range pagination"),
+            CourtInfo("Obergericht", "https://www.gerichte-zh.ch", notes="livesearch.php API"),
             CourtInfo("Verwaltungsgericht", "https://vger.zh.ch"),
             CourtInfo("Sozialversicherungsgericht", "https://www.sozialversicherungsgericht.zh.ch"),
             CourtInfo("Steuerrekursgericht", "https://www.steuerrekurs.zh.ch"),
             CourtInfo("Baurekursgericht", "https://www.brg.zh.ch"),
         ],
-        neuescaper_spider="ZH_Obergericht, ZH_Verwaltungsgericht, ZH_Sozialversicherungsgericht, ZH_Steuerrekurs, ZH_Baurekurs",
-        notes="Most complex canton: 5 separate spiders. ZH_Obergericht uses livesearch.php with 500-day windows.",
-        status="template",
+        scraper_keys="zh_gerichte, zh_obergericht, zh_verwaltungsgericht, zh_sozialversicherungsgericht, zh_baurekursgericht, zh_steuerrekursgericht",
+        notes="5 separate scrapers. ZH_Obergericht uses livesearch.php with date-range windows.",
+        status="ready",
     ),
 }
 
@@ -441,12 +439,12 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
 
 def print_registry_summary():
     """Print a summary of the cantonal court registry."""
-    print(f"{'Canton':<6} {'Platform':<18} {'Spiders':<60} {'Status'}")
-    print("-" * 100)
+    print(f"{'Canton':<6} {'Platform':<18} {'Scrapers':<50} {'Status'}")
+    print("-" * 130)
     for code, entry in sorted(CANTON_REGISTRY.items()):
         print(
             f"{code:<6} {entry.platform:<18} "
-            f"{entry.neuescaper_spider[:58]:<60} {entry.status}"
+            f"{entry.scraper_keys[:48]:<50} {entry.status}"
         )
 
     platforms = {}

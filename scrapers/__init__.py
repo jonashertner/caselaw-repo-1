@@ -1,40 +1,30 @@
 """
 Swiss Court Scrapers package exports.
+
+get_registry() returns {court_code: ScraperClass} for all registered scrapers.
+The canonical list lives in run_scraper.SCRAPERS — this module delegates to it.
 """
 from __future__ import annotations
 
 import importlib
 
-_CLASS_MAP: dict[str, tuple[str, str]] = {
-    "BgerScraper": ("scrapers.bger", "BgerScraper"),
-    # Backward-compat alias for older spelling.
-    "BGerScraper": ("scrapers.bger", "BgerScraper"),
-    "BGELeitentscheideScraper": ("scrapers.bge", "BGELeitentscheideScraper"),
-    "BVGerScraper": ("scrapers.bvger", "BVGerScraper"),
-    "BStGerScraper": ("scrapers.bstger", "BStGerScraper"),
-    "BPatGerScraper": ("scrapers.bpatger", "BPatGerScraper"),
-    "ZHObergerichtScraper": ("scrapers.cantonal.zh_obergericht", "ZHObergerichtScraper"),
-}
-
-__all__ = ["get_registry", *_CLASS_MAP.keys()]
-
-
-def __getattr__(name: str):
-    """Lazily resolve scraper classes exposed at package level."""
-    if name not in _CLASS_MAP:
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    module_name, class_name = _CLASS_MAP[name]
-    module = importlib.import_module(module_name)
-    return getattr(module, class_name)
-
 
 def get_registry() -> dict:
-    """Return available scrapers as {court_code: ScraperClass}."""
-    return {
-        "bger": __getattr__("BgerScraper"),
-        "bge": __getattr__("BGELeitentscheideScraper"),
-        "bvger": __getattr__("BVGerScraper"),
-        "bstger": __getattr__("BStGerScraper"),
-        "bpatger": __getattr__("BPatGerScraper"),
-        "zh_obergericht": __getattr__("ZHObergerichtScraper"),
-    }
+    """Return available scrapers as {court_code: ScraperClass}.
+
+    Delegates to run_scraper.SCRAPERS (the canonical registry) so there is
+    exactly one place to add/remove scrapers.
+    """
+    from run_scraper import SCRAPERS
+
+    registry: dict[str, type] = {}
+    for court_code, (module_name, class_name) in sorted(SCRAPERS.items()):
+        try:
+            module = importlib.import_module(module_name)
+            registry[court_code] = getattr(module, class_name)
+        except Exception:
+            pass  # skip unavailable scrapers silently
+    return registry
+
+
+__all__ = ["get_registry"]
