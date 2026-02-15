@@ -32,7 +32,7 @@ all = ["swiss-caselaw-scrapers[crypto,pdf,api,dev]"]
 include = ["scrapers*"]
 
 [tool.setuptools]
-py-modules = ["pipeline", "base_scraper", "models", "fts5_server"]
+py-modules = ["pipeline", "base_scraper", "models", "db_schema", "run_scraper", "mcp_server", "fts5_server", "export_parquet", "build_fts5"]
 
 [project.scripts]
 swiss-caselaw = "pipeline:main"

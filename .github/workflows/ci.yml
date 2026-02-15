@@ -25,6 +25,9 @@ jobs:
       - name: Schema consistency tests
         run: python test_schema.py
 
+      - name: Parsing tests
+        run: python test_parsing.py
+
       - name: Import checks
         run: |
           python -c "from db_schema import SCHEMA_SQL, INSERT_COLUMNS, INSERT_SQL"

@@ -268,7 +268,6 @@ def import_to_fts5(output_dir: Path, db_path: Path | None = None) -> None:
         return
 
     imported = 0
-    skipped = 0
     for parquet_file in sorted(daily_dir.glob("*.parquet")):
         try:
             table = pq.read_table(parquet_file)
@@ -479,12 +478,12 @@ Available courts: see run_scraper.py SCRAPERS registry
             logger.error(f"Pipeline failed: {e}")
             sys.exit(1)
     else:
-        if args.upload:
-            upload_to_huggingface(output_dir, args.hf_repo)
         if args.consolidate:
             consolidate_monthly(output_dir)
         if args.fts5:
             import_to_fts5(output_dir)
+        if args.upload:
+            upload_to_huggingface(output_dir, args.hf_repo)
 
 
 if __name__ == "__main__":

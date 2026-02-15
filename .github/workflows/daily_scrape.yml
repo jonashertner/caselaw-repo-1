@@ -17,7 +17,7 @@ on:
 
 env:
   HF_TOKEN: ${{ secrets.HF_TOKEN }}
-  HF_REPO: ${{ vars.HF_REPO || 'your-org/swiss-caselaw' }}
+  HF_REPO: ${{ vars.HF_REPO || 'voilaj/swiss-caselaw' }}
 
 jobs:
   scrape:
@@ -56,22 +56,22 @@ jobs:
       - name: Run scraper pipeline
         run: |
           ARGS="--scrape --upload --hf-repo $HF_REPO"
-          
+
           if [ -n "${{ github.event.inputs.courts }}" ]; then
             ARGS="$ARGS --courts ${{ github.event.inputs.courts }}"
           fi
-          
+
           if [ -n "${{ github.event.inputs.max_per_court }}" ]; then
             ARGS="$ARGS --max ${{ github.event.inputs.max_per_court }}"
           fi
-          
+
           python pipeline.py $ARGS
 
       # Monthly consolidation (1st of each month)
       - name: Monthly consolidation
-        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+        if: github.event_name == 'schedule'
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(date -u +%d)" = "01" ]; then
+          if [ "$(date -u +%d)" = "01" ]; then
             python pipeline.py --consolidate --upload --hf-repo "$HF_REPO"
           else
             echo "Skipping monthly consolidation (UTC day: $(date -u +%d))."
