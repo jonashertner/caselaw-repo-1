@@ -8,11 +8,11 @@ language:
 tags:
   - legal
   - swiss-law
-  - caselaw
+  - case-law
   - court-decisions
   - nlp
   - full-text
-pretty_name: Swiss Caselaw
+pretty_name: Swiss Case Law
 size_categories:
   - 1M<n<10M
 task_categories:
@@ -21,7 +21,7 @@ task_categories:
   - question-answering
 ---
 
-# Swiss Caselaw Dataset
+# Swiss Case Law Dataset
 
 **1,000,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
@@ -151,7 +151,7 @@ MIT License. The underlying court decisions are public domain under Swiss law.
 
 ```bibtex
 @dataset{swiss_caselaw_2026,
-  title={Swiss Caselaw Dataset},
+  title={Swiss Case Law Dataset},
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},

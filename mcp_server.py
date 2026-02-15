@@ -1,5 +1,5 @@
 """
-Swiss Caselaw MCP Server
+Swiss Case Law MCP Server
 ==========================
 
 Local MCP server for searching Swiss court decisions.
@@ -800,7 +800,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 # ── Main ──────────────────────────────────────────────────────
 
 async def main():
-    logger.info(f"Swiss Caselaw MCP Server starting")
+    logger.info(f"Swiss Case Law MCP Server starting")
     logger.info(f"Database: {DB_PATH}")
 
     if DB_PATH.exists():

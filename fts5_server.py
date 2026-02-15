@@ -27,7 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 app = FastAPI(
-    title="Swiss Caselaw Search",
+    title="Swiss Case Law Search",
     description="Full-text search over Swiss federal and cantonal court decisions",
     version="1.0.0",
 )

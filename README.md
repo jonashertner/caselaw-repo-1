@@ -1,4 +1,4 @@
-# Swiss Caselaw Open Dataset
+# Swiss Case Law Open Dataset
 
 **1,000,000+ court decisions from all Swiss federal courts and 26 cantons.**
 

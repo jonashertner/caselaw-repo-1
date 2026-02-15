@@ -488,7 +488,7 @@ def run_pipeline(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Swiss Caselaw Scraping Pipeline",
+        description="Swiss Case Law Scraping Pipeline",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

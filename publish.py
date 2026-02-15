@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-publish.py — Daily publishing pipeline for Swiss Caselaw
+publish.py — Daily publishing pipeline for Swiss Case Law
 ==========================================================
 
 Orchestration script for VPS cron job. Runs the full pipeline:
@@ -248,7 +248,7 @@ STEPS = [
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Swiss Caselaw publishing pipeline")
+    parser = argparse.ArgumentParser(description="Swiss Case Law publishing pipeline")
     parser.add_argument(
         "--step", type=int, default=None,
         help="Run only a specific step (1-6)",
@@ -262,7 +262,7 @@ def main():
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
 
-    logger.info(f"=== Swiss Caselaw publish pipeline — {datetime.now(timezone.utc).isoformat()} ===")
+    logger.info(f"=== Swiss Case Law publish pipeline — {datetime.now(timezone.utc).isoformat()} ===")
 
     if args.dry_run:
         logger.info("DRY RUN — no changes will be made")
