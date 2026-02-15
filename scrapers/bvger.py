@@ -163,8 +163,10 @@ class BVGerScraper(BaseScraper):
         try:
             docket = stub["docket_number"]
             dd = parse_date(stub.get("decision_date", ""))
+            if not dd and stub.get("year"):
+                dd = date(stub["year"], 1, 1)
             if not dd:
-                dd = date(stub.get("year", date.today().year), 1, 1)
+                logger.warning(f"[bvger] No date for {docket}")
 
             src = stub.get("_source", "unknown")
             leid = stub.get("leid", "")

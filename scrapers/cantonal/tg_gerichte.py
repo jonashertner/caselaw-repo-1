@@ -215,9 +215,10 @@ class TGGerichteScraper(BaseScraper):
         decision_date = _parse_date_text(full_text[:500])
         if not decision_date:
             decision_date = stub.get("decision_date")
+        if not decision_date and stub.get("year"):
+            decision_date = date(stub["year"], 1, 1)
         if not decision_date:
-            # Use year from RBOG number
-            decision_date = date(stub.get("year", date.today().year), 1, 1)
+            logger.warning(f"TG: no date for {stub.get('docket_number', '?')}")
 
         # Extract chamber/division from content
         chamber = None

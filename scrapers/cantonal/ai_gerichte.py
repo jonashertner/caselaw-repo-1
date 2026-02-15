@@ -167,7 +167,7 @@ class AIGerichteScraper(BaseScraper):
 
         decision_date = stub.get("decision_date")
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"[ai_gerichte] No date for {stub['docket_number']}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "de"
 

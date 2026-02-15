@@ -197,7 +197,7 @@ class VSGerichteScraper(BaseScraper):
 
         decision_date = stub.get("decision_date")
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"[vs_gerichte] No date for {stub['docket_number']}")
 
         language = stub.get("language", "fr")
         if len(full_text) > 100:

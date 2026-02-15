@@ -247,7 +247,7 @@ class GEGerichteScraper(BaseScraper):
 
         decision_date = stub.get("decision_date")
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"[ge_gerichte] No date for {stub.get('docket_number', '?')}")
 
         language = "fr"  # Geneva is French-speaking
 

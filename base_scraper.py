@@ -23,6 +23,7 @@ import time
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Iterator
+from urllib.parse import urlsplit, urlunsplit
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -31,6 +32,23 @@ from urllib3.util.retry import Retry
 from models import Decision
 
 logger = logging.getLogger(__name__)
+
+
+def _redact_proxy_url(proxy_url: str) -> str:
+    """Mask proxy credentials before logging."""
+    try:
+        parsed = urlsplit(proxy_url)
+        if "@" not in parsed.netloc:
+            return proxy_url
+
+        creds, host = parsed.netloc.rsplit("@", 1)
+        user = creds.split(":", 1)[0]
+        safe_creds = f"{user}:***" if ":" in creds else "***"
+        return urlunsplit(
+            (parsed.scheme, f"{safe_creds}@{host}", parsed.path, parsed.query, parsed.fragment)
+        )
+    except Exception:
+        return "<redacted>"
 
 
 # ============================================================
@@ -220,7 +238,7 @@ class BaseScraper(ABC):
         proxy = self.PROXY or os.environ.get("SCRAPER_PROXY", "")
         if proxy:
             session.proxies = {"http": proxy, "https": proxy}
-            logger.info(f"[{self.court_code}] Using proxy: {proxy}")
+            logger.info(f"[{self.court_code}] Using proxy: {_redact_proxy_url(proxy)}")
 
         retry = Retry(
             total=3,

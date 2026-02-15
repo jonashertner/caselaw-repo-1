@@ -414,8 +414,7 @@ class SOGerichteScraper(BaseScraper):
                             pass
 
         if not decision_date:
-            logger.warning(f"SO: no date for {docket}, using today")
-            decision_date = date.today()
+            logger.warning(f"SO: no date for {docket}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "de"
 

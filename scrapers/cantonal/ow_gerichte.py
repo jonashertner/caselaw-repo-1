@@ -774,7 +774,7 @@ class OWGerichteScraper(BaseScraper):
             if dm:
                 decision_date = parse_date(dm.group(0))
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"[ow_gerichte] No date for {stub.get('docket_number', '?')}")
 
         # Language from metadata or detection
         language = stub.get("language", "de")

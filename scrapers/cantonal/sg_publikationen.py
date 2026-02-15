@@ -264,7 +264,9 @@ class SGPublikationenScraper(BaseScraper):
                 logger.warning(f"SG pub: no text for {stub['docket_number']}")
                 return None
 
-        decision_date = stub.get("decision_date") or date.today()
+        decision_date = stub.get("decision_date")
+        if not decision_date:
+            logger.warning(f"SG pub: no date for {stub['docket_number']}")
         language = detect_language(full_text) if len(full_text) > 100 else "de"
 
         # Map court name to court code

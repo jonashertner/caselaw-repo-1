@@ -144,7 +144,9 @@ class WeblawVaadinBaseScraper(BaseScraper):
             el = soup.select_one("div.entscheid") or soup.select_one("div.content") or soup.select_one("article")
             text = self.clean_text(el.get_text(separator="\n")) if el else ""
             if len(text) < 50: return None
-            dd = parse_date(stub.get("decision_date", "")) or date.today()
+            dd = parse_date(stub.get("decision_date", ""))
+            if not dd:
+                logger.warning(f"[{self.court_code}] No date for {stub['docket_number']}")
             pdf = soup.select_one("a[href$='.pdf']")
             return Decision(
                 decision_id=stub["decision_id"], court=self.court_code, canton=self.CANTON,

@@ -417,6 +417,7 @@ def run_pipeline(
     hf_repo: str = "voilaj/swiss-caselaw",
     do_fts5: bool = False,
     do_consolidate: bool = False,
+    fail_on_any_error: bool = True,
 ) -> dict:
     """
     Run the full scraping pipeline.
@@ -427,6 +428,7 @@ def run_pipeline(
     state_dir.mkdir(parents=True, exist_ok=True)
     registry = get_scraper_registry()
     results = {}
+    failed_courts: list[str] = []
 
     # Determine which courts to scrape
     if courts:
@@ -459,6 +461,15 @@ def run_pipeline(
         except Exception as e:
             logger.error(f"Pipeline error for {court_code}: {e}", exc_info=True)
             results[court_code] = -1
+            failed_courts.append(court_code)
+
+    if failed_courts:
+        logger.error(f"Scraper failures detected: {failed_courts}")
+        if fail_on_any_error:
+            raise RuntimeError(
+                "Aborting pipeline because scraper failures prevent completeness: "
+                + ", ".join(failed_courts)
+            )
 
     # Upload to HuggingFace
     if do_upload:
@@ -525,6 +536,11 @@ Available courts: see run_scraper.py SCRAPERS registry
     parser.add_argument(
         "--consolidate", action="store_true", help="Run monthly consolidation"
     )
+    parser.add_argument(
+        "--allow-partial-failures",
+        action="store_true",
+        help="Continue and publish even if one or more scrapers fail",
+    )
     parser.add_argument("--output", type=str, default="output", help="Output directory")
     parser.add_argument(
         "--state",
@@ -550,17 +566,22 @@ Available courts: see run_scraper.py SCRAPERS registry
     state_dir = Path(args.state)
 
     if args.scrape:
-        results = run_pipeline(
-            courts=courts,
-            since_date=args.since,
-            max_per_court=args.max,
-            output_dir=output_dir,
-            state_dir=state_dir,
-            do_upload=args.upload,
-            hf_repo=args.hf_repo,
-            do_fts5=args.fts5,
-            do_consolidate=args.consolidate,
-        )
+        try:
+            results = run_pipeline(
+                courts=courts,
+                since_date=args.since,
+                max_per_court=args.max,
+                output_dir=output_dir,
+                state_dir=state_dir,
+                do_upload=args.upload,
+                hf_repo=args.hf_repo,
+                do_fts5=args.fts5,
+                do_consolidate=args.consolidate,
+                fail_on_any_error=not args.allow_partial_failures,
+            )
+        except Exception as e:
+            logger.error(f"Pipeline failed: {e}")
+            sys.exit(1)
     else:
         if args.upload:
             upload_to_huggingface(output_dir, args.hf_repo)

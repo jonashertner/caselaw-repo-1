@@ -253,7 +253,7 @@ class LUGerichteScraper(BaseScraper):
 
         decision_date = stub.get("decision_date")
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"[lu_gerichte] No date for EnId={stub.get('en_id', '?')}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "de"
 

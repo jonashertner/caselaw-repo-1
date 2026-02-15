@@ -871,7 +871,7 @@ class BgerScraper(BaseScraper):
         # ── Decision date ──
         decision_date = self._resolve_date(stub.get("decision_date"))
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"[{self.court_code}] No date for {stub.get('docket_number', '?')}")
 
         # ── Language ──
         language = self._detect_language(full_text)

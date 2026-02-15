@@ -4,7 +4,7 @@ export_parquet.py — Export JSONL decisions to Parquet files
 ============================================================
 
 Reads all output/decisions/*.jsonl files, deduplicates by decision_id
-(keeps latest), and writes one Parquet file per court.
+(keeps first-seen immutable record), and writes one Parquet file per court.
 
 Output: output/dataset/{court}.parquet
 
@@ -36,7 +36,7 @@ DECISION_SCHEMA = pa.schema([
     # Case identification
     pa.field("docket_number", pa.string(), nullable=False),
     pa.field("docket_number_2", pa.string(), nullable=True),
-    pa.field("decision_date", pa.string(), nullable=False),
+    pa.field("decision_date", pa.string(), nullable=True),
     pa.field("publication_date", pa.string(), nullable=True),
     # Content
     pa.field("language", pa.string(), nullable=False),
@@ -87,8 +87,8 @@ def normalize_row(row: dict) -> dict:
         row["canton"] = "XX"
     if not row.get("docket_number"):
         row["docket_number"] = "unknown"
-    if not row.get("decision_date"):
-        row["decision_date"] = "1970-01-01"
+    if row.get("decision_date") == "1970-01-01":
+        row["decision_date"] = None  # Don't invent dates
     if not row.get("language"):
         row["language"] = "de"
     if not row.get("full_text"):
@@ -115,7 +115,7 @@ def normalize_row(row: dict) -> dict:
 
 
 def load_decisions(input_dir: Path) -> dict[str, dict]:
-    """Load all JSONL files, deduplicating by decision_id (keeps latest)."""
+    """Load all JSONL files, deduplicating by decision_id (keeps first-seen)."""
     decisions: dict[str, dict] = {}
     jsonl_files = sorted(input_dir.glob("*.jsonl"))
 
@@ -133,8 +133,8 @@ def load_decisions(input_dir: Path) -> dict[str, dict]:
                 try:
                     row = json.loads(line)
                     did = row.get("decision_id")
-                    if did:
-                        decisions[did] = row  # later entries overwrite earlier
+                    if did and did not in decisions:
+                        decisions[did] = row
                         count += 1
                 except json.JSONDecodeError:
                     continue
@@ -166,7 +166,7 @@ def export_parquet(input_dir: Path, output_dir: Path) -> dict[str, int]:
     schema_fields = {f.name for f in DECISION_SCHEMA}
     results = {}
 
-    # Global dedup: track all decision_ids across all files
+    # Global dedup: keep first-seen immutable record for each decision_id.
     global_seen: set[str] = set()
 
     # Use per-court ParquetWriter objects for streaming writes

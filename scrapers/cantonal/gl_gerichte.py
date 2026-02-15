@@ -315,7 +315,7 @@ class GLGerichteScraper(BaseScraper):
 
         decision_date = stub.get("decision_date")
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"[gl_gerichte] No date for {stub['docket_number']}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "de"
         decision_id = make_decision_id("gl_gerichte", stub["docket_number"])

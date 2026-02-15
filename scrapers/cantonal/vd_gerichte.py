@@ -319,7 +319,9 @@ class VDGerichteScraper(BaseScraper):
 
         decision_date = stub.get("decision_date")
         if not decision_date:
-            decision_date = stub.get("publication_date") or date.today()
+            decision_date = stub.get("publication_date")
+        if not decision_date:
+            logger.warning(f"VD: no date for {stub['docket_number']}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "fr"
 

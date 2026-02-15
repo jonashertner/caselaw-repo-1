@@ -56,6 +56,10 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import TextContent, Tool
 
+# Add repo root to path so db_schema can be imported when run from any directory
+sys.path.insert(0, str(Path(__file__).parent))
+from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(name)s %(levelname)s %(message)s",
@@ -439,66 +443,8 @@ def _build_db_from_parquet():
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
 
-    # Create schema (same as pipeline.py)
-    conn.executescript("""
-        CREATE TABLE decisions (
-            decision_id TEXT PRIMARY KEY,
-            court TEXT NOT NULL,
-            canton TEXT NOT NULL,
-            chamber TEXT,
-            docket_number TEXT NOT NULL,
-            decision_date TEXT NOT NULL,
-            publication_date TEXT,
-            language TEXT NOT NULL,
-            title TEXT,
-            legal_area TEXT,
-            regeste TEXT,
-            full_text TEXT,
-            decision_type TEXT,
-            outcome TEXT,
-            source_url TEXT,
-            pdf_url TEXT,
-            cited_decisions TEXT,
-            scraped_at TEXT,
-            json_data TEXT
-        );
-
-        CREATE INDEX idx_decisions_court ON decisions(court);
-        CREATE INDEX idx_decisions_canton ON decisions(canton);
-        CREATE INDEX idx_decisions_date ON decisions(decision_date);
-        CREATE INDEX idx_decisions_language ON decisions(language);
-        CREATE INDEX idx_decisions_docket ON decisions(docket_number);
-
-        CREATE VIRTUAL TABLE decisions_fts USING fts5(
-            decision_id UNINDEXED,
-            court,
-            canton,
-            docket_number,
-            language,
-            title,
-            regeste,
-            full_text,
-            content=decisions,
-            content_rowid=rowid,
-            tokenize='unicode61 remove_diacritics 2'
-        );
-
-        CREATE TRIGGER decisions_ai AFTER INSERT ON decisions BEGIN
-            INSERT INTO decisions_fts(rowid, decision_id, court, canton,
-                docket_number, language, title, regeste, full_text)
-            VALUES (new.rowid, new.decision_id, new.court, new.canton,
-                new.docket_number, new.language, new.title, new.regeste,
-                new.full_text);
-        END;
-
-        CREATE TRIGGER decisions_ad AFTER DELETE ON decisions BEGIN
-            INSERT INTO decisions_fts(decisions_fts, rowid, decision_id, court,
-                canton, docket_number, language, title, regeste, full_text)
-            VALUES ('delete', old.rowid, old.decision_id, old.court, old.canton,
-                old.docket_number, old.language, old.title, old.regeste,
-                old.full_text);
-        END;
-    """)
+    # Use canonical schema from db_schema.py
+    conn.executescript(SCHEMA_SQL)
 
     # Import all Parquet files
     imported = 0
@@ -511,36 +457,12 @@ def _build_db_from_parquet():
             for batch in table.to_batches():
                 for row in batch.to_pylist():
                     try:
-                        conn.execute(
-                            """INSERT OR IGNORE INTO decisions
-                            (decision_id, court, canton, chamber, docket_number,
-                             decision_date, publication_date, language, title,
-                             legal_area, regeste, full_text, decision_type,
-                             outcome, source_url, pdf_url, cited_decisions,
-                             scraped_at, json_data)
-                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-                            (
-                                row["decision_id"],
-                                row["court"],
-                                row["canton"],
-                                row.get("chamber"),
-                                row["docket_number"],
-                                row["decision_date"],
-                                row.get("publication_date"),
-                                row["language"],
-                                row.get("title"),
-                                row.get("legal_area"),
-                                row.get("regeste"),
-                                row.get("full_text"),
-                                row.get("decision_type"),
-                                row.get("outcome"),
-                                row.get("source_url"),
-                                row.get("pdf_url"),
-                                row.get("cited_decisions"),
-                                row.get("scraped_at"),
-                                json.dumps(row, default=str),
-                            ),
+                        values = tuple(
+                            json.dumps(row, default=str) if col == "json_data"
+                            else row.get(col)
+                            for col in INSERT_COLUMNS
                         )
+                        conn.execute(INSERT_OR_IGNORE_SQL, values)
                         imported += 1
                     except Exception as e:
                         logger.debug(f"Skip {row.get('decision_id', '?')}: {e}")

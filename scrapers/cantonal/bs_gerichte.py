@@ -475,8 +475,7 @@ class BSGerichteScraper(BaseScraper):
         if not decision_date:
             decision_date = stub.get("publication_date")
         if not decision_date:
-            logger.warning(f"BS no date for {stub['docket_number']}, using today")
-            decision_date = date.today()
+            logger.warning(f"BS: no date for {stub['docket_number']}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "de"
 

@@ -47,7 +47,7 @@ class Decision(BaseModel):
         None,
         description="Secondary docket number if available",
     )
-    decision_date: date = Field(..., description="Date of the decision")
+    decision_date: Optional[date] = Field(None, description="Date of the decision")
     publication_date: Optional[date] = Field(
         None, description="Date published online, if known"
     )

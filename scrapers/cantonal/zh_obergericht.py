@@ -161,7 +161,7 @@ class ZHObergerichtScraper(BaseScraper):
                 court="zh_obergericht",
                 canton="ZH",
                 docket_number=docket,
-                decision_date=parse_date(stub.get("decision_date", "")) or date.today(),
+                decision_date=parse_date(stub.get("decision_date", "")),
                 language=lang,
                 full_text=self.clean_text(full_text) if full_text else "(detail fetch needed)",
                 source_url=stub.get("url", RESULT_PAGE_URL),

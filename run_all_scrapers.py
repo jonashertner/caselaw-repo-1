@@ -254,8 +254,8 @@ def main():
             if not r["success"]:
                 logger.info(f"    - {r['court']}: {r['error']}")
 
-    # Exit with error if more than half failed
-    if failed > len(results) / 2:
+    # Completeness mode: fail when any scraper fails.
+    if failed > 0:
         sys.exit(1)
 
 

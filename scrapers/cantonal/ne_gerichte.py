@@ -24,6 +24,7 @@ Platform: Omnis/FindInfo (JurisWeb)
 from __future__ import annotations
 
 import logging
+import os
 import re
 from datetime import date
 from typing import Iterator
@@ -118,11 +119,19 @@ class NEGerichteScraper(BaseScraper):
 
     Strategy: iterate year-by-year with date filter, paginate within
     each year using W10_KEY session key.
+
+    Note: jurisprudence.ne.ch blocks Hetzner IPs at the TCP level.
+    Set NE_PROXY or SCRAPER_PROXY to a SOCKS5 tunnel if needed.
+    Example: ssh -D 1080 -fNq relay-host and export NE_PROXY=socks5h://127.0.0.1:1080
     """
 
     REQUEST_DELAY = 2.0
     TIMEOUT = 60
     MAX_ERRORS = 100
+
+    # Optional NE-specific proxy override.
+    # If empty, BaseScraper falls back to env SCRAPER_PROXY.
+    PROXY = os.environ.get("NE_PROXY", "")
 
     _session_initialized = False
 
@@ -346,7 +355,7 @@ class NEGerichteScraper(BaseScraper):
                         break
 
         if not decision_date:
-            decision_date = date.today()
+            logger.warning(f"NE: no date for {stub['docket_number']}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "fr"
         decision_id = make_decision_id("ne_gerichte", stub["docket_number"])

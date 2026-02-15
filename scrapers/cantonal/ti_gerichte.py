@@ -386,8 +386,7 @@ class TIGerichteScraper(BaseScraper):
                 full_text = f"[Text extraction failed for {docket}]"
 
         if not decision_date:
-            logger.warning(f"TI: no date for {docket}, using today")
-            decision_date = date.today()
+            logger.warning(f"TI: no date for {docket}")
 
         language = detect_language(full_text) if len(full_text) > 100 else "it"
         decision_id = make_decision_id("ti_gerichte", docket)

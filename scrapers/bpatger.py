@@ -208,7 +208,9 @@ class BPatGerScraper(BaseScraper):
                 return None
 
             decision_date_str = get_cell("Entscheiddatum")
-            decision_date_parsed = parse_date(decision_date_str) if decision_date_str else date.today()
+            decision_date_parsed = parse_date(decision_date_str) if decision_date_str else None
+            if not decision_date_parsed:
+                logger.warning(f"[bpatger] No date for {docket}")
 
             decision_id = make_decision_id("bpatger", docket)
             if self.state.is_known(decision_id):

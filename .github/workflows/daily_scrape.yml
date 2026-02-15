@@ -39,7 +39,7 @@ jobs:
       - name: Restore state
         uses: actions/cache@v4
         with:
-          path: output/state
+          path: state
           key: scraper-state-${{ github.run_number }}
           restore-keys: |
             scraper-state-
@@ -69,13 +69,18 @@ jobs:
 
       # Monthly consolidation (1st of each month)
       - name: Monthly consolidation
-        if: github.event.schedule != '' && (github.event.schedule == '15 2 1 * *' || github.event_name == 'workflow_dispatch')
-        run: python pipeline.py --consolidate --upload --hf-repo $HF_REPO
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(date -u +%d)" = "01" ]; then
+            python pipeline.py --consolidate --upload --hf-repo "$HF_REPO"
+          else
+            echo "Skipping monthly consolidation (UTC day: $(date -u +%d))."
+          fi
 
       - name: Upload scrape logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: scrape-logs-${{ github.run_number }}
-          path: output/state/*.jsonl
+          path: state/*.jsonl
           retention-days: 30

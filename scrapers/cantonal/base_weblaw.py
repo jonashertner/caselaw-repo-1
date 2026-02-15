@@ -96,7 +96,9 @@ class WeblawBaseScraper(BaseScraper):
             text = self.clean_text(el.get_text(separator="\n")) if el else ""
             if len(text) < 50: return None
             pdf = soup.select_one("a[href$='.pdf']")
-            dd = parse_date(stub.get("decision_date", "")) or date.today()
+            dd = parse_date(stub.get("decision_date", ""))
+            if not dd:
+                logger.warning(f"[{self.court_code}] No date for {stub['docket_number']}")
             return Decision(
                 decision_id=stub["decision_id"], court=self.court_code, canton=self.CANTON,
                 docket_number=stub["docket_number"], decision_date=dd,

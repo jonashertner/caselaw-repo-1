@@ -322,8 +322,7 @@ class BLGerichteScraper(BaseScraper):
         # Decision date: stub -> today as fallback
         decision_date = stub.get("decision_date")
         if not decision_date:
-            logger.warning(f"BL: no date for {stub['docket_number']}, using today")
-            decision_date = date.today()
+            logger.warning(f"BL: no date for {stub['docket_number']}")
 
         # Language detection (almost always German for BL)
         language = detect_language(full_text) if len(full_text) > 200 else "de"

@@ -259,7 +259,7 @@ class BStGerScraper(BaseScraper):
             docket = stub["docket_number"]
             decision_date_parsed = parse_date(stub.get("decision_date", ""))
             if not decision_date_parsed:
-                decision_date_parsed = date.today()
+                logger.warning(f"[bstger] No date for {docket}")
 
             pub_date_parsed = parse_date(stub.get("publication_date", ""))
             headnote = stub.get("headnote", "")

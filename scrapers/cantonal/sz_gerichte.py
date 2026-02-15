@@ -285,7 +285,9 @@ class SZGerichteScraper(BaseScraper):
             logger.warning(f"[{self.court_code}] No text for {docket}")
             return None
 
-        dd = parse_date(stub.get("decision_date", "")) or date.today()
+        dd = parse_date(stub.get("decision_date", ""))
+        if not dd:
+            logger.warning(f"[{self.court_code}] No date for {stub['docket_number']}")
 
         return Decision(
             decision_id=stub["decision_id"],
