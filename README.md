@@ -32,13 +32,27 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) that let
 
 ### Setup with Claude Code
 
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's CLI for working with Claude in the terminal. One command adds Swiss case law search:
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's CLI for working with Claude in the terminal. Three steps to add Swiss case law search:
+
+**Step 1.** Install the MCP server dependencies:
 
 ```bash
-claude mcp add swiss-caselaw -- uvx mcp-swiss-caselaw
+pip install mcp pydantic huggingface-hub pyarrow
 ```
 
-That's it. On first use, the server downloads the search database from HuggingFace (~5 GB). This happens once.
+**Step 2.** Clone this repository:
+
+```bash
+git clone https://github.com/jonashertner/caselaw-repo-1.git
+```
+
+**Step 3.** Register the MCP server with Claude Code:
+
+```bash
+claude mcp add swiss-caselaw -- python3 /path/to/caselaw-repo-1/mcp_server.py
+```
+
+On first use, the server downloads the search database from HuggingFace (~5 GB). This happens once.
 
 Now ask Claude:
 
@@ -64,8 +78,8 @@ The same server works with any MCP-compatible client. For Claude Desktop or Curs
 {
   "mcpServers": {
     "swiss-caselaw": {
-      "command": "uvx",
-      "args": ["mcp-swiss-caselaw"]
+      "command": "python3",
+      "args": ["/path/to/caselaw-repo-1/mcp_server.py"]
     }
   }
 }

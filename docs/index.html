@@ -386,7 +386,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
         GitHub
       </a>
-      <a href="https://pypi.org/project/mcp-swiss-caselaw/">
+      <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         MCP Full-Text Search
       </a>
@@ -406,7 +406,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Full dataset as Parquet files on HuggingFace</div></div>
     </a>
-    <a class="quick-card" href="https://pypi.org/project/mcp-swiss-caselaw/">
+    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">MCP server for Claude, Cursor and other AI tools</div></div>
     </a>
@@ -507,9 +507,10 @@ ds = load_dataset("voilaj/swiss-caselaw")</code>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           MCP Server
         </h3>
-        <p data-t="access_mcp_desc">Full-text search via Claude / Cursor integration</p>
-        <code>claude mcp add swiss-caselaw \
-  -- uvx mcp-swiss-caselaw</code>
+        <p data-t="access_mcp_desc">Full-text search via Claude Code. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai" data-t="access_mcp_guide">Setup guide &rarr;</a></p>
+        <code>pip install mcp huggingface-hub pyarrow
+claude mcp add swiss-caselaw \
+  -- python3 mcp_server.py</code>
       </div>
       <div class="access-card">
         <h3>
@@ -518,7 +519,7 @@ ds = load_dataset("voilaj/swiss-caselaw")</code>
         </h3>
         <p data-t="access_api_desc">Query via HuggingFace Datasets Server API</p>
         <code>GET /rows?dataset=voilaj/swiss-caselaw
-  &config=default&split=bger
+  &config=default&split=train
   &offset=0&length=10</code>
       </div>
     </div>
@@ -549,7 +550,8 @@ const I18N = {
     updated:'Aktualisiert am',
     made:'Gebaut mit \u2665 von <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
-    access_mcp_desc:'Volltextsuche via Claude / Cursor Integration',
+    access_mcp_desc:'Volltextsuche via Claude Code.',
+    access_mcp_guide:'Einrichtung &rarr;',
     access_api_desc:'Abfragen via HuggingFace Datasets Server API',
     court_bger:'Bundesgericht', court_bge:'BGE Leitentscheide',
     court_bvger:'Bundesverwaltungsgericht', court_bstger:'Bundesstrafgericht', court_bpatger:'Bundespatentgericht',
@@ -570,7 +572,8 @@ const I18N = {
     updated:'Mis \u00e0 jour le',
     made:'Fait avec \u2665 par <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
-    access_mcp_desc:'Recherche plein texte via int\u00e9gration Claude / Cursor',
+    access_mcp_desc:'Recherche plein texte via Claude Code.',
+    access_mcp_guide:'Guide d\u2019installation &rarr;',
     access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
     court_bger:'Tribunal f\u00e9d\u00e9ral', court_bge:'ATF',
     court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
@@ -591,7 +594,8 @@ const I18N = {
     updated:'Aggiornato il',
     made:'Fatto con \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Scarica il dataset completo in formato Parquet',
-    access_mcp_desc:'Ricerca full-text tramite integrazione Claude / Cursor',
+    access_mcp_desc:'Ricerca full-text via Claude Code.',
+    access_mcp_guide:'Guida all\u2019installazione &rarr;',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     court_bger:'Tribunale federale', court_bge:'DTF',
     court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
@@ -612,7 +616,8 @@ const I18N = {
     updated:'Actualis\u00e0 ils',
     made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
-    access_mcp_desc:'Tschertga en text cumplain via integraziun Claude / Cursor',
+    access_mcp_desc:'Tschertga en text cumplain via Claude Code.',
+    access_mcp_guide:'Guida d\u2019installaziun &rarr;',
     access_api_desc:'Dumondas via HuggingFace Datasets Server API',
     court_bger:'Tribunal federal', court_bge:'DTF',
     court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
@@ -633,7 +638,8 @@ const I18N = {
     updated:'Updated',
     made:'Built with \u2665 by <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Download the full dataset as Parquet files',
-    access_mcp_desc:'Full-text search via Claude / Cursor integration',
+    access_mcp_desc:'Full-text search via Claude Code.',
+    access_mcp_guide:'Setup guide &rarr;',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     court_bger:'Federal Supreme Court', court_bge:'Leading Decisions (BGE)',
     court_bvger:'Federal Administrative Court', court_bstger:'Federal Criminal Court', court_bpatger:'Federal Patent Court',
