@@ -43,7 +43,7 @@ DB_PATH = OUTPUT_DIR / "decisions.db"
 HF_REPO_ID = "voilaj/swiss-caselaw"
 
 
-def run_cmd(cmd: list[str], description: str, dry_run: bool = False) -> bool:
+def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: int = 3600) -> bool:
     """Run a command, return True on success."""
     logger.info(f"  $ {' '.join(cmd)}")
     if dry_run:
@@ -51,7 +51,7 @@ def run_cmd(cmd: list[str], description: str, dry_run: bool = False) -> bool:
         return True
     try:
         result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=3600, cwd=str(REPO_DIR),
+            cmd, capture_output=True, text=True, timeout=timeout, cwd=str(REPO_DIR),
         )
         if result.stdout.strip():
             for line in result.stdout.strip().split("\n"):
@@ -64,7 +64,7 @@ def run_cmd(cmd: list[str], description: str, dry_run: bool = False) -> bool:
             return False
         return True
     except subprocess.TimeoutExpired:
-        logger.error(f"  timed out after 3600s")
+        logger.error(f"  timed out after {timeout}s")
         return False
     except Exception as e:
         logger.error(f"  failed: {e}")
@@ -103,6 +103,7 @@ def step_2_build_fts5(dry_run: bool = False) -> bool:
         [sys.executable, str(script), "--output", str(OUTPUT_DIR)],
         "Build FTS5 database",
         dry_run,
+        timeout=7200,  # FTS5 build + optimize takes >1h for 1M decisions
     )
 
 
