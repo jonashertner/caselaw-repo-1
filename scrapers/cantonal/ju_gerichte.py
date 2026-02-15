@@ -13,11 +13,18 @@ HTML retrieval is not available for JU; all content is fetched via PDF fallback.
 """
 from __future__ import annotations
 
+import os
+
 from scrapers.cantonal.sz_gerichte import SZGerichteScraper
 
 
 class JUGerichteScraper(SZGerichteScraper):
-    """Scraper for Jura courts (TC + TPI) via Tribuna GWT-RPC."""
+    """Scraper for Jura courts (TC + TPI) via Tribuna GWT-RPC.
+
+    Note: jurisprudence.jura.ch blocks Hetzner IPs at the TCP level.
+    Set JU_PROXY or SCRAPER_PROXY to a SOCKS5 tunnel if needed.
+    Example: ssh -D 1080 -fNq relay-host and export JU_PROXY=socks5h://127.0.0.1:1080
+    """
 
     CANTON = "JU"
     COURT_CODE_STR = "ju_gerichte"
@@ -25,6 +32,10 @@ class JUGerichteScraper(SZGerichteScraper):
     GWT_PERMUTATION = "C8CE51A1CBF8D3F8785E0231E597C2B4"
     GWT_MODULE_BASE = "https://jurisprudence.jura.ch/tribunavtplus/"
     DOWNLOAD_URL = "https://jurisprudence.jura.ch/tribunavtplus/ServletDownload/"
+
+    # Optional JU-specific proxy override.
+    # If empty, BaseScraper falls back to env SCRAPER_PROXY.
+    PROXY = os.environ.get("JU_PROXY", "")
 
     # GWT-RPC search template — court filter has both TC and TPI (ArrayList size 2)
     SEARCH_TPL = (

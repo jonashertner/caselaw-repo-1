@@ -194,6 +194,10 @@ class BaseScraper(ABC):
     # Maximum consecutive errors before stopping
     MAX_ERRORS: int = 20
 
+    # SOCKS5/HTTP proxy URL (e.g. "socks5h://127.0.0.1:1080")
+    # Set per-scraper or via environment variable SCRAPER_PROXY
+    PROXY: str = ""
+
     def __init__(self, state_dir: Path = Path("state")):
         self.state_dir = state_dir
         self.state_dir.mkdir(parents=True, exist_ok=True)
@@ -211,6 +215,12 @@ class BaseScraper(ABC):
                 "Accept-Language": "de-CH,de;q=0.9,fr;q=0.8,it;q=0.7,en;q=0.5",
             }
         )
+
+        # Proxy support: class attribute > environment variable
+        proxy = self.PROXY or os.environ.get("SCRAPER_PROXY", "")
+        if proxy:
+            session.proxies = {"http": proxy, "https": proxy}
+            logger.info(f"[{self.court_code}] Using proxy: {proxy}")
 
         retry = Retry(
             total=3,

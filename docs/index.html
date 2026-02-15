@@ -3,67 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Open dataset of Swiss federal and cantonal court decisions.">
-<title>Swiss Jurisprudence Open Access Dataset</title>
+<meta name="description" content="The largest open dataset of Swiss federal and cantonal court decisions. 1M+ decisions, 26 cantons, 88 courts.">
+<meta name="og:title" content="Swiss Caselaw Open Dataset">
+<meta name="og:description" content="1M+ Swiss court decisions. Free, open, searchable.">
+<title>Swiss Caselaw Open Dataset</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --f-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', monospace;
+  --f-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
   --fs-2xs: 0.625rem; --fs-xs: 0.6875rem; --fs-sm: 0.75rem;
   --fs-base: 0.8125rem; --fs-md: 0.875rem; --fs-lg: 1rem;
-  --fs-xl: 1.125rem; --fs-2xl: 1.5rem; --fs-3xl: 2.25rem;
-  --r: 10px; --r-sm: 6px; --r-xs: 4px;
-  --max-w: 1080px;
+  --fs-xl: 1.125rem; --fs-2xl: 1.5rem; --fs-3xl: 2.5rem; --fs-4xl: 3.5rem;
+  --r: 12px; --r-sm: 8px; --r-xs: 4px;
+  --max-w: 1120px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --bg: #ffffff; --bg2: #f5f5f5; --surf: #ffffff;
-  --brd: #d4d4d4; --brd2: #e5e5e5;
-  --tx: #0a0a0a; --tx2: #525252; --tx3: #8a8a8a;
-  --ac: #171717; --ac-bg: rgba(0,0,0,0.04);
-  --red: #d1242f;
+  --bg: #ffffff; --bg2: #f7f7f8; --surf: #ffffff;
+  --brd: #e0e0e0; --brd2: #ebebeb;
+  --tx: #111111; --tx2: #555555; --tx3: #999999;
+  --ac: #d1242f; --ac2: #b91c1c;
+  --ac-bg: rgba(0,0,0,0.03);
+  --green: #16a34a; --green-bg: rgba(22,163,74,0.08);
+  --chart-1: #d1242f; --chart-2: #2563eb; --chart-3: #16a34a; --chart-4: #d97706;
+  --bar: #d1242f; --bar-hover: #b91c1c;
+  --spark: #d1242f;
+  --glow: 0 0 0 1px rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.04);
 }
 [data-theme="dark"] {
-  --bg: #0a0a0a; --bg2: #161616; --surf: #161616;
-  --brd: #404040; --brd2: #262626;
-  --tx: #f5f5f5; --tx2: #a3a3a3; --tx3: #6b6b6b;
-  --ac: #f5f5f5; --ac-bg: rgba(255,255,255,0.05);
-  --red: #f47067;
+  --bg: #09090b; --bg2: #18181b; --surf: #18181b;
+  --brd: #3f3f46; --brd2: #27272a;
+  --tx: #fafafa; --tx2: #a1a1aa; --tx3: #71717a;
+  --ac: #ef4444; --ac2: #f87171;
+  --ac-bg: rgba(255,255,255,0.04);
+  --green: #4ade80; --green-bg: rgba(74,222,128,0.1);
+  --chart-1: #ef4444; --chart-2: #60a5fa; --chart-3: #4ade80; --chart-4: #fbbf24;
+  --bar: #ef4444; --bar-hover: #f87171;
+  --spark: #ef4444;
+  --glow: 0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3);
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.55;
   background: var(--bg); color: var(--tx);
   -webkit-font-smoothing: antialiased;
-  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+  transition: background 0.3s var(--ease), color 0.3s var(--ease);
 }
 .w { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+a { color: var(--ac); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
 /* ── Toolbar ── */
 .toolbar {
   position: sticky; top: 0; z-index: 100;
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: blur(16px) saturate(1.8); -webkit-backdrop-filter: blur(16px) saturate(1.8);
   border-bottom: 1px solid var(--brd2);
 }
-.toolbar-inner { display: flex; justify-content: space-between; align-items: center; height: 44px; }
+.toolbar-inner { display: flex; justify-content: space-between; align-items: center; height: 48px; }
+.toolbar-left { display: flex; align-items: center; gap: 12px; }
+.toolbar-right { display: flex; align-items: center; gap: 8px; }
+.logo { font-family: var(--f-mono); font-size: var(--fs-sm); font-weight: 700; color: var(--tx); letter-spacing: -0.02em; }
+.logo .ch { color: var(--ac); }
 .lang-sw {
   display: flex; gap: 2px; background: var(--bg2);
   border: 1px solid var(--brd2); border-radius: var(--r-sm); padding: 2px;
 }
 .lang-sw button {
-  font-family: var(--f-sans); font-size: var(--fs-xs); font-weight: 600;
-  letter-spacing: 0.04em; padding: 3px 9px; border: none;
-  border-radius: var(--r-xs); background: transparent; color: var(--tx3);
+  font-family: var(--f-sans); font-size: var(--fs-2xs); font-weight: 600;
+  letter-spacing: 0.06em; padding: 3px 8px; border: none;
+  border-radius: 5px; background: transparent; color: var(--tx3);
   cursor: pointer; transition: all 0.15s var(--ease); text-transform: uppercase;
 }
 .lang-sw button:hover { color: var(--tx2); }
 .lang-sw button.on {
   background: var(--surf); color: var(--tx);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 [data-theme="dark"] .lang-sw button.on { box-shadow: 0 0 0 1px var(--brd); }
+.section-nav { display: flex; gap: 2px; }
+.section-nav a {
+  font-size: var(--fs-2xs); font-weight: 500; color: var(--tx3);
+  padding: 4px 8px; border-radius: var(--r-xs); text-decoration: none;
+  transition: all 0.15s var(--ease);
+}
+.section-nav a:hover { color: var(--tx2); background: var(--ac-bg); text-decoration: none; }
 .tbtn {
   display: flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; border: 1px solid var(--brd2);
@@ -73,46 +98,128 @@ body {
 .tbtn:hover { color: var(--tx); border-color: var(--brd); }
 .tbtn svg { width: 16px; height: 16px; }
 
-/* ── Header ── */
-header { padding: 72px 0 16px; text-align: center; }
+/* ── Hero ── */
+header { padding: 80px 0 24px; text-align: center; }
 header h1 {
   font-size: var(--fs-3xl); font-weight: 700;
   letter-spacing: -0.04em; line-height: 1.1;
 }
-header h1 .ch { color: var(--red); font-weight: 800; }
-header .sub { color: var(--tx3); font-size: var(--fs-md); margin-top: 6px; font-weight: 400; }
+header h1 .ch { color: var(--ac); }
+header .sub {
+  color: var(--tx2); font-size: var(--fs-md); margin-top: 8px;
+  font-weight: 400; max-width: 520px; margin-left: auto; margin-right: auto;
+}
+.hero-links {
+  display: flex; gap: 8px; justify-content: center; margin-top: 24px; flex-wrap: wrap;
+}
+.hero-links a {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-sm); font-weight: 500; padding: 7px 14px;
+  border: 1px solid var(--brd); border-radius: 100px;
+  color: var(--tx2); text-decoration: none;
+  transition: all 0.15s var(--ease);
+}
+.hero-links a:hover { border-color: var(--tx3); color: var(--tx); background: var(--ac-bg); text-decoration: none; }
+.hero-links a svg { width: 14px; height: 14px; flex-shrink: 0; }
 
 /* ── KPI ── */
-.kpis { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; margin: 48px 0 64px; background: var(--brd2); border: 1px solid var(--brd2); border-radius: var(--r); overflow: hidden; }
-.kpi {
-  text-align: center; padding: 28px 12px; background: var(--surf);
+.kpis {
+  display: grid; grid-template-columns: repeat(5,1fr); gap: 1px;
+  margin: 48px 0 16px; background: var(--brd2);
+  border: 1px solid var(--brd2); border-radius: var(--r); overflow: hidden;
 }
+.kpi { text-align: center; padding: 28px 8px; background: var(--surf); }
 .kpi-v {
   font-family: var(--f-mono); font-size: var(--fs-2xl); font-weight: 700;
   letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .kpi-l {
-  font-size: var(--fs-xs); font-weight: 500; color: var(--tx3);
-  text-transform: uppercase; letter-spacing: 0.08em; margin-top: 8px;
+  font-size: var(--fs-2xs); font-weight: 600; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px;
 }
+
+/* ── Updated line ── */
+.updated-line {
+  text-align: center; font-size: var(--fs-xs); color: var(--tx3);
+  margin-bottom: 32px; font-family: var(--f-mono);
+}
+
+/* ── Quick Access strip ── */
+.quick-strip {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
+  margin-bottom: 48px;
+}
+.quick-card {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
+  padding: 16px; box-shadow: var(--glow);
+  transition: border-color 0.15s var(--ease);
+  text-decoration: none; color: var(--tx);
+}
+.quick-card:hover { border-color: var(--brd); text-decoration: none; }
+.quick-card svg { flex-shrink: 0; color: var(--ac); margin-top: 2px; }
+.quick-card .qc-title { font-size: var(--fs-md); font-weight: 600; }
+.quick-card .qc-desc { font-size: var(--fs-sm); color: var(--tx2); margin-top: 2px; line-height: 1.4; }
 
 /* ── Sections ── */
-section { margin-bottom: 64px; }
-.sh { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+section { margin-bottom: 56px; }
+.sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .sh h2 { font-size: var(--fs-lg); font-weight: 600; letter-spacing: -0.01em; }
 .sh .badge {
-  font-family: var(--f-mono); font-size: var(--fs-xs); font-weight: 500;
+  font-family: var(--f-mono); font-size: var(--fs-2xs); font-weight: 500;
   color: var(--tx3); background: var(--bg2); border: 1px solid var(--brd2);
-  border-radius: 100px; padding: 2px 10px; line-height: 1.5;
+  border-radius: 100px; padding: 2px 10px; line-height: 1.6;
 }
+.sh .csv-btn {
+  margin-left: auto; font-size: var(--fs-2xs); font-weight: 500;
+  color: var(--tx3); background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: var(--r-sm); padding: 4px 10px; cursor: pointer;
+  transition: all 0.15s var(--ease); font-family: var(--f-sans);
+}
+.sh .csv-btn:hover { color: var(--tx2); border-color: var(--brd); }
+
+/* ── Charts ── */
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.chart-card {
+  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
+  padding: 20px 20px 16px; box-shadow: var(--glow);
+}
+.chart-card.full-width { grid-column: 1 / -1; }
+.chart-card h3 {
+  font-size: var(--fs-sm); font-weight: 600; color: var(--tx2);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;
+}
+.chart-canvas { position: relative; width: 100%; }
+.chart-canvas canvas { width: 100% !important; height: auto !important; }
+
+/* Language donut */
+.lang-chart-wrap { display: flex; align-items: center; gap: 20px; }
+.lang-legend { display: flex; flex-direction: column; gap: 8px; }
+.lang-legend-item { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); }
+.lang-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.lang-pct { font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--tx3); min-width: 38px; }
+
+/* ── Search filter ── */
+.table-search {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.table-search input {
+  font-family: var(--f-sans); font-size: var(--fs-sm);
+  padding: 6px 12px; border: 1px solid var(--brd2); border-radius: var(--r-sm);
+  background: var(--surf); color: var(--tx); outline: none; width: 240px;
+  transition: border-color 0.15s var(--ease);
+}
+.table-search input:focus { border-color: var(--ac); }
+.table-search input::placeholder { color: var(--tx3); }
+.table-search .count { font-size: var(--fs-2xs); color: var(--tx3); font-family: var(--f-mono); }
 
 /* ── Tables ── */
-.tw { border: 1px solid var(--brd); border-radius: var(--r); overflow: hidden; }
+.tw { border: 1px solid var(--brd2); border-radius: var(--r); overflow: hidden; box-shadow: var(--glow); }
 .ct { width: 100%; border-collapse: collapse; }
 .ct th {
-  text-align: left; padding: 10px 16px; background: var(--bg2); color: var(--tx3);
-  font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.06em; border-bottom: 1px solid var(--brd);
+  text-align: left; padding: 10px 14px; background: var(--bg2); color: var(--tx3);
+  font-size: var(--fs-2xs); font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; border-bottom: 1px solid var(--brd2);
   cursor: pointer; user-select: none; white-space: nowrap;
   transition: color 0.15s var(--ease);
 }
@@ -120,40 +227,79 @@ section { margin-bottom: 64px; }
 .ct th.s { color: var(--tx); }
 .ct th .arr { font-size: 0.6rem; margin-left: 2px; opacity: 0; transition: opacity 0.15s; }
 .ct th.s .arr { opacity: 1; }
-.ct td { padding: 9px 16px; border-top: 1px solid var(--brd2); font-size: var(--fs-base); }
+.ct td { padding: 8px 14px; border-top: 1px solid var(--brd2); font-size: var(--fs-base); }
 .ct tbody tr:first-child td { border-top: none; }
 .ct tbody tr { transition: background 0.1s; }
 .ct tbody tr:hover td { background: var(--ac-bg); }
 .cn { font-weight: 500; }
-.cc { font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--tx3); margin-left: 5px; }
+.cc { font-family: var(--f-mono); font-size: var(--fs-2xs); color: var(--tx3); margin-left: 5px; }
 .n { font-family: var(--f-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
 .d { color: var(--tx2); font-variant-numeric: tabular-nums; font-size: var(--fs-sm); }
 .lg {
-  display: inline-block; padding: 1px 5px; border-radius: var(--r-xs);
-  font-size: var(--fs-xs); font-weight: 600; margin-right: 2px;
+  display: inline-block; padding: 1px 6px; border-radius: var(--r-xs);
+  font-size: var(--fs-2xs); font-weight: 600; margin-right: 2px;
   background: var(--ac-bg); color: var(--tx2);
+}
+/* Inline bar in table */
+.bar-cell { display: flex; align-items: center; gap: 8px; }
+.bar-fill {
+  height: 6px; border-radius: 3px; background: var(--bar);
+  transition: width 0.4s var(--ease); opacity: 0.7;
 }
 
 /* ── Canton grid ── */
-.cg { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px,1fr)); gap: 6px; }
+.cg { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 8px; }
 .cc2 {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r-sm);
-  padding: 14px 4px 12px; text-align: center; transition: border-color 0.15s var(--ease);
+  padding: 16px 6px 14px; text-align: center;
+  transition: all 0.15s var(--ease); box-shadow: var(--glow);
+  position: relative; overflow: hidden;
 }
-.cc2:hover { border-color: var(--brd); }
-.cc2.empty { opacity: 0.2; }
+.cc2:hover { border-color: var(--brd); transform: translateY(-1px); }
+.cc2.empty { opacity: 0.25; }
 .cc2 .k { font-family: var(--f-mono); font-size: var(--fs-lg); font-weight: 700; line-height: 1; }
-.cc2 .nm { font-size: var(--fs-2xs); color: var(--tx3); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cc2 .cv { font-family: var(--f-mono); font-size: var(--fs-sm); font-weight: 500; color: var(--tx2); margin-top: 4px; }
+.cc2 .nm {
+  font-size: var(--fs-2xs); color: var(--tx3); margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cc2 .cv { font-family: var(--f-mono); font-size: var(--fs-sm); font-weight: 500; color: var(--tx2); margin-top: 6px; }
+.cc2 .canton-meta {
+  font-size: var(--fs-2xs); color: var(--tx3); margin-top: 4px;
+  display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;
+}
+.cc2 .canton-meta .lg { font-size: 0.5rem; padding: 0 4px; margin: 0; }
+.cc2 .canton-bar {
+  position: absolute; bottom: 0; left: 0; height: 3px;
+  background: var(--bar); opacity: 0.5; transition: width 0.4s var(--ease);
+}
+
+/* ── Access section ── */
+.access-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.access-card {
+  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
+  padding: 20px; box-shadow: var(--glow);
+  transition: border-color 0.15s var(--ease);
+}
+.access-card:hover { border-color: var(--brd); }
+.access-card h3 {
+  font-size: var(--fs-md); font-weight: 600; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.access-card p { font-size: var(--fs-sm); color: var(--tx2); margin-bottom: 12px; line-height: 1.5; }
+.access-card code {
+  display: block; font-family: var(--f-mono); font-size: var(--fs-xs);
+  background: var(--bg2); border: 1px solid var(--brd2); border-radius: var(--r-sm);
+  padding: 10px 12px; overflow-x: auto; white-space: pre; color: var(--tx2);
+  line-height: 1.6;
+}
 
 /* ── Footer ── */
 footer {
-  text-align: center; padding: 32px 0 48px; color: var(--tx3);
+  text-align: center; padding: 40px 0 56px; color: var(--tx3);
   font-size: var(--fs-xs); border-top: 1px solid var(--brd2);
 }
-footer a { color: var(--tx2); text-decoration: none; transition: color 0.15s; }
-footer a:hover { color: var(--tx); }
-footer .made { margin-top: 8px; }
+footer a { color: var(--tx2); }
+footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-bottom: 8px; }
 
 /* ── States ── */
 .ld { text-align: center; padding: 32px 0; color: var(--tx3); font-size: var(--fs-base); }
@@ -167,18 +313,29 @@ footer .made { margin-top: 8px; }
 .hid { display: none !important; }
 
 /* ── Responsive ── */
+@media (max-width: 768px) {
+  .chart-row { grid-template-columns: 1fr; }
+  .access-grid { grid-template-columns: 1fr; }
+  .quick-strip { grid-template-columns: 1fr; }
+  .kpis { grid-template-columns: repeat(3,1fr); }
+  .kpi:nth-child(4), .kpi:nth-child(5) { border-top: none; }
+  .section-nav { display: none; }
+}
 @media (max-width: 640px) {
   .w { padding: 0 16px; }
   header { padding: 48px 0 12px; }
-  header h1 { font-size: 1.5rem; }
-  .kpis { grid-template-columns: repeat(2,1fr); margin: 32px 0 44px; }
+  header h1 { font-size: 1.75rem; }
+  .kpis { grid-template-columns: repeat(2,1fr); margin: 32px 0 12px; }
   .kpi { padding: 20px 8px; }
   .kpi-v { font-size: 1.25rem; }
-  section { margin-bottom: 44px; }
-  .cg { grid-template-columns: repeat(auto-fill, minmax(72px,1fr)); }
-  .tw { margin: 0 -16px; border-radius: 0; border-left: none; border-right: none; }
+  section { margin-bottom: 40px; }
+  .cg { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); }
+  .tw { margin: 0 -16px; border-radius: 0; border-left: none; border-right: none; box-shadow: none; }
   .ct th, .ct td { padding: 8px 10px; }
   .ct .hide-m { display: none; }
+  .hero-links a { font-size: var(--fs-xs); padding: 6px 10px; }
+  .lang-chart-wrap { flex-direction: column; }
+  .table-search input { width: 100%; }
 }
 @media (max-width: 380px) {
   .kpi-v { font-size: 1.125rem; }
@@ -189,131 +346,302 @@ footer .made { margin-top: 8px; }
 <body>
 
 <nav class="toolbar"><div class="w toolbar-inner">
-  <div class="lang-sw" role="group" aria-label="Language">
-    <button data-l="de" class="on">DE</button>
-    <button data-l="fr">FR</button>
-    <button data-l="it">IT</button>
-    <button data-l="rm">RM</button>
-    <button data-l="en">EN</button>
+  <div class="toolbar-left">
+    <span class="logo"><span class="ch">CH</span>Caselaw</span>
+    <div class="lang-sw" role="group" aria-label="Language">
+      <button data-l="de" class="on">DE</button>
+      <button data-l="fr">FR</button>
+      <button data-l="it">IT</button>
+      <button data-l="rm">RM</button>
+      <button data-l="en">EN</button>
+    </div>
+    <div class="section-nav" id="section-nav">
+      <a href="#kpis" data-t="nav_overview">Overview</a>
+      <a href="#charts" data-t="nav_coverage">Coverage</a>
+      <a href="#sec-fed" data-t="nav_federal">Federal</a>
+      <a href="#sec-can" data-t="nav_cantonal">Cantonal</a>
+      <a href="#sec-cantons" data-t="nav_cantons">Cantons</a>
+      <a href="#sec-access" data-t="nav_access">Access</a>
+    </div>
   </div>
-  <button class="tbtn" id="theme-btn" aria-label="Toggle theme">
-    <svg id="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-    <svg id="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-  </button>
+  <div class="toolbar-right">
+    <button class="tbtn" id="theme-btn" aria-label="Toggle theme">
+      <svg id="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg id="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
 </div></nav>
 
 <div class="w">
 
   <header>
-    <h1><span class="ch">+</span> <span data-t="title">Schweizer Jurisprudenz Open-Access-Datensatz</span></h1>
-    <p class="sub" data-t="subtitle">Bundesgerichtliche und kantonale Entscheide</p>
+    <h1><span class="ch">+</span> <span data-t="title">Swiss Caselaw Open Dataset</span></h1>
+    <p class="sub" data-t="subtitle">Full-text search across decisions from all federal courts and 26 cantons. Open, structured, updated daily.</p>
+    <div class="hero-links">
+      <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        HuggingFace Dataset
+      </a>
+      <a href="https://github.com/jonashertner/caselaw-repo-1">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="https://pypi.org/project/mcp-swiss-caselaw/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        MCP Full-Text Search
+      </a>
+    </div>
   </header>
 
   <div class="kpis" id="kpis">
-    <div class="ld" style="grid-column:1/-1"><span class="sp"></span></div>
+    <div class="ld" style="grid-column:1/-1"><span class="sp"></span> <span data-t="loading">Loading</span></div>
   </div>
 
+  <!-- Last Updated -->
+  <div class="updated-line hid" id="last-updated"></div>
+
+  <!-- Quick Access -->
+  <div class="quick-strip" id="quick-strip">
+    <a class="quick-card" href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Full dataset as Parquet files on HuggingFace</div></div>
+    </a>
+    <a class="quick-card" href="https://pypi.org/project/mcp-swiss-caselaw/">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">MCP server for Claude, Cursor and other AI tools</div></div>
+    </a>
+    <a class="quick-card" href="https://huggingface.co/docs/datasets-server/">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <div><div class="qc-title" data-t="quick_api">API</div><div class="qc-desc" data-t="quick_api_desc">REST queries via HuggingFace Datasets Server</div></div>
+    </a>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-row" id="charts">
+    <div class="chart-card">
+      <h3 data-t="chart_timeline">Decisions per Year</h3>
+      <div class="chart-canvas"><canvas id="c-timeline" height="220"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3 data-t="chart_languages">Language Distribution</h3>
+      <div class="lang-chart-wrap">
+        <div class="chart-canvas" style="max-width:180px"><canvas id="c-lang" height="180"></canvas></div>
+        <div class="lang-legend" id="lang-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top 10 courts chart -->
+  <div class="chart-card full-width hid" id="top10-section" style="margin-bottom:16px">
+    <h3 data-t="chart_top10">Top 10 Courts</h3>
+    <div class="chart-canvas"><canvas id="c-top10" height="280"></canvas></div>
+  </div>
+
+  <!-- Language trends stacked area -->
+  <div class="chart-card full-width hid" id="lang-trends-section" style="margin-bottom:16px">
+    <h3 data-t="chart_lang_trends">Language Trends (2005&#8211;present)</h3>
+    <div class="chart-canvas"><canvas id="c-lang-trends" height="260"></canvas></div>
+  </div>
+
+  <!-- Federal courts -->
   <section id="sec-fed" class="hid">
     <div class="sh">
-      <h2 data-t="federal">Bundesgerichte</h2>
+      <h2 data-t="federal">Federal Courts</h2>
       <span class="badge" id="fed-n"></span>
     </div>
     <div class="tw">
       <table class="ct" id="t-fed"><thead><tr>
-        <th data-k="name" data-t="th_court">Gericht</th>
-        <th data-k="count" data-t="th_decisions">Entscheide</th>
-        <th data-k="earliest" class="hide-m" data-t="th_from">Von</th>
-        <th data-k="latest" class="hide-m" data-t="th_to">Bis</th>
-        <th data-k="languages" data-t="th_languages">Sprachen</th>
+        <th data-k="name" data-t="th_court">Court</th>
+        <th data-k="count" data-t="th_decisions">Decisions</th>
+        <th data-k="earliest" class="hide-m" data-t="th_from">From</th>
+        <th data-k="latest" class="hide-m" data-t="th_to">To</th>
+        <th data-k="languages" data-t="th_languages">Languages</th>
       </tr></thead><tbody></tbody></table>
     </div>
   </section>
 
+  <!-- Cantonal courts -->
   <section id="sec-can" class="hid">
     <div class="sh">
-      <h2 data-t="cantonal">Kantonale Gerichte</h2>
+      <h2 data-t="cantonal">Cantonal Courts</h2>
       <span class="badge" id="can-n"></span>
+      <button class="csv-btn" id="csv-can" data-t="csv_export">CSV</button>
+    </div>
+    <div class="table-search" id="can-search-wrap">
+      <input type="text" id="can-search" data-t-placeholder="search_placeholder" placeholder="Search courts...">
+      <span class="count" id="can-search-count"></span>
     </div>
     <div class="tw">
       <table class="ct" id="t-can"><thead><tr>
-        <th data-k="name" data-t="th_court">Gericht</th>
-        <th data-k="canton" data-t="th_canton">Kanton</th>
-        <th data-k="count" data-t="th_decisions">Entscheide</th>
-        <th data-k="earliest" class="hide-m" data-t="th_from">Von</th>
-        <th data-k="latest" class="hide-m" data-t="th_to">Bis</th>
-        <th data-k="languages" class="hide-m" data-t="th_languages">Sprachen</th>
+        <th data-k="name" data-t="th_court">Court</th>
+        <th data-k="canton" data-t="th_canton">Canton</th>
+        <th data-k="count" data-t="th_decisions">Decisions</th>
+        <th data-k="bar" class="hide-m"></th>
+        <th data-k="earliest" class="hide-m" data-t="th_from">From</th>
+        <th data-k="latest" class="hide-m" data-t="th_to">To</th>
       </tr></thead><tbody></tbody></table>
     </div>
   </section>
 
+  <!-- Canton grid -->
   <section id="sec-cantons" class="hid">
-    <div class="sh"><h2 data-t="cantons">Kantone</h2></div>
+    <div class="sh"><h2 data-t="cantons">Cantons</h2></div>
     <div class="cg" id="canton-grid"></div>
   </section>
 
+  <!-- Access -->
+  <section id="sec-access">
+    <div class="sh"><h2 data-t="access">Access the Data</h2></div>
+    <div class="access-grid">
+      <div class="access-card">
+        <h3>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          HuggingFace
+        </h3>
+        <p data-t="access_hf_desc">Download the full dataset as Parquet files</p>
+        <code>from datasets import load_dataset
+ds = load_dataset("voilaj/swiss-caselaw")</code>
+      </div>
+      <div class="access-card">
+        <h3>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          MCP Server
+        </h3>
+        <p data-t="access_mcp_desc">Full-text search via Claude / Cursor integration</p>
+        <code>claude mcp add swiss-caselaw \
+  -- uvx mcp-swiss-caselaw</code>
+      </div>
+      <div class="access-card">
+        <h3>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          REST API
+        </h3>
+        <p data-t="access_api_desc">Query via HuggingFace Datasets Server API</p>
+        <code>GET /rows?dataset=voilaj/swiss-caselaw
+  &config=default&split=bger
+  &offset=0&length=10</code>
+      </div>
+    </div>
+  </section>
+
   <footer>
-    <div>
-      <span id="ts"></span>
+    <div class="foot-links">
       <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">HuggingFace</a>
-      &middot;
       <a href="https://github.com/jonashertner/caselaw-repo-1">GitHub</a>
     </div>
-    <div class="made" data-t="made">Gebaut mit &#9829; von <a href="https://jonashertner.com">Jonas Hertner</a></div>
+    <div id="ts"></div>
+    <div style="margin-top:4px" data-t="made">Built with &#9829; by <a href="https://jonashertner.com">Jonas Hertner</a></div>
   </footer>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
 const I18N = {
   de: {
-    title:'Schweizer Jurisprudenz Open-Access-Datensatz', subtitle:'Bundesgerichtliche und kantonale Entscheide',
-    kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
-    federal:'Bundesgerichte', cantonal:'Kantonale Gerichte', cantons:'Kantone',
+    title:'Swiss Caselaw Open Dataset',
+    subtitle:'Volltextsuche \u00fcber Entscheide aller Bundesgerichte und 26 Kantone. Offen, strukturiert, t\u00e4glich aktualisiert.',
+    loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
+    federal:'Bundesgerichte', cantonal:'Kantonale Gerichte', cantons:'Kantone', access:'Datenzugang',
     th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_from:'Von', th_to:'Bis', th_languages:'Sprachen',
+    chart_timeline:'Entscheide pro Jahr', chart_languages:'Sprachverteilung',
+    chart_top10:'Top 10 Gerichte', chart_lang_trends:'Sprachtrends (2005\u2013heute)',
     updated:'Aktualisiert am',
     made:'Gebaut mit \u2665 von <a href="https://jonashertner.com">Jonas Hertner</a>',
+    access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
+    access_mcp_desc:'Volltextsuche via Claude / Cursor Integration',
+    access_api_desc:'Abfragen via HuggingFace Datasets Server API',
     court_bger:'Bundesgericht', court_bge:'BGE Leitentscheide',
     court_bvger:'Bundesverwaltungsgericht', court_bstger:'Bundesstrafgericht', court_bpatger:'Bundespatentgericht',
+    nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_access:'Zugang',
+    search_placeholder:'Gerichte suchen...', csv_export:'CSV',
+    quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
+    quick_search:'Volltextsuche', quick_search_desc:'MCP-Server f\u00fcr Claude, Cursor und andere AI-Tools',
+    quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
   },
   fr: {
-    title:'Jurisprudence Suisse \u2014 Jeu de donn\u00e9es ouvert', subtitle:'D\u00e9cisions f\u00e9d\u00e9rales et cantonales',
-    kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
-    federal:'Tribunaux f\u00e9d\u00e9raux', cantonal:'Tribunaux cantonaux', cantons:'Cantons',
+    title:'Swiss Caselaw Open Dataset',
+    subtitle:'Recherche plein texte dans les d\u00e9cisions de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. Ouvert, structur\u00e9, mis \u00e0 jour quotidiennement.',
+    loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
+    federal:'Tribunaux f\u00e9d\u00e9raux', cantonal:'Tribunaux cantonaux', cantons:'Cantons', access:'Acc\u00e8s aux donn\u00e9es',
     th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_from:'De', th_to:'\u00c0', th_languages:'Langues',
+    chart_timeline:'D\u00e9cisions par ann\u00e9e', chart_languages:'R\u00e9partition linguistique',
+    chart_top10:'Top 10 Tribunaux', chart_lang_trends:'Tendances linguistiques (depuis 2005)',
     updated:'Mis \u00e0 jour le',
     made:'Fait avec \u2665 par <a href="https://jonashertner.com">Jonas Hertner</a>',
-    court_bger:'Tribunal f\u00e9d\u00e9ral', court_bge:'ATF Arr\u00eats de principe',
-    court_bvger:'Tribunal administratif f\u00e9d\u00e9ral', court_bstger:'Tribunal p\u00e9nal f\u00e9d\u00e9ral', court_bpatger:'Tribunal f\u00e9d\u00e9ral des brevets',
+    access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
+    access_mcp_desc:'Recherche plein texte via int\u00e9gration Claude / Cursor',
+    access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
+    court_bger:'Tribunal f\u00e9d\u00e9ral', court_bge:'ATF',
+    court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
+    nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_access:'Acc\u00e8s',
+    search_placeholder:'Rechercher...', csv_export:'CSV',
+    quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
+    quick_search:'Recherche', quick_search_desc:'Serveur MCP pour Claude, Cursor et autres outils IA',
+    quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
   },
   it: {
-    title:'Giurisprudenza Svizzera \u2014 Dataset ad accesso aperto', subtitle:'Decisioni federali e cantonali',
-    kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_languages:'Lingue', kpi_coverage:'Periodo',
-    federal:'Tribunali federali', cantonal:'Tribunali cantonali', cantons:'Cantoni',
+    title:'Swiss Caselaw Open Dataset',
+    subtitle:'Ricerca full-text nelle decisioni di tutti i tribunali federali e 26 cantoni. Aperto, strutturato, aggiornato quotidianamente.',
+    loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
+    federal:'Tribunali federali', cantonal:'Tribunali cantonali', cantons:'Cantoni', access:'Accesso ai dati',
     th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_from:'Da', th_to:'A', th_languages:'Lingue',
+    chart_timeline:'Decisioni per anno', chart_languages:'Distribuzione linguistica',
+    chart_top10:'Top 10 Tribunali', chart_lang_trends:'Tendenze linguistiche (dal 2005)',
     updated:'Aggiornato il',
     made:'Fatto con \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
-    court_bger:'Tribunale federale', court_bge:'DTF Sentenze di principio',
-    court_bvger:'Tribunale amministrativo federale', court_bstger:'Tribunale penale federale', court_bpatger:'Tribunale federale dei brevetti',
+    access_hf_desc:'Scarica il dataset completo in formato Parquet',
+    access_mcp_desc:'Ricerca full-text tramite integrazione Claude / Cursor',
+    access_api_desc:'Query via HuggingFace Datasets Server API',
+    court_bger:'Tribunale federale', court_bge:'DTF',
+    court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
+    nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_access:'Accesso',
+    search_placeholder:'Cerca tribunali...', csv_export:'CSV',
+    quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
+    quick_search:'Ricerca', quick_search_desc:'Server MCP per Claude, Cursor e altri strumenti IA',
+    quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
   },
   rm: {
-    title:'Giurisprudenza Svizra \u2014 Dataset ad access liber', subtitle:'Sentenziats federals e chantunalas',
-    kpi_decisions:'Sentenziats', kpi_courts:'Dretgiras', kpi_languages:'Linguas', kpi_coverage:'Perioda',
-    federal:'Dretgiras federalas', cantonal:'Dretgiras chantunalas', cantons:'Chantuns',
-    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Sentenziats', th_from:'Da', th_to:'A', th_languages:'Linguas',
+    title:'Swiss Caselaw Open Dataset',
+    subtitle:'Tschertga en il text cumplain da decisiuns da tut las dretgiras federalas e 26 chantuns. Avert, structur\u00e0, actualis\u00e0 mintgadi.',
+    loading:'Chargiar', kpi_decisions:'Decisiuns', kpi_courts:'Dretgiras', kpi_cantons:'Chantuns', kpi_languages:'Linguas', kpi_coverage:'Perioda',
+    federal:'Dretgiras federalas', cantonal:'Dretgiras chantunalas', cantons:'Chantuns', access:'Access a las datas',
+    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_from:'Da', th_to:'Fin', th_languages:'Linguas',
+    chart_timeline:'Decisiuns per onn', chart_languages:'Distribuziun linguistica',
+    chart_top10:'Top 10 Dretgiras', chart_lang_trends:'Tendenzas linguisticas (dapi 2005)',
     updated:'Actualis\u00e0 ils',
     made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
-    court_bger:'Tribunal federal', court_bge:'DTF Sentenziats da princip',
-    court_bvger:'Tribunal administrativ federal', court_bstger:'Tribunal penal federal', court_bpatger:'Tribunal federal da patentas',
+    access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
+    access_mcp_desc:'Tschertga en text cumplain via integraziun Claude / Cursor',
+    access_api_desc:'Dumondas via HuggingFace Datasets Server API',
+    court_bger:'Tribunal federal', court_bge:'DTF',
+    court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
+    nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_access:'Access',
+    search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
+    quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
+    quick_search:'Tschertga', quick_search_desc:'Server MCP per Claude, Cursor ed auters utensils IA',
+    quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
   },
   en: {
-    title:'Swiss Jurisprudence Open Access Dataset', subtitle:'Federal and cantonal court decisions',
-    kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_languages:'Languages', kpi_coverage:'Coverage',
-    federal:'Federal Courts', cantonal:'Cantonal Courts', cantons:'Cantons',
+    title:'Swiss Caselaw Open Dataset',
+    subtitle:'Full-text search across decisions from all federal courts and 26 cantons. Open, structured, updated daily.',
+    loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
+    federal:'Federal Courts', cantonal:'Cantonal Courts', cantons:'Cantons', access:'Access the Data',
     th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_from:'From', th_to:'To', th_languages:'Languages',
+    chart_timeline:'Decisions per Year', chart_languages:'Language Distribution',
+    chart_top10:'Top 10 Courts', chart_lang_trends:'Language Trends (since 2005)',
     updated:'Updated',
     made:'Built with \u2665 by <a href="https://jonashertner.com">Jonas Hertner</a>',
+    access_hf_desc:'Download the full dataset as Parquet files',
+    access_mcp_desc:'Full-text search via Claude / Cursor integration',
+    access_api_desc:'Query via HuggingFace Datasets Server API',
     court_bger:'Federal Supreme Court', court_bge:'Leading Decisions (BGE)',
     court_bvger:'Federal Administrative Court', court_bstger:'Federal Criminal Court', court_bpatger:'Federal Patent Court',
+    nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_access:'Access',
+    search_placeholder:'Search courts...', csv_export:'CSV',
+    quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
+    quick_search:'Search', quick_search_desc:'MCP server for Claude, Cursor and other AI tools',
+    quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
   },
 };
 
@@ -325,6 +653,9 @@ function applyI18n() {
   document.querySelectorAll('[data-t]').forEach(el => {
     const val = t(el.dataset.t);
     if (/<[a-z]/.test(val)) el.innerHTML = val; else el.textContent = val;
+  });
+  document.querySelectorAll('[data-t-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.tPlaceholder || el.getAttribute('data-t-placeholder'));
   });
   if (window._statsData) renderAll(window._statsData);
 }
@@ -347,6 +678,7 @@ function applyTheme() {
   document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
   document.getElementById('ico-sun').style.display = isDark ? 'none' : '';
   document.getElementById('ico-moon').style.display = isDark ? '' : 'none';
+  if (window._statsData) { destroyCharts(); renderCharts(window._statsData); }
 }
 applyTheme();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (themePref === 'auto') applyTheme(); });
@@ -356,9 +688,9 @@ document.getElementById('theme-btn').addEventListener('click', () => {
   applyTheme();
 });
 
-const FED = new Set(['bger','bge','bvger','bstger','bpatger']);
+const FED = new Set(['bger','bge','bvger','bstger','bpatger','weko','finma','edoeb','ch_vb','ta_sst','ch_bundesrat','bge_egmr']);
 const CANTON_NAMES = {
-  CH:'Schweiz/Suisse', AG:'Aargau', AI:'Appenzell I.Rh.', AR:'Appenzell A.Rh.',
+  AG:'Aargau', AI:'Appenzell I.Rh.', AR:'Appenzell A.Rh.',
   BE:'Bern', BL:'Basel-Land', BS:'Basel-Stadt', FR:'Fribourg',
   GE:'Gen\u00e8ve', GL:'Glarus', GR:'Graub\u00fcnden', JU:'Jura',
   LU:'Luzern', NE:'Neuch\u00e2tel', NW:'Nidwalden', OW:'Obwalden',
@@ -367,17 +699,173 @@ const CANTON_NAMES = {
 };
 const ALL_CANTONS = ['ZH','BE','LU','UR','SZ','OW','NW','GL','ZG','FR',
   'SO','BS','BL','SH','AR','AI','SG','GR','AG','TG','TI','VD','VS','NE','GE','JU'];
+const LANG_NAMES = { de:'Deutsch', fr:'Fran\u00e7ais', it:'Italiano', rm:'Rumantsch' };
 
 function fmt(n) { return n != null ? n.toLocaleString('de-CH') : '\u2014'; }
 function ltags(ls) { return (ls||[]).map(l => `<span class="lg">${l}</span>`).join(''); }
-function courtName(code) { const k = 'court_'+code, n = t(k); return n !== k ? n : code; }
+function courtName(code) { const k = 'court_'+code, n = t(k); return n !== k ? n : code.replace(/_/g,' '); }
+function getCSS(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+let _charts = [];
+function destroyCharts() { _charts.forEach(c => c.destroy()); _charts = []; }
+
+function renderCharts(data) {
+  const by_year = data.by_year || {};
+  const currentYear = new Date().getFullYear();
+  const years = Object.keys(by_year).filter(y => +y >= 1954 && +y <= currentYear).sort();
+  const counts = years.map(y => by_year[y]);
+
+  const tx3 = getCSS('--tx3');
+  const brd2 = getCSS('--brd2');
+  const barColor = getCSS('--bar');
+  const barHover = getCSS('--bar-hover');
+  const chartColors = [getCSS('--chart-1'), getCSS('--chart-2'), getCSS('--chart-3'), getCSS('--chart-4')];
+
+  Chart.defaults.font.family = getCSS('--f-sans');
+  Chart.defaults.color = tx3;
+
+  // Timeline bar chart
+  const ctx1 = document.getElementById('c-timeline');
+  if (ctx1) {
+    _charts.push(new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: years,
+        datasets: [{
+          data: counts,
+          backgroundColor: barColor,
+          hoverBackgroundColor: barHover,
+          borderRadius: 2,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: ctx => fmt(ctx.raw) + ' ' + t('kpi_decisions').toLowerCase() }
+        }},
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 10 } } },
+          y: { grid: { color: brd2 }, ticks: { callback: v => v >= 1000 ? (v/1000)+'k' : v, font: { size: 10 } }, beginAtZero: true }
+        }
+      }
+    }));
+  }
+
+  // Language donut
+  const by_lang = data.by_language || {};
+  const langKeys = Object.keys(by_lang).sort((a,b) => by_lang[b] - by_lang[a]);
+  const langVals = langKeys.map(k => by_lang[k]);
+  const langTotal = langVals.reduce((a,b) => a+b, 0);
+  const langColors = langKeys.map((_, i) => chartColors[i % chartColors.length]);
+
+  const ctx2 = document.getElementById('c-lang');
+  if (ctx2) {
+    _charts.push(new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: langKeys.map(k => LANG_NAMES[k] || k),
+        datasets: [{ data: langVals, backgroundColor: langColors, borderWidth: 0, hoverOffset: 4 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: true, cutout: '65%',
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: ctx => fmt(ctx.raw) + ' (' + ((ctx.raw/langTotal)*100).toFixed(1) + '%)' }
+        }}
+      }
+    }));
+  }
+
+  // Language legend
+  const legendEl = document.getElementById('lang-legend');
+  if (legendEl) {
+    legendEl.innerHTML = langKeys.map((k, i) => `
+      <div class="lang-legend-item">
+        <span class="lang-dot" style="background:${langColors[i]}"></span>
+        <span>${LANG_NAMES[k] || k}</span>
+        <span class="lang-pct">${((by_lang[k]/langTotal)*100).toFixed(1)}%</span>
+      </div>
+    `).join('');
+  }
+
+  // Top 10 courts horizontal bar
+  const top10 = data.top_courts || (data.by_court || []).slice(0, 10).map(c => ({court:c.court, canton:c.canton, count:c.count}));
+  if (top10.length) {
+    const ctx10 = document.getElementById('c-top10');
+    if (ctx10) {
+      const labels10 = top10.map(c => courtName(c.court));
+      const vals10 = top10.map(c => c.count);
+      const colors10 = top10.map(c => c.canton === 'CH' ? chartColors[0] : chartColors[1]);
+      _charts.push(new Chart(ctx10, {
+        type: 'bar',
+        data: {
+          labels: labels10,
+          datasets: [{ data: vals10, backgroundColor: colors10, borderRadius: 3, borderSkipped: false }]
+        },
+        options: {
+          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: {
+            callbacks: { label: ctx => fmt(ctx.raw) + ' ' + t('kpi_decisions').toLowerCase() }
+          }},
+          scales: {
+            x: { grid: { color: brd2 }, ticks: { callback: v => v >= 1000 ? (v/1000)+'k' : v, font: { size: 10 } }, beginAtZero: true },
+            y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+          }
+        }
+      }));
+      document.getElementById('top10-section').classList.remove('hid');
+    }
+  }
+
+  // Language trends stacked area
+  const lby = data.language_by_year || {};
+  const trendYears = Object.keys(lby).sort();
+  if (trendYears.length > 2) {
+    const allLangs = ['de', 'fr', 'it', 'rm'];
+    const ctx4 = document.getElementById('c-lang-trends');
+    if (ctx4) {
+      const datasets = allLangs.map((lang, i) => ({
+        label: LANG_NAMES[lang] || lang,
+        data: trendYears.map(y => (lby[y] || {})[lang] || 0),
+        backgroundColor: chartColors[i] + '40',
+        borderColor: chartColors[i],
+        borderWidth: 1.5,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+      }));
+      _charts.push(new Chart(ctx4, {
+        type: 'line',
+        data: { labels: trendYears, datasets },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 11 } } },
+            tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } },
+          },
+          scales: {
+            x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 10 } } },
+            y: { stacked: true, grid: { color: brd2 }, ticks: { callback: v => v >= 1000 ? (v/1000)+'k' : v, font: { size: 10 } }, beginAtZero: true }
+          },
+          interaction: { mode: 'index', intersect: false },
+        }
+      }));
+      document.getElementById('lang-trends-section').classList.remove('hid');
+    }
+  }
+
+}
 
 function sortable(tbl, data, renderRow, defKey='count') {
   let key = defKey, asc = false;
   const ths = tbl.querySelectorAll('thead th[data-k]');
   const tb = tbl.querySelector('tbody');
-  function render() {
-    const s = [...data].sort((a, b) => {
+  tbl._sortData = data; // expose for search filter
+  tbl._renderRow = renderRow;
+  function render(filteredData) {
+    const src = filteredData || data;
+    const s = [...src].sort((a, b) => {
       let va = a[key], vb = b[key];
       if (va == null) va = ''; if (vb == null) vb = '';
       if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
@@ -390,72 +878,152 @@ function sortable(tbl, data, renderRow, defKey='count') {
       const arr = h.querySelector('.arr');
       if (arr) arr.textContent = active ? (asc ? '\u25B2' : '\u25BC') : '\u25BC';
     });
+    return s.length;
   }
   ths.forEach(h => {
+    if (!h.dataset.k) return;
     const arr = document.createElement('span');
     arr.className = 'arr'; arr.textContent = '\u25BC'; h.appendChild(arr);
     h.addEventListener('click', () => {
       const k = h.dataset.k;
       if (key === k) asc = !asc; else { key = k; asc = k !== 'count'; }
-      render();
+      render(tbl._filteredData);
     });
   });
+  tbl._render = render;
   render();
+}
+
+/* ── Table search filter ── */
+function setupTableSearch(inputId, countId, tbl) {
+  const input = document.getElementById(inputId);
+  const countEl = document.getElementById(countId);
+  if (!input || !tbl || !tbl._render) return;
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    if (!q) {
+      tbl._filteredData = null;
+      const n = tbl._render();
+      countEl.textContent = '';
+    } else {
+      tbl._filteredData = tbl._sortData.filter(r =>
+        (r.name || '').toLowerCase().includes(q) ||
+        (r.court || '').toLowerCase().includes(q) ||
+        (r.canton || '').toLowerCase().includes(q) ||
+        (r.cantonName || '').toLowerCase().includes(q)
+      );
+      const n = tbl._render(tbl._filteredData);
+      countEl.textContent = n + '/' + tbl._sortData.length;
+    }
+  });
+}
+
+/* ── CSV export ── */
+function exportCSV(data, filename) {
+  if (!data || !data.length) return;
+  const keys = Object.keys(data[0]);
+  const lines = [keys.join(',')];
+  data.forEach(r => {
+    lines.push(keys.map(k => {
+      let v = r[k];
+      if (Array.isArray(v)) v = v.join(';');
+      if (typeof v === 'string' && (v.includes(',') || v.includes('"'))) v = '"' + v.replace(/"/g, '""') + '"';
+      return v != null ? v : '';
+    }).join(','));
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 function renderAll(data) {
   const range = data.date_range || {};
+  const cantonCount = (data.by_canton || []).length;
+
+  // KPIs — instant display, no animation
   document.getElementById('kpis').innerHTML = `
     <div class="kpi"><div class="kpi-v">${fmt(data.total)}</div><div class="kpi-l">${t('kpi_decisions')}</div></div>
-    <div class="kpi"><div class="kpi-v">${data.court_count||0}</div><div class="kpi-l">${t('kpi_courts')}</div></div>
-    <div class="kpi"><div class="kpi-v">${Object.keys(data.by_language||{}).length}</div><div class="kpi-l">${t('kpi_languages')}</div></div>
+    <div class="kpi"><div class="kpi-v">${fmt(data.court_count || 0)}</div><div class="kpi-l">${t('kpi_courts')}</div></div>
+    <div class="kpi"><div class="kpi-v">${fmt(cantonCount)}</div><div class="kpi-l">${t('kpi_cantons')}</div></div>
+    <div class="kpi"><div class="kpi-v">${fmt(Object.keys(data.by_language || {}).length)}</div><div class="kpi-l">${t('kpi_languages')}</div></div>
     <div class="kpi"><div class="kpi-v">${(range.earliest||'').slice(0,4)}\u2009\u2013\u2009${(range.latest||'').slice(0,4)}</div><div class="kpi-l">${t('kpi_coverage')}</div></div>`;
+
+  // Last Updated — prominent, below KPIs
+  if (data.generated_at) {
+    const d = new Date(data.generated_at);
+    const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
+    const updEl = document.getElementById('last-updated');
+    updEl.textContent = `${t('updated')} ${d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric' })}`;
+    updEl.classList.remove('hid');
+  }
 
   const all = data.by_court || [];
   const fed = all.filter(c => c.canton === 'CH' || FED.has(c.court));
   const can = all.filter(c => c.canton !== 'CH' && !FED.has(c.court));
+  const maxCan = Math.max(...can.map(c => c.count), 1);
 
   if (fed.length) {
     document.getElementById('fed-n').textContent = fmt(fed.reduce((s, c) => s + c.count, 0));
     sortable(document.getElementById('t-fed'), fed.map(c => ({ ...c, name: courtName(c.court) })), r => `<tr>
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
       <td class="n">${fmt(r.count)}</td>
-      <td class="d hide-m">${r.earliest || '\u2014'}</td>
-      <td class="d hide-m">${r.latest || '\u2014'}</td>
+      <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
+      <td class="d hide-m">${r.latest && r.latest !== 'None' ? r.latest : '\u2014'}</td>
       <td>${ltags(r.languages)}</td></tr>`);
     document.getElementById('sec-fed').classList.remove('hid');
   }
 
   if (can.length) {
     document.getElementById('can-n').textContent = fmt(can.reduce((s, c) => s + c.count, 0));
-    sortable(document.getElementById('t-can'), can.map(c => ({
-      ...c, name: c.court.replace(c.canton.toLowerCase()+'_','').replace(/_/g,' '),
+    const canData = can.map(c => ({
+      ...c, name: c.court.replace(new RegExp('^'+c.canton.toLowerCase()+'_'),'').replace(/_/g,' '),
       cantonName: CANTON_NAMES[c.canton] || c.canton,
-    })), r => `<tr>
+      barPct: Math.round((c.count / maxCan) * 100),
+    }));
+    sortable(document.getElementById('t-can'), canData, r => `<tr>
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
       <td>${r.cantonName}</td>
       <td class="n">${fmt(r.count)}</td>
-      <td class="d hide-m">${r.earliest || '\u2014'}</td>
-      <td class="d hide-m">${r.latest || '\u2014'}</td>
-      <td class="hide-m">${ltags(r.languages)}</td></tr>`);
+      <td class="hide-m"><div class="bar-cell"><div class="bar-fill" style="width:${r.barPct}%;min-width:2px;max-width:120px"></div></div></td>
+      <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
+      <td class="d hide-m">${r.latest && r.latest !== 'None' ? r.latest : '\u2014'}</td></tr>`);
     document.getElementById('sec-can').classList.remove('hid');
+
+    // Setup search filter
+    setupTableSearch('can-search', 'can-search-count', document.getElementById('t-can'));
+
+    // CSV export
+    document.getElementById('csv-can').addEventListener('click', () => {
+      exportCSV(canData.map(r => ({ court: r.court, canton: r.canton, name: r.name, count: r.count, earliest: r.earliest, latest: r.latest })), 'cantonal_courts.csv');
+    });
   }
 
+  // Canton grid with proportional bars + enrichment
   const cm = {};
   (data.by_canton || []).forEach(c => { cm[c.canton] = c; });
+  const maxCantonCount = Math.max(...Object.values(cm).map(c => c.count), 1);
   document.getElementById('canton-grid').innerHTML = ALL_CANTONS.map(code => {
     const e = cm[code], v = e ? e.count : 0;
+    const barW = v ? Math.max(Math.round((v / maxCantonCount) * 100), 2) : 0;
+    const langs = e && e.languages && e.languages.length ? e.languages.map(l => `<span class="lg">${l}</span>`).join('') : '';
+    const courts = e && e.court_count ? `<span style="font-size:var(--fs-2xs);color:var(--tx3)">${e.court_count}</span>` : '';
     return `<div class="cc2${v ? '' : ' empty'}">
       <div class="k">${code}</div><div class="nm">${CANTON_NAMES[code]||code}</div>
-      <div class="cv">${v ? fmt(v) : '\u2014'}</div></div>`;
+      <div class="cv">${v ? fmt(v) : '\u2014'}</div>
+      ${langs || courts ? `<div class="canton-meta">${courts}${langs}</div>` : ''}
+      <div class="canton-bar" style="width:${barW}%"></div></div>`;
   }).join('');
   document.getElementById('sec-cantons').classList.remove('hid');
 
+  // Footer timestamp
   if (data.generated_at) {
     const d = new Date(data.generated_at);
-    const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', rm:'de-CH', en:'en-GB' }[curLang] || 'de-CH';
+    const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
     document.getElementById('ts').textContent =
-      `${t('updated')} ${d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric' })}  \u00b7  `;
+      `${t('updated')} ${d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric' })}`;
   }
 }
 
@@ -467,6 +1035,7 @@ async function init() {
     const data = await r.json();
     window._statsData = data;
     renderAll(data);
+    renderCharts(data);
   } catch {
     document.getElementById('kpis').innerHTML =
       '<p class="ld" style="grid-column:1/-1">stats.json not found</p>';

@@ -11,9 +11,14 @@ Language: de
 Architecture:
 1. POST init with browser details -> JSON with Vaadin-Security-Key
 2. POST UIDL click on search button -> paginated result list
-3. Parse hierarchy/state from UIDL response -> docket, abstract, HTML URL
+3. Parse hierarchy/state from UIDL response -> docket, abstract, cache URL
 4. POST UIDL layoutClick on "weiter" element -> next page
-5. GET HTML decision text from .htm URLs
+5. Playwright with injected JSESSIONID visits cache URL -> full text
+
+The cache viewer (rechtsprechung.ow.ch/le/cache/) requires an authuser token
+that matches the session's JSESSIONID. We use requests for fast UIDL discovery,
+then inject the JSESSIONID cookie into a Playwright browser context to render
+the Vaadin cache viewer and extract full decision text.
 
 Source: https://rechtsprechung.ow.ch
 """
@@ -345,14 +350,26 @@ class OWGerichteScraper(BaseScraper):
         if len(children) < 2:
             return None
 
-        # Extract docket number from child[1] — contains <a href="..."> docket </a>
+        # Extract docket number and cache URL from child[1]
+        # Contains: <a href="http://...ow.ch:80/le/cache/?leid=...&authuser=..."> docket </a>
         docket_raw = ""
+        cache_url = ""
         if len(children) > 1:
             child1_state = state.get(str(children[1]), {})
             if isinstance(child1_state, dict):
-                docket_raw = child1_state.get("text", "")
-                if "<" in docket_raw:
-                    docket_raw = BeautifulSoup(docket_raw, "html.parser").get_text(strip=True)
+                raw_html = child1_state.get("text", "")
+                if "<" in raw_html:
+                    soup = BeautifulSoup(raw_html, "html.parser")
+                    link = soup.find("a")
+                    if link:
+                        cache_url = link.get("href", "")
+                        # Fix HTTP to HTTPS
+                        cache_url = cache_url.replace(
+                            "http://rechtsprechung.ow.ch:80", HOST
+                        )
+                    docket_raw = soup.get_text(strip=True)
+                else:
+                    docket_raw = raw_html
 
         if not docket_raw:
             return None
@@ -430,6 +447,7 @@ class OWGerichteScraper(BaseScraper):
             "decision_date": decision_date,
             "abstract": abstract.strip() if abstract else None,
             "html_path": html_path,
+            "cache_url": cache_url,
             "language": language or "de",
             "url": (HOST + html_path) if html_path else HOST,
         }
@@ -602,38 +620,148 @@ class OWGerichteScraper(BaseScraper):
         logger.info(f"[ow_gerichte] Discovery complete: {total_yielded} new stubs across {page} pages")
 
     # ----------------------------------------------------------
+    # Playwright lifecycle for cache viewer
+    # ----------------------------------------------------------
+
+    _pw = None          # playwright context manager
+    _browser = None     # browser instance
+    _pw_context = None  # browser context with JSESSIONID cookie
+
+    def _ensure_playwright(self) -> bool:
+        """
+        Lazily init Playwright browser with JSESSIONID cookie injected.
+
+        Returns True if Playwright is ready, False otherwise.
+        """
+        if self._pw_context is not None:
+            return True
+
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            logger.warning(
+                "[ow_gerichte] playwright not installed. "
+                "pip install playwright && playwright install chromium --with-deps"
+            )
+            return False
+
+        jsid = self.session.cookies.get("JSESSIONID")
+        if not jsid:
+            logger.warning("[ow_gerichte] No JSESSIONID in requests session")
+            return False
+
+        try:
+            self._pw = sync_playwright().start()
+            self._browser = self._pw.chromium.launch(headless=True)
+            self._pw_context = self._browser.new_context()
+            self._pw_context.add_cookies([{
+                "name": "JSESSIONID",
+                "value": jsid,
+                "domain": "rechtsprechung.ow.ch",
+                "path": "/le",
+            }])
+            logger.info(f"[ow_gerichte] Playwright initialized with JSESSIONID={jsid[:8]}...")
+            return True
+        except Exception as e:
+            logger.error(f"[ow_gerichte] Playwright init failed: {e}")
+            self._cleanup_playwright()
+            return False
+
+    def _cleanup_playwright(self):
+        """Close Playwright browser and context."""
+        try:
+            if self._pw_context:
+                self._pw_context.close()
+        except Exception:
+            pass
+        try:
+            if self._browser:
+                self._browser.close()
+        except Exception:
+            pass
+        try:
+            if self._pw:
+                self._pw.stop()
+        except Exception:
+            pass
+        self._pw_context = None
+        self._browser = None
+        self._pw = None
+
+    def _fetch_text_via_playwright(self, cache_url: str, docket: str) -> str:
+        """
+        Navigate Playwright to a cache URL and extract the rendered text.
+
+        The cache viewer is a Vaadin app that renders decision text client-side.
+        We wait for the content to load, then extract body text and clean it.
+        """
+        if not self._ensure_playwright():
+            return ""
+
+        page = None
+        try:
+            page = self._pw_context.new_page()
+            page.goto(cache_url, wait_until="networkidle", timeout=30000)
+            # Wait for Vaadin rendering
+            page.wait_for_timeout(5000)
+
+            body_text = page.inner_text("body")
+
+            # Clean UI chrome from the extracted text
+            # Remove common Vaadin UI elements that appear in the body
+            lines = body_text.split("\n")
+            cleaned = []
+            skip_patterns = {
+                "Neue Suche", "Original", "Treffer", "Suchbegriffe",
+                "vorige Seite", "nächste Seite", "rechtsprechung.ow.ch",
+                "zurück zur Trefferliste",
+            }
+            for line in lines:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                if any(pat in stripped for pat in skip_patterns):
+                    continue
+                cleaned.append(stripped)
+
+            return "\n".join(cleaned).strip()
+
+        except Exception as e:
+            logger.warning(f"[ow_gerichte] Playwright fetch failed for {docket}: {e}")
+            return ""
+        finally:
+            if page:
+                try:
+                    page.close()
+                except Exception:
+                    pass
+
+    # ----------------------------------------------------------
     # Fetch full decision
     # ----------------------------------------------------------
 
     def fetch_decision(self, stub: dict) -> Decision | None:
         """
-        Fetch the full HTML decision text.
+        Fetch the full decision text via Playwright cache viewer.
 
-        Downloads from /download/entscheide/... path. Falls back to abstract.
+        Uses the cache URL from discovery (Vaadin cache viewer with authuser token).
+        Falls back to abstract if Playwright fails.
         """
-        html_path = stub.get("html_path", "")
         docket = stub["docket_number"]
+        cache_url = stub.get("cache_url", "")
         full_text = ""
 
-        if html_path:
-            url = HOST + html_path
-            try:
-                self._rate_limit()
-                resp = self.session.get(
-                    url,
-                    headers={"Referer": REFERER},
-                    timeout=self.TIMEOUT,
-                )
-                resp.raise_for_status()
-                full_text = self._extract_text_from_html(resp.text)
-            except Exception as e:
-                logger.warning(f"[ow_gerichte] HTML fetch failed for {docket}: {e}")
+        if cache_url:
+            full_text = self._fetch_text_via_playwright(cache_url, docket)
+            if full_text and len(full_text) > 100:
+                logger.debug(f"[ow_gerichte] Got {len(full_text)} chars via Playwright for {docket}")
 
         # Fallback to abstract
         if not full_text or len(full_text) < 50:
             abstract = stub.get("abstract", "")
             if abstract and len(abstract) > 20:
                 full_text = abstract
+                logger.debug(f"[ow_gerichte] Using abstract fallback for {docket}")
             elif full_text:
                 pass  # Keep short text
             else:
@@ -642,7 +770,6 @@ class OWGerichteScraper(BaseScraper):
         # Decision date
         decision_date = stub.get("decision_date")
         if not decision_date:
-            # Try to extract from full text
             dm = re.search(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", full_text)
             if dm:
                 decision_date = parse_date(dm.group(0))
@@ -654,10 +781,8 @@ class OWGerichteScraper(BaseScraper):
         if language not in ("de", "fr", "it", "rm") and len(full_text) > 200:
             language = detect_language(full_text)
 
-        # Source URL
-        source_url = stub.get("url", HOST)
-        if html_path and html_path.endswith(".htm"):
-            source_url = HOST + html_path
+        # Source URL: prefer cache URL, fall back to host
+        source_url = cache_url or stub.get("url", HOST)
 
         return Decision(
             decision_id=stub["decision_id"],
@@ -673,42 +798,6 @@ class OWGerichteScraper(BaseScraper):
             cited_decisions=extract_citations(full_text) if len(full_text) > 200 else [],
         )
 
-    # ----------------------------------------------------------
-    # HTML text extraction
-    # ----------------------------------------------------------
-
-    @staticmethod
-    def _extract_text_from_html(html: str) -> str:
-        """
-        Extract plain text from a full HTML decision page.
-
-        Removes scripts, styles, and navigation elements. Returns cleaned
-        text with normalized whitespace.
-        """
-        soup = BeautifulSoup(html, "html.parser")
-
-        # Remove non-content elements
-        for tag in soup.find_all(["script", "style", "nav", "header", "footer"]):
-            tag.decompose()
-
-        # Try to find the main content area
-        content = (
-            soup.find("div", class_="entscheid")
-            or soup.find("div", class_="content")
-            or soup.find("article")
-            or soup.find("body")
-        )
-
-        if not content:
-            content = soup
-
-        text = content.get_text(separator="\n", strip=True)
-
-        # Normalize whitespace: collapse triple+ newlines
-        text = re.sub(r"\n{3,}", "\n\n", text)
-
-        # Strip leading/trailing whitespace per line
-        lines = [line.strip() for line in text.split("\n")]
-        text = "\n".join(lines)
-
-        return text.strip()
+    def __del__(self):
+        """Ensure Playwright resources are cleaned up."""
+        self._cleanup_playwright()

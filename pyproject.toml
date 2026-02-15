@@ -15,6 +15,7 @@ dependencies = [
     "requests>=2.31",
     "beautifulsoup4>=4.12",
     "lxml>=4.9",
+    "playwright>=1.46",
     "pydantic>=2.0",
     "pyarrow>=14.0",
     "huggingface-hub>=0.20",

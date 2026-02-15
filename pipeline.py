@@ -21,6 +21,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import logging
 import os
@@ -41,53 +42,18 @@ def get_scraper_registry() -> dict:
     """
     Return a dict mapping court_code -> scraper class.
 
-    Lazy imports to avoid loading all scrapers unless needed.
+    Uses the canonical registry from run_scraper.py to avoid drift between
+    entrypoints. Scraper imports remain lazy and fault-tolerant per scraper.
     """
-    registry = {}
+    registry: dict[str, type] = {}
+    from run_scraper import SCRAPERS
 
-    try:
-        from scrapers.bger import BgerScraper
-        registry["bger"] = BgerScraper
-    except ImportError as e:
-        logger.warning(f"BGer scraper not available: {e}")
-
-    try:
-        from scrapers.bge import BGELeitentscheideScraper
-        registry["bge"] = BGELeitentscheideScraper
-    except ImportError as e:
-        logger.warning(f"BGE scraper not available: {e}")
-
-    try:
-        from scrapers.bvger import BVGerScraper
-        registry["bvger"] = BVGerScraper
-    except ImportError as e:
-        logger.warning(f"BVGer scraper not available: {e}")
-
-    try:
-        from scrapers.bstger import BStGerScraper
-        registry["bstger"] = BStGerScraper
-    except ImportError as e:
-        logger.warning(f"BStGer scraper not available: {e}")
-
-    try:
-        from scrapers.bpatger import BPatGerScraper
-        registry["bpatger"] = BPatGerScraper
-    except ImportError as e:
-        logger.warning(f"BPatGer scraper not available: {e}")
-
-    # === Cantonal scrapers ===
-    # Add new cantonal scrapers here. To implement a new canton:
-    #   1. Check scrapers/cantonal/registry.py for platform type
-    #   2. Inherit from base_weblaw, base_tribuna, or base_vaadin
-    #   3. Override CANTON, COURT_CODE_STR, DOMAIN, SUCH_URL
-    #   4. Register below
-    #   5. Test: python pipeline.py --scrape --courts {code} --max 5 -v
-    try:
-        from scrapers.cantonal.zh_obergericht import ZHObergerichtScraper
-        registry["zh_obergericht"] = ZHObergerichtScraper
-    except ImportError:
-        pass
-
+    for court_code, (module_name, class_name) in sorted(SCRAPERS.items()):
+        try:
+            module = importlib.import_module(module_name)
+            registry[court_code] = getattr(module, class_name)
+        except Exception as e:
+            logger.warning(f"{court_code} scraper not available: {e}")
     return registry
 
 
@@ -446,6 +412,7 @@ def run_pipeline(
     since_date: str | None = None,
     max_per_court: int | None = None,
     output_dir: Path = Path("output"),
+    state_dir: Path = Path("state"),
     do_upload: bool = False,
     hf_repo: str = "voilaj/swiss-caselaw",
     do_fts5: bool = False,
@@ -457,6 +424,7 @@ def run_pipeline(
     Returns dict of court_code -> count of new decisions.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+    state_dir.mkdir(parents=True, exist_ok=True)
     registry = get_scraper_registry()
     results = {}
 
@@ -475,7 +443,7 @@ def run_pipeline(
     # Scrape each court
     for court_code, scraper_class in active.items():
         try:
-            scraper = scraper_class(state_dir=output_dir / "state")
+            scraper = scraper_class(state_dir=state_dir)
 
             since = None
             if since_date:
@@ -536,7 +504,7 @@ Examples:
     # Full pipeline: scrape, upload, build FTS5
     python pipeline.py --scrape --upload --fts5
 
-Available courts: bger, bge, bvger, bstger, bpatger, zh_obergericht
+Available courts: see run_scraper.py SCRAPERS registry
         """,
     )
 
@@ -558,6 +526,12 @@ Available courts: bger, bge, bvger, bstger, bpatger, zh_obergericht
         "--consolidate", action="store_true", help="Run monthly consolidation"
     )
     parser.add_argument("--output", type=str, default="output", help="Output directory")
+    parser.add_argument(
+        "--state",
+        type=str,
+        default="state",
+        help="State directory shared with run_scraper.py (default: state)",
+    )
     parser.add_argument("--verbose", "-v", action="store_true")
 
     args = parser.parse_args()
@@ -573,6 +547,7 @@ Available courts: bger, bge, bvger, bstger, bpatger, zh_obergericht
 
     courts = args.courts.split(",") if args.courts else None
     output_dir = Path(args.output)
+    state_dir = Path(args.state)
 
     if args.scrape:
         results = run_pipeline(
@@ -580,6 +555,7 @@ Available courts: bger, bge, bvger, bstger, bpatger, zh_obergericht
             since_date=args.since,
             max_per_court=args.max,
             output_dir=output_dir,
+            state_dir=state_dir,
             do_upload=args.upload,
             hf_repo=args.hf_repo,
             do_fts5=args.fts5,

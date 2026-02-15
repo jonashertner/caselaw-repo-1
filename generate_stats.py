@@ -41,6 +41,7 @@ def generate_stats(db_path: Path) -> dict:
     conn.row_factory = sqlite3.Row
 
     stats: dict = {}
+    current_year = datetime.now(timezone.utc).year
 
     # Total decisions
     stats["total"] = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
@@ -135,6 +136,100 @@ def generate_stats(db_path: Path) -> dict:
 
     # Counts
     stats["court_count"] = len(stats["by_court"])
+
+    # ── Derived fields (no new SQL) ──
+
+    # Top 10 courts (pre-sorted for chart)
+    stats["top_courts"] = [
+        {"court": c["court"], "canton": c["canton"], "count": c["count"]}
+        for c in stats["by_court"][:10]
+    ]
+
+    # Year-over-year growth %
+    year_items = sorted(stats["by_year"].items(), key=lambda x: x[0])
+    yoy = {}
+    for i in range(1, len(year_items)):
+        yr, cnt = year_items[i]
+        prev_cnt = year_items[i - 1][1]
+        if prev_cnt > 0:
+            yoy[yr] = round((cnt - prev_cnt) / prev_cnt * 100, 1)
+    stats["yoy_growth"] = yoy
+
+    # Federal vs cantonal split
+    fed_courts = {c["court"] for c in stats["by_court"] if c["canton"] == "CH"}
+    fed_total = sum(c["count"] for c in stats["by_court"] if c["canton"] == "CH")
+    can_total = sum(c["count"] for c in stats["by_court"] if c["canton"] != "CH")
+    stats["federal_vs_cantonal"] = {"federal": fed_total, "cantonal": can_total}
+
+    # ── New SQL queries ──
+
+    # Enrich by_canton with earliest, latest, court_count, languages
+    canton_details = conn.execute("""
+        SELECT
+            canton,
+            COUNT(DISTINCT court) as court_count,
+            MIN(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None'
+                     AND decision_date > '1800-01-01' THEN decision_date END) as earliest,
+            MAX(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None'
+                     AND decision_date < '2100-01-01' THEN decision_date END) as latest,
+            GROUP_CONCAT(DISTINCT language) as languages
+        FROM decisions
+        WHERE canton != 'CH'
+        GROUP BY canton
+    """).fetchall()
+    canton_detail_map = {
+        r["canton"]: {
+            "court_count": r["court_count"],
+            "earliest": r["earliest"],
+            "latest": r["latest"],
+            "languages": r["languages"].split(",") if r["languages"] else [],
+        }
+        for r in canton_details
+    }
+    for entry in stats["by_canton"]:
+        detail = canton_detail_map.get(entry["canton"], {})
+        entry["court_count"] = detail.get("court_count", 0)
+        entry["earliest"] = detail.get("earliest")
+        entry["latest"] = detail.get("latest")
+        entry["languages"] = detail.get("languages", [])
+
+    # Language by year (2005-current year for stacked area chart)
+    lang_by_year = conn.execute("""
+        SELECT
+            substr(decision_date, 1, 4) as year,
+            language,
+            COUNT(*) as count
+        FROM decisions
+        WHERE decision_date IS NOT NULL
+          AND decision_date != 'None'
+          AND length(decision_date) >= 4
+          AND substr(decision_date, 1, 4) BETWEEN ? AND ?
+        GROUP BY year, language
+        ORDER BY year ASC, language ASC
+    """, ("2005", str(current_year))).fetchall()
+    lby = {}
+    for r in lang_by_year:
+        yr = r["year"]
+        if yr not in lby:
+            lby[yr] = {}
+        lby[yr][r["language"]] = r["count"]
+    stats["language_by_year"] = lby
+
+    # Monthly counts for last 3 years
+    by_month = conn.execute("""
+        SELECT
+            substr(decision_date, 1, 7) as month,
+            COUNT(*) as count
+        FROM decisions
+        WHERE decision_date IS NOT NULL
+          AND decision_date != 'None'
+          AND length(decision_date) >= 7
+          AND decision_date >= date('now', '-3 years')
+          AND decision_date < date('now', '+1 day')
+        GROUP BY month
+        ORDER BY month ASC
+    """).fetchall()
+    stats["by_month"] = {r["month"]: r["count"] for r in by_month}
 
     # Generated timestamp
     stats["generated_at"] = datetime.now(timezone.utc).isoformat()
