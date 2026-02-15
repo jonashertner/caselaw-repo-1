@@ -28,31 +28,37 @@ There are three ways to use it, depending on what you need:
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets Claude, Cursor, and other AI tools search across all 1M+ decisions. You type a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets AI tools search across all 1M+ decisions. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
-### Setup with Claude Desktop
+### Setup with Claude Code
 
-**Step 1.** Make sure you have [Claude Desktop](https://claude.ai/download) installed.
-
-**Step 2.** Add the MCP server (one command):
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's CLI for working with Claude in the terminal. One command adds Swiss case law search:
 
 ```bash
 claude mcp add swiss-caselaw -- uvx mcp-swiss-caselaw
 ```
 
-**Step 3.** Restart Claude Desktop. On first use, the server downloads the search database from HuggingFace (~5 GB). This happens once and takes a few minutes depending on your connection.
+That's it. On first use, the server downloads the search database from HuggingFace (~5 GB). This happens once.
 
-**Step 4.** Ask Claude questions like:
+Now ask Claude:
 
-- *"Find recent BGer decisions on Mietrecht Kündigung"*
-- *"What did the BVGer rule on asylum seekers from Eritrea in 2024?"*
-- *"Show me the full text of decision 6B_1234/2023"*
-- *"List courts in canton Zürich and how many decisions each has"*
-- *"Search for decisions citing Art. 8 BV"*
+```
+> Search for BGer decisions on Mietrecht Kündigung from 2024
 
-### Setup with Cursor
+> What did the BVGer rule on asylum seekers from Eritrea?
 
-Add to your Cursor MCP settings (`.cursor/mcp.json`):
+> Show me the full text of 6B_1234/2023
+
+> How many decisions does each court in canton Zürich have?
+
+> Find decisions citing Art. 8 BV
+```
+
+Claude calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
+
+### Other MCP clients
+
+The same server works with any MCP-compatible client. For Claude Desktop or Cursor, add to the JSON config:
 
 ```json
 {
@@ -64,6 +70,9 @@ Add to your Cursor MCP settings (`.cursor/mcp.json`):
   }
 }
 ```
+
+- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
+- **Cursor**: `.cursor/mcp.json` in your project root
 
 ### What the MCP server can do
 
