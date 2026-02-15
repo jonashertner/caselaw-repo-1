@@ -62,6 +62,10 @@ DECISION_SCHEMA = pa.schema([
     # Provenance
     pa.field("scraped_at", pa.string(), nullable=True),
     pa.field("external_id", pa.string(), nullable=True),
+    pa.field("source", pa.string(), nullable=True),           # "entscheidsuche", "direct_scrape"
+    pa.field("source_id", pa.string(), nullable=True),        # Source-specific ID (e.g. Signatur)
+    pa.field("source_spider", pa.string(), nullable=True),    # Spider/scraper name at source
+    pa.field("content_hash", pa.string(), nullable=True),     # MD5 of full_text for dedup
     # Computed fields
     pa.field("has_full_text", pa.bool_(), nullable=False),
     pa.field("text_length", pa.int32(), nullable=False),
@@ -100,6 +104,12 @@ def normalize_row(row: dict) -> dict:
     cited = row.get("cited_decisions", [])
     if isinstance(cited, list):
         row["cited_decisions"] = json.dumps(cited)
+
+    # Map entscheidsuche-specific provenance fields to generic names
+    if row.get("entscheidsuche_signatur") and not row.get("source_id"):
+        row["source_id"] = row["entscheidsuche_signatur"]
+    if row.get("entscheidsuche_spider") and not row.get("source_spider"):
+        row["source_spider"] = row["entscheidsuche_spider"]
 
     # Computed fields
     full_text = row.get("full_text") or ""

@@ -107,6 +107,29 @@ def step_2_build_fts5(dry_run: bool = False) -> bool:
     )
 
 
+def step_2b_quality_report(dry_run: bool = False) -> bool:
+    """Step 2b: Generate quality report and check gates."""
+    logger.info("Step 2b: Quality report")
+
+    script = REPO_DIR / "quality_report.py"
+    if not script.exists():
+        logger.info("  quality_report.py not found, skipping")
+        return True
+
+    if not DB_PATH.exists():
+        logger.info("  Database not found, skipping quality report")
+        return True
+
+    return run_cmd(
+        [sys.executable, str(script),
+         "--db", str(DB_PATH),
+         "--output", str(OUTPUT_DIR / "quality_report.json"),
+         "--gate"],
+        "Quality report",
+        dry_run,
+    )
+
+
 def step_3_export_parquet(dry_run: bool = False) -> bool:
     """Step 3: Export JSONL → Parquet."""
     logger.info("Step 3: Export Parquet")
@@ -240,6 +263,7 @@ def step_6_git_push(dry_run: bool = False) -> bool:
 STEPS = [
     (1, "Ingest", step_1_ingest),
     (2, "Build FTS5", step_2_build_fts5),
+    ("2b", "Quality Report", step_2b_quality_report),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
     (5, "Generate Stats", step_5_generate_stats),
@@ -271,7 +295,7 @@ def main():
     start = time.time()
 
     for num, name, func in STEPS:
-        if args.step is not None and args.step != num:
+        if args.step is not None and str(args.step) != str(num):
             continue
         step_start = time.time()
         try:

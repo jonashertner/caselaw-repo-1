@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Schema consistency tests
+        run: python test_schema.py
+
+      - name: Import checks
+        run: |
+          python -c "from db_schema import SCHEMA_SQL, INSERT_COLUMNS, INSERT_SQL"
+          python -c "from export_parquet import DECISION_SCHEMA, normalize_row"
+          python -c "from models import Decision, make_decision_id, parse_date"
+          python -c "from scrapers import get_registry; r = get_registry(); print(f'{len(r)} scrapers')"
+          python -c "from quality_report import generate_quality_report, check_gates"

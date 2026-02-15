@@ -1,8 +1,9 @@
 """
 Canonical SQLite schema for Swiss court decisions.
 
-Shared between build_fts5.py (ingestion) and mcp_server.py (search).
-Single source of truth — edit here, both consumers pick it up.
+Shared between build_fts5.py (ingestion), mcp_server.py (search),
+and pipeline.py (daily FTS import).
+Single source of truth — edit here, all consumers pick it up.
 """
 
 SCHEMA_SQL = """
@@ -25,6 +26,10 @@ SCHEMA_SQL = """
         pdf_url TEXT,
         cited_decisions TEXT,
         scraped_at TEXT,
+        source TEXT,
+        source_id TEXT,
+        source_spider TEXT,
+        content_hash TEXT,
         json_data TEXT
     );
 
@@ -85,7 +90,8 @@ INSERT_COLUMNS = (
     "decision_date", "publication_date", "language", "title",
     "legal_area", "regeste", "full_text", "decision_type",
     "outcome", "source_url", "pdf_url", "cited_decisions",
-    "scraped_at", "json_data",
+    "scraped_at", "source", "source_id", "source_spider",
+    "content_hash", "json_data",
 )
 
 INSERT_SQL = f"""INSERT INTO decisions
