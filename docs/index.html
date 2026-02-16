@@ -442,12 +442,6 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
     </div>
   </div>
 
-  <!-- Top 10 courts chart -->
-  <div class="chart-card full-width hid" id="top10-section" style="margin-bottom:20px">
-    <h3 data-t="chart_top10">Top 10 Courts</h3>
-    <div class="chart-canvas"><canvas id="c-top10" height="280"></canvas></div>
-  </div>
-
   <!-- Language trends stacked area -->
   <div class="chart-card full-width hid" id="lang-trends-section" style="margin-bottom:20px">
     <h3 data-t="chart_lang_trends">Language Trends (2005&#8211;present)</h3>
@@ -802,35 +796,6 @@ function renderCharts(data) {
         <span class="lang-pct">${((by_lang[k]/langTotal)*100).toFixed(1)}%</span>
       </div>
     `).join('');
-  }
-
-  // Top 10 courts horizontal bar
-  const top10 = data.top_courts || (data.by_court || []).slice(0, 10).map(c => ({court:c.court, canton:c.canton, count:c.count}));
-  if (top10.length) {
-    const ctx10 = document.getElementById('c-top10');
-    if (ctx10) {
-      const labels10 = top10.map(c => courtName(c.court));
-      const vals10 = top10.map(c => c.count);
-      const colors10 = top10.map(c => c.canton === 'CH' ? chartColors[0] : chartColors[1]);
-      _charts.push(new Chart(ctx10, {
-        type: 'bar',
-        data: {
-          labels: labels10,
-          datasets: [{ data: vals10, backgroundColor: colors10, borderRadius: 3, borderSkipped: false }]
-        },
-        options: {
-          indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: {
-            callbacks: { label: ctx => fmt(ctx.raw) + ' ' + t('kpi_decisions').toLowerCase() }
-          }},
-          scales: {
-            x: { grid: { color: brd2 }, ticks: { callback: v => v >= 1000 ? (v/1000)+'k' : v, font: { size: 10 } }, beginAtZero: true },
-            y: { grid: { display: false }, ticks: { font: { size: 11 } } }
-          }
-        }
-      }));
-      document.getElementById('top10-section').classList.remove('hid');
-    }
   }
 
   // Language trends stacked area
