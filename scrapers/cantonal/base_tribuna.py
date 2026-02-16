@@ -51,7 +51,7 @@ _GWT_PERMUTATION_FALLBACK = "C91406E3C064F0230BE12F3EF5EDF1D6"
 _RE_TOTAL = re.compile(r"^//OK\[(\d+)")
 _RE_DOC_ID = re.compile(r"^[0-9a-f]{32}$")
 _RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-_RE_DOCKET = re.compile(r"^[A-Z]{1,4}\d?\s+\d{4}\s+\d+$")
+_RE_DOCKET = re.compile(r"^[A-Z0-9]{1,4}\s+\d{4}\s+\d+$")
 _RE_ENC_PATH = re.compile(r"^[0-9a-f]{60,}$")
 _RE_HEX = re.compile(r"^[0-9a-f]{60,}$")
 
