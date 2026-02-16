@@ -37,6 +37,8 @@ SCRAPERS = {
     "bvger": ("scrapers.bvger", "BVGerScraper"),
     "bstger": ("scrapers.bstger", "BStGerScraper"),
     "bpatger": ("scrapers.bpatger", "BPatGerScraper"),
+    # Federal — regulatory
+    "finma": ("scrapers.finma", "FINMAScraper"),
     # Cantonal — implemented
     "ag_gerichte": ("scrapers.cantonal.ag_gerichte", "AGGerichteScraper"),
     "ai_gerichte": ("scrapers.cantonal.ai_gerichte", "AIGerichteScraper"),
