@@ -238,6 +238,18 @@ def test_extract_query_statute_refs_handles_ordinal_suffixes():
     assert "ART.34t.ER" not in refs
 
 
+def test_parse_statute_ref_handles_ordinal_suffixes():
+    article, paragraph, law = mcp_server._parse_statute_ref("ART.8bis.BV")
+    assert article == "8bis"
+    assert paragraph is None
+    assert law == "BV"
+
+    article, paragraph, law = mcp_server._parse_statute_ref("ART.8.ABS.2bis.BV")
+    assert article == "8"
+    assert paragraph == "2bis"
+    assert law == "BV"
+
+
 def test_looks_like_docket_query_is_strict_for_long_nl_query():
     assert mcp_server._looks_like_docket_query("4A_291/2017")
     assert not mcp_server._looks_like_docket_query(
@@ -315,3 +327,48 @@ def test_graph_signal_map_falls_back_to_legacy_target_decision_id(
         query_citations=set(),
     )
     assert signal_map["target1"]["incoming_citations"] == 3
+
+
+def test_graph_signal_map_preserves_fractional_confidence_weights(
+    tmp_path: Path, monkeypatch
+):
+    graph_db = tmp_path / "reference_graph.db"
+    conn = sqlite3.connect(graph_db)
+    conn.executescript(
+        """
+        CREATE TABLE decision_statutes (
+            decision_id TEXT NOT NULL,
+            statute_id TEXT NOT NULL,
+            mention_count INTEGER NOT NULL DEFAULT 1
+        );
+        CREATE TABLE decision_citations (
+            source_decision_id TEXT NOT NULL,
+            target_ref TEXT NOT NULL,
+            target_type TEXT NOT NULL,
+            mention_count INTEGER NOT NULL DEFAULT 1
+        );
+        CREATE TABLE citation_targets (
+            source_decision_id TEXT NOT NULL,
+            target_ref TEXT NOT NULL,
+            target_decision_id TEXT NOT NULL,
+            match_type TEXT NOT NULL DEFAULT 'docket_norm',
+            confidence_score REAL NOT NULL DEFAULT 1.0
+        );
+        INSERT INTO decision_citations(source_decision_id, target_ref, target_type, mention_count)
+        VALUES ('src1', 'VB_2018_00411', 'docket', 1);
+        INSERT INTO citation_targets(source_decision_id, target_ref, target_decision_id, match_type, confidence_score)
+        VALUES ('src1', 'VB_2018_00411', 'target1', 'docket_norm', 0.49);
+        """
+    )
+    conn.commit()
+    conn.close()
+
+    monkeypatch.setattr(mcp_server, "GRAPH_DB_PATH", graph_db)
+    monkeypatch.setattr(mcp_server, "GRAPH_SIGNALS_ENABLED", True)
+
+    signal_map = mcp_server._load_graph_signal_map(
+        ["target1"],
+        query_statutes=set(),
+        query_citations=set(),
+    )
+    assert 0.0 < signal_map["target1"]["incoming_citations"] < 1.0

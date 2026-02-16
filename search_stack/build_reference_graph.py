@@ -152,7 +152,7 @@ def _citation_confidence(
 
 
 def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
-    rows = conn.execute(
+    cursor = conn.execute(
         """
         WITH candidate_matches AS (
             SELECT
@@ -195,37 +195,38 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
         FROM candidate_matches
         ORDER BY source_decision_id, target_ref, candidate_rank
         """
-    ).fetchall()
-
-    payload: list[tuple[str, str, str, str, float]] = []
-    for row in rows:
-        payload.append(
-            (
-                row["source_decision_id"],
-                row["target_ref"],
-                row["target_decision_id"],
-                "docket_norm",
-                _citation_confidence(
-                    source_court=row["source_court"],
-                    source_canton=row["source_canton"],
-                    source_date=row["source_date"],
-                    target_court=row["target_court"],
-                    target_canton=row["target_canton"],
-                    target_date=row["target_date"],
-                    candidate_rank=int(row["candidate_rank"] or 1),
-                    candidate_count=int(row["candidate_count"] or 1),
-                ),
-            )
-        )
-
-    conn.executemany(
-        """
+    )
+    insert_sql = """
         INSERT OR IGNORE INTO citation_targets
         (source_decision_id, target_ref, target_decision_id, match_type, confidence_score)
         VALUES (?, ?, ?, ?, ?)
-        """,
-        payload,
-    )
+    """
+    batch_size = 10_000
+    while True:
+        rows = cursor.fetchmany(batch_size)
+        if not rows:
+            break
+        payload: list[tuple[str, str, str, str, float]] = []
+        for row in rows:
+            payload.append(
+                (
+                    row["source_decision_id"],
+                    row["target_ref"],
+                    row["target_decision_id"],
+                    "docket_norm",
+                    _citation_confidence(
+                        source_court=row["source_court"],
+                        source_canton=row["source_canton"],
+                        source_date=row["source_date"],
+                        target_court=row["target_court"],
+                        target_canton=row["target_canton"],
+                        target_date=row["target_date"],
+                        candidate_rank=int(row["candidate_rank"] or 1),
+                        candidate_count=int(row["candidate_count"] or 1),
+                    ),
+                )
+            )
+        conn.executemany(insert_sql, payload)
 
 
 def build_graph(

@@ -790,7 +790,7 @@ def _load_graph_signal_map(
     *,
     query_statutes: set[str],
     query_citations: set[str],
-) -> dict[str, dict[str, int]]:
+) -> dict[str, dict[str, float]]:
     if not GRAPH_SIGNALS_ENABLED or not decision_ids:
         return {}
     if not GRAPH_DB_PATH.exists():
@@ -800,11 +800,11 @@ def _load_graph_signal_map(
     if not unique_ids:
         return {}
 
-    signal_map: dict[str, dict[str, int]] = {
+    signal_map: dict[str, dict[str, float]] = {
         did: {
-            "statute_mentions": 0,
-            "query_citation_hits": 0,
-            "incoming_citations": 0,
+            "statute_mentions": 0.0,
+            "query_citation_hits": 0.0,
+            "incoming_citations": 0.0,
         }
         for did in unique_ids
     }
@@ -838,7 +838,7 @@ def _load_graph_signal_map(
                 tuple(unique_ids) + tuple(statute_refs),
             ).fetchall()
             for row in rows:
-                signal_map[row["decision_id"]]["statute_mentions"] = int(row["n"] or 0)
+                signal_map[row["decision_id"]]["statute_mentions"] = float(row["n"] or 0.0)
 
         if query_citations:
             citation_refs = sorted(query_citations)
@@ -854,7 +854,7 @@ def _load_graph_signal_map(
                 tuple(unique_ids) + tuple(citation_refs),
             ).fetchall()
             for row in rows:
-                signal_map[row["decision_id"]]["query_citation_hits"] = int(row["n"] or 0)
+                signal_map[row["decision_id"]]["query_citation_hits"] = float(row["n"] or 0.0)
 
         if has_citation_targets:
             if has_confidence_score:
@@ -899,8 +899,8 @@ def _load_graph_signal_map(
             rows = []
         for row in rows:
             signal_map[row["decision_id"]]["incoming_citations"] = max(
-                0,
-                int(round(float(row["n"] or 0))),
+                0.0,
+                float(row["n"] or 0.0),
             )
     except sqlite3.Error as e:
         logger.debug("Graph-signal lookup failed: %s", e)
@@ -938,7 +938,12 @@ def _text_matches_any_statute_hint(text: str, statutes: set[str]) -> bool:
 
 def _parse_statute_ref(ref: str) -> tuple[str | None, str | None, str | None]:
     m = re.match(
-        r"^ART\.(?P<article>\d+[a-z]?)(?:\.ABS\.(?P<paragraph>\d+[a-z]?))?\.(?P<law>[A-Z0-9/]+)$",
+        (
+            r"^ART\."
+            r"(?P<article>\d+(?:bis|ter|quater|quinquies|sexies|[a-z])?)"
+            r"(?:\.ABS\.(?P<paragraph>\d+(?:bis|ter|quater|quinquies|sexies|[a-z])?))?"
+            r"\.(?P<law>[A-Z0-9/]+)$"
+        ),
         ref,
     )
     if not m:
@@ -1033,9 +1038,9 @@ def _rerank_rows(
         strategy_hits = int(fusion.get("strategy_hits", 0))
 
         graph = graph_signals.get(decision_id, {})
-        statute_mentions = int(graph.get("statute_mentions", 0))
-        query_citation_hits = int(graph.get("query_citation_hits", 0))
-        incoming_citations = int(graph.get("incoming_citations", 0))
+        statute_mentions = float(graph.get("statute_mentions", 0.0))
+        query_citation_hits = float(graph.get("query_citation_hits", 0.0))
+        incoming_citations = float(graph.get("incoming_citations", 0.0))
 
         statute_signal = 0.0
         citation_signal = 0.0

@@ -171,10 +171,20 @@ class ReferenceGraphStore:
             )
             has_legacy_target = self._has_column(conn, "decision_citations", "target_decision_id")
             if has_targets:
-                confidence_select = (
+                confidence_base = (
                     "COALESCE(ct.confidence_score, 1.0)"
                     if has_confidence
                     else "1.0"
+                )
+                confidence_select = (
+                    "CASE "
+                    "WHEN ct.target_decision_id IS NULL THEN NULL "
+                    f"ELSE {confidence_base} END"
+                )
+                weighted_select = (
+                    "CASE "
+                    "WHEN ct.target_decision_id IS NULL THEN NULL "
+                    f"ELSE dc.mention_count * ({confidence_base}) END"
                 )
                 rows = conn.execute(
                     f"""
@@ -186,7 +196,7 @@ class ReferenceGraphStore:
                         ct.match_type,
                         dc.mention_count,
                         {confidence_select} AS confidence_score,
-                        dc.mention_count * {confidence_select} AS weighted_mention_count
+                        {weighted_select} AS weighted_mention_count
                     FROM decision_citations dc
                     LEFT JOIN citation_targets ct
                         ON ct.source_decision_id = dc.source_decision_id
