@@ -15,6 +15,9 @@ from datetime import date, datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
+import pytest
+
+pytestmark = [pytest.mark.live, pytest.mark.manual]
 
 # Setup logging
 logging.basicConfig(

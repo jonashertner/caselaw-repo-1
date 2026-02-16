@@ -25,14 +25,23 @@ dependencies = [
 crypto = ["pycryptodome>=3.20"]
 pdf = ["pymupdf>=1.23"]
 api = ["fastapi>=0.104", "uvicorn>=0.24"]
+search = ["opensearch-py>=2.6"]
+semantic = ["sentence-transformers>=3.0"]
 dev = ["pytest>=7.0", "ruff>=0.1"]
-all = ["swiss-caselaw-scrapers[crypto,pdf,api,dev]"]
+all = ["swiss-caselaw-scrapers[crypto,pdf,api,search,semantic,dev]"]
 
 [tool.setuptools.packages.find]
-include = ["scrapers*"]
+include = ["scrapers*", "search_stack*"]
 
 [tool.setuptools]
 py-modules = ["pipeline", "base_scraper", "models", "db_schema", "run_scraper", "mcp_server", "fts5_server", "export_parquet", "build_fts5"]
 
 [project.scripts]
 swiss-caselaw = "pipeline:main"
+
+[tool.pytest.ini_options]
+addopts = "-m \"not live and not manual\""
+markers = [
+    "live: requires live network/system interaction; excluded from default pytest runs",
+    "manual: diagnostic/manual test; excluded from default pytest runs",
+]

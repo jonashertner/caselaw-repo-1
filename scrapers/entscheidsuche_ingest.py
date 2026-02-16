@@ -27,12 +27,10 @@ import argparse
 import hashlib
 import json
 import logging
-import os
 import re
 import subprocess
 import sys
-import time
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -274,6 +272,26 @@ def detect_language(text: str) -> str:
 # Decision builder
 # ============================================================================
 
+
+def _normalize_id_part(value: str) -> str:
+    return re.sub(r"[^a-zA-Z0-9_.-]", "_", value or "").strip("_")
+
+
+def _build_entscheidsuche_decision_id(
+    *,
+    court_code: str,
+    docket: str,
+    signatur: str,
+    datum: str,
+) -> str:
+    docket_norm = _normalize_id_part(docket) or "unknown"
+    signatur_norm = _normalize_id_part(signatur)
+    if signatur_norm:
+        return f"{court_code}_{docket_norm}_{signatur_norm}"
+    if re.match(r"^\d{4}-\d{2}-\d{2}$", datum or ""):
+        return f"{court_code}_{docket_norm}_{datum.replace('-', '')}"
+    return f"{court_code}_{docket_norm}"
+
 def build_decision(
     meta: dict,
     spider: str,
@@ -361,9 +379,12 @@ def build_decision(
 
     content = "\n\n".join(content_parts) if content_parts else "(metadata only)"
 
-    # Decision ID: court_code + normalized docket
-    docket_norm = re.sub(r"[^a-zA-Z0-9_.-]", "_", docket)
-    decision_id = f"{court_code}_{docket_norm}"
+    decision_id = _build_entscheidsuche_decision_id(
+        court_code=court_code,
+        docket=docket,
+        signatur=signatur,
+        datum=datum,
+    )
 
     # Content hash for dedup
     content_hash = hashlib.md5(content.encode("utf-8")).hexdigest()
@@ -421,11 +442,19 @@ def load_existing_ids(existing_dir: Path) -> set:
                         did = obj.get("decision_id", "")
                         if did:
                             known.add(did)
-                        # Also index by docket for cross-source dedup
+                        # Also index by docket(+decision_date) for cross-source dedup.
+                        # Keep same-docket different-date decisions distinct.
                         docket = obj.get("docket_number", "")
                         court = obj.get("court", "")
+                        decision_date = obj.get("decision_date")
+                        source_id = obj.get("source_id") or obj.get("entscheidsuche_signatur")
                         if docket and court:
-                            known.add(f"{court}::{docket}")
+                            if decision_date and re.match(r"^\d{4}-\d{2}-\d{2}$", str(decision_date)):
+                                known.add(f"{court}::{docket}::{decision_date}")
+                            else:
+                                known.add(f"{court}::{docket}")
+                        if source_id and court:
+                            known.add(f"{court}::source_id::{source_id}")
                     except json.JSONDecodeError:
                         continue
         except Exception as e:
@@ -487,14 +516,33 @@ def ingest_spider(
                 errors += 1
                 continue
 
-            # Check for existing — by decision_id or court::docket
+            # Check for existing by immutable source ID, decision_id, and docket+date.
             signatur = meta.get("Signatur", "")
             nums = meta.get("Num", [])
             docket = nums[0] if nums else signatur
-            docket_norm = re.sub(r"[^a-zA-Z0-9_.-]", "_", docket)
-            decision_id = f"{court_code}_{docket_norm}"
+            decision_id = _build_entscheidsuche_decision_id(
+                court_code=court_code,
+                docket=docket,
+                signatur=signatur,
+                datum=str(meta.get("Datum", "")),
+            )
+            decision_date = meta.get("Datum", "")
+            if not re.match(r"^\d{4}-\d{2}-\d{2}$", str(decision_date)):
+                decision_date = None
+            signatur_key = f"{court_code}::source_id::{signatur}" if signatur else None
+            docket_day_key = f"{court_code}::{docket}::{decision_date}" if decision_date else None
+            docket_fallback_key = f"{court_code}::{docket}"
 
-            if decision_id in known_ids or f"{court_code}::{docket}" in known_ids:
+            if decision_id in known_ids:
+                skipped += 1
+                continue
+            if signatur_key and signatur_key in known_ids:
+                skipped += 1
+                continue
+            if docket_day_key and docket_day_key in known_ids:
+                skipped += 1
+                continue
+            if not docket_day_key and docket_fallback_key in known_ids:
                 skipped += 1
                 continue
 
@@ -539,7 +587,13 @@ def ingest_spider(
                 output_handle.write(json.dumps(decision, ensure_ascii=False) + "\n")
 
             known_ids.add(decision_id)
-            known_ids.add(f"{court_code}::{docket}")
+            if signatur_key:
+                known_ids.add(signatur_key)
+            decision_date_new = decision.get("decision_date")
+            if decision_date_new:
+                known_ids.add(f"{court_code}::{docket}::{decision_date_new}")
+            else:
+                known_ids.add(docket_fallback_key)
             new_count += 1
 
             if processed % 1000 == 0:

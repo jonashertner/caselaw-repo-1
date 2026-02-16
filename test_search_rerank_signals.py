@@ -227,6 +227,17 @@ def test_extract_query_statute_refs_handles_multilingual_paragraph_marker():
     assert "ART.8.AL" not in refs
 
 
+def test_extract_query_statute_refs_handles_ordinal_suffixes():
+    refs = mcp_server._extract_query_statute_refs(
+        "Art. 8bis BV, Art. 34ter BV und Art. 8 Abs. 2bis BV"
+    )
+    assert "ART.8bis.BV" in refs
+    assert "ART.34ter.BV" in refs
+    assert "ART.8.ABS.2bis.BV" in refs
+    assert "ART.8b.IS" not in refs
+    assert "ART.34t.ER" not in refs
+
+
 def test_looks_like_docket_query_is_strict_for_long_nl_query():
     assert mcp_server._looks_like_docket_query("4A_291/2017")
     assert not mcp_server._looks_like_docket_query(
@@ -267,3 +278,40 @@ def test_rerank_boosts_language_match():
         },
     )
     assert results[0]["decision_id"] == "d_fr"
+
+
+def test_graph_signal_map_falls_back_to_legacy_target_decision_id(
+    tmp_path: Path, monkeypatch
+):
+    graph_db = tmp_path / "reference_graph.db"
+    conn = sqlite3.connect(graph_db)
+    conn.executescript(
+        """
+        CREATE TABLE decision_statutes (
+            decision_id TEXT NOT NULL,
+            statute_id TEXT NOT NULL,
+            mention_count INTEGER NOT NULL DEFAULT 1
+        );
+        CREATE TABLE decision_citations (
+            source_decision_id TEXT NOT NULL,
+            target_ref TEXT NOT NULL,
+            target_type TEXT NOT NULL,
+            target_decision_id TEXT,
+            mention_count INTEGER NOT NULL DEFAULT 1
+        );
+        INSERT INTO decision_citations(source_decision_id, target_ref, target_type, target_decision_id, mention_count)
+        VALUES ('src1', 'VB_2018_00411', 'docket', 'target1', 3);
+        """
+    )
+    conn.commit()
+    conn.close()
+
+    monkeypatch.setattr(mcp_server, "GRAPH_DB_PATH", graph_db)
+    monkeypatch.setattr(mcp_server, "GRAPH_SIGNALS_ENABLED", True)
+
+    signal_map = mcp_server._load_graph_signal_map(
+        ["target1"],
+        query_statutes=set(),
+        query_citations=set(),
+    )
+    assert signal_map["target1"]["incoming_citations"] == 3

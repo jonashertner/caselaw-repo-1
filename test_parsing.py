@@ -9,9 +9,13 @@ import sys
 from datetime import date
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from models import Decision, extract_citations, make_decision_id, detect_language, parse_date
+
+pytestmark = pytest.mark.manual
 
 # ============================================================
 # SAMPLE: Real BGer decision HTML structure (2C_28/2026)

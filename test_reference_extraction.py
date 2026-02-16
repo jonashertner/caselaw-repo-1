@@ -41,3 +41,14 @@ def test_extract_case_citations_does_not_duplicate_bge_as_docket():
     refs = extract_case_citations(text)
     normalized = [r.normalized for r in refs]
     assert normalized == ["BGE 147 I 268"]
+
+
+def test_extract_statute_references_handles_ordinal_suffixes():
+    text = "Art. 8bis BV, Art. 34ter BV und Art. 8 Abs. 2bis BV."
+    refs = extract_statute_references(text)
+    normalized = {r.normalized for r in refs}
+    assert "ART.8bis.BV" in normalized
+    assert "ART.34ter.BV" in normalized
+    assert "ART.8.ABS.2bis.BV" in normalized
+    assert "ART.8b.IS" not in normalized
+    assert "ART.34t.ER" not in normalized

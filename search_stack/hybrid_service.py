@@ -155,19 +155,38 @@ class ReferenceGraphStore:
         ).fetchone()
         return row is not None
 
+    def _has_column(self, conn: sqlite3.Connection, table: str, column: str) -> bool:
+        try:
+            rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
+        except sqlite3.Error:
+            return False
+        return any(str(r["name"]).lower() == column.lower() for r in rows)
+
     def outgoing_citations(self, decision_id: str, limit: int = 200) -> list[dict[str, Any]]:
         conn = self._conn()
         try:
-            if self._has_citation_targets(conn):
+            has_targets = self._has_citation_targets(conn)
+            has_confidence = has_targets and self._has_column(
+                conn, "citation_targets", "confidence_score"
+            )
+            has_legacy_target = self._has_column(conn, "decision_citations", "target_decision_id")
+            if has_targets:
+                confidence_select = (
+                    "COALESCE(ct.confidence_score, 1.0)"
+                    if has_confidence
+                    else "1.0"
+                )
                 rows = conn.execute(
-                    """
+                    f"""
                     SELECT
                         dc.source_decision_id,
                         dc.target_ref,
                         dc.target_type,
                         ct.target_decision_id,
                         ct.match_type,
-                        dc.mention_count
+                        dc.mention_count,
+                        {confidence_select} AS confidence_score,
+                        dc.mention_count * {confidence_select} AS weighted_mention_count
                     FROM decision_citations dc
                     LEFT JOIN citation_targets ct
                         ON ct.source_decision_id = dc.source_decision_id
@@ -179,22 +198,44 @@ class ReferenceGraphStore:
                     (decision_id, limit),
                 ).fetchall()
             else:
-                rows = conn.execute(
-                    """
-                    SELECT
-                        source_decision_id,
-                        target_ref,
-                        target_type,
-                        NULL AS target_decision_id,
-                        NULL AS match_type,
-                        mention_count
-                    FROM decision_citations
-                    WHERE source_decision_id = ?
-                    ORDER BY mention_count DESC, target_ref
-                    LIMIT ?
-                    """,
-                    (decision_id, limit),
-                ).fetchall()
+                if has_legacy_target:
+                    rows = conn.execute(
+                        """
+                        SELECT
+                            source_decision_id,
+                            target_ref,
+                            target_type,
+                            target_decision_id,
+                            'legacy_target_decision_id' AS match_type,
+                            mention_count,
+                            1.0 AS confidence_score,
+                            mention_count AS weighted_mention_count
+                        FROM decision_citations
+                        WHERE source_decision_id = ?
+                        ORDER BY mention_count DESC, target_ref
+                        LIMIT ?
+                        """,
+                        (decision_id, limit),
+                    ).fetchall()
+                else:
+                    rows = conn.execute(
+                        """
+                        SELECT
+                            source_decision_id,
+                            target_ref,
+                            target_type,
+                            NULL AS target_decision_id,
+                            NULL AS match_type,
+                            mention_count,
+                            NULL AS confidence_score,
+                            NULL AS weighted_mention_count
+                        FROM decision_citations
+                        WHERE source_decision_id = ?
+                        ORDER BY mention_count DESC, target_ref
+                        LIMIT ?
+                        """,
+                        (decision_id, limit),
+                    ).fetchall()
             return [dict(r) for r in rows]
         finally:
             conn.close()
@@ -202,16 +243,28 @@ class ReferenceGraphStore:
     def incoming_citations(self, decision_id: str, limit: int = 200) -> list[dict[str, Any]]:
         conn = self._conn()
         try:
-            if self._has_citation_targets(conn):
+            has_targets = self._has_citation_targets(conn)
+            has_confidence = has_targets and self._has_column(
+                conn, "citation_targets", "confidence_score"
+            )
+            has_legacy_target = self._has_column(conn, "decision_citations", "target_decision_id")
+            if has_targets:
+                confidence_select = (
+                    "COALESCE(ct.confidence_score, 1.0)"
+                    if has_confidence
+                    else "1.0"
+                )
                 rows = conn.execute(
-                    """
+                    f"""
                     SELECT
                         ct.source_decision_id,
                         ct.target_ref,
                         dc.target_type,
                         ct.target_decision_id,
                         ct.match_type,
-                        dc.mention_count
+                        dc.mention_count,
+                        {confidence_select} AS confidence_score,
+                        dc.mention_count * {confidence_select} AS weighted_mention_count
                     FROM citation_targets ct
                     JOIN decision_citations dc
                       ON dc.source_decision_id = ct.source_decision_id
@@ -223,8 +276,27 @@ class ReferenceGraphStore:
                     (decision_id, limit),
                 ).fetchall()
             else:
-                # Without citation_targets, we cannot resolve incoming citations
-                rows = []
+                if has_legacy_target:
+                    rows = conn.execute(
+                        """
+                        SELECT
+                            source_decision_id,
+                            target_ref,
+                            target_type,
+                            target_decision_id,
+                            'legacy_target_decision_id' AS match_type,
+                            mention_count,
+                            1.0 AS confidence_score,
+                            mention_count AS weighted_mention_count
+                        FROM decision_citations
+                        WHERE target_decision_id = ?
+                        ORDER BY mention_count DESC, source_decision_id
+                        LIMIT ?
+                        """,
+                        (decision_id, limit),
+                    ).fetchall()
+                else:
+                    rows = []
             return [dict(r) for r in rows]
         finally:
             conn.close()

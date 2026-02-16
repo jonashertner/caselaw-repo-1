@@ -20,11 +20,15 @@ Requires: requests, beautifulsoup4
 import json, logging, re, sys, time, traceback
 from datetime import date, timedelta
 
+import pytest
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
 )
 log = logging.getLogger("test_federal")
+
+pytestmark = [pytest.mark.live, pytest.mark.manual]
 
 PASS = 0
 FAIL = 0

@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import sqlite3
 import statistics
 import sys
@@ -29,8 +30,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--golden",
         type=Path,
-        default=Path("benchmarks/search_relevance_golden.json"),
-        help="Path to golden relevance JSON",
+        action="append",
+        help=(
+            "Path to golden relevance JSON (repeatable). "
+            "Default: benchmarks/search_relevance_golden.json"
+        ),
     )
     parser.add_argument(
         "--db",
@@ -69,6 +73,17 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Print per-query misses where no relevant judgment appears in top-k",
     )
+    parser.add_argument(
+        "--min-evaluated",
+        type=int,
+        help="Fail if evaluated queries are below this count",
+    )
+    parser.add_argument(
+        "--require-tag",
+        action="append",
+        default=[],
+        help="Require evaluated count per tag, format TAG:MIN (repeatable)",
+    )
     return parser.parse_args()
 
 
@@ -88,6 +103,50 @@ def _load_golden(path: Path) -> dict:
     return payload
 
 
+def _load_goldens(paths: list[Path]) -> tuple[list[dict], list[str]]:
+    merged: list[dict] = []
+    seen_ids: set[str] = set()
+    sources: list[str] = []
+    for path in paths:
+        payload = _load_golden(path)
+        sources.append(str(path))
+        for query in payload["queries"]:
+            q = dict(query)
+            qid = str(q.get("id") or "")
+            if qid and qid in seen_ids:
+                suffix = 2
+                while f"{qid}__{suffix}" in seen_ids:
+                    suffix += 1
+                q["id"] = f"{qid}__{suffix}"
+            qid_final = str(q.get("id") or f"auto_{len(merged)+1}")
+            q["id"] = qid_final
+            seen_ids.add(qid_final)
+            merged.append(q)
+    return merged, sources
+
+
+def _parse_tag_requirements(items: list[str]) -> dict[str, int]:
+    out: dict[str, int] = {}
+    for item in items:
+        text = (item or "").strip()
+        if not text:
+            continue
+        if ":" not in text:
+            raise ValueError(f"Invalid --require-tag value '{item}', expected TAG:MIN")
+        tag, minimum = text.split(":", 1)
+        tag = tag.strip()
+        if not tag:
+            raise ValueError(f"Invalid --require-tag value '{item}', empty tag")
+        try:
+            min_count = int(minimum.strip())
+        except ValueError as e:
+            raise ValueError(f"Invalid --require-tag value '{item}', MIN must be integer") from e
+        if min_count < 0:
+            raise ValueError(f"Invalid --require-tag value '{item}', MIN must be >= 0")
+        out[tag] = min_count
+    return out
+
+
 def _existing_ids(conn: sqlite3.Connection, ids: set[str]) -> set[str]:
     if not ids:
         return set()
@@ -97,6 +156,94 @@ def _existing_ids(conn: sqlite3.Connection, ids: set[str]) -> set[str]:
         tuple(ids),
     ).fetchall()
     return {r[0] for r in rows}
+
+
+def _normalize_docket(value: str | None) -> str:
+    return re.sub(r"[^0-9a-z]+", "", (value or "").lower())
+
+
+def _candidate_dockets_from_relevant_id(relevant_id: str) -> list[str]:
+    """
+    Derive likely docket strings from a canonical-looking decision_id.
+
+    Examples:
+    - bger_8C_47_2011 -> 8C_47/2011
+    - bger_1A.122_2005 -> 1A.122/2005
+    - bvger_E-7414_2015 -> E-7414/2015
+    - bstger_RR.2012.25 -> RR.2012.25
+    """
+    if not relevant_id:
+        return []
+
+    parts = relevant_id.split("_")
+    tail = parts[-1] if len(parts) == 1 else "_".join(parts[1:])
+    candidates: list[str] = [tail]
+
+    if re.search(r"_\d{4}$", tail):
+        stem, year = tail.rsplit("_", 1)
+        candidates.append(f"{stem}/{year}")
+
+    if len(parts) >= 3 and re.fullmatch(r"\d{4}", parts[-1]):
+        stem = "_".join(parts[1:-1]) if len(parts) > 2 else parts[0]
+        if stem:
+            candidates.append(f"{stem}/{parts[-1]}")
+
+    seen: set[str] = set()
+    out: list[str] = []
+    for c in candidates:
+        c = c.strip()
+        if c and c not in seen:
+            out.append(c)
+            seen.add(c)
+    return out
+
+
+def _lookup_decision_id_by_docket(conn: sqlite3.Connection, docket: str) -> str | None:
+    row = conn.execute(
+        "SELECT decision_id FROM decisions WHERE docket_number = ? LIMIT 1",
+        (docket,),
+    ).fetchone()
+    if row:
+        return row[0]
+
+    norm = _normalize_docket(docket)
+    if not norm:
+        return None
+
+    row = conn.execute(
+        """
+        SELECT decision_id
+        FROM decisions
+        WHERE replace(replace(replace(replace(lower(docket_number),'.',''),'/',''),'_',''),'-','') = ?
+        LIMIT 1
+        """,
+        (norm,),
+    ).fetchone()
+    if row:
+        return row[0]
+    return None
+
+
+def _resolve_relevant_id(
+    conn: sqlite3.Connection,
+    relevant_id: str,
+    *,
+    existing_ids: set[str],
+    cache: dict[str, str | None],
+) -> str | None:
+    if relevant_id in existing_ids:
+        return relevant_id
+    if relevant_id in cache:
+        return cache[relevant_id]
+
+    for docket in _candidate_dockets_from_relevant_id(relevant_id):
+        resolved = _lookup_decision_id_by_docket(conn, docket)
+        if resolved:
+            cache[relevant_id] = resolved
+            return resolved
+
+    cache[relevant_id] = None
+    return None
 
 
 def _configure_search_db(db_path: Path):
@@ -112,19 +259,26 @@ def main() -> int:
     args = parse_args()
     k = max(1, args.k)
     db_path = args.db.expanduser().resolve()
-    golden_path = args.golden.expanduser().resolve()
+    golden_paths = args.golden or [Path("benchmarks/search_relevance_golden.json")]
+    golden_paths = [p.expanduser().resolve() for p in golden_paths]
 
     if not db_path.exists():
         print(f"Database not found: {db_path}", file=sys.stderr)
         return 1
-    if not golden_path.exists():
-        print(f"Golden file not found: {golden_path}", file=sys.stderr)
+    for golden_path in golden_paths:
+        if not golden_path.exists():
+            print(f"Golden file not found: {golden_path}", file=sys.stderr)
+            return 1
+
+    try:
+        required_tags = _parse_tag_requirements(args.require_tag)
+    except ValueError as e:
+        print(str(e), file=sys.stderr)
         return 1
 
-    golden = _load_golden(golden_path)
-    queries = golden["queries"]
+    queries, golden_sources = _load_goldens(golden_paths)
     if not queries:
-        print("Golden file contains no queries.", file=sys.stderr)
+        print("Golden inputs contain no queries.", file=sys.stderr)
         return 1
 
     all_relevant_ids = {
@@ -137,6 +291,7 @@ def main() -> int:
     with sqlite3.connect(str(db_path)) as conn:
         existing_relevant = _existing_ids(conn, all_relevant_ids)
         total_rows = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+    resolve_conn = sqlite3.connect(str(db_path))
 
     mcp_server = _configure_search_db(db_path)
 
@@ -146,21 +301,36 @@ def main() -> int:
     ndcg_scores = []
     hit1_scores = []
     latencies_ms = []
+    resolved_alias_count = 0
+    unresolved_relevant_count = 0
     skipped = 0
+    resolution_cache: dict[str, str | None] = {}
 
     for q in queries:
         qid = q.get("id", "")
         query = q.get("query", "")
         relevant_items = q.get("relevant", [])
+        tags = [t for t in q.get("tags", []) if isinstance(t, str)]
 
         rel_grades = {}
         for rel in relevant_items:
             if not isinstance(rel, dict):
                 continue
             rid = rel.get("decision_id")
-            if not rid or rid not in existing_relevant:
+            if not rid:
                 continue
-            rel_grades[rid] = int(rel.get("grade", 1))
+            resolved = _resolve_relevant_id(
+                resolve_conn,
+                rid,
+                existing_ids=existing_relevant,
+                cache=resolution_cache,
+            )
+            if not resolved:
+                unresolved_relevant_count += 1
+                continue
+            if resolved != rid:
+                resolved_alias_count += 1
+            rel_grades[resolved] = max(rel_grades.get(resolved, 0), int(rel.get("grade", 1)))
 
         if not rel_grades:
             skipped += 1
@@ -168,6 +338,7 @@ def main() -> int:
                 {
                     "id": qid,
                     "query": query,
+                    "tags": tags,
                     "status": "skipped_no_relevant_docs_in_db",
                     "rr": None,
                     "recall": None,
@@ -220,6 +391,7 @@ def main() -> int:
             {
                 "id": qid,
                 "query": query,
+                "tags": tags,
                 "status": "ok",
                 "rr": rr,
                 "recall": recall,
@@ -233,6 +405,7 @@ def main() -> int:
 
     evaluated = len(rr_scores)
     if evaluated == 0:
+        resolve_conn.close()
         print("No benchmark queries could be evaluated (all skipped).", file=sys.stderr)
         return 1
 
@@ -240,10 +413,13 @@ def main() -> int:
         "k": k,
         "db_path": str(db_path),
         "db_rows": total_rows,
-        "golden_path": str(golden_path),
+        "golden_path": golden_sources[0] if golden_sources else "",
+        "golden_paths": golden_sources,
         "queries_total": len(queries),
         "queries_evaluated": evaluated,
         "queries_skipped": skipped,
+        "relevant_aliases_resolved": resolved_alias_count,
+        "relevant_unresolved": unresolved_relevant_count,
         "mrr_at_k": statistics.mean(rr_scores),
         "recall_at_k": statistics.mean(recall_scores),
         "ndcg_at_k": statistics.mean(ndcg_scores),
@@ -252,9 +428,38 @@ def main() -> int:
         "latency_ms_p95": sorted(latencies_ms)[max(0, int(0.95 * len(latencies_ms)) - 1)],
     }
 
+    tag_groups: dict[str, dict[str, list[float]]] = {}
+    for row in per_query:
+        if row["status"] != "ok":
+            continue
+        for tag in row.get("tags", []):
+            bucket = tag_groups.setdefault(
+                tag,
+                {"rr": [], "recall": [], "ndcg": [], "hit1": [], "latency_ms": []},
+            )
+            bucket["rr"].append(row["rr"])
+            bucket["recall"].append(row["recall"])
+            bucket["ndcg"].append(row["ndcg"])
+            bucket["hit1"].append(row["hit1"])
+            bucket["latency_ms"].append(row["latency_ms"])
+
+    by_tag = {}
+    for tag, vals in sorted(tag_groups.items()):
+        by_tag[tag] = {
+            "count": len(vals["rr"]),
+            "mrr_at_k": statistics.mean(vals["rr"]),
+            "recall_at_k": statistics.mean(vals["recall"]),
+            "ndcg_at_k": statistics.mean(vals["ndcg"]),
+            "hit_at_1": statistics.mean(vals["hit1"]),
+            "latency_ms_avg": statistics.mean(vals["latency_ms"]),
+        }
+    summary["by_tag"] = by_tag
+
     print(f"Search Benchmark @ {k}")
     print(f"- DB: {db_path} ({total_rows} decisions)")
-    print(f"- Golden: {golden_path}")
+    print(f"- Golden files: {len(golden_sources)}")
+    for source in golden_sources:
+        print(f"  - {source}")
     print(
         f"- Evaluated: {evaluated}/{len(queries)} "
         f"(skipped {skipped} missing relevance docs)"
@@ -264,6 +469,18 @@ def main() -> int:
     print(f"- nDCG@{k}:   {summary['ndcg_at_k']:.4f}")
     print(f"- Hit@1:      {summary['hit_at_1']:.4f}")
     print(f"- Latency:    avg {summary['latency_ms_avg']:.2f} ms, p95 {summary['latency_ms_p95']:.2f} ms")
+
+    if by_tag:
+        print("\nBy tag:")
+        for tag, stats in by_tag.items():
+            print(
+                f"- {tag}: n={stats['count']}, "
+                f"MRR@{k}={stats['mrr_at_k']:.3f}, "
+                f"Recall@{k}={stats['recall_at_k']:.3f}, "
+                f"nDCG@{k}={stats['ndcg_at_k']:.3f}, "
+                f"Hit@1={stats['hit_at_1']:.3f}, "
+                f"lat={stats['latency_ms_avg']:.1f}ms"
+            )
 
     if args.show_misses:
         misses = [q for q in per_query if q["status"] == "ok" and q["rr"] == 0.0]
@@ -287,6 +504,12 @@ def main() -> int:
         print(f"\nWrote JSON report: {args.json_output}")
 
     failed = False
+    if args.min_evaluated is not None and summary["queries_evaluated"] < args.min_evaluated:
+        print(
+            f"Threshold fail: evaluated {summary['queries_evaluated']} < {args.min_evaluated}",
+            file=sys.stderr,
+        )
+        failed = True
     if args.min_mrr is not None and summary["mrr_at_k"] < args.min_mrr:
         print(
             f"Threshold fail: MRR@{k} {summary['mrr_at_k']:.4f} < {args.min_mrr:.4f}",
@@ -305,7 +528,17 @@ def main() -> int:
             file=sys.stderr,
         )
         failed = True
+    if required_tags:
+        for tag, min_count in required_tags.items():
+            got = int(summary["by_tag"].get(tag, {}).get("count", 0))
+            if got < min_count:
+                print(
+                    f"Threshold fail: tag '{tag}' evaluated count {got} < {min_count}",
+                    file=sys.stderr,
+                )
+                failed = True
 
+    resolve_conn.close()
     return 1 if failed else 0
 
 

@@ -140,7 +140,7 @@ def chunk_text(text: str, chunk_size: int = 1400, overlap: int = 200) -> list[st
 def _docket_norm(value: str | None) -> str:
     if not value:
         return ""
-    out = value.upper().replace("-", "_").replace(".", "_").replace("/", "_")
+    out = value.strip().upper().replace("-", "_").replace(".", "_").replace("/", "_")
     while "__" in out:
         out = out.replace("__", "_")
     return out.strip("_")

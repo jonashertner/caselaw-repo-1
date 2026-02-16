@@ -102,6 +102,26 @@ The dataset is updated daily. To get the latest decisions, ask Claude to run the
 
 The same server works with any MCP-compatible client. For Claude Desktop or Cursor, add to the JSON config:
 
+#### Claude Desktop extension (`.mcpb`) (recommended)
+
+Build a local extension bundle from this repo:
+
+```bash
+./scripts/build_desktop_extension.sh
+```
+
+Requires Node.js/NPM and internet access on first run (for `npx @anthropic-ai/mcpb`).
+
+This creates `dist/swiss-caselaw-local.mcpb` and auto-configures the bundle to run with:
+- `./.venv/bin/python3` if present
+- otherwise `python3` from your PATH
+
+Install it in Claude Desktop:
+1. `Settings` -> `Extensions`
+2. `Advanced settings`
+3. `Install Extension...`
+4. Select `dist/swiss-caselaw-local.mcpb`
+
 ```json
 {
   "mcpServers": {
@@ -126,7 +146,11 @@ On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
 | `get_decision` | Fetch a single decision by docket number or ID |
 | `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |
+| `draft_mock_decision` | Build a research-only mock decision outline from facts, grounded in caselaw + statute references; asks clarification questions before conclusion (optionally enriched from Fedlex) |
 | `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database |
+
+`draft_mock_decision` can use optional Fedlex URLs and caches fetched statute excerpts in
+`~/.swiss-caselaw/fedlex_cache.json` (configurable via `SWISS_CASELAW_FEDLEX_CACHE`).
 
 ### How the local database works
 
@@ -190,6 +214,24 @@ python3 benchmarks/run_search_benchmark.py \
   --min-mrr 0.70 \
   --min-recall 0.80 \
   --min-ndcg 0.90
+```
+
+### Build Reference Graph (Optional)
+
+For statute/citation-aware reranking, build the local graph database:
+
+```bash
+python3 search_stack/build_reference_graph.py \
+  --source-db ~/.swiss-caselaw/decisions.db \
+  --courts bger,bge,bvger \
+  --db output/reference_graph.db
+```
+
+Then set:
+
+```bash
+export SWISS_CASELAW_GRAPH_DB=output/reference_graph.db
+export SWISS_CASELAW_GRAPH_SIGNALS=1
 ```
 
 ---

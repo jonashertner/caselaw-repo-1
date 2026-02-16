@@ -4,6 +4,7 @@ __pycache__/
 *.egg
 dist/
 build/
+.mcpb-build/
 *.db
 *.sqlite
 *.parquet

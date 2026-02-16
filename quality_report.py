@@ -133,6 +133,15 @@ def generate_quality_report(db_path: Path) -> dict:
     report["by_court"] = courts
 
     # --- Duplicate detection (same docket+court, different decision_id) ---
+    dupe_count = conn.execute("""
+        SELECT COUNT(*)
+        FROM (
+            SELECT 1
+            FROM decisions
+            GROUP BY court, docket_number
+            HAVING COUNT(*) > 1
+        )
+    """).fetchone()[0]
     dupes = conn.execute("""
         SELECT court, docket_number, COUNT(*) as cnt
         FROM decisions
@@ -142,7 +151,7 @@ def generate_quality_report(db_path: Path) -> dict:
         LIMIT 20
     """).fetchall()
     report["duplicates"] = {
-        "count": len(dupes),
+        "count": dupe_count,
         "top": [{"court": r["court"], "docket": r["docket_number"], "count": r["cnt"]} for r in dupes[:10]],
     }
 

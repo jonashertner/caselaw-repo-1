@@ -267,9 +267,8 @@ LANGUAGE_HINT_TERMS: dict[str, set[str]] = {
 QUERY_STATUTE_PATTERN = re.compile(
     r"""
     \b(?:Art\.?|Artikel)\s*
-    (?P<article>\d+[a-z]?(?:\s*(?:bis|ter|quater|quinquies|sexies))?)\s*
-    (?:(?:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?)\s*(?P<paragraph>\d+[a-z]?))?\s*
-    (?:(?:bis|ter|quater|quinquies|sexies)\s*)?
+    (?P<article>\d+(?:\s*(?:bis|ter|quater|quinquies|sexies)|[a-z](?![a-z]))?)\s*
+    (?:(?:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?)\s*(?P<paragraph>\d+(?:\s*(?:bis|ter|quater|quinquies|sexies)|[a-z](?![a-z]))?))?\s*
     (?P<law>[A-Z][A-Z0-9]{1,11}(?:/[A-Z0-9]{2,6})?)
     \b
     """,
@@ -728,7 +727,8 @@ def _extract_query_statute_refs(query: str) -> set[str]:
         article = re.sub(r"\s+", "", (match.group("article") or "").lower())
         if not article:
             continue
-        paragraph = (match.group("paragraph") or "").lower() or None
+        paragraph_raw = match.group("paragraph") or ""
+        paragraph = re.sub(r"\s+", "", paragraph_raw.lower()) or None
         law = (match.group("law") or "").upper()
         if not law or law in QUERY_STATUTE_INVALID_LAWS:
             continue
@@ -769,6 +769,22 @@ def _normalize_docket_ref(value: str) -> str:
     return text.strip("_")
 
 
+def _sqlite_has_table(conn: sqlite3.Connection, table: str) -> bool:
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+        (table,),
+    ).fetchone()
+    return row is not None
+
+
+def _sqlite_has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
+    try:
+        rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
+    except sqlite3.Error:
+        return False
+    return any(str(r[1]).lower() == column.lower() for r in rows)
+
+
 def _load_graph_signal_map(
     decision_ids: list[str],
     *,
@@ -798,9 +814,14 @@ def _load_graph_signal_map(
         conn = sqlite3.connect(str(GRAPH_DB_PATH), timeout=0.5)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA query_only = ON")
-        has_citation_targets = conn.execute(
-            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='citation_targets'"
-        ).fetchone() is not None
+        has_citation_targets = _sqlite_has_table(conn, "citation_targets")
+        has_legacy_target_column = _sqlite_has_column(
+            conn, "decision_citations", "target_decision_id"
+        )
+        has_confidence_score = (
+            has_citation_targets
+            and _sqlite_has_column(conn, "citation_targets", "confidence_score")
+        )
 
         placeholders = ",".join("?" for _ in unique_ids)
         if query_statutes:
@@ -836,23 +857,51 @@ def _load_graph_signal_map(
                 signal_map[row["decision_id"]]["query_citation_hits"] = int(row["n"] or 0)
 
         if has_citation_targets:
+            if has_confidence_score:
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        ct.target_decision_id AS decision_id,
+                        SUM(dc.mention_count * COALESCE(ct.confidence_score, 1.0)) AS n
+                    FROM citation_targets ct
+                    JOIN decision_citations dc
+                      ON dc.source_decision_id = ct.source_decision_id
+                     AND dc.target_ref = ct.target_ref
+                    WHERE ct.target_decision_id IN ({placeholders})
+                    GROUP BY ct.target_decision_id
+                    """,
+                    tuple(unique_ids),
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    f"""
+                    SELECT ct.target_decision_id AS decision_id, SUM(dc.mention_count) AS n
+                    FROM citation_targets ct
+                    JOIN decision_citations dc
+                      ON dc.source_decision_id = ct.source_decision_id
+                     AND dc.target_ref = ct.target_ref
+                    WHERE ct.target_decision_id IN ({placeholders})
+                    GROUP BY ct.target_decision_id
+                    """,
+                    tuple(unique_ids),
+                ).fetchall()
+        elif has_legacy_target_column:
             rows = conn.execute(
                 f"""
-                SELECT ct.target_decision_id AS decision_id, SUM(dc.mention_count) AS n
-                FROM citation_targets ct
-                JOIN decision_citations dc
-                  ON dc.source_decision_id = ct.source_decision_id
-                 AND dc.target_ref = ct.target_ref
-                WHERE ct.target_decision_id IN ({placeholders})
-                GROUP BY ct.target_decision_id
+                SELECT target_decision_id AS decision_id, SUM(mention_count) AS n
+                FROM decision_citations
+                WHERE target_decision_id IN ({placeholders})
+                GROUP BY target_decision_id
                 """,
                 tuple(unique_ids),
             ).fetchall()
         else:
-            # Without citation_targets, incoming citation counts are unavailable
             rows = []
         for row in rows:
-            signal_map[row["decision_id"]]["incoming_citations"] = int(row["n"] or 0)
+            signal_map[row["decision_id"]]["incoming_citations"] = max(
+                0,
+                int(round(float(row["n"] or 0))),
+            )
     except sqlite3.Error as e:
         logger.debug("Graph-signal lookup failed: %s", e)
         return {}

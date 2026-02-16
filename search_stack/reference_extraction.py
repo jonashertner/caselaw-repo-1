@@ -13,6 +13,8 @@ from dataclasses import asdict, dataclass
 _ARTICLE_MARKER = r"(?:Art\.?|Artikel)"
 _PARAGRAPH_MARKER = r"(?:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?)"
 _ORDINAL_SUFFIX = r"(?:bis|ter|quater|quinquies|sexies)"
+_ARTICLE_TOKEN = rf"\d+(?:\s*{_ORDINAL_SUFFIX}|[a-z](?![a-z]))?"
+_PARAGRAPH_TOKEN = rf"\d+(?:\s*{_ORDINAL_SUFFIX}|[a-z](?![a-z]))?"
 _INVALID_LAW_CODES = {
     "AL",
     "ABS",
@@ -31,9 +33,8 @@ _INVALID_LAW_CODES = {
 STATUTE_PATTERN = re.compile(
     rf"""
     \b{_ARTICLE_MARKER}\s*
-    (?P<article>\d+[a-z]?(?:\s*{_ORDINAL_SUFFIX})?)\s*
-    (?:{_PARAGRAPH_MARKER}\s*(?P<paragraph>\d+[a-z]?))?\s*
-    (?:{_ORDINAL_SUFFIX}\s*)?
+    (?P<article>{_ARTICLE_TOKEN})\s*
+    (?:{_PARAGRAPH_MARKER}\s*(?P<paragraph>{_PARAGRAPH_TOKEN}))?\s*
     (?P<law>[A-Z][A-Z0-9]{{1,11}}(?:/[A-Z0-9]{{2,6}})?)
     \b
     """,
@@ -90,7 +91,8 @@ def extract_statute_references(text: str) -> list[StatuteReference]:
     for match in STATUTE_PATTERN.finditer(text):
         raw = match.group(0).strip()
         article = re.sub(r"\s+", "", (match.group("article") or "").lower())
-        paragraph = match.group("paragraph")
+        paragraph_raw = match.group("paragraph")
+        paragraph = re.sub(r"\s+", "", paragraph_raw.lower()) if paragraph_raw else None
         law_code = match.group("law").upper()
         if law_code in _INVALID_LAW_CODES:
             continue
@@ -104,7 +106,7 @@ def extract_statute_references(text: str) -> list[StatuteReference]:
                 raw=raw,
                 law_code=law_code,
                 article=article,
-                paragraph=paragraph.lower() if paragraph else None,
+                paragraph=paragraph,
                 normalized=normalized,
             )
         )

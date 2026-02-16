@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sqlite3
 import sys
 import time
+from datetime import date
 from pathlib import Path
 from typing import Iterator
 
@@ -74,6 +76,7 @@ CREATE TABLE IF NOT EXISTS citation_targets (
     target_ref TEXT NOT NULL,
     target_decision_id TEXT NOT NULL,
     match_type TEXT NOT NULL DEFAULT 'docket_norm',
+    confidence_score REAL NOT NULL DEFAULT 0.5,
     PRIMARY KEY (source_decision_id, target_ref, target_decision_id),
     FOREIGN KEY (source_decision_id, target_ref)
         REFERENCES decision_citations(source_decision_id, target_ref),
@@ -88,10 +91,141 @@ CREATE INDEX IF NOT EXISTS idx_citation_targets_target_decision_id
 def _docket_norm(value: str | None) -> str:
     if not value:
         return ""
-    out = value.upper().replace("-", "_").replace(".", "_").replace("/", "_")
+    out = value.strip().upper().replace("-", "_").replace(".", "_").replace("/", "_")
     while "__" in out:
         out = out.replace("__", "_")
     return out.strip("_")
+
+
+def _parse_iso_date(value: str | None) -> date | None:
+    text = (value or "").strip()
+    if not text:
+        return None
+    try:
+        return date.fromisoformat(text)
+    except ValueError:
+        return None
+
+
+def _citation_confidence(
+    *,
+    source_court: str | None,
+    source_canton: str | None,
+    source_date: str | None,
+    target_court: str | None,
+    target_canton: str | None,
+    target_date: str | None,
+    candidate_rank: int,
+    candidate_count: int,
+) -> float:
+    score = 0.55
+
+    if source_canton and target_canton and source_canton == target_canton:
+        score += 0.10
+    if source_court and target_court and source_court == target_court:
+        score += 0.08
+
+    src_dt = _parse_iso_date(source_date)
+    tgt_dt = _parse_iso_date(target_date)
+    if src_dt and tgt_dt:
+        delta_days = (src_dt - tgt_dt).days
+        if delta_days >= 0:
+            score += 0.15
+        else:
+            score -= 0.10
+
+        abs_days = abs(delta_days)
+        if abs_days <= 365:
+            score += 0.10
+        elif abs_days <= (3 * 365):
+            score += 0.05
+
+    if candidate_rank == 1:
+        score += 0.05
+    elif candidate_rank == 2:
+        score += 0.02
+
+    if candidate_count > 1:
+        score -= min(0.15, 0.03 * (candidate_count - 1))
+
+    return max(0.05, min(0.99, round(score, 4)))
+
+
+def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
+    rows = conn.execute(
+        """
+        WITH candidate_matches AS (
+            SELECT
+                dc.source_decision_id,
+                dc.target_ref,
+                sd.court AS source_court,
+                sd.canton AS source_canton,
+                sd.decision_date AS source_date,
+                td.decision_id AS target_decision_id,
+                td.court AS target_court,
+                td.canton AS target_canton,
+                td.decision_date AS target_date,
+                ROW_NUMBER() OVER (
+                    PARTITION BY dc.source_decision_id, dc.target_ref
+                    ORDER BY td.decision_date DESC, td.decision_id
+                ) AS candidate_rank,
+                COUNT(*) OVER (
+                    PARTITION BY dc.source_decision_id, dc.target_ref
+                ) AS candidate_count
+            FROM decision_citations dc
+            JOIN decisions td
+              ON td.docket_norm = dc.target_ref
+            LEFT JOIN decisions sd
+              ON sd.decision_id = dc.source_decision_id
+            WHERE dc.target_type = 'docket'
+              AND td.decision_id <> dc.source_decision_id
+        )
+        SELECT
+            source_decision_id,
+            target_ref,
+            target_decision_id,
+            source_court,
+            source_canton,
+            source_date,
+            target_court,
+            target_canton,
+            target_date,
+            candidate_rank,
+            candidate_count
+        FROM candidate_matches
+        ORDER BY source_decision_id, target_ref, candidate_rank
+        """
+    ).fetchall()
+
+    payload: list[tuple[str, str, str, str, float]] = []
+    for row in rows:
+        payload.append(
+            (
+                row["source_decision_id"],
+                row["target_ref"],
+                row["target_decision_id"],
+                "docket_norm",
+                _citation_confidence(
+                    source_court=row["source_court"],
+                    source_canton=row["source_canton"],
+                    source_date=row["source_date"],
+                    target_court=row["target_court"],
+                    target_canton=row["target_canton"],
+                    target_date=row["target_date"],
+                    candidate_rank=int(row["candidate_rank"] or 1),
+                    candidate_count=int(row["candidate_count"] or 1),
+                ),
+            )
+        )
+
+    conn.executemany(
+        """
+        INSERT OR IGNORE INTO citation_targets
+        (source_decision_id, target_ref, target_decision_id, match_type, confidence_score)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        payload,
+    )
 
 
 def build_graph(
@@ -102,133 +236,136 @@ def build_graph(
     source_db: Path | None = None,
     courts: list[str] | None = None,
 ) -> dict:
+    t0 = time.time()
     db_path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(db_path))
-    conn.execute("PRAGMA foreign_keys = ON")
-    conn.executescript(SCHEMA_SQL)
-    # Rebuild graph snapshot from source each run (idempotent output).
-    conn.executescript(
-        """
-        DELETE FROM citation_targets;
-        DELETE FROM decision_citations;
-        DELETE FROM decision_statutes;
-        DELETE FROM statutes;
-        DELETE FROM decisions;
-        """
-    )
+    tmp_path = db_path.with_name(f".{db_path.name}.tmp")
+    if tmp_path.exists():
+        tmp_path.unlink()
 
-    decisions = 0
-    statute_edges = 0
-    citation_edges = 0
+    conn: sqlite3.Connection | None = None
+    try:
+        conn = sqlite3.connect(str(tmp_path))
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.executescript(SCHEMA_SQL)
 
-    row_iter = _iter_rows_from_source(
-        input_dir=input_dir,
-        source_db=source_db,
-        courts=courts,
-    )
-    for row in row_iter:
-        decision_id = row.get("decision_id")
-        if not decision_id:
-            continue
+        decisions = 0
+        statute_edges = 0
+        citation_edges = 0
 
-        docket_number = row.get("docket_number") or ""
-        conn.execute(
-            """
-            INSERT OR IGNORE INTO decisions
-            (decision_id, docket_number, docket_norm, court, canton, language, decision_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                decision_id,
-                docket_number,
-                _docket_norm(docket_number),
-                row.get("court"),
-                row.get("canton"),
-                row.get("language"),
-                row.get("decision_date"),
-            ),
+        row_iter = _iter_rows_from_source(
+            input_dir=input_dir,
+            source_db=source_db,
+            courts=courts,
         )
-        decisions += 1
+        for row in row_iter:
+            decision_id = row.get("decision_id")
+            if not decision_id:
+                continue
 
-        text = " ".join(
-            [
-                row.get("title") or "",
-                row.get("regeste") or "",
-                row.get("full_text") or "",
-            ]
-        )
-        statutes = extract_statute_references(text)
-        citations = extract_case_citations(text)
-
-        for statute in statutes:
+            docket_number = row.get("docket_number") or ""
             conn.execute(
                 """
-                INSERT OR IGNORE INTO statutes(statute_id, law_code, article, paragraph)
-                VALUES (?, ?, ?, ?)
+                INSERT OR IGNORE INTO decisions
+                (decision_id, docket_number, docket_norm, court, canton, language, decision_date)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
-                    statute.normalized,
-                    statute.law_code,
-                    statute.article,
-                    statute.paragraph,
+                    decision_id,
+                    docket_number,
+                    _docket_norm(docket_number),
+                    row.get("court"),
+                    row.get("canton"),
+                    row.get("language"),
+                    row.get("decision_date"),
                 ),
             )
-            conn.execute(
-                """
-                INSERT INTO decision_statutes(decision_id, statute_id, mention_count)
-                VALUES (?, ?, 1)
-                ON CONFLICT(decision_id, statute_id)
-                DO UPDATE SET mention_count = mention_count + 1
-                """,
-                (decision_id, statute.normalized),
+            decisions += 1
+
+            text = " ".join(
+                [
+                    row.get("title") or "",
+                    row.get("regeste") or "",
+                    row.get("full_text") or "",
+                ]
             )
-            statute_edges += 1
+            statutes = extract_statute_references(text)
+            citations = extract_case_citations(text)
 
-        for citation in citations:
-            target_type = "bge" if citation.citation_type == "bge" else "docket"
-            conn.execute(
-                """
-                INSERT INTO decision_citations
-                (source_decision_id, target_ref, target_type, mention_count)
-                VALUES (?, ?, ?, 1)
-                ON CONFLICT(source_decision_id, target_ref)
-                DO UPDATE SET mention_count = mention_count + 1
-                """,
-                (decision_id, citation.normalized, target_type),
-            )
-            citation_edges += 1
+            for statute in statutes:
+                conn.execute(
+                    """
+                    INSERT OR IGNORE INTO statutes(statute_id, law_code, article, paragraph)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (
+                        statute.normalized,
+                        statute.law_code,
+                        statute.article,
+                        statute.paragraph,
+                    ),
+                )
+                conn.execute(
+                    """
+                    INSERT INTO decision_statutes(decision_id, statute_id, mention_count)
+                    VALUES (?, ?, 1)
+                    ON CONFLICT(decision_id, statute_id)
+                    DO UPDATE SET mention_count = mention_count + 1
+                    """,
+                    (decision_id, statute.normalized),
+                )
+                statute_edges += 1
 
-        if decisions % 1000 == 0:
-            conn.commit()
+            for citation in citations:
+                target_type = "bge" if citation.citation_type == "bge" else "docket"
+                conn.execute(
+                    """
+                    INSERT INTO decision_citations
+                    (source_decision_id, target_ref, target_type, mention_count)
+                    VALUES (?, ?, ?, 1)
+                    ON CONFLICT(source_decision_id, target_ref)
+                    DO UPDATE SET mention_count = mention_count + 1
+                    """,
+                    (decision_id, citation.normalized, target_type),
+                )
+                citation_edges += 1
 
-        if limit and decisions >= limit:
-            break
+            if decisions % 1000 == 0:
+                conn.commit()
+                if decisions % 10000 == 0:
+                    elapsed = time.time() - t0
+                    print(
+                        f"  [{elapsed:.0f}s] {decisions:,} decisions processed, "
+                        f"{statute_edges:,} statute edges, {citation_edges:,} citation edges",
+                        file=sys.stderr,
+                        flush=True,
+                    )
 
-    conn.commit()
+            if limit and decisions >= limit:
+                break
 
-    # Resolve docket references to known decision IDs.
-    conn.execute(
-        """
-        INSERT OR IGNORE INTO citation_targets
-        (source_decision_id, target_ref, target_decision_id, match_type)
-        SELECT dc.source_decision_id, dc.target_ref, d.decision_id, 'docket_norm'
-        FROM decision_citations dc
-        JOIN decisions d ON d.docket_norm = dc.target_ref
-        WHERE dc.target_type = 'docket'
-        """
-    )
-    conn.commit()
+        conn.commit()
+        _resolve_citation_targets(conn)
+        conn.commit()
 
-    total_decisions = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
-    total_statutes = conn.execute("SELECT COUNT(*) FROM statutes").fetchone()[0]
-    total_citations = conn.execute("SELECT COUNT(*) FROM decision_citations").fetchone()[0]
-    resolved_refs = conn.execute(
-        "SELECT COUNT(DISTINCT source_decision_id || '|' || target_ref) FROM citation_targets"
-    ).fetchone()[0]
-    resolved_links = conn.execute(
-        "SELECT COUNT(*) FROM citation_targets"
-    ).fetchone()[0]
-    conn.close()
+        total_decisions = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+        total_statutes = conn.execute("SELECT COUNT(*) FROM statutes").fetchone()[0]
+        total_citations = conn.execute("SELECT COUNT(*) FROM decision_citations").fetchone()[0]
+        resolved_refs = conn.execute(
+            "SELECT COUNT(DISTINCT source_decision_id || '|' || target_ref) FROM citation_targets"
+        ).fetchone()[0]
+        resolved_links = conn.execute(
+            "SELECT COUNT(*) FROM citation_targets"
+        ).fetchone()[0]
+    except Exception:
+        if conn is not None:
+            conn.close()
+        if tmp_path.exists():
+            tmp_path.unlink()
+        raise
+    else:
+        conn.close()
+        os.replace(tmp_path, db_path)
 
     return {
         "db_path": str(db_path),
