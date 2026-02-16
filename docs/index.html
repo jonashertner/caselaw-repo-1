@@ -99,7 +99,17 @@ a:hover { text-decoration: underline; }
 .tbtn svg { width: 16px; height: 16px; }
 
 /* ── Hero ── */
-header { padding: 80px 0 24px; text-align: center; }
+header { padding: 80px 0 24px; text-align: center; position: relative; }
+header::before {
+  content: ''; position: absolute;
+  top: -20px; left: 50%; transform: translateX(-50%);
+  width: 680px; height: 340px;
+  background: radial-gradient(ellipse, rgba(209,36,47,0.05) 0%, transparent 70%);
+  pointer-events: none; z-index: -1;
+}
+[data-theme="dark"] header::before {
+  background: radial-gradient(ellipse, rgba(239,68,68,0.07) 0%, transparent 70%);
+}
 header h1 {
   font-size: var(--fs-3xl); font-weight: 700;
   letter-spacing: -0.04em; line-height: 1.1;
@@ -124,30 +134,29 @@ header .sub {
 
 /* ── KPI ── */
 .kpis {
-  display: grid; grid-template-columns: repeat(5,1fr); gap: 1px;
-  margin: 48px 0 16px; background: var(--brd2);
-  border: 1px solid var(--brd2); border-radius: var(--r); overflow: hidden;
+  display: flex; justify-content: center; gap: 72px;
+  margin: 40px 0 8px;
 }
-.kpi { text-align: center; padding: 28px 8px; background: var(--surf); }
+.kpi { text-align: center; }
 .kpi-v {
-  font-family: var(--f-mono); font-size: var(--fs-2xl); font-weight: 700;
-  letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
+  font-family: var(--f-mono); font-size: 3.5rem; font-weight: 700;
+  letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .kpi-l {
-  font-size: var(--fs-2xs); font-weight: 600; color: var(--tx3);
-  text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px;
+  font-size: var(--fs-xs); font-weight: 500; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: 0.1em; margin-top: 10px;
 }
 
 /* ── Updated line ── */
 .updated-line {
   text-align: center; font-size: var(--fs-xs); color: var(--tx3);
-  margin-bottom: 32px; font-family: var(--f-mono);
+  margin-top: 12px; margin-bottom: 40px; font-family: var(--f-mono);
 }
 
 /* ── Quick Access strip ── */
 .quick-strip {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
-  margin-bottom: 48px;
+  margin-bottom: 56px;
 }
 .quick-card {
   display: flex; align-items: flex-start; gap: 12px;
@@ -156,13 +165,14 @@ header .sub {
   transition: border-color 0.15s var(--ease);
   text-decoration: none; color: var(--tx);
 }
-.quick-card:hover { border-color: var(--brd); text-decoration: none; }
+.quick-card:hover { border-color: var(--ac); text-decoration: none; box-shadow: 0 0 0 1px var(--ac), 0 4px 16px rgba(209,36,47,0.06); }
+[data-theme="dark"] .quick-card:hover { box-shadow: 0 0 0 1px var(--ac), 0 4px 16px rgba(239,68,68,0.1); }
 .quick-card svg { flex-shrink: 0; color: var(--ac); margin-top: 2px; }
 .quick-card .qc-title { font-size: var(--fs-md); font-weight: 600; }
 .quick-card .qc-desc { font-size: var(--fs-sm); color: var(--tx2); margin-top: 2px; line-height: 1.4; }
 
 /* ── Sections ── */
-section { margin-bottom: 56px; }
+section { margin-bottom: 72px; }
 .sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .sh h2 { font-size: var(--fs-lg); font-weight: 600; letter-spacing: -0.01em; }
 .sh .badge {
@@ -179,10 +189,10 @@ section { margin-bottom: 56px; }
 .sh .csv-btn:hover { color: var(--tx2); border-color: var(--brd); }
 
 /* ── Charts ── */
-.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 .chart-card {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
-  padding: 20px 20px 16px; box-shadow: var(--glow);
+  padding: 24px 24px 18px; box-shadow: var(--glow);
 }
 .chart-card.full-width { grid-column: 1 / -1; }
 .chart-card h3 {
@@ -227,7 +237,7 @@ section { margin-bottom: 56px; }
 .ct th.s { color: var(--tx); }
 .ct th .arr { font-size: 0.6rem; margin-left: 2px; opacity: 0; transition: opacity 0.15s; }
 .ct th.s .arr { opacity: 1; }
-.ct td { padding: 8px 14px; border-top: 1px solid var(--brd2); font-size: var(--fs-base); }
+.ct td { padding: 10px 16px; border-top: 1px solid var(--brd2); font-size: var(--fs-base); }
 .ct tbody tr:first-child td { border-top: none; }
 .ct tbody tr { transition: background 0.1s; }
 .ct tbody tr:hover td { background: var(--ac-bg); }
@@ -255,7 +265,7 @@ section { margin-bottom: 56px; }
   transition: all 0.15s var(--ease); box-shadow: var(--glow);
   position: relative; overflow: hidden;
 }
-.cc2:hover { border-color: var(--brd); transform: translateY(-1px); }
+.cc2:hover { border-color: var(--brd); }
 .cc2.empty { opacity: 0.25; }
 .cc2 .k { font-family: var(--f-mono); font-size: var(--fs-lg); font-weight: 700; line-height: 1; }
 .cc2 .nm {
@@ -269,8 +279,8 @@ section { margin-bottom: 56px; }
 }
 .cc2 .canton-meta .lg { font-size: 0.5rem; padding: 0 4px; margin: 0; }
 .cc2 .canton-bar {
-  position: absolute; bottom: 0; left: 0; height: 3px;
-  background: var(--bar); opacity: 0.5; transition: width 0.4s var(--ease);
+  position: absolute; bottom: 0; left: 0; height: 2px;
+  background: var(--bar); opacity: 0.35; transition: width 0.4s var(--ease);
 }
 
 /* ── Access section ── */
@@ -295,8 +305,9 @@ section { margin-bottom: 56px; }
 
 /* ── Footer ── */
 footer {
-  text-align: center; padding: 40px 0 56px; color: var(--tx3);
+  text-align: center; padding: 48px 0 64px; color: var(--tx3);
   font-size: var(--fs-xs); border-top: 1px solid var(--brd2);
+  margin-top: 24px;
 }
 footer a { color: var(--tx2); }
 footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-bottom: 8px; }
@@ -317,18 +328,17 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   .chart-row { grid-template-columns: 1fr; }
   .access-grid { grid-template-columns: 1fr; }
   .quick-strip { grid-template-columns: 1fr; }
-  .kpis { grid-template-columns: repeat(3,1fr); }
-  .kpi:nth-child(4), .kpi:nth-child(5) { border-top: none; }
+  .kpis { gap: 48px; }
   .section-nav { display: none; }
 }
 @media (max-width: 640px) {
   .w { padding: 0 16px; }
   header { padding: 48px 0 12px; }
   header h1 { font-size: 1.75rem; }
-  .kpis { grid-template-columns: repeat(2,1fr); margin: 32px 0 12px; }
-  .kpi { padding: 20px 8px; }
-  .kpi-v { font-size: 1.25rem; }
-  section { margin-bottom: 40px; }
+  header::before { width: 100%; }
+  .kpis { gap: 40px; margin: 28px 0 4px; }
+  .kpi-v { font-size: 2.25rem; }
+  section { margin-bottom: 48px; }
   .cg { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); }
   .tw { margin: 0 -16px; border-radius: 0; border-left: none; border-right: none; box-shadow: none; }
   .ct th, .ct td { padding: 8px 10px; }
@@ -338,7 +348,8 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   .table-search input { width: 100%; }
 }
 @media (max-width: 380px) {
-  .kpi-v { font-size: 1.125rem; }
+  .kpi-v { font-size: 1.75rem; }
+  .kpis { gap: 32px; }
   .cg { grid-template-columns: repeat(4,1fr); }
 }
 </style>
@@ -432,13 +443,13 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   </div>
 
   <!-- Top 10 courts chart -->
-  <div class="chart-card full-width hid" id="top10-section" style="margin-bottom:16px">
+  <div class="chart-card full-width hid" id="top10-section" style="margin-bottom:20px">
     <h3 data-t="chart_top10">Top 10 Courts</h3>
     <div class="chart-canvas"><canvas id="c-top10" height="280"></canvas></div>
   </div>
 
   <!-- Language trends stacked area -->
-  <div class="chart-card full-width hid" id="lang-trends-section" style="margin-bottom:16px">
+  <div class="chart-card full-width hid" id="lang-trends-section" style="margin-bottom:20px">
     <h3 data-t="chart_lang_trends">Language Trends (2005&#8211;present)</h3>
     <div class="chart-canvas"><canvas id="c-lang-trends" height="260"></canvas></div>
   </div>
@@ -948,13 +959,10 @@ function renderAll(data) {
   const range = data.date_range || {};
   const cantonCount = (data.by_canton || []).length;
 
-  // KPIs — instant display, no animation
+  // KPIs — two hero numbers
   document.getElementById('kpis').innerHTML = `
     <div class="kpi"><div class="kpi-v">${fmt(data.total)}</div><div class="kpi-l">${t('kpi_decisions')}</div></div>
-    <div class="kpi"><div class="kpi-v">${fmt(data.court_count || 0)}</div><div class="kpi-l">${t('kpi_courts')}</div></div>
-    <div class="kpi"><div class="kpi-v">${fmt(cantonCount)}</div><div class="kpi-l">${t('kpi_cantons')}</div></div>
-    <div class="kpi"><div class="kpi-v">${fmt(Object.keys(data.by_language || {}).length)}</div><div class="kpi-l">${t('kpi_languages')}</div></div>
-    <div class="kpi"><div class="kpi-v">${(range.earliest||'').slice(0,4)}\u2009\u2013\u2009${(range.latest||'').slice(0,4)}</div><div class="kpi-l">${t('kpi_coverage')}</div></div>`;
+    <div class="kpi"><div class="kpi-v">${fmt(data.court_count || 0)}</div><div class="kpi-l">${t('kpi_courts')}</div></div>`;
 
   // Last Updated — prominent, below KPIs
   if (data.generated_at) {
