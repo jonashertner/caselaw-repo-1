@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "description": "Golden relevance judgments for Swiss caselaw search quality checks.",
+  "queries": [
+    {
+      "id": "q001",
+      "query": "1A.122/2005",
+      "tags": ["docket", "exact"],
+      "relevant": [
+        {"decision_id": "bger_1A.122_2005", "grade": 3},
+        {"decision_id": "bger_1A.124_2005", "grade": 1}
+      ]
+    },
+    {
+      "id": "q002",
+      "query": "Je cherche un arrêt sur le permis de construire d'un parc éolien",
+      "tags": ["nl", "fr", "public-law"],
+      "relevant": [
+        {"decision_id": "bger_1A.122_2005", "grade": 3},
+        {"decision_id": "bger_1A.124_2005", "grade": 2},
+        {"decision_id": "bge_147 II 319", "grade": 1}
+      ]
+    },
+    {
+      "id": "q003",
+      "query": "Art. 8 EMRK Umwandlung des Status der vorläufigen Aufnahme",
+      "tags": ["nl", "de", "human-rights"],
+      "relevant": [
+        {"decision_id": "bge_147 I 268", "grade": 3},
+        {"decision_id": "bge_151 I 62", "grade": 2},
+        {"decision_id": "bge_150 I 93", "grade": 2}
+      ]
+    },
+    {
+      "id": "q004",
+      "query": "Art. 34 BV Finanzreferendum Verpflichtungskredit",
+      "tags": ["constitutional", "de"],
+      "relevant": [
+        {"decision_id": "bge_151 I 32", "grade": 3}
+      ]
+    },
+    {
+      "id": "q005",
+      "query": "Asyl und Wegweisung beschleunigtes Verfahren",
+      "tags": ["asylum", "de"],
+      "relevant": [
+        {"decision_id": "bvger_BVGE 2013_10", "grade": 3},
+        {"decision_id": "bvger_E-7414_2015", "grade": 2}
+      ]
+    },
+    {
+      "id": "q006",
+      "query": "Asyl: Wegweisung?",
+      "tags": ["asylum", "punctuation", "robustness"],
+      "relevant": [
+        {"decision_id": "bvger_E-7414_2015", "grade": 3},
+        {"decision_id": "bvger_BVGE 2013_10", "grade": 1}
+      ]
+    },
+    {
+      "id": "q007",
+      "query": "\"Asyl und Wegweisung",
+      "tags": ["asylum", "quote", "robustness"],
+      "relevant": [
+        {"decision_id": "bvger_E-7414_2015", "grade": 3},
+        {"decision_id": "bvger_BVGE 2013_10", "grade": 1}
+      ]
+    },
+    {
+      "id": "q008",
+      "query": "Was sagt das Bundesgericht zum Kausalzusammenhang in der Unfallversicherung?",
+      "tags": ["nl", "de", "insurance"],
+      "relevant": [
+        {"decision_id": "bger_8C_47_2011", "grade": 3},
+        {"decision_id": "bger_8C_928_2011", "grade": 2}
+      ]
+    },
+    {
+      "id": "q009",
+      "query": "Auslieferung an Rumänien",
+      "tags": ["criminal", "de"],
+      "relevant": [
+        {"decision_id": "bstger_RR.2012.25", "grade": 3}
+      ]
+    },
+    {
+      "id": "q010",
+      "query": "Impôt sur la fortune et estimation fiscale",
+      "tags": ["tax", "fr"],
+      "relevant": [
+        {"decision_id": "ge_gerichte_A_279_2011", "grade": 3}
+      ]
+    },
+    {
+      "id": "q011",
+      "query": "responsabilità civile danno morale",
+      "tags": ["civil", "it"],
+      "relevant": [
+        {"decision_id": "ti_gerichte_12.2004.29", "grade": 3}
+      ]
+    },
+    {
+      "id": "q012",
+      "query": "Baubewilligung Lärm Immissionen",
+      "tags": ["construction", "de"],
+      "relevant": [
+        {"decision_id": "zh_verwaltungsgericht_VB.2001.00187", "grade": 3}
+      ]
+    },
+    {
+      "id": "q013",
+      "query": "Kündigung Mietvertrag missbräuchlich",
+      "tags": ["tenancy", "de"],
+      "relevant": [
+        {"decision_id": "bs_appellationsgericht_ZB.2020.42", "grade": 3}
+      ]
+    }
+  ]
+}

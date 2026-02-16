@@ -47,6 +47,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import sqlite3
 import sys
 from datetime import date, datetime
@@ -79,6 +80,42 @@ PARQUET_DIR = DATA_DIR / "parquet"
 MAX_SNIPPET_LEN = 500  # chars per snippet
 DEFAULT_LIMIT = 20
 MAX_LIMIT = 100
+MAX_RERANK_CANDIDATES = 500
+
+# Known FTS-searchable columns for explicit column filters (e.g., regeste:foo)
+FTS_COLUMNS = {
+    "decision_id",
+    "court",
+    "canton",
+    "docket_number",
+    "language",
+    "title",
+    "regeste",
+    "full_text",
+}
+
+# Lightweight multilingual stopword set for natural-language fallback queries.
+NL_STOPWORDS = {
+    # German
+    "ich", "suche", "zur", "der", "die", "das", "und", "in", "zum", "von",
+    "mit", "ohne", "für", "was", "sagt", "dem", "den", "des", "ein", "eine",
+    "einer", "einem", "im", "am", "an", "zu", "auf", "über", "unter", "als",
+    "oder", "nicht", "art",
+    # French
+    "je", "cherche", "sur", "le", "la", "les", "de", "du", "des", "un", "une",
+    "et", "ou", "dans", "avec", "sans", "pour", "au", "aux", "d",
+    # Italian
+    "cerco", "una", "uno", "un", "sul", "sulla", "sui", "del", "della", "delle",
+    "di", "e", "o", "con", "senza", "per", "nel", "nella", "nei", "agli", "ai",
+    "al",
+    # English
+    "i", "search", "for", "the", "and", "or", "in", "of", "with", "without",
+    "to", "on", "about", "a", "an",
+}
+
+MAX_NL_TOKENS = 16
+RERANK_TERM_LIMIT = 24
+NL_AND_TERM_LIMIT = 8
 
 
 # ── Database ──────────────────────────────────────────────────
@@ -149,10 +186,8 @@ def search_fts5(
     - Column filters: full_text:miete AND regeste:kündigung
     """
     conn = get_db()
-    limit = min(limit, MAX_LIMIT)
+    limit = max(1, min(limit, MAX_LIMIT))
 
-    # Build FTS5 MATCH query
-    # If user passes a natural language query, wrap for safety
     fts_query = query.strip()
     if not fts_query:
         # No search query — return recent decisions with filters
@@ -180,6 +215,12 @@ def search_fts5(
 
     where = (" AND " + " AND ".join(filters)) if filters else ""
 
+    # Docket-style lookups should prioritize exact/near-exact docket matches.
+    if _looks_like_docket_query(fts_query):
+        docket_results = _search_by_docket(conn, fts_query, where, params, limit)
+        if docket_results:
+            return docket_results
+
     sql = f"""
         SELECT
             d.decision_id,
@@ -194,46 +235,356 @@ def search_fts5(
             snippet(decisions_fts, 7, '<mark>', '</mark>', '...', 40) as snippet,
             d.source_url,
             d.pdf_url,
-            rank
+            bm25(decisions_fts, 0.8, 0.8, 0.8, 2.0, 0.8, 6.0, 5.0, 1.2) as bm25_score
         FROM decisions_fts
         JOIN decisions d ON d.rowid = decisions_fts.rowid
         WHERE decisions_fts MATCH ?{where}
-        ORDER BY rank
+        ORDER BY bm25_score ASC
         LIMIT ?
     """
-    params = [fts_query] + params + [limit]
 
     try:
-        rows = conn.execute(sql, params).fetchall()
-        results = []
-        for r in rows:
-            results.append({
-                "decision_id": r["decision_id"],
-                "court": r["court"],
-                "canton": r["canton"],
-                "chamber": r["chamber"],
-                "docket_number": r["docket_number"],
-                "decision_date": r["decision_date"],
-                "language": r["language"],
-                "title": r["title"],
-                "regeste": _truncate(r["regeste"], MAX_SNIPPET_LEN) if r["regeste"] else None,
-                "snippet": r["snippet"],
-                "source_url": r["source_url"],
-                "pdf_url": r["pdf_url"],
-                "relevance_score": round(r["rank"], 4),
-            })
-        return results
-    except sqlite3.OperationalError as e:
-        # FTS5 syntax error — try wrapping query in quotes
-        if "fts5: syntax error" in str(e):
-            logger.info(f"FTS5 syntax error, retrying with quoted query")
-            quoted = f'"{fts_query}"'
-            params[0] = quoted
-            rows = conn.execute(sql, params).fetchall()
-            return [dict(r) for r in rows]
-        raise
+        had_success = False
+        candidate_rows: dict[str, sqlite3.Row] = {}
+        for match_query in _build_query_strategies(fts_query):
+            try:
+                candidate_limit = min(max(limit * 5, 50), MAX_RERANK_CANDIDATES)
+                if _looks_like_docket_query(fts_query):
+                    candidate_limit = max(candidate_limit, min(300, MAX_RERANK_CANDIDATES))
+                rows = conn.execute(
+                    sql,
+                    [match_query] + params + [candidate_limit],
+                ).fetchall()
+                had_success = True
+            except sqlite3.OperationalError as e:
+                logger.info(
+                    "FTS query failed, trying fallback strategy: %s (%s)",
+                    _truncate(match_query, 120),
+                    e,
+                )
+                continue
+
+            for row in rows:
+                decision_id = row["decision_id"]
+                current = candidate_rows.get(decision_id)
+                if current is None:
+                    candidate_rows[decision_id] = row
+                    continue
+                # Keep the better lexical candidate when duplicated across strategies.
+                if _to_float(row["bm25_score"]) < _to_float(current["bm25_score"]):
+                    candidate_rows[decision_id] = row
+
+        if candidate_rows:
+            return _rerank_rows(list(candidate_rows.values()), fts_query, limit)
+
+        # All strategies executed but none returned results.
+        # Return empty list (never propagate parser errors to user queries).
+        if had_success:
+            return []
+        return []
     finally:
         conn.close()
+
+
+def _search_by_docket(
+    conn: sqlite3.Connection,
+    raw_query: str,
+    where: str,
+    params: list,
+    limit: int,
+) -> list[dict]:
+    """Docket-first retrieval for docket-like queries."""
+    query_norm = _normalize_docket(raw_query)
+    if not query_norm:
+        return []
+
+    norm_expr = (
+        "replace(replace(replace(replace(lower(d.docket_number),'.',''),'/',''),'_',''),'-','')"
+    )
+    sql = f"""
+        SELECT
+            d.decision_id,
+            d.court,
+            d.canton,
+            d.chamber,
+            d.docket_number,
+            d.decision_date,
+            d.language,
+            d.title,
+            d.regeste,
+            NULL as snippet,
+            d.source_url,
+            d.pdf_url,
+            CASE
+                WHEN {norm_expr} = ? THEN 0
+                WHEN {norm_expr} LIKE ? THEN 1
+                ELSE 2
+            END AS docket_rank
+        FROM decisions d
+        WHERE ({norm_expr} = ? OR {norm_expr} LIKE ?){where}
+        ORDER BY docket_rank ASC,
+                 abs(length({norm_expr}) - ?) ASC,
+                 d.decision_date DESC
+        LIMIT ?
+    """
+    rows = conn.execute(
+        sql,
+        [
+            query_norm,
+            f"{query_norm}%",
+            query_norm,
+            f"%{query_norm}%",
+            *params,
+            len(query_norm),
+            limit,
+        ],
+    ).fetchall()
+    results = []
+    for r in rows:
+        results.append({
+            "decision_id": r["decision_id"],
+            "court": r["court"],
+            "canton": r["canton"],
+            "chamber": r["chamber"],
+            "docket_number": r["docket_number"],
+            "decision_date": r["decision_date"],
+            "language": r["language"],
+            "title": r["title"],
+            "regeste": _truncate(r["regeste"], MAX_SNIPPET_LEN) if r["regeste"] else None,
+            "snippet": r["snippet"],
+            "source_url": r["source_url"],
+            "pdf_url": r["pdf_url"],
+            "relevance_score": round(100.0 - float(r["docket_rank"]), 4),
+        })
+    return results
+
+
+def _rerank_rows(rows: list[sqlite3.Row], raw_query: str, limit: int) -> list[dict]:
+    """
+    Re-rank lexical FTS candidates with lightweight query-intent signals.
+
+    The FTS index provides robust candidate retrieval; this stage improves top-k
+    quality for practitioner-style natural-language and docket-centric queries.
+    """
+    if not rows:
+        return []
+
+    rank_terms = _extract_rank_terms(raw_query)
+    cleaned_phrase = _clean_for_phrase(raw_query)
+    query_norm = _normalize_docket(raw_query)
+
+    scored: list[tuple[float, float, int, sqlite3.Row]] = []
+    for idx, row in enumerate(rows):
+        bm25_score = _to_float(row["bm25_score"])
+        bm25_component = -bm25_score
+
+        title_text = (row["title"] or "").lower()
+        regeste_text = (row["regeste"] or "").lower()
+        snippet_text = (row["snippet"] or "").lower()
+        docket_text = (row["docket_number"] or "").lower()
+        docket_norm = _normalize_docket(docket_text)
+
+        if rank_terms:
+            title_cov = _term_coverage(rank_terms, title_text)
+            regeste_cov = _term_coverage(rank_terms, regeste_text)
+            snippet_cov = _term_coverage(rank_terms, snippet_text)
+        else:
+            title_cov = regeste_cov = snippet_cov = 0.0
+
+        phrase_hit = 0.0
+        if cleaned_phrase:
+            if cleaned_phrase in title_text or cleaned_phrase in regeste_text:
+                phrase_hit += 1.0
+            if cleaned_phrase in snippet_text:
+                phrase_hit += 0.5
+
+        docket_exact = 1.0 if query_norm and docket_norm and query_norm == docket_norm else 0.0
+        docket_partial = 0.0
+        if query_norm and docket_norm and not docket_exact:
+            if len(query_norm) >= 5 and query_norm in docket_norm:
+                docket_partial = 1.0
+
+        signal = (
+            6.0 * docket_exact
+            + 2.0 * docket_partial
+            + 3.0 * title_cov
+            + 2.2 * regeste_cov
+            + 0.8 * snippet_cov
+            + 1.8 * phrase_hit
+        )
+        final_score = bm25_component + signal
+
+        scored.append((final_score, bm25_score, idx, row))
+
+    scored.sort(key=lambda x: (-x[0], x[1], x[2]))
+
+    results: list[dict] = []
+    for final_score, _bm25, _idx, row in scored[:limit]:
+        results.append({
+            "decision_id": row["decision_id"],
+            "court": row["court"],
+            "canton": row["canton"],
+            "chamber": row["chamber"],
+            "docket_number": row["docket_number"],
+            "decision_date": row["decision_date"],
+            "language": row["language"],
+            "title": row["title"],
+            "regeste": _truncate(row["regeste"], MAX_SNIPPET_LEN) if row["regeste"] else None,
+            "snippet": row["snippet"],
+            "source_url": row["source_url"],
+            "pdf_url": row["pdf_url"],
+            "relevance_score": round(final_score, 4),
+        })
+    return results
+
+
+def _build_query_strategies(raw_query: str) -> list[str]:
+    """
+    Build parser-safe FTS query strategies.
+
+    For explicit FTS syntax, preserve raw query first.
+    For natural language, prefer tokenized OR query first for robustness.
+    """
+    raw = raw_query.strip()
+    nl_and = _build_nl_and_query(raw)
+    nl_or = _build_nl_or_query(raw)
+    cleaned = _clean_for_phrase(raw)
+    quoted = f'"{cleaned}"' if cleaned else ""
+
+    if _has_explicit_fts_syntax(raw):
+        candidates = [raw, quoted, nl_and, nl_or]
+    else:
+        candidates = [nl_and, nl_or, quoted, raw]
+
+    # Dedupe while preserving order
+    seen: set[str] = set()
+    strategies: list[str] = []
+    for c in candidates:
+        c = c.strip()
+        if c and c not in seen:
+            strategies.append(c)
+            seen.add(c)
+    return strategies
+
+
+def _has_explicit_fts_syntax(query: str) -> bool:
+    """Detect advanced query syntax where raw execution should be prioritized."""
+    if re.search(r"\b(AND|OR|NOT|NEAR)\b", query, re.IGNORECASE):
+        return True
+    if "*" in query:
+        return True
+    if re.search(rf"\b(?:{'|'.join(sorted(FTS_COLUMNS))})\s*:", query, re.IGNORECASE):
+        return True
+    # Balanced quoted phrase usually indicates intentional syntax.
+    if query.count('"') >= 2 and query.count('"') % 2 == 0:
+        return True
+    return False
+
+
+def _clean_for_phrase(query: str) -> str:
+    """Normalize punctuation/quotes for safe phrase fallback."""
+    # Remove quotes and punctuation that frequently break FTS parser.
+    tokens = re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", query.lower())
+    return " ".join(tokens[:MAX_NL_TOKENS])
+
+
+def _build_nl_or_query(query: str) -> str:
+    """Tokenize natural-language input into a robust OR-based FTS query."""
+    tokens = re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", query.lower())
+    keep: list[str] = []
+    seen: set[str] = set()
+
+    for tok in tokens:
+        if tok in NL_STOPWORDS:
+            continue
+        if not tok.isdigit() and len(tok) < 3:
+            continue
+        if tok in seen:
+            continue
+        keep.append(tok)
+        seen.add(tok)
+        if len(keep) >= MAX_NL_TOKENS:
+            break
+
+    return " OR ".join(keep)
+
+
+def _build_nl_and_query(query: str) -> str:
+    """Tokenize natural-language input into a stricter AND query."""
+    tokens = re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", query.lower())
+    keep: list[str] = []
+    seen: set[str] = set()
+
+    for tok in tokens:
+        if tok in NL_STOPWORDS:
+            continue
+        if not tok.isdigit() and len(tok) < 3:
+            continue
+        if tok in seen:
+            continue
+        keep.append(tok)
+        seen.add(tok)
+        if len(keep) >= NL_AND_TERM_LIMIT:
+            break
+
+    if len(keep) < 2:
+        return ""
+    return " AND ".join(keep)
+
+
+def _extract_rank_terms(query: str) -> list[str]:
+    """Extract deduplicated content-bearing terms for second-pass reranking."""
+    tokens = re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", query.lower())
+    terms: list[str] = []
+    seen: set[str] = set()
+    for tok in tokens:
+        if tok in NL_STOPWORDS:
+            continue
+        if tok in FTS_COLUMNS:
+            continue
+        if tok in {"and", "or", "not", "near"}:
+            continue
+        if not tok.isdigit() and len(tok) < 3:
+            continue
+        if tok in seen:
+            continue
+        terms.append(tok)
+        seen.add(tok)
+        if len(terms) >= RERANK_TERM_LIMIT:
+            break
+    return terms
+
+
+def _term_coverage(terms: list[str], text: str) -> float:
+    """Fraction of query terms appearing in text."""
+    if not terms:
+        return 0.0
+    hits = sum(1 for t in terms if t in text)
+    return hits / len(terms)
+
+
+def _normalize_docket(value: str) -> str:
+    """Normalize docket-like strings for exact/partial matching."""
+    return re.sub(r"[^0-9a-z]+", "", (value or "").lower())
+
+
+def _looks_like_docket_query(query: str) -> bool:
+    """Heuristic: identify docket-number style queries."""
+    q = query.strip()
+    if not q:
+        return False
+    if re.search(r"[A-Za-z]\d|\d[A-Za-z]", q) and any(ch in q for ch in ("/", "_", ".")):
+        return True
+    if re.search(r"\b[0-9]{1,4}\s+[A-Z]{1,4}\s+[0-9]{1,4}\b", q):
+        return True
+    return False
+
+
+def _to_float(value) -> float:
+    try:
+        return float(value)
+    except Exception:
+        return 1e9
 
 
 def get_decision_by_id(decision_id: str) -> dict | None:
