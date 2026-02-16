@@ -23,6 +23,6 @@ class BEVerwaltungsgerichtScraper(TribunaBaseScraper):
     BASE_URL = "https://www.vg-urteile.apps.be.ch/tribunapublikation"
     COURT_FILTER = "VG"  # Verwaltungsgericht
     LOCALE = "de"
-    REQUEST_DELAY = 2.5
+    REQUEST_DELAY = 4.0  # Increased from 2.5 to avoid 503 rate limit
     VERIFY_SSL = False  # SSL verification issues
     SEARCH_FIELD_COUNT = 21  # New Tribuna version (47-param search)
