@@ -108,11 +108,14 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
         name_fr="Berne",
         platform="TRIBUNA",
         courts=[
-            CourtInfo("Zivil- und Strafgerichte", "https://www.justice.be.ch", notes="Tribuna-based"),
-            CourtInfo("Verwaltungsgericht", "https://www.justice.be.ch", notes="Tribuna-based"),
+            CourtInfo("Zivil- und Strafgerichte", "https://www.zsg-entscheide.apps.be.ch/tribunapublikation", notes="Tribuna old, nf=20"),
+            CourtInfo("Verwaltungsgericht", "https://www.vg-urteile.apps.be.ch/tribunapublikation", notes="Tribuna new, nf=21"),
+            CourtInfo("Anwaltsaufsichtsbehörde", "https://www.aa-entscheide.apps.be.ch/tribunapublikation", notes="Tribuna old, nf=20, 65 decisions"),
+            CourtInfo("BVD", "https://www.bvd-entscheide.apps.be.ch/tribunapublikation", notes="DB disconnected"),
+            CourtInfo("Steuerrekurskommission", "https://www.strk-entscheide.apps.be.ch/tribunapublikation", notes="DB disconnected"),
         ],
-        scraper_keys="be_zivilstraf, be_verwaltungsgericht",
-        notes="Tribuna for main courts. Steuerrekurs/Anwaltsaufsicht Weblaw portals are DNS dead.",
+        scraper_keys="be_zivilstraf, be_verwaltungsgericht, be_anwaltsaufsicht, be_steuerrekurs",
+        notes="Tribuna for main courts. AA (65 decisions, old Tribuna). BVD/STRK portal DBs disconnected — entscheidsuche only.",
         status="ready",
     ),
 
@@ -210,8 +213,8 @@ CANTON_REGISTRY: dict[str, CantonRegistry] = {
             CourtInfo("Tribunal cantonal", "https://jurisprudence.jura.ch"),
         ],
         scraper_keys="ju_gerichte",
-        notes="Tribuna GWT-RPC. French-language. Blocks Hetzner IPs — needs SOCKS5 proxy.",
-        status="blocked",
+        notes="Tribuna GWT-RPC. French-language. Blocks Hetzner IPs — scraped locally (1,052 decisions).",
+        status="ready",
     ),
 
     # --- LUZERN ---

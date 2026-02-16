@@ -3,9 +3,10 @@ Bern Steuerrekurskommission Scraper
 ====================================
 Scrapes tax appeal commission decisions from the Tribuna VTPlus platform.
 
-Platform: Tribuna GWT-RPC (new protocol, Feb 2026)
+Platform: Tribuna GWT-RPC (new protocol, 47-param search)
 Coverage: Steuerrekurskommission des Kantons Bern
-Volume: ~343 decisions (entscheidsuche), possibly more on portal
+Volume: Portal DB disconnected (Feb 2026) — returns 0 results.
+        343 decisions available from entscheidsuche only.
 Language: de/fr
 
 Source: https://www.strk-entscheide.apps.be.ch/tribunapublikation
