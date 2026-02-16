@@ -20,7 +20,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt pytest
 
       - name: Schema consistency tests
         run: python test_schema.py
@@ -35,3 +35,18 @@ jobs:
           python -c "from models import Decision, make_decision_id, parse_date"
           python -c "from scrapers import get_registry; r = get_registry(); print(f'{len(r)} scrapers')"
           python -c "from quality_report import generate_quality_report, check_gates"
+
+      - name: Unit tests (offline)
+        run: |
+          pytest -q \
+            test_schema.py \
+            test_mcp_search_nl.py \
+            test_search_rerank_signals.py \
+            test_mock_decision_tool.py \
+            test_query_planner.py \
+            test_reference_extraction.py \
+            test_reference_graph_resolution.py \
+            test_opensearch_ingest_streaming.py \
+            test_entscheidsuche_ingest_dedup.py \
+            test_hybrid_service_semantic.py \
+            test_search_benchmark_resolution.py
