@@ -23,7 +23,6 @@ import logging
 import random
 import time
 from datetime import date, datetime, timedelta, timezone
-from pathlib import Path
 from typing import Iterator
 
 from base_scraper import BaseScraper

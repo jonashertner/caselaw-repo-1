@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import logging
 from datetime import date, datetime, timezone
-from pathlib import Path
 from typing import Iterator
 
 from bs4 import BeautifulSoup
@@ -33,7 +32,6 @@ from base_scraper import BaseScraper
 from models import (
     Decision,
     detect_language,
-    extract_citations,
     make_decision_id,
     parse_date,
 )
@@ -104,7 +102,6 @@ class BPatGerScraper(BaseScraper):
         Strategy: Parse 'aktuelle-entscheide' first (catches newest),
         then year-based pages for historical coverage.
         """
-        import re as _re
 
         seen_urls = set()
         current_year = date.today().year

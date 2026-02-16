@@ -15,7 +15,7 @@ Platform: JustSearch (Nuxt.js + REST API by Arcanite)
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime
+from datetime import date
 from typing import Iterator
 
 from base_scraper import BaseScraper
@@ -24,7 +24,6 @@ from models import (
     detect_language,
     extract_citations,
     make_decision_id,
-    parse_date,
 )
 
 logger = logging.getLogger(__name__)

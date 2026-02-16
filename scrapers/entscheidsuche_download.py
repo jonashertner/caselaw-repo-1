@@ -29,10 +29,8 @@ Files saved to: /opt/caselaw/entscheidsuche/<SPIDER>/
 from __future__ import annotations
 
 import argparse
-import json
 import logging
 import re
-import sys
 import time
 from pathlib import Path
 from urllib.request import Request, urlopen

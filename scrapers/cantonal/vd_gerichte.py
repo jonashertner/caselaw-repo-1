@@ -26,9 +26,7 @@ Platform: Spring Boot REST API with Angular SPA frontend.
 from __future__ import annotations
 
 import logging
-import re
-from datetime import date, datetime, timedelta
-from pathlib import Path
+from datetime import date, timedelta
 from typing import Iterator
 
 from base_scraper import BaseScraper
@@ -84,7 +82,7 @@ class VDGerichteScraper(BaseScraper):
         self.session.headers["Accept"] = "application/json, text/plain, */*"
         self.session.headers["Origin"] = "https://prestations.vd.ch"
         self.session.headers["Referer"] = f"{BASE_URL}/"
-        logger.info(f"VD: session initialized, XSRF token acquired")
+        logger.info("VD: session initialized, XSRF token acquired")
         return True
 
     def _search(self, date_from: list[int], date_to: list[int], page: int = 0) -> dict | None:

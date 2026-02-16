@@ -156,7 +156,7 @@ def generate_stats(db_path: Path) -> dict:
     stats["yoy_growth"] = yoy
 
     # Federal vs cantonal split
-    fed_courts = {c["court"] for c in stats["by_court"] if c["canton"] == "CH"}
+    {c["court"] for c in stats["by_court"] if c["canton"] == "CH"}
     fed_total = sum(c["count"] for c in stats["by_court"] if c["canton"] == "CH")
     can_total = sum(c["count"] for c in stats["by_court"] if c["canton"] != "CH")
     stats["federal_vs_cantonal"] = {"federal": fed_total, "cantonal": can_total}

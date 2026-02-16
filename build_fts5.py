@@ -23,13 +23,12 @@ import argparse
 import json
 import logging
 import sqlite3
-import sys
 import time
 from pathlib import Path
 
-logger = logging.getLogger("build_fts5")
+from db_schema import INSERT_COLUMNS, INSERT_OR_IGNORE_SQL, SCHEMA_SQL
 
-from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS
+logger = logging.getLogger("build_fts5")
 
 
 def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:

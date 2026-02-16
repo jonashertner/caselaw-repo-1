@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import json
 import logging
-import time
 from datetime import date, timedelta
 from typing import Iterator
 
@@ -28,7 +27,6 @@ from models import (
     detect_language,
     extract_citations,
     make_decision_id,
-    parse_date,
 )
 
 logger = logging.getLogger(__name__)

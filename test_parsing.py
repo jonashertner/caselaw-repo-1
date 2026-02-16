@@ -10,10 +10,11 @@ from datetime import date
 from pathlib import Path
 
 import pytest
+from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from models import Decision, extract_citations, make_decision_id, detect_language, parse_date
+from models import Decision, extract_citations, make_decision_id, detect_language
 
 pytestmark = pytest.mark.manual
 
@@ -270,7 +271,7 @@ def test_language_detection(text):
     lang = detect_language(text)
     print(f"  Detected language: {lang}")
     assert lang == "de", f"FAIL: Expected 'de', got '{lang}'"
-    print(f"  ✓ Correct: German")
+    print("  ✓ Correct: German")
     
     # Test with French text from Jordan Chiles case
     fr_text = """
@@ -281,7 +282,7 @@ def test_language_detection(text):
     lang_fr = detect_language(fr_text)
     print(f"  French text detected as: {lang_fr}")
     assert lang_fr == "fr", f"FAIL: Expected 'fr', got '{lang_fr}'"
-    print(f"  ✓ Correct: French")
+    print("  ✓ Correct: French")
 
 
 def test_search_results_parsing():
@@ -312,7 +313,7 @@ def test_search_results_parsing():
         link = li.select_one("span > a")
         assert link is not None, "FAIL: span > a not found in li"
         
-        href = link.get("href", "")
+        link.get("href", "")
         meta_text = link.get_text(strip=True)
         
         # Parse "DD.MM.YYYY DOCKET"
@@ -429,12 +430,12 @@ def test_url_patterns():
     
     test_url = make_direct_url(date(2026, 1, 23), "2C_28/2026")
     print(f"\n  Our generated URL: {test_url}")
-    print(f"  ✓ Matches confirmed pattern")
+    print("  ✓ Matches confirmed pattern")
     
-    print(f"\n  ⚠ ISSUE: Our JUMP_URL template uses /cgi-bin/JumpCGI")
+    print("\n  ⚠ ISSUE: Our JUMP_URL template uses /cgi-bin/JumpCGI")
     print(f"    JumpCGI format:  {JUMP_URL.format(date='23.01.2026', docket='2C_28/2026')}")
     print(f"    Direct format:   {test_url}")
-    print(f"    → Should add direct URL as primary fallback")
+    print("    → Should add direct URL as primary fallback")
 
 
 def test_abteilung_mapping():
@@ -510,7 +511,7 @@ def test_full_decision_assembly():
     # Serialize
     json_str = decision.model_dump_json()
     print(f"  JSON size:   {len(json_str)} bytes")
-    print(f"  ✓ Decision object created and serialized successfully")
+    print("  ✓ Decision object created and serialized successfully")
     
     return decision
 
@@ -518,8 +519,6 @@ def test_full_decision_assembly():
 # ============================================================
 # MAIN
 # ============================================================
-
-from bs4 import BeautifulSoup
 
 if __name__ == "__main__":
     print("BGer PARSING VALIDATION (Offline, using real decision structure)")

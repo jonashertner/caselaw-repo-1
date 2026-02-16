@@ -33,11 +33,11 @@ from __future__ import annotations
 
 import logging
 import re
-import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
+import requests
 from bs4 import BeautifulSoup
 
 from base_scraper import BaseScraper
@@ -584,7 +584,6 @@ class BGELeitentscheideScraper(BaseScraper):
 
 if __name__ == "__main__":
     import argparse
-    import json
 
     parser = argparse.ArgumentParser(description="Scrape BGE Leitentscheide")
     parser.add_argument("--since", type=str, help="Start year (default: 1954)")

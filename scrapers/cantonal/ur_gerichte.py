@@ -28,7 +28,6 @@ from models import (
     detect_language,
     extract_citations,
     make_decision_id,
-    parse_date,
 )
 
 logger = logging.getLogger(__name__)

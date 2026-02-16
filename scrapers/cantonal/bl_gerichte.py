@@ -19,7 +19,6 @@ Source: https://bl.swisslex.ch
 from __future__ import annotations
 
 import logging
-from datetime import date
 from typing import Iterator
 
 from bs4 import BeautifulSoup

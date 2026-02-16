@@ -31,9 +31,7 @@ from __future__ import annotations
 
 import logging
 import re
-from datetime import date, datetime
-from pathlib import Path
-from typing import Iterator
+from datetime import date
 
 from bs4 import BeautifulSoup
 

@@ -242,14 +242,14 @@ def main():
     failed = sum(1 for r in results if not r["success"])
     total_new = sum(r["new_count"] for r in results)
 
-    logger.info(f"\n=== Summary ===")
+    logger.info("\n=== Summary ===")
     logger.info(f"  Succeeded: {succeeded}/{len(results)}")
     logger.info(f"  Failed: {failed}")
     logger.info(f"  Total new decisions: {total_new}")
     logger.info(f"  Total time: {total_elapsed:.0f}s ({total_elapsed/60:.1f} min)")
 
     if failed:
-        logger.info(f"\n  Failed scrapers:")
+        logger.info("\n  Failed scrapers:")
         for r in results:
             if not r["success"]:
                 logger.info(f"    - {r['court']}: {r['error']}")

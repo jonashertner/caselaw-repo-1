@@ -5,13 +5,13 @@ Tests each component individually so we can see exactly what works.
 """
 
 import hashlib
-import json
 import logging
 import os
 import re
 import sys
 import time
 from datetime import date, datetime, timedelta
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -94,7 +94,7 @@ def test_rss_feed():
             return []
         
         if resp.status_code != 200:
-            print(f"  ✗ Non-200 status")
+            print("  ✗ Non-200 status")
             return []
         
         # Parse RSS
@@ -125,7 +125,7 @@ def test_rss_feed():
         if results:
             print(f"  ✓ RSS works, found {len(items)} decisions")
         else:
-            print(f"  ⚠ RSS returned data but no parseable items")
+            print("  ⚠ RSS returned data but no parseable items")
         return results
     
     except Exception as e:
@@ -292,7 +292,7 @@ def test_aza_search(session, pow_cookies):
         else:
             print("  ⚠ No <ol> found in results")
             # Debug: show page structure
-            print(f"  Page structure (first 1000 chars of relevant divs):")
+            print("  Page structure (first 1000 chars of relevant divs):")
             for div in soup.find_all("div", class_=True)[:10]:
                 classes = " ".join(div.get("class", []))
                 txt = div.get_text(strip=True)[:80]
@@ -466,9 +466,9 @@ def test_jump_cgi(session, pow_cookies, docket, decision_date):
             if content:
                 print(f"  ✓ JumpCGI works, content: {len(content.get_text(strip=True))} chars")
             else:
-                print(f"  ⚠ Got page but primary selector not found")
+                print("  ⚠ Got page but primary selector not found")
         else:
-            print(f"  ⚠ Short or error response")
+            print("  ⚠ Short or error response")
     
     except Exception as e:
         print(f"  ✗ FAILED: {e}")
@@ -559,7 +559,7 @@ def test_scraper_class():
             with open(out / "sample.jsonl", "w") as f:
                 for d in decisions:
                     f.write(d.model_dump_json() + "\n")
-            print(f"\n  ✓ Saved to test_output/sample.jsonl")
+            print("\n  ✓ Saved to test_output/sample.jsonl")
         
         return decisions
     
@@ -573,8 +573,6 @@ def test_scraper_class():
 # ============================================================
 # MAIN
 # ============================================================
-
-from pathlib import Path
 
 if __name__ == "__main__":
     print("=" * 70)

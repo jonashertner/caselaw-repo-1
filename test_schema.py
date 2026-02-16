@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 def test_db_schema_imports():
     """Verify db_schema.py exports are importable and consistent."""
-    from db_schema import SCHEMA_SQL, INSERT_COLUMNS, INSERT_SQL, INSERT_OR_IGNORE_SQL
+    from db_schema import SCHEMA_SQL, INSERT_COLUMNS, INSERT_SQL
 
     # INSERT_COLUMNS should match the CREATE TABLE columns
     assert "decision_id" in INSERT_COLUMNS
@@ -102,8 +102,8 @@ def test_db_parquet_alignment():
         "external_id", "source_spider",
     }
 
-    db_only = db_cols - pq_cols - db_only_expected
-    pq_only = pq_cols - db_cols - pq_only_expected
+    db_cols - pq_cols - db_only_expected
+    pq_cols - db_cols - pq_only_expected
 
     # Core columns that should be in BOTH
     core_shared = {"decision_id", "court", "canton", "language", "full_text",

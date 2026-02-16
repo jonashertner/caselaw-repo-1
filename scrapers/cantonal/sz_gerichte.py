@@ -27,7 +27,6 @@ from __future__ import annotations
 import logging
 import re
 from datetime import date
-from html import unescape
 from typing import Iterator
 
 from base_scraper import BaseScraper

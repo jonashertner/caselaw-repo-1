@@ -30,7 +30,6 @@ from __future__ import annotations
 import logging
 import re
 from datetime import date
-from pathlib import Path
 from typing import Iterator
 
 from bs4 import BeautifulSoup
@@ -41,7 +40,6 @@ from models import (
     detect_language,
     extract_citations,
     make_decision_id,
-    parse_date,
 )
 
 logger = logging.getLogger(__name__)

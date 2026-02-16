@@ -17,8 +17,11 @@ Tests each scraper's:
 
 Requires: requests, beautifulsoup4
 """
-import json, logging, re, sys, time, traceback
-from datetime import date, timedelta
+import logging
+import re
+import sys
+import time
+from datetime import date
 
 import pytest
 

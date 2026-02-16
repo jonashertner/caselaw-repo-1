@@ -454,14 +454,14 @@ def print_registry_summary():
     for entry in CANTON_REGISTRY.values():
         platforms[entry.platform] = platforms.get(entry.platform, 0) + 1
 
-    print(f"\nPlatform distribution:")
+    print("\nPlatform distribution:")
     for p, count in sorted(platforms.items(), key=lambda x: -x[1]):
         print(f"  {p}: {count} cantons")
 
     statuses = {}
     for entry in CANTON_REGISTRY.values():
         statuses[entry.status] = statuses.get(entry.status, 0) + 1
-    print(f"\nStatus distribution:")
+    print("\nStatus distribution:")
     for s, count in sorted(statuses.items()):
         print(f"  {s}: {count} cantons")
 

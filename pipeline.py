@@ -28,7 +28,6 @@ import os
 import sys
 from datetime import date, datetime
 from pathlib import Path
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -462,7 +461,7 @@ Available courts: see run_scraper.py SCRAPERS registry
 
     if args.scrape:
         try:
-            results = run_pipeline(
+            run_pipeline(
                 courts=courts,
                 since_date=args.since,
                 max_per_court=args.max,

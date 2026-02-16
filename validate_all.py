@@ -17,7 +17,6 @@ Produces a summary report at the end.
 
 import json
 import logging
-import sys
 import time
 import traceback
 from datetime import date, timedelta
@@ -121,7 +120,7 @@ def test_scraper(name: str, scraper_cls, court_code: str, **kwargs):
                 for warn in report["warnings"]:
                     print(f"      ⚠ {warn}")
         else:
-            print(f"  ⚠ No decisions returned (discover may have found 0 new stubs)")
+            print("  ⚠ No decisions returned (discover may have found 0 new stubs)")
             result["discover"] = True  # not necessarily a failure
 
     except Exception as e:
@@ -183,7 +182,7 @@ except ImportError as e:
 # ── Summary ───────────────────────────────────────────────────
 
 print(f"\n{'='*60}")
-print(f"  SUMMARY")
+print("  SUMMARY")
 print(f"{'='*60}\n")
 
 total_ok = 0

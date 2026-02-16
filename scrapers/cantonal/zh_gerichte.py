@@ -38,7 +38,7 @@ from __future__ import annotations
 import io
 import logging
 import re
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Iterator
 
 from bs4 import BeautifulSoup
@@ -533,7 +533,7 @@ class ZHGerichteScraper(BaseScraper):
         decision_type = stub.get("entscheidart") or None
 
         # Weiterzug / references
-        weiterzug = stub.get("verweise") or None
+        stub.get("verweise") or None
 
         return Decision(
             decision_id=stub["decision_id"],

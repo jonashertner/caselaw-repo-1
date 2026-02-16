@@ -48,9 +48,10 @@ import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Iterator
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urljoin
 
-from bs4 import BeautifulSoup, Tag
+import requests
+from bs4 import BeautifulSoup
 
 from base_scraper import BaseScraper
 from models import Decision, extract_citations, make_decision_id
@@ -1005,7 +1006,7 @@ class BgerScraper(BaseScraper):
         text_lower = text.lower()
         sorted_abt = sorted(
             ABTEILUNG_MAP.items(),
-            key=lambda kv: max(len(kv[1][l]) for l in ["de", "fr", "it"]),
+            key=lambda kv: max(len(kv[1][lang]) for lang in ["de", "fr", "it"]),
             reverse=True,
         )
         for _, info in sorted_abt:
