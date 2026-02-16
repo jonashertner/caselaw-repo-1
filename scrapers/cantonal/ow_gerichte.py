@@ -526,6 +526,8 @@ class OWGerichteScraper(BaseScraper):
     # Discovery
     # ----------------------------------------------------------
 
+    MAX_SESSION_RETRIES = 10  # Re-init session when pagination stops early
+
     def discover_new(self, since_date=None) -> Iterator[dict]:
         """
         Discover all OW court decisions via Vaadin UIDL protocol.
@@ -534,10 +536,51 @@ class OWGerichteScraper(BaseScraper):
         2. Click search (empty query = all results)
         3. Parse paginated results
         4. Click "weiter" for next pages until exhausted
+        5. If pagination stops early, re-init session and retry
         """
         if since_date and isinstance(since_date, str):
             since_date = parse_date(since_date)
 
+        total_yielded = 0
+        total_reported = 0
+
+        for attempt in range(self.MAX_SESSION_RETRIES):
+            yielded_this_round = 0
+
+            for stub in self._discover_one_session(since_date):
+                if "_total_reported" in stub:
+                    total_reported = stub["_total_reported"]
+                    continue
+                total_yielded += 1
+                yielded_this_round += 1
+                yield stub
+
+            known_count = len(self.state._seen)
+            if total_reported and known_count >= total_reported:
+                logger.info(
+                    f"[ow_gerichte] All {total_reported} decisions covered "
+                    f"after {attempt + 1} session(s)"
+                )
+                break
+
+            if yielded_this_round == 0:
+                logger.info(
+                    f"[ow_gerichte] Session {attempt + 1}: no new stubs found, "
+                    f"known={len(self.state._seen)}, total={total_reported}"
+                )
+                break
+
+            logger.info(
+                f"[ow_gerichte] Session {attempt + 1}: got {yielded_this_round} new stubs, "
+                f"known={len(self.state._seen)}/{total_reported}. Re-initializing session..."
+            )
+            # Clean up old Playwright context before new session
+            self._cleanup_playwright()
+
+        logger.info(f"[ow_gerichte] Discovery complete: {total_yielded} total new stubs")
+
+    def _discover_one_session(self, since_date=None) -> Iterator[dict]:
+        """Run one Vaadin session: init, search, paginate until exhausted."""
         # Step 1: Init session
         sess = self._init_vaadin_session()
         if not sess:
@@ -569,8 +612,11 @@ class OWGerichteScraper(BaseScraper):
         total, stubs = self._parse_results(data, contentid)
         logger.info(f"[ow_gerichte] Total decisions reported: {total}")
 
-        total_yielded = 0
+        # Signal total to caller
+        yield {"_total_reported": total}
+
         page = 1
+        page_yielded = 0
 
         for stub in stubs:
             if self.state.is_known(stub["decision_id"]):
@@ -578,10 +624,10 @@ class OWGerichteScraper(BaseScraper):
             if since_date and stub.get("decision_date"):
                 if isinstance(stub["decision_date"], date) and stub["decision_date"] < since_date:
                     continue
-            total_yielded += 1
+            page_yielded += 1
             yield stub
 
-        logger.info(f"[ow_gerichte] Page {page}: {len(stubs)} results parsed, {total_yielded} new")
+        logger.info(f"[ow_gerichte] Page {page}: {len(stubs)} results parsed, {page_yielded} new")
 
         # Step 4: Paginate
         weiterkey = self._find_weiter_key(data, contentid)
@@ -596,7 +642,7 @@ class OWGerichteScraper(BaseScraper):
 
             _, stubs = self._parse_results(data, contentid)
             if not stubs:
-                logger.info(f"[ow_gerichte] Page {page}: no more results, done")
+                logger.info(f"[ow_gerichte] Page {page}: no more results")
                 break
 
             page_new = 0
@@ -606,7 +652,6 @@ class OWGerichteScraper(BaseScraper):
                 if since_date and stub.get("decision_date"):
                     if isinstance(stub["decision_date"], date) and stub["decision_date"] < since_date:
                         continue
-                total_yielded += 1
                 page_new += 1
                 yield stub
 
@@ -614,10 +659,10 @@ class OWGerichteScraper(BaseScraper):
 
             weiterkey = self._find_weiter_key(data, contentid)
             if not weiterkey:
-                logger.info(f"[ow_gerichte] No weiter key found on page {page}, done")
+                logger.info(f"[ow_gerichte] No weiter key found on page {page}")
                 break
 
-        logger.info(f"[ow_gerichte] Discovery complete: {total_yielded} new stubs across {page} pages")
+        logger.info(f"[ow_gerichte] Session ended after {page} pages")
 
     # ----------------------------------------------------------
     # Playwright lifecycle for cache viewer
