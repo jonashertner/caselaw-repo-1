@@ -29,33 +29,56 @@ There are three ways to use it, depending on what you need:
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets AI tools search across all 1M+ decisions. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets AI tools search across all 1M+ decisions locally on your machine. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
 ### Setup with Claude Code
 
-[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's CLI for working with Claude in the terminal. Three steps to add Swiss case law search:
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's CLI for working with Claude in the terminal.
 
-**Step 1.** Install the MCP server dependencies:
-
-```bash
-pip install mcp pydantic huggingface-hub pyarrow
-```
-
-**Step 2.** Clone this repository:
+**Step 1.** Clone this repository:
 
 ```bash
 git clone https://github.com/jonashertner/caselaw-repo-1.git
+cd caselaw-repo-1
+```
+
+**Step 2.** Create a virtual environment and install the MCP server dependencies:
+
+```bash
+python3 -m venv .venv
+
+# macOS / Linux
+source .venv/bin/activate
+pip install mcp pydantic huggingface-hub pyarrow
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+pip install mcp pydantic huggingface-hub pyarrow
 ```
 
 **Step 3.** Register the MCP server with Claude Code:
 
 ```bash
-claude mcp add swiss-caselaw -- python3 /path/to/caselaw-repo-1/mcp_server.py
+# macOS / Linux
+claude mcp add swiss-caselaw -- /path/to/caselaw-repo-1/.venv/bin/python3 /path/to/caselaw-repo-1/mcp_server.py
+
+# Windows
+claude mcp add swiss-caselaw -- C:\path\to\caselaw-repo-1\.venv\Scripts\python.exe C:\path\to\caselaw-repo-1\mcp_server.py
 ```
 
-On first use, the server downloads the search database from HuggingFace (~5 GB). This happens once.
+Use the full absolute path to the Python binary inside `.venv` so that the server always finds its dependencies, regardless of which directory you run Claude Code from.
 
-Now ask Claude:
+**Step 4.** Restart Claude Code and run your first search.
+
+On first use, the server automatically:
+1. Downloads all Parquet files (~5.2 GB) from [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) to `~/.swiss-caselaw/parquet/`
+2. Builds a local SQLite FTS5 full-text search index at `~/.swiss-caselaw/decisions.db` (~48 GB)
+
+This takes 30–60 minutes depending on your machine and connection. It only happens once — after that, searches run instantly against the local database.
+
+**Total disk usage:** ~53 GB in `~/.swiss-caselaw/`.
+
+Example queries:
 
 ```
 > Search for BGer decisions on Mietrecht Kündigung from 2024
@@ -71,6 +94,10 @@ Now ask Claude:
 
 Claude calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
 
+### Keeping the data current
+
+The dataset is updated daily. To get the latest decisions, ask Claude to run the `update_database` tool, or call it explicitly. This re-downloads the Parquet files from HuggingFace and rebuilds the local database.
+
 ### Other MCP clients
 
 The same server works with any MCP-compatible client. For Claude Desktop or Cursor, add to the JSON config:
@@ -79,14 +106,16 @@ The same server works with any MCP-compatible client. For Claude Desktop or Curs
 {
   "mcpServers": {
     "swiss-caselaw": {
-      "command": "python3",
+      "command": "/path/to/caselaw-repo-1/.venv/bin/python3",
       "args": ["/path/to/caselaw-repo-1/mcp_server.py"]
     }
   }
 }
 ```
 
-- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
+On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
+
+- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows)
 - **Cursor**: `.cursor/mcp.json` in your project root
 
 ### What the MCP server can do
@@ -97,7 +126,47 @@ The same server works with any MCP-compatible client. For Claude Desktop or Curs
 | `get_decision` | Fetch a single decision by docket number or ID |
 | `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |
-| `update_database` | Re-download the latest data from HuggingFace |
+| `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database |
+
+### How the local database works
+
+```
+~/.swiss-caselaw/
+├── parquet/          # Downloaded Parquet files from HuggingFace (~5.2 GB)
+│   └── data/
+│       ├── bger.parquet
+│       ├── bvger.parquet
+│       └── ...       # 88 files, one per court
+└── decisions.db      # SQLite FTS5 search index (~48 GB)
+```
+
+All data stays on your machine. No API calls are made during search — the MCP server queries the local SQLite database directly.
+
+**Database structure.** `decisions.db` is a single SQLite file with two tables:
+
+- **`decisions`** — the main table with one row per decision. Holds all 22 indexed columns (decision_id, court, canton, docket_number, full_text, regeste, etc.) plus a `json_data` column with the complete 34-field record. Indexed on `court`, `canton`, `decision_date`, `language`, and `docket_number` for fast filtered queries.
+
+- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 1M+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
+
+**Why ~48 GB.** The full text of 1M+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
+
+**Search pipeline.** When you search, the server:
+
+1. **Detects query intent** — docket number lookup (`6B_1234/2023`), explicit FTS syntax (`Mietrecht AND Kündigung`), or natural language (`decisions on tenant eviction`).
+
+2. **Runs multiple FTS5 query strategies** — For natural-language queries, the server generates several FTS query variants (AND, OR, phrase, field-focused on regeste/title, with multilingual term expansion) and executes them in sequence. Each strategy produces a ranked candidate set. For explicit syntax (AND/OR/NOT, quoted phrases, column filters), the raw query is tried first.
+
+3. **Fuses candidates via RRF** — Results from all strategies are merged using Reciprocal Rank Fusion: each candidate's score is the weighted sum of `1/(k + rank)` across all strategies that returned it. Decisions found by multiple strategies get a boost.
+
+4. **Reranks with signal scoring** — The top candidates are reranked using a composite score that combines:
+   - **BM25 score** (from FTS5, with custom column weights: `full_text` 1.2, `regeste` 5.0, `title` 6.0 — headnotes and titles are weighted heavily over body text)
+   - **Term coverage** in title (3.0x), regeste (2.2x), and snippet (0.8x)
+   - **Phrase match** in title/regeste (1.8x)
+   - **Docket match** — exact (6.0x) or partial (2.0x)
+   - **Statute/citation graph signals** — if the query mentions an article (e.g., "Art. 8 BV"), decisions that cite that provision are boosted
+   - **Court prior** — e.g., asylum queries boost BVGer results
+
+5. **Selects the best passage** — For each result, the server scans the full text for the most relevant passage and returns it as a snippet.
 
 ### Search quality benchmark
 
@@ -110,11 +179,7 @@ python3 benchmarks/run_search_benchmark.py \
   --json-output benchmarks/latest_search_benchmark.json
 ```
 
-Metrics:
-- `MRR@k`
-- `Recall@k`
-- `nDCG@k`
-- `Hit@1`
+Metrics: `MRR@k`, `Recall@k`, `nDCG@k`, `Hit@1`
 
 You can enforce minimum quality gates (non-zero exit on failure):
 

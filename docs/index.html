@@ -507,10 +507,14 @@ ds = load_dataset("voilaj/swiss-caselaw")</code>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           MCP Server
         </h3>
-        <p data-t="access_mcp_desc">Full-text search via Claude Code. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a></p>
-        <code>pip install mcp huggingface-hub pyarrow
+        <p data-t="access_mcp_desc">Local full-text search via Claude Code, Cursor, or any MCP client. Downloads ~5 GB from HuggingFace, builds a ~48 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a></p>
+        <code>git clone github.com/jonashertner/caselaw-repo-1
+cd caselaw-repo-1
+python3 -m venv .venv
+.venv/bin/pip install mcp pydantic \
+  huggingface-hub pyarrow
 claude mcp add swiss-caselaw \
-  -- python3 mcp_server.py</code>
+  -- .venv/bin/python3 mcp_server.py</code>
       </div>
       <div class="access-card">
         <h3>
@@ -550,7 +554,7 @@ const I18N = {
     updated:'Aktualisiert am',
     made:'Gebaut mit \u2665 von <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
-    access_mcp_desc:'Volltextsuche via Claude Code. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Einrichtung &rarr;</a>',
+    access_mcp_desc:'Lokale Volltextsuche via Claude Code, Cursor oder andere MCP-Clients. L\u00e4dt ~5 GB von HuggingFace herunter, baut einen ~48 GB Suchindex auf Ihrem Rechner. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Einrichtung &rarr;</a>',
     access_api_desc:'Abfragen via HuggingFace Datasets Server API',
     court_bger:'Bundesgericht', court_bge:'BGE Leitentscheide',
     court_bvger:'Bundesverwaltungsgericht', court_bstger:'Bundesstrafgericht', court_bpatger:'Bundespatentgericht',
@@ -571,7 +575,7 @@ const I18N = {
     updated:'Mis \u00e0 jour le',
     made:'Fait avec \u2665 par <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
-    access_mcp_desc:'Recherche plein texte via Claude Code. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guide d\u2019installation &rarr;</a>',
+    access_mcp_desc:'Recherche locale plein texte via Claude Code, Cursor ou tout client MCP. T\u00e9l\u00e9charge ~5 Go depuis HuggingFace, construit un index de recherche de ~48 Go sur votre machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guide d\u2019installation &rarr;</a>',
     access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
     court_bger:'Tribunal f\u00e9d\u00e9ral', court_bge:'ATF',
     court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
@@ -592,7 +596,7 @@ const I18N = {
     updated:'Aggiornato il',
     made:'Fatto con \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Scarica il dataset completo in formato Parquet',
-    access_mcp_desc:'Ricerca full-text via Claude Code. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida all\u2019installazione &rarr;</a>',
+    access_mcp_desc:'Ricerca locale full-text via Claude Code, Cursor o qualsiasi client MCP. Scarica ~5 GB da HuggingFace, crea un indice di ricerca di ~48 GB sulla tua macchina. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida all\u2019installazione &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     court_bger:'Tribunale federale', court_bge:'DTF',
     court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
@@ -613,7 +617,7 @@ const I18N = {
     updated:'Actualis\u00e0 ils',
     made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
-    access_mcp_desc:'Tschertga en text cumplain via Claude Code. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
+    access_mcp_desc:'Tschertga locala en text cumplain via Claude Code, Cursor u mintga client MCP. Telechargia ~5 GB da HuggingFace, construescha in index da tschertga da ~48 GB sin tes computer. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
     access_api_desc:'Dumondas via HuggingFace Datasets Server API',
     court_bger:'Tribunal federal', court_bge:'DTF',
     court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
@@ -634,7 +638,7 @@ const I18N = {
     updated:'Updated',
     made:'Built with \u2665 by <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Download the full dataset as Parquet files',
-    access_mcp_desc:'Full-text search via Claude Code. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a>',
+    access_mcp_desc:'Local full-text search via Claude Code, Cursor, or any MCP client. Downloads ~5 GB from HuggingFace, builds a ~48 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     court_bger:'Federal Supreme Court', court_bge:'Leading Decisions (BGE)',
     court_bvger:'Federal Administrative Court', court_bstger:'Federal Criminal Court', court_bpatger:'Federal Patent Court',

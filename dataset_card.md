@@ -67,15 +67,23 @@ print(f"{len(df_recent)} decisions since 2024")
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude Code for natural-language search:
+Connect the dataset to Claude Code for natural-language search over all 1M+ decisions. Everything runs locally on your machine.
 
 ```bash
-pip install mcp pydantic huggingface-hub pyarrow
 git clone https://github.com/jonashertner/caselaw-repo-1.git
-claude mcp add swiss-caselaw -- python3 /path/to/caselaw-repo-1/mcp_server.py
+cd caselaw-repo-1
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
+pip install mcp pydantic huggingface-hub pyarrow
+claude mcp add swiss-caselaw -- /path/to/.venv/bin/python3 /path/to/mcp_server.py
+# Windows: use .venv\Scripts\python.exe instead
 ```
 
+On first search, the server downloads the Parquet files (~5 GB) from this dataset and builds a local SQLite FTS5 index (~48 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
+
 Then ask: *"Find BGer decisions on tenant eviction from 2024"*
+
+To update: ask Claude to run the `update_database` tool. It re-downloads the latest Parquet files and rebuilds the index.
 
 See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
 
