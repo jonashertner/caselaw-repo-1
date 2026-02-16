@@ -1,9 +1,9 @@
 name: Daily Swiss Case Law Scrape
 
 on:
-  schedule:
-    # Daily at 02:15 UTC (03:15 CET / 04:15 CEST)
-    - cron: '15 2 * * *'
+  # Disabled: VPS handles scraping (cron 01:00 UTC) and publishing (cron 04:00 UTC)
+  # schedule:
+  #   - cron: '15 2 * * *'
   workflow_dispatch:
     inputs:
       courts:
