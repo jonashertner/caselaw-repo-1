@@ -38,6 +38,8 @@ SCRAPERS = {
     "bpatger": ("scrapers.bpatger", "BPatGerScraper"),
     # Federal — regulatory
     "finma": ("scrapers.finma", "FINMAScraper"),
+    "weko": ("scrapers.weko", "WEKOScraper"),
+    "edoeb": ("scrapers.edoeb", "EDOEBScraper"),
     # Cantonal — implemented
     "ag_gerichte": ("scrapers.cantonal.ag_gerichte", "AGGerichteScraper"),
     "ai_gerichte": ("scrapers.cantonal.ai_gerichte", "AIGerichteScraper"),
