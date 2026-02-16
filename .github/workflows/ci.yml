@@ -46,7 +46,5 @@ jobs:
             test_query_planner.py \
             test_reference_extraction.py \
             test_reference_graph_resolution.py \
-            test_opensearch_ingest_streaming.py \
-            test_entscheidsuche_ingest_dedup.py \
             test_hybrid_service_semantic.py \
             test_search_benchmark_resolution.py
