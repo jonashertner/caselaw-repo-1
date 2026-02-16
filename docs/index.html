@@ -134,17 +134,17 @@ header .sub {
 
 /* ── KPI ── */
 .kpis {
-  display: flex; justify-content: center; gap: 72px;
-  margin: 40px 0 8px;
+  display: flex; justify-content: center; gap: 56px;
+  margin: 36px 0 8px;
 }
 .kpi { text-align: center; }
 .kpi-v {
-  font-family: var(--f-mono); font-size: 3.5rem; font-weight: 700;
-  letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums;
+  font-family: var(--f-mono); font-size: 2.25rem; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
 }
 .kpi-l {
-  font-size: var(--fs-xs); font-weight: 500; color: var(--tx3);
-  text-transform: uppercase; letter-spacing: 0.1em; margin-top: 10px;
+  font-size: var(--fs-2xs); font-weight: 600; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-top: 8px;
 }
 
 /* ── Updated line ── */
@@ -328,7 +328,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   .chart-row { grid-template-columns: 1fr; }
   .access-grid { grid-template-columns: 1fr; }
   .quick-strip { grid-template-columns: 1fr; }
-  .kpis { gap: 48px; }
+  .kpis { gap: 40px; }
   .section-nav { display: none; }
 }
 @media (max-width: 640px) {
@@ -336,8 +336,8 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   header { padding: 48px 0 12px; }
   header h1 { font-size: 1.75rem; }
   header::before { width: 100%; }
-  .kpis { gap: 40px; margin: 28px 0 4px; }
-  .kpi-v { font-size: 2.25rem; }
+  .kpis { gap: 36px; margin: 28px 0 4px; }
+  .kpi-v { font-size: 1.75rem; }
   section { margin-bottom: 48px; }
   .cg { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); }
   .tw { margin: 0 -16px; border-radius: 0; border-left: none; border-right: none; box-shadow: none; }
@@ -348,8 +348,8 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   .table-search input { width: 100%; }
 }
 @media (max-width: 380px) {
-  .kpi-v { font-size: 1.75rem; }
-  .kpis { gap: 32px; }
+  .kpi-v { font-size: 1.5rem; }
+  .kpis { gap: 28px; }
   .cg { grid-template-columns: repeat(4,1fr); }
 }
 </style>
