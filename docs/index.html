@@ -442,12 +442,6 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
     </div>
   </div>
 
-  <!-- Language trends stacked area -->
-  <div class="chart-card full-width hid" id="lang-trends-section" style="margin-bottom:20px">
-    <h3 data-t="chart_lang_trends">Language Trends (2005&#8211;present)</h3>
-    <div class="chart-canvas"><canvas id="c-lang-trends" height="260"></canvas></div>
-  </div>
-
   <!-- Federal courts -->
   <section id="sec-fed" class="hid">
     <div class="sh">
@@ -796,44 +790,6 @@ function renderCharts(data) {
         <span class="lang-pct">${((by_lang[k]/langTotal)*100).toFixed(1)}%</span>
       </div>
     `).join('');
-  }
-
-  // Language trends stacked area
-  const lby = data.language_by_year || {};
-  const trendYears = Object.keys(lby).sort();
-  if (trendYears.length > 2) {
-    const allLangs = ['de', 'fr', 'it', 'rm'];
-    const ctx4 = document.getElementById('c-lang-trends');
-    if (ctx4) {
-      const datasets = allLangs.map((lang, i) => ({
-        label: LANG_NAMES[lang] || lang,
-        data: trendYears.map(y => (lby[y] || {})[lang] || 0),
-        backgroundColor: chartColors[i] + '40',
-        borderColor: chartColors[i],
-        borderWidth: 1.5,
-        fill: true,
-        tension: 0.3,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-      }));
-      _charts.push(new Chart(ctx4, {
-        type: 'line',
-        data: { labels: trendYears, datasets },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, font: { size: 11 } } },
-            tooltip: { mode: 'index', intersect: false, callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.raw) } },
-          },
-          scales: {
-            x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 10 } } },
-            y: { stacked: true, grid: { color: brd2 }, ticks: { callback: v => v >= 1000 ? (v/1000)+'k' : v, font: { size: 10 } }, beginAtZero: true }
-          },
-          interaction: { mode: 'index', intersect: false },
-        }
-      }));
-      document.getElementById('lang-trends-section').classList.remove('hid');
-    }
   }
 
 }
