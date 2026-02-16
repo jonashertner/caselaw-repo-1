@@ -18,11 +18,14 @@ To implement a new Tribuna scraper:
         LOCALE = "de"
 
 Covered portals (as of Feb 2026):
-  - GR: https://entscheidsuche.gr.ch
+  - GR: https://entscheidsuche.gr.ch (old Tribuna version)
   - ZG VGR: https://verwaltungsgericht.zg.ch
   - BE ZSG: https://www.zsg-entscheide.apps.be.ch/tribunapublikation
-  - BE VGR: https://www.vg-urteile.apps.be.ch/tribunapublikation (503 as of Feb 2026)
-  - FR: https://entscheidsuche.fr.ch (DNS dead as of Feb 2026)
+  - BE VGR: https://www.vg-urteile.apps.be.ch/tribunapublikation (new Tribuna version)
+  - FR: https://publicationtc.fr.ch (new Tribuna version)
+
+Note: Different portals run different Tribuna compilations. The GWT permutation
+is auto-discovered from each portal's tribunavtplus.nocache.js at runtime.
 """
 from __future__ import annotations
 
@@ -36,10 +39,11 @@ from models import Decision, detect_language, extract_citations, make_decision_i
 
 logger = logging.getLogger(__name__)
 
-# GWT-RPC serialization policy hashes (shared across all Tribuna VTPlus portals)
+# GWT-RPC serialization policy hashes (shared across Tribuna VTPlus versions)
 _CONFIG_HASH = "7225438C30B96853F589E2336CAF98F1"
 _LOADTABLE_HASH = "CAC80118FB77794F1FDFC1B51371CC63"
-_GWT_PERMUTATION = "C91406E3C064F0230BE12F3EF5EDF1D6"
+# Fallback permutation (for portals where auto-discovery fails)
+_GWT_PERMUTATION_FALLBACK = "C91406E3C064F0230BE12F3EF5EDF1D6"
 
 # Regex patterns for parsing search responses
 _RE_TOTAL = re.compile(r"^//OK\[(\d+)")
@@ -96,16 +100,36 @@ class TribunaBaseScraper(BaseScraper):
     def _gwt_base(self) -> str:
         return f"{self.BASE_URL}/{self.TRIBUNA_PATH}"
 
-    @property
-    def _gwt_headers(self) -> dict:
+    def _discover_permutation(self) -> str:
+        """Auto-discover GWT permutation from the portal's nocache.js."""
+        try:
+            r = self.get(f"{self._gwt_base}/tribunavtplus.nocache.js")
+            # Extract 32-char uppercase hex hashes (GWT permutation candidates)
+            hashes = re.findall(r"[A-F0-9]{32}", r.text)
+            if hashes:
+                perm = hashes[0]
+                logger.info(f"[{self.court_code}] Auto-discovered GWT permutation: {perm}")
+                return perm
+        except Exception as e:
+            logger.debug(f"[{self.court_code}] Permutation discovery failed: {e}")
+        logger.warning(f"[{self.court_code}] Using fallback GWT permutation")
+        return _GWT_PERMUTATION_FALLBACK
+
+    def _gwt_headers_with(self, permutation: str) -> dict:
         return {
             "Content-Type": "text/x-gwt-rpc; charset=utf-8",
-            "X-GWT-Permutation": _GWT_PERMUTATION,
+            "X-GWT-Permutation": permutation,
             "X-GWT-Module-Base": f"{self._gwt_base}/",
         }
 
+    @property
+    def _gwt_headers(self) -> dict:
+        # Use cached permutation if available, otherwise fallback
+        perm = getattr(self, "_cached_permutation", _GWT_PERMUTATION_FALLBACK)
+        return self._gwt_headers_with(perm)
+
     def _init_session(self) -> str:
-        """Initialize session: GET base, readConfig, getBerechtigungen.
+        """Initialize session: GET base, discover permutation, readConfig, getBerechtigungen.
 
         Returns the encrypted credential string from config.
         """
@@ -114,6 +138,9 @@ class TribunaBaseScraper(BaseScraper):
             self.get(f"{self.BASE_URL}/")
         except Exception:
             pass
+
+        # Step 1b: Discover the correct GWT permutation for this portal
+        self._cached_permutation = self._discover_permutation()
 
         # Step 2: readConfigFile
         config_body = (

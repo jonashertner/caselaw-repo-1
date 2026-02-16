@@ -8,8 +8,7 @@ Coverage: Tribunal cantonal du canton de Fribourg
 Volume: ~14,000 decisions
 Language: fr/de (bilingual canton)
 
-Source: https://entscheidsuche.fr.ch
-NOTE: DNS was not resolving as of Feb 2026 — portal may be decommissioned.
+Source: https://publicationtc.fr.ch (formerly entscheidsuche.fr.ch)
 """
 from __future__ import annotations
 
@@ -19,7 +18,7 @@ from scrapers.cantonal.base_tribuna import TribunaBaseScraper
 class FRGerichteScraper(TribunaBaseScraper):
     CANTON = "FR"
     COURT_CODE_STR = "fr_gerichte"
-    BASE_URL = "https://entscheidsuche.fr.ch"
+    BASE_URL = "https://publicationtc.fr.ch"
     COURT_FILTER = ""
     LOCALE = "fr"
     REQUEST_DELAY = 2.5
