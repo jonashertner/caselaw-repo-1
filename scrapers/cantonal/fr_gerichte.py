@@ -19,7 +19,7 @@ class FRGerichteScraper(TribunaBaseScraper):
     CANTON = "FR"
     COURT_CODE_STR = "fr_gerichte"
     BASE_URL = "https://publicationtc.fr.ch"
-    COURT_FILTER = ""
+    COURT_FILTER = "TC"  # Tribunal cantonal
     LOCALE = "fr"
     REQUEST_DELAY = 2.5
     VERIFY_SSL = False  # Self-signed certificate

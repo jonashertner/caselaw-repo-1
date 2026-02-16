@@ -21,7 +21,7 @@ class BEVerwaltungsgerichtScraper(TribunaBaseScraper):
     CANTON = "BE"
     COURT_CODE_STR = "be_verwaltungsgericht"
     BASE_URL = "https://www.vg-urteile.apps.be.ch/tribunapublikation"
-    COURT_FILTER = ""
+    COURT_FILTER = "VG"  # Verwaltungsgericht
     LOCALE = "de"
     REQUEST_DELAY = 2.5
     VERIFY_SSL = False  # SSL verification issues
