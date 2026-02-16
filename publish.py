@@ -4,12 +4,14 @@ publish.py — Daily publishing pipeline for Swiss Case Law
 ==========================================================
 
 Orchestration script for VPS cron job. Runs the full pipeline:
-  1. Ingest new entscheidsuche.ch downloads (if entscheidsuche_ingest.py exists)
-  2. Build/update FTS5 database
-  3. Export JSONL → Parquet
-  4. Upload Parquet + dataset card to HuggingFace
-  5. Generate stats.json
-  6. Git commit + push docs/stats.json
+  1.  Ingest new entscheidsuche.ch downloads (if entscheidsuche_ingest.py exists)
+  2.  Build/update FTS5 database
+  2b. Quality report (optional)
+  2c. Build reference graph (citations + statutes, ~78 min)
+  3.  Export JSONL → Parquet
+  4.  Upload Parquet + dataset card to HuggingFace
+  5.  Generate stats.json
+  6.  Git commit + push docs/stats.json
 
 Each step is wrapped in try/except — failures are logged but don't block
 subsequent steps.
@@ -127,6 +129,30 @@ def step_2b_quality_report(dry_run: bool = False) -> bool:
          "--gate"],
         "Quality report",
         dry_run,
+    )
+
+
+def step_2c_build_reference_graph(dry_run: bool = False) -> bool:
+    """Step 2c: Build reference graph (citations + statutes)."""
+    logger.info("Step 2c: Build reference graph")
+
+    script = REPO_DIR / "search_stack" / "build_reference_graph.py"
+    if not script.exists():
+        logger.info("  build_reference_graph.py not found, skipping")
+        return True
+
+    if not DB_PATH.exists():
+        logger.info("  FTS5 database not found, skipping reference graph")
+        return True
+
+    graph_db = OUTPUT_DIR / "reference_graph.db"
+    return run_cmd(
+        [sys.executable, str(script),
+         "--source-db", str(DB_PATH),
+         "--db", str(graph_db)],
+        "Build reference graph",
+        dry_run,
+        timeout=7200,  # ~78 min for 1M decisions
     )
 
 
@@ -264,6 +290,7 @@ STEPS = [
     (1, "Ingest", step_1_ingest),
     (2, "Build FTS5", step_2_build_fts5),
     ("2b", "Quality Report", step_2b_quality_report),
+    ("2c", "Reference Graph", step_2c_build_reference_graph),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
     (5, "Generate Stats", step_5_generate_stats),
