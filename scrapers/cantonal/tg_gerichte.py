@@ -5,13 +5,15 @@ Scrapes court decisions from the Scroll Viewport / Confluence portal at
 rechtsprechung.tg.ch.
 
 Architecture:
-- GET /og/rbog-{year} → year listing page with decision links
-- GET /og/rbog-{year}-nr-{nn} → full decision HTML page
+- GET /og/rbog-{year} → OG year listing page with decision links
+- GET /og/rbog-{year}-nr-{nn} → OG full decision HTML page
+- GET /vg/tvr-{year} → VG year listing page with decision links
+- GET /vg/tvr-{year}-nr-{nn} → VG full decision HTML page
 - No authentication, no AJAX — pure server-rendered HTML
 - Full text inline in HTML
 
-Content: RBOG (Rechenschaftsbericht des Obergerichts) series
-Total: ~1,200 decisions (1994-present)
+Content: RBOG (Obergericht, ~1,200) + TVR (Verwaltungsgericht, ~900) series
+Total: ~2,100 decisions (1994/2000-present)
 Platform: Atlassian Confluence Cloud + Scroll Viewport
 """
 from __future__ import annotations
@@ -37,10 +39,16 @@ logger = logging.getLogger(__name__)
 BASE_URL = "https://rechtsprechung.tg.ch"
 
 # Regex patterns
-RE_RBOG_LINK = re.compile(r"/og/rbog-(\d{4})-nr-(\d+)")
+RE_DECISION_LINK = re.compile(r"/(og/rbog|vg/tvr)-(\d{4})-nr-(\d+)")
 RE_DOCKET = re.compile(r"([A-Z]+\.\d{4}\.\d+)")
 RE_DATE = re.compile(r"(\d{1,2})\.\s*(\w+)\s+(\d{4})")
 RE_DATE_NUMERIC = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
+
+# Court sections: (path_prefix, docket_prefix, start_year)
+SECTIONS = [
+    ("og", "rbog", "RBOG", 1994),   # Obergericht
+    ("vg", "tvr", "TVR", 2000),      # Verwaltungsgericht
+]
 
 # Month name to number (German)
 MONTH_MAP = {
@@ -95,34 +103,37 @@ class TGGerichteScraper(BaseScraper):
 
         total_yielded = 0
         today = date.today()
-        start_year = since_date.year if since_date else 1994
 
-        for year in range(today.year, start_year - 1, -1):
-            logger.info(f"TG: scanning {year}")
-            count = 0
-            for stub in self._discover_year(year):
-                if not self.state.is_known(stub["decision_id"]):
-                    if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
-                        continue
-                    total_yielded += 1
-                    count += 1
-                    yield stub
-            if count > 0:
-                logger.info(f"TG: {year}: {count} new stubs")
+        for section_path, series_slug, series_prefix, default_start in SECTIONS:
+            start_year = since_date.year if since_date else default_start
+            section_count = 0
+
+            for year in range(today.year, start_year - 1, -1):
+                for stub in self._discover_year(section_path, series_slug, series_prefix, year):
+                    if not self.state.is_known(stub["decision_id"]):
+                        if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
+                            continue
+                        total_yielded += 1
+                        section_count += 1
+                        yield stub
+
+            if section_count > 0:
+                logger.info(f"TG/{series_prefix}: {section_count} new stubs")
 
         logger.info(f"TG: discovery complete: {total_yielded} new stubs")
 
-    def _discover_year(self, year: int) -> Iterator[dict]:
+    def _discover_year(self, section_path: str, series_slug: str,
+                       series_prefix: str, year: int) -> Iterator[dict]:
         """Fetch year listing page and extract decision links."""
-        url = f"{BASE_URL}/og/rbog-{year}"
+        url = f"{BASE_URL}/{section_path}/{series_slug}-{year}"
         try:
             r = self.get(url)
         except Exception as e:
-            logger.error(f"TG: failed to fetch year page {year}: {e}")
+            logger.error(f"TG/{series_prefix}: failed to fetch year page {year}: {e}")
             return
 
         if r.status_code != 200:
-            logger.debug(f"TG: year page {year} returned {r.status_code}")
+            logger.debug(f"TG/{series_prefix}: year page {year} returned {r.status_code}")
             return
 
         soup = BeautifulSoup(r.text, "html.parser")
@@ -131,19 +142,19 @@ class TGGerichteScraper(BaseScraper):
         seen = set()
         for a in soup.find_all("a", href=True):
             href = a.get("href", "")
-            m = RE_RBOG_LINK.search(href)
+            m = RE_DECISION_LINK.search(href)
             if not m:
                 continue
 
-            link_year = int(m.group(1))
-            nr = int(m.group(2))
-            key = (link_year, nr)
+            link_year = int(m.group(2))
+            nr = int(m.group(3))
+            key = (series_prefix, link_year, nr)
             if key in seen:
                 continue
             seen.add(key)
 
             link_text = a.get_text(strip=True)
-            docket = f"RBOG-{link_year}-{nr}"
+            docket = f"{series_prefix}-{link_year}-{nr}"
 
             decision_id = make_decision_id("tg_gerichte", docket)
 
@@ -153,7 +164,7 @@ class TGGerichteScraper(BaseScraper):
                 "year": link_year,
                 "nr": nr,
                 "title": link_text[:200] if link_text else None,
-                "url": f"{BASE_URL}/og/rbog-{link_year}-nr-{nr}",
+                "url": f"{BASE_URL}/{section_path}/{series_slug}-{link_year}-nr-{nr}",
             }
 
     def fetch_decision(self, stub: dict) -> Decision | None:
