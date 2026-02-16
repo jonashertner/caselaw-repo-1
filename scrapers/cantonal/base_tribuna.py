@@ -7,7 +7,9 @@ Architecture (reverse-engineered Feb 2026):
 1. GET base URL → set session cookies
 2. POST readConfigFile() → get DLAConfig with encrypted credentials
 3. POST getBerechtigungen("","") → get permissions
-4. POST search(...) with 46 params → paginated results (20 per page)
+4. POST search(...) → paginated results (20 per page)
+   - Old Tribuna (GR, ZG): 46 params (20 search fields)
+   - New Tribuna (FR, BE VG): 47 params (21 search fields)
 5. GET ServletDownload/{docket}_{enc_path}?path=...&pathIsEncrypted=1 → PDF
 
 To implement a new Tribuna scraper:
@@ -88,6 +90,10 @@ class TribunaBaseScraper(BaseScraper):
     REQUEST_DELAY: float = 2.5
     MAX_PAGES: int = 1000        # 20 results/page = 20,000 max
     PAGE_SIZE: int = 20          # Fixed by Tribuna server
+    # Number of search field strings in the GWT-RPC search method.
+    # Old Tribuna (GR, ZG): 20 fields → 46-param search()
+    # New Tribuna (FR, BE VG): 21 fields → 47-param search()
+    SEARCH_FIELD_COUNT: int = 20
 
     # Overridable: the tribunavtplus subpath (usually "tribunavtplus")
     TRIBUNA_PATH: str = "tribunavtplus"
@@ -228,18 +234,21 @@ class TribunaBaseScraper(BaseScraper):
         # Build string table section (pipe-delimited)
         st = "|".join(strings)
 
-        # Type descriptors for 46 parameters
+        # Type descriptors — dynamic based on SEARCH_FIELD_COUNT
         # Params: String, String, ArrayList, Z, ArrayList,
-        #         20×String, 3×Integer, 2×String, 3×Map,
+        #         N×String (search fields), 3×I, 2×String, 3×Integer,
         #         4×String, Z, Map, 7×String
+        # N=20 → 46 params (old Tribuna), N=21 → 47 params (new Tribuna)
+        nf = self.SEARCH_FIELD_COUNT
+        num_params = 5 + nf + 21
+        field_types = "|".join(["5"] * nf)
         types = (
-            "5|5|6|7|6|"           # params 1-5
-            "5|5|5|5|5|5|5|5|5|5|" # params 6-15
-            "5|5|5|5|5|5|5|5|5|5|" # params 16-25
-            "8|8|8|5|5|"           # params 26-30
-            "9|9|9|5|5|5|5|"       # params 31-37
-            "7|10|"                # params 38-39
-            "5|5|5|5|5|5|5"        # params 40-46
+            f"5|5|6|7|6|"           # params 1-5
+            f"{field_types}|"        # params 6-(5+nf): search field strings
+            f"8|8|8|5|5|"           # I×3, String×2
+            f"9|9|9|5|5|5|5|"       # Integer×3, String×4
+            f"7|10|"                # Z, Map
+            f"5|5|5|5|5|5|5"        # String×7
         )
 
         # Value section — parameterized for page and total
@@ -249,8 +258,8 @@ class TribunaBaseScraper(BaseScraper):
         empty_ref = 11  # 1-based ref to "" (str[10])
         zero_ref = 12   # 1-based ref to "0" (str[11], always "0")
 
-        # 20 empty strings for search field values
-        empties = "|".join(["11"] * 20)
+        # N empty strings for search field values (20 or 21)
+        empties = "|".join(["11"] * nf)
 
         # Column definition map refs (HashMap<String,String>: key→label)
         col_refs = []
@@ -294,7 +303,7 @@ class TribunaBaseScraper(BaseScraper):
                 f"{empty_ref}|{empty_ref}|{zero_ref}|{zero_ref}|0|"
             )
 
-        return f"7|0|{num_strings}|{st}|1|2|3|4|46|{types}|{values}"
+        return f"7|0|{num_strings}|{st}|1|2|3|4|{num_params}|{types}|{values}"
 
     def _parse_search_response(self, text: str) -> tuple[int, list[dict]]:
         """Parse GWT-RPC search response.

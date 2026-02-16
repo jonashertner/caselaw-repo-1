@@ -25,3 +25,4 @@ class BEVerwaltungsgerichtScraper(TribunaBaseScraper):
     LOCALE = "de"
     REQUEST_DELAY = 2.5
     VERIFY_SSL = False  # SSL verification issues
+    SEARCH_FIELD_COUNT = 21  # New Tribuna version (47-param search)

@@ -23,3 +23,4 @@ class FRGerichteScraper(TribunaBaseScraper):
     LOCALE = "fr"
     REQUEST_DELAY = 2.5
     VERIFY_SSL = False  # Self-signed certificate
+    SEARCH_FIELD_COUNT = 21  # New Tribuna version (47-param search)
