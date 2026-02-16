@@ -9,7 +9,8 @@ Volume: ~18,000 decisions
 Language: de/fr
 
 Source: https://www.vg-urteile.apps.be.ch/tribunapublikation
-NOTE: Server was returning 503 as of Feb 2026 — may be temporarily down.
+NOTE: Server runs a newer Tribuna version (Feb 2026) where the search() method
+was replaced. Needs protocol update to use saveSearch + getInitialSearch.
 """
 from __future__ import annotations
 
@@ -23,3 +24,4 @@ class BEVerwaltungsgerichtScraper(TribunaBaseScraper):
     COURT_FILTER = ""
     LOCALE = "de"
     REQUEST_DELAY = 2.5
+    VERIFY_SSL = False  # SSL verification issues

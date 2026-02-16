@@ -22,3 +22,4 @@ class FRGerichteScraper(TribunaBaseScraper):
     COURT_FILTER = ""
     LOCALE = "fr"
     REQUEST_DELAY = 2.5
+    VERIFY_SSL = False  # Self-signed certificate

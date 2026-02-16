@@ -241,6 +241,12 @@ class BaseScraper(ABC):
             session.proxies = {"http": proxy, "https": proxy}
             logger.info(f"[{self.court_code}] Using proxy: {_redact_proxy_url(proxy)}")
 
+        # SSL verification (can be disabled per scraper for self-signed certs)
+        if hasattr(self, "VERIFY_SSL") and not self.VERIFY_SSL:
+            session.verify = False
+            import urllib3
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
         retry = Retry(
             total=3,
             backoff_factor=2,  # 2s, 4s, 8s
