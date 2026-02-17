@@ -225,8 +225,25 @@ def build_database(
     # Count existing
     existing = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
 
-    # Import from JSONL (run_scraper.py output)
+    # Seed checkpoint: if incremental mode, no checkpoint file, but DB already has data,
+    # create a checkpoint from current JSONL file sizes to avoid re-reading everything.
     jsonl_dir = output_dir / "decisions"
+    if incremental and checkpoint is None and existing > 0 and jsonl_dir.exists():
+        logger.info(
+            f"Seeding checkpoint from current file sizes (DB has {existing} rows)"
+        )
+        checkpoint = {}
+        for jf in sorted(jsonl_dir.glob("*.jsonl")):
+            checkpoint[jf.name] = {"size": jf.stat().st_size, "imported": 0}
+        # Save immediately so it persists even if interrupted
+        checkpoint_path.write_text(json.dumps({
+            "files": checkpoint,
+            "last_full_build": None,
+            "last_incremental": datetime.now(timezone.utc).isoformat(),
+        }, indent=2))
+        logger.info(f"Seeded checkpoint: {len(checkpoint)} files tracked")
+
+    # Import from JSONL (run_scraper.py output)
     jsonl_imported, jsonl_skipped, new_checkpoint = 0, 0, {}
     if jsonl_dir.exists():
         logger.info(f"Importing from JSONL: {jsonl_dir}")
