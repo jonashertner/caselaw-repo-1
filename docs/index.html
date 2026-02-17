@@ -250,20 +250,12 @@ section { margin-bottom: 72px; }
   font-size: var(--fs-2xs); font-weight: 600; margin-right: 2px;
   background: var(--ac-bg); color: var(--tx2);
 }
-/* Inline bar in table */
-.bar-cell { display: flex; align-items: center; gap: 8px; }
-.bar-fill {
-  height: 6px; border-radius: 3px; background: var(--bar);
-  transition: width 0.4s var(--ease); opacity: 0.7;
-}
-
 /* ── Canton grid ── */
 .cg { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 8px; }
 .cc2 {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r-sm);
   padding: 16px 6px 14px; text-align: center;
   transition: all 0.15s var(--ease); box-shadow: var(--glow);
-  position: relative; overflow: hidden;
 }
 .cc2:hover { border-color: var(--brd); }
 .cc2.empty { opacity: 0.25; }
@@ -278,10 +270,6 @@ section { margin-bottom: 72px; }
   display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;
 }
 .cc2 .canton-meta .lg { font-size: 0.5rem; padding: 0 4px; margin: 0; }
-.cc2 .canton-bar {
-  position: absolute; bottom: 0; left: 0; height: 2px;
-  background: var(--bar); opacity: 0.35; transition: width 0.4s var(--ease);
-}
 
 /* ── Access section ── */
 .access-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
@@ -477,7 +465,6 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <th data-k="name" data-t="th_court">Court</th>
         <th data-k="canton" data-t="th_canton">Canton</th>
         <th data-k="count" data-t="th_decisions">Decisions</th>
-        <th data-k="bar" class="hide-m"></th>
         <th data-k="earliest" class="hide-m" data-t="th_from">From</th>
         <th data-k="latest" class="hide-m" data-t="th_to">To</th>
       </tr></thead><tbody></tbody></table>
@@ -1021,7 +1008,6 @@ function renderAll(data) {
   const all = data.by_court || [];
   const fed = all.filter(c => c.canton === 'CH' || FED.has(c.court));
   const can = all.filter(c => c.canton !== 'CH' && !FED.has(c.court));
-  const maxCan = Math.max(...can.map(c => c.count), 1);
 
   if (fed.length) {
     const fedDelta = fed.reduce((s, c) => s + (dl.by_court?.[c.court] || 0), 0);
@@ -1041,13 +1027,11 @@ function renderAll(data) {
     const canData = can.map(c => ({
       ...c, name: courtName(c.court, c.canton),
       cantonName: CANTON_NAMES[c.canton] || c.canton,
-      barPct: Math.round((c.count / maxCan) * 100),
     }));
     sortable(document.getElementById('t-can'), canData, r => `<tr>
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
       <td>${r.cantonName}</td>
       <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
-      <td class="hide-m"><div class="bar-cell"><div class="bar-fill" style="width:${r.barPct}%;min-width:2px;max-width:120px"></div></div></td>
       <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
       <td class="d hide-m">${r.latest && r.latest !== 'None' ? r.latest : '\u2014'}</td></tr>`);
     document.getElementById('sec-can').classList.remove('hid');
@@ -1061,20 +1045,18 @@ function renderAll(data) {
     });
   }
 
-  // Canton grid with proportional bars + enrichment
+  // Canton grid
   const cm = {};
   (data.by_canton || []).forEach(c => { cm[c.canton] = c; });
-  const maxCantonCount = Math.max(...Object.values(cm).map(c => c.count), 1);
   document.getElementById('canton-grid').innerHTML = ALL_CANTONS.map(code => {
     const e = cm[code], v = e ? e.count : 0;
-    const barW = v ? Math.max(Math.round((v / maxCantonCount) * 100), 2) : 0;
     const langs = e && e.languages && e.languages.length ? e.languages.map(l => `<span class="lg">${l}</span>`).join('') : '';
     const courts = e && e.court_count ? `<span style="font-size:var(--fs-2xs);color:var(--tx3)">${e.court_count}</span>` : '';
     return `<div class="cc2${v ? '' : ' empty'}">
       <div class="k">${code}</div><div class="nm">${CANTON_NAMES[code]||code}</div>
       <div class="cv">${v ? fmt(v) : '\u2014'}${deltaTag(dl.by_canton?.[code])}</div>
       ${langs || courts ? `<div class="canton-meta">${courts}${langs}</div>` : ''}
-      <div class="canton-bar" style="width:${barW}%"></div></div>`;
+      </div>`;
   }).join('');
   document.getElementById('sec-cantons').classList.remove('hid');
 
