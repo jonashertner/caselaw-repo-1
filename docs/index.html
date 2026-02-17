@@ -321,6 +321,8 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   margin-right: 8px; vertical-align: -2px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+.delta { font-size: var(--fs-2xs); font-family: var(--f-mono); color: var(--green);
+  background: var(--green-bg); padding: 1px 6px; border-radius: 9px; margin-left: 6px; white-space: nowrap; }
 .hid { display: none !important; }
 
 /* ── Responsive ── */
@@ -995,13 +997,16 @@ function exportCSV(data, filename) {
   URL.revokeObjectURL(a.href);
 }
 
+function deltaTag(n) { return n > 0 ? `<span class="delta">+${fmt(n)}</span>` : ''; }
+
 function renderAll(data) {
   const range = data.date_range || {};
   const cantonCount = (data.by_canton || []).length;
 
   // KPIs — two hero numbers
+  const dl = data.delta || {};
   document.getElementById('kpis').innerHTML = `
-    <div class="kpi"><div class="kpi-v">${fmt(data.total)}</div><div class="kpi-l">${t('kpi_decisions')}</div></div>
+    <div class="kpi"><div class="kpi-v">${fmt(data.total)}${deltaTag(dl.total)}</div><div class="kpi-l">${t('kpi_decisions')}</div></div>
     <div class="kpi"><div class="kpi-v">${fmt(data.court_count || 0)}</div><div class="kpi-l">${t('kpi_courts')}</div></div>`;
 
   // Last Updated — prominent, below KPIs
@@ -1019,10 +1024,11 @@ function renderAll(data) {
   const maxCan = Math.max(...can.map(c => c.count), 1);
 
   if (fed.length) {
-    document.getElementById('fed-n').textContent = fmt(fed.reduce((s, c) => s + c.count, 0));
+    const fedDelta = fed.reduce((s, c) => s + (dl.by_court?.[c.court] || 0), 0);
+    document.getElementById('fed-n').innerHTML = fmt(fed.reduce((s, c) => s + c.count, 0)) + deltaTag(fedDelta);
     sortable(document.getElementById('t-fed'), fed.map(c => ({ ...c, name: courtName(c.court) })), r => `<tr>
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
-      <td class="n">${fmt(r.count)}</td>
+      <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
       <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
       <td class="d hide-m">${r.latest && r.latest !== 'None' ? r.latest : '\u2014'}</td>
       <td>${ltags(r.languages)}</td></tr>`);
@@ -1030,7 +1036,8 @@ function renderAll(data) {
   }
 
   if (can.length) {
-    document.getElementById('can-n').textContent = fmt(can.reduce((s, c) => s + c.count, 0));
+    const canDelta = can.reduce((s, c) => s + (dl.by_court?.[c.court] || 0), 0);
+    document.getElementById('can-n').innerHTML = fmt(can.reduce((s, c) => s + c.count, 0)) + deltaTag(canDelta);
     const canData = can.map(c => ({
       ...c, name: courtName(c.court, c.canton),
       cantonName: CANTON_NAMES[c.canton] || c.canton,
@@ -1039,7 +1046,7 @@ function renderAll(data) {
     sortable(document.getElementById('t-can'), canData, r => `<tr>
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
       <td>${r.cantonName}</td>
-      <td class="n">${fmt(r.count)}</td>
+      <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
       <td class="hide-m"><div class="bar-cell"><div class="bar-fill" style="width:${r.barPct}%;min-width:2px;max-width:120px"></div></div></td>
       <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
       <td class="d hide-m">${r.latest && r.latest !== 'None' ? r.latest : '\u2014'}</td></tr>`);
@@ -1065,7 +1072,7 @@ function renderAll(data) {
     const courts = e && e.court_count ? `<span style="font-size:var(--fs-2xs);color:var(--tx3)">${e.court_count}</span>` : '';
     return `<div class="cc2${v ? '' : ' empty'}">
       <div class="k">${code}</div><div class="nm">${CANTON_NAMES[code]||code}</div>
-      <div class="cv">${v ? fmt(v) : '\u2014'}</div>
+      <div class="cv">${v ? fmt(v) : '\u2014'}${deltaTag(dl.by_canton?.[code])}</div>
       ${langs || courts ? `<div class="canton-meta">${courts}${langs}</div>` : ''}
       <div class="canton-bar" style="width:${barW}%"></div></div>`;
   }).join('');

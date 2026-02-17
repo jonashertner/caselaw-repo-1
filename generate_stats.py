@@ -265,11 +265,57 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     stats = generate_stats(db_path)
+
+    # ── Compute deltas vs previous stats.json ──
+    prev = {}
+    if output_path.exists():
+        try:
+            with open(output_path, "r", encoding="utf-8") as f:
+                prev = json.load(f)
+            logger.info("Loaded previous stats.json for delta computation")
+        except Exception as e:
+            logger.warning(f"Could not load previous stats.json: {e}")
+
+    if prev:
+        prev_total = prev.get("total", 0)
+        delta_total = stats["total"] - prev_total
+
+        # by_court delta (only where delta > 0)
+        prev_court_counts = {}
+        for c in prev.get("by_court", []):
+            prev_court_counts[c["court"]] = c["count"]
+        delta_by_court = {}
+        for c in stats["by_court"]:
+            d = c["count"] - prev_court_counts.get(c["court"], 0)
+            if d > 0:
+                delta_by_court[c["court"]] = d
+
+        # by_canton delta (only where delta > 0)
+        prev_canton_counts = {}
+        for c in prev.get("by_canton", []):
+            prev_canton_counts[c["canton"]] = c["count"]
+        delta_by_canton = {}
+        for c in stats["by_canton"]:
+            d = c["count"] - prev_canton_counts.get(c["canton"], 0)
+            if d > 0:
+                delta_by_canton[c["canton"]] = d
+
+        stats["delta"] = {
+            "total": delta_total,
+            "by_court": delta_by_court,
+            "by_canton": delta_by_canton,
+            "previous_generated_at": prev.get("generated_at"),
+        }
+    else:
+        stats["delta"] = {"total": 0, "by_court": {}, "by_canton": {}, "previous_generated_at": None}
+
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=2, ensure_ascii=False)
 
+    delta_total = stats["delta"]["total"]
+    delta_str = f" (+{delta_total} new)" if delta_total > 0 else ""
     logger.info(f"Stats written to {output_path}")
-    print(f"Total: {stats['total']} decisions, {stats['court_count']} courts")
+    print(f"Total: {stats['total']} decisions, {stats['court_count']} courts{delta_str}")
 
 
 if __name__ == "__main__":
