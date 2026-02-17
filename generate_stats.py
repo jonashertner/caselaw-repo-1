@@ -238,6 +238,59 @@ def generate_stats(db_path: Path) -> dict:
     return stats
 
 
+def collect_scraper_health(repo_dir: Path) -> dict | None:
+    """Read scraper health JSON, enrich with state counts and JSONL file info."""
+    health_path = repo_dir / "logs" / "scraper_health.json"
+    if not health_path.exists():
+        logger.info("No scraper_health.json found, skipping health data")
+        return None
+
+    try:
+        with open(health_path, "r", encoding="utf-8") as f:
+            health = json.load(f)
+    except Exception as e:
+        logger.warning(f"Could not read scraper_health.json: {e}")
+        return None
+
+    scrapers = health.get("scrapers", {})
+    state_dir = repo_dir / "state"
+    output_dir = repo_dir / "output" / "decisions"
+
+    for court, info in scrapers.items():
+        # State file line count = total known decisions
+        state_file = state_dir / f"{court}.jsonl"
+        if state_file.exists():
+            try:
+                with open(state_file, "rb") as f:
+                    info["state_count"] = sum(1 for _ in f)
+            except Exception:
+                info["state_count"] = None
+        else:
+            info["state_count"] = None
+
+        # JSONL output file size and mtime
+        jsonl_file = output_dir / f"{court}.jsonl"
+        if jsonl_file.exists():
+            try:
+                st = jsonl_file.stat()
+                info["jsonl_size_mb"] = round(st.st_size / (1024 * 1024), 1)
+                info["jsonl_mtime"] = datetime.fromtimestamp(
+                    st.st_mtime, tz=timezone.utc
+                ).isoformat()
+            except Exception:
+                info["jsonl_size_mb"] = None
+                info["jsonl_mtime"] = None
+        else:
+            info["jsonl_size_mb"] = None
+            info["jsonl_mtime"] = None
+
+    return {
+        "run_at": health.get("run_at"),
+        "run_duration_s": health.get("run_duration_s"),
+        "scrapers": scrapers,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate stats.json from FTS5 database")
     parser.add_argument(
@@ -265,6 +318,12 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     stats = generate_stats(db_path)
+
+    # ── Scraper health ──
+    repo_dir = Path(__file__).parent.resolve()
+    scraper_health = collect_scraper_health(repo_dir)
+    if scraper_health:
+        stats["scraper_health"] = scraper_health
 
     # ── Compute deltas vs previous stats.json ──
     prev = {}

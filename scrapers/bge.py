@@ -608,6 +608,7 @@ if __name__ == "__main__":
     )
 
     decisions = scraper.run(since_date=since, max_decisions=args.max)
+    scraper.mark_run_complete(decisions)
 
     print(f"\n{'='*60}")
     print(f"Scraped {len(decisions)} BGE Leitentscheide")

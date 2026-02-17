@@ -308,4 +308,5 @@ if __name__ == "__main__":
 
     scraper = BPatGerScraper()
     decisions = scraper.run(max_decisions=args.max)
+    scraper.mark_run_complete(decisions)
     print(f"Scraped {len(decisions)} BPatGer decisions")

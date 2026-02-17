@@ -649,6 +649,7 @@ if __name__ == "__main__":
         )
     scraper = BVGerScraper()
     decisions = scraper.run(since_date=since, max_decisions=args.max)
+    scraper.mark_run_complete(decisions)
     print(f"Scraped {len(decisions)} BVGer decisions")
     for d in decisions[:5]:
         print(

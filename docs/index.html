@@ -346,6 +346,14 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
 @keyframes spin { to { transform: rotate(360deg); } }
 .delta { font-size: var(--fs-2xs); font-family: var(--f-mono); color: var(--green);
   background: var(--green-bg); padding: 1px 6px; border-radius: 9px; margin-left: 6px; white-space: nowrap; }
+.pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:var(--fs-xs); font-weight:600; }
+.pill-ok { background:#22863a22; color:var(--green); }
+.pill-fail { background:#d1242f22; color:var(--ac); }
+.pill-stale { background:#dbab0922; color:#b08800; }
+[data-theme="dark"] .pill-ok { background:#22863a33; }
+[data-theme="dark"] .pill-fail { background:#d1242f33; }
+[data-theme="dark"] .pill-stale { background:#dbab0933; color:#d4a017; }
+.health-meta { font-size:var(--fs-sm); color:var(--tx2); font-family:var(--f-mono); margin-bottom:12px; }
 .hid { display: none !important; }
 
 /* ── Responsive ── */
@@ -418,6 +426,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
       <a href="#sec-can" data-t="nav_cantonal">Cantonal</a>
       <a href="#sec-cantons" data-t="nav_cantons">Cantons</a>
       <a href="#sec-tree" data-t="nav_browse">Browse</a>
+      <a href="#sec-health" data-t="nav_health">Health</a>
       <a href="#sec-access" data-t="nav_access">Access</a>
     </div>
   </div>
@@ -539,6 +548,26 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
     <div class="tree" id="tree-browser"></div>
   </section>
 
+  <!-- Scraper Health -->
+  <section id="sec-health" class="hid">
+    <div class="sh">
+      <h2 data-t="health_title">Scraper Health</h2>
+      <span class="badge" id="health-n"></span>
+    </div>
+    <div class="health-meta hid" id="health-meta"></div>
+    <div class="tw">
+      <table class="ct" id="t-health"><thead><tr>
+        <th data-k="name" data-t="th_court">Court</th>
+        <th data-k="status" data-t="th_status">Status</th>
+        <th data-k="new_count" data-t="th_new">New</th>
+        <th data-k="duration_s" data-t="th_duration">Duration</th>
+        <th data-k="state_count" class="hide-m" data-t="th_state">Total Known</th>
+        <th data-k="jsonl_size_mb" class="hide-m" data-t="th_jsonl_size">JSONL</th>
+        <th data-k="jsonl_mtime" class="hide-m" data-t="th_last_data">Last Data</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </section>
+
   <!-- Access -->
   <section id="sec-access">
     <div class="sh"><h2 data-t="access">Access the Data</h2></div>
@@ -612,6 +641,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
     quick_search:'Volltextsuche', quick_search_desc:'MCP-Server f\u00fcr Claude und andere AI-Tools',
     quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
+    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_stale:'Veraltet',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -632,6 +662,7 @@ const I18N = {
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
     quick_search:'Recherche', quick_search_desc:'Serveur MCP pour Claude et autres outils IA',
     quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
+    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_stale:'P\u00e9rim\u00e9',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -652,6 +683,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
     quick_search:'Ricerca', quick_search_desc:'Server MCP per Claude e altri strumenti IA',
     quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
+    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_stale:'Obsoleto',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -672,6 +704,7 @@ const I18N = {
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
     quick_search:'Tschertga', quick_search_desc:'Server MCP per Claude ed auters utensils IA',
     quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
+    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_stale:'Vegl',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -692,6 +725,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
     quick_search:'Search', quick_search_desc:'MCP server for Claude and other AI tools',
     quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
+    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_stale:'Stale',
   },
 };
 
@@ -1161,6 +1195,66 @@ function renderAll(data) {
     hd.addEventListener('click', () => hd.parentElement.classList.toggle('open'));
   });
   document.getElementById('sec-tree').classList.remove('hid');
+
+  // Scraper health
+  const sh = data.scraper_health;
+  if (sh && sh.scrapers) {
+    const NOW = Date.now();
+    const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
+    const scrapers = Object.entries(sh.scrapers).map(([code, s]) => {
+      let status = s.success ? 'ok' : 'fail';
+      if (s.success && s.new_count === 0 && s.jsonl_mtime) {
+        const age = NOW - new Date(s.jsonl_mtime).getTime();
+        if (age > SEVEN_DAYS) status = 'stale';
+      }
+      return {
+        code, name: courtName(code),
+        status, status_ord: status === 'ok' ? 0 : status === 'stale' ? 1 : 2,
+        new_count: s.new_count || 0,
+        duration_s: s.duration_s || 0,
+        state_count: s.state_count,
+        jsonl_size_mb: s.jsonl_size_mb,
+        jsonl_mtime: s.jsonl_mtime,
+        error: s.error,
+      };
+    });
+
+    const okCount = scrapers.filter(s => s.status === 'ok').length;
+    document.getElementById('health-n').textContent = `${okCount}/${scrapers.length} ${t('health_ok')}`;
+
+    // Meta line: last run info
+    if (sh.run_at) {
+      const rd = new Date(sh.run_at);
+      const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
+      const durMin = sh.run_duration_s ? Math.round(sh.run_duration_s / 60) : 0;
+      const metaEl = document.getElementById('health-meta');
+      metaEl.textContent = `${t('health_run_at')}: ${rd.toLocaleDateString(loc, { day:'numeric', month:'short', year:'numeric' })}, ${durMin} min`;
+      metaEl.classList.remove('hid');
+    }
+
+    function fmtDur(s) {
+      if (s == null) return '\u2014';
+      if (s < 60) return Math.round(s) + 's';
+      if (s < 3600) return Math.floor(s/60) + 'm ' + Math.round(s%60) + 's';
+      return Math.floor(s/3600) + 'h ' + Math.round((s%3600)/60) + 'm';
+    }
+
+    const pillLabel = { ok: t('health_ok'), fail: t('health_fail'), stale: t('health_stale') };
+    sortable(document.getElementById('t-health'), scrapers, r => {
+      const pill = `<span class="pill pill-${r.status}">${pillLabel[r.status]}</span>`;
+      const mtime = r.jsonl_mtime ? r.jsonl_mtime.slice(0, 10) : '\u2014';
+      const title = r.error ? ` title="${r.error.replace(/"/g, '&quot;').slice(0, 200)}"` : '';
+      return `<tr${title}>
+        <td><span class="cn">${r.name}</span><span class="cc">${r.code}</span></td>
+        <td>${pill}</td>
+        <td class="n">${r.new_count > 0 ? '+' + fmt(r.new_count) : '0'}</td>
+        <td class="n">${fmtDur(r.duration_s)}</td>
+        <td class="n hide-m">${r.state_count != null ? fmt(r.state_count) : '\u2014'}</td>
+        <td class="n hide-m">${r.jsonl_size_mb != null ? r.jsonl_size_mb + ' MB' : '\u2014'}</td>
+        <td class="d hide-m">${mtime}</td></tr>`;
+    }, 'status_ord');
+    document.getElementById('sec-health').classList.remove('hid');
+  }
 
   // Footer timestamp
   if (data.generated_at) {

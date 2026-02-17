@@ -1246,4 +1246,5 @@ if __name__ == "__main__":
         for d in decisions:
             f.write(d.model_dump_json() + "\n")
 
+    scraper.mark_run_complete(decisions)
     print(f"Scraped {len(decisions)} decisions -> {out_file}")

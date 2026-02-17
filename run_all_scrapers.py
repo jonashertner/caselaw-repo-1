@@ -33,6 +33,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import subprocess
 import sys
@@ -253,6 +254,24 @@ def main():
         for r in results:
             if not r["success"]:
                 logger.info(f"    - {r['court']}: {r['error']}")
+
+    # Persist health data for dashboard
+    health = {
+        "run_at": datetime.now(timezone.utc).isoformat(),
+        "run_duration_s": round(total_elapsed, 1),
+        "scrapers": {
+            r["court"]: {
+                "success": r["success"],
+                "new_count": r["new_count"],
+                "duration_s": round(r["duration"], 1),
+                "error": r["error"],
+            }
+            for r in results
+        },
+    }
+    health_path = REPO_DIR / "logs" / "scraper_health.json"
+    health_path.write_text(json.dumps(health, indent=2))
+    logger.info(f"Health data written to {health_path}")
 
     # Completeness mode: fail when any scraper fails.
     if failed > 0:

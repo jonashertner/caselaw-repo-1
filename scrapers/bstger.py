@@ -320,4 +320,5 @@ if __name__ == "__main__":
     since = date.fromisoformat(args.since) if args.since else None
     scraper = BStGerScraper()
     decisions = scraper.run(since_date=since, max_decisions=args.max)
+    scraper.mark_run_complete(decisions)
     print(f"Scraped {len(decisions)} BStGer decisions")

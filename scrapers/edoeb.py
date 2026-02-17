@@ -273,6 +273,7 @@ if __name__ == "__main__":
     since = date.fromisoformat(args.since) if args.since else None
     scraper = EDOEBScraper()
     decisions = scraper.run(since_date=since, max_decisions=args.max)
+    scraper.mark_run_complete(decisions)
     for d in decisions:
         print(f"  {d.decision_id}  {d.decision_date}  {len(d.full_text)} chars  {d.title[:60]}")
     print(f"\nScraped {len(decisions)} EDÖB decisions")
