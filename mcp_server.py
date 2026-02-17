@@ -10,7 +10,7 @@ Architecture:
         ↓ download Parquet files
     ~/.swiss-caselaw/decisions.db  (SQLite + FTS5)
         ↓ search via MCP stdio
-    Claude / Cursor / any MCP client
+    Claude / any MCP client
 
 Installation:
     pip install mcp pydantic huggingface_hub pyarrow

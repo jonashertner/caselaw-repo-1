@@ -100,7 +100,7 @@ The dataset is updated daily. To get the latest decisions, ask Claude to run the
 
 ### Other MCP clients
 
-The same server works with any MCP-compatible client. For Claude Desktop or Cursor, add to the JSON config:
+The same server works with any MCP-compatible client. For Claude Desktop, add to the JSON config:
 
 #### Claude Desktop extension (`.mcpb`) (recommended)
 
@@ -136,13 +136,12 @@ Install it in Claude Desktop:
 On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
 
 - **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows)
-- **Cursor**: `.cursor/mcp.json` in your project root
 
 ### What the MCP server can do
 
 | Tool | Description |
 |------|-------------|
-| `search_decisions` | Full-text search with filters (court, canton, language, date range) |
+| `search_decisions` | Full-text search with filters (court, canton, language, date range, chamber, decision type) |
 | `get_decision` | Fetch a single decision by docket number or ID |
 | `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |
@@ -160,7 +159,7 @@ On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
 │   └── data/
 │       ├── bger.parquet
 │       ├── bvger.parquet
-│       └── ...       # 88 files, one per court
+│       └── ...       # 93 files, one per court
 └── decisions.db      # SQLite FTS5 search index (~48 GB)
 ```
 
@@ -168,7 +167,7 @@ All data stays on your machine. No API calls are made during search — the MCP 
 
 **Database structure.** `decisions.db` is a single SQLite file with two tables:
 
-- **`decisions`** — the main table with one row per decision. Holds all 22 indexed columns (decision_id, court, canton, docket_number, full_text, regeste, etc.) plus a `json_data` column with the complete 34-field record. Indexed on `court`, `canton`, `decision_date`, `language`, and `docket_number` for fast filtered queries.
+- **`decisions`** — the main table with one row per decision. Holds all 23 columns (decision_id, court, canton, chamber, docket_number, full_text, regeste, etc.) plus a `json_data` column with the complete 34-field record. Indexed on `court`, `canton`, `decision_date`, `language`, `docket_number`, `chamber`, and `decision_type` for fast filtered queries.
 
 - **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 1M+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
 
@@ -227,12 +226,13 @@ python3 search_stack/build_reference_graph.py \
   --db output/reference_graph.db
 ```
 
-Then set:
+Then point the server to it:
 
 ```bash
 export SWISS_CASELAW_GRAPH_DB=output/reference_graph.db
-export SWISS_CASELAW_GRAPH_SIGNALS=1
 ```
+
+Graph signals are enabled by default. To disable them, set `SWISS_CASELAW_GRAPH_SIGNALS=0`.
 
 ---
 
@@ -405,19 +405,28 @@ Full schema definition: [`models.py`](models.py)
 | BGE Leading Cases | `bge` | ~21,000 | 1954–present | bger.ch |
 | Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present | bvger.ch |
 | Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2005–present | bstger.weblaw.ch |
-| Federal Patent Court (BPatGer) | `bpatger` | ~100 | 2012–present | bpatger.ch |
+| Federal Admin. Practice (VPB) | `ch_vb` | ~5,600 | 1982–2016 | bk.admin.ch |
+| ECHR (Swiss cases) | `bge_egmr` | ~470 | — | bger.ch |
+| FINMA | `finma` | ~400 | 2014–2024 | finma.ch |
+| EDÖB (Data Protection) | `edoeb` | ~400 | 2002–present | edoeb.admin.ch |
+| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch |
+| Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch |
+| Sports Tribunal | `ta_sst` | ~50 | 2024–present | sportstribunal.ch |
+| Federal Council | `ch_bundesrat` | ~15 | 2012–present | admin.ch |
 
 ### Cantonal courts
 
-Courts across all 26 cantons. The largest cantonal collections:
+93 courts across all 26 cantons. The largest cantonal collections:
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|
-| Genève (GE) | 1 | ~78,000 | 2000–present |
-| Vaud (VD) | 1 | ~75,000 | 2002–present |
-| Ticino (TI) | 1 | ~58,000 | 2006–present |
-| Zürich (ZH) | 6 | ~46,000 | 2005–present |
-| Bern (BE) | 2 | ~11,000 | 2010–present |
+| Vaud (VD) | 3 | ~155,000 | 1984–present |
+| Zürich (ZH) | 20 | ~126,000 | 1980–present |
+| Genève (GE) | 1 | ~78,000 | 1993–present |
+| Ticino (TI) | 1 | ~58,000 | 1995–present |
+| St. Gallen (SG) | 7 | ~35,000 | 2001–present |
+| Aargau (AG) | 18 | ~10,000 | 1993–present |
+| Bern (BE) | 6 | ~16,000 | 2002–present |
 
 All 26 cantons covered: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 
@@ -432,27 +441,25 @@ Live per-court statistics: **[Dashboard](https://jonashertner.github.io/caselaw-
                         │                  Daily Pipeline                  │
                         │                                                  │
 Court websites ────────►│  Scrapers ──► JSONL ──┬──► Parquet ──► HuggingFace
-  bger.ch               │  (38 scrapers,        │                          │
+  bger.ch               │  (43 scrapers,        │                          │
   bvger.ch              │   rate-limited,        └──► FTS5 DB ──► MCP Server
   cantonal portals      │   resumable)                                     │
   entscheidsuche.ch     │                                                  │
-                        │  01:00 UTC  scrape     03:15 UTC  publish        │
+                        │  01:00 UTC  scrape     04:00 UTC  publish        │
                         └──────────────────────────────────────────────────┘
 ```
 
 ### Step by step
 
-1. **Scrape** (01:00 UTC daily) — 38 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
+1. **Scrape** (01:00 UTC daily) — 43 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
 
-2. **Deduplicate** — Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata.
+2. **Build search index** (04:00 UTC) — All JSONL files are ingested, deduplicated, and loaded into a SQLite FTS5 database for full-text search. Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata. A quality enrichment step fills in missing titles, regestes, and content hashes.
 
-3. **Build search index** (03:15 UTC) — All JSONL files are loaded into a SQLite FTS5 database for full-text search. This powers the MCP server.
+3. **Export** — JSONL files are converted to Parquet (one file per court) with a fixed 34-field schema.
 
-4. **Export** — JSONL files are converted to Parquet (one file per court) with a fixed 34-field schema.
+4. **Upload** — Parquet files are pushed to HuggingFace. The MCP server and `datasets` library pick up the new data automatically.
 
-5. **Upload** — Parquet files are pushed to HuggingFace. The MCP server and `datasets` library pick up the new data automatically.
-
-6. **Update dashboard** — `stats.json` is regenerated and pushed to GitHub Pages.
+5. **Update dashboard** — `stats.json` is regenerated and pushed to GitHub Pages.
 
 ---
 
@@ -488,7 +495,7 @@ python run_scraper.py zh_gerichte --max 10 -v
 
 Output is written to `output/decisions/{court}.jsonl` — one JSON object per line, one file per court. The scraper remembers what it has already fetched (state stored in `state/`), so you can run it repeatedly to get only new decisions.
 
-38 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://jonashertner.github.io/caselaw-repo-1/) for per-court statistics.
+43 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://jonashertner.github.io/caselaw-repo-1/) for per-court statistics.
 
 ### Build a local search database
 
@@ -496,7 +503,7 @@ Output is written to `output/decisions/{court}.jsonl` — one JSON object per li
 python build_fts5.py --output output -v
 ```
 
-This reads all JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. For 1M decisions, this takes about 3 hours and produces a ~43 GB database.
+This reads all JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. For 1M decisions, this takes about 3 hours and produces a ~48 GB database.
 
 ### Export to Parquet
 
@@ -513,7 +520,8 @@ Converts JSONL files to Parquet format (one file per court). Output goes to `out
 | Source | What | How |
 |--------|------|-----|
 | **Official court websites** | Federal courts (bger.ch, bvger.ch, bstger.ch, bpatger.ch) | JSON APIs, structured HTML |
-| **Cantonal court portals** | 26 cantonal platforms (Weblaw, Entscheidsammlungen, custom portals) | Court-specific scrapers |
+| **Federal regulatory bodies** | FINMA, WEKO, EDÖB, VPB | Sitecore/custom APIs |
+| **Cantonal court portals** | 26 cantonal platforms (Weblaw, Tribuna, FindInfo, custom portals) | Court-specific scrapers |
 | **[entscheidsuche.ch](https://entscheidsuche.ch)** | Community-maintained archive of Swiss court decisions | Bulk download + ingest |
 
 Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The most metadata-rich version is kept.
