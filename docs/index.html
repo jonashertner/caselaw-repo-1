@@ -555,8 +555,6 @@ const I18N = {
     access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
     access_mcp_desc:'Lokale Volltextsuche via Claude Code, Cursor oder andere MCP-Clients. L\u00e4dt ~5 GB von HuggingFace herunter, baut einen ~48 GB Suchindex auf Ihrem Rechner. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Einrichtung &rarr;</a>',
     access_api_desc:'Abfragen via HuggingFace Datasets Server API',
-    court_bger:'Bundesgericht', court_bge:'BGE Leitentscheide',
-    court_bvger:'Bundesverwaltungsgericht', court_bstger:'Bundesstrafgericht', court_bpatger:'Bundespatentgericht',
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_access:'Zugang',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
@@ -576,8 +574,6 @@ const I18N = {
     access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
     access_mcp_desc:'Recherche locale plein texte via Claude Code, Cursor ou tout client MCP. T\u00e9l\u00e9charge ~5 Go depuis HuggingFace, construit un index de recherche de ~48 Go sur votre machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guide d\u2019installation &rarr;</a>',
     access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
-    court_bger:'Tribunal f\u00e9d\u00e9ral', court_bge:'ATF',
-    court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_access:'Acc\u00e8s',
     search_placeholder:'Rechercher...', csv_export:'CSV',
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
@@ -597,8 +593,6 @@ const I18N = {
     access_hf_desc:'Scarica il dataset completo in formato Parquet',
     access_mcp_desc:'Ricerca locale full-text via Claude Code, Cursor o qualsiasi client MCP. Scarica ~5 GB da HuggingFace, crea un indice di ricerca di ~48 GB sulla tua macchina. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida all\u2019installazione &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
-    court_bger:'Tribunale federale', court_bge:'DTF',
-    court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_access:'Accesso',
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
@@ -618,8 +612,6 @@ const I18N = {
     access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
     access_mcp_desc:'Tschertga locala en text cumplain via Claude Code, Cursor u mintga client MCP. Telechargia ~5 GB da HuggingFace, construescha in index da tschertga da ~48 GB sin tes computer. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
     access_api_desc:'Dumondas via HuggingFace Datasets Server API',
-    court_bger:'Tribunal federal', court_bge:'DTF',
-    court_bvger:'TAF', court_bstger:'TPF', court_bpatger:'TFB',
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_access:'Access',
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
@@ -639,8 +631,6 @@ const I18N = {
     access_hf_desc:'Download the full dataset as Parquet files',
     access_mcp_desc:'Local full-text search via Claude Code, Cursor, or any MCP client. Downloads ~5 GB from HuggingFace, builds a ~48 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
-    court_bger:'Federal Supreme Court', court_bge:'Leading Decisions (BGE)',
-    court_bvger:'Federal Administrative Court', court_bstger:'Federal Criminal Court', court_bpatger:'Federal Patent Court',
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_access:'Access',
     search_placeholder:'Search courts...', csv_export:'CSV',
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
@@ -705,9 +695,138 @@ const ALL_CANTONS = ['ZH','BE','LU','UR','SZ','OW','NW','GL','ZG','FR',
   'SO','BS','BL','SH','AR','AI','SG','GR','AG','TG','TI','VD','VS','NE','GE','JU'];
 const LANG_NAMES = { de:'Deutsch', fr:'Fran\u00e7ais', it:'Italiano', rm:'Rumantsch' };
 
+/* \u2500\u2500 Court display names {de, fr, en}; it\u2192fr fallback, rm\u2192de fallback \u2500\u2500 */
+const COURT_DISPLAY = {
+  // Federal
+  bger:       {de:'Bundesgericht',              fr:'Tribunal f\u00e9d\u00e9ral',              en:'Federal Supreme Court'},
+  bge:        {de:'BGE Leitentscheide',         fr:'ATF',                           en:'Leading Decisions (BGE)'},
+  bvger:      {de:'Bundesverwaltungsgericht',   fr:'TAF',                           en:'Federal Administrative Court'},
+  bstger:     {de:'Bundesstrafgericht',         fr:'TPF',                           en:'Federal Criminal Court'},
+  bpatger:    {de:'Bundespatentgericht',        fr:'TFB',                           en:'Federal Patent Court'},
+  weko:       {de:'WEKO',                       fr:'COMCO',                         en:'Competition Commission'},
+  finma:      {de:'FINMA',                      fr:'FINMA',                         en:'FINMA'},
+  edoeb:      {de:'ED\u00d6B',                       fr:'PFPDT',                         en:'Data Protection Commissioner'},
+  ch_vb:      {de:'VPB',                        fr:'JAAC',                          en:'Federal Admin. Practice'},
+  ta_sst:     {de:'Eidg. Versicherungsgericht', fr:'TFA',                           en:'Federal Insurance Court'},
+  ch_bundesrat:{de:'Bundesrat',                 fr:'Conseil f\u00e9d\u00e9ral',               en:'Federal Council'},
+  bge_egmr:   {de:'EGMR',                      fr:'CEDH',                          en:'ECHR'},
+  // AG
+  ag_gerichte:                {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  ag_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
+  ag_strafgericht:            {de:'Strafgericht',              fr:'Tribunal p\u00e9nal',                        en:'Criminal Court'},
+  ag_versicherungsgericht:    {de:'Versicherungsgericht',      fr:'Tribunal des assurances',               en:'Insurance Court'},
+  ag_zivilgericht:            {de:'Zivilgericht',              fr:'Tribunal civil',                        en:'Civil Court'},
+  ag_handelsgericht:          {de:'Handelsgericht',            fr:'Tribunal de commerce',                  en:'Commercial Court'},
+  ag_spezialverwaltungsgericht:{de:'Spezialverwaltungsgericht',fr:'Tribunal administratif sp\u00e9cialis\u00e9',     en:'Specialised Admin. Court'},
+  ag_regierungsrat:           {de:'Regierungsrat',             fr:'Conseil d\'\u00c9tat',                       en:'Cantonal Government'},
+  ag_departement_bvu:         {de:'Departement BVU',           fr:'D\u00e9partement BVU',                       en:'Dept. Construction & Transport'},
+  ag_departement_vi:          {de:'Departement Volkswirtschaft & Inneres',fr:'D\u00e9partement \u00c9conomie & Int\u00e9rieur',en:'Dept. Economy & Interior'},
+  ag_departement_gs:          {de:'Departement Gesundheit & Soziales',fr:'D\u00e9partement Sant\u00e9 & Social',     en:'Dept. Health & Social Affairs'},
+  ag_departement_bks:         {de:'Departement BKS',           fr:'D\u00e9partement BKS',                       en:'Dept. Education & Culture'},
+  ag_anwaltskommission:       {de:'Anwaltskommission',         fr:'Commission des avocats',                en:'Bar Commission'},
+  ag_aufsichtskommission:     {de:'Aufsichtskommission',       fr:'Commission de surveillance',            en:'Supervisory Commission'},
+  ag_baugesetzgebung:         {de:'Baugesetzgebung',            fr:'L\u00e9gislation de la construction',       en:'Building Legislation'},
+  ag_justizgericht:           {de:'Justizgericht',             fr:'Tribunal de la justice',                en:'Court of Justice'},
+  ag_justizleitung:           {de:'Justizleitung',             fr:'Direction de la justice',               en:'Justice Directorate'},
+  ag_weitere:                 {de:'Weitere Gerichte',          fr:'Autres tribunaux',                      en:'Other Courts'},
+  // AI
+  ai_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  // AR
+  ar_gerichte:                {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  // BE
+  be_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
+  be_zivilstraf:              {de:'Obergericht (Zivil/Straf)', fr:'Tribunal sup\u00e9rieur (civil/p\u00e9nal)',      en:'High Court (Civil/Criminal)'},
+  be_anwaltsaufsicht:         {de:'Anwaltsaufsicht',           fr:'Surveillance des avocats',              en:'Bar Supervision'},
+  be_bvd:                     {de:'BVD (Bau/Verkehr/Energie)', fr:'BVD',                                   en:'BVD (Construction/Transport/Energy)'},
+  be_steuerrekurs:            {de:'Steuerrekurskommission',    fr:'Commission de recours fiscal',          en:'Tax Appeal Commission'},
+  be_weitere:                 {de:'Weitere Gerichte',          fr:'Autres tribunaux',                      en:'Other Courts'},
+  // BL
+  bl_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  // BS
+  bs_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  bs_appellationsgericht:     {de:'Appellationsgericht',       fr:'Cour d\'appel',                         en:'Court of Appeal'},
+  bs_sozialversicherungsgericht:{de:'Sozialversicherungsgericht',fr:'Tribunal des assurances sociales',    en:'Social Insurance Court'},
+  // FR
+  fr_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  // GE
+  ge_gerichte:                {de:'Justiz',                    fr:'Pouvoir judiciaire',                    en:'Judiciary'},
+  // GL
+  gl_gerichte:                {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  // GR
+  gr_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  // JU
+  ju_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  // LU
+  lu_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  // NE
+  ne_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  // NW
+  nw_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  // OW
+  ow_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  // SG
+  sg_gerichte:                {de:'Kreisgericht',              fr:'Tribunal d\'arrondissement',             en:'District Court'},
+  sg_publikationen:           {de:'Publikationen',             fr:'Publications',                          en:'Publications'},
+  sg_versicherungsgericht:    {de:'Versicherungsgericht',      fr:'Tribunal des assurances',               en:'Insurance Court'},
+  sg_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
+  sg_verwaltungsrekurskommission:{de:'Verwaltungsrekurskommission',fr:'Commission de recours administratif',en:'Admin. Appeals Commission'},
+  sg_kantonsgericht:          {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  sg_handelsgericht:          {de:'Handelsgericht',            fr:'Tribunal de commerce',                  en:'Commercial Court'},
+  // SH
+  sh_obergericht:             {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  sh_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  // SO
+  so_gerichte:                {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  // SZ
+  sz_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  sz_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
+  // TG
+  tg_obergericht:             {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  tg_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
+  // TI
+  ti_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                              it:'Tribunali',en:'Courts'},
+  // UR
+  ur_gerichte:                {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  // VD
+  vd_findinfo:                {de:'FindInfo',                  fr:'FindInfo',                               en:'FindInfo'},
+  vd_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  vd_omni:                    {de:'Omni',                      fr:'Omni',                                   en:'Omni'},
+  // VS
+  vs_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  // ZG
+  zg_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
+  zg_obergericht:             {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  // ZH
+  zh_gerichte:                {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
+  zh_obergericht:             {de:'Obergericht (alt)',         fr:'Tribunal sup\u00e9rieur (ancien)',            en:'High Court (legacy)'},
+  zh_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
+  zh_sozialversicherungsgericht:{de:'Sozialversicherungsgericht',fr:'Tribunal des assurances sociales',    en:'Social Insurance Court'},
+  zh_handelsgericht:          {de:'Handelsgericht',            fr:'Tribunal de commerce',                  en:'Commercial Court'},
+  zh_kassationsgericht:       {de:'Kassationsgericht',         fr:'Cour de cassation',                     en:'Court of Cassation'},
+  zh_baurekursgericht:        {de:'Baurekursgericht',          fr:'Tribunal des recours en construction',  en:'Building Appeals Court'},
+  zh_steuerrekursgericht:     {de:'Steuerrekursgericht',       fr:'Tribunal des recours fiscaux',          en:'Tax Appeals Court'},
+  zh_mietgericht:             {de:'Mietgericht',               fr:'Tribunal des baux',                     en:'Tenancy Court'},
+  zh_bezirksgericht_zuerich:  {de:'Bezirksgericht Z\u00fcrich',     fr:'Tribunal de district de Zurich',        en:'District Court Zurich'},
+  zh_bezirksgericht_winterthur:{de:'Bezirksgericht Winterthur',fr:'Tribunal de district de Winterthour',   en:'District Court Winterthur'},
+  zh_bezirksgericht_dietikon: {de:'Bezirksgericht Dietikon',   fr:'Tribunal de district de Dietikon',      en:'District Court Dietikon'},
+  zh_bezirksgericht_horgen:   {de:'Bezirksgericht Horgen',     fr:'Tribunal de district de Horgen',        en:'District Court Horgen'},
+  zh_bezirksgericht_pfaeffikon:{de:'Bezirksgericht Pf\u00e4ffikon', fr:'Tribunal de district de Pf\u00e4ffikon',     en:'District Court Pf\u00e4ffikon'},
+  zh_bezirksgericht_buelach:  {de:'Bezirksgericht B\u00fclach',     fr:'Tribunal de district de B\u00fclach',        en:'District Court B\u00fclach'},
+  zh_bezirksgericht_meilen:   {de:'Bezirksgericht Meilen',     fr:'Tribunal de district de Meilen',        en:'District Court Meilen'},
+  zh_bezirksgericht_dielsdorf:{de:'Bezirksgericht Dielsdorf',  fr:'Tribunal de district de Dielsdorf',     en:'District Court Dielsdorf'},
+  zh_bezirksgericht_hinwil:   {de:'Bezirksgericht Hinwil',     fr:'Tribunal de district de Hinwil',        en:'District Court Hinwil'},
+  zh_bezirksgericht_uster:    {de:'Bezirksgericht Uster',      fr:'Tribunal de district d\'Uster',         en:'District Court Uster'},
+  zh_bezirksgericht_affoltern:{de:'Bezirksgericht Affoltern',  fr:'Tribunal de district d\'Affoltern',     en:'District Court Affoltern'},
+};
+
 function fmt(n) { return n != null ? n.toLocaleString('de-CH') : '\u2014'; }
 function ltags(ls) { return (ls||[]).map(l => `<span class="lg">${l}</span>`).join(''); }
-function courtName(code) { const k = 'court_'+code, n = t(k); return n !== k ? n : code.replace(/_/g,' '); }
+function courtName(code, canton) {
+  const d = COURT_DISPLAY[code];
+  let name = d ? (d[curLang] || d.it || d.fr || d.de || code) : code.replace(/_/g,' ');
+  if (canton) name += ' (' + canton + ')';
+  return name;
+}
 function getCSS(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
 
 let _charts = [];
@@ -913,7 +1032,7 @@ function renderAll(data) {
   if (can.length) {
     document.getElementById('can-n').textContent = fmt(can.reduce((s, c) => s + c.count, 0));
     const canData = can.map(c => ({
-      ...c, name: c.court.replace(new RegExp('^'+c.canton.toLowerCase()+'_'),'').replace(/_/g,' '),
+      ...c, name: courtName(c.court, c.canton),
       cantonName: CANTON_NAMES[c.canton] || c.canton,
       barPct: Math.round((c.count / maxCan) * 100),
     }));
