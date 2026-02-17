@@ -28,6 +28,7 @@ import re
 import sqlite3
 import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger("enrich_quality")
@@ -142,12 +143,13 @@ def extract_date_from_text(full_text: str) -> str | None:
 
 # ─── Substep runners ─────────────────────────────────────────────────────────
 
-def enrich_titles(conn: sqlite3.Connection, dry_run: bool) -> dict:
+def enrich_titles(conn: sqlite3.Connection, dry_run: bool, min_rowid: int = 0) -> dict:
     """Substep 1: Backfill missing titles from full_text."""
     logger.info("─── Substep 1: Title backfill ───")
 
     cur = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE (title IS NULL OR title = '') AND full_text IS NOT NULL"
+        "SELECT COUNT(*) FROM decisions WHERE (title IS NULL OR title = '') AND full_text IS NOT NULL AND rowid > ?",
+        (min_rowid,),
     )
     total = cur.fetchone()[0]
     logger.info(f"  Candidates: {total}")
@@ -156,7 +158,7 @@ def enrich_titles(conn: sqlite3.Connection, dry_run: bool) -> dict:
         return {"candidates": total, "filled": 0}
 
     filled = 0
-    last_rowid = 0
+    last_rowid = min_rowid
     processed = 0
     while True:
         rows = conn.execute(
@@ -191,12 +193,13 @@ def enrich_titles(conn: sqlite3.Connection, dry_run: bool) -> dict:
     return {"candidates": total, "filled": filled}
 
 
-def enrich_regeste(conn: sqlite3.Connection, dry_run: bool) -> dict:
+def enrich_regeste(conn: sqlite3.Connection, dry_run: bool, min_rowid: int = 0) -> dict:
     """Substep 2: Backfill missing regeste from full_text."""
     logger.info("─── Substep 2: Regeste backfill ───")
 
     cur = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE (regeste IS NULL OR regeste = '') AND full_text IS NOT NULL"
+        "SELECT COUNT(*) FROM decisions WHERE (regeste IS NULL OR regeste = '') AND full_text IS NOT NULL AND rowid > ?",
+        (min_rowid,),
     )
     total = cur.fetchone()[0]
     logger.info(f"  Candidates: {total}")
@@ -205,7 +208,7 @@ def enrich_regeste(conn: sqlite3.Connection, dry_run: bool) -> dict:
         return {"candidates": total, "filled": 0}
 
     filled = 0
-    last_rowid = 0
+    last_rowid = min_rowid
     processed = 0
     while True:
         rows = conn.execute(
@@ -240,14 +243,16 @@ def enrich_regeste(conn: sqlite3.Connection, dry_run: bool) -> dict:
     return {"candidates": total, "filled": filled}
 
 
-def repair_dates(conn: sqlite3.Connection, dry_run: bool) -> dict:
+def repair_dates(conn: sqlite3.Connection, dry_run: bool, min_rowid: int = 0) -> dict:
     """Substep 3: Repair invalid/missing dates."""
     logger.info("─── Substep 3: Date repair ───")
 
     cur = conn.execute(
         "SELECT COUNT(*) FROM decisions "
-        "WHERE decision_date IS NULL OR decision_date = '' "
-        "OR decision_date = 'None' OR decision_date = '0000-00-00'"
+        "WHERE (decision_date IS NULL OR decision_date = '' "
+        "OR decision_date = 'None' OR decision_date = '0000-00-00') "
+        "AND rowid > ?",
+        (min_rowid,),
     )
     total = cur.fetchone()[0]
     logger.info(f"  Candidates: {total}")
@@ -257,7 +262,7 @@ def repair_dates(conn: sqlite3.Connection, dry_run: bool) -> dict:
 
     from_docket = 0
     from_text = 0
-    last_rowid = 0
+    last_rowid = min_rowid
 
     while True:
         rows = conn.execute(
@@ -307,13 +312,14 @@ def _ensure_content_hash_column(conn: sqlite3.Connection) -> None:
         conn.commit()
 
 
-def compute_content_hashes(conn: sqlite3.Connection, dry_run: bool) -> dict:
+def compute_content_hashes(conn: sqlite3.Connection, dry_run: bool, min_rowid: int = 0) -> dict:
     """Substep 4: Compute MD5(full_text) for rows missing content_hash."""
     logger.info("─── Substep 4: Content hash ───")
     _ensure_content_hash_column(conn)
 
     cur = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE content_hash IS NULL AND full_text IS NOT NULL"
+        "SELECT COUNT(*) FROM decisions WHERE content_hash IS NULL AND full_text IS NOT NULL AND rowid > ?",
+        (min_rowid,),
     )
     total = cur.fetchone()[0]
     logger.info(f"  Candidates: {total}")
@@ -328,9 +334,9 @@ def compute_content_hashes(conn: sqlite3.Connection, dry_run: bool) -> dict:
         # Use rowid ordering for stable streaming (no OFFSET drift from UPDATEs)
         rows = conn.execute(
             "SELECT decision_id, full_text FROM decisions "
-            "WHERE content_hash IS NULL AND full_text IS NOT NULL "
+            "WHERE content_hash IS NULL AND full_text IS NOT NULL AND rowid > ? "
             "LIMIT ?",
-            (STREAM_LIMIT,),
+            (min_rowid, STREAM_LIMIT),
         ).fetchall()
         if not rows:
             break
@@ -436,6 +442,31 @@ def generate_dedup_report(conn: sqlite3.Connection, output_path: Path, dry_run: 
 
 # ─── Main ────────────────────────────────────────────────────────────────────
 
+def _load_checkpoint(db_path: Path) -> dict | None:
+    """Load checkpoint from .enrich_checkpoint.json next to the DB."""
+    cp_path = db_path.parent / ".enrich_checkpoint.json"
+    if cp_path.exists():
+        try:
+            with open(cp_path, "r") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            logger.warning(f"  Could not load checkpoint: {e}")
+    return None
+
+
+def _save_checkpoint(db_path: Path, max_rowid: int, decision_count: int) -> None:
+    """Save checkpoint after successful enrichment run."""
+    cp_path = db_path.parent / ".enrich_checkpoint.json"
+    data = {
+        "max_rowid": max_rowid,
+        "decision_count": decision_count,
+        "last_run": datetime.now(timezone.utc).isoformat(),
+    }
+    with open(cp_path, "w") as f:
+        json.dump(data, f, indent=2)
+    logger.info(f"  Saved checkpoint: {cp_path} (rowid={max_rowid}, count={decision_count})")
+
+
 def run(
     db_path: Path,
     output_dir: Path,
@@ -455,20 +486,44 @@ def run(
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA busy_timeout=30000")
 
+    # ── Checkpoint: skip if no new decisions ──
+    row = conn.execute("SELECT COUNT(*), MAX(rowid) FROM decisions").fetchone()
+    current_count, current_max_rowid = row[0], row[1] or 0
+
+    checkpoint = _load_checkpoint(db_path)
+    min_rowid = 0
+    if checkpoint:
+        prev_count = checkpoint.get("decision_count", 0)
+        prev_max_rowid = checkpoint.get("max_rowid", 0)
+        if current_count == prev_count and current_max_rowid == prev_max_rowid:
+            logger.info(
+                f"No new decisions since last enrichment "
+                f"(count={current_count}, max_rowid={current_max_rowid}). Skipping."
+            )
+            conn.close()
+            return {"skipped": True, "reason": "no_new_decisions", "decision_count": current_count}
+        min_rowid = prev_max_rowid
+        logger.info(
+            f"Checkpoint found: {prev_count} decisions (max_rowid={prev_max_rowid}). "
+            f"New: {current_count - prev_count} decisions, processing rowid > {min_rowid}"
+        )
+    else:
+        logger.info(f"No checkpoint found — full enrichment run ({current_count} decisions)")
+
     summary = {}
     t0 = time.time()
 
     if not skip_titles:
-        summary["titles"] = enrich_titles(conn, dry_run)
+        summary["titles"] = enrich_titles(conn, dry_run, min_rowid)
 
     if not skip_regeste:
-        summary["regeste"] = enrich_regeste(conn, dry_run)
+        summary["regeste"] = enrich_regeste(conn, dry_run, min_rowid)
 
     if not skip_dates:
-        summary["dates"] = repair_dates(conn, dry_run)
+        summary["dates"] = repair_dates(conn, dry_run, min_rowid)
 
     if not skip_hashes:
-        summary["hashes"] = compute_content_hashes(conn, dry_run)
+        summary["hashes"] = compute_content_hashes(conn, dry_run, min_rowid)
 
     if not skip_dedup:
         summary["dedup"] = generate_dedup_report(
@@ -476,6 +531,10 @@ def run(
         )
 
     conn.close()
+
+    # ── Save checkpoint (only if not dry-run) ──
+    if not dry_run:
+        _save_checkpoint(db_path, current_max_rowid, current_count)
 
     elapsed = time.time() - t0
     summary["elapsed_seconds"] = round(elapsed, 1)
