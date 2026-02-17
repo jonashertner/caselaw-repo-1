@@ -24,6 +24,7 @@ import json
 import logging
 import sqlite3
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from db_schema import INSERT_COLUMNS, INSERT_OR_IGNORE_SQL, SCHEMA_SQL
@@ -62,14 +63,53 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
         return False
 
 
-def import_jsonl(conn: sqlite3.Connection, jsonl_dir: Path) -> tuple[int, int]:
-    """Import decisions from JSONL files. Returns (imported, skipped)."""
+def import_jsonl(
+    conn: sqlite3.Connection, jsonl_dir: Path, checkpoint: dict | None = None,
+) -> tuple[int, int, dict]:
+    """Import decisions from JSONL files.
+
+    Args:
+        conn: SQLite connection.
+        jsonl_dir: Directory containing .jsonl files.
+        checkpoint: If provided, a dict mapping filename -> {"size": int, "imported": int}.
+            Files whose size matches the checkpoint are skipped entirely; files that grew
+            are read starting from the checkpoint byte offset (JSONL files are append-only).
+
+    Returns:
+        (imported, skipped, new_checkpoint) where new_checkpoint has the same structure.
+    """
     imported = 0
     skipped = 0
+    new_checkpoint: dict = {}
 
     for jsonl_file in sorted(jsonl_dir.glob("*.jsonl")):
+        fname = jsonl_file.name
+        current_size = jsonl_file.stat().st_size
+
+        if checkpoint is not None:
+            prev = checkpoint.get(fname, {})
+            prev_size = prev.get("size", 0)
+
+            if current_size == prev_size:
+                # No new data — carry forward checkpoint entry unchanged
+                new_checkpoint[fname] = prev
+                continue
+
+            if current_size < prev_size:
+                # File shrank (unexpected) — read from start to be safe
+                logger.warning(
+                    f"  {fname}: size shrank ({prev_size} → {current_size}), reading from start"
+                )
+                prev_size = 0
+        else:
+            prev_size = 0
+
         file_imported = 0
         with open(jsonl_file, encoding="utf-8") as f:
+            if prev_size > 0:
+                f.seek(prev_size)
+                logger.debug(f"  {fname}: seeking to byte {prev_size}")
+
             for line in f:
                 line = line.strip()
                 if not line:
@@ -89,8 +129,16 @@ def import_jsonl(conn: sqlite3.Connection, jsonl_dir: Path) -> tuple[int, int]:
         if file_imported:
             conn.commit()
             logger.info(f"  {jsonl_file.name}: +{file_imported} decisions")
+        elif checkpoint is not None and prev_size > 0:
+            logger.debug(f"  {fname}: no new decisions (new bytes were dupes)")
 
-    return imported, skipped
+        prev_imported = (checkpoint or {}).get(fname, {}).get("imported", 0)
+        new_checkpoint[fname] = {
+            "size": current_size,
+            "imported": prev_imported + file_imported,
+        }
+
+    return imported, skipped, new_checkpoint
 
 
 def import_parquet(conn: sqlite3.Connection, parquet_dir: Path) -> tuple[int, int]:
@@ -127,14 +175,47 @@ def import_parquet(conn: sqlite3.Connection, parquet_dir: Path) -> tuple[int, in
     return imported, skipped
 
 
-def build_database(output_dir: Path, db_path: Path | None = None) -> Path:
+def build_database(
+    output_dir: Path,
+    db_path: Path | None = None,
+    incremental: bool = False,
+    no_optimize: bool = False,
+    full_rebuild: bool = False,
+) -> Path:
     """
     Build/update the FTS5 database from all available sources.
+
+    Args:
+        output_dir: Directory containing decisions/ and data/ subdirs.
+        db_path: Path for the SQLite DB (default: output_dir/decisions.db).
+        incremental: Only read new bytes from JSONL files using checkpoint.
+        no_optimize: Skip the FTS5 optimize step.
+        full_rebuild: Delete existing DB and checkpoint, rebuild from scratch.
 
     Returns the path to the database.
     """
     db_path = db_path or output_dir / "decisions.db"
     db_path.parent.mkdir(parents=True, exist_ok=True)
+    checkpoint_path = output_dir / ".fts5_checkpoint.json"
+
+    # Full rebuild: delete DB and checkpoint
+    if full_rebuild:
+        if db_path.exists():
+            logger.info(f"Full rebuild: deleting {db_path}")
+            db_path.unlink()
+        if checkpoint_path.exists():
+            logger.info(f"Full rebuild: deleting {checkpoint_path}")
+            checkpoint_path.unlink()
+
+    # Load checkpoint for incremental mode
+    checkpoint = None
+    if incremental and checkpoint_path.exists():
+        try:
+            checkpoint = json.loads(checkpoint_path.read_text()).get("files", {})
+            logger.info(f"Loaded checkpoint: {len(checkpoint)} files tracked")
+        except (json.JSONDecodeError, OSError) as e:
+            logger.warning(f"Failed to load checkpoint, reading all files: {e}")
+            checkpoint = None
 
     conn = sqlite3.connect(str(db_path))
     conn.execute("PRAGMA journal_mode=WAL")
@@ -146,10 +227,12 @@ def build_database(output_dir: Path, db_path: Path | None = None) -> Path:
 
     # Import from JSONL (run_scraper.py output)
     jsonl_dir = output_dir / "decisions"
-    jsonl_imported, jsonl_skipped = 0, 0
+    jsonl_imported, jsonl_skipped, new_checkpoint = 0, 0, {}
     if jsonl_dir.exists():
         logger.info(f"Importing from JSONL: {jsonl_dir}")
-        jsonl_imported, jsonl_skipped = import_jsonl(conn, jsonl_dir)
+        jsonl_imported, jsonl_skipped, new_checkpoint = import_jsonl(
+            conn, jsonl_dir, checkpoint if incremental else None,
+        )
 
     # Import from Parquet (pipeline.py output)
     parquet_dir = output_dir / "data" / "daily"
@@ -161,9 +244,12 @@ def build_database(output_dir: Path, db_path: Path | None = None) -> Path:
     total_imported = jsonl_imported + pq_imported
     total_skipped = jsonl_skipped + pq_skipped
 
-    if total_imported > 0:
-        # Optimize FTS index
+    if not no_optimize and total_imported > 0:
+        logger.info("Running FTS5 optimize...")
         conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
+        conn.commit()
+    elif no_optimize and total_imported > 0:
+        logger.info("Skipping FTS5 optimize (--no-optimize)")
         conn.commit()
 
     total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
@@ -174,6 +260,25 @@ def build_database(output_dir: Path, db_path: Path | None = None) -> Path:
     ).fetchall()
 
     conn.close()
+
+    # Save checkpoint
+    if incremental or full_rebuild:
+        now = datetime.now(timezone.utc).isoformat()
+        # Load existing checkpoint metadata to preserve last_full_build
+        prev_meta = {}
+        if checkpoint_path.exists() and not full_rebuild:
+            try:
+                prev_meta = json.loads(checkpoint_path.read_text())
+            except (json.JSONDecodeError, OSError):
+                pass
+
+        meta = {
+            "files": new_checkpoint,
+            "last_full_build": now if full_rebuild else prev_meta.get("last_full_build"),
+            "last_incremental": now if incremental else prev_meta.get("last_incremental"),
+        }
+        checkpoint_path.write_text(json.dumps(meta, indent=2))
+        logger.info(f"Saved checkpoint: {len(new_checkpoint)} files tracked")
 
     logger.info(f"Database: {db_path} ({db_path.stat().st_size / 1024 / 1024:.1f} MB)")
     logger.info(f"  Existing: {existing}, New: {total_imported}, Skipped: {total_skipped}")
@@ -198,6 +303,18 @@ def main():
         "--watch", type=int, default=None,
         help="Rebuild every N seconds (for use alongside running scrapers)"
     )
+    parser.add_argument(
+        "--incremental", action="store_true",
+        help="Only read new bytes from JSONL files (skip already-processed content)"
+    )
+    parser.add_argument(
+        "--no-optimize", action="store_true",
+        help="Skip FTS5 optimize step (useful with --incremental)"
+    )
+    parser.add_argument(
+        "--full-rebuild", action="store_true",
+        help="Delete existing DB and checkpoint, rebuild from scratch"
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
 
     args = parser.parse_args()
@@ -219,7 +336,12 @@ def main():
                 logger.error(f"Build failed: {e}", exc_info=True)
             time.sleep(args.watch)
     else:
-        build_database(output_dir, db_path)
+        build_database(
+            output_dir, db_path,
+            incremental=args.incremental,
+            no_optimize=args.no_optimize,
+            full_rebuild=args.full_rebuild,
+        )
 
 
 if __name__ == "__main__":

@@ -93,21 +93,32 @@ def step_1_ingest(dry_run: bool = False) -> bool:
     )
 
 
-def step_2_build_fts5(dry_run: bool = False) -> bool:
-    """Step 2: Build/update FTS5 search database."""
-    logger.info("Step 2: Build FTS5 database")
+def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2: Build/update FTS5 search database.
 
+    Sunday or --full-rebuild: full rebuild with optimize (~3h).
+    Mon–Sat: incremental mode, no optimize (< 1 min).
+    """
     script = REPO_DIR / "build_fts5.py"
     if not script.exists():
         logger.error("  build_fts5.py not found")
         return False
 
-    return run_cmd(
-        [sys.executable, str(script), "--output", str(OUTPUT_DIR)],
-        "Build FTS5 database",
-        dry_run,
-        timeout=7200,  # FTS5 build + optimize takes >1h for 1M decisions
-    )
+    # Sunday (weekday 6) = full rebuild, other days = incremental
+    is_rebuild_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
+
+    cmd = [sys.executable, str(script), "--output", str(OUTPUT_DIR)]
+
+    if is_rebuild_day:
+        cmd.append("--full-rebuild")
+        logger.info("Step 2: Full FTS5 rebuild (weekly)")
+        timeout = 7200
+    else:
+        cmd.extend(["--incremental", "--no-optimize"])
+        logger.info("Step 2: Incremental FTS5 update")
+        timeout = 600
+
+    return run_cmd(cmd, "Build FTS5 database", dry_run, timeout=timeout)
 
 
 def step_2b_quality_report(dry_run: bool = False) -> bool:
@@ -331,6 +342,10 @@ def main():
         help="Run only a specific step (1-6)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Log actions without executing")
+    parser.add_argument(
+        "--full-rebuild", action="store_true",
+        help="Force full FTS5 rebuild regardless of day of week"
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -352,7 +367,10 @@ def main():
             continue
         step_start = time.time()
         try:
-            ok = func(dry_run=args.dry_run)
+            if num == 2:
+                ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
+            else:
+                ok = func(dry_run=args.dry_run)
             results[num] = ok
             elapsed = time.time() - step_start
             status = "OK" if ok else "FAILED"
