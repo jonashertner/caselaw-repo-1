@@ -108,7 +108,7 @@ CROSS_ENCODER_TOP_N = max(1, int(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_TOP
 CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT", "1.4"))
 
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", "output/reference_graph.db"))
-GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "0").lower() not in {
+GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
     "no",
@@ -197,6 +197,44 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "verfassung": ("constitution", "costituzione", "bv"),
     "datenschutz": ("protection", "privacy", "donnees"),
     "persoenlichkeitsschutz": ("privacy", "protection", "personalita"),
+    # Constitutional rights
+    "diskriminierung": ("gleichbehandlung", "rechtsgleichheit", "discrimination"),
+    "gleichbehandlung": ("diskriminierung", "rechtsgleichheit", "egalite"),
+    "rechtsgleichheit": ("gleichbehandlung", "diskriminierung", "egalite"),
+    "willkuer": ("arbitraire", "arbitrio", "willkuerverbot"),
+    "willkuerverbot": ("willkuer", "arbitraire", "arbitrio"),
+    "arbitraire": ("willkuer", "willkuerverbot", "arbitrio"),
+    "grundrechte": ("droits", "fondamentaux", "diritti", "fondamentali"),
+    "verhaeltnismaessigkeit": ("proportionnalite", "proporzionalita"),
+    "proportionnalite": ("verhaeltnismaessigkeit", "proporzionalita"),
+    # Contract / tort
+    "haftung": ("responsabilite", "responsabilita", "liability"),
+    "responsabilite": ("haftung", "responsabilita", "liability"),
+    "schadenersatz": ("dommages", "risarcimento", "indemnite"),
+    "dommages": ("schadenersatz", "risarcimento", "indemnite"),
+    "vertrag": ("contrat", "contratto", "contract"),
+    "contrat": ("vertrag", "contratto", "contract"),
+    # Procedure
+    "beschwerde": ("recours", "ricorso", "appel"),
+    "recours": ("beschwerde", "ricorso", "appel"),
+    "vorsorgliche": ("provisoire", "cautelare", "superprovisorisch"),
+    "rechtskraft": ("autorite", "giudicato", "chose"),
+    # Criminal
+    "freiheitsstrafe": ("peine", "privative", "liberte"),
+    "betrug": ("escroquerie", "truffa", "fraud"),
+    "diebstahl": ("vol", "furto", "theft"),
+    # Family
+    "scheidung": ("divorce", "divorzio", "ehescheidung"),
+    "unterhalt": ("entretien", "alimenti", "pension"),
+    "sorgerecht": ("garde", "custodia", "autorite", "parentale"),
+    # Employment (augment existing)
+    "fristlos": ("immediat", "immediato", "fristlose"),
+    "fristlose": ("fristlos", "immediat", "immediato"),
+    "arbeitsvertrag": ("contrat", "travail", "contratto", "lavoro"),
+    "treuepflicht": ("fidelite", "fedelta", "loyaute"),
+    # Competition / data protection
+    "kartell": ("cartel", "cartello", "wettbewerb"),
+    "wettbewerb": ("concurrence", "concorrenza", "competition"),
 }
 ASYL_QUERY_TERMS = {"asyl", "asile", "asilo", "wegweisung", "renvoi", "allontanamento"}
 LEGAL_ANCHOR_PAIRS: tuple[tuple[str, str], ...] = (
@@ -206,6 +244,11 @@ LEGAL_ANCHOR_PAIRS: tuple[tuple[str, str], ...] = (
     ("parc", "eolien"),
     ("permis", "construire"),
     ("baubewilligung", "windpark"),
+    ("fristlos", "kuendigung"),
+    ("fristlose", "entlassung"),
+    ("schadenersatz", "haftung"),
+    ("scheidung", "unterhalt"),
+    ("diskriminierung", "gleichbehandlung"),
 )
 DECISION_INTENT_TERMS = {
     "arret",
@@ -229,10 +272,43 @@ ACCELERATED_PROCEDURE_TERMS = {
     "accelere",
 }
 FEDLEX_LAW_CODE_BASE_URLS = {
-    # Curated set of high-impact federal statutes. Extend over time.
+    # Core private law
+    "OR": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377",
+    "ZGB": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233",
+    # Criminal law
+    "STGB": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799",
+    "STPO": "https://www.fedlex.admin.ch/eli/cc/2010/267",
+    # Constitutional & public law
+    "BV": "https://www.fedlex.admin.ch/eli/cc/1999/404",
+    "BGG": "https://www.fedlex.admin.ch/eli/cc/2006/218",
+    "VWG": "https://www.fedlex.admin.ch/eli/cc/2006/352",
+    "VGG": "https://www.fedlex.admin.ch/eli/cc/2006/352",
+    "VWVG": "https://www.fedlex.admin.ch/eli/cc/1969/737_757_755",
+    # Administrative / procedural
+    "ZPO": "https://www.fedlex.admin.ch/eli/cc/2010/262",
+    "SCHKG": "https://www.fedlex.admin.ch/eli/cc/11/529_488_529",
+    # Migration / asylum
     "ASYLG": "https://www.fedlex.admin.ch/eli/cc/1999/358",
     "AIG": "https://www.fedlex.admin.ch/eli/cc/2007/758",
     "LSTRI": "https://www.fedlex.admin.ch/eli/cc/2007/758",
+    # Social insurance
+    "ATSG": "https://www.fedlex.admin.ch/eli/cc/2002/510",
+    "AHVG": "https://www.fedlex.admin.ch/eli/cc/63/837_843_843",
+    "IVG": "https://www.fedlex.admin.ch/eli/cc/1959/827_857_845",
+    "BVG": "https://www.fedlex.admin.ch/eli/cc/1983/797_797_797",
+    "UVG": "https://www.fedlex.admin.ch/eli/cc/1982/1676_1676_1676",
+    "KVG": "https://www.fedlex.admin.ch/eli/cc/1995/1328_1328_1328",
+    # Regulatory
+    "KG": "https://www.fedlex.admin.ch/eli/cc/1996/546_546_546",
+    "DSG": "https://www.fedlex.admin.ch/eli/cc/2022/491",
+    "BGO": "https://www.fedlex.admin.ch/eli/cc/2006/355",
+    "BGOE": "https://www.fedlex.admin.ch/eli/cc/2006/355",
+    "USG": "https://www.fedlex.admin.ch/eli/cc/1984/1122_1122_1122",
+    "RPG": "https://www.fedlex.admin.ch/eli/cc/1979/1573_1573_1573",
+    # Employment
+    "ARG": "https://www.fedlex.admin.ch/eli/cc/1966/57_57_57",
+    # International
+    "EMRK": "https://www.fedlex.admin.ch/eli/cc/1974/2151_2151_2151",
 }
 COURT_QUERY_HINTS: dict[str, tuple[str, ...]] = {
     "bger": ("bger", "bundesgericht", "tribunal federal", "tribunale federale"),
@@ -470,6 +546,7 @@ def search_fts5(
             is_docket=is_docket_query,
             has_explicit_syntax=has_explicit_syntax,
         )
+        query_has_expandable_terms = _query_has_expandable_terms(fts_query)
 
         for idx, strategy in enumerate(strategies):
             match_query = strategy["query"]
@@ -479,6 +556,8 @@ def search_fts5(
             early_enough = max(limit * 2, 20)
             if expensive_strategy and len(candidate_meta) >= early_enough:
                 break
+            if strategy_name == "nl_or_expanded" and not query_has_expandable_terms:
+                continue
             if expensive_strategy and _query_has_numeric_terms(fts_query):
                 continue
             try:
@@ -640,7 +719,165 @@ def _search_by_docket(
                 str(r.get("decision_id") or ""),
             ),
         )
+    if len(results) < limit:
+        primary_court = (results[0].get("court") or "").lower() if results else None
+        related = _search_related_docket_family(
+            conn,
+            raw_query=raw_query,
+            where=where,
+            params=params,
+            preferred_courts=preferred_courts,
+            primary_court=primary_court,
+            existing_ids={r["decision_id"] for r in results if r.get("decision_id")},
+            limit=max(limit * 3, 20),
+        )
+        if related:
+            results = _dedupe_results_by_decision_id(results + related)
     return results[:limit]
+
+
+def _search_related_docket_family(
+    conn: sqlite3.Connection,
+    *,
+    raw_query: str,
+    where: str,
+    params: list,
+    preferred_courts: set[str],
+    primary_court: str | None,
+    existing_ids: set[str],
+    limit: int,
+) -> list[dict]:
+    family = _parse_docket_family(raw_query)
+    if family is None:
+        return []
+
+    prefix, serial, year = family
+    candidates = _build_docket_family_candidates(prefix=prefix, serial=serial, year=year)
+    if not candidates:
+        return []
+    candidate_placeholders = ",".join("?" for _ in candidates)
+    family_filters = [f"d.docket_number IN ({candidate_placeholders})"]
+    family_params: list = [*candidates]
+
+    sql = f"""
+        SELECT
+            d.decision_id,
+            d.court,
+            d.canton,
+            d.chamber,
+            d.docket_number,
+            d.decision_date,
+            d.language,
+            d.title,
+            d.regeste,
+            NULL as snippet,
+            d.source_url,
+            d.pdf_url
+        FROM decisions d
+        WHERE {" AND ".join(family_filters)}{where}
+        LIMIT ?
+    """
+    query_limit = max(limit * 12, 240)
+    rows = conn.execute(
+        sql,
+        [*family_params, *params, query_limit],
+    ).fetchall()
+    if not rows:
+        return []
+
+    preferred_rank_courts = set(preferred_courts or ())
+    if primary_court:
+        preferred_rank_courts.add(primary_court)
+
+    ranked_rows: list[tuple[tuple, sqlite3.Row]] = []
+    for row in rows:
+        decision_id = row["decision_id"]
+        if not decision_id or decision_id in existing_ids:
+            continue
+        row_docket = row["docket_number"] or ""
+        row_serial = _extract_docket_serial(row_docket, prefix=prefix, year=year)
+        distance = abs(row_serial - serial) if row_serial is not None else 10_000_000
+        preferred_rank = 0 if (row["court"] or "").lower() in preferred_rank_courts else 1
+        ranked_rows.append(
+            (
+                (
+                    preferred_rank,
+                    distance,
+                    -_date_sort_key(str(row["decision_date"] or "")),
+                    str(decision_id),
+                ),
+                row,
+            )
+        )
+    ranked_rows.sort(key=lambda item: item[0])
+
+    out: list[dict] = []
+    for _key, r in ranked_rows:
+        out.append({
+            "decision_id": r["decision_id"],
+            "court": r["court"],
+            "canton": r["canton"],
+            "chamber": r["chamber"],
+            "docket_number": r["docket_number"],
+            "decision_date": r["decision_date"],
+            "language": r["language"],
+            "title": r["title"],
+            "regeste": _truncate(r["regeste"], MAX_SNIPPET_LEN) if r["regeste"] else None,
+            "snippet": r["snippet"],
+            "source_url": r["source_url"],
+            "pdf_url": r["pdf_url"],
+            "relevance_score": 96.0,
+        })
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _build_docket_family_candidates(*, prefix: str, serial: int, year: str) -> list[str]:
+    if serial <= 0 or not prefix or not year:
+        return []
+    serial_window = 40
+    lo = max(1, serial - serial_window)
+    hi = serial + serial_window
+    variants: list[str] = []
+    seen: set[str] = set()
+    for n in range(lo, hi + 1):
+        for sep1 in (".", "_", "-"):
+            for sep2 in ("/", "_"):
+                candidate = f"{prefix}{sep1}{n}{sep2}{year}"
+                if candidate in seen:
+                    continue
+                seen.add(candidate)
+                variants.append(candidate)
+    return variants
+
+
+def _parse_docket_family(raw_query: str) -> tuple[str, int, str] | None:
+    text = re.sub(r"\s+", "", (raw_query or "")).upper()
+    m = re.fullmatch(
+        r"(?P<prefix>[A-Z0-9]{1,4})[._-](?P<serial>\d{1,6})[/_](?P<year>\d{4})",
+        text,
+    )
+    if not m:
+        return None
+    try:
+        serial = int(m.group("serial"))
+    except Exception:
+        return None
+    return m.group("prefix"), serial, m.group("year")
+
+
+def _extract_docket_serial(docket: str, *, prefix: str, year: str) -> int | None:
+    m = re.search(
+        rf"{re.escape(prefix)}[._-](?P<serial>\d{{1,6}})[/_]{re.escape(year)}$",
+        (docket or "").upper(),
+    )
+    if not m:
+        return None
+    try:
+        return int(m.group("serial"))
+    except Exception:
+        return None
 
 
 def _build_docket_variants(raw_query: str) -> set[str]:
@@ -1460,6 +1697,16 @@ def _should_try_raw_fallback(query: str) -> bool:
     return bool(re.fullmatch(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_\s]+", query))
 
 
+def _query_has_expandable_terms(query: str) -> bool:
+    terms = _extract_query_terms(
+        query,
+        limit=MAX_NL_TOKENS,
+        include_variants=False,
+        include_expansions=False,
+    )
+    return any(term in LEGAL_QUERY_EXPANSIONS for term in terms)
+
+
 def _extract_query_terms(
     query: str,
     *,
@@ -1949,6 +2196,96 @@ def _normalize_statute_law_code(value: str) -> str:
     return re.sub(r"[^A-Z0-9/]+", "", raw)
 
 
+# Extended stopwords for facts distillation (DE/FR/IT common words unlikely to
+# improve legal concept matching in FTS5).
+_FACTS_STOPWORDS = NL_STOPWORDS | {
+    # German
+    "ist", "war", "hat", "wurde", "wird", "sind", "waren", "haben", "hatte",
+    "sei", "dass", "sich", "auch", "noch", "nach", "bei", "aus", "mehr",
+    "wie", "aber", "wenn", "nur", "es", "er", "sie", "wir", "kann", "dieser",
+    "diese", "dieses", "diesem", "diesen", "gegen", "bis", "vom", "seit",
+    "seiner", "seine", "seinen", "seinem", "ihrer", "ihre", "ihrem", "ihren",
+    "sowie", "bereits", "dabei", "jedoch", "dazu", "daher", "dann", "damit",
+    "hier", "dort", "nun", "so", "ob", "da", "vor", "ab", "alle", "allem",
+    "allen", "aller", "alles", "andere", "anderen", "anderer", "anderes",
+    "wo", "welche", "welcher", "welches", "werden", "worden", "deren",
+    "dessen", "gemaess", "gemass", "bzw", "etc", "vgl", "bzw",
+    # French
+    "est", "sont", "ont", "ete", "par", "pas", "qui", "que", "il", "elle",
+    "ils", "elles", "nous", "vous", "son", "ses", "leur", "leurs", "ce",
+    "cette", "ces", "mais", "plus", "entre", "aussi", "tres", "bien",
+    "fait", "etre", "avoir", "peut", "tout", "tous", "toute", "toutes",
+    # Italian
+    "che", "non", "sono", "era", "stato", "hanno", "aveva", "come", "anche",
+    "piu", "suo", "sua", "suoi", "sue", "questo", "questa", "questi",
+    "queste", "dal", "dei", "degli", "alle",
+    # Numbers / generic
+    "chf", "fr", "eur", "nr", "abs",
+}
+
+
+def _extract_legal_query_from_facts(
+    text: str,
+    statute_requests: list[dict],
+) -> str:
+    """Distill a facts narrative into a focused legal query for FTS5.
+
+    Instead of sending the entire narrative (which matches on incidental words
+    like city names or party descriptions), this extracts:
+    1. Statute references (Art. X Law)
+    2. Tokens that appear in LEGAL_QUERY_EXPANSIONS (known legal concepts)
+    3. Capitalized German legal nouns (> 5 chars, likely Fachbegriffe)
+    Limits output to ~12 most distinctive terms.
+    """
+    # Collect statute ref strings
+    ref_terms: list[str] = []
+    for st in statute_requests[:6]:
+        ref_terms.append(f'Art. {st["article"]} {st["law_code"]}')
+
+    # Tokenize and normalize
+    raw_tokens = re.findall(r"[A-Za-zÀ-ÖØ-öø-ÿß]+", text)
+    normalized_tokens: list[str] = []
+    seen_norm: set[str] = set()
+    for raw in raw_tokens:
+        norm = _normalize_token_for_fts(raw)
+        if not norm or len(norm) < 3 or norm in _FACTS_STOPWORDS:
+            continue
+        if norm in seen_norm:
+            continue
+
+        # Priority 1: known legal concept in expansion dictionary
+        is_legal_concept = norm in LEGAL_QUERY_EXPANSIONS
+        # Priority 2: capitalized German noun > 5 chars (likely legal term)
+        is_legal_noun = (
+            not is_legal_concept
+            and raw[0].isupper()
+            and len(raw) > 5
+            and norm not in {"zurich", "bern", "basel", "luzern", "geneve",
+                             "lausanne", "schweiz", "suisse", "svizzera",
+                             "kanton", "gemeinde", "bezirk", "herr", "frau",
+                             "arbeitnehmer", "arbeitgeber", "klaeger",
+                             "beklagter", "beschwerdefuhrer",
+                             "beschwerdefuhrerin", "gesuchsteller",
+                             "gesuchstellerin"}
+        )
+        if is_legal_concept or is_legal_noun:
+            seen_norm.add(norm)
+            # Use original form for FTS matching (FTS5 is case-insensitive)
+            normalized_tokens.append((0 if is_legal_concept else 1, raw))
+
+    # Sort: legal concepts first, then legal nouns
+    normalized_tokens.sort(key=lambda x: x[0])
+    concept_terms = [tok for _priority, tok in normalized_tokens[:12]]
+
+    # Combine: statute refs first, then concept terms
+    parts = ref_terms + concept_terms
+    if not parts:
+        # Fallback: return original text (truncated) if no terms extracted
+        return text[:500]
+
+    return " ".join(parts)
+
+
 def _retrieve_case_law_for_facts(
     *,
     query_text: str,
@@ -1984,8 +2321,14 @@ def _retrieve_case_law_for_facts(
                     "match_score": round(score, 4),
                 }
 
-    base_rows = search_fts5(query=query_text, limit=pool_limit)
+    focused_query = _extract_legal_query_from_facts(query_text, statute_requests)
+    base_rows = search_fts5(query=focused_query, limit=pool_limit)
     _add(base_rows, source="facts_query", extra_score=0.4)
+
+    # Broader fallback with raw text at lower weight (only if focused query differs)
+    if focused_query != query_text:
+        fallback_rows = search_fts5(query=query_text, limit=max(8, pool_limit // 2))
+        _add(fallback_rows, source="facts_broad", extra_score=0.15)
 
     for st in statute_requests[:5]:
         q = f"Art. {st['article']} {st['law_code']}"
