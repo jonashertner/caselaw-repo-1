@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 import time
 from datetime import date, datetime
 from pathlib import Path
@@ -104,12 +105,15 @@ def run_with_persistence(
     max_decisions: int | None = None,
     output_dir: Path = Path("output"),
     state_dir: Path = Path("state"),
-):
-    """Run scraper and write each decision to JSONL incrementally."""
+) -> int:
+    """Run scraper and write each decision to JSONL incrementally.
+
+    Returns the number of errors encountered.
+    """
 
     if scraper_key not in SCRAPERS:
         logger.error(f"Unknown scraper: {scraper_key}. Available: {list(SCRAPERS.keys())}")
-        return
+        return 0
 
     module_name, class_name = SCRAPERS[scraper_key]
 
@@ -208,6 +212,8 @@ def run_with_persistence(
         f"File: {jsonl_path} ({file_size:.1f} MB)"
     )
 
+    return errors
+
 
 def main():
     parser = argparse.ArgumentParser(description="Run scraper with JSONL persistence")
@@ -235,13 +241,16 @@ def main():
     for noisy in ("pdfminer", "pdfplumber", "urllib3", "chardet", "charset_normalizer"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    run_with_persistence(
+    errors = run_with_persistence(
         scraper_key=args.scraper,
         since_date=args.since,
         max_decisions=args.max,
         output_dir=Path(args.output),
         state_dir=Path(args.state),
     )
+
+    if errors:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

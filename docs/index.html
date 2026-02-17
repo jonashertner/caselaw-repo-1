@@ -1211,6 +1211,7 @@ function renderAll(data) {
         code, name: courtName(code),
         status, status_ord: status === 'ok' ? 0 : status === 'stale' ? 1 : 2,
         new_count: s.new_count || 0,
+        error_count: s.error_count || 0,
         duration_s: s.duration_s || 0,
         state_count: s.state_count,
         jsonl_size_mb: s.jsonl_size_mb,
@@ -1242,11 +1243,12 @@ function renderAll(data) {
     const pillLabel = { ok: t('health_ok'), fail: t('health_fail'), stale: t('health_stale') };
     sortable(document.getElementById('t-health'), scrapers, r => {
       const pill = `<span class="pill pill-${r.status}">${pillLabel[r.status]}</span>`;
+      const errBadge = r.error_count > 0 ? ` <span class="cc" style="color:var(--ac)">${r.error_count} err</span>` : '';
       const mtime = r.jsonl_mtime ? r.jsonl_mtime.slice(0, 10) : '\u2014';
       const title = r.error ? ` title="${r.error.replace(/"/g, '&quot;').slice(0, 200)}"` : '';
       return `<tr${title}>
         <td><span class="cn">${r.name}</span><span class="cc">${r.code}</span></td>
-        <td>${pill}</td>
+        <td>${pill}${errBadge}</td>
         <td class="n">${r.new_count > 0 ? '+' + fmt(r.new_count) : '0'}</td>
         <td class="n">${fmtDur(r.duration_s)}</td>
         <td class="n hide-m">${r.state_count != null ? fmt(r.state_count) : '\u2014'}</td>

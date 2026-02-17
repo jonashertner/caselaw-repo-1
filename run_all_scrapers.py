@@ -100,8 +100,9 @@ def run_single_scraper(court: str, timeout: int) -> dict:
         duration = time.time() - start
 
         # Parse only this run's appended log region:
-        # [court] Done. New: 42, Errors: ...
+        # [court] Done. New: 42, Errors: 3, ...
         new_count = 0
+        error_count = 0
         error_tail: deque[str] = deque(maxlen=6)
         if log_path.exists():
             with open(log_path, "r", encoding="utf-8", errors="replace") as f:
@@ -113,17 +114,24 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                             new_count = int(line.split("New:")[1].split(",")[0].strip())
                         except (ValueError, IndexError):
                             pass
+                        try:
+                            error_count = int(line.split("Errors:")[1].split(",")[0].strip())
+                        except (ValueError, IndexError):
+                            pass
                     if " ERROR " in line or "Traceback" in line:
                         error_tail.append(line.strip())
 
         error = None
         if result.returncode != 0:
             error = " | ".join(error_tail) if error_tail else f"Exit code {result.returncode}"
+        elif error_count > 0:
+            error = f"{error_count} scraping errors"
 
         return {
             "court": court,
-            "success": result.returncode == 0,
+            "success": result.returncode == 0 and error_count == 0,
             "new_count": new_count,
+            "error_count": error_count,
             "duration": duration,
             "error": error,
         }
@@ -134,6 +142,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "court": court,
             "success": False,
             "new_count": 0,
+            "error_count": 0,
             "duration": duration,
             "error": f"Timed out after {timeout}s",
         }
@@ -143,6 +152,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "court": court,
             "success": False,
             "new_count": 0,
+            "error_count": 0,
             "duration": duration,
             "error": str(e)[:200],
         }
@@ -169,6 +179,9 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Show what would run")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
+
+    if args.parallel < 1:
+        parser.error("--parallel must be at least 1")
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -233,6 +246,7 @@ def main():
                     "court": court,
                     "success": False,
                     "new_count": 0,
+                    "error_count": 0,
                     "duration": 0,
                     "error": str(e)[:200],
                 })
@@ -263,6 +277,7 @@ def main():
             r["court"]: {
                 "success": r["success"],
                 "new_count": r["new_count"],
+                "error_count": r["error_count"],
                 "duration_s": round(r["duration"], 1),
                 "error": r["error"],
             }
