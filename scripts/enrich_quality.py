@@ -293,9 +293,19 @@ def repair_dates(conn: sqlite3.Connection, dry_run: bool) -> dict:
     return {"candidates": total, "from_docket": from_docket, "from_text": from_text}
 
 
+def _ensure_content_hash_column(conn: sqlite3.Connection) -> None:
+    """Add content_hash column if it doesn't exist (older DBs lack it)."""
+    cols = {row[1] for row in conn.execute("PRAGMA table_info(decisions)").fetchall()}
+    if "content_hash" not in cols:
+        logger.info("  Adding missing content_hash column to decisions table")
+        conn.execute("ALTER TABLE decisions ADD COLUMN content_hash TEXT")
+        conn.commit()
+
+
 def compute_content_hashes(conn: sqlite3.Connection, dry_run: bool) -> dict:
     """Substep 4: Compute MD5(full_text) for rows missing content_hash."""
     logger.info("─── Substep 4: Content hash ───")
+    _ensure_content_hash_column(conn)
 
     cur = conn.execute(
         "SELECT COUNT(*) FROM decisions WHERE content_hash IS NULL AND full_text IS NOT NULL"
@@ -342,6 +352,7 @@ def compute_content_hashes(conn: sqlite3.Connection, dry_run: bool) -> dict:
 def generate_dedup_report(conn: sqlite3.Connection, output_path: Path, dry_run: bool) -> dict:
     """Substep 5: Find duplicates and write report."""
     logger.info("─── Substep 5: Dedup report ───")
+    _ensure_content_hash_column(conn)
 
     # Metadata duplicates: same (court, docket_number, decision_date)
     meta_dupes = conn.execute(
