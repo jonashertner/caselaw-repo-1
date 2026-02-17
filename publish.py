@@ -168,9 +168,19 @@ def step_2c_build_reference_graph(dry_run: bool = False) -> bool:
     )
 
 
-def step_2d_enrich_quality(dry_run: bool = False) -> bool:
-    """Step 2d: Enrich data quality (titles, regeste, dates, hashes, dedup)."""
-    logger.info("Step 2d: Quality enrichment")
+def step_2d_enrich_quality(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2d: Enrich data quality (titles, regeste, dates, hashes, dedup).
+
+    Only runs on Sunday (or --full-rebuild). Uses checkpoint internally so
+    even a full run is fast when no new decisions exist.
+    """
+    is_enrichment_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
+
+    if not is_enrichment_day:
+        logger.info("Step 2d: Quality enrichment — skipped (runs weekly on Sunday)")
+        return True
+
+    logger.info("Step 2d: Quality enrichment (weekly)")
 
     script = REPO_DIR / "scripts" / "enrich_quality.py"
     if not script.exists():
@@ -367,7 +377,7 @@ def main():
             continue
         step_start = time.time()
         try:
-            if num == 2:
+            if num in (2, "2d"):
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
             else:
                 ok = func(dry_run=args.dry_run)
