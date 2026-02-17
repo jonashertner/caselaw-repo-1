@@ -189,7 +189,7 @@ def step_2d_enrich_quality(dry_run: bool = False) -> bool:
     if dry_run:
         cmd.append("--dry-run")
 
-    return run_cmd(cmd, "Quality enrichment", timeout=7200)
+    return run_cmd(cmd, "Quality enrichment", dry_run, timeout=7200)
 
 
 def step_3_export_parquet(dry_run: bool = False) -> bool:
@@ -338,8 +338,8 @@ STEPS = [
 def main():
     parser = argparse.ArgumentParser(description="Swiss Case Law publishing pipeline")
     parser.add_argument(
-        "--step", type=int, default=None,
-        help="Run only a specific step (1-6)",
+        "--step", type=str, default=None,
+        help="Run only a specific step (1, 2, 2b, 2c, 2d, 3, 4, 5, 6)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Log actions without executing")
     parser.add_argument(

@@ -103,10 +103,28 @@ def write_parquet_shard(
                 row[key] = json.dumps(val)
         rows.append(row)
 
-    table = pa.Table.from_pylist(rows)
-    pq.write_table(table, filepath, compression="zstd")
+    new_table = pa.Table.from_pylist(rows)
 
-    logger.info(f"Wrote {len(decisions)} decisions to {filepath}")
+    # Append to existing shard if present (avoid overwriting earlier same-day rows)
+    if filepath.exists():
+        try:
+            existing_table = pq.read_table(filepath)
+            # Deduplicate by decision_id: keep new rows, drop old dupes
+            existing_ids = set(existing_table.column("decision_id").to_pylist())
+            new_ids = set(new_table.column("decision_id").to_pylist())
+            overlap = existing_ids & new_ids
+            if overlap:
+                # Filter out rows from existing that are being replaced
+                mask = [did not in overlap for did in existing_table.column("decision_id").to_pylist()]
+                existing_table = existing_table.filter(mask)
+            new_table = pa.concat_tables([existing_table, new_table])
+            logger.info(f"Appending to existing shard ({len(existing_ids)} existing + {len(rows)} new, {len(overlap)} replaced)")
+        except Exception as e:
+            logger.warning(f"Could not read existing shard {filepath}, overwriting: {e}")
+
+    pq.write_table(new_table, filepath, compression="zstd")
+
+    logger.info(f"Wrote {new_table.num_rows} decisions to {filepath}")
     return filepath
 
 
@@ -159,25 +177,24 @@ def upload_to_huggingface(
             logger.error(f"Failed to create repo: {e}")
             return
 
-    # Upload new shards
+    # Upload all shards (always upload — shards may have been appended to since last upload)
     uploaded = 0
     for parquet_file in sorted(daily_dir.glob("*.parquet")):
         remote_path = f"data/daily/{parquet_file.name}"
-        if remote_path not in existing:
-            try:
-                api.upload_file(
-                    path_or_fileobj=str(parquet_file),
-                    path_in_repo=remote_path,
-                    repo_id=repo_id,
-                    repo_type="dataset",
-                    token=token,
-                )
-                uploaded += 1
-                logger.info(f"Uploaded: {remote_path}")
-            except Exception as e:
-                logger.error(f"Failed to upload {parquet_file.name}: {e}")
+        try:
+            api.upload_file(
+                path_or_fileobj=str(parquet_file),
+                path_in_repo=remote_path,
+                repo_id=repo_id,
+                repo_type="dataset",
+                token=token,
+            )
+            uploaded += 1
+            logger.info(f"Uploaded: {remote_path}")
+        except Exception as e:
+            logger.error(f"Failed to upload {parquet_file.name}: {e}")
 
-    logger.info(f"HuggingFace upload complete. {uploaded} new files.")
+    logger.info(f"HuggingFace upload complete. {uploaded} files.")
 
 
 # ============================================================

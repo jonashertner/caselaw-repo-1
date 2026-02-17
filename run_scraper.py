@@ -165,12 +165,11 @@ def run_with_persistence(
         try:
             decision = scraper.fetch_decision(stub)
             if decision:
-                scraper.state.mark_scraped(decision.decision_id)
-
                 # Write full decision to JSONL (skip if already written)
                 if decision.decision_id not in written_ids:
                     with open(jsonl_path, "a", encoding="utf-8") as f:
                         f.write(serialize_decision(decision) + "\n")
+                        f.flush()
                     written_ids.add(decision.decision_id)
                     new_count += 1
 
@@ -181,6 +180,9 @@ def run_with_persistence(
                             f"[{scraper_key}] Progress: {new_count} decisions, "
                             f"{rate:.0f}/hour, file: {jsonl_path.stat().st_size / 1024 / 1024:.1f} MB"
                         )
+
+                # Mark scraped AFTER durable write to avoid gaps on crash
+                scraper.state.mark_scraped(decision.decision_id)
 
                 logger.info(
                     f"[{scraper_key}] Scraped: {decision.decision_id} "

@@ -229,8 +229,10 @@ def build_database(
     # create a checkpoint from current JSONL file sizes to avoid re-reading everything.
     jsonl_dir = output_dir / "decisions"
     if incremental and checkpoint is None and existing > 0 and jsonl_dir.exists():
-        logger.info(
-            f"Seeding checkpoint from current file sizes (DB has {existing} rows)"
+        logger.warning(
+            f"Seeding checkpoint from current file sizes (DB has {existing} rows). "
+            "Assumes DB already contains all JSONL data. If data gaps exist, "
+            "run with --full-rebuild to re-ingest everything."
         )
         checkpoint = {}
         for jf in sorted(jsonl_dir.glob("*.jsonl")):
@@ -348,7 +350,12 @@ def main():
         logger.info(f"Watch mode: rebuilding every {args.watch}s")
         while True:
             try:
-                build_database(output_dir, db_path)
+                build_database(
+                    output_dir, db_path,
+                    incremental=args.incremental,
+                    no_optimize=args.no_optimize,
+                    full_rebuild=args.full_rebuild,
+                )
             except Exception as e:
                 logger.error(f"Build failed: {e}", exc_info=True)
             time.sleep(args.watch)

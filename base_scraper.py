@@ -346,8 +346,9 @@ class BaseScraper(ABC):
             try:
                 decision = self.fetch_decision(stub)
                 if decision:
-                    self.state.mark_scraped(decision.decision_id)
                     new_decisions.append(decision)
+                    # Mark scraped AFTER appending to avoid gaps on crash
+                    self.state.mark_scraped(decision.decision_id)
                     logger.info(
                         f"[{self.court_code}] Scraped: {decision.decision_id} "
                         f"({decision.decision_date})"

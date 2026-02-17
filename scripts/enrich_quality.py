@@ -156,13 +156,13 @@ def enrich_titles(conn: sqlite3.Connection, dry_run: bool) -> dict:
         return {"candidates": total, "filled": 0}
 
     filled = 0
-    offset = 0
-    while offset < total:
+    processed = 0
+    while True:
         rows = conn.execute(
             "SELECT decision_id, full_text FROM decisions "
             "WHERE (title IS NULL OR title = '') AND full_text IS NOT NULL "
-            "LIMIT ? OFFSET ?",
-            (BATCH_SIZE, offset),
+            "LIMIT ?",
+            (BATCH_SIZE,),
         ).fetchall()
         if not rows:
             break
@@ -180,9 +180,13 @@ def enrich_titles(conn: sqlite3.Connection, dry_run: bool) -> dict:
             conn.commit()
             filled += len(updates)
 
-        offset += BATCH_SIZE
-        if offset % 10_000 == 0:
-            logger.info(f"  Progress: {offset}/{total}, filled {filled}")
+        # If no rows were updated, remaining rows can't be enriched — stop
+        if not updates:
+            break
+
+        processed += len(rows)
+        if processed % 10_000 == 0:
+            logger.info(f"  Progress: {processed}/{total}, filled {filled}")
 
     logger.info(f"  Filled {filled} / {total} titles")
     return {"candidates": total, "filled": filled}
@@ -202,13 +206,13 @@ def enrich_regeste(conn: sqlite3.Connection, dry_run: bool) -> dict:
         return {"candidates": total, "filled": 0}
 
     filled = 0
-    offset = 0
-    while offset < total:
+    processed = 0
+    while True:
         rows = conn.execute(
             "SELECT decision_id, full_text FROM decisions "
             "WHERE (regeste IS NULL OR regeste = '') AND full_text IS NOT NULL "
-            "LIMIT ? OFFSET ?",
-            (BATCH_SIZE, offset),
+            "LIMIT ?",
+            (BATCH_SIZE,),
         ).fetchall()
         if not rows:
             break
@@ -226,9 +230,13 @@ def enrich_regeste(conn: sqlite3.Connection, dry_run: bool) -> dict:
             conn.commit()
             filled += len(updates)
 
-        offset += BATCH_SIZE
-        if offset % 10_000 == 0:
-            logger.info(f"  Progress: {offset}/{total}, filled {filled}")
+        # If no rows were updated, remaining rows can't be enriched — stop
+        if not updates:
+            break
+
+        processed += len(rows)
+        if processed % 10_000 == 0:
+            logger.info(f"  Progress: {processed}/{total}, filled {filled}")
 
     logger.info(f"  Filled {filled} / {total} regeste")
     return {"candidates": total, "filled": filled}
@@ -251,21 +259,24 @@ def repair_dates(conn: sqlite3.Connection, dry_run: bool) -> dict:
 
     from_docket = 0
     from_text = 0
-    offset = 0
+    last_rowid = 0
 
-    while offset < total:
+    while True:
         rows = conn.execute(
-            "SELECT decision_id, docket_number, full_text FROM decisions "
-            "WHERE decision_date IS NULL OR decision_date = '' "
-            "OR decision_date = 'None' OR decision_date = '0000-00-00' "
-            "LIMIT ? OFFSET ?",
-            (BATCH_SIZE, offset),
+            "SELECT rowid, decision_id, docket_number, full_text FROM decisions "
+            "WHERE (decision_date IS NULL OR decision_date = '' "
+            "OR decision_date = 'None' OR decision_date = '0000-00-00') "
+            "AND rowid > ? "
+            "ORDER BY rowid LIMIT ?",
+            (last_rowid, BATCH_SIZE),
         ).fetchall()
         if not rows:
             break
 
+        last_rowid = rows[-1][0]
+
         updates = []
-        for did, docket, ft in rows:
+        for _rowid, did, docket, ft in rows:
             # Try docket first (more reliable)
             date = extract_date_from_docket(docket)
             if date:
@@ -284,10 +295,6 @@ def repair_dates(conn: sqlite3.Connection, dry_run: bool) -> dict:
                 "UPDATE decisions SET decision_date = ? WHERE decision_id = ?", updates
             )
             conn.commit()
-
-        offset += BATCH_SIZE
-        if offset % 10_000 == 0:
-            logger.info(f"  Progress: {offset}/{total}, fixed {from_docket + from_text}")
 
     logger.info(f"  Fixed {from_docket + from_text} / {total} dates (docket: {from_docket}, text: {from_text})")
     return {"candidates": total, "from_docket": from_docket, "from_text": from_text}
