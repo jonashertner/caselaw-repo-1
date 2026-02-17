@@ -225,25 +225,12 @@ def build_database(
     # Count existing
     existing = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
 
-    # Seed checkpoint: if incremental mode, no checkpoint file, but DB already has data,
-    # create a checkpoint from current JSONL file sizes to avoid re-reading everything.
     jsonl_dir = output_dir / "decisions"
-    if incremental and checkpoint is None and existing > 0 and jsonl_dir.exists():
-        logger.warning(
-            f"Seeding checkpoint from current file sizes (DB has {existing} rows). "
-            "Assumes DB already contains all JSONL data. If data gaps exist, "
-            "run with --full-rebuild to re-ingest everything."
+    if incremental and checkpoint is None:
+        logger.info(
+            "No checkpoint file found — first incremental run will read all JSONL files. "
+            "Subsequent runs will be fast. To skip this, run --full-rebuild first."
         )
-        checkpoint = {}
-        for jf in sorted(jsonl_dir.glob("*.jsonl")):
-            checkpoint[jf.name] = {"size": jf.stat().st_size, "imported": 0}
-        # Save immediately so it persists even if interrupted
-        checkpoint_path.write_text(json.dumps({
-            "files": checkpoint,
-            "last_full_build": None,
-            "last_incremental": datetime.now(timezone.utc).isoformat(),
-        }, indent=2))
-        logger.info(f"Seeded checkpoint: {len(checkpoint)} files tracked")
 
     # Import from JSONL (run_scraper.py output)
     jsonl_imported, jsonl_skipped, new_checkpoint = 0, 0, {}

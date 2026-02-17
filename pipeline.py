@@ -120,7 +120,8 @@ def write_parquet_shard(
             new_table = pa.concat_tables([existing_table, new_table])
             logger.info(f"Appending to existing shard ({len(existing_ids)} existing + {len(rows)} new, {len(overlap)} replaced)")
         except Exception as e:
-            logger.warning(f"Could not read existing shard {filepath}, overwriting: {e}")
+            logger.error(f"Could not read existing shard {filepath}: {e}")
+            raise
 
     pq.write_table(new_table, filepath, compression="zstd")
 

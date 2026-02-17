@@ -156,19 +156,22 @@ def enrich_titles(conn: sqlite3.Connection, dry_run: bool) -> dict:
         return {"candidates": total, "filled": 0}
 
     filled = 0
+    last_rowid = 0
     processed = 0
     while True:
         rows = conn.execute(
-            "SELECT decision_id, full_text FROM decisions "
+            "SELECT rowid, decision_id, full_text FROM decisions "
             "WHERE (title IS NULL OR title = '') AND full_text IS NOT NULL "
-            "LIMIT ?",
-            (BATCH_SIZE,),
+            "AND rowid > ? ORDER BY rowid LIMIT ?",
+            (last_rowid, BATCH_SIZE),
         ).fetchall()
         if not rows:
             break
 
+        last_rowid = rows[-1][0]
+
         updates = []
-        for did, ft in rows:
+        for _rowid, did, ft in rows:
             title = extract_title(ft)
             if title:
                 updates.append((title, did))
@@ -179,10 +182,6 @@ def enrich_titles(conn: sqlite3.Connection, dry_run: bool) -> dict:
             )
             conn.commit()
             filled += len(updates)
-
-        # If no rows were updated, remaining rows can't be enriched — stop
-        if not updates:
-            break
 
         processed += len(rows)
         if processed % 10_000 == 0:
@@ -206,19 +205,22 @@ def enrich_regeste(conn: sqlite3.Connection, dry_run: bool) -> dict:
         return {"candidates": total, "filled": 0}
 
     filled = 0
+    last_rowid = 0
     processed = 0
     while True:
         rows = conn.execute(
-            "SELECT decision_id, full_text FROM decisions "
+            "SELECT rowid, decision_id, full_text FROM decisions "
             "WHERE (regeste IS NULL OR regeste = '') AND full_text IS NOT NULL "
-            "LIMIT ?",
-            (BATCH_SIZE,),
+            "AND rowid > ? ORDER BY rowid LIMIT ?",
+            (last_rowid, BATCH_SIZE),
         ).fetchall()
         if not rows:
             break
 
+        last_rowid = rows[-1][0]
+
         updates = []
-        for did, ft in rows:
+        for _rowid, did, ft in rows:
             regeste = extract_regeste(ft)
             if regeste:
                 updates.append((regeste, did))
@@ -229,10 +231,6 @@ def enrich_regeste(conn: sqlite3.Connection, dry_run: bool) -> dict:
             )
             conn.commit()
             filled += len(updates)
-
-        # If no rows were updated, remaining rows can't be enriched — stop
-        if not updates:
-            break
 
         processed += len(rows)
         if processed % 10_000 == 0:

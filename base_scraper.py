@@ -347,8 +347,6 @@ class BaseScraper(ABC):
                 decision = self.fetch_decision(stub)
                 if decision:
                     new_decisions.append(decision)
-                    # Mark scraped AFTER appending to avoid gaps on crash
-                    self.state.mark_scraped(decision.decision_id)
                     logger.info(
                         f"[{self.court_code}] Scraped: {decision.decision_id} "
                         f"({decision.decision_date})"
@@ -362,6 +360,12 @@ class BaseScraper(ABC):
                 if errors > self.MAX_ERRORS:
                     logger.error(f"[{self.court_code}] Too many errors ({errors}), stopping.")
                     break
+
+        # Mark scraped AFTER collection loop completes — caller (pipeline.py)
+        # persists to Parquet after run() returns, so marking during the loop
+        # would create gaps if the process crashes mid-collection.
+        for decision in new_decisions:
+            self.state.mark_scraped(decision.decision_id)
 
         logger.info(
             f"[{self.court_code}] Done. "
