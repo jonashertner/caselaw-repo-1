@@ -38,6 +38,8 @@ SCHEMA_SQL = """
     CREATE INDEX IF NOT EXISTS idx_decisions_date ON decisions(decision_date);
     CREATE INDEX IF NOT EXISTS idx_decisions_language ON decisions(language);
     CREATE INDEX IF NOT EXISTS idx_decisions_docket ON decisions(docket_number);
+    CREATE INDEX IF NOT EXISTS idx_decisions_chamber ON decisions(chamber);
+    CREATE INDEX IF NOT EXISTS idx_decisions_type ON decisions(decision_type);
 
     CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
         decision_id UNINDEXED,

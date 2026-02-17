@@ -447,6 +447,8 @@ def search_fts5(
     language: str | None = None,
     date_from: str | None = None,
     date_to: str | None = None,
+    chamber: str | None = None,
+    decision_type: str | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> list[dict]:
     """
@@ -465,7 +467,7 @@ def search_fts5(
     fts_query = query.strip()
     if not fts_query:
         # No search query — return recent decisions with filters
-        return _list_recent(conn, court, canton, language, date_from, date_to, limit)
+        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit)
 
     # Build WHERE clause for filters (applied to main table via JOIN)
     filters = []
@@ -486,6 +488,12 @@ def search_fts5(
     if date_to:
         filters.append("d.decision_date <= ?")
         params.append(date_to)
+    if chamber:
+        filters.append("d.chamber LIKE ?")
+        params.append(f"%{chamber}%")
+    if decision_type:
+        filters.append("d.decision_type LIKE ?")
+        params.append(f"%{decision_type}%")
 
     where = (" AND " + " AND ".join(filters)) if filters else ""
 
@@ -2988,7 +2996,9 @@ def _list_recent(
     language: str | None,
     date_from: str | None,
     date_to: str | None,
-    limit: int,
+    chamber: str | None = None,
+    decision_type: str | None = None,
+    limit: int = DEFAULT_LIMIT,
 ) -> list[dict]:
     """List recent decisions without FTS query (just filters)."""
     filters = []
@@ -3009,6 +3019,12 @@ def _list_recent(
     if date_to:
         filters.append("decision_date <= ?")
         params.append(date_to)
+    if chamber:
+        filters.append("chamber LIKE ?")
+        params.append(f"%{chamber}%")
+    if decision_type:
+        filters.append("decision_type LIKE ?")
+        params.append(f"%{decision_type}%")
 
     where = ("WHERE " + " AND ".join(filters)) if filters else ""
 
@@ -3178,6 +3194,22 @@ async def handle_list_tools() -> list[Tool]:
                         "type": "string",
                         "description": "End date (YYYY-MM-DD)",
                     },
+                    "chamber": {
+                        "type": "string",
+                        "description": (
+                            "Filter by chamber/division (substring match). "
+                            "Examples: 'Abteilung V' (BVGer asylum), "
+                            "'Zivilrechtliche', 'CASSO', 'Strafrechtliche'"
+                        ),
+                    },
+                    "decision_type": {
+                        "type": "string",
+                        "description": (
+                            "Filter by decision type (substring match). "
+                            "Examples: 'Urteil', 'Beschluss', 'Leitentscheid', "
+                            "'BVGE', 'Verfügung', 'Endentscheid'"
+                        ),
+                    },
                     "limit": {
                         "type": "integer",
                         "description": "Max results (default 20, max 100)",
@@ -3334,6 +3366,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 language=arguments.get("language"),
                 date_from=arguments.get("date_from"),
                 date_to=arguments.get("date_to"),
+                chamber=arguments.get("chamber"),
+                decision_type=arguments.get("decision_type"),
                 limit=arguments.get("limit", DEFAULT_LIMIT),
             )
             if not results:
