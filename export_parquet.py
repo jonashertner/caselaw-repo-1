@@ -199,6 +199,10 @@ def export_parquet(input_dir: Path, output_dir: Path) -> dict[str, int]:
                             continue
                         global_seen.add(did)
 
+                        # Skip rows missing required fields (match FTS5 constraints)
+                        if not all(row.get(k) for k in ("court", "canton", "docket_number", "language")):
+                            continue
+
                         court = row.get("court", "unknown")
                         batch_by_court.setdefault(court, []).append(row)
                         file_count += 1
