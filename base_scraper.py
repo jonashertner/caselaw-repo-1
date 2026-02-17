@@ -361,11 +361,8 @@ class BaseScraper(ABC):
                     logger.error(f"[{self.court_code}] Too many errors ({errors}), stopping.")
                     break
 
-        # Mark scraped AFTER collection loop completes — caller (pipeline.py)
-        # persists to Parquet after run() returns, so marking during the loop
-        # would create gaps if the process crashes mid-collection.
-        for decision in new_decisions:
-            self.state.mark_scraped(decision.decision_id)
+        # NOTE: state is NOT marked here. The caller is responsible for calling
+        # mark_run_complete(decisions) after durable persistence (e.g. Parquet write).
 
         logger.info(
             f"[{self.court_code}] Done. "
@@ -374,6 +371,11 @@ class BaseScraper(ABC):
         )
 
         return new_decisions
+
+    def mark_run_complete(self, decisions: list) -> None:
+        """Mark decision IDs as scraped in state. Call after durable persistence."""
+        for decision in decisions:
+            self.state.mark_scraped(decision.decision_id)
 
     # =======================================================================
     # Common utilities

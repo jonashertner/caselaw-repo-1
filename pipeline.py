@@ -369,6 +369,8 @@ def run_pipeline(
 
             if decisions:
                 write_parquet_shard(decisions, output_dir, court_code)
+                # Mark state only AFTER durable Parquet write succeeds
+                scraper.mark_run_complete(decisions)
 
         except Exception as e:
             logger.error(f"Pipeline error for {court_code}: {e}", exc_info=True)
