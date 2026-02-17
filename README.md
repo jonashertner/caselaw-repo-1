@@ -402,13 +402,13 @@ Full schema definition: [`models.py`](models.py)
 | Court | Code | Decisions | Period | Source |
 |-------|------|-----------|--------|--------|
 | Federal Supreme Court (BGer) | `bger` | ~173,000 | 2000–present | bger.ch |
-| BGE Leading Cases | `bge` | ~21,000 | 1954–present | bger.ch |
+| BGE Leading Cases | `bge` | ~45,000 | 1954–present | bger.ch |
 | Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present | bvger.ch |
 | Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2005–present | bstger.weblaw.ch |
-| Federal Admin. Practice (VPB) | `ch_vb` | ~5,600 | 1982–2016 | bk.admin.ch |
+| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982–2016 | bk.admin.ch |
 | ECHR (Swiss cases) | `bge_egmr` | ~470 | — | bger.ch |
-| FINMA | `finma` | ~400 | 2014–2024 | finma.ch |
-| EDÖB (Data Protection) | `edoeb` | ~400 | 2002–present | edoeb.admin.ch |
+| FINMA | `finma` | ~1,200 | 2014–2024 | finma.ch |
+| EDÖB (Data Protection) | `edoeb` | ~1,200 | 2002–present | edoeb.admin.ch |
 | Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch |
 | Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch |
 | Sports Tribunal | `ta_sst` | ~50 | 2024–present | sportstribunal.ch |
@@ -425,8 +425,10 @@ Full schema definition: [`models.py`](models.py)
 | Genève (GE) | 1 | ~78,000 | 1993–present |
 | Ticino (TI) | 1 | ~58,000 | 1995–present |
 | St. Gallen (SG) | 7 | ~35,000 | 2001–present |
-| Aargau (AG) | 18 | ~10,000 | 1993–present |
-| Bern (BE) | 6 | ~16,000 | 2002–present |
+| Graubünden (GR) | 1 | ~29,000 | 2002–present |
+| Basel-Landschaft (BL) | 1 | ~26,000 | 2000–present |
+| Bern (BE) | 6 | ~26,000 | 2002–present |
+| Aargau (AG) | 18 | ~21,000 | 1993–present |
 
 All 26 cantons covered: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 
@@ -459,7 +461,7 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
 
 4. **Upload** — Parquet files are pushed to HuggingFace. The MCP server and `datasets` library pick up the new data automatically.
 
-5. **Update dashboard** — `stats.json` is regenerated and pushed to GitHub Pages.
+5. **Update dashboard** — `stats.json` is regenerated (including scraper health status from the last run) and pushed to GitHub Pages.
 
 ---
 
