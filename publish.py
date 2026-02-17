@@ -8,6 +8,7 @@ Orchestration script for VPS cron job. Runs the full pipeline:
   2.  Build/update FTS5 database
   2b. Quality report (optional)
   2c. Build reference graph (citations + statutes, ~78 min)
+  2d. Quality enrichment (titles, regeste, dates, hashes, dedup)
   3.  Export JSONL → Parquet
   4.  Upload Parquet + dataset card to HuggingFace
   5.  Generate stats.json
@@ -156,6 +157,30 @@ def step_2c_build_reference_graph(dry_run: bool = False) -> bool:
     )
 
 
+def step_2d_enrich_quality(dry_run: bool = False) -> bool:
+    """Step 2d: Enrich data quality (titles, regeste, dates, hashes, dedup)."""
+    logger.info("Step 2d: Quality enrichment")
+
+    script = REPO_DIR / "scripts" / "enrich_quality.py"
+    if not script.exists():
+        logger.info("  enrich_quality.py not found, skipping")
+        return True
+
+    if not DB_PATH.exists():
+        logger.info("  FTS5 database not found, skipping enrichment")
+        return True
+
+    cmd = [
+        sys.executable, str(script),
+        "--db", str(DB_PATH),
+        "--output", str(OUTPUT_DIR),
+    ]
+    if dry_run:
+        cmd.append("--dry-run")
+
+    return run_cmd(cmd, "Quality enrichment", timeout=3600)
+
+
 def step_3_export_parquet(dry_run: bool = False) -> bool:
     """Step 3: Export JSONL → Parquet."""
     logger.info("Step 3: Export Parquet")
@@ -291,6 +316,7 @@ STEPS = [
     (2, "Build FTS5", step_2_build_fts5),
     ("2b", "Quality Report", step_2b_quality_report),
     ("2c", "Reference Graph", step_2c_build_reference_graph),
+    ("2d", "Quality Enrichment", step_2d_enrich_quality),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
     (5, "Generate Stats", step_5_generate_stats),
