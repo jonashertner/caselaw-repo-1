@@ -453,7 +453,7 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
 
 1. **Scrape** (01:00 UTC daily) — 43 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
 
-2. **Build search index** (04:00 UTC) — All JSONL files are ingested, deduplicated, and loaded into a SQLite FTS5 database for full-text search. Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata. A quality enrichment step fills in missing titles, regestes, and content hashes.
+2. **Build search index** (04:00 UTC) — JSONL files are ingested into a SQLite FTS5 database for full-text search. On Mon–Sat, this runs in **incremental mode**: a byte-offset checkpoint tracks how far each JSONL file has been read, so only newly appended decisions are processed (typically < 1 minute). On Sundays, a **full rebuild** compacts the FTS5 index and resets the checkpoint (~3 hours). Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata. A quality enrichment step fills in missing titles, regestes, and content hashes.
 
 3. **Export** — JSONL files are converted to Parquet (one file per court) with a fixed 34-field schema.
 
@@ -500,10 +500,17 @@ Output is written to `output/decisions/{court}.jsonl` — one JSON object per li
 ### Build a local search database
 
 ```bash
+# Full build (reads all JSONL, optimizes FTS index — ~3h for 1M decisions)
 python build_fts5.py --output output -v
+
+# Incremental build (reads only new JSONL bytes, skips optimize — seconds)
+python build_fts5.py --output output --incremental --no-optimize -v
+
+# Full rebuild (deletes DB + checkpoint, rebuilds from scratch)
+python build_fts5.py --output output --full-rebuild -v
 ```
 
-This reads all JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. For 1M decisions, this takes about 3 hours and produces a ~48 GB database.
+This reads JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. A full build of 1M decisions takes about 3 hours and produces a ~48 GB database. Incremental mode uses a checkpoint file (`output/.fts5_checkpoint.json`) to skip unchanged files and seek past already-processed bytes, completing in seconds when few new decisions exist.
 
 ### Export to Parquet
 

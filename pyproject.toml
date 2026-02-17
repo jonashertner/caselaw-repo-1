@@ -25,10 +25,9 @@ dependencies = [
 crypto = ["pycryptodome>=3.20"]
 pdf = ["pymupdf>=1.23"]
 api = ["fastapi>=0.104", "uvicorn>=0.24"]
-search = ["opensearch-py>=2.6"]
 semantic = ["sentence-transformers>=3.0"]
 dev = ["pytest>=7.0", "ruff>=0.1"]
-all = ["swiss-caselaw-scrapers[crypto,pdf,api,search,semantic,dev]"]
+all = ["swiss-caselaw-scrapers[crypto,pdf,api,semantic,dev]"]
 
 [tool.setuptools.packages.find]
 include = ["scrapers*", "search_stack*"]
