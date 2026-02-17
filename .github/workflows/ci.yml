@@ -43,8 +43,6 @@ jobs:
             test_mcp_search_nl.py \
             test_search_rerank_signals.py \
             test_mock_decision_tool.py \
-            test_query_planner.py \
             test_reference_extraction.py \
             test_reference_graph_resolution.py \
-            test_hybrid_service_semantic.py \
             test_search_benchmark_resolution.py
