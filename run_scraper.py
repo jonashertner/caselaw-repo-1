@@ -113,7 +113,7 @@ def run_with_persistence(
 
     if scraper_key not in SCRAPERS:
         logger.error(f"Unknown scraper: {scraper_key}. Available: {list(SCRAPERS.keys())}")
-        return 0
+        return -1
 
     module_name, class_name = SCRAPERS[scraper_key]
 

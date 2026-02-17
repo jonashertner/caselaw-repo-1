@@ -641,7 +641,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
     quick_search:'Volltextsuche', quick_search_desc:'MCP-Server f\u00fcr Claude und andere AI-Tools',
     quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
-    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_stale:'Veraltet',
+    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_stale:'Veraltet', health_errors:'Fehler',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -662,7 +662,7 @@ const I18N = {
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
     quick_search:'Recherche', quick_search_desc:'Serveur MCP pour Claude et autres outils IA',
     quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
-    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_stale:'P\u00e9rim\u00e9',
+    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -683,7 +683,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
     quick_search:'Ricerca', quick_search_desc:'Server MCP per Claude e altri strumenti IA',
     quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
-    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_stale:'Obsoleto',
+    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_stale:'Obsoleto', health_errors:'errori',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -704,7 +704,7 @@ const I18N = {
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
     quick_search:'Tschertga', quick_search_desc:'Server MCP per Claude ed auters utensils IA',
     quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
-    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_stale:'Vegl',
+    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_stale:'Vegl', health_errors:'errurs',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -725,7 +725,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
     quick_search:'Search', quick_search_desc:'MCP server for Claude and other AI tools',
     quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
-    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_stale:'Stale',
+    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_stale:'Stale', health_errors:'errors',
   },
 };
 
@@ -1243,7 +1243,7 @@ function renderAll(data) {
     const pillLabel = { ok: t('health_ok'), fail: t('health_fail'), stale: t('health_stale') };
     sortable(document.getElementById('t-health'), scrapers, r => {
       const pill = `<span class="pill pill-${r.status}">${pillLabel[r.status]}</span>`;
-      const errBadge = r.error_count > 0 ? ` <span class="cc" style="color:var(--ac)">${r.error_count} err</span>` : '';
+      const errBadge = r.error_count > 0 ? ` <span class="cc" style="color:var(--ac)">${r.error_count} ${t('health_errors')}</span>` : '';
       const mtime = r.jsonl_mtime ? r.jsonl_mtime.slice(0, 10) : '\u2014';
       const title = r.error ? ` title="${r.error.replace(/"/g, '&quot;').slice(0, 200)}"` : '';
       return `<tr${title}>
