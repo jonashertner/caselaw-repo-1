@@ -178,7 +178,7 @@ def step_2d_enrich_quality(dry_run: bool = False) -> bool:
     if dry_run:
         cmd.append("--dry-run")
 
-    return run_cmd(cmd, "Quality enrichment", timeout=3600)
+    return run_cmd(cmd, "Quality enrichment", timeout=7200)
 
 
 def step_3_export_parquet(dry_run: bool = False) -> bool:
