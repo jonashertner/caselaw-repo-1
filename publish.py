@@ -116,7 +116,7 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
     else:
         cmd.extend(["--incremental", "--no-optimize"])
         logger.info("Step 2: Incremental FTS5 update")
-        timeout = 600
+        timeout = 3600
 
     return run_cmd(cmd, "Build FTS5 database", dry_run, timeout=timeout)
 
