@@ -153,6 +153,7 @@ def run_with_persistence(
 
     # Run discovery and fetch
     new_count = 0
+    skips = 0
     errors = 0
     start = time.time()
 
@@ -192,6 +193,12 @@ def run_with_persistence(
                     f"[{scraper_key}] Scraped: {decision.decision_id} "
                     f"({decision.decision_date})"
                 )
+            else:
+                skips += 1
+                logger.warning(
+                    f"[{scraper_key}] Skipped (fetch returned None): "
+                    f"{stub.get('docket_number', '?')}"
+                )
 
         except Exception as e:
             errors += 1
@@ -207,7 +214,7 @@ def run_with_persistence(
     file_size = jsonl_path.stat().st_size / 1024 / 1024 if jsonl_path.exists() else 0
 
     logger.info(
-        f"[{scraper_key}] Done. New: {new_count}, Errors: {errors}, "
+        f"[{scraper_key}] Done. New: {new_count}, Skips: {skips}, Errors: {errors}, "
         f"Total written: {len(written_ids)}, Time: {elapsed / 60:.1f} min, "
         f"File: {jsonl_path} ({file_size:.1f} MB)"
     )

@@ -331,6 +331,7 @@ class BaseScraper(ABC):
             List of newly scraped Decision objects.
         """
         new_decisions = []
+        skipped = 0
         errors = 0
 
         logger.info(
@@ -351,6 +352,12 @@ class BaseScraper(ABC):
                         f"[{self.court_code}] Scraped: {decision.decision_id} "
                         f"({decision.decision_date})"
                     )
+                else:
+                    skipped += 1
+                    logger.debug(
+                        f"[{self.court_code}] fetch_decision returned None for "
+                        f"{stub.get('docket_number', '?')}"
+                    )
             except Exception as e:
                 errors += 1
                 logger.error(
@@ -366,7 +373,7 @@ class BaseScraper(ABC):
 
         logger.info(
             f"[{self.court_code}] Done. "
-            f"New: {len(new_decisions)}, Errors: {errors}, "
+            f"New: {len(new_decisions)}, Skips: {skipped}, Errors: {errors}, "
             f"Total known: {self.state.count()}"
         )
 

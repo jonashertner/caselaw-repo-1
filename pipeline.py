@@ -81,8 +81,7 @@ def write_parquet_shard(
         import pyarrow as pa
         import pyarrow.parquet as pq
     except ImportError:
-        logger.error("pyarrow not installed. Run: pip install pyarrow")
-        return None
+        raise RuntimeError("pyarrow not installed — cannot persist. Run: pip install pyarrow")
 
     scrape_date = scrape_date or date.today()
     daily_dir = output_dir / "data" / "daily"
@@ -368,9 +367,13 @@ def run_pipeline(
             results[court_code] = len(decisions)
 
             if decisions:
-                write_parquet_shard(decisions, output_dir, court_code)
-                # Mark state only AFTER durable Parquet write succeeds
-                scraper.mark_run_complete(decisions)
+                shard_path = write_parquet_shard(decisions, output_dir, court_code)
+                if shard_path:
+                    # Mark state only AFTER durable Parquet write succeeds
+                    scraper.mark_run_complete(decisions)
+                else:
+                    logger.error(f"Parquet write failed for {court_code} — state NOT marked")
+                    failed_courts.append(court_code)
 
         except Exception as e:
             logger.error(f"Pipeline error for {court_code}: {e}", exc_info=True)

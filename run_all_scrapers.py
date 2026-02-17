@@ -100,8 +100,9 @@ def run_single_scraper(court: str, timeout: int) -> dict:
         duration = time.time() - start
 
         # Parse only this run's appended log region:
-        # [court] Done. New: 42, Errors: 3, ...
+        # [court] Done. New: 42, Skips: 5, Errors: 3, ...
         new_count = 0
+        skip_count = 0
         error_count = 0
         error_tail: deque[str] = deque(maxlen=6)
         if log_path.exists():
@@ -114,6 +115,11 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                             new_count = int(line.split("New:")[1].split(",")[0].strip())
                         except (ValueError, IndexError):
                             pass
+                        if "Skips:" in line:
+                            try:
+                                skip_count = int(line.split("Skips:")[1].split(",")[0].strip())
+                            except (ValueError, IndexError):
+                                pass
                         try:
                             error_count = int(line.split("Errors:")[1].split(",")[0].strip())
                         except (ValueError, IndexError):
@@ -131,6 +137,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "court": court,
             "success": result.returncode == 0 and error_count == 0,
             "new_count": new_count,
+            "skip_count": skip_count,
             "error_count": error_count,
             "duration": duration,
             "error": error,
@@ -142,6 +149,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "court": court,
             "success": False,
             "new_count": 0,
+            "skip_count": 0,
             "error_count": 0,
             "duration": duration,
             "error": f"Timed out after {timeout}s",
@@ -152,6 +160,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "court": court,
             "success": False,
             "new_count": 0,
+            "skip_count": 0,
             "error_count": 0,
             "duration": duration,
             "error": str(e)[:200],
@@ -246,6 +255,7 @@ def main():
                     "court": court,
                     "success": False,
                     "new_count": 0,
+                    "skip_count": 0,
                     "error_count": 0,
                     "duration": 0,
                     "error": str(e)[:200],
@@ -277,6 +287,7 @@ def main():
             r["court"]: {
                 "success": r["success"],
                 "new_count": r["new_count"],
+                "skip_count": r["skip_count"],
                 "error_count": r["error_count"],
                 "duration_s": round(r["duration"], 1),
                 "error": r["error"],
