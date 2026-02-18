@@ -195,10 +195,14 @@ def run_with_persistence(
                 )
             else:
                 skips += 1
-                logger.warning(
-                    f"[{scraper_key}] Skipped (fetch returned None): "
+                errors += 1
+                logger.error(
+                    f"[{scraper_key}] fetch_decision returned None for "
                     f"{stub.get('docket_number', '?')}"
                 )
+                if errors > 50:
+                    logger.error(f"[{scraper_key}] Too many errors ({errors}), stopping.")
+                    break
 
         except Exception as e:
             errors += 1
@@ -224,7 +228,12 @@ def run_with_persistence(
 
 def main():
     parser = argparse.ArgumentParser(description="Run scraper with JSONL persistence")
-    parser.add_argument("scraper", choices=list(SCRAPERS.keys()), help="Scraper to run")
+    parser.add_argument("scraper", nargs="?", choices=list(SCRAPERS.keys()), help="Scraper to run")
+    parser.add_argument(
+        "--list",
+        action="store_true",
+        help="List available scraper codes and exit",
+    )
     parser.add_argument("--since", type=str, help="Only scrape since date (YYYY-MM-DD)")
     parser.add_argument("--max", type=int, help="Max decisions to scrape")
     parser.add_argument("--output", type=str, default="output", help="Output directory")
@@ -232,6 +241,14 @@ def main():
     parser.add_argument("-v", "--verbose", action="store_true")
 
     args = parser.parse_args()
+
+    if args.list:
+        for scraper_key in sorted(SCRAPERS.keys()):
+            print(scraper_key)
+        return
+
+    if not args.scraper:
+        parser.error("the following argument is required: scraper (unless --list is used)")
 
     Path("logs").mkdir(exist_ok=True)
 

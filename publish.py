@@ -384,14 +384,20 @@ def main():
 
     results = {}
     start = time.time()
+    manual_step_mode = args.step is not None
 
     for num, name, func in STEPS:
         if args.step is not None and str(args.step) != str(num):
             continue
         step_start = time.time()
         try:
-            if num in (2, "2b", "2c", "2d"):
+            if num == 2:
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
+            elif num in ("2b", "2c", "2d"):
+                ok = func(
+                    dry_run=args.dry_run,
+                    full_rebuild=(args.full_rebuild or manual_step_mode),
+                )
             else:
                 ok = func(dry_run=args.dry_run)
             results[num] = ok

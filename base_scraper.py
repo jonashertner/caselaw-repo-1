@@ -223,6 +223,8 @@ class BaseScraper(ABC):
         self.state = ScraperState(self.state_dir / f"{self.court_code}.jsonl")
         self.session = self._build_session()
         self._last_request_time: float = 0
+        self.last_run_errors: int = 0
+        self.last_run_skips: int = 0
 
     def _build_session(self) -> requests.Session:
         """Build an HTTP session with retry logic and proper headers."""
@@ -333,6 +335,8 @@ class BaseScraper(ABC):
         new_decisions = []
         skipped = 0
         errors = 0
+        self.last_run_errors = 0
+        self.last_run_skips = 0
 
         logger.info(
             f"[{self.court_code}] Starting scrape. "
@@ -354,10 +358,14 @@ class BaseScraper(ABC):
                     )
                 else:
                     skipped += 1
-                    logger.debug(
+                    errors += 1
+                    logger.error(
                         f"[{self.court_code}] fetch_decision returned None for "
                         f"{stub.get('docket_number', '?')}"
                     )
+                    if errors > self.MAX_ERRORS:
+                        logger.error(f"[{self.court_code}] Too many errors ({errors}), stopping.")
+                        break
             except Exception as e:
                 errors += 1
                 logger.error(
@@ -376,6 +384,8 @@ class BaseScraper(ABC):
             f"New: {len(new_decisions)}, Skips: {skipped}, Errors: {errors}, "
             f"Total known: {self.state.count()}"
         )
+        self.last_run_errors = errors
+        self.last_run_skips = skipped
 
         return new_decisions
 

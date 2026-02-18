@@ -364,6 +364,7 @@ def run_pipeline(
                 since = parse_date(since_date)
 
             decisions = scraper.run(since_date=since, max_decisions=max_per_court)
+            run_errors = int(getattr(scraper, "last_run_errors", 0) or 0)
             results[court_code] = len(decisions)
 
             if decisions:
@@ -373,7 +374,17 @@ def run_pipeline(
                     scraper.mark_run_complete(decisions)
                 else:
                     logger.error(f"Parquet write failed for {court_code} — state NOT marked")
+                    results[court_code] = -1
                     failed_courts.append(court_code)
+                    continue
+
+            if run_errors > 0:
+                logger.error(
+                    f"{court_code} completed with {run_errors} scrape errors; "
+                    "marking as failed for completeness."
+                )
+                results[court_code] = -1
+                failed_courts.append(court_code)
 
         except Exception as e:
             logger.error(f"Pipeline error for {court_code}: {e}", exc_info=True)
