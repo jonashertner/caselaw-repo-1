@@ -222,10 +222,11 @@ class BGELeitentscheideScraper(BaseScraper):
             except Exception as e:
                 logger.error(f"Incapsula refresh failed: {e}")
 
-        # Store any cookies from the response
-        self._session_cookies = dict(response.cookies)
-        # Merge Incapsula cookies into session cookies so they're sent on every request
-        self._session_cookies.update(dict(self.session.cookies))
+        # Store any cookies from the response (use items() to avoid CookieConflictError
+        # when multiple cookies share the same name across domains)
+        self._session_cookies = {c.name: c.value for c in response.cookies}
+        for c in self.session.cookies:
+            self._session_cookies[c.name] = c.value
         logger.info(
             f"Session established. Cookies: {list(self._session_cookies.keys())}"
         )
