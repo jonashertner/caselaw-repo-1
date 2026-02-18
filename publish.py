@@ -112,7 +112,7 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
     if is_rebuild_day:
         cmd.append("--full-rebuild")
         logger.info("Step 2: Full FTS5 rebuild (weekly)")
-        timeout = 7200
+        timeout = 18000  # ~3h40m for 1M decisions + optimize
     else:
         cmd.extend(["--incremental", "--no-optimize"])
         logger.info("Step 2: Incremental FTS5 update")
