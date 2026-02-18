@@ -72,11 +72,11 @@ Use the full absolute path to the Python binary inside `.venv` so that the serve
 
 On first use, the server automatically:
 1. Downloads all Parquet files (~6.5 GB) from [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) to `~/.swiss-caselaw/parquet/`
-2. Builds a local SQLite FTS5 full-text search index at `~/.swiss-caselaw/decisions.db` (~48 GB)
+2. Builds a local SQLite FTS5 full-text search index at `~/.swiss-caselaw/decisions.db` (~56 GB)
 
 This takes 30–60 minutes depending on your machine and connection. It only happens once — after that, searches run instantly against the local database.
 
-**Total disk usage:** ~53 GB in `~/.swiss-caselaw/`.
+**Total disk usage:** ~63 GB in `~/.swiss-caselaw/`.
 
 Example queries:
 
@@ -160,7 +160,7 @@ On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
 │       ├── bger.parquet
 │       ├── bvger.parquet
 │       └── ...       # 93 files, one per court
-└── decisions.db      # SQLite FTS5 search index (~48 GB)
+└── decisions.db      # SQLite FTS5 search index (~56 GB)
 ```
 
 All data stays on your machine. No API calls are made during search — the MCP server queries the local SQLite database directly.
@@ -171,7 +171,7 @@ All data stays on your machine. No API calls are made during search — the MCP 
 
 - **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 1M+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
 
-**Why ~48 GB.** The full text of 1M+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
+**Why ~56 GB.** The full text of 1M+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
 
 **Search pipeline.** When you search, the server:
 
@@ -329,7 +329,7 @@ curl -X POST "https://datasets-server.huggingface.co/search?dataset=voilaj/swiss
   -d '{"query": "SELECT docket_number, decision_date, language FROM data WHERE court = '\''bger'\'' LIMIT 10"}'
 ```
 
-> Note: The REST API serves the auto-converted version of the dataset. For per-court Parquet files with the full 34-field schema, use the [download method](#2-download-the-dataset) above.
+> Note: The REST API queries the dataset as configured in the HuggingFace repo (per-court Parquet files, full 34-field schema). For bulk access or local analysis, use the [download method](#2-download-the-dataset) above.
 
 ---
 
@@ -513,7 +513,7 @@ python build_fts5.py --output output --incremental --no-optimize -v
 python build_fts5.py --output output --full-rebuild -v
 ```
 
-This reads JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. A full build of 1M decisions takes about 3 hours and produces a ~48 GB database. Incremental mode uses a checkpoint file (`output/.fts5_checkpoint.json`) to skip unchanged files and seek past already-processed bytes, completing in seconds when few new decisions exist.
+This reads JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. A full build of 1M decisions takes about 3 hours and produces a ~56 GB database. Incremental mode uses a checkpoint file (`output/.fts5_checkpoint.json`) to skip unchanged files and seek past already-processed bytes, completing in seconds when few new decisions exist.
 
 ### Export to Parquet
 

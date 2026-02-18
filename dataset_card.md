@@ -85,7 +85,7 @@ claude mcp add swiss-caselaw -- /path/to/.venv/bin/python3 /path/to/mcp_server.p
 # Windows: use .venv\Scripts\python.exe instead
 ```
 
-On first search, the server downloads the Parquet files (~6.5 GB) from this dataset and builds a local SQLite FTS5 index (~48 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
+On first search, the server downloads the Parquet files (~6.5 GB) from this dataset and builds a local SQLite FTS5 index (~56 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
 
 Then ask: *"Find BGer decisions on tenant eviction from 2024"*
 
