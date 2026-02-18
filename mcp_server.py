@@ -3073,7 +3073,7 @@ def update_from_huggingface() -> str:
             repo_id=HF_REPO,
             repo_type="dataset",
             local_dir=str(PARQUET_DIR),
-            allow_patterns="*.parquet",
+            allow_patterns="data/*.parquet",
         )
     except Exception as e:
         return f"Download failed: {e}"
@@ -3081,9 +3081,19 @@ def update_from_huggingface() -> str:
     # Build SQLite from Parquet files
     logger.info("Building SQLite FTS5 database...")
     try:
-        _build_db_from_parquet()
+        result = _build_db_from_parquet()
     except Exception as e:
         return f"Database build failed: {e}"
+
+    # Hard failure gate: refuse to report success on bad ingest
+    MIN_EXPECTED_DECISIONS = 500_000
+    if result["imported"] < MIN_EXPECTED_DECISIONS:
+        return (
+            f"Database build FAILED sanity check: only {result['imported']} decisions "
+            f"imported (minimum {MIN_EXPECTED_DECISIONS}). "
+            f"Skipped files: {result['skipped_files']}, duplicates: {result['duplicates']}. "
+            f"The database at {DB_PATH} may be corrupt — investigate before using."
+        )
 
     stats = get_db_stats()
     return (
@@ -3091,15 +3101,20 @@ def update_from_huggingface() -> str:
         f"Total decisions: {stats.get('total_decisions', '?')}\n"
         f"Courts: {', '.join(stats.get('courts', {}).keys())}\n"
         f"Date range: {stats.get('earliest_date', '?')} to {stats.get('latest_date', '?')}\n"
-        f"Database: {stats.get('db_path', '?')} ({stats.get('db_size_mb', '?')} MB)"
+        f"Database: {stats.get('db_path', '?')} ({stats.get('db_size_mb', '?')} MB)\n"
+        f"Import: {result['imported']} inserted, {result['duplicates']} duplicates, "
+        f"{len(result['skipped_files'])} files skipped"
     )
 
 
 _REQUIRED_PARQUET_COLUMNS = {"decision_id", "court", "canton", "full_text"}
 
 
-def _build_db_from_parquet():
-    """Build SQLite FTS5 database from downloaded Parquet files."""
+def _build_db_from_parquet() -> dict:
+    """Build SQLite FTS5 database from downloaded Parquet files.
+
+    Returns dict with keys: imported, duplicates, skipped_files.
+    """
     import pyarrow.parquet as pq
 
     # Remove old DB
@@ -3166,6 +3181,8 @@ def _build_db_from_parquet():
     )
     if skipped_files:
         logger.warning(f"Skipped files: {skipped_files}")
+
+    return {"imported": imported, "duplicates": duplicates, "skipped_files": skipped_files}
 
 
 # ── MCP Server ────────────────────────────────────────────────
