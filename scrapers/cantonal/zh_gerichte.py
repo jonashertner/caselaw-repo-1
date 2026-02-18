@@ -174,6 +174,8 @@ def _extract_text_from_pdf(pdf_bytes: bytes) -> str:
             return "\n\n".join(pages)
     except ImportError:
         pass
+    except Exception as e:
+        logger.warning(f"pdfplumber failed: {e}")
 
     try:
         from pdfminer.high_level import extract_text as pdfminer_extract
@@ -181,8 +183,10 @@ def _extract_text_from_pdf(pdf_bytes: bytes) -> str:
         return pdfminer_extract(io.BytesIO(pdf_bytes))
     except ImportError:
         pass
+    except Exception as e:
+        logger.warning(f"pdfminer failed: {e}")
 
-    logger.error("No PDF library available. Install pdfplumber.")
+    logger.error("PDF text extraction failed.")
     return ""
 
 

@@ -217,6 +217,10 @@ def run_with_persistence(
     elapsed = time.time() - start
     file_size = jsonl_path.stat().st_size / 1024 / 1024 if jsonl_path.exists() else 0
 
+    # Touch JSONL file on successful runs so dashboard doesn't mark as stale
+    if jsonl_path.exists():
+        jsonl_path.touch()
+
     logger.info(
         f"[{scraper_key}] Done. New: {new_count}, Skips: {skips}, Errors: {errors}, "
         f"Total written: {len(written_ids)}, Time: {elapsed / 60:.1f} min, "
