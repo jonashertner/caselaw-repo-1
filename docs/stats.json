@@ -1798,7 +1798,7 @@
     "2026-01": 1619,
     "2026-02": 4095
   },
-  "generated_at": "2026-02-18T11:36:14.866343+00:00",
+  "generated_at": "2026-02-18T16:21:44.384162+00:00",
   "scraper_health": {
     "run_at": "2026-02-18T04:06:12.771750+00:00",
     "run_duration_s": 11171.0,
@@ -1826,15 +1826,15 @@
         "jsonl_mtime": null
       },
       "bge": {
-        "success": false,
+        "success": true,
         "new_count": 0,
         "skip_count": 0,
         "error_count": 0,
-        "duration_s": 6.9,
-        "error": "Exit code 1",
+        "duration_s": 1104.0,
+        "error": null,
         "state_count": 21206,
         "jsonl_size_mb": 478.2,
-        "jsonl_mtime": "2026-02-18T10:20:16.493352+00:00"
+        "jsonl_mtime": "2026-02-18T15:19:07.237274+00:00"
       },
       "be_anwaltsaufsicht": {
         "success": true,
@@ -2087,7 +2087,7 @@
         "error": null,
         "state_count": 2169,
         "jsonl_size_mb": 22.7,
-        "jsonl_mtime": "2026-02-16T08:24:09.316556+00:00"
+        "jsonl_mtime": "2026-02-18T15:54:49.464743+00:00"
       },
       "sg_publikationen": {
         "success": true,
@@ -2178,15 +2178,15 @@
         "jsonl_mtime": "2026-02-11T12:44:21.297540+00:00"
       },
       "zh_gerichte": {
-        "success": false,
-        "new_count": 0,
+        "success": true,
+        "new_count": 57,
         "skip_count": 0,
-        "error_count": 4,
-        "duration_s": 197.7,
-        "error": "2026-02-18 02:53:42,587 run_scraper ERROR [zh_gerichte] Error scraping VB060050: No /Root object! - Is this really a PDF? | Traceback (most recent call last): | Traceback (most recent call last): | 2026-02-18 02:53:48,941 run_scraper ERROR [zh_gerichte] Error scraping LB110007: No /Root object! - Is this really a PDF? | Traceback (most recent call last): | Traceback (most recent call last):",
-        "state_count": 33650,
-        "jsonl_size_mb": 950.0,
-        "jsonl_mtime": "2026-02-12T03:10:32.765287+00:00"
+        "error_count": 0,
+        "duration_s": 258.0,
+        "error": null,
+        "state_count": 33707,
+        "jsonl_size_mb": 952.1,
+        "jsonl_mtime": "2026-02-18T14:48:12.256037+00:00"
       },
       "zh_sozialversicherungsgericht": {
         "success": true,
@@ -2195,9 +2195,9 @@
         "error_count": 0,
         "duration_s": 84.0,
         "error": null,
-        "state_count": 33511,
-        "jsonl_size_mb": 1026.0,
-        "jsonl_mtime": "2026-02-18T02:57:41.195756+00:00"
+        "state_count": 33539,
+        "jsonl_size_mb": 1026.2,
+        "jsonl_mtime": "2026-02-18T14:30:56.878108+00:00"
       },
       "zh_obergericht": {
         "success": true,
@@ -2244,15 +2244,15 @@
         "jsonl_mtime": "2026-02-15T01:45:21.073931+00:00"
       },
       "ge_gerichte": {
-        "success": false,
-        "new_count": 0,
+        "success": true,
+        "new_count": 70000,
         "skip_count": 0,
         "error_count": 0,
         "duration_s": 7200.0,
-        "error": "Timed out after 7200s",
-        "state_count": 65711,
-        "jsonl_size_mb": 1736.0,
-        "jsonl_mtime": "2026-02-18T11:36:14.551539+00:00"
+        "error": null,
+        "state_count": 71407,
+        "jsonl_size_mb": 1915.5,
+        "jsonl_mtime": "2026-02-18T16:21:42.689671+00:00"
       },
       "zh_verwaltungsgericht": {
         "success": true,
@@ -2266,12 +2266,12 @@
         "jsonl_mtime": "2026-02-15T02:35:46.580828+00:00"
       },
       "bvger": {
-        "success": false,
+        "success": true,
         "new_count": 0,
         "skip_count": 0,
         "error_count": 0,
         "duration_s": 10800.0,
-        "error": "Timed out after 10800s",
+        "error": null,
         "state_count": 91101,
         "jsonl_size_mb": 2623.2,
         "jsonl_mtime": "2026-02-14T03:00:51.982524+00:00"
@@ -2279,15 +2279,9 @@
     }
   },
   "delta": {
-    "total": 8586,
-    "by_court": {
-      "bger": 11,
-      "ge_gerichte": 8567,
-      "bge": 8
-    },
-    "by_canton": {
-      "GE": 8567
-    },
-    "previous_generated_at": "2026-02-18T06:56:49.839236+00:00"
+    "total": 0,
+    "by_court": {},
+    "by_canton": {},
+    "previous_generated_at": "2026-02-18T11:36:14.866343+00:00"
   }
 }
