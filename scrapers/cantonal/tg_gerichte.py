@@ -86,28 +86,47 @@ RE_SIGNATURE_DATE = re.compile(
 )
 
 
-def _extract_signature_date(text: str) -> date | None:
+def _extract_signature_date(text: str, docket_year: int | None = None) -> date | None:
     """
     Extract the decision date from the TG signature block.
 
-    Pattern: "Obergericht, 3. Abteilung, 19. Februar 2024, ZR.2024.9"
-    appears near the end of the decision text.
+    Strategy 1 (RBOG): Match "Obergericht, 3. Abteilung, 19. Februar 2024, ZR.2024.9"
+    Strategy 2 (TVR fallback): Take the last German date in the text that's
+    within ±1 year of the docket year — TVR decisions end with the decision date.
     """
+    # Strategy 1: explicit signature pattern (RBOG)
     matches = list(RE_SIGNATURE_DATE.finditer(text))
-    if not matches:
+    if matches:
+        m = matches[-1]
+        d = _parse_german_date(m.group(1), m.group(2), m.group(3))
+        if d:
+            return d
+
+    # Strategy 2: last date near the docket year (TVR)
+    all_dates = list(RE_DATE.finditer(text))
+    if not all_dates:
         return None
-    # Use the last match (closest to signature block at end of text)
-    m = matches[-1]
-    day = int(m.group(1))
-    month_name = m.group(2).lower()
-    year = int(m.group(3))
-    month = MONTH_MAP.get(month_name)
-    if month:
-        try:
-            return date(year, month, day)
-        except ValueError:
-            pass
-    return None
+
+    # Work backwards — the last date matching the docket year is usually correct
+    for m in reversed(all_dates):
+        d = _parse_german_date(m.group(1), m.group(2), m.group(3))
+        if d and docket_year and abs(d.year - docket_year) <= 1:
+            return d
+
+    # Last resort: just use the very last date found
+    m = all_dates[-1]
+    return _parse_german_date(m.group(1), m.group(2), m.group(3))
+
+
+def _parse_german_date(day_str: str, month_str: str, year_str: str) -> date | None:
+    """Parse a German date from captured groups."""
+    month = MONTH_MAP.get(month_str.lower())
+    if not month:
+        return None
+    try:
+        return date(int(year_str), month, int(day_str))
+    except ValueError:
+        return None
 
 
 class TGGerichteScraper(BaseScraper):
@@ -251,9 +270,9 @@ class TGGerichteScraper(BaseScraper):
         if m_docket:
             docket = m_docket.group(1)
 
-        # Extract decision date from signature block at end of text:
-        # Pattern: "Obergericht, 3. Abteilung, 19. Februar 2024, ZR.2024.9"
-        decision_date = _extract_signature_date(full_text)
+        # Extract decision date from signature block / last date in text
+        docket_year = stub.get("year")
+        decision_date = _extract_signature_date(full_text, docket_year)
         if not decision_date:
             # Fallback: try first 500 chars (works for some older decisions)
             decision_date = _parse_date_text(full_text[:500])
