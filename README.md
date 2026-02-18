@@ -71,7 +71,7 @@ Use the full absolute path to the Python binary inside `.venv` so that the serve
 **Step 4.** Restart Claude Code and run your first search.
 
 On first use, the server automatically:
-1. Downloads all Parquet files (~5.2 GB) from [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) to `~/.swiss-caselaw/parquet/`
+1. Downloads all Parquet files (~6.5 GB) from [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) to `~/.swiss-caselaw/parquet/`
 2. Builds a local SQLite FTS5 full-text search index at `~/.swiss-caselaw/decisions.db` (~48 GB)
 
 This takes 30–60 minutes depending on your machine and connection. It only happens once — after that, searches run instantly against the local database.
@@ -155,7 +155,7 @@ On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
 
 ```
 ~/.swiss-caselaw/
-├── parquet/          # Downloaded Parquet files from HuggingFace (~5.2 GB)
+├── parquet/          # Downloaded Parquet files from HuggingFace (~6.5 GB)
 │   └── data/
 │       ├── bger.parquet
 │       ├── bvger.parquet
@@ -256,7 +256,7 @@ from datasets import load_dataset
 # Load a single court (~170k decisions, ~800 MB)
 bger = load_dataset("voilaj/swiss-caselaw", data_files="data/bger.parquet")
 
-# Load all courts (~1M decisions, ~5.7 GB download)
+# Load all courts (~1M decisions, ~6.5 GB download)
 ds = load_dataset("voilaj/swiss-caselaw", data_files="data/*.parquet")
 ```
 
@@ -422,7 +422,7 @@ Full schema definition: [`models.py`](models.py)
 |--------|--------|-----------|--------|
 | Vaud (VD) | 3 | ~155,000 | 1984–present |
 | Zürich (ZH) | 20 | ~126,000 | 1980–present |
-| Genève (GE) | 1 | ~79,000 | 1993–present |
+| Genève (GE) | 1 | ~86,000 | 1993–present |
 | Ticino (TI) | 1 | ~58,000 | 1995–present |
 | St. Gallen (SG) | 7 | ~35,000 | 2001–present |
 | Graubünden (GR) | 1 | ~29,000 | 2002–present |

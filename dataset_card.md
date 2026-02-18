@@ -27,7 +27,7 @@ task_categories:
 
 Full text, structured metadata, four languages. Updated daily.
 
-[![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://jonashertner.github.io/caselaw-repo-1/)
+[![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/jonashertner/caselaw-repo-1/blob/main/LICENSE)
 
 ## Dataset Summary
@@ -35,7 +35,8 @@ Full text, structured metadata, four languages. Updated daily.
 This dataset contains over one million Swiss court decisions scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). It covers:
 
 - **5 federal courts**: Federal Supreme Court (BGer), Federal Administrative Court (BVGer), Federal Criminal Court (BStGer), Federal Patent Court (BPatGer), plus BGE leading cases
-- **Cantonal courts** across all 26 cantons
+- **Federal regulatory bodies**: FINMA, WEKO, EDÖB, and more
+- **Cantonal courts** across all 26 cantons (93 courts total)
 - **4 languages**: German, French, Italian, Romansh
 - **Temporal range**: 1880 to present
 
@@ -79,7 +80,7 @@ claude mcp add swiss-caselaw -- /path/to/.venv/bin/python3 /path/to/mcp_server.p
 # Windows: use .venv\Scripts\python.exe instead
 ```
 
-On first search, the server downloads the Parquet files (~5 GB) from this dataset and builds a local SQLite FTS5 index (~48 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
+On first search, the server downloads the Parquet files (~6.5 GB) from this dataset and builds a local SQLite FTS5 index (~48 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
 
 Then ask: *"Find BGer decisions on tenant eviction from 2024"*
 
@@ -128,28 +129,48 @@ See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-sear
 
 ## Court Coverage
 
-### Federal Courts (5)
+### Federal Courts
 
 | Court | Code | Decisions | Period |
 |-------|------|-----------|--------|
-| Federal Supreme Court | `bger` | ~173,000 | 2000–present |
-| BGE Leading Cases | `bge` | ~21,000 | 1954–present |
-| Federal Administrative Court | `bvger` | ~91,000 | 2007–present |
-| Federal Criminal Court | `bstger` | ~11,000 | 2005–present |
-| Federal Patent Court | `bpatger` | ~100 | 2012–present |
+| Federal Supreme Court (BGer) | `bger` | ~173,000 | 1996-present |
+| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007-present |
+| BGE Leading Cases | `bge` | ~45,000 | 1954-present |
+| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982-2016 |
+| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2004-present |
+| EDÖB (Data Protection) | `edoeb` | ~1,200 | 1994-present |
+| FINMA | `finma` | ~1,200 | 2008-2024 |
+| ECHR (Swiss cases) | `bge_egmr` | ~470 | - |
+| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012-present |
+| Competition Commission (WEKO) | `weko` | ~120 | 2009-present |
+| Sports Tribunal | `ta_sst` | ~50 | 2024-present |
+| Federal Council | `ch_bundesrat` | ~15 | 2012-present |
 
-### Cantonal Courts (26 cantons)
+### Cantonal Courts (26 cantons, 93 courts)
 
-All 26 cantons: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
+| Canton | Courts | Decisions | Period |
+|--------|--------|-----------|--------|
+| Vaud (VD) | 3 | ~155,000 | 1984-present |
+| Zurich (ZH) | 20 | ~126,000 | 1980-present |
+| Geneve (GE) | 1 | ~86,000 | 1993-present |
+| Ticino (TI) | 1 | ~58,000 | 1995-present |
+| St. Gallen (SG) | 7 | ~35,000 | 2001-present |
+| Graubunden (GR) | 1 | ~29,000 | 2002-present |
+| Basel-Landschaft (BL) | 1 | ~26,000 | 2000-present |
+| Bern (BE) | 6 | ~26,000 | 2002-present |
+| Aargau (AG) | 18 | ~21,000 | 1993-present |
+| Basel-Stadt (BS) | 3 | ~19,000 | 2001-present |
 
-Court codes follow the pattern `{canton}_{court_type}`, e.g., `zh_obergericht`, `ge_gerichte`.
+All 26 cantons covered: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 
-Live coverage statistics: **[Dashboard](https://jonashertner.github.io/caselaw-repo-1/)**
+Live coverage statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ## Data Sources
 
-1. **Official court websites** — direct scraping from federal and cantonal court platforms
+1. **Official court websites** — direct scraping from federal and cantonal court platforms (43 scrapers)
 2. **[entscheidsuche.ch](https://entscheidsuche.ch)** — public archive maintained by the Swiss legal community
+
+Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The most metadata-rich version is kept.
 
 ## Update Frequency
 
@@ -157,7 +178,7 @@ The dataset is updated daily via automated pipeline. New decisions are scraped, 
 
 ## Legal Basis
 
-Court decisions are public records under Swiss law. The Bundesgericht has consistently held that court decisions must be made accessible to the public (BGE 133 I 106, BGE 139 I 129). This dataset contains only publicly available, officially published decisions.
+Court decisions are public records under Swiss law. Article 27 BGG requires the Federal Supreme Court to publish its decisions. The Bundesgericht has consistently held that court decisions must be made accessible to the public (BGE 133 I 106, BGE 139 I 129). This dataset contains only publicly available, officially published decisions.
 
 ## License
 
@@ -177,6 +198,6 @@ MIT License. The underlying court decisions are public domain under Swiss law.
 
 ## Links
 
-- **Dashboard**: [jonashertner.github.io/caselaw-repo-1](https://jonashertner.github.io/caselaw-repo-1/) — live coverage statistics
+- **Website**: [opencaselaw.ch](https://opencaselaw.ch) — live coverage statistics and dashboard
 - **GitHub**: [github.com/jonashertner/caselaw-repo-1](https://github.com/jonashertner/caselaw-repo-1) — source code, scrapers, pipeline
-- **MCP Server**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) — full-text search for Claude Code
+- **MCP Server**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) — full-text search for Claude Code and Claude Desktop
