@@ -527,24 +527,28 @@ class BgerScraper(BaseScraper):
         """
         Discover new BGer decisions.
 
+        Always uses AZA search on www.bger.ch (the only reliable path since
+        search.bger.ch blocks requests at the TLS level as of Feb 2026).
+
         Daily mode (since_date within last 14 days or None):
-            1. Try RSS feed (no PoW needed for RSS)
-            2. Parse Neuheiten page
+            Search AZA for the last 14 days.
         Backfill mode (since_date > 14 days ago):
-            Search AZA in 4-day windows (German only — all decisions appear).
+            Search AZA in 4-day windows.
             Falls back to daily windows if >100 results per window.
         """
         if isinstance(since_date, str):
             since_date = date.fromisoformat(since_date)
-        if since_date and since_date < date.today() - timedelta(days=14):
-            logger.info(f"Backfill mode from {since_date}")
-            self._init_session()
-            yield from self._discover_via_search(since_date)
+
+        self._init_session()
+
+        if not since_date or since_date >= date.today() - timedelta(days=14):
+            # Daily mode: search last 14 days via AZA
+            search_from = since_date or (date.today() - timedelta(days=14))
+            logger.info(f"Daily mode: AZA search from {search_from}")
+            yield from self._discover_via_search(search_from)
         else:
-            # Daily mode: RSS first (lightweight, no PoW), then Neuheiten
-            yield from self._discover_via_rss()
-            self._init_session()
-            yield from self._discover_via_neuheiten()
+            logger.info(f"Backfill mode from {since_date}")
+            yield from self._discover_via_search(since_date)
 
     # ───────────────────────────────────────────────────────────────────────
     # Discovery via RSS
