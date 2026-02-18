@@ -54,6 +54,7 @@ def generate_stats(db_path: Path) -> dict:
             COUNT(*) as count,
             MIN(decision_date) as earliest,
             MAX(decision_date) as latest,
+            MAX(scraped_at) as last_scraped,
             GROUP_CONCAT(DISTINCT language) as languages
         FROM decisions
         GROUP BY court, canton
@@ -66,6 +67,7 @@ def generate_stats(db_path: Path) -> dict:
             "count": r["count"],
             "earliest": r["earliest"],
             "latest": r["latest"],
+            "last_scraped": r["last_scraped"],
             "languages": r["languages"].split(",") if r["languages"] else [],
         }
         for r in courts
