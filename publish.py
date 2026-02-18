@@ -121,9 +121,15 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
     return run_cmd(cmd, "Build FTS5 database", dry_run, timeout=timeout)
 
 
-def step_2b_quality_report(dry_run: bool = False) -> bool:
-    """Step 2b: Generate quality report and check gates."""
-    logger.info("Step 2b: Quality report")
+def step_2b_quality_report(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2b: Generate quality report and check gates (weekly)."""
+    is_rebuild_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
+
+    if not is_rebuild_day:
+        logger.info("Step 2b: Quality report — skipped (runs on Sundays)")
+        return True
+
+    logger.info("Step 2b: Quality report (weekly)")
 
     script = REPO_DIR / "quality_report.py"
     if not script.exists():
@@ -141,6 +147,7 @@ def step_2b_quality_report(dry_run: bool = False) -> bool:
          "--gate"],
         "Quality report",
         dry_run,
+        timeout=7200,
     )
 
 
@@ -377,7 +384,7 @@ def main():
             continue
         step_start = time.time()
         try:
-            if num in (2, "2d"):
+            if num in (2, "2b", "2d"):
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
             else:
                 ok = func(dry_run=args.dry_run)
