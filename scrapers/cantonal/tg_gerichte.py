@@ -80,6 +80,36 @@ def _parse_date_text(text):
     return None
 
 
+RE_SIGNATURE_DATE = re.compile(
+    r"(?:Obergericht|Verwaltungsgericht),\s*(?:\d+\.\s*)?(?:Zivil)?[Aa]bteilung,?\s*"
+    r"(\d{1,2})\.\s*(\w+)\s+(\d{4})"
+)
+
+
+def _extract_signature_date(text: str) -> date | None:
+    """
+    Extract the decision date from the TG signature block.
+
+    Pattern: "Obergericht, 3. Abteilung, 19. Februar 2024, ZR.2024.9"
+    appears near the end of the decision text.
+    """
+    matches = list(RE_SIGNATURE_DATE.finditer(text))
+    if not matches:
+        return None
+    # Use the last match (closest to signature block at end of text)
+    m = matches[-1]
+    day = int(m.group(1))
+    month_name = m.group(2).lower()
+    year = int(m.group(3))
+    month = MONTH_MAP.get(month_name)
+    if month:
+        try:
+            return date(year, month, day)
+        except ValueError:
+            pass
+    return None
+
+
 class TGGerichteScraper(BaseScraper):
     """
     Scraper for Thurgau Obergericht decisions via Scroll Viewport HTML.
@@ -215,14 +245,18 @@ class TGGerichteScraper(BaseScraper):
             if not full_text:
                 full_text = f"[Text extraction failed for {stub['docket_number']}]"
 
-        # Try to extract docket number from content
+        # Extract docket number from content (for metadata, not for decision_id)
         docket = stub["docket_number"]
         m_docket = RE_DOCKET.search(full_text[:1000])
         if m_docket:
             docket = m_docket.group(1)
 
-        # Extract decision date from content
-        decision_date = _parse_date_text(full_text[:500])
+        # Extract decision date from signature block at end of text:
+        # Pattern: "Obergericht, 3. Abteilung, 19. Februar 2024, ZR.2024.9"
+        decision_date = _extract_signature_date(full_text)
+        if not decision_date:
+            # Fallback: try first 500 chars (works for some older decisions)
+            decision_date = _parse_date_text(full_text[:500])
         if not decision_date:
             decision_date = stub.get("decision_date")
         if not decision_date and stub.get("year"):
@@ -230,14 +264,19 @@ class TGGerichteScraper(BaseScraper):
         if not decision_date:
             logger.warning(f"TG: no date for {stub.get('docket_number', '?')}")
 
-        # Extract chamber/division from content
+        # Extract chamber/division from signature block
         chamber = None
-        m_abt = re.search(r"(Obergericht[,\s]*\d+\.\s*Abteilung)", full_text[:500])
+        m_abt = re.search(
+            r"((?:Obergericht|Verwaltungsgericht),\s*(?:\d+\.\s*)?(?:Zivil)?[Aa]bteilung)",
+            full_text,
+        )
         if m_abt:
             chamber = m_abt.group(1)
 
         language = detect_language(full_text) if len(full_text) > 100 else "de"
-        decision_id = make_decision_id("tg_gerichte", docket)
+
+        # Use stub's decision_id to stay consistent with discovery
+        decision_id = stub["decision_id"]
 
         return Decision(
             decision_id=decision_id,

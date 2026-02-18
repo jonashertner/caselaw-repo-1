@@ -164,7 +164,12 @@ class ZHSozialversicherungsgerichtScraper(BaseScraper):
         try:
             resp = self.get(url, timeout=self.TIMEOUT)
         except Exception as e:
-            logger.warning(f"SVG ZH fetch failed for {num}: {e}")
+            # Mark 404s as known so they're not retried every day
+            if "404" in str(e):
+                logger.info(f"SVG ZH {num}: 404 — marking as permanently skipped")
+                self.state.mark_scraped(stub["decision_id"])
+            else:
+                logger.warning(f"SVG ZH fetch failed for {num}: {e}")
             return None
 
         full_text = _extract_html_text(resp.text)
