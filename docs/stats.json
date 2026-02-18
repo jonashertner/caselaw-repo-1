@@ -1798,7 +1798,7 @@
     "2026-01": 1619,
     "2026-02": 4095
   },
-  "generated_at": "2026-02-18T16:21:44.384162+00:00",
+  "generated_at": "2026-02-18T20:41:54.361121+00:00",
   "scraper_health": {
     "run_at": "2026-02-18T04:06:12.771750+00:00",
     "run_duration_s": 11171.0,
@@ -1933,7 +1933,7 @@
         "error": null,
         "state_count": 102,
         "jsonl_size_mb": 0.1,
-        "jsonl_mtime": "2026-02-10T19:48:34.431625+00:00"
+        "jsonl_mtime": "2026-02-18T19:48:01.557533+00:00"
       },
       "be_zivilstraf": {
         "success": true,
@@ -2175,7 +2175,7 @@
         "error": null,
         "state_count": 1136,
         "jsonl_size_mb": 26.1,
-        "jsonl_mtime": "2026-02-11T12:44:21.297540+00:00"
+        "jsonl_mtime": "2026-02-18T19:48:01.557533+00:00"
       },
       "zh_gerichte": {
         "success": true,
@@ -2219,7 +2219,7 @@
         "error": null,
         "state_count": 860,
         "jsonl_size_mb": 23.4,
-        "jsonl_mtime": "2026-02-11T13:17:42.758374+00:00"
+        "jsonl_mtime": "2026-02-18T19:48:01.557533+00:00"
       },
       "sz_verwaltungsgericht": {
         "success": true,
@@ -2250,9 +2250,9 @@
         "error_count": 0,
         "duration_s": 7200.0,
         "error": null,
-        "state_count": 71407,
-        "jsonl_size_mb": 1915.5,
-        "jsonl_mtime": "2026-02-18T16:21:42.689671+00:00"
+        "state_count": 76599,
+        "jsonl_size_mb": 2084.8,
+        "jsonl_mtime": "2026-02-18T20:41:51.476390+00:00"
       },
       "zh_verwaltungsgericht": {
         "success": true,
@@ -2282,6 +2282,6 @@
     "total": 0,
     "by_court": {},
     "by_canton": {},
-    "previous_generated_at": "2026-02-18T11:36:14.866343+00:00"
+    "previous_generated_at": "2026-02-18T16:21:44.384162+00:00"
   }
 }
