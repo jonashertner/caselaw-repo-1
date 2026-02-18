@@ -200,7 +200,7 @@ def run_with_persistence(
                     f"[{scraper_key}] fetch_decision returned None for "
                     f"{stub.get('docket_number', '?')}"
                 )
-                if errors > 50:
+                if errors > getattr(scraper, "MAX_ERRORS", 50):
                     logger.error(f"[{scraper_key}] Too many errors ({errors}), stopping.")
                     break
 
@@ -210,7 +210,7 @@ def run_with_persistence(
                 f"[{scraper_key}] Error scraping {stub.get('docket_number', '?')}: {e}",
                 exc_info=True,
             )
-            if errors > 50:
+            if errors > getattr(scraper, "MAX_ERRORS", 50):
                 logger.error(f"[{scraper_key}] Too many errors ({errors}), stopping.")
                 break
 

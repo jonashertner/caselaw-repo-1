@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -201,6 +202,8 @@ def export_parquet(input_dir: Path, output_dir: Path) -> dict[str, int]:
 
                         # Skip rows missing required fields (match FTS5 constraints)
                         if not all(row.get(k) for k in ("court", "canton", "docket_number", "language")):
+                            missing = [k for k in ("court", "canton", "docket_number", "language") if not row.get(k)]
+                            logger.warning(f"Skipping {did}: missing {', '.join(missing)}")
                             continue
 
                         court = row.get("court", "unknown")
@@ -224,9 +227,13 @@ def export_parquet(input_dir: Path, output_dir: Path) -> dict[str, int]:
                 logger.info(f"  Processed {jsonl_file.name}: {file_count} decisions")
 
     finally:
-        # Close all writers
+        # Close all writers and atomically rename .tmp → .parquet
         for court, writer in writers.items():
             writer.close()
+            tmp_path = output_dir / f"{court}.parquet.tmp"
+            final_path = output_dir / f"{court}.parquet"
+            if tmp_path.exists():
+                os.replace(str(tmp_path), str(final_path))
             logger.info(f"  {court}: {results.get(court, 0)} total")
 
     logger.info(f"Exported {sum(results.values())} decisions across {len(results)} courts")
@@ -246,7 +253,7 @@ def _write_rows(
     table = pa.Table.from_pylist(clean_rows, schema=DECISION_SCHEMA)
 
     if court not in writers:
-        filepath = output_dir / f"{court}.parquet"
+        filepath = output_dir / f"{court}.parquet.tmp"
         writers[court] = pq.ParquetWriter(str(filepath), DECISION_SCHEMA, compression="zstd")
 
     writers[court].write_table(table)

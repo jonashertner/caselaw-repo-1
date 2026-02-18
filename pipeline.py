@@ -303,9 +303,10 @@ def import_to_fts5(output_dir: Path, db_path: Path | None = None) -> None:
         except Exception as e:
             logger.warning(f"Failed to read {parquet_file}: {e}")
 
-    # Optimize FTS index
-    conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
-    conn.commit()
+    # Optimize FTS index (skip if nothing was imported)
+    if imported > 0:
+        conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
+        conn.commit()
     conn.close()
 
     logger.info(

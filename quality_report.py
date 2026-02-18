@@ -60,7 +60,14 @@ def generate_quality_report(db_path: Path) -> dict:
         "SELECT COUNT(*) FROM decisions WHERE decision_date IS NOT NULL AND decision_date != '' AND decision_date != 'None' AND length(decision_date) < 10"
     ).fetchone()[0]
 
-    date_total_bad = date_null + date_future + date_ancient + date_invalid_format
+    # Single query to avoid double-counting overlapping categories
+    date_total_bad = conn.execute("""
+        SELECT COUNT(*) FROM decisions WHERE
+            decision_date IS NULL OR decision_date = '' OR decision_date = 'None'
+            OR decision_date > date('now', '+7 days')
+            OR (decision_date < '1800-01-01' AND decision_date != '' AND decision_date != 'None')
+            OR (length(decision_date) < 10 AND decision_date != '' AND decision_date != 'None')
+    """).fetchone()[0]
     report["dates"] = {
         "null_or_empty": date_null,
         "future": date_future,
