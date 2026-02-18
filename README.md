@@ -5,7 +5,7 @@
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
 [![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
-[![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://jonashertner.github.io/caselaw-repo-1/)
+[![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-dataset-blue)](https://huggingface.co/datasets/voilaj/swiss-caselaw)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -342,7 +342,7 @@ Every decision has 34 structured fields:
 | Field | Type | Example | Description |
 |-------|------|---------|-------------|
 | `decision_id` | string | `bger_6B_1234_2025` | Unique key: `{court}_{docket_normalized}` |
-| `court` | string | `bger` | Court code ([full list](https://jonashertner.github.io/caselaw-repo-1/)) |
+| `court` | string | `bger` | Court code ([full list](https://opencaselaw.ch)) |
 | `canton` | string | `CH` | `CH` for federal, `ZH`/`BE`/`GE`/... for cantonal |
 | `docket_number` | string | `6B_1234/2025` | Original case number as published |
 | `decision_date` | date | `2025-03-15` | Date the decision was rendered |
@@ -422,17 +422,18 @@ Full schema definition: [`models.py`](models.py)
 |--------|--------|-----------|--------|
 | Vaud (VD) | 3 | ~155,000 | 1984–present |
 | Zürich (ZH) | 20 | ~126,000 | 1980–present |
-| Genève (GE) | 1 | ~78,000 | 1993–present |
+| Genève (GE) | 1 | ~79,000 | 1993–present |
 | Ticino (TI) | 1 | ~58,000 | 1995–present |
 | St. Gallen (SG) | 7 | ~35,000 | 2001–present |
 | Graubünden (GR) | 1 | ~29,000 | 2002–present |
+| Basel-Stadt (BS) | 3 | ~19,000 | 2001–present |
 | Basel-Landschaft (BL) | 1 | ~26,000 | 2000–present |
 | Bern (BE) | 6 | ~26,000 | 2002–present |
 | Aargau (AG) | 18 | ~21,000 | 1993–present |
 
 All 26 cantons covered: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 
-Live per-court statistics: **[Dashboard](https://jonashertner.github.io/caselaw-repo-1/)**
+Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ---
 
@@ -497,7 +498,7 @@ python run_scraper.py zh_gerichte --max 10 -v
 
 Output is written to `output/decisions/{court}.jsonl` — one JSON object per line, one file per court. The scraper remembers what it has already fetched (state stored in `state/`), so you can run it repeatedly to get only new decisions.
 
-43 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://jonashertner.github.io/caselaw-repo-1/) for per-court statistics.
+43 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://opencaselaw.ch) for per-court statistics.
 
 ### Build a local search database
 
