@@ -112,9 +112,11 @@ NEUHEITEN_URL = (
 # ═══════════════════════════════════════════════════════════════════════════════
 
 BGER_HEADERS = {
+    # Chrome UA — must match TLS fingerprint from Playwright/Chromium
     "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:141.0) "
-        "Gecko/20100101 Firefox/141.0"
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/121.0.0.0 Safari/537.36"
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "de,en-US;q=0.7,en;q=0.3",
@@ -365,6 +367,7 @@ class BgerScraper(BaseScraper):
         super().__init__(state_dir=state_dir)
         self._pow: dict | None = None
         self._session_cookies: dict = {}
+        self._pow_required: bool = False  # Determined at runtime by probing
         self._incapsula = IncapsulaCookieManager(cache_dir=state_dir)
 
     @property
@@ -384,15 +387,17 @@ class BgerScraper(BaseScraper):
 
     def _init_session(self) -> None:
         """
-        Initialize session by solving Incapsula + PoW.
+        Initialize session by solving Incapsula and optionally PoW.
 
         Flow:
-        1. Harvest Incapsula cookies via Playwright (cached)
+        1. Harvest Incapsula cookies via browser automation (cached)
         2. Apply to requests.Session
-        3. Mine PoW and set PoW cookies
-        4. Hit initial AZA page to establish session
+        3. Probe: does AZA redirect to pow.php?
+           - Yes → mine PoW, set PoW cookies
+           - No  → skip PoW (saves time and avoids infinite mining loops)
+        4. If still blocked by Incapsula, force-refresh cookies
         """
-        # Step 1: Incapsula cookies (Playwright)
+        # Step 1: Incapsula cookies (browser automation)
         try:
             incap_cookies = self._incapsula.get_cookies("www.bger.ch")
             self.session.cookies.update(incap_cookies)
@@ -400,15 +405,26 @@ class BgerScraper(BaseScraper):
         except Exception as e:
             logger.warning(f"Incapsula cookie harvest failed: {e}")
 
-        # Step 2: PoW cookies
-        self._ensure_pow()
-        logger.info("Initializing BGer session with Incapsula + PoW cookies")
+        # Step 2: Probe — is PoW still required?
+        logger.info("Probing AZA to determine if PoW is required")
         try:
-            resp = self.get(
-                AZA_INITIAL_URL,
-                headers=BGER_HEADERS,
-                cookies=self._session_cookies,
-            )
+            resp = self.get(AZA_INITIAL_URL, headers=BGER_HEADERS)
+
+            if "pow.php" in resp.url:
+                # PoW redirect detected — mine and retry
+                logger.info("PoW redirect detected, mining proof-of-work")
+                self._pow_required = True
+                self._ensure_pow()
+                self.session.cookies.update(self._session_cookies)
+                resp = self.get(
+                    AZA_INITIAL_URL,
+                    headers=BGER_HEADERS,
+                    cookies=self._session_cookies,
+                )
+            else:
+                logger.info("No PoW redirect — skipping PoW mining")
+                self._pow_required = False
+
             # Check if Incapsula is still blocking
             if self._incapsula.is_incapsula_blocked(resp.text):
                 logger.warning("Still blocked after initial cookies, force-refreshing")
@@ -417,32 +433,43 @@ class BgerScraper(BaseScraper):
                 resp = self.get(
                     AZA_INITIAL_URL,
                     headers=BGER_HEADERS,
-                    cookies=self._session_cookies,
+                    cookies=self._session_cookies if self._pow_required else {},
                 )
-            logger.info(f"Session initialized, status={resp.status_code}, len={len(resp.text)}")
+
+            logger.info(
+                f"Session initialized, status={resp.status_code}, "
+                f"len={len(resp.text)}, pow_required={self._pow_required}"
+            )
         except Exception as e:
             logger.warning(f"Session init failed (continuing anyway): {e}")
 
     def _get_with_pow(self, url: str, retry: int = 0) -> "requests.Response":
         """
-        GET with Incapsula + PoW cookies and retry logic.
+        GET with Incapsula + optional PoW cookies and retry logic.
 
         Handles:
-        - Incapsula JS challenge blocks (refresh via Playwright)
-        - pow.php redirects (re-mine PoW)
+        - Incapsula JS challenge blocks (refresh via browser automation)
+        - pow.php redirects (mine PoW if needed)
         - help-hilfe redirects (re-mine PoW)
         - Short/empty responses (re-mine PoW)
+
+        Adds exponential backoff between retries.
         """
-        self._ensure_pow()
+        # Only send PoW cookies if PoW is required
+        cookies = self._session_cookies if self._pow_required else {}
+        if self._pow_required:
+            self._ensure_pow()
+
         resp = self.get(
             url,
             headers=BGER_HEADERS,
-            cookies=self._session_cookies,
+            cookies=cookies,
         )
 
         # Check for Incapsula block (JS challenge page)
         if self._incapsula.is_incapsula_blocked(resp.text) and retry < self.MAX_RETRIES:
             logger.info(f"Incapsula block detected, refreshing cookies ({retry+1}/{self.MAX_RETRIES})")
+            time.sleep(2 + retry * 2)  # Backoff before retry
             try:
                 incap_cookies = self._incapsula.refresh_cookies("www.bger.ch")
                 self.session.cookies.update(incap_cookies)
@@ -452,23 +479,31 @@ class BgerScraper(BaseScraper):
 
         # Check for pow.php redirect
         if "pow.php" in resp.url and retry < self.MAX_RETRIES:
-            logger.info(f"PoW redirect detected, retrying ({retry+1}/{self.MAX_RETRIES})")
+            logger.info(f"PoW redirect detected, mining PoW ({retry+1}/{self.MAX_RETRIES})")
+            self._pow_required = True
+            self._pow = mine_pow(POW_DIFFICULTY)
+            self._session_cookies = make_pow_cookies(self._pow)
+            time.sleep(2 + retry * 2)
             fixed_url = resp.url.replace("pow.php", "index.php")
             return self._get_with_pow(fixed_url, retry + 1)
 
         # Check for help page redirect (another form of PoW rejection)
         if "help-hilfe" in resp.url and retry < self.MAX_RETRIES:
             logger.info(f"Help page redirect (PoW rejected), re-mining ({retry+1}/{self.MAX_RETRIES})")
+            self._pow_required = True
             self._pow = mine_pow(POW_DIFFICULTY)
             self._session_cookies = make_pow_cookies(self._pow)
+            time.sleep(2 + retry * 2)
             return self._get_with_pow(url, retry + 1)
 
         # Check for empty/garbage response (not the PoW page but still bad)
         if len(resp.text) < 200 and retry < self.MAX_RETRIES:
-            # Re-mine PoW and retry
-            logger.info(f"Short response ({len(resp.text)} chars), re-mining PoW")
-            self._pow = mine_pow(POW_DIFFICULTY)
-            self._session_cookies = make_pow_cookies(self._pow)
+            logger.info(f"Short response ({len(resp.text)} chars), retrying")
+            time.sleep(2 + retry * 2)
+            # Re-mine PoW if it was required
+            if self._pow_required:
+                self._pow = mine_pow(POW_DIFFICULTY)
+                self._session_cookies = make_pow_cookies(self._pow)
             return self._get_with_pow(url, retry + 1)
 
         return resp

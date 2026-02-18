@@ -1,10 +1,15 @@
 """
-Incapsula/Imperva WAF bypass via Playwright cookie harvesting.
+Incapsula/Imperva WAF bypass via multi-strategy cookie harvesting.
 
 bger.ch and search.bger.ch are behind Imperva's CDN which serves a JS challenge.
 Plain `requests` can't execute JS, so the challenge fails and we get a 212-byte
-stub page. Playwright runs a real Chromium browser that solves the challenge,
-and we extract the resulting cookies for use with requests.Session.
+stub page.  We try multiple browser automation strategies to solve the challenge
+and extract the resulting cookies for use with requests.Session.
+
+Strategy order (strongest first):
+  1. camoufox  — C++-level Firefox patching, strongest stealth
+  2. playwright-stealth — patches 7+ detection vectors on Chromium
+  3. plain Playwright — existing fallback (weakest)
 
 Cookie lifecycle:
   - Incapsula cookies (visid_incap_*, incap_ses_*) typically last 20-30 min
@@ -18,23 +23,30 @@ Usage:
     cookies = mgr.get_cookies("https://www.bger.ch")
     session.cookies.update(cookies)
 
-Dependencies:
-    pip install playwright
-    playwright install chromium --with-deps
+Dependencies (install strongest first):
+    pip install "camoufox[geoip]" && python -m camoufox fetch
+    pip install playwright-stealth
+    pip install playwright && playwright install chromium --with-deps
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import random
 import time
 from pathlib import Path
 from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Lazy import — Playwright is only needed when cookies must be refreshed
+# ═══════════════════════════════════════════════════════════════════════════════
+# LAZY IMPORTS — only loaded when cookies must be refreshed
+# ═══════════════════════════════════════════════════════════════════════════════
+
 _playwright_available: Optional[bool] = None
+_camoufox_available: Optional[bool] = None
+_playwright_stealth_available: Optional[bool] = None
 
 
 def _check_playwright() -> bool:
@@ -52,15 +64,49 @@ def _check_playwright() -> bool:
     return _playwright_available
 
 
+def _check_camoufox() -> bool:
+    global _camoufox_available
+    if _camoufox_available is None:
+        try:
+            from camoufox.sync_api import Camoufox  # noqa: F401
+            _camoufox_available = True
+        except ImportError:
+            _camoufox_available = False
+            logger.debug("camoufox not installed (optional)")
+    return _camoufox_available
+
+
+def _check_playwright_stealth() -> bool:
+    global _playwright_stealth_available
+    if _playwright_stealth_available is None:
+        try:
+            from playwright_stealth import stealth_sync  # noqa: F401
+            if not _check_playwright():
+                _playwright_stealth_available = False
+            else:
+                _playwright_stealth_available = True
+        except ImportError:
+            _playwright_stealth_available = False
+            logger.debug("playwright-stealth not installed (optional)")
+    return _playwright_stealth_available
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
-# DOMAIN CONFIG
+# CONSTANTS
 # ═══════════════════════════════════════════════════════════════════════════════
+
+# Chrome UA — must match TLS fingerprint (Chromium browser sends Chromium TLS)
+CHROME_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/121.0.0.0 Safari/537.36"
+)
 
 # Known Incapsula-protected domains and their seed URLs
 PROTECTED_DOMAINS = {
     "www.bger.ch": {
         "seed_url": "https://www.bger.ch/ext/eurospider/live/de/php/aza/http/index.php",
-        "success_marker": "Eurospider",  # text present on real page
+        "success_marker": "Eurospider",
         "fail_markers": ["Incapsula", "_Incapsula_Resource", "robots"],
     },
     "search.bger.ch": {
@@ -72,43 +118,149 @@ PROTECTED_DOMAINS = {
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# COOKIE HARVESTER
+# SHARED HELPERS
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-def harvest_cookies(
-    url: str,
-    timeout_seconds: int = 45,
-    headless: bool = True,
-) -> dict[str, str]:
+def _simulate_human_behavior(page) -> None:
+    """Simulate human-like mouse movements and short delays."""
+    try:
+        # Random mouse movements
+        for _ in range(random.randint(2, 4)):
+            x = random.randint(100, 800)
+            y = random.randint(100, 600)
+            page.mouse.move(x, y)
+            time.sleep(random.uniform(0.1, 0.3))
+        # Small delay to appear human
+        time.sleep(random.uniform(0.5, 1.5))
+    except Exception:
+        pass  # Non-critical — some page states don't support mouse
+
+
+def _wait_for_challenge(page, timeout_seconds: int, t0: float) -> bool:
     """
-    Launch Chromium via Playwright, navigate to URL, wait for Incapsula
-    JS challenge to resolve, and extract cookies.
+    Poll page until real content appears or timeout.
 
-    Args:
-        url: Target URL (must be on an Incapsula-protected domain)
-        timeout_seconds: Max time to wait for challenge resolution
-        headless: Run browser headlessly (set False for debugging)
-
-    Returns:
-        Dict of cookie name -> value for the domain
-
-    Raises:
-        RuntimeError: If Playwright not available or challenge not solved
+    Returns True if challenge appears solved.
     """
-    if not _check_playwright():
-        raise RuntimeError(
-            "playwright not installed. "
-            "pip install playwright && playwright install chromium --with-deps"
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline:
+        content = page.content()
+
+        has_fail = any(
+            marker in content
+            for marker in ["_Incapsula_Resource", "robots"]
         )
 
-    from playwright.sync_api import sync_playwright
+        # Real page is usually >1000 bytes and lacks Incapsula markers
+        if len(content) > 1000 and not has_fail:
+            logger.info(
+                f"Incapsula challenge solved in {time.time()-t0:.1f}s "
+                f"(page size: {len(content)} chars)"
+            )
+            return True
 
-    logger.info(f"Harvesting Incapsula cookies for {url}")
+        if "Eurospider" in content or "eurospider" in content.lower():
+            logger.info(f"Eurospider content detected in {time.time()-t0:.1f}s")
+            return True
+
+        time.sleep(1)
+
+    # Last attempt — wait for networkidle
+    try:
+        page.wait_for_load_state("networkidle", timeout=10000)
+        content = page.content()
+        if len(content) > 1000:
+            logger.info("Solved after networkidle wait")
+            return True
+    except Exception:
+        pass
+
+    logger.warning(
+        f"Challenge may not be fully solved "
+        f"(page size: {len(page.content())} chars after {timeout_seconds}s). "
+        f"Extracting cookies anyway."
+    )
+    return False
+
+
+def _has_incapsula_cookies(cookies: dict[str, str]) -> bool:
+    """Check if cookie dict contains Incapsula session cookies."""
+    return any(
+        k.startswith("visid_incap") or k.startswith("incap_ses")
+        for k in cookies
+    )
+
+
+def _extract_cookies(context) -> dict[str, str]:
+    """Extract all cookies from a browser context as a flat dict."""
+    return {c["name"]: c["value"] for c in context.cookies()}
+
+
+def _log_harvest_result(strategy: str, cookies: dict[str, str], t0: float) -> None:
+    """Log the result of a cookie harvest attempt."""
+    elapsed = time.time() - t0
+    incap_cookies = [
+        k for k in cookies
+        if k.startswith("visid_incap") or k.startswith("incap_ses")
+        or k.startswith("nlbi_") or k.startswith("_Incap")
+    ]
+    logger.info(
+        f"[{strategy}] Harvested {len(cookies)} cookies "
+        f"({len(incap_cookies)} Incapsula) in {elapsed:.1f}s"
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STRATEGY 1: CAMOUFOX (strongest stealth)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def _harvest_via_camoufox(
+    url: str, timeout_seconds: int, headless: bool,
+) -> dict[str, str]:
+    """
+    Harvest cookies using camoufox — C++-level Firefox patching.
+
+    Camoufox patches the Firefox binary at the C++ level, making it
+    nearly undetectable as automation. Strongest stealth option.
+    """
+    from camoufox.sync_api import Camoufox
+
+    logger.info(f"[camoufox] Attempting cookie harvest for {url}")
+    t0 = time.time()
+
+    with Camoufox(headless=headless) as browser:
+        page = browser.new_page()
+        page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        _simulate_human_behavior(page)
+        _wait_for_challenge(page, timeout_seconds, t0)
+        cookies = _extract_cookies(page.context)
+        _log_harvest_result("camoufox", cookies, t0)
+        return cookies
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STRATEGY 2: PLAYWRIGHT + STEALTH (medium stealth)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def _harvest_via_playwright_stealth(
+    url: str, timeout_seconds: int, headless: bool,
+) -> dict[str, str]:
+    """
+    Harvest cookies using playwright-stealth — patches 7+ detection vectors.
+
+    Uses Chromium with Chrome UA (matching TLS fingerprint) and
+    playwright-stealth to patch navigator.webdriver, chrome.runtime, etc.
+    """
+    from playwright.sync_api import sync_playwright
+    from playwright_stealth import stealth_sync
+
+    logger.info(f"[playwright-stealth] Attempting cookie harvest for {url}")
     t0 = time.time()
 
     with sync_playwright() as p:
-        # Launch with realistic browser fingerprint
         browser = p.chromium.launch(
             headless=headless,
             args=[
@@ -117,12 +269,56 @@ def harvest_cookies(
                 "--disable-dev-shm-usage",
             ],
         )
-
         context = browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:141.0) "
-                "Gecko/20100101 Firefox/141.0"
-            ),
+            user_agent=CHROME_UA,
+            viewport={"width": 1920, "height": 1080},
+            locale="de-CH",
+            timezone_id="Europe/Zurich",
+        )
+        page = context.new_page()
+        stealth_sync(page)
+
+        try:
+            page.goto(url, wait_until="domcontentloaded", timeout=30000)
+            _simulate_human_behavior(page)
+            _wait_for_challenge(page, timeout_seconds, t0)
+            cookies = _extract_cookies(context)
+            _log_harvest_result("playwright-stealth", cookies, t0)
+            return cookies
+        finally:
+            browser.close()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STRATEGY 3: PLAIN PLAYWRIGHT (fallback)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def _harvest_via_playwright_plain(
+    url: str, timeout_seconds: int, headless: bool,
+) -> dict[str, str]:
+    """
+    Harvest cookies using plain Playwright with Chrome UA.
+
+    This is the original approach, upgraded to use Chrome UA (not Firefox)
+    to match Chromium's TLS fingerprint.
+    """
+    from playwright.sync_api import sync_playwright
+
+    logger.info(f"[playwright-plain] Attempting cookie harvest for {url}")
+    t0 = time.time()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=headless,
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+            ],
+        )
+        context = browser.new_context(
+            user_agent=CHROME_UA,
             viewport={"width": 1920, "height": 1080},
             locale="de-CH",
             timezone_id="Europe/Zurich",
@@ -138,79 +334,102 @@ def harvest_cookies(
         page = context.new_page()
 
         try:
-            # Navigate — Incapsula will serve JS challenge first
             page.goto(url, wait_until="domcontentloaded", timeout=30000)
-
-            # Poll until real content appears or timeout
-            deadline = time.time() + timeout_seconds
-            solved = False
-
-            while time.time() < deadline:
-                content = page.content()
-
-                # Check if we've passed the challenge
-                has_fail = any(
-                    marker in content
-                    for marker in ["_Incapsula_Resource", "robots"]
-                    if marker  # skip empty
-                )
-
-                # Real page is usually >1000 bytes and lacks Incapsula markers
-                if len(content) > 1000 and not has_fail:
-                    solved = True
-                    logger.info(
-                        f"Incapsula challenge solved in {time.time()-t0:.1f}s "
-                        f"(page size: {len(content)} chars)"
-                    )
-                    break
-
-                # Also check if we got redirected to the actual content
-                if "Eurospider" in content or "eurospider" in content.lower():
-                    solved = True
-                    logger.info(f"Eurospider content detected in {time.time()-t0:.1f}s")
-                    break
-
-                time.sleep(1)
-
-            if not solved:
-                # One more attempt — wait for networkidle
-                try:
-                    page.wait_for_load_state("networkidle", timeout=10000)
-                    content = page.content()
-                    if len(content) > 1000:
-                        solved = True
-                        logger.info("Solved after networkidle wait")
-                except Exception:
-                    pass
-
-            if not solved:
-                logger.warning(
-                    f"Incapsula challenge may not be fully solved "
-                    f"(page size: {len(page.content())} chars after {timeout_seconds}s). "
-                    f"Extracting cookies anyway."
-                )
-
-            # Extract all cookies for this domain
-            cookies = context.cookies()
-            cookie_dict = {}
-            for c in cookies:
-                cookie_dict[c["name"]] = c["value"]
-
-            elapsed = time.time() - t0
-            incap_cookies = [
-                k for k in cookie_dict
-                if k.startswith("visid_incap") or k.startswith("incap_ses")
-                or k.startswith("nlbi_") or k.startswith("_Incap")
-            ]
-            logger.info(
-                f"Harvested {len(cookie_dict)} cookies "
-                f"({len(incap_cookies)} Incapsula) in {elapsed:.1f}s"
-            )
-
-            return cookie_dict
-
+            _simulate_human_behavior(page)
+            _wait_for_challenge(page, timeout_seconds, t0)
+            cookies = _extract_cookies(context)
+            _log_harvest_result("playwright-plain", cookies, t0)
+            return cookies
         finally:
             browser.close()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MULTI-STRATEGY DISPATCHER
+# ═══════════════════════════════════════════════════════════════════════════════
+
+
+def harvest_cookies(
+    url: str,
+    timeout_seconds: int = 60,
+    headless: bool = True,
+) -> dict[str, str]:
+    """
+    Launch a browser, navigate to URL, wait for Incapsula JS challenge
+    to resolve, and extract cookies.
+
+    Tries strategies in order of stealth strength:
+      1. camoufox (if installed)
+      2. playwright-stealth (if installed)
+      3. plain Playwright (always available)
+
+    Each strategy is tried; if it fails or doesn't yield Incapsula cookies,
+    the next strategy is attempted.
+
+    Args:
+        url: Target URL (must be on an Incapsula-protected domain)
+        timeout_seconds: Max time to wait for challenge resolution per strategy
+        headless: Run browser headlessly (set False for debugging)
+
+    Returns:
+        Dict of cookie name -> value for the domain
+
+    Raises:
+        RuntimeError: If no strategy succeeds
+    """
+    strategies = []
+
+    if _check_camoufox():
+        strategies.append(("camoufox", _harvest_via_camoufox))
+
+    if _check_playwright_stealth():
+        strategies.append(("playwright-stealth", _harvest_via_playwright_stealth))
+
+    if _check_playwright():
+        strategies.append(("playwright-plain", _harvest_via_playwright_plain))
+
+    if not strategies:
+        raise RuntimeError(
+            "No browser automation available. Install at least one of:\n"
+            '  pip install "camoufox[geoip]" && python -m camoufox fetch\n'
+            "  pip install playwright-stealth playwright && playwright install chromium\n"
+            "  pip install playwright && playwright install chromium --with-deps"
+        )
+
+    logger.info(
+        f"Harvesting Incapsula cookies for {url} "
+        f"(strategies: {[s[0] for s in strategies]})"
+    )
+
+    last_error = None
+    for name, strategy_fn in strategies:
+        try:
+            cookies = strategy_fn(url, timeout_seconds, headless)
+            if _has_incapsula_cookies(cookies):
+                logger.info(f"Strategy '{name}' succeeded with Incapsula cookies")
+                return cookies
+            else:
+                logger.warning(
+                    f"Strategy '{name}' completed but no Incapsula cookies found, "
+                    f"trying next strategy"
+                )
+                # Still return if this is the last strategy
+                last_error = None
+                last_cookies = cookies
+        except Exception as e:
+            logger.warning(f"Strategy '{name}' failed: {e}")
+            last_error = e
+            last_cookies = {}
+
+    # If we get here, no strategy produced Incapsula cookies
+    if last_error:
+        raise RuntimeError(
+            f"All {len(strategies)} strategies failed. Last error: {last_error}"
+        )
+
+    # Return whatever the last strategy gave us (may still work)
+    logger.warning("No strategy produced Incapsula cookies, returning best result")
+    return last_cookies  # type: ignore[possibly-undefined]
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -326,7 +545,7 @@ class IncapsulaCookieManager:
 
     def refresh_cookies(self, domain: str) -> dict[str, str]:
         """
-        Force-refresh cookies for a domain via Playwright.
+        Force-refresh cookies for a domain via browser automation.
 
         Args:
             domain: e.g. "www.bger.ch"
@@ -408,11 +627,11 @@ if __name__ == "__main__":
     import requests as req
     config = PROTECTED_DOMAINS.get(domain, {"seed_url": domain})
     url = config["seed_url"] if isinstance(config, dict) else domain
-    r = req.get(url, cookies=cookies, timeout=15)
+    r = req.get(url, cookies=cookies, headers={"User-Agent": CHROME_UA}, timeout=15)
     print(f"\nVerification: GET {url}")
     print(f"  Status: {r.status_code}, Length: {len(r.text)}")
     print(f"  Blocked: {IncapsulaCookieManager.is_incapsula_blocked(r.text)}")
     if "Eurospider" in r.text or "eurospider" in r.text.lower():
-        print("  ✅ SUCCESS — Eurospider content reached!")
+        print("  SUCCESS — Eurospider content reached!")
     else:
-        print(f"  ⚠️  Content preview: {r.text[:300]}")
+        print(f"  Content preview: {r.text[:300]}")
