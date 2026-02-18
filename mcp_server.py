@@ -3060,6 +3060,13 @@ def update_from_huggingface() -> str:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     PARQUET_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Clean old parquet files before download to prevent schema mixing
+    old_files = list(PARQUET_DIR.rglob("*.parquet"))
+    if old_files:
+        logger.info(f"Removing {len(old_files)} old parquet files before download...")
+        for f in old_files:
+            f.unlink()
+
     logger.info(f"Downloading from {HF_REPO}...")
     try:
         snapshot_download(
@@ -3088,6 +3095,9 @@ def update_from_huggingface() -> str:
     )
 
 
+_REQUIRED_PARQUET_COLUMNS = {"decision_id", "court", "canton", "full_text"}
+
+
 def _build_db_from_parquet():
     """Build SQLite FTS5 database from downloaded Parquet files."""
     import pyarrow.parquet as pq
@@ -3105,11 +3115,24 @@ def _build_db_from_parquet():
 
     # Import all Parquet files
     imported = 0
+    duplicates = 0
+    skipped_files = []
     parquet_files = list(PARQUET_DIR.rglob("*.parquet"))
     logger.info(f"Found {len(parquet_files)} Parquet files")
 
     for pf in parquet_files:
         try:
+            schema = pq.read_schema(pf)
+            file_columns = set(schema.names)
+            missing = _REQUIRED_PARQUET_COLUMNS - file_columns
+            if missing:
+                logger.warning(
+                    f"Skipping {pf.name}: missing required columns {missing} "
+                    f"(has: {sorted(file_columns)[:8]}...)"
+                )
+                skipped_files.append(pf.name)
+                continue
+
             table = pq.read_table(pf)
             for batch in table.to_batches():
                 for row in batch.to_pylist():
@@ -3119,13 +3142,17 @@ def _build_db_from_parquet():
                             else row.get(col)
                             for col in INSERT_COLUMNS
                         )
-                        conn.execute(INSERT_OR_IGNORE_SQL, values)
-                        imported += 1
+                        cursor = conn.execute(INSERT_OR_IGNORE_SQL, values)
+                        if cursor.rowcount > 0:
+                            imported += 1
+                        else:
+                            duplicates += 1
                     except Exception as e:
                         logger.debug(f"Skip {row.get('decision_id', '?')}: {e}")
             conn.commit()
         except Exception as e:
             logger.warning(f"Failed to read {pf}: {e}")
+            skipped_files.append(pf.name)
 
     # Optimize
     conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
@@ -3133,7 +3160,12 @@ def _build_db_from_parquet():
     conn.commit()
     conn.close()
 
-    logger.info(f"Built database: {imported} decisions → {DB_PATH}")
+    logger.info(
+        f"Built database: {imported} imported, {duplicates} duplicates, "
+        f"{len(skipped_files)} skipped files → {DB_PATH}"
+    )
+    if skipped_files:
+        logger.warning(f"Skipped files: {skipped_files}")
 
 
 # ── MCP Server ────────────────────────────────────────────────

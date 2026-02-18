@@ -278,6 +278,7 @@ def step_4_upload_hf(dry_run: bool = False) -> bool:
             repo_id=HF_REPO_ID,
             repo_type="dataset",
             allow_patterns="*.parquet",
+            delete_patterns="*.parquet",  # prune remote parquet not in local folder
         )
 
         logger.info(f"  Uploaded {len(parquet_files)} files to {HF_REPO_ID}")
