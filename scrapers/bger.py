@@ -397,13 +397,14 @@ class BgerScraper(BaseScraper):
            - No  → skip PoW (saves time and avoids infinite mining loops)
         4. If still blocked by Incapsula, force-refresh cookies
         """
-        # Step 1: Incapsula cookies (browser automation)
-        try:
-            incap_cookies = self._incapsula.get_cookies("www.bger.ch")
-            self.session.cookies.update(incap_cookies)
-            logger.info(f"Applied {len(incap_cookies)} Incapsula cookies to session")
-        except Exception as e:
-            logger.warning(f"Incapsula cookie harvest failed: {e}")
+        # Step 1: Incapsula cookies (browser automation) for both domains
+        for domain in ["www.bger.ch", "search.bger.ch"]:
+            try:
+                incap_cookies = self._incapsula.get_cookies(domain)
+                self.session.cookies.update(incap_cookies)
+                logger.info(f"Applied {len(incap_cookies)} Incapsula cookies for {domain}")
+            except Exception as e:
+                logger.warning(f"Incapsula cookie harvest failed for {domain}: {e}")
 
         # Step 2: Probe — is PoW still required?
         logger.info("Probing AZA to determine if PoW is required")
@@ -466,15 +467,25 @@ class BgerScraper(BaseScraper):
             cookies=cookies,
         )
 
-        # Check for Incapsula block (JS challenge page)
-        if self._incapsula.is_incapsula_blocked(resp.text) and retry < self.MAX_RETRIES:
-            logger.info(f"Incapsula block detected, refreshing cookies ({retry+1}/{self.MAX_RETRIES})")
+        # Determine which domain to refresh cookies for
+        from urllib.parse import urlparse
+        domain = urlparse(url).hostname or "www.bger.ch"
+        if domain not in ("www.bger.ch", "search.bger.ch"):
+            domain = "www.bger.ch"
+
+        # Check for Incapsula block (JS challenge page or very short response)
+        is_blocked = (
+            self._incapsula.is_incapsula_blocked(resp.text)
+            or (len(resp.text) < 10 and resp.status_code == 200)
+        )
+        if is_blocked and retry < self.MAX_RETRIES:
+            logger.info(f"Block detected ({len(resp.text)} chars), refreshing {domain} cookies ({retry+1}/{self.MAX_RETRIES})")
             time.sleep(2 + retry * 2)  # Backoff before retry
             try:
-                incap_cookies = self._incapsula.refresh_cookies("www.bger.ch")
+                incap_cookies = self._incapsula.refresh_cookies(domain)
                 self.session.cookies.update(incap_cookies)
             except Exception as e:
-                logger.error(f"Incapsula refresh failed: {e}")
+                logger.error(f"Incapsula refresh failed for {domain}: {e}")
             return self._get_with_pow(url, retry + 1)
 
         # Check for pow.php redirect
