@@ -19,6 +19,11 @@ task_categories:
   - text-classification
   - summarization
   - question-answering
+configs:
+  - config_name: default
+    data_files:
+      - split: train
+        path: data/*.parquet
 ---
 
 # Swiss Case Law Dataset
