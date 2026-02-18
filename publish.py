@@ -151,9 +151,15 @@ def step_2b_quality_report(dry_run: bool = False, full_rebuild: bool = False) ->
     )
 
 
-def step_2c_build_reference_graph(dry_run: bool = False) -> bool:
-    """Step 2c: Build reference graph (citations + statutes)."""
-    logger.info("Step 2c: Build reference graph")
+def step_2c_build_reference_graph(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2c: Build reference graph (citations + statutes, weekly)."""
+    is_rebuild_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
+
+    if not is_rebuild_day:
+        logger.info("Step 2c: Reference graph — skipped (runs on Sundays)")
+        return True
+
+    logger.info("Step 2c: Build reference graph (weekly)")
 
     script = REPO_DIR / "search_stack" / "build_reference_graph.py"
     if not script.exists():
@@ -384,7 +390,7 @@ def main():
             continue
         step_start = time.time()
         try:
-            if num in (2, "2b", "2d"):
+            if num in (2, "2b", "2c", "2d"):
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
             else:
                 ok = func(dry_run=args.dry_run)
