@@ -28,8 +28,9 @@ Usage with Claude Desktop:
       }
     }
 
-First run downloads ~800MB from HuggingFace and builds the local
-search index. Subsequent runs use the cached database.
+First run requires calling the 'update_database' tool to download ~5.7GB
+from HuggingFace and build the local search index (~65GB disk, 30-60 min).
+Subsequent runs use the cached database.
 
 Tools exposed:
     search_decisions  — Full-text search with filters (court, canton,
@@ -47,12 +48,15 @@ Tools exposed:
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
 import re
+import shutil
 import sqlite3
 import sys
+import threading
 import time
 import unicodedata
 import html as html_lib
@@ -380,19 +384,17 @@ _CROSS_ENCODER_FAILED = False
 # ── Database ──────────────────────────────────────────────────
 
 def get_db() -> sqlite3.Connection:
-    """Get a connection to the local SQLite database.
+    """Get a read-only connection to the local SQLite database.
 
-    On first run, automatically downloads from HuggingFace and builds the index.
+    Raises FileNotFoundError if the database hasn't been built yet,
+    prompting the user to run the 'update_database' tool.
     """
     if not DB_PATH.exists():
-        logger.info("Database not found — downloading from HuggingFace (first run)...")
-        result = update_from_huggingface()
-        logger.info(result)
-        if not DB_PATH.exists():
-            raise FileNotFoundError(
-                f"Database not found at {DB_PATH}. "
-                f"Automatic download failed. Try running the 'update_database' tool manually."
-            )
+        raise FileNotFoundError(
+            f"Database not found at {DB_PATH}. "
+            f"Run the 'update_database' tool to download and build the search index. "
+            f"This requires ~65 GB free disk space and takes 30-60 minutes."
+        )
     last_error = None
     for _ in range(3):
         try:
@@ -3050,12 +3052,61 @@ def _truncate(text: str | None, max_len: int) -> str | None:
 
 # ── Data management ───────────────────────────────────────────
 
-def update_from_huggingface() -> str:
-    """Download latest data from HuggingFace and rebuild the database."""
-    try:
-        from huggingface_hub import snapshot_download
-    except ImportError:
-        return "Error: huggingface_hub not installed. Run: pip install huggingface_hub"
+REQUIRED_SPACE_GB = 65
+
+_REQUIRED_PARQUET_COLUMNS = {"decision_id", "court", "canton", "full_text"}
+
+# ── Update state (shared between background thread and tool handlers) ──
+
+_update_state: dict = {
+    "status": "idle",       # idle | running | done | failed
+    "phase": "",            # download | import | optimize
+    "message": "",          # latest human-readable status line
+    "step": 0,
+    "total": 0,
+    "started_at": 0.0,
+    "result": "",           # final summary or error message
+}
+_update_thread: threading.Thread | None = None
+
+
+def _check_disk_space() -> str:
+    """Check free disk space. Returns human-readable message or raises."""
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    usage = shutil.disk_usage(DATA_DIR)
+    free_gb = usage.free / (1024 ** 3)
+    if free_gb < REQUIRED_SPACE_GB:
+        raise RuntimeError(
+            f"Insufficient disk space: {free_gb:.1f} GB free, "
+            f"but ~{REQUIRED_SPACE_GB} GB required. "
+            f"Free up space or set SWISS_CASELAW_DIR to a larger volume."
+        )
+    return f"Disk space OK: {free_gb:.1f} GB free"
+
+
+class _StateReporter:
+    """Updates the shared _update_state dict from the worker thread."""
+
+    def report(self, progress: float, total: float, message: str) -> None:
+        logger.info(message)
+        _update_state["step"] = int(progress)
+        _update_state["total"] = int(total)
+        _update_state["message"] = message
+
+
+class _NullReporter:
+    """Fallback reporter that only logs (for non-MCP callers)."""
+
+    def report(self, progress: float, total: float, message: str) -> None:
+        logger.info(message)
+
+
+def _download_parquet_files(reporter) -> int:
+    """Download parquet files one-by-one with per-file progress.
+
+    Returns the number of files downloaded.
+    """
+    from huggingface_hub import hf_hub_download, list_repo_files
 
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     PARQUET_DIR.mkdir(parents=True, exist_ok=True)
@@ -3063,59 +3114,41 @@ def update_from_huggingface() -> str:
     # Clean old parquet files before download to prevent schema mixing
     old_files = list(PARQUET_DIR.rglob("*.parquet"))
     if old_files:
-        logger.info(f"Removing {len(old_files)} old parquet files before download...")
+        reporter.report(0, 1, f"Removing {len(old_files)} old parquet files...")
         for f in old_files:
             f.unlink()
 
-    logger.info(f"Downloading from {HF_REPO}...")
-    try:
-        snapshot_download(
+    # Enumerate remote files
+    all_files = list_repo_files(HF_REPO, repo_type="dataset")
+    parquet_files = sorted(f for f in all_files if f.startswith("data/") and f.endswith(".parquet"))
+    total = len(parquet_files)
+
+    if total == 0:
+        raise RuntimeError(f"No parquet files found in {HF_REPO}/data/")
+
+    for i, remote_path in enumerate(parquet_files, 1):
+        name = Path(remote_path).stem
+        reporter.report(i, total, f"Downloading {name} ({i}/{total})")
+        hf_hub_download(
             repo_id=HF_REPO,
             repo_type="dataset",
+            filename=remote_path,
             local_dir=str(PARQUET_DIR),
-            allow_patterns="data/*.parquet",
-        )
-    except Exception as e:
-        return f"Download failed: {e}"
-
-    # Build SQLite from Parquet files
-    logger.info("Building SQLite FTS5 database...")
-    try:
-        result = _build_db_from_parquet()
-    except Exception as e:
-        return f"Database build failed: {e}"
-
-    # Hard failure gate: refuse to report success on bad ingest
-    MIN_EXPECTED_DECISIONS = 500_000
-    if result["imported"] < MIN_EXPECTED_DECISIONS:
-        return (
-            f"Database build FAILED sanity check: only {result['imported']} decisions "
-            f"imported (minimum {MIN_EXPECTED_DECISIONS}). "
-            f"Skipped files: {result['skipped_files']}, duplicates: {result['duplicates']}. "
-            f"The database at {DB_PATH} may be corrupt — investigate before using."
         )
 
-    stats = get_db_stats()
-    return (
-        f"Database updated successfully.\n"
-        f"Total decisions: {stats.get('total_decisions', '?')}\n"
-        f"Courts: {', '.join(stats.get('courts', {}).keys())}\n"
-        f"Date range: {stats.get('earliest_date', '?')} to {stats.get('latest_date', '?')}\n"
-        f"Database: {stats.get('db_path', '?')} ({stats.get('db_size_mb', '?')} MB)\n"
-        f"Import: {result['imported']} inserted, {result['duplicates']} duplicates, "
-        f"{len(result['skipped_files'])} files skipped"
-    )
+    reporter.report(total, total, f"Download complete: {total} files")
+    return total
 
 
-_REQUIRED_PARQUET_COLUMNS = {"decision_id", "court", "canton", "full_text"}
-
-
-def _build_db_from_parquet() -> dict:
+def _build_db_from_parquet(reporter=None) -> dict:
     """Build SQLite FTS5 database from downloaded Parquet files.
 
     Returns dict with keys: imported, duplicates, skipped_files.
     """
     import pyarrow.parquet as pq
+
+    if reporter is None:
+        reporter = _NullReporter()
 
     # Remove old DB
     if DB_PATH.exists():
@@ -3132,10 +3165,12 @@ def _build_db_from_parquet() -> dict:
     imported = 0
     duplicates = 0
     skipped_files = []
-    parquet_files = list(PARQUET_DIR.rglob("*.parquet"))
-    logger.info(f"Found {len(parquet_files)} Parquet files")
+    parquet_files = sorted(PARQUET_DIR.rglob("*.parquet"))
+    total_files = len(parquet_files)
+    reporter.report(0, total_files, f"Found {total_files} Parquet files to import")
 
-    for pf in parquet_files:
+    for file_idx, pf in enumerate(parquet_files, 1):
+        file_imported = 0
         try:
             schema = pq.read_schema(pf)
             file_columns = set(schema.names)
@@ -3160,16 +3195,23 @@ def _build_db_from_parquet() -> dict:
                         cursor = conn.execute(INSERT_OR_IGNORE_SQL, values)
                         if cursor.rowcount > 0:
                             imported += 1
+                            file_imported += 1
                         else:
                             duplicates += 1
                     except Exception as e:
                         logger.debug(f"Skip {row.get('decision_id', '?')}: {e}")
             conn.commit()
+            reporter.report(
+                file_idx, total_files,
+                f"Imported {pf.stem}: {file_imported:,} decisions "
+                f"({file_idx}/{total_files} files, {imported:,} total)",
+            )
         except Exception as e:
             logger.warning(f"Failed to read {pf}: {e}")
             skipped_files.append(pf.name)
 
     # Optimize
+    reporter.report(total_files, total_files, "Optimizing FTS5 index (this takes a while)...")
     conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
     conn.execute("PRAGMA optimize")
     conn.commit()
@@ -3183,6 +3225,78 @@ def _build_db_from_parquet() -> dict:
         logger.warning(f"Skipped files: {skipped_files}")
 
     return {"imported": imported, "duplicates": duplicates, "skipped_files": skipped_files}
+
+
+def _update_with_progress(reporter) -> str:
+    """Full update: download + build + sanity check. Runs in a worker thread."""
+    t0 = time.monotonic()
+
+    # 1. Disk space
+    _update_state["phase"] = "disk_check"
+    reporter.report(0, 1, "Checking disk space...")
+    msg = _check_disk_space()
+    reporter.report(0, 1, msg)
+
+    # 2. Download
+    _update_state["phase"] = "download"
+    _download_parquet_files(reporter)
+
+    # 3. Build DB
+    _update_state["phase"] = "import"
+    reporter.report(0, 1, "Building SQLite FTS5 database...")
+    result = _build_db_from_parquet(reporter)
+
+    # 4. Sanity check
+    MIN_EXPECTED_DECISIONS = 500_000
+    if result["imported"] < MIN_EXPECTED_DECISIONS:
+        return (
+            f"Database build FAILED sanity check: only {result['imported']} decisions "
+            f"imported (minimum {MIN_EXPECTED_DECISIONS}). "
+            f"Skipped files: {result['skipped_files']}, duplicates: {result['duplicates']}. "
+            f"The database at {DB_PATH} may be corrupt — investigate before using."
+        )
+
+    # 5. Summary
+    elapsed = time.monotonic() - t0
+    minutes, seconds = divmod(int(elapsed), 60)
+    stats = get_db_stats()
+
+    reporter.report(1, 1, "Database ready!")
+    return (
+        f"Database updated successfully in {minutes}m {seconds:02d}s.\n"
+        f"Total: {stats.get('total_decisions', '?'):,} decisions\n"
+        f"Courts: {len(stats.get('courts', {}))} courts\n"
+        f"Date range: {stats.get('earliest_date', '?')} to {stats.get('latest_date', '?')}\n"
+        f"Database: {stats.get('db_path', '?')} ({stats.get('db_size_mb', '?')} MB)\n"
+        f"Import: {result['imported']:,} inserted, {result['duplicates']:,} duplicates, "
+        f"{len(result['skipped_files'])} files skipped"
+    )
+
+
+def _run_update_background() -> None:
+    """Target for the background thread. Updates _update_state on completion."""
+    reporter = _StateReporter()
+    try:
+        summary = _update_with_progress(reporter)
+        _update_state["status"] = "done"
+        _update_state["result"] = summary
+    except Exception as e:
+        logger.error(f"Background update failed: {e}", exc_info=True)
+        _update_state["status"] = "failed"
+        _update_state["result"] = f"Update failed: {e}"
+
+
+def update_from_huggingface() -> str:
+    """Download latest data from HuggingFace and rebuild the database.
+
+    Thin wrapper for non-MCP callers (publish.py, CLI). Uses NullReporter.
+    """
+    try:
+        return _update_with_progress(_NullReporter())
+    except ImportError:
+        return "Error: huggingface_hub not installed. Run: pip install huggingface_hub"
+    except Exception as e:
+        return f"Update failed: {e}"
 
 
 # ── MCP Server ────────────────────────────────────────────────
@@ -3394,7 +3508,20 @@ async def handle_list_tools() -> list[Tool]:
             description=(
                 "Download the latest Swiss caselaw data from HuggingFace "
                 "and rebuild the local search database. Run this on first use "
-                "or to get the latest decisions."
+                "or to get the latest decisions. "
+                "Starts in background (~30-60 min). Use check_update_status to monitor."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {},
+            },
+        ),
+        Tool(
+            name="check_update_status",
+            description=(
+                "Check progress of a running database update. "
+                "Returns current phase, file being processed, and elapsed time. "
+                "Call this after update_database to monitor progress."
             ),
             inputSchema={
                 "type": "object",
@@ -3517,8 +3644,65 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             )]
 
         elif name == "update_database":
-            result = update_from_huggingface()
-            return [TextContent(type="text", text=result)]
+            global _update_thread
+            if _update_state["status"] == "running":
+                return [TextContent(
+                    type="text",
+                    text="Database update already in progress. Use check_update_status to monitor.",
+                )]
+
+            # Reset state and launch background thread
+            _update_state.update(
+                status="running", phase="starting", message="Starting update...",
+                step=0, total=0, started_at=time.monotonic(), result="",
+            )
+            _update_thread = threading.Thread(
+                target=_run_update_background, daemon=True, name="db-update",
+            )
+            _update_thread.start()
+
+            return [TextContent(
+                type="text",
+                text=(
+                    "Database update started in background.\n"
+                    "This downloads ~5.7 GB and builds a ~56 GB search index (30-60 min).\n"
+                    "Use the check_update_status tool to monitor progress."
+                ),
+            )]
+
+        elif name == "check_update_status":
+            status = _update_state["status"]
+
+            if status == "idle":
+                return [TextContent(
+                    type="text",
+                    text="No update running. Use update_database to start one.",
+                )]
+
+            elapsed = time.monotonic() - _update_state["started_at"]
+            minutes, seconds = divmod(int(elapsed), 60)
+            time_str = f"{minutes}m {seconds:02d}s"
+
+            if status == "running":
+                step = _update_state["step"]
+                total = _update_state["total"]
+                phase = _update_state["phase"]
+                message = _update_state["message"]
+                progress = f" ({step}/{total})" if total > 0 else ""
+                return [TextContent(
+                    type="text",
+                    text=(
+                        f"Status: RUNNING ({time_str} elapsed)\n"
+                        f"Phase: {phase}{progress}\n"
+                        f"Current: {message}"
+                    ),
+                )]
+
+            # done or failed
+            return [TextContent(
+                type="text",
+                text=f"Status: {status.upper()} ({time_str} elapsed)\n\n{_update_state['result']}",
+            )]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
@@ -3560,5 +3744,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
