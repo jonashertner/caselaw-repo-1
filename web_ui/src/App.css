@@ -955,6 +955,25 @@ body {
 }
 .citation-link { font-family: var(--f-mono); }
 
+/* ── Search Term Highlights ────────────────────────────── */
+.decision-regeste mark,
+.decision-snippet mark {
+  background: none;
+  color: inherit;
+  font-weight: 600;
+  border-bottom: 1.5px solid var(--text-tertiary);
+}
+
+/* ── Token Counter ────────────────────────────────────── */
+.token-counter {
+  font-family: var(--f-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+
 /* ── Highlighted Decision Card ─────────────────────────── */
 .decision-card.highlighted {
   border-color: var(--border-strong);

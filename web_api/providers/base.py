@@ -35,6 +35,8 @@ class ProviderResponse:
     content: str | None = None
     tool_calls: list[ToolCall] | None = None
     finish_reason: str = "stop"
+    input_tokens: int | None = None
+    output_tokens: int | None = None
 
 
 MCP_TOOLS = [

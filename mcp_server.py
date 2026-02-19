@@ -418,6 +418,11 @@ def get_db() -> sqlite3.Connection:
 
 def get_db_stats() -> dict:
     """Get database statistics."""
+    key = ("get_db_stats",)
+    cached = _cache_get(key)
+    if cached is not None:
+        return cached
+
     try:
         conn = get_db()
         total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
@@ -428,16 +433,36 @@ def get_db_stats() -> dict:
             "SELECT MIN(decision_date), MAX(decision_date) FROM decisions"
         ).fetchone()
         conn.close()
-        return {
+        return _cache_set(key, {
             "total_decisions": total,
             "courts": {r["court"]: r["n"] for r in courts},
             "earliest_date": date_range[0],
             "latest_date": date_range[1],
             "db_path": str(DB_PATH),
             "db_size_mb": round(DB_PATH.stat().st_size / 1024 / 1024, 1),
-        }
+        })
     except FileNotFoundError:
         return {"error": "Database not found. Run 'update_database' first."}
+
+
+# ── Query cache (cleared on DB rebuild) ──────────────────────
+# Caches expensive aggregation queries (list_courts, get_statistics, get_db_stats).
+# Keyed by (function_name, args_tuple). Invalidated when DB is rebuilt.
+_query_cache: dict[tuple, object] = {}
+
+
+def _cache_get(key: tuple):
+    return _query_cache.get(key)
+
+
+def _cache_set(key: tuple, value):
+    _query_cache[key] = value
+    return value
+
+
+def _cache_clear():
+    _query_cache.clear()
+    logger.info("Query cache cleared")
 
 
 # ── Search functions ──────────────────────────────────────────
@@ -1979,8 +2004,33 @@ def _select_best_passage_snippet(
 
     if best_text and best_score > 0:
         compact = re.sub(r"\s+", " ", best_text).strip()
-        return _truncate(compact, MAX_SNIPPET_LEN)
+        truncated = _truncate(compact, MAX_SNIPPET_LEN)
+        return _highlight_terms(truncated, rank_terms, phrase)
     return fallback
+
+
+def _highlight_terms(
+    text: str | None, rank_terms: list[str], phrase: str
+) -> str | None:
+    """Wrap matched search terms in <mark> tags for frontend highlighting."""
+    if not text:
+        return text
+    terms: list[str] = []
+    if phrase:
+        terms.append(phrase)
+    terms.extend(t for t in rank_terms if t not in terms)
+    # Sort longest first so longer phrases match before their sub-tokens
+    terms.sort(key=len, reverse=True)
+    for term in terms:
+        escaped = re.escape(term)
+        # Word-boundary match, case-insensitive
+        text = re.sub(
+            rf"(?<![<\w/])(\b{escaped}\b)(?![^<]*>)",
+            r"<mark>\1</mark>",
+            text,
+            flags=re.IGNORECASE,
+        )
+    return text
 
 
 def _split_passages(full_text: str) -> list[str]:
@@ -2926,6 +2976,11 @@ def get_statistics(
     year: int | None = None,
 ) -> dict:
     """Get aggregate statistics."""
+    key = ("get_statistics", court, canton, year)
+    cached = _cache_get(key)
+    if cached is not None:
+        return cached
+
     conn = get_db()
 
     filters = []
@@ -2964,16 +3019,21 @@ def get_statistics(
 
     conn.close()
 
-    return {
+    return _cache_set(key, {
         "total": total,
         "by_court": {r["court"]: r["n"] for r in by_court},
         "by_language": {r["language"]: r["n"] for r in by_language},
         "by_year": {r["year"]: r["n"] for r in by_year},
-    }
+    })
 
 
 def list_courts() -> list[dict]:
     """List all available courts with decision counts."""
+    key = ("list_courts",)
+    cached = _cache_get(key)
+    if cached is not None:
+        return cached
+
     conn = get_db()
     rows = conn.execute("""
         SELECT
@@ -2988,7 +3048,7 @@ def list_courts() -> list[dict]:
         ORDER BY decision_count DESC
     """).fetchall()
     conn.close()
-    return [dict(r) for r in rows]
+    return _cache_set(key, [dict(r) for r in rows])
 
 
 def _list_recent(
@@ -3261,6 +3321,7 @@ def _update_with_progress(reporter) -> str:
     minutes, seconds = divmod(int(elapsed), 60)
     stats = get_db_stats()
 
+    _cache_clear()
     reporter.report(1, 1, "Database ready!")
     return (
         f"Database updated successfully in {minutes}m {seconds:02d}s.\n"

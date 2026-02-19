@@ -240,6 +240,8 @@ async def chat(request: ChatRequest, raw_request: Request):
         try:
             all_text = ""
             emitted_dockets: set[str] = set()
+            total_input_tokens = 0
+            total_output_tokens = 0
 
             for _round in range(MAX_TOOL_ROUNDS):
                 # Check if client disconnected before each LLM call
@@ -257,6 +259,10 @@ async def chat(request: ChatRequest, raw_request: Request):
                         yield _sse(ChatChunk(type="text", content=chunk.content))
                     if chunk.tool_calls:
                         final_tool_calls = chunk.tool_calls
+                    if chunk.input_tokens is not None:
+                        total_input_tokens += chunk.input_tokens
+                    if chunk.output_tokens is not None:
+                        total_output_tokens += chunk.output_tokens
 
                 all_text += full_text
 
@@ -319,7 +325,12 @@ async def chat(request: ChatRequest, raw_request: Request):
             if cited:
                 yield _sse(ChatChunk(type="decisions", decisions=cited))
 
-            yield _sse(ChatChunk(type="done", session_id=session_id))
+            yield _sse(ChatChunk(
+                type="done",
+                session_id=session_id,
+                input_tokens=total_input_tokens or None,
+                output_tokens=total_output_tokens or None,
+            ))
 
         except Exception as e:
             logger.error("Chat error [%s]: %s", request_id, e, exc_info=True)

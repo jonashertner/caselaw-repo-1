@@ -1,6 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { getDecision } from '../api';
 
+/** Strip all HTML tags except <mark>, </mark>, and <br>. */
+function sanitizeSnippet(html) {
+  if (!html) return '';
+  return html.replace(/<\/?(?!mark\b|br\b)[a-z][^>]*>/gi, '');
+}
+
 export default function ResultsPane({ decisions, highlightId, onHighlightClear }) {
   const [expandedId, setExpandedId] = useState(null);
   const [fullTexts, setFullTexts] = useState({});
@@ -92,8 +98,18 @@ export default function ResultsPane({ decisions, highlightId, onHighlightClear }
               {d.title && <div className="decision-title">{d.title}</div>}
               {isExpanded && (
                 <div className="decision-details">
-                  {d.regeste && <div className="decision-regeste">{d.regeste}</div>}
-                  {d.snippet && <div className="decision-snippet">{d.snippet}</div>}
+                  {d.regeste && (
+                    <div
+                      className="decision-regeste"
+                      dangerouslySetInnerHTML={{ __html: sanitizeSnippet(d.regeste) }}
+                    />
+                  )}
+                  {d.snippet && (
+                    <div
+                      className="decision-snippet"
+                      dangerouslySetInnerHTML={{ __html: sanitizeSnippet(d.snippet) }}
+                    />
+                  )}
                   {d.source_url && (
                     <a href={d.source_url} target="_blank" rel="noopener" className="decision-link"
                        onClick={e => e.stopPropagation()}>

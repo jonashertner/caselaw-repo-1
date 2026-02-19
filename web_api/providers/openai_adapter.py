@@ -62,7 +62,12 @@ class OpenAIProvider(ProviderBase):
         tools: list[dict] | None = None,
     ) -> AsyncIterator[ProviderResponse]:
         oai_messages = self._convert_messages(messages)
-        kwargs: dict = {"model": self.model, "messages": oai_messages, "stream": True}
+        kwargs: dict = {
+            "model": self.model,
+            "messages": oai_messages,
+            "stream": True,
+            "stream_options": {"include_usage": True},
+        }
 
         if tools:
             kwargs["tools"] = [
@@ -81,8 +86,14 @@ class OpenAIProvider(ProviderBase):
 
         # Accumulate tool call fragments across chunks
         tc_accum: dict[int, dict] = {}  # index → {id, name, arguments_json}
+        usage_data = None
 
         async for chunk in stream:
+            # Usage-only chunk (no choices) comes at the end with stream_options
+            if not chunk.choices and hasattr(chunk, "usage") and chunk.usage:
+                usage_data = chunk.usage
+                continue
+
             delta = chunk.choices[0].delta if chunk.choices else None
             if not delta:
                 continue
@@ -104,6 +115,13 @@ class OpenAIProvider(ProviderBase):
                             tc_accum[idx]["name"] = tc_delta.function.name
                         if tc_delta.function.arguments:
                             tc_accum[idx]["arguments_json"] += tc_delta.function.arguments
+
+        # Emit token usage
+        if usage_data:
+            yield ProviderResponse(
+                input_tokens=getattr(usage_data, "prompt_tokens", None),
+                output_tokens=getattr(usage_data, "completion_tokens", None),
+            )
 
         # Emit accumulated tool calls
         if tc_accum:

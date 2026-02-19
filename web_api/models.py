@@ -40,3 +40,5 @@ class ChatChunk(BaseModel):
     tool_trace: ToolTrace | None = None
     decisions: list[dict] | None = None
     session_id: str | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None

@@ -32,6 +32,7 @@ export default function App() {
   const [providerStatus, setProviderStatus] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
+  const [tokenUsage, setTokenUsage] = useState({ input: 0, output: 0 });
   const abortRef = useRef(null);
 
   // Apply theme to document
@@ -149,6 +150,12 @@ export default function App() {
 
             case 'done':
               if (chunk.session_id) setSessionId(chunk.session_id);
+              if (chunk.input_tokens || chunk.output_tokens) {
+                setTokenUsage(prev => ({
+                  input: prev.input + (chunk.input_tokens || 0),
+                  output: prev.output + (chunk.output_tokens || 0),
+                }));
+              }
               break;
 
             case 'error':
@@ -220,6 +227,7 @@ export default function App() {
     setToolTraces([]);
     setError(null);
     setHighlightId(null);
+    setTokenUsage({ input: 0, output: 0 });
   };
 
   return (
@@ -247,6 +255,11 @@ export default function App() {
           <button onClick={toggleTheme} className="btn-secondary btn-theme" title="Toggle dark mode">
             {theme === 'light' ? '\u263E' : '\u2600'}
           </button>
+          {(tokenUsage.input > 0 || tokenUsage.output > 0) && (
+            <span className="token-counter" title="Token usage this session">
+              {tokenUsage.input.toLocaleString()} in / {tokenUsage.output.toLocaleString()} out
+            </span>
+          )}
         </div>
       </header>
 

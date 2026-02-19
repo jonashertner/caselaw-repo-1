@@ -103,6 +103,13 @@ class AnthropicProvider(ProviderBase):
                     arguments=block.input if isinstance(block.input, dict) else {},
                 ))
 
+        # Yield token usage from the final message
+        if hasattr(final, "usage") and final.usage:
+            yield ProviderResponse(
+                input_tokens=final.usage.input_tokens,
+                output_tokens=final.usage.output_tokens,
+            )
+
         if tool_calls:
             yield ProviderResponse(
                 tool_calls=tool_calls,
