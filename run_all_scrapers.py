@@ -260,7 +260,10 @@ def main():
     with ProcessPoolExecutor(max_workers=args.parallel) as executor:
         futures = {}
         for court in courts:
-            timeout = SLOW_SCRAPERS.get(court, args.timeout)
+            # SLOW_SCRAPERS sets the default for known-slow scrapers,
+            # but --timeout always acts as an upper bound (for health checks)
+            default = SLOW_SCRAPERS.get(court, DEFAULT_TIMEOUT)
+            timeout = min(default, args.timeout) if args.timeout != DEFAULT_TIMEOUT else default
             future = executor.submit(run_single_scraper, court, timeout)
             futures[future] = court
 
