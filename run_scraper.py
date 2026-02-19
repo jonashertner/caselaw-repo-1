@@ -34,6 +34,7 @@ SCRAPERS = {
     # Federal
     "bger": ("scrapers.bger", "BgerScraper"),
     "bge": ("scrapers.bge", "BGELeitentscheideScraper"),
+    "bge_egmr": ("scrapers.bge_egmr", "BGEEGMRScraper"),
     "bvger": ("scrapers.bvger", "BVGerScraper"),
     "bstger": ("scrapers.bstger", "BStGerScraper"),
     "bpatger": ("scrapers.bpatger", "BPatGerScraper"),
