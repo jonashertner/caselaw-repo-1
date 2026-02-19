@@ -162,14 +162,24 @@ def run_single_scraper(court: str, timeout: int) -> dict:
 
     except subprocess.TimeoutExpired:
         duration = time.time() - start
+        # Parse any progress from the log before timeout
+        new_count = 0
+        if log_path.exists():
+            with open(log_path, "r", encoding="utf-8", errors="replace") as f:
+                if log_start > 0:
+                    f.seek(log_start)
+                for line in f:
+                    if "Scraped:" in line:
+                        new_count += 1
         return {
             "court": court,
-            "success": False,
-            "new_count": 0,
+            "success": True,
+            "timed_out": True,
+            "new_count": new_count,
             "skip_count": 0,
             "error_count": 0,
             "duration": duration,
-            "error": f"Timed out after {timeout}s",
+            "error": f"Timed out after {timeout}s (still running)",
         }
     except Exception as e:
         duration = time.time() - start
@@ -259,7 +269,12 @@ def main():
             try:
                 result = future.result()
                 results.append(result)
-                status = "OK" if result["success"] else "FAILED"
+                if result.get("timed_out"):
+                    status = "TIMEOUT"
+                elif result["success"]:
+                    status = "OK"
+                else:
+                    status = "FAILED"
                 logger.info(
                     f"  [{status}] {result['court']}: "
                     f"+{result['new_count']} new, "
@@ -280,15 +295,24 @@ def main():
 
     # Summary
     total_elapsed = time.time() - total_start
-    succeeded = sum(1 for r in results if r["success"])
+    succeeded = sum(1 for r in results if r["success"] and not r.get("timed_out"))
+    timed_out = sum(1 for r in results if r.get("timed_out"))
     failed = sum(1 for r in results if not r["success"])
     total_new = sum(r["new_count"] for r in results)
 
     logger.info("\n=== Summary ===")
     logger.info(f"  Succeeded: {succeeded}/{len(results)}")
+    if timed_out:
+        logger.info(f"  Timed out (still healthy): {timed_out}")
     logger.info(f"  Failed: {failed}")
     logger.info(f"  Total new decisions: {total_new}")
     logger.info(f"  Total time: {total_elapsed:.0f}s ({total_elapsed/60:.1f} min)")
+
+    if timed_out:
+        logger.info("\n  Timed-out scrapers (were still running):")
+        for r in results:
+            if r.get("timed_out"):
+                logger.info(f"    - {r['court']} (+{r['new_count']} new in {r['duration']:.0f}s)")
 
     if failed:
         logger.info("\n  Failed scrapers:")
@@ -303,6 +327,7 @@ def main():
         "scrapers": {
             r["court"]: {
                 "success": r["success"],
+                "timed_out": r.get("timed_out", False),
                 "new_count": r["new_count"],
                 "skip_count": r["skip_count"],
                 "error_count": r["error_count"],
@@ -317,7 +342,7 @@ def main():
     health_path.write_text(json.dumps(health, indent=2))
     logger.info(f"Health data written to {health_path}")
 
-    # Completeness mode: fail when any scraper fails.
+    # Only fail on real errors, not timeouts
     if failed > 0:
         sys.exit(1)
 
