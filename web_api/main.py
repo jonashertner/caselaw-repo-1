@@ -373,7 +373,7 @@ def _parse_decisions(text: str) -> list[dict]:
             continue
 
         # Match: **1. 6B_123/2024** (2024-01-15) [bger] [de]
-        if line.startswith("**") and ".**" in line:
+        if line.startswith("**") and line.count("**") >= 2 and ". " in line:
             if current:
                 decisions.append(current)
             current = {"raw": line}
