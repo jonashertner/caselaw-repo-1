@@ -26,6 +26,8 @@ from .providers.base import (
     ProviderMessage, ToolCall, ToolResult, MCP_TOOLS, SYSTEM_PROMPT,
 )
 
+from search_stack.reference_extraction import extract_case_citations
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(name)s %(levelname)s %(message)s",
@@ -172,6 +174,15 @@ async def get_decision(decision_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/search")
+async def search_endpoint(query: str, limit: int = 20):
+    """Direct FTS5 search without LLM involvement."""
+    bridge = await get_bridge()
+    args = {"query": query, "limit": min(limit, 50)}
+    result = await bridge.call_tool("search_decisions", args)
+    return {"decisions": _parse_decisions(result)}
+
+
 @app.get("/sessions")
 async def list_sessions():
     return {
@@ -227,6 +238,9 @@ async def chat(request: ChatRequest, raw_request: Request):
 
     async def stream():
         try:
+            all_text = ""
+            emitted_dockets: set[str] = set()
+
             for _round in range(MAX_TOOL_ROUNDS):
                 # Check if client disconnected before each LLM call
                 if await raw_request.is_disconnected():
@@ -243,6 +257,8 @@ async def chat(request: ChatRequest, raw_request: Request):
                         yield _sse(ChatChunk(type="text", content=chunk.content))
                     if chunk.tool_calls:
                         final_tool_calls = chunk.tool_calls
+
+                all_text += full_text
 
                 # No tool calls → done
                 if not final_tool_calls:
@@ -286,6 +302,9 @@ async def chat(request: ChatRequest, raw_request: Request):
                         decisions = _parse_decisions(result_text)
                         if decisions:
                             trace.hit_count = len(decisions)
+                            for d in decisions:
+                                if d.get("docket_number"):
+                                    emitted_dockets.add(d["docket_number"])
                             yield _sse(ChatChunk(type="decisions", decisions=decisions))
 
                     # Add tool result to session
@@ -295,6 +314,11 @@ async def chat(request: ChatRequest, raw_request: Request):
                         content=result_text,
                     )))
 
+            # Auto-resolve citations mentioned in LLM text but not yet in results
+            cited = await _resolve_cited_decisions(all_text, emitted_dockets)
+            if cited:
+                yield _sse(ChatChunk(type="decisions", decisions=cited))
+
             yield _sse(ChatChunk(type="done", session_id=session_id))
 
         except Exception as e:
@@ -302,6 +326,36 @@ async def chat(request: ChatRequest, raw_request: Request):
             yield _sse(ChatChunk(type="error", content=str(e)))
 
     return StreamingResponse(stream(), media_type="text/event-stream")
+
+
+async def _resolve_cited_decisions(
+    text: str, already_emitted: set[str],
+) -> list[dict]:
+    """Find docket/BGE citations in LLM text and fetch their cards."""
+    if not text:
+        return []
+
+    citations = extract_case_citations(text)
+    new_citations = [
+        c for c in citations if c.normalized not in already_emitted
+    ]
+    if not new_citations:
+        return []
+
+    # Limit to 10 new citations
+    new_citations = new_citations[:10]
+    query = " OR ".join(f'"{c.normalized}"' for c in new_citations)
+
+    try:
+        bridge = await get_bridge()
+        result = await bridge.call_tool("search_decisions", {
+            "query": query,
+            "limit": 20,
+        })
+        return _parse_decisions(result)
+    except Exception as e:
+        logger.warning("Failed to resolve cited decisions: %s", e)
+        return []
 
 
 def _sse(chunk: ChatChunk) -> str:

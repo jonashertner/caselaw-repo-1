@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { getDecision } from '../api';
 
-export default function ResultsPane({ decisions }) {
+export default function ResultsPane({ decisions, highlightId, onHighlightClear }) {
   const [expandedId, setExpandedId] = useState(null);
-  const [fullTexts, setFullTexts] = useState({});  // cache: id → { loading, content, error }
+  const [fullTexts, setFullTexts] = useState({});
+  const cardRefs = useRef({});
 
   const handleExpand = useCallback((lookupId) => {
     if (expandedId === lookupId) {
@@ -14,7 +15,6 @@ export default function ResultsPane({ decisions }) {
 
     if (!lookupId || fullTexts[lookupId]) return;
 
-    // Fetch full text
     setFullTexts(prev => ({ ...prev, [lookupId]: { loading: true } }));
     getDecision(lookupId)
       .then(data => {
@@ -30,6 +30,27 @@ export default function ResultsPane({ decisions }) {
         }));
       });
   }, [expandedId, fullTexts]);
+
+  // Auto-expand and scroll to highlighted decision
+  useEffect(() => {
+    if (!highlightId) return;
+
+    const match = decisions.find(d => d.docket_number === highlightId);
+    if (!match) return;
+
+    const lookupId = match.decision_id || match.docket_number;
+    setExpandedId(lookupId);
+
+    // Scroll after a tick so DOM updates
+    requestAnimationFrame(() => {
+      const el = cardRefs.current[lookupId];
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // Clear highlight after the animation
+    const timer = setTimeout(() => onHighlightClear?.(), 1500);
+    return () => clearTimeout(timer);
+  }, [highlightId, decisions, onHighlightClear]);
 
   if (decisions.length === 0) {
     return (
@@ -48,12 +69,16 @@ export default function ResultsPane({ decisions }) {
           const lookupId = d.decision_id || d.docket_number;
           const cardKey = lookupId || `_idx_${i}`;
           const isExpanded = expandedId === lookupId && lookupId != null;
+          const isHighlighted = highlightId && d.docket_number === highlightId;
           const ft = lookupId ? fullTexts[lookupId] : null;
 
           return (
             <div
               key={cardKey}
-              className={`decision-card ${isExpanded ? 'expanded' : ''}`}
+              ref={el => { if (lookupId) cardRefs.current[lookupId] = el; }}
+              className={
+                `decision-card${isExpanded ? ' expanded' : ''}${isHighlighted ? ' highlighted' : ''}`
+              }
               onClick={() => handleExpand(lookupId)}
             >
               <div className="decision-header">
@@ -61,8 +86,8 @@ export default function ResultsPane({ decisions }) {
                 <span className="decision-date">{d.decision_date || ''}</span>
               </div>
               <div className="decision-meta">
-                {d.court && <span className="tag tag-court">{d.court}</span>}
-                {d.language && <span className="tag tag-lang">{d.language}</span>}
+                {d.court && <span className="tag">{d.court}</span>}
+                {d.language && <span className="tag">{d.language.toUpperCase()}</span>}
               </div>
               {d.title && <div className="decision-title">{d.title}</div>}
               {isExpanded && (

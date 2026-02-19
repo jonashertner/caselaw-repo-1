@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { streamChat, checkHealth } from './api';
+import { streamChat, checkHealth, searchDecisions } from './api';
 import ProviderSelector from './components/ProviderSelector';
 import ChatPane from './components/ChatPane';
 import ResultsPane from './components/ResultsPane';
@@ -31,6 +31,7 @@ export default function App() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [providerStatus, setProviderStatus] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [highlightId, setHighlightId] = useState(null);
   const abortRef = useRef(null);
 
   // Apply theme to document
@@ -171,12 +172,54 @@ export default function App() {
     if (abortRef.current) abortRef.current.abort();
   };
 
+  const mergeDecisions = useCallback((newDecs) => {
+    setDecisions(prev => {
+      const merged = [...prev, ...newDecs];
+      const seen = new Map();
+      for (let i = merged.length - 1; i >= 0; i--) {
+        const key = merged[i].docket_number || `_idx_${i}`;
+        if (!seen.has(key)) seen.set(key, merged[i]);
+      }
+      return [...seen.values()].reverse();
+    });
+  }, []);
+
+  const handleSearchArticle = useCallback(async (articleRef) => {
+    try {
+      const data = await searchDecisions({ query: articleRef });
+      if (data.decisions?.length) mergeDecisions(data.decisions);
+    } catch {
+      // ignore — article search is best-effort
+    }
+  }, [mergeDecisions]);
+
+  const handleCitationClick = useCallback(async (docket) => {
+    // If already in results, just highlight
+    const found = decisions.find(d => d.docket_number === docket);
+    if (found) {
+      setHighlightId(docket);
+      return;
+    }
+    // Otherwise fetch and highlight
+    try {
+      const data = await searchDecisions({ query: `"${docket}"` });
+      if (data.decisions?.length) {
+        mergeDecisions(data.decisions);
+        // Use the docket from the first result or the requested docket
+        setHighlightId(data.decisions[0]?.docket_number || docket);
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [decisions, mergeDecisions]);
+
   const newSession = () => {
     setSessionId(null);
     setMessages([]);
     setDecisions([]);
     setToolTraces([]);
     setError(null);
+    setHighlightId(null);
   };
 
   return (
@@ -228,10 +271,16 @@ export default function App() {
             onSend={sendMessage}
             isStreaming={isStreaming}
             onStop={stopStreaming}
+            onArticleClick={handleSearchArticle}
+            onCitationClick={handleCitationClick}
           />
         </div>
         <div className="side-column">
-          <ResultsPane decisions={decisions} />
+          <ResultsPane
+            decisions={decisions}
+            highlightId={highlightId}
+            onHighlightClear={() => setHighlightId(null)}
+          />
           {toolTraces.length > 0 && (
             <div className="tool-traces">
               <h3>Tool Activity</h3>
