@@ -25,7 +25,6 @@ import logging
 import os
 import re
 import sys
-import tempfile
 import time
 from pathlib import Path
 
@@ -164,7 +163,6 @@ def enrich(
     # Build index for fast lookup
     id_to_idx = {d["decision_id"]: i for i, d in enumerate(decisions)}
 
-    eligible_ids = {d["decision_id"] for d in eligible}
     if max_decisions:
         eligible = eligible[:max_decisions]
         logger.info(f"Limited to {max_decisions} decisions")
@@ -211,7 +209,6 @@ def enrich(
 
         enriched += 1
         if enriched % 100 == 0:
-            elapsed_total = time.time() - last_request
             logger.info(
                 f"[{i+1}/{len(eligible)}] Enriched {enriched} so far "
                 f"(errors: {download_errors} download, {extract_errors} extract)"

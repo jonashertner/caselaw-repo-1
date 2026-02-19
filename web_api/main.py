@@ -271,6 +271,8 @@ def get_statute_text(url: str, article: str):
     import re
     from html import unescape
 
+    logger.info("Statute request: url=%s article=%s", url, article)
+
     if not url.startswith("https://www.fedlex.admin.ch/"):
         raise HTTPException(400, "Only fedlex.admin.ch URLs are supported")
 
@@ -313,6 +315,8 @@ def get_statute_text(url: str, article: str):
     art_html = _extract_article_html(html_doc, art)
     if art_html:
         return {"html": art_html, "text": None, "fedlex_url": url.split("#")[0]}
+
+    logger.warning("Statute HTML extraction failed: article=%s, url=%s, html_len=%d", art, url, len(html_doc))
 
     # Fallback: plain text extraction for non-standard HTML
     compact = re.sub(r"(?is)<(script|style).*?</\1>", " ", html_doc)
