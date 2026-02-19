@@ -77,7 +77,7 @@ On first use, the server automatically:
 
 This takes 30–60 minutes depending on your machine and connection. It only happens once — after that, searches run instantly against the local database.
 
-**Total disk usage:** ~63 GB in `~/.swiss-caselaw/`.
+**Total disk usage:** ~63 GB in `~/.swiss-caselaw/` (macOS/Linux) or `%USERPROFILE%\.swiss-caselaw\` (Windows).
 
 Example queries:
 
@@ -99,29 +99,28 @@ Claude calls the MCP tools automatically — you see the search results inline a
 
 The dataset is updated daily. To get the latest decisions, ask Claude to run the `update_database` tool, or call it explicitly. This re-downloads the Parquet files from HuggingFace and rebuilds the local database.
 
-### Other MCP clients
+### Setup with Claude Desktop
 
-The same server works with any MCP-compatible client. For Claude Desktop, add to the JSON config:
+The same MCP server works with Claude Desktop. Two options:
 
-#### Claude Desktop extension (`.mcpb`) (recommended)
+#### Option A: Desktop extension (recommended)
 
-Build a local extension bundle from this repo:
+Build a local `.mcpb` extension bundle:
 
 ```bash
 ./scripts/build_desktop_extension.sh
 ```
 
-Requires Node.js/NPM and internet access on first run (for `npx @anthropic-ai/mcpb`).
+Then install it in Claude Desktop: `Settings` → `Extensions` → `Advanced settings` → `Install Extension...` → select `dist/swiss-caselaw-local.mcpb`.
 
-This creates `dist/swiss-caselaw-local.mcpb` and auto-configures the bundle to run with:
-- `./.venv/bin/python3` if present
-- otherwise `python3` from your PATH
+Requires Node.js/NPM and internet access on first run. The bundle auto-detects your `.venv/bin/python3` if present, otherwise uses `python3` from your PATH.
 
-Install it in Claude Desktop:
-1. `Settings` -> `Extensions`
-2. `Advanced settings`
-3. `Install Extension...`
-4. Select `dist/swiss-caselaw-local.mcpb`
+#### Option B: Manual JSON config
+
+Edit the Claude Desktop config file:
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -136,7 +135,9 @@ Install it in Claude Desktop:
 
 On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
 
-- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows)
+#### Other MCP clients
+
+Any MCP-compatible client works — use the same `command` + `args` pattern above.
 
 ### What the MCP server can do
 
@@ -344,82 +345,112 @@ Browser (localhost:5173)  →  FastAPI backend  →  MCP server  →  Local SQLi
 
 Everything runs on your machine. No data leaves your computer (except LLM API calls to the provider you choose).
 
-### Prerequisites
+### What you need
 
-- **Python 3.11+** — check with `python3 --version`
-- **Node.js 18+** and **npm** — check with `node --version` and `npm --version`
-- **An LLM provider** — at least one cloud API key *or* a local model via Ollama
+| Requirement | How to check | Where to get it |
+|-------------|-------------|-----------------|
+| **Python 3.11+** | `python3 --version` (macOS/Linux) or `python --version` (Windows) | [python.org/downloads](https://www.python.org/downloads/) |
+| **Node.js 18+** | `node --version` | [nodejs.org](https://nodejs.org) — download the LTS version |
+| **An LLM provider** | *(see below)* | At least one cloud API key **or** a local model via Ollama |
+| **~65 GB free disk** | — | For the search index (downloaded on first run) |
 
-#### Cloud providers
+> **Windows users:** Install Python from [python.org](https://www.python.org/downloads/) and check "Add Python to PATH" during installation. Node.js installs npm automatically.
 
-| Provider | Env variable | Where to get a key | Free tier? |
-|----------|-------------|---------------------|------------|
-| Anthropic (Claude) | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) | Pay-as-you-go |
-| OpenAI | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com/api-keys) | Free credits for new accounts |
-| Google Gemini | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) | Free tier available |
+#### Cloud providers (choose at least one, or use Ollama below)
+
+| Provider | Env variable | Where to get a key | Cost |
+|----------|-------------|---------------------|------|
+| **Google Gemini** | `GEMINI_API_KEY` | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) | Free tier available |
+| **OpenAI** | `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Free credits for new accounts |
+| **Anthropic (Claude)** | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) | Pay-as-you-go |
 
 > **Important:** A Claude Desktop or Claude Pro *subscription* does NOT include an API key. You need a separate developer account at [console.anthropic.com](https://console.anthropic.com/).
 
 #### Local models (no API key needed)
 
-| Model | Ollama command | Size | Notes |
-|-------|---------------|------|-------|
-| Qwen 2.5 (14B) | `ollama pull qwen2.5:14b` | ~9 GB | Best tool-calling at this size |
-| Llama 3.3 (70B) | `ollama pull llama3.3:70b` | ~40 GB | Strongest open-weight model, needs ~48 GB RAM |
+If you prefer not to use cloud APIs, you can run everything locally with [Ollama](https://ollama.com):
 
-Install [Ollama](https://ollama.com), run `ollama serve`, pull a model, and start the app. The UI auto-detects Ollama and shows local models as available.
+| Model | Command to install | Download size | RAM needed |
+|-------|-------------------|---------------|------------|
+| Qwen 2.5 (14B) | `ollama pull qwen2.5:14b` | ~9 GB | ~16 GB |
+| Llama 3.3 (70B) | `ollama pull llama3.3:70b` | ~40 GB | ~48 GB |
+
+Install Ollama from [ollama.com](https://ollama.com) (macOS, Linux, Windows), then:
+
+```bash
+ollama serve          # start the Ollama server (leave running)
+ollama pull qwen2.5:14b   # download a model (one-time)
+```
+
+The Web UI auto-detects Ollama and shows local models as available.
 
 ### Step-by-step setup
 
-**1. Clone the repository:**
+**Step 1. Clone the repository:**
 
 ```bash
 git clone https://github.com/jonashertner/caselaw-repo-1.git
 cd caselaw-repo-1
 ```
 
-**2. Install Python dependencies:**
+**Step 2. Create a Python virtual environment:**
+
+```bash
+python3 -m venv .venv
+```
+
+Activate it:
+
+| OS | Command |
+|----|---------|
+| **macOS / Linux** | `source .venv/bin/activate` |
+| **Windows (PowerShell)** | `.venv\Scripts\Activate.ps1` |
+| **Windows (cmd)** | `.venv\Scripts\activate.bat` |
+
+> You'll know it's active when your terminal prompt starts with `(.venv)`.
+
+**Step 3. Install Python dependencies:**
 
 ```bash
 pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic
 ```
 
-**3. Install at least one LLM provider SDK:**
+Then install at least one LLM provider SDK:
 
 ```bash
 pip install anthropic        # for Claude
-# and/or:
 pip install openai           # for OpenAI / GPT-4o / local models via Ollama
 pip install google-genai     # for Google Gemini
 ```
 
-> **Note:** The `openai` package is also used for local Ollama models (Ollama exposes an OpenAI-compatible API). If you only want to use local models, `pip install openai` is sufficient — no cloud API key required.
+> **Tip:** The `openai` package is also used for local Ollama models (Ollama exposes an OpenAI-compatible API). If you only want to use local models, `pip install openai` is sufficient — no cloud API key required.
 
-**4. Install the frontend:**
+**Step 4. Install the frontend:**
 
 ```bash
 cd web_ui && npm install && cd ..
 ```
 
-**5. Configure your API key:**
+**Step 5. Configure your API key:**
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` in a text editor and paste your API key on the appropriate line. For example, if you have an Anthropic key, change `ANTHROPIC_API_KEY=sk-ant-...` to your actual key. Leave the other provider lines as-is — they will be ignored if empty.
+Open `.env` in a text editor and paste your API key on the appropriate line. For example, if you have a Gemini key, change `GEMINI_API_KEY=AI...` to your actual key. Leave the other provider lines as-is — they will be ignored if empty.
 
-Alternatively, you can skip this step and configure keys from the Settings panel inside the UI after starting.
+> You can also skip this step and configure keys from the **Settings** panel inside the UI after starting.
 
-**6. Start the app:**
+**Step 6. Start the app:**
 
-```bash
-./scripts/run_web_local.sh
-```
+| OS | Command |
+|----|---------|
+| **macOS / Linux** | `./scripts/run_web_local.sh` |
+| **Windows (PowerShell)** | `.\scripts\run_web_local.ps1` |
 
 Open **http://localhost:5173** in your browser.
 
-On first use, the MCP server automatically downloads the dataset (~6.5 GB) and builds a local search index (~56 GB). This takes 30–60 minutes on the first run — after that, it starts instantly.
+**What to expect on first run:** The MCP server will automatically download the dataset (~6.5 GB) from HuggingFace and build a local search index (~56 GB). This takes **30–60 minutes** depending on your connection and disk speed. You'll see progress in the terminal. After this one-time setup, the app starts instantly.
 
 ### Features
 
@@ -427,21 +458,24 @@ On first use, the MCP server automatically downloads the dataset (~6.5 GB) and b
 - **Local-first option**: Run entirely on your machine with Ollama — no cloud API keys needed
 - **Streaming**: Responses appear token-by-token in real time
 - **Tool-augmented chat**: The AI calls search, get_decision, list_courts, etc. automatically
-- **Decision cards**: Structured results with court, date, language, and text snippets
+- **Decision cards**: Clickable statute references with inline Fedlex article text
 - **Filters**: Narrow results by court, canton, language, and date range
 - **In-app settings**: Configure API keys and Ollama connection from the UI
+- **Export**: Download conversations as Markdown, Word, or PDF
 
 ### Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
+| `python3: command not found` (Windows) | Use `python` instead of `python3`, or reinstall Python with "Add to PATH" checked |
 | `npm: command not found` | Install Node.js from [nodejs.org](https://nodejs.org) |
-| `ModuleNotFoundError: No module named 'fastapi'` | Run `pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic` |
-| "No provider configured" banner | Click Settings and paste an API key, or start Ollama (`ollama serve`) for local models |
-| "Database not found" error | The database is built on first start — wait for the initial download to complete |
+| `ModuleNotFoundError: No module named 'fastapi'` | Activate your venv (`source .venv/bin/activate`) and re-run `pip install ...` |
+| "No provider configured" banner | Click the gear icon (Settings) and paste an API key, or start Ollama |
+| "Database not found" on first run | Wait for the initial download to finish (check terminal for progress) |
 | Port already in use | Edit `BACKEND_PORT` or `FRONTEND_PORT` in `.env` |
+| PowerShell script blocked (Windows) | Run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once |
 
-For advanced configuration (custom ports, MCP server path, timeouts), see the full list of environment variables in [`.env.example`](.env.example).
+For advanced configuration (custom ports, MCP server path, timeouts), see [`.env.example`](.env.example).
 
 ---
 
@@ -578,7 +612,9 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
 
 ---
 
-## Running locally
+## Running locally (developer)
+
+For contributors and developers who want to run scrapers, build the pipeline, or modify the codebase.
 
 ### Prerequisites
 
@@ -590,6 +626,8 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
 ```bash
 git clone https://github.com/jonashertner/caselaw-repo-1.git
 cd caselaw-repo-1
+python3 -m venv .venv
+source .venv/bin/activate   # macOS/Linux — on Windows: .venv\Scripts\Activate.ps1
 pip install -e ".[all]"
 ```
 
