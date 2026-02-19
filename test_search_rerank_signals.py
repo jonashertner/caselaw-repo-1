@@ -147,7 +147,9 @@ def test_passage_snippet_prefers_relevant_paragraph():
         fallback="fallback",
     )
     assert snippet is not None
-    assert "Art. 8 EMRK" in snippet
+    # _highlight_terms wraps matches in <mark> tags; strip them for content check
+    plain = snippet.replace("<mark>", "").replace("</mark>", "")
+    assert "Art. 8 EMRK" in plain
 
 
 def test_asylum_query_boosts_bvger_court():
@@ -221,6 +223,11 @@ def test_query_has_numeric_terms_detection():
     assert not mcp_server._query_has_numeric_terms("Asyl und Wegweisung")
 
 
+def test_query_has_expandable_terms_detection():
+    assert mcp_server._query_has_expandable_terms("Asyl und Wegweisung")
+    assert not mcp_server._query_has_expandable_terms("Rechtsmittelbelehrung")
+
+
 def test_extract_query_statute_refs_handles_multilingual_paragraph_marker():
     refs = mcp_server._extract_query_statute_refs("selon art. 8 al. 1 CEDH")
     assert "ART.8.ABS.1.CEDH" in refs
@@ -270,6 +277,29 @@ def test_detect_query_preferred_courts_bger():
     prefs = mcp_server._detect_query_preferred_courts("BGer 4A_291/2017")
     assert "bger" in prefs
     assert "bge" in prefs
+
+
+def test_parse_docket_family_and_serial_extract():
+    family = mcp_server._parse_docket_family("1A.122/2005")
+    assert family == ("1A", 122, "2005")
+    assert mcp_server._parse_docket_family("Asyl und Wegweisung") is None
+    assert mcp_server._extract_docket_serial(
+        "1A.124/2005",
+        prefix="1A",
+        year="2005",
+    ) == 124
+    assert mcp_server._extract_docket_serial(
+        "E-7414/2015",
+        prefix="1A",
+        year="2005",
+    ) is None
+    variants = mcp_server._build_docket_family_candidates(
+        prefix="1A",
+        serial=122,
+        year="2005",
+    )
+    assert "1A.124/2005" in variants
+    assert "1A.122_2005" in variants
 
 
 def test_rerank_boosts_language_match():
