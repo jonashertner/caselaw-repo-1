@@ -21,67 +21,14 @@ There are four ways to use it, depending on what you need:
 
 | Method | For whom | What you get |
 |--------|----------|-------------|
-| [**Web UI**](#1-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
-| [**Search with AI**](#2-search-with-ai) | Power users | Natural-language queries in Claude Code / Claude Desktop |
-| [**Download**](#3-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
-| [**REST API**](#4-rest-api) | Developers | Programmatic row-level access, no setup |
+| [**Search with AI**](#1-search-with-ai) | Power users | Natural-language queries in Claude Code / Claude Desktop |
+| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
+| [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
+| [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
 ---
 
-## 1. Web UI
-
-A local chat interface for searching Swiss court decisions. Ask questions in natural language, and an AI assistant searches the full corpus and answers with cited decisions.
-
-```
-Browser (localhost:5173)  →  FastAPI backend  →  MCP server  →  Local SQLite FTS5 DB
-```
-
-Everything runs on your machine. No data leaves your computer (except LLM API calls to the provider you choose).
-
-### Quick start
-
-```bash
-git clone https://github.com/jonashertner/caselaw-repo-1.git
-cd caselaw-repo-1
-
-# Install dependencies
-pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic
-pip install anthropic        # and/or: pip install openai google-genai
-cd web_ui && npm install && cd ..
-
-# Configure API key
-cp .env.example .env
-# Edit .env — add at least one LLM API key
-
-# Start
-./scripts/run_web_local.sh
-```
-
-Open **http://localhost:5173**. On first use, the database is built automatically (~6.5 GB download, ~56 GB index).
-
-### Features
-
-- **Multi-provider**: Switch between Claude, OpenAI, and Gemini mid-conversation
-- **Tool-augmented chat**: The AI calls search, get_decision, list_courts, etc. automatically
-- **Decision cards**: Structured results with court, date, language, and text snippets
-- **In-app settings**: Configure API keys from the UI (no `.env` editing required)
-- **Streaming**: Real-time response via server-sent events
-
-You need at least one API key:
-
-| Provider | Env variable | Get a key at |
-|----------|-------------|--------------|
-| Anthropic (Claude) | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) |
-| OpenAI | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com/api-keys) |
-| Google Gemini | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) |
-
-> **Note:** A Claude Pro subscription does NOT provide an API key. You need a separate developer account at console.anthropic.com.
-
-Full setup docs: [`docs/web-ui-local.md`](docs/web-ui-local.md)
-
----
-
-## 2. Search with AI
+## 1. Search with AI
 
 The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets AI tools search across all 1M+ decisions locally on your machine. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
@@ -290,7 +237,7 @@ Graph signals are enabled by default. To disable them, set `SWISS_CASELAW_GRAPH_
 
 ---
 
-## 3. Download the dataset
+## 2. Download the dataset
 
 The full dataset is on [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) as Parquet files — one file per court, 34 fields per decision including complete decision text.
 
@@ -360,7 +307,7 @@ Full list of files: [huggingface.co/datasets/voilaj/swiss-caselaw/tree/main/data
 
 ---
 
-## 4. REST API
+## 3. REST API
 
 Query the dataset over HTTP without installing anything. This uses the [HuggingFace Datasets Server](https://huggingface.co/docs/datasets-server/).
 
@@ -383,7 +330,104 @@ curl -X POST "https://datasets-server.huggingface.co/search?dataset=voilaj/swiss
   -d '{"query": "SELECT docket_number, decision_date, language FROM data WHERE court = '\''bger'\'' LIMIT 10"}'
 ```
 
-> Note: The REST API queries the dataset as configured in the HuggingFace repo (per-court Parquet files, full 34-field schema). For bulk access or local analysis, use the [download method](#3-download-the-dataset) above.
+> Note: The REST API queries the dataset as configured in the HuggingFace repo (per-court Parquet files, full 34-field schema). For bulk access or local analysis, use the [download method](#2-download-the-dataset) above.
+
+---
+
+## 4. Web UI
+
+A local chat interface for searching Swiss court decisions. Ask questions in natural language, and an AI assistant searches the full corpus and answers with cited decisions.
+
+```
+Browser (localhost:5173)  →  FastAPI backend  →  MCP server  →  Local SQLite FTS5 DB
+```
+
+Everything runs on your machine. No data leaves your computer (except LLM API calls to the provider you choose).
+
+### Prerequisites
+
+- **Python 3.11+** — check with `python3 --version`
+- **Node.js 18+** and **npm** — check with `node --version` and `npm --version`
+- **An LLM API key** — at least one of the three providers below
+
+| Provider | Env variable | Where to get a key | Free tier? |
+|----------|-------------|---------------------|------------|
+| Anthropic (Claude) | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com/) | Pay-as-you-go |
+| OpenAI | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com/api-keys) | Free credits for new accounts |
+| Google Gemini | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) | Free tier available |
+
+> **Important:** A Claude Desktop or Claude Pro *subscription* does NOT include an API key. You need a separate developer account at [console.anthropic.com](https://console.anthropic.com/).
+
+### Step-by-step setup
+
+**1. Clone the repository:**
+
+```bash
+git clone https://github.com/jonashertner/caselaw-repo-1.git
+cd caselaw-repo-1
+```
+
+**2. Install Python dependencies:**
+
+```bash
+pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic
+```
+
+**3. Install at least one LLM provider SDK:**
+
+```bash
+pip install anthropic        # for Claude
+# and/or:
+pip install openai           # for OpenAI / GPT-4o
+pip install google-genai     # for Google Gemini
+```
+
+**4. Install the frontend:**
+
+```bash
+cd web_ui && npm install && cd ..
+```
+
+**5. Configure your API key:**
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` in a text editor and paste your API key on the appropriate line. For example, if you have an Anthropic key, change `ANTHROPIC_API_KEY=sk-ant-...` to your actual key. Leave the other provider lines as-is — they will be ignored if empty.
+
+Alternatively, you can skip this step and configure keys from the Settings panel inside the UI after starting.
+
+**6. Start the app:**
+
+```bash
+./scripts/run_web_local.sh
+```
+
+Open **http://localhost:5173** in your browser.
+
+On first use, the MCP server automatically downloads the dataset (~6.5 GB) and builds a local search index (~56 GB). This takes 30–60 minutes on the first run — after that, it starts instantly.
+
+### Features
+
+- **Multi-provider**: Switch between Claude, OpenAI, and Gemini mid-conversation
+- **Streaming**: Responses appear token-by-token in real time
+- **Tool-augmented chat**: The AI calls search, get_decision, list_courts, etc. automatically
+- **Decision cards**: Structured results with court, date, language, and text snippets
+- **Filters**: Narrow results by court, canton, language, and date range
+- **In-app settings**: Configure API keys from the UI (no `.env` editing required after first setup)
+
+### Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `npm: command not found` | Install Node.js from [nodejs.org](https://nodejs.org) |
+| `ModuleNotFoundError: No module named 'fastapi'` | Run `pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic` |
+| "No API keys configured" banner | Click Settings in the UI and paste your key, or edit `.env` |
+| "Database not found" error | The database is built on first start — wait for the initial download to complete |
+| Port already in use | Edit `BACKEND_PORT` or `FRONTEND_PORT` in `.env` |
+
+For advanced configuration (custom ports, MCP server path, timeouts), see the full list of environment variables in [`.env.example`](.env.example).
 
 ---
 
