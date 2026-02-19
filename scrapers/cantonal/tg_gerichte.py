@@ -22,6 +22,7 @@ import logging
 import re
 from datetime import date
 from typing import Iterator
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
@@ -207,8 +208,9 @@ class TGGerichteScraper(BaseScraper):
             decision_id = make_decision_id("tg_gerichte", docket)
 
             # Use the actual href from the page (portal switched to
-            # zero-padded URLs like -nr-01 in 2024)
-            raw_href = href if href.startswith("http") else f"{BASE_URL}{href}"
+            # zero-padded URLs like -nr-01 in 2024).
+            # Hrefs may be relative (e.g. "../og/rbog-2024-nr-01").
+            raw_href = urljoin(url, href)
 
             yield {
                 "decision_id": decision_id,
