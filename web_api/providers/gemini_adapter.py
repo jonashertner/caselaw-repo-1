@@ -12,7 +12,7 @@ class GeminiProvider(ProviderBase):
         from google import genai
         self._genai = genai
         self.client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-        self.model = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+        self.model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
     async def chat(
         self,

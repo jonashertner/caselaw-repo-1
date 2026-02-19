@@ -514,6 +514,11 @@ async def chat(request: ChatRequest, raw_request: Request):
                         MIN_SEARCH_LIMIT = 80
                         if tool_args.get("limit", 0) < MIN_SEARCH_LIMIT:
                             tool_args["limit"] = MIN_SEARCH_LIMIT
+                        # Strip court filter unless user explicitly set one —
+                        # unfiltered searches return the best mix of BGE + BGer + cantonal
+                        user_set_court = request.filters and request.filters.court
+                        if not user_set_court:
+                            tool_args.pop("court", None)
                         # Strip language filter unless user explicitly set one —
                         # searches should be multilingual by default
                         user_set_language = request.filters and request.filters.language

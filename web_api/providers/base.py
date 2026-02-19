@@ -46,8 +46,9 @@ MCP_TOOLS = [
             "Search Swiss court decisions using full-text search. "
             "Supports keywords, phrases (in quotes), Boolean operators "
             "(AND, OR, NOT), and prefix matching (word*). "
-            "Filter by court, canton, language, and date range. "
-            "Returns BM25-ranked results with snippets."
+            "Returns BM25-ranked results across ALL courts (BGE, BGer, cantonal) by default. "
+            "Do NOT filter by court or language unless the user explicitly asks for a specific court. "
+            "Broad unfiltered searches return the best mix of leading cases and cantonal decisions."
         ),
         "parameters": {
             "type": "object",
@@ -147,8 +148,11 @@ SYSTEM_PROMPT = (
     "This is mandatory — never use limit=10 or limit=20.\n"
     "- NEVER filter by language. Swiss law is multilingual — the leading case on a topic "
     "may be in any of the 4 languages. Always search across all languages.\n"
-    "- Use targeted, specific queries with appropriate filters "
-    "(court, canton, date range). Do NOT set the language filter.\n"
+    "- NEVER filter by court unless the user explicitly asks for decisions from a specific court. "
+    "Unfiltered searches return a mix of BGE Leitentscheide, BGer, BVGer, and cantonal decisions "
+    "ranked by relevance — this is what produces the best research results.\n"
+    "- Use targeted, specific queries. Do NOT set court, canton, or language filters "
+    "unless the user explicitly requests a specific jurisdiction.\n"
     "- The search engine ranks by relevance — you will then select and cite only the "
     "5–15 most pertinent decisions from the results.\n"
     "- One precise search is better than many vague ones. If a search returns 0 results, "
