@@ -351,9 +351,11 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
 .pill-ok { background:#22863a22; color:var(--green); }
 .pill-fail { background:#d1242f22; color:var(--ac); }
 .pill-stale { background:#dbab0922; color:#b08800; }
+.pill-investigating { background:#dbab0922; color:#b08800; }
 [data-theme="dark"] .pill-ok { background:#22863a33; }
 [data-theme="dark"] .pill-fail { background:#d1242f33; }
 [data-theme="dark"] .pill-stale { background:#dbab0933; color:#d4a017; }
+[data-theme="dark"] .pill-investigating { background:#dbab0933; color:#d4a017; }
 .health-meta { font-size:var(--fs-sm); color:var(--tx2); font-family:var(--f-mono); margin-bottom:12px; }
 .hid { display: none !important; }
 
@@ -590,7 +592,7 @@ ds = load_dataset("voilaj/swiss-caselaw")</code>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           MCP Server
         </h3>
-        <p data-t="access_mcp_desc">Local full-text search via Claude Code or any MCP client. Downloads ~5 GB from HuggingFace, builds a ~48 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a></p>
+        <p data-t="access_mcp_desc">Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a></p>
         <code>git clone github.com/jonashertner/caselaw-repo-1
 cd caselaw-repo-1
 python3 -m venv .venv
@@ -637,7 +639,7 @@ const I18N = {
     updated:'Aktualisiert am',
     made:'Gebaut mit \u2665 von <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
-    access_mcp_desc:'Lokale Volltextsuche via Claude Code oder andere MCP-Clients. L\u00e4dt ~5 GB von HuggingFace herunter, baut einen ~48 GB Suchindex auf Ihrem Rechner. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Einrichtung &rarr;</a>',
+    access_mcp_desc:'Lokale Volltextsuche via Claude Code oder andere MCP-Clients. L\u00e4dt ~6.5 GB von HuggingFace herunter, baut einen ~56 GB Suchindex auf Ihrem Rechner. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Einrichtung &rarr;</a>',
     access_api_desc:'Abfragen via HuggingFace Datasets Server API',
     browse:'Durchsuchen',
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_browse:'Durchsuchen', nav_access:'Zugang',
@@ -645,7 +647,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
     quick_search:'Volltextsuche', quick_search_desc:'MCP-Server f\u00fcr Claude und andere AI-Tools',
     quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
-    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_stale:'Veraltet', health_errors:'Fehler',
+    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_stale:'Veraltet', health_errors:'Fehler',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -658,7 +660,7 @@ const I18N = {
     updated:'Mis \u00e0 jour le',
     made:'Fait avec \u2665 par <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
-    access_mcp_desc:'Recherche locale plein texte via Claude Code ou tout client MCP. T\u00e9l\u00e9charge ~5 Go depuis HuggingFace, construit un index de recherche de ~48 Go sur votre machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guide d\u2019installation &rarr;</a>',
+    access_mcp_desc:'Recherche locale plein texte via Claude Code ou tout client MCP. T\u00e9l\u00e9charge ~6.5 Go depuis HuggingFace, construit un index de recherche de ~56 Go sur votre machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guide d\u2019installation &rarr;</a>',
     access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
     browse:'Parcourir',
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Parcourir', nav_access:'Acc\u00e8s',
@@ -666,7 +668,7 @@ const I18N = {
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
     quick_search:'Recherche', quick_search_desc:'Serveur MCP pour Claude et autres outils IA',
     quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
-    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs',
+    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -679,7 +681,7 @@ const I18N = {
     updated:'Aggiornato il',
     made:'Fatto con \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Scarica il dataset completo in formato Parquet',
-    access_mcp_desc:'Ricerca locale full-text via Claude Code o qualsiasi client MCP. Scarica ~5 GB da HuggingFace, crea un indice di ricerca di ~48 GB sulla tua macchina. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida all\u2019installazione &rarr;</a>',
+    access_mcp_desc:'Ricerca locale full-text via Claude Code o qualsiasi client MCP. Scarica ~6.5 GB da HuggingFace, crea un indice di ricerca di ~56 GB sulla tua macchina. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida all\u2019installazione &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     browse:'Sfoglia',
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_browse:'Sfoglia', nav_access:'Accesso',
@@ -687,7 +689,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
     quick_search:'Ricerca', quick_search_desc:'Server MCP per Claude e altri strumenti IA',
     quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
-    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_stale:'Obsoleto', health_errors:'errori',
+    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_stale:'Obsoleto', health_errors:'errori',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -700,7 +702,7 @@ const I18N = {
     updated:'Actualis\u00e0 ils',
     made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
-    access_mcp_desc:'Tschertga locala en text cumplain via Claude Code u mintga client MCP. Telechargia ~5 GB da HuggingFace, construescha in index da tschertga da ~48 GB sin tes computer. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
+    access_mcp_desc:'Tschertga locala en text cumplain via Claude Code u mintga client MCP. Telechargia ~6.5 GB da HuggingFace, construescha in index da tschertga da ~56 GB sin tes computer. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
     access_api_desc:'Dumondas via HuggingFace Datasets Server API',
     browse:'Navigar',
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_browse:'Navigar', nav_access:'Access',
@@ -708,7 +710,7 @@ const I18N = {
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
     quick_search:'Tschertga', quick_search_desc:'Server MCP per Claude ed auters utensils IA',
     quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
-    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_stale:'Vegl', health_errors:'errurs',
+    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_stale:'Vegl', health_errors:'errurs',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -721,7 +723,7 @@ const I18N = {
     updated:'Updated',
     made:'Built with \u2665 by <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Download the full dataset as Parquet files',
-    access_mcp_desc:'Local full-text search via Claude Code or any MCP client. Downloads ~5 GB from HuggingFace, builds a ~48 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a>',
+    access_mcp_desc:'Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     browse:'Browse',
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
@@ -729,7 +731,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
     quick_search:'Search', quick_search_desc:'MCP server for Claude and other AI tools',
     quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
-    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_stale:'Stale', health_errors:'errors',
+    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_stale:'Stale', health_errors:'errors',
   },
 };
 
@@ -1208,14 +1210,14 @@ function renderAll(data) {
     const NOW = Date.now();
     const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
     const scrapers = Object.entries(sh.scrapers).map(([code, s]) => {
-      let status = s.success ? 'ok' : 'fail';
+      let status = s.success ? 'ok' : 'investigating';
       if (s.success && s.new_count === 0 && s.jsonl_mtime) {
         const age = NOW - new Date(s.jsonl_mtime).getTime();
         if (age > SEVEN_DAYS) status = 'stale';
       }
       return {
         code, name: courtName(code),
-        status, status_ord: status === 'ok' ? 0 : status === 'stale' ? 1 : 2,
+        status, status_ord: status === 'ok' ? 0 : status === 'stale' ? 1 : status === 'investigating' ? 2 : 3,
         new_count: s.new_count || 0,
         skip_count: s.skip_count || 0,
         error_count: s.error_count || 0,
@@ -1247,7 +1249,7 @@ function renderAll(data) {
       return Math.floor(s/3600) + 'h ' + Math.round((s%3600)/60) + 'm';
     }
 
-    const pillLabel = { ok: t('health_ok'), fail: t('health_fail'), stale: t('health_stale') };
+    const pillLabel = { ok: t('health_ok'), fail: t('health_fail'), investigating: t('health_investigating'), stale: t('health_stale') };
     sortable(document.getElementById('t-health'), scrapers, r => {
       const pill = `<span class="pill pill-${r.status}">${pillLabel[r.status]}</span>`;
       const errBadge = r.error_count > 0 ? ` <span class="cc" style="color:var(--ac)">${r.error_count} ${t('health_errors')}</span>` : '';
