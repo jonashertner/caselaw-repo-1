@@ -50,7 +50,7 @@ app.add_middleware(
 _sessions: dict[str, dict] = {}  # sid → {messages, last_used}
 MAX_SESSIONS = 50
 
-MAX_TOOL_ROUNDS = 10
+MAX_TOOL_ROUNDS = 5
 
 # Provider → env-var mapping for key management
 ENV_KEY_MAP = {
