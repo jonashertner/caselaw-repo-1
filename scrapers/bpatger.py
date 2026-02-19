@@ -138,9 +138,24 @@ class BPatGerScraper(BaseScraper):
                         continue
                     seen_urls.add(url)
 
+                    listing_text = link.get_text(strip=True)
+
+                    # Extract docket from listing text (e.g. "S2023_011:\n04.12.2025:...")
+                    # to skip already-known decisions without fetching the detail page
+                    docket_from_listing = None
+                    if listing_text:
+                        first_line = listing_text.split(":")[0].strip()
+                        if first_line and "_" in first_line:
+                            docket_from_listing = first_line
+
+                    if docket_from_listing:
+                        candidate_id = make_decision_id("bpatger", docket_from_listing)
+                        if self.state.is_known(candidate_id):
+                            continue
+
                     stub = {
                         "url": url,
-                        "listing_text": link.get_text(strip=True),
+                        "listing_text": listing_text,
                     }
                     yield stub
 

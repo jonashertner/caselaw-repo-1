@@ -65,7 +65,9 @@ SLOW_SCRAPERS = {
 }
 
 # Scrapers to skip by default (broken, redundant, or handled separately)
-SKIP_BY_DEFAULT: set[str] = set()
+SKIP_BY_DEFAULT: set[str] = {
+    "ge_gerichte",  # TODO: remove once initial bulk scrape completes (~95k decisions)
+}
 
 
 def get_all_courts() -> list[str]:
@@ -135,7 +137,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
 
         return {
             "court": court,
-            "success": result.returncode == 0 and error_count == 0,
+            "success": result.returncode == 0,
             "new_count": new_count,
             "skip_count": skip_count,
             "error_count": error_count,

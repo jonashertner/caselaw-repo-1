@@ -244,31 +244,35 @@ class BVGerScraper(BaseScraper):
     # ══════════════════════════════════════════════════════════
 
     def _discover_weblaw(self, since_date=None) -> Iterator[dict]:
-        start = date(START_YEAR, 1, 1)
+        floor = date(START_YEAR, 1, 1)
         if since_date:
             if isinstance(since_date, str):
-                since_date = parse_date(since_date) or start
-            start = max(since_date, start)
+                since_date = parse_date(since_date) or floor
+            floor = max(since_date, floor)
 
         wd = WINDOW_DAYS
-        cur = start
         today = date.today()
         total_found = 0
+        consecutive_empty_days = 0
 
-        while cur < today:
-            bis = min(cur + timedelta(days=wd), today)
-            docs, total, more = self._wl_search(cur, bis)
+        # Scan backwards from today — finds new decisions quickly for daily
+        # runs, and stops early when all historical decisions are known.
+        cur_end = today
+        while cur_end >= floor:
+            cur_start = max(cur_end - timedelta(days=wd - 1), floor)
+            docs, total, more = self._wl_search(cur_start, cur_end)
 
             if total > MAX_PER_WINDOW and wd > 1:
                 wd = max(1, wd // 2)
                 logger.info(
-                    f"BVGer Weblaw {cur}–{bis}: {total} results, "
+                    f"BVGer Weblaw {cur_start}–{cur_end}: {total} results, "
                     f"narrowing to {wd}d window"
                 )
                 continue
 
-            logger.info(f"BVGer Weblaw {cur}–{bis}: {total} decisions")
+            logger.info(f"BVGer Weblaw {cur_start}–{cur_end}: {total} decisions")
 
+            new_in_window = 0
             for doc in docs:
                 stub = self._wl_parse(doc)
                 if stub and not self.state.is_known(
@@ -276,11 +280,12 @@ class BVGerScraper(BaseScraper):
                 ):
                     yield stub
                     total_found += 1
+                    new_in_window += 1
 
             # Pagination: fetch remaining pages
             offset = len(docs)
             while more and offset < total:
-                docs, _, more = self._wl_search(cur, bis, offset)
+                docs, _, more = self._wl_search(cur_start, cur_end, offset)
                 for doc in docs:
                     stub = self._wl_parse(doc)
                     if stub and not self.state.is_known(
@@ -288,9 +293,24 @@ class BVGerScraper(BaseScraper):
                     ):
                         yield stub
                         total_found += 1
+                        new_in_window += 1
                 offset += len(docs)
 
-            cur = bis + timedelta(days=1)
+            # Early exit: stop scanning history once we've passed 2 years
+            # of consecutive windows with no new (unknown) decisions.
+            window_span = (cur_end - cur_start).days + 1
+            if new_in_window == 0:
+                consecutive_empty_days += window_span
+                if consecutive_empty_days >= 730:
+                    logger.info(
+                        f"BVGer Weblaw: {consecutive_empty_days} consecutive "
+                        f"empty days (back to {cur_start}), stopping early"
+                    )
+                    break
+            else:
+                consecutive_empty_days = 0
+
+            cur_end = cur_start - timedelta(days=1)
 
         logger.info(f"BVGer Weblaw discovery complete: {total_found} new stubs")
 

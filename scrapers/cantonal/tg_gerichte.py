@@ -206,13 +206,17 @@ class TGGerichteScraper(BaseScraper):
 
             decision_id = make_decision_id("tg_gerichte", docket)
 
+            # Use the actual href from the page (portal switched to
+            # zero-padded URLs like -nr-01 in 2024)
+            raw_href = href if href.startswith("http") else f"{BASE_URL}{href}"
+
             yield {
                 "decision_id": decision_id,
                 "docket_number": docket,
                 "year": link_year,
                 "nr": nr,
                 "title": link_text[:200] if link_text else None,
-                "url": f"{BASE_URL}/{section_path}/{series_slug}-{link_year}-nr-{nr}",
+                "url": raw_href,
             }
 
     def fetch_decision(self, stub: dict) -> Decision | None:

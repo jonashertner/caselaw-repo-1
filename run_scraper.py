@@ -195,14 +195,10 @@ def run_with_persistence(
                 )
             else:
                 skips += 1
-                errors += 1
-                logger.error(
-                    f"[{scraper_key}] fetch_decision returned None for "
+                logger.warning(
+                    f"[{scraper_key}] Skipped (fetch returned None): "
                     f"{stub.get('docket_number', '?')}"
                 )
-                if errors > getattr(scraper, "MAX_ERRORS", 50):
-                    logger.error(f"[{scraper_key}] Too many errors ({errors}), stopping.")
-                    break
 
         except Exception as e:
             errors += 1
@@ -227,7 +223,13 @@ def run_with_persistence(
         f"File: {jsonl_path} ({file_size:.1f} MB)"
     )
 
-    return errors
+    # Return non-zero only if the run was aborted due to too many errors.
+    # A few scattered errors (transient network issues, corrupt PDFs) are
+    # normal and should not mark the entire run as failed.
+    max_err = getattr(scraper, "MAX_ERRORS", 50)
+    if errors > max_err:
+        return 1
+    return 0
 
 
 def main():
@@ -269,7 +271,7 @@ def main():
     for noisy in ("pdfminer", "pdfplumber", "urllib3", "chardet", "charset_normalizer"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    errors = run_with_persistence(
+    exit_code = run_with_persistence(
         scraper_key=args.scraper,
         since_date=args.since,
         max_decisions=args.max,
@@ -277,7 +279,7 @@ def main():
         state_dir=Path(args.state),
     )
 
-    if errors:
+    if exit_code:
         sys.exit(1)
 
 
