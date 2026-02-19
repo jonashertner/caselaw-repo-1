@@ -28,24 +28,23 @@ configs:
 
 # Swiss Case Law Dataset
 
-**1,000,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**1,040,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
-Full text, structured metadata, four languages. Updated daily.
+Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
+[![GitHub](https://img.shields.io/badge/GitHub-source-black)](https://github.com/jonashertner/caselaw-repo-1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/jonashertner/caselaw-repo-1/blob/main/LICENSE)
 
 ## Dataset Summary
 
-This dataset contains over one million Swiss court decisions scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). It covers:
+The largest open collection of Swiss court decisions — over 1 million decisions from 93 courts across all 26 cantons, scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are added every night.
 
-- **5 federal courts**: Federal Supreme Court (BGer), Federal Administrative Court (BVGer), Federal Criminal Court (BStGer), Federal Patent Court (BPatGer), plus BGE leading cases
-- **Federal regulatory bodies**: FINMA, WEKO, EDÖB, and more
-- **Cantonal courts** across all 26 cantons (93 courts total)
+- **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, and more
+- **93 cantonal courts** across all 26 cantons
 - **4 languages**: German, French, Italian, Romansh
-- **Temporal range**: 1880 to present
-
-Each decision includes the complete decision text alongside 34 structured metadata fields (court, canton, docket number, date, language, legal area, judges, citations, and more).
+- **Temporal range**: 1880–present
+- **34 structured fields** per decision: full text, docket number, date, court, canton, language, legal area, judges, citations, headnote, and more
 
 ## Quick Start
 
@@ -69,6 +68,36 @@ import pandas as pd
 df = pd.read_parquet("hf://datasets/voilaj/swiss-caselaw/data/bger.parquet")
 df_recent = df[df["decision_date"] >= "2024-01-01"]
 print(f"{len(df_recent)} decisions since 2024")
+
+# Filter by language
+df_french = df[df["language"] == "fr"]
+
+# Group by legal area
+df.groupby("legal_area").size().sort_values(ascending=False).head(10)
+```
+
+### Direct download
+
+Every court is a single Parquet file:
+
+```
+https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/data/bger.parquet
+https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/data/bvger.parquet
+https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/data/zh_gerichte.parquet
+```
+
+Full list: [huggingface.co/datasets/voilaj/swiss-caselaw/tree/main/data](https://huggingface.co/datasets/voilaj/swiss-caselaw/tree/main/data)
+
+### REST API (no setup)
+
+Query via the HuggingFace Datasets Server — no installation required:
+
+```bash
+# Get rows
+curl "https://datasets-server.huggingface.co/rows?dataset=voilaj/swiss-caselaw&config=default&split=train&offset=0&length=5"
+
+# Dataset info
+curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 ```
 
 ### Full-text search via MCP
@@ -85,7 +114,7 @@ claude mcp add swiss-caselaw -- /path/to/.venv/bin/python3 /path/to/mcp_server.p
 # Windows: use .venv\Scripts\python.exe instead
 ```
 
-On first search, the server downloads the Parquet files (~6.5 GB) from this dataset and builds a local SQLite FTS5 index (~56 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
+On first search, the server downloads the Parquet files (~7 GB) from this dataset and builds a local SQLite FTS5 index (~58 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
 
 Then ask: *"Find BGer decisions on tenant eviction from 2024"*
 
@@ -154,33 +183,33 @@ See the [Web UI guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) 
 
 | Court | Code | Decisions | Period |
 |-------|------|-----------|--------|
-| Federal Supreme Court (BGer) | `bger` | ~173,000 | 1996-present |
-| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007-present |
-| BGE Leading Cases | `bge` | ~45,000 | 1954-present |
-| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982-2016 |
-| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2004-present |
-| EDÖB (Data Protection) | `edoeb` | ~1,200 | 1994-present |
-| FINMA | `finma` | ~1,200 | 2008-2024 |
-| ECHR (Swiss cases) | `bge_egmr` | ~470 | - |
-| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012-present |
-| Competition Commission (WEKO) | `weko` | ~120 | 2009-present |
-| Sports Tribunal | `ta_sst` | ~50 | 2024-present |
-| Federal Council | `ch_bundesrat` | ~15 | 2012-present |
+| Federal Supreme Court (BGer) | `bger` | ~173,000 | 1996–present |
+| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present |
+| BGE Leading Cases | `bge` | ~45,000 | 1954–present |
+| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982–2016 |
+| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2004–present |
+| EDÖB (Data Protection) | `edoeb` | ~1,200 | 1994–present |
+| FINMA | `finma` | ~1,200 | 2008–2024 |
+| ECHR (Swiss cases) | `bge_egmr` | ~475 | 1974–present |
+| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present |
+| Competition Commission (WEKO) | `weko` | ~120 | 2009–present |
+| Sports Tribunal | `ta_sst` | ~50 | 2024–present |
+| Federal Council | `ch_bundesrat` | ~15 | 2012–present |
 
 ### Cantonal Courts (26 cantons, 93 courts)
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|
-| Vaud (VD) | 3 | ~155,000 | 1984-present |
-| Zurich (ZH) | 20 | ~126,000 | 1980-present |
-| Geneve (GE) | 1 | ~86,000 | 1993-present |
-| Ticino (TI) | 1 | ~58,000 | 1995-present |
-| St. Gallen (SG) | 7 | ~35,000 | 2001-present |
-| Graubunden (GR) | 1 | ~29,000 | 2002-present |
-| Basel-Landschaft (BL) | 1 | ~26,000 | 2000-present |
-| Bern (BE) | 6 | ~26,000 | 2002-present |
-| Aargau (AG) | 18 | ~21,000 | 1993-present |
-| Basel-Stadt (BS) | 3 | ~19,000 | 2001-present |
+| Vaud (VD) | 3 | ~155,000 | 1984–present |
+| Zürich (ZH) | 20 | ~126,000 | 1980–present |
+| Genève (GE) | 1 | ~116,000 | 1993–present |
+| Ticino (TI) | 1 | ~58,000 | 1995–present |
+| St. Gallen (SG) | 7 | ~35,000 | 2001–present |
+| Graubünden (GR) | 1 | ~29,000 | 2002–present |
+| Basel-Landschaft (BL) | 1 | ~26,000 | 2000–present |
+| Bern (BE) | 6 | ~26,000 | 2002–present |
+| Aargau (AG) | 18 | ~21,000 | 1993–present |
+| Basel-Stadt (BS) | 3 | ~19,000 | 2001–present |
 
 All 26 cantons covered: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 
@@ -188,7 +217,7 @@ Live coverage statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ## Data Sources
 
-1. **Official court websites** — direct scraping from federal and cantonal court platforms (43 scrapers)
+1. **Official court websites** — direct scraping from federal and cantonal court platforms (44 scrapers)
 2. **[entscheidsuche.ch](https://entscheidsuche.ch)** — public archive maintained by the Swiss legal community
 
 Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The most metadata-rich version is kept.

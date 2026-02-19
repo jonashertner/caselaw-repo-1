@@ -72,12 +72,12 @@ Use the full absolute path to the Python binary inside `.venv` so that the serve
 **Step 4.** Restart Claude Code and run your first search.
 
 On first use, the server automatically:
-1. Downloads all Parquet files (~6.5 GB) from [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) to `~/.swiss-caselaw/parquet/`
-2. Builds a local SQLite FTS5 full-text search index at `~/.swiss-caselaw/decisions.db` (~56 GB)
+1. Downloads all Parquet files (~7 GB) from [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) to `~/.swiss-caselaw/parquet/`
+2. Builds a local SQLite FTS5 full-text search index at `~/.swiss-caselaw/decisions.db` (~58 GB)
 
 This takes 30–60 minutes depending on your machine and connection. It only happens once — after that, searches run instantly against the local database.
 
-**Total disk usage:** ~63 GB in `~/.swiss-caselaw/` (macOS/Linux) or `%USERPROFILE%\.swiss-caselaw\` (Windows).
+**Total disk usage:** ~65 GB in `~/.swiss-caselaw/` (macOS/Linux) or `%USERPROFILE%\.swiss-caselaw\` (Windows).
 
 Example queries:
 
@@ -157,12 +157,12 @@ Any MCP-compatible client works — use the same `command` + `args` pattern abov
 
 ```
 ~/.swiss-caselaw/
-├── parquet/          # Downloaded Parquet files from HuggingFace (~6.5 GB)
+├── parquet/          # Downloaded Parquet files from HuggingFace (~7 GB)
 │   └── data/
 │       ├── bger.parquet
 │       ├── bvger.parquet
 │       └── ...       # 93 files, one per court
-└── decisions.db      # SQLite FTS5 search index (~56 GB)
+└── decisions.db      # SQLite FTS5 search index (~58 GB)
 ```
 
 All data stays on your machine. No API calls are made during search — the MCP server queries the local SQLite database directly.
@@ -173,7 +173,7 @@ All data stays on your machine. No API calls are made during search — the MCP 
 
 - **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 1M+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
 
-**Why ~56 GB.** The full text of 1M+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
+**Why ~58 GB.** The full text of 1M+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
 
 **Search pipeline.** When you search, the server:
 
@@ -352,7 +352,7 @@ Everything runs on your machine. No data leaves your computer (except LLM API ca
 | **Python 3.11+** | `python3 --version` (macOS/Linux) or `python --version` (Windows) | [python.org/downloads](https://www.python.org/downloads/) |
 | **Node.js 18+** | `node --version` | [nodejs.org](https://nodejs.org) — download the LTS version |
 | **An LLM provider** | *(see below)* | At least one cloud API key **or** a local model via Ollama |
-| **~65 GB free disk** | — | For the search index (downloaded on first run) |
+| **~65 GB free disk** | `df -h .` (macOS/Linux) | For the search index (downloaded on first run) |
 
 > **Windows users:** Install Python from [python.org](https://www.python.org/downloads/) and check "Add Python to PATH" during installation. Node.js installs npm automatically.
 
@@ -450,7 +450,7 @@ Open `.env` in a text editor and paste your API key on the appropriate line. For
 
 Open **http://localhost:5173** in your browser.
 
-**What to expect on first run:** The MCP server will automatically download the dataset (~6.5 GB) from HuggingFace and build a local search index (~56 GB). This takes **30–60 minutes** depending on your connection and disk speed. You'll see progress in the terminal. After this one-time setup, the app starts instantly.
+**What to expect on first run:** The MCP server will automatically download the dataset (~7 GB) from HuggingFace and build a local search index (~58 GB). This takes **30–60 minutes** depending on your connection and disk speed. You'll see progress in the terminal. After this one-time setup, the app starts instantly.
 
 ### Features
 
@@ -547,18 +547,18 @@ Full schema definition: [`models.py`](models.py)
 
 | Court | Code | Decisions | Period | Source |
 |-------|------|-----------|--------|--------|
-| Federal Supreme Court (BGer) | `bger` | ~173,000 | 2000–present | bger.ch |
-| BGE Leading Cases | `bge` | ~45,000 | 1954–present | bger.ch |
-| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present | bvger.ch |
-| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2005–present | bstger.weblaw.ch |
-| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982–2016 | bk.admin.ch |
-| ECHR (Swiss cases) | `bge_egmr` | ~470 | — | bger.ch |
-| FINMA | `finma` | ~1,200 | 2014–2024 | finma.ch |
-| EDÖB (Data Protection) | `edoeb` | ~1,200 | 2002–present | edoeb.admin.ch |
-| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch |
-| Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch |
-| Sports Tribunal | `ta_sst` | ~50 | 2024–present | sportstribunal.ch |
-| Federal Council | `ch_bundesrat` | ~15 | 2012–present | admin.ch |
+| Federal Supreme Court (BGer) | `bger` | ~173,000 | 1996–present | bger.ch + entscheidsuche |
+| BGE Leading Cases | `bge` | ~45,000 | 1954–present | bger.ch CLIR |
+| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present | bvger.ch + entscheidsuche |
+| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982–2016 | entscheidsuche |
+| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2004–present | bstger.weblaw.ch + entscheidsuche |
+| EDÖB (Data Protection) | `edoeb` | ~1,200 | 1994–present | edoeb.admin.ch + entscheidsuche |
+| FINMA | `finma` | ~1,200 | 2008–2024 | finma.ch + entscheidsuche |
+| ECHR (Swiss cases) | `bge_egmr` | ~475 | 1974–present | bger.ch CLIR |
+| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch + entscheidsuche |
+| Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch + entscheidsuche |
+| Sports Tribunal | `ta_sst` | ~50 | 2024–present | entscheidsuche |
+| Federal Council | `ch_bundesrat` | ~15 | 2012–present | entscheidsuche |
 
 ### Cantonal courts
 
@@ -568,14 +568,14 @@ Full schema definition: [`models.py`](models.py)
 |--------|--------|-----------|--------|
 | Vaud (VD) | 3 | ~155,000 | 1984–present |
 | Zürich (ZH) | 20 | ~126,000 | 1980–present |
-| Genève (GE) | 1 | ~86,000 | 1993–present |
+| Genève (GE) | 1 | ~116,000 | 1993–present |
 | Ticino (TI) | 1 | ~58,000 | 1995–present |
 | St. Gallen (SG) | 7 | ~35,000 | 2001–present |
 | Graubünden (GR) | 1 | ~29,000 | 2002–present |
-| Basel-Stadt (BS) | 3 | ~19,000 | 2001–present |
 | Basel-Landschaft (BL) | 1 | ~26,000 | 2000–present |
 | Bern (BE) | 6 | ~26,000 | 2002–present |
 | Aargau (AG) | 18 | ~21,000 | 1993–present |
+| Basel-Stadt (BS) | 3 | ~19,000 | 2001–present |
 
 All 26 cantons covered: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 
@@ -590,7 +590,7 @@ Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
                         │                  Daily Pipeline                  │
                         │                                                  │
 Court websites ────────►│  Scrapers ──► JSONL ──┬──► Parquet ──► HuggingFace
-  bger.ch               │  (43 scrapers,        │                          │
+  bger.ch               │  (44 scrapers,        │                          │
   bvger.ch              │   rate-limited,        └──► FTS5 DB ──► MCP Server
   cantonal portals      │   resumable)                                     │
   entscheidsuche.ch     │                                                  │
@@ -600,7 +600,7 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
 
 ### Step by step
 
-1. **Scrape** (01:00 UTC daily) — 43 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
+1. **Scrape** (01:00 UTC daily) — 44 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
 
 2. **Build search index** (04:00 UTC) — JSONL files are ingested into a SQLite FTS5 database for full-text search. On Mon–Sat, this runs in **incremental mode**: a byte-offset checkpoint tracks how far each JSONL file has been read, so only newly appended decisions are processed (typically < 1 minute). On Sundays, a **full rebuild** compacts the FTS5 index and resets the checkpoint (~3 hours). Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata. A quality enrichment step fills in missing titles, regestes, and content hashes.
 
@@ -648,7 +648,7 @@ python run_scraper.py zh_gerichte --max 10 -v
 
 Output is written to `output/decisions/{court}.jsonl` — one JSON object per line, one file per court. The scraper remembers what it has already fetched (state stored in `state/`), so you can run it repeatedly to get only new decisions.
 
-43 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://opencaselaw.ch) for per-court statistics.
+44 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://opencaselaw.ch) for per-court statistics.
 
 ### Build a local search database
 
@@ -663,7 +663,7 @@ python build_fts5.py --output output --incremental --no-optimize -v
 python build_fts5.py --output output --full-rebuild -v
 ```
 
-This reads JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. A full build of 1M decisions takes about 3 hours and produces a ~56 GB database. Incremental mode uses a checkpoint file (`output/.fts5_checkpoint.json`) to skip unchanged files and seek past already-processed bytes, completing in seconds when few new decisions exist.
+This reads JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. A full build of 1M decisions takes about 3 hours and produces a ~58 GB database. Incremental mode uses a checkpoint file (`output/.fts5_checkpoint.json`) to skip unchanged files and seek past already-processed bytes, completing in seconds when few new decisions exist.
 
 ### Export to Parquet
 
