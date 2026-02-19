@@ -38,6 +38,8 @@ SCRAPERS = {
     "bvger": ("scrapers.bvger", "BVGerScraper"),
     "bstger": ("scrapers.bstger", "BStGerScraper"),
     "bpatger": ("scrapers.bpatger", "BPatGerScraper"),
+    # Federal — administrative
+    "ch_bundesrat": ("scrapers.ch_bundesrat", "CHBundesratScraper"),
     # Federal — regulatory
     "finma": ("scrapers.finma", "FINMAScraper"),
     "weko": ("scrapers.weko", "WEKOScraper"),
