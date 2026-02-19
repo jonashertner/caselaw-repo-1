@@ -89,7 +89,7 @@ PARQUET_DIR = DATA_DIR / "parquet"
 
 MAX_SNIPPET_LEN = 500  # chars per snippet
 DEFAULT_LIMIT = 50
-MAX_LIMIT = 100
+MAX_LIMIT = 200
 MAX_FACT_DECISION_LIMIT = 20
 MAX_RERANK_CANDIDATES = 300
 MIN_CANDIDATE_POOL = 60
@@ -276,21 +276,32 @@ ACCELERATED_PROCEDURE_TERMS = {
     "accelere",
 }
 FEDLEX_LAW_CODE_BASE_URLS = {
+    # Constitution
+    "BV": "https://www.fedlex.admin.ch/eli/cc/1999/404",
+    "CST": "https://www.fedlex.admin.ch/eli/cc/1999/404",
+    "COST": "https://www.fedlex.admin.ch/eli/cc/1999/404",
     # Core private law
     "OR": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377",
+    "CO": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377",
     "ZGB": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233",
+    "CC": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233",
     # Criminal law
     "STGB": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799",
+    "CP": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799",
     "STPO": "https://www.fedlex.admin.ch/eli/cc/2010/267",
-    # Constitutional & public law
-    "BV": "https://www.fedlex.admin.ch/eli/cc/1999/404",
-    "BGG": "https://www.fedlex.admin.ch/eli/cc/2006/218",
-    "VWG": "https://www.fedlex.admin.ch/eli/cc/2006/352",
-    "VGG": "https://www.fedlex.admin.ch/eli/cc/2006/352",
-    "VWVG": "https://www.fedlex.admin.ch/eli/cc/1969/737_757_755",
-    # Administrative / procedural
+    "CPP": "https://www.fedlex.admin.ch/eli/cc/2010/267",
+    # Procedural law
     "ZPO": "https://www.fedlex.admin.ch/eli/cc/2010/262",
-    "SCHKG": "https://www.fedlex.admin.ch/eli/cc/11/529_488_529",
+    "CPC": "https://www.fedlex.admin.ch/eli/cc/2010/262",
+    "BGG": "https://www.fedlex.admin.ch/eli/cc/2006/218",
+    "LTF": "https://www.fedlex.admin.ch/eli/cc/2006/218",
+    "VWVG": "https://www.fedlex.admin.ch/eli/cc/1969/737_755_755",
+    "PA": "https://www.fedlex.admin.ch/eli/cc/1969/737_755_755",
+    "VGG": "https://www.fedlex.admin.ch/eli/cc/2006/2197",
+    "LTAF": "https://www.fedlex.admin.ch/eli/cc/2006/2197",
+    # Debt enforcement & bankruptcy
+    "SCHKG": "https://www.fedlex.admin.ch/eli/cc/11/529_545_529",
+    "LP": "https://www.fedlex.admin.ch/eli/cc/11/529_545_529",
     # Migration / asylum
     "ASYLG": "https://www.fedlex.admin.ch/eli/cc/1999/358",
     "AIG": "https://www.fedlex.admin.ch/eli/cc/2007/758",
@@ -298,21 +309,54 @@ FEDLEX_LAW_CODE_BASE_URLS = {
     # Social insurance
     "ATSG": "https://www.fedlex.admin.ch/eli/cc/2002/510",
     "AHVG": "https://www.fedlex.admin.ch/eli/cc/63/837_843_843",
+    "LAVS": "https://www.fedlex.admin.ch/eli/cc/63/837_843_843",
     "IVG": "https://www.fedlex.admin.ch/eli/cc/1959/827_857_845",
+    "LAI": "https://www.fedlex.admin.ch/eli/cc/1959/827_857_845",
     "BVG": "https://www.fedlex.admin.ch/eli/cc/1983/797_797_797",
+    "LPP": "https://www.fedlex.admin.ch/eli/cc/1983/797_797_797",
     "UVG": "https://www.fedlex.admin.ch/eli/cc/1982/1676_1676_1676",
+    "LAA": "https://www.fedlex.admin.ch/eli/cc/1982/1676_1676_1676",
     "KVG": "https://www.fedlex.admin.ch/eli/cc/1995/1328_1328_1328",
+    "AVIG": "https://www.fedlex.admin.ch/eli/cc/1982/2184_2184_2184",
+    "LACI": "https://www.fedlex.admin.ch/eli/cc/1982/2184_2184_2184",
+    # Tax
+    "DBG": "https://www.fedlex.admin.ch/eli/cc/1991/1184_1184_1184",
+    "LIFD": "https://www.fedlex.admin.ch/eli/cc/1991/1184_1184_1184",
+    "STHG": "https://www.fedlex.admin.ch/eli/cc/1991/1256_1256_1256",
+    "LHID": "https://www.fedlex.admin.ch/eli/cc/1991/1256_1256_1256",
+    "MWSTG": "https://www.fedlex.admin.ch/eli/cc/2009/5203",
+    "LTVA": "https://www.fedlex.admin.ch/eli/cc/2009/5203",
+    # Transport
+    "SVG": "https://www.fedlex.admin.ch/eli/cc/1959/679_705_685",
+    "LCR": "https://www.fedlex.admin.ch/eli/cc/1959/679_705_685",
+    # Employment
+    "ARG": "https://www.fedlex.admin.ch/eli/cc/1966/57_65_57",
+    "LTR": "https://www.fedlex.admin.ch/eli/cc/1966/57_65_57",
+    # Intellectual property
+    "URG": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798",
+    "LDA": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798",
+    "MSCHG": "https://www.fedlex.admin.ch/eli/cc/1993/274_274_274",
+    "LPM": "https://www.fedlex.admin.ch/eli/cc/1993/274_274_274",
+    # Environment & planning
+    "USG": "https://www.fedlex.admin.ch/eli/cc/1984/1122_1122_1122",
+    "LPE": "https://www.fedlex.admin.ch/eli/cc/1984/1122_1122_1122",
+    "RPG": "https://www.fedlex.admin.ch/eli/cc/1979/1573_1573_1573",
+    "LAT": "https://www.fedlex.admin.ch/eli/cc/1979/1573_1573_1573",
     # Regulatory
     "KG": "https://www.fedlex.admin.ch/eli/cc/1996/546_546_546",
+    "LCART": "https://www.fedlex.admin.ch/eli/cc/1996/546_546_546",
     "DSG": "https://www.fedlex.admin.ch/eli/cc/2022/491",
+    "LPD": "https://www.fedlex.admin.ch/eli/cc/2022/491",
     "BGO": "https://www.fedlex.admin.ch/eli/cc/2006/355",
     "BGOE": "https://www.fedlex.admin.ch/eli/cc/2006/355",
-    "USG": "https://www.fedlex.admin.ch/eli/cc/1984/1122_1122_1122",
-    "RPG": "https://www.fedlex.admin.ch/eli/cc/1979/1573_1573_1573",
-    # Employment
-    "ARG": "https://www.fedlex.admin.ch/eli/cc/1966/57_57_57",
+    # Financial markets
+    "BANKG": "https://www.fedlex.admin.ch/eli/cc/51/117_121_117",
+    "LB": "https://www.fedlex.admin.ch/eli/cc/51/117_121_117",
+    "FINMAG": "https://www.fedlex.admin.ch/eli/cc/2008/5207",
+    "LFINMA": "https://www.fedlex.admin.ch/eli/cc/2008/5207",
     # International
     "EMRK": "https://www.fedlex.admin.ch/eli/cc/1974/2151_2151_2151",
+    "CEDH": "https://www.fedlex.admin.ch/eli/cc/1974/2151_2151_2151",
 }
 COURT_QUERY_HINTS: dict[str, tuple[str, ...]] = {
     "bger": ("bger", "bundesgericht", "tribunal federal", "tribunale federale"),
@@ -489,6 +533,28 @@ def search_fts5(
     - Column filters: full_text:miete AND regeste:kündigung
     """
     conn = get_db()
+    try:
+        return _search_fts5_inner(
+            conn, query, court, canton, language,
+            date_from, date_to, chamber, decision_type, limit,
+        )
+    finally:
+        conn.close()
+
+
+def _search_fts5_inner(
+    conn: sqlite3.Connection,
+    query: str,
+    court: str | None,
+    canton: str | None,
+    language: str | None,
+    date_from: str | None,
+    date_to: str | None,
+    chamber: str | None,
+    decision_type: str | None,
+    limit: int,
+) -> list[dict]:
+    """Inner search logic. Caller is responsible for closing conn."""
     limit = max(1, min(limit, MAX_LIMIT))
 
     fts_query = query.strip()
@@ -572,113 +638,105 @@ def search_fts5(
         LIMIT ?
     """
 
-    try:
-        had_success = False
-        candidate_meta: dict[str, dict] = {}
-        strategies = _build_query_strategies(fts_query)
-        target_pool = _target_candidate_pool(
-            limit=limit,
-            is_docket=is_docket_query,
-            has_explicit_syntax=has_explicit_syntax,
-        )
-        query_has_expandable_terms = _query_has_expandable_terms(fts_query)
+    had_success = False
+    candidate_meta: dict[str, dict] = {}
+    strategies = _build_query_strategies(fts_query)
+    target_pool = _target_candidate_pool(
+        limit=limit,
+        is_docket=is_docket_query,
+        has_explicit_syntax=has_explicit_syntax,
+    )
+    query_has_expandable_terms = _query_has_expandable_terms(fts_query)
 
-        for idx, strategy in enumerate(strategies):
-            match_query = strategy["query"]
-            strategy_name = strategy.get("name", "")
-            strategy_weight = float(strategy.get("weight", 1.0))
-            expensive_strategy = strategy_name in {"nl_or", "nl_or_expanded"}
-            early_enough = max(limit * 2, 20)
-            if expensive_strategy and len(candidate_meta) >= early_enough:
-                break
-            if strategy_name == "nl_or_expanded" and not query_has_expandable_terms:
-                continue
-            if expensive_strategy and _query_has_numeric_terms(fts_query):
-                continue
-            try:
-                candidate_limit = min(max(target_pool, limit * 2), MAX_RERANK_CANDIDATES)
-                if strategy_name in {"regeste_focus", "title_focus"}:
-                    candidate_limit = min(
-                        MAX_RERANK_CANDIDATES,
-                        max(candidate_limit, target_pool * 4),
-                    )
-                rows = conn.execute(
-                    sql,
-                    [match_query] + params + [candidate_limit],
-                ).fetchall()
-                had_success = True
-            except sqlite3.OperationalError as e:
-                logger.debug(
-                    "FTS query failed, trying next strategy: %s (%s)",
-                    _truncate(match_query, 120),
-                    e,
+    for idx, strategy in enumerate(strategies):
+        match_query = strategy["query"]
+        strategy_name = strategy.get("name", "")
+        strategy_weight = float(strategy.get("weight", 1.0))
+        expensive_strategy = strategy_name in {"nl_or", "nl_or_expanded"}
+        early_enough = max(limit * 2, 20)
+        if expensive_strategy and len(candidate_meta) >= early_enough:
+            break
+        if strategy_name == "nl_or_expanded" and not query_has_expandable_terms:
+            continue
+        if expensive_strategy and _query_has_numeric_terms(fts_query):
+            continue
+        try:
+            candidate_limit = min(max(target_pool, limit * 2), MAX_RERANK_CANDIDATES)
+            if strategy_name in {"regeste_focus", "title_focus"}:
+                candidate_limit = min(
+                    MAX_RERANK_CANDIDATES,
+                    max(candidate_limit, target_pool * 4),
                 )
-                continue
-
-            for rank, row in enumerate(rows, start=1):
-                decision_id = row["decision_id"]
-                current = candidate_meta.get(decision_id)
-                if current is None:
-                    current = {
-                        "row": row,
-                        "best_bm25": _to_float(row["bm25_score"]),
-                        "rrf_score": 0.0,
-                        "strategy_hits": 0,
-                    }
-                    candidate_meta[decision_id] = current
-
-                bm25 = _to_float(row["bm25_score"])
-                if bm25 < float(current["best_bm25"]):
-                    current["best_bm25"] = bm25
-                    current["row"] = row
-
-                current["rrf_score"] = float(current["rrf_score"]) + (
-                    strategy_weight / (RRF_RANK_CONSTANT + rank)
-                )
-                current["strategy_hits"] = int(current["strategy_hits"]) + 1
-
-            if len(candidate_meta) >= target_pool:
-                # We already have enough candidates for reranking.
-                break
-            if idx == 0 and has_explicit_syntax and len(candidate_meta) >= limit:
-                # For explicit syntax, one successful strategy with enough top-k
-                # candidates is typically sufficient.
-                break
-
-        if candidate_meta:
-            rows_for_rerank = [m["row"] for m in candidate_meta.values()]
-            fusion_scores = {
-                did: {
-                    "rrf_score": float(meta["rrf_score"]),
-                    "strategy_hits": int(meta["strategy_hits"]),
-                }
-                for did, meta in candidate_meta.items()
-            }
-            reranked = _rerank_rows(
-                rows_for_rerank,
-                fts_query,
-                limit,
-                fusion_scores=fusion_scores,
+            rows = conn.execute(
+                sql,
+                [match_query] + params + [candidate_limit],
+            ).fetchall()
+            had_success = True
+        except sqlite3.OperationalError as e:
+            logger.debug(
+                "FTS query failed, trying next strategy: %s (%s)",
+                _truncate(match_query, 120),
+                e,
             )
-            if inline_docket_results:
-                return _merge_priority_results(
-                    primary=inline_docket_results,
-                    secondary=reranked,
-                    limit=limit,
-                )
-            return reranked
+            continue
 
-        # All strategies executed but none returned results.
-        # Return empty list (never propagate parser errors to user queries).
-        if had_success:
-            if inline_docket_results:
-                return inline_docket_results[:limit]
-            return []
+        for rank, row in enumerate(rows, start=1):
+            decision_id = row["decision_id"]
+            current = candidate_meta.get(decision_id)
+            if current is None:
+                current = {
+                    "row": row,
+                    "best_bm25": _to_float(row["bm25_score"]),
+                    "rrf_score": 0.0,
+                    "strategy_hits": 0,
+                }
+                candidate_meta[decision_id] = current
+
+            bm25 = _to_float(row["bm25_score"])
+            if bm25 < float(current["best_bm25"]):
+                current["best_bm25"] = bm25
+                current["row"] = row
+
+            current["rrf_score"] = float(current["rrf_score"]) + (
+                strategy_weight / (RRF_RANK_CONSTANT + rank)
+            )
+            current["strategy_hits"] = int(current["strategy_hits"]) + 1
+
+        if len(candidate_meta) >= target_pool:
+            break
+        if idx == 0 and has_explicit_syntax and len(candidate_meta) >= limit:
+            break
+
+    if candidate_meta:
+        rows_for_rerank = [m["row"] for m in candidate_meta.values()]
+        fusion_scores = {
+            did: {
+                "rrf_score": float(meta["rrf_score"]),
+                "strategy_hits": int(meta["strategy_hits"]),
+            }
+            for did, meta in candidate_meta.items()
+        }
+        reranked = _rerank_rows(
+            rows_for_rerank,
+            fts_query,
+            limit,
+            fusion_scores=fusion_scores,
+        )
+        if inline_docket_results:
+            return _merge_priority_results(
+                primary=inline_docket_results,
+                secondary=reranked,
+                limit=limit,
+            )
+        return reranked
+
+    if had_success:
         if inline_docket_results:
             return inline_docket_results[:limit]
         return []
-    finally:
-        conn.close()
+    if inline_docket_results:
+        return inline_docket_results[:limit]
+    return []
 
 
 def _search_by_docket(
@@ -1392,6 +1450,7 @@ def _rerank_rows(
             full_text,
             rank_terms=rank_terms,
             phrase=cleaned_phrase,
+            raw_query=raw_query,
             fallback=row["snippet"],
         )
         results.append({
@@ -1977,6 +2036,7 @@ def _select_best_passage_snippet(
     *,
     rank_terms: list[str],
     phrase: str,
+    raw_query: str = "",
     fallback: str | None,
 ) -> str | None:
     if not full_text:
@@ -2005,32 +2065,95 @@ def _select_best_passage_snippet(
     if best_text and best_score > 0:
         compact = re.sub(r"\s+", " ", best_text).strip()
         truncated = _truncate(compact, MAX_SNIPPET_LEN)
-        return _highlight_terms(truncated, rank_terms, phrase)
+        return _highlight_terms(truncated, rank_terms, phrase, raw_query)
     return fallback
 
 
+# Terms too common in Swiss legal text to be worth highlighting.
+# These appear in virtually every decision and create visual noise.
+_HIGHLIGHT_STOPWORDS = {
+    # Court names
+    "bge", "bger", "bvger", "bstger", "bpatger",
+    "bundesgericht", "tribunal", "obergericht", "gericht",
+    # Structural terms (appear in every decision)
+    "art", "abs", "lit", "ziff", "bgb", "erw", "vol",
+    "urteil", "beschluss", "verfügung", "entscheid", "sachverhalt",
+    "arrêt", "décision", "jugement", "sentenza", "fait",
+    # Common procedural
+    "beschwerde", "berufung", "rekurs", "klage", "recours",
+    "antrag", "begründung", "erwägung", "dispositiv",
+    # Roman numerals (BGE volume dividers, court divisions)
+    "i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x",
+    "xi", "xii", "xiii", "xiv", "xv",
+}
+
+
+def _is_trivial_highlight(term: str) -> bool:
+    """Return True if a term is too common/trivial to highlight."""
+    t = term.lower().strip("*")
+    if t in _HIGHLIGHT_STOPWORDS:
+        return True
+    # Bare years (1900-2099) are trivial — they appear in every date
+    if re.fullmatch(r"(?:19|20)\d{2}", t):
+        return True
+    # Pure numbers (docket fragments, page numbers) under 5 digits
+    if t.isdigit() and len(t) < 5:
+        return True
+    return False
+
+
 def _highlight_terms(
-    text: str | None, rank_terms: list[str], phrase: str
+    text: str | None,
+    rank_terms: list[str],
+    phrase: str,
+    raw_query: str = "",
 ) -> str | None:
-    """Wrap matched search terms in <mark> tags for frontend highlighting."""
+    """Wrap matched search terms in <mark> tags for frontend highlighting.
+
+    Tries full raw query phrase first, then individual terms for leftovers.
+    Skips trivial terms (BGE, years, etc.) that add visual noise.
+    """
     if not text:
         return text
-    terms: list[str] = []
-    if phrase:
-        terms.append(phrase)
-    terms.extend(t for t in rank_terms if t not in terms)
-    # Sort longest first so longer phrases match before their sub-tokens
-    terms.sort(key=len, reverse=True)
-    for term in terms:
-        escaped = re.escape(term)
-        # Word-boundary match, case-insensitive
-        text = re.sub(
-            rf"(?<![<\w/])(\b{escaped}\b)(?![^<]*>)",
-            r"<mark>\1</mark>",
-            text,
-            flags=re.IGNORECASE,
-        )
+
+    # Build ordered list: raw query phrase (longest) first, then individual terms
+    candidates: list[str] = []
+
+    # Try the full raw query as a phrase (strip FTS operators)
+    if raw_query:
+        clean_raw = re.sub(r"\b(AND|OR|NOT)\b", " ", raw_query, flags=re.IGNORECASE)
+        clean_raw = clean_raw.strip(' "')
+        clean_raw = re.sub(r"\s+", " ", clean_raw).strip()
+        if clean_raw and len(clean_raw.split()) > 1:
+            candidates.append(clean_raw)
+
+    # Then individual rank_terms, skipping trivial ones
+    for t in rank_terms:
+        if t not in candidates and not _is_trivial_highlight(t):
+            candidates.append(t)
+
+    for term in candidates:
+        # Allow flexible whitespace/punctuation between words for multi-word phrases
+        if len(term.split()) > 1:
+            words = term.split()
+            pattern = r"\b" + r"[\s,;:.·/\-]+".join(re.escape(w) for w in words) + r"\b"
+        else:
+            pattern = rf"\b{re.escape(term)}\b"
+        # Apply highlighting only to text outside existing <mark> tags
+        text = _apply_highlight_outside_marks(text, pattern)
     return text
+
+
+def _apply_highlight_outside_marks(text: str, pattern: str) -> str:
+    """Apply a highlight pattern only to text segments not already inside <mark>."""
+    parts = re.split(r"(<mark>.*?</mark>)", text, flags=re.IGNORECASE)
+    for i, part in enumerate(parts):
+        if part.startswith("<mark>"):
+            continue  # already highlighted
+        parts[i] = re.sub(
+            rf"({pattern})", r"<mark>\1</mark>", part, flags=re.IGNORECASE
+        )
+    return "".join(parts)
 
 
 def _split_passages(full_text: str) -> list[str]:
@@ -2065,16 +2188,18 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     ).fetchone()
 
     if not row:
-        # Try searching by docket number
+        # Try searching by docket number — prefer newest decision
         row = conn.execute(
-            "SELECT * FROM decisions WHERE docket_number = ? LIMIT 1",
+            "SELECT * FROM decisions WHERE docket_number = ? "
+            "ORDER BY decision_date DESC LIMIT 1",
             (decision_id,),
         ).fetchone()
 
     if not row:
-        # Try partial match on docket
+        # Try partial match on docket — prefer newest decision
         row = conn.execute(
-            "SELECT * FROM decisions WHERE docket_number LIKE ? LIMIT 1",
+            "SELECT * FROM decisions WHERE docket_number LIKE ? "
+            "ORDER BY decision_date DESC LIMIT 1",
             (f"%{decision_id}%",),
         ).fetchone()
 
@@ -3210,11 +3335,12 @@ def _build_db_from_parquet(reporter=None) -> dict:
     if reporter is None:
         reporter = _NullReporter()
 
-    # Remove old DB
-    if DB_PATH.exists():
-        DB_PATH.unlink()
+    # Build into a temp file, then atomically rename on success
+    tmp_path = DB_PATH.with_suffix(".tmp")
+    if tmp_path.exists():
+        tmp_path.unlink()
 
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = sqlite3.connect(str(tmp_path))
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
 
@@ -3277,6 +3403,9 @@ def _build_db_from_parquet(reporter=None) -> dict:
     conn.commit()
     conn.close()
 
+    # Atomic replace: os.replace is atomic on POSIX (no gap where DB is missing)
+    os.replace(str(tmp_path), str(DB_PATH))
+
     logger.info(
         f"Built database: {imported} imported, {duplicates} duplicates, "
         f"{len(skipped_files)} skipped files → {DB_PATH}"
@@ -3306,10 +3435,10 @@ def _update_with_progress(reporter) -> str:
     reporter.report(0, 1, "Building SQLite FTS5 database...")
     result = _build_db_from_parquet(reporter)
 
-    # 4. Sanity check
+    # 4. Sanity check — raise so background wrapper sets status="failed"
     MIN_EXPECTED_DECISIONS = 500_000
     if result["imported"] < MIN_EXPECTED_DECISIONS:
-        return (
+        raise RuntimeError(
             f"Database build FAILED sanity check: only {result['imported']} decisions "
             f"imported (minimum {MIN_EXPECTED_DECISIONS}). "
             f"Skipped files: {result['skipped_files']}, duplicates: {result['duplicates']}. "
@@ -3610,12 +3739,24 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             if not results:
                 text = "No decisions found matching your query."
             else:
+                # Re-highlight snippets with phrase-aware highlighter
+                raw_q = arguments.get("query", "")
+                _rank = _extract_rank_terms(raw_q)
+                _phrase = _normalize_text_for_match(_clean_for_phrase(raw_q))
+                for r in results:
+                    if r.get("snippet"):
+                        # Strip SQLite's individual-word marks, re-apply with phrase support
+                        plain = r["snippet"].replace("<mark>", "").replace("</mark>", "")
+                        r["snippet"] = _highlight_terms(plain, _rank, _phrase, raw_q)
+
                 text = f"Found {len(results)} decisions:\n\n"
                 for i, r in enumerate(results, 1):
                     text += (
                         f"**{i}. {r['docket_number']}** ({r['decision_date']}) "
                         f"[{r['court']}] [{r['language']}]\n"
                     )
+                    if r.get("decision_id"):
+                        text += f"   ID: {r['decision_id']}\n"
                     if r.get("title"):
                         text += f"   Title: {r['title']}\n"
                     if r.get("regeste"):

@@ -620,10 +620,9 @@ claude mcp add swiss-caselaw \
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           Web UI
         </h3>
-        <p data-t="access_webui_desc">Local chat interface — ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, or Gemini.</p>
+        <p data-t="access_webui_desc">Local chat interface — ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).</p>
         <code>git clone github.com/jonashertner/caselaw-repo-1
 cd caselaw-repo-1
-cp .env.example .env  # add API key
 ./scripts/run_web_local.sh</code>
       </div>
     </div>
@@ -663,7 +662,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
     quick_search:'Volltextsuche', quick_search_desc:'MCP-Server f\u00fcr Claude und andere AI-Tools',
     quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
-    access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI oder Gemini.',
+    access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI, Gemini oder lokalen Modellen via Ollama (kein API-Schl\u00fcssel n\u00f6tig).',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_stale:'Veraltet', health_errors:'Fehler',
   },
   fr: {
@@ -686,7 +685,7 @@ const I18N = {
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
     quick_search:'Recherche', quick_search_desc:'Serveur MCP pour Claude et autres outils IA',
     quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
-    access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI ou Gemini.',
+    access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI, Gemini ou des mod\u00e8les locaux via Ollama (sans cl\u00e9 API).',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs',
   },
   it: {
@@ -709,7 +708,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
     quick_search:'Ricerca', quick_search_desc:'Server MCP per Claude e altri strumenti IA',
     quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
-    access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI o Gemini.',
+    access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI, Gemini o modelli locali via Ollama (senza chiave API).',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_stale:'Obsoleto', health_errors:'errori',
   },
   rm: {
@@ -732,7 +731,7 @@ const I18N = {
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
     quick_search:'Tschertga', quick_search_desc:'Server MCP per Claude ed auters utensils IA',
     quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
-    access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI u Gemini.',
+    access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI, Gemini u models locals via Ollama (senza clav API).',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_stale:'Vegl', health_errors:'errurs',
   },
   en: {
@@ -755,7 +754,7 @@ const I18N = {
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
     quick_search:'Search', quick_search_desc:'MCP server for Claude and other AI tools',
     quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
-    access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, or Gemini.',
+    access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_stale:'Stale', health_errors:'errors',
   },
 };

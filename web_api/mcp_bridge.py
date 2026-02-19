@@ -29,6 +29,7 @@ class MCPBridge:
         self._request_id = 0
         self._lock = asyncio.Lock()
         self._initialized = False
+        self._stderr_task: asyncio.Task | None = None
 
     async def start(self) -> None:
         if self._proc is not None and self._proc.returncode is None:
@@ -40,6 +41,7 @@ class MCPBridge:
             stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
+            limit=4 * 1024 * 1024,  # 4MB — search results can exceed default 64KB
         )
         self._initialized = False
 
@@ -54,7 +56,26 @@ class MCPBridge:
         await self._send_notification("notifications/initialized", {})
         self._initialized = True
 
+        # Drain stderr in background to prevent pipe buffer deadlock
+        self._stderr_task = asyncio.create_task(self._drain_stderr())
+
+    async def _drain_stderr(self) -> None:
+        """Read stderr continuously to prevent pipe buffer deadlock."""
+        try:
+            while self._proc and self._proc.stderr:
+                line = await self._proc.stderr.readline()
+                if not line:
+                    break
+                logger.debug("MCP stderr: %s", line.decode(errors="replace").rstrip())
+        except asyncio.CancelledError:
+            pass
+        except Exception:
+            pass
+
     async def stop(self) -> None:
+        if self._stderr_task:
+            self._stderr_task.cancel()
+            self._stderr_task = None
         if self._proc and self._proc.returncode is None:
             self._proc.stdin.close()
             try:

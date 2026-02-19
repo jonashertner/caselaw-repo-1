@@ -348,7 +348,9 @@ Everything runs on your machine. No data leaves your computer (except LLM API ca
 
 - **Python 3.11+** — check with `python3 --version`
 - **Node.js 18+** and **npm** — check with `node --version` and `npm --version`
-- **An LLM API key** — at least one of the three providers below
+- **An LLM provider** — at least one cloud API key *or* a local model via Ollama
+
+#### Cloud providers
 
 | Provider | Env variable | Where to get a key | Free tier? |
 |----------|-------------|---------------------|------------|
@@ -357,6 +359,15 @@ Everything runs on your machine. No data leaves your computer (except LLM API ca
 | Google Gemini | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com/apikey) | Free tier available |
 
 > **Important:** A Claude Desktop or Claude Pro *subscription* does NOT include an API key. You need a separate developer account at [console.anthropic.com](https://console.anthropic.com/).
+
+#### Local models (no API key needed)
+
+| Model | Ollama command | Size | Notes |
+|-------|---------------|------|-------|
+| Qwen 2.5 (14B) | `ollama pull qwen2.5:14b` | ~9 GB | Best tool-calling at this size |
+| Llama 3.3 (70B) | `ollama pull llama3.3:70b` | ~40 GB | Strongest open-weight model, needs ~48 GB RAM |
+
+Install [Ollama](https://ollama.com), run `ollama serve`, pull a model, and start the app. The UI auto-detects Ollama and shows local models as available.
 
 ### Step-by-step setup
 
@@ -378,9 +389,11 @@ pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic
 ```bash
 pip install anthropic        # for Claude
 # and/or:
-pip install openai           # for OpenAI / GPT-4o
+pip install openai           # for OpenAI / GPT-4o / local models via Ollama
 pip install google-genai     # for Google Gemini
 ```
+
+> **Note:** The `openai` package is also used for local Ollama models (Ollama exposes an OpenAI-compatible API). If you only want to use local models, `pip install openai` is sufficient — no cloud API key required.
 
 **4. Install the frontend:**
 
@@ -410,12 +423,13 @@ On first use, the MCP server automatically downloads the dataset (~6.5 GB) and b
 
 ### Features
 
-- **Multi-provider**: Switch between Claude, OpenAI, and Gemini mid-conversation
+- **5 models**: Claude, OpenAI, Gemini (cloud) + Qwen 2.5 and Llama 3.3 via Ollama (local)
+- **Local-first option**: Run entirely on your machine with Ollama — no cloud API keys needed
 - **Streaming**: Responses appear token-by-token in real time
 - **Tool-augmented chat**: The AI calls search, get_decision, list_courts, etc. automatically
 - **Decision cards**: Structured results with court, date, language, and text snippets
 - **Filters**: Narrow results by court, canton, language, and date range
-- **In-app settings**: Configure API keys from the UI (no `.env` editing required after first setup)
+- **In-app settings**: Configure API keys and Ollama connection from the UI
 
 ### Troubleshooting
 
@@ -423,7 +437,7 @@ On first use, the MCP server automatically downloads the dataset (~6.5 GB) and b
 |---------|----------|
 | `npm: command not found` | Install Node.js from [nodejs.org](https://nodejs.org) |
 | `ModuleNotFoundError: No module named 'fastapi'` | Run `pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic` |
-| "No API keys configured" banner | Click Settings in the UI and paste your key, or edit `.env` |
+| "No provider configured" banner | Click Settings and paste an API key, or start Ollama (`ollama serve`) for local models |
 | "Database not found" error | The database is built on first start — wait for the initial download to complete |
 | Port already in use | Edit `BACKEND_PORT` or `FRONTEND_PORT` in `.env` |
 

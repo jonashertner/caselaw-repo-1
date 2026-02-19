@@ -21,11 +21,13 @@ class GeminiProvider(ProviderBase):
     ) -> ProviderResponse:
         from google.genai import types
 
-        contents = self._convert_messages(messages)
+        system_text, contents = self._convert_messages(messages)
         kwargs: dict = {"model": self.model, "contents": contents}
 
-        if tools:
-            kwargs["config"] = self._build_tool_config(tools, types)
+        config = self._build_tool_config(tools, types) if tools else types.GenerateContentConfig()
+        if system_text:
+            config.system_instruction = system_text
+        kwargs["config"] = config
 
         resp = await self.client.aio.models.generate_content(**kwargs)
 
@@ -56,14 +58,16 @@ class GeminiProvider(ProviderBase):
     ) -> AsyncIterator[ProviderResponse]:
         from google.genai import types
 
-        contents = self._convert_messages(messages)
+        system_text, contents = self._convert_messages(messages)
         kwargs: dict = {"model": self.model, "contents": contents}
 
-        if tools:
-            kwargs["config"] = self._build_tool_config(tools, types)
+        config = self._build_tool_config(tools, types) if tools else types.GenerateContentConfig()
+        if system_text:
+            config.system_instruction = system_text
+        kwargs["config"] = config
 
         tool_calls = []
-        async for chunk in self.client.aio.models.generate_content_stream(**kwargs):
+        async for chunk in await self.client.aio.models.generate_content_stream(**kwargs):
             for part in chunk.candidates[0].content.parts:
                 if part.text:
                     yield ProviderResponse(content=part.text)
@@ -109,20 +113,21 @@ class GeminiProvider(ProviderBase):
             tools=[types.Tool(function_declarations=declarations)],
         )
 
-    def _convert_messages(self, messages: list[ProviderMessage]) -> list:
+    def _convert_messages(self, messages: list[ProviderMessage]) -> tuple[str | None, list]:
+        """Convert messages, extracting system prompt separately.
+
+        Returns (system_text, contents) where system_text goes into
+        GenerateContentConfig.system_instruction for native handling.
+        """
         from google.genai import types
 
+        system_text = None
         contents = []
         for m in messages:
             if m.role == "system":
-                contents.append(types.Content(
-                    role="user",
-                    parts=[types.Part.from_text(text=f"[System instruction]: {m.content}")],
-                ))
-                contents.append(types.Content(
-                    role="model",
-                    parts=[types.Part.from_text(text="Understood.")],
-                ))
+                # Collect system messages for native system_instruction
+                system_text = (system_text or "") + m.content + "\n"
+                continue
             elif m.role == "user":
                 contents.append(types.Content(
                     role="user",
@@ -147,4 +152,4 @@ class GeminiProvider(ProviderBase):
                         response={"result": m.content},
                     )],
                 ))
-        return contents
+        return system_text, contents

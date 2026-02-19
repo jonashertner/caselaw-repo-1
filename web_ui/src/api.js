@@ -31,10 +31,31 @@ export async function removeApiKey(provider) {
   return resp.json();
 }
 
+export async function getOllamaStatus() {
+  const resp = await fetch(`${API_BASE}/settings/ollama`);
+  return resp.json();
+}
+
+export async function setOllamaUrl(baseUrl) {
+  const resp = await fetch(`${API_BASE}/settings/ollama`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ base_url: baseUrl }),
+  });
+  return resp.json();
+}
+
 export async function searchDecisions({ query, limit = 20 }) {
   const params = new URLSearchParams({ query, limit: String(limit) });
   const resp = await fetch(`${API_BASE}/search?${params}`);
   if (!resp.ok) throw new Error(`Search failed: ${resp.status}`);
+  return resp.json();
+}
+
+export async function fetchStatuteText(url, article) {
+  const params = new URLSearchParams({ url, article });
+  const resp = await fetch(`${API_BASE}/statute?${params}`);
+  if (!resp.ok) throw new Error(`Statute fetch failed: ${resp.status}`);
   return resp.json();
 }
 

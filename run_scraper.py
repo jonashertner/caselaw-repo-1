@@ -108,7 +108,7 @@ def run_with_persistence(
 ) -> int:
     """Run scraper and write each decision to JSONL incrementally.
 
-    Returns the number of errors encountered.
+    Returns the total number of failures (errors + excessive None returns).
     """
 
     if scraper_key not in SCRAPERS:
@@ -155,6 +155,7 @@ def run_with_persistence(
     new_count = 0
     skips = 0
     errors = 0
+    none_count = 0
     start = time.time()
 
     logger.info(
@@ -194,11 +195,19 @@ def run_with_persistence(
                     f"({decision.decision_date})"
                 )
             else:
-                skips += 1
+                none_count += 1
                 logger.warning(
-                    f"[{scraper_key}] Skipped (fetch returned None): "
+                    f"[{scraper_key}] fetch_decision returned None ({none_count}): "
                     f"{stub.get('docket_number', '?')}"
                 )
+                # Consecutive Nones beyond a threshold suggest a systemic issue
+                max_none = getattr(scraper, "MAX_NONE_RETURNS", 200)
+                if none_count >= max_none:
+                    logger.error(
+                        f"[{scraper_key}] Too many None returns ({none_count}), "
+                        f"possible portal issue — stopping."
+                    )
+                    break
 
         except Exception as e:
             errors += 1
@@ -206,7 +215,7 @@ def run_with_persistence(
                 f"[{scraper_key}] Error scraping {stub.get('docket_number', '?')}: {e}",
                 exc_info=True,
             )
-            if errors > getattr(scraper, "MAX_ERRORS", 50):
+            if errors >= getattr(scraper, "MAX_ERRORS", 50):
                 logger.error(f"[{scraper_key}] Too many errors ({errors}), stopping.")
                 break
 
@@ -218,18 +227,19 @@ def run_with_persistence(
         jsonl_path.touch()
 
     logger.info(
-        f"[{scraper_key}] Done. New: {new_count}, Skips: {skips}, Errors: {errors}, "
+        f"[{scraper_key}] Done. New: {new_count}, Skips: {skips}, "
+        f"NoneReturns: {none_count}, Errors: {errors}, "
         f"Total written: {len(written_ids)}, Time: {elapsed / 60:.1f} min, "
         f"File: {jsonl_path} ({file_size:.1f} MB)"
     )
 
-    # Return non-zero only if the run was aborted due to too many errors.
-    # A few scattered errors (transient network issues, corrupt PDFs) are
-    # normal and should not mark the entire run as failed.
-    max_err = getattr(scraper, "MAX_ERRORS", 50)
-    if errors > max_err:
-        return 1
-    return 0
+    # Return total failure count (errors + None returns that breached threshold).
+    # Callers can check > 0 for failure or use the actual count.
+    max_none = getattr(scraper, "MAX_NONE_RETURNS", 200)
+    failure_count = errors
+    if none_count >= max_none:
+        failure_count += none_count
+    return failure_count
 
 
 def main():

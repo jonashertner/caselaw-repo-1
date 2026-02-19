@@ -1,4 +1,5 @@
 import React from 'react';
+import { useI18n } from '../i18n';
 
 const DEFAULTS = {
   court: '', canton: '', language: '', date_from: '', date_to: '',
@@ -6,6 +7,8 @@ const DEFAULTS = {
 };
 
 export default function Filters({ filters, onChange }) {
+  const { t } = useI18n();
+
   const update = (key, value) => {
     onChange({ ...filters, [key]: value });
   };
@@ -18,7 +21,7 @@ export default function Filters({ filters, onChange }) {
     <div className="filters-panel">
       <div className="filter-row">
         <label>
-          Court
+          {t('filter.court')}
           <input
             type="text"
             value={filters.court}
@@ -27,7 +30,7 @@ export default function Filters({ filters, onChange }) {
           />
         </label>
         <label>
-          Canton
+          {t('filter.canton')}
           <input
             type="text"
             value={filters.canton}
@@ -36,9 +39,9 @@ export default function Filters({ filters, onChange }) {
           />
         </label>
         <label>
-          Language
+          {t('filter.language')}
           <select value={filters.language} onChange={e => update('language', e.target.value)}>
-            <option value="">All</option>
+            <option value="">{t('filter.all')}</option>
             <option value="de">Deutsch</option>
             <option value="fr">Fran&ccedil;ais</option>
             <option value="it">Italiano</option>
@@ -48,7 +51,7 @@ export default function Filters({ filters, onChange }) {
       </div>
       <div className="filter-row">
         <label>
-          From
+          {t('filter.from')}
           <input
             type="date"
             value={filters.date_from}
@@ -56,7 +59,7 @@ export default function Filters({ filters, onChange }) {
           />
         </label>
         <label>
-          To
+          {t('filter.to')}
           <input
             type="date"
             value={filters.date_to}
@@ -69,7 +72,7 @@ export default function Filters({ filters, onChange }) {
             checked={filters.collapse_duplicates}
             onChange={e => update('collapse_duplicates', e.target.checked)}
           />
-          Collapse duplicates
+          {t('filter.collapse')}
         </label>
         <label className="toggle-label">
           <input
@@ -77,7 +80,7 @@ export default function Filters({ filters, onChange }) {
             checked={filters.multilingual}
             onChange={e => update('multilingual', e.target.checked)}
           />
-          Multilingual
+          {t('filter.multilingual')}
         </label>
         {!isDefault && (
           <button
@@ -85,7 +88,7 @@ export default function Filters({ filters, onChange }) {
             className="btn-secondary"
             onClick={() => onChange({ ...DEFAULTS })}
           >
-            Reset
+            {t('filter.reset')}
           </button>
         )}
       </div>

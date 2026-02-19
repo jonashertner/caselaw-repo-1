@@ -1,5 +1,7 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { streamChat, checkHealth, searchDecisions } from './api';
+import { useI18n, LANGS } from './i18n';
+import { exportMarkdown, exportDocx, exportPdf } from './export';
 import ProviderSelector from './components/ProviderSelector';
 import ChatPane from './components/ChatPane';
 import ResultsPane from './components/ResultsPane';
@@ -15,7 +17,10 @@ function getInitialTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
+const FILTER_DEFAULTS = { collapse_duplicates: true, multilingual: true };
+
 export default function App() {
+  const { lang, setLang, t } = useI18n();
   const [provider, setProvider] = useState('claude');
   const [messages, setMessages] = useState([]);
   const [decisions, setDecisions] = useState([]);
@@ -33,15 +38,22 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [highlightId, setHighlightId] = useState(null);
   const [tokenUsage, setTokenUsage] = useState({ input: 0, output: 0 });
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const exportMenuRef = useRef(null);
   const abortRef = useRef(null);
 
-  // Apply theme to document
+  const filtersActive = useMemo(() => {
+    return Object.entries(filters).some(([k, v]) => {
+      if (k in FILTER_DEFAULTS) return v !== FILTER_DEFAULTS[k];
+      return v !== '';
+    });
+  }, [filters]);
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  // Fetch provider status on mount
   const refreshProviderStatus = useCallback(() => {
     checkHealth()
       .then(data => {
@@ -56,18 +68,17 @@ export default function App() {
     refreshProviderStatus();
   }, [refreshProviderStatus]);
 
-  // Auto-select first configured provider when status loads/changes
   useEffect(() => {
     if (!providerStatus) return;
     const current = providerStatus[provider];
-    if (current?.configured && current?.sdk_installed) return; // current is fine
+    if (current?.configured && current?.sdk_installed) return;
     const ready = Object.entries(providerStatus).find(
       ([, s]) => s.configured && s.sdk_installed
     );
     if (ready) setProvider(ready[0]);
   }, [providerStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
+  const toggleTheme = () => setTheme(t2 => t2 === 'light' ? 'dark' : 'light');
 
   const noProvidersConfigured = providerStatus &&
     Object.values(providerStatus).every(s => !s.configured);
@@ -85,14 +96,12 @@ export default function App() {
     let assistantContent = '';
     const assistantId = nextMsgId();
 
-    // Only send filters when user has set something beyond defaults
-    const defaults = { collapse_duplicates: true, multilingual: true };
     const cleanFilters = {};
     for (const [k, v] of Object.entries(filters)) {
       if (v !== '' && v !== null) cleanFilters[k] = v;
     }
     const hasUserFilters = Object.entries(cleanFilters).some(
-      ([k, v]) => !(k in defaults && defaults[k] === v)
+      ([k, v]) => !(k in FILTER_DEFAULTS && FILTER_DEFAULTS[k] === v)
     );
 
     try {
@@ -125,24 +134,18 @@ export default function App() {
 
             case 'tool_end':
               setToolTraces(prev => [...prev, chunk.tool_trace]);
-              setMessages(prev => {
-                // Remove the "Calling..." message
-                return prev.filter(m => !(m.role === 'tool' && m.type === 'start'));
-              });
+              setMessages(prev => prev.filter(m => !(m.role === 'tool' && m.type === 'start')));
               break;
 
             case 'decisions':
               if (chunk.decisions) {
-                // Deduplicate by docket_number, keeping latest
                 setDecisions(prev => {
                   const merged = [...prev, ...chunk.decisions];
                   const seen = new Map();
-                  // Iterate in reverse so later entries win
                   for (let i = merged.length - 1; i >= 0; i--) {
-                    const key = merged[i].docket_number || `_idx_${i}`;
+                    const key = merged[i].decision_id || merged[i].docket_number || `_idx_${i}`;
                     if (!seen.has(key)) seen.set(key, merged[i]);
                   }
-                  // Reverse to restore original order
                   return [...seen.values()].reverse();
                 });
               }
@@ -184,36 +187,26 @@ export default function App() {
       const merged = [...prev, ...newDecs];
       const seen = new Map();
       for (let i = merged.length - 1; i >= 0; i--) {
-        const key = merged[i].docket_number || `_idx_${i}`;
+        const key = merged[i].decision_id || merged[i].docket_number || `_idx_${i}`;
         if (!seen.has(key)) seen.set(key, merged[i]);
       }
       return [...seen.values()].reverse();
     });
   }, []);
 
-  const handleSearchArticle = useCallback(async (articleRef) => {
-    try {
-      const data = await searchDecisions({ query: articleRef });
-      if (data.decisions?.length) mergeDecisions(data.decisions);
-    } catch {
-      // ignore — article search is best-effort
-    }
-  }, [mergeDecisions]);
-
   const handleCitationClick = useCallback(async (docket) => {
-    // If already in results, just highlight
-    const found = decisions.find(d => d.docket_number === docket);
+    const found = decisions.find(d =>
+      d.docket_number === docket || d.decision_id === docket
+    );
     if (found) {
-      setHighlightId(docket);
+      setHighlightId(found.decision_id || found.docket_number);
       return;
     }
-    // Otherwise fetch and highlight
     try {
       const data = await searchDecisions({ query: `"${docket}"` });
       if (data.decisions?.length) {
         mergeDecisions(data.decisions);
-        // Use the docket from the first result or the requested docket
-        setHighlightId(data.decisions[0]?.docket_number || docket);
+        setHighlightId(data.decisions[0]?.decision_id || data.decisions[0]?.docket_number || docket);
       }
     } catch (e) {
       // ignore
@@ -230,33 +223,120 @@ export default function App() {
     setTokenUsage({ input: 0, output: 0 });
   };
 
+  const handleExport = useCallback((format) => {
+    setShowExportMenu(false);
+    if (messages.length === 0) return;
+    if (format === 'md') exportMarkdown(messages, t);
+    else if (format === 'docx') exportDocx(messages, t);
+    else if (format === 'pdf') exportPdf(messages, t);
+  }, [messages, t]);
+
+  // Close export menu on outside click
+  useEffect(() => {
+    if (!showExportMenu) return;
+    const handler = (e) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target)) {
+        setShowExportMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showExportMenu]);
+
+  const totalTraceMs = useMemo(
+    () => toolTraces.reduce((sum, t2) => sum + (t2.latency_ms || 0), 0),
+    [toolTraces]
+  );
+
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Swiss Case Law Search</h1>
-        <div className="header-controls">
+        <div className="header-brand">
+          <div className="header-brand-title">
+            <span className="header-brand-icon">{'\u2696'}</span>
+            <span>Caselaw</span>
+          </div>
+          <div className="header-brand-subtitle">{t('header.subtitle')}</div>
+        </div>
+
+        <div className="header-center">
           <ProviderSelector
             value={provider}
             onChange={setProvider}
             disabled={isStreaming}
             providerStatus={providerStatus}
           />
-          <button onClick={() => setShowFilters(f => !f)} className="btn-secondary">
-            Filters {showFilters ? '\u25B2' : '\u25BC'}
+        </div>
+
+        <div className="header-actions">
+          <button className="icon-btn" onClick={() => setShowFilters(f => !f)} title={t('btn.filters')}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M2 4h12M4 8h8M6 12h4"/>
+            </svg>
+            {filtersActive && <span className="icon-btn-badge" />}
           </button>
-          <button onClick={newSession} className="btn-secondary">New Session</button>
-          <button
-            onClick={() => setShowSettings(true)}
-            className="btn-secondary btn-settings"
-            title="API Key Settings"
-          >
-            Settings
+          <button className="icon-btn" onClick={newSession} title={t('btn.new')}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M8 3v10M3 8h10"/>
+            </svg>
           </button>
-          <button onClick={toggleTheme} className="btn-secondary btn-theme" title="Toggle dark mode">
-            {theme === 'light' ? '\u263E' : '\u2600'}
+          <div className="export-dropdown" ref={exportMenuRef}>
+            <button
+              className="icon-btn"
+              onClick={() => setShowExportMenu(v => !v)}
+              title={t('btn.export')}
+              disabled={messages.length === 0}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+            {showExportMenu && (
+              <div className="export-menu">
+                <button onClick={() => handleExport('md')}>Markdown (.md)</button>
+                <button onClick={() => handleExport('docx')}>Word (.docx)</button>
+                <button onClick={() => handleExport('pdf')}>PDF</button>
+              </div>
+            )}
+          </div>
+          <div className="header-divider" />
+          <button className="icon-btn" onClick={() => setShowSettings(true)} title={t('btn.settings')}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
           </button>
+          <button className="icon-btn" onClick={toggleTheme} title={t('btn.theme')}>
+            {theme === 'light' ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+              </svg>
+            ) : (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            )}
+          </button>
+          <div className="header-divider" />
+          <div className="lang-switcher">
+            {LANGS.map(l => (
+              <button
+                key={l}
+                className={`lang-btn${lang === l ? ' active' : ''}`}
+                onClick={() => setLang(l)}
+              >
+                {l.toUpperCase()}
+              </button>
+            ))}
+          </div>
           {(tokenUsage.input > 0 || tokenUsage.output > 0) && (
-            <span className="token-counter" title="Token usage this session">
+            <span className="token-counter" title="Token usage">
               {tokenUsage.input.toLocaleString()} in / {tokenUsage.output.toLocaleString()} out
             </span>
           )}
@@ -265,11 +345,11 @@ export default function App() {
 
       {noProvidersConfigured && (
         <div className="setup-banner">
-          No API keys configured.{' '}
+          {t('banner.noKeys')}{' '}
           <button className="setup-banner-link" onClick={() => setShowSettings(true)}>
-            Open Settings
+            {t('banner.openSettings')}
           </button>{' '}
-          to add one.
+          {t('banner.toAdd')}
         </div>
       )}
 
@@ -284,7 +364,6 @@ export default function App() {
             onSend={sendMessage}
             isStreaming={isStreaming}
             onStop={stopStreaming}
-            onArticleClick={handleSearchArticle}
             onCitationClick={handleCitationClick}
           />
         </div>
@@ -295,18 +374,22 @@ export default function App() {
             onHighlightClear={() => setHighlightId(null)}
           />
           {toolTraces.length > 0 && (
-            <div className="tool-traces">
-              <h3>Tool Activity</h3>
-              {toolTraces.map((t, i) => (
-                <div key={i} className="trace-item">
-                  <span className="trace-tool">{t.tool}</span>
-                  <span className="trace-latency">{t.latency_ms}ms</span>
-                  {t.hit_count != null && (
-                    <span className="trace-hits">{t.hit_count} results</span>
-                  )}
-                </div>
-              ))}
-            </div>
+            <details className="tool-traces">
+              <summary>
+                {toolTraces.length} tool call{toolTraces.length !== 1 ? 's' : ''} — {totalTraceMs}ms total
+              </summary>
+              <div className="tool-traces-list">
+                {toolTraces.map((t2, i) => (
+                  <div key={i} className="trace-item">
+                    <span className="trace-tool">{t2.tool}</span>
+                    <span className="trace-latency">{t2.latency_ms}ms</span>
+                    {t2.hit_count != null && (
+                      <span className="trace-hits">{t2.hit_count} results</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </details>
           )}
         </div>
       </div>

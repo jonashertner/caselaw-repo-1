@@ -93,6 +93,22 @@ To update: ask Claude to run the `update_database` tool. It re-downloads the lat
 
 See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
 
+### Web UI — chat interface with cited decisions
+
+A local chat interface for legal research. Ask questions in natural language, get answers backed by cited Swiss court decisions. Supports 5 LLM providers: Claude, OpenAI, Gemini (cloud), plus Qwen 2.5 and Llama 3.3 via [Ollama](https://ollama.com) (local, no API key needed).
+
+```bash
+git clone https://github.com/jonashertner/caselaw-repo-1.git
+cd caselaw-repo-1
+pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic openai
+cd web_ui && npm install && cd ..
+./scripts/run_web_local.sh
+```
+
+Open http://localhost:5173. For local models, install Ollama and run `ollama pull qwen2.5:14b` — the UI auto-detects it.
+
+See the [Web UI guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) for full details.
+
 ## Schema
 
 | # | Field | Type | Description |
@@ -206,3 +222,4 @@ MIT License. The underlying court decisions are public domain under Swiss law.
 - **Website**: [opencaselaw.ch](https://opencaselaw.ch) — live coverage statistics and dashboard
 - **GitHub**: [github.com/jonashertner/caselaw-repo-1](https://github.com/jonashertner/caselaw-repo-1) — source code, scrapers, pipeline
 - **MCP Server**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) — full-text search for Claude Code and Claude Desktop
+- **Web UI**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) — chat interface with Claude, OpenAI, Gemini, or local models via Ollama

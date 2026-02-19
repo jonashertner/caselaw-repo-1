@@ -293,10 +293,12 @@ def parse_date(text: str) -> date | None:
                 except ValueError:
                     continue
 
-    # Try bare year
+    # Try bare year (guard against year 0 or obviously invalid years)
     m = _DATE_PATTERNS[4][0].match(text)
     if m:
-        return date(int(m.group(1)), 1, 1)
+        year = int(m.group(1))
+        if 1800 <= year <= 2100:
+            return date(year, 1, 1)
 
     return None
 

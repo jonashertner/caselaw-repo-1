@@ -65,9 +65,7 @@ SLOW_SCRAPERS = {
 }
 
 # Scrapers to skip by default (broken, redundant, or handled separately)
-SKIP_BY_DEFAULT: set[str] = {
-    "ge_gerichte",  # TODO: remove once initial bulk scrape completes (~95k decisions)
-}
+SKIP_BY_DEFAULT: set[str] = set()
 
 
 def get_all_courts() -> list[str]:
@@ -106,6 +104,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
         new_count = 0
         skip_count = 0
         error_count = 0
+        none_count = 0
         error_tail: deque[str] = deque(maxlen=6)
         if log_path.exists():
             with open(log_path, "r", encoding="utf-8", errors="replace") as f:
@@ -122,6 +121,11 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                                 skip_count = int(line.split("Skips:")[1].split(",")[0].strip())
                             except (ValueError, IndexError):
                                 pass
+                        if "NoneReturns:" in line:
+                            try:
+                                none_count = int(line.split("NoneReturns:")[1].split(",")[0].strip())
+                            except (ValueError, IndexError):
+                                pass
                         try:
                             error_count = int(line.split("Errors:")[1].split(",")[0].strip())
                         except (ValueError, IndexError):
@@ -130,17 +134,28 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                         error_tail.append(line.strip())
 
         error = None
+        # Failure conditions: nonzero exit, high errors, or excessive None returns
+        ERROR_THRESHOLD = 20
+        NONE_THRESHOLD = 200
+        failed = result.returncode != 0
         if result.returncode != 0:
             error = " | ".join(error_tail) if error_tail else f"Exit code {result.returncode}"
+        elif error_count >= ERROR_THRESHOLD and error_count > new_count:
+            error = f"{error_count} scraping errors (more errors than new decisions)"
+            failed = True
+        elif none_count >= NONE_THRESHOLD:
+            error = f"{none_count} None returns (possible portal issue)"
+            failed = True
         elif error_count > 0:
             error = f"{error_count} scraping errors"
 
         return {
             "court": court,
-            "success": result.returncode == 0,
+            "success": not failed,
             "new_count": new_count,
             "skip_count": skip_count,
             "error_count": error_count,
+            "none_count": none_count,
             "duration": duration,
             "error": error,
         }
@@ -291,6 +306,7 @@ def main():
                 "new_count": r["new_count"],
                 "skip_count": r["skip_count"],
                 "error_count": r["error_count"],
+                "none_count": r.get("none_count", 0),
                 "duration_s": round(r["duration"], 1),
                 "error": r["error"],
             }

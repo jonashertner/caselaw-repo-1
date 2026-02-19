@@ -12,6 +12,7 @@ huggingface-hub>=0.20
 # API server (optional)
 fastapi>=0.104
 uvicorn>=0.24
+python-dotenv>=1.0
 
 # MCP server
 mcp>=1.0

@@ -45,4 +45,5 @@ jobs:
             test_mock_decision_tool.py \
             test_reference_extraction.py \
             test_reference_graph_resolution.py \
-            test_search_benchmark_resolution.py
+            test_search_benchmark_resolution.py \
+            tests/

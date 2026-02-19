@@ -295,8 +295,9 @@ def import_to_fts5(output_dir: Path, db_path: Path | None = None) -> None:
                             else row.get(col)
                             for col in INSERT_COLUMNS
                         )
-                        conn.execute(INSERT_OR_IGNORE_SQL, values)
-                        imported += 1
+                        cursor = conn.execute(INSERT_OR_IGNORE_SQL, values)
+                        if cursor.rowcount > 0:
+                            imported += 1
                     except Exception as e:
                         logger.warning(f"Failed to import {row.get('decision_id', '?')}: {e}")
             conn.commit()

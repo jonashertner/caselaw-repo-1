@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { getDecision } from '../api';
+import { useI18n } from '../i18n';
 
 /** Strip all HTML tags except <mark>, </mark>, and <br>. */
 function sanitizeSnippet(html) {
@@ -8,6 +9,7 @@ function sanitizeSnippet(html) {
 }
 
 export default function ResultsPane({ decisions, highlightId, onHighlightClear }) {
+  const { t } = useI18n();
   const [expandedId, setExpandedId] = useState(null);
   const [fullTexts, setFullTexts] = useState({});
   const cardRefs = useRef({});
@@ -41,7 +43,9 @@ export default function ResultsPane({ decisions, highlightId, onHighlightClear }
   useEffect(() => {
     if (!highlightId) return;
 
-    const match = decisions.find(d => d.docket_number === highlightId);
+    const match = decisions.find(d =>
+      d.decision_id === highlightId || d.docket_number === highlightId
+    );
     if (!match) return;
 
     const lookupId = match.decision_id || match.docket_number;
@@ -61,15 +65,15 @@ export default function ResultsPane({ decisions, highlightId, onHighlightClear }
   if (decisions.length === 0) {
     return (
       <div className="results-pane">
-        <h3>Decisions</h3>
-        <p className="empty-hint">Search results will appear here.</p>
+        <h3>{t('results.heading')}</h3>
+        <p className="empty-hint">{t('results.empty')}</p>
       </div>
     );
   }
 
   return (
     <div className="results-pane">
-      <h3>Decisions ({decisions.length})</h3>
+      <h3>{t('results.heading')} ({decisions.length})</h3>
       <div className="decision-list">
         {decisions.map((d, i) => {
           const lookupId = d.decision_id || d.docket_number;
@@ -92,10 +96,16 @@ export default function ResultsPane({ decisions, highlightId, onHighlightClear }
                 <span className="decision-date">{d.decision_date || ''}</span>
               </div>
               <div className="decision-meta">
-                {d.court && <span className="tag">{d.court}</span>}
+                {d.court && <span className="tag tag-court">{d.court}</span>}
                 {d.language && <span className="tag">{d.language.toUpperCase()}</span>}
               </div>
               {d.title && <div className="decision-title">{d.title}</div>}
+              {!isExpanded && (d.snippet || d.regeste) && (
+                <div
+                  className="decision-preview"
+                  dangerouslySetInnerHTML={{ __html: sanitizeSnippet(d.snippet || d.regeste) }}
+                />
+              )}
               {isExpanded && (
                 <div className="decision-details">
                   {d.regeste && (
@@ -113,20 +123,20 @@ export default function ResultsPane({ decisions, highlightId, onHighlightClear }
                   {d.source_url && (
                     <a href={d.source_url} target="_blank" rel="noopener" className="decision-link"
                        onClick={e => e.stopPropagation()}>
-                      View source
+                      {t('results.source')}
                     </a>
                   )}
                   {ft && ft.loading && (
                     <div className="decision-fulltext-loading">
-                      <span className="dot-pulse" /> Loading full text...
+                      <span className="dot-pulse" /> {t('results.loading')}
                     </div>
                   )}
                   {ft && ft.error && (
-                    <div className="decision-fulltext-error">Failed to load: {ft.error}</div>
+                    <div className="decision-fulltext-error">{t('results.loadError')}: {ft.error}</div>
                   )}
                   {ft && ft.content && (
                     <div className="decision-fulltext">
-                      <div className="decision-fulltext-label">Full Text</div>
+                      <div className="decision-fulltext-label">{t('results.fulltext')}</div>
                       <div className="decision-fulltext-prose">{ft.content}</div>
                     </div>
                   )}

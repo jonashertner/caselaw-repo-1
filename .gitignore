@@ -22,3 +22,5 @@ benchmarks/latest_search_benchmark.json
 docs/GOAL_*.md
 scrapers/probe_*
 scrapers/scrape_*
+web_ui/node_modules/
+.venv/

@@ -15,18 +15,18 @@ import dotenv
 _ENV_PATH = Path(__file__).parent.parent / ".env"
 dotenv.load_dotenv(_ENV_PATH, override=True)
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, HTTPException, Request  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.responses import StreamingResponse  # noqa: E402
 
-from .models import ChatRequest, ChatChunk, ToolTrace, SetKeyRequest
-from .mcp_bridge import get_bridge
-from .providers import PROVIDERS
-from .providers.base import (
-    ProviderMessage, ToolCall, ToolResult, MCP_TOOLS, SYSTEM_PROMPT,
+from .models import ChatRequest, ChatChunk, ToolTrace, SetKeyRequest  # noqa: E402
+from .mcp_bridge import get_bridge  # noqa: E402
+from .providers import PROVIDERS  # noqa: E402
+from .providers.base import (  # noqa: E402
+    ProviderMessage, ToolResult, MCP_TOOLS, SYSTEM_PROMPT,
 )
 
-from search_stack.reference_extraction import extract_case_citations
+from search_stack.reference_extraction import extract_case_citations, _normalize_docket  # noqa: E402
 
 logging.basicConfig(
     level=logging.INFO,
@@ -59,13 +59,22 @@ ENV_KEY_MAP = {
     "claude": "ANTHROPIC_API_KEY",
     "openai": "OPENAI_API_KEY",
     "gemini": "GEMINI_API_KEY",
+    "qwen2.5": "OLLAMA_BASE_URL",
+    "llama3.3": "OLLAMA_BASE_URL",
 }
 
 SDK_IMPORT_MAP = {
     "claude": "anthropic",
     "openai": "openai",
     "gemini": "google.genai",
+    "qwen2.5": "openai",
+    "llama3.3": "openai",
 }
+
+OLLAMA_PROVIDERS = {"qwen2.5", "llama3.3"}
+
+# Cached Ollama reachability probe (avoid spamming on every /health call)
+_ollama_probe_cache: dict = {"result": None, "ts": 0.0}
 
 
 def _check_sdk(module_name: str) -> bool:
@@ -87,16 +96,37 @@ def _mask_key(key: str) -> str | None:
     return key[:6] + "..." + key[-2:]
 
 
+def _ollama_reachable() -> bool:
+    """Check if Ollama is reachable, with 30s cache."""
+    now = time.monotonic()
+    if _ollama_probe_cache["result"] is not None and now - _ollama_probe_cache["ts"] < 30:
+        return _ollama_probe_cache["result"]
+    from .providers.ollama_adapter import check_ollama_reachable
+    result = check_ollama_reachable()
+    _ollama_probe_cache["result"] = result
+    _ollama_probe_cache["ts"] = now
+    return result
+
+
 def _provider_status() -> dict:
     """Return per-provider configuration status."""
     status = {}
+    ollama_checked = None
     for provider, env_var in ENV_KEY_MAP.items():
-        key_val = os.environ.get(env_var, "")
         sdk_mod = SDK_IMPORT_MAP[provider]
-        status[provider] = {
-            "configured": bool(key_val),
-            "sdk_installed": _check_sdk(sdk_mod),
-        }
+        if provider in OLLAMA_PROVIDERS:
+            if ollama_checked is None:
+                ollama_checked = _ollama_reachable()
+            status[provider] = {
+                "configured": ollama_checked,
+                "sdk_installed": _check_sdk(sdk_mod),
+            }
+        else:
+            key_val = os.environ.get(env_var, "")
+            status[provider] = {
+                "configured": bool(key_val),
+                "sdk_installed": _check_sdk(sdk_mod),
+            }
     return status
 
 
@@ -131,19 +161,55 @@ async def health():
 async def get_keys():
     """Return which API keys are set, with masked values."""
     result = {}
+    ollama_checked = None
     for provider, env_var in ENV_KEY_MAP.items():
-        key_val = os.environ.get(env_var, "")
-        result[provider] = {
-            "configured": bool(key_val),
-            "masked": _mask_key(key_val) if key_val else None,
-        }
+        if provider in OLLAMA_PROVIDERS:
+            if ollama_checked is None:
+                ollama_checked = _ollama_reachable()
+            result[provider] = {
+                "configured": ollama_checked,
+                "masked": None,
+                "ollama": True,
+            }
+        else:
+            key_val = os.environ.get(env_var, "")
+            result[provider] = {
+                "configured": bool(key_val),
+                "masked": _mask_key(key_val) if key_val else None,
+            }
     return result
+
+
+@app.get("/settings/ollama")
+async def get_ollama_status():
+    """Return Ollama connection status and base URL."""
+    base_url = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+    reachable = _ollama_reachable()
+    return {"reachable": reachable, "base_url": base_url}
+
+
+@app.post("/settings/ollama")
+async def set_ollama_url(request: Request):
+    """Set the Ollama base URL."""
+    body = await request.json()
+    url = body.get("base_url", "").strip()
+    if not url:
+        raise HTTPException(400, "base_url is required")
+    os.environ["OLLAMA_BASE_URL"] = url
+    dotenv.set_key(str(_ENV_PATH), "OLLAMA_BASE_URL", url)
+    # Invalidate cache
+    _ollama_probe_cache["result"] = None
+    _ollama_probe_cache["ts"] = 0.0
+    reachable = _ollama_reachable()
+    return {"ok": True, "reachable": reachable, "base_url": url}
 
 
 @app.post("/settings/keys")
 async def set_key(req: SetKeyRequest):
     """Set an API key for a provider. Writes to .env and os.environ."""
     provider = req.provider.lower()
+    if provider in OLLAMA_PROVIDERS:
+        raise HTTPException(400, f"{provider} is a local model — use POST /settings/ollama to configure")
     if provider not in ENV_KEY_MAP:
         raise HTTPException(400, f"Unknown provider: {provider}. Choose: {', '.join(ENV_KEY_MAP)}")
     env_var = ENV_KEY_MAP[provider]
@@ -156,12 +222,164 @@ async def set_key(req: SetKeyRequest):
 async def delete_key(provider: str):
     """Remove an API key for a provider."""
     provider = provider.lower()
+    if provider in OLLAMA_PROVIDERS:
+        raise HTTPException(400, f"{provider} is a local model — no API key to remove")
     if provider not in ENV_KEY_MAP:
         raise HTTPException(400, f"Unknown provider: {provider}")
     env_var = ENV_KEY_MAP[provider]
     os.environ.pop(env_var, None)
     dotenv.unset_key(str(_ENV_PATH), env_var)
     return {"ok": True, "provider": provider, "configured": False}
+
+
+def _parse_eli_url(eli_url: str):
+    """Parse a Fedlex ELI URL into (cc_path, lang) or None."""
+    import re
+    m = re.match(
+        r"https://www\.fedlex\.admin\.ch/eli/cc/([^#?]+?)(?:/([a-z]{2}))?(?:[#?].*)?$",
+        eli_url,
+    )
+    if not m:
+        return None
+    return m.group(1).rstrip("/"), m.group(2) or "de"
+
+
+def _eli_to_filestore_url(eli_url: str) -> str | None:
+    """Convert a Fedlex ELI URL to a filestore URL that returns server-rendered HTML."""
+    from datetime import date
+    return _eli_to_filestore_url_year(eli_url, date.today().year)
+
+
+def _eli_to_filestore_url_year(eli_url: str, year: int) -> str | None:
+    """Build a Fedlex filestore URL for a specific consolidation year."""
+    parsed = _parse_eli_url(eli_url)
+    if not parsed:
+        return None
+    cc_path, lang = parsed
+    d = f"{year}0101"
+    path_dashed = cc_path.replace("/", "-")
+    filename = f"fedlex-data-admin-ch-eli-cc-{path_dashed}-{d}-{lang}-html.html"
+    return (
+        f"https://www.fedlex.admin.ch/filestore/fedlex.data.admin.ch"
+        f"/eli/cc/{cc_path}/{d}/{lang}/html/{filename}"
+    )
+
+
+@app.get("/statute")
+def get_statute_text(url: str, article: str):
+    """Fetch a statute article excerpt from Fedlex (server-side proxy)."""
+    import re
+    from html import unescape
+
+    if not url.startswith("https://www.fedlex.admin.ch/"):
+        raise HTTPException(400, "Only fedlex.admin.ch URLs are supported")
+
+    # Convert ELI URL to filestore URL (Fedlex SPA doesn't serve HTML content)
+    fetch_url = _eli_to_filestore_url(url)
+    if not fetch_url:
+        return {"text": None, "fedlex_url": url.split("#")[0]}
+
+    import requests as req
+    from datetime import date
+    ua = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"}
+    resp = None
+
+    # Try current year, then descend until we find a valid consolidation
+    current_year = date.today().year
+    attempt_urls = []
+    for y in range(current_year, current_year - 4, -1):
+        u = _eli_to_filestore_url_year(url, y)
+        if u:
+            attempt_urls.append(u)
+    for attempt_url in attempt_urls:
+        try:
+            resp = req.get(attempt_url, headers=ua, timeout=15, allow_redirects=True)
+            resp.encoding = "utf-8"
+            if resp.status_code < 400 and len(resp.text) > 1000 and "Art." in resp.text[:80000]:
+                break
+            resp = None
+        except Exception:
+            resp = None
+
+    if not resp:
+        return {"html": None, "text": None, "fedlex_url": url.split("#")[0]}
+
+    html_doc = resp.text or ""
+    art = article.strip()
+    if not art:
+        return {"html": None, "text": None, "fedlex_url": url.split("#")[0]}
+
+    # Try to extract the <article id="art_XXX"> element (preserves formatting)
+    art_html = _extract_article_html(html_doc, art)
+    if art_html:
+        return {"html": art_html, "text": None, "fedlex_url": url.split("#")[0]}
+
+    # Fallback: plain text extraction for non-standard HTML
+    compact = re.sub(r"(?is)<(script|style).*?</\1>", " ", html_doc)
+    compact = re.sub(r"(?s)<[^>]+>", " ", compact)
+    compact = unescape(compact)
+    compact = re.sub(r"\s+", " ", compact).strip()
+
+    art_e = re.escape(art)
+    pattern = re.compile(
+        rf"(?<![(\w])Art\.?\s*{art_e}[a-zA-Z]?\s+(?=[A-ZÄÖÜ\d])"
+        rf"(.*?)(?=(?<![(\w])Art\.?\s*\d+[a-zA-Z]?\s+(?=[A-ZÄÖÜ\d])|$)",
+        flags=re.DOTALL,
+    )
+    match = pattern.search(compact)
+    text = compact[match.start():match.end()].strip() if match else None
+    if text and len(text) > 3000:
+        text = text[:3000] + "..."
+
+    return {"html": None, "text": text, "fedlex_url": url.split("#")[0]}
+
+
+def _extract_article_html(html_doc: str, article: str) -> str | None:
+    """Extract a clean HTML fragment for a specific article from Fedlex HTML."""
+    import re
+
+    # Find <article id="art_XXX"> element
+    art_id = f"art_{article}"
+    pattern = re.compile(
+        rf'<article\s+id="{re.escape(art_id)}"[^>]*>(.*?)</article>',
+        flags=re.DOTALL,
+    )
+    match = pattern.search(html_doc)
+    if not match:
+        return None
+
+    fragment = match.group(1)
+
+    # Remove heading (h6 with "Art. X" — we show that in the popup header already)
+    fragment = re.sub(r"(?is)<h6[^>]*>.*?</h6>", "", fragment, count=1)
+
+    # Remove Fedlex UI chrome: display-icon and external-link-icon spans
+    fragment = re.sub(r'<span class="(?:display-icon|external-link-icon)"[^>]*></span>', "", fragment)
+
+    # Remove wrapper divs (collapseable) but keep their content
+    fragment = re.sub(r'<div class="collapseable"[^>]*>', "", fragment)
+    # Balance removed opening divs — remove trailing </div> for each removed opening
+    open_removed = len(re.findall(r'<div class="collapseable"', match.group(1)))
+    for _ in range(open_removed):
+        # Remove last </div>
+        idx = fragment.rfind("</div>")
+        if idx >= 0:
+            fragment = fragment[:idx] + fragment[idx + 6:]
+
+    # Strip empty links (anchor-only <a> tags)
+    fragment = re.sub(r'<a\s+name="[^"]*"\s*></a>', "", fragment)
+
+    # Clean up excessive whitespace
+    fragment = re.sub(r"\n\s*\n", "\n", fragment).strip()
+
+    if not fragment or len(fragment) < 10:
+        return None
+
+    # Truncate very long articles
+    if len(fragment) > 8000:
+        fragment = fragment[:8000] + "…"
+
+    return fragment
 
 
 @app.get("/decision/{decision_id}")
@@ -178,7 +396,7 @@ async def get_decision(decision_id: str):
 async def search_endpoint(query: str, limit: int = 20):
     """Direct FTS5 search without LLM involvement."""
     bridge = await get_bridge()
-    args = {"query": query, "limit": min(limit, 50)}
+    args = {"query": query, "limit": min(limit, 200)}
     result = await bridge.call_tool("search_decisions", args)
     return {"decisions": _parse_decisions(result)}
 
@@ -288,9 +506,35 @@ async def chat(request: ChatRequest, raw_request: Request):
 
                     yield _sse(ChatChunk(type="tool_start", content=f"Calling {tc.name}..."))
 
+                    # Enforce user-set filters and minimum limit on search calls
+                    tool_args = tc.arguments
+                    if tc.name == "search_decisions":
+                        tool_args = dict(tc.arguments)
+                        # Floor: models sometimes use low limits
+                        MIN_SEARCH_LIMIT = 80
+                        if tool_args.get("limit", 0) < MIN_SEARCH_LIMIT:
+                            tool_args["limit"] = MIN_SEARCH_LIMIT
+                        # Strip language filter unless user explicitly set one —
+                        # searches should be multilingual by default
+                        user_set_language = request.filters and request.filters.language
+                        if not user_set_language:
+                            tool_args.pop("language", None)
+                        if request.filters:
+                            f = request.filters
+                            if f.court and "court" not in tool_args:
+                                tool_args["court"] = f.court
+                            if f.canton and "canton" not in tool_args:
+                                tool_args["canton"] = f.canton
+                            if f.language and "language" not in tool_args:
+                                tool_args["language"] = f.language
+                            if f.date_from and "date_from" not in tool_args:
+                                tool_args["date_from"] = f.date_from
+                            if f.date_to and "date_to" not in tool_args:
+                                tool_args["date_to"] = f.date_to
+
                     tool_t0 = time.monotonic()
                     try:
-                        result_text = await bridge.call_tool(tc.name, tc.arguments)
+                        result_text = await bridge.call_tool(tc.name, tool_args)
                     except Exception as e:
                         result_text = f"Tool error: {e}"
 
@@ -298,7 +542,7 @@ async def chat(request: ChatRequest, raw_request: Request):
                     trace = ToolTrace(
                         tool=tc.name,
                         latency_ms=round(tool_ms, 1),
-                        arguments=tc.arguments,
+                        arguments=tool_args,
                     )
 
                     yield _sse(ChatChunk(type="tool_end", tool_trace=trace))
@@ -307,10 +551,23 @@ async def chat(request: ChatRequest, raw_request: Request):
                     if tc.name == "search_decisions":
                         decisions = _parse_decisions(result_text)
                         if decisions:
+                            # Collapse duplicates by docket if requested (default)
+                            collapse = not request.filters or request.filters.collapse_duplicates
+                            if collapse:
+                                seen_dockets: dict[str, dict] = {}
+                                unique = []
+                                for d in decisions:
+                                    dk = d.get("docket_number") or ""
+                                    if dk and dk in seen_dockets:
+                                        continue
+                                    if dk:
+                                        seen_dockets[dk] = d
+                                    unique.append(d)
+                                decisions = unique
                             trace.hit_count = len(decisions)
                             for d in decisions:
                                 if d.get("docket_number"):
-                                    emitted_dockets.add(d["docket_number"])
+                                    emitted_dockets.add(_normalize_docket(d["docket_number"]))
                             yield _sse(ChatChunk(type="decisions", decisions=decisions))
 
                     # Add tool result to session
