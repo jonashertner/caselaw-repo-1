@@ -217,7 +217,7 @@ Live coverage statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ## Data Sources
 
-1. **Official court websites** — direct scraping from federal and cantonal court platforms (44 scrapers)
+1. **Official court websites** — direct scraping from federal and cantonal court platforms (45 scrapers)
 2. **[entscheidsuche.ch](https://entscheidsuche.ch)** — public archive maintained by the Swiss legal community
 
 Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The most metadata-rich version is kept.

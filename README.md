@@ -558,7 +558,7 @@ Full schema definition: [`models.py`](models.py)
 | Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch + entscheidsuche |
 | Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch + entscheidsuche |
 | Sports Tribunal | `ta_sst` | ~50 | 2024–present | entscheidsuche |
-| Federal Council | `ch_bundesrat` | ~15 | 2012–present | entscheidsuche |
+| Federal Council | `ch_bundesrat` | ~15 | 2012–present | bj.admin.ch + entscheidsuche |
 
 ### Cantonal courts
 
@@ -590,7 +590,7 @@ Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
                         │                  Daily Pipeline                  │
                         │                                                  │
 Court websites ────────►│  Scrapers ──► JSONL ──┬──► Parquet ──► HuggingFace
-  bger.ch               │  (44 scrapers,        │                          │
+  bger.ch               │  (45 scrapers,        │                          │
   bvger.ch              │   rate-limited,        └──► FTS5 DB ──► MCP Server
   cantonal portals      │   resumable)                                     │
   entscheidsuche.ch     │                                                  │
@@ -600,7 +600,7 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
 
 ### Step by step
 
-1. **Scrape** (01:00 UTC daily) — 44 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
+1. **Scrape** (01:00 UTC daily) — 45 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
 
 2. **Build search index** (04:00 UTC) — JSONL files are ingested into a SQLite FTS5 database for full-text search. On Mon–Sat, this runs in **incremental mode**: a byte-offset checkpoint tracks how far each JSONL file has been read, so only newly appended decisions are processed (typically < 1 minute). On Sundays, a **full rebuild** compacts the FTS5 index and resets the checkpoint (~3 hours). Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata. A quality enrichment step fills in missing titles, regestes, and content hashes.
 
