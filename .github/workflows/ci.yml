@@ -20,7 +20,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt pytest
+        run: pip install -r requirements.txt pytest pytest-asyncio
 
       - name: Schema consistency tests
         run: python test_schema.py

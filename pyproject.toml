@@ -26,7 +26,7 @@ crypto = ["pycryptodome>=3.20"]
 pdf = ["pymupdf>=1.23"]
 api = ["fastapi>=0.104", "uvicorn>=0.24"]
 semantic = ["sentence-transformers>=3.0"]
-dev = ["pytest>=7.0", "ruff>=0.1"]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.23", "ruff>=0.1"]
 all = ["swiss-caselaw-scrapers[crypto,pdf,api,semantic,dev]"]
 
 [tool.setuptools.packages.find]
@@ -39,6 +39,7 @@ py-modules = ["pipeline", "base_scraper", "models", "db_schema", "run_scraper", 
 swiss-caselaw = "pipeline:main"
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 addopts = "-m \"not live and not manual\""
 markers = [
     "live: requires live network/system interaction; excluded from default pytest runs",
