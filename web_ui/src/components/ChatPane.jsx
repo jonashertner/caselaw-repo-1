@@ -112,6 +112,9 @@ const STATUTE_PARSE_RE = /[Aa]rt\.?\s*(\d+)\s*[a-z]{0,6}\s*(?:(Abs|al|cpv)\.?\s*
  * Returns the URL string, or null if the law is not in our mapping.
  */
 function buildFedlexUrl(text) {
+  // "Art. 271 ff. OR" = article 271 and following — not a single article, skip
+  if (/\bff\.?\s/i.test(text)) return null;
+
   const m = text.match(STATUTE_PARSE_RE);
   if (!m) return null;
 
