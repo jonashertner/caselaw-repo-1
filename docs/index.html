@@ -455,7 +455,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
         GitHub
       </a>
-      <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
+      <a href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         MCP Full-Text Search
       </a>
@@ -471,11 +471,15 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
 
   <!-- Quick Access -->
   <div class="quick-strip" id="quick-strip">
+    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#1-web-ui">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <div><div class="qc-title" data-t="quick_webui">Web UI</div><div class="qc-desc" data-t="quick_webui_desc">Chat interface — ask questions, get cited decisions</div></div>
+    </a>
     <a class="quick-card" href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Full dataset as Parquet files on HuggingFace</div></div>
     </a>
-    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
+    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
       <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">MCP server for Claude and other AI tools</div></div>
     </a>
@@ -580,6 +584,17 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
     <div class="access-grid">
       <div class="access-card">
         <h3>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Web UI
+        </h3>
+        <p data-t="access_webui_desc">Local chat interface — ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, or Gemini.</p>
+        <code>git clone github.com/jonashertner/caselaw-repo-1
+cd caselaw-repo-1
+cp .env.example .env  # add API key
+./scripts/run_web_local.sh</code>
+      </div>
+      <div class="access-card">
+        <h3>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           HuggingFace
         </h3>
@@ -592,7 +607,7 @@ ds = load_dataset("voilaj/swiss-caselaw")</code>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           MCP Server
         </h3>
-        <p data-t="access_mcp_desc">Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a></p>
+        <p data-t="access_mcp_desc">Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">Setup guide &rarr;</a></p>
         <code>git clone github.com/jonashertner/caselaw-repo-1
 cd caselaw-repo-1
 python3 -m venv .venv
@@ -639,14 +654,16 @@ const I18N = {
     updated:'Aktualisiert am',
     made:'Gebaut mit \u2665 von <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
-    access_mcp_desc:'Lokale Volltextsuche via Claude Code oder andere MCP-Clients. L\u00e4dt ~6.5 GB von HuggingFace herunter, baut einen ~56 GB Suchindex auf Ihrem Rechner. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Einrichtung &rarr;</a>',
+    access_mcp_desc:'Lokale Volltextsuche via Claude Code oder andere MCP-Clients. L\u00e4dt ~6.5 GB von HuggingFace herunter, baut einen ~56 GB Suchindex auf Ihrem Rechner. <a href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">Einrichtung &rarr;</a>',
     access_api_desc:'Abfragen via HuggingFace Datasets Server API',
     browse:'Durchsuchen',
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_browse:'Durchsuchen', nav_access:'Zugang',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
+    quick_webui:'Web UI', quick_webui_desc:'Chat-Oberfl\u00e4che \u2014 Fragen stellen, Entscheide erhalten',
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
     quick_search:'Volltextsuche', quick_search_desc:'MCP-Server f\u00fcr Claude und andere AI-Tools',
     quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
+    access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI oder Gemini.',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_stale:'Veraltet', health_errors:'Fehler',
   },
   fr: {
@@ -660,14 +677,16 @@ const I18N = {
     updated:'Mis \u00e0 jour le',
     made:'Fait avec \u2665 par <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
-    access_mcp_desc:'Recherche locale plein texte via Claude Code ou tout client MCP. T\u00e9l\u00e9charge ~6.5 Go depuis HuggingFace, construit un index de recherche de ~56 Go sur votre machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guide d\u2019installation &rarr;</a>',
+    access_mcp_desc:'Recherche locale plein texte via Claude Code ou tout client MCP. T\u00e9l\u00e9charge ~6.5 Go depuis HuggingFace, construit un index de recherche de ~56 Go sur votre machine. <a href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">Guide d\u2019installation &rarr;</a>',
     access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
     browse:'Parcourir',
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Parcourir', nav_access:'Acc\u00e8s',
     search_placeholder:'Rechercher...', csv_export:'CSV',
+    quick_webui:'Web UI', quick_webui_desc:'Interface de chat \u2014 posez des questions, obtenez des d\u00e9cisions',
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
     quick_search:'Recherche', quick_search_desc:'Serveur MCP pour Claude et autres outils IA',
     quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
+    access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI ou Gemini.',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs',
   },
   it: {
@@ -681,14 +700,16 @@ const I18N = {
     updated:'Aggiornato il',
     made:'Fatto con \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Scarica il dataset completo in formato Parquet',
-    access_mcp_desc:'Ricerca locale full-text via Claude Code o qualsiasi client MCP. Scarica ~6.5 GB da HuggingFace, crea un indice di ricerca di ~56 GB sulla tua macchina. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida all\u2019installazione &rarr;</a>',
+    access_mcp_desc:'Ricerca locale full-text via Claude Code o qualsiasi client MCP. Scarica ~6.5 GB da HuggingFace, crea un indice di ricerca di ~56 GB sulla tua macchina. <a href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">Guida all\u2019installazione &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     browse:'Sfoglia',
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_browse:'Sfoglia', nav_access:'Accesso',
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
+    quick_webui:'Web UI', quick_webui_desc:'Interfaccia chat \u2014 fai domande, ottieni decisioni',
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
     quick_search:'Ricerca', quick_search_desc:'Server MCP per Claude e altri strumenti IA',
     quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
+    access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI o Gemini.',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_stale:'Obsoleto', health_errors:'errori',
   },
   rm: {
@@ -702,14 +723,16 @@ const I18N = {
     updated:'Actualis\u00e0 ils',
     made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
-    access_mcp_desc:'Tschertga locala en text cumplain via Claude Code u mintga client MCP. Telechargia ~6.5 GB da HuggingFace, construescha in index da tschertga da ~56 GB sin tes computer. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
+    access_mcp_desc:'Tschertga locala en text cumplain via Claude Code u mintga client MCP. Telechargia ~6.5 GB da HuggingFace, construescha in index da tschertga da ~56 GB sin tes computer. <a href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
     access_api_desc:'Dumondas via HuggingFace Datasets Server API',
     browse:'Navigar',
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_browse:'Navigar', nav_access:'Access',
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
+    quick_webui:'Web UI', quick_webui_desc:'Interfatscha da chat \u2014 far dumondas, obtegnir decisiuns',
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
     quick_search:'Tschertga', quick_search_desc:'Server MCP per Claude ed auters utensils IA',
     quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
+    access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI u Gemini.',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_stale:'Vegl', health_errors:'errurs',
   },
   en: {
@@ -723,14 +746,16 @@ const I18N = {
     updated:'Updated',
     made:'Built with \u2665 by <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Download the full dataset as Parquet files',
-    access_mcp_desc:'Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a>',
+    access_mcp_desc:'Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#2-search-with-ai">Setup guide &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     browse:'Browse',
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
     search_placeholder:'Search courts...', csv_export:'CSV',
+    quick_webui:'Web UI', quick_webui_desc:'Chat interface \u2014 ask questions, get cited decisions',
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
     quick_search:'Search', quick_search_desc:'MCP server for Claude and other AI tools',
     quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
+    access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, or Gemini.',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_stale:'Stale', health_errors:'errors',
   },
 };
