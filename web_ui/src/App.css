@@ -1572,14 +1572,22 @@ body {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background: var(--bg);
+    flex-wrap: wrap;
   }
   .header-center {
-    display: none;
+    order: 10;
+    flex-basis: 100%;
+    justify-content: flex-start;
+    padding-bottom: var(--space-1);
   }
+  .provider-btn { padding: 4px 8px; font-size: var(--fs-xs); }
 }
 
 @media (max-width: 640px) {
   .app { padding: 0 var(--space-3); }
   .header-brand-subtitle { display: none; }
   .suggestion-chips { flex-direction: column; align-items: center; }
+  .provider-btn { padding: 3px 6px; font-size: 11px; }
+  .provider-selector { gap: 1px; }
+  .provider-divider { margin: 0 2px; }
 }
