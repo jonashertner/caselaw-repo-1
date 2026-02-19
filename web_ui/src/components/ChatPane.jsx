@@ -74,6 +74,35 @@ const FEDLEX_CC = {
 
   // Data protection (new, 2023)
   DSG: '2022/491', LPD: '2022/491',
+
+  // Social insurance (general part)
+  ATSG: '2002/510', LPGA: '2002/510',
+  KVG: '1995/1328_1328_1328', LAMal: '1995/1328_1328_1328',
+
+  // Private insurance
+  VVG: '1908/1_1_1', LCA: '1908/1_1_1',
+
+  // International private law
+  IPRG: '1988/1776_1776_1776', LDIP: '1988/1776_1776_1776',
+
+  // Equality
+  GlG: '1996/1498_1498_1498', LEg: '1996/1498_1498_1498',
+
+  // Mergers
+  FusG: '2004/2617', LFus: '2004/2617',
+
+  // Migration
+  AIG: '2007/5437', LEI: '2007/5437',
+  AsylG: '1999/2262', LAsi: '1999/2262',
+
+  // Public procurement
+  BoeB: '2020/641', LMP: '2020/641',
+
+  // Lawyer
+  BGFA: '2002/863', LLCA: '2002/863',
+
+  // Tenancy (ordinance)
+  VMWG: '1990/835', OBLF: '1990/835',
 };
 
 const STATUTE_PARSE_RE = /[Aa]rt\.?\s*(\d+)\s*[a-z]{0,6}\s*(?:(Abs|al|cpv)\.?\s*\d+)?(?:\s*(?:ff|let|lit|Bst)\.?\s*[a-z]?)?\s*([A-Z][A-Za-z]{0,4}[A-Z][A-Za-z0-9]{0,7})/;
@@ -126,8 +155,8 @@ function processText(text, onCitationClick, onStatuteClick) {
       // Statute match — open popup with Fedlex article text
       const url = buildFedlexUrl(matched);
       if (url) {
-        const artMatch = matched.match(/Art\.?\s*(\d+)/);
-        const artNum = artMatch ? artMatch[1] : '';
+        const artMatch = matched.match(/Art\.?\s*(\d+\s*[a-z]*)/);
+        const artNum = artMatch ? artMatch[1].replace(/\s+/g, '') : '';
         parts.push(
           <button
             key={`s-${match.index}`}

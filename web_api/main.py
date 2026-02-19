@@ -339,12 +339,22 @@ def _extract_article_html(html_doc: str, article: str) -> str | None:
     import re
 
     # Find <article id="art_XXX"> element
-    art_id = f"art_{article}"
-    pattern = re.compile(
-        rf'<article\s+id="{re.escape(art_id)}"[^>]*>(.*?)</article>',
-        flags=re.DOTALL,
-    )
-    match = pattern.search(html_doc)
+    # Fedlex uses underscores for suffixes: art_261_bis, art_55a, etc.
+    # Try exact match first, then with underscore before alpha suffix
+    candidates = [f"art_{article}"]
+    suffix_m = re.match(r"^(\d+)([a-z]+)$", article)
+    if suffix_m:
+        candidates.append(f"art_{suffix_m.group(1)}_{suffix_m.group(2)}")
+
+    match = None
+    for art_id in candidates:
+        pattern = re.compile(
+            rf'<article\s+id="{re.escape(art_id)}"[^>]*>(.*?)</article>',
+            flags=re.DOTALL,
+        )
+        match = pattern.search(html_doc)
+        if match:
+            break
     if not match:
         return None
 
