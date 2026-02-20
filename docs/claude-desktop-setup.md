@@ -58,29 +58,19 @@ command: /Users/anna/caselaw-repo-1/.venv/bin/python3
 
 Keep these — you'll paste them into the config file next.
 
-### Step 4 — Edit the Claude Desktop config file
+### Step 4 — Add the MCP server to Claude Desktop
 
-The config file is at:
+You have two options. **Option A** uses the Claude Desktop settings UI. **Option B** edits the config file directly — use this if Option A doesn't work or if your version of Claude Desktop doesn't have the settings UI.
 
-```
-~/Library/Application Support/Claude/claude_desktop_config.json
-```
+#### Option A: Through the Claude Desktop settings (easiest)
 
-Open it by running:
-
-```bash
-open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
-```
-
-If TextEdit says the file doesn't exist, create it:
-
-```bash
-mkdir -p ~/Library/Application\ Support/Claude
-echo '{}' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
-open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
-```
-
-**Replace the entire file contents** with the following. Use the paths from Step 3:
+1. Open **Claude Desktop**
+2. Open Settings:
+   - Click the **Claude** menu in the menu bar (top-left) → **Settings...**
+   - Or press `Cmd + ,`
+3. Click **Developer** in the left sidebar
+4. Click **Edit Config**. This opens `claude_desktop_config.json` in your default text editor.
+5. **Replace the entire file contents** with the following. Use the paths from Step 3:
 
 ```json
 {
@@ -93,15 +83,36 @@ open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.jso
 }
 ```
 
-> **Already have other MCP servers?** Don't overwrite the file. Instead, add the `"swiss-caselaw": { ... }` block inside your existing `"mcpServers"` object, separated by a comma.
+6. Save the file (`Cmd + S`) and close the text editor.
+7. Go back to Claude Desktop Settings → Developer. You should now see **swiss-caselaw** listed under MCP Servers.
 
-Save the file (`Cmd + S`) and close TextEdit.
+> **Already have other MCP servers?** Don't overwrite the file. Add the `"swiss-caselaw": { ... }` block inside your existing `"mcpServers"` object, separated by a comma.
+
+#### Option B: Edit the config file manually (fallback)
+
+If you can't find the Developer settings, edit the config file directly:
+
+```bash
+open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+
+If the file doesn't exist, create it first:
+
+```bash
+mkdir -p ~/Library/Application\ Support/Claude
+echo '{}' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
+open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+
+Paste the same JSON from Option A, save, and close.
 
 ### Step 5 — Restart Claude Desktop
 
 Quit Claude Desktop completely (`Cmd + Q` — not just close the window). Then reopen it.
 
-**How to verify it worked:** Look at the text input bar. You should see a small hammer icon on the right side. Click it — you should see tools like `search_decisions` and `get_decision` in the list.
+**How to verify it worked:** Look at the text input bar at the bottom of the chat. You should see a small hammer icon on the right side. Click it — you should see tools like `search_decisions` and `get_decision` in the list.
+
+You can also verify in Settings → Developer — the swiss-caselaw server should show a green "running" indicator.
 
 If you don't see the hammer icon, see [Troubleshooting](#troubleshooting) below.
 
@@ -160,23 +171,19 @@ command: C:\Users\Anna\caselaw-repo-1\.venv\Scripts\python.exe
 
 Keep these paths for the next step. **Important:** when you put them in the JSON config file, you must double every backslash (`\` becomes `\\`).
 
-### Step 4 — Edit the Claude Desktop config file
+### Step 4 — Add the MCP server to Claude Desktop
 
-The config file is at:
+You have two options. **Option A** uses the Claude Desktop settings UI. **Option B** edits the config file directly — use this if Option A doesn't work or if your version of Claude Desktop doesn't have the settings UI.
 
-```
-%APPDATA%\Claude\claude_desktop_config.json
-```
+#### Option A: Through the Claude Desktop settings (easiest)
 
-Open it by running:
-
-```powershell
-notepad "$env:APPDATA\Claude\claude_desktop_config.json"
-```
-
-If Notepad asks whether to create the file, click **Yes**.
-
-**Replace the entire file contents** with the following. Use the paths from Step 3, with doubled backslashes:
+1. Open **Claude Desktop**
+2. Open Settings:
+   - Click the **hamburger menu** (three lines, top-left) → **Settings...**
+   - Or click **File** → **Settings...**
+3. Click **Developer** in the left sidebar
+4. Click **Edit Config**. This opens `claude_desktop_config.json` in Notepad.
+5. **Replace the entire file contents** with the following. Use the paths from Step 3, with doubled backslashes:
 
 ```json
 {
@@ -189,15 +196,28 @@ If Notepad asks whether to create the file, click **Yes**.
 }
 ```
 
-> **Already have other MCP servers?** Don't overwrite the file. Instead, add the `"swiss-caselaw": { ... }` block inside your existing `"mcpServers"` object, separated by a comma.
+6. Save the file (`Ctrl + S`) and close Notepad.
+7. Go back to Claude Desktop Settings → Developer. You should now see **swiss-caselaw** listed under MCP Servers.
 
-Save the file (`Ctrl + S`) and close Notepad.
+> **Already have other MCP servers?** Don't overwrite the file. Add the `"swiss-caselaw": { ... }` block inside your existing `"mcpServers"` object, separated by a comma.
+
+#### Option B: Edit the config file manually (fallback)
+
+If you can't find the Developer settings, edit the config file directly:
+
+```powershell
+notepad "$env:APPDATA\Claude\claude_desktop_config.json"
+```
+
+If Notepad asks whether to create the file, click **Yes**. Paste the same JSON from Option A, save, and close.
 
 ### Step 5 — Restart Claude Desktop
 
 Quit Claude Desktop completely (right-click the system tray icon and choose "Quit"). Then reopen it.
 
-**How to verify it worked:** Look at the text input bar. You should see a small hammer icon on the right side. Click it — you should see tools like `search_decisions` and `get_decision` in the list.
+**How to verify it worked:** Look at the text input bar at the bottom of the chat. You should see a small hammer icon on the right side. Click it — you should see tools like `search_decisions` and `get_decision` in the list.
+
+You can also verify in Settings → Developer — the swiss-caselaw server should show a green "running" indicator.
 
 If you don't see the hammer icon, see [Troubleshooting](#troubleshooting) below.
 
