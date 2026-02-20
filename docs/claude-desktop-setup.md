@@ -1,147 +1,300 @@
-# Swiss Case Law MCP Server — Claude Desktop Setup
+# Swiss Case Law — Claude Desktop Setup Guide
 
-Search 1,000,000+ Swiss court decisions directly from Claude Desktop. Everything runs locally on your machine.
+Search 1,000,000+ Swiss court decisions directly inside Claude Desktop. The entire dataset runs locally on your machine — no API keys, no cloud services.
 
----
-
-## Prerequisites
-
-- **Claude Desktop** installed ([download](https://claude.ai/download))
-- **Python 3.10+** installed
-- **~65 GB free disk space** (7 GB download + 58 GB search index)
+This guide walks you through every step. Pick your operating system and follow along.
 
 ---
 
-## Setup (5 minutes)
+## What you need before starting
 
-### 1. Clone the repository
+1. **Claude Desktop** — download it at [claude.ai/download](https://claude.ai/download) if you don't have it yet
+2. **Python 3.10 or newer** — check by opening a terminal and running `python3 --version` (macOS/Linux) or `python --version` (Windows)
+3. **Git** — check by running `git --version`
+4. **65 GB of free disk space** — the dataset is 7 GB to download, and the search index it builds is ~58 GB
+
+---
+
+## macOS Setup
+
+### Step 1 — Download the code
+
+Open **Terminal** (press `Cmd + Space`, type "Terminal", press Enter). Then run:
 
 ```bash
+cd ~
 git clone https://github.com/jonashertner/caselaw-repo-1.git
-cd caselaw-repo-1
 ```
 
-### 2. Create a virtual environment and install dependencies
+This creates a folder at `/Users/YOUR_USERNAME/caselaw-repo-1`.
 
-**macOS / Linux:**
+### Step 2 — Install Python dependencies
+
+Still in Terminal, run these three commands one by one:
 
 ```bash
+cd ~/caselaw-repo-1
 python3 -m venv .venv
-source .venv/bin/activate
-pip install mcp pydantic huggingface-hub pyarrow
+.venv/bin/pip install mcp pydantic huggingface-hub pyarrow
 ```
 
-**Windows:**
+Wait for the installation to finish. You should see "Successfully installed ..." at the end.
+
+### Step 3 — Find your exact paths
+
+Run this command. It prints the two paths you'll need in the next step:
 
 ```bash
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install mcp pydantic huggingface-hub pyarrow
+echo "command: $(cd ~/caselaw-repo-1 && pwd)/.venv/bin/python3"
+echo "    arg: $(cd ~/caselaw-repo-1 && pwd)/mcp_server.py"
 ```
 
-### 3. Connect to Claude Desktop
+It will print something like:
 
-Open the Claude Desktop config file in a text editor:
+```
+command: /Users/anna/caselaw-repo-1/.venv/bin/python3
+    arg: /Users/anna/caselaw-repo-1/mcp_server.py
+```
 
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+Keep these — you'll paste them into the config file next.
 
-If the file doesn't exist, create it. Add the following (replace `/path/to/caselaw-repo-1` with the actual path where you cloned the repository):
+### Step 4 — Edit the Claude Desktop config file
 
-**macOS / Linux:**
+The config file is at:
+
+```
+~/Library/Application Support/Claude/claude_desktop_config.json
+```
+
+Open it by running:
+
+```bash
+open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+
+If TextEdit says the file doesn't exist, create it:
+
+```bash
+mkdir -p ~/Library/Application\ Support/Claude
+echo '{}' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
+open -a TextEdit ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+
+**Replace the entire file contents** with the following. Use the paths from Step 3:
 
 ```json
 {
   "mcpServers": {
     "swiss-caselaw": {
-      "command": "/path/to/caselaw-repo-1/.venv/bin/python3",
-      "args": ["/path/to/caselaw-repo-1/mcp_server.py"]
+      "command": "/Users/YOUR_USERNAME/caselaw-repo-1/.venv/bin/python3",
+      "args": ["/Users/YOUR_USERNAME/caselaw-repo-1/mcp_server.py"]
     }
   }
 }
 ```
 
-**Windows:**
+> **Already have other MCP servers?** Don't overwrite the file. Instead, add the `"swiss-caselaw": { ... }` block inside your existing `"mcpServers"` object, separated by a comma.
 
-```json
-{
-  "mcpServers": {
-    "swiss-caselaw": {
-      "command": "C:\\path\\to\\caselaw-repo-1\\.venv\\Scripts\\python.exe",
-      "args": ["C:\\path\\to\\caselaw-repo-1\\mcp_server.py"]
-    }
-  }
-}
-```
+Save the file (`Cmd + S`) and close TextEdit.
 
-> If the file already has other MCP servers, add `"swiss-caselaw": { ... }` inside the existing `"mcpServers"` block — don't overwrite them.
+### Step 5 — Restart Claude Desktop
 
-### 4. Restart Claude Desktop
+Quit Claude Desktop completely (`Cmd + Q` — not just close the window). Then reopen it.
 
-Quit and reopen Claude Desktop. You should see a hammer icon in the input bar, indicating MCP tools are available.
+**How to verify it worked:** Look at the text input bar. You should see a small hammer icon on the right side. Click it — you should see tools like `search_decisions` and `get_decision` in the list.
 
-### 5. Build the search index (first time only)
+If you don't see the hammer icon, see [Troubleshooting](#troubleshooting) below.
 
-In Claude Desktop, type:
+### Step 6 — Build the search index (one time, ~30–60 minutes)
 
-> *"Run the update_database tool to download the Swiss case law dataset."*
+In Claude Desktop, send this message:
 
-Claude will call the `update_database` tool. This downloads ~7 GB of Parquet files from HuggingFace and builds a local SQLite search index. **Takes 30–60 minutes** depending on your internet speed and disk. You only need to do this once.
+> **Please run the update_database tool to download the Swiss case law dataset.**
+
+Claude will start downloading ~7 GB of data from HuggingFace and building the local search index. This takes 30–60 minutes depending on your internet connection and disk speed. You can watch the progress in Claude's response.
+
+**You only need to do this once.** After it finishes, searching is instant.
 
 ---
 
-## Usage
+## Windows Setup
 
-Once the index is built, just ask questions in natural language:
+### Step 1 — Download the code
 
-- *"Find BGer decisions on tenant eviction from 2024"*
-- *"Search for BVGer asylum cases involving Eritrea"*
-- *"Show me recent ECHR decisions involving Switzerland"*
-- *"What does BGE 133 I 106 say?"*
-- *"Find decisions citing Art. 8 BV"*
+Open **PowerShell** (press `Win + X`, select "Terminal" or "PowerShell"). Then run:
 
-Claude automatically calls the search tools and shows matching decisions with highlighted snippets. You can ask follow-up questions about specific decisions.
+```powershell
+cd $HOME
+git clone https://github.com/jonashertner/caselaw-repo-1.git
+```
+
+This creates a folder at `C:\Users\YOUR_USERNAME\caselaw-repo-1`.
+
+### Step 2 — Install Python dependencies
+
+Still in PowerShell, run these three commands one by one:
+
+```powershell
+cd $HOME\caselaw-repo-1
+python -m venv .venv
+.venv\Scripts\pip install mcp pydantic huggingface-hub pyarrow
+```
+
+Wait for the installation to finish. You should see "Successfully installed ..." at the end.
+
+### Step 3 — Find your exact paths
+
+Run this command to print the paths you need:
+
+```powershell
+Write-Host "command: $HOME\caselaw-repo-1\.venv\Scripts\python.exe"
+Write-Host "    arg: $HOME\caselaw-repo-1\mcp_server.py"
+```
+
+It will print something like:
+
+```
+command: C:\Users\Anna\caselaw-repo-1\.venv\Scripts\python.exe
+    arg: C:\Users\Anna\caselaw-repo-1\mcp_server.py
+```
+
+Keep these paths for the next step. **Important:** when you put them in the JSON config file, you must double every backslash (`\` becomes `\\`).
+
+### Step 4 — Edit the Claude Desktop config file
+
+The config file is at:
+
+```
+%APPDATA%\Claude\claude_desktop_config.json
+```
+
+Open it by running:
+
+```powershell
+notepad "$env:APPDATA\Claude\claude_desktop_config.json"
+```
+
+If Notepad asks whether to create the file, click **Yes**.
+
+**Replace the entire file contents** with the following. Use the paths from Step 3, with doubled backslashes:
+
+```json
+{
+  "mcpServers": {
+    "swiss-caselaw": {
+      "command": "C:\\Users\\YOUR_USERNAME\\caselaw-repo-1\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\YOUR_USERNAME\\caselaw-repo-1\\mcp_server.py"]
+    }
+  }
+}
+```
+
+> **Already have other MCP servers?** Don't overwrite the file. Instead, add the `"swiss-caselaw": { ... }` block inside your existing `"mcpServers"` object, separated by a comma.
+
+Save the file (`Ctrl + S`) and close Notepad.
+
+### Step 5 — Restart Claude Desktop
+
+Quit Claude Desktop completely (right-click the system tray icon and choose "Quit"). Then reopen it.
+
+**How to verify it worked:** Look at the text input bar. You should see a small hammer icon on the right side. Click it — you should see tools like `search_decisions` and `get_decision` in the list.
+
+If you don't see the hammer icon, see [Troubleshooting](#troubleshooting) below.
+
+### Step 6 — Build the search index (one time, ~30–60 minutes)
+
+In Claude Desktop, send this message:
+
+> **Please run the update_database tool to download the Swiss case law dataset.**
+
+Claude will start downloading ~7 GB of data from HuggingFace and building the local search index. This takes 30–60 minutes depending on your internet connection and disk speed. You can watch the progress in Claude's response.
+
+**You only need to do this once.** After it finishes, searching is instant.
+
+---
+
+## Using it
+
+Once the index is built, just ask questions in natural language. Examples:
+
+| What you type | What happens |
+|---|---|
+| *"Find BGer decisions about Mietrecht from 2024"* | Searches all Federal Supreme Court decisions on tenancy law |
+| *"Search for BVGer asylum cases involving Eritrea"* | Searches Federal Administrative Court asylum decisions |
+| *"Look up BGE 133 I 106"* | Fetches that specific leading case with full text |
+| *"Find decisions citing Art. 8 BV"* | Searches for decisions that reference this constitutional article |
+| *"How many decisions does each court have?"* | Shows statistics across all 93 courts |
+| *"Draft a legal analysis of whether X constitutes Y"* | Builds a research outline grounded in actual case law |
+
+Claude automatically picks the right search tool, runs the query, and shows you the results. You can then ask follow-up questions like *"Show me the full text of the second result"* or *"Find more recent decisions on the same topic."*
 
 ### Available tools
 
 | Tool | What it does |
 |------|-------------|
 | `search_decisions` | Full-text search with filters (court, canton, language, date range) |
-| `get_decision` | Fetch a single decision by docket number (e.g., `6B_1234/2025`) |
-| `list_courts` | List all 93 courts with decision counts |
+| `get_decision` | Fetch one decision by docket number (e.g., `6B_1234/2025`) or ID |
+| `list_courts` | List all 93 courts with decision counts and date ranges |
 | `get_statistics` | Aggregate statistics by court, canton, or year |
-| `draft_mock_decision` | Generate a research outline grounded in case law and statutes |
+| `draft_mock_decision` | Legal research outline grounded in case law and statutes |
 | `update_database` | Download the latest data from HuggingFace |
 
 ---
 
-## Updating the dataset
+## Keeping the dataset up to date
 
-The dataset is updated daily. To get the latest decisions, ask Claude:
+The dataset is updated every night with new court decisions. To get the latest data, just ask Claude:
 
-> *"Update the Swiss case law database."*
+> **Update the Swiss case law database.**
 
-This re-downloads changed Parquet files and rebuilds the index incrementally.
+This downloads only the changed files and updates the index. Much faster than the initial build.
 
 ---
 
 ## Troubleshooting
 
-**"No MCP tools available" (no hammer icon)**
-- Make sure the config file path is correct for your OS
-- Verify the JSON is valid (no trailing commas, correct quoting)
-- Check that the `command` path points to the Python executable *inside* the `.venv`, not the system Python
-- Restart Claude Desktop after editing the config
+### No hammer icon after restarting Claude Desktop
 
-**"Database not found" or empty search results**
-- Run the `update_database` tool first — the index must be built before searching
+This means Claude Desktop didn't load the MCP server. Check these in order:
 
-**Slow first search after restart**
-- The first query takes a few seconds to open the ~58 GB database. Subsequent queries are fast.
+1. **Is the config file in the right place?**
+   - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-**Path issues on macOS**
-- Use the full absolute path (e.g., `/Users/yourname/caselaw-repo-1/.venv/bin/python3`), not `~` or relative paths
+2. **Is the JSON valid?** Open the file and check for:
+   - Missing or extra commas
+   - Mismatched braces `{ }`
+   - Unescaped backslashes on Windows (must be `\\`, not `\`)
 
-**Path issues on Windows**
-- Use double backslashes in the JSON: `C:\\Users\\...`
-- Use `.venv\\Scripts\\python.exe`, not `.venv\\bin\\python3`
+3. **Do the paths actually exist?** Test by running the command directly in your terminal:
+   ```bash
+   /Users/YOUR_USERNAME/caselaw-repo-1/.venv/bin/python3 --version
+   ```
+   This should print `Python 3.x.x`. If it says "No such file", the path is wrong.
+
+4. **Did you fully quit Claude Desktop?** On macOS, use `Cmd + Q`. Just closing the window is not enough.
+
+### "Database not found" or empty results
+
+You need to build the search index first. Ask Claude to run the `update_database` tool (Step 6 above).
+
+### First search is slow
+
+The first query after opening Claude Desktop takes 3–5 seconds to load the ~58 GB database into memory. Every subsequent search is fast.
+
+### "Permission denied" errors on macOS
+
+If your terminal says "permission denied" when running Python:
+
+```bash
+chmod +x ~/caselaw-repo-1/.venv/bin/python3
+```
+
+### Python not found
+
+- **macOS**: Install Python from [python.org](https://www.python.org/downloads/) or via Homebrew: `brew install python`
+- **Windows**: Install Python from [python.org](https://www.python.org/downloads/). During installation, check **"Add Python to PATH"**.
+
+### Not enough disk space
+
+The full search index requires ~65 GB. If you don't have enough space, the `update_database` tool will fail partway through. Free up space and run it again — it resumes where it left off.
