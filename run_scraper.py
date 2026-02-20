@@ -111,7 +111,7 @@ def run_with_persistence(
 ) -> int:
     """Run scraper and write each decision to JSONL incrementally.
 
-    Returns the total number of failures (errors + excessive None returns).
+    Returns the total number of scrape failures encountered.
     """
 
     if scraper_key not in SCRAPERS:
@@ -199,10 +199,17 @@ def run_with_persistence(
                 )
             else:
                 none_count += 1
+                errors += 1
                 logger.warning(
                     f"[{scraper_key}] fetch_decision returned None ({none_count}): "
                     f"{stub.get('docket_number', '?')}"
                 )
+                max_err = getattr(scraper, "MAX_ERRORS", 50)
+                if errors >= max_err:
+                    logger.error(
+                        f"[{scraper_key}] Too many errors ({errors}), stopping."
+                    )
+                    break
                 # Consecutive Nones beyond a threshold suggest a systemic issue
                 max_none = getattr(scraper, "MAX_NONE_RETURNS", 200)
                 if none_count >= max_none:
@@ -236,13 +243,8 @@ def run_with_persistence(
         f"File: {jsonl_path} ({file_size:.1f} MB)"
     )
 
-    # Return total failure count (errors + None returns that breached threshold).
-    # Callers can check > 0 for failure or use the actual count.
-    max_none = getattr(scraper, "MAX_NONE_RETURNS", 200)
-    failure_count = errors
-    if none_count >= max_none:
-        failure_count += none_count
-    return failure_count
+    # Return total failures so callers can enforce strict completeness.
+    return errors
 
 
 def main():

@@ -195,21 +195,28 @@ export default function App() {
   }, []);
 
   const handleCitationClick = useCallback(async (docket) => {
-    const found = decisions.find(d =>
-      d.docket_number === docket || d.decision_id === docket
-    );
-    if (found) {
-      setHighlightId(found.decision_id || found.docket_number);
+    const exactDecision = decisions.find(d => d.decision_id === docket);
+    if (exactDecision) {
+      setHighlightId(exactDecision.decision_id || exactDecision.docket_number);
       return;
     }
+
+    const existingDocketMatches = decisions.filter(d => d.docket_number === docket);
     try {
       const data = await searchDecisions({ query: `"${docket}"` });
       if (data.decisions?.length) {
         mergeDecisions(data.decisions);
         setHighlightId(data.decisions[0]?.decision_id || data.decisions[0]?.docket_number || docket);
+        return;
       }
     } catch (e) {
-      // ignore
+      // Ignore and fall back to local matches.
+    }
+
+    if (existingDocketMatches.length > 0) {
+      setHighlightId(
+        existingDocketMatches[0].decision_id || existingDocketMatches[0].docket_number || docket
+      );
     }
   }, [decisions, mergeDecisions]);
 

@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import logging
 import re
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from typing import Iterator
 from urllib.parse import urljoin
 

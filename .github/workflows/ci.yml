@@ -46,4 +46,5 @@ jobs:
             test_reference_extraction.py \
             test_reference_graph_resolution.py \
             test_search_benchmark_resolution.py \
+            test_runtime_completeness_guards.py \
             tests/

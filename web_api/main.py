@@ -528,16 +528,6 @@ async def chat(request: ChatRequest, raw_request: Request):
                         MIN_SEARCH_LIMIT = 80
                         if tool_args.get("limit", 0) < MIN_SEARCH_LIMIT:
                             tool_args["limit"] = MIN_SEARCH_LIMIT
-                        # Strip court filter unless user explicitly set one —
-                        # unfiltered searches return the best mix of BGE + BGer + cantonal
-                        user_set_court = request.filters and request.filters.court
-                        if not user_set_court:
-                            tool_args.pop("court", None)
-                        # Strip language filter unless user explicitly set one —
-                        # searches should be multilingual by default
-                        user_set_language = request.filters and request.filters.language
-                        if not user_set_language:
-                            tool_args.pop("language", None)
                         if request.filters:
                             f = request.filters
                             if f.court and "court" not in tool_args:
@@ -570,17 +560,27 @@ async def chat(request: ChatRequest, raw_request: Request):
                     if tc.name == "search_decisions":
                         decisions = _parse_decisions(result_text)
                         if decisions:
-                            # Collapse duplicates by docket if requested (default)
+                            # Collapse exact duplicates only; keep same-docket
+                            # multi-decision chains distinct.
                             collapse = not request.filters or request.filters.collapse_duplicates
                             if collapse:
-                                seen_dockets: dict[str, dict] = {}
+                                seen_keys: set[str] = set()
                                 unique = []
-                                for d in decisions:
-                                    dk = d.get("docket_number") or ""
-                                    if dk and dk in seen_dockets:
+                                for idx, d in enumerate(decisions):
+                                    key = d.get("decision_id")
+                                    if not key:
+                                        key = "|".join(
+                                            [
+                                                d.get("docket_number") or "",
+                                                d.get("court") or "",
+                                                d.get("decision_date") or "",
+                                                d.get("language") or "",
+                                                d.get("title") or "",
+                                            ]
+                                        ) or f"_row_{idx}"
+                                    if key in seen_keys:
                                         continue
-                                    if dk:
-                                        seen_dockets[dk] = d
+                                    seen_keys.add(key)
                                     unique.append(d)
                                 decisions = unique
                             trace.hit_count = len(decisions)

@@ -173,7 +173,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                         new_count += 1
         return {
             "court": court,
-            "success": True,
+            "success": False,
             "timed_out": True,
             "new_count": new_count,
             "skip_count": 0,

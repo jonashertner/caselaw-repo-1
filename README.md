@@ -195,9 +195,9 @@ You can enforce minimum quality gates (non-zero exit on failure):
 python3 benchmarks/run_search_benchmark.py \
   --db ~/.swiss-caselaw/decisions.db \
   -k 10 \
-  --min-mrr 0.70 \
-  --min-recall 0.80 \
-  --min-ndcg 0.90
+  --min-mrr 0.50 \
+  --min-recall 0.75 \
+  --min-ndcg 0.85
 ```
 
 ### Build Reference Graph (Optional)

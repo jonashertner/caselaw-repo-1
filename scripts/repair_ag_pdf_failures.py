@@ -196,7 +196,7 @@ def main():
         total_fixed += fixed
         logger.info(f"  {jsonl_path.name}: {total} total, {failed} failed, {fixed} fixed")
 
-    logger.info(f"\n=== Summary ===")
+    logger.info("\n=== Summary ===")
     logger.info(f"  Total failures found: {total_failed}")
     logger.info(f"  Successfully fixed: {total_fixed}")
     logger.info(f"  Still broken: {total_failed - total_fixed}")
