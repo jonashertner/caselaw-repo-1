@@ -162,7 +162,8 @@ def parse_institution(institution_name: str) -> tuple[str, str | None]:
 
 
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:
-    """Extract text from PDF bytes using pdfplumber, fallback to pdfminer."""
+    """Extract text from PDF bytes. Tries pdfplumber → pymupdf → pdfminer."""
+    # 1. pdfplumber (good for modern PDFs with text layers)
     try:
         import pdfplumber
 
@@ -172,21 +173,44 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
                 text = page.extract_text()
                 if text:
                     pages.append(text)
-            return "\n\n".join(pages)
+            result = "\n\n".join(pages)
+            if len(result) >= 50:
+                return result
     except ImportError:
         pass
+    except Exception as e:
+        logger.debug(f"pdfplumber failed: {e}")
 
-    # Fallback: pdfminer
+    # 2. pymupdf / fitz (handles older PDFs that pdfplumber misses)
+    try:
+        import fitz
+
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        pages = [page.get_text() for page in doc]
+        doc.close()
+        result = "\n\n".join(p for p in pages if p.strip())
+        if len(result) >= 50:
+            return result
+    except ImportError:
+        pass
+    except Exception as e:
+        logger.debug(f"pymupdf failed: {e}")
+
+    # 3. pdfminer (last resort)
     try:
         from pdfminer.high_level import extract_text as pdfminer_extract
 
-        return pdfminer_extract(io.BytesIO(pdf_bytes))
+        result = pdfminer_extract(io.BytesIO(pdf_bytes))
+        if result and len(result) >= 50:
+            return result
     except ImportError:
         pass
+    except Exception as e:
+        logger.debug(f"pdfminer failed: {e}")
 
     logger.error(
-        "No PDF extraction library available. "
-        "Install pdfplumber: pip install pdfplumber"
+        "PDF text extraction failed with all backends. "
+        "Install pymupdf: pip install pymupdf"
     )
     return ""
 
