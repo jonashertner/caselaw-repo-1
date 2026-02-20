@@ -270,6 +270,22 @@ class BVGerScraper(BaseScraper):
                 )
                 continue
 
+            # API caps at ~101 results per query. If a single day exceeds
+            # that, split by language to get all decisions.
+            if total > MAX_PER_WINDOW and wd == 1:
+                logger.warning(
+                    f"BVGer Weblaw {cur_start}: {total} results on one day, "
+                    f"splitting by language"
+                )
+                new_in_window = 0
+                for lang in ("de", "fr", "it"):
+                    yield from self._yield_window(
+                        cur_start, cur_end, total_found, new_in_window,
+                        language=lang,
+                    )
+                cur_end = cur_start - timedelta(days=1)
+                continue
+
             logger.info(f"BVGer Weblaw {cur_start}–{cur_end}: {total} decisions")
 
             new_in_window = 0
@@ -314,14 +330,49 @@ class BVGerScraper(BaseScraper):
 
         logger.info(f"BVGer Weblaw discovery complete: {total_found} new stubs")
 
+    def _yield_window(
+        self, ab: date, bis: date,
+        total_found: int, new_in_window: int,
+        language: str | None = None,
+    ) -> Iterator[dict]:
+        """Yield all stubs from a search window, handling pagination."""
+        docs, total, more = self._wl_search(ab, bis, language=language)
+        if total == 0:
+            return
+
+        label = f"{ab}–{bis}" if ab != bis else str(ab)
+        if language:
+            label += f" [{language}]"
+        logger.info(f"BVGer Weblaw {label}: {total} decisions")
+
+        for doc in docs:
+            stub = self._wl_parse(doc)
+            if stub and not self.state.is_known(
+                make_decision_id("bvger", stub["docket_number"])
+            ):
+                yield stub
+
+        offset = len(docs)
+        while more and offset < total:
+            docs, _, more = self._wl_search(ab, bis, offset, language=language)
+            for doc in docs:
+                stub = self._wl_parse(doc)
+                if stub and not self.state.is_known(
+                    make_decision_id("bvger", stub["docket_number"])
+                ):
+                    yield stub
+            offset += len(docs)
+
     def _wl_search(
-        self, ab: date, bis: date, offset: int = 0
+        self, ab: date, bis: date, offset: int = 0,
+        language: str | None = None,
     ) -> tuple[list[dict], int, bool]:
         """Execute a Weblaw search query. Returns (documents, total, has_more)."""
         body = {
             "guiLanguage": "de",
             "userID": _rand_uid(),
             "sessionDuration": int(time.time()) % 10000,
+            "size": 100,
             "aggs": {"fields": WEBLAW_AGGS_FIELDS, "size": "10"},
             "metadataDateMap": {
                 "rulingDate": {
@@ -332,6 +383,8 @@ class BVGerScraper(BaseScraper):
         }
         if offset > 0:
             body["from"] = offset
+        if language:
+            body["metadataKeywordMap"] = {"language": [language]}
 
         import json
 
