@@ -101,26 +101,9 @@ The dataset is updated daily. To get the latest decisions, ask Claude to run the
 
 ### Setup with Claude Desktop
 
-The same MCP server works with Claude Desktop. Two options:
+See the **[Claude Desktop setup guide](docs/claude-desktop-setup.md)** for step-by-step instructions (macOS + Windows).
 
-#### Option A: Desktop extension (recommended)
-
-Build a local `.mcpb` extension bundle:
-
-```bash
-./scripts/build_desktop_extension.sh
-```
-
-Then install it in Claude Desktop: `Settings` → `Extensions` → `Advanced settings` → `Install Extension...` → select `dist/swiss-caselaw-local.mcpb`.
-
-Requires Node.js/NPM and internet access on first run. The bundle auto-detects your `.venv/bin/python3` if present, otherwise uses `python3` from your PATH.
-
-#### Option B: Manual JSON config
-
-Edit the Claude Desktop config file:
-
-- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+**Quick version** — add this to your `claude_desktop_config.json`:
 
 ```json
 {
@@ -133,11 +116,9 @@ Edit the Claude Desktop config file:
 }
 ```
 
-On Windows, use `".venv\\Scripts\\python.exe"` instead of `".venv/bin/python3"`.
+Config file location: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows). On Windows, use `.venv\\Scripts\\python.exe` instead.
 
-#### Other MCP clients
-
-Any MCP-compatible client works — use the same `command` + `args` pattern above.
+Any MCP-compatible client works with the same `command` + `args` pattern.
 
 ### What the MCP server can do
 
