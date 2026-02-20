@@ -21,10 +21,12 @@ There are four ways to use it, depending on what you need:
 
 | Method | For whom | What you get |
 |--------|----------|-------------|
-| [**Search with AI**](#1-search-with-ai) | Power users | Natural-language queries in Claude Code / Claude Desktop |
+| [**Search with AI**](#1-search-with-ai) | Lawyers, legal researchers | Natural-language queries in Claude Code / Claude Desktop |
 | [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
+
+> **Not sure where to start?** The [Web UI](#4-web-ui) is the easiest way to try it — you get a chat interface that searches all 1M+ decisions and answers legal questions with cited sources. If you already use Claude, the [MCP server](#1-search-with-ai) integrates directly into Claude Code or Claude Desktop.
 
 ---
 
@@ -330,7 +332,7 @@ Everything runs on your machine. No data leaves your computer (except LLM API ca
 
 | Requirement | How to check | Where to get it |
 |-------------|-------------|-----------------|
-| **Python 3.11+** | `python3 --version` (macOS/Linux) or `python --version` (Windows) | [python.org/downloads](https://www.python.org/downloads/) |
+| **Python 3.10+** | `python3 --version` (macOS/Linux) or `python --version` (Windows) | [python.org/downloads](https://www.python.org/downloads/) |
 | **Node.js 18+** | `node --version` | [nodejs.org](https://nodejs.org) — download the LTS version |
 | **An LLM provider** | *(see below)* | At least one cloud API key **or** a local model via Ollama |
 | **~65 GB free disk** | `df -h .` (macOS/Linux) | For the search index (downloaded on first run) |
@@ -629,7 +631,7 @@ python run_scraper.py zh_gerichte --max 10 -v
 
 Output is written to `output/decisions/{court}.jsonl` — one JSON object per line, one file per court. The scraper remembers what it has already fetched (state stored in `state/`), so you can run it repeatedly to get only new decisions.
 
-44 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://opencaselaw.ch) for per-court statistics.
+45 court codes are available. Run `python run_scraper.py --list` for the full list, or see the [dashboard](https://opencaselaw.ch) for per-court statistics.
 
 ### Build a local search database
 
@@ -678,3 +680,11 @@ Court decisions are public records under Swiss law. Article 27 BGG requires the 
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+---
+
+## Contact
+
+Questions, feedback, or ideas? Reach out at **team@jonashertner.com**.
+
+You can also [open an issue](https://github.com/jonashertner/caselaw-repo-1/issues) on GitHub.
