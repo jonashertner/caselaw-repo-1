@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 One-off repair script: re-extract text from AG decisions where PDF extraction
-previously failed. Reads ag_gerichte.jsonl, finds entries with the error marker,
-re-downloads the PDF, extracts text with pymupdf, and rewrites the JSONL.
+previously failed. Streams ag_gerichte.jsonl line by line, re-downloads the PDF
+for failed entries, extracts text with pymupdf, writes repaired JSONL.
 
 Usage:
     python3 scripts/repair_ag_pdf_failures.py [--dry-run]
@@ -10,10 +10,11 @@ Usage:
 
 from __future__ import annotations
 
-import io
 import json
 import logging
+import os
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -22,12 +23,13 @@ import requests
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
+    flush=True,
 )
 logger = logging.getLogger(__name__)
 
 JSONL_DIR = Path("output/decisions")
 FAILURE_MARKER = "[PDF text extraction failed for "
-REQUEST_DELAY = 1.0  # seconds between PDF downloads
+REQUEST_DELAY = 1.0
 
 
 def extract_text_pymupdf(pdf_bytes: bytes) -> str:
@@ -54,12 +56,10 @@ def detect_language(text: str) -> str:
 
 
 def repair_file(jsonl_path: Path, dry_run: bool = False) -> tuple[int, int, int]:
-    """Repair a single JSONL file. Returns (total, failed, fixed)."""
-    lines = jsonl_path.read_text(encoding="utf-8").splitlines()
-    total = len(lines)
+    """Repair a single JSONL file by streaming. Returns (total, failed, fixed)."""
+    total = 0
     failed = 0
     fixed = 0
-    new_lines = []
 
     session = requests.Session()
     session.headers.update({
@@ -67,71 +67,99 @@ def repair_file(jsonl_path: Path, dry_run: bool = False) -> tuple[int, int, int]
         "User-Agent": "Mozilla/5.0 (compatible; Swiss-Caselaw-Repair/1.0)",
     })
 
-    for i, line in enumerate(lines):
-        if not line.strip():
-            new_lines.append(line)
-            continue
+    # Stream: read input line by line, write to temp file
+    tmp_fd, tmp_path = tempfile.mkstemp(
+        suffix=".jsonl", dir=str(jsonl_path.parent)
+    )
 
-        obj = json.loads(line)
-        full_text = obj.get("full_text", "")
+    try:
+        with open(jsonl_path, "r", encoding="utf-8") as fin, \
+             os.fdopen(tmp_fd, "w", encoding="utf-8") as fout:
 
-        if FAILURE_MARKER not in full_text:
-            new_lines.append(line)
-            continue
+            for line in fin:
+                total += 1
+                stripped = line.rstrip("\n")
 
-        failed += 1
-        pdf_url = obj.get("pdf_url", "")
-        docket = obj.get("docket_number", "?")
+                if not stripped:
+                    fout.write(line)
+                    continue
 
-        if not pdf_url:
-            logger.warning(f"  [{failed}] No pdf_url for {docket}, skipping")
-            new_lines.append(line)
-            continue
+                # Quick check before parsing JSON
+                if FAILURE_MARKER not in stripped:
+                    fout.write(line)
+                    continue
 
-        if dry_run:
-            logger.info(f"  [dry-run] Would re-extract: {docket} from {pdf_url}")
-            new_lines.append(line)
-            continue
+                obj = json.loads(stripped)
+                full_text = obj.get("full_text", "")
 
-        # Download PDF
+                if FAILURE_MARKER not in full_text:
+                    # False positive from quick check (marker in other field)
+                    fout.write(line)
+                    continue
+
+                failed += 1
+                pdf_url = obj.get("pdf_url", "")
+                docket = obj.get("docket_number", "?")
+
+                if dry_run:
+                    logger.info(f"  [dry-run] Would re-extract: {docket}")
+                    fout.write(line)
+                    continue
+
+                if not pdf_url:
+                    logger.warning(f"  No pdf_url for {docket}, skipping")
+                    fout.write(line)
+                    continue
+
+                # Download PDF
+                try:
+                    time.sleep(REQUEST_DELAY)
+                    resp = session.get(pdf_url, timeout=60)
+                    resp.raise_for_status()
+                except Exception as e:
+                    logger.warning(f"  PDF download failed for {docket}: {e}")
+                    fout.write(line)
+                    continue
+
+                # Extract text
+                try:
+                    text = extract_text_pymupdf(resp.content)
+                except Exception as e:
+                    logger.warning(f"  pymupdf failed for {docket}: {e}")
+                    fout.write(line)
+                    continue
+
+                if len(text) < 50:
+                    logger.warning(f"  Still too short for {docket}: {len(text)} chars")
+                    fout.write(line)
+                    continue
+
+                # Update the record
+                obj["full_text"] = text
+                obj["text_length"] = len(text)
+                obj["has_full_text"] = True
+                if len(text) > 100:
+                    obj["language"] = detect_language(text)
+                fout.write(json.dumps(obj, ensure_ascii=False) + "\n")
+                fixed += 1
+
+                if fixed % 50 == 0:
+                    logger.info(f"  Fixed {fixed}/{failed} so far...")
+
+        # Replace original with repaired file
+        if not dry_run and fixed > 0:
+            os.replace(tmp_path, str(jsonl_path))
+            logger.info(f"  Replaced {jsonl_path} ({fixed} entries repaired)")
+        else:
+            os.unlink(tmp_path)
+
+    except Exception:
+        # Clean up temp file on error
         try:
-            time.sleep(REQUEST_DELAY)
-            resp = session.get(pdf_url, timeout=60)
-            resp.raise_for_status()
-        except Exception as e:
-            logger.warning(f"  [{failed}] PDF download failed for {docket}: {e}")
-            new_lines.append(line)
-            continue
-
-        # Extract text
-        try:
-            text = extract_text_pymupdf(resp.content)
-        except Exception as e:
-            logger.warning(f"  [{failed}] pymupdf extraction failed for {docket}: {e}")
-            new_lines.append(line)
-            continue
-
-        if len(text) < 50:
-            logger.warning(f"  [{failed}] Still too short for {docket}: {len(text)} chars")
-            new_lines.append(line)
-            continue
-
-        # Update the record
-        obj["full_text"] = text
-        obj["text_length"] = len(text)
-        obj["has_full_text"] = True
-        if len(text) > 100:
-            obj["language"] = detect_language(text)
-        new_lines.append(json.dumps(obj, ensure_ascii=False))
-        fixed += 1
-
-        if fixed % 50 == 0:
-            logger.info(f"  Fixed {fixed}/{failed} so far...")
-
-    if not dry_run and fixed > 0:
-        # Write repaired file
-        jsonl_path.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
-        logger.info(f"  Wrote {jsonl_path} ({fixed} entries repaired)")
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
 
     return total, failed, fixed
 
@@ -139,15 +167,18 @@ def repair_file(jsonl_path: Path, dry_run: bool = False) -> tuple[int, int, int]
 def main():
     dry_run = "--dry-run" in sys.argv
 
-    # Find all JSONL files with failures
     if not JSONL_DIR.exists():
         logger.error(f"JSONL directory not found: {JSONL_DIR}")
         sys.exit(1)
 
+    # Scan for files with failures (line-by-line to avoid loading whole file)
     target_files = []
     for jsonl_path in sorted(JSONL_DIR.glob("*.jsonl")):
-        content = jsonl_path.read_text(encoding="utf-8")
-        count = content.count(FAILURE_MARKER)
+        count = 0
+        with open(jsonl_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if FAILURE_MARKER in line:
+                    count += 1
         if count > 0:
             target_files.append((jsonl_path, count))
             logger.info(f"Found {count} failures in {jsonl_path.name}")
