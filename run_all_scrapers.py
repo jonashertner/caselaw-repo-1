@@ -35,6 +35,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import shutil
 import subprocess
 import sys
 import time
@@ -66,6 +67,54 @@ SLOW_SCRAPERS = {
 
 # Scrapers to skip by default (broken, redundant, or handled separately)
 SKIP_BY_DEFAULT: set[str] = set()
+
+# Disk usage thresholds (percent)
+DISK_WARN_PERCENT = 85
+DISK_CRITICAL_PERCENT = 95
+
+
+def check_disk_usage() -> dict:
+    """Check disk usage for the data volume and repo directory.
+
+    Returns dict with total_gb, used_gb, free_gb, used_percent for each path.
+    """
+    paths_to_check = {
+        "data_volume": Path("/mnt/HC_Volume_104655575"),
+        "repo": REPO_DIR,
+    }
+    result = {}
+    for label, path in paths_to_check.items():
+        if not path.exists():
+            continue
+        try:
+            usage = shutil.disk_usage(path)
+            info = {
+                "path": str(path),
+                "total_gb": round(usage.total / (1024**3), 1),
+                "used_gb": round(usage.used / (1024**3), 1),
+                "free_gb": round(usage.free / (1024**3), 1),
+                "used_percent": round(usage.used / usage.total * 100, 1),
+            }
+            result[label] = info
+
+            if info["used_percent"] >= DISK_CRITICAL_PERCENT:
+                logger.error(
+                    f"CRITICAL: {label} disk at {info['used_percent']}% "
+                    f"({info['free_gb']} GB free) — scraping may fail!"
+                )
+            elif info["used_percent"] >= DISK_WARN_PERCENT:
+                logger.warning(
+                    f"WARNING: {label} disk at {info['used_percent']}% "
+                    f"({info['free_gb']} GB free) — consider cleanup"
+                )
+            else:
+                logger.info(
+                    f"Disk {label}: {info['used_percent']}% used "
+                    f"({info['free_gb']} GB free)"
+                )
+        except Exception as e:
+            logger.warning(f"Could not check disk for {label}: {e}")
+    return result
 
 
 def get_all_courts() -> list[str]:
@@ -257,6 +306,13 @@ def main():
     logger.info(f"=== Daily scrape — {now.isoformat()} ===")
     logger.info(f"Courts: {len(courts)}, Parallel: {args.parallel}, Timeout: {args.timeout}s")
 
+    # Pre-flight disk check
+    disk_before = check_disk_usage()
+    for label, info in disk_before.items():
+        if info["used_percent"] >= DISK_CRITICAL_PERCENT:
+            logger.error(f"Aborting: {label} disk at {info['used_percent']}% — not enough space to scrape safely")
+            sys.exit(2)
+
     if args.dry_run:
         for court in courts:
             t = SLOW_SCRAPERS.get(court, args.timeout)
@@ -352,6 +408,14 @@ def main():
             for r in results
         },
     }
+
+    # Post-run disk check
+    disk_after = check_disk_usage()
+    health["disk"] = disk_after
+    logger.info(f"\n  Disk usage after run:")
+    for label, info in disk_after.items():
+        logger.info(f"    {label}: {info['used_percent']}% ({info['free_gb']} GB free)")
+
     health_path = REPO_DIR / "logs" / "scraper_health.json"
     health_path.write_text(json.dumps(health, indent=2))
     logger.info(f"Health data written to {health_path}")

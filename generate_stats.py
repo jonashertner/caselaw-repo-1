@@ -285,11 +285,14 @@ def collect_scraper_health(repo_dir: Path) -> dict | None:
             info["jsonl_size_mb"] = None
             info["jsonl_mtime"] = None
 
-    return {
+    result = {
         "run_at": health.get("run_at"),
         "run_duration_s": health.get("run_duration_s"),
         "scrapers": scrapers,
     }
+    if "disk" in health:
+        result["disk"] = health["disk"]
+    return result
 
 
 def main():
