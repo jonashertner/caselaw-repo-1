@@ -1,0 +1,15 @@
+[Unit]
+Description=Swiss Case Law MCP Server (SSE worker on port %i)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/caselaw/repo
+Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/mcp_server.py --remote --host 127.0.0.1 --port %i
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

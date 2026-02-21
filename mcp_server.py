@@ -3973,6 +3973,14 @@ def main_remote(host: str, port: int):
     _log_startup()
     logger.info(f"Remote SSE mode on {host}:{port}")
 
+    # Size thread pool for concurrent DB queries (default is too small)
+    import concurrent.futures
+    pool_size = max(32, (os.cpu_count() or 4) * 4)
+    loop = asyncio.new_event_loop()
+    loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=pool_size))
+    asyncio.set_event_loop(loop)
+    logger.info(f"Thread pool: {pool_size} workers")
+
     sse = SseServerTransport("/messages/")
 
     async def handle_sse(request):
