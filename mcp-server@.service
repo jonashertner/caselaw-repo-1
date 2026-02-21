@@ -4,12 +4,17 @@ After=network.target
 
 [Service]
 Type=simple
-User=root
+User=mcp
+Group=mcp
 WorkingDirectory=/opt/caselaw/repo
 Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+EnvironmentFile=-/opt/caselaw/repo/.env.mcp
 ExecStart=/usr/bin/python3 /opt/caselaw/repo/mcp_server.py --remote --host 127.0.0.1 --port %i
 Restart=always
 RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs /mnt/HC_Volume_104655575
 
 [Install]
 WantedBy=multi-user.target

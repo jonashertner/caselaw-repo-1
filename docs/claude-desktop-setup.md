@@ -89,7 +89,9 @@ notepad "$env:APPDATA\Claude\claude_desktop_config.json"
 
 **Step 4.** Restart Claude Desktop and start searching.
 
-> The `update_database` tool is disabled on the remote server — the dataset is updated automatically every night.
+> The `update_database` and `check_update_status` tools are not available on the remote server — the dataset is updated automatically every night.
+>
+> **Auth token:** If the server requires authentication, add `"--header", "Authorization: Bearer <token>"` to the `args` array after the URL.
 
 ---
 

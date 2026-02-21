@@ -59,9 +59,11 @@ claude mcp add swiss-caselaw --transport sse http://46.225.79.22:8765/sse
 
 > Requires [Node.js](https://nodejs.org) (for `npx`). The `mcp-remote` package bridges the remote SSE server to Claude Desktop's stdio transport — it's downloaded automatically on first use.
 
+> **Auth token:** If the server requires authentication, add `--header "Authorization: Bearer <token>"` to the `args` array (Claude Desktop) or `--header "Authorization: Bearer <token>"` flag (Claude Code).
+
 Restart Claude Desktop and start searching.
 
-> The `update_database` tool is disabled on the remote server — the dataset is updated automatically every night.
+> The `update_database` and `check_update_status` tools are not available on the remote server — the dataset is updated automatically every night.
 
 ### Option B: Local server (for offline access)
 

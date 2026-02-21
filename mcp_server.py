@@ -131,6 +131,16 @@ FEDLEX_USER_AGENT = os.environ.get(
     "swiss-caselaw-mcp/1.0 (+https://github.com/jonashertner/caselaw-repo-1)",
 )
 
+# ── Remote transport security ────────────────────────────────
+# Bearer token for SSE endpoint.  If set, every HTTP request (except /health)
+# must carry  Authorization: Bearer <token>.  Empty string = auth disabled.
+AUTH_TOKEN = os.environ.get("SWISS_CASELAW_AUTH_TOKEN", "")
+
+# Comma-separated allowed CORS origins.  Empty = CORS middleware not mounted
+# (only same-origin / non-browser clients can connect).
+_cors_raw = os.environ.get("SWISS_CASELAW_CORS_ORIGINS", "")
+CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
+
 # Known FTS-searchable columns for explicit column filters (e.g., regeste:foo)
 FTS_COLUMNS = {
     "decision_id",
@@ -3729,31 +3739,33 @@ async def handle_list_tools() -> list[Tool]:
                 "required": ["facts"],
             },
         ),
-        Tool(
-            name="update_database",
-            description=(
-                "Download the latest Swiss caselaw data from HuggingFace "
-                "and rebuild the local search database. Run this on first use "
-                "or to get the latest decisions. "
-                "Starts in background (~30-60 min). Use check_update_status to monitor."
+        *([] if REMOTE_MODE else [
+            Tool(
+                name="update_database",
+                description=(
+                    "Download the latest Swiss caselaw data from HuggingFace "
+                    "and rebuild the local search database. Run this on first use "
+                    "or to get the latest decisions. "
+                    "Starts in background (~30-60 min). Use check_update_status to monitor."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {},
+                },
             ),
-            inputSchema={
-                "type": "object",
-                "properties": {},
-            },
-        ),
-        Tool(
-            name="check_update_status",
-            description=(
-                "Check progress of a running database update. "
-                "Returns current phase, file being processed, and elapsed time. "
-                "Call this after update_database to monitor progress."
+            Tool(
+                name="check_update_status",
+                description=(
+                    "Check progress of a running database update. "
+                    "Returns current phase, file being processed, and elapsed time. "
+                    "Call this after update_database to monitor progress."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {},
+                },
             ),
-            inputSchema={
-                "type": "object",
-                "properties": {},
-            },
-        ),
+        ]),
     ]
 
 
@@ -4001,12 +4013,16 @@ def main_remote(host: str, port: int):
 
     from mcp.server.sse import SseServerTransport
     from starlette.applications import Starlette
-    from starlette.middleware.cors import CORSMiddleware
+    from starlette.responses import JSONResponse, Response
     from starlette.routing import Mount, Route
     import uvicorn
 
     _log_startup()
     logger.info(f"Remote SSE mode on {host}:{port}")
+    if AUTH_TOKEN:
+        logger.info("Bearer-token auth enabled")
+    else:
+        logger.warning("No SWISS_CASELAW_AUTH_TOKEN set — endpoint is unauthenticated")
 
     # Size thread pool for concurrent DB queries (default is too small)
     import concurrent.futures
@@ -4026,20 +4042,64 @@ def main_remote(host: str, port: int):
                 streams[0], streams[1], server.create_initialization_options()
             )
 
+    # ── Health / readiness endpoint (exempt from auth) ────────
+    async def handle_health(request):
+        try:
+            conn = get_db()
+            row = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()
+            conn.close()
+            return JSONResponse({"status": "ok", "decisions": row[0]})
+        except Exception as e:
+            return JSONResponse(
+                {"status": "error", "detail": str(e)}, status_code=503,
+            )
+
     app = Starlette(
         routes=[
+            Route("/health", endpoint=handle_health),
             Route("/sse", endpoint=handle_sse),
             Mount("/messages/", app=sse.handle_post_message),
         ],
     )
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_methods=["GET", "POST"],
-        allow_headers=["*"],
-    )
 
-    uvicorn.run(app, host=host, port=port, log_level="info")
+    # ── CORS (inner layer) ────────────────────────────────────
+    # Only mounted when explicit origins are configured via env var.
+    # Non-browser clients (mcp-remote, Claude Code) ignore CORS entirely.
+    if CORS_ORIGINS:
+        from starlette.middleware.cors import CORSMiddleware
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=CORS_ORIGINS,
+            allow_methods=["GET", "POST"],
+            allow_headers=["Authorization", "Content-Type"],
+        )
+
+    # ── Bearer-token auth (outer layer) ───────────────────────
+    # Wraps the ASGI app; checks Authorization header on every HTTP
+    # request except /health.  Disabled when AUTH_TOKEN is empty.
+    asgi_app = app
+    if AUTH_TOKEN:
+        _inner = app
+
+        class _BearerAuthMiddleware:
+            async def __call__(self, scope, receive, send):
+                if scope["type"] == "http":
+                    path = scope.get("path", "")
+                    if path != "/health":
+                        headers = dict(scope.get("headers", []))
+                        auth = headers.get(b"authorization", b"").decode()
+                        if auth != f"Bearer {AUTH_TOKEN}":
+                            resp = Response(
+                                "Unauthorized", status_code=401,
+                                headers={"WWW-Authenticate": "Bearer"},
+                            )
+                            await resp(scope, receive, send)
+                            return
+                await _inner(scope, receive, send)
+
+        asgi_app = _BearerAuthMiddleware()
+
+    uvicorn.run(asgi_app, host=host, port=port, log_level="info")
 
 
 if __name__ == "__main__":
