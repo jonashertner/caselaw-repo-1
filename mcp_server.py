@@ -4058,6 +4058,7 @@ def main_remote(host: str, port: int):
         routes=[
             Route("/health", endpoint=handle_health),
             Route("/sse", endpoint=handle_sse),
+            Route("/", endpoint=handle_sse),
             Mount("/messages/", app=sse.handle_post_message),
         ],
     )

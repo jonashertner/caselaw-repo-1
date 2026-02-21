@@ -12,69 +12,37 @@ Connect to the hosted server. No data download, no Python, no 65 GB disk usage.
 
 ### What you need
 
-1. **Claude Desktop** — [claude.ai/download](https://claude.ai/download)
-2. **Node.js 18+** — [nodejs.org](https://nodejs.org) (LTS version)
+- **Claude Desktop** — [claude.ai/download](https://claude.ai/download) (Pro, Max, Team, or Enterprise plan)
 
-### macOS
+### Setup (all platforms — macOS, Windows, Linux)
 
-**Step 1.** Open **Terminal** (`Cmd + Space`, type "Terminal") and verify Node.js is installed:
+**Step 1.** Open Claude Desktop → **Settings** → **Connectors**
 
-```bash
-node --version
+**Step 2.** Click **"Add custom connector"** at the bottom
+
+**Step 3.** Paste this URL:
+
+```
+https://mcp.opencaselaw.ch
 ```
 
-**Step 2.** Open your Claude Desktop config file:
-
-```bash
-open ~/Library/Application\ Support/Claude/claude_desktop_config.json
-```
-
-If the file doesn't exist, create it first:
-
-```bash
-echo '{}' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
-open ~/Library/Application\ Support/Claude/claude_desktop_config.json
-```
-
-**Step 3.** Add the `mcpServers` section (merge with any existing config):
-
-```json
-{
-  "mcpServers": {
-    "swiss-caselaw": {
-      "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch/sse"]
-    }
-  }
-}
-```
-
-**Step 4.** Restart Claude Desktop. You should see "swiss-caselaw" in the tools list. Try asking:
+**Step 4.** Click **Add**. You should see "swiss-caselaw" tools available. Try asking:
 
 > Search for BGer decisions on Mietrecht Kündigung from 2024
 
-### Windows
+That's it — no Node.js, no config files, works on all platforms.
 
-**Step 1.** Verify Node.js is installed — open **PowerShell** and run:
+> The `update_database` tool is not available on the remote server — the dataset is updated automatically every night.
 
-```powershell
-node --version
-```
+<details>
+<summary>Alternative: manual JSON config (if custom connectors aren't available on your plan)</summary>
 
-**Step 2.** Open the config file:
+Requires [Node.js 18+](https://nodejs.org).
 
-```powershell
-notepad "$env:APPDATA\Claude\claude_desktop_config.json"
-```
+Add to your `claude_desktop_config.json`:
 
-If the file doesn't exist, create it:
-
-```powershell
-echo '{}' > "$env:APPDATA\Claude\claude_desktop_config.json"
-notepad "$env:APPDATA\Claude\claude_desktop_config.json"
-```
-
-**Step 3.** Add the same config as above:
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -87,11 +55,9 @@ notepad "$env:APPDATA\Claude\claude_desktop_config.json"
 }
 ```
 
-**Step 4.** Restart Claude Desktop and start searching.
+Restart Claude Desktop after saving.
 
-> The `update_database` and `check_update_status` tools are not available on the remote server — the dataset is updated automatically every night.
->
-> **Auth token:** If the server requires authentication, add `"--header", "Authorization: Bearer <token>"` to the `args` array after the URL.
+</details>
 
 ---
 

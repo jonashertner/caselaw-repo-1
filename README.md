@@ -38,13 +38,25 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) that let
 
 Connect directly to the hosted MCP server — no data download, no local database, instant access to 1M+ decisions.
 
+**Claude Desktop** (easiest):
+
+1. Open **Settings** → **Connectors**
+2. Click **"Add custom connector"**
+3. Paste `https://mcp.opencaselaw.ch`
+4. Click **Add**
+
+That's it — no Node.js, no config files, no downloads. Available on Pro, Max, Team, and Enterprise plans.
+
 **Claude Code:**
 
 ```bash
 claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch/sse
 ```
 
-**Claude Desktop** — add to `claude_desktop_config.json`:
+<details>
+<summary>Alternative: manual JSON config (if custom connectors aren't available)</summary>
+
+Add to `claude_desktop_config.json` ([Node.js](https://nodejs.org) required):
 
 ```json
 {
@@ -57,11 +69,9 @@ claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch/sse
 }
 ```
 
-> Requires [Node.js](https://nodejs.org) (for `npx`). The `mcp-remote` package bridges the remote SSE server to Claude Desktop's stdio transport — it's downloaded automatically on first use.
+Restart Claude Desktop after saving.
 
-> **Auth token:** If the server requires authentication, add `--header "Authorization: Bearer <token>"` to the `args` array (Claude Desktop) or `--header "Authorization: Bearer <token>"` flag (Claude Code).
-
-Restart Claude Desktop and start searching.
+</details>
 
 > The `update_database` and `check_update_status` tools are not available on the remote server — the dataset is updated automatically every night.
 
