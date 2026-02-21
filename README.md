@@ -41,7 +41,7 @@ Connect directly to the hosted MCP server — no data download, no local databas
 **Claude Code:**
 
 ```bash
-claude mcp add swiss-caselaw --transport sse http://46.225.79.22:8765/sse
+claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch/sse
 ```
 
 **Claude Desktop** — add to `claude_desktop_config.json`:
@@ -51,7 +51,7 @@ claude mcp add swiss-caselaw --transport sse http://46.225.79.22:8765/sse
   "mcpServers": {
     "swiss-caselaw": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "http://46.225.79.22:8765/sse", "--allow-http"]
+      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch/sse"]
     }
   }
 }

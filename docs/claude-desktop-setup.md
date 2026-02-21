@@ -43,7 +43,7 @@ open ~/Library/Application\ Support/Claude/claude_desktop_config.json
   "mcpServers": {
     "swiss-caselaw": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "http://46.225.79.22:8765/sse", "--allow-http"]
+      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch/sse"]
     }
   }
 }
@@ -81,7 +81,7 @@ notepad "$env:APPDATA\Claude\claude_desktop_config.json"
   "mcpServers": {
     "swiss-caselaw": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "http://46.225.79.22:8765/sse", "--allow-http"]
+      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch/sse"]
     }
   }
 }
