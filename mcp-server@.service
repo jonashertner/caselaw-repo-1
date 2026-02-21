@@ -14,6 +14,7 @@ Restart=always
 RestartSec=5
 NoNewPrivileges=true
 ProtectSystem=strict
+PrivateTmp=true
 ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs /mnt/HC_Volume_104655575
 
 [Install]
