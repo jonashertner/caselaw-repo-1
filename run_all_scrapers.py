@@ -152,7 +152,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                 error = f"{none_count} unavailable decisions (possible portal issue)"
                 failed = True
             else:
-                note = f"{none_count} unavailable on portal"
+                note = f"{none_count} listed on portal but content not downloadable (empty page or missing PDF)"
 
         return {
             "court": court,
