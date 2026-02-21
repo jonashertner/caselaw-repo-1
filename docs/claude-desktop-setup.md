@@ -1,17 +1,108 @@
 # Swiss Case Law — Claude Desktop Setup Guide
 
-Search 1,000,000+ Swiss court decisions directly inside Claude Desktop. The entire dataset runs locally on your machine — no API keys, no cloud services.
+Search 1,000,000+ Swiss court decisions directly inside Claude Desktop.
 
-This guide walks you through every step. Pick your operating system and follow along.
+There are two options: **remote** (no download, instant access) or **local** (offline access, 65 GB disk). Choose one.
 
 ---
 
-## What you need before starting
+## Option A: Remote server (recommended)
 
-1. **Claude Desktop** — download it at [claude.ai/download](https://claude.ai/download) if you don't have it yet
-2. **Python 3.10 or newer** — check by opening a terminal and running `python3 --version` (macOS/Linux) or `python --version` (Windows)
-3. **Git** — check by running `git --version`
-4. **65 GB of free disk space** — the dataset is 7 GB to download, and the search index it builds is ~58 GB
+Connect to the hosted server. No data download, no Python, no 65 GB disk usage.
+
+### What you need
+
+1. **Claude Desktop** — [claude.ai/download](https://claude.ai/download)
+2. **Node.js 18+** — [nodejs.org](https://nodejs.org) (LTS version)
+
+### macOS
+
+**Step 1.** Open **Terminal** (`Cmd + Space`, type "Terminal") and verify Node.js is installed:
+
+```bash
+node --version
+```
+
+**Step 2.** Open your Claude Desktop config file:
+
+```bash
+open ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+
+If the file doesn't exist, create it first:
+
+```bash
+echo '{}' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
+open ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+
+**Step 3.** Add the `mcpServers` section (merge with any existing config):
+
+```json
+{
+  "mcpServers": {
+    "swiss-caselaw": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://46.225.79.22:8765/sse", "--allow-http"]
+    }
+  }
+}
+```
+
+**Step 4.** Restart Claude Desktop. You should see "swiss-caselaw" in the tools list. Try asking:
+
+> Search for BGer decisions on Mietrecht Kündigung from 2024
+
+### Windows
+
+**Step 1.** Verify Node.js is installed — open **PowerShell** and run:
+
+```powershell
+node --version
+```
+
+**Step 2.** Open the config file:
+
+```powershell
+notepad "$env:APPDATA\Claude\claude_desktop_config.json"
+```
+
+If the file doesn't exist, create it:
+
+```powershell
+echo '{}' > "$env:APPDATA\Claude\claude_desktop_config.json"
+notepad "$env:APPDATA\Claude\claude_desktop_config.json"
+```
+
+**Step 3.** Add the same config as above:
+
+```json
+{
+  "mcpServers": {
+    "swiss-caselaw": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://46.225.79.22:8765/sse", "--allow-http"]
+    }
+  }
+}
+```
+
+**Step 4.** Restart Claude Desktop and start searching.
+
+> The `update_database` tool is disabled on the remote server — the dataset is updated automatically every night.
+
+---
+
+## Option B: Local server (offline access)
+
+Run the MCP server locally with your own copy of the database. Requires 65 GB free disk and a one-time 30–60 minute setup.
+
+### What you need
+
+1. **Claude Desktop** — [claude.ai/download](https://claude.ai/download)
+2. **Python 3.10 or newer** — `python3 --version` (macOS/Linux) or `python --version` (Windows)
+3. **Git** — `git --version`
+4. **65 GB of free disk space**
 
 ---
 

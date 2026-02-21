@@ -50,13 +50,16 @@ claude mcp add swiss-caselaw --transport sse http://46.225.79.22:8765/sse
 {
   "mcpServers": {
     "swiss-caselaw": {
-      "url": "http://46.225.79.22:8765/sse"
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://46.225.79.22:8765/sse", "--allow-http"]
     }
   }
 }
 ```
 
-That's it. Restart Claude and start searching.
+> Requires [Node.js](https://nodejs.org) (for `npx`). The `mcp-remote` package bridges the remote SSE server to Claude Desktop's stdio transport — it's downloaded automatically on first use.
+
+Restart Claude Desktop and start searching.
 
 > The `update_database` tool is disabled on the remote server — the dataset is updated automatically every night.
 
