@@ -1,0 +1,15 @@
+[Unit]
+Description=Swiss Case Law MCP Server (Remote SSE)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/caselaw/repo
+Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/mcp_server.py --remote --port 8765
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

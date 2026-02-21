@@ -67,6 +67,10 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import TextContent, Tool
 
+# Set to True when running with --remote (SSE transport).
+# Gates off update_database / check_update_status for remote clients.
+REMOTE_MODE = False
+
 # Add repo root to path so db_schema can be imported when run from any directory
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS
@@ -3724,6 +3728,9 @@ async def handle_list_tools() -> list[Tool]:
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
     try:
+        if REMOTE_MODE and name in ("update_database", "check_update_status"):
+            return [TextContent(type="text", text="This tool is not available on the remote server.")]
+
         if name == "search_decisions":
             results = search_fts5(
                 query=arguments.get("query", ""),
@@ -3924,10 +3931,10 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 # ── Main ──────────────────────────────────────────────────────
 
-async def main():
+def _log_startup():
+    """Log database status on startup."""
     logger.info("Swiss Case Law MCP Server starting")
     logger.info(f"Database: {DB_PATH}")
-
     if DB_PATH.exists():
         stats = get_db_stats()
         logger.info(
@@ -3937,6 +3944,10 @@ async def main():
     else:
         logger.info("No database found. Use 'update_database' tool to download data.")
 
+
+async def main_stdio():
+    """Run the MCP server over stdio (default, local mode)."""
+    _log_startup()
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,
@@ -3945,5 +3956,58 @@ async def main():
         )
 
 
+def main_remote(host: str, port: int):
+    """Run the MCP server over SSE (remote mode)."""
+    global REMOTE_MODE
+    REMOTE_MODE = True
+
+    from mcp.server.sse import SseServerTransport
+    from starlette.applications import Starlette
+    from starlette.middleware.cors import CORSMiddleware
+    from starlette.routing import Mount, Route
+    import uvicorn
+
+    _log_startup()
+    logger.info(f"Remote SSE mode on {host}:{port}")
+
+    sse = SseServerTransport("/messages/")
+
+    async def handle_sse(request):
+        async with sse.connect_sse(
+            request.scope, request.receive, request._send
+        ) as streams:
+            await server.run(
+                streams[0], streams[1], server.create_initialization_options()
+            )
+
+    app = Starlette(
+        routes=[
+            Route("/sse", endpoint=handle_sse),
+            Mount("/messages/", app=sse.handle_post_message),
+        ],
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
+    )
+
+    uvicorn.run(app, host=host, port=port, log_level="info")
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    import argparse
+    parser = argparse.ArgumentParser(description="Swiss Case Law MCP Server")
+    parser.add_argument("--remote", action="store_true",
+                        help="Run in remote SSE mode instead of stdio")
+    parser.add_argument("--host", default="0.0.0.0",
+                        help="Host to bind to in remote mode (default: 0.0.0.0)")
+    parser.add_argument("--port", type=int, default=8765,
+                        help="Port to listen on in remote mode (default: 8765)")
+    args = parser.parse_args()
+
+    if args.remote:
+        main_remote(args.host, args.port)
+    else:
+        asyncio.run(main_stdio())

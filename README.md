@@ -32,9 +32,39 @@ There are four ways to use it, depending on what you need:
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets AI tools search across all 1M+ decisions locally on your machine. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets AI tools search across all 1M+ decisions. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
-### Setup with Claude Code
+### Option A: Remote server (no download needed)
+
+Connect directly to the hosted MCP server — no data download, no local database, instant access to 1M+ decisions.
+
+**Claude Code:**
+
+```bash
+claude mcp add swiss-caselaw --transport sse http://46.225.79.22:8765/sse
+```
+
+**Claude Desktop** — add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "swiss-caselaw": {
+      "url": "http://46.225.79.22:8765/sse"
+    }
+  }
+}
+```
+
+That's it. Restart Claude and start searching.
+
+> The `update_database` tool is disabled on the remote server — the dataset is updated automatically every night.
+
+### Option B: Local server (for offline access)
+
+Run the MCP server locally with your own copy of the database (~65 GB disk). This gives you offline access and full control over the data.
+
+#### Setup with Claude Code
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's CLI for working with Claude in the terminal.
 
@@ -101,7 +131,7 @@ Claude calls the MCP tools automatically — you see the search results inline a
 
 The dataset is updated daily. To get the latest decisions, ask Claude to run the `update_database` tool, or call it explicitly. This re-downloads the Parquet files from HuggingFace and rebuilds the local database.
 
-### Setup with Claude Desktop
+#### Setup with Claude Desktop
 
 See the **[Claude Desktop setup guide](docs/claude-desktop-setup.md)** for step-by-step instructions (macOS + Windows).
 
