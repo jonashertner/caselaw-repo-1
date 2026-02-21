@@ -537,6 +537,7 @@ def search_fts5(
     decision_type: str | None = None,
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
+    sort: str | None = None,
 ) -> tuple[list[dict], int]:
     """
     Full-text search using SQLite FTS5 with BM25 ranking.
@@ -556,6 +557,7 @@ def search_fts5(
         return _search_fts5_inner(
             conn, query, court, canton, language,
             date_from, date_to, chamber, decision_type, limit, offset,
+            sort=sort,
         )
     finally:
         conn.close()
@@ -573,6 +575,7 @@ def _search_fts5_inner(
     decision_type: str | None,
     limit: int,
     offset: int = 0,
+    sort: str | None = None,
 ) -> tuple[list[dict], int]:
     """Inner search logic. Returns (results, total_count). Caller closes conn."""
     is_filter_only = not query.strip()
@@ -583,7 +586,7 @@ def _search_fts5_inner(
     fts_query = query.strip()
     if not fts_query:
         # No search query — return recent decisions with filters
-        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset)
+        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset, sort=sort)
 
     # Build WHERE clause for filters (applied to main table via JOIN)
     filters = []
@@ -749,6 +752,7 @@ def _search_fts5_inner(
             limit,
             fusion_scores=fusion_scores,
             offset=offset,
+            sort=sort,
         )
         if inline_docket_results:
             merged = _merge_priority_results(
@@ -1329,6 +1333,7 @@ def _rerank_rows(
     *,
     fusion_scores: dict[str, dict] | None = None,
     offset: int = 0,
+    sort: str | None = None,
 ) -> list[dict]:
     """
     Re-rank lexical FTS candidates with lightweight query-intent signals.
@@ -1476,6 +1481,11 @@ def _rerank_rows(
 
     scored = _apply_cross_encoder_boosts(scored, raw_query)
     scored.sort(key=lambda x: (-x[0], x[1], x[2]))
+
+    # Apply user-requested sort order (overrides relevance ranking)
+    if sort in ("date_desc", "date_asc"):
+        reverse = sort == "date_desc"
+        scored.sort(key=lambda x: (x[3]["decision_date"] or ""), reverse=reverse)
 
     results: list[dict] = []
     for final_score, _bm25, _idx, row in scored[offset:offset + limit]:
@@ -3222,6 +3232,7 @@ def _list_recent(
     decision_type: str | None = None,
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
+    sort: str | None = None,
 ) -> tuple[list[dict], int]:
     """List recent decisions without FTS query (just filters).
     Returns (results, total_count) with exact count."""
@@ -3256,11 +3267,12 @@ def _list_recent(
         f"SELECT COUNT(*) FROM decisions {where}", params,
     ).fetchone()[0]
 
+    order_dir = "ASC" if sort == "date_asc" else "DESC"
     rows = conn.execute(
         f"""SELECT decision_id, court, canton, chamber, docket_number,
             decision_date, language, title, regeste, source_url, pdf_url
         FROM decisions {where}
-        ORDER BY decision_date DESC
+        ORDER BY decision_date {order_dir}
         LIMIT ? OFFSET ?""",
         params + [limit, offset],
     ).fetchall()
@@ -3544,8 +3556,11 @@ async def handle_list_tools() -> list[Tool]:
                 "Search Swiss court decisions using full-text search. "
                 "Supports keywords, phrases (in quotes), Boolean operators "
                 "(AND, OR, NOT), and prefix matching (word*). "
-                "Filter by court, canton, language, and date range. "
-                "Returns BM25-ranked results with snippets."
+                "Filter by court, canton, language, date range, chamber, and decision type. "
+                "Also handles docket number lookup (e.g., 6B_1234/2025) and "
+                "column-scoped search (regeste:keyword, full_text:keyword). "
+                "Returns BM25-ranked results with snippets. "
+                "Use offset for pagination through large result sets."
             ),
             inputSchema={
                 "type": "object",
@@ -3606,13 +3621,23 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Max results (default 20, max 100)",
-                        "default": 20,
+                        "description": "Max results (default 50, max 2000). For filter-only queries (empty query), max 10000.",
+                        "default": 50,
                     },
                     "offset": {
                         "type": "integer",
                         "description": "Skip this many results (for pagination). Default 0.",
                         "default": 0,
+                    },
+                    "sort": {
+                        "type": "string",
+                        "description": "Sort order: 'relevance' (default for FTS), 'date_desc', 'date_asc'.",
+                        "enum": ["relevance", "date_desc", "date_asc"],
+                    },
+                    "fields": {
+                        "type": "string",
+                        "description": "Response detail level: 'full' (default) includes snippet/regeste/URL, 'compact' returns only docket, date, court, language, decision_id.",
+                        "enum": ["full", "compact"],
                     },
                 },
                 "required": ["query"],
@@ -3623,7 +3648,9 @@ async def handle_list_tools() -> list[Tool]:
             description=(
                 "Fetch a single court decision with full text. "
                 "Look up by decision_id (e.g., bger_6B_1234_2025), "
-                "docket number (e.g., 6B_1234/2025), or partial match."
+                "docket number (e.g., 6B_1234/2025), or partial match. "
+                "Full text is truncated at 50,000 characters for very long decisions. "
+                "Set full_text=false to get only metadata and regeste."
             ),
             inputSchema={
                 "type": "object",
@@ -3631,6 +3658,11 @@ async def handle_list_tools() -> list[Tool]:
                     "decision_id": {
                         "type": "string",
                         "description": "Decision ID, docket number, or partial docket",
+                    },
+                    "full_text": {
+                        "type": "boolean",
+                        "description": "Include full text in response (default true). Set false to get only metadata and regeste.",
+                        "default": True,
                     },
                 },
                 "required": ["decision_id"],
@@ -3668,7 +3700,10 @@ async def handle_list_tools() -> list[Tool]:
                 "Build a research-only mock decision outline from user facts. "
                 "Combines relevant Swiss case law retrieval with statute references. "
                 "If possible, enriches statutes with Fedlex text excerpts. "
-                "Asks high-priority clarification questions before providing a conclusion."
+                "IMPORTANT: The tool may return clarification questions (high/medium priority). "
+                "High-priority clarifications must be answered (via the clarifications parameter) "
+                "before the tool will provide a conclusion. Call again with clarifications "
+                "to get the full analysis."
             ),
             inputSchema={
                 "type": "object",
@@ -3777,6 +3812,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
         if name == "search_decisions":
             req_offset = int(arguments.get("offset", 0))
+            sort_arg = arguments.get("sort")
+            fields_arg = arguments.get("fields", "full")
             results, total_count = await asyncio.to_thread(
                 search_fts5,
                 query=arguments.get("query", ""),
@@ -3789,38 +3826,43 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 decision_type=arguments.get("decision_type"),
                 limit=arguments.get("limit", DEFAULT_LIMIT),
                 offset=req_offset,
+                sort=sort_arg,
             )
             if not results:
                 text = f"No decisions found matching your query (total: {total_count})."
             else:
-                # Re-highlight snippets with phrase-aware highlighter
-                raw_q = arguments.get("query", "")
-                _rank = _extract_rank_terms(raw_q)
-                _phrase = _normalize_text_for_match(_clean_for_phrase(raw_q))
+                # Strip <mark> tags from snippets (noise for LLM consumers)
                 for r in results:
                     if r.get("snippet"):
-                        # Strip SQLite's individual-word marks, re-apply with phrase support
-                        plain = r["snippet"].replace("<mark>", "").replace("</mark>", "")
-                        r["snippet"] = _highlight_terms(plain, _rank, _phrase, raw_q)
+                        r["snippet"] = r["snippet"].replace("<mark>", "").replace("</mark>", "")
 
                 end = req_offset + len(results)
                 text = f"Found {total_count} decisions (showing {req_offset + 1}\u2013{end}):\n\n"
-                for i, r in enumerate(results, 1):
-                    text += (
-                        f"**{i}. {r['docket_number']}** ({r['decision_date']}) "
-                        f"[{r['court']}] [{r['language']}]\n"
-                    )
-                    if r.get("decision_id"):
-                        text += f"   ID: {r['decision_id']}\n"
-                    if r.get("title"):
-                        text += f"   Title: {r['title']}\n"
-                    if r.get("regeste"):
-                        text += f"   Regeste: {r['regeste']}\n"
-                    if r.get("snippet"):
-                        text += f"   ...{r['snippet']}...\n"
-                    if r.get("source_url"):
-                        text += f"   URL: {r['source_url']}\n"
-                    text += "\n"
+
+                if fields_arg == "compact":
+                    for i, r in enumerate(results, 1):
+                        text += (
+                            f"{i}. {r['docket_number']} ({r['decision_date']}) "
+                            f"[{r['court']}] [{r['language']}] "
+                            f"ID:{r['decision_id']}\n"
+                        )
+                else:
+                    for i, r in enumerate(results, 1):
+                        text += (
+                            f"**{i}. {r['docket_number']}** ({r['decision_date']}) "
+                            f"[{r['court']}] [{r['language']}]\n"
+                        )
+                        if r.get("decision_id"):
+                            text += f"   ID: {r['decision_id']}\n"
+                        if r.get("title"):
+                            text += f"   Title: {r['title']}\n"
+                        if r.get("regeste"):
+                            text += f"   Regeste: {r['regeste']}\n"
+                        if r.get("snippet"):
+                            text += f"   ...{r['snippet']}...\n"
+                        if r.get("source_url"):
+                            text += f"   URL: {r['source_url']}\n"
+                        text += "\n"
 
             return [TextContent(type="text", text=text)]
 
@@ -3831,6 +3873,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                     type="text",
                     text=f"Decision not found: {arguments['decision_id']}",
                 )]
+            include_full_text = arguments.get("full_text", True)
             # Format full decision
             text = (
                 f"# {result['docket_number']}\n"
@@ -3844,7 +3887,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 text += f"**Title:** {result['title']}\n"
             if result.get("regeste"):
                 text += f"\n## Regeste\n{result['regeste']}\n"
-            if result.get("full_text"):
+            if include_full_text and result.get("full_text"):
                 ft = result["full_text"]
                 if len(ft) > 50000:
                     text += f"\n## Full Text (first 50,000 of {len(ft)} chars)\n{ft[:50000]}\n..."
@@ -3863,12 +3906,13 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             if not courts:
                 return [TextContent(type="text", text="No data available. Run 'update_database' first.")]
             text = "Available courts:\n\n"
-            text += f"{'Court':<25} {'Canton':<8} {'Decisions':>10}  {'Earliest':>12} {'Latest':>12}\n"
-            text += "-" * 75 + "\n"
+            text += f"{'Court':<25} {'Canton':<8} {'Decisions':>10}  {'Languages':>4}  {'Earliest':>12} {'Latest':>12}\n"
+            text += "-" * 83 + "\n"
             for c in courts:
                 text += (
                     f"{c['court']:<25} {c['canton']:<8} "
                     f"{c['decision_count']:>10,}  "
+                    f"{c['languages']:>4}  "
                     f"{c['earliest']:>12} {c['latest']:>12}\n"
                 )
             return [TextContent(type="text", text=text)]
@@ -3880,9 +3924,13 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 canton=arguments.get("canton"),
                 year=arguments.get("year"),
             )
+            total = stats.get("total", 0)
+            courts_count = len(stats.get("by_court", {}))
+            langs = len(stats.get("by_language", {}))
+            summary = f"Total: {total:,} decisions across {courts_count} courts in {langs} languages.\n\n"
             return [TextContent(
                 type="text",
-                text=json.dumps(stats, indent=2, ensure_ascii=False),
+                text=summary + json.dumps(stats, indent=2, ensure_ascii=False),
             )]
 
         elif name == "draft_mock_decision":
