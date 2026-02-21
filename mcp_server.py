@@ -458,7 +458,7 @@ def get_db() -> sqlite3.Connection:
     for _ in range(3):
         try:
             conn = sqlite3.connect(
-                f"file:{DB_PATH}?mode=ro",
+                f"file:{DB_PATH}?immutable=1",
                 uri=True,
                 check_same_thread=False,
                 timeout=1.0,
