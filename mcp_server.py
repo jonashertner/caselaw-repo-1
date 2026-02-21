@@ -93,9 +93,10 @@ PARQUET_DIR = DATA_DIR / "parquet"
 
 MAX_SNIPPET_LEN = 500  # chars per snippet
 DEFAULT_LIMIT = 50
-MAX_LIMIT = 200
+MAX_LIMIT = 2000           # FTS searches with reranking
+FILTER_MAX_LIMIT = 10000   # filter-only queries (no FTS, no reranking)
 MAX_FACT_DECISION_LIMIT = 20
-MAX_RERANK_CANDIDATES = 300
+MAX_RERANK_CANDIDATES = 2500
 MIN_CANDIDATE_POOL = 60
 TARGET_POOL_MULTIPLIER = 4
 DOCKET_MIN_CANDIDATE_POOL = 80
@@ -525,9 +526,13 @@ def search_fts5(
     chamber: str | None = None,
     decision_type: str | None = None,
     limit: int = DEFAULT_LIMIT,
-) -> list[dict]:
+    offset: int = 0,
+) -> tuple[list[dict], int]:
     """
     Full-text search using SQLite FTS5 with BM25 ranking.
+
+    Returns (results, total_count) where total_count is the approximate
+    total number of matching decisions (exact for filter-only queries).
 
     The FTS5 query supports:
     - Simple words: verfassungsrecht
@@ -540,7 +545,7 @@ def search_fts5(
     try:
         return _search_fts5_inner(
             conn, query, court, canton, language,
-            date_from, date_to, chamber, decision_type, limit,
+            date_from, date_to, chamber, decision_type, limit, offset,
         )
     finally:
         conn.close()
@@ -557,14 +562,18 @@ def _search_fts5_inner(
     chamber: str | None,
     decision_type: str | None,
     limit: int,
-) -> list[dict]:
-    """Inner search logic. Caller is responsible for closing conn."""
-    limit = max(1, min(limit, MAX_LIMIT))
+    offset: int = 0,
+) -> tuple[list[dict], int]:
+    """Inner search logic. Returns (results, total_count). Caller closes conn."""
+    is_filter_only = not query.strip()
+    effective_max = FILTER_MAX_LIMIT if is_filter_only else MAX_LIMIT
+    limit = max(1, min(limit, effective_max))
+    offset = max(0, offset)
 
     fts_query = query.strip()
     if not fts_query:
         # No search query — return recent decisions with filters
-        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit)
+        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset)
 
     # Build WHERE clause for filters (applied to main table via JOIN)
     filters = []
@@ -602,9 +611,10 @@ def _search_fts5_inner(
     # Docket-style lookups should prioritize exact/near-exact docket matches.
     if is_docket_query:
         try:
-            docket_results = _search_by_docket(conn, fts_query, where, params, limit)
+            docket_results = _search_by_docket(conn, fts_query, where, params, offset + limit)
             if docket_results:
-                return docket_results
+                total = len(docket_results)
+                return docket_results[offset:offset + limit], total
         except sqlite3.OperationalError as e:
             logger.debug("Docket-first query failed, falling back to FTS: %s", e)
     if inline_docket_candidates:
@@ -647,6 +657,7 @@ def _search_fts5_inner(
     strategies = _build_query_strategies(fts_query)
     target_pool = _target_candidate_pool(
         limit=limit,
+        offset=offset,
         is_docket=is_docket_query,
         has_explicit_syntax=has_explicit_syntax,
     )
@@ -657,7 +668,8 @@ def _search_fts5_inner(
         strategy_name = strategy.get("name", "")
         strategy_weight = float(strategy.get("weight", 1.0))
         expensive_strategy = strategy_name in {"nl_or", "nl_or_expanded"}
-        early_enough = max(limit * 2, 20)
+        effective_need = offset + limit
+        early_enough = max(effective_need * 2, 20)
         if expensive_strategy and len(candidate_meta) >= early_enough:
             break
         if strategy_name == "nl_or_expanded" and not query_has_expandable_terms:
@@ -665,7 +677,7 @@ def _search_fts5_inner(
         if expensive_strategy and _query_has_numeric_terms(fts_query):
             continue
         try:
-            candidate_limit = min(max(target_pool, limit * 2), MAX_RERANK_CANDIDATES)
+            candidate_limit = min(max(target_pool, effective_need * 2), MAX_RERANK_CANDIDATES)
             if strategy_name in {"regeste_focus", "title_focus"}:
                 candidate_limit = min(
                     MAX_RERANK_CANDIDATES,
@@ -708,7 +720,7 @@ def _search_fts5_inner(
 
         if len(candidate_meta) >= target_pool:
             break
-        if idx == 0 and has_explicit_syntax and len(candidate_meta) >= limit:
+        if idx == 0 and has_explicit_syntax and len(candidate_meta) >= effective_need:
             break
 
     if candidate_meta:
@@ -720,27 +732,33 @@ def _search_fts5_inner(
             }
             for did, meta in candidate_meta.items()
         }
+        total_candidates = len(candidate_meta)
         reranked = _rerank_rows(
             rows_for_rerank,
             fts_query,
             limit,
             fusion_scores=fusion_scores,
+            offset=offset,
         )
         if inline_docket_results:
-            return _merge_priority_results(
+            merged = _merge_priority_results(
                 primary=inline_docket_results,
                 secondary=reranked,
                 limit=limit,
+                offset=offset,
             )
-        return reranked
+            return merged, total_candidates + len(inline_docket_results)
+        return reranked, total_candidates
 
     if had_success:
         if inline_docket_results:
-            return inline_docket_results[:limit]
-        return []
+            total = len(inline_docket_results)
+            return inline_docket_results[offset:offset + limit], total
+        return [], 0
     if inline_docket_results:
-        return inline_docket_results[:limit]
-    return []
+        total = len(inline_docket_results)
+        return inline_docket_results[offset:offset + limit], total
+    return [], 0
 
 
 def _search_by_docket(
@@ -1050,9 +1068,10 @@ def _merge_priority_results(
     primary: list[dict],
     secondary: list[dict],
     limit: int,
+    offset: int = 0,
 ) -> list[dict]:
     merged = _dedupe_results_by_decision_id((primary or []) + (secondary or []))
-    return merged[: max(1, limit)]
+    return merged[offset:offset + max(1, limit)]
 
 
 def _extract_query_statute_refs(query: str) -> set[str]:
@@ -1299,6 +1318,7 @@ def _rerank_rows(
     limit: int,
     *,
     fusion_scores: dict[str, dict] | None = None,
+    offset: int = 0,
 ) -> list[dict]:
     """
     Re-rank lexical FTS candidates with lightweight query-intent signals.
@@ -1448,7 +1468,7 @@ def _rerank_rows(
     scored.sort(key=lambda x: (-x[0], x[1], x[2]))
 
     results: list[dict] = []
-    for final_score, _bm25, _idx, row in scored[:limit]:
+    for final_score, _bm25, _idx, row in scored[offset:offset + limit]:
         full_text = _row_get(row, "full_text_raw")
         best_snippet = _select_best_passage_snippet(
             full_text,
@@ -1781,10 +1801,11 @@ def _term_coverage(terms: list[str], text: str) -> float:
     return hits / len(terms)
 
 
-def _target_candidate_pool(*, limit: int, is_docket: bool, has_explicit_syntax: bool) -> int:
-    pool = max(MIN_CANDIDATE_POOL, limit * TARGET_POOL_MULTIPLIER)
+def _target_candidate_pool(*, limit: int, offset: int = 0, is_docket: bool, has_explicit_syntax: bool) -> int:
+    effective = offset + limit
+    pool = max(MIN_CANDIDATE_POOL, effective * TARGET_POOL_MULTIPLIER)
     if has_explicit_syntax:
-        pool = max(pool, limit * 2)
+        pool = max(pool, effective * 2)
     if is_docket:
         pool = max(pool, DOCKET_MIN_CANDIDATE_POOL)
     return min(pool, MAX_RERANK_CANDIDATES)
@@ -2511,19 +2532,19 @@ def _retrieve_case_law_for_facts(
                 }
 
     focused_query = _extract_legal_query_from_facts(query_text, statute_requests)
-    base_rows = search_fts5(query=focused_query, limit=pool_limit)
+    base_rows, _ = search_fts5(query=focused_query, limit=pool_limit)
     _add(base_rows, source="facts_query", extra_score=0.4)
 
     # Broader fallback with raw text at lower weight (only if focused query differs)
     if focused_query != query_text:
-        fallback_rows = search_fts5(query=query_text, limit=max(8, pool_limit // 2))
+        fallback_rows, _ = search_fts5(query=query_text, limit=max(8, pool_limit // 2))
         _add(fallback_rows, source="facts_broad", extra_score=0.15)
 
     for st in statute_requests[:5]:
         q = f"Art. {st['article']} {st['law_code']}"
         if st.get("paragraph"):
             q = f"Art. {st['article']} Abs. {st['paragraph']} {st['law_code']}"
-        rows = search_fts5(query=q, limit=min(25, pool_limit))
+        rows, _ = search_fts5(query=q, limit=min(25, pool_limit))
         _add(rows, source=f"statute_query:{st['law_code']}:{st['article']}", extra_score=0.55)
 
     graph_rows = _search_graph_decisions_for_statutes(statute_requests=statute_requests, limit=pool_limit)
@@ -3190,8 +3211,10 @@ def _list_recent(
     chamber: str | None = None,
     decision_type: str | None = None,
     limit: int = DEFAULT_LIMIT,
-) -> list[dict]:
-    """List recent decisions without FTS query (just filters)."""
+    offset: int = 0,
+) -> tuple[list[dict], int]:
+    """List recent decisions without FTS query (just filters).
+    Returns (results, total_count) with exact count."""
     filters = []
     params: list = []
 
@@ -3219,16 +3242,20 @@ def _list_recent(
 
     where = ("WHERE " + " AND ".join(filters)) if filters else ""
 
+    total_count = conn.execute(
+        f"SELECT COUNT(*) FROM decisions {where}", params,
+    ).fetchone()[0]
+
     rows = conn.execute(
         f"""SELECT decision_id, court, canton, chamber, docket_number,
             decision_date, language, title, regeste, source_url, pdf_url
         FROM decisions {where}
         ORDER BY decision_date DESC
-        LIMIT ?""",
-        params + [limit],
+        LIMIT ? OFFSET ?""",
+        params + [limit, offset],
     ).fetchall()
 
-    return [dict(r) for r in rows]
+    return [dict(r) for r in rows], total_count
 
 
 def _truncate(text: str | None, max_len: int) -> str | None:
@@ -3572,6 +3599,11 @@ async def handle_list_tools() -> list[Tool]:
                         "description": "Max results (default 20, max 100)",
                         "default": 20,
                     },
+                    "offset": {
+                        "type": "integer",
+                        "description": "Skip this many results (for pagination). Default 0.",
+                        "default": 0,
+                    },
                 },
                 "required": ["query"],
             },
@@ -3732,7 +3764,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(type="text", text="This tool is not available on the remote server.")]
 
         if name == "search_decisions":
-            results = await asyncio.to_thread(
+            req_offset = int(arguments.get("offset", 0))
+            results, total_count = await asyncio.to_thread(
                 search_fts5,
                 query=arguments.get("query", ""),
                 court=arguments.get("court"),
@@ -3743,9 +3776,10 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 chamber=arguments.get("chamber"),
                 decision_type=arguments.get("decision_type"),
                 limit=arguments.get("limit", DEFAULT_LIMIT),
+                offset=req_offset,
             )
             if not results:
-                text = "No decisions found matching your query."
+                text = f"No decisions found matching your query (total: {total_count})."
             else:
                 # Re-highlight snippets with phrase-aware highlighter
                 raw_q = arguments.get("query", "")
@@ -3757,7 +3791,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                         plain = r["snippet"].replace("<mark>", "").replace("</mark>", "")
                         r["snippet"] = _highlight_terms(plain, _rank, _phrase, raw_q)
 
-                text = f"Found {len(results)} decisions:\n\n"
+                end = req_offset + len(results)
+                text = f"Found {total_count} decisions (showing {req_offset + 1}\u2013{end}):\n\n"
                 for i, r in enumerate(results, 1):
                     text += (
                         f"**{i}. {r['docket_number']}** ({r['decision_date']}) "
