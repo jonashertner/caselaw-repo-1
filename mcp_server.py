@@ -3732,7 +3732,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(type="text", text="This tool is not available on the remote server.")]
 
         if name == "search_decisions":
-            results = search_fts5(
+            results = await asyncio.to_thread(
+                search_fts5,
                 query=arguments.get("query", ""),
                 court=arguments.get("court"),
                 canton=arguments.get("canton"),
@@ -3777,7 +3778,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(type="text", text=text)]
 
         elif name == "get_decision":
-            result = get_decision_by_id(arguments["decision_id"])
+            result = await asyncio.to_thread(get_decision_by_id, arguments["decision_id"])
             if not result:
                 return [TextContent(
                     type="text",
@@ -3811,7 +3812,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(type="text", text=text)]
 
         elif name == "list_courts":
-            courts = list_courts()
+            courts = await asyncio.to_thread(list_courts)
             if not courts:
                 return [TextContent(type="text", text="No data available. Run 'update_database' first.")]
             text = "Available courts:\n\n"
@@ -3826,7 +3827,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(type="text", text=text)]
 
         elif name == "get_statistics":
-            stats = get_statistics(
+            stats = await asyncio.to_thread(
+                get_statistics,
                 court=arguments.get("court"),
                 canton=arguments.get("canton"),
                 year=arguments.get("year"),
@@ -3837,7 +3839,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             )]
 
         elif name == "draft_mock_decision":
-            report = draft_mock_decision(
+            report = await asyncio.to_thread(
+                draft_mock_decision,
                 facts=arguments.get("facts", ""),
                 question=arguments.get("question"),
                 preferred_language=arguments.get("preferred_language"),
