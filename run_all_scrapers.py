@@ -134,30 +134,36 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                         error_tail.append(line.strip())
 
         error = None
-        # Failure conditions: nonzero exit, high errors, or excessive None returns
-        ERROR_THRESHOLD = 20
-        NONE_THRESHOLD = 200
+        note = None
         failed = result.returncode != 0
         if result.returncode != 0:
             error = " | ".join(error_tail) if error_tail else f"Exit code {result.returncode}"
-        elif error_count >= ERROR_THRESHOLD and error_count > new_count:
-            error = f"{error_count} scraping errors (more errors than new decisions)"
-            failed = True
-        elif none_count >= NONE_THRESHOLD:
-            error = f"{none_count} None returns (possible portal issue)"
-            failed = True
-        elif error_count > 0:
-            error = f"{error_count} scraping errors"
+        elif error_count > 0 and error_count > none_count:
+            # Real exceptions (not just NoneReturns)
+            real_errors = error_count - none_count
+            error = f"{real_errors} scraping errors"
+            if real_errors > 20 and real_errors > new_count:
+                failed = True
+
+        # NoneReturns are expected for portals with a few broken entries.
+        # Only flag as a note, not an error, unless excessive.
+        if none_count > 0:
+            if none_count >= 200:
+                error = f"{none_count} unavailable decisions (possible portal issue)"
+                failed = True
+            else:
+                note = f"{none_count} unavailable on portal"
 
         return {
             "court": court,
             "success": not failed,
             "new_count": new_count,
             "skip_count": skip_count,
-            "error_count": error_count,
+            "error_count": error_count - none_count,  # real errors only
             "none_count": none_count,
             "duration": duration,
             "error": error,
+            "note": note,
         }
 
     except subprocess.TimeoutExpired:
@@ -178,8 +184,10 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "new_count": new_count,
             "skip_count": 0,
             "error_count": 0,
+            "none_count": 0,
             "duration": duration,
             "error": f"Timed out after {timeout}s (still running)",
+            "note": None,
         }
     except Exception as e:
         duration = time.time() - start
@@ -189,8 +197,10 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "new_count": 0,
             "skip_count": 0,
             "error_count": 0,
+            "none_count": 0,
             "duration": duration,
             "error": str(e)[:200],
+            "note": None,
         }
 
 
@@ -337,6 +347,7 @@ def main():
                 "none_count": r.get("none_count", 0),
                 "duration_s": round(r["duration"], 1),
                 "error": r["error"],
+                "note": r.get("note"),
             }
             for r in results
         },

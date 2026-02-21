@@ -199,20 +199,14 @@ def run_with_persistence(
                 )
             else:
                 none_count += 1
-                errors += 1
                 logger.warning(
                     f"[{scraper_key}] fetch_decision returned None ({none_count}): "
                     f"{stub.get('docket_number', '?')}"
                 )
-                max_err = getattr(scraper, "MAX_ERRORS", 50)
-                if errors >= max_err:
-                    logger.error(
-                        f"[{scraper_key}] Too many errors ({errors}), stopping."
-                    )
-                    break
                 # Consecutive Nones beyond a threshold suggest a systemic issue
                 max_none = getattr(scraper, "MAX_NONE_RETURNS", 200)
                 if none_count >= max_none:
+                    errors += 1  # promote to real error for exit code
                     logger.error(
                         f"[{scraper_key}] Too many None returns ({none_count}), "
                         f"possible portal issue — stopping."

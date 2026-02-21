@@ -9,7 +9,7 @@ from base_scraper import BaseScraper
 
 class _NoneReturningBaseScraper(BaseScraper):
     REQUEST_DELAY = 0.0
-    MAX_ERRORS = 0
+    MAX_NONE_RETURNS = 2
 
     def __init__(self, state_dir: Path):
         super().__init__(state_dir=state_dir)
@@ -22,6 +22,7 @@ class _NoneReturningBaseScraper(BaseScraper):
     def discover_new(self, since_date=None):
         yield {"docket_number": "A-1"}
         yield {"docket_number": "A-2"}
+        yield {"docket_number": "A-3"}
 
     def fetch_decision(self, stub: dict):
         self.fetch_calls += 1
@@ -63,15 +64,17 @@ class _PipelineDummyScraper:
         self.mark_called = True
 
 
-def test_base_scraper_counts_none_fetch_as_error(tmp_path: Path):
+def test_base_scraper_stops_after_max_none_returns(tmp_path: Path):
     scraper = _NoneReturningBaseScraper(state_dir=tmp_path / "state")
     decisions = scraper.run()
     assert decisions == []
-    # MAX_ERRORS=0, so the first None-return should trip error budget and stop.
-    assert scraper.fetch_calls == 1
+    # MAX_NONE_RETURNS=2, so after 2 None returns it stops (doesn't reach stub A-3).
+    assert scraper.fetch_calls == 2
 
 
-def test_run_scraper_returns_errors_when_fetch_returns_none(tmp_path: Path, monkeypatch):
+def test_run_scraper_does_not_count_none_returns_as_errors(tmp_path: Path, monkeypatch):
+    """NoneReturns are expected for portals with broken entries.
+    They should not increment the error count or cause exit code 1."""
     monkeypatch.setattr(
         run_scraper,
         "SCRAPERS",
@@ -82,7 +85,7 @@ def test_run_scraper_returns_errors_when_fetch_returns_none(tmp_path: Path, monk
         output_dir=tmp_path / "output",
         state_dir=tmp_path / "state",
     )
-    assert errors == 3
+    assert errors == 0
 
 
 def test_pipeline_marks_court_failed_if_parquet_write_returns_none(tmp_path: Path, monkeypatch):

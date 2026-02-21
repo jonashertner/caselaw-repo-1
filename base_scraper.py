@@ -358,13 +358,14 @@ class BaseScraper(ABC):
                     )
                 else:
                     skipped += 1
-                    errors += 1
-                    logger.error(
+                    logger.warning(
                         f"[{self.court_code}] fetch_decision returned None for "
                         f"{stub.get('docket_number', '?')}"
                     )
-                    if errors > self.MAX_ERRORS:
-                        logger.error(f"[{self.court_code}] Too many errors ({errors}), stopping.")
+                    max_none = getattr(self, "MAX_NONE_RETURNS", 200)
+                    if skipped >= max_none:
+                        errors += 1
+                        logger.error(f"[{self.court_code}] Too many None returns ({skipped}), stopping.")
                         break
             except Exception as e:
                 errors += 1
