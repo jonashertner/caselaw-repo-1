@@ -108,7 +108,7 @@ Connect the dataset to Claude Code or Claude Desktop for natural-language search
 
 ```bash
 # Claude Code
-claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch/sse
+claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 
 # Claude Desktop: Settings → Connectors → Add custom connector → https://mcp.opencaselaw.ch
 ```

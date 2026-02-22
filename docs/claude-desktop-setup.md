@@ -49,7 +49,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "swiss-caselaw": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch/sse"]
+      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch"]
     }
   }
 }

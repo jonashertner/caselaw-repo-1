@@ -50,7 +50,7 @@ That's it — no Node.js, no config files, no downloads. Available on Pro, Max, 
 **Claude Code:**
 
 ```bash
-claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch/sse
+claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 ```
 
 <details>
@@ -63,7 +63,7 @@ Add to `claude_desktop_config.json` ([Node.js](https://nodejs.org) required):
   "mcpServers": {
     "swiss-caselaw": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch/sse"]
+      "args": ["-y", "mcp-remote", "https://mcp.opencaselaw.ch"]
     }
   }
 }
