@@ -102,7 +102,18 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude Code for natural-language search over all 1M+ decisions. Everything runs locally on your machine.
+Connect the dataset to Claude Code or Claude Desktop for natural-language search over all 1M+ decisions.
+
+**Remote (no download needed):**
+
+```bash
+# Claude Code
+claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch/sse
+
+# Claude Desktop: Settings → Connectors → Add custom connector → https://mcp.opencaselaw.ch
+```
+
+**Local (offline access, ~65 GB disk):**
 
 ```bash
 git clone https://github.com/jonashertner/caselaw-repo-1.git
@@ -116,9 +127,25 @@ claude mcp add swiss-caselaw -- /path/to/.venv/bin/python3 /path/to/mcp_server.p
 
 On first search, the server downloads the Parquet files (~7 GB) from this dataset and builds a local SQLite FTS5 index (~58 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
 
-Then ask: *"Find BGer decisions on tenant eviction from 2024"*
+#### MCP tools
 
-To update: ask Claude to run the `update_database` tool. It re-downloads the latest Parquet files and rebuilds the index.
+| Tool | Description |
+|------|-------------|
+| `search_decisions` | Full-text search with filters (court, canton, language, date range, chamber, decision type) |
+| `get_decision` | Fetch a single decision by docket number or ID. Includes citation graph counts. |
+| `list_courts` | List all courts with decision counts |
+| `get_statistics` | Aggregate stats by court, canton, or year |
+| `find_citations` | Show what a decision cites and what cites it, with confidence scores |
+| `find_leading_cases` | Find the most-cited decisions for a topic or statute |
+| `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
+| `draft_mock_decision` | Research-only mock decision outline from facts, grounded in caselaw + statutes |
+| `update_database` | Re-download latest data and rebuild the local database (local mode only) |
+
+The citation graph tools (`find_citations`, `find_leading_cases`, `analyze_legal_trend`) use a **reference graph** with 7.85 million citation edges linking 1M+ decisions and 330K statute references:
+
+- *"What are the leading cases on Art. 8 EMRK?"* → Top decisions ranked by citation count
+- *"Show me the citation network for BGE 138 III 374"* → 13 outgoing, 13,621 incoming citations
+- *"How has Art. 29 BV jurisprudence evolved?"* → Year-by-year trend from 2000 to present
 
 See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
 
