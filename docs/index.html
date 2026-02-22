@@ -353,22 +353,21 @@ section { margin-bottom: 72px; }
   padding: 8px 10px; overflow-x: auto; white-space: pre; color: var(--tx2);
   line-height: 1.5; margin-top: 6px;
 }
-.access-featured .tool-grid {
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 0 24px;
+.access-featured .example-prompts {
   border-top: 1px solid var(--brd2); padding-top: 14px;
 }
-.access-featured .tool-category h5 {
-  font-size: var(--fs-2xs); font-weight: 600; color: var(--tx3); text-transform: uppercase;
-  letter-spacing: 0.06em; margin-bottom: 6px;
+.access-featured .example-prompts h5 {
+  font-size: var(--fs-sm); font-weight: 600; color: var(--tx2); margin-bottom: 10px;
 }
-.access-featured .tool-category ul {
+.access-featured .prompt-list {
   list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 6px;
 }
-.access-featured .tool-category li {
-  font-size: var(--fs-xs); color: var(--tx2); padding: 2px 0; line-height: 1.5;
-}
-.access-featured .tool-category li strong {
-  font-family: var(--f-mono); font-size: var(--fs-2xs); color: var(--tx); font-weight: 500;
+.access-featured .prompt-list li {
+  font-size: var(--fs-sm); color: var(--tx);
+  padding: 8px 12px; background: var(--bg2);
+  border: 1px solid var(--brd2); border-radius: var(--r-sm);
+  line-height: 1.5;
 }
 .access-featured .setup-path-label {
   font-size: var(--fs-2xs); font-weight: 700; text-transform: uppercase;
@@ -380,13 +379,6 @@ section { margin-bottom: 72px; }
 }
 .access-featured .plan-note {
   font-size: var(--fs-2xs); color: var(--tx3); margin-top: 8px; line-height: 1.5;
-}
-.access-featured .local-extra {
-  font-size: var(--fs-xs); color: var(--tx3); margin-top: 14px;
-}
-.access-featured .local-extra code {
-  display: inline; padding: 1px 5px; font-size: var(--fs-2xs); background: var(--bg2);
-  border: 1px solid var(--brd2); border-radius: var(--r-xs);
 }
 .access-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
 .access-card {
@@ -451,7 +443,6 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   .chart-row { grid-template-columns: 1fr; }
   .access-grid { grid-template-columns: 1fr; }
   .access-featured .setup-paths { grid-template-columns: 1fr; }
-  .access-featured .tool-grid { grid-template-columns: 1fr; gap: 12px; }
   .access-featured { padding: 18px 16px; }
   .news-card { padding: 16px 18px; }
   .quick-strip { grid-template-columns: 1fr; }
@@ -546,7 +537,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
         GitHub
       </a>
-      <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
+      <a href="#sec-access">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         <span data-t="hero_mcp">Search with AI</span>
       </a>
@@ -564,25 +555,25 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   <div class="news-card">
     <h3><span data-t="news_title">Neuigkeiten</span> <span class="badge">New</span></h3>
     <ul class="news-items">
-      <li><strong data-t="news_item_1_title">Socratic Tutor</strong> — <span data-t="news_item_1_desc">Interactive study mode with 31 leading cases across 5 legal areas, case briefing exercises, and guided study paths</span></li>
-      <li><strong data-t="news_item_2_title">Citation Graph</strong> — <span data-t="news_item_2_desc">7.85M citation edges linking decisions — find leading cases by statute or topic, trace citation networks</span></li>
-      <li><strong data-t="news_item_3_title">Semantic Search</strong> — <span data-t="news_item_3_desc">BGE-M3 vector embeddings for concept-level matching beyond keyword search</span></li>
+      <li><strong data-t="news_item_1_title">Sokratischer Tutor</strong> — <span data-t="news_item_1_desc">Interaktiver Lernmodus mit 31 Leitentscheiden aus 5 Rechtsgebieten — Urteilsbesprechungen üben mit geführten Lernpfaden</span></li>
+      <li><strong data-t="news_item_2_title">Zitationsgraph</strong> — <span data-t="news_item_2_desc">7,85 Millionen Zitationsverbindungen zwischen Entscheiden — Leitentscheide finden, nachverfolgen wie Gerichte sich gegenseitig zitieren</span></li>
+      <li><strong data-t="news_item_3_title">Semantische Suche</strong> — <span data-t="news_item_3_desc">Nach Konzepten suchen, nicht nur Stichwörtern — verwandte Entscheide finden, auch wenn andere Begriffe verwendet werden</span></li>
     </ul>
   </div>
 
   <!-- Quick Access -->
   <div class="quick-strip" id="quick-strip">
-    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
+    <a class="quick-card" href="#sec-access">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">Connect Claude to 1M+ decisions</div></div>
+      <div><div class="qc-title" data-t="quick_search">Mit AI durchsuchen</div><div class="qc-desc" data-t="quick_search_desc">Fragen in natürlicher Sprache stellen — Einrichtung in 30 Sekunden</div></div>
     </a>
     <a class="quick-card" href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-      <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Full dataset as Parquet files on HuggingFace</div></div>
+      <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Kompletter Datensatz zum Download auf HuggingFace</div></div>
     </a>
-    <a class="quick-card" href="https://huggingface.co/docs/datasets-server/">
+    <a class="quick-card" href="https://mcp.opencaselaw.ch">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-      <div><div class="qc-title" data-t="quick_api">API</div><div class="qc-desc" data-t="quick_api_desc">REST queries via HuggingFace Datasets Server</div></div>
+      <div><div class="qc-title" data-t="quick_api">API</div><div class="qc-desc" data-t="quick_api_desc">Den Datensatz programmatisch via REST API abfragen</div></div>
     </a>
   </div>
 
@@ -686,7 +677,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 8l1.5 1.5M14.5 8l-1 1" stroke-linecap="round"/></svg>
         <span data-t="access_featured_title">Search with AI</span>
       </h3>
-      <p data-t="access_featured_desc">Connect to 1M+ Swiss court decisions with Claude. 8 tools for search, citation analysis (7.85M edges, 330K statutes), and legal research.</p>
+      <p data-t="access_featured_desc">Über 1 Million Schweizer Gerichtsentscheide in natürlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.</p>
 
       <div class="setup-paths">
         <div class="setup-path">
@@ -716,39 +707,25 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
             <span style="color:var(--tx2);font-size:var(--fs-xs)">Clone &rarr; install &rarr; register with Claude Code or Desktop</span><br>
             <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-offline-access" style="font-size:var(--fs-xs)" data-t="access_local_setup">Full setup guide &rarr;</a>
           </div>
-          <div class="setup-steps" style="margin-top:10px;font-size:var(--fs-xs);color:var(--tx3)">
-            Works with any MCP client.
+          <div class="setup-steps" style="margin-top:10px;font-size:var(--fs-xs);color:var(--tx3)" data-t="access_local_note">
+            Works with any MCP client. Local mode includes database update tools.
           </div>
         </div>
       </div>
 
-      <div class="tool-grid">
-        <div class="tool-category">
-          <h5 data-t="access_tools_search">Search</h5>
-          <ul>
-            <li><strong>search_decisions</strong> &mdash; <span data-t="tool_search_decisions">Full-text search with filters</span></li>
-            <li><strong>get_decision</strong> &mdash; <span data-t="tool_get_decision">Fetch by docket number</span></li>
-            <li><strong>list_courts</strong> &mdash; <span data-t="tool_list_courts">All courts with counts</span></li>
-            <li><strong>get_statistics</strong> &mdash; <span data-t="tool_get_statistics">Aggregate stats</span></li>
-          </ul>
-        </div>
-        <div class="tool-category">
-          <h5 data-t="access_tools_citations">Citations</h5>
-          <ul>
-            <li><strong>find_citations</strong> &mdash; <span data-t="tool_find_citations">Citation network for a decision</span></li>
-            <li><strong>find_leading_cases</strong> &mdash; <span data-t="tool_find_leading_cases">Most-cited decisions by statute</span></li>
-            <li><strong>analyze_legal_trend</strong> &mdash; <span data-t="tool_analyze_legal_trend">Jurisprudence trends over time</span></li>
-          </ul>
-        </div>
-        <div class="tool-category">
-          <h5 data-t="access_tools_research">Research</h5>
-          <ul>
-            <li><strong>draft_mock_decision</strong> &mdash; <span data-t="tool_draft_mock_decision">Mock decision from facts + caselaw</span></li>
-          </ul>
-        </div>
+      <div class="example-prompts">
+        <h5 data-t="examples_heading">Was nach der Verbindung möglich ist:</h5>
+        <ul class="prompt-list">
+          <li data-t="cap_search">Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept</li>
+          <li data-t="cap_lookup">Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten</li>
+          <li data-t="cap_stats">Statistiken und Abdeckung aller Bundes- und Kantonsgerichte einsehen</li>
+          <li data-t="cap_leading">Leitentscheide zu jedem Gesetz oder Rechtsgebiet finden, nach Zitationshäufigkeit geordnet</li>
+          <li data-t="cap_citations">Zitationsnetzwerke nachverfolgen — sehen, was ein Entscheid zitiert und was ihn zitiert</li>
+          <li data-t="cap_trends">Analysieren, wie sich die Rechtsprechung zu einem Thema über die Jahre entwickelt hat</li>
+          <li data-t="cap_research">Recherche-Notizen aus Sachverhalt erstellen — mit passender Rechtsprechung und Gesetzesartikeln</li>
+          <li data-t="cap_study">Leitentscheide interaktiv studieren mit geführten Übungen und Urteilsbesprechungen</li>
+        </ul>
       </div>
-
-      <div class="local-extra" data-t="access_local_extra">Local server adds: <code>update_database</code>, <code>check_update_status</code></div>
     </div>
 
     <!-- Standard cards: 3-col -->
@@ -815,26 +792,31 @@ const I18N = {
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_browse:'Durchsuchen', nav_access:'Zugang',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat-Oberfl\u00e4che \u2014 Fragen stellen, Entscheide erhalten',
-    quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
-    quick_search:'Volltextsuche', quick_search_desc:'Claude mit 1M+ Entscheiden verbinden',
-    quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
+    quick_download:'Download', quick_download_desc:'Kompletter Datensatz zum Download auf HuggingFace',
+    quick_search:'Mit AI durchsuchen', quick_search_desc:'Fragen in natürlicher Sprache stellen — Einrichtung in 30 Sekunden',
+    quick_api:'API', quick_api_desc:'Den Datensatz programmatisch via REST API abfragen',
     access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI, Gemini oder lokalen Modellen via Ollama (kein API-Schl\u00fcssel n\u00f6tig).',
     access_featured_title:'Mit AI durchsuchen',
-    access_featured_desc:'Zugang zu 1M+ Schweizer Gerichtsentscheiden mit Claude. 8 Tools f\u00fcr Suche, Zitationsanalyse (7.85M Kanten, 330K Gesetzesartikel) und juristische Recherche.',
+    access_featured_desc:'Über 1 Million Schweizer Gerichtsentscheide in natürlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (empfohlen)', access_local_label:'Lokal (offline)',
     access_remote_desc:'Sofort verf\u00fcgbar, immer aktuell. Kein Download n\u00f6tig.',
     access_local_desc:'Volle Kontrolle, offline verf\u00fcgbar. ~65 GB Speicher, 30\u201360 Min. Einrichtung.',
     access_plan_note:'Desktop: Pro, Max, Team oder Enterprise. Code: jeder Plan.',
-    access_local_extra:'Lokaler Server erg\u00e4nzt: <code>update_database</code>, <code>check_update_status</code>',
-    access_local_setup:'Vollst\u00e4ndige Einrichtung &rarr;',
-    access_tools_search:'Suche', access_tools_citations:'Zitationen', access_tools_research:'Recherche',
-    tool_search_decisions:'Volltextsuche mit Filtern', tool_get_decision:'Entscheid per Dossiernummer abrufen', tool_list_courts:'Alle Gerichte mit Anzahl', tool_get_statistics:'Aggregierte Statistiken',
-    tool_find_citations:'Zitationsnetzwerk eines Entscheids', tool_find_leading_cases:'Meistzitierte Entscheide nach Gesetz', tool_analyze_legal_trend:'Rechtsprechungstrends \u00fcber Zeit',
-    tool_draft_mock_decision:'Musterentscheid aus Fakten + Rechtsprechung',
+    access_local_note:'Kompatibel mit jedem MCP-Client. Lokaler Modus enthält Datenbank-Update-Tools.',
+    access_local_setup:'Vollständige Einrichtung &rarr;',
+    examples_heading:'Was nach der Verbindung möglich ist:',
+    cap_search:'Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept',
+    cap_lookup:'Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten',
+    cap_stats:'Statistiken und Abdeckung aller Bundes- und Kantonsgerichte einsehen',
+    cap_leading:'Leitentscheide zu jedem Gesetz oder Rechtsgebiet finden, nach Zitationshäufigkeit geordnet',
+    cap_citations:'Zitationsnetzwerke nachverfolgen — sehen, was ein Entscheid zitiert und was ihn zitiert',
+    cap_trends:'Analysieren, wie sich die Rechtsprechung zu einem Thema über die Jahre entwickelt hat',
+    cap_research:'Recherche-Notizen aus Sachverhalt erstellen — mit passender Rechtsprechung und Gesetzesartikeln',
+    cap_study:'Leitentscheide interaktiv studieren mit geführten Übungen und Urteilsbesprechungen',
     hero_mcp:'Mit AI durchsuchen',
-    news_title:'Neuigkeiten', news_item_1_title:'Sokratischer Tutor', news_item_1_desc:'Interaktiver Lernmodus mit 31 Leitentscheiden aus 5 Rechtsgebieten, Urteilsbesprechungen und gef\u00fchrten Lernpfaden', news_item_2_title:'Zitationsgraph', news_item_2_desc:'7.85M Zitationsverbindungen zwischen Entscheiden \u2014 Leitentscheide nach Gesetzesartikel oder Thema finden, Zitationsnetzwerke verfolgen', news_item_3_title:'Semantische Suche', news_item_3_desc:'BGE-M3 Vektor-Embeddings f\u00fcr konzeptbasiertes Matching \u00fcber die Stichwortsuche hinaus',
+    news_title:'Neuigkeiten', news_item_1_title:'Sokratischer Tutor', news_item_1_desc:'Interaktiver Lernmodus mit 31 Leitentscheiden aus 5 Rechtsgebieten — Urteilsbesprechungen üben mit geführten Lernpfaden', news_item_2_title:'Zitationsgraph', news_item_2_desc:'7.85 Millionen Zitationsverbindungen zwischen Entscheiden — Leitentscheide finden, nachverfolgen wie Gerichte sich gegenseitig zitieren', news_item_3_title:'Semantische Suche', news_item_3_desc:'Nach Konzepten suchen, nicht nur Stichwörtern — verwandte Entscheide finden, auch wenn andere Begriffe verwendet werden',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
@@ -853,26 +835,31 @@ const I18N = {
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Parcourir', nav_access:'Acc\u00e8s',
     search_placeholder:'Rechercher...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interface de chat \u2014 posez des questions, obtenez des d\u00e9cisions',
-    quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
-    quick_search:'Recherche', quick_search_desc:'Connecter Claude \u00e0 1M+ d\u00e9cisions',
-    quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
+    quick_download:'Télécharger', quick_download_desc:'Dataset complet à télécharger sur HuggingFace',
+    quick_search:'Recherche avec IA', quick_search_desc:'Posez des questions en langage naturel — configuration en 30 secondes',
+    quick_api:'API', quick_api_desc:'Interroger le dataset par programmation via l\'API REST',
     access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI, Gemini ou des mod\u00e8les locaux via Ollama (sans cl\u00e9 API).',
     access_featured_title:'Recherche avec IA',
-    access_featured_desc:'Acc\u00e8s \u00e0 1M+ d\u00e9cisions judiciaires suisses avec Claude. 8 outils pour la recherche, l\u2019analyse des citations (7.85M liens, 330K articles) et la recherche juridique.',
+    access_featured_desc:'Recherchez plus d\'un million de décisions judiciaires suisses en langage naturel. Trouvez les arrêts pertinents, tracez les citations entre décisions, analysez les tendances jurisprudentielles et rédigez des notes de recherche.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Distant (recommand\u00e9)', access_local_label:'Local (hors ligne)',
     access_remote_desc:'Instantan\u00e9, toujours \u00e0 jour. Aucun t\u00e9l\u00e9chargement n\u00e9cessaire.',
     access_local_desc:'Contr\u00f4le total, fonctionne hors ligne. ~65 Go, 30\u201360 min d\u2019installation.',
     access_plan_note:'Desktop : Pro, Max, Team ou Enterprise. Code : tout plan.',
-    access_local_extra:'Le serveur local ajoute : <code>update_database</code>, <code>check_update_status</code>',
-    access_local_setup:'Guide d\u2019installation complet &rarr;',
-    access_tools_search:'Recherche', access_tools_citations:'Citations', access_tools_research:'Recherche juridique',
-    tool_search_decisions:'Recherche plein texte avec filtres', tool_get_decision:'R\u00e9cup\u00e9rer par num\u00e9ro de dossier', tool_list_courts:'Tous les tribunaux avec effectifs', tool_get_statistics:'Statistiques agr\u00e9g\u00e9es',
-    tool_find_citations:'R\u00e9seau de citations d\u2019une d\u00e9cision', tool_find_leading_cases:'D\u00e9cisions les plus cit\u00e9es par article', tool_analyze_legal_trend:'Tendances jurisprudentielles',
-    tool_draft_mock_decision:'D\u00e9cision type \u00e0 partir de faits + jurisprudence',
+    access_local_note:'Compatible avec tout client MCP. Le mode local inclut les outils de mise à jour de la base de données.',
+    access_local_setup:'Guide d\'installation complet &rarr;',
+    examples_heading:'Ce qui est possible après connexion :',
+    cap_search:'Rechercher des décisions en langage naturel — par mot-clé, sujet, article de loi ou concept juridique',
+    cap_lookup:'Consulter toute décision par numéro de dossier — avec texte intégral et métadonnées',
+    cap_stats:'Consulter les statistiques et la couverture de tous les tribunaux fédéraux et cantonaux',
+    cap_leading:'Trouver les arrêts de référence pour toute loi ou domaine juridique, classés par nombre de citations',
+    cap_citations:'Suivre les réseaux de citations — voir ce qu\'une décision cite et ce qui la cite',
+    cap_trends:'Analyser comment la jurisprudence sur un sujet a évolué au fil des années',
+    cap_research:'Rédiger des notes de recherche à partir de faits — avec jurisprudence et articles de loi pertinents',
+    cap_study:'Étudier les arrêts de référence de manière interactive avec des exercices guidés et des commentaires d\'arrêt',
     hero_mcp:'Recherche avec IA',
-    news_title:'Nouveaut\u00e9s', news_item_1_title:'Tuteur socratique', news_item_1_desc:'Mode d\u2019\u00e9tude interactif avec 31 arr\u00eats de r\u00e9f\u00e9rence dans 5 domaines juridiques, exercices de commentaire d\u2019arr\u00eat et parcours guid\u00e9s', news_item_2_title:'Graphe de citations', news_item_2_desc:'7.85M liens de citation entre d\u00e9cisions \u2014 trouver les arr\u00eats de r\u00e9f\u00e9rence par article ou sujet, explorer les r\u00e9seaux de citations', news_item_3_title:'Recherche s\u00e9mantique', news_item_3_desc:'Embeddings vectoriels BGE-M3 pour une correspondance conceptuelle au-del\u00e0 de la recherche par mots-cl\u00e9s',
+    news_title:'Nouveautés', news_item_1_title:'Tuteur socratique', news_item_1_desc:'Mode d\'étude interactif avec 31 arrêts de référence dans 5 domaines juridiques — exercez-vous au commentaire d\'arrêt avec des parcours guidés', news_item_2_title:'Graphe de citations', news_item_2_desc:'7,85 millions de liens de citation entre décisions — trouvez les arrêts de référence, suivez comment les tribunaux se citent mutuellement', news_item_3_title:'Recherche sémantique', news_item_3_desc:'Recherchez par concept, pas seulement par mots-clés — trouvez des décisions liées même quand des termes différents sont utilisés',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
@@ -891,26 +878,31 @@ const I18N = {
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_browse:'Sfoglia', nav_access:'Accesso',
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfaccia chat \u2014 fai domande, ottieni decisioni',
-    quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
-    quick_search:'Ricerca', quick_search_desc:'Connetti Claude a 1M+ decisioni',
-    quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
+    quick_download:'Download', quick_download_desc:'Dataset completo da scaricare su HuggingFace',
+    quick_search:'Ricerca con IA', quick_search_desc:'Fai domande in linguaggio naturale — configurazione in 30 secondi',
+    quick_api:'API', quick_api_desc:'Interroga il dataset via API REST',
     access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI, Gemini o modelli locali via Ollama (senza chiave API).',
     access_featured_title:'Ricerca con IA',
-    access_featured_desc:'Accesso a 1M+ decisioni giudiziarie svizzere con Claude. 8 strumenti per ricerca, analisi delle citazioni (7.85M collegamenti, 330K articoli) e ricerca giuridica.',
+    access_featured_desc:'Cerca oltre un milione di decisioni giudiziarie svizzere in linguaggio naturale. Trova sentenze pertinenti, traccia le citazioni tra decisioni, analizza le tendenze giurisprudenziali e redigi note di ricerca.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remoto (consigliato)', access_local_label:'Locale (offline)',
     access_remote_desc:'Istantaneo, sempre aggiornato. Nessun download necessario.',
     access_local_desc:'Controllo completo, funziona offline. ~65 GB, 30\u201360 min di installazione.',
     access_plan_note:'Desktop: Pro, Max, Team o Enterprise. Code: qualsiasi piano.',
-    access_local_extra:'Il server locale aggiunge: <code>update_database</code>, <code>check_update_status</code>',
-    access_local_setup:'Guida all\u2019installazione completa &rarr;',
-    access_tools_search:'Ricerca', access_tools_citations:'Citazioni', access_tools_research:'Ricerca giuridica',
-    tool_search_decisions:'Ricerca full-text con filtri', tool_get_decision:'Recupera per numero di dossier', tool_list_courts:'Tutti i tribunali con conteggi', tool_get_statistics:'Statistiche aggregate',
-    tool_find_citations:'Rete di citazioni di una decisione', tool_find_leading_cases:'Decisioni pi\u00f9 citate per articolo', tool_analyze_legal_trend:'Tendenze giurisprudenziali nel tempo',
-    tool_draft_mock_decision:'Decisione tipo da fatti + giurisprudenza',
+    access_local_note:'Compatibile con qualsiasi client MCP. La modalità locale include strumenti di aggiornamento del database.',
+    access_local_setup:'Guida all\'installazione completa &rarr;',
+    examples_heading:'Cosa è possibile dopo la connessione:',
+    cap_search:'Cercare decisioni in linguaggio naturale — per parola chiave, tema, articolo di legge o concetto giuridico',
+    cap_lookup:'Consultare qualsiasi decisione per numero di dossier — con testo integrale e metadati',
+    cap_stats:'Consultare statistiche e copertura di tutti i tribunali federali e cantonali',
+    cap_leading:'Trovare le decisioni guida per ogni legge o area giuridica, ordinate per numero di citazioni',
+    cap_citations:'Tracciare le reti di citazioni — vedere cosa cita una decisione e cosa la cita',
+    cap_trends:'Analizzare come la giurisprudenza su un tema si è evoluta nel corso degli anni',
+    cap_research:'Redigere note di ricerca a partire dai fatti — con giurisprudenza e articoli di legge pertinenti',
+    cap_study:'Studiare le decisioni guida in modo interattivo con esercizi guidati e commenti',
     hero_mcp:'Ricerca con IA',
-    news_title:'Novit\u00e0', news_item_1_title:'Tutor socratico', news_item_1_desc:'Modalit\u00e0 di studio interattiva con 31 decisioni guida in 5 aree giuridiche, esercizi di commento e percorsi di studio guidati', news_item_2_title:'Grafo delle citazioni', news_item_2_desc:'7.85M collegamenti tra decisioni \u2014 trovare le decisioni guida per articolo o tema, esplorare le reti di citazione', news_item_3_title:'Ricerca semantica', news_item_3_desc:'Embeddings vettoriali BGE-M3 per una corrispondenza concettuale oltre la ricerca per parole chiave',
+    news_title:'Novità', news_item_1_title:'Tutor socratico', news_item_1_desc:'Modalità di studio interattiva con 31 decisioni guida in 5 aree giuridiche — esercitati nel commento con percorsi di studio guidati', news_item_2_title:'Grafo delle citazioni', news_item_2_desc:'7,85 milioni di collegamenti tra decisioni — trova le decisioni guida, segui come i tribunali si citano a vicenda', news_item_3_title:'Ricerca semantica', news_item_3_desc:'Cerca per concetto, non solo per parole chiave — trova decisioni correlate anche quando vengono usati termini diversi',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
@@ -929,26 +921,31 @@ const I18N = {
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_browse:'Navigar', nav_access:'Access',
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfatscha da chat \u2014 far dumondas, obtegnir decisiuns',
-    quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
-    quick_search:'Tschertga', quick_search_desc:'Connectar Claude cun 1M+ decisiuns',
-    quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
+    quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain per telechargiar sin HuggingFace',
+    quick_search:'Tschertgar cun IA', quick_search_desc:'Far dumondas en lingua natirala — configuraziun en 30 secundas',
+    quick_api:'API', quick_api_desc:'Dumandar il set da datas programmaticamain via API REST',
     access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI, Gemini u models locals via Ollama (senza clav API).',
     access_featured_title:'Tschertgar cun IA',
-    access_featured_desc:'Access a 1M+ decisiuns giudizialas svizras cun Claude. 8 utensils per tschertga, analisa da citaziuns (7.85M colliaziuns, 330K artitgels) e perscrutaziun giuridica.',
+    access_featured_desc:'Tschertgar sur 1 milliun decisiuns giudizialas svizras en lingua natirala. Chattar sentenziuns relevantas, persequitar citaziuns tranter decisiuns, analisar tendenzas giurisprudenzialas e rediger notizias da perscrutaziun.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (recumandà)', access_local_label:'Local (offline)',
     access_remote_desc:'Direct disponibel, adina actual. Nagin download necessari.',
     access_local_desc:'Controlla cumplaina, funcziuna offline. ~65 GB, 30\u201360 min installaziun.',
     access_plan_note:'Desktop: Pro, Max, Team u Enterprise. Code: mintga plan.',
-    access_local_extra:'Il server local agiunta: <code>update_database</code>, <code>check_update_status</code>',
-    access_local_setup:'Guida d\u2019installaziun cumplaina &rarr;',
-    access_tools_search:'Tschertga', access_tools_citations:'Citaziuns', access_tools_research:'Perscrutaziun giuridica',
-    tool_search_decisions:'Tschertga en text cumplain cun filters', tool_get_decision:'Retscherchar per numer da dossier', tool_list_courts:'Tut las dretgiras cun dumbers', tool_get_statistics:'Statisticas aggregadas',
-    tool_find_citations:'Rait da citaziuns d\u2019ina decisiun', tool_find_leading_cases:'Decisiuns pli citadas per artitgel', tool_analyze_legal_trend:'Tendenzas giurisprudenzialas',
-    tool_draft_mock_decision:'Decisiun model ord fatgs + giurisprudenza',
+    access_local_note:'Cumpatibl cun mintga client MCP. Il modus local cuntegna utensils per actualisar la banca da datas.',
+    access_local_setup:'Guida d\'installaziun cumplaina &rarr;',
+    examples_heading:'Tge ch\'è pussaivel suenter la connexiun:',
+    cap_search:'Tschertgar decisiuns en lingua natirala — tenor plaid-clav, tema, artitgel da lescha u concept giuridic',
+    cap_lookup:'Retscherchar mintga decisiun per numer da dossier — cun text cumplain e metadatas',
+    cap_stats:'Consultar statisticas e cuvretga da tut las dretgiras federalas e chantunals',
+    cap_leading:'Chattar decisiuns directivas per mintga lescha u champ giuridic, ordinadas tenor dumber da citaziuns',
+    cap_citations:'Persequitar raits da citaziuns — vesair tge ch\'ina decisiun cita e tge che la cita',
+    cap_trends:'Analisar co la giurisprudenza ad in tema ha sa sviluppà sur ils onns',
+    cap_research:'Rediger notizias da perscrutaziun ord fatgs — cun giurisprudenza ed artitgels da lescha pertinents',
+    cap_study:'Studiar decisiuns directivas interactivamain cun exercizis guidads e commentaris',
     hero_mcp:'Tschertgar cun IA',
-    news_title:'Novitads', news_item_1_title:'Tutor socratic', news_item_1_desc:'Modus da studium interactiv cun 31 decisiuns directivas en 5 champs giuridics, exercizis da commentari e percurs da studium guidads', news_item_2_title:'Graf da citaziuns', news_item_2_desc:'7.85M colliaziuns da citaziun tranter decisiuns \u2014 chattar decisiuns directivas tenor artitgel u tema, persequitar raits da citaziuns', news_item_3_title:'Tschertga semantica', news_item_3_desc:'Embeddings vectorials BGE-M3 per ina congruenza conceptuala surdavant la tschertga per plaids-clav',
+    news_title:'Novitads', news_item_1_title:'Tutor socratic', news_item_1_desc:'Modus da studium interactiv cun 31 decisiuns directivas en 5 champs giuridics — exercitar commentaris cun percurs da studium guidads', news_item_2_title:'Graf da citaziuns', news_item_2_desc:'7,85 milliuns colliaziuns da citaziun tranter decisiuns — chattar decisiuns directivas, persequitar co las dretgiras citan ina l\'autra', news_item_3_title:'Tschertga semantica', news_item_3_desc:'Tschertgar tenor concept, betg mo tenor plaids-clav — chattar decisiuns parentadas era sche differents terms vegnan utilisads',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
@@ -967,26 +964,31 @@ const I18N = {
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
     search_placeholder:'Search courts...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat interface \u2014 ask questions, get cited decisions',
-    quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
-    quick_search:'Search', quick_search_desc:'Connect Claude to 1M+ decisions',
-    quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
+    quick_download:'Download', quick_download_desc:'Full dataset for download on HuggingFace',
+    quick_search:'Search with AI', quick_search_desc:'Ask questions in natural language — setup takes 30 seconds',
+    quick_api:'API', quick_api_desc:'Query the dataset programmatically via REST API',
     access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).',
     access_featured_title:'Search with AI',
-    access_featured_desc:'Connect to 1M+ Swiss court decisions with Claude. 8 tools for search, citation analysis (7.85M edges, 330K statutes), and legal research.',
+    access_featured_desc:'Search over 1 million Swiss court decisions in natural language. Find relevant cases, trace citations between decisions, analyze legal trends, and draft research memos.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (recommended)', access_local_label:'Local (offline)',
     access_remote_desc:'Instant, always current. No download needed.',
     access_local_desc:'Full control, works offline. ~65 GB disk, 30\u201360 min setup.',
     access_plan_note:'Desktop: Pro, Max, Team, or Enterprise. Code: any plan.',
-    access_local_extra:'Local server adds: <code>update_database</code>, <code>check_update_status</code>',
+    access_local_note:'Works with any MCP client. Local mode includes database update tools.',
     access_local_setup:'Full setup guide &rarr;',
-    access_tools_search:'Search', access_tools_citations:'Citations', access_tools_research:'Research',
-    tool_search_decisions:'Full-text search with filters', tool_get_decision:'Fetch by docket number', tool_list_courts:'All courts with counts', tool_get_statistics:'Aggregate stats',
-    tool_find_citations:'Citation network for a decision', tool_find_leading_cases:'Most-cited decisions by statute', tool_analyze_legal_trend:'Jurisprudence trends over time',
-    tool_draft_mock_decision:'Mock decision from facts + caselaw',
+    examples_heading:'What you can do after connecting:',
+    cap_search:'Search decisions in natural language — by keyword, topic, statute, or legal concept',
+    cap_lookup:'Look up any decision by docket number — with full text and metadata',
+    cap_stats:'View statistics and coverage across all federal and cantonal courts',
+    cap_leading:'Find leading cases for any law or legal area, ranked by citation count',
+    cap_citations:'Trace citation networks — see what a decision cites and what cites it',
+    cap_trends:'Analyze how jurisprudence on a topic has evolved year by year',
+    cap_research:'Draft research memos from case facts — with relevant case law and statutes',
+    cap_study:'Study leading cases interactively with guided exercises and case briefing',
     hero_mcp:'Search with AI',
-    news_title:'What\u2019s New', news_item_1_title:'Socratic Tutor', news_item_1_desc:'Interactive study mode with 31 leading cases across 5 legal areas, case briefing exercises, and guided study paths', news_item_2_title:'Citation Graph', news_item_2_desc:'7.85M citation edges linking decisions \u2014 find leading cases by statute or topic, trace citation networks', news_item_3_title:'Semantic Search', news_item_3_desc:'BGE-M3 vector embeddings for concept-level matching beyond keyword search',
+    news_title:'What\u2019s New', news_item_1_title:'Socratic Tutor', news_item_1_desc:'Interactive study mode with 31 leading cases across 5 legal areas — practice case briefing with guided study paths', news_item_2_title:'Citation Graph', news_item_2_desc:'7.85 million citation links between decisions — find leading cases, trace how courts cite each other', news_item_3_title:'Semantic Search', news_item_3_desc:'Search by concept, not just keywords — find related decisions even when different terms are used',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   },
 };
