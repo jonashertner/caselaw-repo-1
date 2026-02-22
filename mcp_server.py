@@ -2433,6 +2433,7 @@ def _find_leading_cases(
 ) -> dict:
     """Find the most-cited decisions for a topic or statute."""
     limit = max(1, min(limit, 100))
+    original_query = query  # preserve for response metadata
 
     # Determine path: statute (graph DB) or global/court-filtered
     conn = _get_graph_conn()
@@ -2478,9 +2479,63 @@ def _find_leading_cases(
                 ),
             ).fetchall()
             candidates = [(r["decision_id"], int(r["cite_count"])) for r in rows]
+        elif query:
+            # Query-only: FTS-first approach — find matching decisions, then rank by citations
+            conn.close()
+            conn = None  # signal we closed it
+            try:
+                fts_conn = get_db()
+                fts_sql = """
+                    SELECT d.decision_id FROM decisions_fts f
+                    JOIN decisions d ON d.decision_id = f.decision_id
+                    WHERE decisions_fts MATCH ?
+                """
+                fts_params: list = [query]
+                if court:
+                    fts_sql += " AND d.court = ?"
+                    fts_params.append(court)
+                if date_from:
+                    fts_sql += " AND d.decision_date >= ?"
+                    fts_params.append(date_from)
+                if date_to:
+                    fts_sql += " AND d.decision_date <= ?"
+                    fts_params.append(date_to)
+                fts_sql += " LIMIT 5000"
+                fts_rows = fts_conn.execute(fts_sql, tuple(fts_params)).fetchall()
+                fts_conn.close()
+                fts_ids = [r["decision_id"] for r in fts_rows]
+            except sqlite3.Error as e:
+                logger.debug("FTS lookup for leading cases failed: %s", e)
+                return {"error": f"FTS query failed: {e}"}
+
+            if not fts_ids:
+                return {"results": [], "total": 0}
+
+            # Look up citation counts from graph for FTS matches
+            graph2 = _get_graph_conn()
+            if graph2 is not None:
+                try:
+                    placeholders = ",".join("?" for _ in fts_ids)
+                    rows = graph2.execute(
+                        f"""
+                        SELECT target_decision_id AS decision_id, COUNT(*) AS cite_count
+                        FROM citation_targets
+                        WHERE target_decision_id IN ({placeholders})
+                        GROUP BY target_decision_id
+                        ORDER BY cite_count DESC
+                        LIMIT ?
+                        """,
+                        (*fts_ids, limit),
+                    ).fetchall()
+                    candidates = [(r["decision_id"], int(r["cite_count"])) for r in rows]
+                except sqlite3.Error as e:
+                    logger.debug("Graph citation lookup failed: %s", e)
+                finally:
+                    graph2.close()
+            # Skip the post-hoc FTS filter since we already started from FTS
+            query = None  # prevent double-filtering below
         else:
-            # Global most-cited (optionally filtered by court/date)
-            overfetch = limit * 3 if query else limit
+            # Global most-cited (no query, no statute)
             sql = """
                 SELECT ct.target_decision_id AS decision_id, COUNT(*) AS cite_count
                 FROM citation_targets ct
@@ -2501,14 +2556,15 @@ def _find_leading_cases(
             if conditions:
                 sql += " WHERE " + " AND ".join(conditions)
             sql += " GROUP BY ct.target_decision_id ORDER BY cite_count DESC LIMIT ?"
-            params.append(overfetch)
+            params.append(limit)
             rows = conn.execute(sql, tuple(params)).fetchall()
             candidates = [(r["decision_id"], int(r["cite_count"])) for r in rows]
     except sqlite3.Error as e:
         logger.debug("Leading cases graph query failed: %s", e)
         return {"error": f"Graph query failed: {e}"}
     finally:
-        conn.close()
+        if conn is not None:
+            conn.close()
 
     if not candidates:
         return {"results": [], "total": 0}
@@ -2563,7 +2619,7 @@ def _find_leading_cases(
         "total": len(results),
         "law_code": law_code,
         "article": article,
-        "query": query,
+        "query": original_query,
     }
 
 
