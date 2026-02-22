@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sqlite3
 import sys
 import time
@@ -97,8 +98,6 @@ def _docket_norm(value: str | None) -> str:
     return out.strip("_")
 
 
-import re as _re
-
 # BStGer two-letter prefixes
 _BSTGER_PREFIXES = frozenset({
     "BB", "BG", "BH", "BK", "BN", "BP",
@@ -118,13 +117,13 @@ def _infer_court_from_docket(docket_norm: str) -> str | None:
     if not docket_norm:
         return None
     # BGer: starts with digit + uppercase letter + underscore + digit
-    if _re.match(r"^[1-9][A-Z]_\d", docket_norm):
+    if re.match(r"^[1-9][A-Z]_\d", docket_norm):
         return "bger"
     # BVGer: single letter A-F + underscore + digits + underscore + 4-digit year
-    if _re.match(r"^[A-F]_\d{1,6}_\d{4}$", docket_norm):
+    if re.match(r"^[A-F]_\d{1,6}_\d{4}$", docket_norm):
         return "bvger"
     # BStGer: known two-letter prefix
-    m = _re.match(r"^([A-Z]{2})_", docket_norm)
+    m = re.match(r"^([A-Z]{2})_", docket_norm)
     if m and m.group(1) in _BSTGER_PREFIXES:
         return "bstger"
     return None
@@ -266,6 +265,75 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
                         target_canton=row["target_canton"],
                         target_date=row["target_date"],
                         target_ref=row["target_ref"],
+                        candidate_rank=int(row["candidate_rank"] or 1),
+                        candidate_count=int(row["candidate_count"] or 1),
+                    ),
+                )
+            )
+        conn.executemany(insert_sql, payload)
+
+    # Second pass: resolve BGE citations.
+    # BGE target_ref = "BGE 147 I 268", BGE docket_norm = "147 I 268".
+    cursor = conn.execute(
+        """
+        WITH bge_matches AS (
+            SELECT
+                dc.source_decision_id,
+                dc.target_ref,
+                sd.court AS source_court,
+                sd.canton AS source_canton,
+                sd.decision_date AS source_date,
+                td.decision_id AS target_decision_id,
+                td.court AS target_court,
+                td.canton AS target_canton,
+                td.decision_date AS target_date,
+                1 AS candidate_rank,
+                1 AS candidate_count
+            FROM decision_citations dc
+            JOIN decisions td
+              ON td.docket_norm = SUBSTR(dc.target_ref, 5)
+             AND td.court IN ('bge', 'bger')
+            LEFT JOIN decisions sd
+              ON sd.decision_id = dc.source_decision_id
+            WHERE dc.target_type = 'bge'
+              AND dc.target_ref LIKE 'BGE %'
+              AND td.decision_id <> dc.source_decision_id
+        )
+        SELECT
+            source_decision_id,
+            target_ref,
+            target_decision_id,
+            source_court,
+            source_canton,
+            source_date,
+            target_court,
+            target_canton,
+            target_date,
+            candidate_rank,
+            candidate_count
+        FROM bge_matches
+        ORDER BY source_decision_id, target_ref
+        """
+    )
+    while True:
+        rows = cursor.fetchmany(batch_size)
+        if not rows:
+            break
+        payload = []
+        for row in rows:
+            payload.append(
+                (
+                    row["source_decision_id"],
+                    row["target_ref"],
+                    row["target_decision_id"],
+                    "bge_norm",
+                    _citation_confidence(
+                        source_court=row["source_court"],
+                        source_canton=row["source_canton"],
+                        source_date=row["source_date"],
+                        target_court=row["target_court"],
+                        target_canton=row["target_canton"],
+                        target_date=row["target_date"],
                         candidate_rank=int(row["candidate_rank"] or 1),
                         candidate_count=int(row["candidate_count"] or 1),
                     ),

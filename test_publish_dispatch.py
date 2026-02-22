@@ -38,3 +38,35 @@ def test_publish_full_rebuild_flag_reaches_weekly_steps(monkeypatch):
 
     assert called["dry_run"] is True
     assert called["full_rebuild"] is True
+
+
+def test_publish_skips_ingest_by_default(monkeypatch):
+    """Step 1 (ingest) should be skipped unless --ingest is passed."""
+    called = {"ingest": False}
+
+    def _fake_ingest(dry_run: bool = False) -> bool:
+        called["ingest"] = True
+        return True
+
+    monkeypatch.setattr(publish, "STEPS", [(1, "Ingest", _fake_ingest)])
+    monkeypatch.setattr(sys, "argv", ["publish.py", "--dry-run"])
+
+    publish.main()
+
+    assert called["ingest"] is False, "Ingest should not run without --ingest flag"
+
+
+def test_publish_runs_ingest_with_flag(monkeypatch):
+    """Step 1 runs when --ingest is passed."""
+    called = {"ingest": False}
+
+    def _fake_ingest(dry_run: bool = False) -> bool:
+        called["ingest"] = True
+        return True
+
+    monkeypatch.setattr(publish, "STEPS", [(1, "Ingest", _fake_ingest)])
+    monkeypatch.setattr(sys, "argv", ["publish.py", "--dry-run", "--ingest"])
+
+    publish.main()
+
+    assert called["ingest"] is True

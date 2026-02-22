@@ -414,3 +414,27 @@ def test_extract_inline_docket_candidates_text_position_order():
     assert len(cands) == 2
     assert cands[0] == "AB.2024.12345"
     assert cands[1] == "4A_291/2017"
+
+
+def test_collapse_spaced_docket_basic():
+    # Standard 3-part docket with spaces
+    assert mcp_server._collapse_spaced_docket("6B 1234 2025") is not None
+    result = mcp_server._collapse_spaced_docket("6B 1234 2025")
+    assert "6B" in result and "1234" in result and "2025" in result
+
+    # 2-digit year gets expanded
+    result = mcp_server._collapse_spaced_docket("7W 15 25")
+    assert result is not None
+    assert "2025" in result
+
+    # Not a docket — too many parts
+    assert mcp_server._collapse_spaced_docket("one two three four five") is None
+    # Not a docket — no letters in first part
+    assert mcp_server._collapse_spaced_docket("123 456 7890") is None
+    # Empty
+    assert mcp_server._collapse_spaced_docket("") is None
+
+
+def test_looks_like_docket_query_accepts_spaced_docket():
+    assert mcp_server._looks_like_docket_query("6B 1234 2025") is True
+    assert mcp_server._looks_like_docket_query("7W 15 25") is True

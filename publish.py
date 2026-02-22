@@ -370,6 +370,10 @@ def main():
         "--full-rebuild", action="store_true",
         help="Force full FTS5 rebuild regardless of day of week"
     )
+    parser.add_argument(
+        "--ingest", action="store_true",
+        help="Run entscheidsuche ingest (step 1); skipped by default"
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -389,11 +393,16 @@ def main():
 
     # Steps 4 (HF upload) and 6 (git push) must not run if critical steps failed,
     # because step 4 prunes remote parquet based on local state.
-    CRITICAL_STEPS = {1, 2, 3}
+    CRITICAL_STEPS = {2, 3}
     GUARDED_STEPS = {4, 6}
 
     for num, name, func in STEPS:
         if args.step is not None and str(args.step) != str(num):
+            continue
+        # Step 1 (ingest) is opt-in: skip unless --ingest or --step 1
+        if num == 1 and not args.ingest and not manual_step_mode:
+            logger.info(f"  Step {num} ({name}): SKIPPED (use --ingest to enable)")
+            results[num] = True
             continue
         # Skip guarded steps if a critical step failed (unless running single step)
         if not manual_step_mode and num in GUARDED_STEPS:

@@ -290,6 +290,59 @@ def test_infer_court_from_docket():
     assert _infer_court_from_docket("") is None
 
 
+def test_bge_citations_resolved_to_bge_decisions(tmp_path: Path):
+    """Issue 4: BGE citations (target_type='bge') should resolve to BGE decisions."""
+    input_dir = tmp_path / "decisions"
+    input_dir.mkdir(parents=True)
+    db_path = tmp_path / "reference_graph.db"
+    rows = [
+        {
+            "decision_id": "bge_147_I_268",
+            "docket_number": "147 I 268",
+            "court": "bge",
+            "canton": "CH",
+            "language": "de",
+            "decision_date": "2021-01-01",
+            "title": "",
+            "regeste": "",
+            "full_text": "",
+        },
+        {
+            "decision_id": "d_citing",
+            "docket_number": "6B_100/2022",
+            "court": "bger",
+            "canton": "CH",
+            "language": "de",
+            "decision_date": "2022-06-01",
+            "title": "",
+            "regeste": "",
+            "full_text": "Gemäss BGE 147 I 268 ist dies klar.",
+        },
+    ]
+    _write_jsonl(input_dir / "sample.jsonl", rows)
+
+    stats = build_graph(input_dir=input_dir, db_path=db_path)
+
+    conn = sqlite3.connect(db_path)
+    # Verify BGE citation was extracted
+    bge_cit = conn.execute(
+        "SELECT target_ref, target_type FROM decision_citations WHERE source_decision_id = 'd_citing' AND target_type = 'bge'"
+    ).fetchone()
+    assert bge_cit is not None
+    assert bge_cit[0] == "BGE 147 I 268"
+
+    # Verify it was resolved
+    link = conn.execute(
+        "SELECT target_decision_id, match_type, confidence_score FROM citation_targets WHERE source_decision_id = 'd_citing' AND target_ref = 'BGE 147 I 268'"
+    ).fetchone()
+    conn.close()
+
+    assert link is not None, "BGE citation should be resolved to a target"
+    assert link[0] == "bge_147_I_268"
+    assert link[1] == "bge_norm"
+    assert float(link[2]) > 0.5
+
+
 def test_build_graph_normalizes_whitespace_dockets(tmp_path: Path):
     input_dir = tmp_path / "decisions"
     input_dir.mkdir(parents=True)

@@ -624,6 +624,10 @@ def _search_fts5_inner(
     is_docket_query = _looks_like_docket_query(fts_query)
     has_explicit_syntax = _has_explicit_fts_syntax(fts_query)
     inline_docket_candidates = _extract_inline_docket_candidates(fts_query)
+    # Try collapsing space-separated queries into docket form
+    collapsed = _collapse_spaced_docket(fts_query)
+    if collapsed and collapsed not in inline_docket_candidates:
+        inline_docket_candidates.insert(0, collapsed)
     inline_docket_results: list[dict] = []
     query_preferred_courts = _detect_query_preferred_courts(fts_query)
 
@@ -2077,6 +2081,49 @@ def _normalize_docket(value: str) -> str:
     return re.sub(r"[^0-9a-z]+", "", (value or "").lower())
 
 
+def _collapse_spaced_docket(query: str) -> str | None:
+    """Try collapsing space-separated tokens into a docket-like string.
+
+    Handles queries like '6B 1234 2025' → '6B_1234/2025' or '7W 15 25' → '7W_15/2025'.
+    Returns the collapsed form if it matches a known docket pattern, else None.
+    """
+    parts = query.strip().split()
+    if not (2 <= len(parts) <= 4):
+        return None
+    if not all(re.match(r"^[A-Z0-9]{1,6}$", p, re.IGNORECASE) for p in parts):
+        return None
+    # First part should contain at least one letter
+    if not re.search(r"[A-Za-z]", parts[0]):
+        return None
+
+    variants = []
+    for sep1 in ("_", ".", "-"):
+        for sep2 in ("/", "_", "."):
+            if len(parts) == 2:
+                variants.append(f"{parts[0]}{sep1}{parts[1]}")
+            elif len(parts) == 3:
+                variants.append(f"{parts[0]}{sep1}{parts[1]}{sep2}{parts[2]}")
+            elif len(parts) == 4:
+                variants.append(f"{parts[0]}{sep1}{parts[1]}{sep2}{parts[2]}{sep1}{parts[3]}")
+
+    # Also try expanding 2-digit year to 4-digit
+    last = parts[-1]
+    if len(last) == 2 and last.isdigit():
+        expanded = parts[:-1] + ["20" + last]
+        for sep1 in ("_", ".", "-"):
+            for sep2 in ("/", "_", "."):
+                if len(expanded) == 3:
+                    variants.append(f"{expanded[0]}{sep1}{expanded[1]}{sep2}{expanded[2]}")
+                elif len(expanded) == 4:
+                    variants.append(f"{expanded[0]}{sep1}{expanded[1]}{sep2}{expanded[2]}{sep1}{expanded[3]}")
+
+    for variant in variants:
+        for pattern in QUERY_DOCKET_PATTERNS:
+            if pattern.fullmatch(variant):
+                return variant
+    return None
+
+
 def _looks_like_docket_query(query: str) -> bool:
     """Heuristic: identify docket-number style queries."""
     q = query.strip()
@@ -2101,6 +2148,9 @@ def _looks_like_docket_query(query: str) -> bool:
                 return True
 
     if re.fullmatch(r"[0-9]{1,4}\s+[A-Z]{1,4}\s+[0-9]{1,4}", q):
+        return True
+    # Try collapsing spaces: "6B 1234 2025" → "6B_1234/2025"
+    if _collapse_spaced_docket(q):
         return True
     return False
 
@@ -2585,7 +2635,6 @@ def _find_leading_cases(
     # If query provided, filter via FTS5
     if query:
         candidate_ids = [c[0] for c in candidates]
-        cite_map = dict(candidates)
         try:
             fts_conn = get_db()
             placeholders = ",".join("?" for _ in candidate_ids)
