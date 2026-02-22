@@ -1,0 +1,96 @@
+{
+  "area_id": "sachenrecht",
+  "area_de": "Sachenrecht",
+  "area_fr": "Droits réels",
+  "area_it": "Diritti reali",
+  "description_de": "Eigentum, Besitz, Dienstbarkeiten und Grundbuch",
+  "modules": [
+    {
+      "id": "eigentum",
+      "name_de": "Eigentum und Eigentumsschutz",
+      "name_fr": "Propriété et protection de la propriété",
+      "name_it": "Proprietà e protezione della proprietà",
+      "statutes": ["Art. 641 ZGB", "Art. 679 ZGB"],
+      "cases": [
+        {
+          "decision_id": "bge_132 III 651",
+          "bge_ref": "BGE 132 III 651",
+          "title_de": "Actio negatoria und Dienstbarkeiten",
+          "title_fr": "Action négatoire et servitudes",
+          "concepts_de": ["Eigentumsfreiheitsklage", "Dienstbarkeit", "Abwehrrecht", "Immissionen"],
+          "concepts_fr": ["Action négatoire", "Servitude", "Droit de défense"],
+          "statutes": ["Art. 641 ZGB", "Art. 738 ZGB"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Das Abwehrrecht nach Art. 641 Abs. 2 ZGB besteht auch bei mittelbaren Eingriffen"
+        },
+        {
+          "decision_id": "bge_127 III 506",
+          "bge_ref": "BGE 127 III 506",
+          "title_de": "Nutzungsrechte bei Stockwerkeigentum",
+          "title_fr": "Droits d'usage en propriété par étages",
+          "concepts_de": ["Stockwerkeigentum", "Sondernutzungsrecht", "Gemeinschaftsrecht"],
+          "concepts_fr": ["Propriété par étages", "Droit d'usage exclusif"],
+          "statutes": ["Art. 712m ZGB", "Art. 712n ZGB"],
+          "difficulty": 4,
+          "prerequisites": ["bge_132 III 651"],
+          "significance_de": "Begründung besonderer Nutzungsrechte bei Stockwerkeigentümergemeinschaft"
+        }
+      ]
+    },
+    {
+      "id": "besitz",
+      "name_de": "Besitz und Besitzesschutz",
+      "name_fr": "Possession et protection possessoire",
+      "name_it": "Possesso e protezione del possesso",
+      "statutes": ["Art. 919 ZGB", "Art. 926 ZGB", "Art. 928 ZGB"],
+      "cases": [
+        {
+          "decision_id": "bge_135 III 633",
+          "bge_ref": "BGE 135 III 633",
+          "title_de": "Besitzesstörung und verbotene Eigenmacht",
+          "title_fr": "Trouble de la possession et voie de fait illicite",
+          "concepts_de": ["Besitzesstörung", "Verbotene Eigenmacht", "Besitzesschutz", "Öffentliches Recht"],
+          "concepts_fr": ["Trouble de la possession", "Voie de fait illicite"],
+          "statutes": ["Art. 928 ZGB"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Voraussetzungen der Besitzesstörungsklage; Verhältnis öffentlich-rechtliche Eigentumsbeschränkung"
+        }
+      ]
+    },
+    {
+      "id": "dienstbarkeiten",
+      "name_de": "Dienstbarkeiten und Grundbuch",
+      "name_fr": "Servitudes et registre foncier",
+      "name_it": "Servitù e registro fondiario",
+      "statutes": ["Art. 730 ZGB", "Art. 738 ZGB", "Art. 942 ZGB"],
+      "cases": [
+        {
+          "decision_id": "bge_128 III 265",
+          "bge_ref": "BGE 128 III 265",
+          "title_de": "Dingliche vs. obligatorische Wirkung von Dienstbarkeiten",
+          "title_fr": "Effet réel vs. obligatoire des servitudes",
+          "concepts_de": ["Grunddienstbarkeit", "Dingliche Wirkung", "Obligatorische Wirkung", "Verzicht"],
+          "concepts_fr": ["Servitude foncière", "Effet réel", "Renonciation"],
+          "statutes": ["Art. 730 ZGB", "Art. 734 ZGB"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Unterscheidung dingliche/obligatorische Bestimmungen bei Dienstbarkeiten"
+        },
+        {
+          "decision_id": "bge_137 III 145",
+          "bge_ref": "BGE 137 III 145",
+          "title_de": "Inhalt und Umfang eines Wegrechts",
+          "title_fr": "Contenu et étendue d'un droit de passage",
+          "concepts_de": ["Wegrecht", "Dienstbarkeitsauslegung", "Schonende Ausübung"],
+          "concepts_fr": ["Droit de passage", "Interprétation des servitudes"],
+          "statutes": ["Art. 737 ZGB", "Art. 738 ZGB"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Bauliche Anlagen bestimmen Inhalt und Umfang einer Dienstbarkeit; Gebot der schonenden Ausübung"
+        }
+      ]
+    }
+  ]
+}

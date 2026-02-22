@@ -3,15 +3,139 @@
   "area_de": "Vertragsrecht (OR AT)",
   "area_fr": "Droit des contrats (CO PG)",
   "area_it": "Diritto contrattuale (CO PG)",
-  "description_de": "Allgemeiner Teil des Obligationenrechts",
+  "description_de": "Allgemeiner Teil des Obligationenrechts: Vertragsschluss, Auslegung, Erfüllung, Leistungsstörungen",
   "modules": [
     {
       "id": "vertragsschluss",
-      "name_de": "Vertragsschluss",
-      "name_fr": "Conclusion du contrat",
-      "name_it": "Conclusione del contratto",
-      "statutes": ["Art. 1-10 OR"],
-      "cases": []
+      "name_de": "Vertragsschluss und AGB",
+      "name_fr": "Conclusion du contrat et CGA",
+      "name_it": "Conclusione del contratto e CGA",
+      "statutes": ["Art. 1 OR", "Art. 3 OR", "Art. 6 OR", "Art. 7 OR", "Art. 8 OR"],
+      "cases": [
+        {
+          "decision_id": "bge_135 III 1",
+          "bge_ref": "BGE 135 III 1",
+          "title_de": "AGB-Kontrolle und Ungewöhnlichkeitsregel",
+          "title_fr": "Contrôle des CGA et règle de l'inhabituel",
+          "concepts_de": ["Allgemeine Geschäftsbedingungen", "Ungewöhnlichkeitsregel", "Inhaltskontrolle", "Konsens"],
+          "concepts_fr": ["Conditions générales", "Clause insolite", "Contrôle du contenu"],
+          "statutes": ["Art. 1 OR", "Art. 8 UWG"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Leitentscheid zur AGB-Inhaltskontrolle: Ungewöhnlichkeitsregel und ihre Voraussetzungen"
+        },
+        {
+          "decision_id": "bge_123 III 35",
+          "bge_ref": "BGE 123 III 35",
+          "title_de": "Konsens und Auslegung eines Verweisungsvertrags",
+          "title_fr": "Consensus et interprétation d'une clause d'élection de for",
+          "concepts_de": ["Konsens", "Vertragsauslegung", "Gerichtsstand", "IPR"],
+          "concepts_fr": ["Consensus", "Interprétation", "For"],
+          "statutes": ["Art. 1 OR"],
+          "difficulty": 4,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zu Konsens und Auslegungsregeln bei Vertragsschluss"
+        }
+      ]
+    },
+    {
+      "id": "vertragsauslegung",
+      "name_de": "Vertragsauslegung",
+      "name_fr": "Interprétation du contrat",
+      "name_it": "Interpretazione del contratto",
+      "statutes": ["Art. 18 OR"],
+      "cases": [
+        {
+          "decision_id": "bge_131 III 606",
+          "bge_ref": "BGE 131 III 606",
+          "title_de": "Grundsätze der Vertragsauslegung",
+          "title_fr": "Principes d'interprétation du contrat",
+          "concepts_de": ["Vertragsauslegung", "Vertrauensprinzip", "Wortlautauslegung", "Parteiwille"],
+          "concepts_fr": ["Interprétation", "Principe de la confiance", "Volonté des parties"],
+          "statutes": ["Art. 18 OR"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Zusammenstellung der Auslegungsgrundsätze; Grenzen der wortlautbezogenen Auslegung"
+        },
+        {
+          "decision_id": "bge_144 III 93",
+          "bge_ref": "BGE 144 III 93",
+          "title_de": "Darlehen oder Schenkung — Auslegung des Parteiwillens",
+          "title_fr": "Prêt ou donation — interprétation de la volonté des parties",
+          "concepts_de": ["Vertragsauslegung", "Parteiwille", "Darlehen", "Schenkung", "Vertrauensprinzip"],
+          "concepts_fr": ["Interprétation", "Volonté", "Prêt", "Donation"],
+          "statutes": ["Art. 18 OR", "Art. 312 OR", "Art. 239 OR"],
+          "difficulty": 3,
+          "prerequisites": ["bge_131 III 606"],
+          "significance_de": "Anwendung der Auslegungsprinzipien auf die Abgrenzung Darlehen/Schenkung"
+        }
+      ]
+    },
+    {
+      "id": "willensmangel",
+      "name_de": "Willensmängel",
+      "name_fr": "Vices du consentement",
+      "name_it": "Vizi della volontà",
+      "statutes": ["Art. 23 OR", "Art. 24 OR", "Art. 25 OR", "Art. 28 OR"],
+      "cases": [
+        {
+          "decision_id": "bge_128 III 70",
+          "bge_ref": "BGE 128 III 70",
+          "title_de": "Vertragsanfechtung wegen Irrtums oder Täuschung",
+          "title_fr": "Invalidation pour erreur ou dol",
+          "concepts_de": ["Irrtum", "Täuschung", "Anfechtung", "Willensmängel", "Unwiderruflichkeit"],
+          "concepts_fr": ["Erreur", "Dol", "Invalidation"],
+          "statutes": ["Art. 23 OR", "Art. 24 OR", "Art. 28 OR"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatz der Unwiderruflichkeit der Anfechtungserklärung und ihre Ausnahmen"
+        },
+        {
+          "decision_id": "bge_132 III 737",
+          "bge_ref": "BGE 132 III 737",
+          "title_de": "Grundlagenirrtum bei gerichtlichem Vergleich",
+          "title_fr": "Erreur essentielle dans une transaction judiciaire",
+          "concepts_de": ["Grundlagenirrtum", "Gerichtlicher Vergleich", "Kündigung", "Eigenbedarf"],
+          "concepts_fr": ["Erreur essentielle", "Transaction judiciaire"],
+          "statutes": ["Art. 24 OR", "Art. 25 OR"],
+          "difficulty": 4,
+          "prerequisites": ["bge_128 III 70"],
+          "significance_de": "Voraussetzungen für die Anfechtung eines gerichtlichen Vergleichs wegen Grundlagenirrtum"
+        }
+      ]
+    },
+    {
+      "id": "erfullung",
+      "name_de": "Leistungsstörungen und Verzug",
+      "name_fr": "Inexécution et demeure",
+      "name_it": "Inadempimento e mora",
+      "statutes": ["Art. 97 OR", "Art. 102 OR", "Art. 107 OR"],
+      "cases": [
+        {
+          "decision_id": "bge_127 III 543",
+          "bge_ref": "BGE 127 III 543",
+          "title_de": "Haftung des Architekten bei Schlechterfüllung",
+          "title_fr": "Responsabilité de l'architecte pour mauvaise exécution",
+          "concepts_de": ["Schlechterfüllung", "Vertragshaftung", "Kausalzusammenhang", "Architektenvertrag"],
+          "concepts_fr": ["Mauvaise exécution", "Responsabilité contractuelle"],
+          "statutes": ["Art. 97 OR", "Art. 398 OR"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Haftung nach Art. 97 OR bei Nicht- oder Schlechterfüllung"
+        },
+        {
+          "decision_id": "bge_123 III 16",
+          "bge_ref": "BGE 123 III 16",
+          "title_de": "Wahlrecht des Gläubigers bei Schuldnerverzug",
+          "title_fr": "Droit d'option du créancier en cas de demeure",
+          "concepts_de": ["Verzug", "Wahlrecht", "Rücktritt", "Schadenersatz", "Nachfrist"],
+          "concepts_fr": ["Demeure", "Droit d'option", "Résolution"],
+          "statutes": ["Art. 107 OR"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Bedeutung und Ausübung der Wahlmöglichkeiten nach Art. 107 OR bei Schuldnerverzug"
+        }
+      ]
     }
   ]
 }

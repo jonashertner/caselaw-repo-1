@@ -1,0 +1,129 @@
+{
+  "area_id": "strafrecht_at",
+  "area_de": "Strafrecht Allgemeiner Teil",
+  "area_fr": "Droit pénal partie générale",
+  "area_it": "Diritto penale parte generale",
+  "description_de": "Allgemeiner Teil des Strafrechts: Vorsatz/Fahrlässigkeit, Versuch, Teilnahme, Strafzumessung",
+  "modules": [
+    {
+      "id": "vorsatz",
+      "name_de": "Vorsatz und Fahrlässigkeit",
+      "name_fr": "Intention et négligence",
+      "name_it": "Intenzionalità e negligenza",
+      "statutes": ["Art. 12 StGB", "Art. 18 StGB"],
+      "cases": [
+        {
+          "decision_id": "bge_130 IV 58",
+          "bge_ref": "BGE 130 IV 58",
+          "title_de": "Eventualvorsatz vs. bewusste Fahrlässigkeit bei Raserunfall",
+          "title_fr": "Dol éventuel vs. négligence consciente lors d'un accident",
+          "concepts_de": ["Eventualvorsatz", "Bewusste Fahrlässigkeit", "Tötung", "Abgrenzung"],
+          "concepts_fr": ["Dol éventuel", "Négligence consciente", "Homicide"],
+          "statutes": ["Art. 12 StGB", "Art. 111 StGB"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Abgrenzung Eventualvorsatz/bewusste Fahrlässigkeit bei tödlichem Raserunfall"
+        },
+        {
+          "decision_id": "bge_133 IV 9",
+          "bge_ref": "BGE 133 IV 9",
+          "title_de": "Eventualvorsatz bei Strassenverkehrsunfall",
+          "title_fr": "Dol éventuel lors d'un accident de la route",
+          "concepts_de": ["Eventualvorsatz", "Strassenverkehr", "Tötung", "Verletzung"],
+          "concepts_fr": ["Dol éventuel", "Circulation routière"],
+          "statutes": ["Art. 12 StGB", "Art. 111 StGB", "Art. 125 StGB"],
+          "difficulty": 3,
+          "prerequisites": ["bge_130 IV 58"],
+          "significance_de": "Eventualvorsatz unter konkreten Umständen verneint — Vertiefung der Abgrenzungskriterien"
+        }
+      ]
+    },
+    {
+      "id": "versuch",
+      "name_de": "Versuch und Rücktritt",
+      "name_fr": "Tentative et désistement",
+      "name_it": "Tentativo e desistenza",
+      "statutes": ["Art. 22 StGB", "Art. 23 StGB"],
+      "cases": [
+        {
+          "decision_id": "bge_131 IV 1",
+          "bge_ref": "BGE 131 IV 1",
+          "title_de": "Versuch der schweren Körperverletzung bei HIV-Übertragung",
+          "title_fr": "Tentative de lésions corporelles graves par transmission du VIH",
+          "concepts_de": ["Versuch", "Schwere Körperverletzung", "HIV", "Vorsatz"],
+          "concepts_fr": ["Tentative", "Lésions corporelles graves", "VIH"],
+          "statutes": ["Art. 22 StGB", "Art. 122 StGB", "Art. 231 StGB"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Versuch der schweren Körperverletzung bei ungeschützten Sexualkontakten einer HIV-infizierten Person"
+        }
+      ]
+    },
+    {
+      "id": "teilnahme",
+      "name_de": "Mittäterschaft und Teilnahme",
+      "name_fr": "Coactivité et participation",
+      "name_it": "Correità e partecipazione",
+      "statutes": ["Art. 24 StGB", "Art. 25 StGB"],
+      "cases": [
+        {
+          "decision_id": "bge_118 IV 397",
+          "bge_ref": "BGE 118 IV 397",
+          "title_de": "Mittäterschaft bei Betäubungsmitteldelikten",
+          "title_fr": "Coactivité en matière de stupéfiants",
+          "concepts_de": ["Mittäterschaft", "Betäubungsmittel", "Anforderungen", "Tatbeitrag"],
+          "concepts_fr": ["Coactivité", "Stupéfiants", "Contribution"],
+          "statutes": ["Art. 24 StGB", "Art. 25 StGB", "Art. 19 BetmG"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Hohe Anforderungen an die Annahme von Mittäterschaft bei BetmG-Widerhandlungen"
+        },
+        {
+          "decision_id": "bge_144 IV 265",
+          "bge_ref": "BGE 144 IV 265",
+          "title_de": "Anstiftung/Gehilfenschaft und Begehungsort",
+          "title_fr": "Instigation/complicité et lieu de commission",
+          "concepts_de": ["Anstiftung", "Gehilfenschaft", "Begehungsort", "Akzessorietät", "Internationale Zuständigkeit"],
+          "concepts_fr": ["Instigation", "Complicité", "Lieu de commission", "Accessoriété"],
+          "statutes": ["Art. 24 StGB", "Art. 25 StGB", "Art. 3 StGB", "Art. 8 StGB"],
+          "difficulty": 4,
+          "prerequisites": ["bge_118 IV 397"],
+          "significance_de": "Akzessorietät der Teilnahme begründet keinen selbständigen Begehungsort"
+        }
+      ]
+    },
+    {
+      "id": "sanktionen",
+      "name_de": "Strafzumessung",
+      "name_fr": "Fixation de la peine",
+      "name_it": "Commisurazione della pena",
+      "statutes": ["Art. 47 StGB", "Art. 49 StGB"],
+      "cases": [
+        {
+          "decision_id": "bge_134 IV 17",
+          "bge_ref": "BGE 134 IV 17",
+          "title_de": "Strafzumessung bei qualifiziertem Betäubungsmitteldelikt",
+          "title_fr": "Fixation de la peine pour infraction qualifiée aux stupéfiants",
+          "concepts_de": ["Strafzumessung", "Betäubungsmittel", "Strafrahmen", "Verschulden"],
+          "concepts_fr": ["Fixation de la peine", "Stupéfiants", "Cadre pénal"],
+          "statutes": ["Art. 47 StGB", "Art. 19 BetmG"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Methodik der Strafzumessung nach Art. 47 StGB"
+        },
+        {
+          "decision_id": "bge_144 IV 313",
+          "bge_ref": "BGE 144 IV 313",
+          "title_de": "Gesamtstrafenbildung und Asperationsprinzip",
+          "title_fr": "Peine d'ensemble et principe d'aggravation",
+          "concepts_de": ["Gesamtstrafe", "Asperationsprinzip", "Konkurrenzen", "Begründungspflicht"],
+          "concepts_fr": ["Peine d'ensemble", "Principe d'aggravation", "Concours"],
+          "statutes": ["Art. 49 StGB", "Art. 41 StGB"],
+          "difficulty": 3,
+          "prerequisites": ["bge_134 IV 17"],
+          "significance_de": "Methodik der Gesamtstrafenbildung bei Konkurrenz: erst Strafart bestimmen, dann Art. 49 StGB prüfen"
+        }
+      ]
+    }
+  ]
+}
