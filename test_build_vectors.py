@@ -1,14 +1,22 @@
-"""Tests for search_stack.build_vectors — text selection helper & sqlite-vec schema."""
+"""Tests for search_stack.build_vectors — text selection, sqlite-vec, model, and pipeline."""
 
+import json
 import struct
 
 import pytest
 
 from search_stack.build_vectors import (
+    BGE_M3_MODEL_ID,
     EMBEDDING_DIM,
+    ENCODE_BATCH_SIZE,
+    ENCODE_MAX_LENGTH,
     VEC_TABLE_SQL,
+    _iter_rows_from_jsonl,
     _select_text,
+    build_vectors,
     create_vec_db,
+    encode_texts,
+    load_model,
     serialize_f32,
 )
 
@@ -174,3 +182,123 @@ def test_vec_db_language_partition(tmp_path):
     assert rows[0][0] == "dec_de"
 
     conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Task 4: Constants for model loader
+# ---------------------------------------------------------------------------
+
+
+def test_bge_m3_model_id():
+    """BGE_M3_MODEL_ID should reference the BAAI/bge-m3 model."""
+    assert BGE_M3_MODEL_ID == "BAAI/bge-m3"
+
+
+def test_encode_constants():
+    """ENCODE_MAX_LENGTH and ENCODE_BATCH_SIZE should have expected defaults."""
+    assert ENCODE_MAX_LENGTH == 512
+    assert ENCODE_BATCH_SIZE == 32
+
+
+# ---------------------------------------------------------------------------
+# Task 4: Embedding model live tests (require model download)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.live
+def test_load_embedding_model():
+    """Load BGE-M3 model, encode one sentence, verify output shape (1, 1024)."""
+    model = load_model()
+    result = encode_texts(model, ["This is a test sentence."])
+    assert result.shape == (1, EMBEDDING_DIM)
+
+
+@pytest.mark.live
+def test_encode_multilingual():
+    """Encode multilingual texts, verify animal-liability texts cluster together."""
+    import numpy as np
+
+    model = load_model()
+    texts = [
+        "Tierhalterhaftung nach Art. 56 OR bei Hundebiss",       # DE: animal liability
+        "Responsabilite du detenteur d'animal selon art. 56 CO", # FR: animal liability
+        "Responsabilita del detentore di animali art. 56 CO",    # IT: animal liability
+        "Steuerbefreiung fuer gemeinnuetzige Organisationen",    # DE: tax exemption (unrelated)
+    ]
+    embeddings = encode_texts(model, texts)
+    assert embeddings.shape == (4, EMBEDDING_DIM)
+
+    # Cosine similarity (embeddings are already L2-normalized, so dot product = cosine)
+    def cosine_sim(a, b):
+        return float(np.dot(a, b))
+
+    # All three animal-liability texts should be more similar to each other
+    # than any of them is to the tax text
+    sim_de_fr = cosine_sim(embeddings[0], embeddings[1])
+    sim_de_it = cosine_sim(embeddings[0], embeddings[2])
+    sim_fr_it = cosine_sim(embeddings[1], embeddings[2])
+    sim_de_tax = cosine_sim(embeddings[0], embeddings[3])
+    sim_fr_tax = cosine_sim(embeddings[1], embeddings[3])
+    sim_it_tax = cosine_sim(embeddings[2], embeddings[3])
+
+    min_animal_sim = min(sim_de_fr, sim_de_it, sim_fr_it)
+    max_tax_sim = max(sim_de_tax, sim_fr_tax, sim_it_tax)
+
+    assert min_animal_sim > max_tax_sim, (
+        f"Animal-liability cluster similarity ({min_animal_sim:.3f}) should exceed "
+        f"max tax similarity ({max_tax_sim:.3f})"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Task 5: JSONL iteration (non-live)
+# ---------------------------------------------------------------------------
+
+
+def test_iter_rows_from_jsonl(tmp_path):
+    """_iter_rows_from_jsonl should parse valid lines and skip bad JSON."""
+    jsonl_file = tmp_path / "test.jsonl"
+    lines = [
+        json.dumps({"decision_id": "d1", "full_text": "Hello"}),
+        "",  # blank line — should be skipped
+        "NOT VALID JSON",  # bad JSON — should be skipped with warning
+        json.dumps({"decision_id": "d2", "full_text": "World"}),
+    ]
+    jsonl_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    rows = list(_iter_rows_from_jsonl(tmp_path))
+    assert len(rows) == 2
+    assert rows[0]["decision_id"] == "d1"
+    assert rows[1]["decision_id"] == "d2"
+
+
+# ---------------------------------------------------------------------------
+# Task 5: Build pipeline live test (requires model + sqlite-vec)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.live
+def test_build_vectors_from_jsonl(tmp_path):
+    """Build vectors from a tiny JSONL: 2 with text, 1 without. Verify stats."""
+    input_dir = tmp_path / "decisions"
+    input_dir.mkdir()
+
+    rows = [
+        {"decision_id": "dec_1", "regeste": "Mietrecht: Kuendigung wegen Eigenbedarf.", "language": "de"},
+        {"decision_id": "dec_2", "full_text": "Das Bundesgericht hat entschieden ...", "language": "de"},
+        {"decision_id": "dec_3", "regeste": None, "full_text": None, "language": "de"},  # no text
+    ]
+    jsonl_file = input_dir / "test.jsonl"
+    jsonl_file.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
+        encoding="utf-8",
+    )
+
+    db_path = tmp_path / "vectors.db"
+    stats = build_vectors(input_dir=input_dir, db_path=db_path)
+
+    assert stats["embedded"] == 2
+    assert stats["skipped_no_text"] == 1
+    assert stats["skipped_dupe"] == 0
+    assert db_path.exists()
+    assert stats["db_path"] == str(db_path)
