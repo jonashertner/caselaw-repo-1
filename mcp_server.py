@@ -75,6 +75,12 @@ from mcp.types import TextContent, Tool
 # Add repo root to path so db_schema can be imported when run from any directory
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
+from study.socratic import build_study_package, build_brief_comparison  # noqa: E402
+from study.curriculum_engine import (  # noqa: E402
+    find_case as curriculum_find_case,
+    load_curriculum,
+    list_areas as curriculum_list_areas,
+)
 
 # Set to True when running with --remote (SSE transport).
 # Gates off update_database / check_update_status for remote clients.
@@ -4204,6 +4210,134 @@ def update_from_huggingface() -> str:
 server = Server("swiss-caselaw")
 
 
+# ── Socratic study tool handlers ─────────────────────────────
+
+def _handle_study_leading_case(
+    *,
+    topic: str | None,
+    decision_id: str | None,
+    difficulty: int | None,
+    language: str,
+    mode: str,
+) -> dict:
+    """Internal handler for study_leading_case tool."""
+    curriculum_case = None
+
+    # Resolve decision_id
+    if decision_id:
+        # Check if it's in curriculum
+        areas = load_curriculum()
+        for area in areas:
+            for mod in area.modules:
+                for case in mod.cases:
+                    if case.decision_id == decision_id:
+                        curriculum_case = case
+                        break
+    elif topic:
+        curriculum_case = curriculum_find_case(topic, difficulty=difficulty, language=language)
+        if curriculum_case:
+            decision_id = curriculum_case.decision_id
+        else:
+            # Fallback: find_leading_cases
+            lc_result = _find_leading_cases(query=topic, court="bge", limit=1)
+            cases = lc_result.get("cases", [])
+            if cases:
+                decision_id = cases[0].get("decision_id")
+
+    if not decision_id:
+        return {"error": "No matching case found. Provide a decision_id or try a different topic."}
+
+    # Fetch the full decision
+    decision = get_decision_by_id(decision_id)
+    if not decision:
+        return {"error": f"Decision not found: {decision_id}"}
+
+    # Get citation counts
+    citation_counts = _count_citations(decision_id)
+
+    # Get related cases from curriculum
+    related_cases = None
+    if curriculum_case and curriculum_case.prerequisites:
+        related_cases = []
+        for prereq_id in curriculum_case.prerequisites:
+            prereq = get_decision_by_id(prereq_id)
+            if prereq:
+                related_cases.append({
+                    "decision_id": prereq_id,
+                    "docket_number": prereq.get("docket_number", ""),
+                    "decision_date": prereq.get("decision_date", ""),
+                    "relationship": "prerequisite",
+                })
+
+    return build_study_package(
+        decision=decision,
+        mode=mode,
+        curriculum_case=curriculum_case,
+        citation_counts=citation_counts,
+        related_cases=related_cases,
+    )
+
+
+def _handle_list_study_curriculum(
+    *,
+    area: str | None,
+    difficulty: int | None,
+    language: str,
+) -> dict:
+    """Internal handler for list_study_curriculum tool."""
+    if area:
+        areas = load_curriculum(area=area)
+        if not areas:
+            return {"error": f"Unknown area: {area}. Available: vertragsrecht, haftpflicht, sachenrecht, grundrechte, strafrecht_at"}
+
+        a = areas[0]
+        lang_key = language if language in ("de", "fr", "it") else "de"
+        modules = []
+        for mod in a.modules:
+            cases = []
+            for case in mod.cases:
+                if difficulty is not None and case.difficulty > difficulty:
+                    continue
+                cases.append({
+                    "decision_id": case.decision_id,
+                    "bge_ref": case.bge_ref,
+                    "title": getattr(case, f"title_{lang_key}", case.title_de) or case.title_de,
+                    "difficulty": case.difficulty,
+                    "statutes": case.statutes,
+                    "prerequisites": case.prerequisites,
+                })
+            modules.append({
+                "id": mod.id,
+                "name": getattr(mod, f"name_{lang_key}", mod.name_de) or mod.name_de,
+                "statutes": mod.statutes,
+                "case_count": len(cases),
+                "cases": cases,
+            })
+        return {
+            "area_id": a.area_id,
+            "name": getattr(a, f"area_{lang_key}", a.area_de) or a.area_de,
+            "description": a.description_de,
+            "modules": modules,
+        }
+
+    # Overview of all areas
+    return {"areas": curriculum_list_areas(language=language)}
+
+
+def _handle_check_case_brief(
+    *,
+    decision_id: str,
+    brief: str,
+    language: str,
+) -> dict:
+    """Internal handler for check_case_brief tool."""
+    decision = get_decision_by_id(decision_id)
+    if not decision:
+        return {"error": f"Decision not found: {decision_id}"}
+
+    return build_brief_comparison(decision=decision, student_brief=brief)
+
+
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
     return [
@@ -4544,6 +4678,108 @@ async def handle_list_tools() -> list[Tool]:
                 "required": ["facts"],
             },
         ),
+        Tool(
+            name="study_leading_case",
+            description=(
+                "Study a leading Swiss court decision (BGE/Leitentscheid) interactively. "
+                "Returns parsed decision structure (Sachverhalt, numbered Erwägungen with "
+                "statute references, Dispositiv), curriculum metadata, and citation graph data. "
+                "Use for Socratic legal education: the returned structure enables generating "
+                "comprehension questions, reading guides, and case briefing exercises."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "topic": {
+                        "type": "string",
+                        "description": (
+                            "Legal topic or concept (e.g., 'Vertragsschluss', 'Art. 41 OR', "
+                            "'Haftpflicht'). Used to find a matching case from the curriculum."
+                        ),
+                    },
+                    "decision_id": {
+                        "type": "string",
+                        "description": "Specific BGE decision_id to study (e.g., 'bge_144_III_93').",
+                    },
+                    "difficulty": {
+                        "type": "integer",
+                        "description": "Target difficulty (1=introductory, 5=complex). Filters curriculum cases.",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Preferred language for labels (de, fr, it).",
+                        "enum": ["de", "fr", "it"],
+                    },
+                    "mode": {
+                        "type": "string",
+                        "description": (
+                            "Study mode: 'guided' (full structure + related cases), "
+                            "'brief' (for case briefing exercises), "
+                            "'quick' (key points only for revision)."
+                        ),
+                        "enum": ["guided", "brief", "quick"],
+                        "default": "guided",
+                    },
+                },
+            },
+        ),
+        Tool(
+            name="list_study_curriculum",
+            description=(
+                "List available study curricula for Swiss law. "
+                "Returns areas (Rechtsgebiete), modules, and cases with metadata. "
+                "Covers: Vertragsrecht, Haftpflicht, Sachenrecht, Grundrechte, Strafrecht AT."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "area": {
+                        "type": "string",
+                        "description": (
+                            "Filter by Rechtsgebiet: vertragsrecht, haftpflicht, "
+                            "sachenrecht, grundrechte, strafrecht_at."
+                        ),
+                    },
+                    "difficulty": {
+                        "type": "integer",
+                        "description": "Show only cases up to this difficulty (1-5).",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Language for labels (de, fr, it).",
+                        "enum": ["de", "fr", "it"],
+                    },
+                },
+            },
+        ),
+        Tool(
+            name="check_case_brief",
+            description=(
+                "Check a student's case brief against the actual decision. "
+                "Returns the parsed decision ground truth (ratio from regeste, statute list, "
+                "Erwägung summaries, Dispositiv) alongside the student's brief, structured "
+                "for comparison and pedagogical feedback generation."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": "The BGE decision_id being briefed.",
+                    },
+                    "brief": {
+                        "type": "string",
+                        "description": "The student's case brief text.",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Feedback language preference (de, fr, it).",
+                        "enum": ["de", "fr", "it"],
+                    },
+                },
+                "required": ["decision_id", "brief"],
+            },
+        ),
         *([] if REMOTE_MODE else [
             Tool(
                 name="update_database",
@@ -4758,6 +4994,35 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 type="text",
                 text=_format_mock_decision_report(report),
             )]
+
+        elif name == "study_leading_case":
+            result = await asyncio.to_thread(
+                _handle_study_leading_case,
+                topic=arguments.get("topic"),
+                decision_id=arguments.get("decision_id"),
+                difficulty=arguments.get("difficulty"),
+                language=arguments.get("language", "de"),
+                mode=arguments.get("mode", "guided"),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "list_study_curriculum":
+            result = await asyncio.to_thread(
+                _handle_list_study_curriculum,
+                area=arguments.get("area"),
+                difficulty=arguments.get("difficulty"),
+                language=arguments.get("language", "de"),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "check_case_brief":
+            result = await asyncio.to_thread(
+                _handle_check_case_brief,
+                decision_id=arguments["decision_id"],
+                brief=arguments["brief"],
+                language=arguments.get("language", "de"),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
         elif name == "update_database":
             global _update_thread
