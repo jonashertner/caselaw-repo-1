@@ -316,9 +316,9 @@ def test_semantic_finds_related_concept():
 
     model = load_model()
     texts = [
-        "Hundebiss",                           # query
-        "Tierhalterhaftung Art. 56 OR",        # semantically related
-        "Mietvertrag Kündigung",               # unrelated
+        "Hundebiss",                                        # query
+        "Tierhalterhaftung Art. 56 OR",                     # semantically related
+        "Steuerbefreiung gemeinnütziger Organisationen",    # unrelated (tax domain)
     ]
     embs = encode_texts(model, texts)
 
@@ -328,5 +328,5 @@ def test_semantic_finds_related_concept():
 
     assert sim_related > sim_unrelated, (
         f"'Hundebiss' should be closer to 'Tierhalterhaftung' ({sim_related:.3f}) "
-        f"than to 'Mietvertrag' ({sim_unrelated:.3f})"
+        f"than to 'Steuerbefreiung' ({sim_unrelated:.3f})"
     )
