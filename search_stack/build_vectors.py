@@ -61,7 +61,7 @@ def _select_text(row: dict) -> str | None:
 
     Priority:
     1. ``regeste`` if present and >= 20 characters
-    2. ``full_text`` first 2000 characters if present and non-empty
+    2. ``full_text`` first 500 characters if present and non-empty
     3. ``None`` otherwise
 
     Args:
@@ -76,7 +76,7 @@ def _select_text(row: dict) -> str | None:
 
     full_text = row.get("full_text") or ""
     if full_text:
-        return full_text[:2000]
+        return full_text[:500]
 
     return None
 

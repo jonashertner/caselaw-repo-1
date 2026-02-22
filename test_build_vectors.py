@@ -33,13 +33,13 @@ def test_select_text_uses_regeste():
 
 
 def test_select_text_falls_back_to_full_text():
-    """When regeste is missing, fall back to full_text truncated to 2000 chars."""
+    """When regeste is missing, fall back to full_text truncated to 500 chars."""
     long_text = "A" * 5000
     row = {"regeste": None, "full_text": long_text}
     result = _select_text(row)
     assert result is not None
-    assert len(result) == 2000
-    assert result == "A" * 2000
+    assert len(result) == 500
+    assert result == "A" * 500
 
 
 def test_select_text_falls_back_on_short_regeste():
