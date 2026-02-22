@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import os
+
+import pytest
+
 from study.parser import Erwagung, ParsedDecision, parse_decision
 
 
@@ -134,3 +138,35 @@ Demnach erkennt das Bundesgericht:
     result = parse_decision(text, language="de", regeste="")
     assert 0.3 <= result.parse_quality <= 0.7
     assert len(result.erwagungen) >= 2
+
+
+# ── Real BGE integration test ────────────────────────────────
+
+# Only run if local DB is available
+HAS_DB = os.path.exists(os.path.expanduser("~/.swiss-caselaw/decisions.db"))
+
+
+@pytest.mark.skipif(not HAS_DB, reason="No local DB")
+def test_parse_real_bge_144_III_93():
+    """Parse a real BGE decision from the database."""
+    import sys
+    sys.path.insert(0, ".")
+    from mcp_server import get_decision_by_id
+
+    decision = get_decision_by_id("bge_144_III_93")
+    assert decision is not None
+
+    result = parse_decision(
+        decision["full_text"],
+        language=decision.get("language", "fr"),
+        regeste=decision.get("regeste", ""),
+    )
+
+    # This French BGE should parse well
+    assert result.parse_quality >= 0.5
+    assert len(result.erwagungen) >= 3  # has E. 5, 5.1, 5.2, etc.
+    # Should find statute references (Art. 312 CO, Art. 239 CO)
+    all_refs = set()
+    for e in result.erwagungen:
+        all_refs.update(e.statute_refs)
+    assert len(all_refs) >= 2

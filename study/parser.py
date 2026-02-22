@@ -79,6 +79,9 @@ def _find_section_start(text: str, patterns: list[re.Pattern]) -> int | None:
 
 def _extract_erwagungen(text: str) -> list[Erwagung]:
     """Split reasoning text into numbered Erwägungen."""
+    # Normalize sub-numbers on their own line: "5.1\n" → "5.1.\n"
+    # Real BGE texts often have sub-headings without trailing periods.
+    text = re.sub(r"^(\s*\d+\.\d+(?:\.\d+)*)\s*$", r"\1.", text, flags=re.MULTILINE)
     matches = list(_ERWAGUNG_NUM.finditer(text))
     if not matches:
         return []
