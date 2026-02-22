@@ -18,6 +18,7 @@ Rate limiting: 3 seconds
 
 from __future__ import annotations
 
+import io
 import json
 import logging
 import random
@@ -57,6 +58,23 @@ HEADERS = {
     "Origin": HOST,
     "Referer": f"{HOST}/?sort-field=relevance&sort-direction=relevance",
 }
+
+
+def _extract_pdf_text(data: bytes) -> str:
+    """Extract text from PDF bytes using fitz (PyMuPDF) with pdfplumber fallback."""
+    try:
+        import fitz
+        doc = fitz.open(stream=data, filetype="pdf")
+        return "\n\n".join(p.get_text() for p in doc)
+    except ImportError:
+        pass
+    try:
+        import pdfplumber
+        with pdfplumber.open(io.BytesIO(data)) as pdf:
+            return "\n\n".join(p.extract_text() or "" for p in pdf.pages)
+    except ImportError:
+        pass
+    return ""
 
 # JSON search template
 BASE_JSON = {
@@ -263,19 +281,41 @@ class BStGerScraper(BaseScraper):
             pub_date_parsed = parse_date(stub.get("publication_date", ""))
             headnote = stub.get("headnote", "")
 
-            # Try to fetch full decision text from content API
+            # Fetch full text by downloading PDF and extracting text
             full_text = ""
             leid = stub.get("doc_id", "")
             if leid:
                 try:
-                    resp = self.get(f"{HOST}/api/getDocumentContent/{leid}")
-                    if resp.status_code == 200 and len(resp.text) > 100:
+                    resp = self.get(
+                        f"{HOST}/api/getDocumentContent/{leid}",
+                        timeout=30,
+                    )
+                    if resp.status_code == 200 and resp.content[:5] == b"%PDF-":
+                        full_text = _extract_pdf_text(resp.content)
+                        if full_text.strip():
+                            logger.debug(f"Extracted {len(full_text)} chars from PDF for {docket}")
+                        else:
+                            logger.debug(f"PDF text extraction empty for {docket}")
+                    elif resp.status_code == 200 and len(resp.text) > 100:
+                        # Non-PDF text response (future-proofing)
                         full_text = resp.text
                 except Exception as e:
                     logger.debug(f"Content fetch failed for {leid}: {e}")
 
-            if not full_text:
+            if not full_text.strip():
                 full_text = headnote or ""
+
+            # Deduplicate multilingual regeste (e.g. "de text;;fr text;;it text")
+            if headnote and ";;" in headnote:
+                parts = [p.strip() for p in headnote.split(";;") if p.strip()]
+                # Take unique parts only
+                seen = set()
+                unique = []
+                for p in parts:
+                    if p not in seen:
+                        seen.add(p)
+                        unique.append(p)
+                headnote = "\n\n".join(unique)
 
             lang = detect_language(full_text) if full_text else "de"
 
