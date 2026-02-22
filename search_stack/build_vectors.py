@@ -196,6 +196,9 @@ def encode_texts(
         numpy array of shape ``(N, EMBEDDING_DIM)`` with L2-normalized
         embeddings.
     """
+    # Set max sequence length to avoid BGE-M3's default of 8192 tokens
+    original_max = getattr(model, "max_seq_length", None)
+    model.max_seq_length = max_length
     embeddings = model.encode(
         texts,
         batch_size=batch_size,
@@ -203,6 +206,8 @@ def encode_texts(
         show_progress_bar=False,
         truncate_dim=EMBEDDING_DIM,
     )
+    if original_max is not None:
+        model.max_seq_length = original_max
     return np.asarray(embeddings, dtype=np.float32)
 
 
