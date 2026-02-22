@@ -511,11 +511,14 @@ def _iter_rows_from_source(
 def _iter_rows_from_jsonl(input_dir: Path) -> Iterator[dict]:
     for jsonl_path in sorted(input_dir.glob("*.jsonl")):
         with open(jsonl_path, encoding="utf-8") as f:
-            for line in f:
+            for line_no, line in enumerate(f, 1):
                 line = line.strip()
                 if not line:
                     continue
-                yield json.loads(line)
+                try:
+                    yield json.loads(line)
+                except json.JSONDecodeError:
+                    logger.warning("Skipping bad JSON at %s:%d", jsonl_path.name, line_no)
 
 
 def _iter_rows_from_db(*, source_db: Path, courts: list[str] | None) -> Iterator[dict]:
