@@ -133,6 +133,14 @@ GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower
     "false",
     "no",
 }
+
+# ── Vector search ─────────────────────────────────────────────
+VECTOR_DB_PATH = Path(os.environ.get("SWISS_CASELAW_VECTORS_DB", "output/vectors.db"))
+VECTOR_SEARCH_ENABLED = os.environ.get("SWISS_CASELAW_VECTOR_SEARCH", "auto").lower()
+VECTOR_WEIGHT = float(os.environ.get("SWISS_CASELAW_VECTOR_WEIGHT", "1.0"))
+VECTOR_K = int(os.environ.get("SWISS_CASELAW_VECTOR_K", "50"))
+VECTOR_SIGNAL_WEIGHT = float(os.environ.get("SWISS_CASELAW_VECTOR_SIGNAL_WEIGHT", "3.0"))
+
 FEDLEX_CACHE_PATH = Path(
     os.environ.get("SWISS_CASELAW_FEDLEX_CACHE", str(DATA_DIR / "fedlex_cache.json"))
 )
@@ -450,6 +458,9 @@ QUERY_DOCKET_PATTERNS = [
 _CROSS_ENCODER = None
 _CROSS_ENCODER_FAILED = False
 
+_VECTOR_MODEL = None
+_VECTOR_MODEL_FAILED = False
+
 
 # ── Database ──────────────────────────────────────────────────
 
@@ -765,6 +776,44 @@ def _search_fts5_inner(
         if idx == 0 and has_explicit_syntax and len(candidate_meta) >= effective_need:
             break
 
+    # ── Vector search (parallel candidate source) ──
+    vector_scores: dict[str, float] = {}
+    if not is_docket_query and not has_explicit_syntax:
+        vector_scores = _search_vectors(
+            query=fts_query,
+            language=language,
+        )
+        if vector_scores:
+            vec_only_ids = set(vector_scores.keys()) - set(candidate_meta.keys())
+            if vec_only_ids:
+                ph = ",".join("?" for _ in vec_only_ids)
+                vec_rows = conn.execute(
+                    f"""SELECT d.decision_id, d.court, d.canton, d.chamber,
+                           d.docket_number, d.decision_date, d.language,
+                           d.title, d.regeste, d.full_text AS full_text_raw,
+                           '' as snippet, d.source_url, d.pdf_url,
+                           0.0 as bm25_score
+                    FROM decisions d WHERE d.decision_id IN ({ph})""",
+                    list(vec_only_ids),
+                ).fetchall()
+                for row in vec_rows:
+                    did = row["decision_id"]
+                    candidate_meta[did] = {
+                        "row": row,
+                        "best_bm25": 0.0,
+                        "rrf_score": 0.0,
+                        "strategy_hits": 0,
+                    }
+            for rank, (did, _dist) in enumerate(
+                sorted(vector_scores.items(), key=lambda x: x[1]), start=1
+            ):
+                if did in candidate_meta:
+                    cm = candidate_meta[did]
+                    cm["rrf_score"] = float(cm["rrf_score"]) + (
+                        VECTOR_WEIGHT / (RRF_RANK_CONSTANT + rank)
+                    )
+                    cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
+
     if candidate_meta:
         rows_for_rerank = [m["row"] for m in candidate_meta.values()]
         fusion_scores = {
@@ -783,6 +832,7 @@ def _search_fts5_inner(
                 fts_query,
                 offset + limit,
                 fusion_scores=fusion_scores,
+                vector_scores=vector_scores,
                 offset=0,
                 sort=sort,
             )
@@ -801,6 +851,7 @@ def _search_fts5_inner(
             fts_query,
             limit,
             fusion_scores=fusion_scores,
+            vector_scores=vector_scores,
             offset=offset,
             sort=sort,
         )
@@ -1194,6 +1245,104 @@ def _get_graph_conn() -> sqlite3.Connection | None:
         return None
 
 
+def _get_vec_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the vector DB, or None if unavailable."""
+    if VECTOR_SEARCH_ENABLED in {"0", "false", "no"}:
+        return None
+    if not VECTOR_DB_PATH.exists():
+        return None
+    try:
+        import sqlite_vec
+    except ImportError:
+        return None
+    try:
+        conn = sqlite3.connect(str(VECTOR_DB_PATH), timeout=0.5)
+        conn.enable_load_extension(True)
+        sqlite_vec.load(conn)
+        conn.enable_load_extension(False)
+        conn.execute("PRAGMA query_only = ON")
+        return conn
+    except Exception as e:
+        logger.debug("Failed to open vector DB: %s", e)
+        return None
+
+
+def _get_vector_model():
+    """Lazy-load embedding model for vector search. Returns None if unavailable."""
+    global _VECTOR_MODEL, _VECTOR_MODEL_FAILED
+    if VECTOR_SEARCH_ENABLED in {"0", "false", "no"}:
+        return None
+    if _VECTOR_MODEL is not None:
+        return _VECTOR_MODEL
+    if _VECTOR_MODEL_FAILED:
+        return None
+    if not VECTOR_DB_PATH.exists():
+        return None
+    try:
+        from sentence_transformers import SentenceTransformer
+    except ImportError:
+        _VECTOR_MODEL_FAILED = True
+        return None
+    try:
+        model_id = "BAAI/bge-m3"
+        try:
+            _VECTOR_MODEL = SentenceTransformer(model_id, backend="onnx")
+            logger.info("Loaded %s with ONNX backend for vector search", model_id)
+        except Exception:
+            _VECTOR_MODEL = SentenceTransformer(model_id)
+            logger.info("Loaded %s with PyTorch backend for vector search", model_id)
+        return _VECTOR_MODEL
+    except Exception as e:
+        logger.warning("Vector model load failed: %s", e)
+        _VECTOR_MODEL_FAILED = True
+        return None
+
+
+def _search_vectors(
+    query: str,
+    language: str | None = None,
+    k: int | None = None,
+) -> dict[str, float]:
+    """Run vector KNN search. Returns {decision_id: cosine_distance} or empty dict."""
+    model = _get_vector_model()
+    if model is None:
+        return {}
+    vec_conn = _get_vec_conn()
+    if vec_conn is None:
+        return {}
+    k = k or VECTOR_K
+    try:
+        embedding = model.encode(
+            [query],
+            show_progress_bar=False,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+        )[0]
+        import struct as _struct
+        query_bytes = _struct.pack(f"{len(embedding)}f", *embedding.tolist())
+
+        if language:
+            rows = vec_conn.execute(
+                "SELECT decision_id, distance FROM vec_decisions "
+                "WHERE embedding MATCH ? AND k = ? AND language = ? "
+                "ORDER BY distance",
+                (query_bytes, k, language),
+            ).fetchall()
+        else:
+            rows = vec_conn.execute(
+                "SELECT decision_id, distance FROM vec_decisions "
+                "WHERE embedding MATCH ? AND k = ? "
+                "ORDER BY distance",
+                (query_bytes, k),
+            ).fetchall()
+        return {row[0]: row[1] for row in rows}
+    except Exception as e:
+        logger.debug("Vector search failed: %s", e)
+        return {}
+    finally:
+        vec_conn.close()
+
+
 def _sqlite_has_table(conn: sqlite3.Connection, table: str) -> bool:
     row = conn.execute(
         "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
@@ -1485,6 +1634,7 @@ def _rerank_rows(
     limit: int,
     *,
     fusion_scores: dict[str, dict] | None = None,
+    vector_scores: dict[str, float] | None = None,
     offset: int = 0,
     sort: str | None = None,
 ) -> list[dict]:
@@ -1608,6 +1758,13 @@ def _rerank_rows(
         if query_languages and row_language in query_languages:
             language_signal += 0.9
 
+        # Vector similarity signal
+        vector_signal = 0.0
+        if vector_scores:
+            vec_dist = vector_scores.get(decision_id)
+            if vec_dist is not None:
+                vector_signal = VECTOR_SIGNAL_WEIGHT * max(0.0, 1.0 - vec_dist)
+
         signal = (
             6.0 * docket_exact
             + 2.0 * docket_partial
@@ -1627,6 +1784,7 @@ def _rerank_rows(
             + court_intent_signal
             + procedure_signal
             + language_signal
+            + vector_signal
         )
         final_score = bm25_component + signal
 
