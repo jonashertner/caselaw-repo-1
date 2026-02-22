@@ -114,6 +114,37 @@
       "relevant": [
         {"decision_id": "bs_appellationsgericht_ZB.2020.42", "grade": 3}
       ]
+    },
+    {
+      "id": "q014",
+      "query": "Hundebiss",
+      "tags": ["semantic", "concept-match", "de", "liability"],
+      "relevant": [
+        {"decision_id": "bge_131 III 115", "grade": 3},
+        {"decision_id": "bge_81 II 512", "grade": 3},
+        {"decision_id": "bge_BGE_110_II_136", "grade": 2}
+      ],
+      "note": "Semantic: no keyword overlap with 'Tierhalterhaftung' — tests concept matching"
+    },
+    {
+      "id": "q015",
+      "query": "Kündigung wegen Krankheit",
+      "tags": ["semantic", "concept-match", "de", "employment"],
+      "relevant": [
+        {"decision_id": "bge_115 V 437", "grade": 3}
+      ],
+      "note": "Semantic: should find Art. 336c OR (Verlängerung bei Erkrankung) without exact wording"
+    },
+    {
+      "id": "q016",
+      "query": "responsabilité du détenteur d'animal",
+      "tags": ["semantic", "cross-lingual", "fr", "liability"],
+      "relevant": [
+        {"decision_id": "bge_BGE_85_II_243", "grade": 3},
+        {"decision_id": "bge_BGE_110_II_136", "grade": 3},
+        {"decision_id": "bge_131 III 115", "grade": 2}
+      ],
+      "note": "Cross-lingual: French query should find German Tierhalterhaftung Art. 56 OR cases"
     }
   ]
 }
