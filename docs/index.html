@@ -307,7 +307,54 @@ section { margin-bottom: 72px; }
 .tree-court .tree-count { font-size: var(--fs-xs); }
 
 /* ── Access section ── */
-.access-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.access-featured {
+  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
+  border-left: 3px solid var(--ac); padding: 24px 28px; box-shadow: var(--glow);
+  margin-bottom: 16px;
+}
+.access-featured h3 {
+  font-size: var(--fs-xl); font-weight: 700; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.access-featured > p { font-size: var(--fs-sm); color: var(--tx2); margin-bottom: 16px; line-height: 1.5; }
+.access-featured .setup-paths {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;
+}
+.access-featured .setup-path h4 {
+  font-size: var(--fs-sm); font-weight: 600; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.access-featured .setup-path .setup-steps {
+  font-size: var(--fs-xs); color: var(--tx2); line-height: 1.7;
+}
+.access-featured .setup-path code {
+  display: block; font-family: var(--f-mono); font-size: var(--fs-xs);
+  background: var(--bg2); border: 1px solid var(--brd2); border-radius: var(--r-sm);
+  padding: 8px 10px; overflow-x: auto; white-space: pre; color: var(--tx2);
+  line-height: 1.5; margin-top: 6px;
+}
+.access-featured .tool-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 0 24px;
+  border-top: 1px solid var(--brd2); padding-top: 14px;
+}
+.access-featured .tool-category h5 {
+  font-size: var(--fs-2xs); font-weight: 600; color: var(--tx3); text-transform: uppercase;
+  letter-spacing: 0.06em; margin-bottom: 6px;
+}
+.access-featured .tool-category ul {
+  list-style: none; padding: 0; margin: 0;
+}
+.access-featured .tool-category li {
+  font-size: var(--fs-xs); color: var(--tx2); padding: 2px 0; line-height: 1.5;
+}
+.access-featured .tool-category li strong {
+  font-family: var(--f-mono); font-size: var(--fs-2xs); color: var(--tx); font-weight: 500;
+}
+.access-featured .setup-local {
+  font-size: var(--fs-xs); color: var(--tx3); margin-top: 12px;
+}
+.access-featured .setup-local a { color: var(--tx2); }
+.access-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
 .access-card {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
   padding: 20px; box-shadow: var(--glow);
@@ -369,6 +416,9 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
 @media (max-width: 768px) {
   .chart-row { grid-template-columns: 1fr; }
   .access-grid { grid-template-columns: 1fr; }
+  .access-featured .setup-paths { grid-template-columns: 1fr; }
+  .access-featured .tool-grid { grid-template-columns: 1fr; gap: 12px; }
+  .access-featured { padding: 18px 16px; }
   .quick-strip { grid-template-columns: 1fr; }
   .kpis { gap: 40px; }
   .section-nav { display: none; }
@@ -461,9 +511,9 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
         GitHub
       </a>
-      <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
+      <a href="https://mcp.opencaselaw.ch">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        MCP Full-Text Search
+        <span data-t="hero_mcp">Search with AI</span>
       </a>
     </div>
   </header>
@@ -481,9 +531,9 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Full dataset as Parquet files on HuggingFace</div></div>
     </a>
-    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
+    <a class="quick-card" href="https://mcp.opencaselaw.ch">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">MCP server for Claude and other AI tools</div></div>
+      <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">Remote MCP — instant access, no download</div></div>
     </a>
     <a class="quick-card" href="https://huggingface.co/docs/datasets-server/">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -588,11 +638,66 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   <!-- Access -->
   <section id="sec-access">
     <div class="sh"><h2 data-t="access">Access the Data</h2></div>
+
+    <!-- Featured: Search with AI -->
+    <div class="access-featured">
+      <h3>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 8l1.5 1.5M14.5 8l-1 1" stroke-linecap="round"/></svg>
+        <span data-t="access_featured_title">Search with AI</span>
+      </h3>
+      <p data-t="access_featured_desc">Connect to 1M+ Swiss court decisions instantly. No download, no setup. 9 tools for search, citation analysis, and legal research.</p>
+
+      <div class="setup-paths">
+        <div class="setup-path">
+          <h4 data-t="access_setup_desktop">Claude Desktop</h4>
+          <div class="setup-steps">
+            <span data-t="access_desktop_steps">Settings &rarr; Connectors &rarr; Add &rarr;</span><br>
+            <code>https://mcp.opencaselaw.ch</code>
+          </div>
+        </div>
+        <div class="setup-path">
+          <h4 data-t="access_setup_code">Claude Code</h4>
+          <code>claude mcp add swiss-caselaw \
+  --transport sse \
+  https://mcp.opencaselaw.ch</code>
+        </div>
+      </div>
+
+      <div class="tool-grid">
+        <div class="tool-category">
+          <h5 data-t="access_tools_search">Search</h5>
+          <ul>
+            <li><strong>search_decisions</strong> &mdash; <span data-t="tool_search_decisions">Full-text search with filters</span></li>
+            <li><strong>get_decision</strong> &mdash; <span data-t="tool_get_decision">Fetch by docket number</span></li>
+            <li><strong>list_courts</strong> &mdash; <span data-t="tool_list_courts">All courts with counts</span></li>
+            <li><strong>get_statistics</strong> &mdash; <span data-t="tool_get_statistics">Aggregate stats</span></li>
+          </ul>
+        </div>
+        <div class="tool-category">
+          <h5 data-t="access_tools_citations">Citations</h5>
+          <ul>
+            <li><strong>find_citations</strong> &mdash; <span data-t="tool_find_citations">Citation network for a decision</span></li>
+            <li><strong>find_leading_cases</strong> &mdash; <span data-t="tool_find_leading_cases">Most-cited decisions by statute</span></li>
+            <li><strong>analyze_legal_trend</strong> &mdash; <span data-t="tool_analyze_legal_trend">Jurisprudence trends over time</span></li>
+          </ul>
+        </div>
+        <div class="tool-category">
+          <h5 data-t="access_tools_research">Research</h5>
+          <ul>
+            <li><strong>draft_mock_decision</strong> &mdash; <span data-t="tool_draft_mock_decision">Mock decision from facts + caselaw</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="setup-local" data-t="access_setup_local">Prefer offline access? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Local setup guide &rarr;</a></div>
+    </div>
+
+    <!-- Standard cards: 2x2 -->
     <div class="access-grid">
       <div class="access-card">
         <h3>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          HuggingFace
+          <span data-t="quick_download">Download</span>
         </h3>
         <p data-t="access_hf_desc">Download the full dataset as Parquet files</p>
         <code>from datasets import load_dataset
@@ -600,17 +705,13 @@ ds = load_dataset("voilaj/swiss-caselaw")</code>
       </div>
       <div class="access-card">
         <h3>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          MCP Server
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8"/></svg>
+          <span data-t="access_graph_title">Citation Graph</span>
         </h3>
-        <p data-t="access_mcp_desc">Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a></p>
-        <code>git clone github.com/jonashertner/caselaw-repo-1
-cd caselaw-repo-1
-python3 -m venv .venv
-.venv/bin/pip install mcp pydantic \
-  huggingface-hub pyarrow
-claude mcp add swiss-caselaw \
-  -- .venv/bin/python3 mcp_server.py</code>
+        <p data-t="access_graph_desc">7.85M citation edges, 330K statutes. Find leading cases, trace citation networks, analyze jurisprudence trends.</p>
+        <code>find_leading_cases(
+  law_code="EMRK", article="8"
+)</code>
       </div>
       <div class="access-card">
         <h3>
@@ -660,16 +761,28 @@ const I18N = {
     updated:'Aktualisiert am',
     made:'Gebaut mit \u2665 von <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
-    access_mcp_desc:'Lokale Volltextsuche via Claude Code oder andere MCP-Clients. L\u00e4dt ~6.5 GB von HuggingFace herunter, baut einen ~56 GB Suchindex auf Ihrem Rechner. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Einrichtung &rarr;</a>',
     access_api_desc:'Abfragen via HuggingFace Datasets Server API',
     browse:'Durchsuchen',
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_browse:'Durchsuchen', nav_access:'Zugang',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat-Oberfl\u00e4che \u2014 Fragen stellen, Entscheide erhalten',
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
-    quick_search:'Volltextsuche', quick_search_desc:'MCP-Server f\u00fcr Claude und andere AI-Tools',
+    quick_search:'Volltextsuche', quick_search_desc:'Remote MCP \u2014 sofortiger Zugang, kein Download',
     quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
     access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI, Gemini oder lokalen Modellen via Ollama (kein API-Schl\u00fcssel n\u00f6tig).',
+    access_featured_title:'Mit AI durchsuchen',
+    access_featured_desc:'Sofortiger Zugang zu 1M+ Schweizer Gerichtsentscheiden. Kein Download, kein Setup. 9 Tools f\u00fcr Suche, Zitationsanalyse und juristische Recherche.',
+    access_setup_desktop:'Claude Desktop',
+    access_setup_code:'Claude Code',
+    access_desktop_steps:'Einstellungen &rarr; Connectors &rarr; Hinzuf\u00fcgen &rarr;',
+    access_setup_local:'Lieber offline arbeiten? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Lokale Einrichtung &rarr;</a>',
+    access_tools_search:'Suche', access_tools_citations:'Zitationen', access_tools_research:'Recherche',
+    access_graph_title:'Zitationsgraph',
+    access_graph_desc:'7.85M Zitationskanten, 330K Gesetzesartikel. Leitentscheide finden, Zitationsnetzwerke verfolgen, Rechtsprechungstrends analysieren.',
+    tool_search_decisions:'Volltextsuche mit Filtern', tool_get_decision:'Entscheid per Dossiernummer abrufen', tool_list_courts:'Alle Gerichte mit Anzahl', tool_get_statistics:'Aggregierte Statistiken',
+    tool_find_citations:'Zitationsnetzwerk eines Entscheids', tool_find_leading_cases:'Meistzitierte Entscheide nach Gesetz', tool_analyze_legal_trend:'Rechtsprechungstrends \u00fcber Zeit',
+    tool_draft_mock_decision:'Musterentscheid aus Fakten + Rechtsprechung',
+    hero_mcp:'Mit AI durchsuchen',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
@@ -683,16 +796,28 @@ const I18N = {
     updated:'Mis \u00e0 jour le',
     made:'Fait avec \u2665 par <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
-    access_mcp_desc:'Recherche locale plein texte via Claude Code ou tout client MCP. T\u00e9l\u00e9charge ~6.5 Go depuis HuggingFace, construit un index de recherche de ~56 Go sur votre machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guide d\u2019installation &rarr;</a>',
     access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
     browse:'Parcourir',
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Parcourir', nav_access:'Acc\u00e8s',
     search_placeholder:'Rechercher...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interface de chat \u2014 posez des questions, obtenez des d\u00e9cisions',
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
-    quick_search:'Recherche', quick_search_desc:'Serveur MCP pour Claude et autres outils IA',
+    quick_search:'Recherche', quick_search_desc:'MCP distant \u2014 acc\u00e8s instantan\u00e9, aucun t\u00e9l\u00e9chargement',
     quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
     access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI, Gemini ou des mod\u00e8les locaux via Ollama (sans cl\u00e9 API).',
+    access_featured_title:'Recherche avec IA',
+    access_featured_desc:'Acc\u00e8s instantan\u00e9 \u00e0 1M+ d\u00e9cisions judiciaires suisses. Aucun t\u00e9l\u00e9chargement, aucune configuration. 9 outils pour la recherche, l\u2019analyse des citations et la recherche juridique.',
+    access_setup_desktop:'Claude Desktop',
+    access_setup_code:'Claude Code',
+    access_desktop_steps:'R\u00e9glages &rarr; Connectors &rarr; Ajouter &rarr;',
+    access_setup_local:'Vous pr\u00e9f\u00e9rez travailler hors ligne ? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Guide d\u2019installation locale &rarr;</a>',
+    access_tools_search:'Recherche', access_tools_citations:'Citations', access_tools_research:'Recherche juridique',
+    access_graph_title:'Graphe de citations',
+    access_graph_desc:'7.85M liens de citations, 330K articles de loi. Trouvez les arr\u00eats de principe, tracez les r\u00e9seaux de citations, analysez les tendances jurisprudentielles.',
+    tool_search_decisions:'Recherche plein texte avec filtres', tool_get_decision:'R\u00e9cup\u00e9rer par num\u00e9ro de dossier', tool_list_courts:'Tous les tribunaux avec effectifs', tool_get_statistics:'Statistiques agr\u00e9g\u00e9es',
+    tool_find_citations:'R\u00e9seau de citations d\u2019une d\u00e9cision', tool_find_leading_cases:'D\u00e9cisions les plus cit\u00e9es par article', tool_analyze_legal_trend:'Tendances jurisprudentielles',
+    tool_draft_mock_decision:'D\u00e9cision type \u00e0 partir de faits + jurisprudence',
+    hero_mcp:'Recherche avec IA',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
@@ -706,16 +831,28 @@ const I18N = {
     updated:'Aggiornato il',
     made:'Fatto con \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Scarica il dataset completo in formato Parquet',
-    access_mcp_desc:'Ricerca locale full-text via Claude Code o qualsiasi client MCP. Scarica ~6.5 GB da HuggingFace, crea un indice di ricerca di ~56 GB sulla tua macchina. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida all\u2019installazione &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     browse:'Sfoglia',
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_browse:'Sfoglia', nav_access:'Accesso',
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfaccia chat \u2014 fai domande, ottieni decisioni',
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
-    quick_search:'Ricerca', quick_search_desc:'Server MCP per Claude e altri strumenti IA',
+    quick_search:'Ricerca', quick_search_desc:'MCP remoto \u2014 accesso istantaneo, nessun download',
     quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
     access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI, Gemini o modelli locali via Ollama (senza chiave API).',
+    access_featured_title:'Ricerca con IA',
+    access_featured_desc:'Accesso istantaneo a 1M+ decisioni giudiziarie svizzere. Nessun download, nessuna configurazione. 9 strumenti per ricerca, analisi delle citazioni e ricerca giuridica.',
+    access_setup_desktop:'Claude Desktop',
+    access_setup_code:'Claude Code',
+    access_desktop_steps:'Impostazioni &rarr; Connectors &rarr; Aggiungi &rarr;',
+    access_setup_local:'Preferisci lavorare offline? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Guida all\u2019installazione locale &rarr;</a>',
+    access_tools_search:'Ricerca', access_tools_citations:'Citazioni', access_tools_research:'Ricerca giuridica',
+    access_graph_title:'Grafo delle citazioni',
+    access_graph_desc:'7.85M collegamenti tra citazioni, 330K articoli di legge. Trova le sentenze principali, traccia le reti di citazioni, analizza le tendenze giurisprudenziali.',
+    tool_search_decisions:'Ricerca full-text con filtri', tool_get_decision:'Recupera per numero di dossier', tool_list_courts:'Tutti i tribunali con conteggi', tool_get_statistics:'Statistiche aggregate',
+    tool_find_citations:'Rete di citazioni di una decisione', tool_find_leading_cases:'Decisioni pi\u00f9 citate per articolo', tool_analyze_legal_trend:'Tendenze giurisprudenziali nel tempo',
+    tool_draft_mock_decision:'Decisione tipo da fatti + giurisprudenza',
+    hero_mcp:'Ricerca con IA',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
@@ -729,16 +866,28 @@ const I18N = {
     updated:'Actualis\u00e0 ils',
     made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
-    access_mcp_desc:'Tschertga locala en text cumplain via Claude Code u mintga client MCP. Telechargia ~6.5 GB da HuggingFace, construescha in index da tschertga da ~56 GB sin tes computer. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Guida d\u2019installaziun &rarr;</a>',
     access_api_desc:'Dumondas via HuggingFace Datasets Server API',
     browse:'Navigar',
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_browse:'Navigar', nav_access:'Access',
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfatscha da chat \u2014 far dumondas, obtegnir decisiuns',
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
-    quick_search:'Tschertga', quick_search_desc:'Server MCP per Claude ed auters utensils IA',
+    quick_search:'Tschertga', quick_search_desc:'MCP remote \u2014 access direct, nagin download',
     quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
     access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI, Gemini u models locals via Ollama (senza clav API).',
+    access_featured_title:'Tschertgar cun IA',
+    access_featured_desc:'Access direct a 1M+ decisiuns giudizialas svizras. Nagin download, nagina configuraziun. 9 utensils per tschertga, analisa da citaziuns e perscrutaziun giuridica.',
+    access_setup_desktop:'Claude Desktop',
+    access_setup_code:'Claude Code',
+    access_desktop_steps:'Configuraziun &rarr; Connectors &rarr; Agiuntar &rarr;',
+    access_setup_local:'Preferis lavurar offline? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Guida d\u2019installaziun locala &rarr;</a>',
+    access_tools_search:'Tschertga', access_tools_citations:'Citaziuns', access_tools_research:'Perscrutaziun giuridica',
+    access_graph_title:'Graf da citaziuns',
+    access_graph_desc:'7.85M colliaziuns da citaziuns, 330K artitgels da lescha. Chattar las decisiuns principalas, persequitar rets da citaziuns, analisar tendenzas giurisprudenzialas.',
+    tool_search_decisions:'Tschertga en text cumplain cun filters', tool_get_decision:'Retscherchar per numer da dossier', tool_list_courts:'Tut las dretgiras cun dumbers', tool_get_statistics:'Statisticas aggregadas',
+    tool_find_citations:'Rait da citaziuns d\u2019ina decisiun', tool_find_leading_cases:'Decisiuns pli citadas per artitgel', tool_analyze_legal_trend:'Tendenzas giurisprudenzialas',
+    tool_draft_mock_decision:'Decisiun model ord fatgs + giurisprudenza',
+    hero_mcp:'Tschertgar cun IA',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
@@ -752,16 +901,28 @@ const I18N = {
     updated:'Updated',
     made:'Built with \u2665 by <a href="https://jonashertner.com">Jonas Hertner</a>',
     access_hf_desc:'Download the full dataset as Parquet files',
-    access_mcp_desc:'Local full-text search via Claude Code or any MCP client. Downloads ~6.5 GB from HuggingFace, builds a ~56 GB search index on your machine. <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">Setup guide &rarr;</a>',
     access_api_desc:'Query via HuggingFace Datasets Server API',
     browse:'Browse',
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
     search_placeholder:'Search courts...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat interface \u2014 ask questions, get cited decisions',
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
-    quick_search:'Search', quick_search_desc:'MCP server for Claude and other AI tools',
+    quick_search:'Search', quick_search_desc:'Remote MCP \u2014 instant access, no download',
     quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
     access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).',
+    access_featured_title:'Search with AI',
+    access_featured_desc:'Connect to 1M+ Swiss court decisions instantly. No download, no setup. 9 tools for search, citation analysis, and legal research.',
+    access_setup_desktop:'Claude Desktop',
+    access_setup_code:'Claude Code',
+    access_desktop_steps:'Settings &rarr; Connectors &rarr; Add &rarr;',
+    access_setup_local:'Prefer offline access? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Local setup guide &rarr;</a>',
+    access_tools_search:'Search', access_tools_citations:'Citations', access_tools_research:'Research',
+    access_graph_title:'Citation Graph',
+    access_graph_desc:'7.85M citation edges, 330K statutes. Find leading cases, trace citation networks, analyze jurisprudence trends.',
+    tool_search_decisions:'Full-text search with filters', tool_get_decision:'Fetch by docket number', tool_list_courts:'All courts with counts', tool_get_statistics:'Aggregate stats',
+    tool_find_citations:'Citation network for a decision', tool_find_leading_cases:'Most-cited decisions by statute', tool_analyze_legal_trend:'Jurisprudence trends over time',
+    tool_draft_mock_decision:'Mock decision from facts + caselaw',
+    hero_mcp:'Search with AI',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   },
 };

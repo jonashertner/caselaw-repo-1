@@ -17,16 +17,17 @@ A structured, searchable archive of Swiss court decisions — from the Federal S
 
 The dataset is built from three sources: direct scraping of official court websites, cantonal court portals, and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are scraped, deduplicated, and published every night.
 
-There are four ways to use it, depending on what you need:
+There are five ways to use it, depending on what you need:
 
 | Method | For whom | What you get |
 |--------|----------|-------------|
-| [**Search with AI**](#1-search-with-ai) | Lawyers, legal researchers | Natural-language queries in Claude Code / Claude Desktop |
+| [**Search with AI**](#1-search-with-ai) | Lawyers, researchers | Natural-language search in Claude — instant access, no download |
+| [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, jurisprudence trends |
 | [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** The [Web UI](#4-web-ui) is the easiest way to try it — you get a chat interface that searches all 1M+ decisions and answers legal questions with cited sources. If you already use Claude, the [MCP server](#1-search-with-ai) integrates directly into Claude Code or Claude Desktop.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-no-download-needed) in Claude Desktop — one click, no download, instant access to all 1M+ decisions and citation analysis tools.
 
 ---
 
