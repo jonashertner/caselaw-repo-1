@@ -2404,9 +2404,11 @@ def find_citations(
 
     result: dict = {"decision_id": decision_id, "direction": direction}
 
-    if _get_graph_conn() is None:
+    check_conn = _get_graph_conn()
+    if check_conn is None:
         result["error"] = "Reference graph not available."
         return result
+    check_conn.close()
 
     if direction in ("both", "outgoing"):
         result["outgoing"] = _find_outgoing_citations(
@@ -2597,7 +2599,6 @@ def _find_leading_cases(
 
     # Enrich with metadata from FTS5 decisions table
     candidate_ids = [c[0] for c in candidates]
-    cite_map = dict(candidates)
     rows = _fetch_decision_rows_by_ids(candidate_ids)
     rows_by_id = {r["decision_id"]: r for r in rows}
 
@@ -3626,7 +3627,7 @@ def _format_trend_response(result: dict) -> str:
         header_parts.append(f'"{query}"')
     header = " + ".join(header_parts) if header_parts else "all"
 
-    text = f"# Legal Trend Analysis\n"
+    text = "# Legal Trend Analysis\n"
     text += f"**Filter:** {header}\n"
     text += f"**Total:** {total:,} decisions\n\n"
 
@@ -4097,9 +4098,9 @@ def _update_with_progress(reporter) -> str:
     # 5. Summary
     elapsed = time.monotonic() - t0
     minutes, seconds = divmod(int(elapsed), 60)
-    stats = get_db_stats()
-
     _cache_clear()
+
+    stats = get_db_stats()
     reporter.report(1, 1, "Database ready!")
     return (
         f"Database updated successfully in {minutes}m {seconds:02d}s.\n"

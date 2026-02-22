@@ -27,7 +27,7 @@ There are five ways to use it, depending on what you need:
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — one click in Claude Desktop, one command in Claude Code. Instant access to all 1M+ decisions and citation analysis tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — one click in Claude.ai or Claude Desktop, one command in Claude Code. Instant access to all 1M+ decisions and citation analysis tools, no download needed.
 
 ---
 
@@ -44,7 +44,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) that let
 | **Tools** | 8 | 10 (+update_database, check_update_status) |
 | **Freshness** | Nightly (automatic) | Manual |
 | **Offline** | No | Yes |
-| **Requires** | Claude Pro/Max/Team/Enterprise (Desktop); any plan (Code) | Any MCP client |
+| **Requires** | Claude Pro/Max/Team/Enterprise (claude.ai / Desktop); any plan (Code) | Any MCP client |
 
 > Start with the remote server. Switch to local only if you need offline access or a non-Claude MCP client.
 
@@ -52,14 +52,14 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) that let
 
 Connect directly to the hosted MCP server — no data download, no local database, instant access to 1M+ decisions.
 
-**Claude Desktop** (easiest):
+**Claude.ai / Claude Desktop** (easiest):
 
 1. Open **Settings** → **Connectors**
 2. Click **"Add custom connector"**
 3. Paste `https://mcp.opencaselaw.ch`
 4. Click **Add**
 
-That's it — no Node.js, no config files, no downloads.
+Same steps in the browser (claude.ai) and the desktop app. No Node.js, no config files, no downloads.
 
 > Available on Pro, Max, Team, and Enterprise plans. For the free plan, use Claude Code or the [manual JSON config](#alternative-manual-json-config-if-custom-connectors-arent-available).
 
