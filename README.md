@@ -138,6 +138,12 @@ Example queries:
 > How many decisions does each court in canton Zürich have?
 
 > Find decisions citing Art. 8 BV
+
+> What are the leading cases on Art. 8 EMRK?
+
+> Show me the citation network for BGE 138 III 374
+
+> How has Mietrecht jurisprudence evolved over time?
 ```
 
 Claude calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
@@ -172,11 +178,68 @@ Any MCP-compatible client works with the same `command` + `args` pattern.
 | Tool | Description |
 |------|-------------|
 | `search_decisions` | Full-text search with filters (court, canton, language, date range, chamber, decision type) |
-| `get_decision` | Fetch a single decision by docket number or ID |
+| `get_decision` | Fetch a single decision by docket number or ID. Includes citation graph counts (cited by / cites). |
 | `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |
+| `find_citations` | Show what a decision cites and what cites it, with confidence scores |
+| `find_leading_cases` | Find the most-cited decisions for a topic or statute |
+| `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Build a research-only mock decision outline from facts, grounded in caselaw + statute references; asks clarification questions before conclusion (optionally enriched from Fedlex) |
 | `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database |
+
+### Citation graph tools
+
+Three tools expose the **reference graph** — 7.85 million citation edges linking 1M+ decisions, plus 330K statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+
+**`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
+
+```
+> Show me the citation network for BGE 138 III 374
+
+## Outgoing (13 — what this decision cites)
+1. BGE 136 III 365 (2010-01-01) [bge] conf=0.98 mentions=1
+2. BGE 133 III 189 (2007-01-01) [bge] conf=0.93 mentions=1
+...
+
+## Incoming (13,621 — what cites this decision)
+1. 5A_234/2026 (2026-02-19) [bger] conf=0.92 mentions=2
+2. 5A_117/2026 (2026-01-30) [bger] conf=0.88 mentions=1
+...
+```
+
+Parameters: `decision_id` (required), `direction` (both/outgoing/incoming), `min_confidence` (0–1, default 0.3), `limit` (default 50, max 200).
+
+**`find_leading_cases`** — Find the most-cited decisions, ranked by how many other decisions reference them. Filter by statute (law code + article), text query, court, or date range.
+
+```
+> What are the leading cases on Art. 8 EMRK?
+
+1. BGE 135 I 143 (2009) — 3,840 citations
+   Regeste: Anspruch auf Aufenthaltsbewilligung...
+2. BGE 130 II 281 (2004) — 3,155 citations
+   Regeste: Familiennachzug; gefestigtes Anwesenheitsrecht...
+```
+
+Parameters: `query` (optional text), `law_code` + `article` (optional statute), `court`, `date_from`, `date_to`, `limit` (default 20, max 100). At least one of `query` or `law_code` is recommended; without any filter it returns the globally most-cited decisions.
+
+**`analyze_legal_trend`** — Year-by-year decision counts showing how jurisprudence on a topic or statute has evolved over time. Returns a table with counts and a visual bar chart.
+
+```
+> How has Art. 29 BV jurisprudence evolved?
+
+**Filter:** Art. 29 BV
+**Total:** 34,669 decisions
+
+Year     Count  Bar
+2000       275  █████
+2005       733  ████████████
+2010     1,028  █████████████████
+2015     1,536  ██████████████████████████
+2020     1,896  ████████████████████████████████
+2025     2,400  ████████████████████████████████████████
+```
+
+Parameters: `query` (optional text), `law_code` + `article` (optional statute), `court`, `date_from`, `date_to`. At least one of `query` or `law_code` is required.
 
 `draft_mock_decision` can use optional Fedlex URLs and caches fetched statute excerpts in
 `~/.swiss-caselaw/fedlex_cache.json` (configurable via `SWISS_CASELAW_FEDLEX_CACHE`).
