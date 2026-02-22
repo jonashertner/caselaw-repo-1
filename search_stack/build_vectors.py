@@ -165,7 +165,13 @@ def load_model(model_id: str = BGE_M3_MODEL_ID):
     Returns:
         A :class:`sentence_transformers.SentenceTransformer` instance.
     """
+    import torch
     from sentence_transformers import SentenceTransformer  # type: ignore[import-untyped]
+
+    # Use all available CPU cores for PyTorch inference
+    cpu_count = os.cpu_count() or 8
+    torch.set_num_threads(cpu_count)
+    logger.info("Set PyTorch threads to %d", cpu_count)
 
     try:
         model = SentenceTransformer(model_id, backend="onnx")
