@@ -140,6 +140,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Research-only mock decision outline from facts, grounded in caselaw + statutes |
 | `update_database` | Re-download latest data and rebuild the local database (local mode only) |
+| `check_update_status` | Check progress of a running database update (local mode only) |
 
 The citation graph tools (`find_citations`, `find_leading_cases`, `analyze_legal_trend`) use a **reference graph** with 7.85 million citation edges linking 1M+ decisions and 330K statute references:
 

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="The largest open dataset of Swiss federal and cantonal court decisions. 1M+ decisions, 26 cantons, 88 courts.">
 <meta name="og:title" content="Swiss Case Law Open Dataset">
-<meta name="og:description" content="The largest open dataset of Swiss court decisions. 1M+ decisions, 26 cantons, updated daily. Download and search locally.">
+<meta name="og:description" content="The largest open dataset of Swiss court decisions. 1M+ decisions, 26 cantons, updated daily. Search instantly with AI or download the full dataset.">
 <title>Swiss Case Law Open Dataset</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,7 +45,7 @@
   --glow: 0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.3);
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { overflow-x: hidden; }
+html { overflow-x: hidden; scroll-behavior: smooth; }
 body {
   font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.55;
   background: var(--bg); color: var(--tx);
@@ -350,11 +350,25 @@ section { margin-bottom: 72px; }
 .access-featured .tool-category li strong {
   font-family: var(--f-mono); font-size: var(--fs-2xs); color: var(--tx); font-weight: 500;
 }
-.access-featured .setup-local {
-  font-size: var(--fs-xs); color: var(--tx3); margin-top: 12px;
+.access-featured .setup-path-label {
+  font-size: var(--fs-2xs); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--tx3); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
 }
-.access-featured .setup-local a { color: var(--tx2); }
-.access-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.access-featured .setup-path-label .rec {
+  color: var(--green); font-weight: 700;
+}
+.access-featured .plan-note {
+  font-size: var(--fs-2xs); color: var(--tx3); margin-top: 8px; line-height: 1.5;
+}
+.access-featured .local-extra {
+  font-size: var(--fs-xs); color: var(--tx3); margin-top: 14px;
+}
+.access-featured .local-extra code {
+  display: inline; padding: 1px 5px; font-size: var(--fs-2xs); background: var(--bg2);
+  border: 1px solid var(--brd2); border-radius: var(--r-xs);
+}
+.access-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
 .access-card {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
   padding: 20px; box-shadow: var(--glow);
@@ -511,7 +525,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
         GitHub
       </a>
-      <a href="https://mcp.opencaselaw.ch">
+      <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         <span data-t="hero_mcp">Search with AI</span>
       </a>
@@ -527,21 +541,17 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
 
   <!-- Quick Access -->
   <div class="quick-strip" id="quick-strip">
+    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">Connect Claude to 1M+ decisions</div></div>
+    </a>
     <a class="quick-card" href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
       <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Full dataset as Parquet files on HuggingFace</div></div>
     </a>
-    <a class="quick-card" href="https://mcp.opencaselaw.ch">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <div><div class="qc-title" data-t="quick_search">Search</div><div class="qc-desc" data-t="quick_search_desc">Remote MCP — instant access, no download</div></div>
-    </a>
     <a class="quick-card" href="https://huggingface.co/docs/datasets-server/">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       <div><div class="qc-title" data-t="quick_api">API</div><div class="qc-desc" data-t="quick_api_desc">REST queries via HuggingFace Datasets Server</div></div>
-    </a>
-    <a class="quick-card" href="https://github.com/jonashertner/caselaw-repo-1#4-web-ui">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      <div><div class="qc-title" data-t="quick_webui">Web UI</div><div class="qc-desc" data-t="quick_webui_desc">Chat interface — ask questions, get cited decisions</div></div>
     </a>
   </div>
 
@@ -645,21 +655,39 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 8l1.5 1.5M14.5 8l-1 1" stroke-linecap="round"/></svg>
         <span data-t="access_featured_title">Search with AI</span>
       </h3>
-      <p data-t="access_featured_desc">Connect to 1M+ Swiss court decisions instantly. No download, no setup. 9 tools for search, citation analysis, and legal research.</p>
+      <p data-t="access_featured_desc">Connect to 1M+ Swiss court decisions with Claude. 8 tools for search, citation analysis (7.85M edges, 330K statutes), and legal research.</p>
 
       <div class="setup-paths">
         <div class="setup-path">
-          <h4 data-t="access_setup_desktop">Claude Desktop</h4>
+          <div class="setup-path-label"><span class="rec" data-t="access_remote_label">Remote (recommended)</span></div>
           <div class="setup-steps">
-            <span data-t="access_desktop_steps">Settings &rarr; Connectors &rarr; Add &rarr;</span><br>
+            <span data-t="access_remote_desc">Instant, always current. No download needed.</span>
+          </div>
+          <div class="setup-steps" style="margin-top:10px">
+            <strong data-t="access_setup_desktop">Claude Desktop</strong><br>
+            <span style="color:var(--tx2);font-size:var(--fs-xs)">Settings &rarr; Connectors &rarr; Add &rarr;</span><br>
             <code>https://mcp.opencaselaw.ch</code>
           </div>
-        </div>
-        <div class="setup-path">
-          <h4 data-t="access_setup_code">Claude Code</h4>
-          <code>claude mcp add swiss-caselaw \
+          <div class="setup-steps" style="margin-top:10px">
+            <strong data-t="access_setup_code">Claude Code</strong>
+            <code>claude mcp add swiss-caselaw \
   --transport sse \
   https://mcp.opencaselaw.ch</code>
+          </div>
+          <div class="plan-note" data-t="access_plan_note">Desktop: Pro, Max, Team, or Enterprise. Code: any plan.</div>
+        </div>
+        <div class="setup-path">
+          <div class="setup-path-label" data-t="access_local_label">Local (offline)</div>
+          <div class="setup-steps">
+            <span data-t="access_local_desc">Full control, works offline. ~65 GB disk, 30&ndash;60 min setup.</span>
+          </div>
+          <div class="setup-steps" style="margin-top:10px">
+            <span style="color:var(--tx2);font-size:var(--fs-xs)">Clone &rarr; install &rarr; register with Claude Code or Desktop</span><br>
+            <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-offline-access" style="font-size:var(--fs-xs)" data-t="access_local_setup">Full setup guide &rarr;</a>
+          </div>
+          <div class="setup-steps" style="margin-top:10px;font-size:var(--fs-xs);color:var(--tx3)">
+            Works with any MCP client.
+          </div>
         </div>
       </div>
 
@@ -689,10 +717,10 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         </div>
       </div>
 
-      <div class="setup-local" data-t="access_setup_local">Prefer offline access? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Local setup guide &rarr;</a></div>
+      <div class="local-extra" data-t="access_local_extra">Local server adds: <code>update_database</code>, <code>check_update_status</code></div>
     </div>
 
-    <!-- Standard cards: 2x2 -->
+    <!-- Standard cards: 3-col -->
     <div class="access-grid">
       <div class="access-card">
         <h3>
@@ -702,16 +730,6 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
         <p data-t="access_hf_desc">Download the full dataset as Parquet files</p>
         <code>from datasets import load_dataset
 ds = load_dataset("voilaj/swiss-caselaw")</code>
-      </div>
-      <div class="access-card">
-        <h3>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8"/></svg>
-          <span data-t="access_graph_title">Citation Graph</span>
-        </h3>
-        <p data-t="access_graph_desc">7.85M citation edges, 330K statutes. Find leading cases, trace citation networks, analyze jurisprudence trends.</p>
-        <code>find_leading_cases(
-  law_code="EMRK", article="8"
-)</code>
       </div>
       <div class="access-card">
         <h3>
@@ -752,7 +770,7 @@ cd caselaw-repo-1
 const I18N = {
   de: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone. Herunterladen und lokal durchsuchen mit AI-Tools.',
+    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
     federal:'Bund', cantonal:'Kantone', cantons:'Kantone', access:'Datenzugang',
     th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_from:'Von', th_to:'Bis', th_updated:'Aktualisiert', th_languages:'Sprachen',
@@ -767,18 +785,20 @@ const I18N = {
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat-Oberfl\u00e4che \u2014 Fragen stellen, Entscheide erhalten',
     quick_download:'Download', quick_download_desc:'Gesamter Datensatz als Parquet auf HuggingFace',
-    quick_search:'Volltextsuche', quick_search_desc:'Remote MCP \u2014 sofortiger Zugang, kein Download',
+    quick_search:'Volltextsuche', quick_search_desc:'Claude mit 1M+ Entscheiden verbinden',
     quick_api:'API', quick_api_desc:'REST-Abfragen via HuggingFace Datasets Server',
     access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI, Gemini oder lokalen Modellen via Ollama (kein API-Schl\u00fcssel n\u00f6tig).',
     access_featured_title:'Mit AI durchsuchen',
-    access_featured_desc:'Sofortiger Zugang zu 1M+ Schweizer Gerichtsentscheiden. Kein Download, kein Setup. 9 Tools f\u00fcr Suche, Zitationsanalyse und juristische Recherche.',
+    access_featured_desc:'Zugang zu 1M+ Schweizer Gerichtsentscheiden mit Claude. 8 Tools f\u00fcr Suche, Zitationsanalyse (7.85M Kanten, 330K Gesetzesartikel) und juristische Recherche.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
-    access_desktop_steps:'Einstellungen &rarr; Connectors &rarr; Hinzuf\u00fcgen &rarr;',
-    access_setup_local:'Lieber offline arbeiten? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Lokale Einrichtung &rarr;</a>',
+    access_remote_label:'Remote (empfohlen)', access_local_label:'Lokal (offline)',
+    access_remote_desc:'Sofort verf\u00fcgbar, immer aktuell. Kein Download n\u00f6tig.',
+    access_local_desc:'Volle Kontrolle, offline verf\u00fcgbar. ~65 GB Speicher, 30\u201360 Min. Einrichtung.',
+    access_plan_note:'Desktop: Pro, Max, Team oder Enterprise. Code: jeder Plan.',
+    access_local_extra:'Lokaler Server erg\u00e4nzt: <code>update_database</code>, <code>check_update_status</code>',
+    access_local_setup:'Vollst\u00e4ndige Einrichtung &rarr;',
     access_tools_search:'Suche', access_tools_citations:'Zitationen', access_tools_research:'Recherche',
-    access_graph_title:'Zitationsgraph',
-    access_graph_desc:'7.85M Zitationskanten, 330K Gesetzesartikel. Leitentscheide finden, Zitationsnetzwerke verfolgen, Rechtsprechungstrends analysieren.',
     tool_search_decisions:'Volltextsuche mit Filtern', tool_get_decision:'Entscheid per Dossiernummer abrufen', tool_list_courts:'Alle Gerichte mit Anzahl', tool_get_statistics:'Aggregierte Statistiken',
     tool_find_citations:'Zitationsnetzwerk eines Entscheids', tool_find_leading_cases:'Meistzitierte Entscheide nach Gesetz', tool_analyze_legal_trend:'Rechtsprechungstrends \u00fcber Zeit',
     tool_draft_mock_decision:'Musterentscheid aus Fakten + Rechtsprechung',
@@ -787,7 +807,7 @@ const I18N = {
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. T\u00e9l\u00e9chargez et recherchez localement avec des outils IA.',
+    subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
     loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
     federal:'F\u00e9d\u00e9ral', cantonal:'Cantons', cantons:'Cantons', access:'Acc\u00e8s aux donn\u00e9es',
     th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_from:'De', th_to:'\u00c0', th_updated:'Maj', th_languages:'Langues',
@@ -802,18 +822,20 @@ const I18N = {
     search_placeholder:'Rechercher...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interface de chat \u2014 posez des questions, obtenez des d\u00e9cisions',
     quick_download:'T\u00e9l\u00e9charger', quick_download_desc:'Dataset complet en Parquet sur HuggingFace',
-    quick_search:'Recherche', quick_search_desc:'MCP distant \u2014 acc\u00e8s instantan\u00e9, aucun t\u00e9l\u00e9chargement',
+    quick_search:'Recherche', quick_search_desc:'Connecter Claude \u00e0 1M+ d\u00e9cisions',
     quick_api:'API', quick_api_desc:'Requ\u00eates REST via HuggingFace Datasets Server',
     access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI, Gemini ou des mod\u00e8les locaux via Ollama (sans cl\u00e9 API).',
     access_featured_title:'Recherche avec IA',
-    access_featured_desc:'Acc\u00e8s instantan\u00e9 \u00e0 1M+ d\u00e9cisions judiciaires suisses. Aucun t\u00e9l\u00e9chargement, aucune configuration. 9 outils pour la recherche, l\u2019analyse des citations et la recherche juridique.',
+    access_featured_desc:'Acc\u00e8s \u00e0 1M+ d\u00e9cisions judiciaires suisses avec Claude. 8 outils pour la recherche, l\u2019analyse des citations (7.85M liens, 330K articles) et la recherche juridique.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
-    access_desktop_steps:'R\u00e9glages &rarr; Connectors &rarr; Ajouter &rarr;',
-    access_setup_local:'Vous pr\u00e9f\u00e9rez travailler hors ligne ? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Guide d\u2019installation locale &rarr;</a>',
+    access_remote_label:'Distant (recommand\u00e9)', access_local_label:'Local (hors ligne)',
+    access_remote_desc:'Instantan\u00e9, toujours \u00e0 jour. Aucun t\u00e9l\u00e9chargement n\u00e9cessaire.',
+    access_local_desc:'Contr\u00f4le total, fonctionne hors ligne. ~65 Go, 30\u201360 min d\u2019installation.',
+    access_plan_note:'Desktop : Pro, Max, Team ou Enterprise. Code : tout plan.',
+    access_local_extra:'Le serveur local ajoute : <code>update_database</code>, <code>check_update_status</code>',
+    access_local_setup:'Guide d\u2019installation complet &rarr;',
     access_tools_search:'Recherche', access_tools_citations:'Citations', access_tools_research:'Recherche juridique',
-    access_graph_title:'Graphe de citations',
-    access_graph_desc:'7.85M liens de citations, 330K articles de loi. Trouvez les arr\u00eats de principe, tracez les r\u00e9seaux de citations, analysez les tendances jurisprudentielles.',
     tool_search_decisions:'Recherche plein texte avec filtres', tool_get_decision:'R\u00e9cup\u00e9rer par num\u00e9ro de dossier', tool_list_courts:'Tous les tribunaux avec effectifs', tool_get_statistics:'Statistiques agr\u00e9g\u00e9es',
     tool_find_citations:'R\u00e9seau de citations d\u2019une d\u00e9cision', tool_find_leading_cases:'D\u00e9cisions les plus cit\u00e9es par article', tool_analyze_legal_trend:'Tendances jurisprudentielles',
     tool_draft_mock_decision:'D\u00e9cision type \u00e0 partir de faits + jurisprudence',
@@ -822,7 +844,7 @@ const I18N = {
   },
   it: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni. Scarica e cerca localmente con strumenti IA.',
+    subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
     loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
     federal:'Federale', cantonal:'Cantoni', cantons:'Cantoni', access:'Accesso ai dati',
     th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_from:'Da', th_to:'A', th_updated:'Agg.', th_languages:'Lingue',
@@ -837,18 +859,20 @@ const I18N = {
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfaccia chat \u2014 fai domande, ottieni decisioni',
     quick_download:'Download', quick_download_desc:'Dataset completo in Parquet su HuggingFace',
-    quick_search:'Ricerca', quick_search_desc:'MCP remoto \u2014 accesso istantaneo, nessun download',
+    quick_search:'Ricerca', quick_search_desc:'Connetti Claude a 1M+ decisioni',
     quick_api:'API', quick_api_desc:'Query REST via HuggingFace Datasets Server',
     access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI, Gemini o modelli locali via Ollama (senza chiave API).',
     access_featured_title:'Ricerca con IA',
-    access_featured_desc:'Accesso istantaneo a 1M+ decisioni giudiziarie svizzere. Nessun download, nessuna configurazione. 9 strumenti per ricerca, analisi delle citazioni e ricerca giuridica.',
+    access_featured_desc:'Accesso a 1M+ decisioni giudiziarie svizzere con Claude. 8 strumenti per ricerca, analisi delle citazioni (7.85M collegamenti, 330K articoli) e ricerca giuridica.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
-    access_desktop_steps:'Impostazioni &rarr; Connectors &rarr; Aggiungi &rarr;',
-    access_setup_local:'Preferisci lavorare offline? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Guida all\u2019installazione locale &rarr;</a>',
+    access_remote_label:'Remoto (consigliato)', access_local_label:'Locale (offline)',
+    access_remote_desc:'Istantaneo, sempre aggiornato. Nessun download necessario.',
+    access_local_desc:'Controllo completo, funziona offline. ~65 GB, 30\u201360 min di installazione.',
+    access_plan_note:'Desktop: Pro, Max, Team o Enterprise. Code: qualsiasi piano.',
+    access_local_extra:'Il server locale aggiunge: <code>update_database</code>, <code>check_update_status</code>',
+    access_local_setup:'Guida all\u2019installazione completa &rarr;',
     access_tools_search:'Ricerca', access_tools_citations:'Citazioni', access_tools_research:'Ricerca giuridica',
-    access_graph_title:'Grafo delle citazioni',
-    access_graph_desc:'7.85M collegamenti tra citazioni, 330K articoli di legge. Trova le sentenze principali, traccia le reti di citazioni, analizza le tendenze giurisprudenziali.',
     tool_search_decisions:'Ricerca full-text con filtri', tool_get_decision:'Recupera per numero di dossier', tool_list_courts:'Tutti i tribunali con conteggi', tool_get_statistics:'Statistiche aggregate',
     tool_find_citations:'Rete di citazioni di una decisione', tool_find_leading_cases:'Decisioni pi\u00f9 citate per articolo', tool_analyze_legal_trend:'Tendenze giurisprudenziali nel tempo',
     tool_draft_mock_decision:'Decisione tipo da fatti + giurisprudenza',
@@ -857,7 +881,7 @@ const I18N = {
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Telechargiar e tschertgar localmain cun utensils IA.',
+    subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Tschertgar directamain cun IA u telechargiar il set da datas cumplain.',
     loading:'Chargiar', kpi_decisions:'Decisiuns', kpi_courts:'Dretgiras', kpi_cantons:'Chantuns', kpi_languages:'Linguas', kpi_coverage:'Perioda',
     federal:'Federal', cantonal:'Chantuns', cantons:'Chantuns', access:'Access a las datas',
     th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_from:'Da', th_to:'Fin', th_updated:'Actual.', th_languages:'Linguas',
@@ -872,18 +896,20 @@ const I18N = {
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfatscha da chat \u2014 far dumondas, obtegnir decisiuns',
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain sco Parquet sin HuggingFace',
-    quick_search:'Tschertga', quick_search_desc:'MCP remote \u2014 access direct, nagin download',
+    quick_search:'Tschertga', quick_search_desc:'Connectar Claude cun 1M+ decisiuns',
     quick_api:'API', quick_api_desc:'Dumondas REST via HuggingFace Datasets Server',
     access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI, Gemini u models locals via Ollama (senza clav API).',
     access_featured_title:'Tschertgar cun IA',
-    access_featured_desc:'Access direct a 1M+ decisiuns giudizialas svizras. Nagin download, nagina configuraziun. 9 utensils per tschertga, analisa da citaziuns e perscrutaziun giuridica.',
+    access_featured_desc:'Access a 1M+ decisiuns giudizialas svizras cun Claude. 8 utensils per tschertga, analisa da citaziuns (7.85M colliaziuns, 330K artitgels) e perscrutaziun giuridica.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
-    access_desktop_steps:'Configuraziun &rarr; Connectors &rarr; Agiuntar &rarr;',
-    access_setup_local:'Preferis lavurar offline? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Guida d\u2019installaziun locala &rarr;</a>',
+    access_remote_label:'Remote (recumandà)', access_local_label:'Local (offline)',
+    access_remote_desc:'Direct disponibel, adina actual. Nagin download necessari.',
+    access_local_desc:'Controlla cumplaina, funcziuna offline. ~65 GB, 30\u201360 min installaziun.',
+    access_plan_note:'Desktop: Pro, Max, Team u Enterprise. Code: mintga plan.',
+    access_local_extra:'Il server local agiunta: <code>update_database</code>, <code>check_update_status</code>',
+    access_local_setup:'Guida d\u2019installaziun cumplaina &rarr;',
     access_tools_search:'Tschertga', access_tools_citations:'Citaziuns', access_tools_research:'Perscrutaziun giuridica',
-    access_graph_title:'Graf da citaziuns',
-    access_graph_desc:'7.85M colliaziuns da citaziuns, 330K artitgels da lescha. Chattar las decisiuns principalas, persequitar rets da citaziuns, analisar tendenzas giurisprudenzialas.',
     tool_search_decisions:'Tschertga en text cumplain cun filters', tool_get_decision:'Retscherchar per numer da dossier', tool_list_courts:'Tut las dretgiras cun dumbers', tool_get_statistics:'Statisticas aggregadas',
     tool_find_citations:'Rait da citaziuns d\u2019ina decisiun', tool_find_leading_cases:'Decisiuns pli citadas per artitgel', tool_analyze_legal_trend:'Tendenzas giurisprudenzialas',
     tool_draft_mock_decision:'Decisiun model ord fatgs + giurisprudenza',
@@ -892,7 +918,7 @@ const I18N = {
   },
   en: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Download and search locally with AI tools.',
+    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
     federal:'Federal', cantonal:'Cantonal', cantons:'Cantons', access:'Access the Data',
     th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_from:'From', th_to:'To', th_updated:'Updated', th_languages:'Languages',
@@ -907,18 +933,20 @@ const I18N = {
     search_placeholder:'Search courts...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat interface \u2014 ask questions, get cited decisions',
     quick_download:'Download', quick_download_desc:'Full dataset as Parquet files on HuggingFace',
-    quick_search:'Search', quick_search_desc:'Remote MCP \u2014 instant access, no download',
+    quick_search:'Search', quick_search_desc:'Connect Claude to 1M+ decisions',
     quick_api:'API', quick_api_desc:'REST queries via HuggingFace Datasets Server',
     access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).',
     access_featured_title:'Search with AI',
-    access_featured_desc:'Connect to 1M+ Swiss court decisions instantly. No download, no setup. 9 tools for search, citation analysis, and legal research.',
+    access_featured_desc:'Connect to 1M+ Swiss court decisions with Claude. 8 tools for search, citation analysis (7.85M edges, 330K statutes), and legal research.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
-    access_desktop_steps:'Settings &rarr; Connectors &rarr; Add &rarr;',
-    access_setup_local:'Prefer offline access? <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-for-offline-access">Local setup guide &rarr;</a>',
+    access_remote_label:'Remote (recommended)', access_local_label:'Local (offline)',
+    access_remote_desc:'Instant, always current. No download needed.',
+    access_local_desc:'Full control, works offline. ~65 GB disk, 30\u201360 min setup.',
+    access_plan_note:'Desktop: Pro, Max, Team, or Enterprise. Code: any plan.',
+    access_local_extra:'Local server adds: <code>update_database</code>, <code>check_update_status</code>',
+    access_local_setup:'Full setup guide &rarr;',
     access_tools_search:'Search', access_tools_citations:'Citations', access_tools_research:'Research',
-    access_graph_title:'Citation Graph',
-    access_graph_desc:'7.85M citation edges, 330K statutes. Find leading cases, trace citation networks, analyze jurisprudence trends.',
     tool_search_decisions:'Full-text search with filters', tool_get_decision:'Fetch by docket number', tool_list_courts:'All courts with counts', tool_get_statistics:'Aggregate stats',
     tool_find_citations:'Citation network for a decision', tool_find_leading_cases:'Most-cited decisions by statute', tool_analyze_legal_trend:'Jurisprudence trends over time',
     tool_draft_mock_decision:'Mock decision from facts + caselaw',
