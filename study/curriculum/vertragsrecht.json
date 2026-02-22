@@ -1,0 +1,17 @@
+{
+  "area_id": "vertragsrecht",
+  "area_de": "Vertragsrecht (OR AT)",
+  "area_fr": "Droit des contrats (CO PG)",
+  "area_it": "Diritto contrattuale (CO PG)",
+  "description_de": "Allgemeiner Teil des Obligationenrechts",
+  "modules": [
+    {
+      "id": "vertragsschluss",
+      "name_de": "Vertragsschluss",
+      "name_fr": "Conclusion du contrat",
+      "name_it": "Conclusione del contratto",
+      "statutes": ["Art. 1-10 OR"],
+      "cases": []
+    }
+  ]
+}
