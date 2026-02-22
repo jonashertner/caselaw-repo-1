@@ -156,6 +156,26 @@ header .sub {
   margin-top: 12px; margin-bottom: 40px; font-family: var(--f-mono);
 }
 
+/* ── News card ── */
+.news-card {
+  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
+  border-left: 3px solid var(--ac); padding: 20px 24px; box-shadow: var(--glow);
+  margin-bottom: 32px;
+}
+.news-card h3 {
+  font-size: var(--fs-md); font-weight: 600; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.news-card h3 .badge {
+  font-size: var(--fs-2xs); background: var(--ac); color: #fff;
+  border: none; padding: 1px 8px; line-height: 1.6;
+}
+.news-items { list-style: none; padding: 0; margin: 0; }
+.news-items li {
+  font-size: var(--fs-sm); color: var(--tx2); padding: 3px 0; line-height: 1.5;
+}
+.news-items li strong { color: var(--tx); }
+
 /* ── Quick Access strip ── */
 .quick-strip {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
@@ -433,6 +453,7 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
   .access-featured .setup-paths { grid-template-columns: 1fr; }
   .access-featured .tool-grid { grid-template-columns: 1fr; gap: 12px; }
   .access-featured { padding: 18px 16px; }
+  .news-card { padding: 16px 18px; }
   .quick-strip { grid-template-columns: 1fr; }
   .kpis { gap: 40px; }
   .section-nav { display: none; }
@@ -538,6 +559,16 @@ footer .foot-links { display: flex; gap: 16px; justify-content: center; margin-b
 
   <!-- Last Updated -->
   <div class="updated-line hid" id="last-updated"></div>
+
+  <!-- News -->
+  <div class="news-card">
+    <h3><span data-t="news_title">Neuigkeiten</span> <span class="badge">New</span></h3>
+    <ul class="news-items">
+      <li><strong data-t="news_item_1_title">Socratic Tutor</strong> — <span data-t="news_item_1_desc">Interactive study mode with 31 leading cases across 5 legal areas, case briefing exercises, and guided study paths</span></li>
+      <li><strong data-t="news_item_2_title">Citation Graph</strong> — <span data-t="news_item_2_desc">7.85M citation edges linking decisions — find leading cases by statute or topic, trace citation networks</span></li>
+      <li><strong data-t="news_item_3_title">Semantic Search</strong> — <span data-t="news_item_3_desc">BGE-M3 vector embeddings for concept-level matching beyond keyword search</span></li>
+    </ul>
+  </div>
 
   <!-- Quick Access -->
   <div class="quick-strip" id="quick-strip">
@@ -803,6 +834,7 @@ const I18N = {
     tool_find_citations:'Zitationsnetzwerk eines Entscheids', tool_find_leading_cases:'Meistzitierte Entscheide nach Gesetz', tool_analyze_legal_trend:'Rechtsprechungstrends \u00fcber Zeit',
     tool_draft_mock_decision:'Musterentscheid aus Fakten + Rechtsprechung',
     hero_mcp:'Mit AI durchsuchen',
+    news_title:'Neuigkeiten', news_item_1_title:'Sokratischer Tutor', news_item_1_desc:'Interaktiver Lernmodus mit 31 Leitentscheiden aus 5 Rechtsgebieten, Urteilsbesprechungen und gef\u00fchrten Lernpfaden', news_item_2_title:'Zitationsgraph', news_item_2_desc:'7.85M Zitationsverbindungen zwischen Entscheiden \u2014 Leitentscheide nach Gesetzesartikel oder Thema finden, Zitationsnetzwerke verfolgen', news_item_3_title:'Semantische Suche', news_item_3_desc:'BGE-M3 Vektor-Embeddings f\u00fcr konzeptbasiertes Matching \u00fcber die Stichwortsuche hinaus',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
@@ -840,6 +872,7 @@ const I18N = {
     tool_find_citations:'R\u00e9seau de citations d\u2019une d\u00e9cision', tool_find_leading_cases:'D\u00e9cisions les plus cit\u00e9es par article', tool_analyze_legal_trend:'Tendances jurisprudentielles',
     tool_draft_mock_decision:'D\u00e9cision type \u00e0 partir de faits + jurisprudence',
     hero_mcp:'Recherche avec IA',
+    news_title:'Nouveaut\u00e9s', news_item_1_title:'Tuteur socratique', news_item_1_desc:'Mode d\u2019\u00e9tude interactif avec 31 arr\u00eats de r\u00e9f\u00e9rence dans 5 domaines juridiques, exercices de commentaire d\u2019arr\u00eat et parcours guid\u00e9s', news_item_2_title:'Graphe de citations', news_item_2_desc:'7.85M liens de citation entre d\u00e9cisions \u2014 trouver les arr\u00eats de r\u00e9f\u00e9rence par article ou sujet, explorer les r\u00e9seaux de citations', news_item_3_title:'Recherche s\u00e9mantique', news_item_3_desc:'Embeddings vectoriels BGE-M3 pour une correspondance conceptuelle au-del\u00e0 de la recherche par mots-cl\u00e9s',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
@@ -877,6 +910,7 @@ const I18N = {
     tool_find_citations:'Rete di citazioni di una decisione', tool_find_leading_cases:'Decisioni pi\u00f9 citate per articolo', tool_analyze_legal_trend:'Tendenze giurisprudenziali nel tempo',
     tool_draft_mock_decision:'Decisione tipo da fatti + giurisprudenza',
     hero_mcp:'Ricerca con IA',
+    news_title:'Novit\u00e0', news_item_1_title:'Tutor socratico', news_item_1_desc:'Modalit\u00e0 di studio interattiva con 31 decisioni guida in 5 aree giuridiche, esercizi di commento e percorsi di studio guidati', news_item_2_title:'Grafo delle citazioni', news_item_2_desc:'7.85M collegamenti tra decisioni \u2014 trovare le decisioni guida per articolo o tema, esplorare le reti di citazione', news_item_3_title:'Ricerca semantica', news_item_3_desc:'Embeddings vettoriali BGE-M3 per una corrispondenza concettuale oltre la ricerca per parole chiave',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
@@ -914,6 +948,7 @@ const I18N = {
     tool_find_citations:'Rait da citaziuns d\u2019ina decisiun', tool_find_leading_cases:'Decisiuns pli citadas per artitgel', tool_analyze_legal_trend:'Tendenzas giurisprudenzialas',
     tool_draft_mock_decision:'Decisiun model ord fatgs + giurisprudenza',
     hero_mcp:'Tschertgar cun IA',
+    news_title:'Novitads', news_item_1_title:'Tutor socratic', news_item_1_desc:'Modus da studium interactiv cun 31 decisiuns directivas en 5 champs giuridics, exercizis da commentari e percurs da studium guidads', news_item_2_title:'Graf da citaziuns', news_item_2_desc:'7.85M colliaziuns da citaziun tranter decisiuns \u2014 chattar decisiuns directivas tenor artitgel u tema, persequitar raits da citaziuns', news_item_3_title:'Tschertga semantica', news_item_3_desc:'Embeddings vectorials BGE-M3 per ina congruenza conceptuala surdavant la tschertga per plaids-clav',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
@@ -951,6 +986,7 @@ const I18N = {
     tool_find_citations:'Citation network for a decision', tool_find_leading_cases:'Most-cited decisions by statute', tool_analyze_legal_trend:'Jurisprudence trends over time',
     tool_draft_mock_decision:'Mock decision from facts + caselaw',
     hero_mcp:'Search with AI',
+    news_title:'What\u2019s New', news_item_1_title:'Socratic Tutor', news_item_1_desc:'Interactive study mode with 31 leading cases across 5 legal areas, case briefing exercises, and guided study paths', news_item_2_title:'Citation Graph', news_item_2_desc:'7.85M citation edges linking decisions \u2014 find leading cases by statute or topic, trace citation networks', news_item_3_title:'Semantic Search', news_item_3_desc:'BGE-M3 vector embeddings for concept-level matching beyond keyword search',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   },
 };
