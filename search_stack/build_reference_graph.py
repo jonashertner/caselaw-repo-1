@@ -97,6 +97,39 @@ def _docket_norm(value: str | None) -> str:
     return out.strip("_")
 
 
+import re as _re
+
+# BStGer two-letter prefixes
+_BSTGER_PREFIXES = frozenset({
+    "BB", "BG", "BH", "BK", "BN", "BP",
+    "CA", "CB", "CR", "RR",
+    "SK", "SN", "SP", "TP",
+})
+
+
+def _infer_court_from_docket(docket_norm: str) -> str | None:
+    """Infer the likely court from a normalized docket reference.
+
+    Swiss federal courts use distinctive docket prefixes:
+    - BGer: digit+letter (e.g. 6B_1234_2025, 4A_291_2017)
+    - BVGer: single letter A-F (e.g. E_5783_2024, D_8226_2025)
+    - BStGer: two-letter codes (e.g. SK_2025_1234, BB_2024_100)
+    """
+    if not docket_norm:
+        return None
+    # BGer: starts with digit + uppercase letter + underscore + digit
+    if _re.match(r"^[1-9][A-Z]_\d", docket_norm):
+        return "bger"
+    # BVGer: single letter A-F + underscore + digits + underscore + 4-digit year
+    if _re.match(r"^[A-F]_\d{1,6}_\d{4}$", docket_norm):
+        return "bvger"
+    # BStGer: known two-letter prefix
+    m = _re.match(r"^([A-Z]{2})_", docket_norm)
+    if m and m.group(1) in _BSTGER_PREFIXES:
+        return "bstger"
+    return None
+
+
 def _parse_iso_date(value: str | None) -> date | None:
     text = (value or "").strip()
     if not text:
@@ -115,10 +148,21 @@ def _citation_confidence(
     target_court: str | None,
     target_canton: str | None,
     target_date: str | None,
+    target_ref: str | None = None,
     candidate_rank: int,
     candidate_count: int,
 ) -> float:
     score = 0.55
+
+    # Docket pattern implies court — strongest disambiguation signal.
+    # E.g. "4A_291_2017" is almost certainly BGer, "E_5783_2024" is BVGer.
+    if target_ref:
+        inferred_court = _infer_court_from_docket(target_ref)
+        if inferred_court and target_court:
+            if target_court == inferred_court:
+                score += 0.20
+            else:
+                score -= 0.20
 
     if source_canton and target_canton and source_canton == target_canton:
         score += 0.10
@@ -132,7 +176,7 @@ def _citation_confidence(
         if delta_days >= 0:
             score += 0.15
         else:
-            score -= 0.10
+            score -= 0.15
 
         abs_days = abs(delta_days)
         if abs_days <= 365:
@@ -221,6 +265,7 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
                         target_court=row["target_court"],
                         target_canton=row["target_canton"],
                         target_date=row["target_date"],
+                        target_ref=row["target_ref"],
                         candidate_rank=int(row["candidate_rank"] or 1),
                         candidate_count=int(row["candidate_count"] or 1),
                     ),
