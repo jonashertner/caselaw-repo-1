@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import re
 import sqlite3
 import time
 from datetime import datetime, timezone
@@ -31,17 +32,212 @@ from db_schema import INSERT_COLUMNS, INSERT_OR_IGNORE_SQL, SCHEMA_SQL
 
 logger = logging.getLogger("build_fts5")
 
+# ── Text cleaning ────────────────────────────────────────────
+
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+_MULTI_SPACE_RE = re.compile(r"[ \t]+")
+_HTML_ENTITIES = {
+    "&nbsp;": " ",
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&#39;": "'",
+    "&apos;": "'",
+}
+
+
+def _fix_mojibake(text: str) -> str:
+    """Fix double-encoded UTF-8 (UTF-8 bytes decoded as Latin-1).
+
+    Common pattern: 'ä' (U+00E4) stored as 'Ã¤' (C3 A4 decoded as Latin-1).
+    """
+    try:
+        # If the text contains typical mojibake sequences, try to fix
+        fixed = text.encode("latin-1").decode("utf-8")
+        # Sanity check: the fixed version should be shorter or equal
+        if len(fixed) <= len(text):
+            return fixed
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        pass
+    return text
+
+
+def _clean_text(text: str | None) -> str | None:
+    """Strip HTML tags, fix HTML entities, fix mojibake, normalize whitespace."""
+    if not text:
+        return text
+
+    # Strip HTML tags
+    text = _HTML_TAG_RE.sub(" ", text)
+
+    # Replace HTML entities
+    for entity, replacement in _HTML_ENTITIES.items():
+        if entity in text:
+            text = text.replace(entity, replacement)
+
+    # Fix mojibake (only if likely — check for common mojibake markers)
+    if "\xc3" in text:
+        text = _fix_mojibake(text)
+
+    # Normalize whitespace (collapse runs of spaces/tabs, preserve newlines)
+    text = _MULTI_SPACE_RE.sub(" ", text)
+
+    return text.strip()
+
+
+# ── BGer regeste extraction ──────────────────────────────────
+
+_REGESTE_START_RE = re.compile(
+    r"(?:^|\n)\s*Regeste\b[:\s]*\n",
+    re.IGNORECASE,
+)
+_REGESTE_END_MARKERS = [
+    re.compile(r"^\s*Sachverhalt\b", re.IGNORECASE | re.MULTILINE),
+    re.compile(r"^\s*Faits\b", re.IGNORECASE | re.MULTILINE),
+    re.compile(r"^\s*Fatti\b", re.IGNORECASE | re.MULTILINE),
+    re.compile(r"^\s*Urteilskopf\b", re.IGNORECASE | re.MULTILINE),
+    re.compile(r"^\s*A\.\s", re.MULTILINE),
+]
+
+
+def _extract_regeste_from_text(full_text: str) -> str | None:
+    """Try to extract regeste from BGE/BGer full_text.
+
+    BGE decisions typically contain:
+      Regeste
+      <regeste text in DE>
+      Regeste      (or Regesto)
+      <regeste in FR/IT>
+      Sachverhalt / Faits / Fatti / A.
+    """
+    m = _REGESTE_START_RE.search(full_text)
+    if not m:
+        return None
+
+    start = m.end()
+    # Find the end: next major section header
+    end = len(full_text)
+    for pat in _REGESTE_END_MARKERS:
+        em = pat.search(full_text, start)
+        if em and em.start() < end:
+            end = em.start()
+
+    regeste = full_text[start:end].strip()
+    # Skip if too short or too long (probably a false match)
+    if len(regeste) < 20 or len(regeste) > 5000:
+        return None
+    return regeste
+
+
+# ── Dedup + post-processing ──────────────────────────────────
+
+def _dedup_decisions(conn: sqlite3.Connection) -> int:
+    """Remove duplicate decisions with same (court, docket_number, decision_date).
+
+    Keeps the version with the longest full_text (preferring non-empty regeste).
+    Returns number of rows deleted.
+    """
+    # Find groups with duplicates
+    dup_sql = """
+        SELECT court, docket_number, decision_date, COUNT(*) as cnt
+        FROM decisions
+        WHERE docket_number IS NOT NULL AND LENGTH(TRIM(docket_number)) > 0
+        GROUP BY court, docket_number, decision_date
+        HAVING cnt > 1
+    """
+    groups = conn.execute(dup_sql).fetchall()
+    if not groups:
+        return 0
+
+    deleted = 0
+    for court, docket, date, cnt in groups:
+        # Fetch all candidates, rank by: has regeste (desc), full_text length (desc)
+        rows = conn.execute(
+            """
+            SELECT decision_id, LENGTH(COALESCE(full_text, '')), LENGTH(COALESCE(regeste, ''))
+            FROM decisions
+            WHERE court = ? AND docket_number = ? AND decision_date IS ?
+            ORDER BY
+                CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
+                LENGTH(COALESCE(full_text, '')) DESC
+            """,
+            (court, docket, date),
+        ).fetchall()
+
+        # Keep the first (best), delete the rest
+        keep_id = rows[0][0]
+        for row in rows[1:]:
+            conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
+            deleted += 1
+
+    conn.commit()
+    return deleted
+
+
+def _fill_missing_regeste(conn: sqlite3.Connection) -> int:
+    """Extract regeste from full_text for BGer/BGE decisions with empty regeste."""
+    cursor = conn.execute(
+        """
+        SELECT decision_id, full_text FROM decisions
+        WHERE court IN ('bger', 'bge')
+          AND (regeste IS NULL OR LENGTH(TRIM(regeste)) = 0)
+          AND LENGTH(COALESCE(full_text, '')) > 200
+        """
+    )
+    updated = 0
+    batch: list[tuple[str, str]] = []
+    while True:
+        rows = cursor.fetchmany(1000)
+        if not rows:
+            break
+        for decision_id, full_text in rows:
+            regeste = _extract_regeste_from_text(full_text or "")
+            if regeste:
+                batch.append((regeste, decision_id))
+        if batch:
+            conn.executemany(
+                "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+                batch,
+            )
+            updated += len(batch)
+            batch.clear()
+
+    if updated:
+        conn.commit()
+    return updated
+
+
+def _log_quality_summary(conn: sqlite3.Connection) -> None:
+    """Log a summary of remaining data quality issues."""
+    total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+    short = conn.execute(
+        "SELECT COUNT(*) FROM decisions WHERE LENGTH(COALESCE(full_text, '')) < 500"
+    ).fetchone()[0]
+    no_regeste = conn.execute(
+        "SELECT COUNT(*) FROM decisions WHERE regeste IS NULL OR LENGTH(TRIM(regeste)) = 0"
+    ).fetchone()[0]
+    no_date = conn.execute(
+        "SELECT COUNT(*) FROM decisions WHERE decision_date IS NULL OR LENGTH(TRIM(decision_date)) = 0"
+    ).fetchone()[0]
+    logger.info(f"  Quality: {short} short text (<500), {no_regeste} no regeste, {no_date} no date (of {total})")
+
 
 def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
     """Insert a single decision. Returns True if inserted, False if skipped (duplicate)."""
     try:
+        # Clean text fields
+        for field in ("full_text", "regeste", "title"):
+            if field in row and row[field]:
+                row[field] = _clean_text(row[field])
+
         # Handle cited_decisions — could be list or JSON string
         cited = row.get("cited_decisions", [])
         if isinstance(cited, list):
             cited = json.dumps(cited)
         row["cited_decisions"] = cited
 
-        # json_data: full row as JSON blob
+        # json_data: full row as JSON blob (after cleaning)
         row["json_data"] = json.dumps(row, default=str)
 
         # Build values tuple matching INSERT_COLUMNS order.
@@ -249,6 +445,20 @@ def build_database(
 
     total_imported = jsonl_imported + pq_imported
     total_skipped = jsonl_skipped + pq_skipped
+
+    # ── Post-import data quality passes ──
+    if total_imported > 0:
+        logger.info("Deduplicating decisions...")
+        deduped = _dedup_decisions(conn)
+        if deduped:
+            logger.info(f"  Removed {deduped} duplicate decisions")
+
+        logger.info("Filling missing regeste for BGer/BGE decisions...")
+        filled = _fill_missing_regeste(conn)
+        if filled:
+            logger.info(f"  Extracted regeste for {filled} decisions")
+
+        _log_quality_summary(conn)
 
     if not no_optimize and total_imported > 0:
         logger.info("Running FTS5 optimize...")
