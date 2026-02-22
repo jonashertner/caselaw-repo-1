@@ -1,0 +1,117 @@
+{
+  "area_id": "grundrechte",
+  "area_de": "Grundrechte (BV)",
+  "area_fr": "Droits fondamentaux (Cst.)",
+  "area_it": "Diritti fondamentali (Cost.)",
+  "description_de": "Verfassungsrechtliche Grundrechte: Rechtsgleichheit, persönliche Freiheit, Wirtschaftsfreiheit, Verfahrensgarantien",
+  "modules": [
+    {
+      "id": "rechtsgleichheit",
+      "name_de": "Rechtsgleichheit und Diskriminierungsverbot",
+      "name_fr": "Égalité et interdiction de la discrimination",
+      "name_it": "Uguaglianza e divieto di discriminazione",
+      "statutes": ["Art. 8 BV"],
+      "cases": [
+        {
+          "decision_id": "bge_129 I 232",
+          "bge_ref": "BGE 129 I 232",
+          "title_de": "Einbürgerungsentscheide und Begründungspflicht",
+          "title_fr": "Décisions de naturalisation et obligation de motiver",
+          "concepts_de": ["Rechtsgleichheit", "Diskriminierungsverbot", "Begründungspflicht", "Einbürgerung"],
+          "concepts_fr": ["Égalité", "Non-discrimination", "Obligation de motiver", "Naturalisation"],
+          "statutes": ["Art. 8 BV", "Art. 29 BV"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Ablehnende Einbürgerungsentscheide unterliegen der Begründungspflicht nach Art. 29 Abs. 2 BV"
+        }
+      ]
+    },
+    {
+      "id": "personliche_freiheit",
+      "name_de": "Persönliche Freiheit",
+      "name_fr": "Liberté personnelle",
+      "name_it": "Libertà personale",
+      "statutes": ["Art. 10 BV", "Art. 31 BV"],
+      "cases": [
+        {
+          "decision_id": "bge_134 I 140",
+          "bge_ref": "BGE 134 I 140",
+          "title_de": "Schutzmassnahmen gegen häusliche Gewalt",
+          "title_fr": "Mesures de protection contre la violence domestique",
+          "concepts_de": ["Persönliche Freiheit", "Häusliche Gewalt", "Verhältnismässigkeit", "Schutzmassnahmen"],
+          "concepts_fr": ["Liberté personnelle", "Violence domestique", "Proportionnalité"],
+          "statutes": ["Art. 10 BV", "Art. 29 BV", "Art. 31 BV"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Überprüfung von Schutzmassnahmen bei häuslicher Gewalt im Licht der Grundrechte"
+        },
+        {
+          "decision_id": "bge_142 I 135",
+          "bge_ref": "BGE 142 I 135",
+          "title_de": "Administrativhaft und Freiheitsentzug",
+          "title_fr": "Détention administrative et privation de liberté",
+          "concepts_de": ["Freiheitsentzug", "Administrativhaft", "EMRK", "Habeas Corpus"],
+          "concepts_fr": ["Privation de liberté", "Détention administrative", "CEDH"],
+          "statutes": ["Art. 10 BV", "Art. 31 BV", "Art. 5 EMRK"],
+          "difficulty": 4,
+          "prerequisites": ["bge_134 I 140"],
+          "significance_de": "Zulässigkeit der Administrativhaft im Ausländerrecht; Grundrechtsschutz bei Freiheitsentzug"
+        }
+      ]
+    },
+    {
+      "id": "wirtschaftsfreiheit",
+      "name_de": "Wirtschaftsfreiheit",
+      "name_fr": "Liberté économique",
+      "name_it": "Libertà economica",
+      "statutes": ["Art. 27 BV", "Art. 94 BV"],
+      "cases": [
+        {
+          "decision_id": "bge_142 I 99",
+          "bge_ref": "BGE 142 I 99",
+          "title_de": "Sondernutzungskonzession und Wirtschaftsfreiheit",
+          "title_fr": "Concession d'utilisation spéciale et liberté économique",
+          "concepts_de": ["Wirtschaftsfreiheit", "Konzession", "Wasserrecht", "Wettbewerb"],
+          "concepts_fr": ["Liberté économique", "Concession", "Concurrence"],
+          "statutes": ["Art. 27 BV", "Art. 94 BV"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Vereinbarkeit kantonaler Konzessionsregeln mit der Wirtschaftsfreiheit"
+        }
+      ]
+    },
+    {
+      "id": "verfahrensgarantien",
+      "name_de": "Verfahrensgarantien und rechtliches Gehör",
+      "name_fr": "Garanties de procédure et droit d'être entendu",
+      "name_it": "Garanzie procedurali e diritto di essere sentito",
+      "statutes": ["Art. 29 BV", "Art. 30 BV"],
+      "cases": [
+        {
+          "decision_id": "bge_136 I 229",
+          "bge_ref": "BGE 136 I 229",
+          "title_de": "Anfechtung von Prüfungsergebnissen",
+          "title_fr": "Contestation des résultats d'examens",
+          "concepts_de": ["Rechtliches Gehör", "Prüfungsergebnis", "Willkürverbot", "Subsidiäre Verfassungsbeschwerde"],
+          "concepts_fr": ["Droit d'être entendu", "Résultat d'examen", "Arbitraire"],
+          "statutes": ["Art. 29 BV", "Art. 9 BV"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Prüfungsergebnisse können mit subsidiärer Verfassungsbeschwerde angefochten werden"
+        },
+        {
+          "decision_id": "bge_134 II 244",
+          "bge_ref": "BGE 134 II 244",
+          "title_de": "Begründungsanforderungen an Beschwerden",
+          "title_fr": "Exigences de motivation des recours",
+          "concepts_de": ["Begründungspflicht", "Beschwerde", "Nichteintreten", "BGG"],
+          "concepts_fr": ["Obligation de motiver", "Recours", "Irrecevabilité"],
+          "statutes": ["Art. 42 BGG"],
+          "difficulty": 1,
+          "prerequisites": [],
+          "significance_de": "Minimale Begründungsanforderungen: Auseinandersetzung mit den Erwägungen des angefochtenen Entscheids"
+        }
+      ]
+    }
+  ]
+}

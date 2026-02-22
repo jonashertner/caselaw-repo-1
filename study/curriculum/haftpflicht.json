@@ -1,0 +1,96 @@
+{
+  "area_id": "haftpflicht",
+  "area_de": "Haftpflichtrecht",
+  "area_fr": "Droit de la responsabilité civile",
+  "area_it": "Diritto della responsabilità civile",
+  "description_de": "Ausservertragliche Haftung: Verschuldenshaftung, Schadensbeweis, Geschäftsherrenhaftung",
+  "modules": [
+    {
+      "id": "verschuldenshaftung",
+      "name_de": "Verschuldenshaftung und Kausalzusammenhang",
+      "name_fr": "Responsabilité pour faute et lien de causalité",
+      "name_it": "Responsabilità per colpa e nesso causale",
+      "statutes": ["Art. 41 OR"],
+      "cases": [
+        {
+          "decision_id": "bge_123 III 110",
+          "bge_ref": "BGE 123 III 110",
+          "title_de": "Adäquater Kausalzusammenhang bei Motorfahrzeughaftung",
+          "title_fr": "Causalité adéquate en matière de responsabilité automobile",
+          "concepts_de": ["Adäquater Kausalzusammenhang", "Motorfahrzeughaftung", "Richterliche Wertung"],
+          "concepts_fr": ["Causalité adéquate", "Responsabilité automobile"],
+          "statutes": ["Art. 41 OR", "Art. 58 SVG"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Beurteilung des adäquaten Kausalzusammenhangs nach Recht und Billigkeit"
+        },
+        {
+          "decision_id": "bge_133 III 323",
+          "bge_ref": "BGE 133 III 323",
+          "title_de": "Haftung bei Geldwäscherei als unerlaubte Handlung",
+          "title_fr": "Responsabilité pour blanchiment d'argent comme acte illicite",
+          "concepts_de": ["Unerlaubte Handlung", "Widerrechtlichkeit", "IPR", "Geldwäscherei"],
+          "concepts_fr": ["Acte illicite", "Illicéité", "Blanchiment"],
+          "statutes": ["Art. 41 OR", "Art. 132 IPRG"],
+          "difficulty": 4,
+          "prerequisites": ["bge_123 III 110"],
+          "significance_de": "Anknüpfung bei unerlaubter Handlung im internationalen Privatrecht"
+        }
+      ]
+    },
+    {
+      "id": "schadensbeweis",
+      "name_de": "Schadensbeweis und Schadensberechnung",
+      "name_fr": "Preuve et calcul du dommage",
+      "name_it": "Prova e calcolo del danno",
+      "statutes": ["Art. 42 OR", "Art. 43 OR", "Art. 44 OR"],
+      "cases": [
+        {
+          "decision_id": "bge_122 III 219",
+          "bge_ref": "BGE 122 III 219",
+          "title_de": "Richterliche Schadensschätzung nach Art. 42 Abs. 2 OR",
+          "title_fr": "Estimation judiciaire du dommage selon art. 42 al. 2 CO",
+          "concepts_de": ["Schadensschätzung", "Beweiserleichterung", "Richterliches Ermessen"],
+          "concepts_fr": ["Estimation du dommage", "Facilitation de preuve"],
+          "statutes": ["Art. 42 OR"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Voraussetzungen und Tragweite der Beweiserleichterung bei Schadensschätzung"
+        },
+        {
+          "decision_id": "bge_131 III 12",
+          "bge_ref": "BGE 131 III 12",
+          "title_de": "Konstitutionelle Prädisposition und Quotenvorrecht",
+          "title_fr": "Prédisposition constitutionnelle et privilège de quotité",
+          "concepts_de": ["Konstitutionelle Prädisposition", "Quotenvorrecht", "Schadenszins", "Schadensberechnung"],
+          "concepts_fr": ["Prédisposition constitutionnelle", "Privilège de quotité"],
+          "statutes": ["Art. 42 OR", "Art. 43 OR", "Art. 44 OR"],
+          "difficulty": 3,
+          "prerequisites": ["bge_122 III 219"],
+          "significance_de": "Berücksichtigung vorbestehender Leiden bei Schadensberechnung vs. Schadenersatzbemessung"
+        }
+      ]
+    },
+    {
+      "id": "geschaftsherrenhaftung",
+      "name_de": "Geschäftsherrenhaftung",
+      "name_fr": "Responsabilité de l'employeur",
+      "name_it": "Responsabilità del padrone d'azienda",
+      "statutes": ["Art. 55 OR"],
+      "cases": [
+        {
+          "decision_id": "bge_122 III 225",
+          "bge_ref": "BGE 122 III 225",
+          "title_de": "Abgrenzung Organ/Hilfsperson und Verjährung",
+          "title_fr": "Distinction organe/auxiliaire et prescription",
+          "concepts_de": ["Geschäftsherrenhaftung", "Hilfsperson", "Organ", "Verjährung"],
+          "concepts_fr": ["Responsabilité de l'employeur", "Auxiliaire", "Organe", "Prescription"],
+          "statutes": ["Art. 55 OR", "Art. 60 OR"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Abgrenzung Organ/Hilfsperson; keine längere strafrechtliche Verjährungsfrist bei Hilfspersonenhaftung"
+        }
+      ]
+    }
+  ]
+}
