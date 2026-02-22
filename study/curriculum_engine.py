@@ -120,6 +120,55 @@ def list_areas(*, language: str = "de") -> list[dict]:
     return result
 
 
+def _score_case(
+    topic_lower: str,
+    topic_words: set[str],
+    case: CurriculumCase,
+    mod: CurriculumModule,
+    area: CurriculumArea,
+) -> int:
+    """Score a curriculum case against a topic query."""
+    score = 0
+
+    # Module id exact match (e.g. "vertragsschluss" matches module_id "vertragsschluss")
+    if topic_lower == mod.id.lower():
+        score += 5
+    elif topic_lower in mod.id.lower() or mod.id.lower() in topic_lower:
+        score += 3
+
+    # Check title match (bidirectional substring)
+    for title in (case.title_de, case.title_fr, case.title_it):
+        title_low = title.lower()
+        if topic_lower in title_low:
+            score += 3
+        elif title_low in topic_lower and len(title_low) > 3:
+            score += 2
+
+    # Check concept match (bidirectional substring + word overlap)
+    for concepts in (case.concepts_de, case.concepts_fr, case.concepts_it):
+        for concept in concepts:
+            concept_low = concept.lower()
+            if topic_lower in concept_low or concept_low in topic_lower:
+                score += 2
+            elif topic_words & set(concept_low.split()):
+                score += 1
+
+    # Check statute match (e.g. "Art. 41 OR")
+    for statute in case.statutes:
+        if topic_lower in statute.lower():
+            score += 2
+
+    # Module name match
+    if topic_lower in mod.name_de.lower() or topic_lower in mod.name_fr.lower():
+        score += 1
+
+    # Area id match
+    if topic_lower in area.area_id:
+        score += 1
+
+    return score
+
+
 def find_case(
     topic: str,
     *,
@@ -128,49 +177,36 @@ def find_case(
 ) -> CurriculumCase | None:
     """Find the best matching curriculum case for a topic string.
 
-    Searches module names, case concepts, case statutes, and case titles.
-    Returns the best match or None.
+    Searches module ids/names, case concepts, case statutes, and case titles.
+    Difficulty is a soft preference: if no matches at the requested difficulty,
+    returns the best match at any difficulty.
     """
     topic_lower = topic.lower()
+    topic_words = set(topic_lower.split())
     areas = load_curriculum()
 
     best: CurriculumCase | None = None
     best_score = 0
+    best_within_diff: CurriculumCase | None = None
+    best_within_diff_score = 0
 
     for area in areas:
         for mod in area.modules:
-            mod_match = topic_lower in mod.name_de.lower() or topic_lower in mod.name_fr.lower()
             for case in mod.cases:
-                if difficulty is not None and case.difficulty > difficulty:
+                score = _score_case(topic_lower, topic_words, case, mod, area)
+                if score <= 0:
                     continue
 
-                score = 0
-                # Check title match
-                for title in (case.title_de, case.title_fr, case.title_it):
-                    if topic_lower in title.lower():
-                        score += 3
-
-                # Check concept match
-                for concepts in (case.concepts_de, case.concepts_fr, case.concepts_it):
-                    for concept in concepts:
-                        if topic_lower in concept.lower():
-                            score += 2
-
-                # Check statute match
-                for statute in case.statutes:
-                    if topic_lower in statute.lower():
-                        score += 2
-
-                # Module context match
-                if mod_match:
-                    score += 1
-
-                # Area id match
-                if topic_lower in area.area_id:
-                    score += 1
-
+                # Track best overall
                 if score > best_score:
                     best_score = score
                     best = case
 
-    return best
+                # Track best within difficulty preference
+                if difficulty is None or case.difficulty <= difficulty:
+                    if score > best_within_diff_score:
+                        best_within_diff_score = score
+                        best_within_diff = case
+
+    # Prefer match within difficulty, fall back to best overall
+    return best_within_diff if best_within_diff is not None else best
