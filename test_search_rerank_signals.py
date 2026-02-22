@@ -402,3 +402,15 @@ def test_graph_signal_map_preserves_fractional_confidence_weights(
         query_citations=set(),
     )
     assert 0.0 < signal_map["target1"]["incoming_citations"] < 1.0
+
+
+def test_extract_inline_docket_candidates_text_position_order():
+    """Issue 3: docket candidates should follow text position, not regex pattern order."""
+    # AB.2024.12345 matches pattern 2, 4A_291/2017 matches pattern 1.
+    # Without position sorting, pattern 1 match would come first.
+    cands = mcp_server._extract_inline_docket_candidates(
+        "comparing AB.2024.12345 with 4A_291/2017"
+    )
+    assert len(cands) == 2
+    assert cands[0] == "AB.2024.12345"
+    assert cands[1] == "4A_291/2017"

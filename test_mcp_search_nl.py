@@ -227,3 +227,13 @@ def test_search_prefers_bger_duplicate_when_query_mentions_bger(nl_test_db):
     assert "d_bger_remand" in ids
     assert "d_ge_dup" in ids
     assert ids.index("d_bger_remand") < ids.index("d_ge_dup")
+
+
+def test_court_aware_docket_search_extracts_docket_from_mixed_query(nl_test_db):
+    """Issue 2: 'BVGer E-1234/2025' should search for docket 'E-1234/2025' not 'BVGerE-1234/2025'."""
+    # The docket D-8226/2025 exists for bvger in the test DB.
+    # A query like "BVGer D-8226/2025" should find it via docket path.
+    results, _ = mcp_server.search_fts5("BVGer D-8226/2025", limit=5)
+    ids = [r["decision_id"] for r in results]
+    assert "d_asyl" in ids
+    assert ids[0] == "d_asyl"

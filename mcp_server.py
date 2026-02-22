@@ -625,11 +625,17 @@ def _search_fts5_inner(
     has_explicit_syntax = _has_explicit_fts_syntax(fts_query)
     inline_docket_candidates = _extract_inline_docket_candidates(fts_query)
     inline_docket_results: list[dict] = []
+    query_preferred_courts = _detect_query_preferred_courts(fts_query)
 
     # Docket-style lookups should prioritize exact/near-exact docket matches.
     if is_docket_query:
+        # Extract just the docket portion from mixed queries like "BGer 4A_291/2017"
+        docket_search_query = inline_docket_candidates[0] if inline_docket_candidates else fts_query
         try:
-            docket_results = _search_by_docket(conn, fts_query, where, params, offset + limit)
+            docket_results = _search_by_docket(
+                conn, docket_search_query, where, params, offset + limit,
+                preferred_courts=query_preferred_courts,
+            )
             if docket_results:
                 if sort in ("date_desc", "date_asc"):
                     reverse = sort == "date_desc"
@@ -645,7 +651,10 @@ def _search_fts5_inner(
         for candidate in inline_docket_candidates[:3]:
             try:
                 inline_docket_results.extend(
-                    _search_by_docket(conn, candidate, where, params, per_docket_limit)
+                    _search_by_docket(
+                        conn, candidate, where, params, per_docket_limit,
+                        preferred_courts=query_preferred_courts,
+                    )
                 )
             except sqlite3.OperationalError as e:
                 logger.debug("Inline docket lookup failed for %s: %s", candidate, e)
@@ -804,12 +813,15 @@ def _search_by_docket(
     where: str,
     params: list,
     limit: int,
+    *,
+    preferred_courts: set[str] | None = None,
 ) -> list[dict]:
     """Docket-first retrieval for docket-like queries."""
     variants = _build_docket_variants(raw_query)
     if not variants:
         return []
-    preferred_courts = _detect_query_preferred_courts(raw_query)
+    if preferred_courts is None:
+        preferred_courts = _detect_query_preferred_courts(raw_query)
 
     exact_variants = sorted(variants)
     exact_placeholders = ",".join("?" for _ in exact_variants)
@@ -1073,7 +1085,7 @@ def _detect_query_preferred_courts(query: str) -> set[str]:
 
 
 def _extract_inline_docket_candidates(query: str) -> list[str]:
-    out: list[str] = []
+    matches_with_pos: list[tuple[int, str]] = []
     seen: set[str] = set()
     for pattern in QUERY_DOCKET_PATTERNS:
         for match in pattern.finditer(query or ""):
@@ -1082,10 +1094,9 @@ def _extract_inline_docket_candidates(query: str) -> list[str]:
             if not raw or len(norm) < 5 or norm in seen:
                 continue
             seen.add(norm)
-            out.append(raw)
-            if len(out) >= 5:
-                return out
-    return out
+            matches_with_pos.append((match.start(), raw))
+    matches_with_pos.sort(key=lambda x: x[0])
+    return [raw for _, raw in matches_with_pos[:5]]
 
 
 def _dedupe_results_by_decision_id(rows: list[dict]) -> list[dict]:
