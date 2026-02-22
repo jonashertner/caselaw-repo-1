@@ -41,6 +41,11 @@ Tools exposed:
     list_courts       — List available courts with decision counts.
     get_statistics    — Aggregate statistics by court, canton, year,
                         language.
+    find_citations    — Show what a decision cites and what cites it.
+                        Uses the reference graph (7.85M citation edges).
+    find_leading_cases — Find most-cited decisions for a topic or statute.
+    analyze_legal_trend — Year-by-year decision counts for jurisprudence
+                        evolution analysis.
     draft_mock_decision — Build a research-only mock decision outline from
                         user facts, grounded in caselaw and statute references
                         (optionally enriched from Fedlex).
@@ -1154,6 +1159,20 @@ def _normalize_docket_ref(value: str) -> str:
     return text.strip("_")
 
 
+def _get_graph_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the reference graph DB, or None if unavailable."""
+    if not GRAPH_DB_PATH.exists():
+        return None
+    try:
+        conn = sqlite3.connect(str(GRAPH_DB_PATH), timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only = ON")
+        return conn
+    except sqlite3.Error as e:
+        logger.debug("Failed to open graph DB: %s", e)
+        return None
+
+
 def _sqlite_has_table(conn: sqlite3.Connection, table: str) -> bool:
     row = conn.execute(
         "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
@@ -1178,8 +1197,6 @@ def _load_graph_signal_map(
 ) -> dict[str, dict[str, float]]:
     if not GRAPH_SIGNALS_ENABLED or not decision_ids:
         return {}
-    if not GRAPH_DB_PATH.exists():
-        return {}
 
     unique_ids = list(dict.fromkeys([did for did in decision_ids if did]))
     if not unique_ids:
@@ -1194,11 +1211,10 @@ def _load_graph_signal_map(
         for did in unique_ids
     }
 
-    conn = None
+    conn = _get_graph_conn()
+    if conn is None:
+        return {}
     try:
-        conn = sqlite3.connect(str(GRAPH_DB_PATH), timeout=0.5)
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
         has_citation_targets = _sqlite_has_table(conn, "citation_targets")
         has_legacy_target_column = _sqlite_has_column(
             conn, "decision_citations", "target_decision_id"
@@ -1291,10 +1307,108 @@ def _load_graph_signal_map(
         logger.debug("Graph-signal lookup failed: %s", e)
         return {}
     finally:
-        if conn is not None:
-            conn.close()
+        conn.close()
 
     return signal_map
+
+
+def _count_citations(decision_id: str) -> tuple[int, int]:
+    """Return (incoming_count, outgoing_count) for a decision from the graph DB.
+
+    Returns (0, 0) if graph DB unavailable or decision not found.
+    """
+    conn = _get_graph_conn()
+    if conn is None:
+        return (0, 0)
+    try:
+        incoming = 0
+        if _sqlite_has_table(conn, "citation_targets"):
+            row = conn.execute(
+                "SELECT COUNT(*) AS n FROM citation_targets WHERE target_decision_id = ?",
+                (decision_id,),
+            ).fetchone()
+            incoming = int(row["n"]) if row else 0
+
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM decision_citations WHERE source_decision_id = ?",
+            (decision_id,),
+        ).fetchone()
+        outgoing = int(row["n"]) if row else 0
+
+        return (incoming, outgoing)
+    except sqlite3.Error as e:
+        logger.debug("Citation count failed: %s", e)
+        return (0, 0)
+    finally:
+        conn.close()
+
+
+def _find_outgoing_citations(
+    decision_id: str, *, min_confidence: float = 0.3, limit: int = 50
+) -> list[dict]:
+    """Find citations made by this decision (what it cites)."""
+    conn = _get_graph_conn()
+    if conn is None:
+        return []
+    try:
+        rows = conn.execute(
+            """
+            SELECT dc.target_ref, dc.target_type, dc.mention_count,
+                   ct.target_decision_id, ct.confidence_score,
+                   d.docket_number, d.court, d.decision_date
+            FROM decision_citations dc
+            LEFT JOIN citation_targets ct
+              ON ct.source_decision_id = dc.source_decision_id
+             AND ct.target_ref = dc.target_ref
+            LEFT JOIN decisions d
+              ON d.decision_id = ct.target_decision_id
+            WHERE dc.source_decision_id = ?
+              AND (ct.confidence_score IS NULL OR ct.confidence_score >= ?)
+            ORDER BY dc.mention_count DESC, ct.confidence_score DESC
+            LIMIT ?
+            """,
+            (decision_id, min_confidence, limit),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    except sqlite3.Error as e:
+        logger.debug("Outgoing citations lookup failed: %s", e)
+        return []
+    finally:
+        conn.close()
+
+
+def _find_incoming_citations(
+    decision_id: str, *, min_confidence: float = 0.3, limit: int = 50
+) -> list[dict]:
+    """Find decisions that cite this decision."""
+    conn = _get_graph_conn()
+    if conn is None:
+        return []
+    try:
+        rows = conn.execute(
+            """
+            SELECT ct.source_decision_id, ct.confidence_score, ct.target_ref,
+                   dc.mention_count,
+                   d.docket_number, d.court, d.decision_date
+            FROM citation_targets ct
+            JOIN decision_citations dc
+              ON dc.source_decision_id = ct.source_decision_id
+             AND dc.target_ref = ct.target_ref
+            JOIN decisions d
+              ON d.decision_id = ct.source_decision_id
+            WHERE ct.target_decision_id = ?
+              AND ct.confidence_score >= ?
+            ORDER BY d.decision_date DESC, ct.confidence_score DESC
+            LIMIT ?
+            """,
+            (decision_id, min_confidence, limit),
+        ).fetchall()
+        return [dict(r) for r in rows]
+    except sqlite3.Error as e:
+        logger.debug("Incoming citations lookup failed: %s", e)
+        return []
+    finally:
+        conn.close()
 
 
 def _text_matches_any_statute_hint(text: str, statutes: set[str]) -> bool:
@@ -2277,6 +2391,286 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     return result
 
 
+def find_citations(
+    *,
+    decision_id: str,
+    direction: str = "both",
+    min_confidence: float = 0.3,
+    limit: int = 50,
+) -> dict:
+    """Find outgoing and/or incoming citations for a decision."""
+    limit = max(1, min(limit, 200))
+    min_confidence = max(0.0, min(min_confidence, 1.0))
+
+    result: dict = {"decision_id": decision_id, "direction": direction}
+
+    if _get_graph_conn() is None:
+        result["error"] = "Reference graph not available."
+        return result
+
+    if direction in ("both", "outgoing"):
+        result["outgoing"] = _find_outgoing_citations(
+            decision_id, min_confidence=min_confidence, limit=limit,
+        )
+
+    if direction in ("both", "incoming"):
+        result["incoming"] = _find_incoming_citations(
+            decision_id, min_confidence=min_confidence, limit=limit,
+        )
+
+    return result
+
+
+def _find_leading_cases(
+    *,
+    query: str | None = None,
+    law_code: str | None = None,
+    article: str | None = None,
+    court: str | None = None,
+    date_from: str | None = None,
+    date_to: str | None = None,
+    limit: int = 20,
+) -> dict:
+    """Find the most-cited decisions for a topic or statute."""
+    limit = max(1, min(limit, 100))
+
+    # Determine path: statute (graph DB) or global/court-filtered
+    conn = _get_graph_conn()
+    if conn is None:
+        return {"error": "Reference graph not available."}
+
+    try:
+        candidates: list[tuple[str, int]] = []  # (decision_id, citation_count)
+
+        if law_code and article:
+            # Statute-filtered: find decisions citing this statute, ranked by incoming citations
+            overfetch = limit * 3 if query else limit
+            rows = conn.execute(
+                """
+                SELECT ct.target_decision_id AS decision_id, COUNT(*) AS cite_count
+                FROM citation_targets ct
+                JOIN decisions d ON d.decision_id = ct.target_decision_id
+                WHERE ct.target_decision_id IN (
+                    SELECT ds.decision_id
+                    FROM decision_statutes ds
+                    JOIN statutes s ON s.statute_id = ds.statute_id
+                    WHERE s.law_code = ? AND s.article = ?
+                )
+                """
+                + (" AND d.court = ?" if court else "")
+                + (" AND d.decision_date >= ?" if date_from else "")
+                + (" AND d.decision_date <= ?" if date_to else "")
+                + """
+                GROUP BY ct.target_decision_id
+                ORDER BY cite_count DESC
+                LIMIT ?
+                """,
+                tuple(
+                    v
+                    for v in (
+                        law_code, article,
+                        court if court else None,
+                        date_from if date_from else None,
+                        date_to if date_to else None,
+                        overfetch,
+                    )
+                    if v is not None
+                ),
+            ).fetchall()
+            candidates = [(r["decision_id"], int(r["cite_count"])) for r in rows]
+        else:
+            # Global most-cited (optionally filtered by court/date)
+            overfetch = limit * 3 if query else limit
+            sql = """
+                SELECT ct.target_decision_id AS decision_id, COUNT(*) AS cite_count
+                FROM citation_targets ct
+            """
+            params: list = []
+            conditions = []
+            if court or date_from or date_to:
+                sql += " JOIN decisions d ON d.decision_id = ct.target_decision_id"
+                if court:
+                    conditions.append("d.court = ?")
+                    params.append(court)
+                if date_from:
+                    conditions.append("d.decision_date >= ?")
+                    params.append(date_from)
+                if date_to:
+                    conditions.append("d.decision_date <= ?")
+                    params.append(date_to)
+            if conditions:
+                sql += " WHERE " + " AND ".join(conditions)
+            sql += " GROUP BY ct.target_decision_id ORDER BY cite_count DESC LIMIT ?"
+            params.append(overfetch)
+            rows = conn.execute(sql, tuple(params)).fetchall()
+            candidates = [(r["decision_id"], int(r["cite_count"])) for r in rows]
+    except sqlite3.Error as e:
+        logger.debug("Leading cases graph query failed: %s", e)
+        return {"error": f"Graph query failed: {e}"}
+    finally:
+        conn.close()
+
+    if not candidates:
+        return {"results": [], "total": 0}
+
+    # If query provided, filter via FTS5
+    if query:
+        candidate_ids = [c[0] for c in candidates]
+        cite_map = dict(candidates)
+        try:
+            fts_conn = get_db()
+            placeholders = ",".join("?" for _ in candidate_ids)
+            matched = fts_conn.execute(
+                f"""
+                SELECT decision_id FROM decisions_fts
+                WHERE decisions_fts MATCH ? AND decision_id IN ({placeholders})
+                """,
+                (query, *candidate_ids),
+            ).fetchall()
+            fts_conn.close()
+            matched_ids = {r["decision_id"] for r in matched}
+            candidates = [(did, cnt) for did, cnt in candidates if did in matched_ids]
+        except sqlite3.Error as e:
+            logger.debug("FTS filter for leading cases failed: %s", e)
+
+    # Truncate to limit
+    candidates = candidates[:limit]
+
+    if not candidates:
+        return {"results": [], "total": 0}
+
+    # Enrich with metadata from FTS5 decisions table
+    candidate_ids = [c[0] for c in candidates]
+    cite_map = dict(candidates)
+    rows = _fetch_decision_rows_by_ids(candidate_ids)
+    rows_by_id = {r["decision_id"]: r for r in rows}
+
+    results = []
+    for did, cite_count in candidates:
+        row = rows_by_id.get(did, {})
+        results.append({
+            "decision_id": did,
+            "docket_number": row.get("docket_number", did),
+            "decision_date": row.get("decision_date", ""),
+            "court": row.get("court", ""),
+            "citation_count": cite_count,
+            "regeste": (row.get("regeste") or "")[:300],
+            "source_url": row.get("source_url", ""),
+        })
+
+    return {
+        "results": results,
+        "total": len(results),
+        "law_code": law_code,
+        "article": article,
+        "query": query,
+    }
+
+
+def analyze_legal_trend(
+    *,
+    query: str | None = None,
+    law_code: str | None = None,
+    article: str | None = None,
+    court: str | None = None,
+    date_from: str | None = None,
+    date_to: str | None = None,
+) -> dict:
+    """Year-by-year decision counts for a statute or topic."""
+    if not query and not law_code:
+        return {"error": "At least one of 'query' or 'law_code' is required."}
+
+    year_counts: dict[int, int] = {}
+
+    # Statute path: use graph DB
+    if law_code and article:
+        conn = _get_graph_conn()
+        if conn is None:
+            return {"error": "Reference graph not available."}
+        try:
+            sql = """
+                SELECT CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) AS year,
+                       COUNT(DISTINCT ds.decision_id) AS cnt
+                FROM decision_statutes ds
+                JOIN statutes s ON s.statute_id = ds.statute_id
+                JOIN decisions d ON d.decision_id = ds.decision_id
+                WHERE s.law_code = ? AND s.article = ?
+                  AND d.decision_date IS NOT NULL
+                  AND CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) > 1800
+                  AND CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) < 2100
+            """
+            params: list = [law_code, article]
+            if court:
+                sql += " AND d.court = ?"
+                params.append(court)
+            if date_from:
+                sql += " AND d.decision_date >= ?"
+                params.append(date_from)
+            if date_to:
+                sql += " AND d.decision_date <= ?"
+                params.append(date_to)
+            sql += " GROUP BY year ORDER BY year"
+            rows = conn.execute(sql, tuple(params)).fetchall()
+            for r in rows:
+                year_counts[int(r["year"])] = int(r["cnt"])
+        except sqlite3.Error as e:
+            logger.debug("Trend statute query failed: %s", e)
+            return {"error": f"Statute trend query failed: {e}"}
+        finally:
+            conn.close()
+
+    # FTS path: text query
+    if query:
+        try:
+            fts_conn = get_db()
+            sql = """
+                SELECT CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) AS year,
+                       COUNT(*) AS cnt
+                FROM decisions_fts f
+                JOIN decisions d ON d.decision_id = f.decision_id
+                WHERE decisions_fts MATCH ?
+                  AND d.decision_date IS NOT NULL
+                  AND CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) > 1800
+                  AND CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) < 2100
+            """
+            params2: list = [query]
+            if court:
+                sql += " AND d.court = ?"
+                params2.append(court)
+            if date_from:
+                sql += " AND d.decision_date >= ?"
+                params2.append(date_from)
+            if date_to:
+                sql += " AND d.decision_date <= ?"
+                params2.append(date_to)
+            sql += " GROUP BY year ORDER BY year"
+            rows = fts_conn.execute(sql, tuple(params2)).fetchall()
+            fts_conn.close()
+            # Merge with statute counts (additive if both paths used)
+            for r in rows:
+                y = int(r["year"])
+                if law_code and article:
+                    # Both paths: take max (intersection would undercount)
+                    year_counts[y] = max(year_counts.get(y, 0), int(r["cnt"]))
+                else:
+                    year_counts[y] = int(r["cnt"])
+        except sqlite3.Error as e:
+            logger.debug("Trend FTS query failed: %s", e)
+            if not year_counts:
+                return {"error": f"FTS trend query failed: {e}"}
+
+    total = sum(year_counts.values())
+    years_sorted = sorted(year_counts.items())
+
+    return {
+        "years": [{"year": y, "count": c} for y, c in years_sorted],
+        "total": total,
+        "law_code": law_code,
+        "article": article,
+        "query": query,
+    }
+
+
 def draft_mock_decision(
     *,
     facts: str,
@@ -2602,15 +2996,14 @@ def _retrieve_case_law_for_facts(
 
 
 def _search_graph_decisions_for_statutes(*, statute_requests: list[dict], limit: int) -> list[dict]:
-    if not statute_requests or not GRAPH_DB_PATH.exists():
+    if not statute_requests:
         return []
 
     mentions: dict[str, int] = {}
-    graph_conn = None
+    graph_conn = _get_graph_conn()
+    if graph_conn is None:
+        return []
     try:
-        graph_conn = sqlite3.connect(str(GRAPH_DB_PATH), timeout=0.5)
-        graph_conn.row_factory = sqlite3.Row
-        graph_conn.execute("PRAGMA query_only = ON")
         for st in statute_requests[:8]:
             law = st["law_code"]
             article = st["article"]
@@ -2648,8 +3041,7 @@ def _search_graph_decisions_for_statutes(*, statute_requests: list[dict], limit:
         logger.debug("Graph statute lookup failed: %s", e)
         return []
     finally:
-        if graph_conn is not None:
-            graph_conn.close()
+        graph_conn.close()
 
     ranked_ids = [
         did for did, _n in sorted(mentions.items(), key=lambda x: x[1], reverse=True)[:limit]
@@ -3067,6 +3459,136 @@ def _build_outcome_note(*, case_law: list[dict], statute_materials: list[dict]) 
     if statute_materials and any(st.get("text_excerpt") for st in statute_materials):
         return "Tendenz auf Basis ähnlicher Entscheide und verfügbarer Normtexte; Ergebnis bleibt fallabhängig."
     return "Tendenz nur auf Basis caselaw-Ähnlichkeit; Normtexte konnten nicht vollständig geladen werden."
+
+
+def _format_citations_response(result: dict) -> str:
+    """Format find_citations result into markdown."""
+    if result.get("error"):
+        return result["error"]
+
+    did = result["decision_id"]
+    text = f"# Citations for {did}\n\n"
+
+    outgoing = result.get("outgoing", [])
+    if outgoing is not None:
+        text += f"## Outgoing ({len(outgoing)} \u2014 what this decision cites)\n"
+        if not outgoing:
+            text += "No outgoing citations found.\n"
+        for i, c in enumerate(outgoing, 1):
+            target_did = c.get("target_decision_id")
+            if target_did:
+                docket = c.get("docket_number") or target_did
+                date = c.get("decision_date") or ""
+                court = c.get("court") or ""
+                conf = c.get("confidence_score")
+                mentions = c.get("mention_count") or 1
+                conf_str = f" conf={conf:.2f}" if conf is not None else ""
+                text += (
+                    f"{i}. **{docket}** ({date}) [{court}]{conf_str} mentions={mentions}\n"
+                    f"   ID: {target_did}\n"
+                )
+            else:
+                ref = c.get("target_ref", "?")
+                ttype = c.get("target_type", "")
+                mentions = c.get("mention_count") or 1
+                text += f"{i}. {ref} (unresolved, type={ttype}) mentions={mentions}\n"
+        text += "\n"
+
+    incoming = result.get("incoming", [])
+    if incoming is not None:
+        text += f"## Incoming ({len(incoming)} \u2014 what cites this decision)\n"
+        if not incoming:
+            text += "No incoming citations found.\n"
+        for i, c in enumerate(incoming, 1):
+            src_did = c.get("source_decision_id", "?")
+            docket = c.get("docket_number") or src_did
+            date = c.get("decision_date") or ""
+            court = c.get("court") or ""
+            conf = c.get("confidence_score")
+            mentions = c.get("mention_count") or 1
+            conf_str = f" conf={conf:.2f}" if conf is not None else ""
+            text += (
+                f"{i}. **{docket}** ({date}) [{court}]{conf_str} mentions={mentions}\n"
+                f"   ID: {src_did}\n"
+            )
+
+    return text
+
+
+def _format_leading_cases_response(result: dict) -> str:
+    """Format find_leading_cases result into markdown."""
+    if result.get("error"):
+        return result["error"]
+
+    items = result.get("results", [])
+    total = result.get("total", 0)
+    law_code = result.get("law_code")
+    article = result.get("article")
+    query = result.get("query")
+
+    header_parts = []
+    if law_code and article:
+        header_parts.append(f"Art. {article} {law_code}")
+    if query:
+        header_parts.append(f'"{query}"')
+    header = " + ".join(header_parts) if header_parts else "all"
+
+    text = f"# Leading Cases ({header}, top {total} most-cited)\n\n"
+    if not items:
+        text += "No results found.\n"
+        return text
+
+    for i, r in enumerate(items, 1):
+        text += (
+            f"**{i}. {r['docket_number']}** ({r['decision_date']}) "
+            f"[{r['court']}] \u2014 **{r['citation_count']} citations**\n"
+        )
+        if r.get("regeste"):
+            text += f"   Regeste: {r['regeste']}\n"
+        if r.get("source_url"):
+            text += f"   URL: {r['source_url']}\n"
+        text += f"   ID: {r['decision_id']}\n\n"
+
+    return text
+
+
+def _format_trend_response(result: dict) -> str:
+    """Format analyze_legal_trend result into markdown."""
+    if result.get("error"):
+        return result["error"]
+
+    years = result.get("years", [])
+    total = result.get("total", 0)
+    law_code = result.get("law_code")
+    article = result.get("article")
+    query = result.get("query")
+
+    header_parts = []
+    if law_code and article:
+        header_parts.append(f"Art. {article} {law_code}")
+    if query:
+        header_parts.append(f'"{query}"')
+    header = " + ".join(header_parts) if header_parts else "all"
+
+    text = f"# Legal Trend Analysis\n"
+    text += f"**Filter:** {header}\n"
+    text += f"**Total:** {total:,} decisions\n\n"
+
+    if not years:
+        text += "No data found.\n"
+        return text
+
+    max_count = max(y["count"] for y in years)
+    bar_max = 40  # max bar width in chars
+
+    text += f"{'Year':<6} {'Count':>7}  Bar\n"
+    text += "-" * 60 + "\n"
+    for y in years:
+        bar_len = round(y["count"] / max_count * bar_max) if max_count > 0 else 0
+        bar = "\u2588" * bar_len
+        text += f"{y['year']:<6} {y['count']:>7,}  {bar}\n"
+
+    return text
 
 
 def _format_mock_decision_report(report: dict) -> str:
@@ -3713,6 +4235,119 @@ async def handle_list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            name="find_citations",
+            description=(
+                "Given a decision_id, show what it cites and what cites it. "
+                "Uses the reference graph database with 7.85M citation edges. "
+                "Returns resolved citations with confidence scores and unresolved references."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": "Decision ID (e.g., bger_6B_1_2025)",
+                    },
+                    "direction": {
+                        "type": "string",
+                        "description": "Citation direction: 'both' (default), 'outgoing', or 'incoming'",
+                        "enum": ["both", "outgoing", "incoming"],
+                        "default": "both",
+                    },
+                    "min_confidence": {
+                        "type": "number",
+                        "description": "Minimum confidence score for resolved citations (0-1, default 0.3)",
+                        "default": 0.3,
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Max citations per direction (default 50, max 200)",
+                        "default": 50,
+                    },
+                },
+                "required": ["decision_id"],
+            },
+        ),
+        Tool(
+            name="find_leading_cases",
+            description=(
+                "Find the most-cited decisions for a topic or statute. "
+                "Authority ranking based on citation graph. "
+                "Filter by statute (law_code + article), topic query, court, and date range."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Optional text query to filter by topic (FTS search)",
+                    },
+                    "law_code": {
+                        "type": "string",
+                        "description": "Optional law code (e.g., BV, OR, ZGB, EMRK, StGB)",
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": "Optional article number (requires law_code)",
+                    },
+                    "court": {
+                        "type": "string",
+                        "description": "Optional court filter (e.g., bger, bge, bvger)",
+                    },
+                    "date_from": {
+                        "type": "string",
+                        "description": "Optional start date (YYYY-MM-DD)",
+                    },
+                    "date_to": {
+                        "type": "string",
+                        "description": "Optional end date (YYYY-MM-DD)",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Max results (default 20, max 100)",
+                        "default": 20,
+                    },
+                },
+            },
+        ),
+        Tool(
+            name="analyze_legal_trend",
+            description=(
+                "Year-by-year decision counts showing jurisprudence evolution. "
+                "Use with a statute reference (law_code + article), a text query, or both. "
+                "Returns yearly counts with visual bar chart."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Optional text query (FTS search)",
+                    },
+                    "law_code": {
+                        "type": "string",
+                        "description": "Optional law code (e.g., BV, OR, EMRK). Requires article.",
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": "Article number (requires law_code)",
+                    },
+                    "court": {
+                        "type": "string",
+                        "description": "Optional court filter",
+                    },
+                    "date_from": {
+                        "type": "string",
+                        "description": "Optional start date (YYYY-MM-DD)",
+                    },
+                    "date_to": {
+                        "type": "string",
+                        "description": "Optional end date (YYYY-MM-DD)",
+                    },
+                },
+            },
+        ),
+        Tool(
             name="draft_mock_decision",
             description=(
                 "Build a research-only mock decision outline from user facts. "
@@ -3917,6 +4552,10 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 text += f"**PDF:** {result['pdf_url']}\n"
             if result.get("cited_decisions"):
                 text += f"\n**Citations:** {result['cited_decisions']}\n"
+            # Add citation graph counts
+            incoming, outgoing = _count_citations(result["decision_id"])
+            if incoming > 0 or outgoing > 0:
+                text += f"\n**Citation graph:** Cited by {incoming} decisions | Cites {outgoing} decisions\n"
             return [TextContent(type="text", text=text)]
 
         elif name == "list_courts":
@@ -3950,6 +4589,41 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 type="text",
                 text=summary + json.dumps(stats, indent=2, ensure_ascii=False),
             )]
+
+        elif name == "find_citations":
+            result = await asyncio.to_thread(
+                find_citations,
+                decision_id=arguments["decision_id"],
+                direction=arguments.get("direction", "both"),
+                min_confidence=float(arguments.get("min_confidence", 0.3)),
+                limit=int(arguments.get("limit", 50)),
+            )
+            return [TextContent(type="text", text=_format_citations_response(result))]
+
+        elif name == "find_leading_cases":
+            result = await asyncio.to_thread(
+                _find_leading_cases,
+                query=arguments.get("query"),
+                law_code=arguments.get("law_code"),
+                article=arguments.get("article"),
+                court=arguments.get("court"),
+                date_from=arguments.get("date_from"),
+                date_to=arguments.get("date_to"),
+                limit=int(arguments.get("limit", 20)),
+            )
+            return [TextContent(type="text", text=_format_leading_cases_response(result))]
+
+        elif name == "analyze_legal_trend":
+            result = await asyncio.to_thread(
+                analyze_legal_trend,
+                query=arguments.get("query"),
+                law_code=arguments.get("law_code"),
+                article=arguments.get("article"),
+                court=arguments.get("court"),
+                date_from=arguments.get("date_from"),
+                date_to=arguments.get("date_to"),
+            )
+            return [TextContent(type="text", text=_format_trend_response(result))]
 
         elif name == "draft_mock_decision":
             report = await asyncio.to_thread(
