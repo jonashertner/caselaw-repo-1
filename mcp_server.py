@@ -67,13 +67,13 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import TextContent, Tool
 
+# Add repo root to path so db_schema can be imported when run from any directory
+sys.path.insert(0, str(Path(__file__).parent))
+from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
+
 # Set to True when running with --remote (SSE transport).
 # Gates off update_database / check_update_status for remote clients.
 REMOTE_MODE = False
-
-# Add repo root to path so db_schema can be imported when run from any directory
-sys.path.insert(0, str(Path(__file__).parent))
-from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS
 
 logging.basicConfig(
     level=logging.INFO,
@@ -626,6 +626,11 @@ def _search_fts5_inner(
         try:
             docket_results = _search_by_docket(conn, fts_query, where, params, offset + limit)
             if docket_results:
+                if sort in ("date_desc", "date_asc"):
+                    reverse = sort == "date_desc"
+                    docket_results.sort(
+                        key=lambda r: r.get("decision_date") or "", reverse=reverse,
+                    )
                 total = len(docket_results)
                 return docket_results[offset:offset + limit], total
         except sqlite3.OperationalError as e:
@@ -746,6 +751,27 @@ def _search_fts5_inner(
             for did, meta in candidate_meta.items()
         }
         total_candidates = len(candidate_meta)
+        if inline_docket_results:
+            # When merging with docket results, get enough from reranker
+            # (offset+limit) and let merge handle final pagination.
+            reranked = _rerank_rows(
+                rows_for_rerank,
+                fts_query,
+                offset + limit,
+                fusion_scores=fusion_scores,
+                offset=0,
+                sort=sort,
+            )
+            merged = _merge_priority_results(
+                primary=inline_docket_results,
+                secondary=reranked,
+                limit=limit,
+                offset=offset,
+            )
+            # Total after dedup
+            all_ids = {r["decision_id"] for r in inline_docket_results}
+            all_ids.update(candidate_meta.keys())
+            return merged, len(all_ids)
         reranked = _rerank_rows(
             rows_for_rerank,
             fts_query,
@@ -754,14 +780,6 @@ def _search_fts5_inner(
             offset=offset,
             sort=sort,
         )
-        if inline_docket_results:
-            merged = _merge_priority_results(
-                primary=inline_docket_results,
-                secondary=reranked,
-                limit=limit,
-                offset=offset,
-            )
-            return merged, total_candidates + len(inline_docket_results)
         return reranked, total_candidates
 
     if had_success:

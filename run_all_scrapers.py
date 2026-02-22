@@ -208,7 +208,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "success": not failed,
             "new_count": new_count,
             "skip_count": skip_count,
-            "error_count": error_count - none_count,  # real errors only
+            "error_count": max(0, error_count - none_count),  # real errors only
             "none_count": none_count,
             "duration": duration,
             "error": error,
@@ -366,7 +366,7 @@ def main():
     total_elapsed = time.time() - total_start
     succeeded = sum(1 for r in results if r["success"] and not r.get("timed_out"))
     timed_out = sum(1 for r in results if r.get("timed_out"))
-    failed = sum(1 for r in results if not r["success"])
+    failed = sum(1 for r in results if not r["success"] and not r.get("timed_out"))
     total_new = sum(r["new_count"] for r in results)
 
     logger.info("\n=== Summary ===")
@@ -412,7 +412,7 @@ def main():
     # Post-run disk check
     disk_after = check_disk_usage()
     health["disk"] = disk_after
-    logger.info(f"\n  Disk usage after run:")
+    logger.info("\n  Disk usage after run:")
     for label, info in disk_after.items():
         logger.info(f"    {label}: {info['used_percent']}% ({info['free_gb']} GB free)")
 

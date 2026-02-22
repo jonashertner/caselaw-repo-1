@@ -387,9 +387,25 @@ def main():
     start = time.time()
     manual_step_mode = args.step is not None
 
+    # Steps 4 (HF upload) and 6 (git push) must not run if critical steps failed,
+    # because step 4 prunes remote parquet based on local state.
+    CRITICAL_STEPS = {1, 2, 3}
+    GUARDED_STEPS = {4, 6}
+
     for num, name, func in STEPS:
         if args.step is not None and str(args.step) != str(num):
             continue
+        # Skip guarded steps if a critical step failed (unless running single step)
+        if not manual_step_mode and num in GUARDED_STEPS:
+            critical_failed = any(
+                results.get(s) is False for s in CRITICAL_STEPS
+            )
+            if critical_failed:
+                results[num] = False
+                logger.warning(
+                    f"  Step {num} ({name}): SKIPPED — critical earlier step failed\n"
+                )
+                continue
         step_start = time.time()
         try:
             if num == 2:

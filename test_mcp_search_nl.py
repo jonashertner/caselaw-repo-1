@@ -137,17 +137,17 @@ def nl_test_db(tmp_path: Path, monkeypatch):
 
 
 def test_search_handles_colon_without_error(nl_test_db):
-    results = mcp_server.search_fts5("Asyl: Wegweisung?", limit=5)
+    results, _ = mcp_server.search_fts5("Asyl: Wegweisung?", limit=5)
     assert any(r["decision_id"] == "d_asyl" for r in results)
 
 
 def test_search_handles_unmatched_quote_without_error(nl_test_db):
-    results = mcp_server.search_fts5('"Asyl und Wegweisung', limit=5)
+    results, _ = mcp_server.search_fts5('"Asyl und Wegweisung', limit=5)
     assert any(r["decision_id"] == "d_asyl" for r in results)
 
 
 def test_search_handles_natural_language_french_prompt(nl_test_db):
-    results = mcp_server.search_fts5(
+    results, _ = mcp_server.search_fts5(
         "Je cherche un arret sur le permis de construire d'un parc eolien",
         limit=5,
     )
@@ -155,12 +155,12 @@ def test_search_handles_natural_language_french_prompt(nl_test_db):
 
 
 def test_search_uses_legal_synonym_expansion_cross_lingual(nl_test_db):
-    results = mcp_server.search_fts5("asile renvoi", limit=5)
+    results, _ = mcp_server.search_fts5("asile renvoi", limit=5)
     assert any(r["decision_id"] == "d_asyl" for r in results)
 
 
 def test_search_handles_legal_natural_language_prompt(nl_test_db):
-    results = mcp_server.search_fts5(
+    results, _ = mcp_server.search_fts5(
         "Art. 8 EMRK Umwandlung des Status der vorlaeufigen Aufnahme",
         limit=5,
     )
@@ -168,7 +168,7 @@ def test_search_handles_legal_natural_language_prompt(nl_test_db):
 
 
 def test_search_handles_legal_natural_language_with_umlaut_prompt(nl_test_db):
-    results = mcp_server.search_fts5(
+    results, _ = mcp_server.search_fts5(
         "Art. 8 EMRK Umwandlung des Status der vorläufigen Aufnahme",
         limit=5,
     )
@@ -176,7 +176,7 @@ def test_search_handles_legal_natural_language_with_umlaut_prompt(nl_test_db):
 
 
 def test_search_result_shape_is_stable_on_fallback(nl_test_db):
-    results = mcp_server.search_fts5("Asyl: Wegweisung?", limit=1)
+    results, _ = mcp_server.search_fts5("Asyl: Wegweisung?", limit=1)
     assert results
     row = results[0]
     assert "relevance_score" in row
@@ -184,24 +184,24 @@ def test_search_result_shape_is_stable_on_fallback(nl_test_db):
 
 
 def test_explicit_boolean_query_still_works(nl_test_db):
-    results = mcp_server.search_fts5("regeste:Asyl AND regeste:Wegweisung", limit=5)
+    results, _ = mcp_server.search_fts5("regeste:Asyl AND regeste:Wegweisung", limit=5)
     assert any(r["decision_id"] == "d_asyl" for r in results)
 
 
 def test_reranker_prefers_title_regeste_over_fulltext_noise(nl_test_db):
-    results = mcp_server.search_fts5("Asyl Wegweisung beschleunigtes Verfahren", limit=3)
+    results, _ = mcp_server.search_fts5("Asyl Wegweisung beschleunigtes Verfahren", limit=3)
     assert results
     assert results[0]["decision_id"] == "d_asyl"
 
 
 def test_reranker_boosts_exact_docket_match(nl_test_db):
-    results = mcp_server.search_fts5("1A.122/2005", limit=3)
+    results, _ = mcp_server.search_fts5("1A.122/2005", limit=3)
     assert results
     assert results[0]["decision_id"] == "d_fr"
 
 
 def test_reranker_normalizes_diacritics_for_french_query(nl_test_db):
-    results = mcp_server.search_fts5(
+    results, _ = mcp_server.search_fts5(
         "Je cherche un arrêt sur le permis de construire d'un parc éolien",
         limit=3,
     )
@@ -214,7 +214,7 @@ def test_search_merges_inline_docket_chain_results(nl_test_db):
         "ZB.2016.28 (13.04.2017 / Rückweisung 23.08.2018) – "
         "Herabsetzung des Mietzinses (BGer 4A_291/2017)"
     )
-    results = mcp_server.search_fts5(query, limit=10)
+    results, _ = mcp_server.search_fts5(query, limit=10)
     ids = [r["decision_id"] for r in results]
     assert "d_bs_first" in ids
     assert "d_bs_second" in ids
@@ -222,7 +222,7 @@ def test_search_merges_inline_docket_chain_results(nl_test_db):
 
 
 def test_search_prefers_bger_duplicate_when_query_mentions_bger(nl_test_db):
-    results = mcp_server.search_fts5("BGer 4A_291/2017", limit=5)
+    results, _ = mcp_server.search_fts5("BGer 4A_291/2017", limit=5)
     ids = [r["decision_id"] for r in results]
     assert "d_bger_remand" in ids
     assert "d_ge_dup" in ids

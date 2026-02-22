@@ -44,11 +44,11 @@ def test_draft_mock_decision_includes_cases_and_statutes(monkeypatch):
     def _fake_search(query: str, **_kwargs):
         q = (query or "").lower()
         if "art. 3 asylg" in q:
-            return [_decision("d_statute", docket="E-7414/2015", court="bvger", score=8.2)]
+            return [_decision("d_statute", docket="E-7414/2015", court="bvger", score=8.2)], 1
         return [
             _decision("d_main", docket="D-7801/2024", court="bvger", score=8.5),
             _decision("d_alt", docket="2C_186/2025", court="bger", score=6.8),
-        ]
+        ], 2
 
     monkeypatch.setattr(mcp_server, "search_fts5", _fake_search)
     monkeypatch.setattr(
@@ -86,7 +86,7 @@ def test_draft_mock_decision_includes_cases_and_statutes(monkeypatch):
 
 
 def test_draft_mock_decision_reaches_conclusion_after_clarifications(monkeypatch):
-    monkeypatch.setattr(mcp_server, "search_fts5", lambda **_kwargs: [_decision("d_main")])
+    monkeypatch.setattr(mcp_server, "search_fts5", lambda **_kwargs: ([_decision("d_main")], 1))
     monkeypatch.setattr(mcp_server, "_search_graph_decisions_for_statutes", lambda **_kwargs: [])
     monkeypatch.setattr(mcp_server, "_resolve_statute_materials", lambda **_kwargs: [])
 

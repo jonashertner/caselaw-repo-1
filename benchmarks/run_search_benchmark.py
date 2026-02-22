@@ -352,7 +352,7 @@ def main() -> int:
             continue
 
         start = time.perf_counter()
-        results = mcp_server.search_fts5(query=query, limit=k)
+        results, _total = mcp_server.search_fts5(query=query, limit=k)
         latency_ms = (time.perf_counter() - start) * 1000.0
         latencies_ms.append(latency_ms)
 
