@@ -302,3 +302,31 @@ def test_build_vectors_from_jsonl(tmp_path):
     assert stats["skipped_dupe"] == 0
     assert db_path.exists()
     assert stats["db_path"] == str(db_path)
+
+
+# ---------------------------------------------------------------------------
+# Task 10: Semantic proximity integration test
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.live
+def test_semantic_finds_related_concept():
+    """'Hundebiss' should be semantically closer to 'Tierhalterhaftung' than to 'Mietvertrag'."""
+    import numpy as np
+
+    model = load_model()
+    texts = [
+        "Hundebiss",                           # query
+        "Tierhalterhaftung Art. 56 OR",        # semantically related
+        "Mietvertrag Kündigung",               # unrelated
+    ]
+    embs = encode_texts(model, texts)
+
+    # Embeddings are L2-normalized, dot product = cosine similarity
+    sim_related = float(np.dot(embs[0], embs[1]))
+    sim_unrelated = float(np.dot(embs[0], embs[2]))
+
+    assert sim_related > sim_unrelated, (
+        f"'Hundebiss' should be closer to 'Tierhalterhaftung' ({sim_related:.3f}) "
+        f"than to 'Mietvertrag' ({sim_unrelated:.3f})"
+    )
