@@ -518,7 +518,7 @@ def _iter_rows_from_jsonl(input_dir: Path) -> Iterator[dict]:
                 try:
                     yield json.loads(line)
                 except json.JSONDecodeError:
-                    logger.warning("Skipping bad JSON at %s:%d", jsonl_path.name, line_no)
+                    print(f"  WARNING: Skipping bad JSON at {jsonl_path.name}:{line_no}", file=sys.stderr)
 
 
 def _iter_rows_from_db(*, source_db: Path, courts: list[str] | None) -> Iterator[dict]:
