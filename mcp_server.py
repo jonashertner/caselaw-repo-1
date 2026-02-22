@@ -3621,7 +3621,7 @@ async def handle_list_tools() -> list[Tool]:
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Max results (default 50, max 2000). For filter-only queries (empty query), max 10000.",
+                        "description": "Max results to return (max 2000). Omit to use default of 50. Do not set low values like 5 or 10 unless the user explicitly asked for fewer results.",
                         "default": 50,
                     },
                     "offset": {
