@@ -141,6 +141,31 @@ VECTOR_WEIGHT = float(os.environ.get("SWISS_CASELAW_VECTOR_WEIGHT", "1.0"))
 VECTOR_K = int(os.environ.get("SWISS_CASELAW_VECTOR_K", "50"))
 VECTOR_SIGNAL_WEIGHT = float(os.environ.get("SWISS_CASELAW_VECTOR_SIGNAL_WEIGHT", "3.0"))
 
+# ── Sparse search ────────────────────────────────────────────
+SPARSE_SEARCH_ENABLED = os.environ.get("SPARSE_SEARCH_ENABLED", "auto").lower()
+SPARSE_SIGNAL_WEIGHT = float(os.environ.get("SWISS_CASELAW_SPARSE_SIGNAL_WEIGHT", "2.5"))
+SPARSE_RRF_WEIGHT = float(os.environ.get("SWISS_CASELAW_SPARSE_RRF_WEIGHT", "1.2"))
+SPARSE_K = int(os.environ.get("SWISS_CASELAW_SPARSE_K", "100"))
+
+# ── LLM query expansion ───────────────────────────────────────
+LLM_EXPANSION_ENABLED = os.environ.get("LLM_EXPANSION_ENABLED", "true").lower() in {
+    "1", "true", "yes",
+}
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+LLM_EXPANSION_TIMEOUT = float(os.environ.get("LLM_EXPANSION_TIMEOUT", "2.0"))
+
+EXPANSION_SYSTEM_PROMPT = (
+    "You are a Swiss legal search assistant. Given a user's search query about "
+    "Swiss law, output 3-6 additional search terms that would help find relevant "
+    "court decisions. Include:\n"
+    "- German/French/Italian equivalents (Swiss legal terminology)\n"
+    "- Related legal doctrines and article references (e.g. Art. 56 OR)\n"
+    "- Broader/narrower legal concepts\n"
+    "Output ONLY the terms, one per line, no numbering or explanation."
+)
+
+_LLM_EXPANSION_CACHE: dict[str, list[str]] = {}
+
 FEDLEX_CACHE_PATH = Path(
     os.environ.get("SWISS_CASELAW_FEDLEX_CACHE", str(DATA_DIR / "fedlex_cache.json"))
 )
@@ -462,6 +487,57 @@ _VECTOR_MODEL = None
 _VECTOR_MODEL_FAILED = False
 
 
+# ── LLM query expansion function ─────────────────────────────
+
+
+def _expand_query_with_llm(query: str) -> list[str]:
+    """Expand a search query using Claude Haiku for legal synonym/cross-lingual terms.
+
+    Returns additional search terms, or empty list on failure/timeout/disabled.
+    Results are cached in-memory for the lifetime of the process.
+    Called from search_fts5 which runs in asyncio.to_thread, so sync HTTP is fine.
+    """
+    if not LLM_EXPANSION_ENABLED or not ANTHROPIC_API_KEY:
+        return []
+
+    cache_key = query.strip().lower()
+    if cache_key in _LLM_EXPANSION_CACHE:
+        return _LLM_EXPANSION_CACHE[cache_key]
+
+    try:
+        import httpx
+    except ImportError:
+        logger.debug("httpx not installed, skipping LLM expansion")
+        return []
+
+    try:
+        with httpx.Client(timeout=LLM_EXPANSION_TIMEOUT) as client:
+            resp = client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-haiku-4-5-20251001",
+                    "max_tokens": 150,
+                    "system": EXPANSION_SYSTEM_PROMPT,
+                    "messages": [{"role": "user", "content": query}],
+                },
+            )
+            resp.raise_for_status()
+            text = resp.json()["content"][0]["text"]
+            terms = [t.strip() for t in text.strip().split("\n") if t.strip()]
+            terms = terms[:6]
+            _LLM_EXPANSION_CACHE[cache_key] = terms
+            logger.debug("LLM expansion for %r: %s", query, terms)
+            return terms
+    except Exception as e:
+        logger.debug("LLM expansion failed for %r: %s", query, e)
+        return []
+
+
 # ── Database ──────────────────────────────────────────────────
 
 def get_db() -> sqlite3.Connection:
@@ -707,7 +783,7 @@ def _search_fts5_inner(
 
     had_success = False
     candidate_meta: dict[str, dict] = {}
-    strategies = _build_query_strategies(fts_query)
+    strategies, llm_terms = _build_query_strategies(fts_query)
     target_pool = _target_candidate_pool(
         limit=limit,
         offset=offset,
@@ -777,12 +853,31 @@ def _search_fts5_inner(
             break
 
     # ── Vector search (parallel candidate source) ──
+    # Augment vector query with LLM expansion terms for better semantic recall
     vector_scores: dict[str, float] = {}
+    sparse_scores: dict[str, float] = {}
     if not is_docket_query and not has_explicit_syntax:
+        vector_query = fts_query
+        if llm_terms:
+            vector_query = f"{fts_query} {' '.join(llm_terms)}"
         vector_scores = _search_vectors(
-            query=fts_query,
+            query=vector_query,
             language=language,
         )
+        # Merge chunk-level vector results (if vec_chunks table exists)
+        chunk_scores = _search_vectors_chunks(
+            query=vector_query,
+            language=language,
+        )
+        if chunk_scores:
+            for did, dist in chunk_scores.items():
+                if did not in vector_scores or dist < vector_scores[did]:
+                    vector_scores[did] = dist
+
+        # Sparse search (if sparse_terms table exists)
+        sparse_scores = _search_sparse(query=fts_query)
+
+        # Add vector-only candidates to the pool
         if vector_scores:
             vec_only_ids = set(vector_scores.keys()) - set(candidate_meta.keys())
             if vec_only_ids:
@@ -814,6 +909,38 @@ def _search_fts5_inner(
                     )
                     cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
 
+        # Add sparse-only candidates to the pool
+        if sparse_scores:
+            sparse_only_ids = set(sparse_scores.keys()) - set(candidate_meta.keys())
+            if sparse_only_ids:
+                ph = ",".join("?" for _ in sparse_only_ids)
+                sp_rows = conn.execute(
+                    f"""SELECT d.decision_id, d.court, d.canton, d.chamber,
+                           d.docket_number, d.decision_date, d.language,
+                           d.title, d.regeste, d.full_text AS full_text_raw,
+                           '' as snippet, d.source_url, d.pdf_url,
+                           0.0 as bm25_score
+                    FROM decisions d WHERE d.decision_id IN ({ph})""",
+                    list(sparse_only_ids),
+                ).fetchall()
+                for row in sp_rows:
+                    did = row["decision_id"]
+                    candidate_meta[did] = {
+                        "row": row,
+                        "best_bm25": 0.0,
+                        "rrf_score": 0.0,
+                        "strategy_hits": 0,
+                    }
+            for rank, (did, _score) in enumerate(
+                sorted(sparse_scores.items(), key=lambda x: -x[1]), start=1
+            ):
+                if did in candidate_meta:
+                    cm = candidate_meta[did]
+                    cm["rrf_score"] = float(cm["rrf_score"]) + (
+                        SPARSE_RRF_WEIGHT / (RRF_RANK_CONSTANT + rank)
+                    )
+                    cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
+
     if candidate_meta:
         rows_for_rerank = [m["row"] for m in candidate_meta.values()]
         fusion_scores = {
@@ -833,6 +960,7 @@ def _search_fts5_inner(
                 offset + limit,
                 fusion_scores=fusion_scores,
                 vector_scores=vector_scores,
+                sparse_scores=sparse_scores,
                 offset=0,
                 sort=sort,
             )
@@ -852,6 +980,7 @@ def _search_fts5_inner(
             limit,
             fusion_scores=fusion_scores,
             vector_scores=vector_scores,
+            sparse_scores=sparse_scores,
             offset=offset,
             sort=sort,
         )
@@ -1343,6 +1472,125 @@ def _search_vectors(
         vec_conn.close()
 
 
+def _search_vectors_chunks(
+    query: str,
+    language: str | None = None,
+    k: int | None = None,
+) -> dict[str, float]:
+    """KNN search at chunk level, aggregated to decision level (min distance).
+
+    Falls back silently to empty dict if vec_chunks table doesn't exist.
+    """
+    model = _get_vector_model()
+    if model is None:
+        return {}
+    vec_conn = _get_vec_conn()
+    if vec_conn is None:
+        return {}
+    k = k or VECTOR_K * 3  # more results since multiple chunks per decision
+
+    try:
+        if not _sqlite_has_table(vec_conn, "vec_chunks"):
+            return {}
+
+        embedding = model.encode(
+            [query],
+            show_progress_bar=False,
+            convert_to_numpy=True,
+            normalize_embeddings=True,
+        )[0]
+        import struct as _struct
+        query_bytes = _struct.pack(f"{len(embedding)}f", *embedding.tolist())
+
+        if language:
+            rows = vec_conn.execute(
+                "SELECT chunk_id, distance FROM vec_chunks "
+                "WHERE embedding MATCH ? AND k = ? AND language = ? "
+                "ORDER BY distance",
+                (query_bytes, k, language),
+            ).fetchall()
+        else:
+            rows = vec_conn.execute(
+                "SELECT chunk_id, distance FROM vec_chunks "
+                "WHERE embedding MATCH ? AND k = ? "
+                "ORDER BY distance",
+                (query_bytes, k),
+            ).fetchall()
+
+        # Aggregate: best (min distance) chunk per decision
+        decision_scores: dict[str, float] = {}
+        for chunk_id, distance in rows:
+            decision_id = chunk_id.rsplit("__chunk_", 1)[0]
+            if decision_id not in decision_scores or distance < decision_scores[decision_id]:
+                decision_scores[decision_id] = distance
+
+        return decision_scores
+    except Exception as e:
+        logger.debug("Chunk vector search failed: %s", e)
+        return {}
+    finally:
+        vec_conn.close()
+
+
+def _search_sparse(
+    query: str,
+    k: int | None = None,
+) -> dict[str, float]:
+    """Sparse retrieval using learned lexical weights from BGE-M3.
+
+    Tokenizes the query, looks up the inverted index, and sums matching
+    token weights per document. Returns {decision_id: score} or empty dict.
+    """
+    if SPARSE_SEARCH_ENABLED in {"0", "false", "no"}:
+        return {}
+    vec_conn = _get_vec_conn()
+    if vec_conn is None:
+        return {}
+    k = k or SPARSE_K
+
+    try:
+        if not _sqlite_has_table(vec_conn, "sparse_terms"):
+            return {}
+
+        # Tokenize query using the model's tokenizer
+        model = _get_vector_model()
+        if model is None:
+            return {}
+
+        # Get tokenizer from model (SentenceTransformer or BGEM3FlagModel)
+        tokenizer = getattr(model, "tokenizer", None)
+        if tokenizer is None:
+            # SentenceTransformer: try model[0].tokenizer (Transformer module)
+            try:
+                tokenizer = model[0].tokenizer
+            except (IndexError, TypeError, AttributeError):
+                pass
+        if tokenizer is None:
+            logger.debug("Cannot access tokenizer for sparse search")
+            return {}
+
+        tokens = tokenizer(query, return_tensors="pt")["input_ids"][0]
+        # Skip special tokens (CLS=101, SEP=102, PAD=0)
+        token_ids = [int(t) for t in tokens if int(t) not in (0, 1, 2, 101, 102)]
+
+        if not token_ids:
+            return {}
+
+        placeholders = ",".join("?" * len(token_ids))
+        rows = vec_conn.execute(
+            f"SELECT decision_id, SUM(weight) as score FROM sparse_terms "
+            f"WHERE token_id IN ({placeholders}) "
+            f"GROUP BY decision_id ORDER BY score DESC LIMIT ?",
+            (*token_ids, k),
+        ).fetchall()
+        return {row[0]: row[1] for row in rows}
+    except Exception as e:
+        logger.debug("Sparse search failed: %s", e)
+        return {}
+    finally:
+        vec_conn.close()
+
+
 def _sqlite_has_table(conn: sqlite3.Connection, table: str) -> bool:
     row = conn.execute(
         "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
@@ -1635,6 +1883,7 @@ def _rerank_rows(
     *,
     fusion_scores: dict[str, dict] | None = None,
     vector_scores: dict[str, float] | None = None,
+    sparse_scores: dict[str, float] | None = None,
     offset: int = 0,
     sort: str | None = None,
 ) -> list[dict]:
@@ -1765,6 +2014,15 @@ def _rerank_rows(
             if vec_dist is not None:
                 vector_signal = VECTOR_SIGNAL_WEIGHT * max(0.0, 1.0 - vec_dist)
 
+        # Sparse (learned lexical) signal
+        sparse_signal = 0.0
+        if sparse_scores:
+            sp_score = sparse_scores.get(decision_id)
+            if sp_score is not None:
+                # Normalize: cap at reasonable max and scale
+                max_sparse = max(sparse_scores.values()) if sparse_scores else 1.0
+                sparse_signal = SPARSE_SIGNAL_WEIGHT * min(1.0, sp_score / max(max_sparse, 0.01))
+
         signal = (
             6.0 * docket_exact
             + 2.0 * docket_partial
@@ -1785,6 +2043,7 @@ def _rerank_rows(
             + procedure_signal
             + language_signal
             + vector_signal
+            + sparse_signal
         )
         final_score = bm25_component + signal
 
@@ -1826,12 +2085,15 @@ def _rerank_rows(
     return results
 
 
-def _build_query_strategies(raw_query: str) -> list[dict]:
+def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
     """
     Build parser-safe FTS query strategies.
 
     For explicit FTS syntax, preserve raw query first.
     For natural language, prefer tokenized OR query first for robustness.
+
+    Returns (strategies, llm_terms) where llm_terms are the raw LLM expansion
+    terms (for use in vector search augmentation).
     """
     raw = raw_query.strip()
     has_explicit_syntax = _has_explicit_fts_syntax(raw)
@@ -1875,6 +2137,30 @@ def _build_query_strategies(raw_query: str) -> list[dict]:
         if _should_try_raw_fallback(raw):
             candidates.append({"name": "raw_fallback", "query": raw, "weight": 0.65})
 
+    # LLM expansion: fetch additional terms (runs in thread via asyncio.to_thread)
+    llm_terms = _expand_query_with_llm(raw)
+    if llm_terms:
+        llm_or_parts: list[str] = []
+        for term in llm_terms:
+            words = term.strip().split()
+            if len(words) == 1:
+                norm = _normalize_token_for_fts(term)
+                if norm:
+                    llm_or_parts.append(norm)
+            else:
+                # Multi-word: normalize each word, join as quoted phrase
+                normed = [
+                    _normalize_token_for_fts(w)
+                    for w in words if _normalize_token_for_fts(w)
+                ]
+                if len(normed) >= 2:
+                    llm_or_parts.append(f'"{" ".join(normed)}"')
+                elif normed:
+                    llm_or_parts.append(normed[0])
+        if llm_or_parts:
+            llm_or_query = " OR ".join(llm_or_parts)
+            candidates.append({"name": "llm_expanded", "query": llm_or_query, "weight": 0.9})
+
     # Dedupe while preserving order
     seen: set[str] = set()
     strategies: list[dict] = []
@@ -1887,7 +2173,7 @@ def _build_query_strategies(raw_query: str) -> list[dict]:
                 "weight": float(candidate.get("weight", 1.0)),
             })
             seen.add(q)
-    return strategies
+    return strategies, llm_terms
 
 
 def _has_explicit_fts_syntax(query: str) -> bool:

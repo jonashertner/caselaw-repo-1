@@ -10,7 +10,11 @@ from search_stack.build_vectors import (
     EMBEDDING_DIM,
     ENCODE_BATCH_SIZE,
     ENCODE_MAX_LENGTH,
+    SPARSE_TABLES_SQL,
+    SPARSE_WEIGHT_THRESHOLD,
     VEC_TABLE_SQL,
+    VEC_CHUNKS_TABLE_SQL,
+    CHUNK_META_TABLE_SQL,
     _iter_rows_from_jsonl,
     _select_text,
     build_vectors,
@@ -81,6 +85,24 @@ def test_vec_table_sql_contains_key_clauses():
     assert "float[1024]" in VEC_TABLE_SQL
     assert "cosine" in VEC_TABLE_SQL
     assert "partition key" in VEC_TABLE_SQL
+
+
+def test_sparse_tables_sql():
+    """SPARSE_TABLES_SQL should define the sparse inverted index."""
+    assert "sparse_terms" in SPARSE_TABLES_SQL
+    assert "token_id" in SPARSE_TABLES_SQL
+    assert "weight" in SPARSE_TABLES_SQL
+    assert "idx_sparse_token" in SPARSE_TABLES_SQL
+
+
+def test_chunk_tables_sql():
+    """Chunk-level tables should be defined correctly."""
+    assert "vec_chunks" in VEC_CHUNKS_TABLE_SQL
+    assert "chunk_id" in VEC_CHUNKS_TABLE_SQL
+    assert "float[1024]" in VEC_CHUNKS_TABLE_SQL
+    assert "chunk_meta" in CHUNK_META_TABLE_SQL
+    assert "decision_id" in CHUNK_META_TABLE_SQL
+    assert "chunk_index" in CHUNK_META_TABLE_SQL
 
 
 def test_serialize_f32_round_trip():
@@ -184,6 +206,82 @@ def test_vec_db_language_partition(tmp_path):
     conn.close()
 
 
+@pytest.mark.live
+def test_vec_db_with_sparse(tmp_path):
+    """Create DB with sparse tables, verify they exist."""
+    db_path = str(tmp_path / "test_vec_sparse.db")
+    conn = create_vec_db(db_path, enable_sparse=True)
+
+    # Verify sparse_terms table exists
+    tables = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    ).fetchall()
+    table_names = {t[0] for t in tables}
+    assert "sparse_terms" in table_names
+
+    # Insert and verify sparse terms
+    conn.execute(
+        "INSERT INTO sparse_terms (decision_id, token_id, weight) VALUES (?, ?, ?)",
+        ("dec_a", 42, 0.5),
+    )
+    conn.execute(
+        "INSERT INTO sparse_terms (decision_id, token_id, weight) VALUES (?, ?, ?)",
+        ("dec_a", 100, 0.3),
+    )
+    conn.execute(
+        "INSERT INTO sparse_terms (decision_id, token_id, weight) VALUES (?, ?, ?)",
+        ("dec_b", 42, 0.8),
+    )
+    conn.commit()
+
+    # Query: find documents matching token_id=42
+    rows = conn.execute(
+        "SELECT decision_id, SUM(weight) as score FROM sparse_terms "
+        "WHERE token_id = 42 GROUP BY decision_id ORDER BY score DESC"
+    ).fetchall()
+    assert len(rows) == 2
+    assert rows[0][0] == "dec_b"  # higher weight
+    assert rows[1][0] == "dec_a"
+
+    conn.close()
+
+
+@pytest.mark.live
+def test_vec_db_with_chunks(tmp_path):
+    """Create DB with chunk tables, verify they exist and work."""
+    db_path = str(tmp_path / "test_vec_chunks.db")
+    conn = create_vec_db(db_path, enable_chunks=True)
+
+    # Verify chunk tables exist
+    tables = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    ).fetchall()
+    table_names = {t[0] for t in tables}
+    assert "chunk_meta" in table_names
+
+    # Insert chunk metadata
+    conn.execute(
+        "INSERT INTO chunk_meta (chunk_id, decision_id, chunk_index) VALUES (?, ?, ?)",
+        ("dec_a__chunk_0", "dec_a", 0),
+    )
+    conn.execute(
+        "INSERT INTO chunk_meta (chunk_id, decision_id, chunk_index) VALUES (?, ?, ?)",
+        ("dec_a__chunk_1", "dec_a", 1),
+    )
+    conn.commit()
+
+    # Query: find chunks for a decision
+    rows = conn.execute(
+        "SELECT chunk_id, chunk_index FROM chunk_meta WHERE decision_id = ? ORDER BY chunk_index",
+        ("dec_a",),
+    ).fetchall()
+    assert len(rows) == 2
+    assert rows[0][0] == "dec_a__chunk_0"
+    assert rows[1][0] == "dec_a__chunk_1"
+
+    conn.close()
+
+
 # ---------------------------------------------------------------------------
 # Task 4: Constants for model loader
 # ---------------------------------------------------------------------------
@@ -198,6 +296,12 @@ def test_encode_constants():
     """ENCODE_MAX_LENGTH and ENCODE_BATCH_SIZE should have expected defaults."""
     assert ENCODE_MAX_LENGTH == 512
     assert ENCODE_BATCH_SIZE == 32
+
+
+def test_sparse_weight_threshold():
+    """SPARSE_WEIGHT_THRESHOLD should be a small positive float."""
+    assert SPARSE_WEIGHT_THRESHOLD > 0
+    assert SPARSE_WEIGHT_THRESHOLD < 0.1
 
 
 # ---------------------------------------------------------------------------
@@ -302,6 +406,46 @@ def test_build_vectors_from_jsonl(tmp_path):
     assert stats["skipped_dupe"] == 0
     assert db_path.exists()
     assert stats["db_path"] == str(db_path)
+
+
+@pytest.mark.live
+def test_build_vectors_with_chunks(tmp_path):
+    """Build vectors with chunk-level indexing enabled."""
+    input_dir = tmp_path / "decisions"
+    input_dir.mkdir()
+
+    rows = [
+        {
+            "decision_id": "dec_1",
+            "regeste": "Mietrecht: Kuendigung wegen Eigenbedarf nach Art. 271 OR.",
+            "full_text": (
+                "A. Sachverhalt\n\nDie Vermieterin kuendigte den Mietvertrag.\n\n"
+                "B. Erwaegungen\n\nDas Gericht pruefte die Eigenbedarfskuendigung.\n\n"
+                "C. Dispositiv\n\nDie Beschwerde wird abgewiesen."
+            ),
+            "language": "de",
+        },
+        {
+            "decision_id": "dec_2",
+            "regeste": None,
+            "full_text": "Kurzer Entscheid ohne Struktur.",
+            "language": "de",
+        },
+    ]
+    jsonl_file = input_dir / "test.jsonl"
+    jsonl_file.write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n",
+        encoding="utf-8",
+    )
+
+    db_path = tmp_path / "vectors.db"
+    stats = build_vectors(
+        input_dir=input_dir, db_path=db_path, enable_chunks=True,
+    )
+
+    assert stats["embedded"] == 2
+    assert stats["chunks_embedded"] > 0
+    assert db_path.exists()
 
 
 # ---------------------------------------------------------------------------
