@@ -38,7 +38,7 @@ EMBEDDING_DIM = 1024
 BGE_M3_MODEL_ID = "BAAI/bge-m3"
 """HuggingFace model identifier for the BGE-M3 multilingual embedding model."""
 
-ENCODE_MAX_LENGTH = 512
+ENCODE_MAX_LENGTH = 256
 """Maximum token length for input texts during encoding."""
 
 ENCODE_BATCH_SIZE = 32
@@ -363,12 +363,15 @@ def _insert_dense_batch(
     dense_vecs: np.ndarray,
 ) -> None:
     """Insert a batch of dense vectors into vec_decisions."""
-    for i in range(len(batch_ids)):
-        conn.execute(
-            "INSERT INTO vec_decisions (decision_id, embedding, language) "
-            "VALUES (?, ?, ?)",
-            (batch_ids[i], serialize_f32(dense_vecs[i].tolist()), batch_langs[i]),
-        )
+    rows = [
+        (batch_ids[i], serialize_f32(dense_vecs[i].tolist()), batch_langs[i])
+        for i in range(len(batch_ids))
+    ]
+    conn.executemany(
+        "INSERT INTO vec_decisions (decision_id, embedding, language) "
+        "VALUES (?, ?, ?)",
+        rows,
+    )
 
 
 def _insert_sparse_batch(
@@ -377,14 +380,18 @@ def _insert_sparse_batch(
     sparse_weights: list[dict[int, float]],
 ) -> None:
     """Insert sparse token weights for a batch into sparse_terms."""
+    rows = []
     for i in range(len(batch_ids)):
+        did = batch_ids[i]
         for token_id, weight in sparse_weights[i].items():
             if weight > SPARSE_WEIGHT_THRESHOLD:
-                conn.execute(
-                    "INSERT INTO sparse_terms (decision_id, token_id, weight) "
-                    "VALUES (?, ?, ?)",
-                    (batch_ids[i], int(token_id), float(weight)),
-                )
+                rows.append((did, int(token_id), float(weight)))
+    if rows:
+        conn.executemany(
+            "INSERT INTO sparse_terms (decision_id, token_id, weight) "
+            "VALUES (?, ?, ?)",
+            rows,
+        )
 
 
 def _insert_chunk_batch(
@@ -423,6 +430,8 @@ def build_vectors(
     limit: int | None = None,
     enable_sparse: bool = False,
     enable_chunks: bool = False,
+    shard_index: int | None = None,
+    num_shards: int | None = None,
 ) -> dict:
     """Build a sqlite-vec database of decision embeddings from JSONL files.
 
@@ -442,6 +451,9 @@ def build_vectors(
             using FlagEmbedding. Requires the FlagEmbedding package.
         enable_chunks: Enable chunk-level indexing. Splits full_text
             into sections and embeds each chunk separately.
+        shard_index: If set, only process decisions where
+            hash(decision_id) % num_shards == shard_index.
+        num_shards: Total number of shards for parallel builds.
 
     Returns:
         Stats dict with keys: ``db_path``, ``embedded``, ``skipped_no_text``,
@@ -454,6 +466,17 @@ def build_vectors(
     tmp_path = db_path.parent / f".{db_path.name}.tmp"
 
     use_flagembedding = enable_sparse
+
+    # Sharding: limit torch threads when running multiple workers
+    if num_shards and num_shards > 1:
+        import torch
+        cpu_count = os.cpu_count() or 16
+        threads_per_shard = max(1, cpu_count // num_shards)
+        torch.set_num_threads(threads_per_shard)
+        logger.info(
+            "Shard %d/%d: using %d PyTorch threads",
+            shard_index, num_shards, threads_per_shard,
+        )
 
     logger.info("Loading model %s (flagembedding=%s) ...", model_id, use_flagembedding)
     model = load_model(model_id, use_flagembedding=use_flagembedding)
@@ -559,6 +582,11 @@ def build_vectors(
             if not decision_id:
                 continue
 
+            # Shard filter: skip decisions not assigned to this shard
+            if num_shards and num_shards > 1 and shard_index is not None:
+                if hash(decision_id) % num_shards != shard_index:
+                    continue
+
             if decision_id in seen_ids:
                 skipped_dupe += 1
                 continue
@@ -596,11 +624,10 @@ def build_vectors(
                     chunk_batch_texts.append(ct)
                     chunk_batch_langs.append(language)
 
-                if len(chunk_batch_ids) >= batch_size:
-                    _flush_chunk_batch()
-
             if len(batch_ids) >= batch_size:
                 _flush_decision_batch()
+                # Flush accumulated chunks right after decisions
+                _flush_chunk_batch()
 
                 if embedded % 10000 == 0:
                     logger.info(
@@ -716,6 +743,18 @@ def main() -> None:
         help="Enable chunk-level indexing (embed decision sections separately)",
     )
     parser.add_argument(
+        "--shard-index",
+        type=int,
+        default=None,
+        help="Shard index (0-based) for parallel builds",
+    )
+    parser.add_argument(
+        "--num-shards",
+        type=int,
+        default=None,
+        help="Total number of shards for parallel builds",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -736,6 +775,8 @@ def main() -> None:
         limit=args.limit,
         enable_sparse=args.enable_sparse,
         enable_chunks=args.enable_chunks,
+        shard_index=args.shard_index,
+        num_shards=args.num_shards,
     )
     print(json.dumps(stats, indent=2, ensure_ascii=False))
 
