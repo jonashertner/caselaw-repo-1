@@ -127,7 +127,7 @@ CROSS_ENCODER_MODEL = os.environ.get(
 CROSS_ENCODER_TOP_N = max(1, int(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_TOP_N", "30")))
 CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT", "1.4"))
 
-GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", "output/reference_graph.db"))
+GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -135,7 +135,7 @@ GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower
 }
 
 # ── Vector search ─────────────────────────────────────────────
-VECTOR_DB_PATH = Path(os.environ.get("SWISS_CASELAW_VECTORS_DB", "output/vectors.db"))
+VECTOR_DB_PATH = Path(os.environ.get("SWISS_CASELAW_VECTORS_DB", str(DATA_DIR / "vectors.db")))
 VECTOR_SEARCH_ENABLED = os.environ.get("SWISS_CASELAW_VECTOR_SEARCH", "auto").lower()
 VECTOR_WEIGHT = float(os.environ.get("SWISS_CASELAW_VECTOR_WEIGHT", "1.0"))
 VECTOR_K = int(os.environ.get("SWISS_CASELAW_VECTOR_K", "50"))

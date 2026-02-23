@@ -252,6 +252,8 @@ def _configure_search_db(db_path: Path):
     mcp_server.DB_PATH = db_path
     mcp_server.DATA_DIR = db_path.parent
     mcp_server.PARQUET_DIR = db_path.parent / "parquet"
+    mcp_server.GRAPH_DB_PATH = db_path.parent / "reference_graph.db"
+    mcp_server.VECTOR_DB_PATH = db_path.parent / "vectors.db"
     return mcp_server
 
 
