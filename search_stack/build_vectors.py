@@ -304,6 +304,9 @@ def encode_texts_flag(
     texts: list[str],
     batch_size: int = ENCODE_BATCH_SIZE,
     max_length: int = ENCODE_MAX_LENGTH,
+    *,
+    sort_by_length: bool = False,
+    sub_batch_size: int = 32,
 ) -> tuple[np.ndarray, list[dict[int, float]]]:
     """Encode texts using FlagEmbedding, returning both dense and sparse outputs.
 
@@ -312,12 +315,37 @@ def encode_texts_flag(
         texts: List of text strings to encode.
         batch_size: Number of texts per encoding batch.
         max_length: Maximum token length for truncation.
+        sort_by_length: Sort texts by length and encode in sub-batches
+            to reduce padding waste. Results are returned in original order.
+        sub_batch_size: Size of sub-batches when sort_by_length is True.
 
     Returns:
         Tuple of (dense_embeddings, sparse_weights) where:
         - dense_embeddings: numpy array of shape (N, EMBEDDING_DIM)
         - sparse_weights: list of {token_id: weight} dicts
     """
+    if sort_by_length and len(texts) > sub_batch_size:
+        # Sort by text length, encode in sub-batches, unsort results
+        indexed = sorted(enumerate(texts), key=lambda x: len(x[1]))
+        all_dense = [None] * len(texts)
+        all_sparse = [None] * len(texts)
+        for i in range(0, len(indexed), sub_batch_size):
+            chunk = indexed[i : i + sub_batch_size]
+            chunk_texts = [t for _, t in chunk]
+            output = model.encode(
+                chunk_texts,
+                batch_size=len(chunk_texts),
+                max_length=max_length,
+                return_dense=True,
+                return_sparse=True,
+                return_colbert_vecs=False,
+            )
+            for j, (orig_idx, _) in enumerate(chunk):
+                all_dense[orig_idx] = output["dense_vecs"][j]
+                all_sparse[orig_idx] = output["lexical_weights"][j]
+        dense = np.asarray(all_dense, dtype=np.float32)
+        return dense, all_sparse
+
     output = model.encode(
         texts,
         batch_size=batch_size,
@@ -532,7 +560,8 @@ def build_vectors(
 
         if use_flagembedding:
             dense, sparse = encode_texts_flag(
-                model, batch_texts, batch_size=batch_size
+                model, batch_texts, batch_size=batch_size,
+                sort_by_length=use_int8, sub_batch_size=32,
             )
             _insert_dense_batch(conn, batch_ids, batch_langs, dense)
             if enable_sparse:
