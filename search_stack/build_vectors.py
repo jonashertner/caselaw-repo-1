@@ -214,7 +214,12 @@ def create_vec_db(
 # ---------------------------------------------------------------------------
 
 
-def load_model(model_id: str = BGE_M3_MODEL_ID, *, use_flagembedding: bool = False):
+def load_model(
+    model_id: str = BGE_M3_MODEL_ID,
+    *,
+    use_flagembedding: bool = False,
+    use_int8: bool = False,
+):
     """Load an embedding model.
 
     When use_flagembedding=True, loads BGEM3FlagModel from FlagEmbedding
@@ -224,6 +229,7 @@ def load_model(model_id: str = BGE_M3_MODEL_ID, *, use_flagembedding: bool = Fal
     Args:
         model_id: HuggingFace model identifier.
         use_flagembedding: Use FlagEmbedding library for sparse support.
+        use_int8: Apply int8 dynamic quantization for faster CPU inference.
 
     Returns:
         A model instance (BGEM3FlagModel or SentenceTransformer).
@@ -239,6 +245,11 @@ def load_model(model_id: str = BGE_M3_MODEL_ID, *, use_flagembedding: bool = Fal
         from FlagEmbedding import BGEM3FlagModel  # type: ignore[import-untyped]
 
         model = BGEM3FlagModel(model_id, use_fp16=False)
+        if use_int8:
+            model.model = torch.quantization.quantize_dynamic(
+                model.model, {torch.nn.Linear}, dtype=torch.qint8
+            )
+            logger.info("Applied int8 dynamic quantization")
         logger.info("Loaded %s with FlagEmbedding (sparse capable)", model_id)
         return model
 
@@ -432,6 +443,7 @@ def build_vectors(
     enable_chunks: bool = False,
     shard_index: int | None = None,
     num_shards: int | None = None,
+    use_int8: bool = False,
 ) -> dict:
     """Build a sqlite-vec database of decision embeddings from JSONL files.
 
@@ -478,8 +490,8 @@ def build_vectors(
             shard_index, num_shards, threads_per_shard,
         )
 
-    logger.info("Loading model %s (flagembedding=%s) ...", model_id, use_flagembedding)
-    model = load_model(model_id, use_flagembedding=use_flagembedding)
+    logger.info("Loading model %s (flagembedding=%s, int8=%s) ...", model_id, use_flagembedding, use_int8)
+    model = load_model(model_id, use_flagembedding=use_flagembedding, use_int8=use_int8)
 
     logger.info("Creating vec DB at %s", tmp_path)
     conn = create_vec_db(
@@ -743,6 +755,11 @@ def main() -> None:
         help="Enable chunk-level indexing (embed decision sections separately)",
     )
     parser.add_argument(
+        "--int8",
+        action="store_true",
+        help="Use int8 dynamic quantization for ~15x faster CPU inference",
+    )
+    parser.add_argument(
         "--shard-index",
         type=int,
         default=None,
@@ -777,6 +794,7 @@ def main() -> None:
         enable_chunks=args.enable_chunks,
         shard_index=args.shard_index,
         num_shards=args.num_shards,
+        use_int8=args.int8,
     )
     print(json.dumps(stats, indent=2, ensure_ascii=False))
 
