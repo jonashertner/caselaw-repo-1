@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from study.parser import Erwagung, ParsedDecision, parse_decision
+from study.parser import ParsedDecision, parse_decision
 
 
 # ── Minimal synthetic texts for unit tests ────────────────────

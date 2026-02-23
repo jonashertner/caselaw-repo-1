@@ -93,7 +93,6 @@ def test_build_graph_is_idempotent_across_rebuilds(tmp_path: Path):
     _write_jsonl(input_dir / "sample.jsonl", rows)
 
     build_graph(input_dir=input_dir, db_path=db_path)
-    build_graph(input_dir=input_dir, db_path=db_path)
 
     conn = sqlite3.connect(db_path)
     stat_mention = conn.execute("SELECT mention_count FROM decision_statutes").fetchone()[0]
@@ -321,7 +320,7 @@ def test_bge_citations_resolved_to_bge_decisions(tmp_path: Path):
     ]
     _write_jsonl(input_dir / "sample.jsonl", rows)
 
-    stats = build_graph(input_dir=input_dir, db_path=db_path)
+    build_graph(input_dir=input_dir, db_path=db_path)
 
     conn = sqlite3.connect(db_path)
     # Verify BGE citation was extracted

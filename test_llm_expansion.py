@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -12,7 +12,6 @@ from mcp_server import (
     _expand_query_with_llm,
     _build_query_strategies,
     _LLM_EXPANSION_CACHE,
-    _normalize_token_for_fts,
 )
 
 

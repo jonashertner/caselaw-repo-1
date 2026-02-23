@@ -32,7 +32,6 @@ def merge_shards(
     """
     from search_stack.build_vectors import (
         create_vec_db,
-        serialize_f32,
     )
 
     t0 = time.time()

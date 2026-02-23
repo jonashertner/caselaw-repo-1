@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 from study.curriculum_engine import (
-    CurriculumArea,
     CurriculumCase,
     find_case,
     list_areas,

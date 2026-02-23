@@ -7,14 +7,13 @@ then prints candidates for manual curation into curriculum JSON files.
 """
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
 # Add repo root to path so we can import mcp_server internals
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from mcp_server import _find_leading_cases, get_decision_by_id
+from mcp_server import _find_leading_cases
 
 
 QUERIES = [

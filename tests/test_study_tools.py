@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import json
-from unittest.mock import patch
 
 from study.socratic import build_study_package, build_brief_comparison
 

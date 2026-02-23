@@ -166,7 +166,6 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
         ).fetchall()
 
         # Keep the first (best), delete the rest
-        keep_id = rows[0][0]
         for row in rows[1:]:
             conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
             deleted += 1

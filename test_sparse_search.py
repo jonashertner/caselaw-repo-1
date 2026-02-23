@@ -2,15 +2,12 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
 
-import pytest
 
 import mcp_server
 from mcp_server import (
     _rerank_rows,
     SPARSE_SIGNAL_WEIGHT,
-    SPARSE_SEARCH_ENABLED,
 )
 
 

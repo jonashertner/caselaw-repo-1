@@ -1,15 +1,11 @@
 """Assemble study packages and brief comparison data for MCP tools."""
 from __future__ import annotations
 
-from dataclasses import asdict
 from typing import Any
 
-from study.parser import ParsedDecision, parse_decision
+from study.parser import parse_decision
 from study.curriculum_engine import (
     CurriculumCase,
-    find_case,
-    load_curriculum,
-    list_areas,
 )
 
 
