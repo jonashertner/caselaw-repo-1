@@ -23,7 +23,7 @@ def _row(decision_id: str, *, bm25: float, title: str = "", regeste: str = "", s
 
 
 def test_query_strategies_include_legal_expansion():
-    strategies = mcp_server._build_query_strategies("asile renvoi")
+    strategies, _ = mcp_server._build_query_strategies("asile renvoi")
     expanded = next(s for s in strategies if s["name"] == "nl_or_expanded")
     q = expanded["query"]
     assert "asyl" in q
@@ -31,7 +31,7 @@ def test_query_strategies_include_legal_expansion():
 
 
 def test_query_strategies_include_field_focus_queries():
-    strategies = mcp_server._build_query_strategies("Asyl und Wegweisung")
+    strategies, _ = mcp_server._build_query_strategies("Asyl und Wegweisung")
     names = {s["name"] for s in strategies}
     assert any(name.startswith("anchor_") for name in names)
     assert "regeste_focus" in names
@@ -53,7 +53,7 @@ def test_expand_rank_terms_for_match_uses_legal_expansions():
 
 
 def test_query_strategies_include_language_focus_when_detected():
-    strategies = mcp_server._build_query_strategies(
+    strategies, _ = mcp_server._build_query_strategies(
         "Je cherche un arrêt sur le permis de construire"
     )
     names = {s["name"] for s in strategies}
@@ -61,7 +61,7 @@ def test_query_strategies_include_language_focus_when_detected():
 
 
 def test_query_strategies_include_anchor_pair_for_windpark_query():
-    strategies = mcp_server._build_query_strategies(
+    strategies, _ = mcp_server._build_query_strategies(
         "Je cherche un arrêt sur le permis de construire d'un parc éolien"
     )
     anchor_queries = {

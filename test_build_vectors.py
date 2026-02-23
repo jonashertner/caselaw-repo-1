@@ -294,7 +294,7 @@ def test_bge_m3_model_id():
 
 def test_encode_constants():
     """ENCODE_MAX_LENGTH and ENCODE_BATCH_SIZE should have expected defaults."""
-    assert ENCODE_MAX_LENGTH == 512
+    assert ENCODE_MAX_LENGTH == 256
     assert ENCODE_BATCH_SIZE == 32
 
 
