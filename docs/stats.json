@@ -1802,7 +1802,7 @@
     "2026-01": 1858,
     "2026-02": 4279
   },
-  "generated_at": "2026-02-24T09:44:45.394031+00:00",
+  "generated_at": "2026-02-24T10:04:44.168185+00:00",
   "scraper_health": {
     "run_at": "2026-02-24T09:04:13.324553+00:00",
     "run_duration_s": 29051.5,
@@ -1920,18 +1920,18 @@
         "jsonl_mtime": "2026-02-24T02:58:07.968874+00:00"
       },
       "be_verwaltungsgericht": {
-        "success": false,
-        "timed_out": true,
+        "success": true,
+        "timed_out": false,
         "new_count": 1628,
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
         "duration_s": 7200.0,
-        "error": "Timed out after 7200s (still running)",
+        "error": null,
         "note": null,
-        "state_count": 3632,
-        "jsonl_size_mb": 131.3,
-        "jsonl_mtime": "2026-02-24T09:44:44.814554+00:00"
+        "state_count": 3917,
+        "jsonl_size_mb": 141.7,
+        "jsonl_mtime": "2026-02-24T10:04:40.867336+00:00"
       },
       "ag_gerichte": {
         "success": true,
@@ -2144,18 +2144,18 @@
         "jsonl_mtime": "2026-02-24T04:44:53.421328+00:00"
       },
       "fr_gerichte": {
-        "success": false,
-        "timed_out": true,
+        "success": true,
+        "timed_out": false,
         "new_count": 2608,
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
         "duration_s": 7200.0,
-        "error": "Timed out after 7200s (still running)",
+        "error": null,
         "note": null,
-        "state_count": 5763,
-        "jsonl_size_mb": 179.0,
-        "jsonl_mtime": "2026-02-24T09:44:44.465552+00:00"
+        "state_count": 6219,
+        "jsonl_size_mb": 192.2,
+        "jsonl_mtime": "2026-02-24T10:04:42.091342+00:00"
       },
       "ge_gerichte": {
         "success": true,
@@ -2459,6 +2459,6 @@
     "total": 0,
     "by_court": {},
     "by_canton": {},
-    "previous_generated_at": "2026-02-24T09:05:56.381116+00:00"
+    "previous_generated_at": "2026-02-24T09:44:45.394031+00:00"
   }
 }
