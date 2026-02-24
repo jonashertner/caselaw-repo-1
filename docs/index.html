@@ -206,29 +206,6 @@ header .sub {
   margin-top: 12px; margin-bottom: 40px; font-family: var(--f-mono);
 }
 
-/* ── News card ── */
-.news-card {
-  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
-  border-left: 3px solid var(--ac); padding: 20px 24px; box-shadow: var(--glow);
-  margin-bottom: 32px; transition: box-shadow 0.2s var(--ease);
-}
-.news-card:hover { box-shadow: var(--glow-hover); }
-.news-card h3 {
-  font-size: var(--fs-md); font-weight: 600; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 8px;
-}
-.news-card h3 .badge {
-  font-size: var(--fs-2xs); background: var(--ac); color: #fff;
-  border: none; padding: 2px 10px; line-height: 1.6;
-  border-radius: 100px; font-weight: 600; letter-spacing: 0.02em;
-}
-.news-items { list-style: none; padding: 0; margin: 0; }
-.news-items li {
-  font-size: var(--fs-sm); color: var(--tx2); padding: 6px 0; line-height: 1.5;
-}
-.news-items li + li { border-top: 1px solid var(--brd2); }
-.news-items li strong { color: var(--tx); }
-
 /* ── Health card (collapsible) ── */
 .health-card {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
@@ -258,45 +235,74 @@ header .sub {
   padding: 12px 20px 20px; border-top: 1px solid var(--brd2);
 }
 
-/* ── Quick Access strip ── */
-.quick-strip {
-  display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
-  margin-bottom: 56px;
-}
-.quick-card {
-  display: flex; align-items: flex-start; gap: 12px;
+/* ── Section cards (collapsible) ── */
+.section-card {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
-  padding: 16px; box-shadow: var(--glow);
-  transition: all 0.2s var(--ease);
-  text-decoration: none; color: var(--tx);
+  padding: 0; box-shadow: var(--glow); margin-bottom: 16px;
+  transition: box-shadow 0.2s var(--ease);
 }
-.quick-card:hover { border-color: var(--ac); text-decoration: none; box-shadow: 0 0 0 1px var(--ac), 0 4px 16px rgba(209,36,47,0.06); transform: translateY(-1px); }
-[data-theme="dark"] .quick-card:hover { box-shadow: 0 0 0 1px var(--ac), 0 4px 16px rgba(239,68,68,0.1); }
-.quick-card svg {
-  flex-shrink: 0; color: var(--ac);
-  background: rgba(209,36,47,0.07); border-radius: 8px; padding: 6px;
-  width: 32px; height: 32px;
+.section-card:hover { box-shadow: var(--glow-hover); }
+.section-summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px; cursor: pointer; list-style: none; user-select: none;
 }
-[data-theme="dark"] .quick-card svg { background: rgba(239,68,68,0.1); }
-.quick-card .qc-title { font-size: var(--fs-md); font-weight: 600; }
-.quick-card .qc-desc { font-size: var(--fs-sm); color: var(--tx2); margin-top: 2px; line-height: 1.4; }
-
-/* ── Sections ── */
-section { margin-bottom: 72px; }
-.sh { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--brd2); }
-.sh h2 { font-size: var(--fs-lg); font-weight: 600; letter-spacing: -0.01em; }
-.sh .badge {
+.section-summary::-webkit-details-marker { display: none; }
+.section-summary h2 {
+  font-size: var(--fs-lg); font-weight: 600; letter-spacing: -0.01em; margin: 0;
+}
+.section-summary .badge {
   font-family: var(--f-mono); font-size: var(--fs-2xs); font-weight: 500;
   color: var(--tx3); background: var(--bg2); border: 1px solid var(--brd2);
   border-radius: 100px; padding: 2px 10px; line-height: 1.6;
 }
-.sh .csv-btn {
-  margin-left: auto; font-size: var(--fs-2xs); font-weight: 500;
+.section-summary .csv-btn {
+  font-size: var(--fs-2xs); font-weight: 500;
   color: var(--tx3); background: var(--bg2); border: 1px solid var(--brd2);
   border-radius: var(--r-sm); padding: 4px 10px; cursor: pointer;
   transition: all 0.15s var(--ease); font-family: var(--f-sans);
 }
-.sh .csv-btn:hover { color: var(--tx2); border-color: var(--brd); }
+.section-summary .csv-btn:hover { color: var(--tx2); border-color: var(--brd); }
+.section-summary .chevron {
+  margin-left: auto; flex-shrink: 0; color: var(--tx3);
+  transition: transform 0.2s var(--ease);
+}
+.section-card[open] .chevron { transform: rotate(180deg); }
+.section-body {
+  padding: 0 20px 20px; border-top: 1px solid var(--brd2);
+}
+
+/* ── Hamburger & Mobile Menu ── */
+.hamburger {
+  display: none;
+  align-items: center; justify-content: center;
+  width: 32px; height: 32px; border: 1px solid var(--brd2);
+  border-radius: var(--r-sm); background: var(--bg2); color: var(--tx2);
+  cursor: pointer; transition: all 0.15s var(--ease);
+}
+.hamburger:hover { color: var(--tx); border-color: var(--brd); }
+.hamburger svg { width: 16px; height: 16px; }
+.mobile-menu {
+  position: fixed; top: 48px; left: 0; right: 0; z-index: 99;
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter: blur(16px) saturate(1.8); -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border-bottom: 1px solid transparent;
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.mobile-menu.open {
+  max-height: 400px;
+  border-bottom-color: var(--brd2);
+}
+.mobile-menu-inner { padding: 8px 24px 12px; }
+.mobile-menu a {
+  display: block; padding: 10px 0;
+  font-size: var(--fs-sm); font-weight: 500; color: var(--tx2);
+  text-decoration: none; border-bottom: 1px solid var(--brd2);
+  transition: color 0.15s var(--ease);
+}
+.mobile-menu a:last-child { border-bottom: none; }
+.mobile-menu a:hover, .mobile-menu a.active { color: var(--ac); text-decoration: none; }
+.section-nav a.active { color: var(--ac); background: var(--ac-bg); }
 
 /* ── Charts ── */
 .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
@@ -613,14 +619,15 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  .hamburger { display: flex; }
   .chart-row { grid-template-columns: 1fr; }
   .access-grid { grid-template-columns: 1fr; }
   .access-featured .setup-paths { grid-template-columns: 1fr; }
   .access-featured { padding: 18px 16px; }
-  .news-card { padding: 16px 18px; }
+  .section-summary { padding: 14px 16px; }
+  .section-body { padding: 0 16px 16px; }
   .health-card .health-summary { padding: 14px 16px; }
   .health-body { padding: 0 16px 16px; }
-  .quick-strip { grid-template-columns: 1fr; }
   .study-prompts ul { grid-template-columns: 1fr; }
   .study-card { padding: 18px 16px; }
   .kpis { gap: 40px; }
@@ -633,7 +640,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   header::before { width: 100%; }
   .kpis { gap: 36px; margin: 28px 0 4px; }
   .kpi-v { font-size: 1.75rem; }
-  section { margin-bottom: 48px; }
   .cg { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); }
   .tw { margin: 0 -16px; border-radius: 0; border-left: none; border-right: none; box-shadow: none; }
   .ct th, .ct td { padding: 8px 10px; }
@@ -664,8 +670,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   header h1 { font-size: 1.4rem; }
   .tree-hd { padding: 6px 10px; }
   .tree-court { padding: 5px 10px 5px 20px; }
-  .quick-card { padding: 12px; }
-  .quick-card .qc-desc { font-size: var(--fs-2xs); }
 }
 </style>
 </head>
@@ -683,22 +687,38 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
     <div class="section-nav" id="section-nav">
       <a href="#kpis" data-t="nav_overview">Overview</a>
-      <a href="#charts" data-t="nav_coverage">Coverage</a>
+      <a href="#sec-access" data-t="nav_access">Access</a>
+      <a href="#sec-coverage" data-t="nav_coverage">Coverage</a>
       <a href="#sec-fed" data-t="nav_federal">Federal</a>
       <a href="#sec-can" data-t="nav_cantonal">Cantonal</a>
       <a href="#sec-cantons" data-t="nav_cantons">Cantons</a>
       <a href="#sec-tree" data-t="nav_browse">Browse</a>
-      <a href="#sec-access" data-t="nav_access">Access</a>
       <a href="#sec-study" data-t="nav_study">Study</a>
     </div>
   </div>
   <div class="toolbar-right">
+    <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
     <button class="tbtn" id="theme-btn" aria-label="Toggle theme">
       <svg id="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg id="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
   </div>
 </div></nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mobile-menu-inner">
+    <a href="#kpis" data-t="nav_overview">Overview</a>
+    <a href="#sec-access" data-t="nav_access">Access</a>
+    <a href="#sec-coverage" data-t="nav_coverage">Coverage</a>
+    <a href="#sec-fed" data-t="nav_federal">Federal</a>
+    <a href="#sec-can" data-t="nav_cantonal">Cantonal</a>
+    <a href="#sec-cantons" data-t="nav_cantons">Cantons</a>
+    <a href="#sec-tree" data-t="nav_browse">Browse</a>
+    <a href="#sec-study" data-t="nav_study">Study</a>
+  </div>
+</div>
 
 <div class="w">
 
@@ -728,71 +748,150 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Last Updated -->
   <div class="updated-line hid" id="last-updated"></div>
 
-  <!-- News -->
-  <div class="news-card">
-    <h3><span data-t="news_title">Neuigkeiten</span></h3>
-    <ul class="news-items">
-      <li><strong data-t="news_item_1_title">Zitationsgraph</strong> — <span data-t="news_item_1_desc">7,85 Millionen Zitationsverbindungen zwischen Entscheiden — Leitentscheide finden, nachverfolgen wie Gerichte sich gegenseitig zitieren</span></li>
-      <li><strong data-t="news_item_2_title">Semantische Suche</strong> — <span data-t="news_item_2_desc">Nach Konzepten suchen, nicht nur Stichwörtern — verwandte Entscheide finden, auch wenn andere Begriffe verwendet werden</span></li>
-      <li><strong data-t="news_item_3_title">Suchindex-Upgrade</strong> — <span data-t="news_item_3_desc">Wir bauen den Datenbankindex neu auf, um die Suchqualität weiter zu verbessern</span></li>
-    </ul>
-  </div>
-
-  <!-- Quick Access -->
-  <div class="quick-strip" id="quick-strip">
-    <a class="quick-card" href="#sec-access">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <div><div class="qc-title" data-t="quick_search">Mit AI durchsuchen</div><div class="qc-desc" data-t="quick_search_desc">Fragen in natürlicher Sprache stellen — Einrichtung in 30 Sekunden</div></div>
-    </a>
-    <a class="quick-card" href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-      <div><div class="qc-title" data-t="quick_download">Download</div><div class="qc-desc" data-t="quick_download_desc">Kompletter Datensatz zum Download auf HuggingFace</div></div>
-    </a>
-    <a class="quick-card" href="https://huggingface.co/docs/datasets-server/">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-      <div><div class="qc-title" data-t="quick_api">API</div><div class="qc-desc" data-t="quick_api_desc">Den Datensatz programmatisch via REST API abfragen</div></div>
-    </a>
-  </div>
-
-  <!-- Charts -->
-  <div class="chart-row" id="charts">
-    <div class="chart-card">
-      <h3 data-t="chart_timeline">Decisions per Year</h3>
-      <div class="chart-canvas"><canvas id="c-timeline" height="220"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3 data-t="chart_languages">Language Distribution</h3>
-      <div class="lang-chart-wrap">
-        <div class="chart-canvas" style="max-width:180px"><canvas id="c-lang" height="180"></canvas></div>
-        <div class="lang-legend" id="lang-legend"></div>
+  <!-- Access the Data -->
+  <details class="section-card" id="sec-access" open>
+    <summary class="section-summary">
+      <h2 data-t="access">Access the Data</h2>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="section-body">
+      <!-- Featured: Search with AI -->
+      <div class="access-featured">
+        <h3>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 8l1.5 1.5M14.5 8l-1 1" stroke-linecap="round"/></svg>
+          <span data-t="access_featured_title">Search with AI</span>
+        </h3>
+        <p data-t="access_featured_desc">Über 1 Million Schweizer Gerichtsentscheide in natürlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.</p>
+        <div class="setup-paths">
+          <div class="setup-path">
+            <div class="setup-path-label"><span class="rec" data-t="access_remote_label">Remote (recommended)</span></div>
+            <div class="setup-steps"><span data-t="access_remote_desc">Instant, always current. No download needed.</span></div>
+            <div class="setup-steps" style="margin-top:10px">
+              <strong data-t="access_setup_desktop">Claude Desktop</strong><br>
+              <span style="color:var(--tx2);font-size:var(--fs-xs)">Settings → Connectors → Add →</span><br>
+              <code>https://mcp.opencaselaw.ch</code>
+            </div>
+            <div class="setup-steps" style="margin-top:10px">
+              <strong data-t="access_setup_code">Claude Code</strong>
+              <code>claude mcp add swiss-caselaw \
+  --transport sse \
+  https://mcp.opencaselaw.ch</code>
+            </div>
+            <div class="plan-note" data-t="access_plan_note">Desktop: Pro, Max, Team, or Enterprise. Code: any plan.</div>
+          </div>
+          <div class="setup-path">
+            <div class="setup-path-label" data-t="access_local_label">Local (offline)</div>
+            <div class="setup-steps"><span data-t="access_local_desc">Full control, works offline. ~65 GB disk, 30&ndash;60 min setup.</span></div>
+            <div class="setup-steps" style="margin-top:10px">
+              <span style="color:var(--tx2);font-size:var(--fs-xs)">Clone → install → register with Claude Code or Desktop</span><br>
+              <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-offline-access" style="font-size:var(--fs-xs)" data-t="access_local_setup">Full setup guide →</a>
+            </div>
+            <div class="setup-steps" style="margin-top:10px;font-size:var(--fs-xs);color:var(--tx3)" data-t="access_local_note">
+              Works with any MCP client. Local mode includes database update tools.
+            </div>
+          </div>
+        </div>
+        <div class="example-prompts">
+          <h5 data-t="examples_heading">Was nach der Verbindung möglich ist:</h5>
+          <ul class="prompt-list">
+            <li data-t="cap_search">Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept</li>
+            <li data-t="cap_lookup">Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten</li>
+            <li data-t="cap_stats">Statistiken und Abdeckung aller Bundes- und Kantonsgerichte einsehen</li>
+            <li data-t="cap_leading">Leitentscheide zu jedem Gesetz oder Rechtsgebiet finden, nach Zitationshäufigkeit geordnet</li>
+            <li data-t="cap_citations">Zitationsnetzwerke nachverfolgen — sehen, was ein Entscheid zitiert und was ihn zitiert</li>
+            <li data-t="cap_trends">Analysieren, wie sich die Rechtsprechung zu einem Thema über die Jahre entwickelt hat</li>
+            <li data-t="cap_research">Recherche-Notizen aus Sachverhalt erstellen — mit passender Rechtsprechung und Gesetzesartikeln</li>
+            <li data-t="cap_study">Leitentscheide interaktiv studieren mit geführten Übungen und Urteilsbesprechungen</li>
+          </ul>
+        </div>
+      </div>
+      <!-- Standard cards: 3-col -->
+      <div class="access-grid">
+        <div class="access-card">
+          <h3>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span data-t="quick_download">Download</span>
+          </h3>
+          <p data-t="access_hf_desc">Download the full dataset as Parquet files</p>
+          <code>from datasets import load_dataset
+ds = load_dataset("voilaj/swiss-caselaw")</code>
+        </div>
+        <div class="access-card">
+          <h3>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            REST API
+          </h3>
+          <p data-t="access_api_desc">Query via HuggingFace Datasets Server API</p>
+          <code>GET /rows?dataset=voilaj/swiss-caselaw
+  &config=default&split=train
+  &offset=0&length=10</code>
+        </div>
+        <div class="access-card">
+          <h3>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Web UI
+          </h3>
+          <p data-t="access_webui_desc">Local chat interface — ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).</p>
+          <code>git clone github.com/jonashertner/caselaw-repo-1
+cd caselaw-repo-1
+./scripts/run_web_local.sh</code>
+        </div>
       </div>
     </div>
-  </div>
+  </details>
+
+  <!-- Coverage (charts) -->
+  <details class="section-card" id="sec-coverage" open>
+    <summary class="section-summary">
+      <h2 data-t="nav_coverage">Coverage</h2>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="section-body">
+      <div class="chart-row" id="charts">
+        <div class="chart-card">
+          <h3 data-t="chart_timeline">Decisions per Year</h3>
+          <div class="chart-canvas"><canvas id="c-timeline" height="220"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3 data-t="chart_languages">Language Distribution</h3>
+          <div class="lang-chart-wrap">
+            <div class="chart-canvas" style="max-width:180px"><canvas id="c-lang" height="180"></canvas></div>
+            <div class="lang-legend" id="lang-legend"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </details>
 
   <!-- Federal courts -->
-  <section id="sec-fed" class="hid">
-    <div class="sh">
+  <details class="section-card hid" id="sec-fed">
+    <summary class="section-summary">
       <h2 data-t="federal">Federal Courts</h2>
       <span class="badge" id="fed-n"></span>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="section-body">
+      <div class="tw">
+        <table class="ct" id="t-fed"><thead><tr>
+          <th data-k="name" data-t="th_court">Court</th>
+          <th data-k="count" data-t="th_decisions">Decisions</th>
+          <th data-k="earliest" class="hide-m" data-t="th_since">Since</th>
+          <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
+          <th data-k="languages" data-t="th_languages">Languages</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
     </div>
-    <div class="tw">
-      <table class="ct" id="t-fed"><thead><tr>
-        <th data-k="name" data-t="th_court">Court</th>
-        <th data-k="count" data-t="th_decisions">Decisions</th>
-        <th data-k="earliest" class="hide-m" data-t="th_since">Since</th>
-        <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
-        <th data-k="languages" data-t="th_languages">Languages</th>
-      </tr></thead><tbody></tbody></table>
-    </div>
-  </section>
+  </details>
 
   <!-- Cantonal courts -->
-  <section id="sec-can" class="hid">
-    <div class="sh">
+  <details class="section-card hid" id="sec-can">
+    <summary class="section-summary">
       <h2 data-t="cantonal">Cantonal Courts</h2>
       <span class="badge" id="can-n"></span>
       <button class="csv-btn" id="csv-can" data-t="csv_export">CSV</button>
-    </div>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="section-body">
     <div class="table-search" id="can-search-wrap">
       <input type="text" id="can-search" data-t-placeholder="search_placeholder" placeholder="Search courts...">
       <span class="count" id="can-search-count"></span>
@@ -806,119 +905,39 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
       </tr></thead><tbody></tbody></table>
     </div>
-  </section>
+    </div>
+  </details>
 
   <!-- Canton grid -->
-  <section id="sec-cantons" class="hid">
-    <div class="sh"><h2 data-t="cantons">Cantons</h2></div>
-    <div class="cg" id="canton-grid"></div>
-  </section>
+  <details class="section-card hid" id="sec-cantons">
+    <summary class="section-summary">
+      <h2 data-t="cantons">Cantons</h2>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="section-body">
+      <div class="cg" id="canton-grid"></div>
+    </div>
+  </details>
 
   <!-- Tree browser -->
-  <section id="sec-tree" class="hid">
-    <div class="sh"><h2 data-t="browse">Browse</h2></div>
-    <div class="tree" id="tree-browser"></div>
-  </section>
-
-
-  <!-- Access -->
-  <section id="sec-access">
-    <div class="sh"><h2 data-t="access">Access the Data</h2></div>
-
-    <!-- Featured: Search with AI -->
-    <div class="access-featured">
-      <h3>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 8l1.5 1.5M14.5 8l-1 1" stroke-linecap="round"/></svg>
-        <span data-t="access_featured_title">Search with AI</span>
-      </h3>
-      <p data-t="access_featured_desc">Über 1 Million Schweizer Gerichtsentscheide in natürlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.</p>
-
-      <div class="setup-paths">
-        <div class="setup-path">
-          <div class="setup-path-label"><span class="rec" data-t="access_remote_label">Remote (recommended)</span></div>
-          <div class="setup-steps">
-            <span data-t="access_remote_desc">Instant, always current. No download needed.</span>
-          </div>
-          <div class="setup-steps" style="margin-top:10px">
-            <strong data-t="access_setup_desktop">Claude Desktop</strong><br>
-            <span style="color:var(--tx2);font-size:var(--fs-xs)">Settings → Connectors → Add →</span><br>
-            <code>https://mcp.opencaselaw.ch</code>
-          </div>
-          <div class="setup-steps" style="margin-top:10px">
-            <strong data-t="access_setup_code">Claude Code</strong>
-            <code>claude mcp add swiss-caselaw \
-  --transport sse \
-  https://mcp.opencaselaw.ch</code>
-          </div>
-          <div class="plan-note" data-t="access_plan_note">Desktop: Pro, Max, Team, or Enterprise. Code: any plan.</div>
-        </div>
-        <div class="setup-path">
-          <div class="setup-path-label" data-t="access_local_label">Local (offline)</div>
-          <div class="setup-steps">
-            <span data-t="access_local_desc">Full control, works offline. ~65 GB disk, 30&ndash;60 min setup.</span>
-          </div>
-          <div class="setup-steps" style="margin-top:10px">
-            <span style="color:var(--tx2);font-size:var(--fs-xs)">Clone → install → register with Claude Code or Desktop</span><br>
-            <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-offline-access" style="font-size:var(--fs-xs)" data-t="access_local_setup">Full setup guide →</a>
-          </div>
-          <div class="setup-steps" style="margin-top:10px;font-size:var(--fs-xs);color:var(--tx3)" data-t="access_local_note">
-            Works with any MCP client. Local mode includes database update tools.
-          </div>
-        </div>
-      </div>
-
-      <div class="example-prompts">
-        <h5 data-t="examples_heading">Was nach der Verbindung möglich ist:</h5>
-        <ul class="prompt-list">
-          <li data-t="cap_search">Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept</li>
-          <li data-t="cap_lookup">Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten</li>
-          <li data-t="cap_stats">Statistiken und Abdeckung aller Bundes- und Kantonsgerichte einsehen</li>
-          <li data-t="cap_leading">Leitentscheide zu jedem Gesetz oder Rechtsgebiet finden, nach Zitationshäufigkeit geordnet</li>
-          <li data-t="cap_citations">Zitationsnetzwerke nachverfolgen — sehen, was ein Entscheid zitiert und was ihn zitiert</li>
-          <li data-t="cap_trends">Analysieren, wie sich die Rechtsprechung zu einem Thema über die Jahre entwickelt hat</li>
-          <li data-t="cap_research">Recherche-Notizen aus Sachverhalt erstellen — mit passender Rechtsprechung und Gesetzesartikeln</li>
-          <li data-t="cap_study">Leitentscheide interaktiv studieren mit geführten Übungen und Urteilsbesprechungen</li>
-        </ul>
-      </div>
+  <details class="section-card hid" id="sec-tree">
+    <summary class="section-summary">
+      <h2 data-t="browse">Browse</h2>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="section-body">
+      <div class="tree" id="tree-browser"></div>
     </div>
-
-    <!-- Standard cards: 3-col -->
-    <div class="access-grid">
-      <div class="access-card">
-        <h3>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          <span data-t="quick_download">Download</span>
-        </h3>
-        <p data-t="access_hf_desc">Download the full dataset as Parquet files</p>
-        <code>from datasets import load_dataset
-ds = load_dataset("voilaj/swiss-caselaw")</code>
-      </div>
-      <div class="access-card">
-        <h3>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          REST API
-        </h3>
-        <p data-t="access_api_desc">Query via HuggingFace Datasets Server API</p>
-        <code>GET /rows?dataset=voilaj/swiss-caselaw
-  &config=default&split=train
-  &offset=0&length=10</code>
-      </div>
-      <div class="access-card">
-        <h3>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Web UI
-        </h3>
-        <p data-t="access_webui_desc">Local chat interface — ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).</p>
-        <code>git clone github.com/jonashertner/caselaw-repo-1
-cd caselaw-repo-1
-./scripts/run_web_local.sh</code>
-      </div>
-    </div>
-  </section>
+  </details>
 
   <!-- Study Guide -->
-  <section id="sec-study">
-    <div class="sh"><h2 data-t="study_title">Study Swiss Law</h2> <span class="badge">44 BGE</span></div>
+  <details class="section-card" id="sec-study">
+    <summary class="section-summary">
+      <h2 data-t="study_title">Study Swiss Law</h2>
+      <span class="badge">44 BGE</span>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="section-body">
     <div class="study-card">
       <h3>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -987,7 +1006,8 @@ cd caselaw-repo-1
         <span class="study-area-tag">Familienrecht</span>
       </div>
     </div>
-  </section>
+    </div>
+  </details>
 
   <!-- Scraper Health (collapsible) -->
   <details class="health-card hid" id="sec-health">
@@ -1091,7 +1111,6 @@ const I18N = {
     study_p5:'Was wäre, wenn der Schädiger nicht widerrechtlich gehandelt hätte?',
     study_p6:'Repetitionskarten für die Voraussetzungen der Geschäftsführung ohne Auftrag',
     hero_mcp:'Mit AI durchsuchen',
-    news_title:'Neuigkeiten', news_item_1_title:'Zitationsgraph', news_item_1_desc:'7,85 Millionen Zitationsverbindungen zwischen Entscheiden — Leitentscheide finden, nachverfolgen wie Gerichte sich gegenseitig zitieren', news_item_2_title:'Semantische Suche', news_item_2_desc:'Nach Konzepten suchen, nicht nur Stichwörtern — verwandte Entscheide finden, auch wenn andere Begriffe verwendet werden', news_item_3_title:'Suchindex-Upgrade', news_item_3_desc:'Wir bauen den Datenbankindex neu auf, um die Suchqualität weiter zu verbessern',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
@@ -1156,7 +1175,6 @@ const I18N = {
     study_p5:'Et si l\'auteur n\'avait pas agi de manière illicite?',
     study_p6:'Cartes de révision sur les conditions de la gestion d\'affaires sans mandat',
     hero_mcp:'Recherche avec IA',
-    news_title:'Nouveautés', news_item_1_title:'Graphe de citations', news_item_1_desc:'7,85 millions de liens de citation entre décisions — trouvez les arrêts de référence, suivez comment les tribunaux se citent mutuellement', news_item_2_title:'Recherche sémantique', news_item_2_desc:'Recherchez par concept, pas seulement par mots-clés — trouvez des décisions liées même quand des termes différents sont utilisés', news_item_3_title:'Mise à jour de l\'index', news_item_3_desc:'Nous reconstruisons l\'index de la base de données pour améliorer encore la qualité de recherche',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
@@ -1221,7 +1239,6 @@ const I18N = {
     study_p5:'E se il danneggiante non avesse agito illecitamente?',
     study_p6:'Carte di ripetizione sui presupposti della gestione d\'affari senza mandato',
     hero_mcp:'Ricerca con IA',
-    news_title:'Novità', news_item_1_title:'Grafo delle citazioni', news_item_1_desc:'7,85 milioni di collegamenti tra decisioni — trova le decisioni guida, segui come i tribunali si citano a vicenda', news_item_2_title:'Ricerca semantica', news_item_2_desc:'Cerca per concetto, non solo per parole chiave — trova decisioni correlate anche quando vengono usati termini diversi', news_item_3_title:'Aggiornamento dell\'indice', news_item_3_desc:'Stiamo ricostruendo l\'indice del database per migliorare ulteriormente la qualità della ricerca',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
@@ -1286,7 +1303,6 @@ const I18N = {
     study_p5:'E sche il donnegiader n\'avess betg agì illicitamain?',
     study_p6:'Cartas da repetiziun per las premissas da la gestiun d\'affars senza incumbensa',
     hero_mcp:'Tschertgar cun IA',
-    news_title:'Novitads', news_item_1_title:'Graf da citaziuns', news_item_1_desc:'7,85 milliuns colliaziuns da citaziun tranter decisiuns — chattar decisiuns directivas, persequitar co las dretgiras citan ina l\'autra', news_item_2_title:'Tschertga semantica', news_item_2_desc:'Tschertgar tenor concept, betg mo tenor plaids-clav — chattar decisiuns parentadas era sche differents terms vegnan utilisads', news_item_3_title:'Upgrade da l\'index', news_item_3_desc:'Nus reconstruin l\'index da la banca da datas per meglierar anc pli la qualitad da tschertga',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
@@ -1351,7 +1367,6 @@ const I18N = {
     study_p5:'What if the tortfeasor had not acted unlawfully (widerrechtlich)?',
     study_p6:'Review cards for the requirements of Gesch\u00e4ftsf\u00fchrung ohne Auftrag',
     hero_mcp:'Search with AI',
-    news_title:'What\u2019s New', news_item_1_title:'Citation Graph', news_item_1_desc:'7.85 million citation links between decisions — find leading cases, trace how courts cite each other', news_item_2_title:'Semantic Search', news_item_2_desc:'Search by concept, not just keywords — find related decisions even when different terms are used', news_item_3_title:'Index Upgrade', news_item_3_desc:'We\'re rebuilding the database index to further improve search quality',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   },
 };
@@ -1397,6 +1412,38 @@ document.getElementById('theme-btn').addEventListener('click', () => {
   localStorage.setItem('theme', themePref);
   applyTheme();
 });
+
+/* ── Hamburger toggle ── */
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+if (hamburgerBtn && mobileMenu) {
+  hamburgerBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  });
+}
+
+/* ── Scroll-spy ── */
+{
+  const navLinks = document.querySelectorAll('#section-nav a, #mobile-menu a');
+  const sectionIds = [...new Set([...document.querySelectorAll('#section-nav a')].map(a => a.getAttribute('href').slice(1)))];
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) observer.observe(el);
+  });
+}
 
 const FED = new Set(['bger','bge','bvger','bstger','bpatger','weko','finma','edoeb','ch_vb','ta_sst','ch_bundesrat','bge_egmr']);
 const CANTON_NAMES = {
@@ -1744,7 +1791,8 @@ function renderAll(data) {
       <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
       <td class="d hide-m">${r.last_scraped ? r.last_scraped.slice(0,10) : '\u2014'}</td>
       <td>${ltags(r.languages)}</td></tr>`);
-    document.getElementById('sec-fed').classList.remove('hid');
+    const fedEl = document.getElementById('sec-fed');
+    fedEl.classList.remove('hid'); fedEl.open = true;
   }
 
   if (can.length) {
@@ -1760,7 +1808,8 @@ function renderAll(data) {
       <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
       <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
       <td class="d hide-m">${r.last_scraped ? r.last_scraped.slice(0,10) : '\u2014'}</td></tr>`);
-    document.getElementById('sec-can').classList.remove('hid');
+    const canEl = document.getElementById('sec-can');
+    canEl.classList.remove('hid'); canEl.open = true;
 
     // Setup search filter
     setupTableSearch('can-search', 'can-search-count', document.getElementById('t-can'));
@@ -1784,7 +1833,8 @@ function renderAll(data) {
       ${langs || courts ? `<div class="canton-meta">${courts}${langs}</div>` : ''}
       </div>`;
   }).join('');
-  document.getElementById('sec-cantons').classList.remove('hid');
+  const cantonsEl = document.getElementById('sec-cantons');
+  cantonsEl.classList.remove('hid'); cantonsEl.open = true;
 
   // Tree browser — group courts by canton/federal
   const treeEl = document.getElementById('tree-browser');
@@ -1820,7 +1870,8 @@ function renderAll(data) {
   treeEl.querySelectorAll('.tree-hd').forEach(hd => {
     hd.addEventListener('click', () => hd.parentElement.classList.toggle('open'));
   });
-  document.getElementById('sec-tree').classList.remove('hid');
+  const treeDetailEl = document.getElementById('sec-tree');
+  treeDetailEl.classList.remove('hid'); treeDetailEl.open = true;
 
   // Scraper health
   const sh = data.scraper_health;
