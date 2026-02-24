@@ -544,6 +544,73 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .disk-bar .disk-fill.critical { background:var(--ac); }
 .hid { display: none !important; }
 
+/* ── Study guide ── */
+.study-card {
+  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
+  border-left: 3px solid #2563eb; padding: 24px 28px;
+  box-shadow: var(--glow); margin-bottom: 32px;
+}
+[data-theme="dark"] .study-card { border-left-color: #60a5fa; }
+.study-card:hover { box-shadow: var(--glow-hover); }
+.study-card h3 {
+  font-size: var(--fs-xl); font-weight: 700; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.study-card h3 svg { color: #2563eb; flex-shrink: 0; }
+[data-theme="dark"] .study-card h3 svg { color: #60a5fa; }
+.study-card > p { font-size: var(--fs-sm); color: var(--tx2); margin-bottom: 18px; line-height: 1.5; }
+.study-steps {
+  display: flex; flex-direction: column; gap: 0; margin-bottom: 18px;
+  counter-reset: study-step;
+}
+.study-step {
+  display: grid; grid-template-columns: 32px 1fr; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--brd2);
+  position: relative;
+}
+.study-step:last-child { border-bottom: none; }
+.study-step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #2563eb; color: #fff; font-family: var(--f-mono);
+  font-size: var(--fs-sm); font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+[data-theme="dark"] .study-step-num { background: #60a5fa; color: #09090b; }
+.study-step-content {}
+.study-step-title { font-size: var(--fs-md); font-weight: 600; margin-bottom: 3px; }
+.study-step-desc { font-size: var(--fs-sm); color: var(--tx2); line-height: 1.5; }
+.study-step-desc code {
+  font-family: var(--f-mono); font-size: var(--fs-xs);
+  background: var(--bg2); border: 1px solid var(--brd2); border-radius: var(--r-xs);
+  padding: 2px 6px; color: var(--tx2);
+}
+.study-step-desc a { font-weight: 500; }
+.study-prompts {
+  border-top: 1px solid var(--brd2); padding-top: 14px;
+}
+.study-prompts h5 {
+  font-size: var(--fs-sm); font-weight: 600; color: var(--tx2); margin-bottom: 10px;
+}
+.study-prompts ul {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.study-prompts li {
+  font-size: var(--fs-xs); color: var(--tx); font-family: var(--f-mono);
+  padding: 8px 12px; background: var(--bg2);
+  border: 1px solid var(--brd2); border-radius: var(--r-sm);
+  line-height: 1.5;
+}
+.study-areas {
+  margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px;
+}
+.study-area-tag {
+  font-size: var(--fs-2xs); font-weight: 500; color: var(--tx2);
+  background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: 100px; padding: 3px 10px; line-height: 1.4;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .chart-row { grid-template-columns: 1fr; }
@@ -554,6 +621,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .health-card .health-summary { padding: 14px 16px; }
   .health-body { padding: 0 16px 16px; }
   .quick-strip { grid-template-columns: 1fr; }
+  .study-prompts ul { grid-template-columns: 1fr; }
+  .study-card { padding: 18px 16px; }
   .kpis { gap: 40px; }
   .section-nav { display: none; }
 }
@@ -620,6 +689,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <a href="#sec-cantons" data-t="nav_cantons">Cantons</a>
       <a href="#sec-tree" data-t="nav_browse">Browse</a>
       <a href="#sec-access" data-t="nav_access">Access</a>
+      <a href="#sec-study" data-t="nav_study">Study</a>
     </div>
   </div>
   <div class="toolbar-right">
@@ -846,6 +916,79 @@ cd caselaw-repo-1
     </div>
   </section>
 
+  <!-- Study Guide -->
+  <section id="sec-study">
+    <div class="sh"><h2 data-t="study_title">Study Swiss Law</h2> <span class="badge">44 BGE</span></div>
+    <div class="study-card">
+      <h3>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span data-t="study_heading">Interactive Case Study for Law Students</span>
+      </h3>
+      <p data-t="study_intro">44 curated BGE decisions across 8 areas of Swiss law. Socratic questions, guided study phases, hypothetical variations, and structured case briefing with rubric feedback.</p>
+
+      <div class="study-steps">
+        <div class="study-step">
+          <div class="study-step-num">1</div>
+          <div class="study-step-content">
+            <div class="study-step-title" data-t="study_s1_title">Connect to the MCP server</div>
+            <div class="study-step-desc" data-t="study_s1_desc">Open <a href="https://claude.ai">claude.ai</a> (Pro/Max/Team) &rarr; Settings &rarr; Connectors &rarr; Add &rarr; <code>https://mcp.opencaselaw.ch</code></div>
+          </div>
+        </div>
+        <div class="study-step">
+          <div class="study-step-num">2</div>
+          <div class="study-step-content">
+            <div class="study-step-title" data-t="study_s2_title">Pick a topic</div>
+            <div class="study-step-desc" data-t="study_s2_desc">Ask Claude: <code>Zeige mir das Studienangebot</code> to see all 8 areas and 44 cases. Or jump straight to a topic.</div>
+          </div>
+        </div>
+        <div class="study-step">
+          <div class="study-step-num">3</div>
+          <div class="study-step-content">
+            <div class="study-step-title" data-t="study_s3_title">Study a leading case</div>
+            <div class="study-step-desc" data-t="study_s3_desc">Ask: <code>Ich m&ouml;chte den Leitentscheid zu Art. 41 OR studieren</code>. You get the parsed decision, Socratic questions at 5 cognitive levels, 3 study phases, and hypothetical variations.</div>
+          </div>
+        </div>
+        <div class="study-step">
+          <div class="study-step-num">4</div>
+          <div class="study-step-content">
+            <div class="study-step-title" data-t="study_s4_title">Write a case brief</div>
+            <div class="study-step-desc" data-t="study_s4_desc">Follow the 6-section template (Leitsatz, Rechtsregel, Sachverhalt, Kernerw&auml;gungen, Dispositiv, Bedeutung). Paste your brief and get rubric-based feedback with scoring criteria.</div>
+          </div>
+        </div>
+        <div class="study-step">
+          <div class="study-step-num">5</div>
+          <div class="study-step-content">
+            <div class="study-step-title" data-t="study_s5_title">Deepen understanding</div>
+            <div class="study-step-desc" data-t="study_s5_desc">Discuss the Socratic questions with Claude, explore hypothetical variations, and use review cards for spaced repetition before the exam.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="study-prompts">
+        <h5 data-t="study_prompts_heading">Example prompts</h5>
+        <ul>
+          <li data-t="study_p1">Zeige mir das Studienangebot f&uuml;r Vertragsrecht</li>
+          <li data-t="study_p2">Ich m&ouml;chte BGE 144 III 93 im gef&uuml;hrten Modus studieren</li>
+          <li data-t="study_p3">Stelle mir sokratische Fragen zu Art. 41 OR</li>
+          <li data-t="study_p4">Hier ist meine Urteilsbesprechung &mdash; bitte bewerten</li>
+          <li data-t="study_p5">Wie w&auml;re der Fall entschieden worden, wenn...</li>
+          <li data-t="study_p6">Gib mir Repetitionskarten zu Sachenrecht</li>
+        </ul>
+      </div>
+
+      <div class="study-areas">
+        <span class="study-area-tag">Vertragsrecht</span>
+        <span class="study-area-tag">Haftpflicht</span>
+        <span class="study-area-tag">Sachenrecht</span>
+        <span class="study-area-tag">Grundrechte</span>
+        <span class="study-area-tag">Strafrecht AT</span>
+        <span class="study-area-tag">Mietrecht</span>
+        <span class="study-area-tag">Arbeitsrecht</span>
+        <span class="study-area-tag">Familienrecht</span>
+      </div>
+    </div>
+  </section>
+
   <!-- Scraper Health (collapsible) -->
   <details class="health-card hid" id="sec-health">
     <summary class="health-summary">
@@ -926,6 +1069,27 @@ const I18N = {
     cap_trends:'Analysieren, wie sich die Rechtsprechung zu einem Thema über die Jahre entwickelt hat',
     cap_research:'Recherche-Notizen aus Sachverhalt erstellen — mit passender Rechtsprechung und Gesetzesartikeln',
     cap_study:'Leitentscheide interaktiv studieren mit geführten Übungen und Urteilsbesprechungen',
+    nav_study:'Studium',
+    study_title:'Schweizer Recht studieren',
+    study_heading:'Interaktives Fallstudium für Jurastudierende',
+    study_intro:'44 kuratierte BGE-Entscheide in 8 Rechtsgebieten. Sokratische Fragen, geführte Lernphasen, hypothetische Variationen und strukturierte Urteilsbesprechung mit Bewertungsraster.',
+    study_s1_title:'Mit dem MCP-Server verbinden',
+    study_s1_desc:'Öffne <a href="https://claude.ai">claude.ai</a> (Pro/Max/Team) → Settings → Connectors → Add → <code>https://mcp.opencaselaw.ch</code>',
+    study_s2_title:'Thema wählen',
+    study_s2_desc:'Frage Claude: <code>Zeige mir das Studienangebot</code> um alle 8 Rechtsgebiete und 44 Fälle zu sehen. Oder springe direkt zu einem Thema.',
+    study_s3_title:'Leitentscheid studieren',
+    study_s3_desc:'Frage: <code>Ich möchte den Leitentscheid zu Art. 41 OR studieren</code>. Du erhältst den strukturierten Entscheid, sokratische Fragen auf 5 Kognitionsstufen, 3 Lernphasen und hypothetische Variationen.',
+    study_s4_title:'Urteilsbesprechung schreiben',
+    study_s4_desc:'Folge der 6-teiligen Vorlage (Leitsatz, Rechtsregel, Sachverhalt, Kernerwägungen, Dispositiv, Bedeutung). Sende deine Besprechung und erhalte kriterienbasiertes Feedback.',
+    study_s5_title:'Verständnis vertiefen',
+    study_s5_desc:'Diskutiere die sokratischen Fragen mit Claude, erkunde hypothetische Variationen und nutze Repetitionskarten zur Prüfungsvorbereitung.',
+    study_prompts_heading:'Beispiel-Prompts',
+    study_p1:'Zeige mir das Studienangebot für Vertragsrecht',
+    study_p2:'Ich möchte BGE 144 III 93 im geführten Modus studieren',
+    study_p3:'Stelle mir sokratische Fragen zu Art. 41 OR',
+    study_p4:'Hier ist meine Urteilsbesprechung — bitte bewerten',
+    study_p5:'Wie wäre der Fall entschieden worden, wenn...',
+    study_p6:'Gib mir Repetitionskarten zu Sachenrecht',
     hero_mcp:'Mit AI durchsuchen',
     news_title:'Neuigkeiten', news_item_1_title:'Zitationsgraph', news_item_1_desc:'7,85 Millionen Zitationsverbindungen zwischen Entscheiden — Leitentscheide finden, nachverfolgen wie Gerichte sich gegenseitig zitieren', news_item_2_title:'Semantische Suche', news_item_2_desc:'Nach Konzepten suchen, nicht nur Stichwörtern — verwandte Entscheide finden, auch wenn andere Begriffe verwendet werden', news_item_3_title:'Suchindex-Upgrade', news_item_3_desc:'Wir bauen den Datenbankindex neu auf, um die Suchqualität weiter zu verbessern',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
@@ -970,6 +1134,27 @@ const I18N = {
     cap_trends:'Analyser comment la jurisprudence sur un sujet a évolué au fil des années',
     cap_research:'Rédiger des notes de recherche à partir de faits — avec jurisprudence et articles de loi pertinents',
     cap_study:'Étudier les arrêts de référence de manière interactive avec des exercices guidés et des commentaires d\'arrêt',
+    nav_study:'Études',
+    study_title:'Étudier le droit suisse',
+    study_heading:'Étude de cas interactive pour étudiants en droit',
+    study_intro:'44 arrêts ATF sélectionnés dans 8 domaines du droit suisse. Questions socratiques, phases d\'étude guidées, variations hypothétiques et commentaire d\'arrêt structuré avec grille d\'évaluation.',
+    study_s1_title:'Se connecter au serveur MCP',
+    study_s1_desc:'Ouvrir <a href="https://claude.ai">claude.ai</a> (Pro/Max/Team) → Settings → Connectors → Add → <code>https://mcp.opencaselaw.ch</code>',
+    study_s2_title:'Choisir un sujet',
+    study_s2_desc:'Demandez à Claude : <code>Montre-moi le programme d\'études</code> pour voir les 8 domaines et 44 cas. Ou passez directement à un sujet.',
+    study_s3_title:'Étudier un arrêt de référence',
+    study_s3_desc:'Demandez : <code>Je voudrais étudier l\'arrêt sur l\'art. 41 CO</code>. Vous recevez l\'arrêt structuré, des questions socratiques à 5 niveaux cognitifs, 3 phases d\'étude et des variations hypothétiques.',
+    study_s4_title:'Rédiger un commentaire d\'arrêt',
+    study_s4_desc:'Suivez le modèle en 6 sections (ratio, règle, faits, considérants clés, dispositif, portée). Soumettez votre commentaire et recevez un feedback structuré.',
+    study_s5_title:'Approfondir la compréhension',
+    study_s5_desc:'Discutez les questions socratiques avec Claude, explorez les variations hypothétiques et utilisez les cartes de révision pour préparer l\'examen.',
+    study_prompts_heading:'Exemples de prompts',
+    study_p1:'Montre-moi le programme pour le droit des contrats',
+    study_p2:'Je voudrais étudier l\'ATF 144 III 93 en mode guidé',
+    study_p3:'Pose-moi des questions socratiques sur l\'art. 41 CO',
+    study_p4:'Voici mon commentaire d\'arrêt — évalue-le',
+    study_p5:'Comment l\'affaire aurait-elle été jugée si...',
+    study_p6:'Donne-moi des cartes de révision en droits réels',
     hero_mcp:'Recherche avec IA',
     news_title:'Nouveautés', news_item_1_title:'Graphe de citations', news_item_1_desc:'7,85 millions de liens de citation entre décisions — trouvez les arrêts de référence, suivez comment les tribunaux se citent mutuellement', news_item_2_title:'Recherche sémantique', news_item_2_desc:'Recherchez par concept, pas seulement par mots-clés — trouvez des décisions liées même quand des termes différents sont utilisés', news_item_3_title:'Mise à jour de l\'index', news_item_3_desc:'Nous reconstruisons l\'index de la base de données pour améliorer encore la qualité de recherche',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
@@ -1014,6 +1199,27 @@ const I18N = {
     cap_trends:'Analizzare come la giurisprudenza su un tema si è evoluta nel corso degli anni',
     cap_research:'Redigere note di ricerca a partire dai fatti — con giurisprudenza e articoli di legge pertinenti',
     cap_study:'Studiare le decisioni guida in modo interattivo con esercizi guidati e commenti',
+    nav_study:'Studio',
+    study_title:'Studiare il diritto svizzero',
+    study_heading:'Studio interattivo per studenti di diritto',
+    study_intro:'44 decisioni DTF selezionate in 8 aree del diritto svizzero. Domande socratiche, fasi di studio guidate, variazioni ipotetiche e commento strutturato con griglia di valutazione.',
+    study_s1_title:'Connettersi al server MCP',
+    study_s1_desc:'Aprire <a href="https://claude.ai">claude.ai</a> (Pro/Max/Team) → Settings → Connectors → Add → <code>https://mcp.opencaselaw.ch</code>',
+    study_s2_title:'Scegliere un argomento',
+    study_s2_desc:'Chiedi a Claude: <code>Mostrami il programma di studio</code> per vedere tutte le 8 aree e i 44 casi. Oppure vai direttamente a un argomento.',
+    study_s3_title:'Studiare una decisione guida',
+    study_s3_desc:'Chiedi: <code>Vorrei studiare la decisione sull\'art. 41 CO</code>. Ricevi la decisione strutturata, domande socratiche a 5 livelli cognitivi, 3 fasi di studio e variazioni ipotetiche.',
+    study_s4_title:'Scrivere un commento',
+    study_s4_desc:'Segui il modello in 6 sezioni (massima, regola, fatti, considerandi chiave, dispositivo, portata). Invia il tuo commento e ricevi un feedback strutturato.',
+    study_s5_title:'Approfondire la comprensione',
+    study_s5_desc:'Discuti le domande socratiche con Claude, esplora le variazioni ipotetiche e usa le carte di ripetizione per preparare l\'esame.',
+    study_prompts_heading:'Esempi di prompt',
+    study_p1:'Mostrami il programma per il diritto contrattuale',
+    study_p2:'Vorrei studiare la DTF 144 III 93 in modalità guidata',
+    study_p3:'Fammi domande socratiche sull\'art. 41 CO',
+    study_p4:'Ecco il mio commento — valutalo',
+    study_p5:'Come sarebbe stato deciso il caso se...',
+    study_p6:'Dammi carte di ripetizione sui diritti reali',
     hero_mcp:'Ricerca con IA',
     news_title:'Novità', news_item_1_title:'Grafo delle citazioni', news_item_1_desc:'7,85 milioni di collegamenti tra decisioni — trova le decisioni guida, segui come i tribunali si citano a vicenda', news_item_2_title:'Ricerca semantica', news_item_2_desc:'Cerca per concetto, non solo per parole chiave — trova decisioni correlate anche quando vengono usati termini diversi', news_item_3_title:'Aggiornamento dell\'indice', news_item_3_desc:'Stiamo ricostruendo l\'indice del database per migliorare ulteriormente la qualità della ricerca',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
@@ -1058,6 +1264,27 @@ const I18N = {
     cap_trends:'Analisar co la giurisprudenza ad in tema ha sa sviluppà sur ils onns',
     cap_research:'Rediger notizias da perscrutaziun ord fatgs — cun giurisprudenza ed artitgels da lescha pertinents',
     cap_study:'Studiar decisiuns directivas interactivamain cun exercizis guidads e commentaris',
+    nav_study:'Studi',
+    study_title:'Studiar il dretg svizzer',
+    study_heading:'Studi da cas interactiv per studentas e students da dretg',
+    study_intro:'44 decisiuns DTF selecziunadas en 8 champs dal dretg svizzer. Dumondas socraticas, fasas da studi guidadas, variaziuns ipoteticas e commentari structurà cun criteris da valitaziun.',
+    study_s1_title:'Sa colliar cun il server MCP',
+    study_s1_desc:'Avrir <a href="https://claude.ai">claude.ai</a> (Pro/Max/Team) → Settings → Connectors → Add → <code>https://mcp.opencaselaw.ch</code>',
+    study_s2_title:'Tscherner in tema',
+    study_s2_desc:'Dumandar a Claude: <code>Mussar il program da studi</code> per vesair tut ils 8 champs e 44 cas. U ir directamain ad in tema.',
+    study_s3_title:'Studiar ina decisiun directiva',
+    study_s3_desc:'Dumandar: <code>Jau less studiar la decisiun davart l\'art. 41 CO</code>. Ti retschaivas la decisiun structurada, dumondas socraticas sin 5 nivels, 3 fasas da studi e variaziuns ipoteticas.',
+    study_s4_title:'Scriver in commentari',
+    study_s4_desc:'Suandar il model en 6 secziuns (maxima, regla, fatgs, considerands, dispositiv, purschida). Trametter tes commentari e retschaiver in feedback structurà.',
+    study_s5_title:'Approfundar la chapientscha',
+    study_s5_desc:'Discutar las dumondas socraticas cun Claude, explorar las variaziuns ipoteticas ed utilisar las cartas da repetiziun per preparar l\'examen.',
+    study_prompts_heading:'Exemples da prompts',
+    study_p1:'Mussar il program per il dretg contractual',
+    study_p2:'Jau less studiar la DTF 144 III 93 en il modus guidà',
+    study_p3:'Far dumondas socraticas davart l\'art. 41 CO',
+    study_p4:'Qua è mes commentari — evaluar per plaschair',
+    study_p5:'Co fiss il cas vegnì decidì sche...',
+    study_p6:'Dar cartas da repetiziun per ils dretgs reals',
     hero_mcp:'Tschertgar cun IA',
     news_title:'Novitads', news_item_1_title:'Graf da citaziuns', news_item_1_desc:'7,85 milliuns colliaziuns da citaziun tranter decisiuns — chattar decisiuns directivas, persequitar co las dretgiras citan ina l\'autra', news_item_2_title:'Tschertga semantica', news_item_2_desc:'Tschertgar tenor concept, betg mo tenor plaids-clav — chattar decisiuns parentadas era sche differents terms vegnan utilisads', news_item_3_title:'Upgrade da l\'index', news_item_3_desc:'Nus reconstruin l\'index da la banca da datas per meglierar anc pli la qualitad da tschertga',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
@@ -1102,6 +1329,27 @@ const I18N = {
     cap_trends:'Analyze how jurisprudence on a topic has evolved year by year',
     cap_research:'Draft research memos from case facts — with relevant case law and statutes',
     cap_study:'Study leading cases interactively with guided exercises and case briefing',
+    nav_study:'Study',
+    study_title:'Study Swiss Law',
+    study_heading:'Interactive Case Study for Law Students',
+    study_intro:'44 curated BGE decisions across 8 areas of Swiss law. Socratic questions, guided study phases, hypothetical variations, and structured case briefing with rubric feedback.',
+    study_s1_title:'Connect to the MCP server',
+    study_s1_desc:'Open <a href="https://claude.ai">claude.ai</a> (Pro/Max/Team) &rarr; Settings &rarr; Connectors &rarr; Add &rarr; <code>https://mcp.opencaselaw.ch</code>',
+    study_s2_title:'Pick a topic',
+    study_s2_desc:'Ask Claude: <code>Show me the study curriculum</code> to see all 8 areas and 44 cases. Or jump straight to a topic.',
+    study_s3_title:'Study a leading case',
+    study_s3_desc:'Ask: <code>I\'d like to study the leading case on Art. 41 OR</code>. You get the parsed decision, Socratic questions at 5 cognitive levels, 3 study phases, and hypothetical variations.',
+    study_s4_title:'Write a case brief',
+    study_s4_desc:'Follow the 6-section template (ratio, rule, facts, key reasoning, dispositif, significance). Paste your brief and get rubric-based feedback with scoring criteria.',
+    study_s5_title:'Deepen understanding',
+    study_s5_desc:'Discuss the Socratic questions with Claude, explore hypothetical variations, and use review cards for spaced repetition before the exam.',
+    study_prompts_heading:'Example prompts',
+    study_p1:'Show me the curriculum for contract law',
+    study_p2:'I\'d like to study BGE 144 III 93 in guided mode',
+    study_p3:'Ask me Socratic questions about Art. 41 OR',
+    study_p4:'Here is my case brief \u2014 please evaluate',
+    study_p5:'How would the case have been decided if...',
+    study_p6:'Give me review cards for property law',
     hero_mcp:'Search with AI',
     news_title:'What\u2019s New', news_item_1_title:'Citation Graph', news_item_1_desc:'7.85 million citation links between decisions — find leading cases, trace how courts cite each other', news_item_2_title:'Semantic Search', news_item_2_desc:'Search by concept, not just keywords — find related decisions even when different terms are used', news_item_3_title:'Index Upgrade', news_item_3_desc:'We\'re rebuilding the database index to further improve search quality',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
