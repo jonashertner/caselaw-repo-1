@@ -407,123 +407,78 @@ def _build_review_cards(
     curriculum_case: CurriculumCase | None,
     lang_key: str,
 ) -> list[dict]:
-    """Build review cards for spaced repetition from parsed decision."""
+    """Build review cards for spaced repetition from parsed decision.
+
+    Cards test conceptual understanding — legal rules, distinctions,
+    application logic — rather than trivia about decision structure.
+    Sources: curriculum socratic questions (with model answers),
+    hypotheticals, and significance metadata.
+    """
     cards: list[dict] = []
+    bge = curriculum_case.bge_ref if curriculum_case else ""
 
-    # Card 1: Ratio decidendi from regeste
-    if parsed.regeste:
-        regeste_short = parsed.regeste[:300]
-        if lang_key == "de":
+    # ── From Socratic questions: turn Q+model_answer into cards ───
+    if curriculum_case and curriculum_case.socratic_questions:
+        for sq in curriculum_case.socratic_questions:
+            answer = sq.get("model_answer", "")
+            if not answer:
+                continue
+            level = sq.get("level", 0)
+            # Skip level 4 (analysis / "what if") — those are better as
+            # hypotheticals. Keep levels 1-3 (comprehension, rule ID,
+            # application) and 5 (evaluation).
+            if level == 4:
+                continue
+            label = sq.get("level_label", "")
             cards.append({
-                "front": "Was ist die ratio decidendi dieses Entscheids?",
-                "back": regeste_short,
-                "tags": ["ratio", "regeste"],
-            })
-        elif lang_key == "fr":
-            cards.append({
-                "front": "Quelle est la ratio decidendi de cet arrêt?",
-                "back": regeste_short,
-                "tags": ["ratio", "regeste"],
-            })
-        else:
-            cards.append({
-                "front": "Qual è la ratio decidendi di questa decisione?",
-                "back": regeste_short,
-                "tags": ["ratio", "regeste"],
+                "front": sq["question"],
+                "back": answer,
+                "tags": [label.lower()] if label else [],
             })
 
-    # Card 2: Key statute + interpretation
-    all_statutes = set()
-    for e in parsed.erwagungen:
-        all_statutes.update(e.statute_refs)
-    if all_statutes:
-        statutes_str = ", ".join(sorted(all_statutes)[:5])
-        if lang_key == "de":
-            cards.append({
-                "front": "Welche Normen wendet das Gericht an?",
-                "back": statutes_str,
-                "tags": ["normen", "statuten"],
-            })
-        elif lang_key == "fr":
-            cards.append({
-                "front": "Quelles normes le tribunal applique-t-il?",
-                "back": statutes_str,
-                "tags": ["normes", "statuts"],
-            })
-        else:
-            cards.append({
-                "front": "Quali norme applica il tribunale?",
-                "back": statutes_str,
-                "tags": ["norme", "statuti"],
-            })
+    # ── From hypotheticals: "what changes if X?" cards ────────────
+    if curriculum_case and curriculum_case.hypotheticals:
+        for hyp in curriculum_case.hypotheticals:
+            scenario = hyp.get("scenario", "")
+            outcome = hyp.get("likely_outcome_shift", "")
+            if scenario and outcome:
+                cards.append({
+                    "front": scenario,
+                    "back": outcome,
+                    "tags": ["variation", hyp.get("type", "")],
+                })
 
-    # Card 3: Significance (from curriculum)
+    # ── Significance: why does this case matter? ──────────────────
     if curriculum_case:
-        sig = getattr(curriculum_case, f"significance_{lang_key}", "") or curriculum_case.significance_de
+        sig = (
+            getattr(curriculum_case, f"significance_{lang_key}", "")
+            or curriculum_case.significance_de
+        )
         if sig:
-            if lang_key == "de":
-                cards.append({
-                    "front": f"Welche Bedeutung hat {curriculum_case.bge_ref}?",
-                    "back": sig,
-                    "tags": ["bedeutung", "präjudiz"],
-                })
-            elif lang_key == "fr":
-                cards.append({
-                    "front": f"Quelle est la portée de {curriculum_case.bge_ref}?",
-                    "back": sig,
-                    "tags": ["portée", "précédent"],
-                })
-            else:
-                cards.append({
-                    "front": f"Qual è la portata di {curriculum_case.bge_ref}?",
-                    "back": sig,
-                    "tags": ["portata", "precedente"],
-                })
-
-    # Card 4: Dispositiv
-    if parsed.dispositiv:
-        dispositiv_short = parsed.dispositiv[:200]
-        if lang_key == "de":
+            front = {
+                "de": f"Warum ist {bge} ein Leitentscheid? Was hat er verändert?",
+                "fr": f"Pourquoi {bge} est-il un arrêt de principe? Qu'a-t-il changé?",
+                "it": f"Perché {bge} è una sentenza di principio? Cosa ha cambiato?",
+            }
             cards.append({
-                "front": "Wie lautet das Dispositiv?",
-                "back": dispositiv_short,
-                "tags": ["dispositiv", "ergebnis"],
-            })
-        elif lang_key == "fr":
-            cards.append({
-                "front": "Quel est le dispositif?",
-                "back": dispositiv_short,
-                "tags": ["dispositif", "résultat"],
-            })
-        else:
-            cards.append({
-                "front": "Qual è il dispositivo?",
-                "back": dispositiv_short,
-                "tags": ["dispositivo", "risultato"],
+                "front": front.get(lang_key, front["de"]),
+                "back": sig,
+                "tags": ["bedeutung"],
             })
 
-    # Card 5: Key Erwägung content
-    key_set = set(curriculum_case.key_erwagungen) if curriculum_case and curriculum_case.key_erwagungen else set()
-    if key_set:
-        key_numbers = ", ".join(f"E. {n}" for n in sorted(key_set))
-        if lang_key == "de":
-            cards.append({
-                "front": "Welche Erwägungen enthalten die ratio?",
-                "back": key_numbers,
-                "tags": ["erwägungen", "kernaussage"],
-            })
-        elif lang_key == "fr":
-            cards.append({
-                "front": "Quels considérants contiennent la ratio?",
-                "back": key_numbers,
-                "tags": ["considérants", "ratio"],
-            })
-        else:
-            cards.append({
-                "front": "Quali considerandi contengono la ratio?",
-                "back": key_numbers,
-                "tags": ["considerandi", "ratio"],
-            })
+    # ── Fallback for non-curriculum cases: ratio from regeste ─────
+    if not cards and parsed.regeste:
+        regeste_short = parsed.regeste[:400]
+        front = {
+            "de": "Was ist die Kernaussage dieses Entscheids und welche Regel stellt er auf?",
+            "fr": "Quelle est la règle posée par cet arrêt?",
+            "it": "Qual è la regola stabilita da questa decisione?",
+        }
+        cards.append({
+            "front": front.get(lang_key, front["de"]),
+            "back": regeste_short,
+            "tags": ["ratio"],
+        })
 
     return cards
 
