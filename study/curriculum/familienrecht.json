@@ -1,0 +1,286 @@
+{
+  "area_id": "familienrecht",
+  "area_de": "Familienrecht",
+  "area_fr": "Droit de la famille",
+  "area_it": "Diritto di famiglia",
+  "description_de": "Familienrecht: Scheidung, Unterhalt, Sorgerecht, Güterrecht, Kindeswohl",
+  "modules": [
+    {
+      "id": "unterhalt",
+      "name_de": "Nachehelicher Unterhalt",
+      "name_fr": "Entretien après divorce",
+      "name_it": "Mantenimento post-divorzio",
+      "statutes": ["Art. 125 ZGB"],
+      "cases": [
+        {
+          "decision_id": "bge_147 III 249",
+          "bge_ref": "BGE 147 III 249",
+          "actual_language": "de",
+          "title_de": "Methodik der Unterhaltsberechnung — zweistufige Methode",
+          "title_fr": "Méthodologie du calcul de l'entretien — méthode en deux étapes",
+          "concepts_de": ["Nachehelicher Unterhalt", "Zweistufige Methode", "Gebührender Unterhalt", "Eigenversorgungskapazität"],
+          "concepts_fr": ["Entretien après divorce", "Méthode en deux étapes", "Entretien convenable"],
+          "statutes": ["Art. 125 ZGB", "Art. 176 ZGB"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Methodik der Unterhaltsberechnung: Einführung der zweistufigen Methode mit Überschussverteilung",
+          "significance_fr": "Arrêt de principe sur la méthodologie du calcul de l'entretien: introduction de la méthode en deux étapes",
+          "key_erwagungen": ["3", "4", "5"],
+          "reading_guide_de": "E. 3: Bisherige Methoden (Existenzminimum, Lebenshaltungskostenmethode). E. 4: Neue zweistufige Methode — Bedarfsermittlung + Überschussverteilung. E. 5: Anwendung auf den konkreten Fall. Dieser Entscheid hat die Praxis grundlegend verändert.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist die zweistufige Methode der Unterhaltsberechnung?",
+              "hint": "Lesen Sie E. 4.",
+              "model_answer": "Stufe 1: Ermittlung des Bedarfs beider Parteien (Existenzminimum). Stufe 2: Verteilung des verbleibenden Überschusses nach den massgeblichen Kriterien (Art. 125 ZGB)."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Faktoren berücksichtigt Art. 125 ZGB bei der Unterhaltsbemessung?",
+              "hint": "Art. 125 Abs. 2 ZGB.",
+              "model_answer": "Ehedauer, Aufgabenverteilung während der Ehe, Lebensstandard, Alter und Gesundheit, Einkommen und Vermögen, Betreuungspflichten, berufliche Aussichten."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie wird der Überschuss zwischen den Parteien verteilt?",
+              "hint": "E. 5.",
+              "model_answer": "Der Überschuss wird grundsätzlich hälftig verteilt. Abweichungen sind möglich bei unterschiedlicher Eigenversorgungskapazität oder lebensprägenden Ehen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre bei einer Kurzehe (unter 3 Jahre) ohne Kinder?",
+              "discussion_points": ["Eigenversorgungskapazität", "Clean Break", "Dauer des Unterhalts"],
+              "likely_outcome_shift": "Bei einer Kurzehe ohne Kinder besteht grundsätzlich kein Anspruch auf nachehelichen Unterhalt. Der Clean-Break-Grundsatz kommt zur Anwendung, weil die Ehe nicht lebensprägend war."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die zweistufige Methode der alten Lebenshaltungskostenmethode überlegen?",
+              "hint": "Denken Sie an Transparenz, Gerechtigkeit und Praktikabilität.",
+              "model_answer": "Pro: Transparenter, vermeidet Doppelzählungen, einheitliche Methode für alle Einkommensverhältnisse. Contra: Höherer Berechnungsaufwand, Überschussverteilung bei Hocheinkommensehen weiterhin unklar."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "extreme_case",
+              "scenario": "Was wäre bei einem Paar mit sehr hohem Einkommen (CHF 50'000/Monat), wo ein Partner nie gearbeitet hat?",
+              "discussion_points": ["Lebensstandard", "Lebensprägende Ehe", "Obergrenze des Unterhalts"],
+              "likely_outcome_shift": "Bei lebensprägender Ehe und hohem Einkommen hat der nicht erwerbstätige Partner Anspruch auf Lebenshaltung gemäss ehelichem Standard. Der Überschuss wird geteilt, allerdings gibt es keine unbegrenzte Lebensstandardgarantie."
+            },
+            {
+              "type": "change_timeline",
+              "scenario": "Was wäre, wenn der Unterhaltspflichtige 5 Jahre nach der Scheidung arbeitslos wird?",
+              "discussion_points": ["Abänderung des Unterhalts", "Art. 129 ZGB", "Veränderte Verhältnisse"],
+              "likely_outcome_shift": "Bei wesentlicher und dauerhafter Veränderung der Verhältnisse kann der Unterhalt angepasst werden (Art. 129 ZGB). Arbeitslosigkeit kann eine Reduktion oder Sistierung rechtfertigen."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sorgerecht",
+      "name_de": "Elterliche Sorge und Kindeswohl",
+      "name_fr": "Autorité parentale et bien de l'enfant",
+      "name_it": "Autorità parentale e bene del bambino",
+      "statutes": ["Art. 296 ZGB", "Art. 298 ZGB", "Art. 301a ZGB"],
+      "cases": [
+        {
+          "decision_id": "bge_142 III 481",
+          "bge_ref": "BGE 142 III 481",
+          "actual_language": "de",
+          "title_de": "Gemeinsame elterliche Sorge als Regelfall",
+          "title_fr": "Autorité parentale conjointe comme règle",
+          "concepts_de": ["Gemeinsame elterliche Sorge", "Kindeswohl", "Ausnahmen", "Kooperationsfähigkeit"],
+          "concepts_fr": ["Autorité parentale conjointe", "Bien de l'enfant", "Exceptions"],
+          "statutes": ["Art. 296 ZGB", "Art. 298 ZGB"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Gemeinsame elterliche Sorge als Regel; alleinige Sorge nur bei schwerwiegender Unfähigkeit zur Kooperation",
+          "significance_fr": "Autorité parentale conjointe comme règle; autorité exclusive seulement en cas d'incapacité grave de coopérer",
+          "key_erwagungen": ["2", "3", "4"],
+          "reading_guide_de": "E. 2: Grundsatz der gemeinsamen Sorge (Art. 296 ZGB). E. 3: Ausnahme — alleinige Sorge nur bei schwerwiegendem, dauerhaftem Elternkonflikt, der das Kindeswohl gefährdet. E. 4: Kriterien der Beurteilung.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was bedeutet die gemeinsame elterliche Sorge und warum ist sie der Regelfall?",
+              "hint": "Art. 296 ZGB und E. 2.",
+              "model_answer": "Gemeinsame elterliche Sorge bedeutet, dass beide Eltern gleichberechtigt über die wesentlichen Kindesbelange entscheiden. Sie ist Regelfall, weil das Kindeswohl grundsätzlich durch die Beteiligung beider Eltern besser gewahrt wird."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Unter welchen Voraussetzungen kann die alleinige Sorge angeordnet werden?",
+              "hint": "E. 3.",
+              "model_answer": "Nur wenn die Zuteilung der alleinigen Sorge zum Schutz des Kindeswohls geboten ist. Typischer Fall: Schwerwiegender, dauerhafter Elternkonflikt, der die Zusammenarbeit verunmöglicht und das Kind belastet."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Welche Kriterien verwendet das Gericht zur Beurteilung der Kooperationsfähigkeit?",
+              "hint": "E. 4.",
+              "model_answer": "Kommunikationsfähigkeit der Eltern, Bereitschaft zur Zusammenarbeit, Stabilität der Betreuungssituation, Wille und Bedürfnisse des Kindes (altersabhängig)."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn ein Elternteil ins Ausland ziehen möchte (Umzug mit dem Kind)?",
+              "discussion_points": ["Art. 301a ZGB", "Zustimmungserfordernis", "Freizügigkeit vs. Kindeswohl"],
+              "likely_outcome_shift": "Ein Umzug ins Ausland mit dem Kind erfordert die Zustimmung des anderen Elternteils oder eine gerichtliche Bewilligung (Art. 301a ZGB). Das Kindeswohl ist entscheidend."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die gemeinsame elterliche Sorge als Regelfall auch bei hochstrittigen Elternkonflikten sinnvoll?",
+              "hint": "Denken Sie an das Kindeswohl bei chronischem Elternstreit.",
+              "model_answer": "Pro: Gemeinsame Verantwortung, Gleichberechtigung. Contra: Bei chronischem Konflikt wird das Kind instrumentalisiert, Entscheidungen werden verzögert. Die Ausnahme (alleinige Sorge) sollte konsequenter angewandt werden, wenn der Konflikt das Kind nachweislich belastet."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn häusliche Gewalt zwischen den Eltern aktenkundig wäre?",
+              "discussion_points": ["Kindeswohlgefährdung", "Schutz des Opfers", "Alleinige Sorge als Schutz"],
+              "likely_outcome_shift": "Häusliche Gewalt ist ein starkes Indiz gegen die gemeinsame Sorge. Der gewalttätige Elternteil kann die alleinige Sorge verlieren, besonders wenn das Kind die Gewalt miterlebt hat."
+            }
+          ]
+        },
+        {
+          "decision_id": "bge_144 III 349",
+          "bge_ref": "BGE 144 III 349",
+          "actual_language": "de",
+          "title_de": "Kindesunterhalt — Betreuungsunterhalt",
+          "title_fr": "Entretien de l'enfant — contribution de prise en charge",
+          "concepts_de": ["Kindesunterhalt", "Betreuungsunterhalt", "Existenzminimum", "Eigenversorgungskapazität"],
+          "concepts_fr": ["Entretien de l'enfant", "Contribution de prise en charge", "Minimum vital"],
+          "statutes": ["Art. 285 ZGB", "Art. 285a ZGB"],
+          "difficulty": 3,
+          "prerequisites": ["bge_142 III 481"],
+          "significance_de": "Grundsatzentscheid zum Betreuungsunterhalt: Wie wird der Lebensunterhalt des betreuenden Elternteils als Teil des Kindesunterhalts berechnet?",
+          "significance_fr": "Arrêt de principe sur la contribution de prise en charge: comment calculer les frais d'entretien du parent qui s'occupe de l'enfant",
+          "key_erwagungen": ["4", "5"],
+          "reading_guide_de": "E. 4: Definition des Betreuungsunterhalts (Art. 285 Abs. 2 ZGB). E. 5: Berechnung — Differenz zwischen Einkommen des betreuenden Elternteils und seinem familienrechtlichen Existenzminimum. Achten Sie auf das Schulstufenmodell.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Betreuungsunterhalt und warum wurde er eingeführt?",
+              "hint": "E. 4 und Art. 285 Abs. 2 ZGB.",
+              "model_answer": "Der Betreuungsunterhalt deckt die Lebenskosten des betreuenden Elternteils, soweit diese durch die Kinderbetreuung verursacht werden. Er wurde 2017 eingeführt, um unverheiratete betreuende Elternteile gleichzustellen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Wie berechnet das Bundesgericht den Betreuungsunterhalt?",
+              "hint": "E. 5.",
+              "model_answer": "Betreuungsunterhalt = Existenzminimum des betreuenden Elternteils minus dessen tatsächliches Einkommen. Das Schulstufenmodell bestimmt, ab wann eine Erwerbstätigkeit zumutbar ist."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Was besagt das Schulstufenmodell für die Erwerbspflicht des betreuenden Elternteils?",
+              "hint": "E. 5.",
+              "model_answer": "Jüngstes Kind unter Schulalter: keine Erwerbstätigkeit zumutbar. Ab Primarschule: 50% Erwerbstätigkeit. Ab Sekundarstufe: 80% Erwerbstätigkeit. Ab 16 Jahren: 100% Erwerbstätigkeit."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn der betreuende Elternteil freiwillig auf eine gutbezahlte Stelle verzichtet?",
+              "discussion_points": ["Hypothetisches Einkommen", "Zumutbare Erwerbstätigkeit", "Eigenversorgungskapazität"],
+              "likely_outcome_shift": "Dem betreuenden Elternteil wird ein hypothetisches Einkommen angerechnet, wenn er bei zumutbarer Anstrengung mehr verdienen könnte. Dies reduziert den Betreuungsunterhalt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist das Schulstufenmodell mit festen Altersgrenzen sachgerecht?",
+              "hint": "Denken Sie an individuelle Betreuungsbedürfnisse und die Verfügbarkeit von Kinderbetreuung.",
+              "model_answer": "Pro: Rechtssicherheit, klare Vorgaben. Contra: Pauschale Grenzen ignorieren individuelle Umstände (z.B. behindertes Kind, fehlende Betreuungsplätze). Eine flexible Beurteilung wäre gerechter, aber weniger vorhersehbar."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn beide Eltern das Kind je zur Hälfte betreuen (echte alternierende Obhut)?",
+              "discussion_points": ["Geteilte Betreuung", "Betreuungsunterhalt bei 50/50", "Barunterhalt vs. Naturalunterhalt"],
+              "likely_outcome_shift": "Bei echter alternierenden Obhut entfällt der Betreuungsunterhalt grundsätzlich. Es bleibt ggf. ein Barunterhalt bei unterschiedlichen Einkommen der Eltern."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "guterrecht",
+      "name_de": "Güterrecht",
+      "name_fr": "Régimes matrimoniaux",
+      "name_it": "Regime matrimoniale",
+      "statutes": ["Art. 196 ZGB", "Art. 215 ZGB", "Art. 206 ZGB"],
+      "cases": [
+        {
+          "decision_id": "bge_141 III 145",
+          "bge_ref": "BGE 141 III 145",
+          "actual_language": "de",
+          "title_de": "Güterrechtliche Auseinandersetzung — Errungenschaftsbeteiligung",
+          "title_fr": "Liquidation du régime matrimonial — participation aux acquêts",
+          "concepts_de": ["Errungenschaftsbeteiligung", "Eigengut", "Errungenschaft", "Vorschlagsteilung"],
+          "concepts_fr": ["Participation aux acquêts", "Biens propres", "Acquêts", "Partage du bénéfice"],
+          "statutes": ["Art. 196 ZGB", "Art. 197 ZGB", "Art. 198 ZGB", "Art. 215 ZGB"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Abgrenzung zwischen Eigengut und Errungenschaft; Vermutung zugunsten der Errungenschaft",
+          "significance_fr": "Arrêt de principe sur la distinction entre biens propres et acquêts; présomption en faveur des acquêts",
+          "key_erwagungen": ["3", "4"],
+          "reading_guide_de": "E. 3: Systematik des Güterrechts — Eigengut (Art. 198 ZGB) vs. Errungenschaft (Art. 197 ZGB). E. 4: Vermutung zugunsten der Errungenschaft (Art. 200 Abs. 3 ZGB) — wer Eigengut behauptet, muss es beweisen.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Unterschied zwischen Eigengut und Errungenschaft?",
+              "hint": "Art. 197 und 198 ZGB, E. 3.",
+              "model_answer": "Eigengut: Vermögen, das ein Ehegatte in die Ehe einbringt oder durch Erbschaft/Schenkung erhält. Errungenschaft: Vermögen, das während der Ehe entgeltlich erworben wird (z.B. Arbeitseinkommen, Kapitalerträge)."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Wie funktioniert die Vorschlagsteilung bei der Errungenschaftsbeteiligung?",
+              "hint": "Art. 215 ZGB.",
+              "model_answer": "Der Vorschlag ist der Überschuss der Errungenschaft jedes Ehegatten über seine Schulden. Jeder Ehegatte hat Anspruch auf die Hälfte des Vorschlags des anderen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum gilt im Zweifel die Vermutung zugunsten der Errungenschaft?",
+              "hint": "Art. 200 Abs. 3 ZGB, E. 4.",
+              "model_answer": "Weil die Zuordnung zum Eigengut die Ausnahme ist. Wer behauptet, ein Vermögenswert gehöre zum Eigengut, muss dies beweisen. Dies schützt den anderen Ehegatten vor Vermögensverschiebungen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn ein Ehegatte eine Erbschaft erhalten, diese aber in eine gemeinsame Liegenschaft investiert hat?",
+              "discussion_points": ["Ersatzanschaffung", "Art. 206 ZGB (Hinzurechnung)", "Surrogation"],
+              "likely_outcome_shift": "Die Erbschaft bleibt Eigengut, aber wenn sie in eine Errungenschaftsliegenschaft investiert wurde, entsteht eine Ersatzforderung des Eigenguts gegen die Errungenschaft (Art. 209 ZGB)."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Errungenschaftsbeteiligung als gesetzlicher Güterstand sachgerecht?",
+              "hint": "Vergleichen Sie mit Gütergemeinschaft und Gütertrennung.",
+              "model_answer": "Pro: Guter Kompromiss zwischen Eigenständigkeit und Teilhabe am ehelichen Erwerb. Contra: Komplexe Abgrenzung Eigengut/Errungenschaft, Beweisprobleme. Im europäischen Vergleich ist sie eine gelungene Mittellösung."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn ein Ehegatte Vermögen absichtlich verschleudert, um den Vorschlag zu schmälern?",
+              "discussion_points": ["Art. 208 ZGB (Hinzurechnung)", "Böswillige Vermögensverminderung", "Schutz des anderen Ehegatten"],
+              "likely_outcome_shift": "Art. 208 ZGB erlaubt die Hinzurechnung böswillig vermindeter Errungenschaft. Die verschleuderten Beträge werden bei der Vorschlagsberechnung wieder hinzugerechnet."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

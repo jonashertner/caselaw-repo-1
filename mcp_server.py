@@ -1829,6 +1829,160 @@ def _find_incoming_citations(
         conn.close()
 
 
+def _find_appeal_chain(
+    decision_id: str, *, min_confidence: float = 0.3
+) -> dict:
+    """Traverse the appeal chain for a decision (prior and subsequent instances).
+
+    Uses the is_prior_instance flag on decision_citations to distinguish
+    procedural links (appeal chain) from doctrinal citations.
+    """
+    conn = _get_graph_conn()
+    if conn is None:
+        return {"decision_id": decision_id, "error": "Reference graph not available."}
+
+    try:
+        # Check if is_prior_instance column exists (backward compat)
+        cols = [
+            r[1] for r in conn.execute("PRAGMA table_info(decision_citations)").fetchall()
+        ]
+        if "is_prior_instance" not in cols:
+            return {
+                "decision_id": decision_id,
+                "error": "Appeal chain data not available. Rebuild reference graph to enable.",
+            }
+
+        result: dict = {"decision_id": decision_id, "chain": []}
+
+        # Get info about the queried decision
+        src = conn.execute(
+            "SELECT docket_number, court, canton, decision_date FROM decisions WHERE decision_id = ?",
+            (decision_id,),
+        ).fetchone()
+        if src:
+            result["docket_number"] = src["docket_number"]
+            result["court"] = src["court"]
+            result["decision_date"] = src["decision_date"]
+
+        # Use separate visited sets per direction so nodes found walking
+        # down (prior instances) are not excluded from the upward walk.
+        # The root decision_id is NOT pre-added — _walk_chain queries it
+        # at depth=0, then adds discovered children to visited to prevent cycles.
+        visited_down: set[str] = set()
+        visited_up: set[str] = set()
+
+        # Walk DOWN: find prior instances (what this decision appealed)
+        _walk_chain(conn, decision_id, "down", result["chain"], min_confidence, visited=visited_down)
+
+        # Walk UP: find subsequent instances (decisions that appealed this one)
+        _walk_chain(conn, decision_id, "up", result["chain"], min_confidence, visited=visited_up)
+
+        # Sort chain by date
+        result["chain"].sort(key=lambda x: x.get("decision_date") or "")
+
+        return result
+    except sqlite3.Error as e:
+        logger.debug("Appeal chain lookup failed: %s", e)
+        return {"decision_id": decision_id, "error": str(e)}
+    finally:
+        conn.close()
+
+
+def _walk_chain(
+    conn: sqlite3.Connection,
+    decision_id: str,
+    direction: str,
+    chain: list[dict],
+    min_confidence: float,
+    visited: set[str],
+    depth: int = 0,
+) -> None:
+    """Recursively walk the appeal chain in one direction."""
+    if depth > 5:  # safety limit
+        return
+    if decision_id in visited:
+        return
+    visited.add(decision_id)  # mark before querying to prevent cycles
+
+    if direction == "down":
+        # Find prior instances: decisions this one appealed
+        rows = conn.execute(
+            """
+            SELECT ct.target_decision_id, MAX(ct.confidence_score) AS confidence_score,
+                   d.docket_number, d.court, d.canton, d.decision_date
+            FROM decision_citations dc
+            JOIN citation_targets ct
+              ON ct.source_decision_id = dc.source_decision_id
+             AND ct.target_ref = dc.target_ref
+            JOIN decisions d
+              ON d.decision_id = ct.target_decision_id
+            WHERE dc.source_decision_id = ?
+              AND dc.is_prior_instance = 1
+              AND ct.confidence_score >= ?
+            GROUP BY ct.target_decision_id
+            ORDER BY confidence_score DESC
+            LIMIT 5
+            """,
+            (decision_id, min_confidence),
+        ).fetchall()
+
+        for row in rows:
+            target_id = row["target_decision_id"]
+            if target_id in visited:
+                continue
+            chain.append({
+                "decision_id": target_id,
+                "docket_number": row["docket_number"],
+                "court": row["court"],
+                "canton": row["canton"],
+                "decision_date": row["decision_date"],
+                "confidence": round(float(row["confidence_score"]), 3),
+                "relation": "prior_instance",
+                "appealed_by": decision_id,
+            })
+            # Recurse down
+            _walk_chain(conn, target_id, "down", chain, min_confidence, visited, depth + 1)
+
+    elif direction == "up":
+        # Find subsequent instances: decisions that appealed this one
+        rows = conn.execute(
+            """
+            SELECT dc.source_decision_id, MAX(ct.confidence_score) AS confidence_score,
+                   d.docket_number, d.court, d.canton, d.decision_date
+            FROM decision_citations dc
+            JOIN citation_targets ct
+              ON ct.source_decision_id = dc.source_decision_id
+             AND ct.target_ref = dc.target_ref
+            JOIN decisions d
+              ON d.decision_id = dc.source_decision_id
+            WHERE ct.target_decision_id = ?
+              AND dc.is_prior_instance = 1
+              AND ct.confidence_score >= ?
+            GROUP BY dc.source_decision_id
+            ORDER BY d.decision_date ASC
+            LIMIT 5
+            """,
+            (decision_id, min_confidence),
+        ).fetchall()
+
+        for row in rows:
+            source_id = row["source_decision_id"]
+            if source_id in visited:
+                continue
+            chain.append({
+                "decision_id": source_id,
+                "docket_number": row["docket_number"],
+                "court": row["court"],
+                "canton": row["canton"],
+                "decision_date": row["decision_date"],
+                "confidence": round(float(row["confidence_score"]), 3),
+                "relation": "subsequent_instance",
+                "appeals": decision_id,
+            })
+            # Recurse up
+            _walk_chain(conn, source_id, "up", chain, min_confidence, visited, depth + 1)
+
+
 def _text_matches_any_statute_hint(text: str, statutes: set[str]) -> bool:
     for ref in statutes:
         article, paragraph, law = _parse_statute_ref(ref)
@@ -4082,6 +4236,72 @@ def _format_citations_response(result: dict) -> str:
     return text
 
 
+def _format_appeal_chain_response(result: dict) -> str:
+    """Format find_appeal_chain result into markdown."""
+    if result.get("error"):
+        return result["error"]
+
+    chain = result.get("chain", [])
+    did = result.get("decision_id", "?")
+    docket = result.get("docket_number", did)
+    court = result.get("court", "?")
+    date = result.get("decision_date", "?")
+
+    if not chain:
+        return (
+            f"# Appeal chain for {docket}\n\n"
+            f"**{docket}** ({date}) [{court}] — ID: {did}\n\n"
+            f"No prior or subsequent instances found in the database.\n"
+            f"This may mean the decision is not an appeal, or the lower/upper court "
+            f"decisions are not in the dataset."
+        )
+
+    text = f"# Appeal chain for {docket}\n\n"
+    text += f"**Query decision:** {docket} ({date}) [{court}] — ID: {did}\n\n"
+
+    # Prior instances (lower courts)
+    prior = [c for c in chain if c.get("relation") == "prior_instance"]
+    subsequent = [c for c in chain if c.get("relation") == "subsequent_instance"]
+
+    if prior:
+        text += f"## Prior instances ({len(prior)})\n"
+        text += "Decisions that were appealed (lower courts):\n\n"
+        for c in prior:
+            conf = c.get("confidence", 0)
+            text += (
+                f"- **{c['docket_number']}** ({c.get('decision_date', '?')}) "
+                f"[{c['court']}] conf={conf:.2f}\n"
+                f"  ID: {c['decision_id']}\n"
+            )
+        text += "\n"
+
+    if subsequent:
+        text += f"## Subsequent instances ({len(subsequent)})\n"
+        text += "Decisions that appealed this one (higher courts):\n\n"
+        for c in subsequent:
+            conf = c.get("confidence", 0)
+            text += (
+                f"- **{c['docket_number']}** ({c.get('decision_date', '?')}) "
+                f"[{c['court']}] conf={conf:.2f}\n"
+                f"  ID: {c['decision_id']}\n"
+            )
+        text += "\n"
+
+    # Visual chain — structural ordering: prior (sorted by date) → query → subsequent (sorted by date)
+    prior_sorted = sorted(prior, key=lambda x: x.get("decision_date") or "")
+    subsequent_sorted = sorted(subsequent, key=lambda x: x.get("decision_date") or "")
+    chain_labels = (
+        [f"{c['docket_number']} [{c['court']}]" for c in prior_sorted]
+        + [f"{docket} [{court}]"]
+        + [f"{c['docket_number']} [{c['court']}]" for c in subsequent_sorted]
+    )
+
+    text += "## Instanzenzug\n"
+    text += " → ".join(chain_labels) + "\n"
+
+    return text
+
+
 def _format_leading_cases_response(result: dict) -> str:
     """Format find_leading_cases result into markdown."""
     if result.get("error"):
@@ -4719,6 +4939,7 @@ def _handle_study_leading_case(
         curriculum_case=curriculum_case,
         citation_counts=citation_counts,
         related_cases=related_cases,
+        requested_language=language,
     )
 
 
@@ -4732,7 +4953,7 @@ def _handle_list_study_curriculum(
     if area:
         areas = load_curriculum(area=area)
         if not areas:
-            return {"error": f"Unknown area: {area}. Available: vertragsrecht, haftpflicht, sachenrecht, grundrechte, strafrecht_at"}
+            return {"error": f"Unknown area: {area}. Available: vertragsrecht, haftpflicht, sachenrecht, grundrechte, strafrecht_at, mietrecht, arbeitsrecht, familienrecht"}
 
         a = areas[0]
         lang_key = language if language in ("de", "fr", "it") else "de"
@@ -4779,7 +5000,22 @@ def _handle_check_case_brief(
     if not decision:
         return {"error": f"Decision not found: {decision_id}"}
 
-    return build_brief_comparison(decision=decision, student_brief=brief)
+    # Find curriculum case for extra context
+    curriculum_case = None
+    areas = load_curriculum()
+    for area in areas:
+        for mod in area.modules:
+            for case in mod.cases:
+                if case.decision_id == decision_id:
+                    curriculum_case = case
+                    break
+
+    return build_brief_comparison(
+        decision=decision,
+        student_brief=brief,
+        language=language,
+        curriculum_case=curriculum_case,
+    )
 
 
 @server.list_tools()
@@ -4964,6 +5200,30 @@ async def handle_list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            name="find_appeal_chain",
+            description=(
+                "Trace the appeal chain (Instanzenzug) for a decision. "
+                "Shows prior instances (lower courts) and subsequent instances (appeals to higher courts). "
+                "Reconstructs the full procedural path, e.g. Bezirksgericht → Obergericht → Bundesgericht. "
+                "Uses the is_prior_instance flag from decision headers."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": "Decision ID (e.g., bger_6B_1_2025)",
+                    },
+                    "min_confidence": {
+                        "type": "number",
+                        "description": "Minimum confidence score (0-1, default 0.3)",
+                        "default": 0.3,
+                    },
+                },
+                "required": ["decision_id"],
+            },
+        ),
+        Tool(
             name="find_leading_cases",
             description=(
                 "Find the most-cited decisions for a topic or statute. "
@@ -5129,7 +5389,14 @@ async def handle_list_tools() -> list[Tool]:
                 "Returns parsed decision structure (Sachverhalt, numbered Erwägungen with "
                 "statute references, Dispositiv), curriculum metadata, and citation graph data. "
                 "Use for Socratic legal education: the returned structure enables generating "
-                "comprehension questions, reading guides, and case briefing exercises."
+                "comprehension questions, reading guides, and case briefing exercises.\n\n"
+                "Study modes:\n"
+                "- 'guided' (default): Full package with Socratic questions (5 Bloom levels), "
+                "study phases (3-phase progression), hypothetical variations, review cards, "
+                "brief template, and related cases.\n"
+                "- 'brief': Decision structure + brief template (6 weighted sections) + review cards. "
+                "Ideal for case briefing exercises.\n"
+                "- 'quick': Regeste + ratio + review cards for spaced repetition revision."
             ),
             inputSchema={
                 "type": "object",
@@ -5157,9 +5424,9 @@ async def handle_list_tools() -> list[Tool]:
                     "mode": {
                         "type": "string",
                         "description": (
-                            "Study mode: 'guided' (full structure + related cases), "
-                            "'brief' (for case briefing exercises), "
-                            "'quick' (key points only for revision)."
+                            "Study mode: 'guided' (full structure + Socratic questions + hypotheticals + review cards), "
+                            "'brief' (decision structure + brief template + review cards), "
+                            "'quick' (regeste + ratio + review cards only)."
                         ),
                         "enum": ["guided", "brief", "quick"],
                         "default": "guided",
@@ -5171,8 +5438,9 @@ async def handle_list_tools() -> list[Tool]:
             name="list_study_curriculum",
             description=(
                 "List available study curricula for Swiss law. "
-                "Returns areas (Rechtsgebiete), modules, and cases with metadata. "
-                "Covers: Vertragsrecht, Haftpflicht, Sachenrecht, Grundrechte, Strafrecht AT."
+                "Returns areas (Rechtsgebiete), modules with case counts and difficulty ranges, and cases with metadata. "
+                "Covers 8 areas: Vertragsrecht, Haftpflicht, Sachenrecht, Grundrechte, Strafrecht AT, "
+                "Mietrecht, Arbeitsrecht, Familienrecht."
             ),
             inputSchema={
                 "type": "object",
@@ -5181,7 +5449,8 @@ async def handle_list_tools() -> list[Tool]:
                         "type": "string",
                         "description": (
                             "Filter by Rechtsgebiet: vertragsrecht, haftpflicht, "
-                            "sachenrecht, grundrechte, strafrecht_at."
+                            "sachenrecht, grundrechte, strafrecht_at, "
+                            "mietrecht, arbeitsrecht, familienrecht."
                         ),
                     },
                     "difficulty": {
@@ -5202,7 +5471,10 @@ async def handle_list_tools() -> list[Tool]:
                 "Check a student's case brief against the actual decision. "
                 "Returns the parsed decision ground truth (ratio from regeste, statute list, "
                 "Erwägung summaries, Dispositiv) alongside the student's brief, structured "
-                "for comparison and pedagogical feedback generation."
+                "for comparison and pedagogical feedback generation. "
+                "Includes a scoring rubric (6 weighted sections: Leitsatz 15%, Rechtsregel 20%, "
+                "Sachverhalt 15%, Kernerwägungen 25%, Dispositiv 10%, Bedeutung 15%), "
+                "common mistakes per section, and the brief template for reference."
             ),
             inputSchema={
                 "type": "object",
@@ -5396,6 +5668,14 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 limit=int(arguments.get("limit", 50)),
             )
             return [TextContent(type="text", text=_format_citations_response(result))]
+
+        elif name == "find_appeal_chain":
+            result = await asyncio.to_thread(
+                _find_appeal_chain,
+                decision_id=arguments["decision_id"],
+                min_confidence=float(arguments.get("min_confidence", 0.3)),
+            )
+            return [TextContent(type="text", text=_format_appeal_chain_response(result))]
 
         elif name == "find_leading_cases":
             result = await asyncio.to_thread(

@@ -15,6 +15,7 @@
         {
           "decision_id": "bge_135 III 1",
           "bge_ref": "BGE 135 III 1",
+          "actual_language": "de",
           "title_de": "AGB-Kontrolle und Ungewöhnlichkeitsregel",
           "title_fr": "Contrôle des CGA et règle de l'inhabituel",
           "concepts_de": ["Allgemeine Geschäftsbedingungen", "Ungewöhnlichkeitsregel", "Inhaltskontrolle", "Konsens"],
@@ -22,11 +23,65 @@
           "statutes": ["Art. 1 OR", "Art. 8 UWG"],
           "difficulty": 3,
           "prerequisites": [],
-          "significance_de": "Leitentscheid zur AGB-Inhaltskontrolle: Ungewöhnlichkeitsregel und ihre Voraussetzungen"
+          "significance_de": "Leitentscheid zur AGB-Inhaltskontrolle: Ungewöhnlichkeitsregel und ihre Voraussetzungen",
+          "key_erwagungen": ["2", "3"],
+          "reading_guide_de": "Fokus auf E. 2 (Auslegung von AGB) und E. 3 (Ungewöhnlichkeitsregel). Achten Sie auf die zweistufige Prüfung: erst Konsens, dann Inhaltskontrolle.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist die Ungewöhnlichkeitsregel bei AGB und welche Funktion hat sie?",
+              "hint": "Lesen Sie E. 3.",
+              "model_answer": "Die Ungewöhnlichkeitsregel schützt den Vertragspartner vor überraschenden AGB-Klauseln. Ungewöhnliche Klauseln, mit denen der schwächere Partner nicht rechnen musste, werden nicht Vertragsbestandteil."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen bilden die Grundlage der AGB-Kontrolle im schweizerischen Recht?",
+              "hint": "Art. 1 OR und Art. 8 UWG.",
+              "model_answer": "Art. 1 OR (Konsenserfordernis), Art. 8 UWG (Inhaltskontrolle missbräuchlicher Geschäftsbedingungen). Die Ungewöhnlichkeitsregel ergibt sich aus dem Vertrauensprinzip."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum war die strittige AGB-Klausel im konkreten Fall ungewöhnlich?",
+              "hint": "Prüfen Sie die Kriterien in E. 3.",
+              "model_answer": "Die Klausel wich erheblich vom dispositiven Recht und den branchenüblichen Bedingungen ab. Der Vertragspartner musste damit nicht rechnen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn der Vertragspartner die AGB vor Vertragsschluss vollständig gelesen hätte?",
+              "discussion_points": ["Tatsächliche vs. normative Kenntnis", "Globalübernahme", "Informierter Konsens"],
+              "likely_outcome_shift": "Die Ungewöhnlichkeitsregel schützt auch bei Globalübernahme, unabhängig davon, ob der Partner die AGB gelesen hat. Die Frage ist, womit er vernünftigerweise rechnen musste."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Reicht die schweizerische AGB-Kontrolle aus, oder braucht es ein umfassenderes System wie in der EU?",
+              "hint": "Vergleichen Sie mit der EU-Klauselrichtlinie 93/13/EWG.",
+              "model_answer": "Pro CH-System: Flexibel, richterliche Einzelfallprüfung. Contra: Lückenhaft, kein generelles Transparenzgebot, Art. 8 UWG nur beschränkt wirksam. Die EU-Richtlinie bietet umfassenderen Konsumentenschutz."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die AGB-Klausel dem Verwender erlaubt, die Preise einseitig anzupassen?",
+              "discussion_points": ["Einseitige Vertragsänderung", "Art. 2 ZGB", "Zumutbarkeit"],
+              "likely_outcome_shift": "Eine einseitige Preisanpassungsklausel ohne Grenzen wäre als ungewöhnlich und evtl. missbräuchlich nach Art. 8 UWG zu qualifizieren."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn beide Parteien Unternehmen wären (B2B)?",
+              "discussion_points": ["Konsumentenschutz vs. B2B", "Ungewöhnlichkeitsregel im B2B-Bereich", "Geschäftserfahrung"],
+              "likely_outcome_shift": "Im B2B-Bereich wird von höherer Aufmerksamkeit ausgegangen. Die Schwelle der Ungewöhnlichkeit ist höher, aber die Regel gilt grundsätzlich auch hier."
+            }
+          ]
         },
         {
           "decision_id": "bge_123 III 35",
           "bge_ref": "BGE 123 III 35",
+          "actual_language": "de",
           "title_de": "Konsens und Auslegung eines Verweisungsvertrags",
           "title_fr": "Consensus et interprétation d'une clause d'élection de for",
           "concepts_de": ["Konsens", "Vertragsauslegung", "Gerichtsstand", "IPR"],
@@ -34,7 +89,54 @@
           "statutes": ["Art. 1 OR"],
           "difficulty": 4,
           "prerequisites": [],
-          "significance_de": "Grundsatzentscheid zu Konsens und Auslegungsregeln bei Vertragsschluss"
+          "significance_de": "Grundsatzentscheid zu Konsens und Auslegungsregeln bei Vertragsschluss",
+          "key_erwagungen": ["2"],
+          "reading_guide_de": "E. 2 enthält die zentrale Darstellung der Auslegungsregeln: natürlicher Konsens (2a), normativer Konsens (2b-d). Achten Sie auf die Unterscheidung tatsächlicher/rechtlicher Konsens.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Unterschied zwischen natürlichem und normativem Konsens?",
+              "hint": "Lesen Sie E. 2a-d.",
+              "model_answer": "Natürlicher Konsens: Beide Parteien verstehen die Erklärung gleich (tatsächlicher Parteiwille übereinstimmend). Normativer Konsens: Die Erklärung wird nach dem Vertrauensprinzip so ausgelegt, wie sie der Empfänger nach Treu und Glauben verstehen durfte."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "In welcher Reihenfolge prüft das Bundesgericht die Konsensformen?",
+              "hint": "E. 2.",
+              "model_answer": "1. Natürlicher Konsens (Tatfrage). 2. Normativer Konsens nach Vertrauensprinzip (Rechtsfrage). 3. Ergänzende Vertragsauslegung bei Lücken."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum war der normative Konsens im konkreten Fall entscheidend?",
+              "hint": "E. 2c-d.",
+              "model_answer": "Die Parteien hatten keinen übereinstimmenden tatsächlichen Willen nachgewiesen. Das Gericht musste daher nach dem Vertrauensprinzip bestimmen, wie die Erklärung objektiv zu verstehen war."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn eine Partei ihre interne, abweichende Willensbildung durch E-Mails belegen könnte?",
+              "discussion_points": ["Mentalreservation", "Beweis des natürlichen Konsenses", "Vertrauensschutz"],
+              "likely_outcome_shift": "Interne E-Mails könnten den tatsächlichen Willen belegen. Wenn beide Parteien dasselbe verstanden haben, gilt der natürliche Konsens. Bei abweichendem internen Willen greift der normative Konsens (Vertrauensschutz)."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Unterscheidung natürlicher/normativer Konsens praktisch handhabbar?",
+              "hint": "Denken Sie an die Beweisproblematik.",
+              "model_answer": "Theoretisch klar, praktisch problematisch: Der natürliche Konsens ist schwer zu beweisen, weshalb fast immer auf den normativen Konsens zurückgegriffen wird. Dies macht die Unterscheidung teilweise akademisch."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn der Vertrag in einer den Parteien nicht geläufigen Sprache abgefasst wäre?",
+              "discussion_points": ["Sprachrisiko", "Verständnismängel", "Erkundigungspflicht"],
+              "likely_outcome_shift": "Wer einen fremdsprachigen Vertrag unterschreibt, trägt das Sprachrisiko. Er darf sich grundsätzlich nicht auf Unverständnis berufen, es sei denn, die Gegenpartei hat ihn arglistig getäuscht."
+            }
+          ]
         }
       ]
     },
@@ -48,6 +150,7 @@
         {
           "decision_id": "bge_131 III 606",
           "bge_ref": "BGE 131 III 606",
+          "actual_language": "fr",
           "title_de": "Grundsätze der Vertragsauslegung",
           "title_fr": "Principes d'interprétation du contrat",
           "concepts_de": ["Vertragsauslegung", "Vertrauensprinzip", "Wortlautauslegung", "Parteiwille"],
@@ -55,11 +158,60 @@
           "statutes": ["Art. 18 OR"],
           "difficulty": 2,
           "prerequisites": [],
-          "significance_de": "Zusammenstellung der Auslegungsgrundsätze; Grenzen der wortlautbezogenen Auslegung"
+          "significance_de": "Zusammenstellung der Auslegungsgrundsätze; Grenzen der wortlautbezogenen Auslegung",
+          "key_erwagungen": ["4.1", "4.2"],
+          "reading_guide_de": "Achtung: Volltext auf Französisch, Regeste ist dreisprachig. E. 4.1 fasst die Auslegungsgrundsätze zusammen (consid. 4.1), E. 4.2 zeigt die Grenzen der Wortlautauslegung.",
+          "reading_guide_fr": "Consid. 4.1: rappel des principes d'interprétation. Consid. 4.2: limites de l'interprétation littérale.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Welche Auslegungsgrundsätze fasst das Bundesgericht in diesem Entscheid zusammen?",
+              "hint": "Lesen Sie E. 4.1.",
+              "model_answer": "1. Primat des tatsächlichen Parteiwillens. 2. Hilfsweise: Auslegung nach Vertrauensprinzip. 3. Wortlaut als Ausgangspunkt, aber nicht allein massgebend. 4. Gesamtwürdigung aller Umstände."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Was besagt Art. 18 OR und wie setzt das Gericht ihn um?",
+              "hint": "E. 4.1.",
+              "model_answer": "Art. 18 OR: Der wirkliche Wille der Parteien geht dem Wortlaut vor. Das Gericht setzt dies um durch die Prüfungsstufenfolge: erst natürlicher Konsens (Tatfrage), dann normativer Konsens (Rechtsfrage)."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum hat das Gericht die Wortlautauslegung im konkreten Fall verworfen?",
+              "hint": "E. 4.2.",
+              "model_answer": "Der Wortlaut ergab ein Ergebnis, das dem erkennbaren Parteiwillen und dem Vertragszweck widersprach. Die systematische und teleologische Auslegung führte zu einem anderen Ergebnis."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn die Vertragsparteien eine Auslegungsregel im Vertrag vereinbart hätten ('Entire Agreement Clause')?",
+              "discussion_points": ["Entire Agreement Clause", "Vorrang des Parteiwillens", "Beweiswürdigung"],
+              "likely_outcome_shift": "Eine Entire Agreement Clause schliesst den Rückgriff auf Vorverhandlungen aus. Art. 18 OR (tatsächlicher Parteiwille) geht aber grundsätzlich vor, da die Auslegung des Vertragstexts davon umfasst wird."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist der Vorrang des tatsächlichen Parteiwillens vor dem Wortlaut sachgerecht?",
+              "hint": "Denken Sie an Verkehrssicherheit und Beweisschwierigkeiten.",
+              "model_answer": "Pro: Entspricht dem Prinzip der Privatautonomie. Contra: Schwierig zu beweisen, gefährdet die Rechtssicherheit. In der Praxis dominiert die objektive Auslegung."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "remove_element",
+              "scenario": "Was wäre, wenn keine Vorverhandlungen dokumentiert wären?",
+              "discussion_points": ["Beweislast", "Wortlaut als Ausgangspunkt", "Umstände des Vertragsschlusses"],
+              "likely_outcome_shift": "Ohne Dokumentation der Vorverhandlungen fällt die Feststellung des tatsächlichen Parteiwillens weg. Der Wortlaut gewinnt als Auslegungskriterium an Gewicht."
+            }
+          ]
         },
         {
           "decision_id": "bge_144 III 93",
           "bge_ref": "BGE 144 III 93",
+          "actual_language": "fr",
           "title_de": "Darlehen oder Schenkung — Auslegung des Parteiwillens",
           "title_fr": "Prêt ou donation — interprétation de la volonté des parties",
           "concepts_de": ["Vertragsauslegung", "Parteiwille", "Darlehen", "Schenkung", "Vertrauensprinzip"],
@@ -67,7 +219,55 @@
           "statutes": ["Art. 18 OR", "Art. 312 OR", "Art. 239 OR"],
           "difficulty": 3,
           "prerequisites": ["bge_131 III 606"],
-          "significance_de": "Anwendung der Auslegungsprinzipien auf die Abgrenzung Darlehen/Schenkung"
+          "significance_de": "Anwendung der Auslegungsprinzipien auf die Abgrenzung Darlehen/Schenkung",
+          "key_erwagungen": ["5.2", "5.3"],
+          "reading_guide_de": "Achtung: Volltext auf Französisch. Zeigt die praktische Anwendung der in BGE 131 III 606 zusammengefassten Grundsätze. Vergleichen Sie die Methodik.",
+          "reading_guide_fr": "Consid. 5.2-5.3: application des principes d'interprétation à la distinction prêt/donation.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Wie grenzt das Gericht Darlehen und Schenkung voneinander ab?",
+              "hint": "Lesen Sie E. 5.2 und vergleichen Sie Art. 312 OR mit Art. 239 OR.",
+              "model_answer": "Darlehen: Rückzahlungspflicht vereinbart. Schenkung: Unentgeltliche Zuwendung ohne Rückzahlungspflicht. Entscheidend ist der Parteiwille bezüglich der Rückzahlung."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Auslegungsmethoden verwendet das Gericht zur Bestimmung des Parteiwillens?",
+              "hint": "E. 5.2-5.3.",
+              "model_answer": "Vertrauensprinzip, Berücksichtigung der Gesamtumstände (familiäre Beziehung, Höhe des Betrags, Verhalten der Parteien nach der Zuwendung)."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Welche Indizien sprachen im konkreten Fall für ein Darlehen bzw. eine Schenkung?",
+              "hint": "E. 5.3.",
+              "model_answer": "Für Darlehen: schriftliche Bestätigung, Höhe des Betrags. Für Schenkung: familiäre Beziehung, keine Zinsen, keine Rückzahlungsfrist vereinbart."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn eine schriftliche Bestätigung über die 'Rückzahlung' existiert, aber ohne Datum und Betrag?",
+              "discussion_points": ["Beweiskraft", "Formvorschriften", "Auslegung unvollständiger Urkunden"],
+              "likely_outcome_shift": "Eine unvollständige Bestätigung hat geringe Beweiskraft. Die Gesamtumstände gewinnen an Bedeutung für die Abgrenzung."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die bundesgerichtliche Methodik bei der Abgrenzung Darlehen/Schenkung im Familienkontext überzeugend?",
+              "hint": "Denken Sie an die Beweisproblematik und die Formfreiheit.",
+              "model_answer": "Die Methodik ist sachgerecht, aber die Beweislage ist im Familienkontext oft unklar. Ein Formerfordernis für Familiendarlehen ab einer Schwelle könnte Rechtssicherheit schaffen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn die Zuwendung zwischen Geschäftspartnern (nicht Familienmitgliedern) erfolgt wäre?",
+              "discussion_points": ["Vermutung im geschäftlichen Verkehr", "Handelsbrauch", "Beweislast"],
+              "likely_outcome_shift": "Im geschäftlichen Verkehr wird eine Rückzahlungspflicht eher vermutet. Die Vermutung spricht für ein Darlehen, nicht für eine Schenkung."
+            }
+          ]
         }
       ]
     },
@@ -81,6 +281,7 @@
         {
           "decision_id": "bge_128 III 70",
           "bge_ref": "BGE 128 III 70",
+          "actual_language": "de",
           "title_de": "Vertragsanfechtung wegen Irrtums oder Täuschung",
           "title_fr": "Invalidation pour erreur ou dol",
           "concepts_de": ["Irrtum", "Täuschung", "Anfechtung", "Willensmängel", "Unwiderruflichkeit"],
@@ -88,11 +289,59 @@
           "statutes": ["Art. 23 OR", "Art. 24 OR", "Art. 28 OR"],
           "difficulty": 2,
           "prerequisites": [],
-          "significance_de": "Grundsatz der Unwiderruflichkeit der Anfechtungserklärung und ihre Ausnahmen"
+          "significance_de": "Grundsatz der Unwiderruflichkeit der Anfechtungserklärung und ihre Ausnahmen",
+          "key_erwagungen": ["1", "2"],
+          "reading_guide_de": "E. 1: Voraussetzung — Willensmangel muss tatsächlich bestanden haben. E. 2: Ausnahmen von der Unwiderruflichkeit. Achten Sie auf das Zusammenspiel von Gestaltungsrecht und Vertrauensschutz.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was bedeutet die Unwiderruflichkeit der Anfechtungserklärung?",
+              "hint": "Lesen Sie E. 1-2.",
+              "model_answer": "Wer einen Vertrag wegen Willensmangels anficht, kann diese Erklärung grundsätzlich nicht mehr zurücknehmen. Die Anfechtung ist ein einseitiges Gestaltungsrecht, das mit Zugang wirkt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Ausnahmen von der Unwiderruflichkeit erkennt das Bundesgericht an?",
+              "hint": "E. 2.",
+              "model_answer": "Ausnahmen: Wenn kein schutzwürdiges Interesse des Empfängers besteht oder wenn der Willensmangel nachträglich weggefallen ist (z.B. Aufklärung des Irrtums)."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum hat das Gericht im konkreten Fall die Rücknahme der Anfechtung zugelassen?",
+              "hint": "E. 2.",
+              "model_answer": "Der Anfechtende konnte nachweisen, dass kein schutzwürdiges Gegenparteiinteresse verletzt wurde und dass die Aufrechterhaltung des Vertrags im beiderseitigen Interesse lag."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn der Vertragspartner im Vertrauen auf die Anfechtung bereits Dispositionen getroffen hätte?",
+              "discussion_points": ["Vertrauensschutz", "Schadenersatz", "Dispositionsschutz"],
+              "likely_outcome_shift": "Bei schutzwürdigen Dispositionen des Partners wäre die Rücknahme der Anfechtung unzulässig. Der Vertrauensschutz überwiegt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Unwiderruflichkeit als Grundsatz überzeugend, oder sollte mehr Flexibilität bestehen?",
+              "hint": "Denken Sie an Rechtssicherheit vs. Einzelfallgerechtigkeit.",
+              "model_answer": "Pro Unwiderruflichkeit: Rechtssicherheit, Schutz des Empfängers. Pro Flexibilität: Vermeidung ungerechter Ergebnisse bei übereilter Anfechtung. Die Ausnahmen schaffen einen sachgerechten Kompromiss."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "change_timeline",
+              "scenario": "Was wäre, wenn die Anfechtung erst nach 2 Jahren erklärt würde?",
+              "discussion_points": ["Verwirkungsfrist (Art. 31 OR)", "Ein-Jahres-Frist", "Kenntnis des Willensmangels"],
+              "likely_outcome_shift": "Nach Ablauf der einjährigen Verwirkungsfrist (Art. 31 Abs. 1 OR) ist die Anfechtung verwirkt. Der Vertrag gilt als genehmigt."
+            }
+          ]
         },
         {
           "decision_id": "bge_132 III 737",
           "bge_ref": "BGE 132 III 737",
+          "actual_language": "de",
           "title_de": "Grundlagenirrtum bei gerichtlichem Vergleich",
           "title_fr": "Erreur essentielle dans une transaction judiciaire",
           "concepts_de": ["Grundlagenirrtum", "Gerichtlicher Vergleich", "Kündigung", "Eigenbedarf"],
@@ -100,7 +349,54 @@
           "statutes": ["Art. 24 OR", "Art. 25 OR"],
           "difficulty": 4,
           "prerequisites": ["bge_128 III 70"],
-          "significance_de": "Voraussetzungen für die Anfechtung eines gerichtlichen Vergleichs wegen Grundlagenirrtum"
+          "significance_de": "Voraussetzungen für die Anfechtung eines gerichtlichen Vergleichs wegen Grundlagenirrtum",
+          "key_erwagungen": ["1", "2", "3"],
+          "reading_guide_de": "E. 1: Voraussetzungen der Anfechtung eines Vergleichs. E. 2: massgebender Zeitpunkt. E. 3: Irrtum über die Person der Vermieterin — kein Verstoss gegen Treu und Glauben.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Kann ein gerichtlicher Vergleich wegen Grundlagenirrtum angefochten werden?",
+              "hint": "Lesen Sie E. 1.",
+              "model_answer": "Ja, grundsätzlich schon, aber unter strengeren Voraussetzungen als bei einem normalen Vertrag, weil ein Vergleich gerade unsichere Rechtspositionen endgültig regeln soll."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Was ist der massgebende Zeitpunkt für die Beurteilung des Irrtums?",
+              "hint": "E. 2.",
+              "model_answer": "Massgebend ist der Zeitpunkt des Vergleichsabschlusses. Ein nachträglicher Irrtum genügt nicht. Der Irrende muss sich bei Vergleichsabschluss über eine wesentliche Grundlage geirrt haben."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum war der Irrtum über die Person der Vermieterin ein Grundlagenirrtum?",
+              "hint": "E. 3.",
+              "model_answer": "Die Person der Vermieterin war wesentlich für die Frage des Eigenbedarfs, auf dem der Vergleich beruhte. Der Irrtum betraf damit eine Grundlage des Vergleichs."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn der Irrtum sich auf die Höhe der zukünftigen Mietzinserhöhung bezogen hätte?",
+              "discussion_points": ["Kalkulationsirrtum", "Zukunftsbezogener Irrtum", "Risikozuweisung"],
+              "likely_outcome_shift": "Ein Irrtum über zukünftige Mietzinsentwicklungen wäre ein Kalkulationsirrtum und grundsätzlich kein Grundlagenirrtum, da er zum Risikobereich des Irrenden gehört."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Sollte die Anfechtung gerichtlicher Vergleiche erschwert werden, um Rechtssicherheit zu gewährleisten?",
+              "hint": "Denken Sie an den Zweck des Vergleichs.",
+              "model_answer": "Pro Erschwerung: Ein Vergleich soll Streitigkeiten endgültig beenden. Pro Anfechtbarkeit: Fehlerhafte Grundlagen sollen korrigierbar sein. Die Praxis verlangt zu Recht strenge Voraussetzungen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn der Anwalt des Irrenden von den richtigen Tatsachen wusste?",
+              "discussion_points": ["Zurechnung des Anwaltswissens", "Sorgfaltspflicht", "Art. 26 OR"],
+              "likely_outcome_shift": "Das Wissen des Anwalts wird der Partei zugerechnet. Die Anfechtung wäre ausgeschlossen, weil der Irrtum auf eigener Nachlässigkeit beruht (Art. 26 OR)."
+            }
+          ]
         }
       ]
     },
@@ -114,6 +410,7 @@
         {
           "decision_id": "bge_127 III 543",
           "bge_ref": "BGE 127 III 543",
+          "actual_language": "fr",
           "title_de": "Haftung des Architekten bei Schlechterfüllung",
           "title_fr": "Responsabilité de l'architecte pour mauvaise exécution",
           "concepts_de": ["Schlechterfüllung", "Vertragshaftung", "Kausalzusammenhang", "Architektenvertrag"],
@@ -121,11 +418,60 @@
           "statutes": ["Art. 97 OR", "Art. 398 OR"],
           "difficulty": 3,
           "prerequisites": [],
-          "significance_de": "Grundsatzentscheid zur Haftung nach Art. 97 OR bei Nicht- oder Schlechterfüllung"
+          "significance_de": "Grundsatzentscheid zur Haftung nach Art. 97 OR bei Nicht- oder Schlechterfüllung",
+          "key_erwagungen": ["2"],
+          "reading_guide_de": "Achtung: Volltext auf Französisch. E. 2 (consid. 2): Schadensnachweis bei Vertragshaftung — die Genossenschaft muss eine Verminderung ihrer Ansprüche oder eine Erhöhung ihrer Schulden nachweisen.",
+          "reading_guide_fr": "Consid. 2: preuve du dommage dans la responsabilité contractuelle de l'architecte.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was muss der Geschädigte bei einer Klage auf Vertragshaftung (Art. 97 OR) nachweisen?",
+              "hint": "Lesen Sie E. 2.",
+              "model_answer": "Vertragsverletzung, Schaden, Kausalzusammenhang zwischen Verletzung und Schaden. Das Verschulden wird vermutet (Beweislastumkehr)."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Wie unterscheidet sich die Beweislast bei Art. 97 OR von Art. 41 OR?",
+              "hint": "Vergleichen Sie die Verschuldensvermutung.",
+              "model_answer": "Bei Art. 97 OR wird das Verschulden vermutet (der Schuldner muss sich exkulpieren). Bei Art. 41 OR muss der Geschädigte das Verschulden beweisen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum scheiterte der Schadensnachweis im konkreten Fall?",
+              "hint": "E. 2.",
+              "model_answer": "Der Geschädigte konnte nicht nachweisen, dass der konkrete Schaden (Vermögensverminderung) kausal auf die Schlechterfüllung des Architekten zurückzuführen war."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn der Architekt einen Subunternehmer eingesetzt hätte, der den Fehler verursachte?",
+              "discussion_points": ["Hilfspersonenhaftung (Art. 101 OR)", "Delegationsrisiko", "Exkulpation"],
+              "likely_outcome_shift": "Der Architekt haftet für das Verschulden des Subunternehmers als Hilfsperson nach Art. 101 OR. Er kann sich nicht exkulpieren, wenn die Hilfsperson schuldhaft handelte."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Verschuldensvermutung bei der Vertragshaftung sachgerecht?",
+              "hint": "Denken Sie an die Informationsasymmetrie zwischen den Parteien.",
+              "model_answer": "Pro: Der Schuldner kennt seine Leistungssphäre besser. Contra: Kann bei komplexen Sachverhalten (wie Bauprojekten) zu unbilligen Ergebnissen führen. Insgesamt überwiegt die Praktikabilität."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "remove_element",
+              "scenario": "Was wäre, wenn keine vertragliche Beziehung zum Architekten bestünde (z.B. Nachbar schädigt durch Bauarbeiten)?",
+              "discussion_points": ["Deliktische Haftung (Art. 41 OR)", "Verschuldensnachweis", "Beweislast"],
+              "likely_outcome_shift": "Ohne Vertrag greift Art. 41 OR (deliktische Haftung). Der Geschädigte müsste das Verschulden selbst beweisen, was die Beweislast erheblich erschwert."
+            }
+          ]
         },
         {
           "decision_id": "bge_123 III 16",
           "bge_ref": "BGE 123 III 16",
+          "actual_language": "de",
           "title_de": "Wahlrecht des Gläubigers bei Schuldnerverzug",
           "title_fr": "Droit d'option du créancier en cas de demeure",
           "concepts_de": ["Verzug", "Wahlrecht", "Rücktritt", "Schadenersatz", "Nachfrist"],
@@ -133,7 +479,54 @@
           "statutes": ["Art. 107 OR"],
           "difficulty": 2,
           "prerequisites": [],
-          "significance_de": "Bedeutung und Ausübung der Wahlmöglichkeiten nach Art. 107 OR bei Schuldnerverzug"
+          "significance_de": "Bedeutung und Ausübung der Wahlmöglichkeiten nach Art. 107 OR bei Schuldnerverzug",
+          "key_erwagungen": ["4"],
+          "reading_guide_de": "E. 4: Die drei Wahlmöglichkeiten des Gläubigers bei Verzug (Erfüllung, Schadenersatz, Rücktritt). Achten Sie auf die Unwiderruflichkeit der Wahl und die Rolle der Nachfrist.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Welche drei Wahlmöglichkeiten hat der Gläubiger nach Ablauf der Nachfrist?",
+              "hint": "Lesen Sie E. 4 und Art. 107 OR.",
+              "model_answer": "1. Auf der Erfüllung bestehen. 2. Auf die Erfüllung verzichten und Schadenersatz wegen Nichterfüllung verlangen. 3. Vom Vertrag zurücktreten."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Was ist die Funktion der Nachfrist nach Art. 107 OR?",
+              "hint": "E. 4.",
+              "model_answer": "Die Nachfrist gibt dem Schuldner eine letzte Chance zur Erfüllung. Erst nach erfolglosem Ablauf kann der Gläubiger sein Wahlrecht ausüben."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum ist die Wahl des Gläubigers unwiderruflich?",
+              "hint": "E. 4.",
+              "model_answer": "Die Unwiderruflichkeit schützt den Schuldner vor widersprüchlichem Verhalten des Gläubigers. Sie dient der Rechtssicherheit und dem Vertrauensschutz."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Was wäre, wenn der Schuldner nach Ablauf der Nachfrist, aber vor der Wahl des Gläubigers, doch noch leistet?",
+              "discussion_points": ["Verspätete Erfüllung", "Annahmeverzug", "Schadenersatz für die Verspätung"],
+              "likely_outcome_shift": "Leistet der Schuldner vor der Wahl, muss der Gläubiger die verspätete Erfüllung annehmen, kann aber Schadenersatz für die Verspätung verlangen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist das dreistufige Wahlrecht des Gläubigers sachgerecht, oder sollte ein automatischer Rücktritt vorgesehen sein?",
+              "hint": "Vergleichen Sie mit dem UN-Kaufrecht (CISG).",
+              "model_answer": "Pro Wahlrecht: Flexibilität, Gläubiger kann wirtschaftlich optimale Lösung wählen. Pro automatischer Rücktritt: Rechtssicherheit, schnellere Abwicklung. Das CISG kennt eine ähnliche Struktur wie das OR."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "extreme_case",
+              "scenario": "Was wäre bei einem Fixgeschäft (z.B. Hochzeitstorte für den Hochzeitstag)?",
+              "discussion_points": ["Art. 108 OR", "Fixgeschäft", "Keine Nachfrist erforderlich"],
+              "likely_outcome_shift": "Bei einem Fixgeschäft ist keine Nachfristansetzung erforderlich (Art. 108 Ziff. 3 OR). Der Gläubiger kann sofort zurücktreten oder Schadenersatz verlangen."
+            }
+          ]
         }
       ]
     }

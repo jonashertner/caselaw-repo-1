@@ -24,6 +24,18 @@ class CurriculumCase:
     significance_de: str = ""
     significance_fr: str = ""
     significance_it: str = ""
+    # Language of the actual full text (de/fr/it) — may differ from student language
+    actual_language: str = ""
+    # Which Erwägungen contain the ratio decidendi (e.g. ["4.1", "4.2", "5"])
+    key_erwagungen: list[str] = field(default_factory=list)
+    # Short study hint for students
+    reading_guide_de: str = ""
+    reading_guide_fr: str = ""
+    reading_guide_it: str = ""
+    # Socratic questions (5 per case, one per Bloom level)
+    socratic_questions: list[dict] = field(default_factory=list)
+    # Hypothetical variations (2-3 per case)
+    hypotheticals: list[dict] = field(default_factory=list)
     # Set at load time from parent context
     area_id: str = ""
     module_id: str = ""
@@ -80,6 +92,13 @@ def load_curriculum(*, area: str | None = None) -> list[CurriculumArea]:
                     significance_de=c.get("significance_de", ""),
                     significance_fr=c.get("significance_fr", ""),
                     significance_it=c.get("significance_it", ""),
+                    actual_language=c.get("actual_language", ""),
+                    key_erwagungen=c.get("key_erwagungen", []),
+                    reading_guide_de=c.get("reading_guide_de", ""),
+                    reading_guide_fr=c.get("reading_guide_fr", ""),
+                    reading_guide_it=c.get("reading_guide_it", ""),
+                    socratic_questions=c.get("socratic_questions", []),
+                    hypotheticals=c.get("hypotheticals", []),
                     area_id=area_id,
                     module_id=mod_data.get("id", ""),
                 ))
@@ -105,16 +124,27 @@ def load_curriculum(*, area: str | None = None) -> list[CurriculumArea]:
 
 
 def list_areas(*, language: str = "de") -> list[dict]:
-    """Return summary of all curriculum areas."""
+    """Return summary of all curriculum areas with module details."""
+    lang_key = language if language in ("de", "fr", "it") else "de"
     result = []
     for a in load_curriculum():
         case_count = sum(len(m.cases) for m in a.modules)
-        name_key = f"area_{language}" if language in ("de", "fr", "it") else "area_de"
+        name_key = f"area_{lang_key}"
+        modules = []
+        for m in a.modules:
+            difficulties = [c.difficulty for c in m.cases]
+            modules.append({
+                "id": m.id,
+                "name": getattr(m, f"name_{lang_key}", m.name_de) or m.name_de,
+                "case_count": len(m.cases),
+                "difficulty_range": [min(difficulties), max(difficulties)] if difficulties else [],
+            })
         result.append({
             "area_id": a.area_id,
             "name": getattr(a, name_key, a.area_de) or a.area_de,
             "module_count": len(a.modules),
             "case_count": case_count,
+            "modules": modules,
         })
     return result
 
@@ -125,6 +155,8 @@ def _score_case(
     case: CurriculumCase,
     mod: CurriculumModule,
     area: CurriculumArea,
+    *,
+    language: str | None = None,
 ) -> int:
     """Score a curriculum case against a topic query."""
     score = 0
@@ -165,6 +197,13 @@ def _score_case(
     if topic_lower in area.area_id:
         score += 1
 
+    # Language preference: boost cases in the requested language
+    if language and case.actual_language:
+        if case.actual_language == language:
+            score += 2
+        else:
+            score -= 1
+
     return score
 
 
@@ -192,8 +231,8 @@ def find_case(
     for area in areas:
         for mod in area.modules:
             for case in mod.cases:
-                score = _score_case(topic_lower, topic_words, case, mod, area)
-                if score <= 0:
+                score = _score_case(topic_lower, topic_words, case, mod, area, language=language)
+                if score < 0:
                     continue
 
                 # Track best overall
