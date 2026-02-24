@@ -24,3 +24,7 @@ scrapers/probe_*
 scrapers/scrape_*
 web_ui/node_modules/
 .venv/
+*.png
+*.jpeg
+.playwright-mcp/
+desktop_extension/
