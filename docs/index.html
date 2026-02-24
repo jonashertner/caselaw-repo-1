@@ -668,31 +668,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </ul>
   </div>
 
-  <!-- Scraper Health (collapsible) -->
-  <details class="health-card hid" id="sec-health">
-    <summary class="health-summary">
-      <h3 data-t="health_title">Scraper Health</h3>
-      <span class="health-status" id="health-summary-status"></span>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="health-body">
-      <div class="health-meta hid" id="health-meta"></div>
-      <div class="disk-bar hid" id="disk-bar"></div>
-      <div class="tw">
-        <table class="ct" id="t-health"><thead><tr>
-          <th data-k="name" data-t="th_court">Court</th>
-          <th data-k="status" data-t="th_status">Status</th>
-          <th data-k="new_count" data-t="th_new">New</th>
-          <th data-k="skip_count" data-t="th_skips">Skips</th>
-          <th data-k="duration_s" data-t="th_duration">Duration</th>
-          <th data-k="state_count" class="hide-m" data-t="th_state">Total Known</th>
-          <th data-k="jsonl_size_mb" class="hide-m" data-t="th_jsonl_size">JSONL</th>
-          <th data-k="jsonl_mtime" class="hide-m" data-t="th_last_data">Last Data</th>
-        </tr></thead><tbody></tbody></table>
-      </div>
-    </div>
-  </details>
-
   <!-- Quick Access -->
   <div class="quick-strip" id="quick-strip">
     <a class="quick-card" href="#sec-access">
@@ -872,6 +847,31 @@ cd caselaw-repo-1
       </div>
     </div>
   </section>
+
+  <!-- Scraper Health (collapsible) -->
+  <details class="health-card hid" id="sec-health">
+    <summary class="health-summary">
+      <h3 data-t="health_title">Scraper Health</h3>
+      <span class="health-status" id="health-summary-status"></span>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="health-body">
+      <div class="health-meta hid" id="health-meta"></div>
+      <div class="disk-bar hid" id="disk-bar"></div>
+      <div class="tw">
+        <table class="ct" id="t-health"><thead><tr>
+          <th data-k="name" data-t="th_court">Court</th>
+          <th data-k="status" data-t="th_status">Status</th>
+          <th data-k="new_count" data-t="th_new">New</th>
+          <th data-k="skip_count" data-t="th_skips">Skips</th>
+          <th data-k="duration_s" data-t="th_duration">Duration</th>
+          <th data-k="state_count" class="hide-m" data-t="th_state">Total Known</th>
+          <th data-k="jsonl_size_mb" class="hide-m" data-t="th_jsonl_size">JSONL</th>
+          <th data-k="jsonl_mtime" class="hide-m" data-t="th_last_data">Last Data</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </details>
 
   <footer>
     <div class="foot-links">
