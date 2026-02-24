@@ -709,8 +709,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <table class="ct" id="t-fed"><thead><tr>
         <th data-k="name" data-t="th_court">Court</th>
         <th data-k="count" data-t="th_decisions">Decisions</th>
-        <th data-k="earliest" class="hide-m" data-t="th_from">From</th>
-        <th data-k="latest" class="hide-m" data-t="th_to">To</th>
+        <th data-k="earliest" class="hide-m" data-t="th_since">Since</th>
         <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
         <th data-k="languages" data-t="th_languages">Languages</th>
       </tr></thead><tbody></tbody></table>
@@ -733,8 +732,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <th data-k="name" data-t="th_court">Court</th>
         <th data-k="canton" data-t="th_canton">Canton</th>
         <th data-k="count" data-t="th_decisions">Decisions</th>
-        <th data-k="earliest" class="hide-m" data-t="th_from">From</th>
-        <th data-k="latest" class="hide-m" data-t="th_to">To</th>
+        <th data-k="earliest" class="hide-m" data-t="th_since">Since</th>
         <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
       </tr></thead><tbody></tbody></table>
     </div>
@@ -893,7 +891,7 @@ const I18N = {
     subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
     federal:'Bund', cantonal:'Kantone', cantons:'Kantone', access:'Datenzugang',
-    th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_from:'Von', th_to:'Bis', th_updated:'Aktualisiert', th_languages:'Sprachen',
+    th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_since:'Seit', th_updated:'Aktualisiert', th_languages:'Sprachen',
     chart_timeline:'Entscheide pro Jahr', chart_languages:'Sprachverteilung',
     chart_top10:'Top 10 Gerichte', chart_lang_trends:'Sprachtrends (2005\u2013heute)',
     updated:'Aktualisiert am',
@@ -937,7 +935,7 @@ const I18N = {
     subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
     loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
     federal:'F\u00e9d\u00e9ral', cantonal:'Cantons', cantons:'Cantons', access:'Acc\u00e8s aux donn\u00e9es',
-    th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_from:'De', th_to:'\u00c0', th_updated:'Maj', th_languages:'Langues',
+    th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_since:'Depuis', th_updated:'Maj', th_languages:'Langues',
     chart_timeline:'D\u00e9cisions par ann\u00e9e', chart_languages:'R\u00e9partition linguistique',
     chart_top10:'Top 10 Tribunaux', chart_lang_trends:'Tendances linguistiques (depuis 2005)',
     updated:'Mis \u00e0 jour le',
@@ -981,7 +979,7 @@ const I18N = {
     subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
     loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
     federal:'Federale', cantonal:'Cantoni', cantons:'Cantoni', access:'Accesso ai dati',
-    th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_from:'Da', th_to:'A', th_updated:'Agg.', th_languages:'Lingue',
+    th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_since:'Dal', th_updated:'Agg.', th_languages:'Lingue',
     chart_timeline:'Decisioni per anno', chart_languages:'Distribuzione linguistica',
     chart_top10:'Top 10 Tribunali', chart_lang_trends:'Tendenze linguistiche (dal 2005)',
     updated:'Aggiornato il',
@@ -1025,7 +1023,7 @@ const I18N = {
     subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Tschertgar directamain cun IA u telechargiar il set da datas cumplain.',
     loading:'Chargiar', kpi_decisions:'Decisiuns', kpi_courts:'Dretgiras', kpi_cantons:'Chantuns', kpi_languages:'Linguas', kpi_coverage:'Perioda',
     federal:'Federal', cantonal:'Chantuns', cantons:'Chantuns', access:'Access a las datas',
-    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_from:'Da', th_to:'Fin', th_updated:'Actual.', th_languages:'Linguas',
+    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_since:'Dapi', th_updated:'Actual.', th_languages:'Linguas',
     chart_timeline:'Decisiuns per onn', chart_languages:'Distribuziun linguistica',
     chart_top10:'Top 10 Dretgiras', chart_lang_trends:'Tendenzas linguisticas (dapi 2005)',
     updated:'Actualis\u00e0 ils',
@@ -1069,7 +1067,7 @@ const I18N = {
     subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
     federal:'Federal', cantonal:'Cantonal', cantons:'Cantons', access:'Access the Data',
-    th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_from:'From', th_to:'To', th_updated:'Updated', th_languages:'Languages',
+    th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_since:'Since', th_updated:'Updated', th_languages:'Languages',
     chart_timeline:'Decisions per Year', chart_languages:'Language Distribution',
     chart_top10:'Top 10 Courts', chart_lang_trends:'Language Trends (since 2005)',
     updated:'Updated',
@@ -1496,7 +1494,6 @@ function renderAll(data) {
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
       <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
       <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
-      <td class="d hide-m">${r.latest && r.latest !== 'None' ? r.latest : '\u2014'}</td>
       <td class="d hide-m">${r.last_scraped ? r.last_scraped.slice(0,10) : '\u2014'}</td>
       <td>${ltags(r.languages)}</td></tr>`);
     document.getElementById('sec-fed').classList.remove('hid');
@@ -1514,7 +1511,6 @@ function renderAll(data) {
       <td>${r.cantonName}</td>
       <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
       <td class="d hide-m">${r.earliest && r.earliest !== '0000-00-00' ? r.earliest : '\u2014'}</td>
-      <td class="d hide-m">${r.latest && r.latest !== 'None' ? r.latest : '\u2014'}</td>
       <td class="d hide-m">${r.last_scraped ? r.last_scraped.slice(0,10) : '\u2014'}</td></tr>`);
     document.getElementById('sec-can').classList.remove('hid');
 
@@ -1523,7 +1519,7 @@ function renderAll(data) {
 
     // CSV export
     document.getElementById('csv-can').addEventListener('click', () => {
-      exportCSV(canData.map(r => ({ court: r.court, canton: r.canton, name: r.name, count: r.count, earliest: r.earliest, latest: r.latest, last_scraped: r.last_scraped })), 'cantonal_courts.csv');
+      exportCSV(canData.map(r => ({ court: r.court, canton: r.canton, name: r.name, count: r.count, earliest: r.earliest, last_scraped: r.last_scraped })), 'cantonal_courts.csv');
     });
   }
 
