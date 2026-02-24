@@ -523,27 +523,38 @@ class BgerScraper(BaseScraper):
     # DISCOVERY
     # ═══════════════════════════════════════════════════════════════════════
 
+    # BGer publishes decisions with a 2-4 week lag after the decision date.
+    # A 14-day AZA search window misses late-published decisions.
+    DAILY_LOOKBACK_DAYS = 60
+
     def discover_new(self, since_date: date | None = None) -> Iterator[dict]:
         """
         Discover new BGer decisions.
 
-        Always uses AZA search on www.bger.ch (the only reliable path since
+        Uses AZA search on www.bger.ch (the only reliable path since
         search.bger.ch blocks requests at the TLS level as of Feb 2026).
 
-        Daily mode (since_date within last 14 days or None):
-            Search AZA for the last 14 days.
-        Backfill mode (since_date > 14 days ago):
-            Search AZA in 4-day windows.
-            Falls back to daily windows if >100 results per window.
+        Also checks Neuheiten (recently added) to catch decisions published
+        after the AZA search window has moved past their decision date.
+
+        Daily mode (since_date within last 60 days or None):
+            1. Neuheiten page (recently published, any decision date)
+            2. AZA search for the last 60 days
+        Backfill mode (since_date > 60 days ago):
+            AZA search in 4-day windows from since_date.
         """
         if isinstance(since_date, str):
             since_date = date.fromisoformat(since_date)
 
         self._init_session()
 
-        if not since_date or since_date >= date.today() - timedelta(days=14):
-            # Daily mode: search last 14 days via AZA
-            search_from = since_date or (date.today() - timedelta(days=14))
+        if not since_date or since_date >= date.today() - timedelta(days=self.DAILY_LOOKBACK_DAYS):
+            # Daily mode: Neuheiten first (catches late-published decisions),
+            # then AZA search for broader coverage
+            logger.info("Checking Neuheiten for recently published decisions")
+            yield from self._discover_via_neuheiten()
+
+            search_from = since_date or (date.today() - timedelta(days=self.DAILY_LOOKBACK_DAYS))
             logger.info(f"Daily mode: AZA search from {search_from}")
             yield from self._discover_via_search(search_from)
         else:
