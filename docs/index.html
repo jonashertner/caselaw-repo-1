@@ -864,7 +864,6 @@ cd caselaw-repo-1
         <table class="ct" id="t-fed"><thead><tr>
           <th data-k="name" data-t="th_court">Court</th>
           <th data-k="count" data-t="th_decisions">Decisions</th>
-          <th data-k="earliest" class="hide-m" data-t="th_since">Since</th>
           <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
           <th data-k="languages" data-t="th_languages">Languages</th>
         </tr></thead><tbody></tbody></table>
@@ -890,7 +889,6 @@ cd caselaw-repo-1
         <th data-k="name" data-t="th_court">Court</th>
         <th data-k="canton" data-t="th_canton">Canton</th>
         <th data-k="count" data-t="th_decisions">Decisions</th>
-        <th data-k="earliest" class="hide-m" data-t="th_since">Since</th>
         <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
       </tr></thead><tbody></tbody></table>
     </div>
@@ -1013,7 +1011,6 @@ cd caselaw-repo-1
           <th data-k="name" data-t="th_court">Court</th>
           <th data-k="status" data-t="th_status">Status</th>
           <th data-k="new_count" data-t="th_new">New</th>
-          <th data-k="skip_count" data-t="th_skips">Skips</th>
           <th data-k="duration_s" data-t="th_duration">Duration</th>
           <th data-k="state_count" class="hide-m" data-t="th_state">Total Known</th>
           <th data-k="jsonl_size_mb" class="hide-m" data-t="th_jsonl_size">JSONL</th>
@@ -1043,7 +1040,7 @@ const I18N = {
     subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
     federal:'Bund', cantonal:'Kantone', cantons:'Kantone', access:'Datenzugang',
-    th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_since:'Seit', th_updated:'Aktualisiert', th_languages:'Sprachen',
+    th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_updated:'Aktualisiert', th_languages:'Sprachen',
     chart_timeline:'Entscheide pro Jahr', chart_languages:'Sprachverteilung',
     chart_top10:'Top 10 Gerichte', chart_lang_trends:'Sprachtrends (2005\u2013heute)',
     updated:'Aktualisiert am',
@@ -1100,14 +1097,14 @@ const I18N = {
     study_p5:'Was wäre, wenn der Schädiger nicht widerrechtlich gehandelt hätte?',
     study_p6:'Repetitionskarten für die Voraussetzungen der Geschäftsführung ohne Auftrag',
     hero_mcp:'Mit AI durchsuchen',
-    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
+    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
     subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
     loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
     federal:'F\u00e9d\u00e9ral', cantonal:'Cantons', cantons:'Cantons', access:'Acc\u00e8s aux donn\u00e9es',
-    th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_since:'Depuis', th_updated:'Maj', th_languages:'Langues',
+    th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_updated:'Maj', th_languages:'Langues',
     chart_timeline:'D\u00e9cisions par ann\u00e9e', chart_languages:'R\u00e9partition linguistique',
     chart_top10:'Top 10 Tribunaux', chart_lang_trends:'Tendances linguistiques (depuis 2005)',
     updated:'Mis \u00e0 jour le',
@@ -1164,14 +1161,14 @@ const I18N = {
     study_p5:'Et si l\'auteur n\'avait pas agi de manière illicite?',
     study_p6:'Cartes de révision sur les conditions de la gestion d\'affaires sans mandat',
     hero_mcp:'Recherche avec IA',
-    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
+    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
     subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
     loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
     federal:'Federale', cantonal:'Cantoni', cantons:'Cantoni', access:'Accesso ai dati',
-    th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_since:'Dal', th_updated:'Agg.', th_languages:'Lingue',
+    th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_updated:'Agg.', th_languages:'Lingue',
     chart_timeline:'Decisioni per anno', chart_languages:'Distribuzione linguistica',
     chart_top10:'Top 10 Tribunali', chart_lang_trends:'Tendenze linguistiche (dal 2005)',
     updated:'Aggiornato il',
@@ -1228,14 +1225,14 @@ const I18N = {
     study_p5:'E se il danneggiante non avesse agito illecitamente?',
     study_p6:'Carte di ripetizione sui presupposti della gestione d\'affari senza mandato',
     hero_mcp:'Ricerca con IA',
-    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
+    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
     subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Tschertgar directamain cun IA u telechargiar il set da datas cumplain.',
     loading:'Chargiar', kpi_decisions:'Decisiuns', kpi_courts:'Dretgiras', kpi_cantons:'Chantuns', kpi_languages:'Linguas', kpi_coverage:'Perioda',
     federal:'Federal', cantonal:'Chantuns', cantons:'Chantuns', access:'Access a las datas',
-    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_since:'Dapi', th_updated:'Actual.', th_languages:'Linguas',
+    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_updated:'Actual.', th_languages:'Linguas',
     chart_timeline:'Decisiuns per onn', chart_languages:'Distribuziun linguistica',
     chart_top10:'Top 10 Dretgiras', chart_lang_trends:'Tendenzas linguisticas (dapi 2005)',
     updated:'Actualis\u00e0 ils',
@@ -1292,14 +1289,14 @@ const I18N = {
     study_p5:'E sche il donnegiader n\'avess betg agì illicitamain?',
     study_p6:'Cartas da repetiziun per las premissas da la gestiun d\'affars senza incumbensa',
     hero_mcp:'Tschertgar cun IA',
-    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
+    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
     subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
     federal:'Federal', cantonal:'Cantonal', cantons:'Cantons', access:'Access the Data',
-    th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_since:'Since', th_updated:'Updated', th_languages:'Languages',
+    th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_updated:'Updated', th_languages:'Languages',
     chart_timeline:'Decisions per Year', chart_languages:'Language Distribution',
     chart_top10:'Top 10 Courts', chart_lang_trends:'Language Trends (since 2005)',
     updated:'Updated',
@@ -1356,7 +1353,7 @@ const I18N = {
     study_p5:'What if the tortfeasor had not acted unlawfully (widerrechtlich)?',
     study_p6:'Review cards for the requirements of Gesch\u00e4ftsf\u00fchrung ohne Auftrag',
     hero_mcp:'Search with AI',
-    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
+    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   },
 };
 
@@ -1794,7 +1791,6 @@ function renderAll(data) {
     sortable(document.getElementById('t-fed'), fed.map(c => ({ ...c, name: courtName(c.court) })), r => `<tr>
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
       <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
-      <td class="d hide-m">${fmtDate(r.earliest)}</td>
       <td class="d hide-m">${fmtDate(r.last_scraped)}</td>
       <td>${ltags(r.languages)}</td></tr>`);
     const fedEl = document.getElementById('sec-fed');
@@ -1812,7 +1808,6 @@ function renderAll(data) {
       <td><span class="cn">${r.name}</span><span class="cc">${r.court}</span></td>
       <td>${r.cantonName}</td>
       <td class="n">${fmt(r.count)}${deltaTag(dl.by_court?.[r.court])}</td>
-      <td class="d hide-m">${fmtDate(r.earliest)}</td>
       <td class="d hide-m">${fmtDate(r.last_scraped)}</td></tr>`);
     const canEl = document.getElementById('sec-can');
     canEl.classList.remove('hid'); canEl.open = true;
@@ -1822,7 +1817,7 @@ function renderAll(data) {
 
     // CSV export
     document.getElementById('csv-can').addEventListener('click', () => {
-      exportCSV(canData.map(r => ({ court: r.court, canton: r.canton, name: r.name, count: r.count, earliest: r.earliest, last_scraped: r.last_scraped })), 'cantonal_courts.csv');
+      exportCSV(canData.map(r => ({ court: r.court, canton: r.canton, name: r.name, count: r.count, last_scraped: r.last_scraped })), 'cantonal_courts.csv');
     });
   }
 
@@ -1894,7 +1889,6 @@ function renderAll(data) {
         code, name: courtName(code),
         status, status_ord: status === 'ok' ? 0 : status === 'running' ? 0.5 : status === 'stale' ? 1 : status === 'investigating' ? 2 : 3,
         new_count: s.new_count || 0,
-        skip_count: s.skip_count || 0,
         error_count: s.error_count || 0,
         none_count: s.none_count || 0,
         duration_s: s.duration_s || 0,
@@ -1961,7 +1955,6 @@ function renderAll(data) {
         <td><span class="cn">${r.name}</span><span class="cc">${r.code}</span></td>
         <td>${pill}${errBadge}${noneBadge}${errDetail}${noteHtml}</td>
         <td class="n">${r.new_count > 0 ? '+' + fmt(r.new_count) : '0'}</td>
-        <td class="n">${r.skip_count > 0 ? fmt(r.skip_count) : '0'}</td>
         <td class="n">${dur}</td>
         <td class="n hide-m">${r.state_count != null ? fmt(r.state_count) : '\u2014'}</td>
         <td class="n hide-m">${r.jsonl_size_mb != null ? r.jsonl_size_mb + ' MB' : '\u2014'}</td>
