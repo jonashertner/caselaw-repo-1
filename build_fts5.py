@@ -419,6 +419,23 @@ def import_parquet(conn: sqlite3.Connection, parquet_dir: Path) -> tuple[int, in
     return imported, skipped
 
 
+def _migrate_schema(conn: sqlite3.Connection) -> None:
+    """Add missing columns to an existing decisions table.
+
+    Safe to call on every startup — ALTER TABLE ADD COLUMN is a no-op
+    if the column already exists (caught by the try/except).
+    """
+    migrations = [
+        ("canonical_key", "TEXT"),
+    ]
+    for col_name, col_type in migrations:
+        try:
+            conn.execute(f"ALTER TABLE decisions ADD COLUMN {col_name} {col_type}")
+            logger.info(f"Schema migration: added column '{col_name}'")
+        except sqlite3.OperationalError:
+            pass  # column already exists
+
+
 def build_database(
     output_dir: Path,
     db_path: Path | None = None,
@@ -465,6 +482,9 @@ def build_database(
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA_SQL)
+
+    # Migrate: add columns that may be missing in older databases
+    _migrate_schema(conn)
 
     # Count existing
     existing = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
