@@ -235,7 +235,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "error_count": 0,
             "none_count": 0,
             "duration": duration,
-            "error": f"Timed out after {timeout}s (still running)",
+            "error": None,
             "note": None,
         }
     except Exception as e:
@@ -339,7 +339,7 @@ def main():
                 result = future.result()
                 results.append(result)
                 if result.get("timed_out"):
-                    status = "TIMEOUT"
+                    status = "RUNNING"
                 elif result["success"]:
                     status = "OK"
                 else:
@@ -372,16 +372,16 @@ def main():
     logger.info("\n=== Summary ===")
     logger.info(f"  Succeeded: {succeeded}/{len(results)}")
     if timed_out:
-        logger.info(f"  Timed out (still healthy): {timed_out}")
+        logger.info(f"  Still running: {timed_out}")
     logger.info(f"  Failed: {failed}")
     logger.info(f"  Total new decisions: {total_new}")
     logger.info(f"  Total time: {total_elapsed:.0f}s ({total_elapsed/60:.1f} min)")
 
     if timed_out:
-        logger.info("\n  Timed-out scrapers (were still running):")
+        logger.info("\n  Still running (hit time cap):")
         for r in results:
             if r.get("timed_out"):
-                logger.info(f"    - {r['court']} (+{r['new_count']} new in {r['duration']:.0f}s)")
+                logger.info(f"    - {r['court']} (+{r['new_count']} new in >{r['duration']:.0f}s)")
 
     if failed:
         logger.info("\n  Failed scrapers:")

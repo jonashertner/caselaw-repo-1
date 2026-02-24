@@ -229,6 +229,35 @@ header .sub {
 .news-items li + li { border-top: 1px solid var(--brd2); }
 .news-items li strong { color: var(--tx); }
 
+/* ── Health card (collapsible) ── */
+.health-card {
+  background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
+  padding: 0; box-shadow: var(--glow); margin-bottom: 32px;
+  transition: box-shadow 0.2s var(--ease);
+}
+.health-card:hover { box-shadow: var(--glow-hover); }
+.health-card .health-summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px; cursor: pointer; list-style: none; user-select: none;
+}
+.health-card .health-summary::-webkit-details-marker { display: none; }
+.health-card .health-summary h3 {
+  font-size: var(--fs-md); font-weight: 600; margin: 0;
+}
+.health-status {
+  font-family: var(--f-mono); font-size: var(--fs-2xs); font-weight: 500;
+  color: var(--tx3); background: var(--bg2); border: 1px solid var(--brd2);
+  border-radius: 100px; padding: 2px 10px; line-height: 1.6;
+}
+.health-card .chevron {
+  margin-left: auto; flex-shrink: 0; color: var(--tx3);
+  transition: transform 0.2s var(--ease);
+}
+.health-card[open] .chevron { transform: rotate(180deg); }
+.health-body {
+  padding: 12px 20px 20px; border-top: 1px solid var(--brd2);
+}
+
 /* ── Quick Access strip ── */
 .quick-strip {
   display: grid; grid-template-columns: repeat(3,1fr); gap: 12px;
@@ -500,10 +529,12 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .pill-fail { background:#d1242f22; color:var(--ac); }
 .pill-stale { background:#dbab0922; color:#b08800; }
 .pill-investigating { background:#dbab0922; color:#b08800; }
+.pill-running { background:#0969da22; color:#0969da; }
 [data-theme="dark"] .pill-ok { background:#22863a33; }
 [data-theme="dark"] .pill-fail { background:#d1242f33; }
 [data-theme="dark"] .pill-stale { background:#dbab0933; color:#d4a017; }
 [data-theme="dark"] .pill-investigating { background:#dbab0933; color:#d4a017; }
+[data-theme="dark"] .pill-running { background:#0969da33; color:#58a6ff; }
 .health-meta { font-size:var(--fs-sm); color:var(--tx2); font-family:var(--f-mono); margin-bottom:12px; }
 .disk-bar { margin-bottom:16px; font-size:var(--fs-sm); color:var(--tx2); font-family:var(--f-mono); }
 .disk-bar .disk-track { height:8px; background:var(--bd); border-radius:4px; margin:4px 0 2px; overflow:hidden; }
@@ -520,6 +551,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .access-featured .setup-paths { grid-template-columns: 1fr; }
   .access-featured { padding: 18px 16px; }
   .news-card { padding: 16px 18px; }
+  .health-card .health-summary { padding: 14px 16px; }
+  .health-body { padding: 0 16px 16px; }
   .quick-strip { grid-template-columns: 1fr; }
   .kpis { gap: 40px; }
   .section-nav { display: none; }
@@ -586,7 +619,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <a href="#sec-can" data-t="nav_cantonal">Cantonal</a>
       <a href="#sec-cantons" data-t="nav_cantons">Cantons</a>
       <a href="#sec-tree" data-t="nav_browse">Browse</a>
-      <a href="#sec-health" data-t="nav_health">Health</a>
       <a href="#sec-access" data-t="nav_access">Access</a>
     </div>
   </div>
@@ -635,6 +667,31 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <li><strong data-t="news_item_3_title">Suchindex-Upgrade</strong> — <span data-t="news_item_3_desc">Wir bauen den Datenbankindex neu auf, um die Suchqualität weiter zu verbessern</span></li>
     </ul>
   </div>
+
+  <!-- Scraper Health (collapsible) -->
+  <details class="health-card hid" id="sec-health">
+    <summary class="health-summary">
+      <h3 data-t="health_title">Scraper Health</h3>
+      <span class="health-status" id="health-summary-status"></span>
+      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="health-body">
+      <div class="health-meta hid" id="health-meta"></div>
+      <div class="disk-bar hid" id="disk-bar"></div>
+      <div class="tw">
+        <table class="ct" id="t-health"><thead><tr>
+          <th data-k="name" data-t="th_court">Court</th>
+          <th data-k="status" data-t="th_status">Status</th>
+          <th data-k="new_count" data-t="th_new">New</th>
+          <th data-k="skip_count" data-t="th_skips">Skips</th>
+          <th data-k="duration_s" data-t="th_duration">Duration</th>
+          <th data-k="state_count" class="hide-m" data-t="th_state">Total Known</th>
+          <th data-k="jsonl_size_mb" class="hide-m" data-t="th_jsonl_size">JSONL</th>
+          <th data-k="jsonl_mtime" class="hide-m" data-t="th_last_data">Last Data</th>
+        </tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </details>
 
   <!-- Quick Access -->
   <div class="quick-strip" id="quick-strip">
@@ -720,27 +777,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     <div class="tree" id="tree-browser"></div>
   </section>
 
-  <!-- Scraper Health -->
-  <section id="sec-health" class="hid">
-    <div class="sh">
-      <h2 data-t="health_title">Scraper Health</h2>
-      <span class="badge" id="health-n"></span>
-    </div>
-    <div class="health-meta hid" id="health-meta"></div>
-    <div class="disk-bar hid" id="disk-bar"></div>
-    <div class="tw">
-      <table class="ct" id="t-health"><thead><tr>
-        <th data-k="name" data-t="th_court">Court</th>
-        <th data-k="status" data-t="th_status">Status</th>
-        <th data-k="new_count" data-t="th_new">New</th>
-        <th data-k="skip_count" data-t="th_skips">Skips</th>
-        <th data-k="duration_s" data-t="th_duration">Duration</th>
-        <th data-k="state_count" class="hide-m" data-t="th_state">Total Known</th>
-        <th data-k="jsonl_size_mb" class="hide-m" data-t="th_jsonl_size">JSONL</th>
-        <th data-k="jsonl_mtime" class="hide-m" data-t="th_last_data">Last Data</th>
-      </tr></thead><tbody></tbody></table>
-    </div>
-  </section>
 
   <!-- Access -->
   <section id="sec-access">
@@ -894,7 +930,7 @@ const I18N = {
     cap_study:'Leitentscheide interaktiv studieren mit geführten Übungen und Urteilsbesprechungen',
     hero_mcp:'Mit AI durchsuchen',
     news_title:'Neuigkeiten', news_item_1_title:'Zitationsgraph', news_item_1_desc:'7,85 Millionen Zitationsverbindungen zwischen Entscheiden — Leitentscheide finden, nachverfolgen wie Gerichte sich gegenseitig zitieren', news_item_2_title:'Semantische Suche', news_item_2_desc:'Nach Konzepten suchen, nicht nur Stichwörtern — verwandte Entscheide finden, auch wenn andere Begriffe verwendet werden', news_item_3_title:'Suchindex-Upgrade', news_item_3_desc:'Wir bauen den Datenbankindex neu auf, um die Suchqualität weiter zu verbessern',
-    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
+    nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_skips:'Leer', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -938,7 +974,7 @@ const I18N = {
     cap_study:'Étudier les arrêts de référence de manière interactive avec des exercices guidés et des commentaires d\'arrêt',
     hero_mcp:'Recherche avec IA',
     news_title:'Nouveautés', news_item_1_title:'Graphe de citations', news_item_1_desc:'7,85 millions de liens de citation entre décisions — trouvez les arrêts de référence, suivez comment les tribunaux se citent mutuellement', news_item_2_title:'Recherche sémantique', news_item_2_desc:'Recherchez par concept, pas seulement par mots-clés — trouvez des décisions liées même quand des termes différents sont utilisés', news_item_3_title:'Mise à jour de l\'index', news_item_3_desc:'Nous reconstruisons l\'index de la base de données pour améliorer encore la qualité de recherche',
-    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
+    nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_skips:'Vides', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -982,7 +1018,7 @@ const I18N = {
     cap_study:'Studiare le decisioni guida in modo interattivo con esercizi guidati e commenti',
     hero_mcp:'Ricerca con IA',
     news_title:'Novità', news_item_1_title:'Grafo delle citazioni', news_item_1_desc:'7,85 milioni di collegamenti tra decisioni — trova le decisioni guida, segui come i tribunali si citano a vicenda', news_item_2_title:'Ricerca semantica', news_item_2_desc:'Cerca per concetto, non solo per parole chiave — trova decisioni correlate anche quando vengono usati termini diversi', news_item_3_title:'Aggiornamento dell\'indice', news_item_3_desc:'Stiamo ricostruendo l\'indice del database per migliorare ulteriormente la qualità della ricerca',
-    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
+    nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_skips:'Vuoti', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -1026,7 +1062,7 @@ const I18N = {
     cap_study:'Studiar decisiuns directivas interactivamain cun exercizis guidads e commentaris',
     hero_mcp:'Tschertgar cun IA',
     news_title:'Novitads', news_item_1_title:'Graf da citaziuns', news_item_1_desc:'7,85 milliuns colliaziuns da citaziun tranter decisiuns — chattar decisiuns directivas, persequitar co las dretgiras citan ina l\'autra', news_item_2_title:'Tschertga semantica', news_item_2_desc:'Tschertgar tenor concept, betg mo tenor plaids-clav — chattar decisiuns parentadas era sche differents terms vegnan utilisads', news_item_3_title:'Upgrade da l\'index', news_item_3_desc:'Nus reconstruin l\'index da la banca da datas per meglierar anc pli la qualitad da tschertga',
-    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
+    nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_skips:'Vids', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -1070,7 +1106,7 @@ const I18N = {
     cap_study:'Study leading cases interactively with guided exercises and case briefing',
     hero_mcp:'Search with AI',
     news_title:'What\u2019s New', news_item_1_title:'Citation Graph', news_item_1_desc:'7.85 million citation links between decisions — find leading cases, trace how courts cite each other', news_item_2_title:'Semantic Search', news_item_2_desc:'Search by concept, not just keywords — find related decisions even when different terms are used', news_item_3_title:'Index Upgrade', news_item_3_desc:'We\'re rebuilding the database index to further improve search quality',
-    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
+    nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_skips:'Skips', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   },
 };
 
@@ -1548,31 +1584,39 @@ function renderAll(data) {
     const NOW = Date.now();
     const SEVEN_DAYS = 7 * 24 * 3600 * 1000;
     const scrapers = Object.entries(sh.scrapers).map(([code, s]) => {
-      let status = s.success ? 'ok' : 'investigating';
+      let status = s.timed_out ? 'running' : s.success ? 'ok' : 'investigating';
       if (s.success && s.new_count === 0 && s.jsonl_mtime) {
         const age = NOW - new Date(s.jsonl_mtime).getTime();
         if (age > SEVEN_DAYS) status = 'stale';
       }
       return {
         code, name: courtName(code),
-        status, status_ord: status === 'ok' ? 0 : status === 'stale' ? 1 : status === 'investigating' ? 2 : 3,
+        status, status_ord: status === 'ok' ? 0 : status === 'running' ? 0.5 : status === 'stale' ? 1 : status === 'investigating' ? 2 : 3,
         new_count: s.new_count || 0,
         skip_count: s.skip_count || 0,
         error_count: s.error_count || 0,
         none_count: s.none_count || 0,
         duration_s: s.duration_s || 0,
+        timed_out: s.timed_out || false,
         state_count: s.state_count,
         jsonl_size_mb: s.jsonl_size_mb,
         jsonl_mtime: s.jsonl_mtime,
-        error: s.error,
+        error: s.timed_out ? null : s.error,
         note: s.note,
       };
     });
 
-    const okCount = scrapers.filter(s => s.status === 'ok').length;
-    document.getElementById('health-n').textContent = `${okCount}/${scrapers.length} ${t('health_ok')}`;
+    const okCount = scrapers.filter(s => s.status === 'ok' || s.status === 'running').length;
+    // Summary status badge on collapsed card
+    const statusParts = [`${okCount}/${scrapers.length} ${t('health_ok')}`];
+    if (sh.run_at) {
+      const rd = new Date(sh.run_at);
+      const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
+      statusParts.push(rd.toLocaleDateString(loc, { day:'numeric', month:'short' }));
+    }
+    document.getElementById('health-summary-status').textContent = statusParts.join(' \u2014 ');
 
-    // Meta line: last run info
+    // Meta line: last run info (inside expanded body)
     if (sh.run_at) {
       const rd = new Date(sh.run_at);
       const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
@@ -1603,7 +1647,7 @@ function renderAll(data) {
       return Math.floor(s/3600) + 'h ' + Math.round((s%3600)/60) + 'm';
     }
 
-    const pillLabel = { ok: t('health_ok'), fail: t('health_fail'), investigating: t('health_investigating'), stale: t('health_stale') };
+    const pillLabel = { ok: t('health_ok'), fail: t('health_fail'), investigating: t('health_investigating'), running: t('health_running'), stale: t('health_stale') };
     sortable(document.getElementById('t-health'), scrapers, r => {
       const pill = `<span class="pill pill-${r.status}">${pillLabel[r.status]}</span>`;
       const errBadge = r.error_count > 0 ? ` <span class="cc" style="color:var(--ac)">${r.error_count} ${t('health_errors')}</span>` : '';
@@ -1611,12 +1655,13 @@ function renderAll(data) {
       const mtime = r.jsonl_mtime ? r.jsonl_mtime.slice(0, 10) : '\u2014';
       const noteHtml = r.note ? `<br><span class="cc" style="color:var(--tx2);font-size:.75rem">${r.note}</span>` : '';
       const errDetail = r.error ? `<br><span class="cc" style="color:var(--ac);font-size:.75rem">${r.error.replace(/"/g,'&quot;').slice(0,120)}</span>` : '';
+      const dur = r.timed_out ? '>' + fmtDur(r.duration_s) : fmtDur(r.duration_s);
       return `<tr>
         <td><span class="cn">${r.name}</span><span class="cc">${r.code}</span></td>
         <td>${pill}${errBadge}${noneBadge}${errDetail}${noteHtml}</td>
         <td class="n">${r.new_count > 0 ? '+' + fmt(r.new_count) : '0'}</td>
         <td class="n">${r.skip_count > 0 ? fmt(r.skip_count) : '0'}</td>
-        <td class="n">${fmtDur(r.duration_s)}</td>
+        <td class="n">${dur}</td>
         <td class="n hide-m">${r.state_count != null ? fmt(r.state_count) : '\u2014'}</td>
         <td class="n hide-m">${r.jsonl_size_mb != null ? r.jsonl_size_mb + ' MB' : '\u2014'}</td>
         <td class="d hide-m">${mtime}</td></tr>`;
