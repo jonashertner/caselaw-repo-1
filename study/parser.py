@@ -23,6 +23,7 @@ class ParsedDecision:
     regeste: str = ""
     language: str = "de"
     parse_quality: float = 0.0
+    is_excerpt: bool = False  # "Auszug" — partial decision, missing sections expected
 
 
 # ── Section header patterns ──────────────────────────────────
@@ -63,8 +64,21 @@ _DISPOSITIV_PATTERNS = [
     re.compile(r"^\s*Per\s+questi\s+motivi\b", re.MULTILINE | re.IGNORECASE),
 ]
 
+# Partial decision markers — missing Sachverhalt/Dispositiv is expected
+_EXCERPT_PATTERNS = [
+    # DE
+    re.compile(r"Auszug\s+aus\s+de[mnr]\s+(?:Urteil|Erwägungen|Entscheid)", re.IGNORECASE),
+    # FR
+    re.compile(r"Extrait\s+d[eu]\s+(?:l'arrêt|jugement|considérants?)", re.IGNORECASE),
+    # IT
+    re.compile(r"Estratto\s+d(?:ella|i)\s+(?:sentenza|considerand[io])", re.IGNORECASE),
+]
+
 # Numbered Erwägung: "1.", "1.1.", "1.1.1.", "5.2."
 _ERWAGUNG_NUM = re.compile(r"^\s*(\d+(?:\.\d+)*)\.\s", re.MULTILINE)
+
+# Letter-labeled sub-sections: "a)", "b)", "aa)", "bb)" at start of line
+_ERWAGUNG_LETTER = re.compile(r"^\s*([a-z]{1,2})\)\s", re.MULTILINE)
 
 
 def _find_section_start(text: str, patterns: list[re.Pattern]) -> int | None:
@@ -78,7 +92,11 @@ def _find_section_start(text: str, patterns: list[re.Pattern]) -> int | None:
 
 
 def _extract_erwagungen(text: str) -> list[Erwagung]:
-    """Split reasoning text into numbered Erwägungen."""
+    """Split reasoning text into numbered Erwägungen.
+
+    Handles both numbered sub-sections (1.1., 1.2.) and letter-labeled
+    sub-sections (a), b), aa)) common in BGE decisions.
+    """
     # Normalize sub-numbers on their own line: "5.1\n" → "5.1.\n"
     # Real BGE texts often have sub-headings without trailing periods.
     text = re.sub(r"^(\s*\d+\.\d+(?:\.\d+)*)\s*$", r"\1.", text, flags=re.MULTILINE)
@@ -94,16 +112,48 @@ def _extract_erwagungen(text: str) -> list[Erwagung]:
         body = text[start:end].strip()
         depth = number.count(".") + 1
 
-        # Extract statute references from this Erwägung's text
-        refs = extract_statute_references(body)
-        ref_strs = [r.normalized for r in refs]
+        # Check for letter-labeled sub-sections within this Erwägung
+        letter_matches = list(_ERWAGUNG_LETTER.finditer(body))
+        if letter_matches:
+            # Text before first letter sub-section is the parent intro
+            intro = body[:letter_matches[0].start()].strip()
+            if intro:
+                refs = extract_statute_references(intro)
+                erwagungen.append(Erwagung(
+                    number=number,
+                    text=intro,
+                    statute_refs=[r.normalized for r in refs],
+                    depth=depth,
+                ))
 
-        erwagungen.append(Erwagung(
-            number=number,
-            text=body,
-            statute_refs=ref_strs,
-            depth=depth,
-        ))
+            # Each letter sub-section
+            for j, lm in enumerate(letter_matches):
+                letter = lm.group(1)
+                sub_start = lm.end()
+                sub_end = (
+                    letter_matches[j + 1].start()
+                    if j + 1 < len(letter_matches)
+                    else len(body)
+                )
+                sub_body = body[sub_start:sub_end].strip()
+                sub_number = f"{number}.{letter}"
+                refs = extract_statute_references(sub_body)
+                erwagungen.append(Erwagung(
+                    number=sub_number,
+                    text=sub_body,
+                    statute_refs=[r.normalized for r in refs],
+                    depth=depth + 1,
+                ))
+        else:
+            # No letter sub-sections — add as single Erwägung
+            refs = extract_statute_references(body)
+            ref_strs = [r.normalized for r in refs]
+            erwagungen.append(Erwagung(
+                number=number,
+                text=body,
+                statute_refs=ref_strs,
+                depth=depth,
+            ))
 
     return erwagungen
 
@@ -122,7 +172,9 @@ def parse_decision(
         return ParsedDecision(regeste=regeste, language=language)
 
     text = full_text
-    quality = 0.0
+
+    # ── Detect excerpt (partial decision) ─────────────────────
+    is_excerpt = any(p.search(text) for p in _EXCERPT_PATTERNS)
 
     # ── Locate section boundaries ────────────────────────────
     sach_start = _find_section_start(text, _SACHVERHALT_PATTERNS)
@@ -142,7 +194,6 @@ def parse_decision(
     if sach_start is not None:
         sach_end = erw_start or disp_start or len(text)
         sachverhalt = text[sach_start:sach_end].strip()
-        quality += 0.3
 
     # Erwägungen: from header to Dispositiv (or end)
     erwagungen_text = ""
@@ -151,15 +202,37 @@ def parse_decision(
         erw_end = disp_start or len(text)
         erwagungen_text = text[erw_start:erw_end].strip()
         erwagungen = _extract_erwagungen(erwagungen_text)
-        quality += 0.3
-        if erwagungen:
-            quality += 0.1
 
     # Dispositiv: from header to end
     dispositiv = ""
     if disp_start is not None:
         dispositiv = text[disp_start:].strip()
-        quality += 0.3
+
+    # ── Quality scoring ──────────────────────────────────────
+    # For excerpts: only score what's expected (Erwägungen).
+    # For full decisions: score all three sections.
+    if is_excerpt:
+        quality = 0.0
+        if erwagungen:
+            quality = 0.8  # Erwägungen found with numbered sections
+        elif erw_start is not None:
+            quality = 0.6  # Erwägungen text found but no numbered sections
+        elif sachverhalt or dispositiv:
+            quality = 0.3  # No Erwägungen but other sections present
+        if sachverhalt:
+            quality = min(quality + 0.1, 1.0)
+        if dispositiv:
+            quality = min(quality + 0.1, 1.0)
+    else:
+        quality = 0.0
+        if sachverhalt:
+            quality += 0.3
+        if erw_start is not None:
+            quality += 0.3
+            if erwagungen:
+                quality += 0.1
+        if dispositiv:
+            quality += 0.3
 
     return ParsedDecision(
         sachverhalt=sachverhalt,
@@ -168,4 +241,5 @@ def parse_decision(
         regeste=regeste,
         language=language,
         parse_quality=min(quality, 1.0),
+        is_excerpt=is_excerpt,
     )
