@@ -29,6 +29,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from db_schema import INSERT_COLUMNS, INSERT_OR_IGNORE_SQL, SCHEMA_SQL
+from models import make_canonical_key
 
 logger = logging.getLogger("build_fts5")
 
@@ -133,42 +134,85 @@ def _extract_regeste_from_text(full_text: str) -> str | None:
 # ── Dedup + post-processing ──────────────────────────────────
 
 def _dedup_decisions(conn: sqlite3.Connection) -> int:
-    """Remove duplicate decisions with same (court, docket_number, decision_date).
+    """Remove duplicate decisions sharing the same canonical_key.
+
+    The canonical_key aggressively normalizes court + docket + date so that
+    formatting variants (dots vs underscores, case, etc.) collapse together.
+    Falls back to exact (court, docket_number, decision_date) if canonical_key
+    is not yet populated.
 
     Keeps the version with the longest full_text (preferring non-empty regeste).
     Returns number of rows deleted.
     """
-    # Find groups with duplicates
-    dup_sql = """
-        SELECT court, docket_number, decision_date, COUNT(*) as cnt
-        FROM decisions
-        WHERE docket_number IS NOT NULL AND LENGTH(TRIM(docket_number)) > 0
-        GROUP BY court, docket_number, decision_date
-        HAVING cnt > 1
-    """
-    groups = conn.execute(dup_sql).fetchall()
-    if not groups:
-        return 0
+    # Check if canonical_key column exists and is populated
+    has_canonical = False
+    try:
+        row = conn.execute(
+            "SELECT COUNT(*) FROM decisions WHERE canonical_key IS NOT NULL AND canonical_key != ''"
+        ).fetchone()
+        has_canonical = row[0] > 0
+    except sqlite3.OperationalError:
+        pass
 
-    deleted = 0
-    for court, docket, date, cnt in groups:
-        # Fetch all candidates, rank by: has regeste (desc), full_text length (desc)
-        rows = conn.execute(
-            """
-            SELECT decision_id, LENGTH(COALESCE(full_text, '')), LENGTH(COALESCE(regeste, ''))
+    if has_canonical:
+        # Exclude keys with empty docket part (format: court|DOCKET|date)
+        dup_sql = """
+            SELECT canonical_key, COUNT(*) as cnt
             FROM decisions
-            WHERE court = ? AND docket_number = ? AND decision_date IS ?
-            ORDER BY
-                CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
-                LENGTH(COALESCE(full_text, '')) DESC
-            """,
-            (court, docket, date),
-        ).fetchall()
+            WHERE canonical_key IS NOT NULL AND canonical_key != ''
+              AND canonical_key NOT LIKE '%||%'
+            GROUP BY canonical_key
+            HAVING cnt > 1
+        """
+        groups = conn.execute(dup_sql).fetchall()
+        if not groups:
+            return 0
 
-        # Keep the first (best), delete the rest
-        for row in rows[1:]:
-            conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
-            deleted += 1
+        deleted = 0
+        for (canonical_key, cnt) in groups:
+            rows = conn.execute(
+                """
+                SELECT decision_id, LENGTH(COALESCE(full_text, '')), LENGTH(COALESCE(regeste, ''))
+                FROM decisions
+                WHERE canonical_key = ?
+                ORDER BY
+                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
+                    LENGTH(COALESCE(full_text, '')) DESC
+                """,
+                (canonical_key,),
+            ).fetchall()
+            for row in rows[1:]:
+                conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
+                deleted += 1
+    else:
+        # Fallback: exact match on (court, docket_number, decision_date)
+        dup_sql = """
+            SELECT court, docket_number, decision_date, COUNT(*) as cnt
+            FROM decisions
+            WHERE docket_number IS NOT NULL AND LENGTH(TRIM(docket_number)) > 0
+            GROUP BY court, docket_number, decision_date
+            HAVING cnt > 1
+        """
+        groups = conn.execute(dup_sql).fetchall()
+        if not groups:
+            return 0
+
+        deleted = 0
+        for court, docket, date, cnt in groups:
+            rows = conn.execute(
+                """
+                SELECT decision_id, LENGTH(COALESCE(full_text, '')), LENGTH(COALESCE(regeste, ''))
+                FROM decisions
+                WHERE court = ? AND docket_number = ? AND decision_date IS ?
+                ORDER BY
+                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
+                    LENGTH(COALESCE(full_text, '')) DESC
+                """,
+                (court, docket, date),
+            ).fetchall()
+            for row in rows[1:]:
+                conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
+                deleted += 1
 
     conn.commit()
     return deleted
@@ -238,6 +282,11 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
 
         # json_data: full row as JSON blob (after cleaning)
         row["json_data"] = json.dumps(row, default=str)
+
+        # Canonical key for dedup (aggressive normalization of court+docket+date)
+        row["canonical_key"] = make_canonical_key(
+            row.get("court", ""), row.get("docket_number", ""), row.get("decision_date"),
+        )
 
         # Build values tuple matching INSERT_COLUMNS order.
         # Convert None-like values properly (avoid storing literal "None" strings).

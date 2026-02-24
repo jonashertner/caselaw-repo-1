@@ -13,6 +13,7 @@ from build_fts5 import (
     insert_decision,
 )
 from db_schema import SCHEMA_SQL
+from models import make_canonical_key
 
 
 # ── _fix_mojibake ────────────────────────────────────────────
@@ -154,8 +155,14 @@ def _insert_row(conn, **kwargs):
         "source_spider": None,
         "content_hash": None,
         "json_data": "{}",
+        "canonical_key": None,
     }
     defaults.update(kwargs)
+    # Auto-compute canonical_key if not explicitly set
+    if defaults["canonical_key"] is None:
+        defaults["canonical_key"] = make_canonical_key(
+            defaults["court"], defaults["docket_number"], defaults.get("decision_date"),
+        )
     cols = list(defaults.keys())
     vals = [defaults[c] for c in cols]
     placeholders = ",".join("?" for _ in cols)
@@ -210,6 +217,75 @@ def test_dedup_skips_empty_docket(db):
 
     deleted = _dedup_decisions(db)
     assert deleted == 0  # empty docket numbers are excluded from dedup
+
+
+def test_dedup_canonical_key_collapses_dot_vs_underscore(db):
+    """Docket 'BL.2020.1' and 'BL_2020_1' collapse to the same canonical key."""
+    _insert_row(db, decision_id="native", court="bl_gerichte",
+                docket_number="400.2020.1", decision_date="2020-05-01",
+                full_text="long " * 200, regeste="Good regeste")
+    _insert_row(db, decision_id="es_dup", court="bl_gerichte",
+                docket_number="400_2020_1", decision_date="2020-05-01",
+                full_text="short", regeste=None)
+
+    deleted = _dedup_decisions(db)
+    assert deleted == 1
+
+    remaining = db.execute("SELECT decision_id FROM decisions").fetchall()
+    assert len(remaining) == 1
+    assert remaining[0][0] == "native"  # longer text + regeste wins
+
+
+def test_dedup_canonical_key_collapses_slash_vs_underscore(db):
+    """Docket '6B_1/2025' and '6B_1_2025' collapse."""
+    _insert_row(db, decision_id="a", court="bger",
+                docket_number="6B_1/2025", decision_date="2025-01-01",
+                full_text="text " * 100, regeste=None)
+    _insert_row(db, decision_id="b", court="bger",
+                docket_number="6B_1_2025", decision_date="2025-01-01",
+                full_text="text " * 100, regeste="Has regeste")
+
+    deleted = _dedup_decisions(db)
+    assert deleted == 1
+
+    remaining = db.execute("SELECT decision_id FROM decisions").fetchall()
+    assert remaining[0][0] == "b"  # regeste wins
+
+
+def test_dedup_canonical_key_different_court_not_collapsed(db):
+    """Same docket at different courts are distinct cases."""
+    _insert_row(db, decision_id="a", court="bger",
+                docket_number="6B_1/2025", decision_date="2025-01-01")
+    _insert_row(db, decision_id="b", court="bge",
+                docket_number="6B_1/2025", decision_date="2025-01-01")
+
+    deleted = _dedup_decisions(db)
+    assert deleted == 0
+    assert db.execute("SELECT COUNT(*) FROM decisions").fetchone()[0] == 2
+
+
+# ── make_canonical_key ───────────────────────────────────────
+
+
+def test_canonical_key_normalizes_docket_variants():
+    assert make_canonical_key("bl_gerichte", "BL.2020.1", "2020-05-01") == \
+           make_canonical_key("bl_gerichte", "BL_2020_1", "2020-05-01")
+
+    assert make_canonical_key("bger", "6B_1/2025", "2025-01-01") == \
+           make_canonical_key("bger", "6B_1_2025", "2025-01-01")
+
+    assert make_canonical_key("bger", "6B 1/2025", "2025-01-01") == \
+           make_canonical_key("bger", "6b_1/2025", "2025-01-01")
+
+
+def test_canonical_key_different_court():
+    assert make_canonical_key("bger", "6B_1/2025", "2025-01-01") != \
+           make_canonical_key("bge", "6B_1/2025", "2025-01-01")
+
+
+def test_canonical_key_different_date():
+    assert make_canonical_key("bger", "6B_1/2025", "2025-01-01") != \
+           make_canonical_key("bger", "6B_1/2025", "2025-01-02")
 
 
 # ── _fill_missing_regeste ────────────────────────────────────
@@ -275,6 +351,12 @@ def test_insert_decision_cleans_html(db):
     assert "&nbsp;" not in result[0]
     assert "<br>" not in result[1]
     assert "<i>" not in result[2]
+
+    # Verify canonical_key was populated
+    ckey = db.execute(
+        "SELECT canonical_key FROM decisions WHERE decision_id='test_clean'"
+    ).fetchone()[0]
+    assert ckey == "bger|1C12025|"
 
 
 # ── _log_quality_summary ─────────────────────────────────────

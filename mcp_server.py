@@ -1289,14 +1289,35 @@ def _extract_inline_docket_candidates(query: str) -> list[str]:
     return [raw for _, raw in matches_with_pos[:5]]
 
 
+def _make_canonical_key(court: str, docket: str, date: str | None = None) -> str:
+    """Compute a canonical key for dedup (aggressive normalization)."""
+    docket_norm = re.sub(r"[^A-Z0-9]", "", (docket or "").upper())
+    date_compact = (date or "").replace("-", "")[:8]
+    return f"{court}|{docket_norm}|{date_compact}"
+
+
 def _dedupe_results_by_decision_id(rows: list[dict]) -> list[dict]:
+    """Deduplicate search results by decision_id and canonical_key.
+
+    Computes a canonical key from court+docket+date to collapse formatting
+    variants of the same case (first/highest-ranked wins).
+    """
     out: list[dict] = []
-    seen: set[str] = set()
+    seen_ids: set[str] = set()
+    seen_canonical: set[str] = set()
     for row in rows:
         did = row.get("decision_id")
-        if not did or did in seen:
+        if not did or did in seen_ids:
             continue
-        seen.add(did)
+        ckey = _make_canonical_key(
+            row.get("court", ""), row.get("docket_number", ""), row.get("decision_date"),
+        )
+        # Skip canonical dedup for empty-docket keys (format: court||date)
+        if ckey and "||" not in ckey and ckey in seen_canonical:
+            continue
+        seen_ids.add(did)
+        if ckey and "||" not in ckey:
+            seen_canonical.add(ckey)
         out.append(row)
     return out
 
@@ -1360,9 +1381,17 @@ def _normalize_docket_ref(value: str) -> str:
     return text.strip("_")
 
 
+_graph_warned = False
+_vec_warned = False
+
+
 def _get_graph_conn() -> sqlite3.Connection | None:
     """Open a read-only connection to the reference graph DB, or None if unavailable."""
+    global _graph_warned
     if not GRAPH_DB_PATH.exists():
+        if not _graph_warned:
+            logger.warning("Reference graph DB not found at %s — citation features disabled", GRAPH_DB_PATH)
+            _graph_warned = True
         return None
     try:
         conn = sqlite3.connect(str(GRAPH_DB_PATH), timeout=0.5)
@@ -1370,19 +1399,26 @@ def _get_graph_conn() -> sqlite3.Connection | None:
         conn.execute("PRAGMA query_only = ON")
         return conn
     except sqlite3.Error as e:
-        logger.debug("Failed to open graph DB: %s", e)
+        logger.warning("Failed to open graph DB: %s", e)
         return None
 
 
 def _get_vec_conn() -> sqlite3.Connection | None:
     """Open a read-only connection to the vector DB, or None if unavailable."""
+    global _vec_warned
     if VECTOR_SEARCH_ENABLED in {"0", "false", "no"}:
         return None
     if not VECTOR_DB_PATH.exists():
+        if not _vec_warned:
+            logger.warning("Vector DB not found at %s — vector search disabled", VECTOR_DB_PATH)
+            _vec_warned = True
         return None
     try:
         import sqlite_vec
     except ImportError:
+        if not _vec_warned:
+            logger.warning("sqlite-vec not installed — vector search disabled")
+            _vec_warned = True
         return None
     try:
         conn = sqlite3.connect(str(VECTOR_DB_PATH), timeout=0.5)
@@ -1392,7 +1428,7 @@ def _get_vec_conn() -> sqlite3.Connection | None:
         conn.execute("PRAGMA query_only = ON")
         return conn
     except Exception as e:
-        logger.debug("Failed to open vector DB: %s", e)
+        logger.warning("Failed to open vector DB: %s", e)
         return None
 
 
@@ -4755,6 +4791,10 @@ def _build_db_from_parquet(reporter=None) -> dict:
                     try:
                         values = tuple(
                             json.dumps(row, default=str) if col == "json_data"
+                            else _make_canonical_key(
+                                row.get("court", ""), row.get("docket_number", ""),
+                                row.get("decision_date"),
+                            ) if col == "canonical_key"
                             else row.get(col)
                             for col in INSERT_COLUMNS
                         )
@@ -5031,7 +5071,10 @@ async def handle_list_tools() -> list[Tool]:
                 "Also handles docket number lookup (e.g., 6B_1234/2025) and "
                 "column-scoped search (regeste:keyword, full_text:keyword). "
                 "Returns BM25-ranked results with snippets. "
-                "Use offset for pagination through large result sets."
+                "Use offset for pagination through large result sets.\n\n"
+                "To find the MOST RECENT decisions: omit the query (or set it empty) "
+                "and use sort='date_desc' with optional court/canton filters. "
+                "Example: query='', court='bger', sort='date_desc', limit=5."
             ),
             inputSchema={
                 "type": "object",
@@ -5111,7 +5154,7 @@ async def handle_list_tools() -> list[Tool]:
                         "enum": ["full", "compact"],
                     },
                 },
-                "required": ["query"],
+                "required": [],
             },
         ),
         Tool(

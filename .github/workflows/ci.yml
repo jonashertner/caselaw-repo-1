@@ -39,12 +39,7 @@ jobs:
       - name: Unit tests (offline)
         run: |
           pytest -q \
-            test_schema.py \
-            test_mcp_search_nl.py \
-            test_search_rerank_signals.py \
-            test_mock_decision_tool.py \
-            test_reference_extraction.py \
-            test_reference_graph_resolution.py \
-            test_search_benchmark_resolution.py \
-            test_runtime_completeness_guards.py \
-            tests/
+            --ignore=test_bger_live.py \
+            --ignore=test_federal_live.py \
+            --ignore=test_build_vectors.py \
+            --ignore=scripts/

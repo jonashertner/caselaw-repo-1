@@ -152,6 +152,22 @@ def make_decision_id(court: str, docket: str) -> str:
     return f"{court}_{normalize_docket(docket)}"
 
 
+def make_canonical_key(court: str, docket: str, decision_date: str | None = None) -> str:
+    """Create a canonical key for deduplication.
+
+    Aggressively normalizes court + docket + date so that formatting
+    variants (dots vs underscores vs slashes, case differences) all
+    collapse to the same key.
+
+    Examples:
+        ('bl_gerichte', 'BL.2020.1', '2020-05-15') → 'bl_gerichte|BL20201|20200515'
+        ('bl_gerichte', 'BL_2020_1', '2020-05-15') → 'bl_gerichte|BL20201|20200515'
+    """
+    docket_norm = re.sub(r"[^A-Z0-9]", "", (docket or "").upper())
+    date_compact = (decision_date or "").replace("-", "")[:8]
+    return f"{court}|{docket_norm}|{date_compact}"
+
+
 # ============================================================
 # Citation extraction
 # ============================================================

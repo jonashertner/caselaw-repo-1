@@ -20,7 +20,8 @@ def test_db_schema_imports():
     assert "decision_id" in INSERT_COLUMNS
     assert "json_data" in INSERT_COLUMNS
     assert INSERT_COLUMNS[0] == "decision_id"
-    assert INSERT_COLUMNS[-1] == "json_data"
+    assert "json_data" in INSERT_COLUMNS
+    assert "canonical_key" in INSERT_COLUMNS
 
     # INSERT_SQL should have the right number of placeholders
     placeholders = INSERT_SQL.count("?")

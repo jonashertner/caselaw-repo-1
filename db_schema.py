@@ -30,7 +30,8 @@ SCHEMA_SQL = """
         source_id TEXT,
         source_spider TEXT,
         content_hash TEXT,
-        json_data TEXT
+        json_data TEXT,
+        canonical_key TEXT
     );
 
     CREATE INDEX IF NOT EXISTS idx_decisions_court ON decisions(court);
@@ -40,6 +41,7 @@ SCHEMA_SQL = """
     CREATE INDEX IF NOT EXISTS idx_decisions_docket ON decisions(docket_number);
     CREATE INDEX IF NOT EXISTS idx_decisions_chamber ON decisions(chamber);
     CREATE INDEX IF NOT EXISTS idx_decisions_type ON decisions(decision_type);
+    CREATE INDEX IF NOT EXISTS idx_decisions_canonical ON decisions(canonical_key);
 
     CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
         decision_id UNINDEXED,
@@ -93,7 +95,7 @@ INSERT_COLUMNS = (
     "legal_area", "regeste", "full_text", "decision_type",
     "outcome", "source_url", "pdf_url", "cited_decisions",
     "scraped_at", "source", "source_id", "source_spider",
-    "content_hash", "json_data",
+    "content_hash", "json_data", "canonical_key",
 )
 
 INSERT_SQL = f"""INSERT INTO decisions
