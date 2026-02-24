@@ -1925,7 +1925,7 @@ function renderAll(data) {
 async function init() {
   applyI18n();
   try {
-    const r = await fetch('stats.json');
+    const r = await fetch('stats.json?v=' + Math.floor(Date.now()/60000));
     if (!r.ok) throw new Error(r.status);
     const data = await r.json();
     window._statsData = data;
