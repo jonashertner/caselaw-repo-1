@@ -523,9 +523,9 @@ class BgerScraper(BaseScraper):
     # DISCOVERY
     # ═══════════════════════════════════════════════════════════════════════
 
-    # BGer publishes decisions with a 2-4 week lag after the decision date.
+    # BGer publishes decisions with a 2-8 week lag after the decision date.
     # A 14-day AZA search window misses late-published decisions.
-    DAILY_LOOKBACK_DAYS = 60
+    DAILY_LOOKBACK_DAYS = 90
 
     def discover_new(self, since_date: date | None = None) -> Iterator[dict]:
         """
