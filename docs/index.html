@@ -58,7 +58,7 @@
 :root {
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
-  --fs-2xs: 0.6875rem; --fs-xs: 0.75rem; --fs-sm: 0.8125rem;
+  --fs-2xs: 0.75rem; --fs-xs: 0.75rem; --fs-sm: 0.8125rem;
   --fs-base: 0.875rem; --fs-md: 0.9375rem; --fs-lg: 1rem;
   --fs-xl: 1.125rem; --fs-2xl: 1.5rem; --fs-3xl: 2.5rem; --fs-4xl: 3.5rem;
   --r: 8px; --r-sm: 6px; --r-xs: 3px;
@@ -518,7 +518,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 [data-theme="dark"] .pill-running { background:#0969da33; color:#58a6ff; }
 .health-meta { font-size:var(--fs-sm); color:var(--tx2); font-family:var(--f-mono); margin-bottom:12px; }
 .disk-bar { margin-bottom:16px; font-size:var(--fs-sm); color:var(--tx2); font-family:var(--f-mono); }
-.disk-bar .disk-track { height:8px; background:var(--bd); border-radius:4px; margin:4px 0 2px; overflow:hidden; }
+.disk-bar .disk-track { height:8px; background:var(--brd); border-radius:4px; margin:4px 0 2px; overflow:hidden; }
 .disk-bar .disk-fill { height:100%; border-radius:4px; transition:width .3s; }
 .disk-bar .disk-fill.ok { background:var(--green); }
 .disk-bar .disk-fill.warn { background:#d4a017; }
@@ -625,7 +625,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .hero-links a { font-size: var(--fs-xs); padding: 6px 10px; }
   .lang-chart-wrap { flex-direction: column; }
   .table-search input { width: 100%; }
-  .access-card code { font-size: 0.6875rem; }
+  .access-card code { font-size: var(--fs-2xs); }
   .tree-court { padding-left: 24px; }
 }
 @media (max-width: 380px) {
@@ -635,14 +635,14 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .cg { grid-template-columns: repeat(4,1fr); gap: 6px; }
   .cc2 { padding: 10px 4px 8px; }
   .cc2 .k { font-size: var(--fs-md); }
-  .cc2 .nm { font-size: 0.625rem; }
+  .cc2 .nm { font-size: var(--fs-2xs); }
   .cc2 .cv { font-size: var(--fs-xs); }
   .cn { max-width: 120px; }
   .ct th, .ct td { padding: 6px 8px; font-size: var(--fs-xs); }
   .toolbar-inner { height: 40px; }
-  .lang-sw button { padding: 2px 5px; font-size: 0.625rem; }
+  .lang-sw button { padding: 2px 5px; font-size: var(--fs-2xs); }
   .hero-links { gap: 6px; }
-  .hero-links a { padding: 5px 8px; font-size: 0.625rem; }
+  .hero-links a { padding: 5px 8px; font-size: var(--fs-2xs); }
   header h1 { font-size: 1.4rem; }
   .tree-hd { padding: 6px 10px; }
   .tree-court { padding: 5px 10px 5px 20px; }
