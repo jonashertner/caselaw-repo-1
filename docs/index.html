@@ -117,6 +117,7 @@ a:hover { text-decoration: underline; }
   letter-spacing: 0.04em; padding: 6px 7px; border: none;
   background: transparent; color: var(--tx3);
   cursor: pointer; transition: color 0.15s var(--ease); text-transform: uppercase;
+  min-height: 44px; display: flex; align-items: center;
 }
 .lang-sw button:hover { color: var(--tx); }
 .lang-sw button.on {
@@ -423,7 +424,7 @@ header .sub {
 .access-featured .setup-path code {
   display: block; font-family: var(--f-mono); font-size: var(--fs-xs);
   background: var(--bg2); border: 1px solid var(--brd2); border-radius: var(--r-sm);
-  padding: 10px 14px; overflow-x: auto; white-space: pre; color: var(--tx2);
+  padding: 10px 14px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; color: var(--tx2);
   line-height: 1.6; margin-top: 8px;
 }
 .access-featured .example-prompts {
@@ -475,7 +476,7 @@ header .sub {
 .access-card code {
   display: block; font-family: var(--f-mono); font-size: var(--fs-xs);
   background: var(--bg2); border: 1px solid var(--brd2); border-radius: var(--r-sm);
-  padding: 12px 14px; overflow-x: auto; white-space: pre; color: var(--tx2);
+  padding: 12px 14px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; color: var(--tx2);
   line-height: 1.6;
 }
 
@@ -561,7 +562,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .study-step-desc code {
   font-family: var(--f-mono); font-size: var(--fs-xs);
   background: var(--bg2); border: 1px solid var(--brd2); border-radius: var(--r-xs);
-  padding: 2px 6px; color: var(--tx2);
+  padding: 2px 6px; color: var(--tx2); word-break: break-all;
 }
 .study-step-desc a { font-weight: 500; }
 .study-prompts {
@@ -607,13 +608,13 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .study-prompts ul { grid-template-columns: 1fr; }
   .study-card { padding: 24px 18px; }
   .kpis { gap: 40px; }
-  .section-nav { display: none; }
 }
 @media (max-width: 640px) {
   .w { padding: 0 16px; }
   header { padding: 48px 0 12px; }
   header h1 { font-size: 1.75rem; }
   header::before { width: 100%; }
+  .section-nav { display: none; }
   .kpis { gap: 36px; margin: 28px 0 4px; }
   .kpi-v { font-size: 1.75rem; }
   .cg { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); }
@@ -626,24 +627,33 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .lang-chart-wrap { flex-direction: column; }
   .table-search input { width: 100%; }
   .access-card code { font-size: var(--fs-2xs); }
+  .access-featured { padding: 20px 16px; }
+  .access-featured .setup-paths { gap: 20px; }
+  .study-card { padding: 20px 16px; }
   .tree-court { padding-left: 24px; }
 }
 @media (max-width: 380px) {
   .w { padding: 0 12px; }
   .kpi-v { font-size: 1.5rem; }
   .kpis { gap: 20px; flex-wrap: wrap; }
-  .cg { grid-template-columns: repeat(4,1fr); gap: 6px; }
+  .cg { grid-template-columns: repeat(3,1fr); gap: 6px; }
   .cc2 { padding: 10px 4px 8px; }
   .cc2 .k { font-size: var(--fs-md); }
   .cc2 .nm { font-size: var(--fs-2xs); }
   .cc2 .cv { font-size: var(--fs-xs); }
   .cn { max-width: 120px; }
   .ct th, .ct td { padding: 6px 8px; font-size: var(--fs-xs); }
+  .tw { margin: 0 -12px; }
   .toolbar-inner { height: 40px; }
-  .lang-sw button { padding: 2px 5px; font-size: var(--fs-2xs); }
+  .lang-sw button { padding: 2px 5px; font-size: var(--fs-2xs); min-height: 40px; }
   .hero-links { gap: 6px; }
   .hero-links a { padding: 5px 8px; font-size: var(--fs-2xs); }
   header h1 { font-size: 1.4rem; }
+  .access-featured { padding: 16px 12px; }
+  .access-featured .setup-paths { gap: 12px; }
+  .study-card { padding: 16px 12px; }
+  .section-summary { padding: 14px 12px; }
+  .section-body { padding: 14px 12px 16px; }
   .tree-hd { padding: 6px 10px; }
   .tree-court { padding: 5px 10px 5px 20px; }
 }
