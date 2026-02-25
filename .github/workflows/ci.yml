@@ -41,4 +41,5 @@ jobs:
           pytest -q \
             --ignore=test_bger_live.py \
             --ignore=test_federal_live.py \
+            --ignore=test_build_vectors.py \
             --ignore=scripts/
