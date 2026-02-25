@@ -128,6 +128,7 @@ CROSS_ENCODER_TOP_N = max(1, int(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_TOP
 CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT", "1.4"))
 
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
+STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -984,6 +985,7 @@ def _search_fts5_inner(
             offset=offset,
             sort=sort,
         )
+        reranked = _dedupe_results_by_decision_id(reranked)
         return reranked, total_candidates
 
     if had_success:
@@ -1383,6 +1385,7 @@ def _normalize_docket_ref(value: str) -> str:
 
 _graph_warned = False
 _vec_warned = False
+_statutes_warned = False
 
 
 def _get_graph_conn() -> sqlite3.Connection | None:
@@ -1429,6 +1432,24 @@ def _get_vec_conn() -> sqlite3.Connection | None:
         return conn
     except Exception as e:
         logger.warning("Failed to open vector DB: %s", e)
+        return None
+
+
+def _get_statutes_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the statutes DB, or None if unavailable."""
+    global _statutes_warned
+    if not STATUTES_DB_PATH.exists():
+        if not _statutes_warned:
+            logger.warning("Statutes DB not found at %s — statute tools disabled", STATUTES_DB_PATH)
+            _statutes_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(str(STATUTES_DB_PATH), timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only = ON")
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open statutes DB: %s", e)
         return None
 
 
@@ -5058,6 +5079,196 @@ def _handle_check_case_brief(
     )
 
 
+# ── Statute tools ──────────────────────────────────────────────
+
+
+def get_law(
+    sr_number: str | None = None,
+    abbreviation: str | None = None,
+    article: str | None = None,
+    language: str = "de",
+) -> dict:
+    """Look up a law or specific article from the Fedlex statute database."""
+    conn = _get_statutes_conn()
+    if conn is None:
+        return {"error": "Statutes database not available. Deploy statutes.db to enable statute lookup."}
+
+    try:
+        # Resolve SR number from abbreviation if needed
+        if not sr_number and abbreviation:
+            abbr_upper = abbreviation.upper()
+            row = conn.execute(
+                """SELECT sr_number FROM laws
+                   WHERE UPPER(abbr_de) = ? OR UPPER(abbr_fr) = ? OR UPPER(abbr_it) = ?
+                   LIMIT 1""",
+                (abbr_upper, abbr_upper, abbr_upper),
+            ).fetchone()
+            if row:
+                sr_number = row["sr_number"]
+            else:
+                return {"error": f"No law found with abbreviation '{abbreviation}'."}
+
+        if not sr_number:
+            return {"error": "Provide sr_number or abbreviation."}
+
+        # Get law metadata
+        law = conn.execute(
+            "SELECT * FROM laws WHERE sr_number = ?", (sr_number,)
+        ).fetchone()
+        if not law:
+            return {"error": f"No law found with SR number '{sr_number}'."}
+
+        result = {
+            "sr_number": law["sr_number"],
+            "title": law[f"title_{language}"] or law["title_de"],
+            "abbreviation": law[f"abbr_{language}"] or law["abbr_de"],
+            "consolidation_date": law["consolidation_date"],
+        }
+
+        if article:
+            # Fetch specific article
+            articles = conn.execute(
+                """SELECT article_num, heading, text FROM articles
+                   WHERE sr_number = ? AND article_num = ? AND lang = ?""",
+                (sr_number, article, language),
+            ).fetchall()
+            if not articles:
+                # Try matching with normalization (e.g., "41a" matches "41a")
+                articles = conn.execute(
+                    """SELECT article_num, heading, text FROM articles
+                       WHERE sr_number = ? AND lang = ?
+                       AND (article_num = ? OR article_num LIKE ?)""",
+                    (sr_number, language, article, f"{article}%"),
+                ).fetchall()
+            result["articles"] = [dict(a) for a in articles]
+        else:
+            # Return article list (no text to keep response compact)
+            articles = conn.execute(
+                """SELECT article_num, heading FROM articles
+                   WHERE sr_number = ? AND lang = ?
+                   ORDER BY CAST(article_num AS INTEGER), article_num""",
+                (sr_number, language),
+            ).fetchall()
+            result["article_count"] = len(articles)
+            result["articles"] = [
+                {"article_num": a["article_num"], "heading": a["heading"]}
+                for a in articles
+            ]
+
+        return result
+    except sqlite3.Error as e:
+        logger.error("Statute lookup error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def search_laws(
+    query: str,
+    sr_number: str | None = None,
+    language: str = "de",
+    limit: int = 10,
+) -> dict:
+    """Full-text search across statute articles."""
+    conn = _get_statutes_conn()
+    if conn is None:
+        return {"error": "Statutes database not available. Deploy statutes.db to enable statute search."}
+
+    limit = min(max(1, limit), 50)
+
+    try:
+        # Build FTS5 query
+        if sr_number:
+            rows = conn.execute(
+                """SELECT a.sr_number, a.article_num, a.heading,
+                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
+                          l.abbr_de, l.abbr_fr, l.abbr_it
+                   FROM articles_fts f
+                   JOIN articles a ON a.id = f.rowid
+                   LEFT JOIN laws l ON a.sr_number = l.sr_number
+                   WHERE articles_fts MATCH ? AND a.sr_number = ? AND a.lang = ?
+                   ORDER BY f.rank
+                   LIMIT ?""",
+                (query, sr_number, language, limit),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """SELECT a.sr_number, a.article_num, a.heading,
+                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
+                          l.abbr_de, l.abbr_fr, l.abbr_it
+                   FROM articles_fts f
+                   JOIN articles a ON a.id = f.rowid
+                   LEFT JOIN laws l ON a.sr_number = l.sr_number
+                   WHERE articles_fts MATCH ? AND a.lang = ?
+                   ORDER BY f.rank
+                   LIMIT ?""",
+                (query, language, limit),
+            ).fetchall()
+
+        results = []
+        for r in rows:
+            abbr = r[f"abbr_{language}"] or r["abbr_de"] or "?"
+            results.append({
+                "sr_number": r["sr_number"],
+                "abbreviation": abbr,
+                "article_num": r["article_num"],
+                "heading": r["heading"],
+                "snippet": r["snippet"],
+            })
+
+        return {"query": query, "count": len(results), "results": results}
+    except sqlite3.Error as e:
+        logger.error("Statute search error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def _format_get_law_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+
+    text = f"# {result['abbreviation']} — SR {result['sr_number']}\n"
+    text += f"**{result['title']}**\n"
+    text += f"Consolidation date: {result['consolidation_date']}\n\n"
+
+    articles = result.get("articles", [])
+    if not articles:
+        text += "No articles found.\n"
+        return text
+
+    # If articles have full text, show them
+    if articles and "text" in articles[0]:
+        for art in articles:
+            heading = f" — {art['heading']}" if art.get("heading") else ""
+            text += f"### Art. {art['article_num']}{heading}\n\n"
+            text += art["text"] + "\n\n"
+    else:
+        # Just article list
+        text += f"**{result.get('article_count', len(articles))} articles**\n\n"
+        for art in articles:
+            heading = f" {art['heading']}" if art.get("heading") else ""
+            text += f"- Art. {art['article_num']}{heading}\n"
+
+    return text
+
+
+def _format_search_laws_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+
+    results = result.get("results", [])
+    text = f"# Statute Search: \"{result['query']}\"\n"
+    text += f"Found {result['count']} matching articles.\n\n"
+
+    for i, r in enumerate(results, 1):
+        heading = f" — {r['heading']}" if r.get("heading") else ""
+        text += f"**{i}. Art. {r['article_num']} {r['abbreviation']}** (SR {r['sr_number']}){heading}\n"
+        text += f"   {r['snippet']}\n\n"
+
+    return text
+
+
 @server.list_tools()
 async def handle_list_tools() -> list[Tool]:
     return [
@@ -5539,6 +5750,73 @@ async def handle_list_tools() -> list[Tool]:
                 "required": ["decision_id", "brief"],
             },
         ),
+        Tool(
+            name="get_law",
+            description=(
+                "Look up a Swiss federal law by SR number or abbreviation. "
+                "Returns law metadata and article list, or full article text if a specific "
+                "article number is provided. Covers all laws in the Classified Compilation (SR/RS). "
+                "Examples: get_law(abbreviation='BV', article='8') for Art. 8 of the Federal Constitution, "
+                "get_law(sr_number='220', article='41') for Art. 41 OR."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sr_number": {
+                        "type": "string",
+                        "description": "SR number of the law (e.g., '210' for ZGB, '220' for OR, '101' for BV).",
+                    },
+                    "abbreviation": {
+                        "type": "string",
+                        "description": "Law abbreviation (e.g., 'BV', 'OR', 'ZGB', 'StGB', 'BGG'). Used to resolve SR number if sr_number not provided.",
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": "Article number to retrieve (e.g., '8', '41a'). If omitted, returns the full article list.",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Language for article text: de (German), fr (French), it (Italian).",
+                        "enum": ["de", "fr", "it"],
+                        "default": "de",
+                    },
+                },
+            },
+        ),
+        Tool(
+            name="search_laws",
+            description=(
+                "Full-text search across Swiss federal law articles. "
+                "Searches article text, headings, and article numbers in the Classified Compilation. "
+                "Useful for finding which law articles deal with a specific legal topic. "
+                "Example: search_laws(query='Verjährung') to find statute of limitations provisions."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query (supports FTS5 syntax: quotes for phrases, OR for alternatives).",
+                    },
+                    "sr_number": {
+                        "type": "string",
+                        "description": "Restrict search to a specific law by SR number.",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Language to search in: de, fr, it.",
+                        "enum": ["de", "fr", "it"],
+                        "default": "de",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results (1-50).",
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
         *([] if REMOTE_MODE else [
             Tool(
                 name="update_database",
@@ -5790,6 +6068,26 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 language=arguments.get("language", "de"),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "get_law":
+            result = await asyncio.to_thread(
+                get_law,
+                sr_number=arguments.get("sr_number"),
+                abbreviation=arguments.get("abbreviation"),
+                article=arguments.get("article"),
+                language=arguments.get("language", "de"),
+            )
+            return [TextContent(type="text", text=_format_get_law_response(result))]
+
+        elif name == "search_laws":
+            result = await asyncio.to_thread(
+                search_laws,
+                query=arguments["query"],
+                sr_number=arguments.get("sr_number"),
+                language=arguments.get("language", "de"),
+                limit=int(arguments.get("limit", 10)),
+            )
+            return [TextContent(type="text", text=_format_search_laws_response(result))]
 
         elif name == "update_database":
             global _update_thread
