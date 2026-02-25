@@ -83,7 +83,7 @@ Anthropic API key. You need a separate developer account at console.anthropic.co
 
 - **Multi-provider**: Switch between OpenAI, Claude, and Gemini mid-conversation
 - **Streaming**: Token-by-token responses via server-sent events
-- **Chat with tools**: The LLM calls search, get_decision, list_courts, etc. via MCP
+- **Chat with tools**: The LLM calls search, get_decision, list_courts, get_law, find_citations, etc. via MCP (16 tools)
 - **Structured results**: Decision cards with court, canton, date, language, snippets
 - **Filters**: Court, canton, language, date range (with reset button)
 - **Toggles**: Duplicate collapse (default ON), multilingual expansion

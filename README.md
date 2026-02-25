@@ -1,6 +1,6 @@
 # Swiss Case Law Open Dataset
 
-**1,000,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**1,075,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
@@ -17,23 +17,24 @@ A structured, searchable archive of Swiss court decisions — from the Federal S
 
 The dataset is built from three sources: direct scraping of official court websites, cantonal court portals, and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are scraped, deduplicated, and published every night.
 
-There are five ways to use it, depending on what you need:
+There are six ways to use it, depending on what you need:
 
 | Method | For whom | What you get |
 |--------|----------|-------------|
 | [**Search with AI**](#1-search-with-ai) | Lawyers, researchers | Natural-language search in Claude, ChatGPT, or Gemini — instant access, no download |
-| [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, jurisprudence trends |
+| [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, appeal chains, jurisprudence trends |
+| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 40+ federal laws (OR, ZGB, StGB, BV, ...) |
 | [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1M+ decisions and citation analysis tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1M+ decisions, citation analysis, statute lookup, and education tools, no download needed.
 
 ---
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) that lets AI tools search across all 1M+ decisions. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 16 tools that lets AI search across all 1M+ decisions, look up federal law articles, analyze citation networks, and study leading cases. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
 ### Remote vs. local
 
@@ -41,7 +42,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) that let
 |---|---|---|
 | **Setup** | 30 seconds | 30–60 minutes |
 | **Disk** | None | ~65 GB |
-| **Tools** | 8 | 10 (+update_database, check_update_status) |
+| **Tools** | 14 | 16 (+update_database, check_update_status) |
 | **Freshness** | Nightly (automatic) | Manual |
 | **Offline** | No | Yes |
 | **Requires** | Claude, ChatGPT, or Gemini CLI (see plans below) | Any MCP client |
@@ -116,7 +117,7 @@ Restart Gemini CLI after saving. No account plan required — Gemini CLI is free
 
 > See the **[full MCP setup guide](docs/claude-desktop-setup.md)** for detailed instructions for all platforms.
 
-> The `update_database` and `check_update_status` tools are not available on the remote server — the dataset is updated automatically every night.
+> The `update_database` and `check_update_status` tools are only available on the local server — the remote dataset is updated automatically every night.
 
 ### Option B: Local server (offline access)
 
@@ -198,12 +199,14 @@ The dataset is updated daily. To get the latest decisions, ask Claude to run the
 
 ```
 ~/.swiss-caselaw/
-├── parquet/          # Downloaded Parquet files from HuggingFace (~7 GB)
+├── parquet/              # Downloaded Parquet files from HuggingFace (~7 GB)
 │   └── data/
 │       ├── bger.parquet
 │       ├── bvger.parquet
-│       └── ...       # 93 files, one per court
-└── decisions.db      # SQLite FTS5 search index (~58 GB)
+│       └── ...           # 93 files, one per court
+├── decisions.db          # SQLite FTS5 search index (~58 GB)
+├── reference_graph.db    # Citation graph (7.85M edges, ~3.5 GB)
+└── statutes.db           # Federal law articles from Fedlex (~42 MB)
 ```
 
 All data stays on your machine. No API calls are made during search — the MCP server queries the local SQLite database directly.
@@ -245,9 +248,15 @@ Available on both remote and local unless noted.
 | `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |
 | `find_citations` | Show what a decision cites and what cites it, with confidence scores |
+| `find_appeal_chain` | Trace the appeal chain (Instanzenzug) — prior and subsequent instances |
 | `find_leading_cases` | Find the most-cited decisions for a topic or statute |
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
-| `draft_mock_decision` | Build a research-only mock decision outline from facts, grounded in caselaw + statute references; asks clarification questions before conclusion (optionally enriched from Fedlex) |
+| `draft_mock_decision` | Build a research-only mock decision outline from facts, grounded in caselaw + statute references; asks clarification questions before conclusion |
+| `study_leading_case` | Interactive study of a BGE/leading case — Socratic questions, case structure, review cards |
+| `list_study_curriculum` | Browse study curricula: 8 legal areas, graded cases, difficulty levels |
+| `check_case_brief` | Check a student's case brief against the actual decision with scoring rubric |
+| `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
+| `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
 | `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database *(local only)* |
 | `check_update_status` | Check progress of a running database update *(local only)* |
 
@@ -271,13 +280,21 @@ These work on both the remote and local server:
 > Show me the citation network for BGE 138 III 374
 
 > How has Mietrecht jurisprudence evolved over time?
+
+> Show me Art. 41 OR (statute lookup)
+
+> Search for statute provisions about Verjährung
+
+> Study the leading case on Vertragsschluss
+
+> Trace the appeal chain for 5A_234/2026
 ```
 
 The AI calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
 
 ### Citation graph tools
 
-Three tools expose the **reference graph** — 7.85 million citation edges linking 1M+ decisions, plus 330K statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+Four tools expose the **reference graph** — 7.85 million citation edges linking 1M+ decisions, plus 330K statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
 
 **`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
 
@@ -296,6 +313,10 @@ Three tools expose the **reference graph** — 7.85 million citation edges linki
 ```
 
 Parameters: `decision_id` (required), `direction` (both/outgoing/incoming), `min_confidence` (0–1, default 0.3), `limit` (default 50, max 200).
+
+**`find_appeal_chain`** — Trace the appeal chain (Instanzenzug) for a decision. Shows prior instances (lower courts) and subsequent instances (appeals to higher courts), reconstructing the full procedural path (e.g., Bezirksgericht → Obergericht → Bundesgericht).
+
+Parameters: `decision_id` (required), `min_confidence` (0–1, default 0.3).
 
 **`find_leading_cases`** — Find the most-cited decisions, ranked by how many other decisions reference them. Filter by statute (law code + article), text query, court, or date range.
 
@@ -328,6 +349,49 @@ Year     Count  Bar
 ```
 
 Parameters: `query` (optional text), `law_code` + `article` (optional statute), `court`, `date_from`, `date_to`. At least one of `query` or `law_code` is required.
+
+### Statute lookup tools
+
+Two tools provide direct access to **Swiss federal law text** from the Classified Compilation (SR/RS), powered by a Fedlex statute database with 40+ laws and 25,000+ articles in three languages.
+
+**`get_law`** — Look up a law by SR number or abbreviation, optionally fetching a specific article with full text.
+
+```
+> Show me Art. 8 BV
+
+# BV — SR 101
+**Bundesverfassung der Schweizerischen Eidgenossenschaft vom 18. April 1999**
+
+### Art. 8 — Rechtsgleichheit
+1 Alle Menschen sind vor dem Gesetz gleich.
+2 Niemand darf diskriminiert werden, namentlich nicht wegen der Herkunft, ...
+```
+
+Parameters: `sr_number` or `abbreviation` (at least one required), `article` (optional — omit to see the full article list), `language` (de/fr/it, default de).
+
+**`search_laws`** — Full-text search across all statute articles. Finds which law articles deal with a specific legal topic.
+
+```
+> Search for statute provisions about Verjährung
+
+1. Art. 130 OR (SR 220): Die Verjährung beginnt mit der Fälligkeit der Forderung...
+2. Art. 132 OR (SR 220): Bei der Berechnung der Frist ist der Tag...
+3. Art. 790 ZGB (SR 210): Die Grundlast ist keiner Verjährung unterworfen...
+```
+
+Parameters: `query` (required, FTS5 syntax), `sr_number` (optional — restrict to one law), `language` (de/fr/it), `limit` (1–50).
+
+The statute database covers the top 40 most-cited Swiss federal laws, including OR, ZGB, StGB, BV, BGG, StPO, ZPO, SchKG, and more. Data is sourced from [Fedlex](https://www.fedlex.admin.ch) (Akoma Ntoso XML).
+
+### Education tools
+
+Three tools support **Socratic legal education** with structured study of leading Swiss court decisions.
+
+**`study_leading_case`** — Interactive study of a BGE or Leitentscheid. Returns parsed decision structure (Sachverhalt, Erwägungen, Dispositiv), Socratic questions at 5 Bloom taxonomy levels, hypothetical variations, review cards for spaced repetition, and a case brief template. Three modes: `guided` (full package), `brief` (structure + brief template), `quick` (regeste + ratio + review cards).
+
+**`list_study_curriculum`** — Browse available study curricula covering 8 legal areas: Vertragsrecht, Haftpflicht, Sachenrecht, Grundrechte, Strafrecht AT, Mietrecht, Arbeitsrecht, Familienrecht. Each area has modules with graded cases and difficulty levels (1–5).
+
+**`check_case_brief`** — Check a student's case brief against the actual decision. Returns the ground truth alongside the brief for comparison, with a scoring rubric (6 weighted sections: Leitsatz 15%, Rechtsregel 20%, Sachverhalt 15%, Kernerwägungen 25%, Dispositiv 10%, Bedeutung 15%).
 
 `draft_mock_decision` can use optional Fedlex URLs and caches fetched statute excerpts in
 `~/.swiss-caselaw/fedlex_cache.json` (configurable via `SWISS_CASELAW_FEDLEX_CACHE`).
@@ -374,6 +438,30 @@ export SWISS_CASELAW_GRAPH_DB=output/reference_graph.db
 ```
 
 Graph signals are enabled by default. To disable them, set `SWISS_CASELAW_GRAPH_SIGNALS=0`.
+
+### Build Statutes Database (Optional)
+
+For statute lookup (`get_law`, `search_laws`), build the Fedlex statute database:
+
+```bash
+# Download the top 100 most-cited federal laws from Fedlex
+python3 -m scrapers.fedlex --top 100
+
+# Build the SQLite FTS5 statutes database
+python3 -m search_stack.build_statutes_db
+```
+
+Then copy to the data directory:
+
+```bash
+cp output/statutes.db ~/.swiss-caselaw/
+```
+
+Or set the path explicitly:
+
+```bash
+export SWISS_CASELAW_STATUTES_DB=output/statutes.db
+```
 
 ---
 
@@ -725,21 +813,24 @@ Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
 ## How it works
 
 ```
-                        ┌──────────────────────────────────────────────────┐
-                        │                  Daily Pipeline                  │
-                        │                                                  │
-Court websites ────────►│  Scrapers ──► JSONL ──┬──► Parquet ──► HuggingFace
-  bger.ch               │  (45 scrapers,        │                          │
-  bvger.ch              │   rate-limited,        └──► FTS5 DB ──► MCP Server
-  cantonal portals      │   resumable)                                     │
-  entscheidsuche.ch     │                                                  │
-                        │  01:00 UTC  scrape     04:00 UTC  publish        │
-                        └──────────────────────────────────────────────────┘
+                        ┌──────────────────────────────────────────────────────┐
+                        │                    Daily Pipeline                    │
+                        │                                                      │
+Court websites ────────►│  Scrapers ──► JSONL ──┬──► Parquet ──► HuggingFace   │
+  bger.ch               │  (45 scrapers,        │                              │
+  bvger.ch              │   rate-limited,        ├──► FTS5 DB ───┐             │
+  cantonal portals      │   resumable)           │               ├► MCP Server │
+  entscheidsuche.ch     │                        └──► Graph DB ──┘             │
+                        │                                          ▲           │
+Fedlex (SPARQL) ───────►│  Fedlex scraper ──► XML ──► Statutes DB ─┘           │
+                        │                                                      │
+                        │  01:00 UTC  scrape        04:00 UTC  publish         │
+                        └──────────────────────────────────────────────────────┘
 ```
 
 ### Step by step
 
-1. **Scrape** (01:00 UTC daily) — 45 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court.
+1. **Scrape** (01:00 UTC daily) — 45 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court. A separate Fedlex scraper downloads federal law texts (Akoma Ntoso XML) via SPARQL for the statute database.
 
 2. **Build search index** (04:00 UTC) — JSONL files are ingested into a SQLite FTS5 database for full-text search. On Mon–Sat, this runs in **incremental mode**: a byte-offset checkpoint tracks how far each JSONL file has been read, so only newly appended decisions are processed (typically < 1 minute). On Sundays, a **full rebuild** compacts the FTS5 index and resets the checkpoint (~3 hours). Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata. A quality enrichment step fills in missing titles, regestes, and content hashes.
 

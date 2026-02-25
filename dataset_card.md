@@ -28,7 +28,7 @@ configs:
 
 # Swiss Case Law Dataset
 
-**1,040,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**1,075,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
@@ -38,7 +38,7 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions — over 1 million decisions from 93 courts across all 26 cantons, scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are added every night.
+The largest open collection of Swiss court decisions — over 1,075,000 decisions from 93 courts across all 26 cantons, scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are added every night.
 
 - **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, and more
 - **93 cantonal courts** across all 26 cantons
@@ -136,17 +136,28 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |
 | `find_citations` | Show what a decision cites and what cites it, with confidence scores |
+| `find_appeal_chain` | Trace the appeal chain (Instanzenzug) — prior and subsequent instances |
 | `find_leading_cases` | Find the most-cited decisions for a topic or statute |
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Research-only mock decision outline from facts, grounded in caselaw + statutes |
+| `study_leading_case` | Interactive study of a BGE/leading case with Socratic questions and review cards |
+| `list_study_curriculum` | Browse study curricula: 8 legal areas, graded cases, difficulty levels |
+| `check_case_brief` | Check a student's case brief against the actual decision with scoring rubric |
+| `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
+| `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
 | `update_database` | Re-download latest data and rebuild the local database (local mode only) |
 | `check_update_status` | Check progress of a running database update (local mode only) |
 
-The citation graph tools (`find_citations`, `find_leading_cases`, `analyze_legal_trend`) use a **reference graph** with 7.85 million citation edges linking 1M+ decisions and 330K statute references:
+The citation graph tools (`find_citations`, `find_appeal_chain`, `find_leading_cases`, `analyze_legal_trend`) use a **reference graph** with 7.85 million citation edges linking 1M+ decisions and 330K statute references:
 
 - *"What are the leading cases on Art. 8 EMRK?"* → Top decisions ranked by citation count
 - *"Show me the citation network for BGE 138 III 374"* → 13 outgoing, 13,621 incoming citations
 - *"How has Art. 29 BV jurisprudence evolved?"* → Year-by-year trend from 2000 to present
+- *"Trace the appeal chain for 5A_234/2026"* → Lower court → Obergericht → Bundesgericht
+
+The statute tools (`get_law`, `search_laws`) provide direct access to **Swiss federal law text** from the Classified Compilation (SR/RS), sourced from [Fedlex](https://www.fedlex.admin.ch). Covers the top 40 most-cited federal laws (OR, ZGB, StGB, BV, BGG, StPO, ZPO, SchKG, etc.) with 25,000+ articles in three languages.
+
+The education tools (`study_leading_case`, `list_study_curriculum`, `check_case_brief`) support **Socratic legal study** of leading Swiss court decisions across 8 legal areas with graded difficulty.
 
 See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
 
@@ -270,7 +281,7 @@ MIT License. The underlying court decisions are public domain under Swiss law.
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={1M+ Swiss federal and cantonal court decisions with full text and structured metadata}
+  note={1,075,000+ Swiss federal and cantonal court decisions with full text and structured metadata}
 }
 ```
 

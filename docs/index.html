@@ -1787,14 +1787,12 @@ function deltaTag(n) { return n > 0 ? `<span class="delta">+${fmt(n)}</span>` : 
 
 function renderAll(data) {
   const range = data.date_range || {};
-  const cantonCount = (data.by_canton || []).length;
 
   // KPIs — two hero numbers
   const dl = data.delta || {};
   document.getElementById('kpis').innerHTML = `
     <div class="kpi"><div class="kpi-v">${fmt(data.total)}${deltaTag(dl.total)}</div><div class="kpi-l">${t('kpi_decisions')}</div></div>
-    <div class="kpi"><div class="kpi-v">${fmt(data.court_count || 0)}</div><div class="kpi-l">${t('kpi_courts')}</div></div>
-    <div class="kpi"><div class="kpi-v">${cantonCount}</div><div class="kpi-l">${t('kpi_cantons')}</div></div>`;
+    <div class="kpi"><div class="kpi-v">${fmt(data.court_count || 0)}</div><div class="kpi-l">${t('kpi_courts')}</div></div>`;
 
   // Last Updated — prominent, below KPIs
   if (data.generated_at) {

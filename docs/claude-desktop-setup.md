@@ -1,6 +1,6 @@
 # Swiss Case Law — MCP Setup Guide
 
-Search 1,000,000+ Swiss court decisions directly inside Claude, ChatGPT, or Gemini.
+Search 1,075,000+ Swiss court decisions directly inside Claude, ChatGPT, or Gemini.
 
 There are two options: **remote** (no download, instant access) or **local** (offline access, 65 GB disk). The remote server works with all major AI platforms.
 
@@ -72,7 +72,7 @@ After connecting, try asking:
 
 You should see search results with matched decisions, snippets, and metadata.
 
-> The `update_database` tool is not available on the remote server — the dataset is updated automatically every night.
+> The `update_database` and `check_update_status` tools are not available on the remote server — the dataset is updated automatically every night.
 
 <details>
 <summary>Alternative: manual JSON config for Claude Desktop (if custom connectors aren't available on your plan)</summary>
@@ -355,8 +355,18 @@ The AI automatically picks the right search tool, runs the query, and shows you 
 | `get_decision` | Fetch one decision by docket number (e.g., `6B_1234/2025`) or ID |
 | `list_courts` | List all 93 courts with decision counts and date ranges |
 | `get_statistics` | Aggregate statistics by court, canton, or year |
+| `find_citations` | Show what a decision cites and what cites it |
+| `find_appeal_chain` | Trace the appeal chain (Instanzenzug) across court levels |
+| `find_leading_cases` | Find the most-cited decisions for a topic or statute |
+| `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Legal research outline grounded in case law and statutes |
-| `update_database` | Download the latest data from HuggingFace |
+| `study_leading_case` | Interactive study of a BGE/leading case with Socratic questions |
+| `list_study_curriculum` | Browse study curricula: 8 legal areas, graded cases |
+| `check_case_brief` | Check a student's case brief against the actual decision |
+| `get_law` | Look up a Swiss federal law by SR number or abbreviation |
+| `search_laws` | Full-text search across Swiss federal law articles |
+| `update_database` | Download the latest data from HuggingFace *(local only)* |
+| `check_update_status` | Check progress of a running database update *(local only)* |
 
 ---
 
