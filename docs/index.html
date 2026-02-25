@@ -864,7 +864,7 @@ cd caselaw-repo-1
         <table class="ct" id="t-fed"><thead><tr>
           <th data-k="name" data-t="th_court">Court</th>
           <th data-k="count" data-t="th_decisions">Decisions</th>
-          <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
+          <th data-k="last_scraped" class="hide-m" data-t="th_updated">New Data</th>
           <th data-k="languages" data-t="th_languages">Languages</th>
         </tr></thead><tbody></tbody></table>
       </div>
@@ -889,7 +889,7 @@ cd caselaw-repo-1
         <th data-k="name" data-t="th_court">Court</th>
         <th data-k="canton" data-t="th_canton">Canton</th>
         <th data-k="count" data-t="th_decisions">Decisions</th>
-        <th data-k="last_scraped" class="hide-m" data-t="th_updated">Updated</th>
+        <th data-k="last_scraped" class="hide-m" data-t="th_updated">New Data</th>
       </tr></thead><tbody></tbody></table>
     </div>
     </div>
@@ -1040,7 +1040,7 @@ const I18N = {
     subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
     federal:'Bund', cantonal:'Kantone', cantons:'Kantone', access:'Datenzugang',
-    th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_updated:'Aktualisiert', th_languages:'Sprachen',
+    th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_updated:'Neue Daten', th_languages:'Sprachen',
     chart_timeline:'Entscheide pro Jahr', chart_languages:'Sprachverteilung',
     chart_top10:'Top 10 Gerichte', chart_lang_trends:'Sprachtrends (2005\u2013heute)',
     updated:'Aktualisiert am',
@@ -1104,7 +1104,7 @@ const I18N = {
     subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
     loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
     federal:'F\u00e9d\u00e9ral', cantonal:'Cantons', cantons:'Cantons', access:'Acc\u00e8s aux donn\u00e9es',
-    th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_updated:'Maj', th_languages:'Langues',
+    th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_updated:'Nouvelles donn\u00e9es', th_languages:'Langues',
     chart_timeline:'D\u00e9cisions par ann\u00e9e', chart_languages:'R\u00e9partition linguistique',
     chart_top10:'Top 10 Tribunaux', chart_lang_trends:'Tendances linguistiques (depuis 2005)',
     updated:'Mis \u00e0 jour le',
@@ -1168,7 +1168,7 @@ const I18N = {
     subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
     loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
     federal:'Federale', cantonal:'Cantoni', cantons:'Cantoni', access:'Accesso ai dati',
-    th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_updated:'Agg.', th_languages:'Lingue',
+    th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_updated:'Nuovi dati', th_languages:'Lingue',
     chart_timeline:'Decisioni per anno', chart_languages:'Distribuzione linguistica',
     chart_top10:'Top 10 Tribunali', chart_lang_trends:'Tendenze linguistiche (dal 2005)',
     updated:'Aggiornato il',
@@ -1232,7 +1232,7 @@ const I18N = {
     subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Tschertgar directamain cun IA u telechargiar il set da datas cumplain.',
     loading:'Chargiar', kpi_decisions:'Decisiuns', kpi_courts:'Dretgiras', kpi_cantons:'Chantuns', kpi_languages:'Linguas', kpi_coverage:'Perioda',
     federal:'Federal', cantonal:'Chantuns', cantons:'Chantuns', access:'Access a las datas',
-    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_updated:'Actual.', th_languages:'Linguas',
+    th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_updated:'Datas novas', th_languages:'Linguas',
     chart_timeline:'Decisiuns per onn', chart_languages:'Distribuziun linguistica',
     chart_top10:'Top 10 Dretgiras', chart_lang_trends:'Tendenzas linguisticas (dapi 2005)',
     updated:'Actualis\u00e0 ils',
@@ -1296,7 +1296,7 @@ const I18N = {
     subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
     federal:'Federal', cantonal:'Cantonal', cantons:'Cantons', access:'Access the Data',
-    th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_updated:'Updated', th_languages:'Languages',
+    th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_updated:'New Data', th_languages:'Languages',
     chart_timeline:'Decisions per Year', chart_languages:'Language Distribution',
     chart_top10:'Top 10 Courts', chart_lang_trends:'Language Trends (since 2005)',
     updated:'Updated',
