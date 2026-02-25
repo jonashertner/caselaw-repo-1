@@ -87,23 +87,57 @@ def _slugify(text: str) -> str:
 
 
 def _extract_pdf_text(data: bytes) -> str:
-    """Extract text from PDF bytes using fitz (PyMuPDF) with pdfplumber fallback."""
+    """Extract text from PDF bytes using fitz (PyMuPDF) with pdfplumber fallback.
+
+    If both extractors return only whitespace (scanned PDF), falls back to
+    OCR via pdf2image + pytesseract.
+    """
+    text = ""
     try:
         import fitz
 
         doc = fitz.open(stream=data, filetype="pdf")
-        return "\n\n".join(p.get_text() for p in doc)
+        text = "\n\n".join(p.get_text() for p in doc)
     except ImportError:
         pass
-    try:
-        import pdfplumber
-        import io
 
-        with pdfplumber.open(io.BytesIO(data)) as pdf:
-            return "\n\n".join(p.extract_text() or "" for p in pdf.pages)
+    if not text.strip():
+        try:
+            import pdfplumber
+            import io
+
+            with pdfplumber.open(io.BytesIO(data)) as pdf:
+                text = "\n\n".join(p.extract_text() or "" for p in pdf.pages)
+        except ImportError:
+            pass
+
+    if not text.strip():
+        text = _ocr_pdf(data)
+
+    return text
+
+
+def _ocr_pdf(data: bytes) -> str:
+    """OCR a scanned PDF using pdf2image + pytesseract."""
+    try:
+        from pdf2image import convert_from_bytes
+        import pytesseract
     except ImportError:
-        pass
-    return ""
+        logger.debug("[edoeb] OCR not available (pdf2image/pytesseract not installed)")
+        return ""
+
+    try:
+        images = convert_from_bytes(data, dpi=300)
+        pages = []
+        for img in images:
+            page_text = pytesseract.image_to_string(img, lang="deu+fra+ita")
+            pages.append(page_text)
+        result = "\n\n".join(pages)
+        logger.info(f"[edoeb] OCR extracted {len(result)} chars from {len(images)} pages")
+        return result
+    except Exception as e:
+        logger.warning(f"[edoeb] OCR failed: {e}")
+        return ""
 
 
 def _extract_date_from_text(text: str) -> str | None:

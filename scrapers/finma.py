@@ -67,7 +67,7 @@ class FINMAScraper(BaseScraper):
             data=f"ds={DATASET_ID}&Order=4",
             headers={
                 "Content-Type": "application/x-www-form-urlencoded",
-                "Referer": "https://www.finma.ch/de/sanktionen/kasuistik/",
+                "Referer": "https://www.finma.ch/de/dokumentation/enforcementberichterstattung/kasuistik/",
             },
         )
         data = response.json()
