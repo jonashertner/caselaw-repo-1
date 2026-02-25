@@ -3,6 +3,10 @@ import sqlite3
 from pathlib import Path
 
 from search_stack.build_reference_graph import build_graph
+from search_stack.reference_extraction import (
+    _extract_dockets_from_paren,
+    extract_prior_instance,
+)
 
 
 def _write_jsonl(path: Path, rows: list[dict]) -> None:
@@ -375,3 +379,242 @@ def test_build_graph_normalizes_whitespace_dockets(tmp_path: Path):
     stats = build_graph(input_dir=input_dir, db_path=db_path)
     assert stats["citations_resolved"] == 1
     assert stats["citation_target_links"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Prior instance extraction tests
+# ---------------------------------------------------------------------------
+
+
+def test_extract_prior_instance_german():
+    text = (
+        "Gegenstand\n"
+        "Nichtanhandnahme; Gegenstandslosigkeit,\n"
+        "Beschwerde gegen den Entscheid des Obergerichts des Kantons Aargau, "
+        "Beschwerdekammer in Strafsachen, vom 13. November 2025 (SBK.2025.285).\n"
+        "Erwägungen:\n"
+    )
+    result = extract_prior_instance(text)
+    assert result == ["SBK_2025_285"]
+
+
+def test_extract_prior_instance_french():
+    text = (
+        "Objet\n"
+        "Aide sociale (condition de recevabilité),\n"
+        "recours contre l'arrêt de la Cour de justice de la République "
+        "et canton de Genève du 6 août 2024 (A/1168/2024 AIDSO - ATA/917/2024).\n"
+        "Considérant en fait et en droit:\n"
+    )
+    result = extract_prior_instance(text)
+    assert "A_1168_2024" in result
+    assert "ATA_917_2024" in result
+
+
+def test_extract_prior_instance_italian():
+    text = (
+        "Oggetto\n"
+        "Assicurazione contro gli infortuni\n"
+        "(presupposto processuale),\n"
+        "ricorso contro la sentenza del Tribunale delle assicurazioni "
+        "del Cantone Ticino del 31 marzo 2025 (35.2024.77).\n"
+        "Visto:\n"
+    )
+    result = extract_prior_instance(text)
+    assert result == ["35_2024_77"]
+
+
+def test_extract_prior_instance_berufung():
+    text = (
+        "Gegenstand\n"
+        "Unterhalt\n"
+        "Berufung gegen das Urteil des Einzelgerichts am Bezirksgericht Horgen "
+        "vom 6. Oktober 2025 (FP240022-L).\n"
+        "Erwägungen:\n"
+    )
+    result = extract_prior_instance(text)
+    assert result == ["FP240022_L"]
+
+
+def test_extract_prior_instance_none_when_no_appeal():
+    text = "Gegenstand\nSteuerfestsetzung.\nErwägungen:\n"
+    assert extract_prior_instance(text) == []
+
+
+def test_extract_prior_instance_empty_text():
+    assert extract_prior_instance("") == []
+    assert extract_prior_instance(None) == []
+
+
+def test_extract_dockets_from_paren_comma_separated():
+    """Comma-separated dockets in parenthetical should all be captured."""
+    result = _extract_dockets_from_paren("A/1168/2024, ATA/917/2024")
+    assert len(result) == 2
+    # _normalize_docket replaces / with _
+    assert "A_1168_2024" in result
+    assert "ATA_917_2024" in result
+
+
+def test_extract_dockets_from_paren_semicolon_separated():
+    """Semicolon-separated dockets should all be captured."""
+    result = _extract_dockets_from_paren("4A_648/2024; 5A_203/2025")
+    assert len(result) == 2
+    assert "4A_648_2024" in result
+    assert "5A_203_2025" in result
+
+
+def test_extract_dockets_from_paren_dash_separated():
+    """Dash-separated dockets (existing behavior) still works."""
+    result = _extract_dockets_from_paren("A/1168/2024 AIDSO - ATA/917/2024")
+    assert len(result) == 2
+
+
+def test_extract_dockets_from_paren_single():
+    """Single docket still works."""
+    result = _extract_dockets_from_paren("SBK.2025.285")
+    assert len(result) == 1
+    assert "SBK_2025_285" in result
+
+
+def test_build_graph_marks_prior_instance(tmp_path: Path):
+    """Prior instance docket from header is flagged in decision_citations."""
+    input_dir = tmp_path / "decisions"
+    input_dir.mkdir(parents=True)
+    db_path = tmp_path / "reference_graph.db"
+    rows = [
+        {
+            "decision_id": "d_lower",
+            "docket_number": "SBK.2025.285",
+            "court": "ag_obergericht",
+            "canton": "AG",
+            "language": "de",
+            "decision_date": "2025-11-13",
+            "title": "",
+            "regeste": "",
+            "full_text": "",
+        },
+        {
+            "decision_id": "d_bger",
+            "docket_number": "7B_1266/2025",
+            "court": "bger",
+            "canton": "CH",
+            "language": "de",
+            "decision_date": "2026-01-21",
+            "title": "",
+            "regeste": "",
+            "full_text": (
+                "Gegenstand\n"
+                "Nichtanhandnahme; Gegenstandslosigkeit,\n"
+                "Beschwerde gegen den Entscheid des Obergerichts des Kantons Aargau, "
+                "Beschwerdekammer in Strafsachen, vom 13. November 2025 (SBK.2025.285).\n"
+                "Erwägungen:\n"
+                "1. Vgl. auch 4A_291/2017.\n"
+            ),
+        },
+    ]
+    _write_jsonl(input_dir / "sample.jsonl", rows)
+
+    stats = build_graph(input_dir=input_dir, db_path=db_path)
+    assert stats["prior_instance_links"] >= 1
+
+    conn = sqlite3.connect(db_path)
+    # The SBK.2025.285 citation should be flagged as prior instance
+    prior = conn.execute(
+        "SELECT target_ref, is_prior_instance FROM decision_citations "
+        "WHERE source_decision_id = 'd_bger' AND is_prior_instance = 1"
+    ).fetchall()
+    assert len(prior) == 1
+    assert prior[0][0] == "SBK_2025_285"
+
+    # The 4A_291/2017 citation should NOT be flagged as prior instance
+    other = conn.execute(
+        "SELECT is_prior_instance FROM decision_citations "
+        "WHERE source_decision_id = 'd_bger' AND target_ref = '4A_291_2017'"
+    ).fetchone()
+    assert other is not None
+    assert other[0] == 0
+
+    # The prior instance citation should resolve to d_lower
+    resolved = conn.execute(
+        "SELECT target_decision_id FROM citation_targets "
+        "WHERE source_decision_id = 'd_bger' AND target_ref = 'SBK_2025_285'"
+    ).fetchone()
+    conn.close()
+    assert resolved is not None
+    assert resolved[0] == "d_lower"
+
+
+def test_build_graph_prior_instance_resolves_across_chain(tmp_path: Path):
+    """Full appeal chain: Bezirksgericht → Obergericht → BGer."""
+    input_dir = tmp_path / "decisions"
+    input_dir.mkdir(parents=True)
+    db_path = tmp_path / "reference_graph.db"
+    rows = [
+        {
+            "decision_id": "d_bezirk",
+            "docket_number": "FV.2024.100",
+            "court": "zh_gerichte",
+            "canton": "ZH",
+            "language": "de",
+            "decision_date": "2024-06-01",
+            "title": "",
+            "regeste": "",
+            "full_text": "",
+        },
+        {
+            "decision_id": "d_ober",
+            "docket_number": "LZ250038",
+            "court": "zh_obergericht",
+            "canton": "ZH",
+            "language": "de",
+            "decision_date": "2025-10-01",
+            "title": "",
+            "regeste": "",
+            "full_text": (
+                "Gegenstand\n"
+                "Unterhalt\n"
+                "Berufung gegen das Urteil des Bezirksgerichts "
+                "vom 1. Juni 2024 (FV.2024.100).\n"
+                "Erwägungen:\n"
+            ),
+        },
+        {
+            "decision_id": "d_bger",
+            "docket_number": "5A_900/2025",
+            "court": "bger",
+            "canton": "CH",
+            "language": "de",
+            "decision_date": "2026-02-01",
+            "title": "",
+            "regeste": "",
+            "full_text": (
+                "Gegenstand\n"
+                "Unterhalt,\n"
+                "Beschwerde gegen den Entscheid des Obergerichts des Kantons Zürich "
+                "vom 1. Oktober 2025 (LZ250038).\n"
+                "Sachverhalt:\n"
+            ),
+        },
+    ]
+    _write_jsonl(input_dir / "sample.jsonl", rows)
+
+    stats = build_graph(input_dir=input_dir, db_path=db_path)
+    assert stats["prior_instance_links"] == 2
+
+    conn = sqlite3.connect(db_path)
+    # d_ober → d_bezirk
+    link1 = conn.execute(
+        "SELECT target_decision_id FROM citation_targets "
+        "WHERE source_decision_id = 'd_ober' AND target_ref = 'FV_2024_100'"
+    ).fetchone()
+    assert link1 is not None
+    assert link1[0] == "d_bezirk"
+
+    # d_bger → d_ober
+    link2 = conn.execute(
+        "SELECT target_decision_id FROM citation_targets "
+        "WHERE source_decision_id = 'd_bger' AND target_ref = 'LZ250038'"
+    ).fetchone()
+    conn.close()
+    assert link2 is not None
+    assert link2[0] == "d_ober"

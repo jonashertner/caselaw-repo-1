@@ -1,8 +1,8 @@
-# Swiss Case Law — Claude Desktop Setup Guide
+# Swiss Case Law — MCP Setup Guide
 
-Search 1,000,000+ Swiss court decisions directly inside Claude Desktop.
+Search 1,000,000+ Swiss court decisions directly inside Claude, ChatGPT, or Gemini.
 
-There are two options: **remote** (no download, instant access) or **local** (offline access, 65 GB disk). Choose one.
+There are two options: **remote** (no download, instant access) or **local** (offline access, 65 GB disk). The remote server works with all major AI platforms.
 
 ---
 
@@ -10,32 +10,72 @@ There are two options: **remote** (no download, instant access) or **local** (of
 
 Connect to the hosted server. No data download, no Python, no 65 GB disk usage.
 
-### What you need
+### Claude Desktop / claude.ai
 
-- **Claude Desktop** — [claude.ai/download](https://claude.ai/download) (Pro, Max, Team, or Enterprise plan)
+**Plan required:** Pro, Max, Team, or Enterprise.
 
-### Setup (all platforms — macOS, Windows, Linux)
+1. Open **Settings** → **Connectors**
+2. Click **"Add custom connector"**
+3. Paste `https://mcp.opencaselaw.ch`
+4. Click **Add**
 
-**Step 1.** Open Claude Desktop → **Settings** → **Connectors**
+Same steps in the browser (claude.ai) and the desktop app. No Node.js, no config files.
 
-**Step 2.** Click **"Add custom connector"** at the bottom
+### Claude Code
 
-**Step 3.** Paste this URL:
+Any plan. One command:
 
+```bash
+claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 ```
-https://mcp.opencaselaw.ch
+
+### ChatGPT
+
+**Plan required:** Plus, Pro, Team, Enterprise, or Edu.
+
+1. Open **Settings** → **Connectors**
+2. Enable **Developer Mode** (under Advanced)
+3. Click **Create**
+4. Enter name: `swiss-caselaw`
+5. Paste MCP server URL: `https://mcp.opencaselaw.ch`
+6. Check **"I trust this application"** → **Create**
+
+To use in a chat: click **+** → **More** → **Developer Mode** → enable the swiss-caselaw connector.
+
+### Gemini CLI
+
+Free, no account plan required.
+
+Add to `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "swiss-caselaw": {
+      "url": "https://mcp.opencaselaw.ch"
+    }
+  }
+}
 ```
 
-**Step 4.** Click **Add**. You should see "swiss-caselaw" tools available. Try asking:
+Restart Gemini CLI after saving.
+
+### Other MCP clients
+
+The server uses the SSE (Server-Sent Events) transport at `https://mcp.opencaselaw.ch`. Any MCP client that supports remote SSE servers can connect using this URL. No authentication required.
+
+### Verify it works
+
+After connecting, try asking:
 
 > Search for BGer decisions on Mietrecht Kündigung from 2024
 
-That's it — no Node.js, no config files, works on all platforms.
+You should see search results with matched decisions, snippets, and metadata.
 
 > The `update_database` tool is not available on the remote server — the dataset is updated automatically every night.
 
 <details>
-<summary>Alternative: manual JSON config (if custom connectors aren't available on your plan)</summary>
+<summary>Alternative: manual JSON config for Claude Desktop (if custom connectors aren't available on your plan)</summary>
 
 Requires [Node.js 18+](https://nodejs.org).
 
@@ -294,7 +334,7 @@ Claude will start downloading ~7 GB of data from HuggingFace and building the lo
 
 ## Using it
 
-Once the index is built, just ask questions in natural language. Examples:
+Once connected, just ask questions in natural language. Examples:
 
 | What you type | What happens |
 |---|---|
@@ -305,7 +345,7 @@ Once the index is built, just ask questions in natural language. Examples:
 | *"How many decisions does each court have?"* | Shows statistics across all 93 courts |
 | *"Draft a legal analysis of whether X constitutes Y"* | Builds a research outline grounded in actual case law |
 
-Claude automatically picks the right search tool, runs the query, and shows you the results. You can then ask follow-up questions like *"Show me the full text of the second result"* or *"Find more recent decisions on the same topic."*
+The AI automatically picks the right search tool, runs the query, and shows you the results. You can then ask follow-up questions like *"Show me the full text of the second result"* or *"Find more recent decisions on the same topic."*
 
 ### Available tools
 
@@ -322,7 +362,9 @@ Claude automatically picks the right search tool, runs the query, and shows you 
 
 ## Keeping the dataset up to date
 
-The dataset is updated every night with new court decisions. To get the latest data, just ask Claude:
+**Remote server:** The dataset is updated automatically every night. No action needed.
+
+**Local server:** Ask your AI to run the `update_database` tool:
 
 > **Update the Swiss case law database.**
 

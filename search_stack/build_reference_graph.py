@@ -23,7 +23,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from search_stack.reference_extraction import extract_case_citations, extract_statute_references  # noqa: E402
+from search_stack.reference_extraction import (  # noqa: E402
+    extract_case_citations,
+    extract_prior_instance,
+    extract_statute_references,
+)
 
 
 SCHEMA_SQL = """
@@ -66,6 +70,7 @@ CREATE TABLE IF NOT EXISTS decision_citations (
     target_ref TEXT NOT NULL,
     target_type TEXT NOT NULL, -- decision|bge|docket
     mention_count INTEGER NOT NULL DEFAULT 1,
+    is_prior_instance INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (source_decision_id, target_ref),
     FOREIGN KEY (source_decision_id) REFERENCES decisions(decision_id)
 );
@@ -405,6 +410,7 @@ def build_graph(
             )
             statutes = extract_statute_references(text)
             citations = extract_case_citations(text)
+            prior_instance_dockets = set(extract_prior_instance(row.get("full_text")))
 
             for statute in statutes:
                 conn.execute(
@@ -432,15 +438,31 @@ def build_graph(
 
             for citation in citations:
                 target_type = "bge" if citation.citation_type == "bge" else "docket"
+                is_prior = 1 if citation.normalized in prior_instance_dockets else 0
                 conn.execute(
                     """
                     INSERT INTO decision_citations
-                    (source_decision_id, target_ref, target_type, mention_count)
-                    VALUES (?, ?, ?, 1)
+                    (source_decision_id, target_ref, target_type, mention_count, is_prior_instance)
+                    VALUES (?, ?, ?, 1, ?)
                     ON CONFLICT(source_decision_id, target_ref)
-                    DO UPDATE SET mention_count = mention_count + 1
+                    DO UPDATE SET mention_count = mention_count + 1,
+                                 is_prior_instance = MAX(is_prior_instance, excluded.is_prior_instance)
                     """,
-                    (decision_id, citation.normalized, target_type),
+                    (decision_id, citation.normalized, target_type, is_prior),
+                )
+                citation_edges += 1
+
+            # Insert prior instance dockets that weren't captured by citation patterns
+            for pi_docket in prior_instance_dockets:
+                conn.execute(
+                    """
+                    INSERT INTO decision_citations
+                    (source_decision_id, target_ref, target_type, mention_count, is_prior_instance)
+                    VALUES (?, ?, 'docket', 1, 1)
+                    ON CONFLICT(source_decision_id, target_ref)
+                    DO UPDATE SET is_prior_instance = 1
+                    """,
+                    (decision_id, pi_docket),
                 )
                 citation_edges += 1
 
@@ -471,6 +493,9 @@ def build_graph(
         resolved_links = conn.execute(
             "SELECT COUNT(*) FROM citation_targets"
         ).fetchone()[0]
+        prior_instance_count = conn.execute(
+            "SELECT COUNT(*) FROM decision_citations WHERE is_prior_instance = 1"
+        ).fetchone()[0]
     except Exception:
         if conn is not None:
             conn.close()
@@ -493,6 +518,7 @@ def build_graph(
         "citations_total": total_citations,
         "citations_resolved": resolved_refs,
         "citation_target_links": resolved_links,
+        "prior_instance_links": prior_instance_count,
     }
 
 

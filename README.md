@@ -21,13 +21,13 @@ There are five ways to use it, depending on what you need:
 
 | Method | For whom | What you get |
 |--------|----------|-------------|
-| [**Search with AI**](#1-search-with-ai) | Lawyers, researchers | Natural-language search in Claude — instant access, no download |
+| [**Search with AI**](#1-search-with-ai) | Lawyers, researchers | Natural-language search in Claude, ChatGPT, or Gemini — instant access, no download |
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, jurisprudence trends |
 | [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — one click in Claude.ai or Claude Desktop, one command in Claude Code. Instant access to all 1M+ decisions and citation analysis tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1M+ decisions and citation analysis tools, no download needed.
 
 ---
 
@@ -44,9 +44,9 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) that let
 | **Tools** | 8 | 10 (+update_database, check_update_status) |
 | **Freshness** | Nightly (automatic) | Manual |
 | **Offline** | No | Yes |
-| **Requires** | Claude Pro/Max/Team/Enterprise (claude.ai / Desktop); any plan (Code) | Any MCP client |
+| **Requires** | Claude, ChatGPT, or Gemini CLI (see plans below) | Any MCP client |
 
-> Start with the remote server. Switch to local only if you need offline access or a non-Claude MCP client.
+> Start with the remote server. Switch to local only if you need offline access.
 
 ### Option A: Remote server (recommended)
 
@@ -88,6 +88,33 @@ Add to `claude_desktop_config.json` ([Node.js](https://nodejs.org) required):
 Restart Claude Desktop after saving.
 
 </details>
+
+**ChatGPT:**
+
+1. Open **Settings** → **Connectors** → enable **Developer Mode**
+2. Click **Create**
+3. Enter name `swiss-caselaw` and paste `https://mcp.opencaselaw.ch`
+4. Check **"I trust this application"** → **Create**
+
+> Available on Plus, Pro, Team, Enterprise, and Edu plans.
+
+**Gemini CLI:**
+
+Add to `~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "swiss-caselaw": {
+      "url": "https://mcp.opencaselaw.ch"
+    }
+  }
+}
+```
+
+Restart Gemini CLI after saving. No account plan required — Gemini CLI is free.
+
+> See the **[full MCP setup guide](docs/claude-desktop-setup.md)** for detailed instructions for all platforms.
 
 > The `update_database` and `check_update_status` tools are not available on the remote server — the dataset is updated automatically every night.
 
@@ -246,7 +273,7 @@ These work on both the remote and local server:
 > How has Mietrecht jurisprudence evolved over time?
 ```
 
-Claude calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
+The AI calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
 
 ### Citation graph tools
 

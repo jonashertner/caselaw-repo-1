@@ -766,13 +766,27 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   --transport sse \
   https://mcp.opencaselaw.ch</code>
             </div>
-            <div class="plan-note" data-t="access_plan_note">Desktop: Pro, Max, Team, or Enterprise. Code: any plan.</div>
+            <div class="setup-steps" style="margin-top:10px">
+              <strong>ChatGPT</strong><br>
+              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_chatgpt_steps">Settings → Connectors → Developer Mode → Create →</span><br>
+              <code>https://mcp.opencaselaw.ch</code>
+            </div>
+            <div class="setup-steps" style="margin-top:10px">
+              <strong>Gemini CLI</strong>
+              <code>// ~/.gemini/settings.json
+{ "mcpServers": {
+    "swiss-caselaw": {
+      "url": "https://mcp.opencaselaw.ch"
+    }
+}}</code>
+            </div>
+            <div class="plan-note" data-t="access_plan_note">Claude: Pro, Max, Team, or Enterprise (Desktop) / any plan (Code). ChatGPT: Plus, Pro, Team, or Enterprise. Gemini CLI: free.</div>
           </div>
           <div class="setup-path">
             <div class="setup-path-label" data-t="access_local_label">Local (offline)</div>
             <div class="setup-steps"><span data-t="access_local_desc">Full control, works offline. ~65 GB disk, 30&ndash;60 min setup.</span></div>
             <div class="setup-steps" style="margin-top:10px">
-              <span style="color:var(--tx2);font-size:var(--fs-xs)">Clone → install → register with Claude Code or Desktop</span><br>
+              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_local_clone">Clone → install → register with any MCP client</span><br>
               <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-offline-access" style="font-size:var(--fs-xs)" data-t="access_local_setup">Full setup guide →</a>
             </div>
             <div class="setup-steps" style="margin-top:10px;font-size:var(--fs-xs);color:var(--tx3)" data-t="access_local_note">
@@ -1063,8 +1077,10 @@ const I18N = {
     access_remote_label:'Remote (empfohlen)', access_local_label:'Lokal (offline)',
     access_remote_desc:'Sofort verf\u00fcgbar, immer aktuell. Kein Download n\u00f6tig.',
     access_local_desc:'Volle Kontrolle, offline verf\u00fcgbar. ~65 GB Speicher, 30\u201360 Min. Einrichtung.',
-    access_plan_note:'Desktop: Pro, Max, Team oder Enterprise. Code: jeder Plan.',
+    access_chatgpt_steps:'Settings → Connectors → Developer Mode → Create →',
+    access_plan_note:'Claude: Pro, Max, Team oder Enterprise (Desktop) / jeder Plan (Code). ChatGPT: Plus, Pro, Team oder Enterprise. Gemini CLI: kostenlos.',
     access_local_note:'Kompatibel mit jedem MCP-Client. Lokaler Modus enthält Datenbank-Update-Tools.',
+    access_local_clone:'Klonen → installieren → mit beliebigem MCP-Client registrieren',
     access_local_setup:'Vollständige Einrichtung →',
     examples_heading:'Was nach der Verbindung möglich ist:',
     cap_search:'Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept',
@@ -1127,8 +1143,10 @@ const I18N = {
     access_remote_label:'Distant (recommand\u00e9)', access_local_label:'Local (hors ligne)',
     access_remote_desc:'Instantan\u00e9, toujours \u00e0 jour. Aucun t\u00e9l\u00e9chargement n\u00e9cessaire.',
     access_local_desc:'Contr\u00f4le total, fonctionne hors ligne. ~65 Go, 30\u201360 min d\u2019installation.',
-    access_plan_note:'Desktop : Pro, Max, Team ou Enterprise. Code : tout plan.',
+    access_chatgpt_steps:'Settings → Connectors → Developer Mode → Create →',
+    access_plan_note:'Claude : Pro, Max, Team ou Enterprise (Desktop) / tout plan (Code). ChatGPT : Plus, Pro, Team ou Enterprise. Gemini CLI : gratuit.',
     access_local_note:'Compatible avec tout client MCP. Le mode local inclut les outils de mise à jour de la base de données.',
+    access_local_clone:'Cloner → installer → enregistrer avec un client MCP',
     access_local_setup:'Guide d\'installation complet →',
     examples_heading:'Ce qui est possible après connexion :',
     cap_search:'Rechercher des décisions en langage naturel — par mot-clé, sujet, article de loi ou concept juridique',
@@ -1191,8 +1209,10 @@ const I18N = {
     access_remote_label:'Remoto (consigliato)', access_local_label:'Locale (offline)',
     access_remote_desc:'Istantaneo, sempre aggiornato. Nessun download necessario.',
     access_local_desc:'Controllo completo, funziona offline. ~65 GB, 30\u201360 min di installazione.',
-    access_plan_note:'Desktop: Pro, Max, Team o Enterprise. Code: qualsiasi piano.',
+    access_chatgpt_steps:'Settings → Connectors → Developer Mode → Create →',
+    access_plan_note:'Claude: Pro, Max, Team o Enterprise (Desktop) / qualsiasi piano (Code). ChatGPT: Plus, Pro, Team o Enterprise. Gemini CLI: gratuito.',
     access_local_note:'Compatibile con qualsiasi client MCP. La modalità locale include strumenti di aggiornamento del database.',
+    access_local_clone:'Clonare → installare → registrare con un client MCP',
     access_local_setup:'Guida all\'installazione completa →',
     examples_heading:'Cosa è possibile dopo la connessione:',
     cap_search:'Cercare decisioni in linguaggio naturale — per parola chiave, tema, articolo di legge o concetto giuridico',
@@ -1255,8 +1275,10 @@ const I18N = {
     access_remote_label:'Remote (recumandà)', access_local_label:'Local (offline)',
     access_remote_desc:'Direct disponibel, adina actual. Nagin download necessari.',
     access_local_desc:'Controlla cumplaina, funcziuna offline. ~65 GB, 30\u201360 min installaziun.',
-    access_plan_note:'Desktop: Pro, Max, Team u Enterprise. Code: mintga plan.',
+    access_chatgpt_steps:'Settings → Connectors → Developer Mode → Create →',
+    access_plan_note:'Claude: Pro, Max, Team u Enterprise (Desktop) / mintga plan (Code). ChatGPT: Plus, Pro, Team u Enterprise. Gemini CLI: gratuit.',
     access_local_note:'Cumpatibl cun mintga client MCP. Il modus local cuntegna utensils per actualisar la banca da datas.',
+    access_local_clone:'Clonar → installar → registrar cun in client MCP',
     access_local_setup:'Guida d\'installaziun cumplaina →',
     examples_heading:'Tge ch\'è pussaivel suenter la connexiun:',
     cap_search:'Tschertgar decisiuns en lingua natirala — tenor plaid-clav, tema, artitgel da lescha u concept giuridic',
@@ -1319,8 +1341,10 @@ const I18N = {
     access_remote_label:'Remote (recommended)', access_local_label:'Local (offline)',
     access_remote_desc:'Instant, always current. No download needed.',
     access_local_desc:'Full control, works offline. ~65 GB disk, 30\u201360 min setup.',
-    access_plan_note:'Desktop: Pro, Max, Team, or Enterprise. Code: any plan.',
+    access_chatgpt_steps:'Settings → Connectors → Developer Mode → Create →',
+    access_plan_note:'Claude: Pro, Max, Team, or Enterprise (Desktop) / any plan (Code). ChatGPT: Plus, Pro, Team, or Enterprise. Gemini CLI: free.',
     access_local_note:'Works with any MCP client. Local mode includes database update tools.',
+    access_local_clone:'Clone → install → register with any MCP client',
     access_local_setup:'Full setup guide →',
     examples_heading:'What you can do after connecting:',
     cap_search:'Search decisions in natural language — by keyword, topic, statute, or legal concept',

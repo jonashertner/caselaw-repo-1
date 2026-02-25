@@ -4,6 +4,7 @@ Legal reference extraction for Swiss case law text.
 Extracts:
 - Statute references (e.g., "Art. 8 EMRK", "Art. 34 Abs. 2 BV")
 - Case citations (BGE and docket-like references)
+- Prior instance references (appeal chain tracking)
 """
 from __future__ import annotations
 
@@ -15,6 +16,10 @@ _PARAGRAPH_MARKER = r"(?:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?
 _ORDINAL_SUFFIX = r"(?:bis|ter|quater|quinquies|sexies)"
 _ARTICLE_TOKEN = rf"\d+(?:\s*{_ORDINAL_SUFFIX}|[a-z](?![a-z]))?"
 _PARAGRAPH_TOKEN = rf"\d+(?:\s*{_ORDINAL_SUFFIX}|[a-z](?![a-z]))?"
+# Qualifiers that can appear between paragraph and law code
+_FOLLOWING_MARKER = r"(?:ff|ss|segg)\.?"  # "and following" markers
+_SUB_MARKER = r"(?:Ziff(?:er)?|lit|Bst|Buchst|S|Satz|ch|let|n)"
+_SUB_TOKEN = r"(?:\d+|[a-z])"
 _INVALID_LAW_CODES = {
     "AL",
     "ABS",
@@ -28,6 +33,16 @@ _INVALID_LAW_CODES = {
     "QUATER",
     "QUINQUIES",
     "SEXIES",
+    # Qualifiers that should never be law codes (safety net)
+    "FF",
+    "SS",
+    "SEGG",
+    "ZIFF",
+    "ZIFFER",
+    "LIT",
+    "BST",
+    "BUCHST",
+    "SATZ",
 }
 
 STATUTE_PATTERN = re.compile(
@@ -35,6 +50,8 @@ STATUTE_PATTERN = re.compile(
     \b{_ARTICLE_MARKER}\s*
     (?P<article>{_ARTICLE_TOKEN})\s*
     (?:{_PARAGRAPH_MARKER}\s*(?P<paragraph>{_PARAGRAPH_TOKEN}))?\s*
+    (?:{_FOLLOWING_MARKER}\s+)?
+    (?:{_SUB_MARKER}\.?\s*{_SUB_TOKEN}\s+)?
     (?P<law>[A-Z][A-Z0-9]{{1,11}}(?:/[A-Z0-9]{{2,6}})?)
     \b
     """,
@@ -162,3 +179,144 @@ def _normalize_docket(text: str) -> str:
     normalized = normalized.replace("-", "_").replace(".", "_").replace("/", "_")
     normalized = re.sub(r"_+", "_", normalized)
     return normalized.strip("_")
+
+
+# ---------------------------------------------------------------------------
+# Prior instance extraction (appeal chain tracking)
+# ---------------------------------------------------------------------------
+
+# Structural markers to locate the header section
+_GEGENSTAND_RE = re.compile(
+    r"\b(?:Gegenstand|Objet|Oggetto)\b", re.IGNORECASE
+)
+_BODY_START_RE = re.compile(
+    r"\b(?:Erwägung(?:en)?|Sachverhalt|Considérant|Faits|Considerando|Fatti"
+    r"|Visto|In\s+Erwägung)\s*:",
+    re.IGNORECASE,
+)
+
+# Appeal keyword + preposition → text → (docket) in parentheses
+# Matches across all three languages:
+#   DE: Beschwerde gegen den Entscheid des ... vom 13. Nov 2025 (SBK.2025.285).
+#   FR: recours contre l'arrêt de la ... du 6 août 2024 (A/1168/2024).
+#   IT: ricorso contro la sentenza del ... del 31 marzo 2025 (35.2024.77).
+_PRIOR_INSTANCE_RE = re.compile(
+    r"\b(?:Beschwerde|Berufung|Rekurs|Einsprache|recours|appel|ricorso)"
+    r"\s+(?:gegen|contre|contro)\b"
+    r"[^(]{10,500}?"  # court name, decision type, date (non-greedy, no backtrack through parens)
+    r"\(([^)]{3,100})\)",  # docket in parentheses
+    re.IGNORECASE | re.DOTALL,
+)
+
+# Broader docket pattern for parenthetical content — accepts formats
+# not covered by DOCKET_PATTERNS (e.g. "35.2024.77", "A/1168/2024")
+_PAREN_DOCKET_RE = re.compile(
+    r"[A-Z0-9]{1,6}[./_-]\d{2,6}[./_-]\d{2,6}"
+    r"(?:\s*[-–]\s*[A-Z0-9]{1,6}[./_-]\d{2,6}[./_-]\d{2,6})?",
+    re.IGNORECASE,
+)
+
+
+def extract_prior_instance(text: str | None) -> list[str]:
+    """Extract prior instance docket number(s) from a decision's header.
+
+    Swiss court decisions (especially BGer) include a formulaic header identifying
+    the prior instance, e.g.:
+        Beschwerde gegen den Entscheid des Obergerichts vom 13.11.2025 (SBK.2025.285).
+        recours contre l'arrêt de la Cour de justice du 6 août 2024 (ATA/917/2024).
+        ricorso contro la sentenza del Tribunale del 31 marzo 2025 (35.2024.77).
+
+    Returns normalized docket references of the prior instance(s).
+    """
+    if not text:
+        return []
+
+    header = _extract_header_section(text)
+
+    dockets: list[str] = []
+    seen: set[str] = set()
+    for match in _PRIOR_INSTANCE_RE.finditer(header):
+        paren_content = match.group(1).strip()
+        for docket in _extract_dockets_from_paren(paren_content):
+            if docket and docket not in seen:
+                seen.add(docket)
+                dockets.append(docket)
+    return dockets
+
+
+def _extract_header_section(text: str) -> str:
+    """Extract the header section where the prior instance is declared.
+
+    Looks for text between 'Gegenstand/Objet/Oggetto' and the first body
+    marker (Erwägung/Sachverhalt/etc.). Falls back to the first 2000 chars.
+    """
+    gegenstand = _GEGENSTAND_RE.search(text)
+    if not gegenstand:
+        return text[:2000]
+
+    start = gegenstand.start()
+    body = _BODY_START_RE.search(text, pos=start + 10)
+    end = body.start() if body else min(start + 2000, len(text))
+    return text[start:end]
+
+
+def _extract_dockets_from_paren(content: str) -> list[str]:
+    """Extract and normalize docket references from parenthetical content.
+
+    Handles single dockets ('SBK.2025.285'), multiple dockets separated
+    by ' - ' ('A/1168/2024 AIDSO - ATA/917/2024'), comma ('A/1168/2024,
+    ATA/917/2024'), or semicolon, and filters out redacted content ('N (...)').
+    """
+    if not content or content.strip() in ("...", "…"):
+        return []
+
+    # Split on spaced dash/en-dash, comma, or semicolon for multi-docket
+    # parentheticals like "A/1168/2024 AIDSO - ATA/917/2024" or
+    # "A/1168/2024, ATA/917/2024" or "A/1168/2024; ATA/917/2024"
+    parts = re.split(r"\s+[-–]\s+|[,;]\s*", content)
+
+    results: list[str] = []
+    for part in parts:
+        part = part.strip()
+        if not part:
+            continue
+
+        # Try existing DOCKET_PATTERNS — findall to capture multiple dockets
+        # within a single part (e.g. "4A_648/2024 AIDSO ATA/917/2024")
+        found = False
+        for pattern in DOCKET_PATTERNS[:2]:  # skip BGE-style pattern
+            matches = pattern.findall(part)
+            if matches:
+                for match_val in matches:
+                    # findall returns group(0) for patterns without groups,
+                    # or the group content for patterns with groups
+                    raw = match_val if isinstance(match_val, str) else match_val[0]
+                    normalized = _normalize_docket(raw)
+                    if normalized:
+                        results.append(normalized)
+                        found = True
+                break  # don't try the next pattern if this one matched
+        if found:
+            continue
+
+        # Try broader pattern for formats like "35.2024.77"
+        m = _PAREN_DOCKET_RE.search(part)
+        if m:
+            normalized = _normalize_docket(m.group(0))
+            if normalized and len(normalized) >= 5:
+                results.append(normalized)
+                continue
+
+        # Fallback: if part is short and contains both letters and digits,
+        # treat the whole thing as a docket (handles ZH-style "FP240022-L")
+        if (
+            5 <= len(part) <= 40
+            and any(c.isdigit() for c in part)
+            and any(c.isalpha() for c in part)
+            and " " not in part  # single token only
+        ):
+            normalized = _normalize_docket(part)
+            if normalized and len(normalized) >= 5:
+                results.append(normalized)
+
+    return results
