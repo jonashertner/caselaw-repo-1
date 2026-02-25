@@ -133,13 +133,12 @@ def get_law_metadata(work_uris: list[str]) -> dict[str, dict]:
     metadata = {}
 
     for lang, lang_uri in LANG_URIS.items():
-        # Batch in groups of 200 to avoid query size limits
-        for i in range(0, len(work_uris), 200):
-            batch = work_uris[i : i + 200]
+        # Batch in groups of 80 to avoid URL length limits on SPARQL GET
+        for i in range(0, len(work_uris), 80):
+            batch = work_uris[i : i + 80]
             values = " ".join(f"<{uri}>" for uri in batch)
             query = f"""
             PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
-            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
             SELECT ?work ?title ?abbreviation WHERE {{
               VALUES ?work {{ {values} }}
@@ -149,7 +148,11 @@ def get_law_metadata(work_uris: list[str]) -> dict[str, dict]:
               OPTIONAL {{ ?expr jolux:title ?title }}
             }}
             """
-            rows = sparql_query(query, timeout=120)
+            try:
+                rows = sparql_query(query, timeout=120)
+            except Exception as e:
+                log.warning("Metadata query failed (batch %d-%d): %s", i, i + len(batch), e)
+                continue
             for row in rows:
                 work = row["work"]
                 if work not in metadata:
@@ -306,17 +309,40 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
 
     laws = single_laws
 
-    # Step 3: Early filter by SR number (avoids fetching metadata for all 12k laws)
+    # Step 3: Early filter
     if sr_filter:
         laws = [r for r in laws if r["srNumber"] in sr_filter]
         log.info("Filtered to %d laws by SR number", len(laws))
+    elif top_cited > 0:
+        # For --top mode: fetch metadata first (lightweight), then filter by cited codes
+        cited_codes = get_top_cited_sr_numbers(top_cited)
+        if cited_codes:
+            work_uris_all = list({row["work"] for row in laws})
+            metadata_all = get_law_metadata(work_uris_all)
+            matched = []
+            cited_upper = {c.upper() for c in cited_codes}
+            for row in laws:
+                meta = metadata_all.get(row["work"], {})
+                abbrs = {
+                    meta.get("abbr_de", "").upper(),
+                    meta.get("abbr_fr", "").upper(),
+                    meta.get("abbr_it", "").upper(),
+                }
+                if abbrs & cited_upper:
+                    matched.append(row)
+            if matched:
+                laws = matched
+                log.info("Filtered to %d laws matching cited law codes", len(laws))
 
-    # Step 4: Resolve consolidation URIs
-    cons_map = resolve_consolidation_uris(laws)
-
-    # Step 5: Get metadata (titles, abbreviations)
+    # Step 4: Get metadata (skip if already fetched for --top)
     work_uris = list({row["work"] for row in laws})
-    metadata = get_law_metadata(work_uris)
+    if top_cited > 0 and 'metadata_all' in dir():
+        metadata = {w: metadata_all[w] for w in work_uris if w in metadata_all}
+    else:
+        metadata = get_law_metadata(work_uris)
+
+    # Step 5: Resolve consolidation URIs (only for matched laws)
+    cons_map = resolve_consolidation_uris(laws)
 
     # Step 6: Build law index
     law_index = []
@@ -352,23 +378,6 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
         law_index.append(entry)
 
     log.info("Built index of %d laws", len(law_index))
-
-    # Step 6: Filter by top-cited if requested (needs metadata for abbreviation matching)
-    if not sr_filter and top_cited > 0:
-        cited_codes = get_top_cited_sr_numbers(top_cited)
-        if cited_codes:
-            abbr_match = []
-            for entry in law_index:
-                abbrs = {
-                    entry.get("abbr_de", "").upper(),
-                    entry.get("abbr_fr", "").upper(),
-                    entry.get("abbr_it", "").upper(),
-                }
-                if abbrs & {c.upper() for c in cited_codes}:
-                    abbr_match.append(entry)
-            if abbr_match:
-                law_index = abbr_match
-                log.info("Filtered to %d laws matching cited law codes", len(law_index))
 
     # Step 5: Resolve XML download URLs
     consolidation_uris = [e["consolidation_uri"] for e in law_index]
