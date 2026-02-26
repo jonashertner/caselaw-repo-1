@@ -181,6 +181,8 @@ def run_with_persistence(
                         f.flush()
                     written_ids.add(decision.decision_id)
                     new_count += 1
+                else:
+                    skips += 1
 
                     if new_count % 100 == 0:
                         elapsed = time.time() - start

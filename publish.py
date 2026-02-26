@@ -14,8 +14,9 @@ Orchestration script for VPS cron job. Runs the full pipeline:
   5.  Generate stats.json
   6.  Git commit + push docs/stats.json
 
-Each step is wrapped in try/except — failures are logged but don't block
-subsequent steps.
+Most steps are wrapped in try/except — failures are logged. Critical steps
+(FTS5, Parquet) will skip subsequent guarded steps (HF upload, git push) to
+avoid publishing an incomplete dataset.
 
 Cron:
     15 3 * * * cd /opt/caselaw/repo && python3 publish.py >> logs/publish.log 2>&1

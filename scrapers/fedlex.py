@@ -22,7 +22,6 @@ import os
 import re
 import sqlite3
 import time
-import urllib.parse
 from pathlib import Path
 
 import requests

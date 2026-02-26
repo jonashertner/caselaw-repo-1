@@ -347,7 +347,7 @@ def main():
                 result = future.result()
                 results.append(result)
                 if result.get("timed_out"):
-                    status = "RUNNING"
+                    status = "TIMEOUT"
                 elif result["success"]:
                     status = "OK"
                 else:
@@ -380,13 +380,13 @@ def main():
     logger.info("\n=== Summary ===")
     logger.info(f"  Succeeded: {succeeded}/{len(results)}")
     if timed_out:
-        logger.info(f"  Still running: {timed_out}")
+        logger.info(f"  Timed out: {timed_out}")
     logger.info(f"  Failed: {failed}")
     logger.info(f"  Total new decisions: {total_new}")
     logger.info(f"  Total time: {total_elapsed:.0f}s ({total_elapsed/60:.1f} min)")
 
     if timed_out:
-        logger.info("\n  Still running (hit time cap):")
+        logger.info("\n  Timed out (hit time cap):")
         for r in results:
             if r.get("timed_out"):
                 logger.info(f"    - {r['court']} (+{r['new_count']} new in >{r['duration']:.0f}s)")
