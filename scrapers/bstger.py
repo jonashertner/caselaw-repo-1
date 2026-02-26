@@ -99,7 +99,7 @@ class BStGerScraper(BaseScraper):
     Uses adaptive date windowing to stay under 100 results per request.
     """
 
-    REQUEST_DELAY = 3.0
+    REQUEST_DELAY = 1.5
     TIMEOUT = 60
 
     @property
@@ -156,6 +156,9 @@ class BStGerScraper(BaseScraper):
 
         return documents, total, has_more, bis_date
 
+    # Daily runs look back this many days instead of scanning from 2005
+    DAILY_LOOKBACK_DAYS = 365
+
     def discover_new(self, since_date=None) -> Iterator[dict]:
         """
         Discover BStGer decisions using adaptive date windowing.
@@ -164,12 +167,18 @@ class BStGerScraper(BaseScraper):
         - Start with 64-day windows
         - If >100 results, halve the window and retry
         - Move forward through time until today
+        - Daily runs (no since_date) look back 365 days, not from 2005
         """
         start = date.fromisoformat(START_DATE)
         if since_date:
             if isinstance(since_date, str):
                 since_date = parse_date(since_date) or start
             start = max(since_date, start)
+        else:
+            # Daily mode: only look back DAILY_LOOKBACK_DAYS
+            daily_start = date.today() - timedelta(days=self.DAILY_LOOKBACK_DAYS)
+            start = max(daily_start, start)
+            logger.info(f"BStGer daily mode: looking back {self.DAILY_LOOKBACK_DAYS} days from {start}")
 
         window_days = INITIAL_WINDOW_DAYS
         current_date = start

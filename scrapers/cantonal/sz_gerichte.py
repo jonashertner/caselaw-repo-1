@@ -53,7 +53,7 @@ _RE_HEX_DECODE = re.compile(r"\\x([0-9A-Fa-f]{2})")
 class SZGerichteScraper(BaseScraper):
     """Scraper for Schwyz Kantonsgericht (KG) via Tribuna GWT-RPC."""
 
-    REQUEST_DELAY = 2.5
+    REQUEST_DELAY = 1.5
     TIMEOUT = 60
     MAX_ERRORS = 50
 
@@ -130,6 +130,9 @@ class SZGerichteScraper(BaseScraper):
             "X-GWT-Module-Base": self.GWT_MODULE_BASE,
         }
 
+    # Stop scanning after this many consecutive already-known decisions
+    CONSECUTIVE_KNOWN_LIMIT = 200
+
     def discover_new(self, since_date=None) -> Iterator[dict]:
         if since_date and isinstance(since_date, str):
             since_date = date.fromisoformat(since_date)
@@ -137,6 +140,7 @@ class SZGerichteScraper(BaseScraper):
         total = None
         page_nr = 0
         total_yielded = 0
+        consecutive_known = 0
         errors = 0
 
         while True:
@@ -156,7 +160,14 @@ class SZGerichteScraper(BaseScraper):
                 m = _RE_TOTAL.search(resp.text)
                 if m:
                     total = int(m.group())
-                    logger.info(f"[{self.court_code}] Total: {total} decisions")
+                    known = len(self.state)
+                    logger.info(f"[{self.court_code}] Portal: {total}, Known: {known}")
+                    if total <= known:
+                        logger.info(
+                            f"[{self.court_code}] No new decisions on portal "
+                            f"(portal={total}, known={known}), skipping full scan"
+                        )
+                        return
                 else:
                     logger.error(f"[{self.court_code}] Could not parse total from response")
                     break
@@ -182,7 +193,16 @@ class SZGerichteScraper(BaseScraper):
             if not self.state.is_known(did):
                 stub["decision_id"] = did
                 total_yielded += 1
+                consecutive_known = 0
                 yield stub
+            else:
+                consecutive_known += 1
+                if consecutive_known >= self.CONSECUTIVE_KNOWN_LIMIT:
+                    logger.info(
+                        f"[{self.court_code}] {self.CONSECUTIVE_KNOWN_LIMIT} consecutive "
+                        f"known decisions, stopping early (yielded {total_yielded} new)"
+                    )
+                    break
 
             page_nr += 1
 

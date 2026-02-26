@@ -66,7 +66,10 @@ SLOW_SCRAPERS = {
 }
 
 # Scrapers to skip by default (broken, redundant, or handled separately)
-SKIP_BY_DEFAULT: set[str] = set()
+SKIP_BY_DEFAULT: set[str] = {
+    "be_steuerrekurs",  # Portal DB disconnected (Feb 2026), returns 0 results
+"ne_gerichte",      # Portal blocks Hetzner IPs; needs NE_PROXY env var (SOCKS5 tunnel)
+}
 
 # Disk usage thresholds (percent)
 DISK_WARN_PERCENT = 85
@@ -272,6 +275,11 @@ def main():
         help=f"Default timeout per scraper in seconds (default: {DEFAULT_TIMEOUT})",
     )
     parser.add_argument("--dry-run", action="store_true", help="Show what would run")
+    parser.add_argument(
+        "--source", type=str, default="cron", choices=["cron", "manual"],
+        help="Run source: 'cron' writes to scraper_health.json, "
+             "'manual' writes to scraper_health_manual.json",
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -416,7 +424,11 @@ def main():
     for label, info in disk_after.items():
         logger.info(f"    {label}: {info['used_percent']}% ({info['free_gb']} GB free)")
 
-    health_path = REPO_DIR / "logs" / "scraper_health.json"
+    if args.source == "manual":
+        health_filename = "scraper_health_manual.json"
+    else:
+        health_filename = "scraper_health.json"
+    health_path = REPO_DIR / "logs" / health_filename
     health_path.write_text(json.dumps(health, indent=2))
     logger.info(f"Health data written to {health_path}")
 

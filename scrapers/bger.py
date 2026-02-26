@@ -100,10 +100,11 @@ RSS_URL = (
     SEARCH_HOST + "/ext/eurospider/live/de/php/aza/rss/index_aza.php"
 )
 
-# Neuheiten (recently published)
-NEUHEITEN_URL = (
+# Neuheiten (recently published) — date-specific format
+NEUHEITEN_DATE_URL = (
     SEARCH_HOST
     + "/ext/eurospider/live/{lang}/php/aza/http/index_aza.php"
+    "?date={date}&lang={lang}&mode=news"
 )
 
 
@@ -610,19 +611,45 @@ class BgerScraper(BaseScraper):
 
     def _discover_via_neuheiten(self) -> Iterator[dict]:
         """
-        Parse 'Liste der Neuheiten' for recently added decisions.
+        Check each of the last 7 days' Neuheiten pages for published decisions.
 
-        Note: Scraping only German for backfill (all decisions
-        appear regardless of language). For Neuheiten we also check de only
-        since the content is the same across all 3 interface languages.
+        Uses date-specific URL: index_aza.php?date=YYYYMMDD&lang=de&mode=news
+        Each page lists decisions published on that specific date.
+
+        Note: Scraping only German — all decisions appear regardless of
+        the interface language.
         """
-        url = NEUHEITEN_URL.format(lang="de")
-        try:
-            resp = self._get_with_pow(url)
-            soup = BeautifulSoup(resp.text, "html.parser")
-            yield from self._parse_search_results(soup, "de")
-        except Exception as e:
-            logger.error(f"Neuheiten: {e}")
+        today = date.today()
+        total_published = 0
+        total_new = 0
+        for days_ago in range(7):
+            check_date = today - timedelta(days=days_ago)
+            date_str = check_date.strftime("%Y%m%d")
+            url = NEUHEITEN_DATE_URL.format(lang="de", date=date_str)
+            try:
+                resp = self._get_with_pow(url)
+                soup = BeautifulSoup(resp.text, "html.parser")
+                count = 0
+                new_count = 0
+                for stub in self._parse_search_results(soup, "de"):
+                    count += 1
+                    new_count += 1
+                    yield stub
+                # Count known decisions that were parsed but filtered by is_known
+                published = self._count_search_results(soup)
+                known = published - new_count
+                total_published += published
+                total_new += new_count
+                logger.info(
+                    f"Neuheiten {check_date}: {published} published, "
+                    f"{new_count} new, {known} already known"
+                )
+            except Exception as e:
+                logger.warning(f"Neuheiten {check_date}: {e}")
+        logger.info(
+            f"Neuheiten total: {total_published} published, "
+            f"{total_new} new across last 7 days"
+        )
 
     # ───────────────────────────────────────────────────────────────────────
     # Discovery via AZA search (backfill)
@@ -809,6 +836,19 @@ class BgerScraper(BaseScraper):
                 stub["title"] = divs[2].get_text(strip=True)
 
             yield stub
+
+    def _count_search_results(self, soup: BeautifulSoup) -> int:
+        """Count total decision entries on a search results page (including known)."""
+        hit_count = self._get_hit_count(soup)
+        if hit_count is not None:
+            return hit_count
+        # Fallback: count list items in ranklist
+        ranklist = soup.select_one("div.ranklist_content ol")
+        if not ranklist:
+            ranklist = soup.find("ol")
+        if not ranklist:
+            return 0
+        return len(ranklist.find_all("li", recursive=False))
 
     def _follow_pagination(
         self, soup: BeautifulSoup, lang: str, search_date: date

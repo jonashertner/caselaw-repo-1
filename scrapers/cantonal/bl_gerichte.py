@@ -19,6 +19,7 @@ Source: https://bl.swisslex.ch
 from __future__ import annotations
 
 import logging
+from datetime import date, timedelta
 from typing import Iterator
 
 from bs4 import BeautifulSoup
@@ -104,12 +105,14 @@ SEARCH_BODY_TEMPLATE = {
 }
 
 
-def _build_search_body(page: int) -> dict:
+def _build_search_body(page: int, date_from: str | None = None) -> dict:
     """Build a search POST body for the given page number."""
     import copy
     body = copy.deepcopy(SEARCH_BODY_TEMPLATE)
     body["paging"]["CurrentPage"] = page
     body["searchFilter"]["paging"]["CurrentPage"] = page
+    if date_from:
+        body["searchFilter"]["dateFrom"] = date_from
     return body
 
 
@@ -125,12 +128,17 @@ class BLGerichteScraper(BaseScraper):
     Uses a JSON search API with pagination (100 hits/page) and a separate
     document endpoint for full HTML text.
 
-    Total: ~9,129 decisions.
+    Total: ~9,129 decisions (portal count; JSONL may include duplicates from multi-docket entries).
     """
 
     REQUEST_DELAY = 1.5
     TIMEOUT = 60
     MAX_ERRORS = 50
+
+    # For daily runs: only search back this many days instead of full scan
+    DAILY_LOOKBACK_DAYS = 730  # 2 years covers any catch-up needed
+    # Stop after this many consecutive known decisions during full scans
+    CONSECUTIVE_KNOWN_LIMIT = 300
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -149,11 +157,25 @@ class BLGerichteScraper(BaseScraper):
         if since_date and isinstance(since_date, str):
             since_date = parse_date(since_date)
 
+        # Determine the date_from filter for the API query.
+        # For daily runs (no since_date): look back DAILY_LOOKBACK_DAYS.
+        # For explicit since_date: use that date.
+        if since_date:
+            date_from_filter = since_date.strftime("%Y-%m-%d")
+        else:
+            lookback = date.today() - timedelta(days=self.DAILY_LOOKBACK_DAYS)
+            date_from_filter = lookback.strftime("%Y-%m-%d")
+            logger.info(
+                f"BL: daily mode — searching from {date_from_filter} "
+                f"(lookback {self.DAILY_LOOKBACK_DAYS} days)"
+            )
+
         total_yielded = 0
         page = 1
+        consecutive_known = 0
 
         # First request to get total count and transactionId
-        data = self._search_page(page)
+        data = self._search_page(page, date_from_filter)
         if not data:
             logger.error("BL: initial search failed, aborting discovery")
             return
@@ -163,19 +185,28 @@ class BLGerichteScraper(BaseScraper):
         total_pages = (total_docs + HITS_PER_PAGE - 1) // HITS_PER_PAGE
 
         logger.info(
-            f"BL: {total_docs} total decisions, {total_pages} pages, "
+            f"BL: {total_docs} decisions in date window, {total_pages} pages, "
             f"transactionId={self._transaction_id}"
         )
 
         # Process page 1
         for stub in self._parse_hits(data, since_date):
             if not self.state.is_known(stub["decision_id"]):
+                consecutive_known = 0
                 total_yielded += 1
                 yield stub
+            else:
+                consecutive_known += 1
 
         # Remaining pages
         for page in range(2, total_pages + 1):
-            data = self._search_page(page)
+            if consecutive_known >= self.CONSECUTIVE_KNOWN_LIMIT:
+                logger.info(
+                    f"BL: {consecutive_known} consecutive known — stopping early at page {page}"
+                )
+                break
+
+            data = self._search_page(page, date_from_filter)
             if not data:
                 logger.error(f"BL: search page {page} failed, stopping pagination")
                 break
@@ -188,17 +219,20 @@ class BLGerichteScraper(BaseScraper):
             page_yielded = 0
             for stub in self._parse_hits(data, since_date):
                 if not self.state.is_known(stub["decision_id"]):
+                    consecutive_known = 0
                     total_yielded += 1
                     page_yielded += 1
                     yield stub
+                else:
+                    consecutive_known += 1
 
             logger.info(f"BL: page {page}/{total_pages}: {page_yielded} new stubs")
 
         logger.info(f"BL: discovery complete: {total_yielded} new stubs")
 
-    def _search_page(self, page: int) -> dict | None:
+    def _search_page(self, page: int, date_from: str | None = None) -> dict | None:
         """Execute a search request for the given page number."""
-        body = _build_search_body(page)
+        body = _build_search_body(page, date_from)
         try:
             resp = self.post(
                 SEARCH_URL,
