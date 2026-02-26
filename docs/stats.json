@@ -1808,7 +1808,7 @@
     "2026-01": 2112,
     "2026-02": 4460
   },
-  "generated_at": "2026-02-26T10:25:17.178725+00:00",
+  "generated_at": "2026-02-26T13:07:27.268917+00:00",
   "scraper_health": {
     "run_at": "2026-02-26T08:21:18.733157+00:00",
     "run_duration_s": 1555.0,
@@ -1951,7 +1951,7 @@
         "note": null,
         "state_count": 90812,
         "jsonl_size_mb": 1353.7,
-        "jsonl_mtime": "2026-02-26T01:24:45.569665+00:00"
+        "jsonl_mtime": "2026-02-26T10:53:57.094822+00:00"
       },
       "ch_bundesrat": {
         "success": true,
@@ -2462,22 +2462,9 @@
     }
   },
   "delta": {
-    "total": 16,
-    "by_court": {
-      "gr_gerichte": 3,
-      "fr_gerichte": 2,
-      "sg_versicherungsgericht": 1,
-      "ag_strafgericht": 1,
-      "ag_zivilgericht": 2,
-      "zh_bezirksgericht_zuerich": 7
-    },
-    "by_canton": {
-      "ZH": 7,
-      "SG": 1,
-      "GR": 3,
-      "FR": 2,
-      "AG": 3
-    },
-    "previous_generated_at": "2026-02-26T04:18:18.680506+00:00"
+    "total": 0,
+    "by_court": {},
+    "by_canton": {},
+    "previous_generated_at": "2026-02-26T10:25:17.178725+00:00"
   }
 }
