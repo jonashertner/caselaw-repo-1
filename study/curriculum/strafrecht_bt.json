@@ -110,12 +110,12 @@
           ]
         },
         {
-          "decision_id": "bge_133 IV 228",
-          "bge_ref": "BGE 133 IV 228",
+          "decision_id": "",
+          "bge_ref": "BGE 124 IV 274",
           "actual_language": "de",
-          "title_de": "Geldwäscherei — Vortaterfordernis und Vortäter",
-          "title_fr": "Blanchiment d'argent — infraction préalable",
-          "title_it": "",
+          "title_de": "Geldwäscherei — Vortäter als eigener Geldwäscher",
+          "title_fr": "Blanchiment — auteur de l'infraction préalable comme propre blanchisseur",
+          "title_it": "Riciclaggio — autore del reato presupposto come proprio riciclatore",
           "concepts_de": [
             "Geldwäscherei",
             "Vortat",
@@ -133,74 +133,14 @@
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Anforderungen an die Vortat bei Geldwäscherei und zur Frage, ob der Vortäter selbst tauglicher Täter ist.",
-          "significance_fr": "Cet arrêt de principe établit que le simple lésé qui n'est pas victime au sens de la LAVI n'a en règle générale pas qualité pour former un recours en matière pénale au sens de l'art. 81 al. 1 LTF, car l'action pénale appartient à l'État et ne protège qu'indirectement les intérêts privés.",
-          "significance_it": "Questa sentenza di principio stabilisce che il semplice danneggiato che non è vittima ai sensi della LAV non è di regola legittimato a interporre ricorso in materia penale ai sensi dell'art. 81 cpv. 1 LTF, poiché l'azione penale appartiene allo Stato e tutela solo indirettamente gli interessi privati.",
-          "key_erwagungen": [
-            "2",
-            "2.1",
-            "2.2",
-            "2.3"
-          ],
-          "reading_guide_de": "Lesen Sie zunächst die Regeste, um die Kernaussage des Entscheids zu erfassen, und vertiefen Sie sich dann in Erwägung 2, insbesondere E. 2.1 (Wortlaut von Art. 81 Abs. 1 BGG), E. 2.2 (Auslegungsmethodik) und E. 2.3 (Unterscheidung rechtliches vs. faktisches Interesse). Achten Sie dabei besonders auf die Abgrenzung zwischen dem einfachen Geschädigten und dem OHG-Opfer sowie auf die Begründung, weshalb der staatliche Strafanspruch einer extensiven Auslegung der Beschwerdelegitimation entgegensteht.",
-          "reading_guide_fr": "Commencez par lire le regeste pour saisir l'enseignement central de l'arrêt, puis approfondissez le considérant 2, notamment les ch. 2.1 (texte de l'art. 81 al. 1 LTF), 2.2 (méthodes d'interprétation) et 2.3 (distinction entre intérêt juridique et intérêt de fait). Prêtez une attention particulière à la distinction entre le simple lésé et la victime au sens de la LAVI, ainsi qu'à la justification pour laquelle le monopole étatique de l'action pénale s'oppose à une interprétation extensive de la qualité pour recourir.",
-          "reading_guide_it": "Iniziate con la lettura del regesto per cogliere il principio fondamentale della decisione, poi approfondite il considerando 2, in particolare i nn. 2.1 (testo dell'art. 81 cpv. 1 LTF), 2.2 (metodi di interpretazione) e 2.3 (distinzione tra interesse giuridico e interesse di fatto). Prestate particolare attenzione alla distinzione tra il semplice danneggiato e la vittima ai sensi della LAV, nonché alla motivazione per cui il monopolio statale dell'azione penale osta a un'interpretazione estensiva della legittimazione a ricorrere.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was hat das Bundesgericht in BGE 133 IV 228 bezüglich der Beschwerdeberechtigung des Geschädigten entschieden, der nicht Opfer im Sinne des OHG ist?",
-              "hint": "Siehe Regeste und E. 2 des Entscheids.",
-              "model_answer": "Das Bundesgericht hat entschieden, dass ein Geschädigter, der nicht Opfer im Sinne von Art. 2 Abs. 1 OHG ist, grundsätzlich nicht legitimiert ist, Beschwerde in Strafsachen zu erheben. Ein allgemeines oder faktisches Interesse genügt nicht; erforderlich ist ein rechtlich geschütztes, eigenes Interesse. Da die Strafverfolgung im öffentlichen Interesse liegt, hat der einfache Geschädigte in der Regel nur ein faktisches Interesse daran."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Voraussetzungen nennt Art. 81 Abs. 1 BGG für die Legitimation zur Beschwerde in Strafsachen, und welche Personenkategorien werden in der nicht abschliessenden Liste unter lit. b aufgeführt?",
-              "hint": "Siehe E. 2.1 des Entscheids mit der Wiedergabe des Gesetzeswortlauts.",
-              "model_answer": "Art. 81 Abs. 1 BGG verlangt zunächst, dass die beschwerdeführende Person am vorinstanzlichen Verfahren teilgenommen hat oder daran gehindert wurde, und ein rechtliches Interesse an der Aufhebung oder Änderung des angefochtenen Entscheids besitzt. Die Liste unter lit. b nennt exemplarisch: die beschuldigte Person, deren gesetzliche Vertretung, die Anklagebehörde, die Privatklägerschaft unter bestimmten Bedingungen, das Opfer bei Auswirkungen auf Zivilansprüche sowie den Anzeigeerstatter bei Streitigkeiten über das Anzeigerecht. Die Liste ist nicht abschliessend."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Wenden Sie die vom Bundesgericht entwickelten Grundsätze auf folgenden Fall an: Ein Arbeitgeber erstattet Strafanzeige gegen einen ehemaligen Mitarbeiter wegen Diebstahls von Betriebsgeheimnissen. Die Staatsanwaltschaft stellt das Verfahren ein. Ist der Arbeitgeber zur Beschwerde in Strafsachen legitimiert?",
-              "hint": "Vgl. E. 2.3 zum Erfordernis eines rechtlich geschützten Interesses und zur Unterscheidung von faktischem und rechtlichem Interesse.",
-              "model_answer": "Der Arbeitgeber ist Geschädigter, da sein Betriebsgeheimnis unmittelbar verletzt ist. Entscheidend ist, ob er Opfer im Sinne des OHG ist, was eine körperliche, psychische oder sexuelle Beeinträchtigung voraussetzt – dies trifft auf einen Vermögensschaden oder Geheimnisdiebstahl typischerweise nicht zu. Nach BGE 133 IV 228 hätte der Arbeitgeber als einfacher Geschädigter grundsätzlich nur ein faktisches Interesse an der Strafverfolgung, weshalb er zur Beschwerde in Strafsachen nicht legitimiert wäre, sofern er keine Zivilansprüche adhäsionsweise geltend macht."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Das Bundesgericht wendet in E. 2.2 einen 'pragmatischen Pluralismus' bei der Gesetzesauslegung an. Weshalb lehnt es dennoch die extensive Auslegung von Art. 81 Abs. 1 BGG ab, die der Beschwerdeführer befürwortete, obwohl die Liste unter lit. b ausdrücklich nicht abschliessend ist?",
-              "hint": "Vgl. E. 2.2 und E. 2.3 zur Unterscheidung von faktischem und rechtlichem Interesse sowie zum staatlichen Strafverfolgungsanspruch.",
-              "model_answer": "Obwohl die Liste unter Art. 81 Abs. 1 lit. b BGG nicht abschliessend ist, bedeutet dies nicht, dass jedes faktische Interesse zur Beschwerdelegitimation genügt. Das Bundesgericht betont, dass die Strafklage dem Staat gehört und im öffentlichen Interesse geführt wird; der einfache Geschädigte profitiert davon nur mittelbar. Die nicht abschliessende Liste eröffnet nur dort Raum für weitere Legitimierte, wo ein echtes rechtlich geschütztes Interesse besteht – nicht bloss ein wirtschaftliches oder emotionales Interesse an einer Verurteilung. Eine extensive Auslegung würde die klare Grundentscheidung des Gesetzgebers unterlaufen, wonach der Geschädigte ohne OHG-Opferstellung grundsätzlich auf den Zivilweg verwiesen wird."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Bewerten Sie kritisch, ob der Ausschluss des einfachen Geschädigten von der Beschwerdelegitimation nach Art. 81 Abs. 1 BGG rechtspolitisch überzeugend ist, insbesondere unter dem Gesichtspunkt des Rechtsschutzes und des Verhältnisses zwischen öffentlichem Strafanspruch und privaten Interessen.",
-              "hint": "Vgl. E. 2.3 sowie die allgemeinen Überlegungen zum Verhältnis von staatlichem Strafanspruch und Opferschutz.",
-              "model_answer": "Die Lösung des Bundesgerichts ist systematisch kohärent, da sie den staatlichen Charakter der Strafverfolgung betont und eine Instrumentalisierung des Strafprozesses durch Private verhindert. Kritisch lässt sich jedoch einwenden, dass Geschädigte, die erhebliche Schäden erlitten haben, aber nicht unter das OHG fallen (z.B. bei reinen Vermögensdelikten), schutzlos bleiben können, wenn die Staatsanwaltschaft das Verfahren einstellt. Die enge Auslegung kann zudem bei Delikten mit diffusen Opfern oder bei behördlichem Verfolgungsermessen zu rechtsstaatlichen Lücken führen. De lege ferenda wäre eine differenziertere Regelung denkbar, die dem unmittelbar Geschädigten zumindest bei schwerwiegenden Eingriffen in seine absolut geschützten Rechtsgüter eine subsidiäre Beschwerdelegitimation einräumt."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Stellen Sie sich vor, Y. hätte die kopierten Kontoauszüge nicht nur an die Bankdirektion, sondern auch an die Finanzmarktaufsicht (FINMA) weitergeleitet, mit dem Hinweis, X. könnte in Geldwäschereiaktivitäten verwickelt sein. X. erstattet nunmehr sowohl Strafanzeige wegen Verletzung des Schriftgeheimnisses als auch wegen falscher Anschuldigung. Hat dies Auswirkungen auf seine Beschwerdelegitimation?",
-              "discussion_points": [
-                "Qualifiziert die Einschaltung der FINMA und der Vorwurf der falschen Anschuldigung X. möglicherweise als Opfer im Sinne des OHG wegen psychischer Beeinträchtigung durch die berufliche Schädigung?",
-                "Verändert der Bezug zu Art. 303 StGB (falsche Anschuldigung) die Rechtsnatur des Interesses von X. an der Strafverfolgung und damit seine Legitimation nach Art. 81 Abs. 1 BGG?"
-              ],
-              "likely_outcome_shift": "Falls X. durch die Meldung an die FINMA eine ernsthafte psychische Beeinträchtigung oder eine direkte Bedrohung seiner beruflichen Existenz nachweisen kann, könnte er als Opfer im Sinne von Art. 2 Abs. 1 OHG qualifizieren, was ihm die Beschwerdelegitimation nach Art. 81 Abs. 1 lit. b Ziff. 5 BGG eröffnen würde. Allerdings müsste das Bundesgericht prüfen, ob der berufliche Schaden allein die OHG-Opferstellung begründet, was nach bisheriger Rechtsprechung tendenziell verneint wird. Das Ergebnis bliebe somit unsicher und hinge von der konkreten Intensität der psychischen Beeinträchtigung ab."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Angenommen, nicht X., sondern Y. hätte Strafanzeige gegen X. erstattet – etwa weil X. in ihrer Privatwohnung heimlich Überwachungskameras installiert hätte – und die Staatsanwaltschaft hätte das Verfahren eingestellt. Y. als Privatdetektivin erleidet durch die Überwachung eine attestierte psychische Beeinträchtigung und möchte Beschwerde in Strafsachen erheben.",
-              "discussion_points": [
-                "Qualifiziert Y. unter diesen Umständen als Opfer im Sinne von Art. 2 Abs. 1 OHG aufgrund der psychischen Beeinträchtigung durch die heimliche Überwachung?",
-                "Welchen Einfluss hat die allfällige OHG-Opferstellung auf die Beschwerdelegitimation nach Art. 81 Abs. 1 lit. b Ziff. 5 BGG, insbesondere im Hinblick auf mögliche Zivilansprüche?"
-              ],
-              "likely_outcome_shift": "Wenn Y. eine psychische Beeinträchtigung durch die heimliche Überwachung glaubhaft machen kann, würde sie als Opfer im Sinne des OHG gelten und wäre damit zur Beschwerde in Strafsachen legitimiert, sofern der angefochtene Entscheid ihre Zivilansprüche berührt. Dies stünde im direkten Kontrast zur Situation von X. im Ausgangsfall, der lediglich als einfacher Geschädigter ohne OHG-Opferstellung behandelt wurde. Die Rollenumkehr verdeutlicht die zentrale Bedeutung der OHG-Opferstellung als Schlüsselkriterium für die Beschwerdelegitimation nach BGE 133 IV 228."
-            }
-          ]
+          "significance_fr": "",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         },
         {
           "decision_id": "bge_132 IV 108",
