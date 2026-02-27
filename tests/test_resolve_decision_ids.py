@@ -23,9 +23,13 @@ def test_parse_bge_ref_invalid():
 
 def test_build_fts_query():
     query = build_fts_query("BGE 135 III 1")
-    # Should produce a query that would match docket_number in FTS5
-    assert "135" in query
-    assert "III" in query
+    assert query == '"135 III 1"'
+    assert build_fts_query("not a ref") == ""
+
+
+def test_parse_bge_ref_ia_collection():
+    result = parse_bge_ref("BGE 110 Ia 1")
+    assert result == {"volume": "110", "collection": "IA", "page": "1"}
 
 
 def test_resolve_all_skips_existing(tmp_path):

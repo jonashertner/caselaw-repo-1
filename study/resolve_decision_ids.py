@@ -20,7 +20,7 @@ CURRICULUM_DIR = Path(__file__).resolve().parent / "curriculum"
 DEFAULT_DB = Path(__file__).resolve().parent.parent / "output" / "swiss_caselaw_fts5.db"
 
 _BGE_PATTERN = re.compile(
-    r"BGE\s+(\d+)\s+(I{1,3}V?|VI?|IV)\s+(\d+)", re.IGNORECASE
+    r"BGE\s+(\d+)\s+(Ia|Ib|I{1,3}V?|VI?|IV)\s+(\d+)", re.IGNORECASE
 )
 
 
@@ -33,7 +33,11 @@ def parse_bge_ref(bge_ref: str) -> dict[str, str] | None:
 
 
 def build_fts_query(bge_ref: str) -> str:
-    """Build FTS5 query string for a BGE ref."""
+    """Build an FTS5 phrase query string for a BGE ref.
+
+    Utility for callers that query the FTS5 virtual table directly.
+    Note: the internal resolver uses a LIKE query on docket_number instead.
+    """
     parts = parse_bge_ref(bge_ref)
     if not parts:
         return ""
@@ -48,16 +52,18 @@ def _query_db(db_path: str, bge_ref: str) -> list[dict[str, Any]]:
     try:
         con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
         con.row_factory = sqlite3.Row
-        cur = con.cursor()
-        # Search docket_number for pattern like "135 III 1"
-        pattern = f"%{parts['volume']} {parts['collection']} {parts['page']}%"
-        cur.execute(
-            "SELECT decision_id, docket_number FROM decisions "
-            "WHERE court = 'bge' AND docket_number LIKE ? LIMIT 3",
-            (pattern,),
-        )
-        rows = [dict(r) for r in cur.fetchall()]
-        con.close()
+        try:
+            cur = con.cursor()
+            # Search docket_number for pattern like "135 III 1"
+            pattern = f"%{parts['volume']} {parts['collection']} {parts['page']}%"
+            cur.execute(
+                "SELECT decision_id, docket_number FROM decisions "
+                "WHERE court = 'bge' AND docket_number LIKE ? LIMIT 3",
+                (pattern,),
+            )
+            rows = [dict(r) for r in cur.fetchall()]
+        finally:
+            con.close()
         return rows
     except sqlite3.OperationalError:
         return []
@@ -104,8 +110,8 @@ def resolve_all(
                     print(f"  RESOLVED: {bge_ref} → {did}")
                     if not dry_run:
                         case["decision_id"] = did
+                        changed = True
                     stats["resolved"] += 1
-                    changed = True
                 else:
                     print(f"  NOT FOUND: {bge_ref}")
                     stats["not_found"] += 1
