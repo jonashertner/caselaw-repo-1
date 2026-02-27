@@ -42,12 +42,73 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zur AGB-Inhaltskontrolle: Ungewöhnlichkeitsregel und ihre Voraussetzungen",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "1.3",
+            "2",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 1.3, um zu verstehen, unter welchen Voraussetzungen das Bundesgericht die Rechtsfrage als von grundsätzlicher Bedeutung qualifiziert hat. Widmen Sie dann Erwägung 2 zur Auslegung von AGB besondere Aufmerksamkeit, bevor Sie in Erwägung 3 die Kernfrage der Ungewöhnlichkeitsregel und ihre Anwendung auf Ziffer 4 Abs. 2 AGB 2005 nachvollziehen.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was besagt Ziffer 4 Absatz 2 der AGB 2005 der Versicherungsgesellschaft, und welche Konsequenz hatte diese Klausel für die Beschwerdeführer, als sie ihre Versicherungsverträge kündigen wollten?",
+              "hint": "Sachverhalt, S. 2–3: Wortlaut der Klausel und Reaktion der Beschwerdegegnerin auf die Kündigungsschreiben",
+              "model_answer": "Ziffer 4 Abs. 2 AGB 2005 sieht vor, dass die Versicherungsgesellschaft bei einer behördlich angeordneten Änderung von Prämien, Selbstbehalten oder Deckungsumfang den Vertrag einseitig anpassen darf, ohne dass dem Versicherungsnehmer ein Kündigungsrecht zusteht. Als die Beschwerdeführer ihre Verträge wegen der angekündigten Prämienerhöhung per 31. Dezember 2006 kündigten, lehnte die Versicherungsgesellschaft diese Kündigungen gestützt auf diese Klausel ab. Die Folge war, dass die Beschwerdeführer nach Ansicht der Beschwerdegegnerin an die geänderten Vertragskonditionen gebunden blieben."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche rechtlichen Voraussetzungen müssen nach der bundesgerichtlichen Rechtsprechung erfüllt sein, damit eine AGB-Klausel als «ungewöhnlich» im Sinne der Ungewöhnlichkeitsregel gilt und damit nicht Vertragsbestandteil wird?",
+              "hint": "Erwägung 3: Das Bundesgericht legt die Voraussetzungen der Ungewöhnlichkeitsregel dar",
+              "model_answer": "Die Ungewöhnlichkeitsregel setzt voraus, dass eine AGB-Klausel objektiv ungewöhnlich ist, d.h. vom Vertragstyp und von den vernünftigen Erwartungen der schwächeren Vertragspartei erheblich abweicht. Zusätzlich muss die übernehmende Partei die Klausel nicht gekannt haben und bei gehöriger Aufmerksamkeit auch nicht damit rechnen musste. Je stärker eine Klausel die Rechtsstellung des Vertragspartners beeinträchtigt, desto eher wird sie als ungewöhnlich qualifiziert. Der Erklärungsempfänger, dem die AGB-Klausel nicht bekannt war, wird durch die Ungewöhnlichkeitsregel geschützt, weil seine globale Zustimmung sich nicht auf Klauseln erstreckt, mit denen er vernünftigerweise nicht rechnen musste."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die Ungewöhnlichkeitsregel auf Ziffer 4 Abs. 2 AGB 2005 an: Aus welchen Gründen bejaht das Bundesgericht im vorliegenden Fall die Ungewöhnlichkeit dieser Klausel?",
+              "hint": "Erwägung 3: Anwendung der Regel auf den konkreten Klauselinhalt (Ausschluss des Kündigungsrechts bei behördlicher Anordnung)",
+              "model_answer": "Das Bundesgericht bejaht die Ungewöhnlichkeit, weil ein Ausschluss des Kündigungsrechts bei einer einseitigen Vertragsanpassung durch die Versicherungsgesellschaft eine erhebliche Abweichung vom dispositiven Recht und von den berechtigten Erwartungen eines durchschnittlichen Versicherungsnehmers darstellt. Grundsätzlich gewährt das Gesetz einem Vertragspartner das Recht, bei wesentlichen Vertragsänderungen durch die Gegenpartei aus dem Vertrag auszutreten. Ein Versicherungsnehmer, der einen Standard-Versicherungsvertrag abschliesst, muss nicht damit rechnen, dass er trotz erheblicher Prämien- und Deckungsänderungen an den Vertrag gebunden bleibt. Die Klausel benachteiligt den Versicherungsnehmer besonders stark, da sie gerade in Fällen behördlicher Anordnung – in denen die Änderungen besonders einschneidend sein können – jedes Kündigungsrecht entzieht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Weshalb differenziert Ziffer 4 AGB 2005 zwischen einer freiwilligen Vertragsanpassung durch die Versicherungsgesellschaft (Abs. 1) und einer behördlich angeordneten Anpassung (Abs. 2), und welche rechtliche Bedeutung hat diese Unterscheidung für die Beurteilung der Ungewöhnlichkeit?",
+              "hint": "Sachverhalt S. 2–3 (Wortlaut Ziff. 4) und Erwägung 3 (Analyse des Klauselzwecks)",
+              "model_answer": "Absatz 1 räumt dem Versicherungsnehmer bei einer freiwilligen Anpassung durch die Versicherungsgesellschaft ausdrücklich ein Kündigungsrecht ein, was dem gesetzlichen Leitbild eines fairen Interessenausgleichs entspricht. Absatz 2 hingegen entzieht dieses Recht gerade im Fall einer behördlichen Anordnung, obwohl auch solche Änderungen für den Versicherungsnehmer erhebliche finanzielle Konsequenzen haben können. Diese Differenzierung offenbart das eigentliche Regelungsproblem: Die Versicherungsgesellschaft nutzt den Umstand einer behördlichen Anordnung als Legitimationsgrund, um das Kündigungsrecht auszuschalten, obwohl das Risiko regulatorischer Änderungen primär in ihre Sphäre fällt. Für die Ungewöhnlichkeitsprüfung ist entscheidend, dass die Klausel in Abs. 2 das Recht, das Abs. 1 gerade erst gewährt hat, in einem wesentlichen Anwendungsfall wieder entzieht – was der Versicherungsnehmer nicht erwarten muss."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht gewählte Lösung über die Ungewöhnlichkeitsregel überzeugend, oder wäre eine Inhaltskontrolle nach Art. 8 UWG (Verbot missbräuchlicher AGB) ein geeigneteres Instrument gewesen, um den Versicherungsnehmern in diesem Fall zu helfen?",
+              "hint": "Erwägungen 2 und 3 sowie die im Regeste genannten Rechtsfragen; zu Art. 8 UWG als Kontrollmassstab",
+              "model_answer": "Die Lösung über die Ungewöhnlichkeitsregel ist methodisch kohärent, weil sie auf der Konsensebene ansetzt und den Schutz des Vertragspartners vor überraschenden Klauseln ohne generelles richterliches Eingreifen in den Vertragsinhalt ermöglicht. Allerdings hat die Ungewöhnlichkeitsregel eine strukturelle Schwäche: Wer die Klausel kennt oder kennen musste, ist nicht geschützt. Art. 8 UWG (in der damals geltenden Fassung) bot zwar eine inhaltliche Überprüfung, war jedoch in seiner Anwendbarkeit und Reichweite umstrittener und bot weniger klare Kriterien. Die bundesgerichtliche Lösung ist vertretbar, weil sie einen effektiven Schutz ohne judizielle Vertragsgestaltung bietet; eine stärkere Abstützung auf Art. 8 UWG hätte jedoch den Vorteil einer allgemeineren Inhaltskontrolle geboten und wäre besonders dann relevant, wenn der Versicherungsnehmer die Klausel ausdrücklich zur Kenntnis genommen hat."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Versicherungsgesellschaft hätte den Versicherungsnehmer anlässlich des Vertragsabschlusses ausdrücklich und individuell auf Ziffer 4 Abs. 2 AGB 2005 hingewiesen und dieser hätte die Kenntnisnahme dieser Klausel durch separate Unterschrift bestätigt. Würde die Ungewöhnlichkeitsregel dennoch greifen?",
+              "discussion_points": [
+                "Die Ungewöhnlichkeitsregel schützt nur denjenigen, dem die Klausel nicht bekannt war und der bei gehöriger Aufmerksamkeit auch nicht damit rechnen musste – ein ausdrücklicher Hinweis könnte diese Voraussetzung entfallen lassen.",
+                "Es stellt sich die Folgefrage, ob in diesem Fall Art. 8 UWG (Inhaltskontrolle) als alternatives Schutzinstrument eingreifen könnte, um eine missbräuchliche einseitige Benachteiligung des Versicherungsnehmers zu verhindern."
+              ],
+              "likely_outcome_shift": "Bei nachgewiesener individueller Kenntnisnahme würde die Ungewöhnlichkeitsregel wahrscheinlich nicht mehr greifen, da die globale Zustimmung sich dann auf die konkrete Klausel erstreckt. Der Rechtsschutz der Versicherungsnehmer würde sich damit auf eine allfällige Inhaltskontrolle nach Art. 8 UWG oder auf das allgemeine Verbot gröblicher Benachteiligung verlagern, was zu einer offeneren und weniger sicheren Rechtslage führen würde."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht Privatkunden, sondern ein mittelgrosses Unternehmen (KMU) mit eigener Rechtsabteilung hätte die gleichen AGB-Klauseln akzeptiert und klagt nun auf Feststellung der Unwirksamkeit von Ziffer 4 Abs. 2. Verändert die unternehmerische Stellung des Klägers die rechtliche Beurteilung?",
+              "discussion_points": [
+                "Unternehmen mit Rechtsabteilung werden als geschäftserfahrener eingestuft; die Schutzwürdigkeit im Rahmen der Ungewöhnlichkeitsregel richtet sich nach dem Empfängerhorizont der jeweiligen Vertragspartei.",
+                "Es ist zu prüfen, ob ein KMU mit eigener Rechtsabteilung mit einer solchen Klausel in Versicherungsverträgen rechnen musste, was den Schutz durch die Ungewöhnlichkeitsregel erheblich einschränken könnte."
+              ],
+              "likely_outcome_shift": "Bei einem unternehmerischen Kläger mit eigener Rechtsabteilung würde das Bundesgericht den Massstab für die Ungewöhnlichkeit höher ansetzen, da von einem solchen Vertragspartner eine sorgfältigere Prüfung der AGB erwartet werden kann. Es ist gut möglich, dass das Gericht die Ungewöhnlichkeit in diesem Kontext verneinen würde, was bedeuten würde, dass das Unternehmen an die Klausel gebunden bliebe und die Kündigung unwirksam wäre."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le considérant 1.3 pour comprendre dans quelles conditions le Tribunal fédéral a qualifié la question juridique de fondamentale. Portez ensuite une attention particulière au considérant 2 sur l'interprétation des conditions générales, avant d'analyser au considérant 3 la question centrale de la règle de l'insolite et son application à l'art. 4 al. 2 des CGA 2005.",
+          "reading_guide_it": "Iniziare con il considerando 1.3 per comprendere i presupposti che hanno indotto il Tribunale federale a qualificare la questione giuridica come di principio. Prestare poi particolare attenzione al considerando 2 sull'interpretazione delle condizioni generali di contratto, per poi analizzare nel considerando 3 la questione centrale della regola dell'insolito e la sua applicazione all'art. 4 cpv. 2 delle CGA 2005.",
+          "significance_fr": "Cet arrêt de principe précise les conditions d'application de la règle de l'insolite aux clauses des conditions générales de contrat et confirme qu'une clause excluant le droit de résiliation de l'assuré en cas de modification du contrat ordonnée par une autorité est objectivement insolite et donc inopposable.",
+          "significance_it": "Questa sentenza di principio chiarisce i presupposti della regola dell'insolito nelle condizioni generali di contratto e conferma che una clausola che esclude il diritto di disdetta dell'assicurato in caso di adeguamento del contratto ordinato da un'autorità è oggettivamente insolita e quindi inapplicabile."
         },
         {
           "decision_id": "bge_144 III 93",
@@ -177,12 +238,76 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Zusammenstellung der Auslegungsgrundsätze; Grenzen der wortlautbezogenen Auslegung",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "4.1",
+            "4.2",
+            "4.2.1",
+            "4.2.2",
+            "5",
+            "6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (A.c und A.d) sorgfältig, um die vertragliche Ausgangslage und den Zusammenbruch von SAirGroup zu verstehen. Konzentrieren Sie sich dann auf E. 4.1 für die systematische Zusammenstellung der Auslegungsgrundsätze nach Art. 18 OR und E. 4.2 für die Grenzen der wortlautbezogenen Auslegung. Abschliessend ist E. 5 zur Qualifikation als Garantievertrag (Art. 111 OR) und E. 6 zur Berechnung der Ansprüche zu studieren.",
+          "reading_guide_fr": "Commencez par lire attentivement les faits (A.c et A.d) afin de comprendre la situation contractuelle de base et la faillite de SAirGroup. Concentrez-vous ensuite sur le consid. 4.1 pour la synthèse des principes d'interprétation des contrats selon l'art. 18 CO, et sur le consid. 4.2 pour les limites de l'interprétation littérale. Terminez par le consid. 5 sur la qualification de contrat de garantie (art. 111 CO) et le consid. 6 sur le calcul des prétentions.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was verstand das Bundesgericht unter dem 'Versprechen' von Gate Gourmet Genève SA in der Frühpensionierungsvereinbarung vom 23. Juli 1998, und welche Leistungen wurden B. darin konkret zugesichert?",
+              "hint": "Vgl. den Sachverhalt unter A.c sowie die Erwägungen zu E. 4.2.1 und 4.2.2",
+              "model_answer": "Gate Gourmet Genève SA versprach B. in eigenem Namen, dass ihr während der Frühpensionierung bestimmte Leistungen (sogenannte Vorruhestandsleistungen gemäss Sozialplan) erbracht werden, die tatsächlich von einem Dritten – SAirGroup bzw. der Muttergesellschaft – finanziert und ausgezahlt werden sollten. Diese Leistungen wurden ab dem 1. November 1998 regelmässig ausbezahlt. Das Versprechen bildete die Gegenleistung von B. dafür, dass sie ihrer Frühpensionierung einwilligte."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Auslegungsgrundsätze hat das Bundesgericht in E. 4.1 für die Vertragsauslegung nach Art. 18 Abs. 1 OR zusammengestellt, und in welchem Verhältnis stehen subjektive und objektive Auslegung zueinander?",
+              "hint": "Massgeblich ist E. 4.1 des Entscheids; vgl. auch die Regeste",
+              "model_answer": "Das Bundesgericht hält fest, dass primär der übereinstimmende wirkliche Wille der Parteien massgeblich ist (subjektive Auslegung). Kann dieser nicht festgestellt werden, ist der Vertrag nach dem Vertrauensprinzip auszulegen, d.h. es ist zu fragen, wie eine vernünftige Partei die Erklärung der anderen nach Treu und Glauben verstehen durfte und musste (objektive Auslegung). Der Wortlaut ist dabei ein wichtiges, aber nicht allein entscheidendes Auslegungsmittel; er kann durch den Zusammenhang, den Zweck des Vertrags und die Begleitumstände relativiert werden."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, die Formulierung im Brief vom 23. Juli 1998 wäre eindeutig dahingehend gewesen, dass Gate Gourmet Genève SA nur als Bote oder Stellvertreter von SAirGroup handelte: Wie hätte das Bundesgericht den Vertragsschluss und die Haftungsfrage dann wohl beurteilt?",
+              "hint": "Vgl. E. 4.2 zu den Grenzen der wortlautbezogenen Auslegung sowie Art. 111 OR",
+              "model_answer": "Wäre Gate Gourmet Genève SA eindeutig als bloss empfangende Übermittlerin oder Stellvertreterin von SAirGroup aufgetreten, hätte kein Garantievertrag im Sinne von Art. 111 OR vorgelegen. B. hätte in diesem Fall nur direkte Ansprüche gegen SAirGroup, nicht aber gegen Gate Gourmet Switzerland Sàrl als Rechtsnachfolgerin. Das Bundesgericht betonte jedoch gerade, dass der Wortlaut allein nicht entscheidend ist und aufgrund der Umstände – insbesondere der eigenständigen Verpflichtung im eigenen Namen – ein Garantievertrag anzunehmen war."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum qualifizierte das Bundesgericht das Versprechen von Gate Gourmet Genève SA als Garantievertrag nach Art. 111 OR und nicht als einfache Schuldübernahme oder als Bürgschaft, und welche rechtlichen Konsequenzen ergeben sich aus dieser Qualifikation für B.?",
+              "hint": "Vgl. E. 4.2.1, 4.2.2 und E. 5 des Entscheids sowie die Unterschiede zwischen Art. 111, 175 und 492 OR",
+              "model_answer": "Ein Garantievertrag nach Art. 111 OR liegt vor, wenn jemand in eigenem Namen verspricht, dass ein Dritter eine Leistung erbringen wird, und dabei eine selbständige Einstandspflicht übernimmt. Im Gegensatz zur Bürgschaft (Art. 492 OR) ist der Garantievertrag nicht akzessorisch und erfordert keine besondere Form. Anders als bei der Schuldübernahme (Art. 175 OR) wird die Schuld des Dritten nicht übernommen, sondern es entsteht eine eigenständige Verpflichtung des Versprechenden. Für B. bedeutete dies, dass sie bei Ausfall von SAirGroup direkt und ohne Einreden gegen Gate Gourmet Switzerland Sàrl vorgehen konnte."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Entscheidung des Bundesgerichts, trotz eines möglicherweise ambivalenten Wortlauts einen Garantievertrag anzunehmen und damit die Arbeitnehmerin zu schützen, rechtspolitisch überzeugend, oder gewichtet das Gericht die Schutzinteressen von B. übermässig gegenüber dem Wortlautprinzip und der Privatautonomie von Gate Gourmet?",
+              "hint": "Vgl. E. 4.1 und 4.2 zu den Auslegungsgrundsätzen sowie den Grundsatz des Vertrauensschutzes und der Äquivalenz von Leistung und Gegenleistung",
+              "model_answer": "Die Entscheidung ist rechtspolitisch gut vertretbar, weil das Vertrauensprinzip und das Äquivalenzprinzip verlangen, dass B. für ihre dauerhafte Gegenleistung – die Einwilligung zur Frühpensionierung – eine verlässliche Zusicherung erhalten muss. Eine rein wortlautfixierte Auslegung könnte den Arbeitnehmer strukturell benachteiligen, da er im Gegensatz zum Arbeitgeber regelmässig weniger Einfluss auf die Vertragsformulierung hat. Allerdings ist kritisch anzumerken, dass eine konsequente Anwendung des Wortlautprinzips für klare Vertragsverhältnisse sorgt und es dem Gericht nicht zusteht, eindeutige Formulierungen nachträglich umzudeuten; im vorliegenden Fall war die Ausgangslage aber hinreichend ambivalent, um eine teleologische Auslegung zu rechtfertigen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, Gate Gourmet Genève SA hätte im Brief vom 23. Juli 1998 ausdrücklich einen Vorbehalt eingefügt, wonach ihre Leistungspflicht entfällt, falls SAirGroup in finanzielle Schwierigkeiten gerät oder Insolvenz anmeldet. Würde dies die Qualifikation als Garantievertrag ausschliessen oder nur seine Reichweite beschränken?",
+              "discussion_points": [
+                "Prüfung, ob ein solcher Auflösungsvorbehalt die Selbständigkeit der Einstandspflicht nach Art. 111 OR beseitigt oder nur eine zulässige vertragliche Befristung/Bedingung darstellt",
+                "Frage, ob ein solcher Vorbehalt im Arbeitsrecht gegenüber Arbeitnehmenden als missbräuchlich oder sittenwidrig (Art. 27 ZGB, Art. 2 ZGB) qualifiziert werden könnte"
+              ],
+              "likely_outcome_shift": "Ein solcher Vorbehalt würde den Garantievertrag nicht zwingend beseitigen, könnte aber als auflösende Bedingung wirken und Gate Gourmets Haftung im Insolvenzfall von SAirGroup ausschliessen. Allerdings wäre zu prüfen, ob ein solcher Vorbehalt treuwidrig wäre, da er die Schutzwirkung der Frühpensionierungsvereinbarung für B. vollständig aushöhlen würde. Das Bundesgericht hätte in diesem Fall möglicherweise die Gültigkeit des Vorbehalts unter dem Gesichtspunkt von Treu und Glauben (Art. 2 ZGB) verneinen müssen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht eine Arbeitnehmerin, sondern ein selbständiger Zulieferer (ein kleines Catering-Unternehmen) mit Gate Gourmet Genève SA eine ähnliche Vereinbarung über aufgeschobene Zahlungen getroffen hätte, bei der SAirGroup als zahlende Drittpartei vorgesehen war?",
+              "discussion_points": [
+                "Fehlen des arbeitsrechtlichen Schutzzwecks und des Ungleichgewichts zwischen den Parteien, was die teleologische Auslegung zugunsten des Gläubigers weniger zwingend macht",
+                "Frage, ob Vertragsauslegung und Qualifikation als Garantievertrag rein nach objektiven Kriterien dasselbe Ergebnis liefern würden oder ob die Parteikonstellation die Auslegung beeinflusst"
+              ],
+              "likely_outcome_shift": "Ohne den spezifischen arbeitsrechtlichen Schutzkontext würde das Bundesgericht stärker am Wortlaut der Vereinbarung haften und müsste deutlichere Anhaltspunkte für eine selbständige Garantieverpflichtung verlangen. Das Ergebnis könnte dasselbe sein, wenn der Brief die gleichen Formulierungen enthält, aber das Gericht wäre weniger geneigt, ambivalente Formulierungen zugunsten des Zulieferers auszulegen. Die Risikoverteilung zwischen Kaufleuten gilt als ausgewogener, was eine strengere Wortlautauslegung rechtfertigen würde."
+            }
+          ],
+          "reading_guide_it": "Leggere dapprima attentamente i fatti (A.c e A.d) per comprendere la situazione contrattuale di partenza e il fallimento di SAirGroup. Concentrarsi poi sul consid. 4.1 per la sintesi dei principi di interpretazione del contratto ai sensi dell'art. 18 CO e sul consid. 4.2 per i limiti dell'interpretazione letterale. Concludere con il consid. 5 sulla qualificazione come contratto di garanzia (art. 111 CO) e il consid. 6 sul calcolo delle pretese.",
+          "significance_fr": "Cet arrêt constitue la référence de principe en droit suisse des contrats pour la synthèse des règles d'interprétation selon l'art. 18 CO et pour les limites de l'interprétation purement littérale, tout en illustrant la qualification d'un engagement unilatéral comme contrat de garantie au sens de l'art. 111 CO dans le contexte d'une retraite anticipée.",
+          "significance_it": "Questa sentenza rappresenta il riferimento fondamentale nel diritto contrattuale svizzero per la sintesi delle regole di interpretazione ai sensi dell'art. 18 CO e per i limiti dell'interpretazione puramente letterale, illustrando altresì la qualificazione di un impegno unilaterale come contratto di garanzia ai sensi dell'art. 111 CO nel contesto di un pensionamento anticipato."
         },
         {
           "decision_id": "bge_113 II 25",
@@ -319,12 +444,72 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatz der Unwiderruflichkeit der Anfechtungserklärung und ihre Ausnahmen",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "1",
+            "2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die Chronologie der Vereinbarungen und Erklärungen (1988–1994) zu verstehen. Konzentrieren Sie sich dann auf E. 1 (Voraussetzung der Wirksamkeit der Anfechtungserklärung) und E. 2 (Grundsatz der Unwiderruflichkeit und seine Ausnahmen), da diese den normativen Kern des Entscheids bilden. Beachten Sie insbesondere, wie das Bundesgericht die Anforderungen an eine nachträgliche einvernehmliche Vertragswiederherstellung konkretisiert.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was verstand das Bundesgericht unter der 'Wirksamkeit der Anfechtungserklärung' und welche Voraussetzung muss nach E. 1 erfüllt sein, damit eine Anfechtung wegen Irrtums oder Täuschung überhaupt Wirkung entfaltet?",
+              "hint": "Vgl. Regeste und E. 1: Die Wirksamkeit der Anfechtungserklärung setzt das Bestehen des behaupteten Willensmangels voraus.",
+              "model_answer": "Das Bundesgericht hält fest, dass die blosse Abgabe einer Anfechtungserklärung nicht genügt, um einen Vertrag unverbindlich zu machen. Vielmehr muss der behauptete Willensmangel – also Irrtum oder Täuschung im Sinne von Art. 23 ff. OR – tatsächlich vorliegen. Fehlt der Willensmangel, entfaltet die Anfechtungserklärung keine rechtliche Wirkung und der Vertrag bleibt verbindlich."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welchen Grundsatz zur Anfechtungserklärung hat das Bundesgericht in E. 2 bekräftigt, und welche Ausnahmen lässt die Rechtsprechung davon zu?",
+              "hint": "Vgl. E. 2 sowie die Ausführungen des Kantonsgerichts zur Unwiderruflichkeit und zur Möglichkeit nachträglicher Einigung.",
+              "model_answer": "Der Grundsatz lautet, dass eine einmal abgegebene Anfechtungserklärung grundsätzlich unwiderruflich ist und nicht einseitig zurückgenommen werden kann. Als Ausnahme anerkennt das Bundesgericht, dass die Parteien sich nachträglich einvernehmlich darauf einigen können, den angefochtenen Vertrag dennoch gelten zu lassen; dies kommt dem Abschluss eines neuen Vertrags gleichen Inhalts gleich. Eine solche Einigung kann auch stillschweigend oder durch konkludentes Verhalten zustande kommen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "C. forderte mit Schreiben vom 3. Januar 1994 die Erfüllung der Vereinbarungen, obwohl er diese zuvor angefochten hatte. Wie ist dieses Verhalten nach den im Entscheid entwickelten Grundsätzen rechtlich zu qualifizieren?",
+              "hint": "Vgl. den Sachverhalt zum Schreiben vom 3. Januar 1994 und die Antwort des Anwalts von C. vom 11. Januar 1994 zur nachträglichen Genehmigung.",
+              "model_answer": "Das Schreiben vom 3. Januar 1994 kann als Angebot an B. verstanden werden, den angefochtenen Vertrag trotz der Anfechtungserklärung wieder in Kraft zu setzen. Da die Anfechtungserklärung nach dem Grundsatz der Unwiderruflichkeit nicht einseitig zurückgenommen werden kann, wäre eine Wiederherstellung des Vertragsverhältnisses nur bei übereinstimmender Annahme durch B. möglich. Das Kantonsgericht verneinte eine solche Annahme, weil B. das Angebot nicht angenommen hatte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern besteht ein Spannungsverhältnis zwischen dem Grundsatz der Unwiderruflichkeit der Anfechtungserklärung und dem Interesse des Anfechtenden daran, seine Erklärung zurückzunehmen, wenn der Anfechtungsgegner den Willensmangel bestreitet?",
+              "hint": "Vgl. das Argument des Anwalts von C. vom 11. Januar 1994 sowie die Frage, ob der Beklagte den Anfechtenden auf seiner Erklärung behaften darf.",
+              "model_answer": "Der Anfechtende steht vor einem Dilemma: Hat er die Anfechtungserklärung abgegeben, ist er daran gebunden, auch wenn sich später herausstellt, dass der Willensmangel nicht vorlag oder von der Gegenpartei bestritten wird. Die Gegenpartei kann den Anfechtenden auf seiner Erklärung behaften und so die Unverbindlichkeit des Vertrages geltend machen, selbst wenn sie den Anfechtungsgrund nicht anerkennt. Dies führt dazu, dass der Anfechtende im Ergebnis schlechter gestellt sein kann als ohne Anfechtungserklärung, was das Spannungsverhältnis zwischen Vertrauensschutz und dem Interesse an flexibler Rechtsdurchsetzung verdeutlicht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist der Grundsatz der Unwiderruflichkeit der Anfechtungserklärung rechtspolitisch überzeugend, oder sollte dem Anfechtenden – zumindest unter gewissen Voraussetzungen – ein einseitiges Rücktrittsrecht von seiner Erklärung zugestanden werden?",
+              "hint": "Vgl. E. 2 sowie die ratio legis von Art. 23 ff. OR: Schutz des Anfechtenden einerseits, Vertrauensschutz des Anfechtungsgegners andererseits.",
+              "model_answer": "Der Grundsatz der Unwiderruflichkeit lässt sich mit dem Vertrauensschutz des Anfechtungsgegners begründen: Dieser darf nach Erhalt der Anfechtungserklärung davon ausgehen, dass der Vertrag hinfällig ist, und seine Dispositionen danach ausrichten. Ein einseitiges Rücktrittsrecht des Anfechtenden würde diesen Vertrauensschutz unterhöhlen und Rechtsunsicherheit schaffen. Andererseits erscheint es unbillig, den Anfechtenden an einer Erklärung festzuhalten, wenn der Willensmangel tatsächlich nicht bestand; de lege ferenda könnte man überlegen, ob eine einseitige Rücknahme zulässig sein sollte, solange der Anfechtungsgegner noch keine schützenswerten Dispositionen getroffen hat."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, C. hätte nach seiner Anfechtungserklärung vom 18. Dezember 1992 nicht nur die Erfüllung verlangt, sondern B. hätte dies ausdrücklich schriftlich akzeptiert und in der Folge eine erste Rate von Fr. 100'000.- geleistet. Wäre unter diesen Umständen von einer gültigen Wiederherstellung des Vertrags auszugehen?",
+              "discussion_points": [
+                "Reicht eine ausdrückliche schriftliche Annahme kombiniert mit einer Teilleistung als Beleg für eine übereinstimmende Willensäusserung zur Vertragswiederherstellung aus?",
+                "Welche Beweislast trägt die Partei, die sich auf die nachträgliche Einigung beruft, und wie wirkt sich die Teilzahlung auf die Beweissituation aus?"
+              ],
+              "likely_outcome_shift": "Bei ausdrücklicher Annahme und Teilzahlung durch B. wäre die Schwelle für eine konkludente oder ausdrückliche Einigung zur Vertragswiederherstellung klar überschritten. Das Bundesgericht hätte in diesem Fall wohl keine Notwendigkeit gesehen, die Sache zurückzuweisen, und die Klage auf Vertragserfüllung wäre mit hoher Wahrscheinlichkeit gutgeheissen worden."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht C. (der Verkäufer der Ansprüche), sondern B. hätte die Vereinbarungen vom 29. Mai und 30. August 1992 wegen Täuschung angefochten und danach A. (als Zessionar von C.) Erfüllung verlangt. Würden die vom Bundesgericht entwickelten Grundsätze zur Unwiderruflichkeit der Anfechtungserklärung unverändert gelten?",
+              "discussion_points": [
+                "Ist der Grundsatz der Unwiderruflichkeit parteiunabhängig, oder kommt es darauf an, wer Anfechtender und wer Anfechtungsgegner ist?",
+                "Könnte A. als Zessionar der Ansprüche von C. dieselbe Rechtsstellung einnehmen wie C. selbst, oder hat die Zession Auswirkungen auf die Geltendmachung der Vertragswiederherstellung?"
+              ],
+              "likely_outcome_shift": "Der Grundsatz der Unwiderruflichkeit gilt unabhängig davon, welche Partei die Anfechtungserklärung abgegeben hat. Hätte B. angefochten und dann Erfüllung verlangt, wäre C. bzw. A. als Zessionar in der gleichen Position wie B. im Ausgangsfall: Sie könnten B. auf seiner Anfechtungserklärung behaften. Die Klage von A. wäre in diesem Szenario mangels wirksamer Vertragswiederherstellung durch B. ebenfalls schwer durchzusetzen gewesen."
+            }
+          ],
+          "reading_guide_fr": "Lisez d'abord attentivement les faits afin de comprendre la chronologie des accords et des déclarations (1988–1994). Concentrez-vous ensuite sur les considérants 1 (conditions d'efficacité de la déclaration d'invalidation) et 2 (principe de l'irrévocabilité et ses exceptions), qui constituent le nœud normatif de l'arrêt. Notez en particulier comment le Tribunal fédéral précise les exigences d'un rétablissement conventionnel ultérieur du contrat.",
+          "reading_guide_it": "Leggete dapprima attentamente i fatti per comprendere la cronologia degli accordi e delle dichiarazioni (1988–1994). Concentratevi poi sui considerandi 1 (presupposti per l'efficacia della dichiarazione di contestazione) e 2 (principio dell'irrevocabilità e sue eccezioni), che costituiscono il nucleo normativo della sentenza. Notate in particolare come il Tribunale federale precisa i requisiti per un ripristino convenzionale successivo del contratto.",
+          "significance_fr": "Cet arrêt consacre le principe de l'irrévocabilité de la déclaration d'invalidation du contrat pour vice du consentement (erreur ou dol) et précise que le rétablissement du contrat ne peut résulter que d'un accord mutuel des parties, équivalant à la conclusion d'un nouveau contrat.",
+          "significance_it": "La sentenza sancisce il principio dell'irrevocabilità della dichiarazione di contestazione del contratto per vizio del consenso (errore o dolo) e precisa che il ripristino del contratto può derivare solo da un accordo reciproco delle parti, equivalente alla conclusione di un nuovo contratto."
         },
         {
           "decision_id": "bge_132 III 737",
@@ -351,12 +536,75 @@
             "bge_128 III 70"
           ],
           "significance_de": "Voraussetzungen für die Anfechtung eines gerichtlichen Vergleichs wegen Grundlagenirrtum",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "1",
+            "1.1",
+            "1.2",
+            "2",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (A.a–A.c) sorgfältig, um die zeitliche Abfolge des Eigentumswechsels und des Vergleichsabschlusses nachzuvollziehen. Konzentrieren Sie sich dann auf Erwägung 1 (Voraussetzungen des Grundlagenirrtums bei gerichtlichen Vergleichen), Erwägung 2 (massgebender Zeitpunkt für die Wesentlichkeit) und Erwägung 3 (Einfluss der Vermieteridentität auf Kündigung und Erstreckung sowie Treu und Glauben), da diese die tragenden Rechtsfragen des Entscheids enthalten.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der zentrale Sachverhalt in BGE 132 III 737, und warum wussten die Kläger beim Abschluss des Vergleichs nicht, wer tatsächlich Eigentümerin der Liegenschaft war?",
+              "hint": "Sachverhalt A.a und A.b: Beachten Sie den Zeitpunkt des Eigentumswechsels (5. September 2000) und die Tatsache, dass der Handwechsel den Klägern nicht mitgeteilt wurde.",
+              "model_answer": "Der Beklagte hatte die Liegenschaft bereits im Jahr 2000 an seine eigene Aktiengesellschaft verkauft, ohne die Mieter darüber zu informieren. Als er 2002 die Kündigung wegen Eigenbedarfs aussprach, handelnd unter seinem eigenen Namen, gingen die Kläger irrtümlich davon aus, er sei noch Vermieter. Beim Vergleich vom 11. Juni 2002 kannten die Kläger die wahre Eigentümerin nicht, was ihren Irrtum über die Person des Vermieters begründet."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen müssen nach Art. 24 Abs. 1 Ziff. 4 OR kumulativ erfüllt sein, damit ein Grundlagenirrtum zur Unverbindlichkeit eines Vertrages führt, und wie grenzt das Bundesgericht diesen von anderen Irrtumsarten ab?",
+              "hint": "Erwägung 1.1 und 1.2: Das Gericht erläutert die Voraussetzungen des Grundlagenirrtums in Abgrenzung zu Art. 23 OR.",
+              "model_answer": "Nach Art. 24 Abs. 1 Ziff. 4 OR liegt ein wesentlicher Irrtum vor, wenn er einen bestimmten Sachverhalt betrifft, den der Irrende nach Treu und Glauben im Geschäftsverkehr als notwendige Grundlage des Vertrages betrachtete. Erforderlich sind somit erstens ein tatsächlicher Irrtum über einen Sachverhalt und zweitens, dass dieser Sachverhalt subjektiv und objektiv als wesentliche Vertragsgrundlage gilt. Das Bundesgericht prüft die objektive Wesentlichkeit frei, d.h. ob auch ein vernünftiger Dritter in gleicher Situation den betreffenden Umstand als Grundlage des Vertrages betrachtet hätte."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die Grundlagenirrtums-Doktrin auf den vorliegenden Fall an: Inwiefern ist der Irrtum der Kläger über die Person des Vermieters als objektiv wesentlich im Sinne von Art. 24 Abs. 1 Ziff. 4 OR zu qualifizieren?",
+              "hint": "Erwägung 3 und Regeste: Das Bundesgericht erklärt, dass die Identität des Vermieters Einfluss auf die Zulässigkeit der Kündigung und die Erstreckungsdauer haben kann.",
+              "model_answer": "Die Frage, ob der Kündigende selbst Vertragspartei oder nur wirtschaftlicher Beherrscher der Eigentümerin ist, hat konkrete Auswirkungen auf die Zulässigkeit der Eigenbedarfskündigung und damit auf die mögliche Erstreckungsdauer nach Art. 272 Abs. 2 lit. d OR. Ein vernünftiger Mieter hätte diesen Umstand als notwendige Grundlage des Vergleichs über die Erstreckungsdauer betrachtet, da er die rechtliche Ausgangssituation fundamental bestimmt. Daher ist die objektive Wesentlichkeit des Irrtums zu bejahen, und die Vorinstanz hatte Art. 24 Abs. 1 Ziff. 4 OR falsch angewendet, als sie dies verneinte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht musste prüfen, ob die Berufung auf den Irrtum nach Art. 25 Abs. 1 OR rechtsmissbräuchlich war. Analysieren Sie, warum das Gericht trotz der anwaltlichen Vertretung der Kläger beim Vergleich keinen Rechtsmissbrauch annahm.",
+              "hint": "Erwägung 3 und Regeste zu Art. 25 Abs. 1 OR: Das Gericht prüft Treu und Glauben; die anwaltliche Vertretung schützt nicht vor einem Irrtum über Tatsachen, die der Partei gar nicht bekannt sein konnten.",
+              "model_answer": "Art. 25 Abs. 1 OR schränkt die Irrtumsanfechtung ein, wenn deren Geltendmachung gegen Treu und Glauben verstösst. Die anwaltliche Vertretung der Kläger beim Vergleich ändert nichts daran, dass ihnen die Tatsache des Eigentumswechsels – und damit die wahre Identität der Vermieterin – schlicht unbekannt war; dieser Irrtum war nicht durch mangelnde Sorgfalt veranlasst. Da der Beklagte die Kündigung in eigenem Namen ausgesprochen und den Handwechsel verschwiegen hatte, hatten die Kläger keinen Anlass, die Vermieterstellung zu hinterfragen. Das Bundesgericht verneinte daher den Rechtsmissbrauch zutreffend: Wer auf eine Irreführung durch Schweigen des Vertragspartners hereinfällt, handelt nicht treuwidrig, wenn er sich anschliessend auf den Irrtum beruft."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie kritisch, ob das Ergebnis des Bundesgerichts – die Unverbindlichkeit des gerichtlichen Vergleichs – aus rechtspolitischer Sicht überzeugend ist, und welche Auswirkungen es auf die Rechtssicherheit bei gerichtlichen Vergleichen hat.",
+              "hint": "Erwägung 1 und 2: Das Gericht betont, dass gerichtliche Vergleiche zwar besonderer Rechtssicherheit bedürfen, aber dennoch den allgemeinen Irrtumsregeln unterstehen.",
+              "model_answer": "Die Entscheidung des Bundesgerichts ist aus rechtspolitischer Sicht ambivalent: Einerseits schützt sie Mieter vor den Folgen einer Informationsasymmetrie, die durch das pflichtwidrige Schweigen des Beklagten verursacht wurde, was der Waffengleichheit im Mietrecht dient. Andererseits untergräbt die Anfechtbarkeit gerichtlicher Vergleiche wegen Grundlagenirrtums deren Befriedungsfunktion und prozessuale Finalität, da Parteien sich nach einem Vergleich nie vollständig sicher sein können. Überzeugend bleibt das Ergebnis jedoch, weil das Bundesgericht die Anfechtbarkeit auf klare Voraussetzungen beschränkt und das Verschweigen des Eigentumswechsels durch den Beklagten als entscheidendes Kriterium heranzieht – wer selbst eine Informationspflicht verletzt, kann sich nicht auf die Bestandskraft des darauf basierenden Vergleichs berufen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Kläger hätten im Rahmen des Schlichtungsverfahrens selbst einen Grundbuchauszug eingeholt und wären so vor Abschluss des Vergleichs in der Lage gewesen, den Eigentumswechsel auf die Aktiengesellschaft festzustellen – sie hätten diesen aber nicht beachtet. Würde der Grundlagenirrtum trotzdem bejaht werden können?",
+              "discussion_points": [
+                "Obliegenheit der Parteien zur Selbstinformation: Müssen Mieter bei einem Schlichtungsverfahren aktiv die aktuelle Grundbucheintragung prüfen?",
+                "Auswirkung auf die Wesentlichkeit und auf Art. 25 Abs. 1 OR: Wäre die Berufung auf den Irrtum rechtsmissbräuchlich, wenn die Kläger ihn bei gehöriger Sorgfalt hätten vermeiden können?"
+              ],
+              "likely_outcome_shift": "Bei Kenntnis eines leicht zugänglichen Grundbuchauszugs, den die Kläger ignoriert hätten, würde die Unverbindlichkeit des Vergleichs wahrscheinlich verneint. Die Irrtumsanfechtung scheiterte nach Art. 25 Abs. 1 OR, da die Berufung auf einen selbst verschuldeten und leicht vermeidbaren Irrtum als rechtsmissbräuchlich qualifiziert werden könnte. Das Bundesgericht hätte in diesem Fall möglicherweise eine Mitverantwortung der Kläger angenommen und die Klage abgewiesen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Mieter, sondern der Beklagte (als formeller Nichteigentümer) geltend machen würde, er habe sich beim Abschluss des Vergleichs über seine eigene fehlende Vermieterstellung geirrt, und deshalb sei der Vergleich für ihn unverbindlich?",
+              "discussion_points": [
+                "Kann sich eine Partei auf ihren eigenen Irrtum über rechtliche Verhältnisse berufen, die sie selbst herbeigeführt hat (venire contra factum proprium)?",
+                "Verhältnis von Art. 24 Abs. 1 Ziff. 4 OR zur Arglist und zum Verbot widersprüchlichen Verhaltens gemäss Art. 2 ZGB."
+              ],
+              "likely_outcome_shift": "Eine Irrtumsanfechtung durch den Beklagten würde mit hoher Wahrscheinlichkeit scheitern. Da er selbst den Eigentumswechsel vorgenommen und den Klägern verschwiegen hatte, wäre die Berufung auf den Irrtum über seine eigene fehlende Vermieterstellung offensichtlich rechtsmissbräuchlich im Sinne von Art. 25 Abs. 1 OR und Art. 2 Abs. 2 ZGB. Das Gericht würde feststellen, dass niemand aus seinem eigenen pflichtwidrigen Verhalten einen Vorteil ziehen darf."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement les faits (A.a–A.c) afin de comprendre la chronologie du transfert de propriété et de la conclusion de la transaction. Concentrez-vous ensuite sur le considérant 1 (conditions de l'erreur essentielle pour les transactions judiciaires), le considérant 2 (moment déterminant pour l'appréciation du caractère essentiel) et le considérant 3 (influence de l'identité du bailleur sur le congé et la prolongation, ainsi que la bonne foi), car ces passages contiennent les questions juridiques centrales de l'arrêt.",
+          "reading_guide_it": "Leggere attentamente i fatti (A.a–A.c) per comprendere la cronologia del trasferimento di proprietà e della conclusione della transazione. Concentrarsi poi sui considerandi 1 (condizioni dell'errore essenziale nelle transazioni giudiziarie), 2 (momento determinante per valutare l'essenzialità) e 3 (influenza dell'identità del locatore sul recesso e sulla proroga, nonché la buona fede), poiché questi passaggi contengono le questioni giuridiche centrali della decisione.",
+          "significance_fr": "Cet arrêt établit que les transactions judiciaires peuvent être attaquées pour erreur essentielle au sens de l'art. 24 al. 1 ch. 4 CO lorsque l'identité du bailleur – et notamment la question de savoir si celui qui a donné le congé pour besoin propre était réellement partie au contrat de bail – était ignorée du locataire au moment de la conclusion de la transaction, une telle erreur n'étant pas contraire à la bonne foi au sens de l'art. 25 al. 1 CO.",
+          "significance_it": "La sentenza stabilisce che una transazione giudiziaria può essere impugnata per errore essenziale ai sensi dell'art. 24 cpv. 1 n. 4 CO qualora il conduttore ignorasse, al momento della sua conclusione, la vera identità del locatore e in particolare se chi aveva dato la disdetta per bisogno proprio fosse effettivamente parte del contratto di locazione, senza che tale impugnazione violi la buona fede ai sensi dell'art. 25 cpv. 1 CO."
         }
       ]
     },
@@ -394,12 +642,72 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Haftung nach Art. 97 OR bei Nicht- oder Schlechterfüllung",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "2",
+            "2a"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die Eigentumsverhältnisse am Gebäude und die Stellung der Genossenschaft als Vertragspartnerin zu erfassen. Konzentrieren Sie sich anschliessend auf Erwägung 2, in der das Bundesgericht die Qualifikation des Architektenvertrags und die Anforderungen an den Schadensnachweis nach Art. 97 OR klärt. Beachten Sie besonders die Aussage, dass die Genossenschaft als Nicht-Eigentümerin eine Verminderung ihrer Aktiven oder eine Erhöhung ihrer Passiven nachweisen muss.",
+          "reading_guide_fr": "Lisez d'abord attentivement l'état de fait pour comprendre les rapports de propriété sur l'immeuble et la position de la coopérative en tant que partie au contrat. Concentrez-vous ensuite sur le considérant 2, dans lequel le Tribunal fédéral clarifie la qualification du contrat d'architecte et les exigences relatives à la preuve du dommage selon l'art. 97 CO. Notez en particulier que la coopérative, n'étant pas propriétaire, doit établir une diminution de ses actifs ou une augmentation de ses dettes.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Warum war die Genossenschaft (Société Coopérative X.) im vorliegenden Fall nicht Eigentümerin des erstellten Gebäudes, obwohl sie den Architektenvertrag abgeschlossen hatte?",
+              "hint": "Vgl. Sachverhalt Abschnitt A: Eigentumsverhältnisse nach dem notariellen Akt vom 26. November 1992",
+              "model_answer": "Die Genossenschaft hatte zwar zunächst einen Dreizehntelanteil an der Parzelle erworben, diesen aber an zwei Dritte abgetreten. Nach dem Notarialakt vom 26. November 1992 wurde das Gebäude als Stockwerkeigentum zwischen den dreizehn natürlichen Personen (Miteigentümern) konstituiert, wobei die Genossenschaft selbst nicht unter den Stockwerkeigentümern figurierte. Damit fehlte ihr die dingliche Berechtigung am Gebäude."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Beweislastregeln gelten nach Art. 97 OR für die klagende Partei, und welche besonderen Anforderungen stellt das Bundesgericht an den Schadensnachweis einer Genossenschaft, die nicht Eigentümerin des mangelhaften Werkes ist?",
+              "hint": "Vgl. Regeste und Erwägung 2: Beweislast beim Schadensnachweis nach Art. 97 OR",
+              "model_answer": "Nach Art. 97 OR hat die geschädigte Partei grundsätzlich den Schaden zu beweisen, während das Verschulden des Schuldners vermutet wird. Das Bundesgericht präzisiert, dass eine Genossenschaft, die nicht Eigentümerin des Gebäudes ist, nicht einfach auf die am Bauwerk festgestellten Mängel verweisen kann, sondern konkret nachweisen muss, dass ihre eigenen Aktiven vermindert oder ihre Schulden erhöht wurden. Es genügt also nicht, einen Schaden der Stockwerkeigentümer darzulegen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Nehmen Sie an, die Genossenschaft hätte nachgewiesen, dass sie aufgrund der Baumängel von den Stockwerkeigentümern erfolgreich auf Rückzahlung von Genossenschaftseinlagen in der Höhe von CHF 50'000 verklagt wurde. Würde dies den geforderten Schadensnachweis nach Art. 97 OR erbringen?",
+              "hint": "Vgl. Regeste: 'Verminderung der ihr zustehenden Ansprüche oder eine Erhöhung ihrer Schulden'",
+              "model_answer": "Ja, in diesem Szenario würde der Schadensnachweis gelingen. Eine gerichtlich festgestellte Rückzahlungspflicht gegenüber den Stockwerkeigentümern würde unmittelbar eine Erhöhung der Schulden der Genossenschaft bewirken und somit ihren eigenen Vermögensschaden konkret belegen. Dies entspricht genau dem Massstab des Bundesgerichts, das eine Verminderung der Aktiven oder eine Erhöhung der Passiven der Genossenschaft selbst verlangt, um den Schaden nach Art. 97 OR darzutun."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Gericht qualifiziert den vorliegenden Architektenvertrag als 'contrat complet' (Gesamtarchitektenvertrag) und wendet für die Haftung die Regeln des Auftragsrechts (Art. 394 ff. OR) an. Welche dogmatischen Konsequenzen hat diese Qualifikation im Vergleich zur Anwendung des Werkvertragsrechts (Art. 363 ff. OR) für die Stellung des Bauherrn?",
+              "hint": "Vgl. Erwägung 2a: Unterschied zwischen Werkvertrag und Auftrag; Haftungsmasssstab Art. 398 OR vs. Art. 368 OR",
+              "model_answer": "Im Werkvertragsrecht stehen dem Besteller bei Mängeln die spezifischen Rechtsbehelfe gemäss Art. 368 OR (Nachbesserung, Minderung, Wandelung) zur Verfügung, die einen strengeren Erfolgsbezug haben. Beim Auftrag hingegen schuldet der Beauftragte gemäss Art. 398 OR lediglich sorgfältige Ausführung, ohne einen bestimmten Erfolg zu garantieren; der Schadensnachweis nach Art. 97 OR liegt vollständig beim Auftraggeber. Die Qualifikation als Gesamtarchitektenvertrag mit auftragsrechtlicher Haftung erschwert somit die Rechtsdurchsetzung für den Bauherrn, da kein Mangelgewährleistungssystem mit Verschuldensvermutung für den Werkmangel selbst greift, sondern ein allgemeines Haftungssystem nach Art. 97 OR gilt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritisieren Sie die vom Bundesgericht entwickelte Anforderung, dass eine Genossenschaft als Vertragspartnerin des Architekten ihren eigenen Schaden (Verminderung der Aktiven oder Erhöhung der Passiven) gesondert nachweisen muss, obwohl sie den Architekten mit der Realisierung des Projekts für ihre Mitglieder beauftragt hatte. Ist diese Lösung sachgerecht?",
+              "hint": "Vgl. Regeste und Sachverhalt: Zweck der Genossenschaft, Stellung als Vertragspartei vs. Nicht-Eigentümerin",
+              "model_answer": "Die Lösung des Bundesgerichts ist dogmatisch konsequent, da nur der Vertragspartner, der selbst einen Schaden erleidet, Ersatz verlangen kann, und der Schaden der Stockwerkeigentümer von diesen direkt geltend zu machen wäre. Kritisch lässt sich jedoch anführen, dass die Genossenschaft als Instrument zur kollektiven Verwirklichung des Bauprojekts ihrer Mitglieder konzipiert war und die strikte Trennung zwischen Genossenschaftsschaden und Eigentümerschaden die Klagemöglichkeit der Genossenschaft faktisch aushöhlt, obwohl sie die vertragliche Gegenpartei des Architekten war. Eine rechtsvergleichend informierte Kritik könnte auf das Institut des Vertrages zugunsten Dritter oder auf schadensrechtliche Figuren wie den 'Drittschadensliquidation' verweisen, die eine flexiblere Zurechnung des Schadens ermöglichen würden."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Genossenschaft hätte im Innenverhältnis gegenüber den Stockwerkeigentümern vertraglich zugesichert, dass sie bei allfälligen Baumängeln die Haftung gegenüber dem Architekten vollumfänglich übernimmt und den Erlös an die Eigentümer weiterleitet. Würde eine solche Vereinbarung den Schadensnachweis der Genossenschaft gegenüber dem Architekten erleichtern?",
+              "discussion_points": [
+                "Wirkung einer internen Haftungsübernahmevereinbarung auf den Aussenrechtsweg nach Art. 97 OR",
+                "Frage, ob eine solche Vereinbarung die Passiven der Genossenschaft erhöht und damit einen eigenen Schaden begründet"
+              ],
+              "likely_outcome_shift": "Eine vertragliche Verpflichtung der Genossenschaft gegenüber den Eigentümern zur Schadensdeckung würde ihre Passiven erhöhen und könnte damit den vom Bundesgericht geforderten Schadensnachweis erfüllen. Das Gericht müsste jedoch prüfen, ob diese interne Vereinbarung rechtswirksam und hinreichend konkret ist, um als nachgewiesener Schaden im Sinne von Art. 97 OR zu gelten. Im Ergebnis würde dies die Erfolgsaussichten der Genossenschaft deutlich verbessern."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Genossenschaft, sondern einer der einzelnen Stockwerkeigentümer direkt gegen den Architekten geklagt hätte, obwohl der Architektenvertrag ausschliesslich mit der Genossenschaft abgeschlossen worden war?",
+              "discussion_points": [
+                "Relativität der Schuldverhältnisse: Fehlende Vertragsbeziehung zwischen Stockwerkeigentümer und Architekt",
+                "Möglichkeit einer Drittschadensliquidation oder Ansprüche aus unerlaubter Handlung (Art. 41 OR) als alternative Anspruchsgrundlagen"
+              ],
+              "likely_outcome_shift": "Da kein direktes Vertragsverhältnis zwischen dem einzelnen Stockwerkeigentümer und dem Architekten besteht, würde eine Klage nach Art. 97 OR mangels Aktivlegitimation scheitern. Der Eigentümer müsste seinen Anspruch entweder auf Art. 41 OR (ausservertragliche Haftung) stützen, wobei die Widerrechtlichkeit gesondert nachzuweisen wäre, oder eine Abtretung der Ansprüche der Genossenschaft erwirken, was die Prozessführung erheblich erschwert."
+            }
+          ],
+          "reading_guide_it": "Leggere attentamente i fatti per comprendere i rapporti di proprietà sull'edificio e la posizione della cooperativa come parte contrattuale. Concentrarsi poi sul considerando 2, in cui il Tribunale federale chiarisce la qualificazione del contratto d'architetto e i requisiti della prova del danno ai sensi dell'art. 97 CO, in particolare l'obbligo per la cooperativa non proprietaria di dimostrare una diminuzione degli attivi o un aumento dei passivi.",
+          "significance_fr": "Cet arrêt de principe établit que la coopérative, en tant que maître de l'ouvrage non propriétaire de l'immeuble construit, doit prouver un dommage propre (diminution de ses actifs ou augmentation de ses dettes) pour fonder une action en responsabilité contre l'architecte selon l'art. 97 CO.",
+          "significance_it": "Questa sentenza di principio stabilisce che la cooperativa committente, non essendo proprietaria dell'edificio costruito, deve provare un proprio danno (diminuzione degli attivi o aumento dei passivi) per fondare un'azione di responsabilità contro l'architetto ai sensi dell'art. 97 CO."
         },
         {
           "decision_id": "bge_123 III 16",
@@ -425,12 +733,72 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Bedeutung und Ausübung der Wahlmöglichkeiten nach Art. 107 OR bei Schuldnerverzug",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "2",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die chronologische Abfolge der Erklärungen beider Parteien zu verstehen. Konzentrieren Sie sich dann auf Erwägung 2 zur Einrede der abgeurteilten Sache und auf Erwägung 4 zur Bedeutung, Auslegung und Unwiderruflichkeit der Wahlerklärung nach Art. 107 OR; diese beiden Erwägungen bilden den dogmatischen Kern des Entscheids.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat M. mit seinem Schreiben vom 26. November 1993 erklärt, und welche rechtliche Bedeutung kommt dieser Erklärung im Rahmen von Art. 107 OR zu?",
+              "hint": "Sachverhalt, S. 17–18: Schreiben vom 26. November 1993 und Rücktrittserklärung vom 17. Juni 1994",
+              "model_answer": "M. verzichtete mit dem Schreiben vom 26. November 1993 auf die Leistung der Verkäufer und behielt sich Schadenersatz vor. Im Rahmen von Art. 107 OR entspricht dies der Ausübung des Wahlrechts des Gläubigers bei Schuldnerverzug: Der Gläubiger kann entweder auf Erfüllung bestehen oder auf die Leistung verzichten und stattdessen Schadenersatz verlangen. M. hat damit eine der Optionen des Art. 107 OR gewählt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Wahlmöglichkeiten stehen dem Gläubiger gemäss Art. 107 OR bei Verzug des Schuldners zur Verfügung, und unter welchen Voraussetzungen kann er diese ausüben?",
+              "hint": "Regeste sowie Erwägung 4: Bedeutung der Wahlmöglichkeiten und Auslegung der Wahlerklärung",
+              "model_answer": "Art. 107 OR gibt dem Gläubiger nach fruchtlosem Ablauf einer angesetzten Nachfrist zwei Optionen: Er kann weiterhin auf Erfüllung bestehen und zusätzlich Schadenersatz wegen Verzugs verlangen, oder er kann auf die Erfüllung verzichten und entweder Ersatz des aus dem Dahinfallen des Vertrags entstehenden Schadens verlangen oder vom Vertrag zurücktreten. Voraussetzung ist, dass der Schuldner in Verzug ist und eine angemessene Nachfrist ungenutzt verstrichen ist. Die Wahl muss dem Schuldner gegenüber erklärt werden."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "M. erklärte zunächst den Verzicht auf die Leistung (November 1993), bezahlte danach dennoch den Kaufpreis und erklärte anschliessend erneut den Rücktritt (Juni 1994). Wie ist diese Abfolge von Erklärungen nach Art. 107 OR rechtlich zu beurteilen?",
+              "hint": "Sachverhalt S. 17–18 und Erwägung 4 zur Unwiderruflichkeit der getroffenen Wahl",
+              "model_answer": "Das Bundesgericht betont in Erwägung 4 die Unwiderruflichkeit der einmal getroffenen Wahl nach Art. 107 OR. Hat M. mit dem Schreiben vom November 1993 wirksam auf die Leistung verzichtet, so ist diese Wahl grundsätzlich bindend und kann nicht einseitig widerrufen werden. Die spätere Zahlung des Kaufpreises und die erneute Rücktrittserklärung vom Juni 1994 werfen daher die Frage auf, ob die erste Wahlerklärung überhaupt wirksam war oder ob eine neue Ausgangslage entstanden ist, die eine neue Wahlmöglichkeit begründet."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Die Beklagten erhoben die Einrede der abgeurteilten Sache. Weshalb lehnte das Bundesgericht diese Einrede ab, und welche Unterschiede bestehen zwischen dem Streitgegenstand des ersten und des zweiten Prozesses?",
+              "hint": "Erwägung 2, insbesondere zur Anspruchsidentität und zur objektiven Begrenzung der materiellen Rechtskraft durch den Streitgegenstand",
+              "model_answer": "Das Bundesgericht unterscheidet klar zwischen dem Streitgegenstand des ersten Prozesses (Kaufpreisforderung der Erben E. gegen M.) und jenem des zweiten (Rückforderungsanspruch von M. gegen die Erben E. nach erklärtem Rücktritt). Obwohl beide Verfahren denselben Kaufvertrag betreffen, sind der Rechtsgrund und die gestellten Begehren verschieden. Die materielle Rechtskraft des ersten Urteils erstreckt sich nur auf das damals beurteilte Begehren und erfasst nicht die im zweiten Prozess geltend gemachten Rückforderungs- und Schadenersatzansprüche, die erst nach dem ersten Urteil entstanden sind."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht bekräftigt die Unwiderruflichkeit der Wahlentscheidung nach Art. 107 OR. Ist diese Rechtsfolge rechtspolitisch überzeugend, oder sollte dem Gläubiger unter bestimmten Umständen eine Korrektur seiner Wahl ermöglicht werden?",
+              "hint": "Erwägung 4 zur Unwiderruflichkeit sowie die Interessenlage beider Parteien im vorliegenden Sachverhalt",
+              "model_answer": "Die Unwiderruflichkeit der Wahl schützt den Schuldner vor Rechtsunsicherheit und vor missbräuchlichen taktischen Erklärungen des Gläubigers; sie fördert ausserdem die Rechtssicherheit und Klarheit im Schuldverhältnis. Allerdings kann die starre Unwiderruflichkeit im Einzelfall unbillig erscheinen, etwa wenn der Gläubiger seine Wahl aufgrund falscher Vorstellungen über den Sachverhalt getroffen hat oder wenn sich die Verhältnisse nach der Wahlerklärung wesentlich verändert haben. Eine differenzierte Lösung, die eine Anfechtung der Wahlerklärung wegen Willensmängeln zulässt, würde beiden Interessen gerechter werden, ohne den Schutz des Schuldners vollständig aufzugeben."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, M. hätte nach seinem Verzicht auf die Leistung (November 1993) nachgewiesen, dass die Erben E. die Nichtherausgabe der Patientinnenunterlagen arglistig herbeigeführt haben, um den Rücktritt zu provozieren und gleichzeitig den bereits rechtskräftig zugesprochenen Kaufpreis zu behalten. Würde dies an der Unwiderruflichkeit der Wahl nach Art. 107 OR etwas ändern?",
+              "discussion_points": [
+                "Kann eine Wahlerklärung nach Art. 107 OR wegen Willensmängeln (insbesondere arglistiger Täuschung nach Art. 28 OR) angefochten werden?",
+                "Steht der Grundsatz von Treu und Glauben (Art. 2 ZGB) der strikten Durchsetzung der Unwiderruflichkeit entgegen, wenn der Schuldner den Eintritt des Verzugs selbst provoziert hat?"
+              ],
+              "likely_outcome_shift": "Die arglistige Herbeiführung des Verzugs durch die Verkäufer könnte die Berufung auf die Unwiderruflichkeit der Wahlerklärung als rechtsmissbräuchlich erscheinen lassen (Art. 2 Abs. 2 ZGB). Das Gericht müsste prüfen, ob M. seine Wahlerklärung wegen Täuschung anfechten kann, was ihm erlauben würde, erneut Erfüllung zu verlangen oder zumindest den Schadenersatzanspruch anders zu berechnen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie würde sich die Rechtslage verändern, wenn nicht der Käufer (M.), sondern die Verkäufer (Erben E.) in Verzug geraten wären, weil sie die Patientinnenunterlagen nicht geliefert hätten, obwohl M. den Kaufpreis bereits im Voraus vollständig bezahlt hatte?",
+              "discussion_points": [
+                "Wäre die Einrede der abgeurteilten Sache in einem Folgeprozess von M. auf Schadenersatz ebenso zu prüfen, wenn der erste Prozess von den Erben E. auf Kaufpreiszahlung geführt worden wäre?",
+                "Inwiefern beeinflusst die Vorleistungspflicht des Käufers die Ausübung des Wahlrechts nach Art. 107 OR, und ab welchem Zeitpunkt geraten die Verkäufer in Verzug?"
+              ],
+              "likely_outcome_shift": "Bei bereits vollständig erbrachter Vorleistung durch M. wäre seine Position als Gläubiger der Sachleistung gestärkt, da kein Synallagma mehr offen stünde. Die Erben E. befänden sich klar im Schuldnerverzug hinsichtlich der Herausgabepflicht, und M. könnte ohne weiteres die Optionen von Art. 107 OR ausüben, ohne dass das Synallagma die Auslegung seiner Wahlerklärung komplizieren würde."
+            }
+          ],
+          "reading_guide_fr": "Lisez d'abord attentivement les faits afin de saisir la chronologie des déclarations des deux parties. Concentrez-vous ensuite sur le considérant 2 relatif à l'exception de chose jugée et sur le considérant 4 concernant la portée, l'interprétation et l'irrévocabilité de la déclaration d'option au sens de l'art. 107 CO; ces deux considérants constituent le cœur dogmatique de l'arrêt.",
+          "reading_guide_it": "Si raccomanda di leggere dapprima attentamente i fatti per comprendere la sequenza cronologica delle dichiarazioni delle parti. Ci si concentri poi sul considerando 2 relativo all'eccezione di cosa giudicata e sul considerando 4 concernente il significato, l'interpretazione e l'irrevocabilità della dichiarazione di scelta ai sensi dell'art. 107 CO, che costituiscono il nucleo dogmatico della decisione.",
+          "significance_fr": "Cet arrêt précise la portée du droit d'option du créancier en cas de demeure du débiteur selon l'art. 107 CO, en consacrant notamment le principe de l'irrévocabilité de la déclaration d'option une fois celle-ci exercée, et en délimitant les effets de la chose jugée dans les litiges successifs nés du même contrat.",
+          "significance_it": "La sentenza chiarisce la portata del diritto di scelta del creditore in caso di mora del debitore ai sensi dell'art. 107 CO, sancendo in particolare il principio dell'irrevocabilità della dichiarazione di scelta una volta esercitata, e delimitando gli effetti della cosa giudicata nelle controversie successive sorte dallo stesso contratto."
         }
       ]
     }

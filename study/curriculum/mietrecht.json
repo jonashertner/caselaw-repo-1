@@ -40,13 +40,73 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Methodik der Überprüfung des Anfangsmietzinses; Anforderungen an den Nachweis der Orts- und Quartierüblichkeit",
-          "significance_fr": "Méthodologie du contrôle du loyer initial; exigences de preuve pour les loyers du quartier",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise les exigences auxquelles doit satisfaire la méthode des cinq appartements comparables pour établir les loyers usuels du quartier au sens de l'art. 269a lit. a CO, et délimite la portée du principe inquisitoire social devant les instances cantonales.",
+          "key_erwagungen": [
+            "2.2",
+            "2.2.3",
+            "2.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (A.a–B.), um die mietrechtliche Ausgangskonstellation (Mietzinssenkungsbegehren, Einwand der Quartierüblichkeit) zu verstehen. Konzentrieren Sie sich dann auf Erwägung 2.2 (Begriff und Beweismass der quartierüblichen Mietzinse), Erwägung 2.2.3 (Anforderungen an die Methode der fünf Vergleichswohnungen) und Erwägung 2.3 (Tragweite der sozialen Untersuchungsmaxime in erster Instanz und im Berufungsverfahren).",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 141 III 569 unter dem Begriff der «quartierüblichen Mietzinse» und welche Funktion erfüllt dieser Begriff im Mietrecht?",
+              "hint": "Vgl. Regeste und Erwägung 2.2 des Entscheids",
+              "model_answer": "Quartierübliche Mietzinse sind jene Mieten, die für vergleichbare Wohnungen in der gleichen Ortschaft oder im gleichen Quartier tatsächlich bezahlt werden. Gemäss Art. 269a lit. a OR gilt ein Mietzins als nicht missbräuchlich, wenn er im Rahmen der orts- und quartierüblichen Mietzinsen liegt. Der Begriff dient als Korrektiv zur kostenbasierten Methode und erlaubt dem Vermieter, einen höheren Mietzins zu rechtfertigen, sofern dieser dem Marktniveau entspricht."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen und verordnungsrechtlichen Grundlagen regeln die Methode der fünf Vergleichswohnungen, und welche konkreten Anforderungen stellt Art. 11 VMWG (OBLF) an die Vergleichsobjekte?",
+              "hint": "Vgl. Art. 269a lit. a OR, Art. 11 VMWG sowie Erwägung 2.2.3",
+              "model_answer": "Art. 269a lit. a OR erklärt einen Mietzins als nicht missbräuchlich, wenn er im Rahmen der orts- und quartierüblichen Mietzinsen liegt. Art. 11 VMWG konkretisiert, dass Vergleichswohnungen hinsichtlich Lage, Grösse, Ausstattung, Zustand und Baujahr mit dem streitgegenständlichen Objekt vergleichbar sein müssen. Für die Methode der fünf Vergleichswohnungen verlangt das Bundesgericht mindestens fünf tatsächlich vergleichbare Objekte, deren Merkmale und Mietzinse konkret nachgewiesen werden müssen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Im vorliegenden Fall hat die Vermieterin Vergleichswohnungen angeführt, um den Einwand der Quartierüblichkeit zu begründen. Weshalb hat das Bundesgericht diesen Einwand im Ergebnis verworfen, und welche Anforderungen hätte die Vermieterin erfüllen müssen?",
+              "hint": "Vgl. Sachverhalt unter B. sowie Erwägung 2.2.3",
+              "model_answer": "Das Bundesgericht hat den Einwand verworfen, weil die Vermieterin die Vergleichswohnungen nicht hinreichend konkret und nachweisbar belegt hat. Sie hätte nicht nur die Adressen, sondern auch die genauen Merkmale (Lage, Grösse, Ausstattung, Zustand, Baujahr) sowie die tatsächlich bezahlten Mietzinse der mindestens fünf Vergleichsobjekte substanziiert darlegen und dokumentieren müssen. Ohne diese konkreten Nachweise kann der Einwand der Quartierüblichkeit nicht erfolgreich erhoben werden."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht befasst sich in Erwägung 2.3 mit der beschränkten (sozialen) Untersuchungsmaxime. Inwiefern unterscheidet sich deren Tragweite vor erster Instanz von jener im Berufungsverfahren, und welche Konsequenzen ergeben sich daraus für die Beweisführungslast der Parteien?",
+              "hint": "Vgl. Erwägung 2.3 sowie Art. 243 Abs. 2 lit. c und Art. 247 Abs. 2 lit. a ZPO",
+              "model_answer": "Die soziale Untersuchungsmaxime gemäss Art. 247 Abs. 2 lit. a ZPO verpflichtet das erstinstanzliche Gericht, den Sachverhalt von Amtes wegen zu ergänzen, wenn die Parteien – häufig rechtsunkundige Mieter oder Vermieter – unvollständige Angaben machen. Im Berufungsverfahren gilt diese erhöhte gerichtliche Mitwirkungspflicht hingegen nicht in gleicher Weise, weshalb die Parteien neue Behauptungen nur unter den restriktiven Voraussetzungen von Art. 317 ZPO einbringen können. Daraus folgt, dass eine Partei, die in erster Instanz trotz gerichtlicher Aufforderung relevante Beweise nicht beibringt, diese im Rechtsmittelverfahren grundsätzlich nicht mehr nachholen kann."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritiker argumentieren, die strenge Anforderung an den Nachweis von fünf Vergleichswohnungen erschwere es Vermietern unverhältnismässig, den Einwand der Quartierüblichkeit erfolgreich zu erheben. Wie beurteilen Sie diese Kritik im Licht des Schutzzwecks des Mietrechts und der prozessualen Rahmenbedingungen?",
+              "hint": "Vgl. Erwägungen 2.2 und 2.2.3 sowie den Zweck von Art. 270 OR und Art. 269a lit. a OR",
+              "model_answer": "Die Kritik hat einen gewissen Kern, denn in engen Wohnungsmärkten mit hoher Fluktuation sind tatsächlich vergleichbare Objekte mit dokumentierten Mietzinsen schwer zu finden. Andererseits ist die strenge Anforderung sachlich gerechtfertigt, weil Art. 269a lit. a OR als Ausnahmetatbestand vom Grundsatz des kostendeckenden Mietzinses konzipiert ist und eine belastbare Marktüblichkeit nur durch konkrete Vergleichsdaten nachgewiesen werden kann. Die soziale Untersuchungsmaxime mildert zudem die Beweisführungslast, indem das Gericht die beweisbelastete Partei aktiv zur Vorlage geeigneter Belege auffordert, was einen angemessenen Ausgleich darstellt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Vermieterin hätte fünf Vergleichswohnungen im gleichen Quartier benennen können, aber drei davon befanden sich in einem Neubau aus dem Jahr 2010, während das streitgegenständliche Objekt aus dem Jahr 1958 stammt. Würde dies den Einwand der Quartierüblichkeit retten?",
+              "discussion_points": [
+                "Art. 11 Abs. 1 VMWG verlangt Vergleichbarkeit hinsichtlich Baujahr – ein erheblicher Altersunterschied beeinträchtigt die Vergleichbarkeit",
+                "Das Gericht müsste prüfen, ob Ausstattung und Zustand des Neubaus so angepasst werden könnten, dass sie mit dem Altbau vergleichbar sind, etwa durch Abzüge oder Korrekturen"
+              ],
+              "likely_outcome_shift": "Der Einwand der Quartierüblichkeit würde voraussichtlich scheitern oder zumindest erheblich geschwächt, weil Neubauten strukturell höhere Mieten rechtfertigen und damit kein repräsentatives Bild des relevanten Marktsegments für Altbauwohnungen liefern. Das Gericht hätte allenfalls die drei Neubauwohnungen aus der Vergleichsgruppe auszuscheiden, wodurch die verbleibenden zwei Objekte für eine zuverlässige Marktüblichkeitsbeurteilung nicht mehr ausreichten."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht die Mieterin hätte eine Mietzinssenkung verlangt, sondern die Vermieterin hätte bei Beginn eines neuen Mietverhältnisses einen gegenüber dem Vormieter erhöhten Anfangsmietzins festgesetzt, und die neue Mieterin hätte diesen nach Art. 270 OR angefochten. Wie würde sich die Beweislastverteilung und die Anwendung der Methode der fünf Vergleichswohnungen verändern?",
+              "discussion_points": [
+                "Bei der Anfechtung des Anfangsmietzinses nach Art. 270 OR trägt die Mieterin zunächst die Beweislast für die Missbräuchlichkeit, während die Vermieterin den Einwand der Quartierüblichkeit substanziiert darlegen muss",
+                "Die Methodik der fünf Vergleichswohnungen gilt gleichermassen, doch der Fokus verschiebt sich auf den Zeitpunkt des Vertragsabschlusses und den damaligen Marktpreis"
+              ],
+              "likely_outcome_shift": "Die Grundsätze von BGE 141 III 569 zur Methode der fünf Vergleichswohnungen und zum Beweismass würden unverändert gelten, da Art. 269a lit. a OR in beiden Konstellationen anwendbar ist. Allerdings wäre die Ausgangslage für die Vermieterin tendenziell günstiger, weil ein aktuell erhobener Marktmietzins bei Vertragsabschluss leichter durch zeitnahe Vergleichsdaten belegt werden kann als ein historisch fixierter und im Laufe der Zeit gesunkener Mietzins."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les faits (A.a–B.) afin de saisir la situation de droit du bail (demande de réduction de loyer, exception des loyers usuels du quartier). Concentrez-vous ensuite sur le considérant 2.2 (notion et fardeau de la preuve des loyers usuels du quartier), le considérant 2.2.3 (exigences de la méthode des cinq appartements comparables) et le considérant 2.3 (portée du principe inquisitoire social en première instance et en appel).",
+          "reading_guide_it": "Iniziate leggendo i fatti (A.a–B.) per comprendere il contesto della locazione (richiesta di riduzione del canone, eccezione dei canoni usuali del quartiere). Concentratevi poi sul considerando 2.2 (nozione e onere della prova dei canoni usuali), sul considerando 2.2.3 (requisiti del metodo dei cinque appartamenti di confronto) e sul considerando 2.3 (portata del principio inquisitorio sociale in prima istanza e in appello).",
+          "significance_it": "Questa sentenza precisa i requisiti del metodo dei cinque appartamenti di confronto per dimostrare i canoni usuali del quartiere ai sensi dell'art. 269a lett. a CO e delimita la portata del principio inquisitorio sociale davanti alle istanze cantonali."
         },
         {
           "decision_id": "bge_140 III 433",
@@ -74,13 +134,74 @@
             "bge_141 III 569"
           ],
           "significance_de": "Berechnung der zulässigen Nettorendite; Referenzzinssatz als Berechnungsgrundlage",
-          "significance_fr": "Calcul du rendement net admissible; taux de référence comme base de calcul",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise les critères de distinction entre immeubles anciens et récents en droit du bail et établit les règles de calcul du taux d'intérêt applicable aux investissements d'entretien extraordinaire dans le cadre du rendement net admissible selon l'art. 269 CO.",
+          "key_erwagungen": [
+            "3",
+            "3.1",
+            "3.1.1",
+            "3.5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 3, um die grundlegenden Normen (Art. 269 und 269a OR) und die Wechselwirkung zwischen absoluten und relativen Mietzinsanpassungsgründen zu verstehen. Vertiefen Sie anschliessend E. 3.1 und E. 3.1.1, welche die zentrale Frage der Abgrenzung zwischen Altliegenschaft und Neubau sowie die fehlende zahlenmässige Grenze behandeln, und beachten Sie schliesslich E. 3.5 zur Bestimmung des Verzinsungssatzes für das für ausserordentlichen Unterhalt aufgewendete Kapital.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Begriff der 'Altliegenschaft' im Sinne des Mietrechts, und warum spielt diese Qualifikation für die Wahl der Berechnungsmethode des Mietzinses eine entscheidende Rolle?",
+              "hint": "Vgl. E. 3.1, wo das Bundesgericht die Rechtsprechung zu Altliegenschaften zusammenfasst und die Gründe für den Vorrang der Orts- oder Quartierüblichkeit bei solchen Liegenschaften erläutert.",
+              "model_answer": "Eine Altliegenschaft ist nach der bundesgerichtlichen Rechtsprechung eine Liegenschaft, die vor mehreren Jahrzehnten gebaut oder erworben worden ist. Bei solchen Objekten fehlen oft die Belege zur Feststellung des investierten Eigenkapitals, oder deren Verwendung führt zu wirtschaftlich unrealistischen Ergebnissen bei der Nettorenditeberechnung. Deshalb tritt bei Altliegenschaften die Anpassung an die Orts- oder Quartierüblichkeit (Art. 269a lit. a OR) gegenüber der Kostenmiete (Nettorendite nach Art. 269 OR) in den Vordergrund."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen des OR regeln die Zulässigkeit von Mietzinsen, und wie verteilen Art. 269 OR und Art. 269a OR die Beweislast zwischen Vermieter und Mieter?",
+              "hint": "Vgl. E. 3 sowie die im Urteil zitierten Normen; insbesondere die Formulierung, dass Mietzinse 'in der Regel' nicht missbräuchlich sind, wenn die Voraussetzungen von Art. 269a OR erfüllt sind.",
+              "model_answer": "Art. 269 OR statuiert das grundsätzliche Verbot missbräuchlicher Mietzinse, insbesondere solcher, die einen übersetzten Ertrag aus der Mietsache erzielen. Art. 269a OR enthält demgegenüber Vermutungstatbestände, bei deren Erfüllung ein Mietzins 'in der Regel' als nicht missbräuchlich gilt, etwa bei Orts- oder Quartierüblichkeit (lit. a) oder kostendeckenden Erhöhungen (lit. b). Unbestritten ist im vorliegenden Fall, dass sowohl Mieter als auch Vermieter gegenüber einem auf einen relativen Grund gestützten Mietzinsanpassungsbegehren einredeweise einen absoluten Anpassungsgrund geltend machen können, d.h. der Mieter kann die Vermutung nach Art. 269a lit. a OR durch den Nachweis eines übersetzten Ertrags widerlegen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Eine Vermieterin saniert eine 30 Jahre alte Liegenschaft umfassend und begehrt gestützt auf wertvermehrende Investitionen eine Mietzinserhöhung. Der Mieter wendet einen übersetzten Ertrag ein. Welche Berechnungsmethode ist nach BGE 140 III 433 vorrangig anzuwenden, und wie ist dabei der Zinssatz für das für ausserordentlichen Unterhalt aufgewendete Kapital zu bestimmen?",
+              "hint": "Vgl. E. 3.1 zur Frage der Altliegenschaft und E. 3.5 zur Verzinsung des für ausserordentlichen Unterhalt aufgewendeten Kapitals.",
+              "model_answer": "Da eine 30-jährige Liegenschaft unter Umständen als Altliegenschaft qualifiziert werden könnte, stellt sich zunächst die Frage, ob die Orts- oder Quartierüblichkeit oder die Kostenmiete vorrangig anzuwenden ist; das Bundesgericht hat eine 26- bis 27-jährige Liegenschaft nicht als Altliegenschaft qualifiziert, was auf eine ähnliche Beurteilung einer 30-jährigen Liegenschaft hindeuten kann. Wird die Kostenmiete (Nettorendite) herangezogen, ist gemäss E. 3.5 für die Verzinsung des für ausserordentlichen Unterhalt bzw. den werterhaltenden Teil umfassender Sanierungen aufgewendeten Kapitals ein am Referenzzinssatz orientierter Satz massgebend. Die genaue Bestimmung dieses Satzes richtet sich nach den im Urteil entwickelten Grundsätzen, wobei der Referenzzinssatz als Berechnungsgrundlage dient."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht hat sich bisher nicht zahlenmässig festgelegt, wie alt eine Liegenschaft sein muss, um als Altliegenschaft zu gelten. Welche Spannungsfelder und Wertungswidersprüche entstehen aus dieser offenen Rechtslage, und welche Interessenkonflikte zwischen Vermietern und Mietern werden dadurch perpetuiert?",
+              "hint": "Vgl. E. 3.1.1, wo das Bundesgericht das Fehlen einer expliziten Altersgrenze einräumt, sowie die Argumentation der Beschwerdegegner zur engen Auslegung des Altbaubegriffs.",
+              "model_answer": "Die fehlende zahlenmässige Definition des Altliegenschaftsbegriffs schafft Rechtsunsicherheit: Vermieter haben einen Anreiz, die Altliegenschaftsqualifikation zu bejahen, um vom tendenziell vorteilhafteren Vergleich mit orts- und quartierüblichen Mietzinsen zu profitieren, während Mieter eine enge Auslegung bevorzugen, um die strengere Nettorenditenberechnung durchzusetzen. Dies führt zu einer opportunistischen Vermischung der Methoden, die – wie die Beschwerdegegner zutreffend rügen – den gesetzgeberisch intendierten Vorrang der Kostenmiete untergräbt. Zugleich besteht das Risiko, dass ältere Liegenschaften je nach Einzelfallbeurteilung unterschiedlich behandelt werden, was dem Grundsatz der Rechtssicherheit und der Gleichbehandlung von Mietverhältnissen widerspricht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht entwickelte Unterscheidung zwischen Altliegenschaften (Vorrang der Orts- oder Quartierüblichkeit) und neueren Liegenschaften (Vorrang der Kostenmiete bzw. Nettorendite) rechtspolitisch überzeugend, und welche alternativen Regelungsmodelle wären denkbar?",
+              "hint": "Vgl. E. 3.1 zur ratio legis der Altliegenschaftsregelung (Schutz langjähriger Eigentümer, Vermeidung wirtschaftlich unrealistischer Ergebnisse) sowie die kritischen Einwände der Beschwerdegegner.",
+              "model_answer": "Die Unterscheidung ist rechtspolitisch ambivalent: Einerseits erscheint sie pragmatisch gerechtfertigt, weil bei sehr alten Liegenschaften Eigenkapitalnachweise tatsächlich fehlen oder zu verzerrten Ergebnissen führen können und eine Benachteiligung langjähriger Eigentümer gegenüber Neuerwerbern vermieden werden soll. Andererseits begünstigt die Unschärfe des Begriffs 'Altliegenschaft' strategisches Verhalten und kann dazu führen, dass Vermieter die Methode wählen, die ihnen den höheren Mietzins ermöglicht, was den Mieterschutz aushöhlt. Als Alternative wäre eine gesetzliche Fixierung einer Altersgrenze (z.B. 30 oder 40 Jahre) denkbar, oder ein einheitliches Berechnungsmodell, das Indexierungen des Eigenkapitals erlaubt und so wirtschaftlich realistische Ergebnisse auch bei älteren Liegenschaften sicherstellt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Liegenschaft zwar 26 Jahre alt wäre, der aktuelle Vermieter sie jedoch erst vor zwei Jahren erworben hätte und den Kaufpreis als Eigenkapitalbasis für die Nettorenditeberechnung geltend macht? Verändert sich die Beurteilung, ob Orts- oder Quartierüblichkeit oder Kostenmiete vorrangig anzuwenden ist?",
+              "discussion_points": [
+                "Massgeblichkeit des Erwerbszeitpunkts versus des Baujahrs für die Altliegenschaftsqualifikation",
+                "Risiko einer opportunistischen Neubewertung des Eigenkapitals beim Eigentümerwechsel zulasten der Mieter"
+              ],
+              "likely_outcome_shift": "Da das Bundesgericht in E. 3.1 sowohl das Baudatum als auch das Erwerbsdatum als relevant bezeichnet ('gebaut oder erworben'), könnte ein erst vor zwei Jahren erfolgter Erwerb dazu führen, dass trotz des hohen Alters der Liegenschaft die Nettorenditeberechnung auf Basis des Kaufpreises angewendet wird. Dies würde jedoch das rechtspolitische Ziel, wirtschaftlich unrealistische Ergebnisse zu vermeiden, gefährden, da ein aktueller Kaufpreis eine realistische Eigenkapitalbasis darstellt – anders als historische Anschaffungskosten. Das Ergebnis hinge letztlich davon ab, ob die Gerichte den Schwerpunkt auf das Baujahr oder den Erwerbszeitpunkt legen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht der Mieter, sondern der Vermieter beruft sich auf die Nettorenditeberechnung nach Art. 269 OR, weil die orts- und quartierüblichen Mietzinse deutlich unter der erzielbaren Kostenmiete liegen und er eine Mietzinserhöhung anstrebt. Kann der Vermieter in dieser Konstellation die Einrede des 'zu tiefen Ertrags' erheben?",
+              "discussion_points": [
+                "Symmetrie der Einredemöglichkeiten: Gilt die Möglichkeit, einredeweise absolute Anpassungsgründe geltend zu machen, auch zugunsten des Vermieters?",
+                "Schutzrichtung von Art. 269 OR: Ist die Missbrauchsgesetzgebung primär auf den Mieterschutz ausgerichtet, oder schützt sie auch Vermieterinteressen?"
+              ],
+              "likely_outcome_shift": "Nach der in E. 3 zitierten Rechtsprechung (BGE 121 III 163) können sowohl Mieter als auch Vermieter gegenüber einem relativen Anpassungsbegehren einredeweise absolute Anpassungsgründe vorbringen. Allerdings ist Art. 269 OR primär als Missbrauchsverbot zum Schutz der Mieter konzipiert; ein 'zu tiefer Ertrag' ist im Gesetz nicht explizit als Missbrauchstatbestand vorgesehen. Der Vermieter müsste daher auf Art. 269a lit. a OR (Orts- oder Quartierüblichkeit) abstellen und könnte nicht direkt eine Unterschreitung der Kostenmiete als Anpassungsgrund geltend machen."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le considérant 3 pour saisir les normes de base (art. 269 et 269a CO) et l'articulation entre motifs absolus et relatifs d'adaptation du loyer. Approfondissez ensuite les considérants 3.1 et 3.1.1, qui traitent de la question centrale de la distinction entre immeuble ancien et immeuble récent et de l'absence de seuil d'âge chiffré, puis consultez le considérant 3.5 sur la détermination du taux d'intérêt applicable aux frais d'entretien extraordinaire.",
+          "reading_guide_it": "Iniziate con la lettura del considerando 3 per comprendere le norme fondamentali (art. 269 e 269a CO) e l'interazione tra motivi assoluti e relativi di adeguamento della pigione. Approfondite poi i considerandi 3.1 e 3.1.1, che affrontano la distinzione tra immobile antico e di nuova costruzione e l'assenza di una soglia d'età numerica, e infine il considerando 3.5 sul tasso d'interesse applicabile alle spese di manutenzione straordinaria.",
+          "significance_it": "Questa sentenza chiarisce i criteri per distinguere gli immobili antichi da quelli recenti nel diritto della locazione e stabilisce le regole per il calcolo del tasso d'interesse applicabile agli investimenti di manutenzione straordinaria nell'ambito del rendimento netto ammissibile ai sensi dell'art. 269 CO."
         }
       ]
     },
@@ -118,13 +239,72 @@
           "difficulty": 1,
           "prerequisites": [],
           "significance_de": "Voraussetzungen der Kündigung wegen Zahlungsrückstands nach Art. 257d OR; Anforderungen an die Mahnung",
-          "significance_fr": "Conditions de résiliation pour défaut de paiement selon l'art. 257d CO; exigences de la mise en demeure",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise les conditions auxquelles un bailleur peut valablement résilier un bail en vue de travaux de transformation ou de rénovation, en exigeant notamment qu'un projet suffisamment concret et élaboré existe au moment de la résiliation afin que le locataire puisse en apprécier la nécessité (art. 271 CO).",
+          "key_erwagungen": [
+            "3.2",
+            "3.2.1"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 91–92), um die vertragliche Konstellation und den Kündigungsanlass zu verstehen. Konzentrieren Sie sich sodann auf Erwägung 3.2.1 (S. 92–93), in der das Bundesgericht die allgemeinen Grundsätze zur Treuwidrigkeit einer Kündigung und die spezifischen Anforderungen an das Vorliegen eines genügend konkreten Bauprojekts entwickelt.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der Grund, den die Vermieterin im Kündigungsschreiben vom 21. November 2013 für die Kündigung des Mietverhältnisses angegeben hat?",
+              "hint": "Sachverhalt A, S. 91",
+              "model_answer": "Die Vermieterin begründete die Kündigung damit, dass ein Architekturwettbewerb durchgeführt werde und verschiedene Nutzungsmöglichkeiten geprüft würden. Sie wollte sich als Eigentümerin der Liegenschaft für das 'umfassende Bauvorhaben' sämtliche Optionen offenhalten. Ein konkretes, ausgearbeitetes Bauprojekt wurde dabei nicht vorgelegt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche rechtlichen Voraussetzungen nennt das Bundesgericht in E. 3.2.1 für die Gültigkeit einer Kündigung im Hinblick auf Umbau- oder Renovationsarbeiten?",
+              "hint": "Erwägung 3.2.1, S. 92–93",
+              "model_answer": "Das Bundesgericht verlangt erstens, dass der Verbleib des Mieters die geplanten Arbeiten erheblich erschweren oder verzögern würde. Zweitens muss das Projekt des Vermieters realitätsnah und objektiv möglich sein, insbesondere darf es nicht offensichtlich mit öffentlichem Recht unvereinbar sein. Drittens muss der Vermieter im Zeitpunkt der Kündigung über ein genügend ausgereiftes und ausgearbeitetes Projekt verfügen, damit der Mieter beurteilen kann, ob eine Räumung erforderlich ist."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Vermieter kündigt einen Mietvertrag und legt gleichzeitig ein bewilligtes Bauprojekt vor, das die vollständige Kernentkernung des vermieteten Ladenlokals vorsieht. Wäre eine solche Kündigung nach den in BGE 142 III 91 entwickelten Grundsätzen gültig?",
+              "hint": "Erwägung 3.2.1, insbesondere Absatz 2 und 3",
+              "model_answer": "Eine solche Kündigung wäre nach den bundesgerichtlichen Grundsätzen aller Voraussicht nach gültig. Das Projekt wäre ausreichend konkretisiert und bewilligt, womit die Realitätsnähe bejaht werden kann. Da eine vollständige Kernentkernung die Anwesenheit des Mieters im Objekt offensichtlich erheblich erschweren würde, läge auch ein schützenswertes Interesse des Vermieters vor. Die Kündigung würde damit nicht gegen Treu und Glauben verstossen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht hob die Kündigung als treuwidrig auf, obwohl die Vorinstanzen sie für gültig befunden hatten. Welches zentrale Defizit in der Begründung der Vermieterin führte zu dieser unterschiedlichen Beurteilung, und warum ist dieses Defizit nach Art. 271 OR entscheidend?",
+              "hint": "Erwägung 3.2.1, letzter Absatz; Art. 271 Abs. 2 OR",
+              "model_answer": "Das zentrale Defizit lag darin, dass die Vermieterin zum Zeitpunkt der Kündigung über kein hinreichend konkretisiertes Bauprojekt verfügte – sie befand sich noch in der Phase eines Architekturwettbewerbs und prüfte lediglich verschiedene Nutzungsmöglichkeiten. Damit konnte die Mieterin nicht beurteilen, ob die geplanten Arbeiten eine Räumung tatsächlich erforderten. Nach Art. 271 Abs. 2 OR wird bei mangelnder oder fehlerhafter Begründung in der Regel angenommen, es fehle an einem schützenswerten Interesse, was die Kündigung als treuwidrig erscheinen lässt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht verlangt ein 'genügend ausgereiftes und ausgearbeitetes Projekt' zum Zeitpunkt der Kündigung, ohne aber zu verlangen, dass bereits Baubewilligungen vorliegen. Ist diese Balance zwischen Vermieterschutz und Mieterschutz überzeugend, oder schützt sie eine Partei zu wenig?",
+              "hint": "Erwägung 3.2.1, Absätze 2 und 3; vgl. BGE 140 III 496",
+              "model_answer": "Die vom Bundesgericht gezogene Grenze erscheint grundsätzlich sachgerecht, weil sie einerseits Vermieter nicht dazu zwingt, bereits vor Beginn des Baubewilligungsverfahrens – das oft jahrelang dauert – auf eine Kündigung zu verzichten, andererseits aber sicherstellt, dass Mieter nicht auf blossen Verdacht hin verdrängt werden. Kritisch lässt sich jedoch einwenden, dass das Kriterium des 'genügend ausgereiften Projekts' unscharf bleibt und in der Praxis zu erheblicher Rechtsunsicherheit führen kann. Eine stärkere Formalisierung der Anforderungen – etwa durch Vorlage eines Vorprojekts oder eines Raumprogramms – könnte die Vorhersehbarkeit für beide Parteien verbessern, ohne den Vermieter unverhältnismässig zu belasten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Vermieterin zum Zeitpunkt der Kündigung ein detailliertes Vorprojekt eines beauftragten Architekturbüros vorgelegt hätte, aus dem hervorging, dass der Umbau eine vollständige Schliessung des Gebäudes für mindestens 18 Monate erfordern würde – jedoch noch keine öffentlich-rechtliche Bewilligung beantragt worden war?",
+              "discussion_points": [
+                "Genügt ein detailliertes Vorprojekt ohne Bewilligungsgesuch als 'genügend ausgereiftes Projekt' im Sinne von E. 3.2.1?",
+                "Inwiefern verändert die prognostizierte Dauer der Bauarbeiten (18 Monate) die Interessenabwägung zwischen Vermieter und Mieterin?"
+              ],
+              "likely_outcome_shift": "Mit einem detaillierten Vorprojekt wäre die Kündigung aller Voraussicht nach als gültig zu qualifizieren, da das Bundesgericht ausdrücklich festhält, dass das Vorliegen einer Baubewilligung keine Voraussetzung der Gültigkeit ist. Das konkrete Projekt würde der Mieterin ermöglichen, die Notwendigkeit der Räumung nachzuvollziehen, womit der Treuwidrigkeitsvorwurf entfiele."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Vermieterin, sondern die Mieterin (A. SA) die Kündigung ausgesprochen hätte – etwa weil sie das Ladenlokal aufgeben wollte, um an einem anderen Standort zu renovieren – und die Vermieterin diese Kündigung wegen mangelhafter Begründung anficht?",
+              "discussion_points": [
+                "Gilt das Begründungserfordernis nach Art. 271 Abs. 2 OR symmetrisch auch für Kündigungen durch die Mieterin?",
+                "Hat die Vermieterin bei einer Kündigung durch die Mieterin dasselbe Schutzbedürfnis wie umgekehrt, oder differenziert das Gesetz nach der kündigenden Partei?"
+              ],
+              "likely_outcome_shift": "Art. 271 OR schützt grundsätzlich den Mieter vor missbräuchlichen Kündigungen durch den Vermieter; eine Kündigung durch die Mieterin unterliegt diesem Schutzregime nicht in gleicher Weise. Die Vermieterin könnte sich kaum auf Art. 271 OR berufen, da diese Bestimmung einseitig zugunsten des Mieters konzipiert ist, womit eine Anfechtung der mieterseitigen Kündigung in diesem Rahmen scheitern würde."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire l'état de fait (p. 91–92) afin de saisir la situation contractuelle et le motif de résiliation invoqué. Concentrez-vous ensuite sur le considérant 3.2.1 (p. 92–93), dans lequel le Tribunal fédéral développe les principes généraux relatifs à la résiliation contraire à la bonne foi et les exigences posées quant à la concrétisation suffisante du projet de travaux.",
+          "reading_guide_it": "Si consiglia di leggere dapprima i fatti (p. 91–92) per comprendere il rapporto contrattuale e il motivo della disdetta. Ci si concentri poi sul considerando 3.2.1 (p. 92–93), nel quale il Tribunale federale sviluppa i principi generali relativi alla disdetta contraria alla buona fede e i requisiti concernenti la sufficiente concretezza del progetto edilizio.",
+          "significance_it": "La sentenza chiarisce le condizioni alle quali un locatore può validamente disdire un contratto di locazione in vista di lavori di trasformazione o ristrutturazione, richiedendo in particolare che al momento della disdetta esista un progetto sufficientemente concreto ed elaborato (art. 271 CO)."
         },
         {
           "decision_id": "bge_138 III 59",
@@ -152,13 +332,74 @@
             "bge_142 III 91"
           ],
           "significance_de": "Voraussetzungen der Anfechtung einer Kündigung wegen Treuwidrigkeit; Beweislast beim Mieter",
-          "significance_fr": "Conditions de contestation d'une résiliation pour violation de la bonne foi; fardeau de la preuve",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que c'est au locataire de prouver le caractère contraire à la bonne foi d'un congé ordinaire, et qu'une simple possibilité vague d'usage personnel ne suffit pas à justifier une sous-location, tout en admettant que la tolérance prolongée d'un comportement illicite n'éteint pas nécessairement le droit du bailleur de résilier le bail pour atteinte durable au rapport de confiance.",
+          "key_erwagungen": [
+            "2.1",
+            "2.2",
+            "2.3",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 2.1, um die allgemeinen Voraussetzungen und die Beweislastverteilung bei der Anfechtung einer ordentlichen Kündigung nach Art. 271 OR zu verstehen. Erwägung 2.2 klärt, wann eine Untervermietung nach Art. 262 OR zulässig ist, während Erwägung 3 das Verhältnis zwischen dem Dulden eines Fehlverhaltens und dem Recht zur Kündigung wegen Vertrauensbruchs beleuchtet.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was bedeutet es laut Bundesgericht, dass eine ordentliche Kündigung keine besonderen Kündigungsgründe voraussetzt, und welche einzige Schranke gilt dennoch bei der Miete von Wohn- und Geschäftsräumen?",
+              "hint": "Siehe Erwägung 2.1, zweiter Absatz des Entscheidtexts",
+              "model_answer": "Eine ordentliche Kündigung kann grundsätzlich ohne Angabe von Gründen ausgesprochen werden, sofern die vertraglichen oder gesetzlichen Fristen und Termine eingehalten werden. Die einzige Schranke ergibt sich aus dem Grundsatz von Treu und Glauben gemäss Art. 271 Abs. 1 OR: Eine Kündigung ist anfechtbar, wenn sie gegen diesen Grundsatz verstösst. Als treuwidrig gilt eine Kündigung insbesondere dann, wenn sie ohne objektives, ernsthaftes und schützenswertes Interesse oder aus reiner Schikane erfolgt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen des OR regeln die Anfechtbarkeit einer ordentlichen Kündigung wegen Treuwidrigkeit, und wie unterscheiden sich Art. 271 OR und Art. 271a OR hinsichtlich der Beweislastverteilung?",
+              "hint": "Vgl. Erwägung 2.1 sowie das Regeste zum Entscheid; beachte den Unterschied zwischen ordentlicher Kündigung und Kündigung während eines Sperrfristverfahrens",
+              "model_answer": "Art. 271 OR regelt die allgemeine Anfechtbarkeit einer Kündigung wegen Verstosses gegen Treu und Glauben, wobei die Beweislast beim Kündigungsempfänger liegt, der die Treuwidrigkeit nachweisen muss. Art. 271a OR hingegen nennt spezifische Tatbestände – etwa die Kündigung während eines laufenden Schlichtungs- oder Gerichtsverfahrens oder innerhalb der dreijährigen Sperrfrist –, bei denen die Beweislast umgekehrt ist und die kündigende Partei das Vorliegen eines zulässigen Grundes beweisen muss. Im vorliegenden Fall war Art. 271 OR massgebend, da es sich um eine gewöhnliche ordentliche Kündigung ohne Sperrfristbezug handelte."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Der Mieter C. hatte das Ferienhaus ohne vorgängige Zustimmung des Eigentümers untervermietet. Wie beurteilt das Bundesgericht in diesem Zusammenhang die Zulässigkeit einer Untervermietung, wenn der Mieter nur eine vage Möglichkeit zur späteren Eigennutzung geltend macht?",
+              "hint": "Siehe Erwägung 2.2 (im Regeste erwähnt) sowie Art. 262 OR",
+              "model_answer": "Gemäss Art. 262 OR darf ein Mieter die Sache untervermieten, wenn der Vermieter seine Zustimmung nicht verweigert. Das Bundesgericht hält in Erwägung 2.2 jedoch fest, dass die blosse, vage Möglichkeit, die Mietsache allenfalls wieder einmal selber zu nutzen, eine Untervermietung nicht rechtfertigt. Ein schutzwürdiges Interesse an der Untermiete muss konkret und ernsthaft sein; eine diffuse Zukunftsabsicht genügt den Anforderungen von Art. 262 OR nicht. Im vorliegenden Fall fehlte es somit an einem legitimen Untervermietungsgrund."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht hält in Erwägung 3 fest, dass das Dulden eines vertrags- oder gesetzwidrigen Verhaltens durch den Vermieter eine ordentliche Kündigung wegen dauernder Beeinträchtigung des Vertrauensverhältnisses nicht notwendigerweise ausschliesst. Welche rechtliche Spannung besteht zwischen dem Verwirkungsgedanken und diesem Grundsatz, und wie löst das Gericht diesen Konflikt?",
+              "hint": "Vgl. Erwägung 3 des Entscheids und die allgemeinen Grundsätze zu Treu und Glauben (Art. 2 ZGB)",
+              "model_answer": "Der Verwirkungsgedanke könnte nahelegen, dass ein Vermieter, der ein Fehlverhalten des Mieters über längere Zeit toleriert, sein Recht zur Kündigung verliert, weil er durch sein Dulden einen Vertrauenstatbestand schafft. Das Bundesgericht differenziert jedoch und hält fest, dass das Dulden zwar ein Indiz gegen die Ernsthaftigkeit der Kündigung sein kann, aber nicht zwingend zur Verwirkung führt, wenn das Fehlverhalten dauerhaft das Vertrauensverhältnis beeinträchtigt. Der Konflikt wird dadurch aufgelöst, dass die konkrete Intensität und Dauerhaftigkeit der Vertrauensbeeinträchtigung entscheidend sind und nicht allein der Zeitablauf seit Beginn des duldsamen Verhaltens des Vermieters."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritisch betrachtet: Ist die in BGE 138 III 59 bestätigte Regel, wonach der Mieter die Beweislast für die Treuwidrigkeit einer ordentlichen Kündigung trägt, mit dem mietrechtlichen Schutzgedanken des schweizerischen Obligationenrechts vereinbar, oder sollte der Gesetzgeber die Beweislast generell umkehren?",
+              "hint": "Berücksichtige Art. 271 OR, Art. 271a OR sowie die Schutzfunktion des Mietrechts (vgl. Botschaft zum revidierten Mietrecht); vergleiche mit der umgekehrten Beweislast bei Art. 271a OR",
+              "model_answer": "Die bestehende Regelung, die dem Mieter die Beweislast auferlegt, lässt sich systemlogisch damit rechtfertigen, dass eine ordentliche Kündigung grundsätzlich keines Grundes bedarf und die Treuwidrigkeit eine Ausnahme darstellt, die vom Ausnahme-Behauptenden zu beweisen ist. Allerdings steht sie in Spannung mit dem sozialpolitischen Schutzgedanken des Mietrechts, da Mieter strukturell benachteiligt sind und nur selten Einblick in die wahren Motive des Vermieters haben. Eine generelle Umkehr der Beweislast – wie sie Art. 271a OR für Sperrfristen vorsieht – würde diesen Schutz stärken, könnte aber die Vertragsfreiheit des Vermieters unverhältnismässig einschränken und zu einer unkontrollierten Ausweitung gerichtlicher Überprüfung führen. Eine ausgewogene Lösung könnte in einer Beweiserleichterung oder gesetzlichen Vermutung der Treuwidrigkeit in bestimmten Konstellationen bestehen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Vermieter A.X. hätte im Kündigungsschreiben ausdrücklich angegeben, er wolle das Ferienhaus für sich und seine Familie als Erstwohnsitz nutzen, und dies durch einen bereits abgeschlossenen Umzugsvertrag belegt. Hätte dies die Beurteilung der Treuwidrigkeit der Kündigung verändert?",
+              "discussion_points": [
+                "Ein nachgewiesener Eigenbedarf stellt in der Regel ein objektives, ernsthaftes und schützenswertes Interesse dar, das eine Kündigung rechtfertigt.",
+                "Zu prüfen wäre, ob der Eigenbedarf tatsächlich und dauerhaft besteht oder vorgeschoben ist – insbesondere angesichts des späteren Verhaltens des Vermieters, der das Haus direkt an die Untermieter weitervermietet hat."
+              ],
+              "likely_outcome_shift": "Mit einem glaubhaft belegten Eigenbedarf wäre die Kündigung sehr wahrscheinlich nicht als treuwidrig qualifiziert worden, da ein schutzwürdiges Eigeninteresse des Vermieters vorgelegen hätte. Allerdings hätte das tatsächliche spätere Verhalten des Vermieters – die direkte Weitervermietung an die Untermieter – den Eigenbedarf als vorgeschoben erscheinen lassen und die Kündigung dennoch anfechtbar gemacht."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht der Vermieter, sondern der Mieter C. die Kündigung ausgesprochen hätte – also wenn C. das Mietverhältnis mit A. hätte beenden wollen, während er gleichzeitig die Untermieter E. und F. im Haus belässt und das Ferienhaus weiter an sie vermietet?",
+              "discussion_points": [
+                "Der Schutz von Art. 271 OR gilt nur für Mieter bei der Anfechtung von Vermieterkündigungen; eine Kündigung durch den Mieter unterliegt anderen Massstäben.",
+                "Die unbefugte Weitervermietung nach Beendigung des Hauptmietvertrags würde das Verhältnis zwischen Mieter und Untermietern tangieren und gegebenenfalls Ansprüche des Vermieters gegen den Mieter aus ungerechtfertigter Bereicherung oder unerlaubter Handlung begründen."
+              ],
+              "likely_outcome_shift": "Ein Rollentausch würde den Anwendungsbereich von Art. 271 OR vollständig entfallen lassen, da dieser Artikel nur dem Schutz des Mieters dient. Die Rechtsfrage würde sich stattdessen auf die vertragsrechtliche Abwicklung des Untermietverhältnisses sowie allfällige Herausgabeansprüche des Eigentümers nach Art. 641 ZGB verlagern."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le considérant 2.1 pour comprendre les conditions générales et le fardeau de la preuve lors de la contestation d'un congé ordinaire selon l'art. 271 CO. Le considérant 2.2 précise les conditions de validité d'une sous-location au sens de l'art. 262 CO, tandis que le considérant 3 examine la relation entre la tolérance d'un comportement illicite et le droit de résilier pour atteinte durable au rapport de confiance.",
+          "reading_guide_it": "Si consiglia di iniziare con il considerando 2.1, che illustra i presupposti generali e la ripartizione dell'onere probatorio nell'impugnazione di una disdetta ordinaria ai sensi dell'art. 271 CO. Il considerando 2.2 chiarisce quando il subaffitto è ammissibile ex art. 262 CO, mentre il considerando 3 analizza il rapporto tra la tolleranza di un comportamento contrario al contratto e il diritto di disdetta per pregiudizio duraturo del rapporto fiduciario.",
+          "significance_it": "La sentenza chiarisce che spetta al conduttore dimostrare la contrarietà alla buona fede di una disdetta ordinaria, che una mera possibilità vaga di uso personale non giustifica il subaffitto, e che la tolleranza prolungata di un comportamento illecito non esclude necessariamente il diritto del locatore di recedere per pregiudizio duraturo del rapporto fiduciario."
         }
       ]
     },
@@ -197,13 +438,72 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Voraussetzungen und Berechnung der Mietzinsherabsetzung bei Mängeln der Mietsache",
-          "significance_fr": "Conditions et calcul de la réduction de loyer en cas de défauts",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt définit la notion de défaut de la chose louée en droit fédéral et précise que toute diminution de confort survenant en cours de bail ne constitue pas nécessairement un défaut au sens des art. 259a et 259d CO, la distinction devant être opérée par voie d'interprétation des attentes légitimes du locataire.",
+          "key_erwagungen": [
+            "3.2",
+            "3.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 3.2 sorgfältig, um den bundesrechtlichen Mangelsbegriff und die Voraussetzungen der Mietzinsherabsetzung nach Art. 259a und 259d OR zu erfassen. Wenden Sie sich dann Erwägung 3.3 zu, wo das Gericht durch Vertragsauslegung prüft, ob der Privatheitsverlust im konkreten Fall die Schwelle zum Rechtsmangel überschreitet und welche Kriterien dabei massgebend sind.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist gemäss BGE 135 III 345 der rechtliche Begriff des Mangels der Mietsache, und welche zwei Alternativen nennt das Bundesgericht, unter denen ein Mangel vorliegen kann?",
+              "hint": "Erwägung 3.2, zweiter Absatz",
+              "model_answer": "Ein Mangel liegt vor, wenn die Mietsache nicht den vertraglich vereinbarten Zustand aufweist. Konkret unterscheidet das Bundesgericht zwei Alternativen: Erstens, wenn die Sache eine Eigenschaft nicht aufweist, die der Vermieter versprochen hat, und zweitens, wenn sie eine Eigenschaft nicht aufweist, auf die der Mieter aufgrund des vertragsgemässen Gebrauchs legitim zählen durfte. Die Legaldefinition fehlt im Gesetz, weshalb das Gericht auf eine vergleichende Betrachtung zwischen Ist- und Sollzustand abstellt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Voraussetzungen müssen gemäss Art. 259a Abs. 1 lit. b und Art. 259d OR kumulativ erfüllt sein, damit ein Mieter eine Mietzinsherabsetzung verlangen kann?",
+              "hint": "Erwägung 3.2, erster Absatz",
+              "model_answer": "Zunächst muss im Verlauf des Mietverhältnisses ein Mangel aufgetreten sein, der nicht dem Mieter anzulasten ist und den dieser nicht auf eigene Kosten zu beheben hat (Art. 259a Abs. 1 lit. b OR). Zusätzlich verlangt Art. 259d OR, dass dieser Mangel den vertragsgemässen Gebrauch der Sache tatsächlich beeinträchtigt oder einschränkt. Das Bundesgericht hält zudem fest, dass kein Verschulden des Vermieters erforderlich ist und der Mangel nicht behebbar sein muss."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Die Vorinstanz sprach den Mietern eine Mietzinsreduktion von 2 % zu, weil die Fenster und Balkone des neuen Nachbargebäudes zu einem Verlust an Privatsphäre führten. Welche Mindestvoraussetzungen müssen nach der bundesgerichtlichen Praxis erfüllt sein, damit eine solche Reduktion von nur 2 % gerechtfertigt ist?",
+              "hint": "Erwägung 3.2, letzter Satz",
+              "model_answer": "Grundsätzlich setzt eine Mietzinsreduktion voraus, dass der vertragsgemässe Gebrauch um mindestens 5 % eingeschränkt ist. Das Bundesgericht lässt jedoch eine Reduktion von nur 2 % zu, wenn es sich um eine dauerhafte (permanente) Beeinträchtigung handelt. Im vorliegenden Fall wurde die Dauerhaftigkeit des Privatheitsverlusts durch das neue Nachbargebäude bejaht, was die Unterschreitung der 5 %-Schwelle rechtfertigte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet zwischen einer blossen Komfortverminderung und einem rechtlich relevanten Mangel. Welche Auslegungskriterien zieht es heran, um diese Grenze im konkreten Fall zu bestimmen, und warum ist diese Abgrenzung für die Praxis bedeutsam?",
+              "hint": "Erwägung 3.3",
+              "model_answer": "Das Bundesgericht prüft im Wege der Vertragsauslegung, was der Mieter aufgrund der Mietgebräuche, der Zweckbestimmung der Mietsache, ihrer Lage und der Höhe des Mietzinses berechtigterweise erwarten durfte. Diese objektiv-normative Betrachtung verhindert, dass jede nachträgliche Verschlechterung des Wohnumfelds automatisch als Mangel gilt. Die Abgrenzung ist praxisrelevant, weil Vermieter sonst für Entwicklungen im Aussenbereich haften würden, die ausserhalb ihrer Einflusssphäre liegen und von den Parteien bei Vertragsschluss nicht vereinbart wurden."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritiker könnten einwenden, dass die vom Bundesgericht entwickelte Formel – wonach nicht jede Komfortverminderung einen Mangel darstellt – den Mieter zu wenig schützt, da er bei Vertragsschluss keine Kenntnis von künftigen Umgebungsveränderungen haben kann. Wie überzeugt Sie diese Rechtsprechung im Lichte des Schutzzwecks des Mietrechts?",
+              "hint": "Erwägungen 3.2 und 3.3 gesamthaft",
+              "model_answer": "Die Rechtsprechung ist grundsätzlich überzeugend, weil sie das Mietverhältnis nicht zu einer Versicherung gegen jede nachträgliche Veränderung des Wohnumfelds macht, was für Vermieter unzumutbar wäre. Allerdings bleibt die Grenzziehung zwischen zumutbarer Komfortverminderung und echtem Mangel einzelfallabhängig und damit wenig vorhersehbar. Der Schutzgedanke des Mietrechts wird jedoch durch das Kriterium der legitimen Erwartungen des Mieters angemessen berücksichtigt, sodass wesentliche und dauerhafte Einbussen – wie der festgestellte Privatheitsverlust – dennoch zur Mietzinsreduktion führen können."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Mieter beim Abschluss des Mietvertrags 1997 ausdrücklich auf die ruhige Lage und den unverbaubaren Ausblick nach Osten hingewiesen worden wären und dies als wesentliches Merkmal schriftlich im Vertrag festgehalten hätte?",
+              "discussion_points": [
+                "Würde eine vertragliche Zusicherung der Aussicht den Mangelsbegriff nach Art. 256 Abs. 1 OR direkt erfüllen, ohne dass auf die legitimen Erwartungen abgestellt werden müsste?",
+                "Könnte der Vermieter trotz fehlendem Verschulden für den Verlust der Aussicht infolge der Drittbaute haftbar gemacht werden, und in welchem Umfang wäre eine Mietzinsreduktion gerechtfertigt?"
+              ],
+              "likely_outcome_shift": "Bei einer ausdrücklichen vertraglichen Zusicherung des Ausblicks würde der Mangelsbegriff zweifelsfrei bejaht, da der Ist-Zustand direkt vom versprochenen Soll-Zustand abweicht. Die Mietzinsreduktion fiele erheblich höher aus als 2 %, da neben dem Privatheitsverlust auch der deutliche Verlust des zugesicherten Ausblicks zu berücksichtigen wäre. Der Vermieter könnte sich nicht auf fehlende Einflussnahme auf die Drittbaute berufen, weil er das Risiko durch die vertragliche Zusicherung explizit übernommen hätte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht die Vermieterschaft, sondern die Mieter hätten den Fall ans Bundesgericht weitergezogen – mit dem Argument, eine Mietzinsreduktion von bloss 2 % sei angesichts des dauerhaften und schwerwiegenden Verlusts an Privatsphäre viel zu tief angesetzt und müsse auf mindestens 10 % erhöht werden.",
+              "discussion_points": [
+                "Welche Beweismittel müssten die Mieter beibringen, um eine stärkere Beeinträchtigung des vertragsgemässen Gebrauchs zu substanziieren, und wie wird der Grad der Einschränkung in der Praxis gemessen?",
+                "Wäre das Bundesgericht an die tatsächlichen Feststellungen der Vorinstanz gebunden, oder könnte es die Schwere des Mangels frei überprüfen?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht wäre an die tatsächlichen Feststellungen der Vorinstanz zur Intensität des Privatheitsverlusts gebunden und könnte diese nur auf Willkür hin überprüfen. Ohne neue substanziierte Beweise für eine wesentlich stärkere Nutzungsbeeinträchtigung wäre eine Erhöhung der Reduktion kaum durchzusetzen. Allerdings hätte eine solche Beschwerde die Gelegenheit geboten, die Kriterien zur Bemessung des Herabsetzungsanteils bei dauerhaften Komforteinbussen schärfer zu konturieren."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le considérant 3.2 pour saisir la notion fédérale de défaut de la chose louée et les conditions de la réduction de loyer selon les art. 259a et 259d CO. Poursuivez avec le considérant 3.3, dans lequel le Tribunal fédéral détermine, par voie d'interprétation contractuelle, si la perte d'intimité subie par les locataires atteint le seuil du défaut juridiquement pertinent et quels critères sont décisifs à cet égard.",
+          "reading_guide_it": "Si raccomanda di leggere con attenzione il considerando 3.2 per comprendere la nozione federale di difetto della cosa locata e i presupposti della riduzione della pigione ai sensi degli art. 259a e 259d CO. Si passi poi al considerando 3.3, dove il Tribunale federale verifica, mediante interpretazione contrattuale, se la perdita di intimità nel caso concreto raggiunga la soglia del difetto giuridicamente rilevante e quali criteri siano determinanti.",
+          "significance_it": "Questa sentenza definisce la nozione federale di difetto della cosa locata e chiarisce che non ogni diminuzione del comfort insorta durante il rapporto locatizio costituisce necessariamente un difetto ai sensi degli art. 259a e 259d CO, dovendo la distinzione essere operata mediante interpretazione delle legittime aspettative del conduttore."
         },
         {
           "decision_id": "bge_128 III 82",

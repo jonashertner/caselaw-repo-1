@@ -36,12 +36,73 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Beurteilung des adäquaten Kausalzusammenhangs nach Recht und Billigkeit",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "2",
+            "3",
+            "3a"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 2, um die Bindung des Bundesgerichts an die tatsächlichen Feststellungen zum natürlichen Kausalzusammenhang zu verstehen. Wenden Sie sich dann Erwägung 3 und 3a zu, wo das Gericht die Definition der Adäquanz darlegt und begründet, weshalb die sozialversicherungsrechtliche Praxis des EVG für das Haftpflichtrecht nicht massgebend ist. Achten Sie besonders auf die Rolle von Art. 4 ZGB als Schlüsselnorm für die richterliche Billigkeitswertung.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 123 III 110 unter dem adäquaten Kausalzusammenhang, und wie grenzt es diesen vom natürlichen Kausalzusammenhang ab?",
+              "hint": "Vgl. Erwägung 2 und 3a: Definition der Adäquanz und Feststellungen zum natürlichen Kausalzusammenhang.",
+              "model_answer": "Der natürliche Kausalzusammenhang fragt, ob das Ereignis conditio sine qua non des Schadens ist – eine rein tatsächliche Frage. Der adäquate Kausalzusammenhang fügt eine normative Ebene hinzu: Das Ereignis muss nach dem gewöhnlichen Lauf der Dinge und der allgemeinen Lebenserfahrung geeignet sein, einen Erfolg der eingetretenen Art herbeizuführen. Im vorliegenden Fall war der natürliche Zusammenhang zwischen dem Unfall und den Beschwerden des Klägers (Schleudertrauma-Symptome, 100 % Arbeitsunfähigkeit) von beiden kantonalen Instanzen bereits bejaht worden; streitig war allein die Adäquanz."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlage beruft das Bundesgericht für die richterliche Wertung bei der Adäquanzbeurteilung, und welche Normen des Haftpflichtrechts sind im Sachverhalt einschlägig?",
+              "hint": "Vgl. Regeste sowie Art. 4 ZGB, Art. 41 OR und Art. 58 SVG.",
+              "model_answer": "Das Bundesgericht stützt die richterliche Wertung bei der Adäquanzprüfung auf Art. 4 ZGB, der dem Richter erlaubt, nach Recht und Billigkeit zu entscheiden. Im Sachverhalt haftet der Halter des Personenwagens nach Art. 58 SVG (Kausalhaftung des Motorfahrzeughalters), während Art. 41 OR die allgemeine Grundlage der Verschuldenshaftung darstellt. Die Kombination dieser Normen zeigt, dass die rechtspolitische Zielsetzung des SVG – die verschärfte Gefährdungshaftung für Motorfahrzeuge – bei der Adäquanzbeurteilung zu berücksichtigen ist."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Das Amtsgericht Luzern-Land verneinte den adäquaten Kausalzusammenhang, weil es den Unfall als leicht einstufte und die sozialversicherungsrechtliche Praxis des EVG anwandte. Hätte das Amtsgericht bei korrekter Anwendung von BGE 123 III 110 anders entscheiden müssen?",
+              "hint": "Vgl. Erwägung 3: Unterschiedliche Kriterien im Haftpflicht- und Sozialversicherungsrecht; rechtspolitische Zielsetzung der anwendbaren Normen.",
+              "model_answer": "Ja. Nach BGE 123 III 110 ist die Adäquanzprüfung im Haftpflichtrecht nicht mechanisch an die sozialversicherungsrechtlichen Kriterien des EVG geknüpft, weil die rechtspolitischen Ziele beider Rechtsgebiete divergieren. Das Amtsgericht hätte die haftpflichtrechtliche Gefährdungshaftung nach Art. 58 SVG und die damit verbundene Billigkeitskorrektur gemäss Art. 4 ZGB berücksichtigen müssen. Eine blosse Übernahme der EVG-Adäquanzformel (Schweregradeinteilung des Unfalls) ohne eigenständige zivilrechtliche Wertung war daher bundesrechtswidrig."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Die Beklagte argumentierte, dass die Anforderungen an die Adäquanz im Haftpflichtrecht jedenfalls nicht tiefer angesetzt werden dürften als im Sozialversicherungsrecht. Welche strukturellen Unterschiede zwischen den beiden Rechtsbereichen entkräften dieses Argument?",
+              "hint": "Vgl. Erwägung 3a und die Hinweise auf BGE 117 V 369, BGE 115 V 133; rechtspolitische Zweckrichtung der Normen.",
+              "model_answer": "Im Sozialversicherungsrecht geht es um die Zumutbarkeit der Kostenübernahme durch ein kollektives Versicherungssystem mit Beitrags- und Solidaritätslogik, was tendenziell engere Haftungsgrenzen rechtfertigt. Im Haftpflichtrecht – namentlich bei der Gefährdungshaftung nach Art. 58 SVG – steht der Ausgleich eines individuell verursachten Schadens und die Prävention im Vordergrund; der Halter profitiert wirtschaftlich von der Fahrzeugnützung und trägt deshalb das erhöhte Risiko. Die unterschiedliche Interessenlage und Risikozuweisung erlaubt es, im Haftpflichtrecht die Adäquanz weiter zu fassen, ohne das Systemziel der Haftungsbeschränkung aufzugeben."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass der adäquate Kausalzusammenhang für denselben Unfall im Haftpflichtrecht bejaht, im Sozialversicherungsrecht aber verneint werden kann? Welche Konsequenzen hat diese Divergenz für die Rechtssicherheit und Gerechtigkeit?",
+              "hint": "Vgl. Regeste und Erwägung 3: 'Die Abgrenzung adäquater Unfallfolgen von inadäquaten kann deshalb im Haftpflicht- und im Sozialversicherungsrecht unterschiedlich ausfallen.'",
+              "model_answer": "Die Divergenz ist rechtssystematisch begründbar, da unterschiedliche Normen unterschiedliche Schutzzwecke verfolgen und Art. 4 ZGB eine teleologisch differenzierte Billigkeitsentscheidung verlangt. Rechtspolitisch problematisch ist jedoch, dass ein Geschädigter für denselben Schaden im Zivilprozess Entschädigung erhält, während ihm die Sozialversicherung die Leistung verweigert – oder umgekehrt –, was das Vertrauen in die Kohärenz der Rechtsordnung belasten kann. Andererseits vermeidet diese Flexibilität eine starre Kausalitätsformel, die entweder den Haftpflichtigen übermässig belastet oder den Geschädigten im Sozialversicherungsrecht zu grosszügig entschädigt; die Lösung verlangt aber von den Gerichten eine transparente und konsistente Begründungskultur."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, S. hatte vor dem Unfall bereits an einer vorbestehenden, asymptomatischen Degeneration der Halswirbelsäule gelitten, die erst durch den Unfall symptomatisch wurde. Ändert dies die Adäquanzbeurteilung im Haftpflichtrecht?",
+              "discussion_points": [
+                "Bedeutung der 'Anlagebedingtheit' eines Schadens für den adäquaten Kausalzusammenhang: Ist der Unfall noch 'geeignet', den Erfolg herbeizuführen, wenn er nur eine latente Prädisposition aktiviert?",
+                "Kürzung des Schadenersatzes nach Art. 44 OR wegen Mitwirkung einer vorbestehenden Disposition des Geschädigten versus vollständige Haftung des Halters nach Art. 58 SVG."
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde die Adäquanz wohl weiterhin bejahen, da der Unfall conditio sine qua non und nach allgemeiner Lebenserfahrung geeignet war, die Symptome auszulösen – auch wenn die Prädisposition den Kausalverlauf begünstigte. Allerdings könnte das Gericht eine Reduktion der Ersatzleistung nach Art. 44 Abs. 1 OR in Betracht ziehen, um der Mitverantwortung der körperlichen Anlage Rechnung zu tragen, ohne die Haftung des Halters vollständig zu eliminieren."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht S. als Beifahrer, sondern der Fahrer des korrekt fahrenden Motorrollers die Klage auf Schadenersatz gegen die Haftpflichtversicherung des Autolenkern eingereicht hätte, und dieser Rollerfahrer ähnliche Schleudertraumasymptome entwickelt hätte?",
+              "discussion_points": [
+                "Haftungsgrundlage: Der fehlbare Autolenker C. haftet dem Rollerfahrer als Geschädigtem sowohl nach Art. 41 OR (Verschuldenshaftung, da Rotlichtverstoss) als auch nach Art. 58 SVG (Halterhaftung). Ändert die stärkere Verschuldenskomponente die Adäquanzwertung?",
+                "Mitschuld und Solidarhaftung: Der Rollerfahrer war korrekt unterwegs; kein Mitverschulden nach Art. 44 OR. Verändert die klarere Schuldzuweisung die Billigkeitserwägungen im Rahmen von Art. 4 ZGB?"
+              ],
+              "likely_outcome_shift": "Im Ergebnis würde die Adäquanz für den Rollerfahrer mindestens gleich grosszügig beurteilt wie für den Beifahrer S., da das Verschulden des Lenkers C. eindeutig und die Gefährdungshaftung nach Art. 58 SVG ebenfalls greift. Ohne Mitverschulden des Rollerfahrers entfällt zudem die Möglichkeit einer Kürzung nach Art. 44 OR, was die Haftungsposition des Klägers sogar stärken würde."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le considérant 2 pour comprendre comment le Tribunal fédéral est lié aux constatations de fait relatives au lien de causalité naturelle. Passez ensuite aux considérants 3 et 3a, où la juridiction expose la définition de la causalité adéquate et explique pourquoi la pratique du Tribunal fédéral des assurances en matière de droit des assurances sociales ne s'impose pas en droit de la responsabilité civile. Prêtez une attention particulière au rôle de l'art. 4 CC comme norme pivot de l'appréciation en équité par le juge.",
+          "reading_guide_it": "Iniziate con la lettura del considerando 2 per capire come il Tribunale federale sia vincolato agli accertamenti di fatto sul nesso causale naturale. Passate poi ai considerandi 3 e 3a, dove la corte illustra la definizione di causalità adeguata e spiega perché la prassi del Tribunale federale delle assicurazioni in materia di diritto delle assicurazioni sociali non è determinante per il diritto della responsabilità civile. Prestate particolare attenzione al ruolo dell'art. 4 CC come norma cardine per la valutazione giudiziale secondo equità.",
+          "significance_fr": "Cet arrêt de principe établit que l'appréciation de la causalité adéquate relève d'une appréciation judiciaire fondée sur l'équité au sens de l'art. 4 CC, de sorte que les critères développés par le droit des assurances sociales ne s'imposent pas mécaniquement en droit de la responsabilité civile.",
+          "significance_it": "Questa sentenza di principio stabilisce che la valutazione del nesso causale adeguato richiede una ponderazione giudiziale secondo equità ai sensi dell'art. 4 CC, cosicché i criteri sviluppati nel diritto delle assicurazioni sociali non si impongono meccanicamente nel diritto della responsabilità civile."
         },
         {
           "decision_id": "bge_123 III 10",
@@ -266,12 +327,74 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Voraussetzungen und Tragweite der Beweiserleichterung bei Schadensschätzung",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "3a",
+            "3b",
+            "3c",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 3a sorgfältig, um die Voraussetzungen und Grenzen der richterlichen Schadensschätzung nach Art. 42 Abs. 2 OR zu verstehen. Beachten Sie dabei das Spannungsverhältnis zwischen Beweiserleichterung und fortbestehender Substantiierungsobliegenheit. Erwägung 4 zeigt dann, wie diese abstrakten Grundsätze auf den konkreten Fall der Pressehaftung angewendet werden.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was bezweckt Art. 42 Abs. 2 OR nach der Darstellung des Bundesgerichts in BGE 122 III 219, und was ist ausdrücklich nicht sein Ziel?",
+              "hint": "Siehe Erwägung 3a, insbesondere den Abschnitt zur Tragweite der Beweiserleichterung.",
+              "model_answer": "Art. 42 Abs. 2 OR bezweckt eine Erleichterung des Schadensnachweises für den Geschädigten, indem das Gericht den Schaden aufgrund einer blossen Schätzung als ausgewiesen erachten darf. Die Bestimmung soll jedoch nicht dazu dienen, dem Geschädigten die Beweislast generell abzunehmen. Es ist also keine Grundlage, ohne nähere Angaben Schadenersatzforderungen in beliebiger Höhe zu stellen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen müssen gemäss BGE 122 III 219 erfüllt sein, damit ein Gericht Art. 42 Abs. 2 OR anwenden und den Schaden schätzen darf?",
+              "hint": "Erwägung 3a nennt sowohl die Anwendungsvoraussetzungen als auch die verbleibenden Pflichten des Geschädigten.",
+              "model_answer": "Art. 42 Abs. 2 OR ist anwendbar, wenn der strikte Nachweis des Schadens – sei es hinsichtlich seiner Existenz oder seiner Höhe – ausgeschlossen oder unmöglich ist. Zusätzlich muss der Geschädigte aber alle Umstände, die für den Schadenseintritt sprechen und dessen Abschätzung erlauben oder erleichtern, soweit möglich und zumutbar behaupten und beweisen. Die Beweiserleichterung setzt also eine hinreichende Substantiierung durch den Geschädigten voraus."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Die Klägerin (Spinnerei an der Lorze AG) stellte eine Schadenersatzforderung von 15 Mio. Franken. Wie hätte sie gemäss den in BGE 122 III 219 dargelegten Grundsätzen vorgehen müssen, um von der Beweiserleichterung nach Art. 42 Abs. 2 OR profitieren zu können?",
+              "hint": "Erwägung 3a und 4 zeigen, welche konkreten Anforderungen an die Substantiierung gestellt werden, insbesondere im Kontext unlauterer Presseberichterstattung.",
+              "model_answer": "Die Klägerin hätte konkrete Umstände behaupten und soweit möglich beweisen müssen, die den Schadenseintritt plausibel machen, etwa den Zusammenhang zwischen den Presseartikeln und einem Rückgang von Aufträgen, Kreditverweigerungen oder ähnlichen wirtschaftlichen Nachteilen. Blosse Behauptungen über einen Schaden ohne substantiierte Angaben zu dessen Grundlagen genügen nicht. Sie hätte darlegen müssen, welche konkreten Geschäftsbeziehungen infolge der Berichterstattung geschädigt wurden und in welchem Umfang, um dem Gericht eine taugliche Grundlage für eine Schätzung zu liefern."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht grenzt in BGE 122 III 219 Art. 42 Abs. 2 OR von Art. 8 ZGB ab. Welche unterschiedlichen Funktionen erfüllen diese beiden Normen im Bereich des Schadensnachweises, und warum ist diese Abgrenzung für die Praxis bedeutsam?",
+              "hint": "Erwägung 3a behandelt das Verhältnis beider Normen; Art. 8 ZGB betrifft die Beweislastverteilung, Art. 42 Abs. 2 OR die Beweismassreduktion.",
+              "model_answer": "Art. 8 ZGB regelt die Beweislastverteilung und bestimmt grundsätzlich, welche Partei die Folgen der Beweislosigkeit trägt – beim Schaden trifft dies den Geschädigten. Art. 42 Abs. 2 OR hingegen ist eine Beweismassvorschrift, die das erforderliche Beweismass herabsetzt und dem Gericht erlaubt, den Schaden zu schätzen, ohne dass ein strikter Beweis erbracht wird. Die Abgrenzung ist praktisch bedeutsam, weil Art. 42 Abs. 2 OR nur eine Erleichterung der Beweisführung, nicht aber eine Umkehr oder Aufhebung der Beweislast bewirkt; der Geschädigte bleibt weiterhin zur Substantiierung verpflichtet."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 122 III 219 vorgenommene restriktive Auslegung von Art. 42 Abs. 2 OR – insbesondere das Festhalten an der Substantiierungsobliegenheit des Geschädigten – rechtspolitisch überzeugend, oder schiesst sie über das Ziel hinaus und untergräbt den gesetzgeberischen Zweck der Norm?",
+              "hint": "Erwägung 3a diskutiert ältere Rechtsprechung und die Lehre; bedenken Sie den Schutzzweck von Art. 42 Abs. 2 OR im Kontext von Pressehaftung.",
+              "model_answer": "Die restriktive Auslegung ist grundsätzlich überzeugend, weil sie das Gleichgewicht zwischen Beweiserleichterung und Rechtssicherheit wahrt: Ein Gericht kann Schäden nicht ins Blaue hinein schätzen, ohne jede tatsächliche Grundlage. Gerade bei der Haftung für Presseberichterstattung wäre eine gegenteilige Auslegung problematisch, da sie die Pressefreiheit durch unkontrollierbare Schadenersatzforderungen unverhältnismässig belasten würde. Andererseits kann man kritisch fragen, ob die Anforderungen in Fällen immaterieller oder schwer messbarer Schäden nicht zu hoch sind und ob das Gericht bei der Schätzung nicht grosszügiger sein sollte, sobald die Kausalität dem Grunde nach feststeht."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Spinnerei an der Lorze AG hätte unmittelbar nach den Presseartikeln detaillierte Buchhaltungsunterlagen vorgelegt, aus denen ein Rückgang der Bestellungen um 40% im Vergleich zum Vorjahr hervorging, sowie Absageschreiben von drei Grosskunden, die sich ausdrücklich auf die Berichterstattung in der Weltwoche bezogen. Wie würde sich dies auf die Anwendung von Art. 42 Abs. 2 OR auswirken?",
+              "discussion_points": [
+                "Ob die vorgelegten Dokumente die Substantiierungsobliegenheit gemäss Erwägung 3a erfüllen würden",
+                "Ob der Kausalzusammenhang zwischen der Presseberichterstattung und dem Umsatzrückgang damit hinreichend dargetan wäre"
+              ],
+              "likely_outcome_shift": "Mit dieser Dokumentation hätte die Klägerin die vom Bundesgericht geforderte Substantiierung erbracht und dem Gericht eine taugliche Schätzungsgrundlage geliefert. Das Handelsgericht hätte dann gemäss Art. 42 Abs. 2 OR den Schaden nach richterlichem Ermessen schätzen müssen, anstatt die Klage abzuweisen. Der Ausgang des Verfahrens wäre damit zugunsten der Klägerin verschoben worden, wobei die genaue Höhe des zugesprochenen Betrags im richterlichen Ermessen geblieben wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht ein Presseunternehmen, sondern ein Konkurrent der Spinnerei an der Lorze AG hätte die schädigenden unwahren Äusserungen über die Lorze-Gruppe in einem Rundschreiben an potenzielle Kunden verbreitet (Verstoss gegen Art. 3 lit. a UWG). Die Lorze-Gruppe klagt auf Schadenersatz und stützt sich erneut auf Art. 42 Abs. 2 OR. Würde sich an der Anwendung der Beweiserleichterung etwas ändern?",
+              "discussion_points": [
+                "Ob die in BGE 122 III 219 entwickelten allgemeinen Grundsätze zu Art. 42 Abs. 2 OR unverändert gelten",
+                "Ob der gezielte Versand an Kunden eine leichtere Substantiierung des Schadens ermöglicht als eine allgemeine Medienpublikation"
+              ],
+              "likely_outcome_shift": "Die allgemeinen Grundsätze von Art. 42 Abs. 2 OR würden unverändert gelten, da sie nicht presserechts-spezifisch sind. Beim gezielten Versand an bestimmte Kunden wäre es der Klägerin aber wesentlich einfacher, die Empfänger des Rundschreibens und deren darauffolgendes Verhalten zu benennen und zu belegen. Damit würde die Substantiierungsobliegenheit leichter zu erfüllen sein, und die Chancen auf eine gerichtliche Schadensschätzung zugunsten der Klägerin würden deutlich steigen."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le considérant 3a pour comprendre les conditions et les limites de l'estimation judiciaire du dommage selon l'art. 42 al. 2 CO. Prêtez attention à la tension entre l'allègement du fardeau de la preuve et l'obligation de substantiation qui subsiste. Le considérant 4 illustre ensuite l'application de ces principes abstraits au cas concret de la responsabilité de la presse.",
+          "reading_guide_it": "Leggere attentamente il considerando 3a per comprendere i presupposti e i limiti della stima giudiziale del danno ai sensi dell'art. 42 cpv. 2 CO. Si noti la tensione tra l'agevolazione probatoria e il persistente obbligo di sostanziazione. Il considerando 4 illustra poi l'applicazione di questi principi astratti al caso concreto della responsabilità della stampa.",
+          "significance_fr": "Cet arrêt définit de manière contraignante les conditions d'application de l'art. 42 al. 2 CO en précisant que l'allègement du fardeau de la preuve ne dispense pas le lésé de son obligation de substantiation, et applique ces principes à la responsabilité des entreprises de presse pour des reportages économiques déloyaux.",
+          "significance_it": "Questa sentenza definisce in modo vincolante i presupposti dell'art. 42 cpv. 2 CO, precisando che l'agevolazione probatoria non esime il danneggiato dall'obbligo di sostanziazione, e applica tali principi alla responsabilità delle imprese editoriali per reportage economici sleali."
         },
         {
           "decision_id": "bge_131 III 12",
@@ -299,12 +422,75 @@
             "bge_122 III 219"
           ],
           "significance_de": "Berücksichtigung vorbestehender Leiden bei Schadensberechnung vs. Schadenersatzbemessung",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "4",
+            "4.1",
+            "7",
+            "8",
+            "9"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 4 sorgfältig, um die zentrale Unterscheidung zwischen Schadensberechnung (Art. 42 OR) und Schadenersatzbemessung (Art. 43/44 OR) bei konstitutioneller Prädisposition zu verstehen. Achten Sie anschliessend auf E. 7 zum Zweck des Quotenvorrechts und zum Bereicherungsverbot sowie auf E. 8 und 9 zur Verzinsung von Genugtuung und zum Verhältnis von Schadenszins und Verzugszins.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Begriff der 'konstitutionellen Prädisposition' und welche Auswirkungen hatte der krankhafte Vorzustand der Klägerin im konkreten Fall auf den Unfallschaden?",
+              "hint": "Vgl. E. 4, Sachverhalt sowie die Ausführungen zum MEDAS-Gutachten im Obergericht-Urteil.",
+              "model_answer": "Die konstitutionelle Prädisposition bezeichnet einen vorbestehenden krankhaften Zustand der geschädigten Person, der die Entstehung oder das Ausmass eines Schadens beeinflusst. Im vorliegenden Fall stellte das Obergericht gestützt auf das MEDAS-Gutachten fest, dass der Vorzustand der Klägerin den Eintritt des Schadens nach dem Auffahrunfall in nicht unerheblicher Weise begünstigt hatte. Die Parteien anerkannten daraufhin eine Kürzung des Anspruchs um 20 %."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlagen (Art. 42, 43, 44 OR) sind nach der bundesgerichtlichen Rechtsprechung für die Berücksichtigung der konstitutionellen Prädisposition massgeblich, und wie grenzt das Gericht deren Anwendungsbereiche voneinander ab?",
+              "hint": "Vgl. E. 4 mit Verweis auf BGE 113 II 86 E. 3b.",
+              "model_answer": "Art. 42 OR regelt die Schadensberechnung: Vorbestehende Schädigungen, die sich mit Sicherheit oder hoher Wahrscheinlichkeit auch ohne das schädigende Ereignis ausgewirkt hätten, sind anteilsmässig auszuscheiden, da nur der tatsächlich auf das Ereignis zurückführbare Schaden ersatzfähig ist. Art. 44 OR hingegen kommt zur Anwendung, wenn der Schaden ohne den Unfall voraussichtlich überhaupt nicht eingetreten wäre, der Vorzustand aber Eintritt oder Ausmass begünstigt hat; hier kann die Prädisposition im Rahmen der Bemessung des Schadenersatzes berücksichtigt werden. Art. 43 OR ergänzt Art. 44 OR bei der Festsetzung von Art und Grösse des Ersatzes."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein medizinisches Gutachten käme zum Schluss, dass die Klägerin aufgrund ihrer Prädisposition mit 80-prozentiger Wahrscheinlichkeit innerhalb von fünf Jahren auch ohne den Unfall arbeitsunfähig geworden wäre. Unter welche Norm (Art. 42 oder Art. 44 OR) fiele die Berücksichtigung dieser Prädisposition, und wie wäre der Schaden zu berechnen?",
+              "hint": "Vgl. E. 4, Unterscheidung zwischen Schadensberechnung (Art. 42 OR) und Schadenersatzbemessung (Art. 44 OR) sowie das Kriterium der hohen Wahrscheinlichkeit.",
+              "model_answer": "Bei einer 80-prozentigen Wahrscheinlichkeit des schadensauslösenden Vorzustands auch ohne Unfall wäre die Prädisposition im Rahmen von Art. 42 OR bei der Schadensberechnung zu berücksichtigen, da der Schwellenwert der 'hohen Wahrscheinlichkeit' erreicht erscheint. Der tatsächlich auf den Unfall zurückführbare Schaden wäre anteilsmässig zu ermitteln, indem die vermögensrechtlichen Folgen, die sich mit hoher Wahrscheinlichkeit auch ohne Unfall eingestellt hätten, aus der Berechnung ausgeklammert werden. Das Quotenvorrecht der Klägerin wäre entsprechend anzupassen, da es sich hier um eine Schadensberechnung und nicht um eine blosse Kürzung des Ersatzes handelt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum ist die Unterscheidung zwischen Schadensberechnung (Art. 42 OR) und Schadenersatzbemessung (Art. 44 OR) praktisch relevant für das Quotenvorrecht der geschädigten Person, und welche Konsequenzen ergeben sich für die Klägerin je nachdem, welche Norm angewendet wird?",
+              "hint": "Vgl. E. 4 am Ende sowie E. 7; vgl. auch BGE 113 II 86 E. 3 und BGE 120 II 58 E. 3c.",
+              "model_answer": "Das Quotenvorrecht schützt die geschädigte Person davor, dass Versicherungsleistungen bei einem ungedeckten Schaden vorrangig dem Haftpflichtigen zugutekommen. Wird die Prädisposition bei der Schadensberechnung nach Art. 42 OR berücksichtigt, verringert sich der anrechenbare Gesamtschaden, was sich auf die Quotenberechnung und damit auf das Quotenvorrecht auswirkt. Erfolgt die Berücksichtigung dagegen erst bei der Schadenersatzbemessung nach Art. 44 OR, bleibt der berechnete Gesamtschaden höher, und das Quotenvorrecht der Klägerin wirkt sich günstiger aus, weil sie einen grösseren Anteil des ungedeckten Schadens behalten kann, bevor der Haftpflichtige von Versicherungsleistungen profitiert."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht gezogene Grenze zwischen Art. 42 OR und Art. 44 OR bei der konstitutionellen Prädisposition rechtspolitisch überzeugend, oder schafft das Kriterium der 'hohen Wahrscheinlichkeit' in der Praxis Rechtsunsicherheit zulasten der Geschädigten?",
+              "hint": "Vgl. E. 4 und die dort zitierten Lehrmeinungen (Weber, Brehm, Rey, Porchet, Dettwiler); vgl. auch E. 7 zum Bereicherungsverbot.",
+              "model_answer": "Die Unterscheidung ist dogmatisch kohärent, weil sie den Kausalzusammenhang zwischen schädigendem Ereignis und ersatzfähigem Schaden ernst nimmt: Nur was tatsächlich durch das Ereignis verursacht wurde, soll ersetzt werden. Allerdings führt das Kriterium der 'hohen Wahrscheinlichkeit' in der Praxis zu erheblicher Rechtsunsicherheit, da medizinische Prognosen selten eindeutige Wahrscheinlichkeitsangaben liefern und Gutachter den gleichen Sachverhalt unterschiedlich einschätzen können. Rechtspolitisch wäre eine klarere Abgrenzung oder eine einheitliche Lösung über Art. 44 OR denkbar, die den Gerichten mehr Flexibilität lässt und die Schutzbedürftigkeit der Geschädigten stärker gewichtet, ohne die Haftpflichtigen unverhältnismässig zu belasten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Klägerin neben der konstitutionellen Prädisposition auch ein eigenes Mitverschulden am Unfall gehabt hätte (z.B. weil sie ohne angelegten Sicherheitsgurt fuhr), und wie würde dies die Berechnung des Quotenvorrechts sowie die Anspruchskürzung nach Art. 44 OR beeinflussen?",
+              "discussion_points": [
+                "Kumulation von konstitutioneller Prädisposition und Mitverschulden nach Art. 44 OR: additive oder getrennte Kürzung?",
+                "Auswirkung auf das Quotenvorrecht, wenn sowohl der Gesamtschaden als auch der Ersatzanspruch durch zwei unabhängige Kürzungsgründe gemindert werden."
+              ],
+              "likely_outcome_shift": "Bei Kumulation von Mitverschulden und konstitutioneller Prädisposition würde der Ersatzanspruch der Klägerin durch mehrere Kürzungsfaktoren gleichzeitig gemindert, was das Quotenvorrecht erheblich aushöhlen könnte. Das Bundesgericht müsste klären, ob die Kürzungen sequenziell oder parallel anzuwenden sind, was je nach Methode zu unterschiedlichen Ergebnissen für die verbleibende Deckungslücke führt. In der Tendenz würde die Klägerin deutlich weniger erhalten, und das Quotenvorrecht verlöre an praktischer Schutzwirkung."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht eine Privatperson, sondern die Schweizerische Unfallversicherungsanstalt (SUVA) als Klägerin aufträte und aus übergegangenem Recht (Art. 72 ATSG) Regressansprüche gegen die Haftpflichtversicherung geltend machte – wie würde sich dies auf das Quotenvorrecht und die Berücksichtigung der konstitutionellen Prädisposition auswirken?",
+              "discussion_points": [
+                "Der Sozialversicherungsregress nach Art. 72 ATSG ist auf die Quote der SUVA beschränkt; das Quotenvorrecht schützt primär die direkt geschädigte Person, nicht den Sozialversicherer.",
+                "Die konstitutionelle Prädisposition beeinflusst sowohl den Gesamtschaden als auch die Höhe der SUVA-Leistungen; es stellt sich die Frage, ob die Prädisposition im Regressverfahren erneut geprüft werden muss oder bereits in der SUVA-Leistungsfestsetzung berücksichtigt wurde."
+              ],
+              "likely_outcome_shift": "Im Regressfall der SUVA würde das Quotenvorrecht zugunsten der direkt Geschädigten wirken, d.h. die SUVA müsste ihren Regressanspruch hinter dem ungedeckten Schaden der Klägerin zurückstellen. Die konstitutionelle Prädisposition wäre im Rahmen des Regresses erneut zu prüfen, sofern sie nicht bereits die SUVA-Leistungen gemindert hat, was zu einer komplexen Koordination zwischen Sozialversicherungs- und Haftpflichtrecht führt. Im Ergebnis könnte die SUVA ihren Regressanspruch nur in dem Mass durchsetzen, in dem der Gesamtschaden der Klägerin tatsächlich gedeckt ist."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le consid. 4 pour saisir la distinction centrale entre le calcul du dommage (art. 42 CO) et la fixation de l'indemnité (art. 43/44 CO) en présence d'une prédisposition constitutionnelle. Portez ensuite votre attention sur le consid. 7 relatif au but du droit de priorité sur la quote-part et à l'interdiction de l'enrichissement, ainsi que sur les consid. 8 et 9 concernant les intérêts sur la réparation morale et le rapport entre intérêts compensatoires et intérêts moratoires.",
+          "reading_guide_it": "Si raccomanda di leggere attentamente il consid. 4 per comprendere la distinzione fondamentale tra il calcolo del danno (art. 42 CO) e la determinazione del risarcimento (art. 43/44 CO) in presenza di una predisposizione costituzionale. Si presti poi attenzione al consid. 7 sul diritto di priorità sulla quota e sul divieto di arricchimento, nonché ai consid. 8 e 9 sugli interessi della riparazione morale e sul rapporto tra interessi compensativi e interessi moratori.",
+          "significance_fr": "Cet arrêt précise les critères permettant de déterminer si la prédisposition constitutionnelle de la victime doit être prise en compte lors du calcul du dommage selon l'art. 42 CO ou lors de la fixation de l'indemnité selon les art. 43/44 CO, avec des conséquences directes sur le droit de priorité sur la quote-part de la personne lésée.",
+          "significance_it": "La sentenza chiarisce i criteri per stabilire se la predisposizione costituzionale della vittima debba essere considerata nel calcolo del danno ai sensi dell'art. 42 CO oppure nella determinazione del risarcimento ai sensi degli art. 43/44 CO, con conseguenze dirette sul diritto di priorità sulla quota della persona lesa."
         }
       ]
     },
@@ -343,12 +529,74 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Abgrenzung Organ/Hilfsperson; keine längere strafrechtliche Verjährungsfrist bei Hilfspersonenhaftung",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "key_erwagungen": [
+            "4",
+            "4a",
+            "4b",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste, um die beiden Kernfragen – Abgrenzung Organ/Hilfsperson und Anwendbarkeit von Art. 60 Abs. 2 OR – zu erfassen. Konzentrieren Sie sich anschliessend auf Erwägung 4 zur Definition des Organsbegriffs und auf Erwägung 5 zur Frage, ob die strafrechtliche Verjährungsfrist auch bei der Geschäftsherrenhaftung gilt. Beachten Sie dabei die Entwicklung der bundesgerichtlichen Rechtsprechung seit BGE 112 II 172.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 122 III 225 hinsichtlich der Anwendung der längeren strafrechtlichen Verjährungsfrist gemäss Art. 60 Abs. 2 OR auf die Haftung des Geschäftsherrn für Hilfspersonen entschieden?",
+              "hint": "Vgl. Regeste und E. 5 des Entscheids.",
+              "model_answer": "Das Bundesgericht hat entschieden, dass die längere strafrechtliche Verjährungsfrist gemäss Art. 60 Abs. 2 OR nicht auf den Anspruch gegen den Geschäftsherrn anwendbar ist, wenn dieser nach Art. 55 OR für das deliktische Handeln einer Hilfsperson haftet. Die verlängerte Frist gilt somit nur dann, wenn der Schaden durch ein Organ der juristischen Person verursacht wurde. Im vorliegenden Fall war der Brand durch Mitarbeiter verursacht worden, die als blosse Hilfspersonen einzustufen waren, weshalb die Klage verjährt war."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche rechtlichen Kriterien legt das Bundesgericht fest, um eine Person als Organ einer juristischen Person von einer blossen Hilfsperson im Sinne von Art. 55 OR abzugrenzen?",
+              "hint": "Vgl. E. 4 des Entscheids sowie die zitierten Literaturstellen und Vorjudikate (insb. BGE 117 II 570).",
+              "model_answer": "Als Organe gelten Personen, die durch Gesetz, Statuten oder aufgrund der faktischen Organisation an der Willensbildung der Gesellschaft teilhaben und mit entsprechender rechtlicher oder tatsächlicher Entscheidkompetenz ausgestattet sind. Es genügt nicht, dass ein Mitarbeiter eine ihm übertragene Tätigkeit in einem eng begrenzten Bereich selbständig ausführt; entscheidend ist vielmehr, dass er die Willensbildung des Unternehmens als Ganzes beeinflussen kann. Reine Ausführungsorgane ohne Entscheidbefugnis auf Geschäftsleitungsebene sind demzufolge als Hilfspersonen zu qualifizieren."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Hätte die Klage der PTT-Betriebe gegen die X. AG Aussicht auf Erfolg gehabt, wenn der für den Brand verantwortliche Mario C. nachweislich Entscheidkompetenzen auf Stufe Geschäftsleitung gehabt hätte?",
+              "hint": "Vgl. E. 4 zur Organeigenschaft und die in BGE 112 II 172 geänderte Praxis zur Ausdehnung von Art. 60 Abs. 2 OR auf juristische Personen.",
+              "model_answer": "Ja, die Klage wäre unter dieser Voraussetzung wahrscheinlich nicht an der Verjährung gescheitert. Seit BGE 112 II 172 gilt die längere strafrechtliche Verjährungsfrist auch für den Anspruch gegen die juristische Person, sofern der Schaden von einem Organ verursacht wurde, weil das Handeln des Organs dem Unternehmen selbst zugerechnet wird. Hätte Mario C. die Willensbildung der X. AG mitgeprägt und wäre als Organ qualifiziert worden, hätte Art. 60 Abs. 2 OR die Verjährung verlängert und die Einrede wäre gescheitert."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet sich die dogmatische Begründung der Organhaftung juristischer Personen von derjenigen der Geschäftsherrenhaftung nach Art. 55 OR, und warum rechtfertigt dieser Unterschied eine unterschiedliche Behandlung bei der Verjährung?",
+              "hint": "Vgl. E. 4a zur Begründung der Ausdehnung der Frist auf juristische Personen (Art. 55 ZGB) sowie den systematischen Kontrast zur Hilfspersonenhaftung nach Art. 55 OR.",
+              "model_answer": "Die Organhaftung beruht auf dem Gedanken, dass Organe nicht für die juristische Person handeln, sondern als Teil dieser selbst tätig werden; ihr Verhalten ist unmittelbar das Verhalten des Unternehmens (Art. 55 Abs. 2 ZGB). Die Geschäftsherrenhaftung nach Art. 55 OR hingegen ist eine Kausalhaftung für das Verhalten eines von der juristischen Person verschiedenen Dritten, bei der der Geschäftsherr lediglich für ein fremdes Verschulden einsteht. Da bei der Organhaftung kein Drittverhältnis besteht, ist es folgerichtig, die strafrechtliche Verjährungsfrist des Art. 60 Abs. 2 OR – die an die strafbare Handlung einer bestimmten Person anknüpft – nur auf Konstellationen auszudehnen, in denen Täter und haftende Person rechtlich identisch sind, nicht aber auf die Konstellation des für eine Hilfsperson haftenden Geschäftsherrn."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Lösung des Bundesgerichts, die längere Verjährungsfrist bei der Hilfspersonenhaftung zu verweigern, rechtspolitisch überzeugend, oder könnte man argumentieren, dass auch Geschädigte im Rahmen von Art. 55 OR schutzwürdige Interessen an der Verlängerung haben?",
+              "hint": "Berücksichtigen Sie den Schutzzweck von Art. 60 Abs. 2 OR, die Wertung des Gesetzgebers sowie die Konsequenzen für die Praxis.",
+              "model_answer": "Die Lösung ist dogmatisch konsequent, weil Art. 60 Abs. 2 OR an die strafrechtliche Dimension einer konkreten Handlung anknüpft und die Haftung des Geschäftsherrn nach Art. 55 OR gerade auf einer eigenständigen zivilrechtlichen Zurechnungsnorm beruht, die nicht automatisch die strafrechtliche Qualifikation des Hilfspersonenverhaltens mitübernimmt. Rechtspolitisch lässt sich jedoch einwenden, dass Geschädigte oft erst nach Abschluss des Strafverfahrens über die Identität der verantwortlichen Hilfsperson und die Vermögenslage des Geschäftsherrn informiert sind, was die kurze ordentliche Verjährungsfrist in der Praxis faktisch verkürzt. Eine de lege ferenda Ausdehnung auf die Geschäftsherrenhaftung wäre diskutierbar, würde aber einen bewussten Eingriff des Gesetzgebers erfordern, da eine analoge Anwendung angesichts des eindeutigen Wortlauts und Telos von Art. 60 Abs. 2 OR methodisch schwer zu begründen ist."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Stellen Sie sich vor, Mario C. hätte zwar keine formelle Geschäftsleitungsfunktion gehabt, aber er wäre der einzige technische Spezialist der X. AG für diese Art von Arbeiten gewesen und hätte faktisch alle entsprechenden Entscheidungen ohne Rücksprache mit der Unternehmensleitung getroffen. Ändert dies die Qualifikation als Organ?",
+              "discussion_points": [
+                "Genügt faktische Entscheidungsautonomie in einem Teilbereich für die Organeigenschaft, oder muss die Entscheidkompetenz die Willensbildung des Gesamtunternehmens betreffen?",
+                "Wie ist der Begriff des 'faktischen Organs' im Sinne von BGE 117 II 570 abzugrenzen, und welche Mindestvoraussetzungen müssen erfüllt sein?"
+              ],
+              "likely_outcome_shift": "Die Organeigenschaft würde nach der bundesgerichtlichen Formel dennoch verneint, da das Kriterium nicht die selbständige Aufgabenerfüllung in einem Fachbereich ist, sondern die Teilhabe an der unternehmerischen Willensbildung insgesamt. Allerdings wäre die Frage näher zu prüfen, ob faktische Alleinentscheidung im gesamten technischen Bereich eines kleineren Unternehmens ausnahmsweise die Schwelle zur Organeigenschaft erreichen könnte, was die Einrede der Verjährung möglicherweise scheitern liesse."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht die PTT-Betriebe, sondern ein privates Versicherungsunternehmen hätte als Subrogationsberechtigte nach Art. 72 VVG den Schadenersatzanspruch geltend gemacht, und die schädigende X. AG wäre eine kleine Personengesellschaft, bei der der handelnde Mario C. gleichzeitig Gesellschafter mit Einzelunterschrift gewesen wäre.",
+              "discussion_points": [
+                "Würde die Gesellschafterstellung mit Einzelunterschrift bei einer Personengesellschaft die Organeigenschaft begründen und damit Art. 60 Abs. 2 OR auslösen?",
+                "Verändert die Subrogation des Versicherers die verjährungsrechtliche Ausgangslage, insbesondere hinsichtlich des Beginns der Verjährungsfrist?"
+              ],
+              "likely_outcome_shift": "Bei einer Personengesellschaft mit Einzelunterschrift käme dem handelnden Gesellschafter typischerweise echte Entscheidungskompetenz auf Unternehmensebene zu, was die Organeigenschaft bejahen und die Anwendung der längeren strafrechtlichen Verjährungsfrist nach Art. 60 Abs. 2 OR ermöglichen würde. Die Subrogation des Versicherers überträgt den Anspruch in dem Zustand, in dem er sich beim Geschädigten befand, sodass die Verjährungsfrage nach denselben Regeln zu beurteilen wäre; der Ausgang der Verjährungseinrede würde sich zugunsten der klagenden Partei verschieben."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le Regeste afin de saisir les deux questions centrales : la distinction entre organe et auxiliaire, et l'applicabilité de l'art. 60 al. 2 CO. Concentrez-vous ensuite sur le considérant 4, qui précise la définition de l'organe, puis sur le considérant 5, qui traite de l'inapplicabilité du délai pénal de prescription à la responsabilité du commettant. Prenez note de l'évolution jurisprudentielle amorcée par l'ATF 112 II 172.",
+          "reading_guide_it": "Iniziate leggendo il Regeste per cogliere le due questioni centrali: la distinzione tra organo e ausiliario e l'applicabilità dell'art. 60 cpv. 2 CO. Focalizzatevi poi sul considerando 4, che definisce i criteri dell'organo societario, e sul considerando 5, che esclude l'applicazione del termine di prescrizione penale alla responsabilità del principale per gli ausiliari. Tenete presente l'evoluzione giurisprudenziale inaugurata da DTF 112 II 172.",
+          "significance_fr": "Cet arrêt établit que le délai de prescription pénal de l'art. 60 al. 2 CO ne s'applique pas à la responsabilité du commettant pour ses auxiliaires (art. 55 CO), tout en précisant les critères permettant de distinguer l'organe de la personne morale de la simple auxiliaire.",
+          "significance_it": "La sentenza stabilisce che il termine di prescrizione penale ex art. 60 cpv. 2 CO non si applica alla responsabilità del principale per gli ausiliari ai sensi dell'art. 55 CO, e fissa i criteri per distinguere l'organo della persona giuridica dal semplice ausiliario."
         },
         {
           "decision_id": "bge_130 III 736",

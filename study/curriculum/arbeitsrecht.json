@@ -39,13 +39,74 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Kündigung als Reaktion auf berechtigte Beschwerden des Arbeitnehmers ist missbräuchlich",
-          "significance_fr": "Le licenciement en réaction à des plaintes justifiées de l'employé est abusif",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que la protection contre le licenciement-représailles (art. 336 al. 1 let. d CO) exige la bonne foi du travailleur et un lien de causalité entre la prétention invoquée et la décision de licenciement, et que le licenciement fondé sur des insuffisances de caractère affectant le travail en commun n'est pas abusif au sens de l'art. 336 al. 1 let. a CO.",
+          "key_erwagungen": [
+            "2.3",
+            "2.4",
+            "2.5",
+            "2.6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst das Regeste, um die zwei zentralen Rechtsfragen (Rachekündigung nach Art. 336 Abs. 1 lit. d OR und charakterliche Unzulänglichkeiten nach lit. a) zu erfassen. Arbeiten Sie anschliessend E. 2.3 durch, welche die allgemeinen Grundsätze zur Kündigungsfreiheit und Missbräuchlichkeit zusammenfasst, bevor Sie die spezifischen Ausführungen in E. 2.4 (Gutgläubigkeit und Kausalität) und E. 2.5 (Abgrenzung persönlichkeitsbezogener Eigenschaften) vertiefen.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 136 III 513 unter dem Begriff der 'Rachekündigung', und welche Grundvoraussetzung muss der Arbeitnehmer erfüllen, um den Schutz von Art. 336 Abs. 1 lit. d OR zu geniessen?",
+              "hint": "Vgl. Regeste sowie E. 2.4 des Entscheids.",
+              "model_answer": "Eine Rachekündigung liegt vor, wenn der Arbeitgeber das Arbeitsverhältnis kündigt, weil der Arbeitnehmer Ansprüche aus dem Arbeitsvertrag geltend gemacht hat. Der Arbeitnehmer ist jedoch nur geschützt, wenn er nach Treu und Glauben annehmen durfte, dass seine Ansprüche berechtigt sind – er muss also gutgläubig gehandelt haben. Es ist dabei nicht erforderlich, dass die geltend gemachten Ansprüche tatsächlich bestehen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche zwei Tatbestände von Art. 336 OR stehen im Zentrum dieses Entscheids, und welche unterschiedlichen Schutzrichtungen verfolgen sie?",
+              "hint": "Vgl. Regeste sowie E. 2.4 (lit. d) und E. 2.5 (lit. a).",
+              "model_answer": "Art. 336 Abs. 1 lit. d OR schützt den Arbeitnehmer vor Vergeltungskündigungen, d.h. wenn die Kündigung als Reaktion auf die Geltendmachung von Ansprüchen aus dem Arbeitsverhältnis erfolgt. Art. 336 Abs. 1 lit. a OR hingegen schützt die Persönlichkeit des Arbeitnehmers, indem es missbräuchlich ist, jemandem wegen einer Eigenschaft zu kündigen, die ihm 'kraft seiner Persönlichkeit zusteht', sofern kein hinreichender Bezug zum Arbeitsverhältnis besteht. Die beiden Normen schützen also unterschiedliche Interessen: die eine das Recht auf Rechtsdurchsetzung, die andere die persönliche Integrität."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Arbeitnehmer fordert kurz vor seiner Kündigung ausstehende Überstundenentschädigung ein, die rechtlich tatsächlich nicht geschuldet ist. Kann er sich dennoch auf Art. 336 Abs. 1 lit. d OR berufen, und welche weiteren Voraussetzungen müsste er nachweisen?",
+              "hint": "Vgl. E. 2.4: Gutgläubigkeit und Kausalität der geltend gemachten Ansprüche für den Kündigungsentscheid.",
+              "model_answer": "Ja, der Arbeitnehmer kann sich grundsätzlich auf Art. 336 Abs. 1 lit. d OR berufen, auch wenn die Überstundenentschädigung rechtlich nicht geschuldet ist, solange er gutgläubig – d.h. nach Treu und Glauben – annehmen durfte, dass sein Anspruch berechtigt ist. Entscheidend ist jedoch zusätzlich, dass die Geltendmachung dieses Anspruchs kausal für den Kündigungsentscheid war. Spielte die Forderung beim Entschluss zur Kündigung keine Rolle, ist die Kündigung gemäss diesem Entscheid trotz zeitlicher Nähe nicht missbräuchlich."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet zwischen Kündigungen wegen 'charakterlicher Unzulänglichkeiten' und solchen wegen persönlichkeitsbezogener Eigenschaften im Sinne von Art. 336 Abs. 1 lit. a OR. Welches Abgrenzungskriterium verwendet das Gericht, und welche Konsequenz hat diese Unterscheidung für den Kündigungsschutz?",
+              "hint": "Vgl. E. 2.5: Die Auswirkung auf die gemeinsame Arbeit ist das massgebliche Abgrenzungskriterium.",
+              "model_answer": "Das Bundesgericht stellt darauf ab, ob die charakterlichen Unzulänglichkeiten des Arbeitnehmers sich schädlich auf die gemeinsame Arbeit auswirken. Ist dies der Fall, liegt kein missbräuchlicher Grund im Sinne von Art. 336 Abs. 1 lit. a OR vor, weil der Bezug zum Arbeitsverhältnis den Schutz der Norm ausschliesst. Diese Abgrenzung hat zur Folge, dass das Gericht nicht mehr prüfen muss, ob es sich überhaupt um eine 'Eigenschaft kraft der Persönlichkeit' handelt, was den Anwendungsbereich des Missbräuchlichkeitsschutzes in diesem Bereich erheblich einschränkt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritiker könnten einwenden, dass das Kausalitätserfordernis bei der Rachekündigung (Art. 336 Abs. 1 lit. d OR) den Schutz des Arbeitnehmers in der Praxis aushöhlt, da Arbeitgeber die wahren Kündigungsmotive verschleiern können. Wie beurteilen Sie diesen Einwand, und welche prozessrechtlichen Instrumente könnten dem Arbeitnehmer dennoch helfen?",
+              "hint": "Vgl. E. 2.3 (Beweislastverteilung, Motiv der Kündigung als Tatfrage) sowie E. 2.4 (Kausalität).",
+              "model_answer": "Der Einwand ist berechtigt, da das Kausalitätserfordernis dem Arbeitnehmer eine schwere Beweislast auferlegt: Er muss nachweisen, dass seine Anspruchsgeltendmachung tatsächlich den Ausschlag für die Kündigung gab, was bei geschickter Argumentation des Arbeitgebers kaum gelingt. Allerdings eröffnet die bundesgerichtliche Praxis, wonach der Kündigungsgrund eine Tatfrage ist, dem Gericht einen gewissen Ermessensspielraum bei der Beweiswürdigung, und Indizien wie zeitliche Nähe zwischen Anspruchsgeltendmachung und Kündigung können ein starkes Beweismittel darstellen. Rechtspolitisch wäre eine Beweislastumkehr – wie sie in anderen Rechtsordnungen bekannt ist – denkbar, um den Schutzgedanken der Norm wirksamer umzusetzen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Stellen Sie sich vor, dass der Arbeitnehmer kurz vor der Kündigung nicht nur Überstundenentschädigung einfordert, sondern gleichzeitig auch intern Mobbing-Vorwürfe gegen seinen Vorgesetzten erhebt. Der Arbeitgeber kündigt und behauptet, der Grund sei ausschliesslich die mangelnde Teamfähigkeit des Arbeitnehmers. Wie verändert das Hinzutreten der Persönlichkeitsschutzverletzung (Art. 328 OR) die rechtliche Beurteilung?",
+              "discussion_points": [
+                "Kann Art. 328 OR als zusätzlicher Anknüpfungspunkt für die Missbräuchlichkeit herangezogen werden, auch wenn er nicht in Art. 336 OR aufgeführt ist?",
+                "Verändert die zeitliche Häufung mehrerer schutzwürdiger Handlungen des Arbeitnehmers die Beweislage hinsichtlich der Kausalität der Kündigung?"
+              ],
+              "likely_outcome_shift": "Das Gericht müsste prüfen, ob die Kündigung missbräuchlich ist, weil der Arbeitgeber durch das Ignorieren der Mobbing-Meldung Art. 328 OR verletzt und dadurch die Kündigung in einem schlechten Licht erscheint – ein Fall, den das Bundesgericht in E. 2.3 als mögliche 'andere Konstellation' ausserhalb der gesetzlichen Liste anerkennt. Die Häufung von Schutztatbeständen (Rachekündigung nach lit. d und Persönlichkeitsschutz nach lit. a) dürfte die Indizlage für eine missbräuchliche Motivation des Arbeitgebers erheblich stärken und eine Gesamtbetrachtung erzwingen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht der Arbeitnehmer, sondern der Arbeitgeber behauptet, er sei missbräuchlich durch eine ungerechtfertigte Klage des Arbeitnehmers auf Lohnzahlung geschädigt worden, und er nun versucht, Schadenersatz wegen der Geltendmachung einer zu Unrecht erhobenen Forderung geltend zu machen?",
+              "discussion_points": [
+                "Steht dem Arbeitgeber ein Gegenstück zum Rachekündigungsschutz zur Verfügung, wenn der Arbeitnehmer gutgläubig, aber letztlich unberechtigt klagt?",
+                "Wie verhält sich das Prinzip der Prozessfreiheit (nemo tenetur se ipsum accusare) und das Recht auf Zugang zu den Gerichten gegenüber allfälligen Schadenersatzansprüchen des Arbeitgebers?"
+              ],
+              "likely_outcome_shift": "Der Arbeitgeber hätte grundsätzlich keinen Anspruch auf Schadenersatz, solange der Arbeitnehmer gutgläubig gehandelt hat, denn der Gesetzgeber hat mit Art. 336 Abs. 1 lit. d OR gerade das Recht des Arbeitnehmers auf unbefangene Geltendmachung von Ansprüchen schützen wollen. Eine gegenteilige Auslegung würde den Schutzgedanken der Norm vollständig unterlaufen und Arbeitnehmer von der Rechtsdurchsetzung abschrecken, was mit dem Grundsatz der Waffengleichheit im Arbeitsrecht unvereinbar wäre."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le regeste afin d'identifier les deux questions juridiques centrales (résiliation-représailles selon l'art. 336 al. 1 let. d CO et insuffisances de caractère selon la let. a). Étudiez ensuite le consid. 2.3, qui résume les principes généraux relatifs à la liberté de résiliation et à l'abus de droit, puis approfondissez les consid. 2.4 (bonne foi et causalité) et 2.5 (délimitation des traits de personnalité au sens de la loi).",
+          "reading_guide_it": "Iniziate leggendo il regesto per identificare le due questioni giuridiche centrali (licenziamento per rappresaglia ai sensi dell'art. 336 cpv. 1 lett. d CO e carenze caratteriali ai sensi della lett. a). Studiate poi il consid. 2.3, che riassume i principi generali sulla libertà di disdetta e l'abuso di diritto, e approfondite i consid. 2.4 (buona fede e causalità) e 2.5 (delimitazione delle qualità personali ai sensi della norma).",
+          "significance_it": "Questa sentenza chiarisce che la protezione contro il licenziamento per rappresaglia (art. 336 cpv. 1 lett. d CO) richiede la buona fede del lavoratore e un nesso causale tra la pretesa fatta valere e la decisione di licenziamento, e che il licenziamento fondato su carenze caratteriali che pregiudicano il lavoro comune non è abusivo ai sensi dell'art. 336 cpv. 1 lett. a CO."
         },
         {
           "decision_id": "bge_124 III 474",
@@ -167,13 +228,74 @@
             "bge_136 III 513"
           ],
           "significance_de": "Massstab für den 'wichtigen Grund' bei fristloser Kündigung; Zumutbarkeit der Fortsetzung",
-          "significance_fr": "Critère du 'juste motif' pour résiliation immédiate; exigibilité de la poursuite",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt établit que le licenciement d'un employé après de nombreuses années de service irréprochable, peu avant la retraite et sans recherche de solution alternative, constitue une violation du devoir de protection de l'employeur (art. 328 CO) et un congé abusif au sens de l'art. 336 CO.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "2.2",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die konkreten Umstände der Kündigung zu erfassen, und wenden Sie sich dann Erwägung 2.1 zu, die das Prinzip der Kündigungsfreiheit und den Massstab der Missbräuchlichkeit klärt. Erwägung 2.2 ist zentral: Sie entwickelt, wie die Fürsorgepflicht gemäss Art. 328 OR die Art und Weise der Kündigung beschränkt und unter welchen Voraussetzungen das Unterlassen sozialverträglicher Alternativen zur Missbräuchlichkeit führt.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was waren die konkreten Umstände, unter denen dem Kläger gekündigt wurde, und welche Gründe nannte die Beklagte zur Rechtfertigung der Kündigung?",
+              "hint": "Siehe Sachverhalt, S. 115–116, insbesondere das Kündigungsschreiben vom 22. Mai 2002.",
+              "model_answer": "Der Kläger war seit 1958 ununterbrochen bei der Beklagten tätig und plante, nach 45 Dienstjahren in Pension zu gehen. Wenige Monate vor der Pensionierung wurde ihm per 31. Juli 2002 gekündigt. Als Begründung nannte die Beklagte seine negative Einstellung gegenüber neuen Projekten, einen unterdurchschnittlichen Bonus von 6,2 % sowie Widerstand gegen die Jahresarbeitszeitregelung."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Grundlagen regeln die missbräuchliche Kündigung im schweizerischen Arbeitsrecht, und wie verhält sich Art. 336 OR zum allgemeinen Rechtsmissbrauchsverbot?",
+              "hint": "Siehe Erwägung 2.1, S. 116–117.",
+              "model_answer": "Art. 336 OR nennt bestimmte unzulässige Kündigungsgründe und konkretisiert damit das allgemeine Rechtsmissbrauchsverbot für den Bereich des Arbeitsvertrags. Die Aufzählung ist nicht abschliessend; das Bundesgericht hat weitere Tatbestände anerkannt, sofern deren Schwere jener der ausdrücklich genannten Gründe vergleichbar ist. Ergänzend spielt Art. 328 OR eine zentrale Rolle, da er die Fürsorgepflicht des Arbeitgebers zum Schutz der Persönlichkeitsgüter des Arbeitnehmers statuiert."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie würden Sie die in Erwägung 2.2 entwickelten Grundsätze zur Fürsorgepflicht auf einen Fall anwenden, in dem ein Arbeitnehmer nach 30 Dienstjahren zwei Jahre vor der Pensionierung wegen Umstrukturierung entlassen wird, ohne dass der Arbeitgeber alternative Stellen geprüft hat?",
+              "hint": "Siehe Erwägung 2.2 zur Pflicht des Arbeitgebers, zumutbare Vorkehren zu treffen und nach sozialverträglicheren Lösungen zu suchen.",
+              "model_answer": "Nach den Grundsätzen von BGE 132 III 115 wäre zu prüfen, ob der Arbeitgeber vor der Kündigung sämtliche zumutbaren Massnahmen ergriffen hat, um eine sozialverträglichere Lösung zu finden, etwa durch interne Versetzung oder angepasste Aufgaben. Das Unterlassen einer solchen Prüfung bei langer Dienstzeit und naher Pensionierung spricht für eine Verletzung der Fürsorgepflicht gemäss Art. 328 OR. Je nach Schwere dieser Unterlassung könnte die Kündigung als missbräuchlich im Sinne von Art. 336 OR qualifiziert und eine Entschädigung von bis zu sechs Monatslöhnen gemäss Art. 336a OR zugesprochen werden."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet das Bundesgericht zwischen dem Kündigungsmotiv und der Art und Weise der Kündigung als selbständige Quellen der Missbräuchlichkeit, und welche Konsequenzen hat diese Unterscheidung für den Nachweis im Prozess?",
+              "hint": "Siehe Erwägung 2.1 und 2.2, insbesondere zur Frage des krass vertragswidrigen Verhaltens und des 'falschen und verdeckten Spiels'.",
+              "model_answer": "Das Bundesgericht erkennt zwei eigenständige Anknüpfungspunkte für die Missbräuchlichkeit: Einerseits das Motiv der Kündigung (z.B. Alter, Gewerkschaftszugehörigkeit), andererseits die Art und Weise ihrer Ausübung, namentlich ein krass vertragswidriges Verhalten oder eine schwere Persönlichkeitsverletzung. Diese Unterscheidung hat prozessuale Relevanz: Beim Motiv muss der Arbeitnehmer regelmässig nachweisen, dass ein unzulässiger Grund ausschlaggebend war, während bei der Art und Weise das objektive Verhalten des Arbeitgebers – etwa das Unterlassen sozialverträglicher Alternativen – im Vordergrund steht. Dadurch wird der Beweis für den Arbeitnehmer in bestimmten Konstellationen erleichtert, da er nicht zwingend ein subjektiv diskriminierendes Motiv belegen muss."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht entwickelte Doktrin, wonach das Unterlassen einer Suche nach sozialverträglicheren Lösungen bei langjährigen Arbeitnehmern nahe der Pensionierung zur Missbräuchlichkeit führen kann, rechtspolitisch überzeugend, oder schränkt sie die Vertragsfreiheit der Arbeitgeber unverhältnismässig ein?",
+              "hint": "Berücksichtigen Sie Erwägung 2.1 (Prinzip der Kündigungsfreiheit) und Erwägung 2.2 (Fürsorgepflicht, Art. 328 OR) sowie den Massstab der vergleichbaren Schwere.",
+              "model_answer": "Die Doktrin ist rechtspolitisch vertretbar, weil sie einen angemessenen Ausgleich zwischen der grundsätzlichen Kündigungsfreiheit und dem Schutz besonders vulnerabler Arbeitnehmer herstellt: Wer nach Jahrzehnten loyaler Arbeit kurz vor der Pensionierung steht, verdient erhöhten Schutz vor willkürlichen Entlassungen, die seine soziale Absicherung gefährden. Kritisch lässt sich einwenden, dass die Pflicht zur Suche nach sozialverträglichen Alternativen die Grenze zwischen ordentlicher und missbräuchlicher Kündigung unscharf macht und Arbeitgeber in Unternehmenskrisen faktisch zur Weiterbeschäftigung zwingt, selbst wenn sachliche Gründe vorliegen. Überzeugend bleibt das Urteil dennoch, weil das Bundesgericht nicht die Kündigung an sich verbietet, sondern lediglich ein Mindestmass an Sorgfalt und Rücksichtnahme einfordert, das dem Schutzzweck von Art. 328 OR entspricht."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Beklagte hätte dem Kläger vor der Kündigung mehrmals schriftlich eine interne Versetzung auf eine weniger anspruchsvolle Stelle angeboten, die dieser jedoch jedes Mal abgelehnt hat, weil er eine Lohnreduktion von 10 % nicht akzeptieren wollte. Wie verändert dies die rechtliche Beurteilung der Kündigung?",
+              "discussion_points": [
+                "Hat die Beklagte durch die Versetzungsangebote ihrer Pflicht zur Suche nach einer sozialverträglicheren Lösung genügt, auch wenn diese mit einer Lohnreduktion verbunden waren?",
+                "Ist die Ablehnung eines Angebots mit 10 % Lohnreduktion durch einen langjährigen Arbeitnehmer kurz vor der Pensionierung als zumutbare Mitwirkungspflicht zu werten oder als verständliche Interessenwahrung?"
+              ],
+              "likely_outcome_shift": "Das Angebot konkreter Alternativstellen würde die Fürsorgepflicht der Beklagten erheblich stärken und die Annahme einer missbräuchlichen Kündigung deutlich erschweren, da das Bundesgericht verlangt, dass der Arbeitgeber zumutbare Vorkehren trifft – und solche hier nachweislich getroffen wurden. Allerdings wäre zu prüfen, ob eine Lohnreduktion von 10 % kurz vor der Pensionierung noch als 'zumutbare' Alternative gilt oder ob das Angebot inhaltlich unzureichend war, sodass die Missbräuchlichkeit unter Umständen bestehen bliebe."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht der Arbeitnehmer, sondern die Arbeitgeberin klagt: Der Kläger hätte selbst gekündigt und verlangt nun eine Entschädigung, weil die Beklagte durch systematisches Mobbing seitens Vorgesetzter eine für ihn unzumutbare Arbeitssituation geschaffen hat, die ihn zur Kündigung gezwungen hat (sog. konstruktive Kündigung). Wie wäre dieser Fall nach den in BGE 132 III 115 entwickelten Grundsätzen zu beurteilen?",
+              "discussion_points": [
+                "Kann eine vom Arbeitnehmer ausgesprochene Kündigung ebenfalls als missbräuchlich qualifiziert werden, wenn sie durch vertragswidriges Verhalten des Arbeitgebers veranlasst wurde?",
+                "Welche Rolle spielt Art. 328 OR bei der Beurteilung, ob der Arbeitgeber durch sein Verhalten die Persönlichkeitsrechte des Arbeitnehmers so schwer verletzt hat, dass die Eigenkündigung als Reaktion darauf gerechtfertigt war?"
+              ],
+              "likely_outcome_shift": "Im Falle einer konstruktiven Kündigung würde das Gericht prüfen, ob die Arbeitgeberin durch ihr Verhalten – hier systematisches Mobbing – ihre Fürsorgepflicht gemäss Art. 328 OR so schwer verletzt hat, dass dem Arbeitnehmer die Fortsetzung des Arbeitsverhältnisses objektiv nicht mehr zumutbar war. Die in BGE 132 III 115 betonten Grundsätze zur Fürsorgepflicht und zum Schutzzweck von Art. 328 OR würden analog angewendet; der Arbeitnehmer könnte Schadensersatz und gegebenenfalls eine Genugtuung verlangen, selbst wenn er formal die kündigende Partei ist."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement les faits afin de saisir les circonstances concrètes du licenciement, puis consultez le considérant 2.1, qui précise le principe de la liberté de résiliation et le critère de l'abus. Le considérant 2.2 est essentiel : il explique comment le devoir de protection découlant de l'art. 328 CO limite les modalités du congé et dans quelles conditions l'omission de rechercher des solutions socialement plus acceptables rend le licenciement abusif.",
+          "reading_guide_it": "Leggere innanzitutto attentamente i fatti per comprendere le circostanze concrete del licenziamento, poi esaminare il considerando 2.1, che chiarisce il principio della libertà di disdetta e il criterio dell'abusività. Il considerando 2.2 è fondamentale: illustra come il dovere di protezione ai sensi dell'art. 328 CO limiti le modalità del licenziamento e in quali condizioni l'omissione di cercare soluzioni socialmente più accettabili rende abusivo il licenziamento.",
+          "significance_it": "Questa sentenza stabilisce che il licenziamento di un lavoratore dopo molti anni di servizio irreprensibile, poco prima del pensionamento e senza ricerca di soluzioni alternative, costituisce una violazione del dovere di protezione del datore di lavoro (art. 328 CO) e un licenziamento abusivo ai sensi dell'art. 336 CO."
         }
       ]
     },
@@ -211,13 +333,75 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Der Arbeitnehmer trägt die Darlegungs- und Beweislast für geleistete Überstunden",
-          "significance_fr": "L'employé supporte le fardeau de l'allégation et de la preuve des heures supplémentaires",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "L'arrêt établit que le travailleur supporte le fardeau de l'allégation et de la preuve des heures supplémentaires effectuées, et qu'une attente excessive avant de faire valoir ce droit peut entraîner sa péremption au regard du principe de la bonne foi (art. 2 CC), notamment lorsqu'il n'a pas satisfait à son obligation d'avis envers l'employeur.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "2.2",
+            "2.3",
+            "2.4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (A–D), um den prozessualen Weg des Falles durch drei Instanzen nachzuvollziehen. Konzentrieren Sie sich dann auf Erwägung 2.1 für die besonderen Anforderungen an leitende Angestellte und auf die im Regeste genannten Erwägungen 2.2–2.4 für die entscheidende Frage der Anzeigeobliegenheit und der Anspruchsverwirkung. Beachten Sie dabei stets das Zusammenspiel zwischen Art. 321c OR und dem Grundsatz von Treu und Glauben nach Art. 2 ZGB.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Kantonsgericht Graubünden entschieden, und warum wies es die Klage des Klägers auf Überstundenentschädigung ab?",
+              "hint": "Sachverhalt, Abschnitt C (Entscheid des Kantonsgerichts)",
+              "model_answer": "Das Kantonsgericht Graubünden hiess die Berufung des Beklagten teilweise gut und wies die Klage auf Lohnentschädigungen (inkl. Überstundenentschädigung) ab. Es begründete dies damit, dass der Kläger die Überstundenentschädigung zu spät geltend gemacht habe und der Anspruch deshalb aufgrund der Umstände verwirkt sei. Der Kläger hatte das Arbeitsverhältnis am 30. April 1998 beendet und erst am 8. Dezember 2000 – also rund zweieinhalb Jahre später – Klage erhoben."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzliche Grundlage regelt den Anspruch auf Überstundenentschädigung, und unter welchen Voraussetzungen entsteht dieser Anspruch nach Art. 321c OR?",
+              "hint": "Erwägung 2 und 2.1, Verweis auf Art. 321c Abs. 1 und 3 OR",
+              "model_answer": "Art. 321c OR bildet die gesetzliche Grundlage. Nach Abs. 1 ist der Arbeitnehmer zur Überstundenleistung verpflichtet, wenn diese notwendig, zumutbar und ihm möglich ist. Gemäss Abs. 3 sind Überstunden zu entgelten, sofern sie nicht durch Freizeit kompensiert werden und keine anderslautende schriftliche Vereinbarung oder ein Normalarbeitsvertrag bzw. Gesamtarbeitsvertrag besteht. Die gesetzliche Regelung gilt auch für leitende Angestellte, sofern der zeitliche Umfang der Arbeit vertraglich ausdrücklich vereinbart wurde."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Der Kläger war als Verkehrsdirektor (Tourismus-Direktor) tätig. Welche besonderen Hürden gelten nach diesem Urteil für leitende Angestellte, die Überstundenentschädigung beanspruchen wollen, und weshalb konnte der Kläger diese Hürde trotzdem nehmen?",
+              "hint": "Erwägung 2.1, insbesondere die vertragliche Regelung der Arbeitszeit (Ziff. 3 des Arbeitsvertrags)",
+              "model_answer": "Leitende Angestellte haben grundsätzlich keinen Anspruch auf Überstundenentschädigung, weil von ihnen erwartet wird, mehr als das übliche Pensum zu leisten, und weil sie ihre Arbeitszeit weitgehend frei einteilen können. Ein solcher Anspruch entsteht für sie ausnahmsweise nur, wenn ihnen zusätzliche Aufgaben über den vereinbarten Pflichtenkreis hinaus übertragen werden oder wenn die gesamte Belegschaft während längerer Zeit wesentliche Überstunden leistet. Im vorliegenden Fall konnte der Kläger diese Hürde nehmen, weil sein Arbeitsvertrag die wöchentliche Arbeitszeit ausdrücklich auf 42,5 Stunden festlegte, womit die allgemeine Regelung von Art. 321c OR anwendbar war."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht hob den Entscheid des Kantonsgerichts auf und wies die Sache zurück. Welche rechtlichen Fehler warf der Kläger der Vorinstanz vor, und inwiefern berührt die Frage der Anzeigeobliegenheit das Verhältnis zwischen Art. 321c OR und Art. 2 ZGB?",
+              "hint": "Sachverhalt Abschnitt D (Berufungsbegehren) und Regeste (E. 2.2–2.4)",
+              "model_answer": "Der Kläger rügte eine Verletzung von Art. 2 ZGB (Treu und Glauben / Rechtsmissbrauch) sowie von Art. 321c OR, indem die Vorinstanz bei der Annahme der Verwirkung sachfremde Tatsachen berücksichtigt und relevante ausser Acht gelassen habe. Die Frage der Anzeigeobliegenheit betrifft die arbeitsrechtliche Nebenpflicht des Arbeitnehmers, den Arbeitgeber zeitnah über geleistete Überstunden zu informieren; zu langes Zuwarten kann nach Treu und Glauben (Art. 2 ZGB) zur Verwirkung des Anspruchs führen. Das Bundesgericht korrigierte die Vorinstanz, weil diese den Massstab für die Verwirkung nicht korrekt angewendet hatte, was zeigt, dass die Grenze zwischen legitimer Untätigkeit des Arbeitnehmers und rechtsmissbräuchlichem Zuwarten sorgfältig geprüft werden muss."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch sinnvoll, den Anspruch auf Überstundenentschädigung auch ohne formelle Verwirkungsfrist allein aufgrund zu langen Zuwartens des Arbeitnehmers untergehen zu lassen? Welche Interessen stehen sich dabei gegenüber?",
+              "hint": "Regeste (E. 2.2–2.4) und die Überlegungen zur Anzeigeobliegenheit; vgl. auch den Grundsatz von Treu und Glauben (Art. 2 ZGB)",
+              "model_answer": "Für diese Lösung spricht das berechtigte Interesse des Arbeitgebers, zeitnah Kenntnis von Überstunden zu erlangen, um darüber disponieren (z.B. Freizeitausgleich anordnen) und Beweise sichern zu können; ausserdem fördert sie Rechtssicherheit und verhindert die spekulative Anhäufung von Forderungen. Dagegen spricht, dass Arbeitnehmer – insbesondere in abhängigen Positionen – oft zögern, während des laufenden Arbeitsverhältnisses Ansprüche geltend zu machen, und dass das Gesetz in Art. 321c OR keine ausdrückliche Anzeigepflicht vorschreibt. Eine Verwirkung ohne gesetzliche Grundlage allein gestützt auf Art. 2 ZGB erscheint daher heikel und bedarf einer besonders sorgfältigen Interessenabwägung im Einzelfall, wie das Bundesgericht durch die Rückweisung implizit bestätigte."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Kläger hätte während des laufenden Arbeitsverhältnisses dem Beklagten monatlich schriftliche Überstundenrapporte eingereicht, die dieser kommentarlos entgegengenommen hatte. Die Klage wäre dennoch erst zweieinhalb Jahre nach Beendigung des Arbeitsverhältnisses eingereicht worden. Würde dies die Frage der Verwirkung anders beurteilen lassen?",
+              "discussion_points": [
+                "Die schriftlichen Rapporte könnten die Anzeigeobliegenheit des Arbeitnehmers erfüllen und dem Arbeitgeber die Möglichkeit gegeben haben, zeitnah zu reagieren.",
+                "Das kommentarlose Entgegennehmen der Rapporte könnte als konkludente Anerkennung der Überstunden oder zumindest als Verzicht auf den Einwand der verspäteten Anzeige gewertet werden."
+              ],
+              "likely_outcome_shift": "Eine Verwirkung wäre erheblich schwerer zu begründen, weil der Arbeitgeber durch die regelmässigen Rapporte informiert war und selbst die Möglichkeit gehabt hätte, die Überstunden zu kompensieren oder zu bestreiten. Das blosse Verstreichen von Zeit nach Vertragsende würde allein kaum genügen, um den Anspruch untergehen zu lassen, da der Kern der Anzeigeobliegenheit – Schutz des Arbeitgebers vor Überraschungsforderungen – bereits erfüllt wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht der Arbeitnehmer, sondern der Arbeitgeber hätte nach Vertragsende zwei Jahre gewartet und dann Rückerstattung von angeblich zu viel bezahltem Lohn (Gegenforderung für zu wenig geleistete Arbeit) verlangt. Gelten die Grundsätze zur Anzeigeobliegenheit und Verwirkung spiegelbildlich auch für den Arbeitgeber?",
+              "discussion_points": [
+                "Die Anzeigeobliegenheit wurde in der Rechtsprechung primär für den Arbeitnehmer entwickelt; es ist fraglich, ob sie symmetrisch auf den Arbeitgeber angewendet werden kann, da dieser die Arbeit des Arbeitnehmers direkt überwacht.",
+                "Der Arbeitgeber ist als stärkere Vertragspartei in der Lage, Minderleistungen sofort festzustellen und zu rügen; ein langes Zuwarten könnte daher noch strenger als Verzicht oder Verwirkung gewertet werden."
+              ],
+              "likely_outcome_shift": "Die Rückforderung des Arbeitgebers wäre wohl noch eher als verwirkt zu betrachten als jene des Arbeitnehmers, weil der Arbeitgeber die Leistungserbringung direkt überwachen kann und Rügeobliegenheiten im Arbeitsrecht tendenziell strenger für die stärkere Vertragspartei gelten. Zudem schützt das Arbeitsrecht den Arbeitnehmer vor nachträglichen Abzügen, was die Hürde für eine erfolgreiche Rückforderung des Arbeitgebers erhöhen würde."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire l'état de fait (A–D) afin de retracer le cheminement procédural de l'affaire à travers les trois instances. Concentrez-vous ensuite sur le considérant 2.1 pour les exigences particulières applicables aux cadres supérieurs, puis sur les considérants 2.2–2.4 mentionnés dans le regeste pour la question centrale de l'obligation d'avis et de la péremption du droit. Prêtez attention à l'interaction entre l'art. 321c CO et le principe de la bonne foi au sens de l'art. 2 CC.",
+          "reading_guide_it": "Iniziate con la lettura della fattispecie (A–D) per seguire il percorso processuale della causa attraverso le tre istanze. Concentrate poi l'attenzione sul considerando 2.1 riguardante i requisiti particolari per i dirigenti, e sui considerandi 2.2–2.4 citati nel regesto per la questione centrale dell'obbligo di comunicazione e della decadenza del diritto. Tenete presente l'interazione tra l'art. 321c CO e il principio della buona fede di cui all'art. 2 CC.",
+          "significance_it": "La sentenza stabilisce che il lavoratore sopporta l'onere di allegazione e di prova per le ore straordinarie prestate, e che un'attesa eccessiva prima di far valere tale diritto può comportarne la decadenza alla luce del principio della buona fede (art. 2 CC), in particolare qualora il lavoratore non abbia adempiuto al proprio obbligo di comunicazione nei confronti del datore di lavoro."
         },
         {
           "decision_id": "bge_125 I 71",
@@ -356,13 +540,72 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Voraussetzungen eines gültigen Konkurrenzverbots; Einblick in Kundenstamm als Voraussetzung",
-          "significance_fr": "Conditions d'une prohibition de concurrence valable; connaissance de la clientèle comme condition",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que la clause de prohibition de concurrence fondée sur la connaissance de la clientèle est invalide lorsque la relation avec le client repose essentiellement sur les compétences personnelles de l'employé plutôt que sur l'identité de l'employeur, et que les actes préparatoires à la création d'une entreprise concurrente effectués avant la fin du contrat de travail ne violent pas le devoir de fidélité.",
+          "key_erwagungen": [
+            "2.2",
+            "2.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die beiden Regestens, um die zwei zentralen Rechtsfragen zu erfassen: die Gültigkeit des Konkurrenzverbots (E. 2.2) und die Grenzen der Treuepflicht bei Vorbereitungshandlungen (E. 2.3). Achten Sie besonders darauf, wie das Bundesgericht die Voraussetzung des 'Einblicks in den Kundenkreis' gemäss Art. 340 Abs. 2 OR auslegt und warum es im Kontext von personalisierten Dienstleistungen ein schutzwürdiges Interesse des Arbeitgebers verneint.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 138 III 67 bezüglich der Gültigkeit eines Konkurrenzverbots entschieden, wenn der Arbeitnehmer dem Kunden eine Leistung erbringt, die vorwiegend von seinen persönlichen Fähigkeiten geprägt ist?",
+              "hint": "Vgl. Regeste a und E. 2.2 des Entscheids.",
+              "model_answer": "Das Bundesgericht hat entschieden, dass ein Konkurrenzverbot, das auf den Einblick in den Kundenkreis gestützt wird, ungültig ist, wenn der Arbeitnehmer dem Kunden eine Leistung erbringt, die vorwiegend von seinen persönlichen Fähigkeiten geprägt ist. In einem solchen Fall misst der Kunde den persönlichen Fähigkeiten des Arbeitnehmers eine grössere Bedeutung bei als der Identität des Arbeitgebers. Die Voraussetzung des 'Einblicks in den Kundenkreis' gemäss Art. 340 Abs. 2 OR ist damit nicht erfüllt, weil kein schutzwürdiges Interesse des Arbeitgebers besteht."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche kumulativen gesetzlichen Voraussetzungen müssen nach Art. 340 Abs. 2 OR erfüllt sein, damit ein Konkurrenzverbot gültig ist, und welche dieser Voraussetzungen stand im vorliegenden Fall im Vordergrund?",
+              "hint": "Vgl. Art. 340 Abs. 2 OR sowie Regeste a und b des Entscheids.",
+              "model_answer": "Art. 340 Abs. 2 OR verlangt, dass der Arbeitnehmer Einblick in den Kundenkreis oder in Fabrikations- und Geschäftsgeheimnisse hatte und dass die Verwendung dieses Wissens den Arbeitgeber erheblich schädigen könnte. Im vorliegenden Fall standen beide Voraussetzungen zur Diskussion: Erstens der Einblick in den Kundenkreis (Regeste a) und zweitens die Fabrikations- und Geschäftsgeheimnisse (Regeste b). Das Bundesgericht verneinte beide Voraussetzungen und erklärte die Konkurrenzverbote der beiden 'training coach senior' für ungültig."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Buchhalter einer Treuhandfirma schliesst mit seinem Arbeitgeber ein Konkurrenzverbot ab und betreut dabei dieselben Unternehmenskunden über Jahre hinweg. Wäre ein solches Konkurrenzverbot nach den Grundsätzen von BGE 138 III 67 eher gültig oder ungültig?",
+              "hint": "Prüfen Sie, ob die erbrachte Leistung vorwiegend von den persönlichen Fähigkeiten des Buchhalters oder von der Infrastruktur und dem Ruf des Arbeitgebers abhängt.",
+              "model_answer": "Im Fall eines Buchhalters einer Treuhandfirma dürfte ein Konkurrenzverbot gestützt auf den Einblick in den Kundenkreis eher gültig sein. Anders als bei einem 'training coach', bei dem die persönliche Beziehung und individuelle Kompetenz des Trainers im Vordergrund stehen, vertrauen Unternehmenskunden einer Treuhandfirma tendenziell stärker der Institution und ihren Systemen als einer einzelnen Person. Zudem verfügt der Buchhalter über detaillierte Kenntnisse der finanziellen Situation der Kunden, was ein legitimes Schutzinteresse des Arbeitgebers begründet."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet in BGE 138 III 67 zwischen der Treuepflicht während des Arbeitsverhältnisses und nach dessen Beendigung. Welche Konsequenzen zieht es daraus für die Zulässigkeit von Vorbereitungshandlungen zur Gründung eines Konkurrenzunternehmens noch während des laufenden Arbeitsverhältnisses?",
+              "hint": "Vgl. Regeste b und E. 2.3 des Entscheids sowie Art. 321a OR.",
+              "model_answer": "Das Bundesgericht stellt fest, dass die Treuepflicht gemäss Art. 321a OR mit dem Ablauf des Arbeitsvertrags erlischt und danach kein nachvertragliches Wettbewerbsverbot kraft Gesetzes besteht. Bereits während des laufenden Arbeitsverhältnisses sind Vorbereitungshandlungen zur Gründung eines Konkurrenzunternehmens zulässig, solange der Arbeitnehmer noch keine aktive Konkurrenztätigkeit aufnimmt und weder Arbeitnehmer noch Kundschaft des bisherigen Arbeitgebers abwirbt. Die Grenze zur Treuepflichtverletzung wird erst überschritten, wenn der Arbeitnehmer beginnt, aktiv gegen die Interessen seines noch bestehenden Arbeitgebers zu handeln."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 138 III 67 entwickelte Unterscheidung zwischen 'persönlichkeitsgeprägte Leistungen' und anderen Leistungen als Kriterium für die Gültigkeit von Konkurrenzverboten aus rechtspolitischer Sicht überzeugend, oder schützt sie die Arbeitnehmerinteressen auf Kosten eines legitimen Arbeitgeberschutzes?",
+              "hint": "Beachten Sie die Interessenabwägung zwischen dem Schutz der wirtschaftlichen Freiheit des Arbeitnehmers und dem legitimen Schutzinteresse des Arbeitgebers an seinem Kundenstamm.",
+              "model_answer": "Die Unterscheidung des Bundesgerichts ist rechtspolitisch grundsätzlich überzeugend, weil sie verhindert, dass Arbeitgeber über Konkurrenzverbote das persönliche Humankapital von Arbeitnehmern faktisch 'einschliessen', obwohl der Kundenstamm primär auf der individuellen Persönlichkeit und Kompetenz des Arbeitnehmers beruht. Kritisch lässt sich einwenden, dass die Abgrenzung in der Praxis schwierig zu ziehen ist, da die meisten Dienstleistungsbeziehungen sowohl institutionelle als auch persönliche Elemente aufweisen. Dennoch erscheint die Lösung vorzugswürdig, weil Art. 340 Abs. 2 OR ein legitimes Schutzinteresse des Arbeitgebers verlangt und dieses fehlt, wenn der Kunde primär wegen des Arbeitnehmers und nicht wegen des Unternehmens Kunde ist."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn Y. und Z. nachweislich eine spezifische, vom Arbeitgeber X. SA entwickelte und geheimgehaltene Coaching-Methodik sowie proprietäre Trainingsinhalte mitgenommen und in ihrem neuen Konkurrenzunternehmen eingesetzt hätten?",
+              "discussion_points": [
+                "Würden die verwendeten Materialien und Methoden als 'Fabrikations- und Geschäftsgeheimnisse' im Sinne von Art. 340 Abs. 2 OR qualifizieren, und welche Anforderungen stellt das Bundesgericht an diese Qualifikation?",
+                "Würde die Mitnahme solcher Materialien zusätzlich eine Verletzung der Treuepflicht gemäss Art. 321a OR oder gar strafbare Handlungen (z.B. Verletzung des Geschäftsgeheimnisses nach Art. 162 StGB) begründen, unabhängig von der Gültigkeit des Konkurrenzverbots?"
+              ],
+              "likely_outcome_shift": "Wenn nachgewiesen würde, dass Y. und Z. spezifische, vom Arbeitgeber geheimgehaltene technische oder methodische Inhalte verwendet haben, hätte dies die Gültigkeit des Konkurrenzverbots unter dem Aspekt der 'Fabrikations- und Geschäftsgeheimnisse' neu beleuchtet und möglicherweise bejaht. Zudem hätten die Arbeitnehmer ihre Treuepflicht verletzt, was unabhängig vom Konkurrenzverbot Schadenersatzansprüche begründet hätte. Das Bundesgericht hätte die Klage von X. SA in diesem Szenario zumindest teilweise gutheissen müssen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht Y. und Z. als freie Coaches, sondern zwei Softwareentwickler hätten das Unternehmen verlassen und ein Konkurrenzunternehmen gegründet, das eine ähnliche Softwarelösung wie ihr früherer Arbeitgeber anbietet, für deren Entwicklung sie massgeblich verantwortlich waren.",
+              "discussion_points": [
+                "Inwiefern würde die Natur der erbrachten Leistung (technische Softwareentwicklung statt personenbezogenes Coaching) die Beurteilung des 'Einblicks in den Kundenkreis' und der 'Fabrikations- und Geschäftsgeheimnisse' verändern?",
+                "Spielen bei Softwareentwicklern das Urheberrecht und der Schutz von Quellcode als Geschäftsgeheimnis eine zusätzliche Rolle, die über das Konkurrenzverbotsrecht hinausgeht?"
+              ],
+              "likely_outcome_shift": "Bei Softwareentwicklern würde die Beurteilung der 'Fabrikations- und Geschäftsgeheimnisse' erheblich stärker ins Gewicht fallen, da proprietärer Quellcode, Algorithmen und Architekturentscheidungen klar als schützenswerte Geheimnisse qualifizieren. Das Kriterium der 'persönlichkeitsgeprägten Leistung' wäre weniger relevant, da Softwareprodukte primär der Firma und nicht dem individuellen Entwickler zugeschrieben werden. Ein Konkurrenzverbot würde in diesem Szenario mit höherer Wahrscheinlichkeit für gültig erklärt, und die Gründung eines direkten Konkurrenzunternehmens mit dem erworbenen Know-how würde zusätzliche Haftungsrisiken begründen."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les deux regestae afin de saisir les deux questions juridiques centrales: la validité de la clause de prohibition de concurrence (consid. 2.2) et les limites du devoir de fidélité lors d'actes préparatoires (consid. 2.3). Portez une attention particulière à la manière dont le Tribunal fédéral interprète la condition de la 'connaissance de la clientèle' au sens de l'art. 340 al. 2 CO et à la raison pour laquelle il nie l'existence d'un intérêt légitime de l'employeur dans le contexte de prestations de services personnalisées.",
+          "reading_guide_it": "Si raccomanda di leggere innanzitutto i due regestae per comprendere le due questioni giuridiche centrali: la validità del patto di non concorrenza (consid. 2.2) e i limiti del dovere di fedeltà in caso di atti preparatori (consid. 2.3). Si presti particolare attenzione al modo in cui il Tribunale federale interpreta la condizione della 'conoscenza della clientela' ai sensi dell'art. 340 cpv. 2 CO e alle ragioni per cui nega un interesse legittimo del datore di lavoro nel contesto di prestazioni di servizi personalizzate.",
+          "significance_it": "Questa sentenza chiarisce che il patto di non concorrenza basato sulla conoscenza della clientela è invalido quando il rapporto con il cliente dipende essenzialmente dalle competenze personali del lavoratore piuttosto che dall'identità del datore di lavoro, e che gli atti preparatori alla costituzione di un'impresa concorrente compiuti prima della scadenza del contratto di lavoro non violano il dovere di fedeltà."
         },
         {
           "decision_id": "bge_129 III 177",

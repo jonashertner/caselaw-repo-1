@@ -38,13 +38,78 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Methodik der Unterhaltsberechnung: Einführung der zweistufigen Methode mit Überschussverteilung",
-          "significance_fr": "Arrêt de principe sur la méthodologie du calcul de l'entretien: introduction de la méthode en deux étapes",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt de principe introduit une méthode en deux étapes pour le calcul de l'entretien post-divorce et abandonne l'«effet bascule» de la jurisprudence antérieure sur le mariage ayant marqué la vie, en exigeant désormais une appréciation concrète de chaque mariage et de ses effets réels sur la situation des époux.",
+          "key_erwagungen": [
+            "3.4",
+            "3.4.1",
+            "3.4.2",
+            "3.4.3",
+            "3.4.4",
+            "3.4.5",
+            "3.4.6",
+            "3.5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 250–252), um die besonderen Umstände der 'Fernehe' zu erfassen. Konzentrieren Sie sich dann auf die Erwägungen 3.4.1 bis 3.4.6, in denen das Bundesgericht die Prinzipien der lebensprägenden Ehe systematisch entwickelt und den 'Kippeffekt' der bisherigen Rechtsprechung kritisiert. Abschliessend zeigt E. 3.5 die konkrete Anwendung dieser Grundsätze auf den vorliegenden Fall.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter einer 'lebensprägenden Ehe' und welche Rechtsfolge knüpft es grundsätzlich daran?",
+              "hint": "Vgl. Regeste und E. 3.4.1 sowie E. 3.4.3",
+              "model_answer": "Eine lebensprägende Ehe liegt vor, wenn die Ehe die Lebensgestaltung eines Ehegatten nachhaltig beeinflusst hat, sodass er seinen bisherigen Lebensstandard nach der Scheidung nicht mehr aus eigener Kraft erreichen kann. Das Bundesgericht knüpft daran die Rechtsfolge, dass der nacheheliche Unterhalt am ehelich gelebten Standard ausgerichtet werden darf. Voraussetzung ist stets, dass eine tatsächliche Lebensgestaltung stattgefunden hat, die diesen Einfluss begründet."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche normativen Grundlagen regeln den nachehelichen Unterhalt im Schweizer Recht, und welche Prinzipien hat das Bundesgericht in BGE 147 III 249 für dessen Bemessung entwickelt?",
+              "hint": "Vgl. Art. 125 ZGB sowie E. 3.4.4 und E. 3.4.5",
+              "model_answer": "Die zentrale Norm ist Art. 125 ZGB, der den nachehelichen Unterhalt regelt. Das Bundesgericht hat in diesem Entscheid als Leitprinzipien festgehalten: Erstens geht die Eigenversorgung des unterhaltsberechtigten Ehegatten stets vor, d.h. eine vorhandene Erwerbskapazität ist grundsätzlich vollständig auszuschöpfen. Zweitens besteht ein Unterhaltsanspruch nur, soweit Eigenversorgung fehlt und der verpflichtete Ehegatte leistungsfähig ist, und drittens ist der Anspruch zeitlich angemessen zu begrenzen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie hat das Bundesgericht die Prinzipien der lebensprägenden Ehe auf den konkreten Sachverhalt – eine kinderlose Ehe mit weitgehend getrennter Lebensführung wegen Auslandseinsätzen des Ehemannes – angewendet, und zu welchem Ergebnis gelangte es?",
+              "hint": "Vgl. E. 3.5 sowie Sachverhalt (A. und B.) und den dispositiven Teil des Urteils",
+              "model_answer": "Das Bundesgericht stellte fest, dass die Parteien aufgrund der Auslandstätigkeit des Ehemannes die eheliche Gemeinschaft faktisch kaum aufgenommen hatten und die Ehefrau ihren Lebenszuschnitt nicht wesentlich durch die Ehe verändert hatte. Angesichts dieser speziellen Umstände verneinte es das Vorliegen einer lebensprägenden Ehe und damit einen nachehelichen Unterhaltsanspruch ab März 2016. Es hiess die Beschwerde des Ehemannes in diesem Punkt gut und sah vom Zuspruch nachehelichen Unterhalts ab."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht kritisiert den sogenannten 'Kippeffekt' der bisherigen Rechtsprechung zur lebensprägenden Ehe. Was meint es damit, und welche methodischen Konsequenzen zieht es daraus für die Unterhaltsberechnung?",
+              "hint": "Vgl. E. 3.4.2 und E. 3.4.6",
+              "model_answer": "Mit 'Kippeffekt' kritisiert das Bundesgericht, dass die bisherige Praxis die Frage der Lebensprägung als binäre Schwelle behandelte: Lag eine lebensprägende Ehe vor, folgte automatisch ein umfassender Unterhaltsanspruch; fehlte sie, entstand kein Anspruch. Dies führte zu schematischen und teils ungerechten Ergebnissen. Das Bundesgericht verlangt stattdessen eine Würdigung der konkreten Ehe in ihrer Gesamtheit und eine Einzelfallbeurteilung, bei der Intensität, Dauer und Art der gegenseitigen Lebensgestaltung differenziert berücksichtigt werden. Die Methodik wird damit von einem Alles-oder-Nichts-Prinzip zu einer graduellen Betrachtung weiterentwickelt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Inwiefern stellt BGE 147 III 249 einen Paradigmenwechsel im Schweizer Unterhaltsrecht dar, und welche Vor- und Nachteile hat der Übergang zur einzelfallbezogenen Methodik gegenüber dem bisherigen schematischen Ansatz?",
+              "hint": "Vgl. E. 3.4.2, E. 3.4.3 und E. 3.4.6 sowie die Significance des Entscheids als Grundsatzentscheid",
+              "model_answer": "BGE 147 III 249 markiert einen bedeutenden Methodenwechsel, indem das Bundesgericht den starren Kippeffekt zugunsten einer einzelfallbezogenen Beurteilung aufgibt und damit Gerechtigkeit im Einzelfall stärkt. Der Vorteil liegt in der Sachgerechtigkeit: Atypische Eheformen wie die vorliegende 'Fernehe' werden angemessen gewürdigt, ohne pauschale Folgen auszulösen. Nachteilig ist jedoch die geringere Rechtssicherheit und Vorhersehbarkeit, da Parteien und Gerichte stärker auf Wertungsspielräume angewiesen sind, was Rechtsstreitigkeiten verlängern kann. Insgesamt ist der Ansatz zu begrüssen, weil er verfassungsrechtliche Grundsätze wie die Verhältnismässigkeit und Einzelfallgerechtigkeit stärker zur Geltung bringt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Parteien gemeinsame Kinder hätten und die Ehefrau wegen der Kinderbetreuung ihre Erwerbstätigkeit vollständig aufgegeben hätte, obwohl das eheliche Zusammenleben wegen der Auslandstätigkeit des Ehemannes ebenfalls sehr eingeschränkt war?",
+              "discussion_points": [
+                "Wie wirkt sich die Kinderbetreuung als ehebedingte Nachteil (Art. 125 Abs. 2 Ziff. 5 ZGB) auf die Frage der Lebensprägung aus?",
+                "Inwiefern verändert die Aufgabe der Erwerbstätigkeit zugunsten der Familie die Beurteilung der faktischen Lebensgestaltung, auch wenn physische Präsenz des anderen Ehegatten weitgehend fehlte?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht hätte die Ehe mit hoher Wahrscheinlichkeit als lebensprägend qualifiziert, da die Ehefrau durch die Kinderbetreuung konkrete und nachweisbare ehebedingte Nachteile in ihrer Erwerbsbiografie erlitten hätte. Die Eigenversorgungskapazität wäre entsprechend eingeschränkt zu beurteilen gewesen, und ein zeitlich begrenzter, aber substanzieller Unterhaltsanspruch wäre wahrscheinlich zugesprochen worden."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht der Ehemann, sondern die Ehefrau die international tätige Berufsperson gewesen wäre, die ihre Arbeitseinsätze im Ausland verrichtete, und der Ehemann in der Schweiz geblieben wäre und dort in bescheidenerem Rahmen als Teilzeitangestellter gearbeitet hätte?",
+              "discussion_points": [
+                "Würde die Geschlechterrolle die rechtliche Beurteilung der Lebensprägung beeinflussen, oder ist Art. 125 ZGB geschlechtsneutral anzuwenden?",
+                "Wie wäre die Eigenversorgungskapazität des in der Schweiz verbliebenen Ehemannes zu beurteilen, und hätte seine Teilzeittätigkeit als freiwillige Einschränkung oder als ehebedingter Nachteil gegolten?"
+              ],
+              "likely_outcome_shift": "Die rechtliche Beurteilung wäre nach den Prinzipien von BGE 147 III 249 grundsätzlich identisch, da Art. 125 ZGB geschlechtsneutral ausgestaltet ist. Das Bundesgericht würde auch hier auf die konkrete Lebensgestaltung abstellen und prüfen, ob der Ehemann seinen Lebenszuschnitt tatsächlich durch die Ehe verändert hatte. Da er in der Schweiz verblieb und weiterhin erwerbstätig war, fehlte es an einer lebensprägenden Veränderung, sodass auch ein Unterhaltsanspruch des Ehemannes wohl zu verneinen wäre."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les faits (p. 250–252) pour comprendre les circonstances particulières du mariage à distance. Concentrez-vous ensuite sur les considérants 3.4.1 à 3.4.6, dans lesquels le Tribunal fédéral développe systématiquement les principes du mariage ayant marqué la vie et critique l'«effet bascule» de la jurisprudence antérieure. Le considérant 3.5 illustre enfin l'application concrète de ces principes au cas d'espèce.",
+          "reading_guide_it": "Iniziate leggendo i fatti (p. 250–252) per comprendere le particolari circostanze del matrimonio a distanza. Concentrate poi l'attenzione sui considerandi 3.4.1–3.4.6, nei quali il Tribunale federale sviluppa sistematicamente i principi del matrimonio che ha segnato la vita e critica l'«effetto bascula» della giurisprudenza precedente. Il considerando 3.5 illustra infine l'applicazione concreta di tali principi al caso di specie.",
+          "significance_it": "Questa sentenza di principio introduce un metodo in due fasi per il calcolo del mantenimento post-divorzio e abbandona l'«effetto bascula» della giurisprudenza precedente sul matrimonio che ha segnato la vita, richiedendo d'ora in poi una valutazione concreta di ogni matrimonio e dei suoi effetti reali sulla situazione dei coniugi."
         },
         {
           "decision_id": "bge_134 III 145",
@@ -174,13 +239,76 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Gemeinsame elterliche Sorge als Regel; alleinige Sorge nur bei schwerwiegender Unfähigkeit zur Kooperation",
-          "significance_fr": "Autorité parentale conjointe comme règle; autorité exclusive seulement en cas d'incapacité grave de coopérer",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt de principe précise les critères applicables à l'art. 301a al. 2 let. a CC en cas de déménagement d'un enfant à l'étranger lors de garde partagée, en posant le concept de prise en charge comme point de départ de l'examen fondé sur le bien de l'enfant et en imposant une adaptation obligatoire de la réglementation de la garde et du droit aux relations personnelles.",
+          "key_erwagungen": [
+            "2.3",
+            "2.4",
+            "2.5",
+            "2.6",
+            "2.7",
+            "2.8"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste sorgfältig, um den normativen Rahmen von Art. 301a Abs. 2 lit. a und Abs. 5 ZGB zu erfassen. Konzentrieren Sie sich sodann auf die Erwägungen 2.5 bis 2.8, in denen das Bundesgericht den Prüfungsmassstab beim Wegzug eines Elternteils entwickelt und das Betreuungskonzept als zentralen Ausgangspunkt sowie die obligatorische Anpassung der Betreuungsregelung herausarbeitet. Beachten Sie dabei, wie das Gericht die Bewegungsfreiheit der Eltern und das Kindeswohl miteinander in Einklang bringt.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Welche gesetzliche Grundlage regelt im vorliegenden Fall die Frage des Wegzugs der Kinder ins Ausland, und seit wann ist diese Bestimmung in Kraft?",
+              "hint": "Vgl. Erwägung 2, erster Abschnitt sowie die Regeste.",
+              "model_answer": "Die Frage des Wegzugs ins Ausland richtet sich nach Art. 301a Abs. 2 lit. a ZGB, der am 1. Juli 2014 in Kraft getreten ist. Diese Bestimmung verlangt bei gemeinsamer elterlicher Sorge die Zustimmung des anderen Elternteils oder eine gerichtliche Genehmigung für den Wegzug des Kindes ins Ausland. Im vorliegenden Fall hatte das Kreisgericht St. Gallen der Mutter die Erlaubnis erteilt, den Aufenthaltsort der Kinder nach Graz zu verlegen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Kriterien nennt das Bundesgericht gemäss Regeste für die Beurteilung des geeigneten Aufenthaltsortes des Kindes beim Wegzug eines Elternteils ins Ausland?",
+              "hint": "Vgl. Regeste, insbesondere E. 2.6 und E. 2.7.",
+              "model_answer": "Das Bundesgericht stellt das Kindeswohl in den Mittelpunkt und prüft den geeigneten Aufenthaltsort des Kindes ausgehend vom Wegzug des betreuenden Elternteils. Als zentralen Ausgangspunkt bezeichnet das Gericht das Betreuungskonzept, d.h. welcher Elternteil die überwiegende Betreuung übernimmt. Zusätzlich ist obligatorisch zu prüfen, wie die Betreuungs-, Besuchs- und Unterhaltsregelung an die neue Situation angepasst werden kann (E. 2.7 und E. 2.8)."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Die kantonalen Gerichte haben der Mutter die Erlaubnis zum Wegzug nach Graz erteilt, weil sie die Hauptbetreuerin der Kinder sei. Wenden Sie die in der Regeste genannten Kriterien auf den konkreten Sachverhalt an und prüfen Sie, ob dieses Ergebnis überzeugend ist.",
+              "hint": "Vgl. Sachverhalt, Erwägung 2.1 sowie E. 2.6–2.8.",
+              "model_answer": "Die kantonalen Gerichte haben korrekt festgestellt, dass die Mutter die Hauptbetreuerin der Kinder ist und der Vater kein erweitertes Betreuungsmodell anstrebt. Ausgehend vom Betreuungskonzept als Ausgangspunkt ist es sachgerecht, den Kindern den Wegzug mit der Mutter zu erlauben, da die faktische Betreuungssituation unverändert bleibt. Zugleich wurden Sprache, Staatsbürgerschaft und Lebensbedingungen in Graz berücksichtigt. Die Anpassung des Besuchsrechts – einschliesslich des vom Bundesgericht zusätzlich gewährten Ferienrechts an Feiertagen – zeigt, dass das Gericht die obligatorische Prüfung nach E. 2.8 korrekt vorgenommen hat."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern steht die Niederlassungs- und Bewegungsfreiheit des wegzugswilligen Elternteils in einem Spannungsverhältnis zum Kindeswohl und zum Kontaktrecht des zurückbleibenden Elternteils? Wie löst das Bundesgericht diesen Konflikt?",
+              "hint": "Vgl. Regeste E. 2.5 sowie E. 2.6.",
+              "model_answer": "Das Spannungsverhältnis besteht darin, dass ein absolutes Verbot des Wegzugs die verfassungsrechtlich geschützte Niederlassungs- und Bewegungsfreiheit des betreuenden Elternteils verletzen würde, während eine unbeschränkte Erlaubnis das Kontaktrecht des anderen Elternteils und damit das Kindeswohl gefährden kann. Das Bundesgericht löst diesen Konflikt, indem es nicht den Wegzug des Elternteils verbietet, sondern das Kindeswohl als massgebenden Prüfungsmassstab für die Frage verwendet, ob das Kind mitziehen darf. Zentral ist dabei das bestehende Betreuungskonzept: Betreut der wegziehende Elternteil das Kind überwiegend, spricht dies in der Regel dafür, den Kinderaufenthalt beim betreuenden Elternteil zu belassen und das Besuchsrecht des anderen Elternteils entsprechend anzupassen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritisieren Sie die Rechtsprechung des Bundesgerichts: Ist es sachgerecht, das bestehende Betreuungskonzept als massgeblichen Ausgangspunkt zu nehmen, oder besteht die Gefahr, dass damit der betreuende Elternteil faktisch einen einseitigen Vorteil erhält und das Ergebnis präjudiziert wird?",
+              "hint": "Vgl. Regeste E. 2.7 sowie Erwägung 2.1 zur Argumentation der Vorinstanzen.",
+              "model_answer": "Die Wahl des Betreuungskonzepts als Ausgangspunkt ist sachlich begründet, weil Kontinuität in der Hauptbetreuung dem Kindeswohl typischerweise dient. Kritisch lässt sich jedoch einwenden, dass dieser Ansatz strukturell den betreuenden Elternteil – häufig die Mutter – bevorzugt und damit Anreize schafft, frühzeitig eine Alleinbetreuung zu etablieren, um sich später eine grössere Handlungsfreiheit beim Wohnsitzwechsel zu sichern. Zudem kann die Fokussierung auf das bestehende Betreuungskonzept dazu führen, dass das Gericht die Qualität des Kontakts zum nicht-betreuenden Elternteil und dessen Bedeutung für das Kind systematisch untergewichtet. Eine ausgewogenere Prüfung müsste stärker auf die konkreten Auswirkungen des Wegzugs auf die Bindung des Kindes an den zurückbleibenden Elternteil abstellen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn der Vater im Zeitpunkt des Wegzugsgesuchs der Mutter beantragt hätte, die Obhut zu ändern und die Kinder künftig zu gleichen Teilen abwechselnd bei beiden Elternteilen zu betreuen (alternierende Obhut), und er nachgewiesen hätte, dass er seinen Arbeitsort nach St. Gallen verlegt und ausreichend Zeit für die Betreuung hätte?",
+              "discussion_points": [
+                "Ändert sich der Ausgangspunkt der Prüfung, wenn kein klares Betreuungskonzept zugunsten eines Elternteils besteht oder ein solches erst neu beantragt wird?",
+                "Wie ist das Kindeswohl bei alternierender Obhut und gleichzeitigem Wegzugswunsch eines Elternteils zu gewichten, wenn beide Elternteile ernsthaft betreuungsbereit sind?"
+              ],
+              "likely_outcome_shift": "Wäre alternierende Obhut ernsthaft beantragt und glaubhaft gemacht worden, hätte das Gericht das Betreuungskonzept nicht mehr ohne Weiteres als feststehend betrachten dürfen. Der Wegzug nach Graz hätte in diesem Fall das gemeinsame Betreuungsmodell faktisch verunmöglicht, weshalb das Gericht den Aufenthaltsort der Kinder möglicherweise in der Schweiz belassen und der Mutter freigestellt hätte, ebenfalls in der Schweiz zu bleiben oder auf die Obhut zu verzichten. Das Ergebnis wäre deutlich offener und stärker vom konkreten Kindeswohlgutachten abhängig gewesen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Mutter, sondern der Vater – der bisher das Besuchsrecht ausübt – nach Graz ziehen und die Kinder mitnehmen wollte, während die Mutter als Hauptbetreuerin in der Schweiz verbleiben würde?",
+              "discussion_points": [
+                "Kann ein Elternteil, der bisher lediglich ein Besuchsrecht innehat, gestützt auf Art. 301a ZGB eine Verlegung des Aufenthaltsorts der Kinder ins Ausland verlangen?",
+                "Wie verändert sich die Anwendung des Kriteriums 'Betreuungskonzept als Ausgangspunkt', wenn der wegzugswillige Elternteil gerade nicht der Hauptbetreuer ist?"
+              ],
+              "likely_outcome_shift": "In dieser Konstellation würde das bestehende Betreuungskonzept klar gegen den Wegzug der Kinder mit dem Vater sprechen, da die Mutter als Hauptbetreuerin in der Schweiz verbleibt. Der Vater könnte seinen Wegzug nach Graz verwirklichen, dürfte aber die Kinder nicht mitnehmen, solange die Mutter die Hauptbetreuung übernimmt. Das Bundesgericht würde voraussichtlich die Beibehaltung des Aufenthalts der Kinder bei der Mutter in der Schweiz anordnen und das Besuchsrecht des Vaters an dessen neuen Wohnort in Österreich anpassen."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le regeste afin de saisir le cadre normatif de l'art. 301a al. 2 let. a et al. 5 CC. Concentrez-vous ensuite sur les considérants 2.5 à 2.8, dans lesquels le Tribunal fédéral développe le critère de contrôle applicable lors du départ d'un parent à l'étranger, en posant le concept de prise en charge comme point de départ central et en dégageant l'obligation d'adapter la réglementation de la garde. Observez comment la Cour concilie la liberté d'établissement des parents avec le bien de l'enfant.",
+          "reading_guide_it": "Leggere innanzitutto attentamente il regesto per comprendere il quadro normativo dell'art. 301a cpv. 2 lett. a e cpv. 5 CC. Concentrarsi poi sui considerandi 2.5 a 2.8, nei quali il Tribunale federale sviluppa il criterio di esame applicabile in caso di trasferimento all'estero di un genitore, ponendo il modello di custodia come punto di partenza centrale e individuando l'obbligo di adeguare la relativa regolamentazione. Osservare come il Tribunale concilia la libertà di domicilio dei genitori con il bene del figlio.",
+          "significance_it": "Questa sentenza di principio precisa i criteri applicabili all'art. 301a cpv. 2 lett. a CC in caso di trasferimento all'estero di un figlio soggetto ad autorità parentale congiunta, individuando nel modello di custodia il punto di partenza dell'esame fondato sul bene del figlio e imponendo un adeguamento obbligatorio della regolamentazione della custodia e del diritto di visita."
         },
         {
           "decision_id": "bge_143 III 361",
@@ -430,13 +558,76 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Abgrenzung zwischen Eigengut und Errungenschaft; Vermutung zugunsten der Errungenschaft",
-          "significance_fr": "Arrêt de principe sur la distinction entre biens propres et acquêts; présomption en faveur des acquêts",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt de principe établit que le versement anticipé de l'avoir de prévoyance professionnelle doit, avant la survenance du cas de prévoyance, être traité comme un prêt de l'institution de prévoyance, de sorte que la plus-value conjoncturelle de l'immeuble qui en résulte doit être répartie de la même manière que celle afférente à un prêt hypothécaire en cours lors de la liquidation du régime matrimonial.",
+          "key_erwagungen": [
+            "3",
+            "3.1",
+            "3.2",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 146) sorgfältig, um die Finanzierungsstruktur der Liegenschaft (Hypothek, Vorbezug, Eigenkapital) zu verstehen. Konzentrieren Sie sich anschliessend auf Erwägungen 3 und 4, in denen das Bundesgericht die Rechtsnatur des Vorbezugs vor Eintritt des Vorsorgefalls klärt und die Konsequenzen für die Mehrwertverteilung nach Art. 206 Abs. 1 und Art. 209 Abs. 3 ZGB ableitet.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 141 III 145 unter einem «Vorbezug» von Freizügigkeitsguthaben, und wie wurde dieser Vorbezug im vorliegenden Fall konkret für den Erwerb der Liegenschaft eingesetzt?",
+              "hint": "Sachverhalt (S. 146): Finanzierung der Liegenschaft durch Hypothekardarlehen und Vorbezug von 310'950 Fr.",
+              "model_answer": "Ein Vorbezug ist die vorzeitige Auszahlung von Guthaben aus der beruflichen Vorsorge (2. Säule) zum Zweck der Wohneigentumsförderung vor Eintritt eines Vorsorgefalls (z.B. Pensionierung). Im vorliegenden Fall verwendete der Ehemann 310'950 Fr. aus seiner Pensionskasse als Teil der Kaufpreisfinanzierung für die gemeinsame Eigentumswohnung in X. (Genf), die insgesamt 1'100'000 Fr. kostete. Der restliche Kaufpreis wurde durch ein Hypothekardarlehen von 910'000 Fr. (später auf 1'010'000 Fr. erhöht) finanziert."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Artikel des ZGB sind gemäss dem Regeste von BGE 141 III 145 massgebend, und welche Rechtsfragen regeln Art. 206 Abs. 1 bzw. Art. 209 Abs. 3 ZGB im ehelichen Güterrecht?",
+              "hint": "Regeste sowie Art. 206 Abs. 1 und Art. 209 Abs. 3 ZGB (Beteiligung am Mehrwert und Ersatzforderungen zwischen Gütermassen).",
+              "model_answer": "Art. 206 Abs. 1 ZGB regelt die Beteiligung einer Gütermasse am Mehrwert eines Vermögensgegenstandes, wenn sie zu dessen Erwerb, Verbesserung oder Erhaltung beigetragen hat; die Beteiligung erfolgt proportional zum geleisteten Beitrag. Art. 209 Abs. 3 ZGB bestimmt, dass Ersatzforderungen zwischen Eigengut und Errungenschaft bei Auflösung des Güterstandes nach dem damaligen Wert des betreffenden Vermögensgegenstandes berechnet werden, sofern der Beitrag zur Wertsteigerung geführt hat. Das Bundesgericht musste klären, ob der Vorbezug als Eigengut des Ehemannes zu qualifizieren ist und ob dem Eigengut folglich ein Anteil am konjunkturellen Mehrwert der Liegenschaft zusteht."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie wäre die Mehrwertverteilung der Liegenschaft (Verkehrswert 2'600'000 Fr.) konkret zu berechnen, wenn das Bundesgericht den Vorbezug als ausstehende Schuld (Darlehen) behandelt und nicht als effektiven Eigengutsbeitrag?",
+              "hint": "E. 3.1: Berechnung der Cour de justice: Plus-value = 2'600'000 Fr. – 1'010'000 Fr. – 310'950 Fr. = 1'279'050 Fr.",
+              "model_answer": "Behandelt man den Vorbezug wie ein Hypothekardarlehen (d.h. als ausstehende Verbindlichkeit), wird er bei der Berechnung des Mehrwerts von der aktuellen Liegenschaftswerden abgezogen; der verbleibende Mehrwert von 1'279'050 Fr. (2'600'000 – 1'010'000 – 310'950) wird hälftig auf die beiden Miteigentümer aufgeteilt, was je 639'525 Fr. ergibt. Da keine Reallokation des Mehrwerts zugunsten des Eigenguts des Ehemannes stattfindet, besteht keine Regressforderung des Eigenguts gegen die Errungenschaft. Die Ehefrau erhält damit 639'525 Fr. als Anteil am Mehrwert der Liegenschaft aus den Errungenschaftsmassen des Ehemannes."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Weshalb behandelt das Bundesgericht den Vorbezug von Freizügigkeitsguthaben vor Eintritt eines Vorsorgefalls wie ein Darlehen der Vorsorgeeinrichtung und nicht wie eine endgültige Verwendung von Eigengut des Ehemannes? Welche rechtliche und teleologische Begründung liegt diesem Ansatz zugrunde?",
+              "hint": "E. 3 und 4: Natur des Vorbezugs im Vorsorgerecht; Rückzahlungspflicht bei Veräusserung oder Eintritt des Vorsorgefalls.",
+              "model_answer": "Vor Eintritt des Vorsorgefalls bleibt die Rückzahlungspflicht des Vorbezugs bestehen: Bei Veräusserung der Liegenschaft oder bei Eintritt des Vorsorgefalls muss der Betrag in die Vorsorgeeinrichtung zurückgeführt werden. Wirtschaftlich betrachtet hat der Ehemann also nicht frei über die Gelder verfügt, sondern sie nur vorübergehend aus der gebundenen Vorsorge entnommen – vergleichbar einem zweckgebundenen Darlehen. Teleologisch verhindert diese Gleichbehandlung mit dem Hypothekardarlehen eine ungerechtfertigte Privilegierung des Ehemannes: Da die Verbindlichkeit gegenüber der Pensionskasse noch besteht, wäre es sachwidrig, dem Eigengut bereits jetzt einen Mehrwertanteil zuzusprechen, der auf einem noch nicht definitiv getilgten «Schuldbetrag» basiert."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Überzeugt die vom Bundesgericht gewählte Gleichstellung des Vorbezugs mit einem Hypothekardarlehen aus Sicht des ehelichen Güterrechts? Welche Vor- und Nachteile hat dieser Ansatz im Vergleich zu einer Qualifikation des Vorbezugs als endgültiger Eigengutsbeitrag?",
+              "hint": "E. 3 und 4: Abwägung zwischen Vorsorgeschutz, Gleichbehandlung der Ehegatten und Rechtssicherheit bei der Güterstandsauflösung.",
+              "model_answer": "Der Ansatz des Bundesgerichts ist im Hinblick auf die Einheit der Rechtsordnung überzeugend, weil er die vorsorge­rechtliche Natur des Vorbezugs (schwebende Rückzahlungspflicht) konsequent ins Güterrecht überträgt und eine Doppelbegünstigung des Ehemannes verhindert. Kritisch lässt sich einwenden, dass die Gleichstellung mit einem Hypothekardarlehen die unterschiedliche rechtliche Struktur verwischt: Ein Bankdarlehen ist eine sofort vollstreckbare Schuld gegenüber einem Dritten, während die Rückzahlungspflicht beim Vorbezug erst beim Eintritt bestimmter Ereignisse aktualisiert wird. Insgesamt erscheint die Lösung jedoch praktikabel und schützt die schwächere Partei (Ehefrau) vor einer Schmälerung ihres Mehrwertanteils durch einseitige güterrechtliche Umqualifikation von Vorsorgegeldern."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn der Ehemann vor der Auflösung des Güterstandes in Pension gegangen wäre und der Vorbezug damit definitiv nicht mehr zurückbezahlt werden müsste – der Vorsorgefall wäre also eingetreten? Wie würde das Bundesgericht den konjunkturellen Mehrwert der Liegenschaft in diesem Fall auf Eigengut und Errungenschaft verteilen?",
+              "discussion_points": [
+                "Mit Eintritt des Vorsorgefalls entfällt die Rückzahlungspflicht gegenüber der Pensionskasse, sodass der Vorbezug nicht mehr als Darlehen qualifiziert werden kann.",
+                "Es müsste geprüft werden, welcher Anteil des Vorbezugs (241'360 Fr. vor der Ehe vs. 69'589,80 Fr. nach der Ehe) dem Eigengut bzw. der Errungenschaft des Ehemannes zuzuordnen ist.",
+                "Art. 206 Abs. 1 ZGB käme zur Anwendung: Das Eigengut hätte einen anteiligen Mehrwertanspruch gegen die Errungenschaft, proportional zu seinem Finanzierungsbeitrag."
+              ],
+              "likely_outcome_shift": "Bei eingetretenem Vorsorgefall würde der Anteil des Vorbezugs, der aus vor-ehelichem Eigengut (241'360 Fr.) stammt, als Eigengutsbeitrag qualifiziert, und das Eigengut des Ehemannes erhielte eine Mehrwertbeteiligung gemäss Art. 206 Abs. 1 ZGB. Dies würde die Regressforderung des Eigenguts gegen die Errungenschaft begründen und den an die Ehefrau auszuzahlenden Betrag um rund 280'000 Fr. reduzieren, wie vom Rekurrenten ursprünglich beantragt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht der Ehemann, sondern die Ehefrau hätte den Vorbezug aus ihrer Pensionskasse geleistet, und zwar ausschliesslich aus nach der Heirat angesammelten Guthaben (also reiner Errungenschaft). Die Liegenschaft wäre aber dennoch je zur Hälfte im Miteigentum beider Ehegatten und würde dem Ehemann bei der Scheidung zugesprochen. Wie würde die güterrechtliche Abrechnung aussehen?",
+              "discussion_points": [
+                "Da der Vorbezug aus der Errungenschaft der Ehefrau stammt, wäre er wie ein Darlehen der Vorsorgeeinrichtung an die Errungenschaft der Ehefrau zu behandeln – mit entsprechender Rückzahlungslast zu Lasten der Errungenschaft der Ehefrau.",
+                "Bei der Mehrwertverteilung hätte die Errungenschaft der Ehefrau keinen zusätzlichen Eigengutsbeitrag geleistet, sodass keine Regressforderung des Eigenguts entstünde.",
+                "Die hälftige Mehrwertteilung würde analog zum Hauptfall gelten, jedoch mit dem Unterschied, dass die Errungenschaft der Ehefrau mit der (simulierten) Darlehensschuld belastet wäre."
+              ],
+              "likely_outcome_shift": "Da der Vorbezug vollständig aus der Errungenschaft der Ehefrau stammt, bleibt die Mehrwertbeteiligung symmetrisch: Beide Errungenschaftsmassen profitieren hälftig vom konjunkturellen Mehrwert, und es entstehen keine Eigengutsforderungen. Die Belastung der Errungenschaft der Ehefrau durch den simulierten Vorsorgekredit würde jedoch ihren Nettobeteiligungsgewinn schmälern, ohne dass dies den Gesamtbetrag der Mehrwertteilung ändert."
+            }
+          ],
+          "reading_guide_fr": "Lisez d'abord attentivement les faits (p. 146) afin de comprendre la structure de financement de l'immeuble (hypothèque, versement anticipé, fonds propres). Concentrez-vous ensuite sur les considérants 3 et 4, dans lesquels le Tribunal fédéral qualifie la nature juridique du versement anticipé avant la survenance du cas de prévoyance et en tire les conséquences pour la répartition de la plus-value selon les art. 206 al. 1 et 209 al. 3 CC.",
+          "reading_guide_it": "Leggere dapprima con attenzione i fatti (p. 146) per comprendere la struttura di finanziamento dell'immobile (ipoteca, prelievo anticipato, capitale proprio). Concentrarsi poi sui considerandi 3 e 4, nei quali il Tribunale federale qualifica la natura giuridica del prelievo anticipato prima del verificarsi del caso di previdenza e ne trae le conseguenze per la ripartizione della plusvalenza ai sensi degli art. 206 cpv. 1 e 209 cpv. 3 CC.",
+          "significance_it": "Questa sentenza di principio stabilisce che il prelievo anticipato dell'avere di previdenza professionale, prima del verificarsi del caso di previdenza, dev'essere trattato come un mutuo concesso dall'istituto di previdenza, cosicché la plusvalenza congiunturale dell'immobile che ne deriva deve essere ripartita allo stesso modo di quella relativa a un mutuo ipotecario in corso al momento della liquidazione del regime matrimoniale."
         },
         {
           "decision_id": "bge_116 III 32",

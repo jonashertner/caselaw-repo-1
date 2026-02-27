@@ -39,13 +39,79 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Ablehnende Einbürgerungsentscheide unterliegen der Begründungspflicht nach Art. 29 Abs. 2 BV",
-          "significance_fr": "Les décisions de naturalisation négatives sont soumises à l'obligation de motiver selon l'art. 29 al. 2 Cst.",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Les décisions négatives en matière de naturalisation sont soumises à l'obligation de motivation découlant de l'art. 29 al. 2 Cst., combiné avec l'interdiction de discrimination (art. 8 al. 2 Cst.), ce qui rend structurellement incompatible avec la Constitution le recours au vote en urne pour décider des demandes de naturalisation.",
+          "key_erwagungen": [
+            "2.4",
+            "3.3",
+            "3.4",
+            "3.5",
+            "3.6",
+            "4.2",
+            "4.3",
+            "4.4",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt, um die politische Ausgangslage der Initiative 'Einbürgerungen vors Volk!' zu verstehen. Konzentrieren Sie sich dann auf E. 3.3–3.6, welche die Begründungspflicht bei ablehnenden Einbürgerungsentscheiden herleiten und deren Unvereinbarkeit mit dem Urnenverfahren darlegen, sowie auf E. 4.2–4.4 zum Konflikt zwischen Abstimmungsfreiheit und Privatsphärenschutz. E. 5 rundet die Lektüre ab, indem es den Vorrang der Rechtsstaatlichkeit gegenüber dem Demokratieprinzip begründet.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was verlangte die Volksinitiative 'Einbürgerungen vors Volk!' der SVP der Stadt Zürich konkret, und wer hätte nach ihrer Annahme über Einbürgerungsgesuche entschieden?",
+              "hint": "Vgl. E. 2.4 sowie den Sachverhalt ab S. 233",
+              "model_answer": "Die Initiative verlangte, dass die Befugnis zur Erteilung des Gemeindebürgerrechts an im Ausland geborene Ausländerinnen und Ausländer den stimmberechtigten Stadtbürgern zugewiesen wird. Anstelle der Bürgerlichen Abteilung des Gemeinderates oder des Stadtrates hätten die Stimmberechtigten an der Urne über Einbürgerungsgesuche entschieden. Es handelt sich um ein obligatorisches Verwaltungsreferendum auf kommunaler Ebene."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche verfassungsrechtlichen Bestimmungen hat das Bundesgericht herangezogen, um die Begründungspflicht bei ablehnenden Einbürgerungsentscheiden zu begründen, und in welchem Verhältnis stehen diese Normen zueinander?",
+              "hint": "Vgl. Regeste sowie E. 3.3 und 3.4",
+              "model_answer": "Das Bundesgericht stützte die Begründungspflicht auf Art. 29 Abs. 2 BV (Anspruch auf rechtliches Gehör) in Verbindung mit Art. 8 Abs. 2 BV (Diskriminierungsverbot). Art. 29 Abs. 2 BV gewährt grundsätzlich einen Anspruch auf Begründung staatlicher Entscheide, während Art. 8 Abs. 2 BV das Verbot ethnischer oder rassistischer Diskriminierung statuiert. Die Kombination dieser Normen bewirkt, dass Betroffene nachprüfen können müssen, ob ein ablehnender Einbürgerungsentscheid diskriminierungsfrei ergangen ist."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Weshalb ist eine den verfassungsrechtlichen Anforderungen genügende Begründung bei einer Urnenabstimmung über Einbürgerungsgesuche strukturell nicht möglich?",
+              "hint": "Vgl. E. 3.5 und 3.6",
+              "model_answer": "Bei einer Urnenabstimmung stimmt eine Vielzahl von Stimmberechtigten anonym und ohne Angabe von Gründen ab; ein kollektiver Entscheid an der Urne lässt sich daher von Natur aus nicht mit einer individualisierten, nachvollziehbaren Begründung versehen. Der abgelehnte Gesuchsteller könnte nicht erkennen, aus welchen Gründen sein Gesuch abgewiesen wurde, und wäre damit ausser Stande, eine allfällige Diskriminierung gerichtlich zu rügen. Damit ist die Initiative systembedingt nicht mit Art. 29 Abs. 2 BV vereinbar."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht identifiziert einen Konflikt zwischen der Informationspflicht der Behörden gegenüber den Stimmberechtigten und dem Recht auf Schutz der Privat- und Geheimsphäre der Gesuchsteller. Wie entsteht dieser Konflikt, und warum lässt er sich im vorliegenden Kontext nicht auflösen?",
+              "hint": "Vgl. E. 4.2, 4.3 und 4.4",
+              "model_answer": "Damit Stimmberechtigte ihr Abstimmungsrecht sachgerecht ausüben können (Art. 34 Abs. 2 BV), müssten ihnen die persönlichen Verhältnisse der Gesuchstellenden – etwa Wohnsituation, familiäre Bindungen, Integrationsgrad – offengelegt werden. Dies greift jedoch in die durch Art. 13 BV geschützte Privat- und Geheimsphäre der Betroffenen ein. Da die Einbürgerung ein höchstpersönliches Anliegen ist und die Veröffentlichung sensitiver Personendaten gegenüber der gesamten Stimmbürgerschaft unverhältnismässig wäre, erscheint ein angemessener Ausgleich zwischen diesen beiden Grundrechtspositionen unmöglich."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Die Beschwerdeführer argumentierten, dass Einbürgerungsentscheide politische Akte seien und das Demokratieprinzip die rechtsstaatlichen Defizite der Initiative rechtfertige. Wie beurteilt das Bundesgericht dieses Argument, und überzeugt diese Wertung aus rechtsstaatlicher Sicht?",
+              "hint": "Vgl. E. 3.3–3.4 sowie E. 5",
+              "model_answer": "Das Bundesgericht verwarf das Argument in E. 5 mit der Begründung, dass das Demokratieprinzip nicht dazu dienen darf, rechtsstaatliche Grundgarantien – insbesondere den Anspruch auf rechtliches Gehör und das Diskriminierungsverbot – auszuhöhlen. Auch demokratisch legitimierte Entscheide müssen den Grundrechtsschranken der Bundesverfassung standhalten, da diese gerade auch Minderheiten vor dem Mehrheitswillen schützen sollen. Diese Wertung überzeugt, weil das Rechtsstaatsprinzip (Art. 5 BV) und die Grundrechte strukturell Vorrang vor einfachen Mehrheitsentscheiden haben und Ausländerinnen und Ausländer als Stimmrechtsausgeschlossene besonders schutzbedürftig sind."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Kanton hätte ein Verfahren gesetzlich vorgesehen, bei dem die Stimmberechtigten an der Urne nur über bereits von einer Fachkommission geprüfte und positiv vorgeschlagene Einbürgerungsgesuche abstimmen dürfen, und ablehnende Urnenentscheide würden automatisch eine schriftliche Begründung der Kommission auslösen – würde die Initiative dann den verfassungsrechtlichen Anforderungen standhalten?",
+              "discussion_points": [
+                "Genügt eine Kommissionsbegründung dem Begründungsanspruch aus Art. 29 Abs. 2 BV, wenn der eigentliche Entscheid anonym an der Urne erfolgt?",
+                "Bleibt das Spannungsverhältnis zwischen Abstimmungsfreiheit (Art. 34 Abs. 2 BV) und Privatsphärenschutz (Art. 13 BV) bei diesem Verfahren bestehen?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht müsste differenzierter prüfen, ob eine vorgelagerte Kommissionsbegründung die Begründungspflicht sachlich erfüllen kann. Selbst bei einem solchen Verfahren bliebe jedoch das Problem, dass der Urnenentscheid selbst anonym und unbegründet bleibt, sodass der Gesuchsteller den eigentlichen Ablehnungsgrund nicht kennt. Der Ausgang wäre ungewisser, eine Verfassungswidrigkeit wegen des verbleibenden Anonymitätsproblems aber weiterhin wahrscheinlich."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die SVP, sondern eine linke Gruppierung eine Initiative eingereicht hätte, die verlangt, dass Einbürgerungsablehnungen durch Gemeinderäte zwingend einer unabhängigen Ombudsstelle zur Überprüfung auf Diskriminierung vorgelegt werden müssen – würde das Bundesgericht diese Initiative ebenfalls für ungültig erklären?",
+              "discussion_points": [
+                "Stärkt eine obligatorische Antidiskriminierungsprüfung die Grundrechte der Gesuchstellenden statt sie zu beschränken?",
+                "Könnte eine solche Initiative mit Art. 8 Abs. 2 BV und Art. 29 Abs. 2 BV als kompatibel oder gar als deren Konkretisierung angesehen werden?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde die Initiative aller Voraussicht nach nicht für ungültig erklären, da sie nicht in die Grundrechte der Betroffenen eingreift, sondern deren Schutz vor Diskriminierung stärkt. Im Gegenteil würde eine solche Initiative die Anforderungen von Art. 8 Abs. 2 BV und Art. 29 Abs. 2 BV eher konkretisieren. Damit würde deutlich, dass die Ungültigkeit in BGE 129 I 232 nicht auf einer grundsätzlichen Ablehnung direktdemokratischer Elemente beruht, sondern auf dem spezifischen Grundrechtseingriff der Urnenabstimmung ohne Begründungsmöglichkeit."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les faits pour comprendre le contexte politique de l'initiative 'Einbürgerungen vors Volk!'. Concentrez-vous ensuite sur les consid. 3.3–3.6, qui fondent l'obligation de motivation des décisions de naturalisation négatives et démontrent leur incompatibilité avec le vote en urne, ainsi que sur les consid. 4.2–4.4 relatifs au conflit entre la liberté de vote et la protection de la sphère privée. Le consid. 5 clôt la lecture en justifiant la primauté de l'État de droit sur le principe démocratique.",
+          "reading_guide_it": "Si consiglia di leggere prima i fatti per comprendere il contesto politico dell'iniziativa. Ci si concentri poi sui consid. 3.3–3.6, che fondano l'obbligo di motivazione delle decisioni negative di naturalizzazione e ne dimostrano l'incompatibilità con il voto alle urne, nonché sui consid. 4.2–4.4 sul conflitto tra libertà di voto e tutela della sfera privata. Il consid. 5 conclude illustrando la preminenza dello Stato di diritto sul principio democratico.",
+          "significance_it": "Le decisioni negative in materia di naturalizzazione sono soggette all'obbligo di motivazione ai sensi dell'art. 29 cpv. 2 Cost. in combinato con il divieto di discriminazione (art. 8 cpv. 2 Cost.), rendendo strutturalmente incompatibile con la Costituzione il ricorso al voto alle urne per decidere sulle domande di naturalizzazione."
         },
         {
           "decision_id": "bge_129 I 392",
@@ -178,13 +244,80 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Überprüfung von Schutzmassnahmen bei häuslicher Gewalt im Licht der Grundrechte",
-          "significance_fr": "Examen des mesures de protection contre la violence domestique à la lumière des droits fondamentaux",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que les mesures de protection contre la violence domestique (interdiction de périmètre et de contact) ne constituent ni une privation de liberté au sens de l'art. 31 Cst. et de l'art. 5 CEDH, ni une accusation pénale au sens de l'art. 6 CEDH, tout en reconnaissant que la réputation de la personne concernée constitue un 'droit civil' protégé par l'art. 6 § 1 CEDH, et en confirmant la proportionnalité de telles mesures au regard de la liberté personnelle.",
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4",
+            "5.2",
+            "5.3",
+            "5.4",
+            "5.5",
+            "5.6",
+            "5.7",
+            "6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Erwägungen 3 und 4, um die Abgrenzung der Gewaltschutzmassnahmen vom Begriff der Freiheitsentziehung (Art. 31 BV, Art. 5 EMRK) und der strafrechtlichen Anklage (Art. 6 EMRK) zu verstehen. Widmen Sie sich anschliessend den Erwägungen 5.2 bis 5.7 für die Analyse der Gehörsgarantien und des Beweisanspruchs, bevor Sie mit Erwägung 6 die Verhältnismässigkeitsprüfung des Rayonverbots am Massstab von Art. 10 Abs. 2 BV nachvollziehen.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was genau wird X. im vorliegenden Fall vorgeworfen, und welche konkreten Massnahmen hat die Kantonspolizei Zürich gestützt auf das GSG/ZH gegen ihn angeordnet?",
+              "hint": "Sachverhalt, BGE 134 I 140 S. 141–142",
+              "model_answer": "X. wird vorgeworfen, am 19. Oktober 2007 seiner von ihm getrennt lebenden Ehefrau Y. ohne Vorwarnung ins Gesicht geschlagen zu haben. Die Kantonspolizei ordnete daraufhin gleichentags ein Kontakt- und Rayonverbot bis zum 2. November 2007 an. Dieses Verbot wurde später durch den Einzelrichter in Strafsachen bestätigt und bis zum 2. Februar 2008 verlängert."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsnormen – sowohl auf Bundesebene als auch auf Konventionsebene – zieht das Bundesgericht heran, um zu beurteilen, ob das Rayon- und Kontaktverbot eine Freiheitsentziehung oder eine strafrechtliche Anklage darstellt?",
+              "hint": "Regeste und Erwägungen 3 und 4",
+              "model_answer": "Das Bundesgericht prüft Art. 31 BV (persönliche Freiheit, Freiheitsentzug) sowie Art. 5 EMRK (Recht auf Freiheit und Sicherheit) hinsichtlich der Freiheitsentziehung. Für die Frage der strafrechtlichen Anklage stützt es sich auf Art. 6 EMRK. Es kommt zum Schluss, dass weder der Begriff der Freiheitsentziehung nach Art. 5 EMRK/Art. 31 BV noch derjenige der strafrechtlichen Anklage nach Art. 6 EMRK erfüllt ist."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie würden Sie die vom Bundesgericht entwickelten Grundsätze zur Verhältnismässigkeit des Rayonverbots (Erwägung 6) auf einen Fall anwenden, in dem nicht ein einmaliger Vorfall, sondern eine mehrjährige Eskalation von Gewalt dokumentiert ist?",
+              "hint": "Erwägung 6 zur Verhältnismässigkeit der persönlichen Freiheit (Art. 10 Abs. 2 BV)",
+              "model_answer": "Das Bundesgericht verlangt, dass ein Rayonverbot geeignet, erforderlich und zumutbar sein muss. Bei einer mehrjährigen dokumentierten Gewalteskalation wäre die Gefährdung der betroffenen Person noch evidenter, was sowohl die Eignung als auch die Notwendigkeit der Massnahme noch deutlicher begründen würde. Unter Umständen könnte sogar eine längere Dauer oder ein ausgedehnteres Rayon verhältnismässig sein, sofern dies dem Schutz des Opfers dient und das Ausmass der Einschränkung für den Täter noch zumutbar bleibt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht qualifiziert den 'guten Ruf' als 'civil right' im Sinne von Art. 6 Ziff. 1 EMRK (Erwägung 5.2). Welche dogmatischen Konsequenzen hat diese Einordnung für die Verfahrensgarantien, die dem Gesuchsgegner im Gewaltschutzverfahren zustehen?",
+              "hint": "Erwägungen 5.2 bis 5.5",
+              "model_answer": "Indem der gute Ruf als 'civil right' qualifiziert wird, greift Art. 6 Ziff. 1 EMRK mit seinen Verfahrensgarantien – insbesondere dem Anspruch auf ein faires Verfahren vor einem unabhängigen Gericht. Dies bedeutet, dass dem Gesuchsgegner ein Mindestmass an rechtlichem Gehör zusteht und er das Recht haben muss, zu den gegen ihn erhobenen Vorwürfen Stellung zu nehmen. Gleichzeitig zeigt das Bundesgericht, dass § 9 Abs. 3 GSG/ZH mit dem Recht auf mündliche Anhörung über den konventions- und bundesrechtlichen Mindeststandard hinausgeht, und prüft, ob eine allfällige Gehörsverletzung im Rechtsmittelverfahren geheilt werden konnte."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es aus grundrechtlicher Perspektive überzeugend, dass das Bundesgericht Rayon- und Kontaktverbote nicht als Freiheitsentziehung im Sinne von Art. 31 BV und Art. 5 EMRK qualifiziert, obwohl diese Massnahmen die Bewegungsfreiheit und das Privatleben des Betroffenen erheblich einschränken können?",
+              "hint": "Erwägungen 3 und 6 sowie Art. 10 Abs. 2 BV",
+              "model_answer": "Die Auffassung des Bundesgerichts ist dogmatisch vertretbar, da die klassische Freiheitsentziehung eine physische Inhaftierung oder vergleichbare totale Bewegungseinschränkung voraussetzt, was bei einem Rayon- und Kontaktverbot nicht gegeben ist. Dennoch lässt sich kritisch einwenden, dass insbesondere weiträumige und langandauernde Rayonverbote die persönliche Freiheit nach Art. 10 Abs. 2 BV intensiv berühren, was nach den allgemeinen Schrankenvoraussetzungen von Art. 36 BV – Legalität, öffentliches Interesse, Verhältnismässigkeit – streng geprüft werden muss. Das Bundesgericht trägt dem Rechnung, indem es das Rayonverbot eigenständig an Art. 10 Abs. 2 BV misst und dabei eine sorgfältige Verhältnismässigkeitsprüfung vornimmt, was die Schutzlücke gegenüber einer vollständigen Anwendung von Art. 31 BV teilweise schliesst."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, X. hätte glaubhaft gemacht, dass er auf das gemeinsame Wohnhaus im Rayonbereich angewiesen ist, weil er dort sein einziges Büro und damit seine gesamte berufliche Existenz betreibt, und dass er ohne Zugang zu diesem Ort seine selbstständige Erwerbstätigkeit sofort einstellen müsste. Wie würde diese Zusatzkonstellation die Verhältnismässigkeitsprüfung beeinflussen?",
+              "discussion_points": [
+                "Würde die wirtschaftliche Existenzbedrohung das Gewicht des Eingriffs in die persönliche Freiheit (Art. 10 Abs. 2 BV) und allenfalls die Wirtschaftsfreiheit (Art. 27 BV) so stark erhöhen, dass mildere Massnahmen vorrangig zu prüfen wären?",
+                "Kämen als mildere Mittel etwa zeitlich beschränkte Zugangsfenster zum Rayonbereich oder eine räumlich engere Definition des Verbots in Betracht, um den Schutz von Y. und die beruflichen Interessen von X. gleichermassen zu berücksichtigen?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht müsste die Zumutbarkeit des Rayonverbots in seiner bestehenden Form ernsthafter in Frage stellen und prüfen, ob eine modifizierte, räumlich oder zeitlich differenziertere Massnahme den Schutz von Y. gleich effektiv sicherstellen könnte. Es ist denkbar, dass ein absolutes Rayonverbot in dieser Konstellation als unverhältnismässig eingestuft würde und stattdessen ein differenzierteres Regime mit kontrollierten Zugangsbedingungen angeordnet werden müsste."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht X. gegen die Schutzmassnahmen Beschwerde führt, sondern Y. das Rayonverbot als unzureichend anfechtet, weil die Polizei trotz einer jahrelangen Gewaltgeschichte und einer konkreten Bedrohungslage nur ein kurzfristiges Verbot von zwei Wochen angeordnet hat?",
+              "discussion_points": [
+                "Welche positiven Schutzpflichten des Staates gegenüber dem Gewaltopfer ergeben sich aus Art. 10 Abs. 1 BV (Recht auf Leben und körperliche Unversehrtheit) und Art. 3 EMRK (Verbot unmenschlicher Behandlung), und könnte eine zu kurze Schutzmassnahme diese verletzen?",
+                "Müsste das Bundesgericht in diesem Fall die Ermessensgrenzen der Polizei und der kantonalen Behörden beim Erlass von Schutzmassnahmen definieren und prüfen, ob ein staatliches Unterlassen grundrechtswidrig sein kann?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht müsste primär die staatlichen Schutzpflichten aus Art. 10 Abs. 1 BV und der EMRK thematisieren und prüfen, ob die Behörden ihrer Pflicht zum effektiven Schutz des Opfers nachgekommen sind. Ein zu kurz bemessenes Rayonverbot könnte als Verletzung positiver Schutzpflichten qualifiziert werden, was die Behörden zur Anordnung längerer oder intensiverer Massnahmen verpflichten würde und damit eine grundlegend andere Perspektive auf das Spannungsverhältnis zwischen Opferschutz und Täterrechten eröffnet."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les considérants 3 et 4 afin de comprendre la délimitation des mesures de protection contre la violence domestique par rapport à la notion de privation de liberté (art. 31 Cst., art. 5 CEDH) et d'accusation pénale (art. 6 CEDH). Examinez ensuite les considérants 5.2 à 5.7 pour l'analyse des garanties du droit d'être entendu et du droit à l'administration des preuves, puis terminez avec le considérant 6 pour la pesée de la proportionnalité de l'interdiction de périmètre au regard de l'art. 10 al. 2 Cst.",
+          "reading_guide_it": "Si consiglia di leggere dapprima i considerandi 3 e 4 per comprendere la distinzione tra le misure di protezione contro la violenza domestica e la nozione di privazione della libertà (art. 31 Cost., art. 5 CEDU) nonché quella di accusa penale (art. 6 CEDU). Si passi poi ai considerandi 5.2–5.7 per l'analisi delle garanzie del diritto di essere sentiti e del diritto all'assunzione delle prove, e infine al considerando 6 per esaminare il controllo della proporzionalità del divieto di zona alla luce dell'art. 10 cpv. 2 Cost.",
+          "significance_it": "Questa sentenza chiarisce che le misure di protezione contro la violenza domestica (divieto di zona e di contatto) non costituiscono né una privazione della libertà ai sensi dell'art. 31 Cost. e dell'art. 5 CEDU, né un'accusa penale ai sensi dell'art. 6 CEDU, riconoscendo al contempo che la reputazione dell'interessato rappresenta un 'diritto civile' tutelato dall'art. 6 § 1 CEDU e confermando la proporzionalità di tali misure rispetto alla libertà personale."
         },
         {
           "decision_id": "bge_142 I 135",
@@ -213,13 +346,74 @@
             "bge_134 I 140"
           ],
           "significance_de": "Zulässigkeit der Administrativhaft im Ausländerrecht; Grundrechtsschutz bei Freiheitsentzug",
-          "significance_fr": "Admissibilité de la détention administrative en droit des étrangers; protection des droits fondamentaux",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt de principe établit que la détention administrative dans le cadre de la procédure Dublin n'est licite que si des indices concrets d'un risque de fuite considérable sont établis, et que le premier contrôle judiciaire de la détention doit intervenir aussi rapidement que possible, indépendamment du délai de huit jours prévu pour les demandes de libération ultérieures.",
+          "key_erwagungen": [
+            "1",
+            "1.1",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 1 sorgfältig, um die Zulässigkeit der Beschwerde trotz des Asylausschlusses nach Art. 83 lit. d Ziff. 1 BGG zu verstehen. Wenden Sie sich anschliessend E. 3 zu, welche die zeitlichen Anforderungen an die erstmalige richterliche Haftprüfung klärt, und schliessen Sie mit E. 4, die die materiellen Haftvoraussetzungen im Dublin-Verfahren – insbesondere das Erfordernis konkreter Anzeichen einer Untertauchgefahr – präzisiert.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Warum ordnete das SEM die Inhaftierung von A. an, und auf welche gesetzliche Grundlage stützte es sich dabei?",
+              "hint": "Vgl. Sachverhalt B sowie die Erwähnung von Art. 76a Abs. 3 lit. c AuG in E. 1.",
+              "model_answer": "Das SEM ordnete die Inhaftierung von A. zur Sicherstellung des Wegweisungsvollzugs nach Bulgarien an, nachdem es auf sein Asylgesuch nicht eingetreten war. Als gesetzliche Grundlage diente Art. 76a Abs. 3 lit. c AuG, der im Rahmen des Dublin-Verfahrens eine Haft zur Sicherung der Überstellung ermöglicht. A. hatte bereits zuvor in Bulgarien ein Asylgesuch gestellt, weshalb die Dublin-Regelung zur Anwendung kam."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlagen – sowohl aus dem Bundesrecht als auch aus der EMRK – sind für den Schutz vor rechtswidriger Administrativhaft im vorliegenden Fall massgebend, und welche unterschiedlichen Schutzgehalte vermitteln sie?",
+              "hint": "Vgl. Regeste sowie Art. 10 Abs. 2 und Art. 31 Abs. 4 BV, Art. 5 Ziff. 1 und Ziff. 4 EMRK.",
+              "model_answer": "Massgebend sind Art. 10 Abs. 2 BV (persönliche Freiheit), Art. 31 Abs. 4 BV (Anspruch auf richterliche Prüfung des Freiheitsentzugs) sowie Art. 5 Ziff. 1 EMRK (Recht auf Freiheit und Sicherheit) und Art. 5 Ziff. 4 EMRK (Habeas-Corpus-Recht). Während Art. 31 Abs. 4 BV und Art. 5 Ziff. 4 EMRK das Verfahrensrecht – insbesondere die rasche richterliche Überprüfung – schützen, regelt Art. 5 Ziff. 1 EMRK die materiellen Voraussetzungen, unter denen ein Freiheitsentzug überhaupt zulässig ist. Art. 76a AuG konkretisiert diese Vorgaben auf einfachgesetzlicher Ebene für das Dublin-Verfahren."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Asylsuchender wird in der Schweiz in Administrativhaft genommen und verlangt erstmals eine richterliche Überprüfung: Welche konkreten Anforderungen stellt das Bundesgericht an die Geschwindigkeit dieser Prüfung, und was gilt für die 8-Tages-Frist gemäss Art. 80a Abs. 4 AuG?",
+              "hint": "Vgl. E. 3 des Entscheids.",
+              "model_answer": "Das Bundesgericht verlangt, dass die erstmalige richterliche Haftprüfung so rasch wie möglich zu erfolgen hat, was sich aus Art. 31 Abs. 4 BV und Art. 5 Ziff. 4 EMRK ergibt. Die 8-tägige Frist von Art. 80a Abs. 4 AuG betrifft ausschliesslich die Beurteilung eines späteren Haftentlassungsgesuchs und ist auf die erstmalige Haftprüfung nicht anwendbar. Für die erste richterliche Kontrolle gilt daher ein strengerer, ungesetzter Massstab der grösstmöglichen Beschleunigung."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet zwischen der blossen Tatsache, dass jemand in einem anderen Dublin-Staat ein Asylgesuch gestellt hat, und dem Vorliegen konkreter Anzeichen einer erheblichen Untertauchgefahr. Welche Konsequenz hat diese Unterscheidung für die Rechtmässigkeit der Haftanordnung im Dublin-Verfahren, und inwiefern begrenzt sie den Ermessensspielraum der Behörden?",
+              "hint": "Vgl. E. 4 sowie den materiellen Gehalt von Art. 76a AuG.",
+              "model_answer": "Das Bundesgericht hält klar fest, dass allein der Umstand einer Asylgesuchstellung in einem anderen Dublin-Staat keine hinreichende Grundlage für eine Haft darstellt. Es müssen konkrete, auf den Einzelfall bezogene Anzeichen einer erheblichen Untertauchgefahr vorliegen, damit eine Haft auf Art. 76a AuG gestützt werden kann. Diese Anforderung begrenzt den behördlichen Ermessensspielraum erheblich: Pauschalvermutungen oder abstrakte Risiken genügen nicht, was einer automatischen Inhaftierung von Dublin-Rückkehrenden entgegensteht. Damit wird der Grundsatz der Verhältnismässigkeit im Bereich des Freiheitsentzugs konsequent durchgesetzt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht bejahte seine Zuständigkeit zur Beurteilung der Beschwerde trotz des grundsätzlichen Ausschlusses von Asylsachen nach Art. 83 lit. d Ziff. 1 BGG. Bewerten Sie kritisch, ob diese Rechtsprechung den Grundrechtsschutz für Asylsuchende in Administrativhaft angemessen gewährleistet, oder ob strukturelle Lücken verbleiben.",
+              "hint": "Vgl. E. 1 sowie den Zusammenhang zwischen Asylverfahren und Haftanordnung im Dublin-Kontext.",
+              "model_answer": "Das Bundesgericht stärkt den Grundrechtsschutz, indem es die Beschwerde in öffentlich-rechtlichen Angelegenheiten trotz des Asylausschlusses zulässt, wenn die Haft – auch bei funktionellem Zusammenhang mit dem Asylverfahren – als eigenständiger Gegenstand angefochten wird. Dies ist zu begrüssen, weil andernfalls Freiheitsentzüge im Dublin-Verfahren einer höchstgerichtlichen Kontrolle entzogen wären. Kritisch bleibt jedoch, dass die verfahrensrechtliche Konstruktion komplex und für betroffene Personen schwer zugänglich ist, was den effektiven Rechtsschutz in der Praxis beeinträchtigen kann. Zudem zeigt der Fall, dass strukturelle Verzögerungen bei der richterlichen Erstprüfung – trotz klarer Vorgaben – weiterhin ein Problem darstellen können."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn A. nicht nur in Bulgarien, sondern zusätzlich bereits mehrfach untergetaucht wäre und die Behörden ihn nach intensiver Fahndung aufgegriffen hätten? Würde dies die Haftanordnung nach Art. 76a AuG rechtfertigen?",
+              "discussion_points": [
+                "Würde das wiederholte Untertauchen als 'konkretes Anzeichen einer erheblichen Gefahr des Untertauchens' im Sinne von E. 4 genügen?",
+                "Inwiefern verändert sich die Verhältnismässigkeitsprüfung, wenn individuelle Verhaltensweisen – statt bloss der Dublin-Sachverhalt – herangezogen werden?"
+              ],
+              "likely_outcome_shift": "Bei nachgewiesenem wiederholtem Untertauchen wären die vom Bundesgericht geforderten konkreten Anzeichen einer erheblichen Untertauchgefahr aller Voraussicht nach erfüllt, sodass die Haftanordnung gestützt auf Art. 76a AuG als rechtmässig zu beurteilen wäre. Die Verhältnismässigkeit wäre dennoch zu prüfen, insbesondere ob mildere Massnahmen wie eine Meldepflicht ausreichen würden. Das Bundesgericht hätte die Beschwerde in diesem Fall wohl abgewiesen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht das SEM, sondern ein Kanton die Administrativhaft angeordnet hätte und die richterliche Haftprüfung durch ein kantonales Haftgericht – und nicht durch das Bundesverwaltungsgericht – erfolgt wäre?",
+              "discussion_points": [
+                "Welche Auswirkungen hätte dies auf die Zuständigkeit des Bundesgerichts und den anwendbaren Rechtsmittelweg gemäss BGG?",
+                "Würde die 8-tägige Frist von Art. 80a Abs. 4 AuG im kantonalen Verfahren anders ausgelegt, und wie würde die erstmalige richterliche Prüfung organisiert?"
+              ],
+              "likely_outcome_shift": "Bei kantonaler Haftanordnung mit kantonaler Haftprüfung wäre der Instanzenzug ein anderer: Die Beschwerde ans Bundesgericht würde über ein kantonales Obergericht laufen, womit Art. 83 lit. d Ziff. 1 BGG von vornherein weniger problematisch wäre. Die materiellen Anforderungen an die Haftvoraussetzungen – insbesondere das Erfordernis konkreter Untertauchgefahr – blieben identisch. Verfahrensrechtlich könnte die kantonale Haftprüfung rascher und niederschwelliger zugänglich sein, was den Schutzstandard von Art. 31 Abs. 4 BV und Art. 5 Ziff. 4 EMRK besser erfüllen würde."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le considérant 1 pour comprendre la recevabilité du recours malgré l'exclusion en matière d'asile prévue à l'art. 83 let. d ch. 1 LTF. Poursuivez avec le considérant 3, qui précise les exigences temporelles applicables au premier contrôle judiciaire de la détention, puis terminez par le considérant 4, qui définit les conditions matérielles de la détention dans le cadre de la procédure Dublin, notamment l'exigence d'indices concrets d'un risque de fuite.",
+          "reading_guide_it": "Leggere dapprima attentamente il considerando 1 per comprendere l'ammissibilità del ricorso nonostante l'esclusione in materia di asilo ai sensi dell'art. 83 lett. d n. 1 LTF. Proseguire con il considerando 3, che chiarisce i requisiti temporali per il primo esame giudiziario della detenzione, e concludere con il considerando 4, che precisa le condizioni materiali della detenzione nell'ambito della procedura Dublino, in particolare la necessità di indizi concreti di un rischio di fuga.",
+          "significance_it": "Questa sentenza di principio stabilisce che la detenzione amministrativa nell'ambito della procedura Dublino è lecita solo in presenza di indizi concreti di un rischio considerevole di fuga, e che il primo esame giudiziario della detenzione deve avvenire il più rapidamente possibile, indipendentemente dal termine di otto giorni previsto per le successive domande di liberazione."
         }
       ]
     },
@@ -257,13 +451,77 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Vereinbarkeit kantonaler Konzessionsregeln mit der Wirtschaftsfreiheit",
-          "significance_fr": "Compatibilité des règles cantonales de concession avec la liberté économique",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que la souveraineté cantonale sur les eaux publiques constitue un régale cantonal soustrait au champ d'application de la liberté économique (art. 27 Cst.), de sorte que les cantons disposent d'un large pouvoir d'appréciation dans l'octroi de concessions d'utilisation des eaux sans être tenus d'organiser un appel d'offres public.",
+          "key_erwagungen": [
+            "2.2",
+            "2.3",
+            "2.4",
+            "3",
+            "4",
+            "4.3.5",
+            "5"
+          ],
+          "reading_guide_de": "Beim Lesen des Urteils empfiehlt es sich, zunächst die Erwägungen 2.2 bis 2.4 zu studieren, welche die verfassungsrechtliche Grundstruktur (Gewässerhoheit, Wirtschaftsfreiheit, Ausschreibungspflicht) klären. Anschliessend sollten die Erwägungen 3 bis 5 zur konkreten Ausgestaltung der Urner Verordnung gelesen werden, wobei Erwägung 4.3.5 zum Verhältnis von abstrakter und konkreter Normenkontrolle besondere Aufmerksamkeit verdient.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter der 'Gewässerhoheit' der Kantone, und welche praktische Konsequenz ergibt sich daraus für die Nutzung öffentlicher Gewässer durch Private?",
+              "hint": "Siehe Regeste sowie Erwägung 2.4",
+              "model_answer": "Die Gewässerhoheit bezeichnet das hoheitliche Recht der Kantone über ihre öffentlichen Gewässer als kantonales Regal. Daraus folgt, dass die Kantone die öffentlichen Gewässer entweder selbst nutzen oder das Nutzungsrecht konzessionsweise an Dritte verleihen können. Private haben keinen Rechtsanspruch auf Erteilung einer solchen Konzession."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche bundesrechtlichen Normen sind im vorliegenden Fall massgebend, und wie verteilen diese die Regelungskompetenz zwischen Bund und Kantonen im Bereich der Wassernutzung?",
+              "hint": "Siehe Art. 76 Abs. 2 und 4 BV sowie Art. 94 Abs. 4 BV; Regeste und Erwägung 2.2",
+              "model_answer": "Massgebend sind Art. 27 BV (Wirtschaftsfreiheit), Art. 76 Abs. 2 und 4 BV (Grundsatzkompetenz des Bundes bei der Wassernutzung) sowie Art. 94 Abs. 4 BV (Abweichungen vom Grundsatz der Wirtschaftsfreiheit). Ergänzend gilt Art. 60 Abs. 3bis WRG. Der Bund hat lediglich eine Grundsatzkompetenz, während die Kantone die Gewässerhoheit behalten und das Konzessionswesen eigenständig ausgestalten dürfen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Ein privates Unternehmen stellt ein Gesuch zur Nutzung eines öffentlichen Flusses im Kanton Uri zur Energieerzeugung. Der Kanton lehnt das Gesuch ab, ohne eine öffentliche Ausschreibung durchgeführt zu haben. Kann das Unternehmen gestützt auf Art. 27 BV oder Art. 6 Ziff. 1 EMRK Rechte geltend machen?",
+              "hint": "Siehe Erwägungen 2.3 und 2.4",
+              "model_answer": "Nein. Das Bundesgericht hält in E. 2.4 fest, dass die Gewässerhoheit ein kantonales Regal darstellt und die Verfügungsmacht über öffentliche Gewässer vom Schutzbereich der Wirtschaftsfreiheit (Art. 27 BV) ausgenommen ist. Da kein Rechtsanspruch auf Erteilung der Konzession besteht, findet Art. 6 Ziff. 1 EMRK auf das Konzessionsverfahren gemäss E. 2.3 keine Anwendung. Eine öffentliche Ausschreibung ist bundesrechtlich nicht vorgeschrieben."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet sich das Verhältnis von abstrakter und konkreter Normenkontrolle in diesem Urteil, und welche Bedeutung hat diese Unterscheidung für die Überprüfung der Urner Gewässernutzungsverordnung?",
+              "hint": "Siehe Erwägung 4.3.5 sowie die Vorbemerkungen zur abstrakten Normenkontrolle im Regeste",
+              "model_answer": "Bei der abstrakten Normenkontrolle wird eine Norm losgelöst von ihrer konkreten Anwendung auf ihre Vereinbarkeit mit übergeordnetem Recht überprüft. Das Bundesgericht wendet dabei einen zurückhaltenderen Prüfmassstab an: Eine Norm ist nur aufzuheben, wenn sie sich jeder verfassungskonformen Auslegung entzieht. In E. 4.3.5 betont das Gericht, dass einzelne problematische Aspekte der Verordnung im Rahmen einer späteren konkreten Normenkontrolle anders beurteilt werden könnten, was die Reichweite des vorliegenden Urteils begrenzt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Kriterium der Beteiligung der öffentlichen Hand wird in der Urner Gewässernutzungsverordnung als Vergabekriterium für Konzessionen zugelassen. Ist diese Privilegierung des Staates gegenüber privaten Bewerbern aus rechtspolitischer und verfassungsrechtlicher Sicht überzeugend?",
+              "hint": "Siehe Erwägung 4, insbesondere zur Berücksichtigung des öffentlichen Wohls, sowie Art. 94 Abs. 4 BV",
+              "model_answer": "Das Bundesgericht lässt das Kriterium der öffentlichen Beteiligung als Ausdruck des pflichtgemässen Ermessens der Konzessionsbehörde und des öffentlichen Wohls zu. Aus verfassungsrechtlicher Sicht ist dies vertretbar, weil Art. 94 Abs. 4 BV Ausnahmen vom Grundsatz der Wirtschaftsfreiheit für staatliche Monopolbereiche wie Regalrechte zulässt. Rechtspolitisch lässt sich jedoch einwenden, dass die Bevorzugung öffentlicher Antragsteller den Wettbewerb verzerrt und wirtschaftliche Effizienzüberlegungen vernachlässigt, was die Frage aufwirft, ob nicht transparente Ausschreibungsverfahren besser geeignet wären, das öffentliche Wohl zu sichern."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Europäische Union hätte mit der Schweiz ein Stromabkommen abgeschlossen, das auch Bestimmungen über die diskriminierungsfreie Vergabe von Wassernutzungskonzessionen enthält und ein transparentes Ausschreibungsverfahren vorschreibt. Wie würde dies die Beurteilung der Urner GNV/UR 2014 verändern?",
+              "discussion_points": [
+                "Vorrang eines Staatsvertrags gegenüber kantonalem Verordnungsrecht gemäss Art. 5 Abs. 4 BV",
+                "Vereinbarkeit des Kriteriums der öffentlichen Beteiligung mit dem unionsrechtlichen Diskriminierungsverbot und Transparenzgebot"
+              ],
+              "likely_outcome_shift": "Ein solches Abkommen würde als Staatsvertrag dem kantonalen Verordnungsrecht vorgehen und könnten ein zwingendes Ausschreibungsgebot begründen. Die Urner Regelung, die keine öffentliche Ausschreibung vorschreibt und die Beteiligung der öffentlichen Hand bevorzugt, wäre in diesem Fall zumindest teilweise als völkerrechtswidrig zu beurteilen. Das Bundesgericht müsste prüfen, ob eine vertragskonforme Auslegung möglich ist oder ob die entsprechenden Bestimmungen der GNV/UR unanwendbar erklärt werden müssten."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Statt eines privaten Energieunternehmens wäre es eine ausländische staatsnahe Gesellschaft (z.B. ein europäischer Energiekonzern in öffentlichem Eigentum), die das Konzessionsgesuch stellt und sich auf Gleichbehandlung beruft, weil der Kanton Uri einem inländischen privaten Bewerber den Vorzug gibt, jedoch nicht ihr.",
+              "discussion_points": [
+                "Anwendbarkeit des Diskriminierungsverbots auf ausländische juristische Personen im Konzessionsrecht",
+                "Frage, ob das Kriterium der öffentlichen Beteiligung bei gleichzeitiger Ablehnung eines ausländischen Staatsunternehmens als versteckte Diskriminierung qualifiziert werden kann"
+              ],
+              "likely_outcome_shift": "Die Parteienkonstellation würde Fragen des internationalen Wirtschaftsrechts und allfälliger Reziprozitätspflichten aufwerfen. Das Bundesgericht müsste prüfen, ob ausländische staatsnahe Unternehmen sich auf schweizerische Grundrechte berufen können und ob das Kriterium der öffentlichen Beteiligung, das auf inländische öffentliche Hand ausgerichtet ist, gegenüber einem ausländischen Staatsunternehmen sachlich gerechtfertigt ist. Das Ergebnis könnte differieren, da ein Ausschluss ausländischer Staatsunternehmen vom Vorzugskriterium als sachlich begründbar erscheint, was die abstrakte Normenkontrolle jedoch kaum berühren würde."
+            }
+          ],
+          "reading_guide_fr": "Il est recommandé de commencer par les considérants 2.2 à 2.4, qui établissent la structure constitutionnelle de base (souveraineté sur les eaux, liberté économique, obligation de mise en soumission publique). Les considérants 3 à 5 concernant la mise en œuvre concrète de l'ordonnance uranaise doivent ensuite être étudiés, avec une attention particulière au considérant 4.3.5 sur le rapport entre contrôle abstrait et concret des normes.",
+          "reading_guide_it": "Si raccomanda di iniziare con i considerandi 2.2–2.4, che chiariscono la struttura costituzionale di base (sovranità sulle acque, libertà economica, obbligo di bando pubblico). I considerandi 3–5 sulla concreta configurazione dell'ordinanza urana vanno poi esaminati attentamente, con particolare riguardo al considerando 4.3.5 sul rapporto tra controllo astratto e concreto delle norme.",
+          "significance_it": "La sentenza chiarisce che la sovranità cantonale sulle acque pubbliche costituisce un regale cantonale sottratto all'ambito di applicazione della libertà economica (art. 27 Cost.), cosicché i cantoni dispongono di ampio potere discrezionale nel rilascio di concessioni d'uso delle acque senza obbligo di indire una gara pubblica."
         }
       ]
     },
@@ -301,13 +559,77 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Prüfungsergebnisse können mit subsidiärer Verfassungsbeschwerde angefochten werden",
-          "significance_fr": "Les résultats d'examens peuvent être contestés par recours constitutionnel subsidiaire",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que le résultat d'un examen (respectivement une note) peut être attaqué par la voie du recours constitutionnel subsidiaire lorsque l'échec, une autre conséquence juridique ou un prédicat dont le mode de calcul est fixé par le règlement des examens est en jeu, délimitant ainsi clairement le champ d'application de l'art. 83 let. t LTF.",
+          "key_erwagungen": [
+            "1",
+            "2",
+            "2.2",
+            "3",
+            "4",
+            "5",
+            "6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 1 und E. 2, um den verfahrensrechtlichen Ausgangspunkt (Ausschluss der ordentlichen Beschwerde nach Art. 83 lit. t BGG und Öffnung der subsidiären Verfassungsbeschwerde) zu verstehen. E. 3 klärt die entscheidende Zulässigkeitsfrage der Anfechtbarkeit von Einzelnoten; E. 4 und 5 vertiefen die Verfahrensgarantien (rechtliches Gehör, Kognition). E. 6 zeigt schliesslich, wie das Bundesgericht Examensentscheide inhaltlich überprüft.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der konkrete Ausgangsstreit in BGE 136 I 229, und welche Note begehrte die Beschwerdeführerin für ihre Masterarbeit?",
+              "hint": "Sachverhalt A und B des Entscheids",
+              "model_answer": "Die Beschwerdeführerin X. studierte Rechtswissenschaften an der Universität Bern und erhielt für ihre Masterarbeit die Note 5,0, was ihr das Prädikat 'magna cum laude' einbrachte. Sie verlangte, die Note auf 6,0, mindestens aber auf 5,5 anzuheben, weil sie das Prädikat 'summa cum laude' anstrebte. Der Streit zog sich durch die Rekurskommission und das Verwaltungsgericht bis vor das Bundesgericht."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Norm schliesst die ordentliche Beschwerde in öffentlich-rechtlichen Angelegenheiten gegen Prüfungsergebnisse aus, und unter welchen Voraussetzungen öffnet das Bundesgericht dennoch den Weg zur subsidiären Verfassungsbeschwerde?",
+              "hint": "E. 1 und E. 2 des Entscheids sowie Art. 83 lit. t und Art. 113 ff. BGG",
+              "model_answer": "Art. 83 lit. t BGG schliesst die Beschwerde in öffentlich-rechtlichen Angelegenheiten gegen Entscheide über das Ergebnis von Prüfungen und anderen Fähigkeitsbewertungen aus. Dennoch ist die subsidiäre Verfassungsbeschwerde nach Art. 113 ff. BGG zulässig, wenn ein rechtlich schutzwürdiges Interesse besteht. Das Bundesgericht präzisiert, dass eine Note dann mit subsidiärer Verfassungsbeschwerde anfechtbar ist, wenn das Nichtbestehen, eine andere Rechtsfolge oder ein Prädikat in Frage steht, dessen Festlegung die Prüfungsordnung vorgibt und das nicht im freien Ermessen der Prüfungsbehörde liegt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Student hat eine Prüfung bestanden, möchte aber eine Einzelnote anfechten, die keinen Einfluss auf das Bestehen und auch kein reglementarisch definiertes Prädikat berührt – wäre eine subsidiäre Verfassungsbeschwerde ans Bundesgericht zulässig?",
+              "hint": "E. 2.2 und E. 3 des Entscheids zur Zulässigkeit der Anfechtung von Einzelnoten",
+              "model_answer": "Nach der in BGE 136 I 229 präzisierten Rechtsprechung wären Einzelnoten grundsätzlich nicht selbständig anfechtbar, da sie lediglich Elemente der Gesamtbeurteilung bilden. Eine Ausnahme gilt nur, wenn an die Notenhöhe konkrete Rechtsfolgen geknüpft sind oder die Prüfungsordnung vorschreibt, wie ein Prädikat zu bestimmen ist. Fehlt ein solcher normativer Bezugspunkt, mangelt es an einem rechtlich schutzwürdigen Interesse im Sinne von Art. 115 lit. b BGG, womit auf die Beschwerde nicht einzutreten wäre."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum unterscheidet das Bundesgericht zwischen Prüfungsentscheiden, die im Ermessen der Prüfungsbehörde liegen, und solchen, die reglementarisch gebunden sind – und welche verfassungsrechtliche Logik steckt hinter dieser Differenzierung?",
+              "hint": "E. 2.2, E. 3 sowie der Bezug zu Art. 9 und Art. 29 Abs. 2 BV",
+              "model_answer": "Die Unterscheidung beruht auf der Überlegung, dass echte Fachurteile über intellektuelle Leistungen wegen der beschränkten Kognition des Bundesgerichts grundsätzlich nicht justiziabel sind; die richterliche Zurückhaltung schützt die Autonomie der Prüfungsbehörden. Ist dagegen die Berechnungsmethode eines Prädikats reglementarisch vorgegeben, liegt keine Ermessensfrage, sondern eine reine Rechtsanwendungsfrage vor, bei der eine Verletzung des Willkürverbots (Art. 9 BV) oder des rechtlichen Gehörs (Art. 29 Abs. 2 BV) ohne weiteres denkbar und überprüfbar ist. Die Differenzierung wahrt so das Gleichgewicht zwischen institutioneller Autonomie der Bildungseinrichtungen und dem verfassungsrechtlichen Anspruch auf effektiven Rechtsschutz."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 136 I 229 vorgenommene Präzisierung der Rechtsprechung rechtspolitisch überzeugend, oder schafft die Zulässigkeit der subsidiären Verfassungsbeschwerde gegen reglementarisch gebundene Prädikate ein kaum bewältigbares Rechtsschutzgefälle gegenüber rein ermessensbasierten Prüfungsentscheiden?",
+              "hint": "E. 1-3 sowie das Spannungsfeld zwischen Art. 29a BV (Rechtsweggarantie) und der institutionellen Autonomie der Universitäten",
+              "model_answer": "Die Präzisierung ist insofern kohärent, als sie den Rechtsschutz auf Konstellationen beschränkt, in denen das Gericht wirklich normativen Massstäben folgen kann, ohne in fachliche Beurteilungsspielräume einzugreifen. Kritisch lässt sich jedoch einwenden, dass die Grenzziehung zwischen 'reglementarisch gebunden' und 'Ermessen' in der Praxis unscharf bleibt und zu Rechtsunsicherheit führt, weil Prüfungsordnungen selten vollständig determinieren, wie Noten zu vergeben sind. Zudem entsteht ein Rechtsschutzgefälle: Studierende an Hochschulen mit präzisen Prädikatsregeln haben bessere Beschwerdemöglichkeiten als solche an Einrichtungen mit offeneren Regelungen, was die Gleichheit vor dem Gesetz tangiert und eine stärkere Harmonisierung der universitären Prüfungsreglemente nahelegt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn die Prüfungsordnung der Universität Bern kein klar definiertes Berechnungsschema für die Prädikate 'magna cum laude' und 'summa cum laude' enthielte, sondern der Prüfungskommission ausdrücklich ein Beurteilungsspielraum eingeräumt wäre?",
+              "discussion_points": [
+                "Fehlendes rechtlich schutzwürdiges Interesse gem. Art. 115 lit. b BGG bei fehlendem reglementarischem Bezugspunkt",
+                "Reichweite des Willkürverbots (Art. 9 BV) bei echten Ermessensentscheiden im Prüfungsrecht"
+              ],
+              "likely_outcome_shift": "Ohne reglementarisch vorgegebenes Berechnungsschema für das Prädikat würde dem Entscheid der Ermessenscharakter zukommen, und das Bundesgericht hätte auf die subsidiäre Verfassungsbeschwerde mangels rechtlich schutzwürdigen Interesses nicht eingetreten. Die Beschwerdeführerin hätte lediglich offensichtliche Willkür oder eine Verletzung des rechtlichen Gehörs rügen können, ohne dass das Bundesgericht die Prädikatsberechnung selbst hätte überprüfen dürfen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht eine Studentin ihre zu tief befundene Masterarbeitsnote anfechten würde, sondern die Universität die von der Rekurskommission heraufgesetzte Note gerichtlich anfechten wollte?",
+              "discussion_points": [
+                "Legitimation der Universität als Beschwerdeführerin gem. Art. 115 BGG und öffentliches Interesse an der Überprüfung von Notenentscheiden",
+                "Frage der Beschwerdelegitimation einer staatlichen Institution gegen einen ihr untergeordneten Beschwerdeentscheid und das Verhältnis zur institutionellen Autonomie"
+              ],
+              "likely_outcome_shift": "Eine Universität als staatliche Körperschaft kann sich grundsätzlich nicht auf Grundrechte berufen und hat daher in der Regel keine Legitimation zur subsidiären Verfassungsbeschwerde gemäss Art. 115 BGG als Beschwerdeführerin. Der Rechtsweg wäre ihr in dieser Konstellation versperrt, was die Endgültigkeit von Rekursentscheiden zugunsten der Studierenden stärkt und die Frage aufwirft, ob die Prüfungsordnungen klarere verwaltungsinterne Korrekturmechanismen vorsehen sollten."
+            }
+          ],
+          "reading_guide_fr": "Commencez par les consid. 1 et 2 pour saisir le point de départ procédural (exclusion du recours ordinaire selon l'art. 83 let. t LTF et ouverture du recours constitutionnel subsidiaire). Le consid. 3 tranche la question décisive de la recevabilité de l'attaque contre des notes individuelles ; les consid. 4 et 5 approfondissent les garanties de procédure (droit d'être entendu, cognition). Le consid. 6 illustre enfin comment le Tribunal fédéral contrôle matériellement les décisions d'examen.",
+          "reading_guide_it": "Si raccomanda di leggere prima i consid. 1 e 2 per comprendere il punto di partenza procedurale (esclusione del ricorso ordinario ex art. 83 lett. t LTF e apertura del ricorso costituzionale sussidiario). Il consid. 3 chiarisce la questione decisiva dell'impugnabilità dei voti singoli; i consid. 4 e 5 approfondiscono le garanzie procedurali (diritto di essere sentiti, cognizione). Il consid. 6 mostra infine come il Tribunale federale esamina nel merito le decisioni d'esame.",
+          "significance_it": "Questa sentenza chiarisce che il risultato di un esame (ovvero un voto) può essere impugnato mediante ricorso costituzionale sussidiario quando è in discussione la non superazione, un'altra conseguenza giuridica o un predicato il cui metodo di calcolo è stabilito dal regolamento degli esami, delimitando così il campo di applicazione dell'art. 83 lett. t LTF."
         },
         {
           "decision_id": "bge_134 II 244",
@@ -332,13 +654,74 @@
           "difficulty": 1,
           "prerequisites": [],
           "significance_de": "Minimale Begründungsanforderungen: Auseinandersetzung mit den Erwägungen des angefochtenen Entscheids",
-          "significance_fr": "Exigences minimales de motivation: confrontation avec les considérants de la décision attaquée",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que l'art. 42 al. 2 LTF exige du recourant qu'il se confronte, au moins brièvement, aux considérants de la décision attaquée, de sorte que la simple reproduction du mémoire cantonal entraîne l'irrecevabilité du recours au Tribunal fédéral.",
+          "key_erwagungen": [
+            "2.1",
+            "2.2",
+            "2.3",
+            "2.4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 2.1, um die allgemeine Begründungspflicht nach Art. 42 Abs. 2 BGG und deren Verhältnis zum Grundsatz 'iura novit curia' zu verstehen. Befassen Sie sich dann mit E. 2.2 zu den strengeren Anforderungen bei Grundrechtsverletzungen und E. 2.3, wo das Bundesgericht konkret darlegt, weshalb die nahezu wortgleiche Wiederholung der kantonalen Beschwerdeschrift nicht genügt. E. 2.4 klärt schliesslich, warum keine Nachfristansetzung gewährt werden kann.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter der minimalen Begründungsanforderung gemäss Art. 42 Abs. 2 BGG, und warum genügte die Beschwerdeschrift der Stockwerkeigentümergemeinschaft dieser Anforderung nicht?",
+              "hint": "Vgl. E. 2.1 und E. 2.3 des Entscheids",
+              "model_answer": "Art. 42 Abs. 2 BGG verlangt, dass der Beschwerdeführer in gedrängter Form darlegt, inwiefern der angefochtene Akt Recht verletzt, und sich dabei wenigstens kurz mit den Erwägungen des angefochtenen Entscheids auseinandersetzt. Im vorliegenden Fall hatte der Rechtsvertreter der Beschwerdeführer vor Bundesgericht praktisch dieselbe Beschwerdebegründung eingereicht wie bereits vor dem Verwaltungsgericht. Da die Begründung nicht auf die Erwägungen des verwaltungsgerichtlichen Urteils einging, fehlte die notwendige Auseinandersetzung mit dem angefochtenen Entscheid vollständig."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen des BGG regeln die Begründungsanforderungen an eine Beschwerde, und welche Konsequenz sieht das Gesetz bei deren Nichterfüllung vor?",
+              "hint": "Vgl. Art. 42 Abs. 2, Art. 108 Abs. 1 lit. b sowie Art. 106 Abs. 1 und 2 BGG, wie in E. 2.1 und E. 2.2 dargestellt",
+              "model_answer": "Art. 42 Abs. 2 BGG enthält die allgemeine Begründungspflicht, während Art. 106 Abs. 2 BGG für Grundrechtsverletzungen eine qualifizierte Rügepflicht statuiert. Bei Nichterfüllung der Mindestanforderungen tritt das Bundesgericht auf die Beschwerde nicht ein; bei offensichtlichen Begründungsmängeln kann dies im vereinfachten Verfahren nach Art. 108 Abs. 1 lit. b BGG geschehen. Der Grundsatz 'iura novit curia' (Art. 106 Abs. 1 BGG) greift erst, wenn überhaupt auf die Beschwerde eingetreten werden kann."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Ein Anwalt reicht vor Bundesgericht eine Beschwerde ein, die zwar neue Rechtsliteratur zitiert, aber inhaltlich identisch mit der kantonalen Beschwerdeschrift ist und auf die Erwägungen des kantonalen Gerichts mit keinem Wort eingeht. Wie würde das Bundesgericht gestützt auf BGE 134 II 244 über das Eintreten entscheiden?",
+              "hint": "Vgl. E. 2.1 und E. 2.3 sowie den Entscheid im Urteilskopf",
+              "model_answer": "Das Bundesgericht würde auf die Beschwerde nicht eintreten. Gemäss BGE 134 II 244 genügt es nicht, lediglich neue Literatur hinzuzufügen, wenn die Begründung inhaltlich unverändert bleibt und keine Auseinandersetzung mit den Erwägungen des angefochtenen Entscheids stattfindet. Die minimale Anforderung von Art. 42 Abs. 2 BGG besteht gerade darin, auf die Argumentation der Vorinstanz einzugehen und aufzuzeigen, inwiefern deren Schlussfolgerungen rechtlich fehlerhaft sind."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Die Beschwerdeführer argumentierten, ein Nichteintreten wäre überspitzt formalistisch und würde das Rechtsverweigerungsverbot verletzen. Inwiefern lässt sich dieser Einwand mit der Ratio der Begründungsanforderungen des BGG in Einklang bringen oder nicht?",
+              "hint": "Vgl. E. 2.1 sowie den Sachverhalt (Stellungnahme der Beschwerdeführer vom 30. April 2008)",
+              "model_answer": "Das Argument des überspitzten Formalismus ist wenig überzeugend, weil die Begründungsanforderungen des Art. 42 Abs. 2 BGG eine funktionale Rolle im Rechtsmittelsystem spielen: Sie stellen sicher, dass das Bundesgericht weiss, welche Aspekte des vorinstanzlichen Entscheids bestritten werden, und ermöglichen eine effiziente Rechtspflege. Das Rechtsverweigerungsverbot schützt vor ungerechtfertigtem Nichteintreten aus rein formellen Gründen, nicht aber davor, dass ein Beschwerdeführer die inhaltliche Mindestarbeit der Auseinandersetzung mit dem angefochtenen Entscheid selbst erbringen muss. Der Grundsatz 'iura novit curia' entbindet den Beschwerdeführer nicht von der Pflicht, den Streitgegenstand und die beanstandeten Erwägungen zu bezeichnen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie kritisch, ob die vom Bundesgericht in BGE 134 II 244 festgelegte Mindestanforderung – wenigstens kurze Auseinandersetzung mit den Vorinstanzerwägungen – eine angemessene Balance zwischen Verfahrenseffizienz und Rechtszugang darstellt, insbesondere für nicht anwaltlich vertretene Parteien.",
+              "hint": "Vgl. E. 2.1–2.4 sowie die allgemeinen Grundsätze des Zugangs zum Bundesgericht",
+              "model_answer": "Die Anforderung ist im Grundsatz verhältnismässig, da sie lediglich eine minimale Auseinandersetzung verlangt und damit das Bundesgericht davor schützt, als allgemeine Appellationsinstanz zu fungieren. Für anwaltlich vertretene Parteien wie im vorliegenden Fall ist die Anforderung klar zumutbar und entspricht professionellen Standards. Kritischer zu beurteilen ist die Situation nicht vertretener Laien, wo das Gebot des fairen Verfahrens (Art. 29 BV) möglicherweise eine grosszügigere Auslegung gebietet; das Bundesgericht berücksichtigt dies jedoch in ständiger Praxis, indem es bei Laienbeschwerden die Anforderungen etwas tiefer ansetzt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Beschwerdeführer zwar dieselbe Beschwerdebegründung eingereicht hätten, aber innerhalb der Beschwerdefrist eine kurze Ergänzungsschrift nachgereicht hätten, die explizit auf drei zentrale Erwägungen des Verwaltungsgerichts eingeht und darlegt, warum diese bundesrechtswidrig seien?",
+              "discussion_points": [
+                "Gilt die Ergänzungsschrift als Teil der fristgerecht eingereichten Beschwerdebegründung, oder ist die Begründung auf die ursprüngliche Eingabe beschränkt?",
+                "Inwiefern ändert Art. 42 Abs. 5 und 6 BGG – der laut E. 2.4 keine Nachfristansetzung gewährt – etwas an der Zulässigkeit einer fristkonformen Ergänzung?"
+              ],
+              "likely_outcome_shift": "Wenn die Ergänzungsschrift noch innerhalb der 30-tägigen Beschwerdefrist eingereicht wurde, dürfte das Bundesgericht sie als Teil der Begründung berücksichtigen, sofern sie die Anforderungen von Art. 42 Abs. 2 BGG erfüllt. In diesem Fall würde das Gericht wohl auf die Beschwerde eintreten, da die Mindestanforderung der Auseinandersetzung mit den Vorinstanzerwägungen nachträglich aber fristgerecht erfüllt worden wäre. Die Frage der inhaltlichen Berechtigung bliebe jedoch offen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Stockwerkeigentümergemeinschaft, sondern die X. AG (Mobilfunkbetreiberin) vor Bundesgericht eine inhaltlich identische Beschwerde wie im kantonalen Verfahren eingereicht hätte, um eine für sie ungünstige Auflage des Verwaltungsgerichts (Einbezug in das Qualitätssicherungssystem) anzufechten?",
+              "discussion_points": [
+                "Ändert die Parteistellung (privates Unternehmen vs. Bürgergemeinschaft) etwas an den Begründungsanforderungen gemäss Art. 42 Abs. 2 BGG?",
+                "Spielt es eine Rolle, dass das Verwaltungsgericht die Beschwerde der Gegenseite teilweise gutgeheissen hatte und damit ein inhaltlich neuer Streitgegenstand vorliegt, der im kantonalen Verfahren noch nicht thematisiert wurde?"
+              ],
+              "likely_outcome_shift": "Die Begründungsanforderungen nach Art. 42 Abs. 2 BGG gelten unabhängig von der Parteistellung gleichermassen für alle Beschwerdeführer. Auch die X. AG müsste sich mit den Erwägungen des Verwaltungsgerichts auseinandersetzen, und eine bloss wiederholte kantonale Begründung würde zum Nichteintreten führen. Allerdings wäre die Ausgangslage insofern anders, als die X. AG die neue Auflage – Einbezug in das Qualitätssicherungssystem – erst durch das verwaltungsgerichtliche Urteil erhalten hat und insoweit zwingend neue, auf diesen Entscheid bezogene Argumente vorbringen müsste."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le consid. 2.1 pour comprendre l'obligation de motivation selon l'art. 42 al. 2 LTF et son rapport avec le principe 'iura novit curia'. Consultez ensuite le consid. 2.2 sur les exigences accrues en matière de droits fondamentaux, puis le consid. 2.3 où le Tribunal fédéral explique concrètement pourquoi la répétition quasi mot pour mot du mémoire cantonal est insuffisante. Le consid. 2.4 précise enfin pourquoi aucun délai supplémentaire ne peut être accordé.",
+          "reading_guide_it": "Leggere dapprima il consid. 2.1 per comprendere l'obbligo di motivazione ai sensi dell'art. 42 cpv. 2 LTF e il suo rapporto con il principio 'iura novit curia'. Passare poi al consid. 2.2 sulle esigenze più severe per le violazioni dei diritti fondamentali e al consid. 2.3, dove il Tribunale federale spiega concretamente perché la ripetizione quasi letterale del gravame cantonale è insufficiente. Il consid. 2.4 chiarisce infine perché non può essere concessa una proroga di termine.",
+          "significance_it": "Questa sentenza chiarisce che l'art. 42 cpv. 2 LTF impone al ricorrente di confrontarsi almeno brevemente con i considerandi della decisione impugnata, cosicché la mera ripetizione del gravame cantonale comporta l'inammissibilità del ricorso dinanzi al Tribunale federale."
         }
       ]
     }

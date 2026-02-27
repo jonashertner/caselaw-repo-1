@@ -326,13 +326,75 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Voraussetzungen der Besitzesstörungsklage; Verhältnis öffentlich-rechtliche Eigentumsbeschränkung",
-          "significance_fr": "Conditions de l'action possessoire; rapport avec les restrictions de droit public",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que la condition de la voie de fait prohibée au sens de l'art. 928 CC peut être exclue par une restriction de droit public à la propriété inscrite dans un règlement communal de construction et de zones, de sorte que le possesseur est tenu de tolérer le survol et l'atterrissage de deltaplanes sur ses parcelles sans pouvoir invoquer la protection possessoire.",
+          "key_erwagungen": [
+            "3",
+            "3.1",
+            "3.2",
+            "4",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (Abschnitte A–C), um die planungsrechtliche Ausgangslage und die Parteirollen zu verstehen. Konzentrieren Sie sich dann auf Erwägung 3 (Begriff der verbotenen Eigenmacht), Erwägung 3.1 (Verhältnis von Besitzes- und Rechtsfrage) sowie Erwägung 3.2 (Wirkung öffentlich-rechtlicher Erlaubnisse), da dort die dogmatische Kernaussage des Urteils entwickelt wird.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter 'verbotener Eigenmacht' im Sinne von Art. 928 ZGB, und warum ist dieses Merkmal für die Besitzesstörungsklage entscheidend?",
+              "hint": "Siehe Erwägung 3 und 3.2 des Entscheids.",
+              "model_answer": "Verbotene Eigenmacht liegt vor, wenn die Besitzesstörung weder vom Besitzer selbst noch durch das objektive Recht erlaubt ist. Dieses Merkmal ist entscheidend, weil die Klage aus Art. 928 ZGB nur dann begründet ist, wenn die Störung tatsächlich unerlaubt erfolgt. Ist die Störung durch öffentliches Recht gestattet, entfällt die verbotene Eigenmacht und damit der Klagegrund."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlagen – öffentlich-rechtliche wie privatrechtliche – spielen in diesem Fall zusammen, und wie grenzt das Gericht ihre jeweilige Rolle ab?",
+              "hint": "Vgl. Art. 928 ZGB sowie Art. 77 des kommunalen Bau- und Zonenreglements (BZR) der Gemeinde G.; Erwägungen 3, 3.1 und 3.2.",
+              "model_answer": "Art. 928 ZGB bildet die privatrechtliche Grundlage der Besitzesstörungsklage. Art. 77 BZR der Gemeinde G. stellt eine öffentlich-rechtliche Eigentumsbeschränkung dar, die das Überfliegen und Landen mit Hängegleitern auf bestimmten Grundstücken erlaubt. Das Gericht hält fest, dass öffentlich-rechtliche Normen die Rechtswidrigkeit einer Besitzesstörung ausschliessen können, also die Voraussetzung der verbotenen Eigenmacht entfallen lassen, auch wenn das Privatrecht grundsätzlich den Besitzesschutz gewährt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Die X. AG hat die betroffenen Grundstücke erst nach der Homologation des BZR im Jahr 1998 erworben. Welche Konsequenz zieht das Gericht daraus für die Frage der Duldungspflicht?",
+              "hint": "Sachverhalt Abschnitt B; Erwägung 3.2.",
+              "model_answer": "Da das BZR bereits 1998 rechtskräftig homologiert wurde und die X. AG die Grundstücke erst zwischen 2003 und 2006 erwarb, hat sie diese in Kenntnis der bestehenden öffentlich-rechtlichen Beschränkung erworben. Daraus folgt, dass sie die Nutzung als Landeplatz und Hindernisfreihaltefläche dulden muss, weil die Beschränkung schon vor dem Erwerb bestand und Teil des Rechtsstatus der Grundstücke war. Eine ausdrückliche Zustimmung ist für die Duldungspflicht nicht erforderlich."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht betont, dass im Besitzesstörungsverfahren die Besitzesfrage und die Rechtsfrage grundsätzlich zu trennen sind, lässt aber dennoch die materielle Rechtslage einfliessen. Worin liegt der dogmatische Widerspruch, und wie löst ihn das Gericht?",
+              "hint": "Vgl. Erwägung 3.1 sowie den Verweis auf Art. 927 Abs. 2 ZGB und die Kommentarliteratur (Stark, Steinauer).",
+              "model_answer": "Der dogmatische Widerspruch liegt darin, dass die Besitzesstörungsklage nach Art. 928 ZGB – anders als die Besitzesentziehungsklage nach Art. 927 ZGB – dem Beklagten grundsätzlich verwehrt, ein besseres Recht einzuwenden. Gleichzeitig setzt das Tatbestandsmerkmal der 'verbotenen Eigenmacht' eine Wertung anhand der objektiven Rechtslage voraus. Das Gericht löst diesen Widerspruch, indem es nicht das subjektive Recht des Beklagten prüft, sondern objektiv feststellt, ob die Störung durch das öffentliche Recht erlaubt ist – womit die verbotene Eigenmacht auf der Tatbestandsebene entfällt, bevor es überhaupt zu einer Rechtseinrede des Beklagten kommt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass eine kommunale Zonenplanung den privatrechtlichen Besitzesschutz eines Grundeigentümers vollständig ausschliessen kann, ohne dass dieser einer Nutzung zugestimmt hat – auch wenn eine Entschädigung vorgesehen ist?",
+              "hint": "Art. 77 Abs. 3 BZR (Entschädigungspflicht); Erwägung 3.2; allgemeine Systematik von Art. 928 ZGB.",
+              "model_answer": "Diese Lösung ist rechtspolitisch ambivalent: Einerseits ist es sachgerecht, dass demokratisch legitimierte öffentlich-rechtliche Nutzungsplanungen Vorrang vor privatem Besitzesschutz geniessen, zumal eine Entschädigungspflicht zugunsten der betroffenen Eigentümer vorgesehen ist. Andererseits besteht das Risiko, dass Gemeinden durch Zonenreglemente faktisch Dienstbarkeiten zu Lasten Privater begründen, ohne das privatrechtliche Verfahren der Dienstbarkeitsbestellung einzuhalten. Die Entschädigungsklausel mildert dieses Spannungsverhältnis, löst es aber nicht vollständig, da sie den Verlust der prozessualen Abwehrmöglichkeit nicht kompensiert."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die X. AG nach dem Erwerb der Grundstücke hohe Zäune und Bäume errichtet bzw. gepflanzt hätte, die den Landebetrieb tatsächlich gefährden, und die Beschwerdegegner daraufhin eigenmächtig diese Hindernisse entfernt hätten?",
+              "discussion_points": [
+                "Hätten die Beschwerdegegner durch die eigenmächtige Entfernung der Hindernisse ihrerseits verbotene Eigenmacht gegenüber der X. AG begangen, oder wäre dies durch Art. 77 BZR gedeckt?",
+                "Inwiefern würde die Pflicht der X. AG, Hindernisse zu unterlassen (Art. 77 Abs. 2 BZR), einen Selbsthilfeanspruch der Trägerschaft oder eine behördliche Vollstreckungskompetenz begründen?"
+              ],
+              "likely_outcome_shift": "Die eigenmächtige Entfernung der Hindernisse durch die Beschwerdegegner würde wahrscheinlich als verbotene Eigenmacht qualifiziert, da Art. 77 BZR nur eine Duldungspflicht begründet, jedoch keine Selbsthilfeberechtigung verleiht. Die X. AG könnte in diesem umgekehrten Szenario ihrerseits erfolgreich Besitzesschutzklage erheben, während die Durchsetzung der Hindernisfreiheit den Verwaltungsbehörden obliegt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht eine Aktiengesellschaft, sondern ein Landwirt als Grundeigentümer klagen würde, der die betroffenen Grundstücke seit Generationen bewirtschaftet und bereits vor der Zonenplanung von 1997/1998 Besitzer war?",
+              "discussion_points": [
+                "Würde der Umstand, dass der Landwirt die Grundstücke vor der Homologation des BZR erworben hatte, seine Rechtsposition gegenüber der öffentlich-rechtlichen Eigentumsbeschränkung stärken?",
+                "Inwiefern wäre die Entschädigungspflicht gemäss Art. 77 Abs. 3 BZR für einen Altbesitzer bedeutsamer als für die X. AG, die die Grundstücke nach der Homologation erwarb?"
+              ],
+              "likely_outcome_shift": "Ein Altbesitzer, der vor der Zonenplanung Eigentümer war, hätte eine stärkere Ausgangslage hinsichtlich der materiellen Entschädigung, da die Beschränkung nachträglich in sein bestehendes Eigentumsrecht eingreift. Dennoch würde das Bundesgericht auch in diesem Fall die verbotene Eigenmacht verneinen, da das homologierte BZR als geltendes objektives Recht die Störung erlaubt; der entscheidende Unterschied läge in einem möglicherweise stärkeren Entschädigungsanspruch nach materiellem öffentlichem Recht."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les faits (sections A à C) pour comprendre le cadre réglementaire et les rôles des parties. Concentrez-vous ensuite sur le considérant 3 (notion de voie de fait prohibée), le considérant 3.1 (distinction entre la question de la possession et celle du droit) et le considérant 3.2 (effets des autorisations de droit public), car c'est là que le Tribunal fédéral développe le raisonnement juridique central de l'arrêt.",
+          "reading_guide_it": "Iniziare con la lettura dei fatti (sezioni A–C) per comprendere il quadro pianificatorio e i ruoli delle parti. Concentrarsi poi sui considerandi 3 (nozione di atto arbitrario vietato), 3.1 (distinzione tra questione del possesso e questione del diritto) e 3.2 (effetti delle autorizzazioni di diritto pubblico), dove il Tribunale federale sviluppa il nucleo dogmatico della sentenza.",
+          "significance_it": "La sentenza chiarisce che il presupposto dell'atto arbitrario vietato ai sensi dell'art. 928 CC può essere escluso da una restrizione di diritto pubblico alla proprietà contenuta in un regolamento edilizio e delle zone comunale, cosicché il possessore è tenuto a tollerare il sorvolo e l'atterraggio di deltaplani sui propri fondi senza poter invocare la tutela possessoria."
         },
         {
           "decision_id": "bge_132 III 155",
@@ -468,13 +530,72 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Unterscheidung dingliche/obligatorische Bestimmungen bei Dienstbarkeiten",
-          "significance_fr": "Distinction entre dispositions réelles et obligatoires des servitudes",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt établit que les clauses contractuelles portant sur le contenu et l'étendue d'une servitude ont en principe un effet réel et ne peuvent être de nature purement obligationnelle qu'à titre exceptionnel, et qu'une renonciation tacite à un droit de passage est admissible lorsque son exercice est objectivement incompatible avec des droits de servitude ultérieurement accordés.",
+          "key_erwagungen": [
+            "3",
+            "4a"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 3 sorgfältig, um die vom Bundesgericht entwickelte Grundregel zur Unterscheidung dinglicher und obligatorischer Vertragsbestimmungen sowie die massgebenden Auslegungsgrundsätze zu erfassen. Wenden Sie sich anschliessend Erwägung 4a zu, welche die Voraussetzungen des konkludenten Verzichts auf ein Wegrecht bei Unvereinbarkeit mit späteren Dienstbarkeiten behandelt. Beachten Sie dabei stets den Wortlaut von Art. 730 und 734 ZGB als normativen Ankerpunkt.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Unterschied zwischen einer Vertragsbestimmung mit dinglicher Wirkung und einer solchen mit bloss obligatorischer Wirkung im Kontext eines Dienstbarkeitsvertrags?",
+              "hint": "Vgl. Erwägung 3 sowie Art. 730 und 738 ZGB",
+              "model_answer": "Eine Vertragsbestimmung mit dinglicher Wirkung gilt gegenüber jedermann und bindet auch Rechtsnachfolger der ursprünglichen Vertragsparteien, weil sie den Inhalt und Umfang der im Grundbuch eingetragenen Dienstbarkeit selbst festlegt. Eine bloss obligatorische Bestimmung hingegen verpflichtet nur die ursprünglichen Vertragsparteien persönlich und geht nicht auf deren Rechtsnachfolger über. Das Bundesgericht stellt fest, dass Vertragsbestimmungen über Inhalt und Umfang einer Dienstbarkeit in der Regel dingliche Wirkung haben und nur ausnahmsweise rein obligatorischer Natur sind."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen und Auslegungsgrundsätze nennt das Bundesgericht in Erwägung 3, um die Rechtsnatur einer Vertragsklausel in einem Dienstbarkeitsvertrag zu bestimmen?",
+              "hint": "Vgl. Erwägung 3, insbesondere die Verweise auf Art. 738 ZGB sowie die zitierten Leitentscheide BGE 108 II 542, 127 III 444 u.a.",
+              "model_answer": "Das Bundesgericht stützt sich primär auf Art. 738 ZGB, wonach der Inhalt der Dienstbarkeit im Rahmen des Grundbucheintrags anhand des Erwerbsgrundes (Dienstbarkeitsvertrag) zu bestimmen ist. Da der übereinstimmende wirkliche Wille nicht feststellbar war, erfolgt die Auslegung normativ nach dem Vertrauensprinzip, wobei der klare Wortlaut Vorrang hat, sofern er sich nicht als nur scheinbar klar erweist. Ergänzend dürfen für Dritte erkennbare Begleitumstände, der Gesamtzusammenhang und die Interessenlage der Parteien beim Vertragsabschluss berücksichtigt werden."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die vom Bundesgericht in Erwägung 3 entwickelten Auslegungsgrundsätze auf Art. 4 Abs. 2 des Dienstbarkeitsvertrags von 1972 an: Welche Argumente sprechen dafür, dass das zeitliche Parkierverbot während der Geschäftsöffnungszeiten bloss obligatorischen Charakter hat?",
+              "hint": "Vgl. Erwägung 3, das Stichwort im Grundbuch ('Parkplatz-Mitbenützungsrecht') sowie den Vertragszweck",
+              "model_answer": "Das im Grundbuch eingetragene Stichwort lautet lediglich 'Parkplatz-Mitbenützungsrecht' und enthält keine Einschränkung der Berechtigung; ein zeitliches Nutzungsverbot ist daraus nicht erkennbar. Für Dritte ist ein solches Verbot aus dem Grundbucheintrag nicht ohne Weiteres ersichtlich, was gegen eine dingliche Bindung spricht. Zudem erscheint das zeitliche Verbot als eine persönliche Pflicht zwischen den damaligen Vertragsparteien, die eng mit dem konkreten Betrieb der Firma D. AG verknüpft war und daher eher obligatorischen als dinglichen Charakter aufweist."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht hält in Erwägung 4a fest, dass auf ein Wegrecht implizit verzichtet werden kann, wenn dessen Ausübung mit später eingeräumten Rechten unvereinbar ist. Welche rechtsdogmatischen Voraussetzungen müssen für einen solchen konkludenten Verzicht nach Art. 734 ZGB erfüllt sein, und worin liegt die Besonderheit gegenüber einem ausdrücklichen Verzicht?",
+              "hint": "Vgl. Erwägung 4a sowie Art. 734 ZGB (Untergang der Dienstbarkeit durch Verzicht)",
+              "model_answer": "Ein konkludenter Verzicht auf eine Dienstbarkeit im Sinne von Art. 734 ZGB setzt voraus, dass der Wille des Berechtigten, auf sein Recht zu verzichten, aus den Umständen klar und eindeutig hervorgeht, ohne dass eine ausdrückliche Erklärung abgegeben wurde. Im vorliegenden Fall genügt es, dass die Ausübung des Wegrechts objektiv unvereinbar mit dem später vertraglich eingeräumten Parkplatz-Mitbenützungsrecht ist, sodass aus dem Abschluss des späteren Vertrags auf einen Aufgabewillen geschlossen werden kann. Die Besonderheit gegenüber dem ausdrücklichen Verzicht liegt darin, dass der Wille aus dem Gesamtverhalten – insbesondere dem Inhalt des späteren Dienstbarkeitsvertrags – abgeleitet werden muss, was eine sorgfältige Auslegung erfordert."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritisch betrachtet: Ist die vom Bundesgericht aufgestellte Regel, dass Vertragsbestimmungen über Inhalt und Umfang einer Dienstbarkeit 'in der Regel' dingliche und nur 'ausnahmsweise' bloss obligatorische Wirkung haben, rechtspolitisch überzeugend? Welche Risiken und Vorteile birgt diese Vermutung für den Grundstücksverkehr?",
+              "hint": "Vgl. Erwägung 3; bedenken Sie die Funktion des Grundbuchs (Art. 970 ff. ZGB) sowie den Schutz gutgläubiger Dritter",
+              "model_answer": "Die Regel begünstigt die Vollständigkeit und Kohärenz der Dienstbarkeit, indem sie sicherstellt, dass die vertragliche Detailregelung nicht durch einen Eigentümerwechsel ausgehöhlt wird, was dem Parteiwillen bei Begründung der Dienstbarkeit entspricht. Rechtspolitisch problematisch ist jedoch, dass detaillierte Vertragsklauseln mit dinglicher Wirkung ausgestattet werden, obwohl sie aus dem Grundbucheintrag – der oft nur ein knapes Stichwort enthält – für Dritte kaum erkennbar sind, was dem Publizitätsprinzip des Grundbuchs widerspricht. Eine kritische Würdigung könnte daher fordern, die dingliche Wirkung von der tatsächlichen Erkennbarkeit der Bestimmung für gutgläubige Dritte abhängig zu machen und bei fehlender Erkennbarkeit grundsätzlich nur obligatorische Wirkung anzunehmen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Beklagte C. AG hatte das Grundstück Nr. 360 von einem gutgläubigen Dritten erworben, der beim Kauf weder Kenntnis vom Dienstbarkeitsvertrag von 1972 noch von Art. 4 Abs. 2 (zeitliches Parkierverbot) hatte, weil diese Klausel im Grundbucheintrag nicht vermerkt war. Würde dies die Beurteilung der Dinglichkeit von Art. 4 Abs. 2 verändern?",
+              "discussion_points": [
+                "Bedeutung des Publizitätsprinzips (Art. 970 ZGB) und des öffentlichen Glaubens des Grundbuchs (Art. 973 ZGB) für den Schutz gutgläubiger Dritterwerber",
+                "Frage, ob die Erkennbarkeit einer Vertragsklausel für Dritte als konstitutives Merkmal der dinglichen Wirkung anzusehen ist, und wie dies mit der bundesgerichtlichen Regel der 'Regeldinglichkeit' zu vereinbaren wäre"
+              ],
+              "likely_outcome_shift": "Ein gutgläubiger Dritterwerber könnte sich auf Art. 973 ZGB berufen und geltend machen, er habe auf den Grundbucheintrag vertrauen dürfen, der das zeitliche Parkierverbot nicht erkennen liess. In diesem Fall würde die dingliche Wirkung von Art. 4 Abs. 2 gegenüber dem gutgläubigen Erwerber entfallen, und die Bestimmung würde nur noch als obligatorische Verpflichtung zwischen den ursprünglichen Vertragsparteien fortbestehen. Dies würde die Spannung zwischen der bundesgerichtlichen Vermutung zugunsten dinglicher Wirkung und dem Schutz des Rechtsverkehrs durch das Grundbuch deutlich offenlegen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht die Kläger (Eigentümer der Parzelle Nr. 2466), sondern die Beklagte C. AG hätte Klage erhoben mit dem Ziel, den Klägern die Ausübung des Wegrechts im Kreisverkehr gänzlich zu untersagen, weil die Kläger durch Abschluss des Dienstbarkeitsvertrags von 1972 über die Parkplätze konkludent auf das frühere Wegrecht verzichtet hätten.",
+              "discussion_points": [
+                "Voraussetzungen und Beweislast für den konkludenten Verzicht auf ein Wegrecht gemäss Art. 734 ZGB, insbesondere wer die Unvereinbarkeit der Rechte darzulegen hat",
+                "Frage, ob die blosse Einräumung eines neuen Rechts (Parkplatz-Mitbenützungsrecht) genügt, um auf ein älteres Wegrecht zu verzichten, oder ob eine ausdrückliche Aufhebungsabrede erforderlich wäre"
+              ],
+              "likely_outcome_shift": "Das Gericht müsste nun prüfen, ob der Abschluss des Vertrags von 1972 tatsächlich einen eindeutigen Verzichtswillen der damaligen Eigentümer der Parzelle Nr. 2466 auf das bestehende Wegrecht erkennen lässt. Da ein Verzicht auf eine Dienstbarkeit nicht leichthin anzunehmen ist und die blosse Koexistenz zweier Dienstbarkeiten keine Unvereinbarkeit begründet, würde die Klage der Beklagten wohl scheitern, sofern die Ausübung des Wegrechts und die Parkplatznutzung nicht objektiv und dauerhaft unvereinbar sind. Das Ergebnis würde damit von einer sorgfältigen Sachverhaltsfeststellung über die tatsächliche räumliche und funktionale Unvereinbarkeit der beiden Nutzungsrechte abhängen."
+            }
+          ],
+          "reading_guide_fr": "Lisez attentivement le considérant 3 pour saisir la règle générale posée par le Tribunal fédéral quant à la distinction entre les clauses contractuelles à effet réel et celles à portée purement obligationnelle, ainsi que les principes d'interprétation applicables aux contrats de servitude. Consultez ensuite le considérant 4a, qui traite des conditions d'une renonciation tacite à un droit de passage lorsque son exercice est incompatible avec des droits de servitude ultérieurement constitués. Gardez à l'esprit le texte des art. 730 et 734 CC comme ancrage normatif.",
+          "reading_guide_it": "Leggere attentamente il considerando 3 per comprendere la regola generale elaborata dal Tribunale federale sulla distinzione tra clausole contrattuali con effetto reale e clausole con mera portata obbligatoria, nonché i principi di interpretazione applicabili ai contratti di servitù. Esaminare poi il considerando 4a, che tratta le condizioni della rinuncia tacita a un diritto di passaggio qualora il suo esercizio sia incompatibile con diritti di servitù costituiti successivamente. Tenere sempre presente il testo degli art. 730 e 734 CC come ancoraggio normativo.",
+          "significance_it": "Questa sentenza stabilisce che le clausole contrattuali relative al contenuto e all'estensione di una servitù hanno di regola efficacia reale e solo eccezionalmente natura meramente obbligatoria, e che una rinuncia tacita a un diritto di passaggio è ammissibile quando il suo esercizio risulti oggettivamente incompatibile con diritti di servitù costituiti successivamente."
         },
         {
           "decision_id": "bge_137 III 145",
@@ -498,13 +619,75 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Bauliche Anlagen bestimmen Inhalt und Umfang einer Dienstbarkeit; Gebot der schonenden Ausübung",
-          "significance_fr": "Les installations déterminent le contenu et l'étendue d'une servitude; obligation d'exercice ménager",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise que les installations bâties nécessaires à l'exercice d'une servitude en déterminent en principe le contenu et l'étendue avec plein effet à l'égard des tiers acquéreurs, et que le principe d'exercice ménageant (art. 737 al. 2 et 3 CC) ne restreint pas ce contenu mais en règle uniquement les modalités d'exercice.",
+          "key_erwagungen": [
+            "3",
+            "3.1",
+            "3.2",
+            "4",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst das Regeste, um die beiden Kernaussagen des Urteils zu erfassen: die Bestimmung von Inhalt und Umfang einer Dienstbarkeit durch bauliche Anlagen (E. 3 und 4) sowie die genaue Funktion des Gebots der schonenden Ausübung (E. 5). Achten Sie in E. 3.1 besonders auf die Stufenordnung des Art. 738 ZGB, die das methodische Rüstzeug für jede Dienstbarkeitsauslegung bildet.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was besagt die im Grundbuch eingetragene Dienstbarkeit zwischen den Grundstücken Nr. 60 und Nr. 61, und wo genau befindet sich der betroffene Weg?",
+              "hint": "Siehe Sachverhalt A.b: Beschreibung des Grunddienstbarkeitsvertrags vom 8. Mai 1957 und die Lage des Wegs zwischen den beiden Häusern.",
+              "model_answer": "Die Dienstbarkeit gewährt ein gegenseitiges Fuss- und Fahrwegrecht mit allen Fahrzeugen zwischen den beiden Häusern, soweit die Grenzlinie der Grundstücke verläuft. Der Weg befindet sich auf der Fläche zwischen der südlichen Hausfassade auf Grundstück Nr. 61 und der nördlichen Hausfassade auf Grundstück Nr. 60 und ermöglicht auf der westlichen Seite den Zugang zur öffentlichen Strasse."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Stufenordnung sieht Art. 738 ZGB für die Ermittlung von Inhalt und Umfang einer Dienstbarkeit vor, und welche Rolle spielen dabei bauliche Anlagen?",
+              "hint": "Siehe Erwägung 3.1 zur Auslegungshierarchie nach Art. 738 ZGB sowie das Regeste zur Funktion baulicher Anlagen.",
+              "model_answer": "Art. 738 ZGB sieht eine dreistufige Auslegungsordnung vor: Massgebend ist zunächst der Grundbucheintrag (Abs. 1); bei unklarem Wortlaut kann auf den Begründungsakt zurückgegriffen werden; ist auch dieser nicht schlüssig, richtet sich der Inhalt nach der langjährigen, unbestrittenen und gutgläubigen Ausübung (Abs. 2). Sind für die Ausübung einer Dienstbarkeit bauliche Anlagen erforderlich, bestimmen diese in der Regel auch den Inhalt und Umfang der Dienstbarkeit – grundsätzlich mit voller Wirkung gegenüber Dritterwerbern."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie hat das Bundesgericht die Stufenordnung des Art. 738 ZGB auf den vorliegenden Fall mit dem neu errichteten Steg der Beschwerdeführer angewendet, und welches Ergebnis folgte daraus?",
+              "hint": "Siehe Erwägungen 3 und 4: Ermittlung des Inhalts des Wegrechts anhand des Grundbucheintrags und der baulichen Verhältnisse; Auswirkung des Stegs auf die Ausübbarkeit des Wegrechts.",
+              "model_answer": "Das Bundesgericht ermittelte zunächst den Inhalt des Wegrechts anhand des Grundbucheintrags und der bestehenden baulichen Situation zwischen den beiden Häusern. Da der neu errichtete Steg der Beschwerdeführer in die für das Wegrecht massgebliche Fläche hineinragt und deren freie Nutzbarkeit beeinträchtigt, verstösst er gegen den festgestellten Inhalt und Umfang der Dienstbarkeit. Die Beschwerde wurde folglich abgewiesen und die Beschwerdeführer zur Entfernung der störenden Bauteile verpflichtet."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welchen Unterschied macht das Bundesgericht zwischen der inhaltlichen Begrenzung einer Dienstbarkeit und dem Gebot der schonenden Ausübung gemäss Art. 737 Abs. 2 und 3 ZGB, und warum ist diese Unterscheidung im vorliegenden Fall entscheidend?",
+              "hint": "Siehe Erwägung 5 und das Regeste zum Gebot der schonenden Ausübung; Abgrenzung von Inhalt/Umfang einerseits und Ausübungsmodalität andererseits.",
+              "model_answer": "Das Bundesgericht hält fest, dass das Gebot der schonenden Ausübung gemäss Art. 737 Abs. 2 und 3 ZGB keine inhaltliche oder umfangmässige Beschränkung der Dienstbarkeit bewirkt, sondern lediglich die Ausübungsmodalitäten nach Massgabe des feststehenden Inhalts regelt. Die Beschwerdeführer hatten argumentiert, ihre Überbauung stelle nur eine vernachlässigbare Beeinträchtigung dar. Das Bundesgericht verwarf dies, weil das Ausübungsgebot nicht dazu dient, den Dienstbarkeitsinhalt nachträglich einzuengen – der Berechtigte darf auf dem vollen, eingetragenen Umfang bestehen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es sachgerecht, dass bauliche Anlagen den Inhalt und Umfang einer Dienstbarkeit auch gegenüber gutgläubigen Dritterwerbern bestimmen, oder birgt dies unverhältnismässige Risiken für den Grundstücksverkehr?",
+              "hint": "Vergleiche Erwägungen 3 und 4 zur Drittwirkung; beachte die Funktion des Grundbuchs als Publizitätsmittel und die Interessen des Rechtsverkehrs.",
+              "model_answer": "Die Regel ist sachgerecht, weil bauliche Anlagen für jedermann sichtbar sind und damit eine ähnliche Publizitätsfunktion erfüllen wie der Grundbucheintrag selbst – ein sorgfältiger Erwerber kann vor Kauf den tatsächlichen Zustand des Grundstücks besichtigen. Allerdings birgt die volle Drittwirkung Risiken, wenn Anlagen über die Jahre hinweg verändert werden oder unklar ist, welche Anlage ursprünglich die Dienstbarkeit konkretisiert hat. De lege ferenda liesse sich diskutieren, ob eine stärkere Pflicht zur Eintragung von Konkretisierungen im Grundbuch den Rechtsverkehr besser schützen würde."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Steg der Beschwerdeführer wäre bereits vor Eintragung der Dienstbarkeit im Jahr 1957 vorhanden gewesen und hätte den Weg teilweise überdacht. Würde dies die Auslegung des Wegrechts und die Entscheidung verändern?",
+              "discussion_points": [
+                "Könnten vorbestehende bauliche Anlagen den ursprünglichen Parteiwillen beim Abschluss des Grunddienstbarkeitsvertrags von 1957 konkretisieren und damit den Dienstbarkeitsinhalt von Anfang an einschränken?",
+                "Wie verhält sich eine solche Vorgeschichte zur Stufenordnung des Art. 738 ZGB, insbesondere zur Auslegung anhand des Begründungsakts und der langjährigen Ausübung?"
+              ],
+              "likely_outcome_shift": "Wäre der Steg bereits 1957 vorhanden gewesen und hätten die Parteien das Wegrecht in Kenntnis dieser Anlage begründet, so könnte argumentiert werden, die bauliche Einschränkung sei Teil des vereinbarten Dienstbarkeitsinhalts. Das Ergebnis könnte zugunsten der Beschwerdeführer ausfallen, da die Dienstbarkeit von Anfang an nur den durch den Steg beschränkten Raum umfasste. Allerdings müsste der tatsächliche Parteiwille 1957 klar belegt sein, was in der Praxis schwer zu beweisen ist."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Beschwerdeführer (Eigentümer des belasteten Grundstücks Nr. 61) einen Steg gebaut hätten, sondern der Beschwerdegegner (Eigentümer des herrschenden Grundstücks Nr. 60) auf dem Wegbereich eine feste Überdeckung errichtet hätte, die den Beschwerdeführern die Ausübung ihres gegenseitigen Wegrechts erschwert?",
+              "discussion_points": [
+                "Kann der Inhaber des herrschenden Grundstücks die Ausübung der Dienstbarkeit durch eigene bauliche Massnahmen so erweitern oder verändern, dass er das belastete Grundstück stärker in Anspruch nimmt als ursprünglich vereinbart?",
+                "Welche Ansprüche hätten die Beschwerdeführer als Inhaber des ebenfalls berechtigten Grundstücks gestützt auf Art. 737 ZGB und das Gebot der schonenden Ausübung?"
+              ],
+              "likely_outcome_shift": "In dieser Konstellation wäre der Beschwerdegegner als Berechtigter verpflichtet, die Dienstbarkeit schonend auszuüben und das belastete Grundstück so wenig wie möglich zu beeinträchtigen (Art. 737 Abs. 2 ZGB). Bauliche Massnahmen des Berechtigten, die über den ursprünglich festgelegten Inhalt und Umfang des Wegrechts hinausgehen, wären unzulässig. Die Beschwerdeführer könnten Beseitigung verlangen, wobei die gleiche Auslegungslogik des Art. 738 ZGB Anwendung fände – nun aber zugunsten des belasteten Grundstücks."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le Regeste afin de saisir les deux enseignements principaux de l'arrêt: la détermination du contenu et de l'étendue d'une servitude par les installations bâties (consid. 3 et 4) et la portée exacte du principe d'exercice ménageant (consid. 5). Portez une attention particulière au consid. 3.1, qui expose la hiérarchie d'interprétation posée par l'art. 738 CC, outil méthodologique fondamental pour toute question relative aux servitudes.",
+          "reading_guide_it": "Iniziate dalla lettura del Regeste per cogliere i due insegnamenti fondamentali della sentenza: la determinazione del contenuto e dell'estensione di una servitù attraverso le costruzioni esistenti (consid. 3 e 4) e la precisa funzione del principio dell'esercizio parsimonioso (consid. 5). Prestate particolare attenzione al consid. 3.1, che illustra la gerarchia interpretativa dell'art. 738 CC, strumento metodologico essenziale per ogni questione in materia di servitù.",
+          "significance_it": "La sentenza chiarisce che le costruzioni necessarie all'esercizio di una servitù ne determinano di regola il contenuto e l'estensione con piena efficacia nei confronti dei terzi acquirenti, e che il principio dell'esercizio parsimonioso (art. 737 cpv. 2 e 3 CC) non limita tale contenuto, ma ne disciplina unicamente le modalità di esercizio."
         }
       ]
     }

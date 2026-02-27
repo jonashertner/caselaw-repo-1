@@ -39,13 +39,75 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Abgrenzung Eventualvorsatz/bewusste Fahrlässigkeit bei tödlichem Raserunfall",
-          "significance_fr": "Arrêt de principe sur la distinction dol éventuel/négligence consciente lors d'un accident mortel",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt de principe fixe les critères de délimitation entre le dol éventuel et la négligence consciente dans le cadre d'accidents de la route mortels causés par des courses illégales, en précisant que la prise en compte du résultat létal peut être déduite de l'extrême dangerosité objective du comportement combinée à l'absence de raison sérieuse de faire confiance à l'absence de résultat.",
+          "key_erwagungen": [
+            "3",
+            "7",
+            "8",
+            "8.1",
+            "9"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 58–60), um den Ablauf des Rennens und den Unfall zu verstehen. Konzentrieren Sie sich dann auf E. 8 und 9, wo das Bundesgericht die Abgrenzungskriterien zwischen Eventualvorsatz und bewusster Fahrlässigkeit entwickelt und auf den konkreten Fall anwendet. Achten Sie besonders auf die Ausführungen zur Wissens- und Willensseite des Vorsatzes sowie auf die Indizien, die das Gericht für die Inkaufnahme des Todeserfolgs heranzieht.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Obergericht Luzern den beiden Beschwerdeführern X. und Y. konkret vorgeworfen, und welcher Tatbestand des StGB stand im Mittelpunkt des Verfahrens vor dem Kassationshof?",
+              "hint": "Vgl. Sachverhalt (S. 58–60) sowie Regeste und E. 7.",
+              "model_answer": "Das Obergericht bestätigte die erstinstanzliche Verurteilung beider Angeklagten wegen mehrfacher (eventual-)vorsätzlicher Tötung gemäss Art. 111 StGB. Im Mittelpunkt stand die Frage, ob das lebensgefährliche Rennfahren auf öffentlichen Strassen, das zum Tod zweier jugendlicher Fussgänger führte, als eventualvorsätzliche Tötung oder lediglich als fahrlässige Tötung zu qualifizieren ist. Beide Angeklagten hatten an einem spontanen illegalen Autorennen mit Geschwindigkeiten von 120–140 km/h innerorts teilgenommen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Anforderungen stellt Art. 18 Abs. 2 StGB an den Vorsatz, und wie definiert das Bundesgericht in E. 8 die Wissens- und die Willensseite des Eventualvorsatzes?",
+              "hint": "Vgl. E. 8 sowie E. 8.1 mit dem Verweis auf die Wissenssseite des Vorsatzes.",
+              "model_answer": "Art. 18 Abs. 2 StGB verlangt, dass die Tat mit Wissen und Wollen ausgeführt wird. Das Bundesgericht unterscheidet dabei eine Wissensseite – das aktuelle Wissen um die Tatumstände einschliesslich der Vorstellung über den Kausalverlauf und den Taterfolg – und eine Willensseite. Beim Eventualvorsatz hält der Täter den Eintritt des tatbestandsmässigen Erfolges für möglich und nimmt ihn in Kauf, ohne ihn direkt anzustreben. Hierin liegt der entscheidende Unterschied zur bewussten Fahrlässigkeit, bei der der Täter zwar dieselbe Möglichkeit erkennt, aber darauf vertraut, der Erfolg werde ausbleiben."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die vom Bundesgericht in E. 8 und 9 entwickelten Kriterien zur Abgrenzung von Eventualvorsatz und bewusster Fahrlässigkeit auf den konkreten Sachverhalt an: Welche tatsächlichen Umstände sprachen für eine Inkaufnahme des Todeserfolgs durch X.?",
+              "hint": "Vgl. Sachverhalt S. 59–60 sowie E. 8 und 9 zur Willensseite des Eventualvorsatzes.",
+              "model_answer": "X. raste mit 120–140 km/h in eine unübersichtliche Linkskurve innerorts, führte dabei ein Überholmanöver durch und hatte Kenntnis von den eingeschränkten Sichtverhältnissen sowie von der Anwesenheit anderer Verkehrsteilnehmer. Diese Kombination aus massiv überhöhter Geschwindigkeit, Überholmanöver bei Nacht innerorts und unübersichtlicher Kurve schuf ein derart hohes Risiko für den Tod Dritter, dass das Bundesgericht die Inkaufnahme des Todeserfolgs bejahen konnte. Das eigene Interesse am Kräftemessen überwog offensichtlich jede Rücksichtnahme auf andere, was gegen ein ernsthaftes Vertrauen auf das Ausbleiben des Erfolgs spricht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Vergleichen Sie die Strafbarkeit von X. und Y.: Inwiefern unterscheidet sich ihr Tatbeitrag sachverhaltlich, und welche dogmatischen Schwierigkeiten entstehen bei der Zurechnung des Todeserfolgs an Y., der das Fahrzeug zur Unfallzeit nicht führte?",
+              "hint": "Vgl. Sachverhalt S. 59–60 sowie die Schuldigsprechung beider Angeklagter im erstinstanzlichen Urteil.",
+              "model_answer": "Y. fuhr als zweites Fahrzeug im Rennen und provozierte durch sein aggressives Aufschliessen den Wettbewerb, war jedoch nicht derjenige, dessen Fahrzeug die Fussgänger traf. Dogmatisch stellt sich damit die Frage der mittäterschaftlichen Zurechnung oder allenfalls der Anstiftung: Hat Y. durch seine aktive Beteiligung am Rennen einen gemeinsamen Tatentschluss mitgetragen, der die Erfolgszurechnung rechtfertigt? Die Herausforderung liegt darin, nachzuweisen, dass auch Y. den Tod von Dritten als mögliche Folge des gemeinsamen Rasens in Kauf nahm, obwohl der unmittelbar tödliche Steuerungsfehler allein von X. begangen wurde."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Qualifikation des Rasens als eventualvorsätzliche Tötung rechtspolitisch überzeugend, oder besteht die Gefahr, dass das Bundesgericht die Grenze zur Fahrlässigkeit durch eine zu weitgehende Objektivierung der Willensseite verwischt?",
+              "hint": "Vgl. E. 8 und 9 zur Abgrenzung sowie die Kritik in der Lehre (Stratenwerth) an einer rein wahrscheinlichkeitsbasierten Vorsatzdefinition.",
+              "model_answer": "Die Entscheidung ist rechtspolitisch nachvollziehbar, weil sie dem Unrechtsgehalt rücksichtsloser Raserei gerecht wird und Allgemeinprävention stärkt. Kritisch ist jedoch anzumerken, dass eine zu starke Objektivierung der Willensseite – etwa durch den Schluss von der hohen objektiven Gefährlichkeit auf die Inkaufnahme – das voluntative Element des Vorsatzes zu einer blossen Fiktion macht und die gesetzlich vorgesehene Abgrenzung zur bewussten Fahrlässigkeit erodiert. Ein dogmatisch saubererer Ansatz würde verlangen, konkrete Anhaltspunkte für ein individuell-psychisches Inkaufnehmen nachzuweisen, statt dieses aus der Schwere der Pflichtverletzung zu erschliessen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn X. kurz vor der Ortschaft Gelfingen aktiv abgebremst hätte und trotzdem die Kontrolle über das Fahrzeug verloren hätte – hätte das Bundesgericht dann immer noch Eventualvorsatz bejaht?",
+              "discussion_points": [
+                "Ein aktives Abbremsen vor dem Ortseingang könnte als Indiz dafür gewertet werden, dass X. ernsthaft darauf vertraute, eine Gefährdung zu vermeiden, was die Willensseite des Eventualvorsatzes in Frage stellt.",
+                "Andererseits kommt es auf den Gesamtkontext an: Selbst ein kurzes Abbremsen beseitigt nicht die vorangegangene Risikosteigerung durch das Rennen, und das Bundesgericht könnte die fortdauernde Teilnahme am Rennen bis unmittelbar vor der Ortschaft als genügend bewerten."
+              ],
+              "likely_outcome_shift": "Ein nachgewiesenes Abbremsverhalten würde die Verteidigungsposition erheblich stärken und könnte das Bundesgericht dazu bewegen, lediglich bewusste Fahrlässigkeit zu bejahen, da das Vertrauen auf ein gutes Ergebnis plausibler erschiene. Die Strafe würde dann nach Art. 117 StGB (fahrlässige Tötung) wesentlich tiefer ausfallen, und die präventive Signalwirkung des Urteils wäre entsprechend geringer."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht X. und Y. hätten gegeneinander gerennt, sondern X. hätte alleine und ohne jegliche Provokation durch ein anderes Fahrzeug innerorts mit 140 km/h einen Unfall verursacht – wie würde sich die Beurteilung des Eventualvorsatzes verändern?",
+              "discussion_points": [
+                "Das wechselseitige Aufschaukeln und die Wettbewerbsdynamik zwischen den Fahrern sind im Originalfall wichtige Indizien für die Billigung des Risikos; ohne diesen sozialen Kontext fehlt ein zentrales Beweiselement für die Willensseite.",
+                "Allerdings kann auch ein Einzeltäter Eventualvorsatz haben, wenn die objektive Gefährlichkeit seines Verhaltens so extrem ist, dass ein Vertrauen auf das Ausbleiben des Erfolgs unglaubwürdig erscheint."
+              ],
+              "likely_outcome_shift": "Ohne den Rennkontext wäre die Annahme von Eventualvorsatz schwieriger zu begründen, weil das Element der bewussten Risikoeskalation im Wettbewerb entfiele. Ein Gericht würde möglicherweise eher zur bewussten Fahrlässigkeit tendieren, sofern keine weiteren Umstände – wie ein früherer Entschluss, auf Fussgänger keine Rücksicht zu nehmen – vorlägen. Die Verurteilung würde dann wahrscheinlich nach Art. 117 StGB (fahrlässige Tötung) erfolgen."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les faits (p. 58–60) afin de comprendre le déroulement de la course et de l'accident. Concentrez-vous ensuite sur les considérants 8 et 9, dans lesquels le Tribunal fédéral développe les critères de distinction entre le dol éventuel et la négligence consciente et les applique aux faits de l'espèce. Prêtez une attention particulière aux développements relatifs aux éléments cognitif et volitif du dol ainsi qu'aux indices retenus par le tribunal pour établir l'acceptation du résultat létal.",
+          "reading_guide_it": "Iniziate con la lettura dei fatti (pp. 58–60) per comprendere lo svolgimento della gara e dell'incidente. Concentratevi poi sui considerandi 8 e 9, nei quali il Tribunale federale elabora i criteri per distinguere il dolo eventuale dalla colpa cosciente e li applica al caso concreto. Prestate particolare attenzione alle argomentazioni relative all'elemento cognitivo e volitivo del dolo, nonché agli indici utilizzati dal tribunale per affermare l'accettazione dell'evento mortale.",
+          "significance_it": "Questa sentenza di principio stabilisce i criteri per distinguere il dolo eventuale dalla colpa cosciente nel contesto di incidenti stradali mortali causati da gare illegali, chiarendo che l'accettazione dell'evento letale può essere desunta dall'estrema pericolosità oggettiva del comportamento unitamente all'assenza di una seria fiducia nell'assenza del risultato."
         },
         {
           "decision_id": "bge_136 IV 49",
@@ -171,13 +233,71 @@
             "bge_130 IV 58"
           ],
           "significance_de": "Eventualvorsatz unter konkreten Umständen verneint — Vertiefung der Abgrenzungskriterien",
-          "significance_fr": "Dol éventuel nié dans les circonstances concrètes — approfondissement des critères de distinction",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt précise les critères de délimitation entre le dol éventuel et la négligence consciente dans les accidents de la circulation, en soulignant que le comportement autonome et imprévisible d'un tiers peut exclure l'acceptation volontaire du résultat par le premier auteur.",
+          "key_erwagungen": [
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste sorgfältig, um die Kernaussage des Urteils zu erfassen, und konzentrieren Sie sich dann auf Erwägung 4, in der das Bundesgericht die massgeblichen Abgrenzungskriterien zwischen Eventualvorsatz und bewusster Fahrlässigkeit anhand der konkreten Unfallumstände entwickelt. Beachten Sie dabei insbesondere, wie das Gericht die Übersichtlichkeit der Strecke, die Vorhersehbarkeit des Verhaltens von F. und das Fehlen eines echten Inkaufnehmens der Todesfolgen durch X. gewichtet.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Unterschied zwischen Eventualvorsatz und bewusster Fahrlässigkeit, und wie grenzt das Bundesgericht diese beiden Schuldformen im vorliegenden Fall voneinander ab?",
+              "hint": "Vgl. Art. 12 Abs. 2 und 3 StGB sowie E. 4 des Urteils, wo das Gericht die subjektiven Elemente des Eventualvorsatzes erörtert.",
+              "model_answer": "Beim Eventualvorsatz hält der Täter den Eintritt des Erfolgs für möglich und nimmt ihn in Kauf ('billigend in Kauf nehmen'), während er bei der bewussten Fahrlässigkeit zwar ebenfalls um die Möglichkeit des Erfolgseintritts weiss, aber darauf vertraut, dieser werde ausbleiben. Im vorliegenden Fall verneinte das Bundesgericht den Eventualvorsatz, weil X. auf einem übersichtlichen Streckenabschnitt beschleunigt hatte und die Kollision letztlich auf das eigenverantwortliche Verhalten des überholenden F. zurückzuführen war, weshalb X. nicht davon ausging, dass Todes- oder Verletzungsfolgen eintreten würden."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Normen bilden die massgebliche Grundlage für die Beurteilung des Eventualvorsatzes in diesem Fall, und welche Tatbestandsmerkmale müssen nach diesen Normen erfüllt sein?",
+              "hint": "Zu beachten sind Art. 12 StGB (Vorsatz und Fahrlässigkeit), Art. 111 StGB (Tötung) und Art. 125 StGB (fahrlässige Körperverletzung), wie sie im Urteilskopf genannt werden.",
+              "model_answer": "Art. 12 Abs. 2 StGB definiert Vorsatz als das Wissen und Wollen der Tat; Eventualvorsatz liegt vor, wenn der Täter die Verwirklichung des Tatbestands für möglich hält und sie in Kauf nimmt. Art. 111 StGB setzt für die vorsätzliche Tötung voraus, dass der Täter den Tod eines Menschen vorsätzlich – mindestens eventualvorsätzlich – herbeiführt. Art. 125 StGB betrifft die fahrlässige Körperverletzung und setzt voraus, dass der Täter die Sorgfaltspflicht verletzt, ohne den Erfolgseintritt in Kauf zu nehmen. Die Abgrenzung zwischen diesen Normen hängt somit massgeblich vom Nachweis des voluntativen Elements ab."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie hätte das Gericht entschieden, wenn X. das Beschleunigen auf einer unübersichtlichen Kurve bei Nacht und Nebel vorgenommen hätte, sodass er wusste, dass F. beim Überholen keine andere Möglichkeit als eine Frontalkollision gehabt hätte?",
+              "hint": "Orientieren Sie sich an den in E. 4 entwickelten Kriterien zur konkreten Tatsituation, insbesondere der Übersichtlichkeit der Strecke und der Vorhersehbarkeit des Kausalverlaufs.",
+              "model_answer": "Unter diesen veränderten Umständen wäre die Bejahung des Eventualvorsatzes erheblich wahrscheinlicher, da X. bei einer unübersichtlichen Kurve hätte erkennen können, dass F. beim Überholen zwingend in eine lebensgefährliche Situation gerät. Das voluntative Element – das Inkaufnehmen der Todes- oder Verletzungsfolgen – wäre dann leichter nachzuweisen, weil X. keine vernünftige Grundlage gehabt hätte, auf einen glücklichen Ausgang zu vertrauen. Das Gericht hätte in diesem Fall wohl Eventualvorsatz bejaht und X. nach Art. 111 StGB verurteilt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern spielte das eigenverantwortliche Verhalten des überholenden Fahrzeuglenkers F. eine entscheidende Rolle bei der Verneinung des Eventualvorsatzes von X., und wie verhält sich dies zur strafrechtlichen Zurechnungslehre?",
+              "hint": "Prüfen Sie E. 4 im Hinblick auf den Kausalzusammenhang und die Frage, ob das Dazwischentreten eines Dritten den Vorsatz des Ersthandelnden ausschliesst oder beeinflusst.",
+              "model_answer": "Das Bundesgericht stellte fest, dass F. trotz herannahenden Gegenverkehrs sein Überholmanöver nicht abbrach, sondern sogar beschleunigte – ein eigenverantwortliches Verhalten, das den normalen Kausalverlauf unterbrach. Im Rahmen der Zurechnungslehre kann das freiverantwortliche Dazwischentreten eines Dritten dazu führen, dass dem Ersthandelnden der Erfolg subjektiv nicht zugerechnet wird, weil er den genauen Ablauf nicht voraussehen und in Kauf nehmen konnte. X. konnte daher darauf vertrauen, dass F. sein Manöver bei Erkennen der Gefahr abbrechen würde, was das voluntative Element des Eventualvorsatzes auf seiner Seite entfallen liess."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Verneinung des Eventualvorsatzes durch das Bundesgericht in diesem Fall überzeugend, oder hätte man angesichts des leichtsinnigen Fahrverhaltens von X. – fehlender Führerausweis, Beschleunigen beim Überholen – zu einem anderen Ergebnis gelangen sollen?",
+              "hint": "Berücksichtigen Sie sowohl die objektiven Umstände (Streckencharakter, Geschwindigkeit, Sichtverhältnisse) als auch die persönlichen Defizite von X. (kein Führerausweis, negatives verkehrspsychologisches Gutachten) und wägen Sie die Argumente für und gegen Eventualvorsatz ab.",
+              "model_answer": "Die Entscheidung des Bundesgerichts ist dogmatisch vertretbar, da auf einer geraden, übersichtlichen Strecke ein vernünftiger Fahrzeuglenker typischerweise darauf vertraut, dass der Überholende sein Manöver bei Gefahr abbricht. Kritisch lässt sich jedoch einwenden, dass X.' persönliche Defizite – kein Führerausweis, mehrfach gescheiterter Fahrprüfungsversuch, entzogener Lernfahrausweis aufgrund eines negativen Gutachtens – Rückschlüsse auf ein erhöhtes Risikobewusstsein und eine gleichgültigere Einstellung zu Verkehrsgefahren erlauben könnten. Dennoch überzeugt die Abgrenzung zur bewussten Fahrlässigkeit im Ergebnis, weil das Gericht korrekt zwischen dem kognitiven Wissen um eine abstrakte Gefahr und dem echten Inkaufnehmen konkreter Todesfolgen unterscheidet."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn X. vor dem Beschleunigen im Rückspiegel erkannt hätte, dass Gegenverkehr bereits deutlich sichtbar war und F. trotzdem zum Überholen ansetzte – und X. dennoch beschleunigte?",
+              "discussion_points": [
+                "Verändert das bewusste Wahrnehmen des Gegenverkehrs durch X. das voluntative Element des Eventualvorsatzes?",
+                "Kann X. sich noch auf das eigenverantwortliche Handeln von F. berufen, wenn er die konkrete Gefährdungslage bereits vor dem Beschleunigen kannte?"
+              ],
+              "likely_outcome_shift": "Wenn X. den herannahenden Gegenverkehr bereits gesehen hatte und dennoch beschleunigte, wäre das kognitive Element des Eventualvorsatzes klar erfüllt. Das Gericht hätte in diesem Fall erheblich grössere Schwierigkeiten gehabt, das voluntative Element zu verneinen, da die bewusste Inkaufnahme einer Frontalkollision naheliegt. Eine Verurteilung wegen eventualvorsätzlicher Tötung nach Art. 111 StGB wäre unter diesen Umständen sehr wahrscheinlich."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht X. (der überholte Fahrzeuglenker), sondern F. (der überholende Fahrzeuglenker) hätte überlebt und wäre angeklagt worden: Wie wäre seine Strafbarkeit hinsichtlich Eventualvorsatz oder Fahrlässigkeit zu beurteilen?",
+              "discussion_points": [
+                "F. setzte das Überholmanöver trotz erkennbaren Gegenverkehrs fort und beschleunigte sogar – erfüllt dies eher das Tatbild des Eventualvorsatzes als das Verhalten von X.?",
+                "Welche Bedeutung hat die Tatsache, dass F. die unmittelbare Kontrolle über das gefährliche Manöver hatte und als letzter hätte abbrechen können?"
+              ],
+              "likely_outcome_shift": "Im Fall von F. wäre die Bejahung des Eventualvorsatzes deutlich wahrscheinlicher, da er als überholender Fahrer die unmittelbare Gefahrenlage geschaffen hatte, den Gegenverkehr sehen konnte und dennoch nicht abbremste. Sein Verhalten weist eine viel direktere Kausalität zum Erfolgseintritt auf, und das voluntative Element – das Inkaufnehmen der Kollision – wäre schwerer zu verneinen. Eine Verurteilung wegen mehrfacher eventualvorsätzlicher Tötung gemäss Art. 111 StGB erschiene unter diesen Umständen sachgerecht."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le regeste afin de saisir la portée centrale de l'arrêt, puis concentrez-vous sur le considérant 4, dans lequel le Tribunal fédéral développe les critères déterminants pour distinguer le dol éventuel de la négligence consciente à la lumière des circonstances concrètes de l'accident. Prêtez une attention particulière à la manière dont la cour pondère la visibilité du tronçon, la prévisibilité du comportement de F. et l'absence d'une véritable acceptation des conséquences mortelles par X.",
+          "reading_guide_it": "Leggere dapprima attentamente il regesto per cogliere il nucleo centrale della sentenza, quindi concentrarsi sul considerando 4, nel quale il Tribunale federale sviluppa i criteri determinanti per distinguere il dolo eventuale dalla colpa cosciente alla luce delle circostanze concrete dell'incidente. Prestare particolare attenzione al modo in cui il tribunale pondera la visibilità del tratto stradale, la prevedibilità del comportamento di F. e l'assenza di una vera accettazione delle conseguenze letali da parte di X.",
+          "significance_it": "Questa sentenza chiarisce i criteri di delimitazione tra dolo eventuale e colpa cosciente negli incidenti stradali, sottolineando che il comportamento autonomo e imprevedibile di un terzo può escludere l'accettazione volontaria del risultato da parte del primo autore."
         }
       ]
     },
@@ -216,13 +336,76 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Versuch der schweren Körperverletzung bei ungeschützten Sexualkontakten einer HIV-infizierten Person",
-          "significance_fr": "Tentative de lésions corporelles graves lors de rapports sexuels non protégés d'une personne séropositive",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt confirme que l'infection au VIH constitue objectivement une lésion corporelle grave au sens de l'art. 122 al. 1 CP et précise que le consentement éclairé et autonome du partenaire exclut la punissabilité pour lésion corporelle grave, mais non pour propagation d'une maladie de l'homme au sens de l'art. 231 CP.",
+          "key_erwagungen": [
+            "1",
+            "1.1",
+            "2",
+            "2.1",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Beginnen Sie mit Erwägung 1.1, um die objektive Tatbestandsmässigkeit der HIV-Infektion als schwere Körperverletzung zu verstehen, und lesen Sie dann Erwägung 2 zur subjektiven Tatseite (Eventualvorsatz). Achten Sie besonders auf Erwägungen 3 und 4, die das Spannungsverhältnis zwischen dem Einverständnis des Partners und der Strafbarkeit nach Art. 122 bzw. Art. 231 StGB dogmatisch aufarbeiten.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Warum qualifiziert das Bundesgericht die HIV-Infektion als schwere Körperverletzung im Sinne von Art. 122 Abs. 1 StGB, obwohl der Tod nicht unmittelbar eintritt?",
+              "hint": "Vgl. Erwägung 1.1, insbesondere die Ausführungen zur 'erheblichen Wahrscheinlichkeit des tödlichen Verlaufs' und zum Verweis auf BGE 125 IV 242.",
+              "model_answer": "Das Bundesgericht stellt darauf ab, dass eine lebensgefährliche Verletzung keine zeitlich unmittelbare, akute Lebensgefahr erfordert. Massgebend ist vielmehr die erhebliche Wahrscheinlichkeit des tödlichen Verlaufs. Da die HIV-Infektion nach relativ langer Zeit bei vielen Betroffenen mit hoher Wahrscheinlichkeit zum Ausbruch von AIDS und anschliessend zum Tod führt, ist dieses Kriterium erfüllt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche rechtlichen Normen kommen im vorliegenden Fall zur Anwendung, und in welchem Verhältnis stehen Art. 122 StGB und Art. 231 StGB zueinander?",
+              "hint": "Vgl. den Urteilskopf sowie die Regeste, insbesondere die Erwähnungen von Art. 22 StGB und Art. 231 Ziff. 1 StGB.",
+              "model_answer": "Im Fall werden Art. 122 Abs. 1 StGB (schwere Körperverletzung), Art. 231 Ziff. 1 StGB (Verbreiten menschlicher Krankheiten) sowie Art. 22 StGB (Versuch) angewendet. Beide Tatbestände können nebeneinander erfüllt sein: Art. 122 StGB schützt primär den Einzelnen vor körperlicher Schädigung, während Art. 231 StGB ein Allgemeindelikt ist, das die öffentliche Gesundheit schützt. Das Einverständnis des Partners schliesst zwar die Strafbarkeit nach Art. 122 StGB aus, nicht aber jene nach Art. 231 StGB."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "X. hat mit fünf Männern ungeschützt Geschlechtsverkehr gehabt, obwohl er von seiner HIV-Infektion wusste. Wie prüft das Bundesgericht das Vorliegen von Eventualvorsatz in diesem konkreten Fall?",
+              "hint": "Vgl. Erwägung 2 und 2.1, insbesondere die Ausführungen zur subjektiven Tatseite und zum Argument der statistisch geringen Übertragungswahrscheinlichkeit.",
+              "model_answer": "Das Bundesgericht bejaht den Eventualvorsatz trotz der statistisch geringen Übertragungswahrscheinlichkeit beim einzelnen Sexualakt. Wer wissentlich als HIV-infizierte Person ungeschützten Sexualverkehr hat, nimmt die Möglichkeit der Übertragung in Kauf und handelt damit eventualvorsätzlich. Die blosse Hoffnung, das Virus nicht zu übertragen, genügt nicht, um den Vorsatz auszuschliessen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht differenziert zwischen der Wirkung des Einverständnisses des Partners bei Art. 122 StGB und bei Art. 231 StGB. Welche dogmatischen Gründe liegen dieser Unterscheidung zugrunde?",
+              "hint": "Vgl. Erwägungen 3 und 4 sowie die Regeste zur Frage der Tatbestandsmässigkeit und Rechtswidrigkeit.",
+              "model_answer": "Bei Art. 122 StGB handelt es sich um ein Individualrechtsgut (körperliche Unversehrtheit), über das der Rechtsträger grundsätzlich disponieren kann. Ein freiverantwortliches, informiertes Einverständnis des Partners schliesst daher die Tatbestandsmässigkeit – oder zumindest die Rechtswidrigkeit – aus, sofern das Opfer das Geschehen mitbeherrscht. Art. 231 StGB hingegen schützt die öffentliche Gesundheit als Kollektivgut, über das der Einzelne nicht verfügen kann; das Einverständnis des Partners ist daher für die Strafbarkeit nach dieser Norm irrelevant."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass das Einverständnis eines informierten Partners die Strafbarkeit nach Art. 122 StGB ausschliesst, nicht aber jene nach Art. 231 StGB? Welche Wertungen stehen sich gegenüber?",
+              "hint": "Vgl. Erwägungen 3 und 4 sowie die Spannungsfelder zwischen Selbstbestimmungsrecht, Gesundheitsschutz und Strafwürdigkeit.",
+              "model_answer": "Die Lösung des Bundesgerichts ist systematisch kohärent, wirft aber rechtspolitisch Fragen auf: Einerseits respektiert der Ausschluss der Strafbarkeit nach Art. 122 StGB die sexuelle Selbstbestimmung des informierten Partners. Andererseits kann es befremden, dass dasselbe Verhalten dennoch nach Art. 231 StGB strafbar bleibt, obwohl die betroffene Person autonom und informiert zugestimmt hat. Kritiker könnten einwenden, dass die Beibehaltung der Strafbarkeit nach Art. 231 StGB das Selbstbestimmungsrecht unterläuft und möglicherweise HIV-positive Personen vom offenen Umgang mit ihrer Infektion abhält."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, einer der fünf Sexualpartner von X. war selbst bereits HIV-infiziert und kannte sein eigenes positives Serostatus. Ändert sich die strafrechtliche Beurteilung des Verhaltens von X. gegenüber diesem Partner?",
+              "discussion_points": [
+                "Kann ein bereits HIV-infizierter Partner durch erneute Übertragung desselben Virus noch 'lebensgefährlich verletzt' werden (Superinfektion mit resistenten Virusstämmen als mögliche schwere Körperverletzung)?",
+                "Inwiefern verändert das Wissen des Partners um seine eigene Infektion die Voraussetzungen für ein freiverantwortliches Einverständnis im Sinne von Erwägung 3?"
+              ],
+              "likely_outcome_shift": "Bei einem bereits HIV-positiven Partner entfällt das klassische Schutzgut der Unversehrtheit in Bezug auf die HIV-Infektion selbst, was die Tatbestandsmässigkeit nach Art. 122 StGB fraglich macht. Die Strafbarkeit nach Art. 231 StGB könnte jedoch bestehen bleiben, da das Kollektivgut der öffentlichen Gesundheit weiterhin berührt ist. Allerdings würde ein informiertes Einverständnis des ebenfalls HIV-positiven Partners die Strafwürdigkeit erheblich relativieren."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht X., sondern sein Partner hätte X. angezeigt – und es stellt sich heraus, dass der Partner selbst HIV-positiv war und dies X. gegenüber verschwiegen hatte, wobei X. der Unwissende war. Wie wäre die Rechtslage zu beurteilen?",
+              "discussion_points": [
+                "Kann der Partner von X. wegen versuchter oder vollendeter schwerer Körperverletzung nach Art. 122 StGB sowie nach Art. 231 StGB verfolgt werden, wenn er seine HIV-Infektion kannte und verschwieg?",
+                "Welche Auswirkung hat das Verschweigen der Infektion auf das Einverständnis von X. – liegt überhaupt ein wirksames, freiverantwortliches Einverständnis vor, wenn der Infizierte die entscheidungsrelevante Information zurückgehalten hat?"
+              ],
+              "likely_outcome_shift": "Hätte der Partner seine HIV-Infektion gegenüber X. verschwiegen, wäre kein wirksames informiertes Einverständnis von X. gegeben, da ein solches nach den Grundsätzen von Erwägung 3 Kenntnis des Übertragungsrisikos voraussetzt. Der Partner wäre damit in derselben Rolle wie X. im Ausgangsfall und müsste sich nach Art. 122 StGB und Art. 231 StGB verantworten. Die Konstellation verdeutlicht, dass das Einverständnis als Strafbarkeitsausschlussgrund strenge Anforderungen an die Informiertheit stellt."
+            }
+          ],
+          "reading_guide_fr": "Commencez par le considérant 1.1 pour comprendre la qualification objective de l'infection au VIH comme lésion corporelle grave, puis lisez le considérant 2 relatif à l'élément subjectif (dol éventuel). Portez une attention particulière aux considérants 3 et 4, qui traitent de la tension entre le consentement du partenaire et la punissabilité selon les art. 122 et 231 CP.",
+          "reading_guide_it": "Iniziate con il considerando 1.1 per comprendere la qualificazione oggettiva dell'infezione da HIV come lesione corporale grave, poi leggete il considerando 2 relativo all'elemento soggettivo (dolo eventuale). Prestate particolare attenzione ai considerandi 3 e 4, che esaminano la tensione tra il consenso del partner e la punibilità ai sensi degli art. 122 e 231 CP.",
+          "significance_it": "La sentenza conferma che l'infezione da HIV costituisce oggettivamente una lesione corporale grave ai sensi dell'art. 122 cpv. 1 CP e chiarisce che il consenso informato e autonomo del partner esclude la punibilità per lesione corporale grave, ma non per propagazione di malattia umana ai sensi dell'art. 231 CP."
         }
       ]
     },
@@ -261,13 +444,73 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Hohe Anforderungen an die Annahme von Mittäterschaft bei BetmG-Widerhandlungen",
-          "significance_fr": "Exigences élevées pour admettre la coactivité en matière de stupéfiants",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt établit que la qualité de simple fournisseur de stupéfiants ne suffit pas à fonder la coactivité au sens de l'art. 19 ch. 1 LStup, les exigences relatives à la maîtrise commune de l'acte devant être appréciées de manière stricte.",
+          "key_erwagungen": [
+            "2",
+            "2a",
+            "2b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst das Regeste, um den Kerngehalt des Entscheids (restriktive Mittäterschaft bei BetmG-Delikten) zu erfassen, und wenden Sie sich dann Erwägung 2a zu, die den Gerichtsstandsstreit zwischen den Kantonen Bern und Solothurn erklärt. Erwägung 2b ist das dogmatische Herzstück: Hier entwickelt das Bundesgericht die Kriterien der Tatherrschaft und des gemeinsamen Tatplans und wendet sie auf die Lieferantenrolle von G. und H. an.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 118 IV 397 als zentrales Merkmal der Mittäterschaft definiert, und wie unterscheidet es sich von der blossen Teilnahme (Gehilfenschaft)?",
+              "hint": "Vgl. Erwägung 2b, wo das Gericht die Rechtsprechung zur Tatherrschaft und zum massgebenden Zusammenwirken zusammenfasst.",
+              "model_answer": "Das Bundesgericht hält fest, dass Mittäter ist, wer bei der Entschliessung, Planung oder Ausführung eines Delikts vorsätzlich und in massgebender Weise mit anderen Tätern zusammenwirkt und als Hauptbeteiligter dasteht. Entscheidend ist die (Mit-)Tatherrschaft: Der Mittäter bestimmt über die Tatbegehung nicht allein, sondern gemeinsam mit anderen. Im Gegensatz dazu leistet der Gehilfe lediglich einen untergeordneten Beitrag, ohne Tatherrschaft zu besitzen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen sind in diesem Entscheid massgebend, und welche Funktion erfüllt Art. 349 Abs. 2 StGB im Kontext des Gerichtsstandsstreits zwischen den Kantonen Bern und Solothurn?",
+              "hint": "Vgl. das Regeste sowie Erwägung 2a zur Frage des Gerichtsstandes und zur Rolle von Art. 349 Abs. 2 StGB.",
+              "model_answer": "Massgebend sind Art. 24 StGB (Anstiftung), Art. 25 StGB (Gehilfenschaft), Art. 19 Ziff. 1 BetmG (Betäubungsmitteldelikte) sowie Art. 349 Abs. 2 StGB (Gerichtsstand bei Mittäterschaft). Art. 349 Abs. 2 StGB regelt, dass bei Mittäterschaft die Behörden desjenigen Kantons zuständig sind, in dem die Untersuchung zuerst angehoben wurde. Nur wenn G. und H. als Mittäter von P. qualifiziert werden, wären die Solothurner Behörden zuständig – andernfalls verbleibt die Zuständigkeit beim Kanton Bern."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die vom Bundesgericht entwickelten Kriterien der Mittäterschaft auf den Sachverhalt an: Können G. und H. als blosse Lieferanten von P. als Mittäter qualifiziert werden?",
+              "hint": "Vgl. Erwägung 2b sowie die Ausführungen der Gesuchsgegnerin (Kanton Solothurn) zur wirtschaftlichen Selbständigkeit der Beteiligten.",
+              "model_answer": "Nach den Kriterien des Bundesgerichts fehlt es bei G. und H. an der erforderlichen Tatherrschaft über die gesamte Tat: Sie lieferten Betäubungsmittel an P., der diese eigenständig weiterverkaufte, ohne ihnen gegenüber rechenschaftspflichtig zu sein oder einen Teil des Erlöses abzuliefern. G. und H. hatten keinen Einfluss auf Planung, Organisation oder Ausführung der Verkaufshandlungen von P. Ihre Rolle als Lieferanten begründet damit eher Gehilfenschaft oder eine selbständige Täterschaft in Bezug auf ihre eigenen Tathandlungen, nicht aber Mittäterschaft."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum setzt das Bundesgericht die Anforderungen an die Mittäterschaft bei BetmG-Widerhandlungen «eher hoch» an, und welche dogmatischen und praktischen Gründe sprechen für diesen Ansatz?",
+              "hint": "Vgl. das Regeste und Erwägung 2b; beachten Sie den Zusammenhang mit der Eigenstruktur des BetmG (Art. 19 Ziff. 1), das zahlreiche selbständige Tathandlungen kennt.",
+              "model_answer": "Das BetmG enthält in Art. 19 Ziff. 1 einen umfangreichen Katalog selbständig strafbarer Tathandlungen (Erwerben, Lagern, Verkaufen, Vermitteln etc.), sodass jede beteiligte Person in der Regel bereits durch ihre eigene Handlung als Täterin erfasst ist. Würde man Mittäterschaft leichtfertig annehmen, käme es zu einer unzulässigen Ausdehnung der strafrechtlichen Verantwortlichkeit und zu einer Vermischung der Gerichtsstände. Dogmatisch schützt das hohe Anforderungsniveau den Grundsatz der Tatherrschaft und verhindert, dass blosse wirtschaftliche Verbindungen zwischen eigenständig handelnden Drogenhändlern zur Mittäterschaft führen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie kritisch, ob die restriktive Mittäterschaftsdoktrin des Bundesgerichts bei organisierten Drogenhandelsstrukturen zu sachgerechten Ergebnissen führt, oder ob sie die strafrechtliche Erfassung arbeitsteilig agierender Tätergruppen erschwert.",
+              "hint": "Berücksichtigen Sie das Regeste, den Sachverhalt (Lieferantenstruktur seit 1986) und vergleichen Sie mit dem Argument des Generalprokurators Bern zur «Organisation».",
+              "model_answer": "Die restriktive Mittäterschaftsdoktrin führt zu dogmatischer Klarheit und schützt vor einer übermässigen Haftungsausdehnung, kann aber bei langfristig etablierten, arbeitsteiligen Drogenhandelsstrukturen unbefriedigend sein: Der Generalprokurator weist zu Recht darauf hin, dass P., G. und H. seit 1986 in einer dauerhaften, koordinierten Lieferbeziehung standen, die einer Organisation näherkommt als isolierten Einzeltaten. Andererseits verhindert das BetmG durch seinen breiten Tatbestandskatalog Strafbarkeitslücken, sodass G. und H. für ihre eigenen Handlungen eigenständig haften. Insgesamt erscheint die restriktive Haltung vertretbar, könnte jedoch durch das Konzept der bandenmässigen Begehung (Art. 19 Ziff. 2 BetmG) ergänzt werden, um solche Strukturen angemessen zu erfassen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn G., H. und P. nachweislich gemeinsam einen festen Verkaufsplan ausgehandelt hätten, wonach P. die Betäubungsmittel ausschliesslich zu einem von allen drei gemeinsam festgelegten Mindestpreis verkaufen durfte und einen festen Anteil des Erlöses monatlich an G. und H. abliefern musste?",
+              "discussion_points": [
+                "Erfüllt die gemeinsame Preisfestsetzung und Erlösbeteiligung das Kriterium der gemeinsamen Tatplanung und Tatherrschaft?",
+                "Verschiebt sich die Rolle von G. und H. vom blossen Lieferanten zum Mitorganisator des gesamten Drogenhandels?"
+              ],
+              "likely_outcome_shift": "Mit einem gemeinsamen Tatplan, verbindlichen Preisabsprachen und einer Erlösbeteiligung würden G. und H. nicht mehr als blosse Lieferanten, sondern als Mitgestalter der gesamten Tatausführung erscheinen, was die Annahme von Mittäterschaft deutlich stärker begründen würde. Die Tatherrschaft wäre dann nicht mehr allein bei P., sondern würde auf alle drei Beteiligten verteilt, sodass das Bundesgericht wohl Mittäterschaft bejahen und die Zuständigkeit Solothurns bestätigen müsste."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht P. als Abnehmer gegenüber G. und H. aufgetreten wäre, sondern wenn G. und H. die Betäubungsmittel gemeinsam in Thailand eingekauft, gemeinsam in die Schweiz eingeführt und erst dann P. als Abnehmer beliefert hätten – und die Strafuntersuchung wegen der Einfuhr im Kanton Bern (Grenzübertritt) eröffnet worden wäre?",
+              "discussion_points": [
+                "Begründet das arbeitsteilige Zusammenwirken von G. und H. bei Einkauf und Einfuhr untereinander Mittäterschaft, selbst wenn sie gegenüber P. weiterhin nur als Lieferanten auftreten?",
+                "Verändert sich der massgebende Gerichtsstand, wenn die schwerste oder erste Tathandlung (Einfuhr) im Kanton Bern lokalisiert ist?"
+              ],
+              "likely_outcome_shift": "Das arbeitsteilige Vorgehen von G. und H. bei Einkauf und Einfuhr würde zwischen diesen beiden Personen klare Mittäterschaft begründen, da beide an Planung und Ausführung der gemeinsamen Tat massgebend beteiligt wären. Die Zuständigkeit für G. und H. läge dann eindeutig beim Kanton Bern; ob P. als Mittäter oder als eigenständiger Täter (Abnehmer) zu beurteilen wäre, bliebe jedoch weiterhin fraglich und hängte von der Intensität seiner Einbindung in die Einfuhrtat ab."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire le regeste afin de saisir l'essentiel de l'arrêt (exigences élevées pour retenir la coactivité en matière de LStup), puis consultez le considérant 2a, qui expose le conflit de for entre les cantons de Berne et de Soleure. Le considérant 2b constitue le cœur dogmatique de la décision: le Tribunal fédéral y développe les critères de la maîtrise de l'acte et du plan commun, et les applique au rôle de fournisseurs de G. et H.",
+          "reading_guide_it": "Si consiglia di leggere dapprima il regesto per cogliere il nucleo della decisione (requisiti elevati per la coautoria nei reati LStup), poi il considerando 2a, che illustra il conflitto di competenza tra i Cantoni di Berna e di Soletta. Il considerando 2b è il cuore dogmatico: il Tribunale federale vi elabora i criteri del dominio del fatto e del piano comune, applicandoli al ruolo di fornitori di G. e H.",
+          "significance_it": "La sentenza stabilisce che il semplice ruolo di fornitore di stupefacenti non è sufficiente a fondare la coautoria ai sensi dell'art. 19 n. 1 LStup, poiché i requisiti relativi al dominio comune del fatto devono essere valutati con rigore."
         },
         {
           "decision_id": "bge_144 IV 265",
@@ -299,13 +542,71 @@
             "bge_118 IV 397"
           ],
           "significance_de": "Akzessorietät der Teilnahme begründet keinen selbständigen Begehungsort",
-          "significance_fr": "L'accessoriété de la participation ne fonde pas un lieu de commission indépendant",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt confirme que l'acte d'instigation ou de complicité accompli en Suisse ne constitue pas un point de rattachement autonome au sens des art. 3 et 8 CP lorsque le fait principal a été commis exclusivement à l'étranger, de sorte que la Suisse n'est pas compétente pour poursuivre de tels actes de participation.",
+          "key_erwagungen": [
+            "2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Regeste sorgfältig, um den Kerngehalt des Entscheids zu erfassen, und konzentrieren Sie sich anschliessend auf Erwägung 2, in der das Bundesgericht das Verhältnis zwischen Akzessorietät der Teilnahme (Art. 24 und 25 StGB) und den räumlichen Anwendungsregeln (Art. 3 und 8 StGB) dogmatisch begründet. Der Sachverhalt (B.a und B.b) illustriert anschaulich, wie grenzüberschreitende Konstellationen mit im Inland begangenen Anstiftungshandlungen und im Ausland verübten Haupttaten in der Praxis aussehen.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 144 IV 265 unter der 'Akzessorietät' der Teilnahme, und warum ist dieses Prinzip für die Frage der schweizerischen Strafhoheit entscheidend?",
+              "hint": "Vgl. Regeste und Erwägung 2 des Entscheids sowie Art. 24 und 25 StGB.",
+              "model_answer": "Akzessorietät bedeutet, dass Anstiftung und Gehilfenschaft rechtlich von der Haupttat abhängen: Ohne eine strafbare Haupttat kann keine Teilnahme bestraft werden. Das Bundesgericht leitet daraus ab, dass die Teilnahmehandlung keinen eigenen, selbständigen Begehungsort begründet, sondern stets auf den Ort der Haupttat verweist. Wurde die Haupttat ausschliesslich im Ausland begangen, fehlt damit der für die schweizerische Strafhoheit erforderliche Anknüpfungspunkt im Inland."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen des StGB regeln den räumlichen Anwendungsbereich des schweizerischen Strafrechts, und wie verhält sich Art. 8 StGB zu Art. 3 StGB im vorliegenden Fall?",
+              "hint": "Lesen Sie Art. 3 und Art. 8 StGB sowie den Regeste des Entscheids sorgfältig.",
+              "model_answer": "Art. 3 StGB begründet die schweizerische Strafhoheit für Verbrechen oder Vergehen, die in der Schweiz begangen werden (Territorialprinzip). Art. 8 StGB präzisiert den Begehungsort und erklärt eine Tat dort als begangen, wo der Täter handelt oder wo der Erfolg eintritt. Im vorliegenden Fall prüft das Bundesgericht, ob die in der Schweiz vorgenommene Anstiftungshandlung (Art. 24 StGB) oder Gehilfenschaft (Art. 25 StGB) nach Art. 8 StGB einen eigenständigen Begehungsort in der Schweiz begründen kann – was es aufgrund der Akzessorietät verneint."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "X. hat B. in der Schweiz dazu überredet, das Fahrzeug in Frankreich in Brand zu setzen. Prüfen Sie anhand der Grundsätze dieses Urteils, ob die Schweiz für die Verfolgung dieser Anstiftung zuständig ist.",
+              "hint": "Vgl. Sachverhalt B.a sowie Erwägung 2 zum Verhältnis von Begehungsort und Akzessorietät.",
+              "model_answer": "X. hat seine Anstiftungshandlung zwar in der Schweiz vorgenommen, doch die Haupttat – die vorsätzliche Brandstiftung – wurde ausschliesslich in Saint-Priest (Frankreich) von einer unbekannten Person verübt. Gemäss BGE 144 IV 265 begründet die akzessorische Anstiftungshandlung keinen selbständigen Begehungsort i.S.v. Art. 3 und 8 StGB. Da kein Anknüpfungspunkt in der Schweiz besteht, fehlt die schweizerische Strafhoheit für die Anstiftung zur vorsätzlichen Brandstiftung, weshalb X. diesbezüglich freizusprechen ist."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht bestätigt mit diesem Entscheid seine bisherige Rechtsprechung. Welche dogmatischen Spannungen entstehen zwischen dem Grundsatz der Akzessorietät der Teilnahme und dem Schutzinteresse, das hinter dem Territorialprinzip steht, wenn Anstiftungshandlungen bewusst im Inland vorgenommen werden, um ausländische Haupttaten auszulösen?",
+              "hint": "Vgl. Erwägung 2 sowie die Systematik von Art. 3, 8, 24 und 25 StGB; bedenken Sie auch den Zweck des Territorialprinzips.",
+              "model_answer": "Das Territorialprinzip soll staatliche Souveränität und inländische Rechtsordnung schützen, indem auf Inlandshandlungen schweizerisches Recht angewendet wird. Wenn jedoch Anstifter oder Gehilfen gezielt von der Schweiz aus handeln, um im Ausland verübte Haupttaten zu provozieren, entsteht eine Schutzlücke: Die inländische Handlung bleibt straflos, obwohl sie kausal für das Auslandsdelikt ist. Die strenge Akzessorietät führt dazu, dass der Handlungsort des Teilnehmers rechtlich 'unsichtbar' wird, was kriminalpolitisch problematisch ist, da der Anstifter gezielt die Schweiz als 'sicheren Hafen' nutzen kann. Das Bundesgericht nimmt diese Spannung in Kauf, um die dogmatische Kohärenz der Teilnahmehaftung nicht zu gefährden."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie kritisch, ob die vom Bundesgericht bestätigte Lösung – Verneinung eines selbständigen Begehungsorts für Teilnahmehandlungen – rechtspolitisch überzeugt, oder ob eine Gesetzesrevision geboten wäre, die auch für im Inland begangene Anstiftungen und Beihilfen zu ausländischen Haupttaten Strafhoheit begründet.",
+              "hint": "Beziehen Sie die Regeste, Erwägung 2 sowie rechtsvergleichende und kriminalpolitische Überlegungen ein.",
+              "model_answer": "Die dogmatisch konsequente Lösung des Bundesgerichts überzeugt auf der Ebene der Systemkohärenz, da sie die limitierte Akzessorietät als Strukturprinzip der Teilnahme ernst nimmt und eine Ausdehnung der Strafhoheit verhindert, die über den Wortlaut von Art. 3 und 8 StGB hinausginge. Kriminalpolitisch hingegen erscheint die Lösung unbefriedigend: Sie schafft Anreize, Anstiftungshandlungen bewusst im Inland zu setzen, solange die Haupttat im Ausland verübt wird, was insbesondere bei organisierter Kriminalität und Wirtschaftsdelikten mit internationalem Bezug missbrauchsanfällig ist. Eine Gesetzesrevision, die – analog zu ausländischen Rechtsordnungen – den inländischen Handlungsort des Teilnehmers als eigenständigen Anknüpfungspunkt anerkennt, wäre rechtspolitisch sinnvoll und würde keine unüberwindlichen dogmatischen Hürden schaffen, sofern der Gesetzgeber die limitierte Akzessorietät ausdrücklich lockert."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, B. hätte nicht nur in Frankreich gehandelt, sondern wäre auch in der Schweiz tätig geworden, indem er hier den Brandbeschleuniger besorgt und an C. übergeben hätte, bevor sich alle nach Saint-Priest begaben. Würde dies an der Verneinung der schweizerischen Strafhoheit etwas ändern?",
+              "discussion_points": [
+                "Kann die Beschaffung von Tatmitteln in der Schweiz als Teil der Haupttat (Art. 221 StGB) qualifiziert werden, sodass ein Begehungsort nach Art. 8 StGB in der Schweiz entsteht?",
+                "Ist die Vorbereitungshandlung in der Schweiz als selbständige strafbare Gehilfenschaft (Art. 25 StGB) zu werten, oder bleibt es bei der akzessorischen Abhängigkeit von der im Ausland vollzogenen Haupttat?"
+              ],
+              "likely_outcome_shift": "Würde die Schweizer Beschaffungshandlung als Ausführungshandlung der Haupttat qualifiziert, könnte ein Begehungsort in der Schweiz nach Art. 8 StGB bejaht werden, was die schweizerische Strafhoheit eröffnete. Bliebe sie hingegen eine reine Vorbereitungshandlung, änderte sich an der Verneinung der Strafhoheit nach der Logik von BGE 144 IV 265 nichts, da die Akzessorietät der Teilnahme weiterhin auf die ausländische Haupttat verwiese."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, X. wäre nicht der Anstifter, sondern der unmittelbare Täter der Haupttat (Brandstiftung) gewesen und hätte das Fahrzeug persönlich in Frankreich angezündet, während B. in der Schweiz als Anstifter gehandelt hätte. Ändert sich die Beurteilung der schweizerischen Strafhoheit gegenüber B.?",
+              "discussion_points": [
+                "Bleibt B.'s in der Schweiz vorgenommene Anstiftungshandlung auch dann ohne selbständigen Begehungsort, wenn feststeht, dass die Haupttat im Ausland durch einen identifizierten Täter verübt wurde?",
+                "Würde es einen Unterschied machen, wenn B. gleichzeitig Mitorganisator wäre und seine Handlungen in der Schweiz als mittäterschaftliche Tatbeiträge qualifiziert werden könnten?"
+              ],
+              "likely_outcome_shift": "Die Situation ändert sich in Bezug auf B.'s Strafhoheit grundsätzlich nicht: Auch wenn der Haupttäter identifiziert ist, begründet die Anstiftungshandlung in der Schweiz nach BGE 144 IV 265 keinen selbständigen Begehungsort. Würde B.'s Beitrag jedoch als Mittäterschaft qualifiziert, wäre zu prüfen, ob der in der Schweiz geleistete Tatbeitrag einen Begehungsort i.S.v. Art. 8 StGB begründet, was die Strafhoheit eröffnen könnte, da Mittäterschaft nicht akzessorisch, sondern eigenständig ist."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le regeste afin de saisir la portée de l'arrêt, puis concentrez-vous sur le considérant 2, dans lequel le Tribunal fédéral fonde dogmatiquement le rapport entre l'accessoriété de la participation (art. 24 et 25 CP) et les règles d'application dans l'espace (art. 3 et 8 CP). Les faits exposés aux sections B.a et B.b illustrent concrètement la configuration transfrontalière en cause, avec des actes d'instigation commis en Suisse et un acte principal perpétré exclusivement à l'étranger.",
+          "reading_guide_it": "Si raccomanda di leggere dapprima attentamente il regesto per cogliere il nucleo della decisione, quindi di concentrarsi sul considerando 2, in cui il Tribunale federale fonda dogmaticamente il rapporto tra l'accessorietà della partecipazione (art. 24 e 25 CP) e le norme sull'applicazione spaziale del diritto penale (art. 3 e 8 CP). I fatti descritti alle sezioni B.a e B.b illustrano concretamente la fattispecie transfrontaliera, con atti di istigazione compiuti in Svizzera e il fatto principale realizzato esclusivamente all'estero.",
+          "significance_it": "La sentenza conferma che l'atto di istigazione o complicità compiuto in Svizzera non costituisce un punto di collegamento autonomo ai sensi degli art. 3 e 8 CP quando il fatto principale è stato commesso esclusivamente all'estero, con la conseguenza che la Svizzera non è competente a perseguire tali atti di partecipazione."
         }
       ]
     },
@@ -343,13 +644,73 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Methodik der Strafzumessung nach Art. 47 StGB",
-          "significance_fr": "Arrêt de principe sur la méthodologie de la fixation de la peine selon l'art. 47 CP",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt de principe fixe la méthodologie de fixation de la peine selon l'art. 47 CP et établit que les seuils légaux pour le sursis et le sursis partiel (art. 42/43 CP) sont contraignants et ne peuvent pas être relativisés par voie d'interprétation judiciaire.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 18–19), um die Tatumstände zu verstehen, und widmen Sie sich dann eingehend E. 2 zur Strafzumessung nach Art. 47 StGB sowie E. 3 zur verbindlichen Wirkung der gesetzlichen Grenzwerte für den bedingten und teilbedingten Vollzug (Art. 42/43 StGB). Besonders aufschlussreich ist die Abgrenzung zur früheren Praxis gemäss BGE 118 IV 337, welche das Gericht in E. 3 explizit für das neue Recht verwirft.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat die Beschwerdeführerin X. konkret getan, und welche Strafe wurde ihr vom Obergericht des Kantons Zürich auferlegt?",
+              "hint": "Sachverhalt (S. 18–19) und Urteilskopf",
+              "model_answer": "X. übernahm knapp 1 Kilogramm Kokain (Reinheitsgrad ca. 55–60 %), um es auf Provisionsbasis zu verkaufen, und hatte bereits 22 Gramm reines Kokain für Fr. 2'600.– veräussert. Das Obergericht verurteilte sie zu einer Freiheitsstrafe von 27 Monaten, wobei 15 Monate bedingt aufgeschoben und 12 Monate vollziehbar erklärt wurden. Das Bundesgericht wies ihre Beschwerde ab."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen regeln die Strafzumessung sowie den bedingten und teilbedingten Strafvollzug im neuen Allgemeinen Teil des StGB, und wie definiert Art. 47 StGB das massgebliche Zumessungskriterium?",
+              "hint": "Regeste b und E. 2.1",
+              "model_answer": "Art. 47 StGB regelt die Strafzumessung und stellt das Verschulden des Täters als zentrales Kriterium in den Vordergrund; daneben sind Vorleben, persönliche Verhältnisse und die Wirkung der Strafe zu berücksichtigen. Art. 42 Abs. 1 StGB setzt die Obergrenze für den vollständig bedingten Vollzug bei zwei Jahren, Art. 43 Abs. 1 StGB erlaubt den teilbedingten Vollzug bis zu drei Jahren. Diese Grenzen sind nach BGE 134 IV 17 verbindlich und dürfen nicht durch Auslegung relativiert werden."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, das Gericht gelangt bei der Strafzumessung zu einer Freiheitsstrafe von genau 24 Monaten: Welche Schritte muss es gemäss BGE 134 IV 17 unternehmen, bevor es diese Strafe ausfällt, und wie ist der Entscheid zu begründen?",
+              "hint": "E. 3 (Regeste b) zum Umgang mit den gesetzlichen Grenzwerten und zur Begründungspflicht nach Art. 50 StGB",
+              "model_answer": "Das Gericht muss sich ausdrücklich fragen, ob eine Freiheitsstrafe, die den Grenzwert von 24 Monaten nicht überschreitet, noch innerhalb des ihm zustehenden Ermessensspielraums liegt. Bejaht es dies, hat es die Strafe auf höchstens 24 Monate festzusetzen, um den bedingten Vollzug zu ermöglichen. Den Entscheid muss es in jedem Fall ausdrücklich und nachvollziehbar begründen (Art. 50 StGB), damit überprüft werden kann, weshalb die Grenze über- oder nicht überschritten wurde."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Weshalb hält das Bundesgericht in BGE 134 IV 17 ausdrücklich fest, dass die in BGE 118 IV 337 entwickelte Praxis nicht in das neue Recht übernommen werden kann, und worin liegt der entscheidende Unterschied zwischen alter und neuer Rechtslage?",
+              "hint": "E. 3 (Regeste b), insbesondere der Passus zur Unzulässigkeit der Relativierung der gesetzlichen Grenzwerte",
+              "model_answer": "BGE 118 IV 337 erlaubte es unter altem Recht, die damaligen Grenzwerte für den bedingten Vollzug durch richterliche Auslegung zu überwinden, weil das Gesetz mehr Spielraum liess. Das neue Recht hat die Obergrenzen von zwei Jahren (Art. 42 Abs. 1 StGB) und drei Jahren (Art. 43 Abs. 1 StGB) als klare gesetzliche Schwellen ausgestaltet. Das Bundesgericht betont, dass es keinen Raum gibt, diese durch Auslegung zu relativieren, da der Gesetzgeber bewusst verbindliche Grenzwerte setzen wollte, die richterliche Manipulation ausschliessen sollen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es sachgerecht, dass das Bundesgericht die 27-monatige Freiheitsstrafe trotz des von X. vorgebrachten Motivs – die Finanzierung der medizinischen Behandlung ihres Sohnes – als nicht unhaltbar hoch einstuft? Überzeugt diese Gewichtung unter dem Aspekt der Verschuldensbeurteilung nach Art. 47 StGB?",
+              "hint": "E. 2 (Regeste a) zum Strafmass und zur Berücksichtigung persönlicher Motive",
+              "model_answer": "Das Bundesgericht anerkennt das Motiv als strafmindernden Umstand, stuft es jedoch nicht als so gewichtig ein, dass es die erhebliche objektive Tatschwere – knapp 1 kg Kokain mit hohem Reinheitsgrad – zu kompensieren vermag. Diese Gewichtung ist unter Art. 47 StGB vertretbar, da das Verschulden primär nach dem Tatunrecht zu bemessen ist und persönliche Beweggründe nur im Rahmen der Gesamtwürdigung berücksichtigt werden. Kritisch lässt sich einwenden, dass altruistische Motive stärker zugunsten der Täterin hätten gewichtet werden können, doch bewegt sich der Ermessensentscheid der Vorinstanz innerhalb des bundesgerichtlich anerkannten Spielraums."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, X. wäre nicht nur Kurierin gewesen, sondern hätte nachweislich selbst kokainabhängig gewesen und das Kokain teilweise für den Eigenkonsum bestimmt gehabt. Wie würde sich dies auf die Strafzumessung nach Art. 47 StGB sowie auf die Frage des bedingten oder teilbedingten Vollzugs auswirken?",
+              "discussion_points": [
+                "Einfluss der Suchtproblematik auf die Verschuldensbeurteilung (verminderte Schuldfähigkeit, Art. 19 StGB) und damit auf das Strafmass",
+                "Wechselwirkung zwischen therapeutischem Bedarf, ambulanter Behandlung (Art. 63 StGB) und dem Vollzugsregime"
+              ],
+              "likely_outcome_shift": "Die Eigensucht könnte das Verschulden mindern, da die Handlungsfreiheit durch die Abhängigkeit eingeschränkt ist, was tendenziell zu einer tieferen Strafe führen würde. Gleichzeitig könnte das Gericht eine ambulante Behandlung anordnen und den Vollzug zugunsten der Therapie aufschieben, was die Wahrscheinlichkeit eines vollständig bedingten Vollzugs erhöht. Die Grenzwertfrage des Art. 42/43 StGB bliebe aber weiterhin nach dem Grundsatz von BGE 134 IV 17 zu beachten."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht X. als Kurierin, sondern der unbekannte Auftraggeber, der ihr das Kilogramm Kokain übergab und die Operation leitete, würde vor Gericht gestellt. Verändert sich die Strafzumessungsmethodik nach Art. 47 StGB, und wäre dasselbe Strafmass von 27 Monaten noch angemessen?",
+              "discussion_points": [
+                "Höheres Verschulden des Organisators/Hintermanns gegenüber der blossen Kurierin (Tatbeitrag, kriminelle Energie, Mengenverantwortung)",
+                "Mögliche Qualifizierung als bandenmässiger oder gewerbsmässiger Handel (Art. 19 Ziff. 2 BetmG) mit entsprechend höherem Strafrahmen"
+              ],
+              "likely_outcome_shift": "Der Auftraggeber trüge als Organisator ein deutlich schwereres Verschulden, da er die Drogenlieferkette steuerte und das finanzielle Risiko trug. Dies würde nach Art. 47 StGB zu einem markant höheren Strafmass führen, das 27 Monate deutlich übersteigen dürfte. Zudem wäre der bedingte oder teilbedingte Vollzug bei einer entsprechend höheren Strafe aus dem Anwendungsbereich von Art. 42/43 StGB herausgefallen."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire les faits (p. 18–19) pour comprendre les circonstances de l'infraction, puis concentrez-vous sur le consid. 2 relatif à la fixation de la peine selon l'art. 47 CP et sur le consid. 3 concernant le caractère contraignant des seuils légaux pour le sursis et le sursis partiel (art. 42/43 CP). La distinction explicite avec la pratique antérieure fondée sur l'ATF 118 IV 337, que le Tribunal fédéral écarte pour le nouveau droit, est particulièrement éclairante.",
+          "reading_guide_it": "Si raccomanda di iniziare con i fatti (p. 18–19) per comprendere le circostanze del reato, per poi esaminare il consid. 2 sulla commisurazione della pena ai sensi dell'art. 47 CP e il consid. 3 sul carattere vincolante delle soglie legali per la sospensione condizionale e parziale (art. 42/43 CP). Particolarmente significativa è la distinzione rispetto alla prassi anteriore fondata sulla DTF 118 IV 337, che il Tribunale federale esclude espressamente per il nuovo diritto.",
+          "significance_it": "Questa sentenza di principio stabilisce la metodologia di commisurazione della pena ai sensi dell'art. 47 CP e afferma che le soglie legali per la sospensione condizionale e parziale (art. 42/43 CP) sono vincolanti e non possono essere relativizzate per via interpretativa."
         },
         {
           "decision_id": "bge_144 IV 313",
@@ -377,13 +738,71 @@
             "bge_134 IV 17"
           ],
           "significance_de": "Methodik der Gesamtstrafenbildung bei Konkurrenz: erst Strafart bestimmen, dann Art. 49 StGB prüfen",
-          "significance_fr": "Méthodologie de la formation de la peine d'ensemble en cas de concours: d'abord déterminer le genre de peine",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt établit que le juge doit d'abord déterminer la nature de la peine pour chaque infraction avant d'appliquer l'art. 49 al. 1 CP, et qu'il ne peut convertir une peine pécuniaire en peine privative de liberté au seul motif que la peine pécuniaire globale dépasserait le maximum légal.",
+          "key_erwagungen": [
+            "1"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Regeste sorgfältig, der die Kernaussagen des Entscheids zusammenfasst, und vertiefen Sie sich anschliessend in Erwägung 1, die die methodische Reihenfolge bei der Gesamtstrafenbildung sowie die Begründungspflicht nach Art. 41 Abs. 2 StGB ausführlich erläutert. Beachten Sie dabei insbesondere die Abgrenzung zwischen der Strafartbestimmung als erster Stufe und der Asperationsprüfung nach Art. 49 Abs. 1 StGB als zweiter Stufe.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 144 IV 313 unter dem Begriff der 'Gleichartigkeit' von Strafen im Sinne von Art. 49 Abs. 1 StGB, und weshalb gelten Geldstrafe und Freiheitsstrafe nicht als gleichartig?",
+              "hint": "Vgl. den Regeste sowie die einleitenden Ausführungen in Erwägung 1.",
+              "model_answer": "Das Bundesgericht versteht unter 'Gleichartigkeit' im Sinne von Art. 49 Abs. 1 StGB, dass nur Strafen derselben Art – also entweder ausschliesslich Freiheitsstrafen oder ausschliesslich Geldstrafen – zu einer Gesamtstrafe zusammengefasst werden können. Geldstrafe und Freiheitsstrafe sind keine gleichartigen Strafen, weil sie sich in ihrer Natur, ihren Wirkungen und ihren gesetzlichen Rahmenbedingungen grundlegend unterscheiden. Folglich kann Art. 49 Abs. 1 StGB nur innerhalb derselben Strafart angewendet werden, nicht aber um zwei verschiedene Strafarten zu einer einzigen zu verschmelzen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche methodische Reihenfolge schreibt das Bundesgericht in BGE 144 IV 313 für die Strafzumessung bei Realkonkurrenz vor, und welche gesetzlichen Bestimmungen liegen dieser Methodik zugrunde?",
+              "hint": "Die Reihenfolge ergibt sich aus dem Regeste sowie aus Art. 49 Abs. 1 und Art. 41 StGB.",
+              "model_answer": "Das Bundesgericht schreibt vor, dass das Gericht bei mehreren gleichzeitig zu beurteilenden Straftaten zunächst für jede einzelne Tat die Strafart (Freiheitsstrafe, Geldstrafe oder Busse) zu bestimmen hat. Erst in einem zweiten Schritt ist zu prüfen, ob die festgelegten Strafen gleichartig sind, um gegebenenfalls Art. 49 Abs. 1 StGB – das Asperationsprinzip – anzuwenden. Diese Methodik stützt sich auf Art. 49 Abs. 1 StGB (Gesamtstrafenbildung bei gleichartigen Strafen) und auf Art. 41 Abs. 2 StGB (Begründungspflicht bei Wahl der Freiheitsstrafe anstelle der Geldstrafe)."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Stellen Sie sich vor, ein Gericht verurteilt einen Beschuldigten wegen Betrugs (Strafdrohung: Geldstrafe oder Freiheitsstrafe bis 5 Jahre) und wegen einfacher Körperverletzung (Strafdrohung: Geldstrafe oder Freiheitsstrafe bis 3 Jahre). Es erwägt, für beide Taten je eine Geldstrafe auszusprechen, stellt jedoch fest, dass die hypothetische Gesamtgeldstrafe 360 Tagessätze übersteigen würde. Wie hätte das Gericht nach BGE 144 IV 313 vorzugehen?",
+              "hint": "Vgl. den Regeste, insbesondere den Satz zur Unzulässigkeit der Umwandlung einer Geldstrafe in eine Freiheitsstrafe wegen Überschreitung des Höchstmasses.",
+              "model_answer": "Nach der Methodik des Bundesgerichts darf das Gericht eine Geldstrafe nicht allein deshalb in eine Freiheitsstrafe umwandeln, weil die hypothetische Gesamtgeldstrafe das gesetzliche Höchstmass von 360 Tagessätzen gemäss Art. 34 Abs. 1 StGB überschreiten würde. Das Gericht bleibt an das gesetzliche Höchstmass der Geldstrafe gebunden und muss beide Strafen separat als Geldstrafen – jede bis maximal 360 Tagessätze – aussprechen. Möchte das Gericht dennoch eine Freiheitsstrafe verhängen, muss es dies gemäss Art. 41 Abs. 2 StGB gesondert begründen, namentlich darlegen, weshalb eine Geldstrafe im konkreten Fall nicht zweckmässig erscheint."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Die Vorinstanz hatte im Verfahren, das zu BGE 144 IV 313 führte, mehrfach Begründungsmängel produziert, weshalb das Bundesgericht die Sache zweimal zurückwies. Welche strukturellen Schwächen in der kantonalen Strafzumessungspraxis lassen sich aus diesem Verfahrensverlauf ableiten, und inwiefern adressiert das Bundesgericht diese mit seinen methodischen Vorgaben?",
+              "hint": "Vgl. den Sachverhalt (Abschnitte B–D) sowie den Regeste zur Begründungspflicht nach Art. 41 Abs. 2 StGB.",
+              "model_answer": "Der Verfahrensverlauf zeigt, dass die Vorinstanz wiederholt die Anforderungen an die Begründung der Strafart und Strafhöhe verkannte und das Asperationsprinzip methodisch falsch anwandte, indem sie die Strafartfrage nicht vorgelagert klärte. Diese strukturelle Schwäche liegt darin, dass kantonale Gerichte die zweistufige Prüfung – zuerst Strafart, dann Asperation – nicht konsequent trennen und die Wahl der Freiheitsstrafe nicht hinreichend rechtfertigen. Das Bundesgericht adressiert dies, indem es eine klare Methodenpflicht statuiert: Die Strafartfestlegung muss für jede Tat separat und begründet erfolgen, bevor Art. 49 StGB überhaupt zur Anwendung kommt, und jede Abweichung von der Geldstrafe hin zur Freiheitsstrafe bedarf einer ausdrücklichen Begründung gemäss Art. 41 Abs. 2 StGB."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritiker könnten einwenden, dass die starre Methodik des Bundesgerichts in BGE 144 IV 313 – insbesondere das Verbot, eine Geldstrafe wegen Überschreitung des Höchstmasses in eine Freiheitsstrafe umzuwandeln – zu unbefriedigenden Ergebnissen führt, wenn ein Täter viele mittelschwere Delikte begeht. Wie überzeugend ist die Lösung des Bundesgerichts aus rechtspolitischer und rechtsstaatlicher Sicht?",
+              "hint": "Berücksichtigen Sie das Legalitätsprinzip (Bindung an gesetzliche Höchstmasse), das Verhältnismässigkeitsprinzip sowie die Ratio von Art. 41 Abs. 2 StGB.",
+              "model_answer": "Aus rechtsstaatlicher Sicht ist die Methodik des Bundesgerichts überzeugend, weil sie konsequent das Legalitätsprinzip wahrt: Das Gericht darf nicht durch eine verdeckte Umwandlung von Geldstrafe in Freiheitsstrafe das gesetzlich vorgesehene Strafmass überschreiten, was dem Schutz des Beschuldigten dient. Rechtspolitisch ist allerdings einzuräumen, dass die starre Trennung bei Serientätern mit vielen mittelschweren Delikten dazu führen kann, dass trotz erheblicher kumulativer Schuld nur eine Geldstrafe von maximal 360 Tagessätzen verhängt werden darf, was als unzureichend empfunden werden könnte. Die Lösung des Bundesgerichts ist dennoch vorzuziehen, weil sie Rechtssicherheit und Transparenz fördert und Gerichte zwingt, die Strafartfrage offen zu begründen, statt durch methodische Tricks zu einer schwereren Strafe zu gelangen, ohne dies ausreichend zu rechtfertigen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Beschuldigte X. wäre nicht nur wegen der genannten Delikte verurteilt worden, sondern hätte zusätzlich eine rechtskräftige frühere Verurteilung zu einer bedingten Freiheitsstrafe von 18 Monaten erlitten, die noch nicht vollständig vollzogen ist. Das Gericht möchte nun eine Gesamtstrafe unter Einbezug dieser früheren Strafe bilden. Wie verändert dies die methodische Prüfung nach Art. 49 StGB und Art. 41 StGB?",
+              "discussion_points": [
+                "Voraussetzungen der nachträglichen Gesamtstrafenbildung gemäss Art. 49 Abs. 2 StGB und deren Abgrenzung zu Art. 49 Abs. 1 StGB",
+                "Frage, ob die frühere Freiheitsstrafe und die neu auszusprechenden Strafen unterschiedlicher Art sind und wie dies die Gleichartigkeitsprüfung beeinflusst"
+              ],
+              "likely_outcome_shift": "Die Einbeziehung einer früheren bedingten Freiheitsstrafe würde die Anwendbarkeit von Art. 49 Abs. 2 StGB aufwerfen, der eine nachträgliche Gesamtstrafenbildung nur dann erlaubt, wenn das frühere Urteil noch nicht vollstreckt ist und die Strafen gleichartig sind. Da die frühere Freiheitsstrafe und eine neu auszusprechende Geldstrafe nicht gleichartig sind, müsste das Gericht weiterhin separate Strafen aussprechen und könnte die Geldstrafe nicht in eine Freiheitsstrafe umwandeln, um eine einheitliche Gesamtfreiheitsstrafe zu bilden."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht der Beschuldigte X., sondern die Staatsanwaltschaft das Urteil mit dem Argument angefochten hätte, das Gericht hätte angesichts der Schwere der Delikte zwingend eine Freiheitsstrafe für sämtliche Taten aussprechen müssen, ohne dass hierfür eine gesonderte Begründung gemäss Art. 41 Abs. 2 StGB erforderlich sei?",
+              "discussion_points": [
+                "Legitimation der Staatsanwaltschaft zur Anfechtung von Strafzumessungsentscheiden und Umfang der Kognition des Bundesgerichts",
+                "Ob Art. 41 Abs. 2 StGB als Begründungspflicht ausschliesslich dem Schutz des Beschuldigten dient oder auch im öffentlichen Interesse liegt"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde auch bei einer Anfechtung durch die Staatsanwaltschaft an seiner Methodik festhalten, da Art. 41 Abs. 2 StGB eine zwingende Begründungspflicht statuiert, die unabhängig von der Beschwerdeführerseite gilt. Eine staatsanwaltschaftliche Beschwerde, die eine Freiheitsstrafe ohne gesonderte Begründung verlangt, würde abgewiesen, weil die Begründungspflicht nicht nur dem Individualschutz dient, sondern auch der Rechtssicherheit und der Überprüfbarkeit richterlicher Ermessensentscheidungen."
+            }
+          ],
+          "reading_guide_fr": "Commencez par lire attentivement le regeste, qui résume les points essentiels de l'arrêt, puis approfondissez la lecture du considérant 1, qui expose la méthode de fixation de la peine d'ensemble et l'obligation de motivation selon l'art. 41 al. 2 CP. Prêtez une attention particulière à la distinction entre la détermination préalable de la nature de la peine et l'application subséquente du principe d'aggravation selon l'art. 49 al. 1 CP.",
+          "reading_guide_it": "Leggere innanzitutto attentamente il regesto, che riassume i punti fondamentali della sentenza, per poi approfondire il considerando 1, nel quale viene illustrata la metodologia per la formazione della pena complessiva e l'obbligo di motivazione ai sensi dell'art. 41 cpv. 2 CP. Prestare particolare attenzione alla distinzione tra la determinazione preliminare della specie della pena e la successiva applicazione del principio di inasprimento secondo l'art. 49 cpv. 1 CP.",
+          "significance_it": "Questa sentenza stabilisce che il giudice deve determinare la specie della pena per ogni singolo reato prima di applicare l'art. 49 cpv. 1 CP, e che non può convertire una pena pecuniaria in una pena detentiva unicamente perché la pena pecuniaria complessiva supererebbe il massimo legale."
         }
       ]
     }
