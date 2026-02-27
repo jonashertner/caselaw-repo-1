@@ -41,74 +41,12 @@
           "prerequisites": [],
           "significance_de": "Methodik der Überprüfung des Anfangsmietzinses; Anforderungen an den Nachweis der Orts- und Quartierüblichkeit",
           "significance_fr": "Méthodologie du contrôle du loyer initial; exigences de preuve pour les loyers du quartier",
-          "key_erwagungen": [
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 3: Methodik der Mietzinsüberprüfung — absolute vs. relative Methode. E. 4: Anforderungen an den Nachweis der Orts- und Quartierüblichkeit (mindestens 5 Vergleichsobjekte). Achten Sie auf die Beweislastverteilung.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Unter welchen Voraussetzungen kann ein Anfangsmietzins angefochten werden?",
-              "hint": "Lesen Sie Art. 270 OR und E. 3.",
-              "model_answer": "Der Mieter muss innerhalb von 30 Tagen nach Übernahme der Sache die Schlichtungsbehörde anrufen und geltend machen, dass der Mietzins missbräuchlich ist (Not- oder Zwangslage, erhebliche Mietzinserhöhung)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Was ist der Unterschied zwischen der absoluten und der relativen Methode der Mietzinsüberprüfung?",
-              "hint": "E. 3.",
-              "model_answer": "Absolute Methode: Vergleich mit Kosten + angemessener Rendite (Nettorendite). Relative Methode: Vergleich mit orts- und quartierüblichen Mietzinsen (Art. 269a lit. a OR)."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum verlangt das Bundesgericht mindestens 5 Vergleichsobjekte für den Nachweis der Orts- und Quartierüblichkeit?",
-              "hint": "E. 4.",
-              "model_answer": "5 Vergleichsobjekte gewährleisten eine statistisch aussagekräftige Grundlage. Weniger Vergleichswerte lassen keine zuverlässige Aussage über das Marktniveau zu."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn in einem ländlichen Gebiet keine 5 Vergleichsobjekte verfügbar wären?",
-              "discussion_points": [
-                "Beweisnotstand",
-                "Alternative Methoden",
-                "Absolute Methode als Ausweg"
-              ],
-              "likely_outcome_shift": "Das Gericht müsste auf die absolute Methode (Nettorendite/Kostenmiete) zurückgreifen. In der Praxis wird auch mit weniger Vergleichsobjekten gearbeitet, wobei die Aussagekraft abnimmt."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist das schweizerische System der Mietzinsüberprüfung effektiv oder zu komplex?",
-              "hint": "Vergleichen Sie mit einer reinen Marktmiete oder einer gesetzlichen Mietpreisbremse.",
-              "model_answer": "Pro: Differenzierte Lösung, schützt Mieter ohne Marktmechanismus völlig auszuschalten. Contra: Extrem komplex, verursacht hohe Prozesskosten, wenige Mieter kennen ihre Rechte."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "change_timeline",
-              "scenario": "Was wäre, wenn der Mieter die 30-Tage-Frist für die Anfechtung des Anfangsmietzinses verpasst hat?",
-              "discussion_points": [
-                "Verwirkungsfrist",
-                "Keine Wiederherstellung",
-                "Nächste Gelegenheit"
-              ],
-              "likely_outcome_shift": "Die Frist ist eine Verwirkungsfrist. Nach Ablauf kann der Anfangsmietzins nicht mehr angefochten werden. Der Mieter muss auf die nächste Mietzinserhöhung warten."
-            },
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn der Vermieter den Mietzins unter dem Vormieter deutlich gesenkt und dann für den neuen Mieter wieder erhöht hätte?",
-              "discussion_points": [
-                "Mietzinserhöhung gegenüber Vormieter",
-                "Art. 270 Abs. 1 lit. b OR",
-                "Umgehung"
-              ],
-              "likely_outcome_shift": "Die Senkung gegenüber dem Vormieter ist irrelevant. Entscheidend ist, ob der verlangte Mietzins orts- und quartierüblich ist. Ein Missbrauchsverdacht kann vorliegen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_140 III 433",
@@ -137,65 +75,12 @@
           ],
           "significance_de": "Berechnung der zulässigen Nettorendite; Referenzzinssatz als Berechnungsgrundlage",
           "significance_fr": "Calcul du rendement net admissible; taux de référence comme base de calcul",
-          "key_erwagungen": [
-            "3",
-            "4",
-            "5"
-          ],
-          "reading_guide_de": "E. 3: Methodik der Nettorenditeberechnung. E. 4: Referenzzinssatz + 0.5% als zulässige Rendite. E. 5: Behandlung von Altliegenschaften. Achten Sie auf die teuerungsbedingten Aufwertungen des Eigenkapitals.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist die Nettorendite und wann gilt ein Mietzins als missbräuchlich?",
-              "hint": "E. 3.",
-              "model_answer": "Die Nettorendite ist der Ertrag aus dem investierten Eigenkapital nach Abzug aller Kosten. Ein Mietzins ist missbräuchlich, wenn er eine Überrendite ermöglicht (mehr als Referenzzinssatz + 0.5%)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie berechnet das Bundesgericht die zulässige Nettorendite?",
-              "hint": "E. 4.",
-              "model_answer": "Zulässige Rendite = Referenzzinssatz + 0.5%. Basis ist das investierte Eigenkapital, das teuerungsbereinigt aufgewertet wird. Der hypothekarische Referenzzinssatz wird vierteljährlich publiziert."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Wie werden Altliegenschaften behandelt, deren Anlagekosten nicht mehr feststellbar sind?",
-              "hint": "E. 5.",
-              "model_answer": "Bei Altliegenschaften, deren ursprüngliche Anlagekosten nicht mehr nachweisbar sind, wird auf den Realwert der Liegenschaft abgestellt. Dieser wird durch Schätzung ermittelt."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Referenzzinssatz negativ wäre?",
-              "discussion_points": [
-                "Untergrenze der Rendite",
-                "Negativzinsen",
-                "Investitionsschutz"
-              ],
-              "likely_outcome_shift": "Ein negativer Referenzzinssatz würde theoretisch zu einer zulässigen Rendite unter 0.5% führen. In der Praxis hat das Bundesgericht klargestellt, dass eine angemessene Minimalrendite gewährleistet bleiben muss."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Kostenmiete (Nettorendite-Methode) noch zeitgemäss, oder sollte die Schweiz auf ein Vergleichsmietensystem umstellen?",
-              "hint": "Denken Sie an die Komplexität und die wirtschaftlichen Anreize.",
-              "model_answer": "Pro Kostenmiete: Schützt vor Spekulation, Transparenz. Contra: Extrem komplex, hemmt Investitionen in Altbauten, ignoriert Marktrealitäten. Ein Vergleichsmietensystem wäre einfacher, birgt aber Inflationsrisiken."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre, wenn der Vermieter umfangreiche wertvermehrende Renovationen durchgeführt hat?",
-              "discussion_points": [
-                "Wertvermehrende vs. werterhaltende Investitionen",
-                "Überwälzung auf Mietzins",
-                "Art. 269a lit. b OR"
-              ],
-              "likely_outcome_shift": "Wertvermehrende Investitionen dürfen anteilig auf den Mietzins überwälzt werden (Art. 269a lit. b OR). Dies erhöht das investierte Eigenkapital und damit die zulässige Rendite."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -234,64 +119,12 @@
           "prerequisites": [],
           "significance_de": "Voraussetzungen der Kündigung wegen Zahlungsrückstands nach Art. 257d OR; Anforderungen an die Mahnung",
           "significance_fr": "Conditions de résiliation pour défaut de paiement selon l'art. 257d CO; exigences de la mise en demeure",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Voraussetzungen der Kündigung nach Art. 257d OR (Zahlungsrückstand + 30-Tage-Nachfrist). E. 3: Formelle Anforderungen an die Mahnung und die Kündigungserklärung. Ein einfacher, praxisnaher Einstiegsfall.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Welche Schritte muss der Vermieter einhalten, bevor er wegen Zahlungsrückstands kündigen kann?",
-              "hint": "Art. 257d OR und E. 2.",
-              "model_answer": "1. Schriftliche Mahnung mit Androhung der Kündigung. 2. Ansetzung einer Nachfrist von mindestens 30 Tagen (Wohnräume) bzw. 10 Tagen (Geschäftsräume). 3. Kündigung erst nach Ablauf der Frist."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche formellen Anforderungen stellt Art. 257d OR an die Mahnung?",
-              "hint": "E. 3.",
-              "model_answer": "Schriftform, Angabe des Rückstands, Ansetzung der Nachfrist mit genauer Fristangabe, Androhung der Kündigung als Folge der Nichtzahlung."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war die Kündigung im konkreten Fall gültig?",
-              "hint": "E. 2-3.",
-              "model_answer": "Der Vermieter hatte alle formellen Anforderungen eingehalten: schriftliche Mahnung, korrekte Nachfrist, Androhung der Kündigung. Der Mieter hatte innerhalb der Frist nicht bezahlt."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Mieter den Rückstand am letzten Tag der Frist bezahlt hätte?",
-              "discussion_points": [
-                "Rechtzeitige Zahlung",
-                "Heilung des Verzugs",
-                "Kein Kündigungsrecht"
-              ],
-              "likely_outcome_shift": "Bei rechtzeitiger Zahlung innerhalb der Nachfrist entfällt das Kündigungsrecht. Der Mietvertrag besteht fort."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die 30-Tage-Frist für Wohnräume angemessen oder zu kurz?",
-              "hint": "Denken Sie an den Mieterschutz und das Interesse des Vermieters an Mietzinseinnahmen.",
-              "model_answer": "Pro 30 Tage: Ausreichend für die Beschaffung der Mittel. Contra: Bei temporären finanziellen Schwierigkeiten zu kurz, insbesondere bei Familien. Einige Kantone kennen längere Fristen im Schlichtungsverfahren."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn der Mieter die Mietzinse wegen behaupteter Mängel hinterlegt hätte (Art. 259g OR)?",
-              "discussion_points": [
-                "Mietzinshinterlegung",
-                "Wirkung auf Zahlungsrückstand",
-                "Zusammenspiel mit Art. 257d OR"
-              ],
-              "likely_outcome_shift": "Eine ordnungsgemässe Hinterlegung gilt nicht als Zahlungsrückstand. Der Vermieter kann in diesem Fall nicht nach Art. 257d OR kündigen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_138 III 59",
@@ -320,65 +153,12 @@
           ],
           "significance_de": "Voraussetzungen der Anfechtung einer Kündigung wegen Treuwidrigkeit; Beweislast beim Mieter",
           "significance_fr": "Conditions de contestation d'une résiliation pour violation de la bonne foi; fardeau de la preuve",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Grundsatz — jede Kündigung ist zulässig, solange sie nicht treuwidrig ist. E. 3: Beispielkatalog (Art. 271a OR) ist nicht abschliessend. E. 4: Beweislast — der Mieter muss die Treuwidrigkeit beweisen. Achten Sie auf die Generalklausel von Art. 271 OR.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Wann ist eine Kündigung im Mietrecht missbräuchlich?",
-              "hint": "Lesen Sie E. 2 und Art. 271 OR.",
-              "model_answer": "Eine Kündigung ist missbräuchlich, wenn sie gegen Treu und Glauben verstösst (Art. 271 OR). Dies ist insbesondere der Fall, wenn sie ein Retorsionsmittel ist oder offensichtlich unverhältnismässig."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welches Verhältnis besteht zwischen der Generalklausel (Art. 271 OR) und dem Beispielkatalog (Art. 271a OR)?",
-              "hint": "E. 3.",
-              "model_answer": "Art. 271a OR enthält einen nicht abschliessenden Beispielkatalog missbräuchlicher Kündigungen. Art. 271 OR ist die Generalklausel, die auch darüber hinausgehende Fälle der Treuwidrigkeit erfasst."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Wer trägt die Beweislast für die Missbräuchlichkeit und warum?",
-              "hint": "E. 4.",
-              "model_answer": "Der Mieter trägt die Beweislast, weil die Kündigung grundsätzlich zulässig ist (Kündigungsfreiheit). Er muss Umstände nachweisen, die auf Treuwidrigkeit schliessen lassen."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Vermieter Eigenbedarf geltend macht, diesen aber nach Auszug des Mieters nicht realisiert?",
-              "discussion_points": [
-                "Scheinbegründung",
-                "Nachträgliche Überprüfung",
-                "Schadenersatz"
-              ],
-              "likely_outcome_shift": "Wenn der Eigenbedarf nur vorgeschoben war, ist die Kündigung missbräuchlich. Der Mieter kann Schadenersatz verlangen und ggf. Wiedereinzug fordern."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist der schweizerische Kündigungsschutz im Vergleich zu anderen Ländern stark oder schwach?",
-              "hint": "Vergleichen Sie mit Deutschland (Sozialklausel) oder Frankreich (Trêve hivernale).",
-              "model_answer": "Die Schweiz bietet einen mittleren Schutz: Kein grundloses Kündigungsverbot wie in Deutschland, aber Schutz vor Treuwidrigkeit. Die Beweislast beim Mieter schwächt den Schutz. Die Erstreckungsmöglichkeit (Art. 272 OR) kompensiert teilweise."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "change_timeline",
-              "scenario": "Was wäre, wenn die Kündigung während eines laufenden Schlichtungsverfahrens ausgesprochen würde?",
-              "discussion_points": [
-                "Sperrfrist (Art. 271a Abs. 1 lit. d OR)",
-                "Retorsionskündigung",
-                "Nichtigkeitsfolge"
-              ],
-              "likely_outcome_shift": "Eine Kündigung während eines Schlichtungsverfahrens ist nach Art. 271a Abs. 1 lit. d OR nichtig. Sie muss nach Ablauf der Sperrfrist erneut ausgesprochen werden."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -418,64 +198,12 @@
           "prerequisites": [],
           "significance_de": "Voraussetzungen und Berechnung der Mietzinsherabsetzung bei Mängeln der Mietsache",
           "significance_fr": "Conditions et calcul de la réduction de loyer en cas de défauts",
-          "key_erwagungen": [
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 3: Begriff des Mangels — jede Abweichung vom vertraglich vereinbarten Zustand. E. 4: Berechnung der Herabsetzung — proportional zur Gebrauchsbeeinträchtigung. Achten Sie auf die Mängelrügepflicht des Mieters.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was gilt im Mietrecht als Mangel?",
-              "hint": "E. 3.",
-              "model_answer": "Ein Mangel ist jede Abweichung des tatsächlichen Zustands der Mietsache vom vertraglich vereinbarten oder vorausgesetzten Zustand, die den vertragsgemässen Gebrauch beeinträchtigt."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Rechte hat der Mieter bei Mängeln nach Art. 259a OR?",
-              "hint": "Art. 259a-259i OR.",
-              "model_answer": "Mängelbeseitigung verlangen, Mietzinsherabsetzung (Art. 259d OR), Schadenersatz (Art. 259e OR), Mietzinshinterlegung (Art. 259g OR), fristlose Kündigung bei schweren Mängeln (Art. 259b lit. a OR)."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Wie berechnet das Gericht die Mietzinsherabsetzung?",
-              "hint": "E. 4.",
-              "model_answer": "Proportional zur Gebrauchsbeeinträchtigung. Bei vollständiger Unbenutzbarkeit: 100%. Bei teilweiser Beeinträchtigung: prozentualer Abzug je nach Ausmass und Dauer."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Mieter den Mangel bei Einzug kannte und nichts beanstandet hat?",
-              "discussion_points": [
-                "Genehmigung des Mangels",
-                "Rügepflicht",
-                "Art. 256 Abs. 2 OR"
-              ],
-              "likely_outcome_shift": "Kennt der Mieter den Mangel bei Einzug und beanstandet er ihn nicht, kann er grundsätzlich keine Mietzinsherabsetzung verlangen (Genehmigung durch konkludentes Verhalten)."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die proportionale Herabsetzungsmethode gerecht, oder sollten Pauschalen gelten?",
-              "hint": "Denken Sie an die Beweisproblematik und die Praktikabilität.",
-              "model_answer": "Pro proportional: Einzelfallgerechtigkeit. Contra: Schwierig zu beziffern, hohe Prozesskosten. Pauschalen (wie bei Baulärm: 10-40% in der Praxis) wären praktikabler, aber weniger gerecht."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre bei einem Schimmelbefall, der die Gesundheit der Mieter gefährdet?",
-              "discussion_points": [
-                "Schwerer Mangel",
-                "Fristlose Kündigung (Art. 259b lit. a OR)",
-                "Gesundheitsschaden"
-              ],
-              "likely_outcome_shift": "Gesundheitsgefährdender Schimmel ist ein schwerer Mangel. Der Mieter kann fristlos kündigen (Art. 259b lit. a OR) und Schadenersatz verlangen. Die Mietzinsherabsetzung könnte 30-50% betragen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_128 III 82",

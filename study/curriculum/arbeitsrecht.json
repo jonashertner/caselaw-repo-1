@@ -40,64 +40,12 @@
           "prerequisites": [],
           "significance_de": "Kündigung als Reaktion auf berechtigte Beschwerden des Arbeitnehmers ist missbräuchlich",
           "significance_fr": "Le licenciement en réaction à des plaintes justifiées de l'employé est abusif",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Grundsatz der Kündigungsfreiheit und ihre Grenzen (Art. 336 OR). E. 3: Rachekündigung — zeitlicher Zusammenhang zwischen Beschwerde und Kündigung als Indiz. Achten Sie auf die Beweislastverteilung.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Wann ist eine Kündigung im Arbeitsrecht missbräuchlich?",
-              "hint": "Art. 336 OR und E. 2.",
-              "model_answer": "Eine Kündigung ist missbräuchlich, wenn sie aus einem im Gesetz genannten Grund (Art. 336 OR) oder einem gleichwertigen Grund gegen Treu und Glauben erfolgt. Der Katalog von Art. 336 OR ist nicht abschliessend."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Rechtsfolge hat eine missbräuchliche Kündigung?",
-              "hint": "Art. 336a OR.",
-              "model_answer": "Die Kündigung ist gültig (nicht nichtig!), aber der Arbeitnehmer hat Anspruch auf eine Entschädigung von maximal 6 Monatslöhnen. Das Arbeitsverhältnis endet trotzdem."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht im konkreten Fall eine Rachekündigung angenommen?",
-              "hint": "E. 3.",
-              "model_answer": "Der enge zeitliche Zusammenhang zwischen der berechtigten Beschwerde des Arbeitnehmers und der Kündigung sprach für eine Rachekündigung. Der Arbeitgeber konnte keinen sachlichen Kündigungsgrund nachweisen."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Arbeitgeber einen sachlichen Grund (z.B. Leistungsdefizite) nachweisen könnte?",
-              "discussion_points": [
-                "Mischmotivation",
-                "Hauptmotiv",
-                "Beweisschwierigkeiten"
-              ],
-              "likely_outcome_shift": "Bei einer Mischmotivation ist entscheidend, welches das Hauptmotiv war. Kann der Arbeitgeber einen sachlichen Grund nachweisen, ist die Kündigung nicht missbräuchlich."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Sanktion von maximal 6 Monatslöhnen abschreckend genug?",
-              "hint": "Vergleichen Sie mit dem Schutz in Deutschland (Wiedereinstellung) oder Frankreich.",
-              "model_answer": "Contra: 6 Monatslöhne sind ein geringer Betrag für grosse Unternehmen. Pro: Das Schweizer Recht betont die Vertragsfreiheit. Ein Wiedereinstellungsanspruch wie in Deutschland existiert nicht. Die Abschreckungswirkung ist begrenzt."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn der Arbeitnehmer ein Whistleblower (Meldung von Compliance-Verstössen) wäre?",
-              "discussion_points": [
-                "Whistleblower-Schutz",
-                "Art. 336 Abs. 1 lit. d OR",
-                "Europäische Entwicklungen"
-              ],
-              "likely_outcome_shift": "Seit der Revision von Art. 321abis ff. OR geniesst der Whistleblower besonderen Kündigungsschutz. Eine Kündigung als Reaktion auf eine berechtigte Meldung wäre missbräuchlich."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_124 III 474",
@@ -220,65 +168,12 @@
           ],
           "significance_de": "Massstab für den 'wichtigen Grund' bei fristloser Kündigung; Zumutbarkeit der Fortsetzung",
           "significance_fr": "Critère du 'juste motif' pour résiliation immédiate; exigibilité de la poursuite",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Definition des wichtigen Grundes (Art. 337 OR). E. 3: Zumutbarkeitsprüfung — kann die Fortsetzung bis zum ordentlichen Termin verlangt werden? E. 4: Verhältnismässigkeit — Verwarnung als milderes Mittel.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist ein wichtiger Grund im Sinne von Art. 337 OR?",
-              "hint": "E. 2.",
-              "model_answer": "Ein Umstand, der die Fortsetzung des Arbeitsverhältnisses nach Treu und Glauben unzumutbar macht. Es muss sich um eine schwere Vertragsverletzung handeln, die das Vertrauensverhältnis zerstört."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Prüfungsschritte verlangt das Bundesgericht bei der fristlosen Kündigung?",
-              "hint": "E. 2-4.",
-              "model_answer": "1. Liegt eine schwere Vertragsverletzung vor? 2. Ist die Fortsetzung bis zum ordentlichen Termin unzumutbar? 3. Wurde die Verhältnismässigkeit gewahrt (Verwarnung als milderes Mittel)?"
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war die fristlose Kündigung im konkreten Fall gerechtfertigt?",
-              "hint": "E. 4.",
-              "model_answer": "Die Vertragsverletzung war so schwer, dass das Vertrauensverhältnis unwiederbringlich zerstört war. Eine Verwarnung hätte das Vertrauen nicht wiederherstellen können."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Arbeitgeber 3 Wochen nach dem Vorfall gekündigt hätte?",
-              "discussion_points": [
-                "Reaktionsfrist",
-                "Verwirkung",
-                "Dulden des Verhaltens"
-              ],
-              "likely_outcome_shift": "Die fristlose Kündigung muss unverzüglich ausgesprochen werden (Reaktionsfrist 2-3 Arbeitstage). Nach 3 Wochen gilt die Vertragsverletzung als geduldet, die fristlose Kündigung wäre ungerechtfertigt."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die fristlose Kündigung als Sanktion verhältnismässig, oder braucht es abgestufte Massnahmen?",
-              "hint": "Denken Sie an Verwarnung, Versetzung, ordentliche Kündigung.",
-              "model_answer": "Die fristlose Kündigung ist das schärfste Instrument. Pro: Schnelle Lösung bei untragbarer Situation. Contra: Existenzbedrohend für den Arbeitnehmer. Die Praxis verlangt zu Recht eine Verhältnismässigkeitsprüfung."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn der Arbeitnehmer fristlos kündigt (statt der Arbeitgeber)?",
-              "discussion_points": [
-                "Art. 337 OR gilt für beide Seiten",
-                "Typische Gründe des Arbeitnehmers",
-                "Schadenersatzanspruch"
-              ],
-              "likely_outcome_shift": "Auch der Arbeitnehmer kann bei wichtigem Grund fristlos kündigen (z.B. Lohnausfall, Mobbing). Er hat dann Anspruch auf Schadenersatz und evtl. eine Entschädigung (Art. 337c OR)."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -317,64 +212,12 @@
           "prerequisites": [],
           "significance_de": "Der Arbeitnehmer trägt die Darlegungs- und Beweislast für geleistete Überstunden",
           "significance_fr": "L'employé supporte le fardeau de l'allégation et de la preuve des heures supplémentaires",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Definition der Überstunden (Art. 321c OR). E. 3: Beweislast — der Arbeitnehmer muss Anzahl und Notwendigkeit der Überstunden nachweisen. Achten Sie auf die praktischen Schwierigkeiten der Beweisführung.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was sind Überstunden im Sinne von Art. 321c OR und wann besteht Anspruch auf Vergütung?",
-              "hint": "E. 2.",
-              "model_answer": "Überstunden sind Arbeitsstunden, die über die vertraglich oder üblich vereinbarte Arbeitszeit hinausgehen und die vom Arbeitgeber angeordnet oder notwendig waren. Vergütung: Zuschlag von 25% oder Kompensation durch Freizeit."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wer trägt die Beweislast für Überstunden und was muss bewiesen werden?",
-              "hint": "E. 3.",
-              "model_answer": "Der Arbeitnehmer muss beweisen: 1. Anzahl der Überstunden. 2. Notwendigkeit oder Anordnung durch den Arbeitgeber. 3. Fehlende Kompensation durch Freizeit."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum scheiterte der Überstundenanspruch im konkreten Fall?",
-              "hint": "E. 3.",
-              "model_answer": "Der Arbeitnehmer konnte die genaue Anzahl der Überstunden nicht ausreichend substantiieren. Ohne Arbeitszeiterfassung fehlte die Beweisgrundlage."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Arbeitgeber keine Arbeitszeiterfassung führt, obwohl er dazu verpflichtet wäre?",
-              "discussion_points": [
-                "Beweislastumkehr",
-                "Art. 46 ArG",
-                "Sorgfaltspflichtverletzung"
-              ],
-              "likely_outcome_shift": "Bei Verletzung der Pflicht zur Arbeitszeiterfassung könnte eine Beweislastumkehr greifen: Der Arbeitgeber müsste beweisen, dass keine Überstunden geleistet wurden."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Beweislast bei Überstunden beim Arbeitnehmer sachgerecht?",
-              "hint": "Denken Sie an das Machtungleichgewicht im Arbeitsverhältnis.",
-              "model_answer": "Contra: Der Arbeitnehmer hat oft keine Kontrolle über die Arbeitszeiterfassung. Pro: Wer eine Forderung stellt, muss sie belegen. Lösung: Strikte Pflicht zur Arbeitszeiterfassung durch den Arbeitgeber, die den Nachweis erleichtert."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "remove_element",
-              "scenario": "Was wäre, wenn der Arbeitsvertrag Überstunden mit dem Lohn als abgegolten erklärt?",
-              "discussion_points": [
-                "Zulässigkeit von Pauschalklauseln",
-                "Schranken",
-                "Art. 321c Abs. 3 OR"
-              ],
-              "likely_outcome_shift": "Pauschalklauseln sind zulässig, wenn das Grundgehalt über dem Mindestlohn liegt und die Mehrarbeit in einem vernünftigen Verhältnis steht. Bei Kadermitarbeitern eher zulässig als bei Normalangestellten."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_125 I 71",
@@ -514,64 +357,12 @@
           "prerequisites": [],
           "significance_de": "Voraussetzungen eines gültigen Konkurrenzverbots; Einblick in Kundenstamm als Voraussetzung",
           "significance_fr": "Conditions d'une prohibition de concurrence valable; connaissance de la clientèle comme condition",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Voraussetzungen (Art. 340 OR): Schriftform, Einblick in Kundenstamm oder Geschäftsgeheimnisse. E. 3: Schranken (Art. 340a OR): Ort, Zeit, Gegenstand müssen angemessen begrenzt sein. Achten Sie auf die Verhältnismässigkeitsprüfung.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Unter welchen Voraussetzungen ist ein Konkurrenzverbot gültig?",
-              "hint": "Art. 340 OR und E. 2.",
-              "model_answer": "1. Schriftform. 2. Handlungsfähiger Arbeitnehmer. 3. Einblick in Kundenstamm oder Geschäftsgeheimnisse. 4. Möglichkeit einer erheblichen Schädigung des Arbeitgebers durch Verwertung."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Schranken setzt Art. 340a OR dem Konkurrenzverbot?",
-              "hint": "E. 3.",
-              "model_answer": "Angemessene Begrenzung nach Ort, Zeit und Gegenstand. In der Regel max. 3 Jahre, beschränkt auf das Tätigkeitsgebiet und den räumlichen Einzugsbereich des Arbeitgebers."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war der 'Einblick in den Kundenstamm' im konkreten Fall gegeben?",
-              "hint": "E. 2.",
-              "model_answer": "Der Arbeitnehmer hatte durch seine Funktion direkten Zugang zu Kundendaten, Vertragskonditionen und persönlichen Beziehungen. Er konnte dieses Wissen beim Konkurrenten direkt verwerten."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Arbeitgeber das Arbeitsverhältnis ohne wichtigen Grund gekündigt hätte?",
-              "discussion_points": [
-                "Art. 340c Abs. 2 OR",
-                "Dahinfallen des Konkurrenzverbots",
-                "Schutzzweck"
-              ],
-              "likely_outcome_shift": "Wenn der Arbeitgeber ohne begründeten Anlass kündigt, fällt das Konkurrenzverbot dahin (Art. 340c Abs. 2 OR). Der Schutz entfällt, weil der Arbeitgeber die Trennung herbeigeführt hat."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Sind Konkurrenzverbote im modernen Arbeitsmarkt noch zeitgemäss?",
-              "hint": "Denken Sie an die Arbeitnehmerfreizügigkeit und den Fachkräftemangel.",
-              "model_answer": "Pro: Schützt Investitionen in Kundenbeziehungen und Geschäftsgeheimnisse. Contra: Beschränkt die Mobilität qualifizierter Arbeitnehmer, verstärkt Machtungleichgewicht. Der Trend geht zur Einschränkung (vgl. Kalifornien: grundsätzlich verboten)."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre, wenn das Konkurrenzverbot global und für 5 Jahre gelten würde?",
-              "discussion_points": [
-                "Übermässigkeit",
-                "Richterliche Herabsetzung (Art. 340a Abs. 2 OR)",
-                "Nichtigkeit vs. Reduktion"
-              ],
-              "likely_outcome_shift": "Ein globales 5-Jahres-Verbot wäre übermässig. Der Richter kann es auf ein angemessenes Mass herabsetzen (Art. 340a Abs. 2 OR), typischerweise auf 1-2 Jahre und den relevanten Markt."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_129 III 177",

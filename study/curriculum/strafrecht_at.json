@@ -40,75 +40,12 @@
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Abgrenzung Eventualvorsatz/bewusste Fahrlässigkeit bei tödlichem Raserunfall",
           "significance_fr": "Arrêt de principe sur la distinction dol éventuel/négligence consciente lors d'un accident mortel",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Definition Eventualvorsatz — Wissens- und Willenskomponente. E. 3: Definition bewusste Fahrlässigkeit — Vertrauen auf Ausbleiben des Erfolgs. E. 4: Abgrenzungskriterien im konkreten Fall. Die Abgrenzung ist eine Rechtsfrage, aber die innere Tatsache (Wille) ist eine Tatfrage.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Wie definiert das Bundesgericht den Eventualvorsatz und die bewusste Fahrlässigkeit?",
-              "hint": "Lesen Sie E. 2 und E. 3.",
-              "model_answer": "Eventualvorsatz: Der Täter hält den Erfolg für möglich und nimmt ihn in Kauf. Bewusste Fahrlässigkeit: Der Täter hält den Erfolg für möglich, vertraut aber pflichtwidrig darauf, dass er nicht eintritt."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Norm regelt die Abgrenzung und welches ist das entscheidende Kriterium?",
-              "hint": "Art. 12 StGB, E. 2-3.",
-              "model_answer": "Art. 12 Abs. 2 StGB (Vorsatz) vs. Art. 12 Abs. 3 StGB (Fahrlässigkeit). Das entscheidende Kriterium ist das Willenselement: Inkaufnahme (Vorsatz) vs. pflichtwidriges Vertrauen auf Ausbleiben (Fahrlässigkeit)."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht im konkreten Fall Eventualvorsatz bejaht?",
-              "hint": "E. 4.",
-              "model_answer": "Das extreme Fahrverhalten (hohe Geschwindigkeit in der Ortschaft, Überholen in unübersichtlicher Kurve) liess keinen anderen Schluss zu, als dass der Täter den tödlichen Unfall als möglich erkannte und in Kauf nahm."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Täter nachweislich unter Alkoholeinfluss stand und seine Risikowahrnehmung beeinträchtigt war?",
-              "discussion_points": [
-                "Actio libera in causa",
-                "Selbstverschuldete Unzurechnungsfähigkeit",
-                "Art. 263 StGB"
-              ],
-              "model_answer": "Der Alkoholeinfluss könnte die Wissenskomponente beeinträchtigen. Allerdings greift die actio libera in causa: Wer sich schuldhaft in einen Rauschzustand versetzt, kann sich nicht auf verminderte Wahrnehmung berufen."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die bundesgerichtliche Abgrenzung zwischen Eventualvorsatz und bewusster Fahrlässigkeit praktisch handhabbar?",
-              "hint": "Denken Sie an die Beweisproblematik bei inneren Tatsachen.",
-              "model_answer": "Die Abgrenzung ist theoretisch klar, praktisch aber schwierig, weil sie auf dem inneren Willen des Täters beruht. Gerichte schliessen oft von äusseren Umständen auf den Willen, was zu Rechtsunsicherheit führen kann."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre, wenn der Fahrer ein professioneller Rennfahrer auf einer ihm bekannten Strecke wäre?",
-              "discussion_points": [
-                "Subjektives Risikobewusstsein",
-                "Sonderwissen",
-                "Vertrauensgrundsatz"
-              ],
-              "likely_outcome_shift": "Ein professioneller Rennfahrer könnte argumentieren, dass er aufgrund seiner Fähigkeiten auf das Ausbleiben des Erfolgs vertraute. Dies könnte eher für bewusste Fahrlässigkeit sprechen."
-            },
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn ein Beifahrer den Fahrer zum Rasen angestiftet hätte?",
-              "discussion_points": [
-                "Anstiftung (Art. 24 StGB)",
-                "Mittäterschaft",
-                "Eigenverantwortlichkeit des Fahrers"
-              ],
-              "likely_outcome_shift": "Der Beifahrer könnte als Anstifter haften. Der Fahrer bleibt als Haupttäter verantwortlich — die Anstiftung ändert nichts an seinem Vorsatz."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_136 IV 49",
@@ -235,64 +172,12 @@
           ],
           "significance_de": "Eventualvorsatz unter konkreten Umständen verneint — Vertiefung der Abgrenzungskriterien",
           "significance_fr": "Dol éventuel nié dans les circonstances concrètes — approfondissement des critères de distinction",
-          "key_erwagungen": [
-            "4",
-            "5"
-          ],
-          "reading_guide_de": "E. 4: Wiederholung der Abgrenzungsgrundsätze aus BGE 130 IV 58. E. 5: Anwendung auf den konkreten Fall — warum hier bewusste Fahrlässigkeit vorlag. Vergleichen Sie die Sachverhaltswürdigung mit BGE 130 IV 58.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Warum wurde in diesem Fall (im Unterschied zu BGE 130 IV 58) kein Eventualvorsatz angenommen?",
-              "hint": "Vergleichen Sie die Sachverhalte beider Fälle.",
-              "model_answer": "Die konkreten Umstände zeigten, dass der Fahrer zwar pflichtwidrig handelte, aber darauf vertraute, dass kein Unfall passiert. Das Willenselement der Inkaufnahme fehlte."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie wendet das Gericht die in BGE 130 IV 58 entwickelten Grundsätze an?",
-              "hint": "E. 4-5.",
-              "model_answer": "Das Gericht prüft dieselben Kriterien (Wissens- und Willenselement), kommt aber bei der Würdigung des konkreten Sachverhalts zu einem anderen Ergebnis. Die Methodik bleibt identisch."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Welche Sachverhaltselemente sprachen hier gegen den Eventualvorsatz?",
-              "hint": "E. 5.",
-              "model_answer": "Die Geschwindigkeit war zwar überhöht, aber nicht extrem. Die Strecke war dem Fahrer bekannt. Er hatte keine Selbstgefährdungsbereitschaft gezeigt, was gegen eine Inkaufnahme spricht."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Fahrer bereits wegen eines früheren Raserunfalls vorbestraft wäre?",
-              "discussion_points": [
-                "Vortaten als Indiz für Willenselement",
-                "Verschärftes Risikobewusstsein",
-                "Rückfall"
-              ],
-              "model_answer": "Eine einschlägige Vorstrafe würde das Wissenselement verstärken: Der Fahrer wusste aus eigener Erfahrung um die Gefahr. Dies könnte eher für Eventualvorsatz sprechen."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die kasuistische Abgrenzung Eventualvorsatz/bewusste Fahrlässigkeit im Strassenverkehr konsistent?",
-              "hint": "Vergleichen Sie BGE 130 IV 58 und BGE 133 IV 9.",
-              "model_answer": "Die Konsistenz ist fraglich: Ähnliche Sachverhalte führen zu unterschiedlichen Ergebnissen je nach Würdigung der Umstände. Ein objektiveres Kriterium (z.B. Geschwindigkeitsüberschreitung) würde Rechtssicherheit erhöhen, aber Einzelfallgerechtigkeit mindern."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "change_timeline",
-              "scenario": "Was wäre, wenn der Fall nach Inkrafttreten von Art. 90 Abs. 3 SVG (Rasertatbestand) beurteilt würde?",
-              "discussion_points": [
-                "Gesetzliche Vermutung",
-                "Rasertatbestand",
-                "Verhältnis zu Art. 12 StGB"
-              ],
-              "likely_outcome_shift": "Art. 90 Abs. 3-4 SVG stellt extreme Geschwindigkeitsüberschreitungen unter eine verschärfte Strafe. Die Abgrenzungsfrage Vorsatz/Fahrlässigkeit könnte durch den Gefährdungstatbestand entschärft werden."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -332,75 +217,12 @@
           "prerequisites": [],
           "significance_de": "Versuch der schweren Körperverletzung bei ungeschützten Sexualkontakten einer HIV-infizierten Person",
           "significance_fr": "Tentative de lésions corporelles graves lors de rapports sexuels non protégés d'une personne séropositive",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Tatbestand der schweren Körperverletzung (Art. 122 StGB). E. 3: Versuchsstrafbarkeit — Anfang der Ausführung. E. 4: Eventualvorsatz bei HIV-Übertragung. Achten Sie auf die Abgrenzung zum Gefährdungstatbestand (Art. 231 StGB).",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Welche Straftatbestände kommen bei der wissentlichen HIV-Gefährdung in Betracht?",
-              "hint": "Lesen Sie E. 2 und vergleichen Sie Art. 122 StGB mit Art. 231 StGB.",
-              "model_answer": "Art. 122 StGB (schwere Körperverletzung, ggf. Versuch), Art. 231 StGB (Verbreitung menschlicher Krankheiten), und je nach Umständen Art. 111 StGB (Tötung)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wann beginnt der Versuch im Sinne von Art. 22 StGB?",
-              "hint": "E. 3.",
-              "model_answer": "Der Versuch beginnt mit dem Anfang der Ausführung — d.h. wenn der Täter eine Handlung vornimmt, die einen unmittelbaren Schritt zur Verwirklichung des Tatbestands darstellt."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht den Eventualvorsatz bezüglich der schweren Körperverletzung bejaht?",
-              "hint": "E. 4.",
-              "model_answer": "Die Person wusste um ihre HIV-Infektion und das Übertragungsrisiko bei ungeschütztem Geschlechtsverkehr. Sie nahm die Möglichkeit einer schweren Körperverletzung (lebenslange HIV-Infektion) in Kauf."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Person antiretrovirale Medikamente einnähme und die Viruslast unter der Nachweisgrenze läge?",
-              "discussion_points": [
-                "Swiss Statement (2008)",
-                "Medizinische Risikobeurteilung",
-                "Wissenseliment"
-              ],
-              "model_answer": "Bei nachweislich supprimierter Viruslast ist das Übertragungsrisiko vernachlässigbar. Das Wissenselement (Erkennen des Erfolgsrisikos) könnte fehlen. Die Rechtsprechung hat sich hier weiterentwickelt."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Kriminalisierung von HIV-Übertragungsrisiken der richtige strafrechtliche Ansatz?",
-              "hint": "Denken Sie an Prävention, Stigmatisierung und eigenverantwortliches Handeln beider Partner.",
-              "model_answer": "Pro: Schutz des Opfers, Abschreckung. Contra: Stigmatisierung HIV-positiver Personen, kontraproduktiv für die Prävention (weniger Tests), Eigenverantwortung beider Partner. Der Trend geht zur Entkriminalisierung bei supprimierter Viruslast."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "remove_element",
-              "scenario": "Was wäre, wenn keine Übertragung stattfand und der Partner nicht einmal gefährdet wurde (z.B. wegen Kondomverwendung)?",
-              "discussion_points": [
-                "Untauglicher Versuch",
-                "Abstrakte vs. konkrete Gefährdung",
-                "Art. 23 StGB"
-              ],
-              "likely_outcome_shift": "Bei Kondomverwendung fehlt die Versuchshandlung mangels Anfang der Ausführung. Es könnte allenfalls Art. 231 StGB (Verbreitung von Krankheiten) greifen."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn der Partner über die HIV-Infektion informiert war und eingewilligt hätte?",
-              "discussion_points": [
-                "Einwilligung des Verletzten",
-                "Art. 122 StGB und Einwilligung",
-                "Unverfügbare Rechtsgüter"
-              ],
-              "likely_outcome_shift": "Die Einwilligung in eine schwere Körperverletzung ist nach h.L. unwirksam (unverfügbares Rechtsgut). Allerdings könnte sie den Vorsatz des Täters beeinflussen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -440,64 +262,12 @@
           "prerequisites": [],
           "significance_de": "Hohe Anforderungen an die Annahme von Mittäterschaft bei BetmG-Widerhandlungen",
           "significance_fr": "Exigences élevées pour admettre la coactivité en matière de stupéfiants",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Definition der Mittäterschaft — gemeinsamer Tatentschluss und massgeblicher Tatbeitrag. E. 3: Abgrenzung zur Gehilfenschaft (Art. 25 StGB). Achten Sie auf das Kriterium der Tatherrschaft.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was unterscheidet Mittäterschaft von Gehilfenschaft?",
-              "hint": "Lesen Sie E. 2 und E. 3.",
-              "model_answer": "Mittäterschaft: Gemeinsamer Tatentschluss + massgeblicher Tatbeitrag (Tatherrschaft). Gehilfenschaft: Untergeordneter Beitrag, der die Tat nur fördert aber nicht mitbestimmt."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welches Kriterium ist entscheidend für die Abgrenzung und wo ist es normativ verankert?",
-              "hint": "Art. 24 und Art. 25 StGB.",
-              "model_answer": "Das Kriterium der Tatherrschaft: Wer die Tat mitbeherrscht (Mittäterschaft), wer nur fördert (Gehilfenschaft). Normativ ergibt sich dies aus der Unterscheidung Täterschaft (Art. 24) vs. Gehilfenschaft (Art. 25 StGB)."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht im konkreten Fall hohe Anforderungen an die Mittäterschaft gestellt?",
-              "hint": "E. 2-3.",
-              "model_answer": "Bei Betäubungsmitteldelikten ist die Strafandrohung für Täterschaft deutlich höher. Das Gericht verlangt deshalb einen massgeblichen, mitbestimmenden Tatbeitrag und nicht bloss eine Hilfeleistung."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Beschuldigte nur das Fahrzeug für den Transport zur Verfügung gestellt hätte?",
-              "discussion_points": [
-                "Tatbeitrag",
-                "Fungibilität des Beitrags",
-                "Tatherrschaft"
-              ],
-              "model_answer": "Das blosse Zur-Verfügung-Stellen eines Fahrzeugs ist ein untergeordneter, fungibler Beitrag. Dies spricht für Gehilfenschaft, nicht für Mittäterschaft."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die strenge Abgrenzung Mittäterschaft/Gehilfenschaft im Betäubungsmittelrecht sachgerecht?",
-              "hint": "Denken Sie an die enormen Strafrahmenunterschiede.",
-              "model_answer": "Pro: Schützt untergeordnete Beteiligte vor unverhältnismässigen Strafen. Contra: In organisierter Kriminalität sind die Rollen oft unklar, was die Anwendung erschwert. Die funktionale Tatherrschaftslehre bietet einen sinnvollen Massstab."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn die Person die Aktion geplant und koordiniert hätte, ohne selbst Hand anzulegen?",
-              "discussion_points": [
-                "Mittelbare Täterschaft",
-                "Organisationsherrschaft",
-                "Hintermann"
-              ],
-              "likely_outcome_shift": "Planung und Koordination können Mittäterschaft oder sogar mittelbare Täterschaft begründen. Der intellektuelle Beitrag kann die fehlende unmittelbare Tatausführung kompensieren."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_144 IV 265",
@@ -530,65 +300,12 @@
           ],
           "significance_de": "Akzessorietät der Teilnahme begründet keinen selbständigen Begehungsort",
           "significance_fr": "L'accessoriété de la participation ne fonde pas un lieu de commission indépendant",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Akzessorietät der Teilnahme. E. 3: Begehungsort nach Art. 8 StGB. E. 4: Keine Erweiterung der Zuständigkeit durch die Teilnahmetat. Achten Sie auf die praktischen Folgen für grenzüberschreitende Kriminalität.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was bedeutet Akzessorietät der Teilnahme?",
-              "hint": "Lesen Sie E. 2.",
-              "model_answer": "Teilnahme (Anstiftung/Gehilfenschaft) ist abhängig von einer Haupttat. Ohne strafbare Haupttat keine strafbare Teilnahme. Die Teilnahme teilt den Unrechtcharakter der Haupttat."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie bestimmt sich der Begehungsort bei Teilnahmehandlungen nach Art. 8 StGB?",
-              "hint": "E. 3-4.",
-              "model_answer": "Der Begehungsort der Teilnahme ist dort, wo der Teilnehmer handelt (Handlungsort) oder wo die Haupttat ausgeführt wird (Erfolgsort). Die Akzessorietät erweitert den Begehungsort nicht selbständig."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht die schweizerische Zuständigkeit im konkreten Fall verneint?",
-              "hint": "E. 4.",
-              "model_answer": "Der Teilnahmehandlung fehlte der Bezug zur Schweiz: Die Teilnahmehandlung und die Haupttat fanden beide im Ausland statt. Die Akzessorietät begründet keinen zusätzlichen Begehungsort in der Schweiz."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Anstiftung per E-Mail aus der Schweiz erfolgt wäre, die Haupttat aber im Ausland?",
-              "discussion_points": [
-                "Handlungsort des Teilnehmers",
-                "Ubiquitätsprinzip",
-                "Art. 8 StGB"
-              ],
-              "model_answer": "Bei Anstiftung per E-Mail aus der Schweiz wäre der Handlungsort des Teilnehmers in der Schweiz. Das Ubiquitätsprinzip (Art. 8 StGB) könnte die schweizerische Zuständigkeit für die Teilnahmetat begründen."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Beschränkung des Begehungsorts bei Teilnahme sachgerecht angesichts internationaler Kriminalität?",
-              "hint": "Denken Sie an Cyberkriminalität und organisierte Kriminalität.",
-              "model_answer": "Pro: Verhindert exzessive Jurisdiktionserweiterung, respektiert Souveränität anderer Staaten. Contra: Strafbarkeitslücken bei grenzüberschreitender Kriminalität. Die Lösung liegt in internationaler Zusammenarbeit."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "jurisdictional_shift",
-              "scenario": "Was wäre, wenn die Haupttat in der Schweiz verübt würde, die Teilnahme aber aus dem Ausland?",
-              "discussion_points": [
-                "Umgekehrte Konstellation",
-                "Art. 8 StGB",
-                "Stellvertretende Strafrechtspflege"
-              ],
-              "likely_outcome_shift": "Die Schweiz wäre für die Haupttat zuständig. Für die Teilnahme aus dem Ausland müsste der ausländische Staat die Zuständigkeit übernehmen, sofern dort ein Begehungsort gegeben ist."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -627,64 +344,12 @@
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Methodik der Strafzumessung nach Art. 47 StGB",
           "significance_fr": "Arrêt de principe sur la méthodologie de la fixation de la peine selon l'art. 47 CP",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Methodik der Strafzumessung — Ausgangspunkt Verschulden, dann Strafminderungs-/Strafschärfungsgründe. E. 3: Begründungsanforderungen. Das Gericht muss die wesentlichen Strafzumessungsfaktoren nennen und gewichten.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Wie ist die Methodik der Strafzumessung nach Art. 47 StGB aufgebaut?",
-              "hint": "Lesen Sie E. 2.",
-              "model_answer": "1. Bestimmung des Strafrahmens (Tatbestand). 2. Verschuldensbewertung als Ausgangspunkt. 3. Anpassung durch Strafschärfungs- und Strafminderungsgründe. 4. Bestimmung der Strafart."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Faktoren berücksichtigt Art. 47 StGB bei der Verschuldensbewertung?",
-              "hint": "Art. 47 Abs. 2 StGB.",
-              "model_answer": "Vorleben, persönliche Verhältnisse, Wirkung der Strafe auf den Täter, Schwere der Verletzung, Beweggründe, Art der Ausführung, Tatumstände."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Welche Begründungsanforderungen stellt das Bundesgericht an die Strafzumessung?",
-              "hint": "E. 3.",
-              "model_answer": "Das Gericht muss die wesentlichen Strafzumessungsfaktoren benennen und ihre Gewichtung nachvollziehbar darlegen. Nicht jeder Faktor muss beziffert werden, aber die Hauptüberlegungen müssen erkennbar sein."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Täter geständig wäre und aktiv mit den Behörden kooperiert hätte?",
-              "discussion_points": [
-                "Strafmilderung",
-                "Kooperation",
-                "Art. 48 StGB"
-              ],
-              "model_answer": "Geständnis und Kooperation sind Strafminderungsgründe (Art. 48 lit. d StGB). Die Strafe wäre deutlich zu reduzieren, insbesondere wenn die Kooperation zur Aufklärung weiterer Straftaten beigetragen hat."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Bietet die Strafzumessungsmethodik genug Orientierung für die Praxis, oder ist sie zu offen?",
-              "hint": "Denken Sie an Disparitäten zwischen verschiedenen Gerichten.",
-              "model_answer": "Pro: Flexibilität ermöglicht Einzelfallgerechtigkeit. Contra: Fehlende Leitlinien führen zu Disparitäten — für ähnliche Taten werden sehr unterschiedliche Strafen ausgesprochen. Sentencing Guidelines (wie in den USA) wären ein Gegenmodell."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre bei einem Ersttatverfahren mit geringem Verschulden, aber hoher Drogenmenge (knapp über der qualifizierten Menge)?",
-              "discussion_points": [
-                "Mindeststrafe",
-                "Verhältnismässigkeit",
-                "Schwelleneffekt"
-              ],
-              "likely_outcome_shift": "Das qualifizierte Delikt verändert den Strafrahmen drastisch. Trotz geringem Verschulden gilt die Mindeststrafe des qualifizierten Tatbestands. Dies führt zu Spannungen mit dem Verschuldensprinzip."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_144 IV 313",
@@ -713,65 +378,12 @@
           ],
           "significance_de": "Methodik der Gesamtstrafenbildung bei Konkurrenz: erst Strafart bestimmen, dann Art. 49 StGB prüfen",
           "significance_fr": "Méthodologie de la formation de la peine d'ensemble en cas de concours: d'abord déterminer le genre de peine",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Voraussetzungen von Art. 49 StGB — mehrere gleichartige Strafen bei Realkonkurrenz. E. 3: Methodik — erst Einsatzstrafe für schwerstes Delikt, dann angemessene Erhöhung. E. 4: Begründungspflicht — Einsatzstrafe und Gesamtstrafe müssen nachvollziehbar sein.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist das Asperationsprinzip und wann kommt es zur Anwendung?",
-              "hint": "Lesen Sie E. 2 und Art. 49 StGB.",
-              "model_answer": "Das Asperationsprinzip besagt, dass bei mehreren Delikten die Strafe für das schwerste Delikt angemessen erhöht wird, aber nicht die Summe der Einzelstrafen erreichen darf. Es kommt bei Realkonkurrenz gleichartiger Strafen zur Anwendung."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie wird die Gesamtstrafe nach der bundesgerichtlichen Methodik gebildet?",
-              "hint": "E. 3.",
-              "model_answer": "1. Einsatzstrafe: Strafe für das schwerste Delikt bestimmen. 2. Asperation: Angemessene Erhöhung für die weiteren Delikte. 3. Maximum: Die Gesamtstrafe darf das Anderthalbfache der Einsatzstrafe nicht überschreiten."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war die Begründung der Vorinstanz ungenügend?",
-              "hint": "E. 4.",
-              "model_answer": "Die Vorinstanz hatte die Einsatzstrafe und die Gesamtstrafe nicht transparent dargelegt. Das Bundesgericht verlangt, dass die Methodik und die einzelnen Schritte nachvollziehbar sind."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn für ein Delikt eine Geldstrafe und für ein anderes eine Freiheitsstrafe auszusprechen wäre?",
-              "discussion_points": [
-                "Ungleichartige Strafen",
-                "Keine Asperation bei verschiedenen Strafarten",
-                "Kumulation"
-              ],
-              "model_answer": "Art. 49 StGB setzt gleichartige Strafen voraus. Bei ungleichartigen Strafen (Geld + Freiheit) werden sie nebeneinander ausgesprochen (Kumulation), keine Asperation."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist das Asperationsprinzip gerechter als das Kumulationsprinzip oder das Absorptionsprinzip?",
-              "hint": "Vergleichen Sie die drei Systeme.",
-              "model_answer": "Asperation: Kompromiss zwischen Kumulation (zu hart) und Absorption (zu mild). Pro: Berücksichtigt alle Taten, verhindert exzessive Strafen. Contra: Methodisch komplex, Begründungsaufwand. Im internationalen Vergleich ist Asperation der vorherrschende Ansatz."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre bei 20 Einzeldelikten mit je 6 Monaten Freiheitsstrafe?",
-              "discussion_points": [
-                "Obergrenze der Asperation",
-                "Höchststrafe",
-                "Praktische Grenzen"
-              ],
-              "likely_outcome_shift": "Die Gesamtstrafe würde deutlich unter 10 Jahren liegen (nicht 20 × 6 = 120 Monate). Die Asperation dämpft die Summe, aber die grosse Anzahl führt dennoch zu einer erheblichen Gesamtstrafe."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     }

@@ -40,73 +40,12 @@
           "prerequisites": [],
           "significance_de": "Ablehnende Einbürgerungsentscheide unterliegen der Begründungspflicht nach Art. 29 Abs. 2 BV",
           "significance_fr": "Les décisions de naturalisation négatives sont soumises à l'obligation de motiver selon l'art. 29 al. 2 Cst.",
-          "key_erwagungen": [
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 3: Anwendbarkeit der Grundrechte im Einbürgerungsverfahren — insbesondere Diskriminierungsverbot (Art. 8 Abs. 2 BV). E. 4: Begründungspflicht als Mindestgarantie. Achten Sie auf die Argumentation, warum Volksabstimmungen keine Ausnahme bilden.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was hat das Bundesgericht in Bezug auf Einbürgerungsentscheide an der Urne entschieden?",
-              "hint": "Lesen Sie die Regeste und das Dispositiv.",
-              "model_answer": "Das Bundesgericht entschied, dass auch ablehnende Einbürgerungsentscheide durch Volksabstimmung begründet werden müssen und dem Diskriminierungsverbot unterliegen."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Grundrechte sind betroffen und wie wendet das Gericht sie an?",
-              "hint": "Art. 8 BV und Art. 29 BV.",
-              "model_answer": "Art. 8 Abs. 2 BV (Diskriminierungsverbot) verhindert ablehnende Entscheide aus rassistischen oder ethnischen Gründen. Art. 29 Abs. 2 BV (rechtliches Gehör) verlangt eine Begründung."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum genügt eine blosse Ablehnung per Urne ohne Begründung nicht?",
-              "hint": "Prüfen Sie E. 4.",
-              "model_answer": "Ohne Begründung lässt sich nicht überprüfen, ob die Ablehnung auf sachlichen oder diskriminierenden Gründen beruht. Die Begründungspflicht ist Voraussetzung für effektiven Rechtsschutz."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn eine Gemeindeversammlung (statt Urnenabstimmung) den Entscheid fällt und die Diskussion protokolliert wird?",
-              "discussion_points": [
-                "Begründungspflicht bei Gemeindeversammlungen",
-                "Protokollierung",
-                "Transparenz"
-              ],
-              "model_answer": "Ein Protokoll der Diskussion könnte als Begründung genügen, sofern die sachlichen Gründe ersichtlich sind. Die Hürde der Begründungspflicht wäre leichter zu nehmen."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Überzeugt es, dass das Bundesgericht die direkte Demokratie hier einschränkt? Wie ist das Spannungsfeld Demokratie vs. Grundrechte zu beurteilen?",
-              "hint": "Argumentieren Sie aus beiden Perspektiven.",
-              "model_answer": "Pro Einschränkung: Grundrechte schützen Minderheiten vor Mehrheitsentscheiden. Contra: Einbürgerung war traditionell ein politischer Akt. Das Bundesgericht betont, dass auch demokratische Verfahren rechtsstaatliche Mindestgarantien einhalten müssen."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "remove_element",
-              "scenario": "Was wäre, wenn der Einbürgerungskandidat die formellen Voraussetzungen (Aufenthaltsdauer) nicht erfüllt?",
-              "discussion_points": [
-                "Formelle vs. materielle Ablehnungsgründe",
-                "Begründungsanforderungen bei formeller Ablehnung"
-              ],
-              "likely_outcome_shift": "Bei formeller Ablehnung ist die Begründung einfacher (Verweis auf fehlende Voraussetzung). Diskriminierungsgefahr ist geringer."
-            },
-            {
-              "type": "jurisdictional_shift",
-              "scenario": "Was wäre, wenn das kantonale Recht vorsieht, dass Einbürgerungen ausschliesslich durch den Gemeinderat (nicht die Stimmbürger) entschieden werden?",
-              "discussion_points": [
-                "Exekutiventscheid vs. Volksabstimmung",
-                "Verwaltungsverfahren",
-                "Begründungspflicht bei Verwaltungsentscheiden"
-              ],
-              "likely_outcome_shift": "Bei einem Exekutiventscheid greift die Begründungspflicht unmittelbar nach VwVG/kantonalem Verfahrensrecht. Der Grundrechtsschutz ist einfacher durchzusetzen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_129 I 392",
@@ -240,65 +179,12 @@
           "prerequisites": [],
           "significance_de": "Überprüfung von Schutzmassnahmen bei häuslicher Gewalt im Licht der Grundrechte",
           "significance_fr": "Examen des mesures de protection contre la violence domestique à la lumière des droits fondamentaux",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Grundrechtseingriff durch Schutzmassnahmen. E. 3: Verhältnismässigkeitsprüfung. E. 4: Verfahrensgarantien. Achten Sie auf die Dreistufenprüfung: Eignung, Erforderlichkeit, Zumutbarkeit.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Welche Grundrechte stehen bei Schutzmassnahmen gegen häusliche Gewalt in Spannung?",
-              "hint": "Lesen Sie E. 2.",
-              "model_answer": "Persönliche Freiheit (Art. 10 BV) des Betroffenen der Massnahme vs. Schutz der körperlichen Unversehrtheit des Opfers. Dazu kommen die Verfahrensgarantien (Art. 29 BV)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie prüft das Bundesgericht die Verhältnismässigkeit der Schutzmassnahme?",
-              "hint": "E. 3 — dreistufige Prüfung.",
-              "model_answer": "1. Eignung: Ist die Massnahme geeignet, das Opfer zu schützen? 2. Erforderlichkeit: Gibt es mildere Mittel? 3. Zumutbarkeit: Steht die Schwere des Eingriffs im Verhältnis zum Schutzzweck?"
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht die konkrete Massnahme als verhältnismässig beurteilt?",
-              "hint": "Prüfen Sie die Subsumtion in E. 3-4.",
-              "model_answer": "Die Massnahme war geeignet (Schutz des Opfers), erforderlich (keine mildere Alternative) und zumutbar (temporäre Einschränkung der Freiheit im Verhältnis zur Gewaltsituation)."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Gewalt nur psychischer (nicht physischer) Natur wäre?",
-              "discussion_points": [
-                "Psychische Gewalt als Grundrechtseingriff",
-                "Beweisschwierigkeiten",
-                "Verhältnismässigkeit"
-              ],
-              "model_answer": "Auch psychische Gewalt kann Schutzmassnahmen rechtfertigen, allerdings sind die Beweisanforderungen höher und die Verhältnismässigkeit schwieriger zu begründen."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Balance zwischen Täterrechten und Opferschutz in der bundesgerichtlichen Rechtsprechung überzeugend?",
-              "hint": "Berücksichtigen Sie die EMRK-Rechtsprechung und die staatliche Schutzpflicht.",
-              "model_answer": "Die Rechtsprechung versucht einen Ausgleich. Kritiker bemängeln, dass Täterrechte zu stark betont werden. Befürworter sehen den Rechtsschutz als unverzichtbar. Die EMRK verlangt effektiven Opferschutz."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre bei wiederholter, schwerer körperlicher Gewalt mit Todesdrohung?",
-              "discussion_points": [
-                "Intensivere Schutzmassnahmen",
-                "U-Haft als ultima ratio",
-                "Opferschutz vs. Unschuldsvermutung"
-              ],
-              "likely_outcome_shift": "Deutlich intensivere Massnahmen (Kontaktverbot, elektronische Überwachung) wären verhältnismässig. Die Schwere der Bedrohung verschiebt die Zumutbarkeitsabwägung."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_142 I 135",
@@ -328,75 +214,12 @@
           ],
           "significance_de": "Zulässigkeit der Administrativhaft im Ausländerrecht; Grundrechtsschutz bei Freiheitsentzug",
           "significance_fr": "Admissibilité de la détention administrative en droit des étrangers; protection des droits fondamentaux",
-          "key_erwagungen": [
-            "3",
-            "4",
-            "5"
-          ],
-          "reading_guide_de": "E. 3: Gesetzliche Grundlage der Administrativhaft. E. 4: Voraussetzungen nach Art. 5 EMRK. E. 5: Verhältnismässigkeit und Dauer. Vergleichen Sie die Anforderungen von BV und EMRK.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist Administrativhaft und unter welchen Voraussetzungen ist sie zulässig?",
-              "hint": "Lesen Sie E. 3.",
-              "model_answer": "Administrativhaft ist ein Freiheitsentzug zur Sicherung der Wegweisung eines ausländischen Staatsangehörigen. Sie ist zulässig bei gesetzlicher Grundlage, öffentlichem Interesse und Verhältnismässigkeit."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Garantien bieten Art. 31 BV und Art. 5 EMRK bei Freiheitsentzug?",
-              "hint": "Vergleichen Sie die beiden Normen in E. 4.",
-              "model_answer": "Richterliche Überprüfung innert kurzer Frist, Recht auf Anhörung, Information über Gründe der Haft, Recht auf einen Anwalt. Art. 5 EMRK enthält einen abschliessenden Katalog zulässiger Haftgründe."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war die Haftdauer im konkreten Fall (noch) verhältnismässig?",
-              "hint": "Prüfen Sie E. 5.",
-              "model_answer": "Die Behörden hatten die Ausschaffung aktiv betrieben. Die Haft war nicht übermässig lang und die Person hatte die Mitwirkung verweigert, was die Dauer mitverursachte."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Ausschaffung in das Herkunftsland faktisch unmöglich wäre (Non-Refoulement)?",
-              "discussion_points": [
-                "Art. 25 Abs. 3 BV",
-                "Art. 3 EMRK",
-                "Verhältnismässigkeit bei Unmöglichkeit"
-              ],
-              "model_answer": "Bei faktischer Unmöglichkeit der Ausschaffung wird die Administrativhaft unverhältnismässig und muss aufgehoben werden. Non-Refoulement (Art. 3 EMRK) hat absoluten Charakter."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Administrativhaft als Instrument zur Durchsetzung migrationspolitischer Ziele grundrechtskonform?",
-              "hint": "Berücksichtigen Sie die EGMR-Rechtsprechung und alternative Massnahmen.",
-              "model_answer": "Pro: Sicherung eines rechtskräftigen Entscheids. Contra: Freiheitsentzug ohne strafrechtlichen Vorwurf. Der EGMR verlangt enge Voraussetzungen und kurze Fristen. Alternativen wie Meldepflicht sind oft milder."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "change_timeline",
-              "scenario": "Was wäre, wenn die Administrativhaft bereits 18 Monate (statt 3 Monate) dauert?",
-              "discussion_points": [
-                "Maximale Haftdauer (Art. 79 AIG)",
-                "Verhältnismässigkeit bei langer Dauer",
-                "EGMR-Rechtsprechung"
-              ],
-              "likely_outcome_shift": "Nach 18 Monaten nähert sich die Haft der gesetzlichen Höchstdauer. Die Verhältnismässigkeit wird fraglich, insbesondere wenn keine Aussicht auf Ausschaffung besteht."
-            },
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn die inhaftierte Person minderjährig wäre?",
-              "discussion_points": [
-                "Kindesrecht (Art. 11 BV)",
-                "UN-Kinderrechtskonvention",
-                "Ultima-Ratio-Prinzip bei Minderjährigen"
-              ],
-              "likely_outcome_shift": "Administrativhaft bei Minderjährigen ist grundsätzlich unverhältnismässig. Das Kindeswohl (Art. 3 KRK) und Art. 11 BV verlangen vorrangig alternative Massnahmen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -435,65 +258,12 @@
           "prerequisites": [],
           "significance_de": "Vereinbarkeit kantonaler Konzessionsregeln mit der Wirtschaftsfreiheit",
           "significance_fr": "Compatibilité des règles cantonales de concession avec la liberté économique",
-          "key_erwagungen": [
-            "3",
-            "4",
-            "5"
-          ],
-          "reading_guide_de": "E. 3: Schutzbereich der Wirtschaftsfreiheit. E. 4: Konzession als Eingriff. E. 5: Verhältnismässigkeitsprüfung. Achten Sie auf die Unterscheidung zwischen Grundsatz der Wirtschaftsfreiheit (Art. 94 BV) und individuellem Grundrecht (Art. 27 BV).",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist eine Sondernutzungskonzession und inwiefern betrifft sie die Wirtschaftsfreiheit?",
-              "hint": "Lesen Sie E. 3 und E. 4.",
-              "model_answer": "Eine Sondernutzungskonzession erlaubt die exklusive Nutzung öffentlicher Güter (z.B. Wasser). Sie schränkt die Wirtschaftsfreiheit ein, weil sie den Marktzugang für Konkurrenten beschränkt."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Was ist der Unterschied zwischen dem individuellen Grundrecht (Art. 27 BV) und dem Grundsatz der Wirtschaftsfreiheit (Art. 94 BV)?",
-              "hint": "E. 3.",
-              "model_answer": "Art. 27 BV schützt den Einzelnen gegen unverhältnismässige staatliche Eingriffe. Art. 94 BV ist ein Strukturprinzip: Der Staat muss den Wettbewerb grundsätzlich achten und darf keine wirtschaftspolitischen Massnahmen treffen."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht die Konzessionsregel als verhältnismässig beurteilt?",
-              "hint": "E. 5.",
-              "model_answer": "Die Konzessionsregel diente einem öffentlichen Interesse (nachhaltige Wassernutzung), war geeignet und erforderlich, und die Einschränkung des Marktzugangs stand im Verhältnis zum Schutzzweck."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Kanton ein Monopol statt einer Konzession einführen würde?",
-              "discussion_points": [
-                "Art. 94 BV als Grenze",
-                "Monopol vs. Konzession",
-                "Öffentliches Interesse"
-              ],
-              "model_answer": "Ein Monopol wäre ein stärkerer Eingriff in Art. 27 und Art. 94 BV. Es bedürfte einer bundesrechtlichen Grundlage oder besonderer kantonaler Kompetenz und strengerer Verhältnismässigkeitsprüfung."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist das Konzessionssystem für natürliche Ressourcen aus grundrechtlicher Sicht der richtige Ansatz?",
-              "hint": "Denken Sie an Umweltschutz, Marktzugang und soziale Gerechtigkeit.",
-              "model_answer": "Pro: Nachhaltige Bewirtschaftung, öffentliches Interesse an Ressourcenschutz. Contra: Privilegierung weniger Konzessionäre, Innovationshemmung. Alternative: Versteigerungsmodelle könnten Wettbewerb fördern."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "jurisdictional_shift",
-              "scenario": "Was wäre, wenn die EU-Dienstleistungsfreiheit anwendbar wäre (Szenario eines bilateralen Abkommens)?",
-              "discussion_points": [
-                "Verhältnis Landesrecht/Völkerrecht",
-                "EU-Binnenmarktrecht",
-                "Diskriminierungsverbot"
-              ],
-              "likely_outcome_shift": "Die Konzessionsregel müsste auch dem EU-Diskriminierungsverbot genügen. Bevorzugung einheimischer Unternehmen wäre unzulässig."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -532,64 +302,12 @@
           "prerequisites": [],
           "significance_de": "Prüfungsergebnisse können mit subsidiärer Verfassungsbeschwerde angefochten werden",
           "significance_fr": "Les résultats d'examens peuvent être contestés par recours constitutionnel subsidiaire",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Zulässigkeit der subsidiären Verfassungsbeschwerde bei Prüfungsentscheiden. E. 3: Kognition des Bundesgerichts — beschränkt auf Willkürprüfung. Achten Sie auf die zurückhaltende Überprüfung bei Bewertungsfragen.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Welches Rechtsmittel steht gegen eine Prüfungsbewertung offen und warum nicht die ordentliche Beschwerde?",
-              "hint": "Lesen Sie E. 2.",
-              "model_answer": "Die subsidiäre Verfassungsbeschwerde (Art. 113 BGG), weil es sich um einen kantonalen Entscheid über eine öffentlich-rechtliche Angelegenheit handelt, die nicht der ordentlichen Beschwerde unterliegt."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Grundrechte können bei der Anfechtung geltend gemacht werden?",
-              "hint": "Art. 29 BV und Art. 9 BV.",
-              "model_answer": "Art. 29 Abs. 2 BV (rechtliches Gehör — Begründungspflicht) und Art. 9 BV (Willkürverbot — offensichtlich fehlerhafte Bewertung)."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum übt das Bundesgericht bei Prüfungsentscheiden nur eine beschränkte Kognition aus?",
-              "hint": "E. 3.",
-              "model_answer": "Das Bundesgericht prüft nur auf Willkür, weil Prüfungsbewertungen auf fachspezifischen Einschätzungen beruhen, die dem Gericht entzogen sind. Nur offensichtlich fehlerhafte Bewertungen werden korrigiert."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Prüfungsordnung kein Einsichtsrecht in die korrigierte Prüfung vorsieht?",
-              "discussion_points": [
-                "Rechtliches Gehör",
-                "Akteneinsicht",
-                "Fairness"
-              ],
-              "model_answer": "Ohne Einsichtsrecht ist das rechtliche Gehör verletzt, weil der Prüfling die Bewertung nicht substanziiert anfechten kann. Art. 29 Abs. 2 BV verlangt Zugang zu den entscheidrelevanten Unterlagen."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die zurückhaltende bundesgerichtliche Kognition bei Prüfungsentscheiden sachgerecht?",
-              "hint": "Denken Sie an Rechtsschutz vs. Fachkompetenz.",
-              "model_answer": "Pro: Prüfungsbewertung erfordert Fachkompetenz, die das Gericht nicht hat. Contra: Willkürprüfung bietet minimalen Rechtsschutz, systematische Fehler werden erst spät erkannt."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn ein Prüfungsexperte befangen wäre (z.B. persönliche Feindschaft)?",
-              "discussion_points": [
-                "Art. 30 BV (Unabhängigkeit)",
-                "Befangenheit",
-                "Ausstandspflicht"
-              ],
-              "likely_outcome_shift": "Die Befangenheit würde eine Verletzung von Art. 30 BV begründen. Der Prüfungsentscheid müsste aufgehoben und die Prüfung von einem unbefangenen Experten neu bewertet werden."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_134 II 244",
@@ -615,62 +333,12 @@
           "prerequisites": [],
           "significance_de": "Minimale Begründungsanforderungen: Auseinandersetzung mit den Erwägungen des angefochtenen Entscheids",
           "significance_fr": "Exigences minimales de motivation: confrontation avec les considérants de la décision attaquée",
-          "key_erwagungen": [
-            "2"
-          ],
-          "reading_guide_de": "E. 2: Art. 42 Abs. 2 BGG verlangt eine Auseinandersetzung mit den Erwägungen des angefochtenen Entscheids. Reines Wiederholen des vorinstanzlich Vorgetragenen genügt nicht. Wichtig für die Praxis: Was muss eine Beschwerde mindestens enthalten?",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was muss eine Beschwerde an das Bundesgericht mindestens enthalten?",
-              "hint": "Lesen Sie E. 2 und Art. 42 BGG.",
-              "model_answer": "Die Beschwerde muss sich mit den Erwägungen der Vorinstanz auseinandersetzen und darlegen, inwiefern diese Bundesrecht verletzt. Ein blosses Wiederholen früherer Vorbringen genügt nicht."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Was ist die Rechtsfolge einer ungenügenden Begründung?",
-              "hint": "Art. 108 BGG.",
-              "model_answer": "Das Bundesgericht tritt auf die Beschwerde nicht ein (Nichteintreten). Bei qualifizierten Grundrechtsrügen (Art. 106 Abs. 2 BGG) gelten noch strengere Anforderungen."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum genügte die Begründung im konkreten Fall nicht?",
-              "hint": "E. 2.",
-              "model_answer": "Der Beschwerdeführer hatte lediglich seine Argumente aus dem vorinstanzlichen Verfahren wiederholt, ohne auf die Erwägungen der Vorinstanz einzugehen."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Beschwerdeführer ein Laie ohne anwaltliche Vertretung wäre?",
-              "discussion_points": [
-                "Anwaltspflicht",
-                "Rechtsschutz für Laien",
-                "Art. 29 Abs. 3 BV"
-              ],
-              "model_answer": "Die Anforderungen an die Begründung gelten auch für Laien. Allerdings wird die Begründung weniger formalistisch beurteilt. Art. 29 Abs. 3 BV gibt Anspruch auf unentgeltliche Rechtspflege."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Sind die Begründungsanforderungen des Bundesgerichts zu hoch oder angemessen?",
-              "hint": "Denken Sie an die Filterfunktion des BGG und den Zugang zum Recht.",
-              "model_answer": "Pro: Filtert aussichtslose Beschwerden, schont Ressourcen. Contra: Zugangsbarriere für Laien und sozial Schwache. Die Anforderungen sind im internationalen Vergleich streng, aber systematisch konsequent."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "remove_element",
-              "scenario": "Was wäre, wenn die Vorinstanz ihren Entscheid selbst nicht begründet hätte?",
-              "discussion_points": [
-                "Begründungspflicht der Vorinstanz (Art. 29 Abs. 2 BV)",
-                "Wie soll sich der Beschwerdeführer mit fehlenden Erwägungen auseinandersetzen?"
-              ],
-              "likely_outcome_shift": "Das Bundesgericht müsste den vorinstanzlichen Entscheid wegen Verletzung des rechtlichen Gehörs aufheben, unabhängig von der Qualität der Beschwerdebegründung."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     }

@@ -327,61 +327,12 @@
           "prerequisites": [],
           "significance_de": "Voraussetzungen der Besitzesstörungsklage; Verhältnis öffentlich-rechtliche Eigentumsbeschränkung",
           "significance_fr": "Conditions de l'action possessoire; rapport avec les restrictions de droit public",
-          "key_erwagungen": [
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 3: Voraussetzungen der Besitzesstörungsklage nach Art. 928 ZGB. E. 4: Verhältnis zum öffentlichen Recht. Achten Sie auf den Unterschied zwischen Besitzesschutz und Eigentumsschutz.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was schützt die Besitzesstörungsklage und wie unterscheidet sie sich von der Eigentumsklage?",
-              "hint": "Vergleichen Sie Art. 928 ZGB mit Art. 641 ZGB.",
-              "model_answer": "Die Besitzesstörungsklage schützt den tatsächlichen Besitz, unabhängig davon, ob der Kläger auch Eigentümer ist. Die Eigentumsklage setzt dagegen Eigentum voraus."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Tatbestandsmerkmale muss der Kläger nach Art. 928 ZGB nachweisen?",
-              "hint": "Lesen Sie E. 3.",
-              "model_answer": "Verbotene Eigenmacht (Besitzesstörung ohne Recht), Besitz des Klägers, kausaler Zusammenhang zwischen Störung und Beeinträchtigung."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht die Besitzesstörung im konkreten Fall bejaht?",
-              "hint": "Prüfen Sie die Subsumtion der Tatbestandsmerkmale.",
-              "model_answer": "Der Beklagte hat ohne Rechtstitel in den Besitz des Klägers eingegriffen. Die Störung war rechtswidrig, weil keine öffentlich-rechtliche Grundlage sie rechtfertigte."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Störung durch eine behördliche Anordnung gedeckt wäre?",
-              "discussion_points": [
-                "Verhältnis privater Besitzesschutz und öffentliches Recht"
-              ],
-              "model_answer": "Eine gültige behördliche Anordnung würde die Eigenmacht rechtfertigen. Der Besitzesschutz weicht dem öffentlichen Recht, sofern die Anordnung verhältnismässig ist."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist der besitzrechtliche Schutz auch bei ungeklärter Eigentumslage gerechtfertigt?",
-              "hint": "Denken Sie an den Rechtsfrieden und die Funktion des Besitzesschutzes.",
-              "model_answer": "Ja, der Besitzesschutz dient dem Rechtsfrieden und verhindert Selbstjustiz. Wer ein besseres Recht hat, muss den ordentlichen Rechtsweg beschreiten."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "change_timeline",
-              "scenario": "Was wäre, wenn die Besitzesstörung vor mehr als einem Jahr stattfand?",
-              "discussion_points": [
-                "Verwirkungsfrist (Art. 929 ZGB)",
-                "Unterschied zwischen Klage und Selbsthilfe"
-              ],
-              "likely_outcome_shift": "Die Besitzesstörungsklage wäre nach der einjährigen Verwirkungsfrist nicht mehr möglich. Der Besitzer müsste auf die Eigentumsklage ausweichen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_132 III 155",
@@ -518,74 +469,12 @@
           "prerequisites": [],
           "significance_de": "Unterscheidung dingliche/obligatorische Bestimmungen bei Dienstbarkeiten",
           "significance_fr": "Distinction entre dispositions réelles et obligatoires des servitudes",
-          "key_erwagungen": [
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 3: Grundsatz — Dienstbarkeiten haben dingliche Wirkung und binden Rechtsnachfolger. E. 4: Ausnahme — Obligatorische Nebenbestimmungen binden nur die Vertragsparteien, nicht Dritterwerber.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der Unterschied zwischen dinglichen und obligatorischen Bestimmungen einer Dienstbarkeit?",
-              "hint": "Lesen Sie E. 3 und E. 4.",
-              "model_answer": "Dingliche Bestimmungen sind Teil der Dienstbarkeit selbst und gelten gegenüber jedermann (auch Rechtsnachfolgern). Obligatorische Bestimmungen sind vertragliche Nebenabreden und binden nur die ursprünglichen Parteien."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie werden nach Art. 738 ZGB Inhalt und Umfang einer Dienstbarkeit bestimmt?",
-              "hint": "Achten Sie auf die Stufenfolge der Auslegung.",
-              "model_answer": "Primär aus dem Grundbucheintrag, sekundär aus dem Errichtungsakt (Begründungsvertrag), subsidiär aus der Art, wie die Dienstbarkeit während längerer Zeit ausgeübt wurde."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war die strittige Bestimmung im konkreten Fall obligatorischer und nicht dinglicher Natur?",
-              "hint": "Prüfen Sie die Kriterien in E. 4.",
-              "model_answer": "Die Bestimmung betraf eine persönliche Leistungspflicht (z.B. Unterhalt), die nicht zum Inhalt der Dienstbarkeit gehört, sondern eine vertragliche Nebenabrede darstellt."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die obligatorische Nebenbestimmung im Grundbuch vorgemerkt wäre?",
-              "discussion_points": [
-                "Grundbuchvormerkung",
-                "Publizitätsprinzip",
-                "Drittwirkung durch Vormerkung"
-              ],
-              "model_answer": "Eine Vormerkung im Grundbuch verschafft der obligatorischen Bestimmung keine dingliche Wirkung, erhöht aber die Publizität. Der Erwerber kann sich nicht auf Gutgläubigkeit berufen."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die strikte Trennung zwischen dinglichen und obligatorischen Bestimmungen bei Dienstbarkeiten sachgerecht?",
-              "hint": "Denken Sie an den Schutz des Erwerbers vs. den Schutz des Berechtigten.",
-              "model_answer": "Pro: Rechtsklarheit und Verkehrsschutz — Erwerber können sich auf den Grundbucheintrag verlassen. Contra: Berechtigte verlieren Nebenrechte beim Eigentümerwechsel. Ein Mittelweg wäre die systematische Vormerkung obligatorischer Bestimmungen."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn das belastete Grundstück an einen gutgläubigen Dritten verkauft würde?",
-              "discussion_points": [
-                "Drittwirkung dinglicher Rechte",
-                "Kein gutgläubiger lastenfreier Erwerb bei Dienstbarkeiten",
-                "Art. 973 ZGB"
-              ],
-              "likely_outcome_shift": "Die dingliche Dienstbarkeit bindet den Erwerber unabhängig von seiner Kenntnis. Die obligatorische Nebenbestimmung hingegen nicht."
-            },
-            {
-              "type": "remove_element",
-              "scenario": "Was wäre, wenn die Dienstbarkeit nicht im Grundbuch eingetragen wäre?",
-              "discussion_points": [
-                "Konstitutivwirkung des Grundbucheintrags",
-                "Art. 731 ZGB",
-                "Ersitzung"
-              ],
-              "likely_outcome_shift": "Ohne Grundbucheintrag entsteht keine Grunddienstbarkeit (Art. 731 ZGB). Allenfalls könnte eine Ersitzung geltend gemacht werden."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_137 III 145",
@@ -610,64 +499,12 @@
           "prerequisites": [],
           "significance_de": "Bauliche Anlagen bestimmen Inhalt und Umfang einer Dienstbarkeit; Gebot der schonenden Ausübung",
           "significance_fr": "Les installations déterminent le contenu et l'étendue d'une servitude; obligation d'exercice ménager",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Auslegung der Dienstbarkeit nach Art. 738 ZGB. E. 3: Gebot der schonenden Ausübung nach Art. 737 ZGB. Achten Sie darauf, wie bestehende bauliche Anlagen den Umfang des Wegrechts konkretisieren.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Wie wird der Inhalt eines Wegrechts bestimmt?",
-              "hint": "Lesen Sie E. 2 und Art. 738 ZGB.",
-              "model_answer": "Primär aus dem Grundbucheintrag, dann aus dem Begründungsakt, subsidiär aus der bisherigen Ausübung. Bestehende bauliche Anlagen (z.B. ein angelegter Weg) konkretisieren den Umfang."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Was bedeutet das Gebot der schonenden Ausübung nach Art. 737 ZGB?",
-              "hint": "Lesen Sie E. 3.",
-              "model_answer": "Der Berechtigte muss sein Recht so ausüben, dass er den Belasteten möglichst wenig beeinträchtigt. Die Dienstbarkeit darf nicht weiter gehen als nötig."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war die beanspruchte Nutzung im konkreten Fall durch das Wegrecht gedeckt?",
-              "hint": "Prüfen Sie die Subsumtion in E. 3.",
-              "model_answer": "Die baulichen Anlagen (bestehender Weg) zeigten den Umfang der Dienstbarkeit. Die beanspruchte Nutzung entsprach der bisherigen Ausübung und dem Zweck des Wegrechts."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Berechtigte das Wegrecht für schwere Lastwagen statt für Personenwagen nutzen wollte?",
-              "discussion_points": [
-                "Veränderte Bedürfnisse",
-                "Schonende Ausübung",
-                "Anpassung der Dienstbarkeit"
-              ],
-              "likely_outcome_shift": "Eine Nutzungsintensivierung könnte das Gebot der schonenden Ausübung verletzen, es sei denn, der Begründungsakt liesse diese Nutzung zu."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist es sachgerecht, dass bestehende bauliche Anlagen den Umfang einer Dienstbarkeit bestimmen können?",
-              "hint": "Denken Sie an Rechtssicherheit vs. Flexibilität.",
-              "model_answer": "Pro: Praktisch und nachvollziehbar, vermeidet Streit über den ursprünglichen Parteiwillen. Contra: Zufällige bauliche Gegebenheiten können den Umfang verzerren."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "change_timeline",
-              "scenario": "Was wäre, wenn das Wegrecht seit 50 Jahren nicht mehr ausgeübt wurde?",
-              "discussion_points": [
-                "Löschung durch Nichtausübung",
-                "Art. 736 ZGB",
-                "Verjährung vs. Verwirkung bei dinglichen Rechten"
-              ],
-              "likely_outcome_shift": "Nach 30 Jahren Nichtausübung kann der Belastete die Löschung verlangen. Das Wegrecht könnte durch Verjährung erloschen sein."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     }

@@ -36,64 +36,12 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Beurteilung des adäquaten Kausalzusammenhangs nach Recht und Billigkeit",
-          "key_erwagungen": [
-            "2",
-            "3"
-          ],
-          "reading_guide_de": "E. 2: Definition und Massstab der Adäquanz. E. 3: Unterschied zum Sozialversicherungsrecht. Achten Sie auf die richterliche Wertung nach Art. 4 ZGB (Recht und Billigkeit).",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der adäquate Kausalzusammenhang und welche Funktion hat er?",
-              "hint": "Lesen Sie E. 2.",
-              "model_answer": "Der adäquate Kausalzusammenhang ist eine normative Einschränkung der natürlichen Kausalität. Er begrenzt die Haftung auf Fälle, in denen das schädigende Verhalten nach dem gewöhnlichen Lauf der Dinge und der allgemeinen Lebenserfahrung geeignet war, den eingetretenen Schaden herbeizuführen."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welchen Massstab legt das Bundesgericht für die Adäquanzbeurteilung an?",
-              "hint": "E. 2 — 'Recht und Billigkeit'.",
-              "model_answer": "Der Massstab ist eine richterliche Wertung nach Art. 4 ZGB (Recht und Billigkeit). Es handelt sich um eine normative Beurteilung, nicht um eine rein statistische Wahrscheinlichkeitsprüfung."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war der Kausalzusammenhang im konkreten Fall adäquat?",
-              "hint": "E. 2-3.",
-              "model_answer": "Das Verhalten des Schädigers war nach dem gewöhnlichen Lauf der Dinge geeignet, den eingetretenen Schaden herbeizuführen. Die Folge lag nicht ausserhalb jeder Wahrscheinlichkeit."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn das Opfer eine ungewöhnliche Vorerkrankung hätte, die den Schaden massiv vergrösserte?",
-              "discussion_points": [
-                "Konstitutionelle Prädisposition",
-                "Adäquanz bei Vorschäden",
-                "Schadensersatzbemessung"
-              ],
-              "likely_outcome_shift": "Eine Vorerkrankung unterbricht die Adäquanz in der Regel nicht. Die Schadensersatzbemessung kann aber nach Art. 43/44 OR angepasst werden (Schadenersatzbemessung vs. Schadensberechnung)."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist der Adäquanzmassstab zu unbestimmt? Wäre eine präzisere Formel wünschenswert?",
-              "hint": "Vergleichen Sie mit dem Schutzzweck der Norm (alternative Kausalitätstheorien).",
-              "model_answer": "Pro Flexibilität: Erlaubt Einzelfallgerechtigkeit. Contra: Geringe Vorhersehbarkeit, Abhängigkeit vom richterlichen Ermessen. Die Lehre des Schutzzwecks der Norm ist präziser, aber im Schweizer Recht nicht herrschend."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre bei einer Kettenreaktion: Auffahrunfall → Stau → verspäteter Krankenwagen → Tod eines Dritten?",
-              "discussion_points": [
-                "Kettenkausalität",
-                "Unterbrechung der Adäquanz",
-                "Haftung für mittelbare Folgen"
-              ],
-              "likely_outcome_shift": "Die Adäquanz dürfte bei einer solchen Kettenreaktion fehlen. Der Tod des Dritten liegt ausserhalb des normalen Kausalverlaufs und ist dem Unfallverursacher nicht mehr zurechenbar."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_123 III 10",
@@ -318,63 +266,12 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Voraussetzungen und Tragweite der Beweiserleichterung bei Schadensschätzung",
-          "key_erwagungen": [
-            "3"
-          ],
-          "reading_guide_de": "E. 3a: Voraussetzungen der Beweiserleichterung. E. 3b-c: Überprüfungsbefugnis des Bundesgerichts. E. 4: Anwendung auf Pressehaftung — wie weit reicht das richterliche Ermessen?",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was erlaubt Art. 42 Abs. 2 OR dem Richter und unter welchen Voraussetzungen?",
-              "hint": "Lesen Sie E. 3a.",
-              "model_answer": "Art. 42 Abs. 2 OR erlaubt dem Richter, den Schaden nach Ermessen zu schätzen, wenn der exakte Beweis nicht möglich oder nicht zumutbar ist. Voraussetzung: Der Geschädigte hat den Schaden dem Grundsatz nach nachgewiesen."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "In welchem Verhältnis steht Art. 42 Abs. 2 OR zu Art. 8 ZGB (Beweislast)?",
-              "hint": "E. 3a-b.",
-              "model_answer": "Art. 42 Abs. 2 OR ist eine Beweiserleichterung, die von der allgemeinen Beweislast (Art. 8 ZGB) abweicht. Der Geschädigte muss den Schaden nicht exakt beweisen, sondern nur dem Grundsatz nach."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war die richterliche Schätzung im konkreten Fall bundesrechtskonform?",
-              "hint": "E. 3b-c.",
-              "model_answer": "Der Geschädigte hatte den Schaden dem Grundsatz nach nachgewiesen, und die exakte Bezifferung war nicht möglich. Die Schätzung des Richters hielt sich innerhalb des Ermessensrahmens."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Geschädigte den Schaden exakt hätte berechnen können, dies aber unterlassen hat?",
-              "discussion_points": [
-                "Subsidiarität der Schätzung",
-                "Substanziierungspflicht",
-                "Mitwirkungspflicht"
-              ],
-              "likely_outcome_shift": "Die Beweiserleichterung greift nur, wenn der exakte Beweis nicht möglich oder nicht zumutbar ist. Bei zumutbarer Berechnung gilt die normale Beweislast."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Besteht die Gefahr, dass die richterliche Schadensschätzung zu Willkür führt?",
-              "hint": "Denken Sie an die Überprüfbarkeit durch das Bundesgericht.",
-              "model_answer": "Die Gefahr ist begrenzt, weil die Schätzung nachvollziehbar begründet werden muss und vom Bundesgericht auf Ermessensmissbrauch überprüft wird. Allerdings variieren Schätzungen zwischen Gerichten."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre bei einem immateriellen Schaden (z.B. Persönlichkeitsverletzung durch Medien)?",
-              "discussion_points": [
-                "Art. 49 OR",
-                "Genugtuung",
-                "Bemessungskriterien"
-              ],
-              "likely_outcome_shift": "Bei immateriellen Schäden ist die richterliche Schätzung der Regelfall (Art. 49 OR). Die Bemessung erfolgt nach Schwere der Verletzung und Verschulden, ist aber noch stärker vom Ermessen abhängig."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_131 III 12",
@@ -402,64 +299,12 @@
             "bge_122 III 219"
           ],
           "significance_de": "Berücksichtigung vorbestehender Leiden bei Schadensberechnung vs. Schadenersatzbemessung",
-          "key_erwagungen": [
-            "4",
-            "7"
-          ],
-          "reading_guide_de": "E. 4: Unterschied Schadensberechnung vs. Schadenersatzbemessung bei konstitutioneller Prädisposition. E. 7: Zweck des Quotenvorrechts und Bereicherungsverbot.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der Unterschied zwischen Schadensberechnung und Schadenersatzbemessung?",
-              "hint": "Lesen Sie E. 4.",
-              "model_answer": "Schadensberechnung (Art. 42 OR): Bestimmung des entstandenen Schadens in Franken. Schadenersatzbemessung (Art. 43/44 OR): Richterliche Festlegung, wie viel davon der Schädiger tragen muss (Reduktion möglich)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wo wird die konstitutionelle Prädisposition berücksichtigt — bei der Schadensberechnung oder bei der Schadenersatzbemessung?",
-              "hint": "E. 4.",
-              "model_answer": "Bei der Schadenersatzbemessung (Art. 44 OR), nicht bei der Schadensberechnung. Der volle Schaden wird berechnet, aber die Ersatzpflicht wird reduziert, weil der Geschädigte vorbelastet war."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Was ist das Quotenvorrecht und warum dient es dem Geschädigten?",
-              "hint": "E. 7.",
-              "model_answer": "Das Quotenvorrecht bedeutet, dass bei Vorliegen mehrerer Haftpflichtiger der Geschädigte zuerst von seinem Recht Gebrauch macht. Es verhindert, dass der Geschädigte unterentschädigt wird."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Vorerkrankung erst nach dem Unfall diagnostiziert wurde?",
-              "discussion_points": [
-                "Zeitpunkt der Diagnose",
-                "Kausalitätsbeweis",
-                "Beweislast"
-              ],
-              "likely_outcome_shift": "Die nachträgliche Diagnose ändert die Rechtslage nicht: Entscheidend ist, ob die Prädisposition zum Unfallzeitpunkt bestand, nicht wann sie diagnostiziert wurde."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist es gerecht, dass der Schädiger die Vorerkrankung des Opfers mittragen muss (Grundsatz: 'Man nimmt das Opfer, wie es ist')?",
-              "hint": "Denken Sie an die Risikoverteilung zwischen Schädiger und Geschädigtem.",
-              "model_answer": "Pro: Der Schädiger hat den Schaden verursacht und muss das Risiko tragen. Contra: Der Schädiger haftet für einen Schaden, der (teilweise) auch ohne sein Verhalten eingetreten wäre. Art. 44 OR schafft einen Ausgleich."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn der Geschädigte seine Vorerkrankung kannte und sich bewusst in Gefahr begab?",
-              "discussion_points": [
-                "Selbstverschulden (Art. 44 OR)",
-                "Mitverschulden",
-                "Schadenersatzreduktion"
-              ],
-              "likely_outcome_shift": "Das Selbstverschulden des Geschädigten führt zu einer weiteren Reduktion des Schadenersatzes nach Art. 44 OR. Die Kenntnis der Vorerkrankung erhöht die Eigenverantwortung."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -498,63 +343,12 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Abgrenzung Organ/Hilfsperson; keine längere strafrechtliche Verjährungsfrist bei Hilfspersonenhaftung",
-          "key_erwagungen": [
-            "4",
-            "5"
-          ],
-          "reading_guide_de": "E. 4: Abgrenzungskriterien Organ vs. Hilfsperson. E. 5: Keine Anwendung der längeren strafrechtlichen Verjährungsfrist (Art. 60 Abs. 2 OR) bei Geschäftsherrenhaftung.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der Unterschied zwischen einem Organ und einer Hilfsperson im Haftungsrecht?",
-              "hint": "Lesen Sie E. 4.",
-              "model_answer": "Ein Organ handelt als die juristische Person selbst (direkte Zurechnung). Eine Hilfsperson handelt für den Geschäftsherrn, aber nicht als dessen Organ (indirekte Haftung über Art. 55 OR)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Warum ist die Abgrenzung für die Verjährung relevant?",
-              "hint": "E. 5 und Art. 60 Abs. 2 OR.",
-              "model_answer": "Art. 60 Abs. 2 OR verlängert die Verjährung bei strafbarer Handlung. Bei Organhaftung wird die Straftat dem Unternehmen zugerechnet (längere Verjährung). Bei Hilfspersonenhaftung (Art. 55 OR) nicht."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum hat das Gericht die längere Verjährungsfrist im konkreten Fall verneint?",
-              "hint": "E. 5.",
-              "model_answer": "Der Schädiger war Hilfsperson, nicht Organ. Die Geschäftsherrenhaftung (Art. 55 OR) ist eine eigenständige Haftungsgrundlage, bei der die strafbare Handlung der Hilfsperson dem Geschäftsherrn nicht zugerechnet wird."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der Geschäftsherr die strafbare Handlung der Hilfsperson angeordnet hätte?",
-              "discussion_points": [
-                "Eigenverschulden des Geschäftsherrn",
-                "Anstiftung",
-                "Organhaftung"
-              ],
-              "likely_outcome_shift": "Bei Anordnung durch den Geschäftsherrn haftet dieser aus eigenem Verschulden (Art. 41 OR), nicht nur nach Art. 55 OR. Die strafrechtliche Verjährungsfrist wäre dann anwendbar."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist es sachgerecht, dass die strafrechtliche Verjährungsfrist bei Geschäftsherrenhaftung nicht gilt?",
-              "hint": "Denken Sie an den Schutz des Geschädigten.",
-              "model_answer": "Pro: Art. 55 OR ist eine Kausalhaftung ohne eigenes Verschulden des Geschäftsherrn. Contra: Der Geschädigte wird benachteiligt, wenn er nicht zwischen Organ und Hilfsperson unterscheiden kann. Die Revision des Verjährungsrechts hat dies teilweise korrigiert."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn der Geschäftsherr nachweisen könnte, dass er alle erforderlichen Sorgfalt in der Auswahl und Überwachung der Hilfsperson angewandt hat?",
-              "discussion_points": [
-                "Exkulpationsbeweis (Art. 55 Abs. 1 OR)",
-                "Cura in eligendo/instruendo/custodiendo"
-              ],
-              "likely_outcome_shift": "Der Geschäftsherr kann sich nach Art. 55 Abs. 1 OR exkulpieren, wenn er nachweist, dass er bei der Auswahl, Anleitung und Überwachung die erforderliche Sorgfalt angewandt hat."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_130 III 736",

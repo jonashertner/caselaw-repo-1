@@ -39,75 +39,12 @@
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Methodik der Unterhaltsberechnung: Einführung der zweistufigen Methode mit Überschussverteilung",
           "significance_fr": "Arrêt de principe sur la méthodologie du calcul de l'entretien: introduction de la méthode en deux étapes",
-          "key_erwagungen": [
-            "3",
-            "4",
-            "5"
-          ],
-          "reading_guide_de": "E. 3: Bisherige Methoden (Existenzminimum, Lebenshaltungskostenmethode). E. 4: Neue zweistufige Methode — Bedarfsermittlung + Überschussverteilung. E. 5: Anwendung auf den konkreten Fall. Dieser Entscheid hat die Praxis grundlegend verändert.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist die zweistufige Methode der Unterhaltsberechnung?",
-              "hint": "Lesen Sie E. 4.",
-              "model_answer": "Stufe 1: Ermittlung des Bedarfs beider Parteien (Existenzminimum). Stufe 2: Verteilung des verbleibenden Überschusses nach den massgeblichen Kriterien (Art. 125 ZGB)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Faktoren berücksichtigt Art. 125 ZGB bei der Unterhaltsbemessung?",
-              "hint": "Art. 125 Abs. 2 ZGB.",
-              "model_answer": "Ehedauer, Aufgabenverteilung während der Ehe, Lebensstandard, Alter und Gesundheit, Einkommen und Vermögen, Betreuungspflichten, berufliche Aussichten."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Wie wird der Überschuss zwischen den Parteien verteilt?",
-              "hint": "E. 5.",
-              "model_answer": "Der Überschuss wird grundsätzlich hälftig verteilt. Abweichungen sind möglich bei unterschiedlicher Eigenversorgungskapazität oder lebensprägenden Ehen."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre bei einer Kurzehe (unter 3 Jahre) ohne Kinder?",
-              "discussion_points": [
-                "Eigenversorgungskapazität",
-                "Clean Break",
-                "Dauer des Unterhalts"
-              ],
-              "likely_outcome_shift": "Bei einer Kurzehe ohne Kinder besteht grundsätzlich kein Anspruch auf nachehelichen Unterhalt. Der Clean-Break-Grundsatz kommt zur Anwendung, weil die Ehe nicht lebensprägend war."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die zweistufige Methode der alten Lebenshaltungskostenmethode überlegen?",
-              "hint": "Denken Sie an Transparenz, Gerechtigkeit und Praktikabilität.",
-              "model_answer": "Pro: Transparenter, vermeidet Doppelzählungen, einheitliche Methode für alle Einkommensverhältnisse. Contra: Höherer Berechnungsaufwand, Überschussverteilung bei Hocheinkommensehen weiterhin unklar."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "extreme_case",
-              "scenario": "Was wäre bei einem Paar mit sehr hohem Einkommen (CHF 50'000/Monat), wo ein Partner nie gearbeitet hat?",
-              "discussion_points": [
-                "Lebensstandard",
-                "Lebensprägende Ehe",
-                "Obergrenze des Unterhalts"
-              ],
-              "likely_outcome_shift": "Bei lebensprägender Ehe und hohem Einkommen hat der nicht erwerbstätige Partner Anspruch auf Lebenshaltung gemäss ehelichem Standard. Der Überschuss wird geteilt, allerdings gibt es keine unbegrenzte Lebensstandardgarantie."
-            },
-            {
-              "type": "change_timeline",
-              "scenario": "Was wäre, wenn der Unterhaltspflichtige 5 Jahre nach der Scheidung arbeitslos wird?",
-              "discussion_points": [
-                "Abänderung des Unterhalts",
-                "Art. 129 ZGB",
-                "Veränderte Verhältnisse"
-              ],
-              "likely_outcome_shift": "Bei wesentlicher und dauerhafter Veränderung der Verhältnisse kann der Unterhalt angepasst werden (Art. 129 ZGB). Arbeitslosigkeit kann eine Reduktion oder Sistierung rechtfertigen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_134 III 145",
@@ -238,65 +175,12 @@
           "prerequisites": [],
           "significance_de": "Gemeinsame elterliche Sorge als Regel; alleinige Sorge nur bei schwerwiegender Unfähigkeit zur Kooperation",
           "significance_fr": "Autorité parentale conjointe comme règle; autorité exclusive seulement en cas d'incapacité grave de coopérer",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 2: Grundsatz der gemeinsamen Sorge (Art. 296 ZGB). E. 3: Ausnahme — alleinige Sorge nur bei schwerwiegendem, dauerhaftem Elternkonflikt, der das Kindeswohl gefährdet. E. 4: Kriterien der Beurteilung.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was bedeutet die gemeinsame elterliche Sorge und warum ist sie der Regelfall?",
-              "hint": "Art. 296 ZGB und E. 2.",
-              "model_answer": "Gemeinsame elterliche Sorge bedeutet, dass beide Eltern gleichberechtigt über die wesentlichen Kindesbelange entscheiden. Sie ist Regelfall, weil das Kindeswohl grundsätzlich durch die Beteiligung beider Eltern besser gewahrt wird."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Unter welchen Voraussetzungen kann die alleinige Sorge angeordnet werden?",
-              "hint": "E. 3.",
-              "model_answer": "Nur wenn die Zuteilung der alleinigen Sorge zum Schutz des Kindeswohls geboten ist. Typischer Fall: Schwerwiegender, dauerhafter Elternkonflikt, der die Zusammenarbeit verunmöglicht und das Kind belastet."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Welche Kriterien verwendet das Gericht zur Beurteilung der Kooperationsfähigkeit?",
-              "hint": "E. 4.",
-              "model_answer": "Kommunikationsfähigkeit der Eltern, Bereitschaft zur Zusammenarbeit, Stabilität der Betreuungssituation, Wille und Bedürfnisse des Kindes (altersabhängig)."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn ein Elternteil ins Ausland ziehen möchte (Umzug mit dem Kind)?",
-              "discussion_points": [
-                "Art. 301a ZGB",
-                "Zustimmungserfordernis",
-                "Freizügigkeit vs. Kindeswohl"
-              ],
-              "likely_outcome_shift": "Ein Umzug ins Ausland mit dem Kind erfordert die Zustimmung des anderen Elternteils oder eine gerichtliche Bewilligung (Art. 301a ZGB). Das Kindeswohl ist entscheidend."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die gemeinsame elterliche Sorge als Regelfall auch bei hochstrittigen Elternkonflikten sinnvoll?",
-              "hint": "Denken Sie an das Kindeswohl bei chronischem Elternstreit.",
-              "model_answer": "Pro: Gemeinsame Verantwortung, Gleichberechtigung. Contra: Bei chronischem Konflikt wird das Kind instrumentalisiert, Entscheidungen werden verzögert. Die Ausnahme (alleinige Sorge) sollte konsequenter angewandt werden, wenn der Konflikt das Kind nachweislich belastet."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn häusliche Gewalt zwischen den Eltern aktenkundig wäre?",
-              "discussion_points": [
-                "Kindeswohlgefährdung",
-                "Schutz des Opfers",
-                "Alleinige Sorge als Schutz"
-              ],
-              "likely_outcome_shift": "Häusliche Gewalt ist ein starkes Indiz gegen die gemeinsame Sorge. Der gewalttätige Elternteil kann die alleinige Sorge verlieren, besonders wenn das Kind die Gewalt miterlebt hat."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_143 III 361",
@@ -547,64 +431,12 @@
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Abgrenzung zwischen Eigengut und Errungenschaft; Vermutung zugunsten der Errungenschaft",
           "significance_fr": "Arrêt de principe sur la distinction entre biens propres et acquêts; présomption en faveur des acquêts",
-          "key_erwagungen": [
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "E. 3: Systematik des Güterrechts — Eigengut (Art. 198 ZGB) vs. Errungenschaft (Art. 197 ZGB). E. 4: Vermutung zugunsten der Errungenschaft (Art. 200 Abs. 3 ZGB) — wer Eigengut behauptet, muss es beweisen.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der Unterschied zwischen Eigengut und Errungenschaft?",
-              "hint": "Art. 197 und 198 ZGB, E. 3.",
-              "model_answer": "Eigengut: Vermögen, das ein Ehegatte in die Ehe einbringt oder durch Erbschaft/Schenkung erhält. Errungenschaft: Vermögen, das während der Ehe entgeltlich erworben wird (z.B. Arbeitseinkommen, Kapitalerträge)."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie funktioniert die Vorschlagsteilung bei der Errungenschaftsbeteiligung?",
-              "hint": "Art. 215 ZGB.",
-              "model_answer": "Der Vorschlag ist der Überschuss der Errungenschaft jedes Ehegatten über seine Schulden. Jeder Ehegatte hat Anspruch auf die Hälfte des Vorschlags des anderen."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum gilt im Zweifel die Vermutung zugunsten der Errungenschaft?",
-              "hint": "Art. 200 Abs. 3 ZGB, E. 4.",
-              "model_answer": "Weil die Zuordnung zum Eigengut die Ausnahme ist. Wer behauptet, ein Vermögenswert gehöre zum Eigengut, muss dies beweisen. Dies schützt den anderen Ehegatten vor Vermögensverschiebungen."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn ein Ehegatte eine Erbschaft erhalten, diese aber in eine gemeinsame Liegenschaft investiert hat?",
-              "discussion_points": [
-                "Ersatzanschaffung",
-                "Art. 206 ZGB (Hinzurechnung)",
-                "Surrogation"
-              ],
-              "likely_outcome_shift": "Die Erbschaft bleibt Eigengut, aber wenn sie in eine Errungenschaftsliegenschaft investiert wurde, entsteht eine Ersatzforderung des Eigenguts gegen die Errungenschaft (Art. 209 ZGB)."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Errungenschaftsbeteiligung als gesetzlicher Güterstand sachgerecht?",
-              "hint": "Vergleichen Sie mit Gütergemeinschaft und Gütertrennung.",
-              "model_answer": "Pro: Guter Kompromiss zwischen Eigenständigkeit und Teilhabe am ehelichen Erwerb. Contra: Komplexe Abgrenzung Eigengut/Errungenschaft, Beweisprobleme. Im europäischen Vergleich ist sie eine gelungene Mittellösung."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn ein Ehegatte Vermögen absichtlich verschleudert, um den Vorschlag zu schmälern?",
-              "discussion_points": [
-                "Art. 208 ZGB (Hinzurechnung)",
-                "Böswillige Vermögensverminderung",
-                "Schutz des anderen Ehegatten"
-              ],
-              "likely_outcome_shift": "Art. 208 ZGB erlaubt die Hinzurechnung böswillig vermindeter Errungenschaft. Die verschleuderten Beträge werden bei der Vorschlagsberechnung wieder hinzugerechnet."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         },
         {
           "decision_id": "bge_116 III 32",
