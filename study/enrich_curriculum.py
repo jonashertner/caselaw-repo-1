@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -96,8 +97,13 @@ def build_enrichment_prompt(case: CurriculumCase, *, decision_text: str) -> str:
 
 def parse_enrichment_response(response_text: str) -> dict[str, Any]:
     """Parse and validate the Claude response. Raises ValueError on invalid shape."""
+    # Strip markdown code fences if present (e.g. ```json ... ```)
+    text = response_text.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```[a-z]*\n?", "", text)
+        text = re.sub(r"\n?```$", "", text)
     try:
-        data = json.loads(response_text)
+        data = json.loads(text)
     except json.JSONDecodeError as e:
         raise ValueError(f"Invalid JSON from enrichment response: {e}") from e
 
@@ -140,7 +146,7 @@ def _call_claude(prompt: str, api_key: str) -> str:
     client = anthropic.Anthropic(api_key=api_key)
     msg = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=2048,
+        max_tokens=4096,
         messages=[{"role": "user", "content": prompt}],
     )
     return msg.content[0].text
