@@ -10,7 +10,10 @@
       "name_de": "Rechtliches Gehör und Beschwerdelegitimation",
       "name_fr": "Droit d'être entendu et qualité pour recourir",
       "name_it": "Diritto di essere sentiti e legittimazione a ricorrere",
-      "statutes": ["Art. 29 BV", "Art. 89 BGG"],
+      "statutes": [
+        "Art. 29 BV",
+        "Art. 89 BGG"
+      ],
       "cases": [
         {
           "decision_id": "bge_110 Ia 1",
@@ -19,21 +22,91 @@
           "title_de": "Rechtliches Gehör — Begründungspflicht von Behördenentscheiden",
           "title_fr": "Droit d'être entendu — obligation de motiver les décisions",
           "title_it": "",
-          "concepts_de": ["Rechtliches Gehör", "Begründungspflicht", "Mindestanforderungen", "Rechtsschutz"],
-          "concepts_fr": ["Droit d'être entendu", "Obligation de motiver", "Conditions minimales"],
+          "concepts_de": [
+            "Rechtliches Gehör",
+            "Begründungspflicht",
+            "Mindestanforderungen",
+            "Rechtsschutz"
+          ],
+          "concepts_fr": [
+            "Droit d'être entendu",
+            "Obligation de motiver",
+            "Conditions minimales"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 29 BV"],
+          "statutes": [
+            "Art. 29 BV"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Begründungspflicht als Teilgehalt des rechtlichen Gehörs: Behörden müssen ihre Entscheide so begründen, dass der Betroffene sie sachgerecht anfechten kann.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur l'obligation de motiver les décisions administratives en tant que composante du droit d'être entendu: les autorités doivent motiver leurs décisions de manière à permettre au destinataire de les contester utilement.",
+          "significance_it": "Decisione di principio sull'obbligo di motivazione delle decisioni amministrative quale componente del diritto di essere sentiti: le autorità devono motivare le loro decisioni in modo tale da consentire al destinatario di impugnarle adeguatamente.",
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Konzentrieren Sie sich beim Lesen auf die Erwägungen, in denen das Bundesgericht den Gehalt der Begründungspflicht als Teilaspekt des rechtlichen Gehörs nach Art. 29 BV herleitet und die Mindestanforderungen an eine genügende Begründung definiert. Beachten Sie insbesondere, wie das Gericht das Kriterium der 'sachgerechten Anfechtbarkeit' als funktionalen Massstab für die Ausreichendheit einer Begründung entwickelt. Verfolgen Sie schliesslich, welche Konsequenzen das Bundesgericht an eine ungenügende Begründung knüpft und unter welchen Bedingungen ein solcher Mangel heilbar ist.",
+          "reading_guide_fr": "Concentrez-vous sur les considérants dans lesquels le Tribunal fédéral dégage l'obligation de motiver les décisions en tant que composante du droit d'être entendu garanti par l'art. 29 Cst. et définit les exigences minimales auxquelles doit satisfaire une motivation suffisante. Prêtez une attention particulière au critère de la 'contestation utile' que le tribunal développe comme étalon fonctionnel pour apprécier l'adéquation d'une motivation. Examinez enfin les conséquences que le Tribunal fédéral attache à une motivation insuffisante et les conditions dans lesquelles un tel vice peut être réparé.",
+          "reading_guide_it": "Concentratevi sui considerandi nei quali il Tribunale federale ricava l'obbligo di motivazione come componente del diritto di essere sentiti ai sensi dell'art. 29 Cost. e definisce i requisiti minimi cui deve soddisfare una motivazione sufficiente. Prestate particolare attenzione al criterio dell'impugnabilità adeguata, che il Tribunale sviluppa come misura funzionale per valutare la sufficienza di una motivazione. Esaminate infine le conseguenze che il Tribunale federale ricollega a una motivazione insufficiente e le condizioni alle quali tale vizio può essere sanato.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 110 Ia 1 unter der Begründungspflicht, und warum wird sie als Teilgehalt des rechtlichen Gehörs gemäss Art. 29 BV qualifiziert?",
+              "hint": "Suchen Sie in den einleitenden Erwägungen des Gerichts nach der Definition des rechtlichen Gehörs und seiner Teilgehalte.",
+              "model_answer": "Das Bundesgericht versteht unter der Begründungspflicht die Obliegenheit der Behörde, ihre Entscheide so zu erläutern, dass der Betroffene die Überlegungen nachvollziehen und den Entscheid sachgerecht anfechten kann. Sie ist ein Teilgehalt des rechtlichen Gehörs, weil ohne eine nachvollziehbare Begründung das Recht, gehört zu werden, weitgehend leerliefe. Art. 29 BV schützt somit nicht nur die Möglichkeit zur Äusserung, sondern auch das Recht zu erfahren, aus welchen Gründen die Behörde entschieden hat."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche konkreten Anforderungen stellt BGE 110 Ia 1 an eine genügende Begründung eines behördlichen Entscheids, und welche Mindestvoraussetzungen müssen erfüllt sein?",
+              "hint": "Achten Sie auf die Erwägungen, in denen das Gericht die Begründungspflicht inhaltlich konkretisiert und von einer blossen Formbegründung abgrenzt.",
+              "model_answer": "Das Bundesgericht verlangt, dass die Begründung die wesentlichen Überlegungen nennt, von denen sich die Behörde hat leiten lassen. Sie muss so beschaffen sein, dass der Betroffene den Entscheid inhaltlich verstehen und gezielt anfechten kann. Eine pauschale oder formelhafte Begründung genügt nicht; die Behörde muss zumindest auf die entscheidenden Argumente der Parteien eingehen und die tragenden Motive ihres Entscheids offenlegen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Eine Gemeindebehörde verweigert einem Baugesuchsteller die Baubewilligung mit der lapidaren Begründung, das Vorhaben entspreche nicht dem Ortscharakter. Inwiefern ist diese Begründung nach den Massstäben von BGE 110 Ia 1 als unzureichend zu qualifizieren?",
+              "hint": "Übertragen Sie die in BGE 110 Ia 1 entwickelten Anforderungen auf den konkreten Sachverhalt und prüfen Sie, ob die Begründung eine sachgerechte Anfechtung ermöglicht.",
+              "model_answer": "Nach BGE 110 Ia 1 muss eine Begründung dem Betroffenen ermöglichen, die behördliche Überlegung nachzuvollziehen und den Entscheid gezielt anzufechten. Die Formulierung 'entspricht nicht dem Ortscharakter' ist eine blosse Leerformel, die keine konkreten Überlegungen erkennen lässt und dem Gesuchsteller nicht mitteilt, welche spezifischen Merkmale seines Projekts beanstandet werden. Mangels solcher Angaben kann er weder die Überlegungen der Behörde nachvollziehen noch sachgerecht Beschwerde erheben, weshalb eine Verletzung der aus Art. 29 BV fliessenden Begründungspflicht vorläge."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern steht die in BGE 110 Ia 1 statuierte Begründungspflicht in einem funktionalen Zusammenhang mit dem Anspruch auf rechtliches Gehör insgesamt, und welche anderen Teilgehalte des rechtlichen Gehörs würden ohne sie ins Leere laufen?",
+              "hint": "Analysieren Sie die strukturellen Verbindungen zwischen der Begründungspflicht und den weiteren Garantien des Art. 29 BV, insbesondere dem Recht zur Stellungnahme und dem Recht auf Akteneinsicht.",
+              "model_answer": "Die Begründungspflicht erfüllt eine Scharnierfunktion im System des rechtlichen Gehörs: Ohne Kenntnis der behördlichen Überlegungen kann die betroffene Person weder wirksam Beschwerde erheben noch überprüfen, ob ihre im Rahmen des Akteneinsichts- und Äusserungsrechts vorgebrachten Argumente überhaupt berücksichtigt wurden. Das Recht auf Äusserung würde zur blossen Formalie, wenn die Behörde darauf nicht eingehen müsste. Ebenso verlöre das Recht auf Akteneinsicht an praktischer Bedeutung, da die Partei ohne Begründung nicht erkennen könnte, welche Aktenstücke für den Entscheid ausschlaggebend waren. Die Begründungspflicht schafft somit erst die Voraussetzungen für eine effektive Ausübung sämtlicher übrigen Teilgehalte des rechtlichen Gehörs."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die in BGE 110 Ia 1 entwickelte Begründungspflicht nach Art. 29 BV als ausreichende Garantie für effektiven Rechtsschutz zu bewerten, oder bestehen systematische Grenzen, die den Schutz der Betroffenen relativieren?",
+              "hint": "Würdigen Sie kritisch sowohl die Stärken des Ansatzes als auch etwaige Schwächen, etwa hinsichtlich der Kontrolldichte, der Heilungsmöglichkeit von Begründungsmängeln oder des Verhältnisses zur richterlichen Kognition.",
+              "model_answer": "BGE 110 Ia 1 leistet einen wichtigen Beitrag zu einem transparenten Verwaltungshandeln und ermöglicht eine effektive Rechtsweggarantie, indem er Begründungsmängel als eigenständige Verfassungsverletzung qualifiziert. Kritisch ist jedoch anzumerken, dass das Bundesgericht Begründungsmängel unter bestimmten Voraussetzungen als heilbar erachtet, was den Schutz der Betroffenen abschwächen kann. Zudem bleibt die Kontrolldichte begrenzt: Die Behörde muss zwar die tragenden Motive nennen, ist aber nicht verpflichtet, jeden einzelnen Gesichtspunkt zu erörtern, was Spielraum für strategisch knappe Begründungen lässt. Insgesamt stellt der Entscheid eine notwendige, aber keine hinreichende Bedingung für einen lückenlosen Rechtsschutz dar."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Stellen Sie sich vor, die Behörde hat den Entscheid mündlich in einer öffentlichen Sitzung umfassend begründet, danach aber einen schriftlichen Entscheid ohne jede Begründung zugestellt. Ändert die vorangehende mündliche Erläuterung die verfassungsrechtliche Beurteilung nach Art. 29 BV?",
+              "discussion_points": [
+                "Ob eine mündliche Begründung die schriftliche Begründungspflicht zu ersetzen vermag oder ob der schriftliche Entscheid eigenständig begründet sein muss.",
+                "Inwieweit die Zugänglichkeit und Dokumentierbarkeit der Begründung für die sachgerechte Anfechtung entscheidend ist, insbesondere wenn die mündliche Begründung nicht protokolliert wurde."
+              ],
+              "likely_outcome_shift": "Die fehlende schriftliche Begründung dürfte weiterhin als Verletzung von Art. 29 BV qualifiziert werden, da der Betroffene auf eine dokumentierte Grundlage angewiesen ist, um den Entscheid vor einer Rechtsmittelinstanz sachgerecht anfechten zu können. Eine mündliche Begründung kann zwar faktisch informieren, ersetzt aber nicht die formelle Anforderung an einen begründeten schriftlichen Entscheid. Fehlte ein Protokoll der mündlichen Äusserungen, wäre die Heilungswirkung noch fraglicher, da der Betroffene die Begründung vor der Rechtsmittelinstanz nicht substanziieren könnte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht eine staatliche Behörde, sondern ein mit öffentlich-rechtlichen Aufgaben beliehenes privates Unternehmen (z. B. eine konzessionierte Transportgesellschaft) erlässt gegenüber einem Kunden einen Entscheid ohne Begründung. Gilt die aus BGE 110 Ia 1 abgeleitete Begründungspflicht auch in diesem Verhältnis?",
+              "discussion_points": [
+                "Ob und unter welchen Voraussetzungen Private, die öffentliche Aufgaben wahrnehmen, an die Grundrechte und damit an Art. 29 BV gebunden sind (Frage der Grundrechtsbindung Privater bzw. der indirekten Drittwirkung).",
+                "Welche Rolle die Qualifikation des strittigen Akts als Verfügung im Sinne des Verwaltungsrechts spielt und ob das Verwaltungsverfahrensrecht subsidiär eingreift."
+              ],
+              "likely_outcome_shift": "Soweit das beliehene Unternehmen hoheitlich handelt und Verfügungen erlässt, ist es als Träger öffentlicher Gewalt direkt an Art. 29 BV gebunden, sodass die Begründungspflicht aus BGE 110 Ia 1 grundsätzlich Anwendung findet. Handelt das Unternehmen hingegen privatrechtlich, greift die direkte Grundrechtsbindung nicht, und der Schutz des Betroffenen hängt von gesetzlichen Informationspflichten oder einer allfälligen indirekten Drittwirkung ab. Das Ergebnis verschiebt sich damit je nach rechtlicher Qualifikation des fraglichen Akts erheblich."
+            }
+          ]
         },
         {
           "decision_id": "bge_141 II 307",
@@ -42,21 +115,97 @@
           "title_de": "Beschwerdelegitimation im öffentlichen Recht — schutzwürdiges Interesse",
           "title_fr": "Qualité pour recourir en droit public — intérêt digne de protection",
           "title_it": "",
-          "concepts_de": ["Beschwerdelegitimation", "Schutzwürdiges Interesse", "Art. 89 BGG", "Praktischer Nutzen"],
-          "concepts_fr": ["Qualité pour recourir", "Intérêt digne de protection", "Utilité pratique"],
+          "concepts_de": [
+            "Beschwerdelegitimation",
+            "Schutzwürdiges Interesse",
+            "Art. 89 BGG",
+            "Praktischer Nutzen"
+          ],
+          "concepts_fr": [
+            "Qualité pour recourir",
+            "Intérêt digne de protection",
+            "Utilité pratique"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 89 BGG"],
+          "statutes": [
+            "Art. 89 BGG"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Beschwerdelegitimation nach Art. 89 BGG: Das schutzwürdige Interesse besteht im praktischen Nutzen, den das Obsiegen dem Beschwerdeführer einbringen würde.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur la qualité pour recourir selon l'art. 89 LTF: l'intérêt digne de protection réside dans l'utilité pratique que l'emporterait pour la recourante le fait d'obtenir gain de cause, principe valable également en droit des marchés publics.",
+          "significance_it": "Decisione di principio sulla legittimazione a ricorrere ai sensi dell'art. 89 LTF: l'interesse degno di protezione consiste nell'utilità pratica che il ricorrente trarrebbe dall'accoglimento del proprio ricorso, principio applicabile anche nel diritto degli appalti pubblici.",
+          "key_erwagungen": [
+            "5",
+            "6.1",
+            "6.2",
+            "6.3",
+            "6.4",
+            "6.5",
+            "6.6",
+            "6.7",
+            "6.8"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Regeste-Abschnitt, um die zentralen Rechtsfragen zu erfassen, und konzentrieren Sie sich danach auf E. 6.1–6.4 (allgemeine Grundsätze zur Beschwerdelegitimation nach Art. 89 BGG) sowie E. 6.5–6.8 (Anwendung auf den Beschaffungsrechtsfall und den Grundsatz der Rechtsanwendung von Amtes wegen). E. 5 gibt ergänzend Aufschluss über die materiellrechtliche Zulässigkeit des Einladungsverfahrens nach BGBM.",
+          "reading_guide_fr": "Commencez par lire le Regeste pour saisir les questions juridiques centrales, puis concentrez-vous sur les consid. 6.1–6.4 (principes généraux de la qualité pour recourir selon l'art. 89 LTF) et les consid. 6.5–6.8 (application au droit des marchés publics et principe de l'application du droit d'office). Le consid. 5 éclaire par ailleurs la licéité matérielle de la procédure sur invitation au regard de la LMI.",
+          "reading_guide_it": "Iniziare con la lettura del Regeste per cogliere le questioni giuridiche centrali, poi concentrarsi sui consid. 6.1–6.4 (principi generali sulla legittimazione a ricorrere ai sensi dell'art. 89 LTF) e sui consid. 6.5–6.8 (applicazione al diritto degli appalti pubblici e principio dell'applicazione del diritto d'ufficio). Il consid. 5 chiarisce inoltre la liceità materiale della procedura per invito alla luce della LMI.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 141 II 307 unter dem 'schutzwürdigen Interesse' als Voraussetzung der Beschwerdelegitimation nach Art. 89 BGG?",
+              "hint": "Vgl. Regeste und E. 6.1–6.4 des Entscheids",
+              "model_answer": "Das schutzwürdige Interesse besteht gemäss dem Bundesgericht im praktischen Nutzen, den das Obsiegen der Beschwerdeführerin bringen würde. Es geht also nicht um ein abstraktes rechtliches Interesse, sondern um einen konkreten, tatsächlichen Vorteil. Dieser Ansatz gilt allgemein für Art. 89 BGG und findet auch im öffentlichen Beschaffungsrecht Anwendung."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen bilden das normative Fundament des Entscheids, und welche Funktion übernimmt Art. 110 BGG im Kontext der kantonalen Beschwerdelegitimation?",
+              "hint": "Vgl. Regeste sowie Art. 89, 95 und 110 BGG",
+              "model_answer": "Der Entscheid stützt sich auf Art. 89, 95 und 110 BGG sowie Art. 3, 5 und 9 Abs. 2bis BGBM. Art. 110 BGG verlangt, dass kantonale Rechtsmittelinstanzen mindestens dieselben Rügen zulassen müssen wie das Bundesgericht. Damit bewirkt Art. 110 BGG, dass die Legitimationsvoraussetzungen von Art. 89 BGG auch für das kantonale Verfahren massgeblich sind, was eine Unterschreitung dieses Standards durch kantonales Recht verhindert."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Eine Anbieterin nimmt an einem Einladungsverfahren teil, unterliegt und beantragt vor dem kantonalen Verwaltungsgericht, das Verfahren sei zu wiederholen und als offenes Verfahren durchzuführen. Hat sie nach den Grundsätzen von BGE 141 II 307 ein schutzwürdiges Interesse an diesem Antrag?",
+              "hint": "Vgl. E. 6.5–6.8 des Entscheids",
+              "model_answer": "Ja. Müsste das gesamte Verfahren als offenes Ausschreibungsverfahren wiederholt werden, könnte die unterlegene Anbieterin ein neues Angebot einreichen und ihre Chancen auf den Zuschlag erhöhen sich damit. Daraus ergibt sich ein konkreter praktischer Nutzen im Sinne von Art. 89 BGG. Die Beschwerdeführerin ist deshalb befugt, die Durchführung eines offenen Verfahrens zu beantragen, auch wenn sie am ursprünglichen Einladungsverfahren teilgenommen hat."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Verwaltungsgericht Zürich hatte den Antrag auf Durchführung eines offenen Verfahrens mit dem Argument abgewiesen, die Beschwerdeführerin sei dazu nicht legitimiert, da sie keine Nachteile erlitten habe. Inwiefern widerspricht diese Begründung dem Bundesrecht, und welche Konsequenz zog das Bundesgericht daraus?",
+              "hint": "Vgl. Sachverhalt B sowie E. 6.1–6.8 und Urteilsdispositiv",
+              "model_answer": "Das Verwaltungsgericht verknüpfte die Legitimation zu Unrecht mit dem Erleiden eines materiellen Nachteils und übersah, dass der praktische Nutzen einer möglichen Verfahrenswiederholung bereits ein schutzwürdiges Interesse begründet. Zudem missachtete es den Grundsatz der Rechtsanwendung von Amtes wegen: Tritt ein Gericht auf eine Beschwerde ein, muss es offensichtliche Rechtsmängel bei der Verfahrenswahl auch ohne entsprechende Rüge prüfen. Das Bundesgericht stellte deshalb fest, dass das Verwaltungsgericht Bundesrecht verletzt hatte, indem es den Antrag auf Rückweisung zur Durchführung eines offenen Verfahrens nicht beurteilt hatte."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, die Beschwerdelegitimation im öffentlichen Beschaffungsrecht allein auf den 'praktischen Nutzen' im Sinne eines verbesserten Zuschlagschancenverhältnisses zu stützen, oder bestehen Gründe, den Legitimationsmassstab enger oder weiter zu fassen?",
+              "hint": "Vgl. E. 6.1–6.4 im Zusammenspiel mit dem Zweck des BGBM und des öffentlichen Beschaffungsrechts (Wettbewerb, Transparenz, Gleichbehandlung)",
+              "model_answer": "Der auf den praktischen Nutzen abstellende Massstab ist kohärent mit dem Ziel des Beschaffungsrechts, einen funktionierenden Wettbewerb zu fördern: Wer realistische Chancen auf einen Zuschlag hat, soll die Rechtmässigkeit des Verfahrens rügen können. Ein engerer Massstab liefe Gefahr, Rechtsverstösse der Vergabestelle schutzlos zu stellen. Allerdings könnte ein zu weiter Massstab – etwa Legitimation jedes Marktteilnehmers unabhängig von konkreten Zuschlagschancen – zu einer Popularbeschwerde führen und Vergabeverfahren übermässig verzögern; der vom Bundesgericht gewählte Mittelweg erscheint daher ausgewogen, bleibt aber in Randfällen auslegungsbedürftig."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die A. AG hätte am ursprünglichen Einladungsverfahren gar nicht teilgenommen, sondern wäre nicht eingeladen worden, obwohl sie objektiv qualifiziert gewesen wäre. Sie erfährt von der Vergabe und erhebt Beschwerde mit dem Antrag, ein offenes Verfahren durchzuführen. Ändert sich die Beurteilung der Beschwerdelegitimation?",
+              "discussion_points": [
+                "Ist ein praktischer Nutzen auch für eine Anbieterin erkennbar, die nie am Verfahren beteiligt war, aber bei einem offenen Verfahren hätte teilnehmen können?",
+                "Welche Rolle spielt die Kenntnis des Vergabeobjekts und die Fähigkeit, ein wettbewerbsfähiges Angebot zu stellen, für die Beurteilung des schutzwürdigen Interesses?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht müsste prüfen, ob eine nicht eingeladene, aber objektiv qualifizierte Anbieterin ebenfalls einen praktischen Nutzen aus der Verfahrenswiederholung ziehen kann. Da sie bei einem offenen Verfahren ein Angebot hätte einreichen können, dürfte ein schutzwürdiges Interesse grundsätzlich bejaht werden – allerdings müsste sie glaubhaft machen, dass sie zur Offerte fähig und bereit gewesen wäre. Dies könnte zu einer Ausweitung der Legitimation führen, die das Gericht mit Blick auf Verfahrenseffizienz sorgfältig begrenzen müsste."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die unterlegene Anbieterin A. AG, sondern ein Konkurrenzunternehmen, das nicht am Einladungsverfahren teilgenommen hatte und auch nicht eingeladen worden war, Beschwerde erhebt und die Feststellung der Rechtswidrigkeit des Einladungsverfahrens beantragt – vertreten durch die WEKO als Nebenintervenientin?",
+              "discussion_points": [
+                "Verfügt die WEKO als Behörde über eine eigenständige Beschwerdelegitimation nach Art. 89 Abs. 2 BGG, unabhängig von einem eigenen praktischen Nutzen?",
+                "Kann ein nicht am Verfahren beteiligtes Unternehmen ein schutzwürdiges Interesse geltend machen, wenn es keine konkreten Zuschlagschancen hatte?"
+              ],
+              "likely_outcome_shift": "Die WEKO besitzt gemäss Art. 89 Abs. 2 lit. a BGG und ihrer gesetzlichen Aufgabe (Schutz des freien Marktzugangs nach BGBM) eine eigenständige Beschwerdelegitimation, die nicht auf einen praktischen Nutzen im privatwirtschaftlichen Sinne angewiesen ist – wie das Verfahren 2C_920/2014 zeigt. Das nicht beteiligte Konkurrenzunternehmen hingegen wäre deutlich schwerer legitimiert, da es seinen praktischen Nutzen und seine Fähigkeit zur Angebotsstellung konkret darlegen müsste; ohne diese Darlegung würde das Bundesgericht auf die Beschwerde voraussichtlich nicht eintreten."
+            }
+          ]
         }
       ]
     },
@@ -65,7 +214,10 @@
       "name_de": "Beschwerderecht und Rechtsweggarantie",
       "name_fr": "Droit de recours et garantie de l'accès au juge",
       "name_it": "Diritto di ricorso e garanzia dell'accesso al giudice",
-      "statutes": ["Art. 29a BV", "Art. 6 EMRK"],
+      "statutes": [
+        "Art. 29a BV",
+        "Art. 6 EMRK"
+      ],
       "cases": [
         {
           "decision_id": "bge_147 III 586",
@@ -74,21 +226,93 @@
           "title_de": "Rechtsweggarantie — Zugang zum Gericht und Schiedsverfahren",
           "title_fr": "Garantie de l'accès au juge — arbitrage et assistance judiciaire",
           "title_it": "",
-          "concepts_de": ["Rechtsweggarantie", "Schiedsverfahren", "Unentgeltliche Rechtspflege", "Zugang zum Gericht"],
-          "concepts_fr": ["Garantie de l'accès au juge", "Arbitrage", "Assistance judiciaire"],
+          "concepts_de": [
+            "Rechtsweggarantie",
+            "Schiedsverfahren",
+            "Unentgeltliche Rechtspflege",
+            "Zugang zum Gericht"
+          ],
+          "concepts_fr": [
+            "Garantie de l'accès au juge",
+            "Arbitrage",
+            "Assistance judiciaire"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 29a BV", "Art. 6 EMRK"],
+          "statutes": [
+            "Art. 29a BV",
+            "Art. 6 EMRK"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Rechtsweggarantie im Schiedsverfahren: Der Ausschluss staatlicher unentgeltlicher Rechtspflege verletzt Art. 29a BV nicht, wenn andere Zugangsmöglichkeiten bestehen.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que l'exclusion de l'assistance judiciaire étatique dans les procédures arbitrales (art. 380 CPC) ne viole pas la garantie d'accès au juge selon l'art. 29a Cst. dès lors que d'autres solutions – notamment institutionnelles comme l'assistance pro bono du TAS – permettent effectivement à la partie indigente d'accéder à la juridiction arbitrale convenue.",
+          "significance_it": "Questa sentenza di principio stabilisce che l'esclusione del gratuito patrocinio statale nei procedimenti arbitrali (art. 380 CPC) non viola la garanzia dell'accesso al giudice ai sensi dell'art. 29a Cost., purché esistano altre soluzioni – in particolare istituzionali come l'assistenza pro bono del TAS – che consentano effettivamente alla parte indigente di accedere al tribunale arbitrale convenuto.",
+          "key_erwagungen": [
+            "4.4.1",
+            "4.4.2",
+            "5.1",
+            "5.2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste sorgfältig, um den Prüfungsrahmen zu erfassen, und konzentrieren Sie sich anschliessend auf die Erwägungen 4.4.1 und 4.4.2 zur Rechtsweggarantie sowie auf die Erwägungen 5.1 und 5.2 zur Beurteilung der gewährten Prozesskostenhilfe unter dem Gesichtspunkt von Art. 190 Abs. 2 lit. d IPRG. Der Sachverhalt (insbesondere Abschnitte A.b, A.c und B.a) liefert den faktischen Hintergrund zum Dopingverfahren und zur Prozesskostenhilfe, der für das Verständnis der rechtlichen Würdigung unerlässlich ist.",
+          "reading_guide_fr": "Commencez par lire attentivement le regeste afin de saisir le cadre d'examen, puis concentrez-vous sur les considérants 4.4.1 et 4.4.2 relatifs à la garantie d'accès au juge, ainsi que sur les considérants 5.1 et 5.2 concernant l'évaluation de l'assistance judiciaire accordée sous l'angle de l'art. 190 al. 2 let. d LDIP. Les faits (en particulier les sections A.b, A.c et B.a) fournissent le contexte factuel de la procédure antidopage et de l'assistance judiciaire, indispensable à la compréhension de l'analyse juridique.",
+          "reading_guide_it": "Leggere dapprima attentamente il regesto per comprendere il quadro di esame, poi concentrarsi sui considerandi 4.4.1 e 4.4.2 relativi alla garanzia dell'accesso al giudice e sui considerandi 5.1 e 5.2 riguardanti la valutazione del gratuito patrocinio concesso sotto il profilo dell'art. 190 cpv. 2 lett. d LDIP. I fatti (in particolare le sezioni A.b, A.c e B.a) forniscono il contesto fattuale del procedimento antidoping e del gratuito patrocinio, indispensabile per comprendere l'analisi giuridica.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 147 III 586 bezüglich der unentgeltlichen Rechtspflege im Schiedsverfahren entschieden, und welche Art von Prozesskostenhilfe erhielt der Beschwerdeführer tatsächlich vom TAS?",
+              "hint": "Siehe Regeste sowie Sachverhalt B.a: Die ICAS-Verfügung betreffend Prozesskostenhilfe und deren konkrete Ausgestaltung.",
+              "model_answer": "Das Bundesgericht entschied, dass der Ausschluss der staatlich gewährten unentgeltlichen Rechtspflege im Schiedsverfahren die Rechtsweggarantie gemäss Art. 29a BV nicht verletzt, sofern andere Zugangsmöglichkeiten bestehen. Der Beschwerdeführer erhielt vom ICAS nicht die volle staatliche Prozesskostenhilfe, sondern eine institutionelle Unterstützung in Form eines Pro-bono-Anwalts sowie einen Reisekostenbeitrag von Fr. 1'500.-, nicht jedoch die Finanzierung von Sachverständigengutachten."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlagen sind im vorliegenden Fall einschlägig, und welche Funktion übernimmt jeweils Art. 380 ZPO, Art. 29a BV sowie Art. 190 Abs. 2 lit. b und d IPRG im Prüfungsrahmen des Bundesgerichts?",
+              "hint": "Siehe Regeste und die dort aufgeführten Normen; Art. 380 ZPO regelt den Ausschluss der unentgeltlichen Rechtspflege im Schiedsverfahren, während Art. 190 IPRG die Anfechtungsgründe für internationale Schiedssprüche normiert.",
+              "model_answer": "Art. 380 ZPO schliesst die staatliche unentgeltliche Rechtspflege ausdrücklich für Schiedsverfahren aus und bildet den gesetzlichen Ausgangspunkt. Art. 29a BV gewährleistet die Rechtsweggarantie und dient als verfassungsrechtlicher Prüfmassstab dafür, ob trotz Schiedsvereinbarung ein Zugang zu staatlichen Gerichten erforderlich ist. Art. 190 Abs. 2 lit. b und d IPRG definieren die Anfechtungsgründe des internationalen Schiedsspruchs, namentlich die fehlende Zuständigkeit sowie die Verletzung des Grundsatzes der Waffengleichheit und des rechtlichen Gehörs."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, dem Beschwerdeführer wäre vom TAS keinerlei Prozesskostenhilfe gewährt worden und er hätte das Verfahren mangels finanzieller Mittel nicht durchführen können: Wie hätte das Bundesgericht die Frage der Rechtsweggarantie nach Art. 29a BV in diesem Fall voraussichtlich beurteilt?",
+              "hint": "Vgl. Erwägung 4.4.1 und 4.4.2: Das Bundesgericht stützt seine Verneinung einer Verletzung der Rechtsweggarantie massgeblich darauf, dass dem Beschwerdeführer tatsächlich Zugang zum Schiedsverfahren ermöglicht wurde.",
+              "model_answer": "Hätte der Beschwerdeführer keinerlei Prozesskostenhilfe erhalten und wäre er dadurch faktisch vom Schiedsverfahren ausgeschlossen gewesen, hätte das Bundesgericht eine Verletzung der Rechtsweggarantie ernstlich prüfen müssen. In Erwägung 4.4.2 betont das Gericht ausdrücklich, dass die Verneinung eines staatlichen Zugangs gerade darauf beruht, dass der Beschwerdeführer das TAS-Verfahren mit einem Pro-bono-Anwalt tatsächlich durchlaufen konnte. Ohne jeden Zugang wäre zu erörtern gewesen, ob die Schiedsvereinbarung unter dem Gesichtspunkt von Art. 29a BV einer Anpassung bedurft hätte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet BGE 147 III 586 zwischen dem verfassungsrechtlichen Anspruch auf Zugang zu einem Gericht (Art. 29a BV) und dem einfachgesetzlichen Anspruch auf staatliche unentgeltliche Rechtspflege, und welche Konsequenzen zieht das Bundesgericht aus dieser Unterscheidung für Schiedsverfahren?",
+              "hint": "Erwägungen 4.4.1 und 4.4.2 sind zentral; das Gericht trennt den Anspruch auf Zugang von der konkreten Ausgestaltung der Kostenhilfe.",
+              "model_answer": "Das Bundesgericht differenziert klar zwischen dem verfassungsrechtlichen Gebot, überhaupt Zugang zu einem gerichtlichen Verfahren zu haben (Art. 29a BV), und dem einfachgesetzlichen Anspruch auf staatlich finanzierte Prozesskostenhilfe (Art. 29 Abs. 3 BV i.V.m. kantonalem Recht). Art. 380 ZPO schliesst letzteren für Schiedsverfahren aus, ohne damit automatisch die Rechtsweggarantie zu verletzen. Das Gericht folgert daraus, dass Schiedsinstitutionen und Parteien gehalten sind, eigenständige Zugangsregelungen zu schaffen, und dass die Rechtsweggarantie erst dann verletzt ist, wenn mangels jeglicher alternativer Lösung ein effektiver Zugang zum vereinbarten Forum faktisch unmöglich wird."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Lösung des Bundesgerichts, den faktischen Zugang zum Schiedsverfahren mittels Pro-bono-Anwalt als hinreichende Erfüllung der Rechtsweggarantie zu werten, aus rechtspolitischer und grundrechtlicher Sicht überzeugend, oder bestehen strukturelle Bedenken gegenüber diesem Ansatz?",
+              "hint": "Berücksichtigen Sie die fehlende Finanzierung von Sachverständigengutachten (E. 5.2), die strukturelle Ungleichheit im Verhältnis zu einem internationalen Verband wie der UCI sowie die Anforderungen von Art. 6 Ziff. 1 EMRK an einen fairen Prozess.",
+              "model_answer": "Die Lösung des Bundesgerichts ist dogmatisch konsistent, wirft aber rechtspolitische Fragen auf: Zum einen hängt der Zugang zum Recht von der zufälligen Verfügbarkeit eines Pro-bono-Anwalts ab, was strukturell unsicher ist. Zum anderen blieb die Finanzierung von Sachverständigengutachten – in einem wissenschaftlich komplexen Dopingfall von erheblicher Bedeutung – ungesichert, was eine faktische Waffenungleichheit gegenüber dem gut ausgestatteten internationalen Verband UCI begründen könnte. Das Gericht verlagert damit die Verantwortung für den Zugang zum Recht von der staatlichen auf die institutionelle Ebene, ohne verbindliche Mindeststandards für die institutionelle Prozesskostenhilfe zu definieren, was im Hinblick auf Art. 6 Ziff. 1 EMRK und die Anforderung eines fairen Verfahrens kritisch zu würdigen ist."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der TAS hätte dem Beschwerdeführer zwar einen Pro-bono-Anwalt vermittelt, dieser aber hätte keine Spezialkenntnisse im Anti-Doping-Recht gehabt und wäre in der Dopinganalytik völlig unerfahren gewesen. Gleichzeitig hätte der Beschwerdeführer mangels Finanzierung keinen eigenen Sachverständigen beiziehen können, während die UCI drei Fachexperten einsetzte. Wie würde sich dies auf die Beurteilung nach Art. 190 Abs. 2 lit. d IPRG und Art. 6 Ziff. 1 EMRK auswirken?",
+              "discussion_points": [
+                "Reicht ein Pro-bono-Anwalt ohne fachspezifische Kenntnisse aus, um den Anforderungen an eine effektive Rechtsvertretung i.S.v. Art. 6 Ziff. 1 EMRK zu genügen?",
+                "Ab welcher Schwelle begründet das faktische Ungleichgewicht bei der Sachverständigenunterstützung eine anfechtbare Verletzung des Grundsatzes der Waffengleichheit gemäss Art. 190 Abs. 2 lit. d IPRG?"
+              ],
+              "likely_outcome_shift": "In diesem Szenario wäre die Bejahung einer Verletzung des Grundsatzes der Waffengleichheit und des ordre public erheblich wahrscheinlicher, da das Bundesgericht in E. 5.2 bereits die fehlende Sachverständigenfinanzierung kritisch betrachtete. Ein manifestes und krasses Ungleichgewicht sowohl bei der Rechtsvertretungsqualität als auch bei der Beweismittelerhebung dürfte die Schwelle zur Anfechtbarkeit des Schiedsspruchs nach Art. 190 Abs. 2 lit. d IPRG überschreiten."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht ein professioneller Radsportler, sondern ein Amateur-Athlet aus einem Entwicklungsland, der keinerlei Einnahmen aus dem Sport erzielt und dem kein Pro-bono-Anwalt vermittelt werden konnte, eine Schiedsklausel zugunsten des TAS unterzeichnet hätte und nun mangels Mitteln das Schiedsverfahren nicht betreiben kann? Würde das Bundesgericht in diesem Fall ebenfalls eine Verletzung von Art. 29a BV verneinen?",
+              "discussion_points": [
+                "Spielt die wirtschaftliche Abhängigkeit vom Sport bzw. das Bestehen eines professionellen Umfelds (Verein, Team, Agent) bei der Frage eine Rolle, ob die Schiedsvereinbarung faktisch freiwillig eingegangen wurde?",
+                "Ist die Rechtsweggarantie nach Art. 29a BV bei totalem Ausschluss vom Schiedsverfahren ohne jede institutionelle Alternative verletzt, und müsste das Bundesgericht den Weg zu staatlichen Gerichten trotz Schiedsvereinbarung öffnen?"
+              ],
+              "likely_outcome_shift": "In diesem Fall würde die vom Bundesgericht in E. 4.4.2 tragende Erwägung entfallen, dass dem Beschwerdeführer tatsächlich Zugang zum Schiedsverfahren verschafft wurde. Das Bundesgericht müsste konsequenterweise prüfen, ob die Schiedsvereinbarung mangels effektiven Zugangs zur Rechtsweggarantie gemäss Art. 29a BV weichen muss und dem mittellosen Amateur-Athleten der Weg zu staatlichen Gerichten zu öffnen wäre – ein Ergebnis, das das Gericht in BGE 147 III 586 ausdrücklich offenliess."
+            }
+          ]
         },
         {
           "decision_id": "bge_133 I 201",
@@ -97,21 +321,92 @@
           "title_de": "Zugang zum Gericht — Art. 6 EMRK und zivilrechtliche Ansprüche",
           "title_fr": "Accès au tribunal — art. 6 CEDH et droits de caractère civil",
           "title_it": "",
-          "concepts_de": ["Zugang zum Gericht", "Art. 6 EMRK", "Zivilrechtliche Ansprüche", "Verfahrensgarantien"],
-          "concepts_fr": ["Accès au tribunal", "Droits civils", "Garanties procédurales"],
+          "concepts_de": [
+            "Zugang zum Gericht",
+            "Art. 6 EMRK",
+            "Zivilrechtliche Ansprüche",
+            "Verfahrensgarantien"
+          ],
+          "concepts_fr": [
+            "Accès au tribunal",
+            "Droits civils",
+            "Garanties procédurales"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 29a BV", "Art. 6 EMRK"],
+          "statutes": [
+            "Art. 29a BV",
+            "Art. 6 EMRK"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Anwendungsbereich von Art. 6 EMRK: Grundsätze zur Bestimmung zivilrechtlicher Ansprüche und Sicherstellung des gerichtlichen Zugangs.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt pose le principe que toute décision administrative doit être notifiée directement à la personne titulaire du droit en cause, et qu'une transmission par l'intermédiaire d'un tiers – fût-il l'employeur – ne satisfait pas aux exigences du droit d'être entendu (art. 29 al. 2 Cst.) ni à l'interdiction de l'arbitraire (art. 9 Cst.), et que ce vice ne saurait être guéri par la seule notification d'une décision rendue par une instance de recours à cognition restreinte.",
+          "significance_it": "La sentenza stabilisce che ogni decisione amministrativa deve essere notificata direttamente al titolare del diritto in questione, e che la trasmissione tramite un terzo – fosse anche il datore di lavoro – non soddisfa le esigenze del diritto di essere sentiti (art. 29 cpv. 2 Cost.) né il divieto dell'arbitrio (art. 9 Cost.), e che tale vizio non può essere sanato dalla sola notifica di una decisione pronunciata da un'istanza di ricorso con cognizione limitata.",
+          "key_erwagungen": [
+            "2.1",
+            "2.3",
+            "1"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 2.1, welche die Eröffnungspflicht gegenüber der Arbeitnehmerin aus dem kantonalen Verfahrensrecht sowie aus Art. 9 und Art. 29 Abs. 2 BV herleitet. Erwägung 2.3 ist zentral für die Frage, ob der Eröffnungsmangel durch spätere Zustellung des verwaltungsgerichtlichen Entscheids geheilt werden kann – und warum die eingeschränkte Kognition der Rechtsmittelinstanz eine Heilung ausschliesst. Erwägung 1 gibt einen kompakten Überblick über die bundesgerichtliche Prüfungsdichte bei kantonalem Recht.",
+          "reading_guide_fr": "Commencez par le considérant 2.1, qui fonde l'obligation de notifier la décision directement à la travailleuse sur le droit de procédure cantonal ainsi que sur les art. 9 et 29 al. 2 Cst. Le considérant 2.3 est essentiel pour comprendre pourquoi le vice de notification ne peut pas être guéri par la simple communication ultérieure de la décision de l'instance de recours judiciaire, dont le pouvoir d'examen est limité. Le considérant 1 rappelle l'étendue du contrôle du Tribunal fédéral en matière de droit cantonal.",
+          "reading_guide_it": "Si raccomanda di leggere dapprima il considerando 2.1, che ricava l'obbligo di notifica diretta alla lavoratrice dal diritto processuale cantonale nonché dagli art. 9 e 29 cpv. 2 Cost. Il considerando 2.3 è fondamentale per comprendere perché il vizio di notifica non può essere sanato dalla semplice trasmissione della decisione dell'istanza giudiziaria di ricorso, il cui potere cognitivo è limitato. Il considerando 1 illustra la portata del controllo del Tribunale federale sul diritto cantonale.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der konkrete Verfahrensmangel, den das Bundesgericht in BGE 133 I 201 beanstandet hat, und welche Partei war davon betroffen?",
+              "hint": "Vgl. Sachverhalt A sowie E. 2.1 des Urteils.",
+              "model_answer": "Die Familienausgleichskasse hatte die Verfügung über Kinderzulagen nur an die Arbeitgeberin (Firma X.) gerichtet und dieser lediglich die Bitte mitgegeben, das Doppel der Verfügung an die Arbeitnehmerin (E.) weiterzuleiten. Die Arbeitnehmerin E. als eigentlich anspruchsberechtigte Person erhielt die Verfügung somit nicht direkt eröffnet. Das Bundesgericht erachtete dieses Vorgehen als verfahrensfehlerhaft."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Auf welche konkreten rechtlichen Grundlagen stützt das Bundesgericht seine Schlussfolgerung, dass die Verfügung zwingend der Arbeitnehmerin hätte eröffnet werden müssen?",
+              "hint": "Vgl. E. 2.1, insbesondere § 4 Abs. 1 KAZG/TG, § 20 Abs. 1 VRG/TG sowie Art. 9 und Art. 29 Abs. 2 BV.",
+              "model_answer": "Das Bundesgericht stützt sich erstens auf § 4 Abs. 1 KAZG/TG, wonach Arbeitnehmerinnen und Arbeitnehmer selbst anspruchsberechtigt sind, sowie auf § 20 Abs. 1 VRG/TG, der die Eröffnung von Entscheiden an alle Beteiligten und betroffenen Dritten schriftlich verlangt. Daraus leitet das Gericht ab, dass E. als Partei in das Verfahren einzubeziehen war. Die unterbliebene direkte Eröffnung verletzt das Willkürverbot (Art. 9 BV) und den Anspruch auf rechtliches Gehör (Art. 29 Abs. 2 BV)."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, eine kantonale Behörde erlässt eine Verfügung über Sozialhilfeleistungen und stellt diese nur dem gesetzlichen Vertreter der betroffenen Person zu, ohne der betroffenen Person selbst eine Kopie zu schicken. Wie würde das Bundesgericht diesen Fall gestützt auf BGE 133 I 201 beurteilen?",
+              "hint": "Wenden Sie die in E. 2.1 entwickelten Grundsätze zur Eröffnungspflicht auf den neuen Sachverhalt an.",
+              "model_answer": "Nach den in BGE 133 I 201 entwickelten Grundsätzen müsste eine Verfügung zwingend der direkt anspruchsberechtigten und betroffenen Person eröffnet werden. Die Zustellung an einen Vertreter allein ohne direkte Eröffnung an die betroffene Person würde – soweit diese handlungsfähig ist – in analoger Weise das Willkürverbot und den Anspruch auf rechtliches Gehör verletzen. Eine blosse Weiterleitung durch Dritte genügt nicht, um den verfahrensrechtlichen Schutzanspruch der betroffenen Person zu wahren."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Weshalb reichte es nach Auffassung des Bundesgerichts nicht aus, dass E. zumindest den Entscheid des Verwaltungsgerichts direkt zugestellt bekam, und welche strukturelle Schwäche des Rechtsmittelverfahrens liegt diesem Schluss zugrunde?",
+              "hint": "Vgl. E. 2.3 zur Frage der Heilung des Verfahrensmangels und zur eingeschränkten Kognition der Rechtsmittelinstanz.",
+              "model_answer": "Das Bundesgericht verneinte eine Heilung des Eröffnungsmangels, weil die Beschwerdeführerin 2 erst im Verfahren vor dem Verwaltungsgericht erstmals direkt angeschrieben wurde, dieses jedoch nur über eine eingeschränkte Kognition verfügte. Dadurch konnte E. die ursprüngliche Verfügung nicht mehr vollumfänglich anfechten und ihre Rechte nicht wirksam wahrnehmen. Die strukturelle Schwäche liegt darin, dass eine eingeschränkte Überprüfungskompetenz der Rechtsmittelinstanz den Verlust von Verfahrensgarantien auf erster Stufe nicht kompensieren kann, da bestimmte Rügen faktisch ausgeschlossen bleiben."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht vertretene strenge Haltung zur direkten Eröffnung von Verfügungen an alle betroffenen Personen aus rechtspolitischer Sicht überzeugend, oder gibt es gewichtige Gegenargumente, etwa im Hinblick auf Verfahrenseffizienz oder die Rolle des Arbeitgebers als Durchführungsorgan?",
+              "hint": "Berücksichtigen Sie E. 2.1 und E. 2.3 sowie die Funktion des Arbeitgebers im Kinderzulagensystem.",
+              "model_answer": "Die strenge Haltung des Bundesgerichts ist aus rechtsstaatlicher Sicht überzeugend, weil nur die direkte Eröffnung sicherstellt, dass die anspruchsberechtigte Person tatsächlich Kenntnis erlangt und ihre Rechtsmittelrechte wahrnehmen kann. Das Gegenargument der Verfahrenseffizienz – der Arbeitgeber als zentraler Ansprechpartner im Beitragssystem – hat zwar praktischen Charme, vermag aber den grundrechtlichen Anspruch auf rechtliches Gehör nicht zu verdrängen. Gerade das Abhängigkeitsverhältnis zwischen Arbeitnehmer und Arbeitgeber macht deutlich, warum die Weiterleitung durch den Arbeitgeber kein verlässliches Substitut für eine behördliche Eröffnung ist."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Wie würde sich die Beurteilung ändern, wenn E. nachweislich Kenntnis von der Verfügung erhalten hätte, weil die Arbeitgeberin ihr das Doppel tatsächlich übergeben und E. daraufhin den Inhalt ausdrücklich zur Kenntnis genommen hatte – dies aber erst nach Ablauf der Rekursfrist?",
+              "discussion_points": [
+                "Kann tatsächliche Kenntnis den formellen Eröffnungsmangel heilen, insbesondere im Hinblick auf den Fristenlauf für Rechtsmittel?",
+                "Welche Anforderungen stellt Art. 29 Abs. 2 BV an die Wirksamkeit einer Eröffnung und ab welchem Zeitpunkt beginnt die Rechtsmittelfrist zu laufen?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht hätte möglicherweise differenzieren müssen, ob eine faktische Kenntnisnahme den formellen Mangel für Fristzwecke zu heilen vermag. Da das Willkürverbot und Art. 29 Abs. 2 BV die behördliche Eröffnung als formellen Akt verlangen, dürfte eine bloss private Weiterleitung den Fristenlauf nicht in Gang setzen – E. könnte also auch bei nachgewiesener Kenntnis noch Rechtsmittel ergreifen, solange keine ordnungsgemässe Eröffnung erfolgte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Arbeitnehmerin E., sondern der Arbeitgeber (Firma X.) der eigentliche Anspruchsinhaber der Kinderzulagen wäre – etwa weil das kantonale Recht vorsähe, dass Zulagen direkt an den Arbeitgeber zur Auszahlung an Arbeitnehmer ausgerichtet werden und nur dem Arbeitgeber ein eigenes Klagerecht zustünde?",
+              "discussion_points": [
+                "Würde sich an der Frage der Eröffnungspflicht etwas ändern, wenn der Arbeitgeber selbst Partei des Verwaltungsverfahrens und unmittelbar in seinen Rechten betroffen wäre?",
+                "Inwiefern hätte eine solche Konstruktion Auswirkungen auf den grundrechtlichen Schutz der Arbeitnehmerin, insbesondere auf Art. 29a BV und das Recht auf Zugang zu einem Gericht?"
+              ],
+              "likely_outcome_shift": "Wäre der Arbeitgeber formell der alleinige Anspruchsinhaber, entfiele die Pflicht zur direkten Eröffnung gegenüber E., weil diese nicht Partei des Verfahrens wäre. Allerdings entstünde eine neue Problematik: E. hätte möglicherweise kein eigenständiges Rechtsmittelrecht, was im Lichte von Art. 29a BV und Art. 6 EMRK bedenklich sein könnte, falls ihre zivilrechtlichen Interessen an den Zulagen materiell berührt sind. Das Bundesgericht müsste dann prüfen, ob E. dennoch einen verfassungs- oder konventionsrechtlichen Anspruch auf Zugang zu einem Gericht hätte."
+            }
+          ]
         }
       ]
     },
@@ -120,7 +415,10 @@
       "name_de": "Kognition und Verhältnismässigkeit",
       "name_fr": "Cognition et proportionnalité",
       "name_it": "Cognizione e proporzionalità",
-      "statutes": ["Art. 9 BV", "Art. 95 BGG"],
+      "statutes": [
+        "Art. 9 BV",
+        "Art. 95 BGG"
+      ],
       "cases": [
         {
           "decision_id": "bge_137 II 40",
@@ -129,21 +427,95 @@
           "title_de": "Kognition des Bundesgerichts bei Ermessen — Art. 95 BGG",
           "title_fr": "Pouvoir d'examen du Tribunal fédéral en matière de libre appréciation",
           "title_it": "",
-          "concepts_de": ["Kognition", "Ermessen", "Bundesrecht", "Art. 95 BGG", "Willkür"],
-          "concepts_fr": ["Pouvoir d'examen", "Libre appréciation", "Droit fédéral"],
+          "concepts_de": [
+            "Kognition",
+            "Ermessen",
+            "Bundesrecht",
+            "Art. 95 BGG",
+            "Willkür"
+          ],
+          "concepts_fr": [
+            "Pouvoir d'examen",
+            "Libre appréciation",
+            "Droit fédéral"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 95 BGG"],
+          "statutes": [
+            "Art. 95 BGG"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Kognition des Bundesgerichts bei Ermessensentscheiden: Das Bundesgericht überprüft nur Bundesrechtsverletzungen, nicht die Angemessenheit des Ermessens.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt établit que la qualité pour agir devant le Tribunal fédéral (art. 89 al. 1 LTF) exige un intérêt personnel et concret, de sorte que le plaignant populaire au sens de l'art. 94 al. 2 LRTV ne dispose pas de la qualité pour recourir au-delà de l'Autorité indépendante.",
+          "significance_it": "La sentenza stabilisce che la legittimazione al ricorso dinanzi al Tribunale federale (art. 89 cpv. 1 LTF) richiede un interesse personale e concreto, cosicché chi ha presentato un'azione popolare ai sensi dell'art. 94 cpv. 2 LRTV non ha la facoltà di adire il Tribunale federale oltre l'Autorità indipendente.",
+          "key_erwagungen": [
+            "2.1",
+            "2.2",
+            "2.3",
+            "2.4",
+            "2.5",
+            "2.6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 2.2, um die Unterscheidung zwischen Individualbeschwerde und Popularbeschwerde im RTVG zu verstehen. Prüfen Sie dann E. 2.1 zur Frage des aktuellen Rechtsschutzinteresses, die das Bundesgericht ausdrücklich offenliess. Schliesslich zeigen E. 2.3 bis 2.6 (im nicht zitierten Teil), wie das Bundesgericht die Anforderungen von Art. 89 Abs. 1 BGG konkret auf die verschiedenen Beschwerdeführergruppen angewandt hat.",
+          "reading_guide_fr": "Commencez par le considérant 2.2 pour saisir la distinction entre recours individuel et plainte populaire dans la LRTV. Examinez ensuite le considérant 2.1, où le Tribunal fédéral laisse ouverte la question de l'intérêt actuel à recourir. Les considérants 2.3 à 2.6 (non reproduits intégralement) précisent comment les conditions de l'art. 89 al. 1 LTF ont été appliquées aux différents groupes de recourants.",
+          "reading_guide_it": "Iniziare con il considerando 2.2 per comprendere la distinzione tra ricorso individuale e azione popolare nell'ambito della LRTV. Esaminare poi il considerando 2.1, dove il Tribunale federale lascia aperta la questione dell'interesse attuale al ricorso. I considerandi 2.3–2.6 illustrano come i requisiti dell'art. 89 cpv. 1 LTF siano stati applicati ai diversi gruppi di ricorrenti.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 137 II 40 in Bezug auf die Beschwerdelegitimation der Popularklage vor dem Bundesgericht entschieden?",
+              "hint": "Siehe E. 2.2, letzter Absatz des zitierten Entscheidtextes.",
+              "model_answer": "Das Bundesgericht hat festgestellt, dass die im RTVG vorgesehene Popularbeschwerde (Art. 94 Abs. 2 RTVG) ausschliesslich den Zugang zur Unabhängigen Beschwerdeinstanz (UBI) eröffnet, nicht aber den Weiterzug ans Bundesgericht. Ein Popularbeschwerdeführer hat keine Beschwerdelegitimation im Sinne von Art. 89 Abs. 1 BGG vor dem Bundesgericht, weil ihm das schutzwürdige persönliche Interesse fehlt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen regeln die Beschwerdelegitimation vor dem Bundesgericht und vor der UBI, und wie unterscheiden sie sich voneinander in Bezug auf das persönliche Interesse?",
+              "hint": "Vgl. Art. 89 Abs. 1 BGG sowie Art. 94 Abs. 1 und 2 RTVG, diskutiert in E. 2.2.",
+              "model_answer": "Art. 89 Abs. 1 BGG verlangt für die Beschwerde ans Bundesgericht ein schutzwürdiges persönliches Interesse an der Aufhebung oder Änderung des angefochtenen Entscheids. Art. 94 Abs. 1 RTVG setzt ebenfalls voraus, dass der Beschwerdeführer nachweist, die beanstandete Sendung betreffe ihn besonders. Art. 94 Abs. 2 RTVG lässt demgegenüber eine Popularbeschwerde zu, bei der 20 Mitunterzeichner genügen und kein persönliches Interesse nachgewiesen werden muss – eine Ausnahme, die jedoch nicht auf das Bundesgericht übertragbar ist."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie würde das Bundesgericht die Beschwerdelegitimation von Frau X beurteilen, die zwar eine der 61 Mitunterzeichnerinnen der Popularbeschwerde war, nun aber behauptet, sie sei als Mutter von drei Kindern besonders von der Tabakwerbung im Fernsehen betroffen?",
+              "hint": "Prüfen Sie Art. 89 Abs. 1 BGG und die Anforderungen an das schutzwürdige persönliche Interesse gemäss E. 2.2 und 2.3.",
+              "model_answer": "Das Bundesgericht würde prüfen, ob Frau X ein schutzwürdiges persönliches Interesse im Sinne von Art. 89 Abs. 1 BGG nachweisen kann, das über das allgemeine Interesse der Öffentlichkeit hinausgeht. Die blosse Elternschaft begründet in der Regel kein hinreichend spezifisches persönliches Interesse, das sie von der Allgemeinheit unterscheidet. Mangels individueller, besonderer Betroffenheit durch die beanstandeten Sendeausschnitte dürfte das Bundesgericht auf ihre Beschwerde nicht eintreten."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum hat der Gesetzgeber im RTVG eine Popularbeschwerde vor der UBI zugelassen, und welche systematischen Gründe sprechen dafür, dass diese Möglichkeit nicht automatisch den Weiterzug ans Bundesgericht umfasst?",
+              "hint": "Vgl. E. 2.2, insbesondere die Hinweise auf die Botschaft des Bundesrates und ATF 134 II 260.",
+              "model_answer": "Die Popularbeschwerde vor der UBI wurde eingeführt, weil das Verfahren vor dieser Instanz nicht primär dem Schutz individueller Rechte dient, sondern ein Instrument der staatlichen Aufsicht über die Einhaltung der rundfunkrechtlichen Programmvorschriften ist. Das Bundesgericht hingegen ist ein Rechtsmittelgericht zum Schutz subjektiver Rechte, weshalb Art. 89 Abs. 1 BGG ein persönliches, schutzwürdiges Interesse verlangt. Die Popularklage würde den Charakter des Bundesgerichts als Rechtsschutzinstanz in ein Aufsichtsorgan verwandeln, was dem institutionellen Aufgabenverständnis widerspricht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass der Weg zur Popularbeschwerde bei der UBI endet und kein Weiterzug ans Bundesgericht möglich ist, oder schafft dies eine unbefriedigende Lücke im Rechtsschutz bei Verstössen gegen Programmvorschriften zum Schutz der öffentlichen Gesundheit?",
+              "hint": "Beachten Sie E. 2.1 (aktuelles Rechtsschutzinteresse), E. 2.2 (Zweck der Popularbeschwerde) und den Hinweis auf die WHO-Rahmenkonvention.",
+              "model_answer": "Einerseits ist die Beschränkung der Popularbeschwerde auf die UBI systematisch kohärent, da das Bundesgericht als Hüterin subjektiver Rechte nicht zum allgemeinen Kontrollgremium für Programmvorschriften werden soll. Andererseits kann dies im Bereich des Gesundheitsschutzes – etwa bei der Tabakwerbung, die kollektive Interessen berührt – zu einer Schutzlücke führen, insbesondere wenn keine staatliche Stelle von Amtes wegen einschreitet. Eine rechtspolitische Alternative wäre, das Beschwerderecht anerkannter Organisationen im Gesundheitsbereich gemäss Art. 89 Abs. 2 lit. d BGG auszubauen, was jedoch eine explizite gesetzgeberische Entscheidung erforderte."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Beschwerdeführerin Oxyromandie wäre nicht nur eine Verein ohne besondere gesetzliche Grundlage, sondern eine durch Bundesgesetz anerkannte Organisation mit spezifischem Beschwerderecht im Gesundheitsbereich (analog Art. 89 Abs. 2 lit. d BGG). Würde dies die Eintretensfrage verändern?",
+              "discussion_points": [
+                "Art. 89 Abs. 2 lit. d BGG erlaubt Bundesgesetzen, bestimmten Organisationen ein Beschwerderecht einzuräumen, das vom allgemeinen Erfordernis eines persönlichen Interesses abweicht.",
+                "Das RTVG selbst sieht ein solches Verbandsbeschwerderecht für Gesundheitsorganisationen nicht vor; es müsste ausdrücklich im einschlägigen Bundesgesetz verankert sein."
+              ],
+              "likely_outcome_shift": "Wäre Oxyromandie durch ein Bundesgesetz ausdrücklich mit einem Beschwerderecht ausgestattet, könnte das Bundesgericht auf die Beschwerde eintreten, ohne dass ein persönliches Interesse nachgewiesen werden müsste. Das Ergebnis in der Sache wäre davon aber unabhängig und würde von der materiellen Prüfung der behaupteten RTVG-Verletzung abhängen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht eine Anti-Tabak-Vereinigung, sondern der Tabakkonzern Oettinger Davidoff selbst gegen die Entscheidung der UBI Beschwerde ans Bundesgericht erheben würde, weil er der Ansicht ist, seine Marke sei durch die negative Berichterstattung der UBI-Entscheidung geschädigt worden?",
+              "discussion_points": [
+                "Als direkt betroffenes Unternehmen, dessen Marke Gegenstand des UBI-Verfahrens war, hätte Davidoff potenziell ein schutzwürdiges persönliches wirtschaftliches Interesse im Sinne von Art. 89 Abs. 1 BGG.",
+                "Es wäre zu prüfen, ob Davidoff am vorinstanzlichen Verfahren beteiligt war und ob die UBI-Entscheidung Rechtswirkungen gegenüber Davidoff entfaltet oder ob nur die SRG SSR als Adressatin der Entscheidung beschwerdelegitimiert wäre."
+              ],
+              "likely_outcome_shift": "Im Gegensatz zu den Popularbeschwerdeführern könnte Davidoff als Markeninhaber, dessen Logo Gegenstand des Verfahrens war, eher ein hinreichend individuelles Interesse geltend machen. Das Bundesgericht müsste aber prüfen, ob Davidoff formell Parteistellung im UBI-Verfahren hatte; ohne Beteiligung am Vorverfahren würde wohl auch hier auf die Beschwerde nicht eingetreten."
+            }
+          ]
         },
         {
           "decision_id": "bge_142 I 155",
@@ -152,21 +524,95 @@
           "title_de": "Verhältnismässigkeit im öffentlichen Recht",
           "title_fr": "Proportionnalité en droit public",
           "title_it": "",
-          "concepts_de": ["Verhältnismässigkeit", "Eignung", "Erforderlichkeit", "Zumutbarkeit", "Art. 36 BV"],
-          "concepts_fr": ["Proportionnalité", "Aptitude", "Nécessité", "Raisonnabilité"],
+          "concepts_de": [
+            "Verhältnismässigkeit",
+            "Eignung",
+            "Erforderlichkeit",
+            "Zumutbarkeit",
+            "Art. 36 BV"
+          ],
+          "concepts_fr": [
+            "Proportionnalité",
+            "Aptitude",
+            "Nécessité",
+            "Raisonnabilité"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 36 BV"],
+          "statutes": [
+            "Art. 36 BV"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Verhältnismässigkeit von Grundrechtseingriffen: Dreistufige Prüfung (Eignung, Erforderlichkeit, Zumutbarkeit) als Kernstück des Rechtsstaatsprinzips.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt précise que, sous le régime de la LTF, de nouveaux moyens juridiques — y compris des griefs constitutionnels — peuvent en principe être soulevés pour la première fois devant le Tribunal fédéral, pour autant qu'ils reposent sur les faits retenus par l'instance précédente et n'élargissent pas l'objet du litige.",
+          "significance_it": "Questa sentenza chiarisce che, nel regime della LTF, nuovi argomenti giuridici — incluse censure costituzionali — possono in linea di principio essere invocati per la prima volta davanti al Tribunale federale, a condizione che si basino sui fatti accertati dall'istanza precedente e non amplino l'oggetto della controversia.",
+          "key_erwagungen": [
+            "4.4.1",
+            "4.4.2",
+            "4.4.3",
+            "4.4.4",
+            "4.4.5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 4.4.2, um das Verhältnis von Anfechtungsobjekt und Streitgegenstand zu verstehen, bevor Sie sich E. 4.4.3 zuwenden, wo das Bundesgericht die fehlende gesetzliche Grundlage für einen Rügenverschluss herausarbeitet. E. 4.4.4 bietet den historischen Kontext unter der alten OJ und verdeutlicht, welche Neuerung das BGG-Regime mit sich gebracht hat.",
+          "reading_guide_fr": "Commencez par le consid. 4.4.2 pour saisir la distinction entre l'objet de la contestation et l'objet du litige, puis passez au consid. 4.4.3 où le Tribunal fédéral démontre l'absence de base légale pour exclure de nouveaux moyens juridiques. Le consid. 4.4.4 replace la question dans son contexte historique sous l'ancienne OJ et illustre l'évolution apportée par la LTF.",
+          "reading_guide_it": "Si raccomanda di iniziare con il consid. 4.4.2 per comprendere la distinzione tra oggetto dell'impugnazione e oggetto della controversia, per poi esaminare il consid. 4.4.3, dove il Tribunale federale evidenzia l'assenza di una base legale che escluda nuove allegazioni giuridiche. Il consid. 4.4.4 fornisce il contesto storico sotto il vecchio OG e chiarisce le novità introdotte dalla LTF.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 142 I 155 unter dem Begriff des 'Streitgegenstands' (objet du litige) und wie unterscheidet es diesen vom 'Anfechtungsobjekt' (objet de la contestation)?",
+              "hint": "Vgl. E. 4.4.2, insbesondere den Verweis auf ATF 136 II 457 und ATF 125 V 413.",
+              "model_answer": "Das Anfechtungsobjekt wird durch den angefochtenen Entscheid der Vorinstanz bestimmt und bildet den äusseren Rahmen, innerhalb dessen sich das Verfahren vor Bundesgericht abspielt. Der Streitgegenstand hingegen wird durch die Parteibegehren abgegrenzt und kann gegenüber dem Anfechtungsobjekt eingeschränkt, nicht aber erweitert oder verändert werden. Diese Unterscheidung ist zentral, weil sie bestimmt, welche Rügen vor Bundesgericht überhaupt zulässig sind."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzliche Regelung des BGG betrifft die Zulässigkeit neuer rechtlicher Argumente vor Bundesgericht, und welche Regelungen schliessen das Gericht ausdrücklich aus?",
+              "hint": "Vgl. E. 4.4.3 mit Blick auf Art. 99 Abs. 1, Abs. 2 und Art. 106 Abs. 1 BGG.",
+              "model_answer": "Das BGG schliesst neue Begehren (Art. 99 Abs. 2 BGG) stets und neue Tatsachen sowie Beweismittel (Art. 99 Abs. 1 BGG) grundsätzlich aus. Hinsichtlich neuer Rechtsargumente enthält das BGG hingegen keine ausdrückliche Einschränkung, weshalb Art. 106 Abs. 1 BGG (Rechtsanwendung von Amtes wegen) als Grundlage dient. Daraus folgert das Bundesgericht, dass neue rechtliche Vorbringen grundsätzlich zulässig sind, sofern sie auf dem festgestellten Sachverhalt beruhen und die Begehren weder erweitern noch verändern."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Die Beschwerdeführerin X. SA rügt erstmals vor Bundesgericht eine Verletzung von Art. 127 BV. Prüfen Sie anhand der in E. 4.4.3 entwickelten Kriterien, ob diese neue Verfassungsrüge zulässig ist.",
+              "hint": "Vgl. E. 4.4.1 zum Sachverhalt und E. 4.4.3 zu den massgeblichen Voraussetzungen.",
+              "model_answer": "Gemäss E. 4.4.3 ist ein neues Rechtsargument vor Bundesgericht grundsätzlich zulässig, wenn es sich auf den von der Vorinstanz festgestellten Sachverhalt stützt und die Begehren nicht erweitert oder verändert. Im vorliegenden Fall beruht die neue Rüge der Verletzung von Art. 127 BV auf demselben Sachverhalt, der bereits Gegenstand des kantonalen Verfahrens war, und geht nicht über die vorinstanzlichen Rechtsbegehren hinaus. Die Rüge müsste demnach grundsätzlich als zulässig betrachtet werden, wobei ergänzend zu prüfen bleibt, ob besondere Gründe wie das Gebot von Treu und Glauben der Zulassung entgegenstehen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht stellt in E. 4.4.4 fest, dass unter der alten OJ neue Verfassungsrügen nur beschränkt zulässig waren. Welche ratio legis stand hinter dieser strengeren Praxis, und weshalb rechtfertigt das neue BGG-Regime eine Lockerung dieser Anforderungen?",
+              "hint": "Vgl. E. 4.4.4 zur alten Rechtslage unter der OJ sowie E. 4.4.3 zur neuen Konzeption des BGG.",
+              "model_answer": "Unter der OJ diente die Einschränkung neuer Verfassungsrügen primär dem Schutz vor dilatorischen Manövern und der Sicherstellung, dass kantonale Instanzen die Möglichkeit erhalten, Grundrechtsfragen selbst zu prüfen. Das BGG hat demgegenüber eine klare Trennung zwischen neuen Tatsachen (ausgeschlossen) und neuen Rechtsargumenten (grundsätzlich zulässig) eingeführt, gestützt auf den Grundsatz der Rechtsanwendung von Amtes wegen nach Art. 106 Abs. 1 BGG. Da das Bundesgericht das Recht ohnehin von Amtes wegen anwendet, erscheint es systemkonform, neue rechtliche Argumente zuzulassen, solange der Streitgegenstand nicht ausgeweitet wird und der Sachverhalt unverändert bleibt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht präzisiert in BGE 142 I 155 seine Rechtsprechung zur Zulässigkeit neuer Verfassungsrügen. Beurteilen Sie kritisch, ob diese Präzisierung aus Sicht der Rechtssicherheit, der Prozessökonomie und des Grundsatzes von Treu und Glauben überzeugend ist.",
+              "hint": "Vgl. E. 4.4.3 und E. 4.4.4 sowie das Spannungsverhältnis zwischen Art. 106 Abs. 1 BGG und dem Erschöpfungserfordernis.",
+              "model_answer": "Die Präzisierung des Bundesgerichts ist dogmatisch kohärent, weil sie die fehlende gesetzliche Grundlage für einen Rügenverschluss im BGG ernst nimmt und den Grundsatz der Rechtsanwendung von Amtes wegen konsequent anwendet. Kritisch einzuwenden ist jedoch, dass die Zulassung neuer Verfassungsrügen erst vor Bundesgericht kantonale Instanzen um die Möglichkeit bringt, Grundrechtsverletzungen zu beheben, was dem Subsidiaritätsprinzip zuwiderläuft und das Bundesgericht mit erstinstanzlichen Verfassungsprüfungen belasten kann. Aus der Perspektive von Treu und Glauben erscheint die Lösung dann problematisch, wenn eine Partei strategisch Rügen zurückgehalten hat; das Bundesgericht trägt dem durch den Vorbehalt gegen treuwidriges Verhalten Rechnung, was jedoch im Einzelfall schwer handhabbar bleibt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Beschwerdeführerin X. SA hätte die Rüge der Verletzung von Art. 127 BV bereits vor der kantonalen Instanz explizit erhoben, diese hätte den Punkt jedoch ohne Begründung stillschweigend übergangen. Ändert sich die Zulässigkeitsprüfung vor Bundesgericht, und welche Konsequenzen hätte dies für die Begründungspflicht des Bundesgerichts?",
+              "discussion_points": [
+                "Verhältnis von Art. 106 Abs. 1 BGG zur Rügepflicht bei Verfassungsverletzungen (Art. 106 Abs. 2 BGG)",
+                "Frage der formellen Rechtsverweigerung durch die kantonale Instanz und deren Bedeutung für die bundesgerichtliche Kognition"
+              ],
+              "likely_outcome_shift": "Hätte die Beschwerdeführerin die Verfassungsrüge bereits kantonalinstanzlich vorgebracht, wäre das Argument der treuwidrigen Taktik von vornherein hinfällig, und die Zulässigkeit vor Bundesgericht stünde ausser Zweifel. Zugleich könnte das Bundesgericht prüfen, ob die Vorinstanz durch die stillschweigende Nichtbehandlung des Rügepunkts den Gehörsanspruch (Art. 29 Abs. 2 BV) verletzt hat, was zu einer Rückweisung führen könnte, statt der direkten Sachentscheidung."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht eine privatrechtliche Aktiengesellschaft (X. SA), sondern eine ausländische Kapitalgesellschaft mit Schweizer Zweigniederlassung wäre Beschwerdeführerin und hätte erstmals vor Bundesgericht geltend gemacht, die kantonale Abgabe verstosse gegen das Diskriminierungsverbot aus einem anwendbaren Staatsvertrag (anstelle von Art. 127 BV). Wie verändert sich die Zulässigkeitsprüfung?",
+              "discussion_points": [
+                "Frage, ob staatsvertragliche Rügen denselben Zulässigkeitskriterien wie Verfassungsrügen unterliegen oder ob besondere Regeln gelten",
+                "Bedeutung von Art. 95 BGG (Bundesrecht einschliesslich Völkerrecht) für die Kognition des Bundesgerichts bei neuen staatsvertraglichen Argumenten"
+              ],
+              "likely_outcome_shift": "Da Art. 106 Abs. 1 BGG das Bundesgericht zur Rechtsanwendung von Amtes wegen verpflichtet und Völkerrecht zum anwendbaren Bundesrecht zählt (Art. 95 lit. b BGG), dürfte die Zulässigkeitsschwelle für neue staatsvertragliche Rügen ähnlich tief angesetzt werden wie für neue verfassungsrechtliche Argumente. Allerdings könnten spezifische Erschöpfungsregeln des anwendbaren Staatsvertrags oder des internationalen Verfahrensrechts zusätzliche Hürden schaffen, was eine differenziertere Analyse erfordern würde als im vorliegenden rein innerstaatlichen Kontext."
+            }
+          ]
         },
         {
           "decision_id": "bge_138 I 274",
@@ -175,21 +621,96 @@
           "title_de": "Willkür im Verwaltungsrecht — Art. 9 BV",
           "title_fr": "Arbitraire en droit administratif — art. 9 Cst.",
           "title_it": "",
-          "concepts_de": ["Willkür", "Art. 9 BV", "Verwaltungsrecht", "Sachverhaltsrüge"],
-          "concepts_fr": ["Arbitraire", "Droit administratif", "Établissement des faits"],
+          "concepts_de": [
+            "Willkür",
+            "Art. 9 BV",
+            "Verwaltungsrecht",
+            "Sachverhaltsrüge"
+          ],
+          "concepts_fr": [
+            "Arbitraire",
+            "Droit administratif",
+            "Établissement des faits"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 9 BV"],
+          "statutes": [
+            "Art. 9 BV"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Willkürbegriff nach Art. 9 BV im Verwaltungsrecht: Ein Entscheid ist willkürlich, wenn er offensichtlich unhaltbar ist oder dem Gerechtigkeitsgedanken grob widerspricht.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt consacre l'interdiction pour les CFF d'édicter une prohibition générale d'affichage fondée sur le contenu politique ou thématique des affiches, en raison de leur soumission aux droits fondamentaux (art. 35 al. 2 Cst.) et du droit à la liberté d'expression (art. 16 al. 2 Cst.).",
+          "significance_it": "Questa sentenza stabilisce che le FFS non possono vietare in modo generale l'affissione di manifesti in base al loro contenuto politico o tematico, poiché sono vincolate ai diritti fondamentali (art. 35 cpv. 2 Cost.) e alla libertà di opinione (art. 16 cpv. 2 Cost.).",
+          "key_erwagungen": [
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+            "2.2",
+            "2.3",
+            "3.4",
+            "3.5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 275–276), um die tatsächliche Ausgangslage zu verstehen. Konzentrieren Sie sich dann auf E. 1.1–1.4 zur Abgrenzung von öffentlichem und privatem Recht sowie auf E. 2.2–2.3 zur Grundrechtsbindung der SBB und zur Nutzung öffentlicher Sachen. Abschliessend sind E. 3.4 und 3.5 zentral für das Verbot inhaltsbezogener Plakatsperren und die Beurteilung des konkreten Plakats.",
+          "reading_guide_fr": "Commencez par lire les faits (p. 275–276) afin de saisir la situation de départ. Concentrez-vous ensuite sur les consid. 1.1–1.4 concernant la délimitation entre droit public et droit privé, puis sur les consid. 2.2–2.3 relatifs à la soumission des CFF aux droits fondamentaux et à l'utilisation des choses publiques. Enfin, les consid. 3.4 et 3.5 sont essentiels pour comprendre l'interdiction des restrictions de contenu et l'appréciation de l'affiche litigieuse.",
+          "reading_guide_it": "Iniziate leggendo i fatti (p. 275–276) per comprendere la situazione di partenza. Concentratevi poi sui consid. 1.1–1.4 sulla distinzione tra diritto pubblico e privato, nonché sui consid. 2.2–2.3 sul vincolo delle FFS ai diritti fondamentali e sull'uso delle cose pubbliche. I consid. 3.4 e 3.5 sono infine determinanti per il divieto di restrizioni basate sul contenuto e per la valutazione del manifesto contestato.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist in diesem Fall konkret passiert, und warum haben die SBB das Plakat nach drei Tagen entfernen lassen?",
+              "hint": "Sachverhalt, Abschnitt A",
+              "model_answer": "A. beauftragte die APG, ein Plakat im ShopVille-RailCity (Bahnhof Zürich) auszuhängen, das sich gegen die israelische Siedlungspolitik richtete. Nach drei Tagen veranlassten die SBB am 26. März 2009 die sofortige Entfernung. Die SBB erliessen später eine Verfügung, die den weiteren Aushang förmlich untersagte, da sie offenbar aussenpolitisch heikle Inhalte aus ihren Anlagen fernhalten wollten."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche verfassungsrechtlichen Normen sind gemäss dem Bundesgericht im vorliegenden Fall massgebend, und warum sind die SBB überhaupt grundrechtsgebunden?",
+              "hint": "Regeste sowie E. 2.2",
+              "model_answer": "Das Bundesgericht stützt sich auf Art. 16 Abs. 2 BV (Meinungsäusserungsfreiheit) sowie Art. 35 Abs. 2 BV, der vorsieht, dass staatliche Organe und Träger öffentlicher Aufgaben die Grundrechte zu achten haben. Die SBB sind grundrechtsgebunden, weil sie als bundesnaher Betrieb öffentliche Aufgaben wahrnehmen und damit als staatliche Akteure im Sinne von Art. 35 Abs. 2 BV gelten."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie unterscheidet das Bundesgericht zwischen der Bezeichnung von Plakatanschlagstellen einerseits und der Prüfung einzelner Plakate andererseits, und welche Konsequenzen hat diese Unterscheidung für den vorliegenden Fall?",
+              "hint": "E. 2.3",
+              "model_answer": "Das Bundesgericht hält fest, dass die SBB bei der Festlegung von Plakatanschlagstellen eine umfassende Interessenabwägung vornehmen müssen. Sind diese Stellen jedoch einmal bezeichnet, darf ein einzelnes Plakat nur noch unter polizeilichen Gesichtspunkten (d.h. auf Verstösse gegen die öffentliche Ordnung, Sicherheit, Sittlichkeit usw.) geprüft werden. Im vorliegenden Fall hatten die SBB entsprechende Stellen ausgewiesen, weshalb das Plakat nur noch polizeirechtlich zu beurteilen war – und es dabei nicht zu beanstanden gab."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Weshalb lehnte das Bundesgericht die Argumentation der SBB ab, wonach es sich beim Plakatierungsstreit um eine privatrechtliche Angelegenheit handle, und welche Methoden zog es zur Abgrenzung von öffentlichem und privatem Recht heran?",
+              "hint": "E. 1.1–1.4",
+              "model_answer": "Das Bundesgericht wendete einen Methodenpluralismus an (Interessen-, Funktions-, Subordinationstheorie) und prüfte in concreto, welches Kriterium den Gegebenheiten am besten gerecht wird. Es befand, dass die Regelung der ausserordentlichen Nutzung öffentlicher Sachen im engeren Sinne – also der Bahnhofsinfrastruktur – ihrem Wesen nach öffentlich-rechtlicher Natur ist. Die unternehmerische Freiheit, die den SBB durch die Bahnreform 1 eingeräumt wurde, ändert daran nichts, da die Zulassung zur Plakatierung auf öffentlichem Grund kein rein privatwirtschaftlicher Vorgang ist."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist das vom Bundesgericht statuierte generelle Verbot, aussenpolitisch thematische Plakate in Bahnhöfen zu untersagen, aus rechtspolitischer Sicht überzeugend, und wie lässt es sich mit dem Interesse der SBB an politischer Neutralität vereinbaren?",
+              "hint": "E. 3.4 und E. 3.5",
+              "model_answer": "Das generelle Verbot aussenpolitischer Plakate ist aus Sicht der Meinungsäusserungsfreiheit nicht haltbar, weil es den Inhalt von Meinungsäusserungen pauschal nach thematischen Kategorien ausschliesst und damit eine unzulässige Vorzensur darstellt. Die SBB können zwar ein legitimes Interesse an politischer Neutralität haben, doch müssen sie dieses verhältnismässig umsetzen – etwa durch sachlich begründete Einschränkungen im Einzelfall statt durch ein kategorisches Inhaltsverbot. Das Bundesgericht überzeugt damit, weil es den Grundsatz des Zensurverbots wahrt und den SBB dennoch Spielraum für eine polizeirechtliche Prüfung im Einzelfall belässt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, das streitige Plakat hätte nicht nur die israelische Siedlungspolitik kritisiert, sondern würde zugleich explizit zu einem Boykott israelischer Produkte aufrufen und enthielte Aussagen, die als Diskriminierung einer Bevölkerungsgruppe gedeutet werden könnten. Wie würde das Bundesgericht die polizeirechtliche Prüfung des einzelnen Plakats vornehmen?",
+              "discussion_points": [
+                "Ob diskriminierende Inhalte i.S. von Art. 261bis StGB einen polizeirechtlichen Eingriff rechtfertigen",
+                "Wie weit der Schutzbereich der Meinungsäusserungsfreiheit bei kommerziell oder politisch motivierten Boykottaufrufen reicht"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde nun genauer prüfen, ob das Plakat die Schwelle zur Diskriminierung oder Hetze überschreitet und damit einen polizeirechtlichen Eingriff rechtfertigt. Bei einem klaren Verstoss gegen Art. 261bis StGB wäre das Verbot des Plakats zulässig, ohne dass dies einem generellen Themenverbot gleichkäme. Das Ergebnis könnte sich damit zugunsten der SBB verschieben, sofern die beanstandeten Aussagen strafrechtlich relevant wären."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht eine Privatperson, sondern eine grosse politische Partei (z.B. eine im Nationalrat vertretene Partei) das Plakat in Auftrag gegeben hätte und die SBB den Aushang mit dem Argument verweigert hätten, politische Wahlwerbung sei in ihren Bahnhöfen grundsätzlich unzulässig?",
+              "discussion_points": [
+                "Ob politische Parteien einen stärkeren Anspruch auf Nutzung öffentlicher Sachen für Wahlkampfzwecke haben als Privatpersonen",
+                "Inwiefern ein generelles Verbot politischer Wahlwerbung mit der Politischen Rechten (Art. 34 BV) und der Meinungsfreiheit in Konflikt gerät"
+              ],
+              "likely_outcome_shift": "Die Grundrechtsgebundenheit der SBB und das Zensurverbot würden weiterhin gelten, doch käme zusätzlich Art. 34 BV (politische Rechte) ins Spiel, was den Anspruch der Partei auf Zugang zur öffentlichen Infrastruktur im Vorfeld von Wahlen verstärken könnte. Gleichzeitig würde das Gericht prüfen, ob ein generelles Verbot politischer Wahlwerbung verhältnismässig ist – wahrscheinlich wäre ein solches Pauschalverbot noch schwerer zu rechtfertigen als das im Ausgangsfall beurteilte Themenverbot, sodass das Ergebnis zu Lasten der SBB noch klarer ausfallen dürfte."
+            }
+          ]
         }
       ]
     }

@@ -10,7 +10,9 @@
       "name_de": "Rechtsgleichheit und Diskriminierungsverbot",
       "name_fr": "Égalité et interdiction de la discrimination",
       "name_it": "Uguaglianza e divieto di discriminazione",
-      "statutes": ["Art. 8 BV"],
+      "statutes": [
+        "Art. 8 BV"
+      ],
       "cases": [
         {
           "decision_id": "bge_129 I 232",
@@ -18,14 +20,30 @@
           "actual_language": "de",
           "title_de": "Einbürgerungsentscheide und Begründungspflicht",
           "title_fr": "Décisions de naturalisation et obligation de motiver",
-          "concepts_de": ["Rechtsgleichheit", "Diskriminierungsverbot", "Begründungspflicht", "Einbürgerung"],
-          "concepts_fr": ["Égalité", "Non-discrimination", "Obligation de motiver", "Naturalisation"],
-          "statutes": ["Art. 8 BV", "Art. 29 BV"],
+          "concepts_de": [
+            "Rechtsgleichheit",
+            "Diskriminierungsverbot",
+            "Begründungspflicht",
+            "Einbürgerung"
+          ],
+          "concepts_fr": [
+            "Égalité",
+            "Non-discrimination",
+            "Obligation de motiver",
+            "Naturalisation"
+          ],
+          "statutes": [
+            "Art. 8 BV",
+            "Art. 29 BV"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Ablehnende Einbürgerungsentscheide unterliegen der Begründungspflicht nach Art. 29 Abs. 2 BV",
           "significance_fr": "Les décisions de naturalisation négatives sont soumises à l'obligation de motiver selon l'art. 29 al. 2 Cst.",
-          "key_erwagungen": ["3", "4"],
+          "key_erwagungen": [
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 3: Anwendbarkeit der Grundrechte im Einbürgerungsverfahren — insbesondere Diskriminierungsverbot (Art. 8 Abs. 2 BV). E. 4: Begründungspflicht als Mindestgarantie. Achten Sie auf die Argumentation, warum Volksabstimmungen keine Ausnahme bilden.",
           "socratic_questions": [
             {
@@ -53,7 +71,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn eine Gemeindeversammlung (statt Urnenabstimmung) den Entscheid fällt und die Diskussion protokolliert wird?",
-              "discussion_points": ["Begründungspflicht bei Gemeindeversammlungen", "Protokollierung", "Transparenz"],
+              "discussion_points": [
+                "Begründungspflicht bei Gemeindeversammlungen",
+                "Protokollierung",
+                "Transparenz"
+              ],
               "model_answer": "Ein Protokoll der Diskussion könnte als Begründung genügen, sofern die sachlichen Gründe ersichtlich sind. Die Hürde der Begründungspflicht wäre leichter zu nehmen."
             },
             {
@@ -68,13 +90,20 @@
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn der Einbürgerungskandidat die formellen Voraussetzungen (Aufenthaltsdauer) nicht erfüllt?",
-              "discussion_points": ["Formelle vs. materielle Ablehnungsgründe", "Begründungsanforderungen bei formeller Ablehnung"],
+              "discussion_points": [
+                "Formelle vs. materielle Ablehnungsgründe",
+                "Begründungsanforderungen bei formeller Ablehnung"
+              ],
               "likely_outcome_shift": "Bei formeller Ablehnung ist die Begründung einfacher (Verweis auf fehlende Voraussetzung). Diskriminierungsgefahr ist geringer."
             },
             {
               "type": "jurisdictional_shift",
               "scenario": "Was wäre, wenn das kantonale Recht vorsieht, dass Einbürgerungen ausschliesslich durch den Gemeinderat (nicht die Stimmbürger) entschieden werden?",
-              "discussion_points": ["Exekutiventscheid vs. Volksabstimmung", "Verwaltungsverfahren", "Begründungspflicht bei Verwaltungsentscheiden"],
+              "discussion_points": [
+                "Exekutiventscheid vs. Volksabstimmung",
+                "Verwaltungsverfahren",
+                "Begründungspflicht bei Verwaltungsentscheiden"
+              ],
               "likely_outcome_shift": "Bei einem Exekutiventscheid greift die Begründungspflicht unmittelbar nach VwVG/kantonalem Verfahrensrecht. Der Grundrechtsschutz ist einfacher durchzusetzen."
             }
           ]
@@ -86,21 +115,92 @@
           "title_de": "Rechtsgleichheit — Gleichbehandlung im kantonalen Steuerrecht",
           "title_fr": "Égalité de traitement — égalité dans le droit fiscal cantonal",
           "title_it": "",
-          "concepts_de": ["Rechtsgleichheit", "Gleichbehandlung", "Sachlicher Grund", "Willkürverbot"],
-          "concepts_fr": ["Égalité de traitement", "Motif objectif", "Interdiction de l'arbitraire"],
+          "concepts_de": [
+            "Rechtsgleichheit",
+            "Gleichbehandlung",
+            "Sachlicher Grund",
+            "Willkürverbot"
+          ],
+          "concepts_fr": [
+            "Égalité de traitement",
+            "Motif objectif",
+            "Interdiction de l'arbitraire"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 8 BV"],
+          "statutes": [
+            "Art. 8 BV"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Massstab der Rechtsgleichheit nach Art. 8 Abs. 1 BV: Gleiches muss gleich, Ungleiches muss ungleich behandelt werden; sachliche Gründe für Differenzierung erforderlich.",
-          "significance_fr": "Critère de l'égalité de traitement selon l'art. 8 al. 1 Cst.: l'égal doit être traité également; des motifs objectifs pour la différenciation sont nécessaires.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt précise le standard de l'égalité de traitement selon l'art. 8 al. 1 Cst. – le semblable doit être traité de manière semblable, le dissemblable de manière dissemblable, une différenciation exigeant des motifs objectifs – et confirme qu'une initiative populaire communale doit être déclarée invalide lorsqu'elle vise à avantager les ressortissants suisses au détriment des étrangers sans fondement objectif suffisant, violant ainsi à la fois l'égalité de traitement et l'interdiction de discrimination.",
+          "significance_it": "La sentenza precisa il criterio dell'uguaglianza giuridica secondo l'art. 8 cpv. 1 Cost. – il simile deve essere trattato in modo simile e il dissimile in modo dissimile, con necessità di motivi oggettivi per ogni differenziazione – e conferma che un'iniziativa popolare comunale che mira a privilegiare i cittadini svizzeri a scapito degli stranieri senza sufficienti ragioni oggettive viola sia il principio di uguaglianza sia il divieto di discriminazione e deve essere dichiarata invalida.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "2.2",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste, um das Prüfungsergebnis und die massgeblichen Normen (Art. 8 Abs. 1 und 2, Art. 34 Abs. 1 BV) zu erfassen. Studieren Sie dann E. 2.1 zur bundesgerichtlichen Kognition bei Stimmrechtsbeschwerden und E. 2.2 zu den Auslegungsgrundsätzen für Volksinitiativen, bevor Sie E. 3 als Kernerwägung zur Verletzung der Rechtsgleichheit und des Diskriminierungsverbots analysieren.",
+          "reading_guide_fr": "Commencez par lire le regeste afin de saisir le résultat de l'examen et les normes déterminantes (art. 8 al. 1 et 2, art. 34 al. 1 Cst.). Étudiez ensuite le consid. 2.1 relatif au pouvoir de cognition du Tribunal fédéral en matière de droits politiques et le consid. 2.2 sur les principes d'interprétation des initiatives populaires, avant d'analyser le consid. 3 comme considérant central sur la violation du principe d'égalité et de l'interdiction de discrimination.",
+          "reading_guide_it": "Iniziate leggendo il regesto per cogliere il risultato dell'esame e le norme determinanti (art. 8 cpv. 1 e 2, art. 34 cpv. 1 Cost.). Studiate poi il consid. 2.1 relativo al potere cognitivo del Tribunale federale in materia di diritti politici e il consid. 2.2 sui principi d'interpretazione delle iniziative popolari, prima di analizzare il consid. 3 quale considerando centrale sulla violazione del principio di uguaglianza e del divieto di discriminazione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was bezweckte die Volksinitiative 'SchweizerInnen zuerst!' der Schweizer Demokraten der Stadt Zürich, und welche konkrete Ergänzung der Gemeindeordnung wurde damit angestrebt?",
+              "hint": "Vgl. Sachverhalt, insb. den Initiativtext und die beigefügte Begründung (BGE 129 I 392 S. 393).",
+              "model_answer": "Die Initiative wollte die Gemeindeordnung Zürichs um einen neuen Art. 2 Abs. 2 ergänzen, der die Gemeindebehörden verpflichtet, im Rahmen des übergeordneten Rechts den Bedürfnissen der Schweizerinnen und Schweizer Vorrang einzuräumen. Damit sollte sichergestellt werden, dass Zürich eine schweizerisch geprägte Stadt bleibt. Die Begründung der Initianten verwies auf den hohen Ausländeranteil und die angeblich negativen sozialen Folgen der Zuwanderung."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche verfassungsrechtlichen Normen hat das Bundesgericht im Rahmen seiner Prüfung der Initiative herangezogen, und was beinhalten diese Normen inhaltlich?",
+              "hint": "Vgl. Regeste und E. 3; massgeblich sind Art. 8 Abs. 1 und 2 sowie Art. 34 Abs. 1 BV.",
+              "model_answer": "Das Bundesgericht stützte sich auf Art. 8 Abs. 1 BV (Rechtsgleichheit: Gleiches muss gleich, Ungleiches ungleich behandelt werden, wobei sachliche Gründe für eine Differenzierung erforderlich sind), Art. 8 Abs. 2 BV (Diskriminierungsverbot, das u.a. die Herkunft und die Nationalität schützt) sowie Art. 34 Abs. 1 BV (Garantie der politischen Rechte). Art. 8 Abs. 1 BV richtet sich als Grundrecht an den Staat und verbietet willkürliche Ungleichbehandlungen, während Art. 8 Abs. 2 BV ein qualifiziertes Differenzierungsverbot für besonders sensible Merkmale aufstellt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie hat das Bundesgericht den Massstab der Rechtsgleichheit gemäss Art. 8 Abs. 1 BV konkret auf den Initiativtext der 'SchweizerInnen zuerst!'-Initiative angewendet, um deren Unvereinbarkeit mit der Bundesverfassung zu begründen?",
+              "hint": "Vgl. Regeste und E. 3; zu prüfen ist, ob sachliche Gründe für die Bevorzugung von Schweizerinnen und Schweizern vorliegen.",
+              "model_answer": "Das Bundesgericht stellte fest, dass die Initiative die Bevorzugung von Schweizerinnen und Schweizern gegenüber Ausländern ohne sachliche Gründe anordnet, die eine solche Ungleichbehandlung nach Art. 8 Abs. 1 BV rechtfertigen könnten. Die blosse Nationalität stellt keinen hinreichenden sachlichen Differenzierungsgrund dar, der eine generelle Zurücksetzung ausländischer Personen in allen Lebensbereichen legitimiert. Da die Initiative zudem an das Merkmal der nationalen Herkunft anknüpft, verletzt sie gleichzeitig das Diskriminierungsverbot von Art. 8 Abs. 2 BV."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche Auslegungsmethodik wendet das Bundesgericht bei der Beurteilung der materiellen Rechtmässigkeit einer Volksinitiative an, und warum ist diese Methodik bei Volksinitiativen besonders bedeutsam?",
+              "hint": "Vgl. E. 2.2 (BGE 129 I 392 S. 395): Grundsatz der Auslegung nach anerkannten Interpretationsgrundsätzen; Verhältnis von Wortlaut, Begründung und Initiantenwillen.",
+              "model_answer": "Das Bundesgericht geht grundsätzlich vom Wortlaut der Initiative aus und stellt nicht auf den subjektiven Willen der Initianten ab, zieht jedoch die allfällige Begründung und Äusserungen der Initianten ergänzend bei. Von mehreren Auslegungsmöglichkeiten wählt es jene, die dem Sinn und Zweck der Initiative am besten entspricht. Diese Methodik ist bei Volksinitiativen besonders bedeutsam, weil die Ungültigerklärung einen erheblichen Eingriff in die politischen Rechte der Initianten und der Unterzeichnenden darstellt und daher nur bei klarer Verfassungswidrigkeit in Betracht kommt; zugleich schützt sie die Stimmberechtigten vor täuschend formulierten Begehren."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Ungültigerklärung einer demokratisch zustande gekommenen Volksinitiative wegen Verletzung von Grundrechten aus rechtsstaatlicher Perspektive gerechtfertigt, oder überwiegt das Recht der Stimmberechtigten auf Selbstbestimmung?",
+              "hint": "Vgl. E. 2.1 (Spannungsverhältnis zwischen Art. 34 BV und materiellen Grundrechten) sowie Regeste (E. 3); beachte den Vorrang des übergeordneten Rechts gemäss § 4 IG.",
+              "model_answer": "Die Ungültigerklärung ist aus rechtsstaatlicher Perspektive gerechtfertigt, weil die Bundesverfassung als übergeordnetes Recht dem demokratischen Mehrheitsentscheid Schranken setzt und den Schutz von Minderheiten – hier ausländischer Personen – vor Diskriminierung auch gegenüber Volksentscheiden durchsetzt. Die Demokratie setzt die Geltung von Grundrechten voraus und ist nicht grenzenlos; eine Volksinitiative kann nicht dazu benutzt werden, verfassungsmässig garantierte Rechte einer Gruppe zu beseitigen. Freilich zeigt dieser Fall auch die Spannung zwischen dem Initiativrecht als Ausdruck direkter Demokratie und dem materiellen Grundrechtsschutz, die eine sorgfältige und zurückhaltende Ungültigkeitspraxis erfordert."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Initiativtext hätte nicht generell auf die Bedürfnisse der 'Schweizerinnen und Schweizer' abgestellt, sondern ausschliesslich auf Bereiche wie die kommunale Wohnraumvermittlung bei nachgewiesener sozialer Bedürftigkeit – hätte das Bundesgericht die Initiative dennoch für ungültig erklärt?",
+              "discussion_points": [
+                "Können sachliche Gründe (soziale Bedürftigkeit, Wohnsitzdauer) eine Differenzierung nach Nationalität in bestimmten Bereichen rechtfertigen?",
+                "Wie verhält sich eine bereichsspezifische Bevorzugung zum Diskriminierungsverbot von Art. 8 Abs. 2 BV, der die Nationalität als verpöntes Merkmal nennt?"
+              ],
+              "likely_outcome_shift": "Eine enger gefasste Initiative, die Differenzierungen an sachliche Kriterien wie Bedürftigkeit oder Wohnsitzdauer knüpft und die Nationalität nur als eines von mehreren Merkmalen berücksichtigt, könnte möglicherweise einer Verhältnismässigkeitsprüfung standhalten. Das Bundesgericht hätte dann zu prüfen, ob ein qualifizierter sachlicher Grund im Sinne der Rechtsprechung zu Art. 8 Abs. 2 BV vorliegt, was zu einer zumindest teilweisen Gültigerklärung oder einer geltungserhaltenden Auslegung hätte führen können."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht Privatpersonen, sondern der Stadtrat selbst eine entsprechende Weisung an die Verwaltung erlassen hätte – den Bedürfnissen von Schweizerinnen und Schweizern bei der Vergabe kommunaler Leistungen generell Vorrang zu geben – ohne eine demokratische Volksinitiative als Grundlage?",
+              "discussion_points": [
+                "Würde das Bundesgericht die Grundrechtsbindung der Verwaltung (Art. 35 BV) strenger anwenden als bei einer Initiative, die immerhin eine demokratische Legitimation beansprucht?",
+                "Ist der Eingriff in das Diskriminierungsverbot gravierender, wenn er durch Exekutivhandeln statt durch direktdemokratisches Verfahren erfolgt?"
+              ],
+              "likely_outcome_shift": "Eine behördliche Weisung ohne gesetzliche Grundlage würde das Legalitätsprinzip (Art. 5 BV) zusätzlich verletzen und wäre mangels formell-gesetzlicher Grundlage für einen Grundrechtseingriff noch leichter angreifbar. Das Bundesgericht würde die Weisung mit hoher Wahrscheinlichkeit wegen Verletzung von Art. 8 BV sowie mangels hinreichender gesetzlicher Grundlage aufheben, ohne dass die demokratische Legitimationsebene zugunsten des Stadtrats ins Gewicht fallen könnte."
+            }
+          ]
         }
       ]
     },
@@ -109,7 +209,10 @@
       "name_de": "Persönliche Freiheit",
       "name_fr": "Liberté personnelle",
       "name_it": "Libertà personale",
-      "statutes": ["Art. 10 BV", "Art. 31 BV"],
+      "statutes": [
+        "Art. 10 BV",
+        "Art. 31 BV"
+      ],
       "cases": [
         {
           "decision_id": "bge_134 I 140",
@@ -117,14 +220,31 @@
           "actual_language": "de",
           "title_de": "Schutzmassnahmen gegen häusliche Gewalt",
           "title_fr": "Mesures de protection contre la violence domestique",
-          "concepts_de": ["Persönliche Freiheit", "Häusliche Gewalt", "Verhältnismässigkeit", "Schutzmassnahmen"],
-          "concepts_fr": ["Liberté personnelle", "Violence domestique", "Proportionnalité"],
-          "statutes": ["Art. 10 BV", "Art. 29 BV", "Art. 31 BV"],
+          "concepts_de": [
+            "Persönliche Freiheit",
+            "Häusliche Gewalt",
+            "Verhältnismässigkeit",
+            "Schutzmassnahmen"
+          ],
+          "concepts_fr": [
+            "Liberté personnelle",
+            "Violence domestique",
+            "Proportionnalité"
+          ],
+          "statutes": [
+            "Art. 10 BV",
+            "Art. 29 BV",
+            "Art. 31 BV"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Überprüfung von Schutzmassnahmen bei häuslicher Gewalt im Licht der Grundrechte",
           "significance_fr": "Examen des mesures de protection contre la violence domestique à la lumière des droits fondamentaux",
-          "key_erwagungen": ["2", "3", "4"],
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 2: Grundrechtseingriff durch Schutzmassnahmen. E. 3: Verhältnismässigkeitsprüfung. E. 4: Verfahrensgarantien. Achten Sie auf die Dreistufenprüfung: Eignung, Erforderlichkeit, Zumutbarkeit.",
           "socratic_questions": [
             {
@@ -152,7 +272,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Gewalt nur psychischer (nicht physischer) Natur wäre?",
-              "discussion_points": ["Psychische Gewalt als Grundrechtseingriff", "Beweisschwierigkeiten", "Verhältnismässigkeit"],
+              "discussion_points": [
+                "Psychische Gewalt als Grundrechtseingriff",
+                "Beweisschwierigkeiten",
+                "Verhältnismässigkeit"
+              ],
               "model_answer": "Auch psychische Gewalt kann Schutzmassnahmen rechtfertigen, allerdings sind die Beweisanforderungen höher und die Verhältnismässigkeit schwieriger zu begründen."
             },
             {
@@ -167,7 +291,11 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre bei wiederholter, schwerer körperlicher Gewalt mit Todesdrohung?",
-              "discussion_points": ["Intensivere Schutzmassnahmen", "U-Haft als ultima ratio", "Opferschutz vs. Unschuldsvermutung"],
+              "discussion_points": [
+                "Intensivere Schutzmassnahmen",
+                "U-Haft als ultima ratio",
+                "Opferschutz vs. Unschuldsvermutung"
+              ],
               "likely_outcome_shift": "Deutlich intensivere Massnahmen (Kontaktverbot, elektronische Überwachung) wären verhältnismässig. Die Schwere der Bedrohung verschiebt die Zumutbarkeitsabwägung."
             }
           ]
@@ -178,14 +306,33 @@
           "actual_language": "de",
           "title_de": "Administrativhaft und Freiheitsentzug",
           "title_fr": "Détention administrative et privation de liberté",
-          "concepts_de": ["Freiheitsentzug", "Administrativhaft", "EMRK", "Habeas Corpus"],
-          "concepts_fr": ["Privation de liberté", "Détention administrative", "CEDH"],
-          "statutes": ["Art. 10 BV", "Art. 31 BV", "Art. 5 EMRK"],
+          "concepts_de": [
+            "Freiheitsentzug",
+            "Administrativhaft",
+            "EMRK",
+            "Habeas Corpus"
+          ],
+          "concepts_fr": [
+            "Privation de liberté",
+            "Détention administrative",
+            "CEDH"
+          ],
+          "statutes": [
+            "Art. 10 BV",
+            "Art. 31 BV",
+            "Art. 5 EMRK"
+          ],
           "difficulty": 4,
-          "prerequisites": ["bge_134 I 140"],
+          "prerequisites": [
+            "bge_134 I 140"
+          ],
           "significance_de": "Zulässigkeit der Administrativhaft im Ausländerrecht; Grundrechtsschutz bei Freiheitsentzug",
           "significance_fr": "Admissibilité de la détention administrative en droit des étrangers; protection des droits fondamentaux",
-          "key_erwagungen": ["3", "4", "5"],
+          "key_erwagungen": [
+            "3",
+            "4",
+            "5"
+          ],
           "reading_guide_de": "E. 3: Gesetzliche Grundlage der Administrativhaft. E. 4: Voraussetzungen nach Art. 5 EMRK. E. 5: Verhältnismässigkeit und Dauer. Vergleichen Sie die Anforderungen von BV und EMRK.",
           "socratic_questions": [
             {
@@ -213,7 +360,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Ausschaffung in das Herkunftsland faktisch unmöglich wäre (Non-Refoulement)?",
-              "discussion_points": ["Art. 25 Abs. 3 BV", "Art. 3 EMRK", "Verhältnismässigkeit bei Unmöglichkeit"],
+              "discussion_points": [
+                "Art. 25 Abs. 3 BV",
+                "Art. 3 EMRK",
+                "Verhältnismässigkeit bei Unmöglichkeit"
+              ],
               "model_answer": "Bei faktischer Unmöglichkeit der Ausschaffung wird die Administrativhaft unverhältnismässig und muss aufgehoben werden. Non-Refoulement (Art. 3 EMRK) hat absoluten Charakter."
             },
             {
@@ -228,13 +379,21 @@
             {
               "type": "change_timeline",
               "scenario": "Was wäre, wenn die Administrativhaft bereits 18 Monate (statt 3 Monate) dauert?",
-              "discussion_points": ["Maximale Haftdauer (Art. 79 AIG)", "Verhältnismässigkeit bei langer Dauer", "EGMR-Rechtsprechung"],
+              "discussion_points": [
+                "Maximale Haftdauer (Art. 79 AIG)",
+                "Verhältnismässigkeit bei langer Dauer",
+                "EGMR-Rechtsprechung"
+              ],
               "likely_outcome_shift": "Nach 18 Monaten nähert sich die Haft der gesetzlichen Höchstdauer. Die Verhältnismässigkeit wird fraglich, insbesondere wenn keine Aussicht auf Ausschaffung besteht."
             },
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn die inhaftierte Person minderjährig wäre?",
-              "discussion_points": ["Kindesrecht (Art. 11 BV)", "UN-Kinderrechtskonvention", "Ultima-Ratio-Prinzip bei Minderjährigen"],
+              "discussion_points": [
+                "Kindesrecht (Art. 11 BV)",
+                "UN-Kinderrechtskonvention",
+                "Ultima-Ratio-Prinzip bei Minderjährigen"
+              ],
               "likely_outcome_shift": "Administrativhaft bei Minderjährigen ist grundsätzlich unverhältnismässig. Das Kindeswohl (Art. 3 KRK) und Art. 11 BV verlangen vorrangig alternative Massnahmen."
             }
           ]
@@ -246,7 +405,10 @@
       "name_de": "Wirtschaftsfreiheit",
       "name_fr": "Liberté économique",
       "name_it": "Libertà economica",
-      "statutes": ["Art. 27 BV", "Art. 94 BV"],
+      "statutes": [
+        "Art. 27 BV",
+        "Art. 94 BV"
+      ],
       "cases": [
         {
           "decision_id": "bge_142 I 99",
@@ -254,14 +416,30 @@
           "actual_language": "de",
           "title_de": "Sondernutzungskonzession und Wirtschaftsfreiheit",
           "title_fr": "Concession d'utilisation spéciale et liberté économique",
-          "concepts_de": ["Wirtschaftsfreiheit", "Konzession", "Wasserrecht", "Wettbewerb"],
-          "concepts_fr": ["Liberté économique", "Concession", "Concurrence"],
-          "statutes": ["Art. 27 BV", "Art. 94 BV"],
+          "concepts_de": [
+            "Wirtschaftsfreiheit",
+            "Konzession",
+            "Wasserrecht",
+            "Wettbewerb"
+          ],
+          "concepts_fr": [
+            "Liberté économique",
+            "Concession",
+            "Concurrence"
+          ],
+          "statutes": [
+            "Art. 27 BV",
+            "Art. 94 BV"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Vereinbarkeit kantonaler Konzessionsregeln mit der Wirtschaftsfreiheit",
           "significance_fr": "Compatibilité des règles cantonales de concession avec la liberté économique",
-          "key_erwagungen": ["3", "4", "5"],
+          "key_erwagungen": [
+            "3",
+            "4",
+            "5"
+          ],
           "reading_guide_de": "E. 3: Schutzbereich der Wirtschaftsfreiheit. E. 4: Konzession als Eingriff. E. 5: Verhältnismässigkeitsprüfung. Achten Sie auf die Unterscheidung zwischen Grundsatz der Wirtschaftsfreiheit (Art. 94 BV) und individuellem Grundrecht (Art. 27 BV).",
           "socratic_questions": [
             {
@@ -289,7 +467,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Kanton ein Monopol statt einer Konzession einführen würde?",
-              "discussion_points": ["Art. 94 BV als Grenze", "Monopol vs. Konzession", "Öffentliches Interesse"],
+              "discussion_points": [
+                "Art. 94 BV als Grenze",
+                "Monopol vs. Konzession",
+                "Öffentliches Interesse"
+              ],
               "model_answer": "Ein Monopol wäre ein stärkerer Eingriff in Art. 27 und Art. 94 BV. Es bedürfte einer bundesrechtlichen Grundlage oder besonderer kantonaler Kompetenz und strengerer Verhältnismässigkeitsprüfung."
             },
             {
@@ -304,7 +486,11 @@
             {
               "type": "jurisdictional_shift",
               "scenario": "Was wäre, wenn die EU-Dienstleistungsfreiheit anwendbar wäre (Szenario eines bilateralen Abkommens)?",
-              "discussion_points": ["Verhältnis Landesrecht/Völkerrecht", "EU-Binnenmarktrecht", "Diskriminierungsverbot"],
+              "discussion_points": [
+                "Verhältnis Landesrecht/Völkerrecht",
+                "EU-Binnenmarktrecht",
+                "Diskriminierungsverbot"
+              ],
               "likely_outcome_shift": "Die Konzessionsregel müsste auch dem EU-Diskriminierungsverbot genügen. Bevorzugung einheimischer Unternehmen wäre unzulässig."
             }
           ]
@@ -316,7 +502,10 @@
       "name_de": "Verfahrensgarantien und rechtliches Gehör",
       "name_fr": "Garanties de procédure et droit d'être entendu",
       "name_it": "Garanzie procedurali e diritto di essere sentito",
-      "statutes": ["Art. 29 BV", "Art. 30 BV"],
+      "statutes": [
+        "Art. 29 BV",
+        "Art. 30 BV"
+      ],
       "cases": [
         {
           "decision_id": "bge_136 I 229",
@@ -324,14 +513,29 @@
           "actual_language": "de",
           "title_de": "Anfechtung von Prüfungsergebnissen",
           "title_fr": "Contestation des résultats d'examens",
-          "concepts_de": ["Rechtliches Gehör", "Prüfungsergebnis", "Willkürverbot", "Subsidiäre Verfassungsbeschwerde"],
-          "concepts_fr": ["Droit d'être entendu", "Résultat d'examen", "Arbitraire"],
-          "statutes": ["Art. 29 BV", "Art. 9 BV"],
+          "concepts_de": [
+            "Rechtliches Gehör",
+            "Prüfungsergebnis",
+            "Willkürverbot",
+            "Subsidiäre Verfassungsbeschwerde"
+          ],
+          "concepts_fr": [
+            "Droit d'être entendu",
+            "Résultat d'examen",
+            "Arbitraire"
+          ],
+          "statutes": [
+            "Art. 29 BV",
+            "Art. 9 BV"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Prüfungsergebnisse können mit subsidiärer Verfassungsbeschwerde angefochten werden",
           "significance_fr": "Les résultats d'examens peuvent être contestés par recours constitutionnel subsidiaire",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Zulässigkeit der subsidiären Verfassungsbeschwerde bei Prüfungsentscheiden. E. 3: Kognition des Bundesgerichts — beschränkt auf Willkürprüfung. Achten Sie auf die zurückhaltende Überprüfung bei Bewertungsfragen.",
           "socratic_questions": [
             {
@@ -359,7 +563,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Prüfungsordnung kein Einsichtsrecht in die korrigierte Prüfung vorsieht?",
-              "discussion_points": ["Rechtliches Gehör", "Akteneinsicht", "Fairness"],
+              "discussion_points": [
+                "Rechtliches Gehör",
+                "Akteneinsicht",
+                "Fairness"
+              ],
               "model_answer": "Ohne Einsichtsrecht ist das rechtliche Gehör verletzt, weil der Prüfling die Bewertung nicht substanziiert anfechten kann. Art. 29 Abs. 2 BV verlangt Zugang zu den entscheidrelevanten Unterlagen."
             },
             {
@@ -374,7 +582,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn ein Prüfungsexperte befangen wäre (z.B. persönliche Feindschaft)?",
-              "discussion_points": ["Art. 30 BV (Unabhängigkeit)", "Befangenheit", "Ausstandspflicht"],
+              "discussion_points": [
+                "Art. 30 BV (Unabhängigkeit)",
+                "Befangenheit",
+                "Ausstandspflicht"
+              ],
               "likely_outcome_shift": "Die Befangenheit würde eine Verletzung von Art. 30 BV begründen. Der Prüfungsentscheid müsste aufgehoben und die Prüfung von einem unbefangenen Experten neu bewertet werden."
             }
           ]
@@ -385,14 +597,27 @@
           "actual_language": "de",
           "title_de": "Begründungsanforderungen an Beschwerden",
           "title_fr": "Exigences de motivation des recours",
-          "concepts_de": ["Begründungspflicht", "Beschwerde", "Nichteintreten", "BGG"],
-          "concepts_fr": ["Obligation de motiver", "Recours", "Irrecevabilité"],
-          "statutes": ["Art. 42 BGG"],
+          "concepts_de": [
+            "Begründungspflicht",
+            "Beschwerde",
+            "Nichteintreten",
+            "BGG"
+          ],
+          "concepts_fr": [
+            "Obligation de motiver",
+            "Recours",
+            "Irrecevabilité"
+          ],
+          "statutes": [
+            "Art. 42 BGG"
+          ],
           "difficulty": 1,
           "prerequisites": [],
           "significance_de": "Minimale Begründungsanforderungen: Auseinandersetzung mit den Erwägungen des angefochtenen Entscheids",
           "significance_fr": "Exigences minimales de motivation: confrontation avec les considérants de la décision attaquée",
-          "key_erwagungen": ["2"],
+          "key_erwagungen": [
+            "2"
+          ],
           "reading_guide_de": "E. 2: Art. 42 Abs. 2 BGG verlangt eine Auseinandersetzung mit den Erwägungen des angefochtenen Entscheids. Reines Wiederholen des vorinstanzlich Vorgetragenen genügt nicht. Wichtig für die Praxis: Was muss eine Beschwerde mindestens enthalten?",
           "socratic_questions": [
             {
@@ -420,7 +645,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Beschwerdeführer ein Laie ohne anwaltliche Vertretung wäre?",
-              "discussion_points": ["Anwaltspflicht", "Rechtsschutz für Laien", "Art. 29 Abs. 3 BV"],
+              "discussion_points": [
+                "Anwaltspflicht",
+                "Rechtsschutz für Laien",
+                "Art. 29 Abs. 3 BV"
+              ],
               "model_answer": "Die Anforderungen an die Begründung gelten auch für Laien. Allerdings wird die Begründung weniger formalistisch beurteilt. Art. 29 Abs. 3 BV gibt Anspruch auf unentgeltliche Rechtspflege."
             },
             {
@@ -435,7 +664,10 @@
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn die Vorinstanz ihren Entscheid selbst nicht begründet hätte?",
-              "discussion_points": ["Begründungspflicht der Vorinstanz (Art. 29 Abs. 2 BV)", "Wie soll sich der Beschwerdeführer mit fehlenden Erwägungen auseinandersetzen?"],
+              "discussion_points": [
+                "Begründungspflicht der Vorinstanz (Art. 29 Abs. 2 BV)",
+                "Wie soll sich der Beschwerdeführer mit fehlenden Erwägungen auseinandersetzen?"
+              ],
               "likely_outcome_shift": "Das Bundesgericht müsste den vorinstanzlichen Entscheid wegen Verletzung des rechtlichen Gehörs aufheben, unabhängig von der Qualität der Beschwerdebegründung."
             }
           ]

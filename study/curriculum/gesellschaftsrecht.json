@@ -10,7 +10,11 @@
       "name_de": "Aktienrecht: Struktur und Vinkulierung",
       "name_fr": "Droit des actions: structure et restriction de transfert",
       "name_it": "Diritto azionario: struttura e restrizione al trasferimento",
-      "statutes": ["Art. 620 OR", "Art. 685 OR", "Art. 698 OR"],
+      "statutes": [
+        "Art. 620 OR",
+        "Art. 685 OR",
+        "Art. 698 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_136 III 278",
@@ -19,21 +23,91 @@
           "title_de": "Vinkulierung von Namenaktien — Ablehnungsgründe",
           "title_fr": "Restriction au transfert d'actions nominatives — motifs de refus",
           "title_it": "",
-          "concepts_de": ["Vinkulierung", "Namenaktien", "Übertragungsbeschränkung", "Wichtiger Grund"],
-          "concepts_fr": ["Restriction au transfert", "Actions nominatives", "Juste motif"],
+          "concepts_de": [
+            "Vinkulierung",
+            "Namenaktien",
+            "Übertragungsbeschränkung",
+            "Wichtiger Grund"
+          ],
+          "concepts_fr": [
+            "Restriction au transfert",
+            "Actions nominatives",
+            "Juste motif"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 685b OR"],
+          "statutes": [
+            "Art. 685b OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Vinkulierung von Namenaktien: Die Gesellschaft kann die Übertragung nur aus wichtigem Grund oder bei Überschreitung einer Höchstbeteiligungsquote ablehnen.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt constitue la synthèse de référence du Tribunal fédéral sur les conditions de la dissolution judiciaire d'une société anonyme pour de justes motifs selon l'art. 736 ch. 4 CO, en consacrant notamment la subsidiarité de la dissolution et le large pouvoir d'appréciation du juge.",
+          "significance_it": "Questa sentenza costituisce la sintesi di riferimento del Tribunale federale sulle condizioni per lo scioglimento giudiziale di una società anonima per gravi motivi ai sensi dell'art. 736 n. 4 CO, sancendo in particolare il carattere sussidiario dello scioglimento e l'ampio potere discrezionale del giudice.",
+          "key_erwagungen": [
+            "2.2.1",
+            "2.2.2",
+            "2.2.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 2.2.1, um die gesetzlichen Voraussetzungen von Art. 736 Ziff. 4 OR und den richterlichen Ermessensspielraum zu verstehen. Vertiefen Sie dann E. 2.2.2, das die zentralen Grundsätze – Mehrheitsprinzip, Subsidiarität und Verhältnismässigkeit – sowie die massgebliche bundesgerichtliche Rechtsprechung zusammenfasst. Achten Sie dabei besonders auf die Passage zu Kleingesellschaften und persönlichen Konflikten, die die dogmatische Reichweite des Entscheids präzisiert.",
+          "reading_guide_fr": "Commencez par lire le consid. 2.2.1 afin de saisir les conditions légales de l'art. 736 ch. 4 CO et le pouvoir d'appréciation du juge. Approfondissez ensuite le consid. 2.2.2, qui synthétise les principes fondamentaux – principe majoritaire, subsidiarité et proportionnalité – ainsi que la jurisprudence fédérale déterminante. Prêtez une attention particulière au passage relatif aux petites sociétés familiales et aux conflits personnels, qui précise la portée dogmatique de l'arrêt.",
+          "reading_guide_it": "Iniziate con la lettura del consid. 2.2.1 per comprendere i presupposti legali dell'art. 736 n. 4 CO e il potere discrezionale del giudice. Approfondite poi il consid. 2.2.2, che riassume i principi fondamentali – principio maggioritario, sussidiarietà e proporzionalità – nonché la giurisprudenza federale rilevante. Prestate particolare attenzione al passaggio sulle piccole società familiari e sui conflitti personali, che precisa la portata dogmatica della decisione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 136 III 278 unter dem Begriff 'wichtige Gründe' im Sinne von Art. 736 Ziff. 4 OR, und welche Schwelle muss eine Minderheit von Aktionären erreichen, um die Auflösungsklage erheben zu können?",
+              "hint": "Vgl. E. 2.2.1 des Entscheids, insbesondere den Wortlaut zu Art. 736 Ziff. 4 OR.",
+              "model_answer": "Gemäss Art. 736 Ziff. 4 OR können Aktionäre, die zusammen mindestens 10 % des Aktienkapitals vertreten, beim Richter die Auflösung der Gesellschaft aus wichtigen Gründen verlangen. Als wichtige Gründe gelten insbesondere eine andauernd schlechte Geschäftsführung, eine anhaltende Verletzung der Minderheitsrechte oder eine Blockierung der Gesellschaftsorgane. Der Richter kann anstelle der Auflösung auch eine andere, den Umständen angemessene Lösung anordnen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundsätze – insbesondere hinsichtlich Subsidiarität und Verhältnismässigkeit – hat das Bundesgericht in BGE 136 III 278 für die Auflösungsklage nach Art. 736 Ziff. 4 OR herausgearbeitet?",
+              "hint": "Vgl. E. 2.2.2, insbesondere die Ausführungen zur Subsidiarität und zur Proportionalität.",
+              "model_answer": "Das Bundesgericht hält fest, dass die Auflösung eine Massnahme des letzten Mittels (ultima ratio) ist und nur dann ausgesprochen werden darf, wenn keine weniger einschneidende Alternative besteht. Das Subsidiaritätsprinzip verlangt, dass die Minderheitsaktionäre zunächst andere Rechtsbehelfe – wie die Anfechtung eines Generalversammlungsbeschlusses oder eine Auskunftsklage – ausschöpfen müssen. Zudem ist der Grundsatz der Verhältnismässigkeit zu wahren, das heisst, die widerstreitenden Interessen müssen sorgfältig gegeneinander abgewogen werden."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, in einer kleinen Familienaktiengesellschaft kontrolliert die Mehrheitsaktionärin sämtliche Organe und schüttet seit Jahren keine Dividenden aus, obwohl die Gesellschaft Gewinne erzielt. Die Minderheitsaktionärin (15 % des Kapitals) möchte die Auflösung beantragen. Prüfen Sie anhand der in BGE 136 III 278 entwickelten Kriterien, ob die Klage Aussicht auf Erfolg hätte.",
+              "hint": "Vgl. E. 2.2.2 zur Subsidiarität, zum Mehrheitsprinzip und zur Berücksichtigung persönlicher Verhältnisse in kleinen Gesellschaften.",
+              "model_answer": "Die Minderheitsaktionärin hält 15 % des Kapitals und erfüllt damit die Klageberechtigung nach Art. 736 Ziff. 4 OR. Die systematische Nicht-Ausschüttung trotz Gewinnen könnte eine anhaltende Verletzung legitimer Minderheitsinteressen darstellen. Allerdings müsste die Klägerin zunächst weniger einschneidende Mittel ausschöpfen (z.B. Anfechtung der Gewinnverwendungsbeschlüsse), da die Auflösung subsidiär ist; erst wenn solche Massnahmen keine Abhilfe schaffen, käme eine Auflösung in Betracht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht betont in BGE 136 III 278, dass die Aktiengesellschaft eine Kapitalgesellschaft und keine Personengesellschaft ist, räumt aber bei kleinen Familiengesellschaften eine gewisse Berücksichtigung persönlicher Beziehungen ein. Welche Spannungen entstehen dadurch in der Dogmatik der Auflösungsklage, und wie löst das Gericht diesen Widerspruch?",
+              "hint": "Vgl. E. 2.2.2, letzter Abschnitt zu den persönlichen Konflikten und dem Kapitalgesellschaftsprinzip (ATF 67 II 162, ATF 126 III 266).",
+              "model_answer": "Die Spannung liegt darin, dass das aktienrechtliche Mehrheitsprinzip und der Kapitalcharakter der AG grundsätzlich verlangen, dass nur finanzielle Interessen massgebend sind und persönliche Konflikte nicht die Auflösung rechtfertigen. Bei kleinen Familiengesellschaften, die strukturell einer Personengesellschaft ähneln, lässt das Bundesgericht jedoch zu, dass persönliche Verhältnisse in begrenztem Mass einfliessen, da das Vertrauensverhältnis zwischen den Aktionären dort wirtschaftlich relevant sein kann. Das Gericht löst diesen Widerspruch pragmatisch, indem es den Richter auf Art. 4 ZGB (Recht und Billigkeit) verweist und ihm einen weiten Ermessensspielraum einräumt, ohne das Mehrheitsprinzip grundsätzlich in Frage zu stellen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie kritisch, ob das in BGE 136 III 278 verankerte Subsidiaritätsprinzip bei der Auflösungsklage einen angemessenen Schutz für Minderheitsaktionäre bietet, oder ob es de facto die Auflösung als Rechtsbehelf illusorisch macht.",
+              "hint": "Vgl. E. 2.2.2 insgesamt, insbesondere die Passage zur Subsidiarität und zum Mehrheitsprinzip; vergleichen Sie auch die alternativen Rechtsbehelfe.",
+              "model_answer": "Das Subsidiaritätsprinzip schützt zwar das legitime Interesse an der Unternehmenskontinuität und verhindert missbräuchliche Auflösungsklagen, bürdet der Minderheit jedoch eine erhebliche Beweislast und prozessuale Hürde auf, die in der Praxis den Rechtsbehelf stark einschränken kann. Gerade in geschlossenen Gesellschaften, wo die Mehrheit sämtliche Organe kontrolliert und alternative Rechtsbehelfe (z.B. Anfechtungsklagen) ins Leere laufen können, droht die Subsidiarität die Minderheit schutzlos zu stellen. Eine ausgewogenere Lösung könnte darin bestehen, dem Gericht explizit die Möglichkeit zu erleichtern, Zwischenmassnahmen (z.B. Abberufung von Organen) anzuordnen, ohne dass die Minderheit zuvor alle anderen Klagewege erschöpfen muss."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Stellen Sie sich vor, dass die Minderheitsaktionärin in BGE 136 III 278 zwar 10 % des Aktienkapitals hält, aber kurz vor Klageerhebung bewusst darauf verzichtet hat, einen Generalversammlungsbeschluss anzufechten, der ihre Dividendenansprüche verkürzte. Die Mehrheit beruft sich nun darauf, die Klägerin habe das Subsidiaritätsprinzip missachtet und ihre Rechte verwirkt.",
+              "discussion_points": [
+                "Kann der Verzicht auf eine frühere Anfechtungsklage als Verletzung des Subsidiaritätsprinzips gewertet werden, die die Auflösungsklage per se unzulässig macht?",
+                "Inwiefern könnte das Verhalten der Klägerin unter dem Gesichtspunkt von Treu und Glauben (Art. 2 ZGB) als rechtsmissbräuchlich oder als Verwirkung qualifiziert werden?"
+              ],
+              "likely_outcome_shift": "Das Gericht würde die Auflösungsklage wahrscheinlich als verfrüht oder subsidiär unzulässig abweisen, da die Klägerin ein milderes Mittel (Anfechtungsklage) nicht genutzt hat. Allerdings könnte das Gericht prüfen, ob das Unterlassen der Anfechtung strategisch erzwungen war oder ob weitere, nicht heilbare Verletzungen hinzukommen, die eine Auflösung dennoch rechtfertigen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht eine Minderheitsaktionärin, sondern die Mehrheitsaktionärin (mit 60 % des Kapitals) die Auflösung der Gesellschaft gestützt auf Art. 736 Ziff. 4 OR beantragen würde, weil die Minderheit durch Blockade im Verwaltungsrat eine Sanierung verhindert?",
+              "discussion_points": [
+                "Ist Art. 736 Ziff. 4 OR auch für Mehrheitsaktionäre anwendbar, oder setzt die Norm implizit voraus, dass es sich um eine benachteiligte Minderheit handelt?",
+                "Welche alternativen Instrumente stehen der Mehrheit zur Verfügung (z.B. Absetzung von Verwaltungsratsmitgliedern durch die Generalversammlung), und inwiefern beeinflusst dies das Subsidiaritätsprinzip zu ihren Ungunsten?"
+              ],
+              "likely_outcome_shift": "Da die Mehrheitsaktionärin über andere, weniger einschneidende Mittel verfügt – insbesondere die Abberufung blockierender Verwaltungsratsmitglieder an der Generalversammlung –, würde das Subsidiaritätsprinzip die Auflösungsklage der Mehrheit fast sicher scheitern lassen. Zudem ist die Schutzfunktion von Art. 736 Ziff. 4 OR primär auf die Minderheit ausgerichtet, was eine restriktive Auslegung zugunsten der Mehrheit nahelegt."
+            }
+          ]
         },
         {
           "decision_id": "bge_122 III 279",
@@ -42,21 +116,91 @@
           "title_de": "GV-Beschlussanfechtung — Rechtsschutzinteresse und Anfechtungsklage",
           "title_fr": "Contestation des décisions de l'AG — intérêt juridique et action",
           "title_it": "",
-          "concepts_de": ["Beschlussanfechtung", "Generalversammlung", "Rechtsschutzinteresse", "Gestaltungsklage"],
-          "concepts_fr": ["Contestation des décisions", "Assemblée générale", "Intérêt juridique"],
+          "concepts_de": [
+            "Beschlussanfechtung",
+            "Generalversammlung",
+            "Rechtsschutzinteresse",
+            "Gestaltungsklage"
+          ],
+          "concepts_fr": [
+            "Contestation des décisions",
+            "Assemblée générale",
+            "Intérêt juridique"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 706 OR", "Art. 691 OR"],
+          "statutes": [
+            "Art. 706 OR",
+            "Art. 691 OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Anfechtungsklage gegen GV-Beschlüsse: Das Rechtsschutzinteresse fehlt, wenn die Klage im Ergebnis nur einen gleichlautenden Mehrheitsbeschluss bestätigen würde.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que l'action en annulation d'une décision de l'assemblée générale fondée sur l'art. 691 al. 3 CO est une action formatrice dont l'intérêt à agir fait défaut lorsque le résultat visé consiste uniquement à confirmer la validité d'une décision majoritaire existante.",
+          "significance_it": "Questa sentenza di principio stabilisce che l'azione di contestazione di una delibera assembleare ai sensi dell'art. 691 cpv. 3 CO è un'azione costitutiva per la quale manca l'interesse ad agire quando il risultato perseguito consiste unicamente nel confermare la validità di una delibera già adottata a maggioranza.",
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 280–281), um die ungewöhnliche Konstellation zu erfassen: W. klagt als beschlussbefürwortender Aktionär. Konzentrieren Sie sich sodann auf Erwägung 2, welche die dogmatische Einordnung der Klage nach Art. 691 Abs. 3 OR als Gestaltungsklage und die Anforderungen an das Rechtsschutzinteresse entwickelt. Achten Sie besonders darauf, wie das Bundesgericht zwischen dem formellen Klagebegehren und dem im Ergebnis angestrebten Ziel unterscheidet.",
+          "reading_guide_fr": "Commencez par lire l'état de fait (p. 280–281) pour saisir la constellation inhabituelle dans laquelle W. agit en qualité d'actionnaire favorable à la décision contestée. Concentrez-vous ensuite sur le considérant 2, qui développe la qualification de l'action fondée sur l'art. 691 al. 3 CO comme action formatrice (Gestaltungsklage) et précise les exigences relatives à l'intérêt à agir. Prêtez une attention particulière à la distinction que le Tribunal fédéral opère entre les conclusions formelles et le résultat matériellement visé par le demandeur.",
+          "reading_guide_it": "Si consiglia di leggere dapprima i fatti (p. 280–281) per comprendere la peculiare situazione processuale in cui W. agisce come azionista favorevole alla delibera impugnata. Il fulcro della decisione si trova nel considerando 2, dove il Tribunale federale qualifica l'azione ai sensi dell'art. 691 cpv. 3 CO come azione costitutiva (Gestaltungsklage) e precisa i requisiti dell'interesse ad agire, distinguendo tra le conclusioni formali e il risultato sostanziale perseguito dall'attore.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was verstand das Bundesgericht unter dem Begriff der 'Gestaltungsklage' im Kontext der Anfechtungsklage nach Art. 691 Abs. 3 OR, und welche Wirkung hat ein stattgebendes Urteil für die übrigen Aktionäre?",
+              "hint": "Vgl. Erwägung 2, zweiter Abschnitt, sowie den Verweis auf Art. 706 Abs. 5 OR und BGE 110 II 387.",
+              "model_answer": "Das Bundesgericht qualifiziert die Klage nach Art. 691 Abs. 3 OR als Gestaltungsklage, weil sie nicht bloss etwas feststellt oder zu einer Leistung verpflichtet, sondern aktiv auf die Beseitigung eines Rechtsverhältnisses – nämlich des angefochtenen Generalversammlungsbeschlusses – abzielt. Ein stattgebendes Urteil wirkt nach Art. 706 Abs. 5 OR für und gegen alle Aktionäre, also mit Wirkung erga omnes. Damit unterscheidet sich diese Klage grundlegend von einer reinen Feststellungsklage, die nur inter partes wirkt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche normativen Voraussetzungen müssen gemäss Art. 691 Abs. 3 OR erfüllt sein, damit ein Aktionär einen Generalversammlungsbeschluss anfechten kann, und wie verhält sich diese Bestimmung zur allgemeinen Anfechtungsklage nach Art. 706 f. OR?",
+              "hint": "Vgl. Erwägung 2, erster Abschnitt, sowie die zitierten Lehrmeinungen (Schleiffer, Böckli, Forstmoser/Meier-Hayoz/Nobel).",
+              "model_answer": "Art. 691 Abs. 3 OR setzt voraus, dass an einem Generalversammlungsbeschluss Personen mitgewirkt haben, die zur Teilnahme nicht befugt waren. Der Aktionär kann den Beschluss anfechten, ohne vorgängig Einspruch erhoben haben zu müssen. Die Klage scheitert jedoch, wenn die Gesellschaft nachweist, dass die unberechtigte Mitwirkung keinen Einfluss auf die Beschlussfassung hatte (fehlende Kausalität). Das Bundesgericht und die herrschende Lehre qualifizieren Art. 691 Abs. 3 OR als Unterfall der allgemeinen Anfechtungsklage nach Art. 706 f. OR, weshalb sämtliche allgemeinen Prozessvoraussetzungen – darunter das Rechtsschutzinteresse – ebenfalls gelten."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Aktionär W. verlangte in seinem Hauptbegehren nicht die Aufhebung des Beschlusses, sondern die Korrektur des Abstimmungsprotokolls zugunsten des bereits beschlossenen Resultats. Warum verneinte das Handelsgericht – und in der Folge das Bundesgericht – das Rechtsschutzinteresse für dieses Begehren?",
+              "hint": "Vgl. Sachverhalt (S. 280–281) sowie Erwägung 2, dritter Abschnitt.",
+              "model_answer": "W. bestritt nicht die Gültigkeit des Beschlusses, sondern wollte lediglich festgestellt haben, dass das Ergebnis auch nach Streichung unberechtigter Nein-Stimmen dasselbe wäre – der Beschluss also mit noch deutlicherem Mehr angenommen worden sei. Ein Rechtsschutzinteresse setzt voraus, dass der Kläger durch das begehrte Urteil eine tatsächliche Verbesserung seiner Rechtsstellung erlangen kann. Da das Begehren von W. im Ergebnis nur denselben Mehrheitsbeschluss bestätigte und dessen materielle Gültigkeit nicht in Frage stellte, fehlte jede rechtsgestaltende Wirkung, und das Gericht trat mangels hinreichenden Rechtsschutzinteresses nicht auf die Klage ein."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet sich die prozessuale Situation von W. von jener der Anfechtungskläger X. AG und Y.? Welche Wechselwirkungen zwischen den parallelen Verfahren spielten bei der Beurteilung des Rechtsschutzinteresses eine Rolle?",
+              "hint": "Vgl. Sachverhalt sowie Erwägung 2 (insb. der Hinweis, dass die Anfechtungsklage auch dann fehlt, wenn ein gleichlautender Mehrheitsbeschluss nur bestätigt werden soll).",
+              "model_answer": "X. AG und Y. fochten den Beschluss an, weil er nach ihrer Auffassung unter Missachtung statutarischer Stimmrechtsbeschränkungen zustande gekommen sei – sie wollten den Beschluss zu Fall bringen. W. hingegen wollte mit seiner Klage gerade das Gegenteil erreichen: Er wollte beweisen, dass der Beschluss selbst ohne die beanstandeten Stimmen eine Mehrheit gefunden hätte, um so der Anfechtung durch X. AG und Y. den Boden zu entziehen. Diese Konstellation ist prozessual ungewöhnlich, weil W. die Anfechtungsklage nicht als Werkzeug zur Beseitigung eines Beschlusses nutzte, sondern als defensives Instrument zur Absicherung desselben – ein Zweck, für den die Gestaltungsklage nach Art. 691 Abs. 3 OR nicht konzipiert ist und der das Rechtsschutzinteresse entfallen lässt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dem Aktionär, der einen Beschluss inhaltlich befürwortet, jegliches prozessuales Instrument zu versagen, um diesen gegen Anfechtungen zu verteidigen? Welche alternativen Rechtsschutzmöglichkeiten bestehen, und wie wäre deren Eignung zu beurteilen?",
+              "hint": "Erwägung 2 sowie allgemeine aktienrechtliche Grundsätze zu Nebenintervention und Feststellungsklage.",
+              "model_answer": "Die Entscheidung des Bundesgerichts ist dogmatisch stringent: Die Anfechtungsklage als Gestaltungsklage ist auf Beschlussaufhebung ausgerichtet und passt strukturell nicht für den umgekehrten Zweck der Beschlussverteidigung. Rechtspolitisch freilich könnte man kritisieren, dass ein beschlussbefürwortender Aktionär damit prozessual weitgehend auf die Gesellschaft angewiesen ist, die ihrerseits im Anfechtungsverfahren der Gegenseite als Beklagte auftritt. Als Alternative bietet sich die Nebenintervention (Streitbeitritt) im Anfechtungsverfahren der X. AG und Y. an, wodurch W. seine Argumente zur fehlenden Kausalität einbringen könnte, ohne eine eigenständige Gestaltungsklage erheben zu müssen. Diese Lösung ist prozessökonomisch vorzugswürdig und vermeidet widersprechende Urteile, doch ihre Wirkungsgrenzen im aktienrechtlichen Gestaltungsverfahren sind zu beachten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, W. hätte nicht nur beantragt, das Protokoll zu korrigieren, sondern wäre in seiner Klage einen Schritt weiter gegangen und hätte primär die Aufhebung des Beschlusses mit dem Eventualantrag verlangt, das Gericht solle feststellen, dass ein neuer, identischer Beschluss als gefasst gilt. Hätte dies an der Verneinung des Rechtsschutzinteresses etwas geändert?",
+              "discussion_points": [
+                "Würde ein formeller Aufhebungsantrag das Rechtsschutzinteresse begründen, auch wenn das materielle Ziel dasselbe bleibt (Bestätigung des Beschlusses)?",
+                "Kann ein Aktionär, der den Beschluss inhaltlich befürwortet, glaubhaft machen, er leide an einem schutzwürdigen Nachteil durch den Beschluss in seiner aktuellen Form?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde wohl auch bei formell korrekt gestelltem Aufhebungsantrag das Rechtsschutzinteresse verneinen, weil es nicht auf die Formulierung der Begehren, sondern auf das tatsächlich angestrebte wirtschaftliche Ergebnis abstellt. Da W. den Beschluss inhaltlich will und seine Klage im Ergebnis nur dessen Bestand sichern soll, fehlt das für eine Gestaltungsklage erforderliche Interesse an der Beseitigung des angefochtenen Rechtsverhältnisses. Ein echter Aufhebungsantrag wäre zudem widersprüchlich zu W.s erklärtem Ziel und damit als rechtsmissbräuchlich einzustufen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht W., sondern die Gesellschaft S. selbst hätte eine Klage erhoben mit dem Ziel, das Abstimmungsprotokoll zu korrigieren und festzustellen, dass der Beschluss vom 22. November 1994 trotz der angeblich unberechtigten Nein-Stimmen wirksam zustande gekommen ist – gewissermassen als präventive Reaktion auf die hängigen Anfechtungsklagen von X. AG und Y.",
+              "discussion_points": [
+                "Ist die Gesellschaft überhaupt aktivlegitimiert, einen eigenen Generalversammlungsbeschluss anzufechten oder dessen Gültigkeit festzustellen?",
+                "Stünde der Gesellschaft stattdessen eine negative Feststellungsklage offen, und welche prozessualen Hindernisse bestünden dabei?"
+              ],
+              "likely_outcome_shift": "Die Gesellschaft ist nach herrschender Lehre und Rechtsprechung nicht aktivlegitimiert, einen eigenen Generalversammlungsbeschluss anzufechten, da die Anfechtungsklage dem Schutz der Aktionärsminderheit dient und gegen die Gesellschaft als Beklagte gerichtet ist. Eine von der Gesellschaft erhobene Feststellungsklage bezüglich der Gültigkeit ihres eigenen Beschlusses würde an der fehlenden Sachlegitimation sowie am Grundsatz scheitern, dass dieselbe Frage bereits Gegenstand der hängigen Anfechtungsverfahren ist. Die Gesellschaft muss ihre Verteidigungsargumente – insbesondere die fehlende Kausalität der unberechtigten Stimmabgaben – im Rahmen der bestehenden Anfechtungsprozesse als Beklagte einbringen."
+            }
+          ]
         }
       ]
     },
@@ -65,7 +209,10 @@
       "name_de": "Organhaftung und Verantwortlichkeit",
       "name_fr": "Responsabilité des organes",
       "name_it": "Responsabilità degli organi",
-      "statutes": ["Art. 717 OR", "Art. 754 OR"],
+      "statutes": [
+        "Art. 717 OR",
+        "Art. 754 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_128 III 142",
@@ -74,21 +221,95 @@
           "title_de": "Sorgfaltspflicht der Organe — Business Judgment Rule",
           "title_fr": "Devoir de diligence des organes — business judgment rule",
           "title_it": "",
-          "concepts_de": ["Sorgfaltspflicht", "Business Judgment Rule", "Ermessen", "Organhaftung"],
-          "concepts_fr": ["Devoir de diligence", "Business judgment rule", "Pouvoir d'appréciation"],
+          "concepts_de": [
+            "Sorgfaltspflicht",
+            "Business Judgment Rule",
+            "Ermessen",
+            "Organhaftung"
+          ],
+          "concepts_fr": [
+            "Devoir de diligence",
+            "Business judgment rule",
+            "Pouvoir d'appréciation"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 717 OR", "Art. 754 OR"],
+          "statutes": [
+            "Art. 717 OR",
+            "Art. 754 OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu Sorgfaltspflicht und unternehmerischem Ermessen der Organe: Gerichte überprüfen unternehmerische Entscheide nur auf grobe Pflichtwidrigkeiten.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt pose le principe que l'exclusion du droit de vote lors du vote de décharge (art. 695 al. 1 CO) s'étend au représentant qui est lui-même impliqué dans la gestion, même s'il agit sur instruction d'un actionnaire non concerné par la gestion.",
+          "significance_it": "Questa sentenza stabilisce che l'esclusione del diritto di voto in sede di delibera di discarico (art. 695 cpv. 1 CO) si estende al rappresentante coinvolto nella gestione, anche se agisce su istruzione di un azionista estraneo alla gestione.",
+          "key_erwagungen": [
+            "3",
+            "3.a",
+            "3.b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Regeste-Abschnitt, um die zentrale Rechtsfrage – den Stimmrechtsausschluss nach Art. 695 Abs. 1 OR bei weisungsgebundener Vertretung – zu erfassen. Konzentrieren Sie sich anschliessend auf Erwägung 3 lit. a (Meinungsstreit in der Lehre) und lit. b (Zweck des Déchargebeschlusses und Qualifikation des Vertreters), da dort die tragende Begründung des Bundesgerichts entwickelt wird. Beachten Sie auch die Sachverhaltsdarstellung, um die 50/50-Aktionärsstruktur und die damit verbundene Interessenlage zu verstehen.",
+          "reading_guide_fr": "Commencez par lire le Regeste afin de saisir la question juridique centrale – l'exclusion du droit de vote selon l'art. 695 al. 1 CO en cas de représentation avec instructions. Concentrez-vous ensuite sur le considérant 3 let. a (divergences doctrinales) et let. b (but du vote de décharge et rôle du représentant), où le Tribunal fédéral développe sa motivation principale. Prêtez attention aux faits pour comprendre la structure actionnariale à 50/50 et les conflits d'intérêts qui en résultent.",
+          "reading_guide_it": "Iniziare con la lettura del Regeste per cogliere la questione giuridica centrale – l'esclusione del diritto di voto ai sensi dell'art. 695 cpv. 1 CO in caso di rappresentanza con istruzioni. Concentrarsi poi sul considerando 3 lett. a (divergenze dottrinali) e lett. b (scopo della delibera di discarico e ruolo del rappresentante), dove il Tribunale federale sviluppa la sua motivazione principale. Prestare attenzione ai fatti per comprendere la struttura azionaria paritetica 50/50 e i relativi conflitti di interessi.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Stimmrechtsausschluss gemäss Art. 695 Abs. 1 OR, und welche Personen werden von der Beschlussfassung über die Entlastung des Verwaltungsrats ausgeschlossen?",
+              "hint": "Vgl. Regeste und Erwägung 3 des Entscheids, insbesondere die Formulierung 'in irgendeiner Weise an der Geschäftsführung teilgenommen haben'.",
+              "model_answer": "Art. 695 Abs. 1 OR schliesst alle Personen vom Stimmrecht aus, die in irgendeiner Weise an der Geschäftsführung der Aktiengesellschaft teilgenommen haben, wenn die Generalversammlung über die Entlastung des Verwaltungsrats beschliesst. Im vorliegenden Fall war D. als Direktor der Beklagten an der Geschäftsführung beteiligt und damit selbst vom Stimmrecht ausgeschlossen. Das Bundesgericht dehnt diesen Ausschluss auch auf die Stimmrechtsvertretung aus, sodass D. nicht als Vertreter seines Vaters A. abstimmen durfte."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen sind im vorliegenden Fall einschlägig, und in welchem Spannungsverhältnis stehen Art. 695 Abs. 1 OR und Art. 689 Abs. 2 OR zueinander?",
+              "hint": "Vgl. Erwägung 3 sowie die Ausführungen des Klägers zur Weisungsbefolgungspflicht nach Art. 689b OR.",
+              "model_answer": "Im Zentrum steht Art. 695 Abs. 1 OR, der den Stimmrechtsausschluss bei der Décharge-Erteilung regelt. Art. 689 Abs. 2 OR hingegen erlaubt dem Aktionär grundsätzlich, sein Stimmrecht durch einen Vertreter auszuüben. Das Spannungsverhältnis liegt darin, dass der Kläger geltend macht, sein Vertreter handele lediglich weisungsgebunden gemäss Art. 689b OR und stehe damit der eigenen Stimmabgabe des nicht an der Geschäftsführung beteiligten Aktionärs gleich, während das Bundesgericht den Ausschluss nach Art. 695 Abs. 1 OR als vorrangig betrachtet."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, A. hätte nicht seinen Sohn D. (Direktor), sondern einen unabhängigen Rechtsanwalt als Stimmrechtsvertreter bevollmächtigt: Würde der Stimmrechtsausschluss nach Art. 695 Abs. 1 OR nach der Logik des Bundesgerichts dennoch gelten?",
+              "hint": "Vgl. Erwägung 3 lit. a und b sowie die Unterscheidung zwischen dem Stimmrecht des Aktionärs und dem Ausschluss aufgrund der Eigenschaft des Vertreters.",
+              "model_answer": "Nach der Logik des Bundesgerichts würde ein unabhängiger Rechtsanwalt als Vertreter nicht unter den Ausschlussgrund des Art. 695 Abs. 1 OR fallen, da er selbst nicht an der Geschäftsführung beteiligt ist. Der Ausschluss im vorliegenden Fall knüpft primär an die Eigenschaft des Vertreters D. als Direktor an. Hätte A. einen nicht an der Geschäftsführung beteiligten Vertreter gewählt, wären dessen Stimmen grundsätzlich zuzulassen gewesen, sofern A. selbst nicht als faktisches Organ qualifiziert würde."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht und ein Teil der Doktrin kommen zu unterschiedlichen Ergebnissen bezüglich der Frage, ob der Stimmrechtsausschluss auch bei weisungsgebundener Vertretung gilt. Welche Argumente sprechen für und gegen die vom Bundesgericht gewählte extensive Auslegung von Art. 695 Abs. 1 OR?",
+              "hint": "Vgl. Erwägung 3 lit. a (ältere und neuere Lehrmeinungen) und lit. b (Zweck des Déchargebeschlusses und Rolle des Vertreters in der Versammlung).",
+              "model_answer": "Für die extensive Auslegung spricht der Schutzzweck von Art. 695 Abs. 1 OR: Der Déchargebeschluss soll frei von Interessenkonflikten gefasst werden, und ein an der Geschäftsführung beteiligter Vertreter nimmt an der Versammlung teil, nimmt dort Informationen auf und beeinflusst de facto das Abstimmungsgeschehen, selbst wenn er weisungsgebunden handelt. Dagegen lässt sich einwenden, dass das Stimmrecht ein wohlerworbenes Recht des Aktionärs ist und eine Spezialvollmacht mit ausdrücklicher Weisung den Vertreter zum blossen Boten degradiert, der den Willen des nicht betroffenen Aktionärs mechanisch umsetzt. Die bundesgerichtliche Lösung priorisiert den Konfliktfreiheitsgrundsatz gegenüber der formalen Autonomie des Aktionärs in der Vertreterwahl."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 128 III 142 entwickelte Lösung rechtspolitisch überzeugend, oder öffnet sie die Möglichkeit, dass Mehrheitsaktionäre die Stimmrechte von Minderheitsaktionären systematisch aushebeln können?",
+              "hint": "Vgl. den Sachverhalt (Pattsituation 50/50-Beteiligung), Erwägung 3 lit. b sowie die praktische Wirkung des Entscheids für die Minderheitsaktionärsstellung.",
+              "model_answer": "Die Lösung ist in der vorliegenden Konstellation rechtspolitisch vertretbar, weil sie Interessenkonflikte bei der Décharge-Erteilung wirksam verhindert. In einer 50/50-Struktur wie der vorliegenden kann sie jedoch paradoxe Ergebnisse zeitigen: Der Minderheitsaktionär A. verliert faktisch sein Stimmrecht bei der Décharge, weil er sich auf Familienangehörige stützen muss, während die andere Familienfraktion (E. und seine Verwandten) ebenfalls interessenbefangen abstimmt. Ein Korrektiv läge de lege ferenda in einer differenzierteren Regelung, die zwischen dem Vertreter als blossem Boten mit Spezialvollmacht und dem eigentlich ermessensausübenden Vertreter unterscheidet, um die Mitwirkungsrechte nicht an der Geschäftsführung beteiligter Aktionäre besser zu schützen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, A. hätte D. nicht als Stimmrechtsvertreter eingesetzt, sondern wäre selbst an der Generalversammlung erschienen. Kurz vor der Abstimmung über die Décharge stellt die Gegenseite fest, dass A. über viele Jahre hinweg als faktisches Organ der Beklagten tätig war, indem er operative Entscheide mitgetroffen hat, obwohl er formal kein Amt innehatte. Würde der Stimmrechtsausschluss nach Art. 695 Abs. 1 OR auch ihn persönlich treffen?",
+              "discussion_points": [
+                "Definition des faktischen Organs im Schweizer Gesellschaftsrecht und Voraussetzungen für die Qualifikation als solches",
+                "Ob Art. 695 Abs. 1 OR ('in irgendeiner Weise an der Geschäftsführung teilgenommen') auch faktische Organe erfasst oder nur formell bestellte Organe und Angestellte",
+                "Beweislastfragen: Wer muss die faktische Organeigenschaft darlegen und beweisen?",
+                "Auswirkungen auf die Minderheitsaktionärsstellung, wenn auch der persönlich erschienene Aktionär ausgeschlossen wird"
+              ],
+              "likely_outcome_shift": "Das Handelsgericht hatte A. bereits als 'materielles oder faktisches Organ' qualifiziert und seinen persönlichen Stimmrechtsausschluss bejaht. Wäre diese Qualifikation bundesgerichtlich bestätigt worden, hätte A. auch als persönlich erschienener Aktionär nicht abstimmen dürfen, unabhängig von der Vertreterfrage. Dies hätte die Stellung der Klägerseite noch weiter geschwächt und die praktische Bedeutung der Entscheidung über die Vertreterfrage relativiert."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht A., sondern E. (Delegierter des Verwaltungsrats) hätte die Anfechtungsklage erhoben, weil die Stimmen seiner Frau F. und Tochter G. bei der Décharge-Abstimmung nicht berücksichtigt wurden, obwohl diese keinerlei Geschäftsführungsaufgaben wahrnahmen und E. sie persönlich vertreten hatte.",
+              "discussion_points": [
+                "Ob Art. 695 Abs. 1 OR den Stimmrechtsausschluss nur an die Person des Vertreters oder auch an die des vertretenen Aktionärs knüpft",
+                "Schutzweck der Norm: Verhindert werden soll, dass an der Geschäftsführung beteiligte Personen mittels Stimmrechtsmacht die eigene Entlastung herbeiführen – ob dies auch gilt, wenn die vertretenen Aktionäre selbst unbeteiligt sind",
+                "Unterschied zur Konstellation in BGE 128 III 142, wo der Vertreter (D.) selbst Direktor war, während hier der Vertretene (E.) das Organ ist"
+              ],
+              "likely_outcome_shift": "In dieser Konstellation wäre der Ausschluss der Stimmen von F. und G. kaum zu begründen, denn nicht die Vertreterinnen, sondern E. selbst ist an der Geschäftsführung beteiligt. Art. 695 Abs. 1 OR knüpft an die Teilnahme an der Geschäftsführung an, und F. und G. erfüllen dieses Merkmal nicht. Da E. als Vertreter selbst ausgeschlossen wäre, hätten F. und G. einen anderen, nicht betroffenen Vertreter bestellen oder persönlich erscheinen müssen; ein Ausschluss ihrer Stimmen per se wäre gesetzwidrig gewesen."
+            }
+          ]
         },
         {
           "decision_id": "bge_132 III 564",
@@ -97,21 +318,95 @@
           "title_de": "Verantwortlichkeitsklage — Kausalität und Schaden",
           "title_fr": "Action en responsabilité — causalité et dommage",
           "title_it": "",
-          "concepts_de": ["Verantwortlichkeit", "Kausalität", "Schaden", "Konkursverschleppung"],
-          "concepts_fr": ["Responsabilité", "Causalité", "Dommage", "Prolongation abusive de la faillite"],
+          "concepts_de": [
+            "Verantwortlichkeit",
+            "Kausalität",
+            "Schaden",
+            "Konkursverschleppung"
+          ],
+          "concepts_fr": [
+            "Responsabilité",
+            "Causalité",
+            "Dommage",
+            "Prolongation abusive de la faillite"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 754 OR"],
+          "statutes": [
+            "Art. 754 OR"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Weiterentwicklung der Verantwortlichkeitsklage: Kausalzusammenhang zwischen Pflichtverletzung und Schaden bei Konkursverschleppung und die Schadensberechnung.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt clarifie de manière déterminante les conditions de la responsabilité des administrateurs pour retard à déclarer la faillite, en précisant le calcul du dommage, l'exigence du lien de causalité adéquat et la portée de la solidarité différenciée selon l'art. 759 al. 1 CO.",
+          "significance_it": "La sentenza chiarisce in modo determinante le condizioni della responsabilità degli amministratori per ritardo nella dichiarazione di fallimento, precisando il calcolo del danno, il requisito del nesso causale adeguato e la portata della solidarietà differenziata ai sensi dell'art. 759 cpv. 1 CO.",
+          "key_erwagungen": [
+            "3",
+            "4",
+            "5",
+            "6",
+            "6.1",
+            "7"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 3 für die systematische Übersicht der Klagemöglichkeiten des Gesellschaftsgläubigers, dann Erwägung 5 zur konkreten Sorgfaltspflicht der Verwaltungsräte bei einer inaktiven Gesellschaft in Schieflage, und schliesslich Erwägung 6 samt 6.1 für die zentrale Frage des adäquaten Kausalzusammenhangs und der Schadensberechnung bei Konkursverschleppung. Erwägung 7 zur differenzierten Solidarität rundet das Verständnis der Haftungsverteilung ab.",
+          "reading_guide_fr": "Commencez par le considérant 3 pour obtenir une vue d'ensemble systématique des actions ouvertes au créancier social, puis lisez le considérant 5 sur le devoir de diligence concret des administrateurs face à une société inactive en situation précaire, et enfin le considérant 6 avec le point 6.1 sur la question centrale du lien de causalité adéquat et du calcul du dommage en cas de retard à déclarer la faillite. Le considérant 7 sur la solidarité différenciée complète la compréhension de la répartition de la responsabilité.",
+          "reading_guide_it": "Iniziare con il considerando 3 per una panoramica sistematica delle azioni a disposizione del creditore sociale, poi il considerando 5 sul dovere di diligenza degli amministratori di fronte a una società inattiva in situazione precaria, e infine il considerando 6 con il punto 6.1 sul nesso causale adeguato e il calcolo del danno in caso di ritardo nella dichiarazione di fallimento. Il considerando 7 sulla solidarietà differenziata completa la comprensione della ripartizione della responsabilità.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Welche verschiedenen Klagen stehen einem Gesellschaftsgläubiger nach dem Bundesgericht je nach Art des erlittenen Schadens zur Verfügung, und wie unterscheiden sie sich voneinander?",
+              "hint": "Vgl. Erwägung 3 des Entscheids, wo das Bundesgericht die verschiedenen Klagetypen systematisch darstellt.",
+              "model_answer": "Das Bundesgericht unterscheidet in Erwägung 3 zwischen der direkten Klage des Gläubigers für seinen unmittelbaren Schaden (direkter Schaden) und der abgeleiteten Klage als Abtretungsgläubiger der Masse nach Art. 260 SchKG für den Schaden der Gesellschaft (mittelbarer Schaden). Der direkte Schaden entsteht, wenn das Vermögen des Gläubigers unabhängig vom Gesellschaftsschaden beeinträchtigt wird, während der mittelbare Schaden eine Reflexwirkung des Gesellschaftsschadens darstellt. Im vorliegenden Fall klagte die Banque A. als Abtretungsgläubigerin der Konkursmasse und machte damit einen mittelbaren Schaden geltend."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche vier kumulativen Voraussetzungen müssen nach Art. 754 OR für eine Verantwortlichkeitsklage gegen Verwaltungsräte erfüllt sein, und wie hat das Bundesgericht diese Voraussetzungen in Erwägung 4 präzisiert?",
+              "hint": "Vgl. Erwägung 4 sowie den Wortlaut von Art. 754 OR.",
+              "model_answer": "Art. 754 OR setzt voraus: (1) eine Pflichtverletzung des Verwaltungsrats, (2) einen Schaden bei der Gesellschaft oder beim Gläubiger, (3) einen adäquaten Kausalzusammenhang zwischen Pflichtverletzung und Schaden sowie (4) ein Verschulden (Vorsatz oder Fahrlässigkeit). Das Bundesgericht betont in Erwägung 4, dass alle vier Voraussetzungen kumulativ erfüllt sein müssen und dass bei der Beurteilung der Sorgfaltspflicht ein objektiver Massstab anzulegen ist. Fehlt auch nur eine Voraussetzung, entfällt die Haftung."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Welche konkreten Handlungen hätten X. und Y. als Verwaltungsräte der Z. S.A. nach der Bekanntgabe der Mietforderungen ab August 1992 vornehmen müssen, um ihrer Sorgfaltspflicht zu genügen?",
+              "hint": "Vgl. Erwägung 5 zur Sorgfaltspflicht bei einer inaktiven Gesellschaft in prekärer Lage.",
+              "model_answer": "Das Bundesgericht hält in Erwägung 5 fest, dass X. und Y. angesichts der geltend gemachten Mietforderungen und der ohnehin schon defizitären Lage der Z. S.A. unverzüglich die finanzielle Situation der Gesellschaft hätten überprüfen und konkrete Massnahmen ergreifen müssen. Insbesondere hätten sie bei drohender Überschuldung rechtzeitig den Richter benachrichtigen müssen (Art. 725 Abs. 2 OR), anstatt die Situation durch bloss formelle Massnahmen wie Fussnoten im Revisionsbericht zu verschleiern. Das Zuwarten bis 1995 und das schlichte Weiterführen einer substanzlosen Gesellschaft trotz bekannter Schulden stellt eine klare Verletzung der Sorgfaltspflicht dar."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Wie bestimmt das Bundesgericht den adäquaten Kausalzusammenhang zwischen der Pflichtverletzung (Konkursverschleppung) und dem eingetretenen Schaden, und welche Schwierigkeiten ergeben sich dabei bei der Schadensberechnung im Falle einer Konkursverschleppung?",
+              "hint": "Vgl. Erwägung 6 und insbesondere Erwägung 6.1 zur Schadensberechnung und zur Kollokationsforderung.",
+              "model_answer": "Das Bundesgericht analysiert in Erwägung 6, dass der adäquate Kausalzusammenhang bei der Konkursverschleppung darin besteht, dass bei rechtzeitiger Benachrichtigung des Richters die Konkurseröffnung früher erfolgt wäre und dadurch die weitere Vermögensverminderung verhindert worden wäre. Der Schaden bemisst sich nach der Differenz zwischen dem hypothetischen Aktivenüberschuss bei rechtzeitiger Konkurseröffnung und dem tatsächlichen Ergebnis. Eine besondere Schwierigkeit liegt in der hypothetischen Betrachtung: Es muss ermittelt werden, was bei pflichtgemässem Verhalten geschehen wäre. Zudem bestätigt das Bundesgericht in E. 6.1, dass bei der Abtretungsgläubigerklage die Begründetheit und der Umfang der kollozierten Forderung nicht erneut zu überprüfen ist."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht angewandte differenzierte Solidarität nach Art. 759 Abs. 1 OR eine sachgerechte Lösung zur Verteilung der Haftung unter mehreren Verwaltungsräten, oder führt sie zu unbilligen Ergebnissen für Gläubiger?",
+              "hint": "Vgl. Erwägung 7 zur differenzierten Solidarität sowie den Normzweck des Art. 759 Abs. 1 OR.",
+              "model_answer": "Die differenzierte Solidarität nach Art. 759 Abs. 1 OR stellt einen Kompromiss zwischen vollständiger Solidarhaftung und strenger Teilhaftung dar: Jeder Verantwortliche haftet zwar solidarisch, jedoch nur im Umfang seines individuellen Verschuldens- und Kausalitätsbeitrags. Dies erscheint aus Gläubigerperspektive problematisch, weil der Gläubiger zwar jeden Haftpflichtigen für den vollen Schaden belangen kann, die interne Verteilung aber die Durchsetzbarkeit erschweren kann, wenn einzelne Schädiger insolvent sind. Andererseits ist die Lösung aus Sicht der Verhältnismässigkeit begrüssenswert, weil sie verhindert, dass ein Verwaltungsrat mit marginaler Beteiligung für das gesamte Fehlverhalten seiner Mitorgane aufkommen muss; ob diese Interessenabwägung gelungen ist, bleibt in der Lehre umstritten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, X. und Y. hätten bereits im Februar 1993 – unmittelbar nach der Konsultation des Revisionsorgans – den Richter über die drohende Überschuldung der Z. S.A. benachrichtigt, dieser hätte jedoch die Konkurseröffnung aus prozeduralen Gründen erst im Dezember 1993 angeordnet. Würde dies den adäquaten Kausalzusammenhang zwischen ihrer Pflichtverletzung und dem Schaden der Banque A. unterbrechen?",
+              "discussion_points": [
+                "Prüfung, ob die Pflichtverletzung bereits mit der unterlassenen frühzeitigen Benachrichtigung vor Februar 1993 einsetzte oder erst danach.",
+                "Frage, ob die Verzögerung durch den Richter als Unterbrechung des Kausalzusammenhangs oder lediglich als Mitursache zu qualifizieren ist und welche Wirkung dies auf die Schadensberechnung hätte."
+              ],
+              "likely_outcome_shift": "Der Kausalzusammenhang würde durch das Handeln des Richters grundsätzlich nicht unterbrochen, da dieses eine vorhersehbare Folge der korrekten Benachrichtigung ist. Allerdings würde sich der Schaden auf die Vermögensverminderung zwischen dem hypothetischen frühestmöglichen Konkursdatum (bei pflichtgemässem Verhalten) und dem tatsächlichen Konkurs 1997 reduzieren, was zu einer erheblich tieferen Haftungssumme führen könnte. Die Haftung von X. und Y. würde damit nicht entfallen, aber quantitativ deutlich eingeschränkt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht die Banque A. als Abtretungsgläubigerin der Konkursmasse, sondern der Vermieter J. persönlich hätte die Verwaltungsräte X. und Y. direkt und aus eigenem Recht auf Schadenersatz wegen Konkursverschleppung eingeklagt. Wie würde sich dies auf die Klageart, die Schadensberechnung und die prozessuale Stellung des Klägers auswirken?",
+              "discussion_points": [
+                "Unterscheidung zwischen direktem Schaden (unmittelbare Beeinträchtigung des Gläubigervermögens durch die Pflichtverletzung) und mittelbarem Schaden (Reflexschaden infolge Gesellschaftsschadens) und die daraus folgende Wahl der richtigen Klageart.",
+                "Frage, ob J. als direkter Gläubiger einen eigenen, vom Gesellschaftsschaden unabhängigen Schaden nachweisen müsste, und welche Beweisschwierigkeiten dies mit sich brächte."
+              ],
+              "likely_outcome_shift": "J. müsste als direktklagender Gläubiger einen eigenen, unmittelbaren Schaden nachweisen, der sich von jenem der Gesellschaft unterscheidet – was bei typischer Konkursverschleppung schwierig ist, da sein Schaden regelmässig ein Reflexschaden des Gesellschaftsschadens ist. Ohne Abtretung nach Art. 260 SchKG fehlte J. die Legitimation, den Gesellschaftsschaden geltend zu machen, sodass seine Klage auf den echten direkten Schaden beschränkt wäre und in der Regel tiefer ausfallen würde. Die Klage wäre damit erheblich schwieriger zu gewinnen und würde voraussichtlich zu einem geringeren oder gar keinem Schadenersatz führen."
+            }
+          ]
         },
         {
           "decision_id": "bge_102 II 224",
@@ -120,21 +415,93 @@
           "title_de": "Konzernhaftung und Durchgriff",
           "title_fr": "Responsabilité du groupe et action directe",
           "title_it": "",
-          "concepts_de": ["Konzernhaftung", "Durchgriff", "Rechtsmissbrauch", "Muttergesellschaft"],
-          "concepts_fr": ["Responsabilité du groupe", "Transparence", "Abus de droit", "Société mère"],
+          "concepts_de": [
+            "Konzernhaftung",
+            "Durchgriff",
+            "Rechtsmissbrauch",
+            "Muttergesellschaft"
+          ],
+          "concepts_fr": [
+            "Responsabilité du groupe",
+            "Transparence",
+            "Abus de droit",
+            "Société mère"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 2 ZGB", "Art. 620 OR"],
+          "statutes": [
+            "Art. 2 ZGB",
+            "Art. 620 OR"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Leitentscheid zur Haftung der Muttergesellschaft für Tochtergesellschaften: Durchgriff bei missbräuchlicher Verwendung der Konzernstruktur.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur la responsabilité de la société mère pour les dettes de sa filiale: le Tribunal fédéral admet la levée du voile social en cas d'utilisation abusive de la structure du groupe, fondée sur l'interdiction de l'abus de droit (art. 2 CC).",
+          "significance_it": "Decisione di principio sulla responsabilità della società madre per i debiti della filiale: il Tribunale federale ammette il superamento del velo societario in caso di utilizzo abusivo della struttura del gruppo, fondato sul divieto di abuso del diritto (art. 2 CC).",
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie BGE 102 II 224 mit besonderem Augenmerk auf die Erwägungen zur wirtschaftlichen Einheit von Mutter- und Tochtergesellschaft sowie auf die Voraussetzungen des Rechtsmissbrauchs nach Art. 2 ZGB. Achten Sie darauf, wie das Gericht das Verhältnis zwischen dem Trennungsprinzip des Aktienrechts (Art. 620 OR) und dem ausnahmsweisen Durchgriff dogmatisch einbettet. Die Schlüsselfrage lautet stets: Wann wird die formale Rechtspersönlichkeit der Tochtergesellschaft missbräuchlich als 'Schild' gegen Gläubigeransprüche eingesetzt?",
+          "reading_guide_fr": "Lisez BGE 102 II 224 en prêtant une attention particulière aux considérants relatifs à l'unité économique entre société mère et filiale, ainsi qu'aux conditions de l'abus de droit au sens de l'art. 2 CC. Observez comment le Tribunal fédéral articule le principe de séparation des personnalités juridiques (art. 620 CO) avec l'exception que constitue la levée du voile social. La question centrale est de savoir à quel moment la personnalité juridique distincte de la filiale est utilisée de manière abusive pour faire obstacle aux prétentions des créanciers.",
+          "reading_guide_it": "Leggere BGE 102 II 224 prestando particolare attenzione ai considerandi relativi all'unità economica tra società madre e filiale e alle condizioni dell'abuso di diritto ai sensi dell'art. 2 CC. Osservare come il Tribunale federale inquadra il rapporto tra il principio di separazione delle personalità giuridiche (art. 620 CO) e l'eccezione rappresentata dal superamento del velo societario. La questione centrale è quando la personalità giuridica distinta della filiale viene utilizzata abusivamente come scudo contro le pretese dei creditori.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht man im Kontext von BGE 102 II 224 unter dem Begriff 'Durchgriff' (percement du voile social), und warum ist das Trennungsprinzip zwischen Mutter- und Tochtergesellschaft die Regel?",
+              "hint": "Vgl. Art. 620 OR, der die Aktiengesellschaft als eigenständige juristische Person konstituiert; das Gericht erläutert das Verhältnis zwischen Rechtspersönlichkeit und Haftungsbeschränkung.",
+              "model_answer": "Der Durchgriff bezeichnet die ausnahmsweise Durchbrechung der Haftungstrennung zwischen rechtlich selbstständigen Gesellschaften, sodass die Muttergesellschaft für Verbindlichkeiten der Tochtergesellschaft einsteht. Das Trennungsprinzip ist die Regel, weil jede Aktiengesellschaft gemäss Art. 620 OR eine eigene Rechtspersönlichkeit besitzt und die Gesellschafter grundsätzlich nur das eingebrachte Kapital riskieren. Erst wenn diese Trennung rechtsmissbräuchlich instrumentalisiert wird, greift der Durchgriff als Korrektiv."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlage zieht das Bundesgericht in BGE 102 II 224 heran, um den Durchgriff zu begründen, und welche tatbestandlichen Voraussetzungen müssen kumulativ erfüllt sein?",
+              "hint": "Das Gericht stützt sich zentral auf Art. 2 ZGB (Rechtsmissbrauchsverbot); achten Sie auf die Umschreibung der missbräuchlichen Verwendung der Konzernstruktur.",
+              "model_answer": "Das Bundesgericht stützt den Durchgriff auf Art. 2 ZGB, das heisst auf das allgemeine Rechtsmissbrauchsverbot. Voraussetzung ist erstens eine wirtschaftliche Identität oder völlige Beherrschung der Tochtergesellschaft durch die Mutter sowie zweitens die missbräuchliche Instrumentalisierung der rechtlichen Selbstständigkeit der Tochter, etwa um Gläubiger zu schädigen oder gesetzliche Pflichten zu umgehen. Erst bei Erfüllung beider Elemente wird die formale Trennung der Rechtspersönlichkeiten ausnahmsweise ignoriert."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, eine Schweizer Muttergesellschaft entzieht ihrer finanziell angeschlagenen Tochtergesellschaft systematisch liquide Mittel durch Darlehen zu marktfremden Konditionen, sodass die Tochter ihre Lieferanten nicht mehr bezahlen kann. Würde das in BGE 102 II 224 entwickelte Kriterium des Rechtsmissbrauchs eine Haftung der Mutter begründen?",
+              "hint": "Prüfen Sie, ob das beschriebene Verhalten die zwei tatbestandlichen Elemente des Durchgriffs (wirtschaftliche Beherrschung + missbräuchliche Verwendung) erfüllt.",
+              "model_answer": "Ja, prima facie wären die Voraussetzungen des Durchgriffs erfüllt: Die Mutter beherrscht die Tochter vollständig und entzieht ihr gezielt Liquidität unter marktwidrigen Bedingungen, was einer missbräuchlichen Verwendung der Konzernstruktur zum Nachteil der Gläubiger entspricht. Die Lieferanten könnten sich auf Art. 2 ZGB berufen und verlangen, dass die Mutter als eigentliche Schuldnerin behandelt wird. Allerdings müssten sie im Prozess die konkreten Umstände der Kapitalentziehung und den Schädigungsvorsatz substanziiert dartun."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet sich der in BGE 102 II 224 anerkannte Haftungsdurchgriff von der aktienrechtlichen Verantwortlichkeitsklage gemäss Art. 754 OR, und welche praktischen Konsequenzen hat diese Abgrenzung für Gläubiger eines Konzerns?",
+              "hint": "Vergleichen Sie Schuldner, Anspruchsgrundlage und Beweislast beider Institute; beachten Sie insbesondere, wer klageberechtigt ist.",
+              "model_answer": "Die Verantwortlichkeitsklage nach Art. 754 OR richtet sich gegen Organpersonen (Verwaltungsräte, Geschäftsführer) wegen schuldhafter Pflichtverletzung und setzt ein individuelles Verschulden voraus; Anspruchsberechtigte sind primär die Gesellschaft oder ihre Aktionäre im Sinne des Schadensersatzes. Der Durchgriff nach BGE 102 II 224 hingegen macht die Muttergesellschaft als solche – nicht ihre Organe – direkt haftbar und beruht auf dem Rechtsmissbrauchsverbot, ohne dass ein individuelles Verschulden nachgewiesen werden muss. Für Gläubiger ist der Durchgriff attraktiver, wenn die Organpersonen vermögenslos sind, aber anspruchsvoller in der Beweisführung, weil die missbräuchliche Konzerngestaltung als solche dargetan werden muss."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 102 II 224 gewählte Lösung – Haftungsdurchgriff gestützt auf das Rechtsmissbrauchsverbot statt auf eine explizite Konzernhaftungsnorm – rechtspolitisch überzeugend, oder hätte der Gesetzgeber eine spezifische Regelung der Konzernhaftung schaffen sollen?",
+              "hint": "Wägen Sie Rechtssicherheit, Flexibilität und Gläubigerschutz ab; berücksichtigen Sie, dass das Schweizer OR bis heute keine kodifizierte Konzernhaftung kennt.",
+              "model_answer": "Die richterrechtliche Lösung über Art. 2 ZGB bietet Flexibilität und ermöglicht es den Gerichten, auf atypische Missbrauchskonstellationen zu reagieren, ohne starre Tatbestandsgrenzen. Kritisch ist jedoch, dass die Unbestimmtheit des Rechtsmissbrauchsbegriffs die Rechtssicherheit für Konzerne beeinträchtigt und die Beweislast für Gläubiger faktisch sehr hoch bleibt, was den Gläubigerschutz abschwächt. Eine kodifizierte Konzernhaftungsnorm – wie sie etwa das deutsche Recht partiell kennt – würde Transparenz und Vorhersehbarkeit erhöhen, müsste aber sorgfältig ausgestaltet werden, um legitime Konzernstrukturen nicht unverhältnismässig zu belasten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Stellen Sie sich vor, die Tochtergesellschaft hat ihrerseits eine eigene Enkeltochtergesellschaft gegründet, auf die sämtliche werthaltigen Aktiven verschoben wurden, bevor die Tochtergesellschaft in Konkurs fiel. Die Gläubiger der Tochter verlangen nun Durchgriff sowohl auf die Mutter als auch auf die Enkeltochter. Ändert sich die rechtliche Analyse nach den Grundsätzen von BGE 102 II 224?",
+              "discussion_points": [
+                "Kann der Durchgriff mehrstufig über mehrere Konzernebenen hinweg angewendet werden, oder setzt er eine direkte Beherrschungsbeziehung voraus?",
+                "Wie beurteilt sich die missbräuchliche Verwendung der Konzernstruktur, wenn die Aktiven nicht zur Mutter, sondern zu einer Schwester- oder Enkeltochtergesellschaft verschoben wurden?"
+              ],
+              "likely_outcome_shift": "Die Grundsätze von BGE 102 II 224 lassen sich prinzipiell auf mehrstufige Konzerngeflechte ausdehnen, sofern eine einheitliche Leitung und ein koordinierter Missbrauch nachgewiesen werden können. Der Durchgriff auf die Enkeltochter würde jedoch eine zusätzliche Beweisebene erfordern, da deren rechtliche Selbstständigkeit separat als missbräuchlich charakterisiert werden müsste. In der Praxis steigt damit die Beweislast der Gläubiger erheblich, was den Erfolg der Klage unsicherer macht."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Kehren Sie das Verhältnis um: Eine insolvente Muttergesellschaft will Ansprüche geltend machen, die eigentlich ihrer wirtschaftlich gesunden, aber formal eigenständigen Tochtergesellschaft zustehen. Kann sich die Muttergesellschaft ihrerseits auf eine Art 'umgekehrten Durchgriff' berufen, um auf das Vermögen der Tochter zuzugreifen?",
+              "discussion_points": [
+                "Dient der Durchgriff nach BGE 102 II 224 dem Schutz von Gläubigern oder kann er auch zugunsten der beherrschenden Gesellschaft geltend gemacht werden?",
+                "Würde ein 'umgekehrter Durchgriff' zugunsten der Mutter das Trennungsprinzip nicht in sein Gegenteil verkehren und die Minderheitsaktionäre sowie Gläubiger der Tochter schädigen?"
+              ],
+              "likely_outcome_shift": "Der umgekehrte Durchgriff zugunsten der herrschenden Gesellschaft wird in der Schweizer Rechtslehre und -praxis überwiegend abgelehnt, da der Durchgriff primär ein Gläubigerschutzinstrument ist und nicht dazu dient, der Muttergesellschaft eigennützigen Zugriff auf das Vermögen der Tochter zu verschaffen. Eine solche Ausdehnung würde die Minderheitsaktionäre und Gläubiger der Tochtergesellschaft schutzlos stellen und den Rechtsmissbrauchsgedanken umkehren. Das Bundesgericht würde einen solchen Anspruch der Mutter daher mit grosser Wahrscheinlichkeit zurückweisen."
+            }
+          ]
         }
       ]
     },
@@ -143,7 +510,10 @@
       "name_de": "GmbH und Konzernrecht",
       "name_fr": "Sàrl et droit des groupes",
       "name_it": "Sagl e diritto dei gruppi",
-      "statutes": ["Art. 717 OR", "Art. 772 OR"],
+      "statutes": [
+        "Art. 717 OR",
+        "Art. 772 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_140 III 533",
@@ -152,21 +522,92 @@
           "title_de": "GmbH — Kaduzierung von Stammanteilen",
           "title_fr": "Sàrl — caducité des parts sociales",
           "title_it": "",
-          "concepts_de": ["GmbH", "Kaduzierung", "Stammanteil", "Kapitalerhöhung"],
-          "concepts_fr": ["Sàrl", "Caducité", "Part sociale", "Augmentation du capital"],
+          "concepts_de": [
+            "GmbH",
+            "Kaduzierung",
+            "Stammanteil",
+            "Kapitalerhöhung"
+          ],
+          "concepts_fr": [
+            "Sàrl",
+            "Caducité",
+            "Part sociale",
+            "Augmentation du capital"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 777c OR"],
+          "statutes": [
+            "Art. 777c OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Kaduzierungsverfahren bei der GmbH: Voraussetzungen und Wirkungen der Kaduzierung bei säumigem Gesellschafter.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe clarifie les conditions auxquelles des prêts intra-groupe sont compatibles avec l'interdiction de restitution des apports (art. 680 al. 2 CO), précise le rapport entre l'action en restitution (art. 678 CO) et l'action en responsabilité (art. 754 ss CO), et reconnaît la distribuabilité de l'agio en tant que partie de la réserve générale non bloquée (art. 671 al. 2 ch. 1 et al. 3 CO).",
+          "significance_it": "Questa decisione di principio chiarisce le condizioni alle quali i prestiti infragruppo sono compatibili con il divieto di restituzione degli apporti (art. 680 cpv. 2 CO), precisa il rapporto tra l'azione di restituzione (art. 678 CO) e l'azione di responsabilità (art. 754 segg. CO) e riconosce la distribuibilità dell'aggio come parte della riserva generale non vincolata (art. 671 cpv. 2 n. 1 e cpv. 3 CO).",
+          "key_erwagungen": [
+            "3",
+            "4",
+            "6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 534–536) sorgfältig, um die konzernrechtliche Struktur und das Cash-Pooling-System zu verstehen. Konzentrieren Sie sich dann auf Erwägung 3 (Verhältnis Rückerstattungs- zur Verantwortlichkeitsklage), Erwägung 4 (Zulässigkeit konzerninterner Darlehen und Einlagenrückgewährverbot) sowie Erwägung 6 (Ausschüttbarkeit von Agio), da diese die tragenden Rechtsfragen des Entscheids behandeln.",
+          "reading_guide_fr": "Lisez d'abord attentivement les faits (p. 534–536) pour comprendre la structure du groupe et le système de cash pooling. Concentrez-vous ensuite sur le considérant 3 (rapport entre l'action en restitution et l'action en responsabilité), le considérant 4 (admissibilité des prêts intra-groupe et interdiction de restitution des apports) et le considérant 6 (distribuabilité de l'agio), qui constituent le cœur juridique de l'arrêt.",
+          "reading_guide_it": "Leggere dapprima attentamente i fatti (p. 534–536) per comprendere la struttura del gruppo e il sistema di cash pooling. Concentrarsi poi sui considerandi 3 (rapporto tra azione di restituzione e azione di responsabilità), 4 (ammissibilità dei prestiti infragruppo e divieto di restituzione degli apporti) e 6 (distribuibilità dell'aggio), che costituiscono il nucleo giuridico della decisione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was verstand das Bundesgericht unter dem Begriff des 'Zero Balancing Cash Pooling' und welche rechtliche Beziehung entstand dabei zwischen der Swisscargo AG und der Finance BV?",
+              "hint": "Sachverhalt A.b, S. 534–535",
+              "model_answer": "Beim Zero Balancing Cash Pooling wurden am Ende jedes Buchungstags alle Teilnehmerkonten auf einen Null-Saldo ausgeglichen, indem Guthaben an den Master Account der Pool-Führerin (Finance BV) übertragen wurden. Dadurch entstand zwischen Swisscargo und Finance BV ein Kontokorrentverhältnis mit gegenseitigen Darlehensforderungen. Die Transaktionen hatten somit den Charakter konzerninterner Darlehen ('cross-stream' gegenüber Finance BV, 'up-stream' gegenüber SAirGroup)."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen des OR sind gemäss dem Bundesgericht massgebend für die Frage, ob konzerninterne Darlehen mit dem Verbot der Einlagenrückgewähr vereinbar sind, und wie grenzen sich diese voneinander ab?",
+              "hint": "Regeste und Erwägung 4",
+              "model_answer": "Das Bundesgericht stützt sich primär auf Art. 680 Abs. 2 OR, der die Rückgewähr von Einlagen an Aktionäre verbietet, sowie auf Art. 678 OR (Rückerstattungsklage) für zu Unrecht bezogene Leistungen. Ergänzend ist Art. 671 OR relevant für die Reservebildungspflichten. Die Rückerstattungsklage nach Art. 678 OR ist dabei von der Verantwortlichkeitsklage nach Art. 754 ff. OR zu unterscheiden, wobei beide nebeneinander anwendbar sein können, aber unterschiedliche Voraussetzungen und Rechtsfolgen aufweisen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie beurteilt das Bundesgericht die Zulässigkeit der konzerninternen Darlehen der Swisscargo AG konkret: Welche Voraussetzungen müssen erfüllt sein, damit ein solches Darlehen nicht gegen das Verbot der Einlagenrückgewähr verstösst?",
+              "hint": "Erwägung 4",
+              "model_answer": "Ein konzerninternes Darlehen ist mit Art. 680 Abs. 2 OR vereinbar, wenn es zu marktüblichen Konditionen gewährt wird, die Rückzahlung gesichert erscheint und das freie Eigenkapital der darlehensgebenden Gesellschaft nicht unterschritten wird. Entscheidend ist, ob die Leistung einem Drittvergleich standhält ('at arm's length'). Im Fall der Swisscargo war zu prüfen, ob die Darlehen an Finance BV und SAirGroup angesichts der sich verschlechternden Bonität des Konzerns noch als werthaltig eingestuft werden durften und ob sie das frei verfügbare Eigenkapital beeinträchtigten."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welches Verhältnis besteht nach der bundesgerichtlichen Analyse zwischen der Rückerstattungsklage (Art. 678 OR) und der Verantwortlichkeitsklage (Art. 754 ff. OR), und welche praktischen Konsequenzen ergeben sich daraus für die Nachlassmasse der Swisscargo als Klägerin?",
+              "hint": "Erwägung 3",
+              "model_answer": "Das Bundesgericht hält fest, dass die Rückerstattungsklage nach Art. 678 OR und die Verantwortlichkeitsklage nach Art. 754 ff. OR unterschiedliche Anspruchsgrundlagen mit eigenem Anwendungsbereich sind und grundsätzlich nebeneinander bestehen können. Die Rückerstattungsklage richtet sich gegen die ungerechtfertigt bereicherte Person (z.B. Aktionärin SAirLogistics), während die Verantwortlichkeitsklage Organpflichtverletzungen der Revisionsstelle erfasst. Für die Nachlassmasse bedeutet dies, dass sie je nach Beklagtem und verfolgtem Schaden die geeignete Klage wählen muss, wobei eine Kumulation prozessual möglich, aber mit unterschiedlichen Beweisanforderungen verbunden ist."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Wie ist die bundesgerichtliche Aussage zur Ausschüttbarkeit von Agio als Teil der allgemeinen Reserve (Art. 671 Abs. 2 Ziff. 1 und Abs. 3 OR) rechtspolitisch zu bewerten, und welche Schutzlücken könnten daraus für Gläubiger entstehen?",
+              "hint": "Erwägung 6 sowie Art. 671 Abs. 2 Ziff. 1 und Abs. 3 OR",
+              "model_answer": "Das Bundesgericht qualifiziert Agio als Teil der ungesperrten allgemeinen Reserve, das unter den Voraussetzungen von Art. 671 Abs. 3 OR ausgeschüttet werden kann, sofern die gesetzlichen Mindestreserven gebildet sind. Rechtspolitisch ist dies insofern kritisch zu würdigen, als Agio wirtschaftlich dem Kapitalschutz nahesteht und seine Ausschüttbarkeit Gläubiger gefährden kann, wenn sie in Krisenzeiten zur Liquiditätsabschöpfung verwendet wird. Die Entscheidung zeigt eine Schutzlücke auf: Das Gesetz unterscheidet nicht hinreichend zwischen operativ erwirtschaftetem freiem Eigenkapital und Kapitaleinlagen der Aktionäre, was eine Revision des Kapitalschutzrechts – wie sie mit der OR-Reform 2023 teilweise erfolgte – rechtfertigt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Swisscargo AG wäre keine 100%-ige Tochtergesellschaft gewesen, sondern hätte auch Minderheitsaktionäre (25 % Beteiligung) gehabt. Wie würde sich dies auf die Beurteilung der Dividendenausschüttung von 28,5 Mio. Fr. und der konzerninternen Darlehen auswirken?",
+              "discussion_points": [
+                "Schutz der Minderheitsaktionäre nach Art. 706 OR (Anfechtungsklage) und Art. 678 OR bei unzulässigen Leistungen an die Mehrheitsaktionärin",
+                "Verschärfte Prüfungspflichten der Revisionsstelle bei Interessenkonflikten zwischen Mehr- und Minderheitsaktionären im Konzern"
+              ],
+              "likely_outcome_shift": "Mit Minderheitsaktionären würde die Transaktion einer noch strengeren Drittvergleichsprüfung unterliegen, da die konzerninternen Darlehen und die Dividende primär der Mehrheitsaktionärin zugutekamen. Die Minderheitsaktionäre hätten zudem eigenständige Anfechtungs- und Rückerstattungsansprüche geltend machen können, was die Haftungsposition der Revisionsstelle erheblich verschärft hätte. Die Gerichte hätten wohl einen strengeren Massstab an die 'at arm's length'-Bedingungen der Darlehen angelegt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht die Nachlassmasse der Swisscargo AG, sondern ein einzelner Gläubiger der Swisscargo (z.B. eine Flughafengesellschaft mit einer Forderung von 5 Mio. Fr.) würde gegen die Revisionsstelle A. AG klagen. Ändert sich die Klageberechtigung und die Anspruchsgrundlage?",
+              "discussion_points": [
+                "Aktivlegitimation von Gesellschaftsgläubigern bei der Verantwortlichkeitsklage nach Art. 754 Abs. 1 i.V.m. Art. 756 OR: direkter Schaden vs. mittelbarer Schaden",
+                "Unterschied zwischen dem Gesamtschaden der Gesellschaft (actio pro societate durch Nachlassmasse) und dem Individualschaden des Gläubigers als Voraussetzung der eigenständigen Gläubigerklage"
+              ],
+              "likely_outcome_shift": "Ein einzelner Gesellschaftsgläubiger kann nach Art. 756 Abs. 1 OR nur dann direkt gegen die Revisionsstelle klagen, wenn er einen unmittelbaren, von der Schädigung der Gesellschaft unabhängigen Schaden erlitten hat. Da der Schaden des Gläubigers hier typischerweise ein mittelbarer (Reflexschaden) wäre, wäre seine Aktivlegitimation zu verneinen oder erheblich eingeschränkt. Nur die Nachlassmasse bzw. der Sachwalter ist legitimiert, den Gesamtschaden der Gesellschaft einzuklagen, weshalb ein Gläubiger mit hoher Wahrscheinlichkeit mit seiner Klage scheitern würde."
+            }
+          ]
         },
         {
           "decision_id": "bge_130 III 213",
@@ -175,21 +616,93 @@
           "title_de": "Treuepflicht des Verwaltungsrats im Konzern",
           "title_fr": "Devoir de fidélité du conseil d'administration dans le groupe",
           "title_it": "",
-          "concepts_de": ["Treuepflicht", "Verwaltungsrat", "Konzerninteressen", "Interessenkonflikt"],
-          "concepts_fr": ["Devoir de fidélité", "Conseil d'administration", "Intérêts du groupe", "Conflit d'intérêts"],
+          "concepts_de": [
+            "Treuepflicht",
+            "Verwaltungsrat",
+            "Konzerninteressen",
+            "Interessenkonflikt"
+          ],
+          "concepts_fr": [
+            "Devoir de fidélité",
+            "Conseil d'administration",
+            "Intérêts du groupe",
+            "Conflit d'intérêts"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 717 OR"],
+          "statutes": [
+            "Art. 717 OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Treuepflicht von Organen einer Aktiengesellschaft im Konzern: Eigene Interessen und Konzerninteressen müssen hinter dem Gesellschaftsinteresse zurückstehen.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur le devoir de fidélité des organes dirigeants d'une société anonyme au sein d'un groupe: les intérêts personnels et les intérêts du groupe doivent céder le pas à l'intérêt de la société elle-même.",
+          "significance_it": "Decisione di principio sul dovere di fedeltà degli organi direttivi di una società anonima all'interno di un gruppo: gli interessi personali e gli interessi del gruppo devono cedere il passo all'interesse della società stessa.",
+          "key_erwagungen": [
+            "2.1",
+            "2.2",
+            "2.3",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 214–215), um die konzernrechtliche Konstellation und das konkrete Verhalten des Beklagten zu verstehen. Konzentrieren Sie sich anschliessend auf Erwägung 2.1 zur Normenfrage (Art. 321a vs. Art. 717 OR) sowie auf die Erwägungen 2.2 und 2.3 zur Treuepflicht im Konzern und zur Frage des Schadens aus rechtsgrundloser Vermögensverschiebung. Erwägung 3 ist für die arbeitsrechtliche Frage der fristlosen Entlassung und das Erfordernis der vorgängigen Abmahnung zentral.",
+          "reading_guide_fr": "Commencez par lire les faits (p. 214–215) afin de comprendre la structure du groupe et le comportement concret du défendeur. Concentrez-vous ensuite sur le considérant 2.1 relatif aux normes applicables (art. 321a vs art. 717 CO) ainsi que sur les considérants 2.2 et 2.3 concernant le devoir de fidélité au sein du groupe et le dommage résultant d'un transfert de patrimoine sans cause. Le considérant 3 est essentiel pour la question du licenciement immédiat et de l'avertissement préalable.",
+          "reading_guide_it": "Iniziare con la lettura dei fatti (p. 214–215) per comprendere la struttura del gruppo societario e il comportamento concreto del convenuto. Concentrarsi poi sul considerando 2.1 relativo alle norme applicabili (art. 321a vs art. 717 CO) e sui considerandi 2.2 e 2.3 riguardanti il dovere di fedeltà nel gruppo e il danno derivante da un trasferimento patrimoniale privo di causa. Il considerando 3 è fondamentale per la questione del licenziamento immediato e dell'avvertimento preventivo.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat der Beklagte konkret getan, das zur fristlosen Entlassung geführt hat, und in welchem Verhältnis stand er zur klagenden Gesellschaft?",
+              "hint": "Sachverhalt, S. 214–215: Beschreibung des F.-Geschäfts und der Gutschrift vom 7. Dezember 1995",
+              "model_answer": "Der Beklagte war Direktor und später Geschäftsführer der B. AG und stand zu ihr in einem Arbeitsverhältnis. Er veranlasste am 7. Dezember 1995 eine Gutschrift zu Lasten der Klägerin und zu Gunsten der C. Ltd., einer anderen Gesellschaft innerhalb der C.-Gruppe, um den Verlust der Konzernschwester aus einem Holzgeschäft auszugleichen. Diese Vermögensverschiebung ohne Rechtsgrundlage führte schliesslich zu seiner fristlosen Entlassung am 16. Januar 1998."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Normen sind gemäss dem Bundesgericht für die Beurteilung der Treuepflicht des Beklagten massgeblich, und wie verhält sich Art. 321a OR zu Art. 717 OR in diesem Zusammenhang?",
+              "hint": "Erwägung 2.1: Qualifikation des Rechtsverhältnisses und massgebliche Normen",
+              "model_answer": "Das Bundesgericht stellt fest, dass das schweizerische Arbeitsvertragsrecht keine unterschiedlichen Kategorien von Arbeitnehmern kennt, sodass Art. 321a Abs. 1 OR grundsätzlich auf alle Hierarchiestufen anwendbar ist. Zusätzlich greift Art. 717 Abs. 1 OR, da der Beklagte gleichzeitig Organ der Gesellschaft war. Beide Normen begründen eine Treuepflicht, wobei Art. 717 OR als aktienrechtliche Norm strengere Anforderungen an geschäftsleitende Organe stellt, insbesondere im Hinblick auf die vorrangige Wahrung des Gesellschaftsinteresses."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Nehmen Sie an, der Beklagte hätte die Gutschrift auf ausdrückliche Weisung der Konzernmutter vorgenommen. Hätte dies nach den im Urteil dargelegten Grundsätzen seine Haftung gegenüber der Klägerin ausgeschlossen?",
+              "hint": "Erwägung 2.2 und 2.3: Treuepflicht im Konzern, Vorrang des Gesellschaftsinteresses gegenüber Konzerninteressen",
+              "model_answer": "Nein, eine Weisung der Konzernmutter hätte die Haftung des Beklagten nicht ohne Weiteres ausgeschlossen. Das Bundesgericht hält fest, dass Konzerninteressen dem Interesse der einzelnen Gesellschaft grundsätzlich nachgehen müssen. Ein Organ der Tochtergesellschaft ist zunächst dieser gegenüber treuepflichtig und darf nicht zum Nachteil der Gesellschaft handeln, auch wenn die Konzernmutter dies anweist. Die rechtsgrundlose Vermögensverschiebung schadet der Klägerin unabhängig davon, wer sie angeordnet hat."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Obergericht und das Bundesgericht kamen zur Frage der fristlosen Entlassung zu unterschiedlichen Ergebnissen. Welche dogmatische Spannung zeigt sich zwischen der Qualifikation der Pflichtverletzung als schwerwiegend (im Sinne von Art. 717 OR) einerseits und den Anforderungen an eine fristlose Entlassung nach Art. 337 OR andererseits?",
+              "hint": "Erwägung 3 und Regeste b: Fristlose Entlassung, Erfordernis der vorgängigen Abmahnung",
+              "model_answer": "Das Obergericht hatte die Gutschrift als schwere Vertragsverletzung gewertet und die fristlose Entlassung für gerechtfertigt gehalten. Das Bundesgericht differenziert jedoch: Eine Verletzung der gesellschaftsrechtlichen Treuepflicht kann gleichzeitig eine Pflichtverletzung im Arbeitsverhältnis darstellen, doch für die fristlose Entlassung nach Art. 337 OR bedarf es einer qualifizierten Unzumutbarkeit der Fortsetzung des Arbeitsverhältnisses. Das Bundesgericht betont, dass ohne vorgängige Abmahnung die Veranlassung einer rechtsgrundlosen Gutschrift als solche – trotz ihrer Pflichtwidrigkeit – nicht zwingend die hohe Schwelle von Art. 337 OR erreicht, was die Spannung zwischen der gesellschaftsrechtlichen und der arbeitsrechtlichen Beurteilung derselben Handlung verdeutlicht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass das Bundesgericht Konzerninteressen grundsätzlich dem Einzelgesellschaftsinteresse nachordnet, obwohl wirtschaftliche Konzernrealitäten oft eine koordinierte Ressourcenallokation erfordern? Welche Konsequenzen hat diese Haltung für die Praxis von Konzernleitungsorganen?",
+              "hint": "Erwägungen 2.2 und 2.3, Regeste a: Schaden aus rechtsgrundloser Vermögensverschiebung innerhalb des Konzerns",
+              "model_answer": "Die Haltung des Bundesgerichts schützt Gläubiger und Minderheitsaktionäre der Tochtergesellschaft vor einer Aushöhlung ihres Haftungssubstrats durch konzerninterne Transfers ohne Gegenleistung, was aus Sicht des Gläubigerschutzes und der rechtlichen Selbstständigkeit juristischer Personen dogmatisch kohärent ist. Problematisch ist jedoch, dass in der wirtschaftlichen Realität Konzernsynergien und Liquiditätsausgleiche oft sachlich gerechtfertigt sind und ohne klare vertragliche Grundlage vorgenommen werden. Die Folge für die Praxis ist, dass konzernleitende Organe auf eine explizite schuldrechtliche Grundlage für jede Vermögensverschiebung – etwa durch Cashpooling-Verträge oder Verrechnungspreisvereinbarungen – angewiesen sind, um sich nicht der Haftung aus Treuepflichtverletzung auszusetzen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die B. AG hätte mit der C. Ltd. einen schriftlichen Konzernverrechnungsvertrag abgeschlossen, der gegenseitige Verlustausgleiche unter bestimmten Bedingungen erlaubt, und der Beklagte hätte sich bei der Gutschrift auf diesen Vertrag berufen können. Wie würde sich dies auf die Beurteilung der Treuepflichtverletzung auswirken?",
+              "discussion_points": [
+                "Würde eine vertragliche Grundlage die Rechtsgrundlosigkeit der Vermögensverschiebung entfallen lassen und damit die Pflichtverletzung ausschliessen?",
+                "Welche Anforderungen müsste ein solcher Konzernvertrag erfüllen, damit er den Beklagten von seiner organschaftlichen Treuepflicht gegenüber der B. AG entbindet?"
+              ],
+              "likely_outcome_shift": "Mit einer vertraglichen Grundlage würde die Gutschrift nicht mehr als rechtsgrundlose Vermögensverschiebung gelten, was die Treuepflichtverletzung nach Art. 717 OR entfallen liesse, sofern die Konditionen des Vertrags dem Drittvergleich standhalten. Damit wären sowohl die Schadenersatzklage als auch die fristlose Entlassung deutlich schwerer zu rechtfertigen, und das Verfahren hätte wahrscheinlich zugunsten des Beklagten geendet."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie würde sich die Rechtslage verändern, wenn nicht ein angestellter Direktor, sondern ein Mitglied des Verwaltungsrats der B. AG – ohne Arbeitsverhältnis – dieselbe Gutschrift zu Gunsten der C. Ltd. veranlasst hätte?",
+              "discussion_points": [
+                "Würde Art. 321a OR als arbeitsrechtliche Treuepflicht überhaupt noch anwendbar sein, oder käme ausschliesslich Art. 717 OR zum Tragen?",
+                "Welche Unterschiede bestehen bezüglich der Haftungsvoraussetzungen und des Klagepfads zwischen einem arbeitsrechtlichen und einem rein aktienrechtlichen Verantwortlichkeitsanspruch?"
+              ],
+              "likely_outcome_shift": "Bei einem reinen Verwaltungsratsmitglied ohne Arbeitsvertrag würde sich die Haftung ausschliesslich nach Art. 717 OR und dem aktienrechtlichen Verantwortlichkeitsrecht (Art. 754 OR) richten; arbeitsrechtliche Ansprüche wie entgangener Lohn oder eine Entschädigung nach Art. 337c OR wären ausgeschlossen. Die Haftungsvoraussetzungen blieben im Kern ähnlich, jedoch würde das Verfahren nach aktienrechtlichen Regeln durchgeführt, und eine 'fristlose Entlassung' als solche wäre mangels Arbeitsverhältnis kein relevantes Rechtsinstitut mehr."
+            }
+          ]
         }
       ]
     }

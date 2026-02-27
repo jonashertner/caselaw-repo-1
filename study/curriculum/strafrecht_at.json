@@ -10,7 +10,10 @@
       "name_de": "Vorsatz und Fahrlässigkeit",
       "name_fr": "Intention et négligence",
       "name_it": "Intenzionalità e negligenza",
-      "statutes": ["Art. 12 StGB", "Art. 18 StGB"],
+      "statutes": [
+        "Art. 12 StGB",
+        "Art. 18 StGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_130 IV 58",
@@ -18,14 +21,30 @@
           "actual_language": "de",
           "title_de": "Eventualvorsatz vs. bewusste Fahrlässigkeit bei Raserunfall",
           "title_fr": "Dol éventuel vs. négligence consciente lors d'un accident",
-          "concepts_de": ["Eventualvorsatz", "Bewusste Fahrlässigkeit", "Tötung", "Abgrenzung"],
-          "concepts_fr": ["Dol éventuel", "Négligence consciente", "Homicide"],
-          "statutes": ["Art. 12 StGB", "Art. 111 StGB"],
+          "concepts_de": [
+            "Eventualvorsatz",
+            "Bewusste Fahrlässigkeit",
+            "Tötung",
+            "Abgrenzung"
+          ],
+          "concepts_fr": [
+            "Dol éventuel",
+            "Négligence consciente",
+            "Homicide"
+          ],
+          "statutes": [
+            "Art. 12 StGB",
+            "Art. 111 StGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Abgrenzung Eventualvorsatz/bewusste Fahrlässigkeit bei tödlichem Raserunfall",
           "significance_fr": "Arrêt de principe sur la distinction dol éventuel/négligence consciente lors d'un accident mortel",
-          "key_erwagungen": ["2", "3", "4"],
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 2: Definition Eventualvorsatz — Wissens- und Willenskomponente. E. 3: Definition bewusste Fahrlässigkeit — Vertrauen auf Ausbleiben des Erfolgs. E. 4: Abgrenzungskriterien im konkreten Fall. Die Abgrenzung ist eine Rechtsfrage, aber die innere Tatsache (Wille) ist eine Tatfrage.",
           "socratic_questions": [
             {
@@ -53,7 +72,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Täter nachweislich unter Alkoholeinfluss stand und seine Risikowahrnehmung beeinträchtigt war?",
-              "discussion_points": ["Actio libera in causa", "Selbstverschuldete Unzurechnungsfähigkeit", "Art. 263 StGB"],
+              "discussion_points": [
+                "Actio libera in causa",
+                "Selbstverschuldete Unzurechnungsfähigkeit",
+                "Art. 263 StGB"
+              ],
               "model_answer": "Der Alkoholeinfluss könnte die Wissenskomponente beeinträchtigen. Allerdings greift die actio libera in causa: Wer sich schuldhaft in einen Rauschzustand versetzt, kann sich nicht auf verminderte Wahrnehmung berufen."
             },
             {
@@ -68,13 +91,21 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre, wenn der Fahrer ein professioneller Rennfahrer auf einer ihm bekannten Strecke wäre?",
-              "discussion_points": ["Subjektives Risikobewusstsein", "Sonderwissen", "Vertrauensgrundsatz"],
+              "discussion_points": [
+                "Subjektives Risikobewusstsein",
+                "Sonderwissen",
+                "Vertrauensgrundsatz"
+              ],
               "likely_outcome_shift": "Ein professioneller Rennfahrer könnte argumentieren, dass er aufgrund seiner Fähigkeiten auf das Ausbleiben des Erfolgs vertraute. Dies könnte eher für bewusste Fahrlässigkeit sprechen."
             },
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn ein Beifahrer den Fahrer zum Rasen angestiftet hätte?",
-              "discussion_points": ["Anstiftung (Art. 24 StGB)", "Mittäterschaft", "Eigenverantwortlichkeit des Fahrers"],
+              "discussion_points": [
+                "Anstiftung (Art. 24 StGB)",
+                "Mittäterschaft",
+                "Eigenverantwortlichkeit des Fahrers"
+              ],
               "likely_outcome_shift": "Der Beifahrer könnte als Anstifter haften. Der Fahrer bleibt als Haupttäter verantwortlich — die Anstiftung ändert nichts an seinem Vorsatz."
             }
           ]
@@ -86,21 +117,96 @@
           "title_de": "Notwehr — Voraussetzungen und Grenzen der Notwehrreaktion",
           "title_fr": "Légitime défense — conditions et limites de la réaction défensive",
           "title_it": "",
-          "concepts_de": ["Notwehr", "Rechtfertigung", "Angriff", "Verhältnismässigkeit", "Notwehrexzess"],
-          "concepts_fr": ["Légitime défense", "Justification", "Attaque", "Proportionnalité", "Excès de défense"],
+          "concepts_de": [
+            "Notwehr",
+            "Rechtfertigung",
+            "Angriff",
+            "Verhältnismässigkeit",
+            "Notwehrexzess"
+          ],
+          "concepts_fr": [
+            "Légitime défense",
+            "Justification",
+            "Attaque",
+            "Proportionnalité",
+            "Excès de défense"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 15 StGB", "Art. 16 StGB"],
+          "statutes": [
+            "Art. 15 StGB",
+            "Art. 16 StGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Voraussetzungen der Notwehr: gegenwärtiger rechtswidriger Angriff und Verhältnismässigkeit der Abwehrhandlung.",
-          "significance_fr": "Arrêt de principe sur les conditions de la légitime défense: attaque actuelle et illicite, proportionnalité de la réaction défensive.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur les conditions de la légitime défense selon l'art. 15 CP, posant que l'utilisation d'un couteau peut être proportionnée in concreto lorsque l'attaque est menée par plusieurs personnes et que le risque de lésions corporelles graves est réel.",
+          "significance_it": "Decisione di principio sui presupposti della legittima difesa ai sensi dell'art. 15 CP, che stabilisce che l'uso di un coltello può essere proporzionato in concreto quando l'aggressione è compiuta da più persone e il rischio di lesioni corporali gravi è reale.",
+          "key_erwagungen": [
+            "1",
+            "2",
+            "3.1",
+            "3.2"
+          ],
+          "reading_guide_de": "Beginnen Sie mit E. 1 für den Sachverhalt und die vorinstanzliche Würdigung, lesen Sie danach E. 3.1 für die gesetzliche Grundlage (Art. 15 und 16 StGB) sowie E. 3.2 für die bundesgerichtliche Verhältnismässigkeitsprüfung. Das Kernargument des Bundesgerichts – Einzelfallbeurteilung aus ex-ante-Perspektive statt abstrakte Gefahrenbeurteilung – findet sich im Regeste prägnant zusammengefasst und wird in E. 3 und 4 entfaltet.",
+          "reading_guide_fr": "Commencez par le consid. 1 pour les faits et l'appréciation de l'instance précédente, puis lisez le consid. 3.1 pour le fondement légal (art. 15 et 16 CP) et le consid. 3.2 pour le contrôle de proportionnalité du Tribunal fédéral. L'argument central – appréciation in concreto selon une perspective ex ante plutôt qu'évaluation abstraite du danger – est résumé dans le regeste et développé aux consid. 3 et 4.",
+          "reading_guide_it": "Iniziare con il consid. 1 per i fatti e la valutazione dell'istanza precedente, quindi leggere il consid. 3.1 per il fondamento legale (art. 15 e 16 CP) e il consid. 3.2 per il controllo di proporzionalità del Tribunale federale. L'argomento centrale – valutazione caso per caso secondo una prospettiva ex ante piuttosto che una valutazione astratta del pericolo – è sintetizzato nel regesto e sviluppato nei consid. 3 e 4.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was waren die konkreten Umstände des Angriffs auf den Beschwerdeführer in der Langstrasse, und welches Abwehrmittel setzte er ein?",
+              "hint": "Vgl. E. 1, Sachverhaltsschilderung: Art des Angriffs, Anzahl der Angreifer, verwendetes Messer und resultierende Verletzungen.",
+              "model_answer": "Der Beschwerdeführer wurde von zwei Personen (A. und einer weiteren Person) mit Faustschlägen und Fusstritten angegriffen, wobei ein Schlag sein Gesicht traf. Zur Abwehr zog er ein Taschenmesser mit ca. 7 cm Klingenlänge und versetzte A. zunächst einen Stich in die Kniekehle (ca. 4 cm tief) und später einen weiteren Stich in die Flanke (ca. 8 cm tief). Die Verletzungen waren zwar nicht lebensgefährlich, hätten es bei geringfügig abweichendem Stichwinkel aber sein können."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Voraussetzungen müssen gemäss Art. 15 StGB und der bundesgerichtlichen Rechtsprechung erfüllt sein, damit eine Notwehrhandlung als rechtmässig gilt?",
+              "hint": "Vgl. E. 3.1 und E. 3.2: gesetzliche Definition und Verhältnismässigkeitskriterien gemäss BGer-Rechtsprechung (u.a. BGE 102 IV 65).",
+              "model_answer": "Art. 15 StGB setzt erstens einen gegenwärtigen oder unmittelbar drohenden Angriff voraus, der rechtswidrig ist. Zweitens muss die Abwehrhandlung den Umständen angemessen sein. Die Rechtsprechung konkretisiert die Angemessenheit anhand der Schwere des Angriffs, der bedrohten Rechtsgüter, der Art des eingesetzten Abwehrmittels und seiner tatsächlichen Verwendung. Die Beurteilung erfolgt aus der Perspektive der konkreten Situation des Angegriffenen zum Tatzeitpunkt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie wendet das Bundesgericht die Verhältnismässigkeitskriterien auf den Messereinsatz des Beschwerdeführers an, und zu welchem Ergebnis gelangt es?",
+              "hint": "Vgl. E. 3.2 sowie die Ausführungen im Regeste: Berücksichtigung von Angriffsart, zahlenmässiger Überlegenheit der Angreifer und Verletzungsrisiko.",
+              "model_answer": "Das Bundesgericht hält fest, dass der Einsatz eines Messers grundsätzlich das letzte Mittel der Verteidigung ist und besondere Zurückhaltung erfordert. Im konkreten Fall berücksichtigt es jedoch die zahlenmässige Überlegenheit der Angreifer (zwei gegen einen), die Art des Angriffs (Faustschläge und Fusstritte) sowie das reale Risiko, schwere Körperverletzungen zu erleiden. Unter Würdigung dieser Gesamtumstände gelangt das Bundesgericht zum Schluss, dass der Messereinsatz im Einzelfall angemessen sein kann und korrigiert damit die vorinstanzliche Qualifikation als unverhältnismässig."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Worin liegt der zentrale Widerspruch zwischen der Argumentation der Vorinstanz und jener des Bundesgerichts hinsichtlich der Verhältnismässigkeit des Messereinsatzes, und welche methodische Grundfrage steckt dahinter?",
+              "hint": "Vgl. E. 1 (Begründung der Vorinstanz) und E. 3 (Bundesgerichtskorrektur): abstrakte vs. konkrete Beurteilung der Notwehrsituation.",
+              "model_answer": "Die Vorinstanz argumentiert abstrakt-generell: Faustschläge und Fusstritte führten nur in Ausnahmefällen zu schwersten Verletzungen, weshalb der Beschwerdeführer keine Lebensgefahr annehmen durfte. Das Bundesgericht hingegen betont die konkret-individuelle Perspektive des Angegriffenen zum Tatzeitpunkt und berücksichtigt die spezifischen Faktoren des Einzelfalls (zwei Angreifer, Art der Attacke, Risiko schwerer Verletzungen). Die methodische Grundfrage ist damit, ob die Verhältnismässigkeit ex ante aus der Sicht des Angegriffenen oder ex post anhand statistischer Wahrscheinlichkeiten zu beurteilen ist – das Bundesgericht entscheidet sich klar für den ex-ante-Massstab."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Grundregel des Bundesgerichts, wonach der Messereinsatz 'grundsätzlich das letzte Mittel' sei, aber 'im Einzelfall angemessen sein kann', rechtspolitisch überzeugend, oder birgt sie die Gefahr einer zu weitgehenden Verteidigungsbefugnis?",
+              "hint": "Vgl. Regeste und E. 3; beachte die Spannung zwischen Selbstverteidigungsrecht des Einzelnen und staatlichem Gewaltmonopol sowie dem Schutz potenzieller Angreifer vor unverhältnismässigen Gegenwehrmassnahmen.",
+              "model_answer": "Die Formel ist einerseits überzeugend, weil sie dem Einzelnen in einer echten Bedrohungssituation effektiven Schutz ermöglicht und die ex-ante-Perspektive des Angegriffenen respektiert. Andererseits birgt die Öffnung zum 'Einzelfall' die Gefahr, dass die Subsidiaritätsregel ausgehöhlt wird und Gerichte bei jedem Mehrfrontangriff den Messereinsatz legitimieren. Rechtspolitisch wäre eine stärkere Konkretisierung der Kriterien (z.B. Mindestschwelle der Verletzungsgefahr) wünschenswert, um Rechtssicherheit zu gewährleisten und einer schleichenden Ausweitung des Notwehrrechts entgegenzuwirken."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Beschwerdeführer hatte das Taschenmesser nicht zufällig bei sich, sondern war nachweislich in der Vergangenheit bereits in mehrere Messerstechereien verwickelt und trug das Messer bewusst als Schutzwaffe. Ändert dies die Beurteilung der Verhältnismässigkeit oder des Vorsatzes?",
+              "discussion_points": [
+                "Ist die Herkunft oder der Zweck des Mitführens des Messers für die Verhältnismässigkeit der Notwehr relevant, oder kommt es allein auf die konkrete Angriffssituation an?",
+                "Könnte eine bewusste Bewaffnung als Indiz für einen über die blosse Abwehr hinausgehenden Angriffswillen gewertet werden, was den Eventualvorsatz auf schwere Körperverletzung stärkt?"
+              ],
+              "likely_outcome_shift": "Das bewusste Mitführen des Messers als Schutzwaffe würde die Notwehrsituation an sich nicht beseitigen, da der Angriff gleichwohl rechtswidrig und gegenwärtig war. Es könnte jedoch bei der Beurteilung des Vorsatzes und der Verhältnismässigkeit erschwerend wirken: Gerichte könnten die Hemmschwelle zum Messereinsatz als subjektiv niedriger einschätzen und den Notwehrexzess (Art. 16 StGB) weniger leicht als entschuldbar qualifizieren. Im Ergebnis würde die Verurteilung wegen eventualvorsätzlicher versuchter schwerer Körperverletzung wahrscheinlicher."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht der Beschwerdeführer, sondern A. hätte im Verlauf derselben Auseinandersetzung ein Messer gezogen und den Beschwerdeführer gestochen, nachdem dieser ihn zuvor mit Faustschlägen angegriffen hatte. Könnte sich A. seinerseits auf Notwehr berufen?",
+              "discussion_points": [
+                "Kann sich eine Person auf Notwehr berufen, wenn sie den Angriff durch eigenes rechtswidriges Vorverhalten (Faustschläge) selbst provoziert oder mitverursacht hat?",
+                "Wie ist die Situation zu beurteilen, wenn beide Parteien wechselseitig Angriffe und Abwehrhandlungen vornehmen – wo endet der Angriff und wo beginnt die Notwehr?"
+              ],
+              "likely_outcome_shift": "Wenn A. den Angriff durch eigene Tätlichkeiten provoziert hätte, wäre sein Notwehrrecht erheblich eingeschränkt oder ausgeschlossen, da der provozierte Gegenangriff des Beschwerdeführers aus A.s Sicht nicht vollständig 'rechtswidrig' im Sinne von Art. 15 StGB erschiene. Das Bundesgericht müsste differenzieren, ob die Reaktion des Beschwerdeführers die Provokation überschreitet; nur ein exzessiver Gegenangriff könnte A. ein eingeschränktes Notwehrrecht eröffnen. Im Ergebnis würde A. allenfalls ein reduziertes Notwehrrecht zustehen, und ein Strafausschluss wäre unwahrscheinlich."
+            }
+          ]
         },
         {
           "decision_id": "bge_133 IV 9",
@@ -108,14 +214,31 @@
           "actual_language": "de",
           "title_de": "Eventualvorsatz bei Strassenverkehrsunfall",
           "title_fr": "Dol éventuel lors d'un accident de la route",
-          "concepts_de": ["Eventualvorsatz", "Strassenverkehr", "Tötung", "Verletzung"],
-          "concepts_fr": ["Dol éventuel", "Circulation routière"],
-          "statutes": ["Art. 12 StGB", "Art. 111 StGB", "Art. 125 StGB"],
+          "concepts_de": [
+            "Eventualvorsatz",
+            "Strassenverkehr",
+            "Tötung",
+            "Verletzung"
+          ],
+          "concepts_fr": [
+            "Dol éventuel",
+            "Circulation routière"
+          ],
+          "statutes": [
+            "Art. 12 StGB",
+            "Art. 111 StGB",
+            "Art. 125 StGB"
+          ],
           "difficulty": 3,
-          "prerequisites": ["bge_130 IV 58"],
+          "prerequisites": [
+            "bge_130 IV 58"
+          ],
           "significance_de": "Eventualvorsatz unter konkreten Umständen verneint — Vertiefung der Abgrenzungskriterien",
           "significance_fr": "Dol éventuel nié dans les circonstances concrètes — approfondissement des critères de distinction",
-          "key_erwagungen": ["4", "5"],
+          "key_erwagungen": [
+            "4",
+            "5"
+          ],
           "reading_guide_de": "E. 4: Wiederholung der Abgrenzungsgrundsätze aus BGE 130 IV 58. E. 5: Anwendung auf den konkreten Fall — warum hier bewusste Fahrlässigkeit vorlag. Vergleichen Sie die Sachverhaltswürdigung mit BGE 130 IV 58.",
           "socratic_questions": [
             {
@@ -143,7 +266,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Fahrer bereits wegen eines früheren Raserunfalls vorbestraft wäre?",
-              "discussion_points": ["Vortaten als Indiz für Willenselement", "Verschärftes Risikobewusstsein", "Rückfall"],
+              "discussion_points": [
+                "Vortaten als Indiz für Willenselement",
+                "Verschärftes Risikobewusstsein",
+                "Rückfall"
+              ],
               "model_answer": "Eine einschlägige Vorstrafe würde das Wissenselement verstärken: Der Fahrer wusste aus eigener Erfahrung um die Gefahr. Dies könnte eher für Eventualvorsatz sprechen."
             },
             {
@@ -158,7 +285,11 @@
             {
               "type": "change_timeline",
               "scenario": "Was wäre, wenn der Fall nach Inkrafttreten von Art. 90 Abs. 3 SVG (Rasertatbestand) beurteilt würde?",
-              "discussion_points": ["Gesetzliche Vermutung", "Rasertatbestand", "Verhältnis zu Art. 12 StGB"],
+              "discussion_points": [
+                "Gesetzliche Vermutung",
+                "Rasertatbestand",
+                "Verhältnis zu Art. 12 StGB"
+              ],
               "likely_outcome_shift": "Art. 90 Abs. 3-4 SVG stellt extreme Geschwindigkeitsüberschreitungen unter eine verschärfte Strafe. Die Abgrenzungsfrage Vorsatz/Fahrlässigkeit könnte durch den Gefährdungstatbestand entschärft werden."
             }
           ]
@@ -170,7 +301,10 @@
       "name_de": "Versuch und Rücktritt",
       "name_fr": "Tentative et désistement",
       "name_it": "Tentativo e desistenza",
-      "statutes": ["Art. 22 StGB", "Art. 23 StGB"],
+      "statutes": [
+        "Art. 22 StGB",
+        "Art. 23 StGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_131 IV 1",
@@ -178,14 +312,31 @@
           "actual_language": "de",
           "title_de": "Versuch der schweren Körperverletzung bei HIV-Übertragung",
           "title_fr": "Tentative de lésions corporelles graves par transmission du VIH",
-          "concepts_de": ["Versuch", "Schwere Körperverletzung", "HIV", "Vorsatz"],
-          "concepts_fr": ["Tentative", "Lésions corporelles graves", "VIH"],
-          "statutes": ["Art. 22 StGB", "Art. 122 StGB", "Art. 231 StGB"],
+          "concepts_de": [
+            "Versuch",
+            "Schwere Körperverletzung",
+            "HIV",
+            "Vorsatz"
+          ],
+          "concepts_fr": [
+            "Tentative",
+            "Lésions corporelles graves",
+            "VIH"
+          ],
+          "statutes": [
+            "Art. 22 StGB",
+            "Art. 122 StGB",
+            "Art. 231 StGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Versuch der schweren Körperverletzung bei ungeschützten Sexualkontakten einer HIV-infizierten Person",
           "significance_fr": "Tentative de lésions corporelles graves lors de rapports sexuels non protégés d'une personne séropositive",
-          "key_erwagungen": ["2", "3", "4"],
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 2: Tatbestand der schweren Körperverletzung (Art. 122 StGB). E. 3: Versuchsstrafbarkeit — Anfang der Ausführung. E. 4: Eventualvorsatz bei HIV-Übertragung. Achten Sie auf die Abgrenzung zum Gefährdungstatbestand (Art. 231 StGB).",
           "socratic_questions": [
             {
@@ -213,7 +364,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Person antiretrovirale Medikamente einnähme und die Viruslast unter der Nachweisgrenze läge?",
-              "discussion_points": ["Swiss Statement (2008)", "Medizinische Risikobeurteilung", "Wissenseliment"],
+              "discussion_points": [
+                "Swiss Statement (2008)",
+                "Medizinische Risikobeurteilung",
+                "Wissenseliment"
+              ],
               "model_answer": "Bei nachweislich supprimierter Viruslast ist das Übertragungsrisiko vernachlässigbar. Das Wissenselement (Erkennen des Erfolgsrisikos) könnte fehlen. Die Rechtsprechung hat sich hier weiterentwickelt."
             },
             {
@@ -228,13 +383,21 @@
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn keine Übertragung stattfand und der Partner nicht einmal gefährdet wurde (z.B. wegen Kondomverwendung)?",
-              "discussion_points": ["Untauglicher Versuch", "Abstrakte vs. konkrete Gefährdung", "Art. 23 StGB"],
+              "discussion_points": [
+                "Untauglicher Versuch",
+                "Abstrakte vs. konkrete Gefährdung",
+                "Art. 23 StGB"
+              ],
               "likely_outcome_shift": "Bei Kondomverwendung fehlt die Versuchshandlung mangels Anfang der Ausführung. Es könnte allenfalls Art. 231 StGB (Verbreitung von Krankheiten) greifen."
             },
             {
               "type": "swap_parties",
               "scenario": "Was wäre, wenn der Partner über die HIV-Infektion informiert war und eingewilligt hätte?",
-              "discussion_points": ["Einwilligung des Verletzten", "Art. 122 StGB und Einwilligung", "Unverfügbare Rechtsgüter"],
+              "discussion_points": [
+                "Einwilligung des Verletzten",
+                "Art. 122 StGB und Einwilligung",
+                "Unverfügbare Rechtsgüter"
+              ],
               "likely_outcome_shift": "Die Einwilligung in eine schwere Körperverletzung ist nach h.L. unwirksam (unverfügbares Rechtsgut). Allerdings könnte sie den Vorsatz des Täters beeinflussen."
             }
           ]
@@ -246,7 +409,10 @@
       "name_de": "Mittäterschaft und Teilnahme",
       "name_fr": "Coactivité et participation",
       "name_it": "Correità e partecipazione",
-      "statutes": ["Art. 24 StGB", "Art. 25 StGB"],
+      "statutes": [
+        "Art. 24 StGB",
+        "Art. 25 StGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_118 IV 397",
@@ -254,14 +420,30 @@
           "actual_language": "de",
           "title_de": "Mittäterschaft bei Betäubungsmitteldelikten",
           "title_fr": "Coactivité en matière de stupéfiants",
-          "concepts_de": ["Mittäterschaft", "Betäubungsmittel", "Anforderungen", "Tatbeitrag"],
-          "concepts_fr": ["Coactivité", "Stupéfiants", "Contribution"],
-          "statutes": ["Art. 24 StGB", "Art. 25 StGB", "Art. 19 BetmG"],
+          "concepts_de": [
+            "Mittäterschaft",
+            "Betäubungsmittel",
+            "Anforderungen",
+            "Tatbeitrag"
+          ],
+          "concepts_fr": [
+            "Coactivité",
+            "Stupéfiants",
+            "Contribution"
+          ],
+          "statutes": [
+            "Art. 24 StGB",
+            "Art. 25 StGB",
+            "Art. 19 BetmG"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Hohe Anforderungen an die Annahme von Mittäterschaft bei BetmG-Widerhandlungen",
           "significance_fr": "Exigences élevées pour admettre la coactivité en matière de stupéfiants",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Definition der Mittäterschaft — gemeinsamer Tatentschluss und massgeblicher Tatbeitrag. E. 3: Abgrenzung zur Gehilfenschaft (Art. 25 StGB). Achten Sie auf das Kriterium der Tatherrschaft.",
           "socratic_questions": [
             {
@@ -289,7 +471,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Beschuldigte nur das Fahrzeug für den Transport zur Verfügung gestellt hätte?",
-              "discussion_points": ["Tatbeitrag", "Fungibilität des Beitrags", "Tatherrschaft"],
+              "discussion_points": [
+                "Tatbeitrag",
+                "Fungibilität des Beitrags",
+                "Tatherrschaft"
+              ],
               "model_answer": "Das blosse Zur-Verfügung-Stellen eines Fahrzeugs ist ein untergeordneter, fungibler Beitrag. Dies spricht für Gehilfenschaft, nicht für Mittäterschaft."
             },
             {
@@ -304,7 +490,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn die Person die Aktion geplant und koordiniert hätte, ohne selbst Hand anzulegen?",
-              "discussion_points": ["Mittelbare Täterschaft", "Organisationsherrschaft", "Hintermann"],
+              "discussion_points": [
+                "Mittelbare Täterschaft",
+                "Organisationsherrschaft",
+                "Hintermann"
+              ],
               "likely_outcome_shift": "Planung und Koordination können Mittäterschaft oder sogar mittelbare Täterschaft begründen. Der intellektuelle Beitrag kann die fehlende unmittelbare Tatausführung kompensieren."
             }
           ]
@@ -315,14 +505,36 @@
           "actual_language": "de",
           "title_de": "Anstiftung/Gehilfenschaft und Begehungsort",
           "title_fr": "Instigation/complicité et lieu de commission",
-          "concepts_de": ["Anstiftung", "Gehilfenschaft", "Begehungsort", "Akzessorietät", "Internationale Zuständigkeit"],
-          "concepts_fr": ["Instigation", "Complicité", "Lieu de commission", "Accessoriété"],
-          "statutes": ["Art. 24 StGB", "Art. 25 StGB", "Art. 3 StGB", "Art. 8 StGB"],
+          "concepts_de": [
+            "Anstiftung",
+            "Gehilfenschaft",
+            "Begehungsort",
+            "Akzessorietät",
+            "Internationale Zuständigkeit"
+          ],
+          "concepts_fr": [
+            "Instigation",
+            "Complicité",
+            "Lieu de commission",
+            "Accessoriété"
+          ],
+          "statutes": [
+            "Art. 24 StGB",
+            "Art. 25 StGB",
+            "Art. 3 StGB",
+            "Art. 8 StGB"
+          ],
           "difficulty": 4,
-          "prerequisites": ["bge_118 IV 397"],
+          "prerequisites": [
+            "bge_118 IV 397"
+          ],
           "significance_de": "Akzessorietät der Teilnahme begründet keinen selbständigen Begehungsort",
           "significance_fr": "L'accessoriété de la participation ne fonde pas un lieu de commission indépendant",
-          "key_erwagungen": ["2", "3", "4"],
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 2: Akzessorietät der Teilnahme. E. 3: Begehungsort nach Art. 8 StGB. E. 4: Keine Erweiterung der Zuständigkeit durch die Teilnahmetat. Achten Sie auf die praktischen Folgen für grenzüberschreitende Kriminalität.",
           "socratic_questions": [
             {
@@ -350,7 +562,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Anstiftung per E-Mail aus der Schweiz erfolgt wäre, die Haupttat aber im Ausland?",
-              "discussion_points": ["Handlungsort des Teilnehmers", "Ubiquitätsprinzip", "Art. 8 StGB"],
+              "discussion_points": [
+                "Handlungsort des Teilnehmers",
+                "Ubiquitätsprinzip",
+                "Art. 8 StGB"
+              ],
               "model_answer": "Bei Anstiftung per E-Mail aus der Schweiz wäre der Handlungsort des Teilnehmers in der Schweiz. Das Ubiquitätsprinzip (Art. 8 StGB) könnte die schweizerische Zuständigkeit für die Teilnahmetat begründen."
             },
             {
@@ -365,7 +581,11 @@
             {
               "type": "jurisdictional_shift",
               "scenario": "Was wäre, wenn die Haupttat in der Schweiz verübt würde, die Teilnahme aber aus dem Ausland?",
-              "discussion_points": ["Umgekehrte Konstellation", "Art. 8 StGB", "Stellvertretende Strafrechtspflege"],
+              "discussion_points": [
+                "Umgekehrte Konstellation",
+                "Art. 8 StGB",
+                "Stellvertretende Strafrechtspflege"
+              ],
               "likely_outcome_shift": "Die Schweiz wäre für die Haupttat zuständig. Für die Teilnahme aus dem Ausland müsste der ausländische Staat die Zuständigkeit übernehmen, sofern dort ein Begehungsort gegeben ist."
             }
           ]
@@ -377,7 +597,10 @@
       "name_de": "Strafzumessung",
       "name_fr": "Fixation de la peine",
       "name_it": "Commisurazione della pena",
-      "statutes": ["Art. 47 StGB", "Art. 49 StGB"],
+      "statutes": [
+        "Art. 47 StGB",
+        "Art. 49 StGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_134 IV 17",
@@ -385,14 +608,29 @@
           "actual_language": "de",
           "title_de": "Strafzumessung bei qualifiziertem Betäubungsmitteldelikt",
           "title_fr": "Fixation de la peine pour infraction qualifiée aux stupéfiants",
-          "concepts_de": ["Strafzumessung", "Betäubungsmittel", "Strafrahmen", "Verschulden"],
-          "concepts_fr": ["Fixation de la peine", "Stupéfiants", "Cadre pénal"],
-          "statutes": ["Art. 47 StGB", "Art. 19 BetmG"],
+          "concepts_de": [
+            "Strafzumessung",
+            "Betäubungsmittel",
+            "Strafrahmen",
+            "Verschulden"
+          ],
+          "concepts_fr": [
+            "Fixation de la peine",
+            "Stupéfiants",
+            "Cadre pénal"
+          ],
+          "statutes": [
+            "Art. 47 StGB",
+            "Art. 19 BetmG"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Methodik der Strafzumessung nach Art. 47 StGB",
           "significance_fr": "Arrêt de principe sur la méthodologie de la fixation de la peine selon l'art. 47 CP",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Methodik der Strafzumessung — Ausgangspunkt Verschulden, dann Strafminderungs-/Strafschärfungsgründe. E. 3: Begründungsanforderungen. Das Gericht muss die wesentlichen Strafzumessungsfaktoren nennen und gewichten.",
           "socratic_questions": [
             {
@@ -420,7 +658,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Täter geständig wäre und aktiv mit den Behörden kooperiert hätte?",
-              "discussion_points": ["Strafmilderung", "Kooperation", "Art. 48 StGB"],
+              "discussion_points": [
+                "Strafmilderung",
+                "Kooperation",
+                "Art. 48 StGB"
+              ],
               "model_answer": "Geständnis und Kooperation sind Strafminderungsgründe (Art. 48 lit. d StGB). Die Strafe wäre deutlich zu reduzieren, insbesondere wenn die Kooperation zur Aufklärung weiterer Straftaten beigetragen hat."
             },
             {
@@ -435,7 +677,11 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre bei einem Ersttatverfahren mit geringem Verschulden, aber hoher Drogenmenge (knapp über der qualifizierten Menge)?",
-              "discussion_points": ["Mindeststrafe", "Verhältnismässigkeit", "Schwelleneffekt"],
+              "discussion_points": [
+                "Mindeststrafe",
+                "Verhältnismässigkeit",
+                "Schwelleneffekt"
+              ],
               "likely_outcome_shift": "Das qualifizierte Delikt verändert den Strafrahmen drastisch. Trotz geringem Verschulden gilt die Mindeststrafe des qualifizierten Tatbestands. Dies führt zu Spannungen mit dem Verschuldensprinzip."
             }
           ]
@@ -446,14 +692,32 @@
           "actual_language": "de",
           "title_de": "Gesamtstrafenbildung und Asperationsprinzip",
           "title_fr": "Peine d'ensemble et principe d'aggravation",
-          "concepts_de": ["Gesamtstrafe", "Asperationsprinzip", "Konkurrenzen", "Begründungspflicht"],
-          "concepts_fr": ["Peine d'ensemble", "Principe d'aggravation", "Concours"],
-          "statutes": ["Art. 49 StGB", "Art. 41 StGB"],
+          "concepts_de": [
+            "Gesamtstrafe",
+            "Asperationsprinzip",
+            "Konkurrenzen",
+            "Begründungspflicht"
+          ],
+          "concepts_fr": [
+            "Peine d'ensemble",
+            "Principe d'aggravation",
+            "Concours"
+          ],
+          "statutes": [
+            "Art. 49 StGB",
+            "Art. 41 StGB"
+          ],
           "difficulty": 3,
-          "prerequisites": ["bge_134 IV 17"],
+          "prerequisites": [
+            "bge_134 IV 17"
+          ],
           "significance_de": "Methodik der Gesamtstrafenbildung bei Konkurrenz: erst Strafart bestimmen, dann Art. 49 StGB prüfen",
           "significance_fr": "Méthodologie de la formation de la peine d'ensemble en cas de concours: d'abord déterminer le genre de peine",
-          "key_erwagungen": ["2", "3", "4"],
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 2: Voraussetzungen von Art. 49 StGB — mehrere gleichartige Strafen bei Realkonkurrenz. E. 3: Methodik — erst Einsatzstrafe für schwerstes Delikt, dann angemessene Erhöhung. E. 4: Begründungspflicht — Einsatzstrafe und Gesamtstrafe müssen nachvollziehbar sein.",
           "socratic_questions": [
             {
@@ -481,7 +745,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn für ein Delikt eine Geldstrafe und für ein anderes eine Freiheitsstrafe auszusprechen wäre?",
-              "discussion_points": ["Ungleichartige Strafen", "Keine Asperation bei verschiedenen Strafarten", "Kumulation"],
+              "discussion_points": [
+                "Ungleichartige Strafen",
+                "Keine Asperation bei verschiedenen Strafarten",
+                "Kumulation"
+              ],
               "model_answer": "Art. 49 StGB setzt gleichartige Strafen voraus. Bei ungleichartigen Strafen (Geld + Freiheit) werden sie nebeneinander ausgesprochen (Kumulation), keine Asperation."
             },
             {
@@ -496,7 +764,11 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre bei 20 Einzeldelikten mit je 6 Monaten Freiheitsstrafe?",
-              "discussion_points": ["Obergrenze der Asperation", "Höchststrafe", "Praktische Grenzen"],
+              "discussion_points": [
+                "Obergrenze der Asperation",
+                "Höchststrafe",
+                "Praktische Grenzen"
+              ],
               "likely_outcome_shift": "Die Gesamtstrafe würde deutlich unter 10 Jahren liegen (nicht 20 × 6 = 120 Monate). Die Asperation dämpft die Summe, aber die grosse Anzahl führt dennoch zu einer erheblichen Gesamtstrafe."
             }
           ]

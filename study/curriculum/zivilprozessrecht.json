@@ -10,7 +10,10 @@
       "name_de": "Zuständigkeit und Prozessvoraussetzungen",
       "name_fr": "Compétence et conditions de recevabilité",
       "name_it": "Competenza e condizioni di ricevibilità",
-      "statutes": ["Art. 17 ZPO", "Art. 59 ZPO"],
+      "statutes": [
+        "Art. 17 ZPO",
+        "Art. 59 ZPO"
+      ],
       "cases": [
         {
           "decision_id": "bge_147 III 153",
@@ -19,21 +22,92 @@
           "title_de": "Prorogation — Auslegung der Gerichtsstandsvereinbarung",
           "title_fr": "Prorogation de for — interprétation de la clause d'élection",
           "title_it": "",
-          "concepts_de": ["Prorogation", "Gerichtsstandsvereinbarung", "Auslegung", "Culpa in contrahendo"],
-          "concepts_fr": ["Prorogation de for", "Convention d'élection de for", "Interprétation"],
+          "concepts_de": [
+            "Prorogation",
+            "Gerichtsstandsvereinbarung",
+            "Auslegung",
+            "Culpa in contrahendo"
+          ],
+          "concepts_fr": [
+            "Prorogation de for",
+            "Convention d'élection de for",
+            "Interprétation"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 17 ZPO"],
+          "statutes": [
+            "Art. 17 ZPO"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Auslegung von Gerichtsstandsvereinbarungen: Massgebend ist der objektive Vertragsinhalt; eine zu weit gefasste Klausel kann unwirksam sein.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur l'interprétation des clauses d'élection de for selon l'art. 17 CPC: une clause trop large visant l'ensemble des prétentions issues des relations d'affaires est invalide, et une clause limitée à un contrat résilié ne s'étend pas aux prétentions fondées sur la culpa in contrahendo relatives à un nouveau contrat non conclu.",
+          "significance_it": "Decisione di principio sull'interpretazione delle clausole di proroga del foro ai sensi dell'art. 17 CPC: una clausola troppo ampia che copre tutte le pretese derivanti dalla relazione d'affari è inefficace, e una clausola limitata a un contratto disdetto non si estende alle pretese fondate sulla culpa in contrahendo relative a un nuovo contratto non concluso.",
+          "key_erwagungen": [
+            "5",
+            "5.1",
+            "6",
+            "7"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (A.a–A.b) aufmerksam, um die Vertragsstruktur und die Klagegrundlage zu verstehen. Arbeiten Sie dann Erwägung 5 (Auslegungsprinzipien), Erwägung 6 (Unmöglichkeit der Feststellung des tatsächlichen Parteiwillens) und Erwägung 7 (objektivierte Auslegung und Unwirksamkeit der weit gefassten Klausel) durch – dort liegt der dogmatische Kern des Entscheids.",
+          "reading_guide_fr": "Commencez par lire attentivement les faits (A.a–A.b) afin de comprendre la structure contractuelle et le fondement de l'action. Étudiez ensuite le considérant 5 (principes d'interprétation), le considérant 6 (impossibilité d'établir la volonté réelle des parties) et le considérant 7 (interprétation objective et nullité de la clause trop large) – c'est là que se trouve le cœur dogmatique de la décision.",
+          "reading_guide_it": "Leggete innanzitutto attentamente i fatti (A.a–A.b) per comprendere la struttura contrattuale e il fondamento dell'azione. Studiate poi il considerando 5 (principi di interpretazione), il considerando 6 (impossibilità di accertare la reale volontà delle parti) e il considerando 7 (interpretazione oggettivata e inefficacia della clausola troppo ampia) – qui si trova il nucleo dogmatico della decisione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der konkrete Streitgegenstand in BGE 147 III 153, und weshalb war die Frage der örtlichen Zuständigkeit überhaupt streitig?",
+              "hint": "Vgl. Sachverhalt A.a und A.b: Welche Verträge wurden gekündigt, und worauf stützte die B. SA ihre Klage?",
+              "model_answer": "Die A. AG kündigte mehrere Händlerverträge mit der B. SA. Die B. SA klagte daraufhin nicht aus diesen gekündigten Verträgen, sondern aus culpa in contrahendo, weil sie geltend machte, ihr sei der Abschluss neuer Verträge in Aussicht gestellt worden. Streitig war, ob die in den alten Verträgen enthaltenen Gerichtsstandsklauseln (mit Gerichtsstand X) auch diese culpa-in-contrahendo-Ansprüche erfassten und damit die Zuständigkeit der Pretura Lugano ausschlossen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Auslegungsmethode schreibt das Bundesgericht für Gerichtsstandsvereinbarungen vor, und welche gesetzliche Grundlage ist dabei massgebend?",
+              "hint": "Vgl. Erwägung 5 und 5.1: Wie verhält sich Art. 17 ZPO zur allgemeinen Vertragsauslegung nach Art. 18 OR?",
+              "model_answer": "Gemäss Erwägung 5 stützt sich das Bundesgericht auf Art. 17 Abs. 1 ZPO als spezifische Grundlage für Gerichtsstandsvereinbarungen. Die Auslegung folgt dem allgemeinen Vertragsprinzip: Vorrang hat zunächst der subjektive tatsächliche Parteiwille (Art. 18 OR). Lässt sich dieser nicht feststellen, greift die objektivierte Auslegung, bei der massgebend ist, wie die Erklärung nach Treu und Glauben verstanden werden durfte."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie hätte das Bundesgericht entschieden, wenn die Gerichtsstandsklausel in den Händlerverträgen gelautet hätte: 'Gerichtsstand für alle Ansprüche aus der Geschäftsbeziehung der Parteien ist X'?",
+              "hint": "Vgl. Regeste und Erwägung 7: Das Bundesgericht hält fest, dass eine solche Klausel unwirksam wäre.",
+              "model_answer": "Eine Gerichtsstandsklausel, die pauschal 'alle Ansprüche aus der Geschäftsbeziehung' erfasst, wäre nach dem Bundesgericht unwirksam, weil sie zu weit gefasst ist und Art. 17 ZPO verlangt, dass die Vereinbarung auf Ansprüche aus einem 'bestimmten Rechtsverhältnis' beschränkt ist. Das Gericht hätte die Unzuständigkeit von Gerichtsstand X festgestellt, und die Zuständigkeit der Pretura Lugano wäre ebenfalls auf anderem Weg zu prüfen gewesen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Worin liegt der entscheidende Unterschied zwischen der Gerichtsstandsklausel in den Händlerverträgen und jener in den Verkaufs- und Lieferbedingungen, und weshalb führte gerade dieser Unterschied zur unterschiedlichen rechtlichen Beurteilung?",
+              "hint": "Vgl. Sachverhalt A.a: Die Händlerverträge verweisen auf 'Entstehung und Auflösung des Vertrags', die Verkaufsbedingungen auf 'alle aktuellen und zukünftigen Rechte aus der Geschäftsbeziehung'.",
+              "model_answer": "Die Klausel in den Händlerverträgen beschränkt sich auf Streitigkeiten über 'Entstehung und Auflösung des Vertrags sowie daraus resultierende Rechte und Pflichten', also auf einen klar umgrenzten Sachbereich. Die Klausel in den Verkaufsbedingungen hingegen erstreckt sich auf 'alle aktuellen und zukünftigen Rechte aus der Geschäftsbeziehung', was einer unzulässig weiten Fassung entspricht. Das Bundesgericht hält fest, dass die enger formulierte Klausel zwar wirksam ist, aber Ansprüche aus dem Nichtzustandekommen eines neuen Vertrags (culpa in contrahendo) inhaltlich nicht erfasst, weil diese einem anderen Rechtsverhältnis entspringen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 147 III 153 entwickelte Regel, wonach eine zu weit gefasste Gerichtsstandsklausel unwirksam ist, rechtspolitisch überzeugend, oder könnte sie den Parteiwillen in unzulässiger Weise einschränken?",
+              "hint": "Vgl. Regeste und Erwägung 7: Bedenken Sie die Schutzfunktion des Art. 17 ZPO und das Bestimmtheitsgebot.",
+              "model_answer": "Die Lösung des Bundesgerichts ist rechtspolitisch grundsätzlich überzeugend, weil das Bestimmtheitserfordernis des Art. 17 ZPO sicherstellt, dass die Parteien wissen, für welche Streitigkeiten sie einen abweichenden Gerichtsstand vereinbaren. Eine zu weite Klausel hebelt den gesetzlichen Gerichtsstand für eine unbestimmte Vielzahl von Sachverhalten aus und kann schwächere Vertragsparteien benachteiligen. Allerdings ist kritisch anzumerken, dass die Unwirksamkeit der gesamten Klausel – statt einer geltungserhaltenden Reduktion – hart erscheint; eine teleologische Reduktion auf den zulässigen Kern wäre eine denkbare Alternative, die den Parteiwillen besser wahren würde."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Parteien hätten nach der Kündigung der alten Händlerverträge eine separate, schriftliche Vereinbarung unterzeichnet, wonach 'sämtliche Streitigkeiten im Zusammenhang mit der Beendigung der Geschäftsbeziehung und etwaigen Folgevereinbarungen' am Gerichtsstand X zu beurteilen seien. Würde diese Klausel die culpa-in-contrahendo-Ansprüche der B. SA erfassen?",
+              "discussion_points": [
+                "Ist die Klausel hinreichend bestimmt im Sinne von Art. 17 ZPO, wenn sie 'etwaige Folgevereinbarungen' erwähnt?",
+                "Kann eine nach Vertragsauflösung geschlossene Gerichtsstandsvereinbarung rückwirkend vorvertragliche Ansprüche erfassen, oder fehlt es am erforderlichen Bezug zu einem 'bestimmten Rechtsverhältnis'?"
+              ],
+              "likely_outcome_shift": "Da die neue Klausel explizit auf 'Folgevereinbarungen' und die 'Beendigung der Geschäftsbeziehung' Bezug nimmt, wäre eine Einbeziehung der culpa-in-contrahendo-Ansprüche wegen des Nichtzustandekommens neuer Verträge deutlich plausibler. Das Bundesgericht müsste prüfen, ob dieser Wortlaut nach objektivierter Auslegung tatsächlich vorvertragliche Pflichtverletzungen umfasst, was wahrscheinlich bejaht würde – mit der Folge, dass die Zuständigkeit des Gerichtsstands X gegeben wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie würde sich die Rechtslage verändern, wenn nicht die B. SA (Händlerin) gegen die A. AG (Importeurin) klagen würde, sondern die A. AG gegen die B. SA auf Rückzahlung von Investitionsbeiträgen, die sie der B. SA im Hinblick auf den Abschluss neuer Verträge gewährt hatte?",
+              "discussion_points": [
+                "Würde die A. AG sich auf dieselben Gerichtsstandsklauseln berufen, um den Gerichtsstand X durchzusetzen – und würde das Bundesgericht dieselbe Auslegung anwenden?",
+                "Verändert die Tatsache, dass die Klauseln von der A. AG (als stärkerer Partei) formuliert wurden, die Auslegung nach dem Vertrauensprinzip, insbesondere unter dem Gesichtspunkt der Unklarheitenregel?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde dieselbe objektivierte Auslegungsmethode anwenden, käme aber möglicherweise zu einem anderen Ergebnis: Als Verwenderin der Klauseln müsste sich die A. AG deren Unklarheit entgegenhalten lassen (Unklarheitenregel, Auslegung contra proferentem). Die Klausel dürfte daher eher eng ausgelegt werden, was die Zuständigkeit am Gerichtsstand X für culpa-in-contrahendo-Ansprüche ebenfalls verneinen würde – diesmal aber zum Nachteil der A. AG."
+            }
+          ]
         },
         {
           "decision_id": "bge_140 III 227",
@@ -42,21 +116,96 @@
           "title_de": "Prozessvoraussetzungen — Prüfung der Klagebewilligung",
           "title_fr": "Conditions de recevabilité — examen de l'autorisation de procéder",
           "title_it": "",
-          "concepts_de": ["Prozessvoraussetzungen", "Klagebewilligung", "Schlichtungsbehörde", "Von Amtes wegen"],
-          "concepts_fr": ["Conditions de recevabilité", "Autorisation de procéder", "Autorité de conciliation"],
+          "concepts_de": [
+            "Prozessvoraussetzungen",
+            "Klagebewilligung",
+            "Schlichtungsbehörde",
+            "Von Amtes wegen"
+          ],
+          "concepts_fr": [
+            "Conditions de recevabilité",
+            "Autorisation de procéder",
+            "Autorité de conciliation"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 59 ZPO", "Art. 60 ZPO", "Art. 209 ZPO"],
+          "statutes": [
+            "Art. 59 ZPO",
+            "Art. 60 ZPO",
+            "Art. 209 ZPO"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Die Gültigkeit der Klagebewilligung ist vom Sachgericht im Rahmen der Prozessvoraussetzungen von Amtes wegen zu prüfen; eine vorgängige kantonale Beschwerde ist unzulässig.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt établit que l'autorisation de procéder délivrée par l'autorité de conciliation ne peut pas faire l'objet d'un recours cantonal et que sa validité doit être examinée d'office par le tribunal saisi de la cause au titre des conditions de recevabilité (art. 59 et 60 CPC).",
+          "significance_it": "La sentenza stabilisce che l'autorizzazione a procedere rilasciata dall'autorità di conciliazione non è impugnabile con ricorso cantonale e che la sua validità deve essere esaminata d'ufficio dal giudice di merito nell'ambito dei presupposti processuali (art. 59 e 60 CPC).",
+          "key_erwagungen": [
+            "3",
+            "3.1",
+            "3.2",
+            "3.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst das Regeste und die Erwägung 3.1, welche die grundsätzliche Unzulässigkeit der kantonalen Beschwerde gegen die Klagebewilligung begründet. Studieren Sie danach Erwägung 3.2, die erläutert, weshalb die Gültigkeitsprüfung dem Sachgericht im Rahmen der Prozessvoraussetzungen nach Art. 59 und Art. 60 ZPO obliegt. Erwägung 3.3 fasst die Konsequenzen für den konkreten Fall zusammen.",
+          "reading_guide_fr": "Commencez par lire le résumé (Regeste) et le considérant 3.1, qui établit l'irrecevabilité du recours cantonal contre l'autorisation de procéder. Étudiez ensuite le considérant 3.2, qui explique pourquoi c'est le tribunal saisi du fond qui doit examiner la validité de l'autorisation au titre des conditions de recevabilité selon les art. 59 et 60 CPC. Le considérant 3.3 tire les conséquences pour le cas d'espèce.",
+          "reading_guide_it": "Si consiglia di leggere dapprima il Regeste e il considerando 3.1, che stabilisce l'inammissibilità del ricorso cantonale contro l'autorizzazione a procedere. Si esamini poi il considerando 3.2, che illustra perché spetta al giudice di merito verificare d'ufficio la validità dell'autorizzazione nell'ambito dei presupposti processuali ai sensi degli art. 59 e 60 CPC. Il considerando 3.3 trae le conseguenze per il caso concreto.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 140 III 227 bezüglich der Anfechtbarkeit einer Klagebewilligung entschieden, und welches Gericht ist für die Überprüfung ihrer Gültigkeit zuständig?",
+              "hint": "Vgl. E. 3.1 und das Regeste des Entscheids.",
+              "model_answer": "Das Bundesgericht hat entschieden, dass die Klagebewilligung einer Schlichtungsbehörde kein anfechtbarer Entscheid ist und daher nicht mit kantonaler Beschwerde angefochten werden kann. Die Überprüfung der Gültigkeit der Klagebewilligung obliegt dem Sachgericht, bei dem die Klage nach Art. 209 Abs. 3 ZPO einzureichen ist. Lediglich die von der Schlichtungsbehörde festgesetzten Kosten können mit kantonaler Beschwerde angefochten werden."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen der ZPO bilden die rechtliche Grundlage dafür, dass das Sachgericht die Gültigkeit der Klagebewilligung von Amtes wegen prüfen muss?",
+              "hint": "Vgl. E. 3.2 sowie Art. 59 und Art. 60 ZPO.",
+              "model_answer": "Art. 59 ZPO normiert die Prozessvoraussetzungen, zu denen eine gültige Klagebewilligung gehört. Art. 60 ZPO verpflichtet das Gericht, das Vorliegen der Prozessvoraussetzungen von Amtes wegen zu prüfen. Art. 209 Abs. 3 ZPO regelt die Frist, innerhalb derer die Klage nach Ausstellung der Klagebewilligung beim zuständigen Gericht einzureichen ist, und markiert damit den Zeitpunkt, ab dem das Sachgericht die Zuständigkeit für die Überprüfung erhält."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, eine Schlichtungsbehörde stellt eine Klagebewilligung aus, obwohl die klagende Partei an der Schlichtungsverhandlung unentschuldigt abwesend war. Wie und vor welchem Gericht muss der Beklagte diese Unregelmässigkeit geltend machen?",
+              "hint": "Vgl. E. 3.2 und den Verweis auf Urteil 4A_387/2013.",
+              "model_answer": "Der Beklagte kann die Unregelmässigkeit nicht durch eine kantonale Beschwerde gegen die Klagebewilligung selbst rügen. Er muss vielmehr abwarten, bis die Klägerschaft die Klage beim zuständigen Sachgericht einreicht, und dort einwenden, dass eine Prozessvoraussetzung gemäss Art. 59 ZPO fehlt. Das Sachgericht prüft dann von Amtes wegen nach Art. 60 ZPO, ob die Klagebewilligung gültig ausgestellt wurde, und tritt gegebenenfalls auf die Klage nicht ein."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum behandelt das Bundesgericht die Klagebewilligung nicht als einen anfechtbaren Entscheid, obwohl sie von einer Behörde ausgestellt wird, und welche verfahrensrechtliche Logik steckt hinter dieser Qualifikation?",
+              "hint": "Vgl. E. 3.1, insbesondere den Verweis auf ATF 139 III 273 und ATF 139 III 486.",
+              "model_answer": "Das Bundesgericht stuft die Klagebewilligung nicht als anfechtbaren Entscheid ein, weil sie selbst keine materiellen Rechte und Pflichten der Parteien verbindlich regelt, sondern lediglich den Weg zum Sachgericht eröffnet. Die Gültigkeit der Klagebewilligung ist eine Prozessvoraussetzung, deren Prüfung systematisch dem entscheidenden Sachgericht zugewiesen ist, das ohnehin alle Prozessvoraussetzungen von Amtes wegen überprüft. Eine vorgängige kantonale Beschwerde würde zu einer Aufspaltung des Verfahrens, unnötigen Verzögerungen und einer Doppelprüfung führen, was der Prozessökonomie und der Systematik der ZPO widerspräche."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie, ob der Ausschluss der kantonalen Beschwerde gegen die Klagebewilligung den Rechtsschutz des Beklagten ausreichend wahrt, oder ob de lege ferenda eine frühere Anfechtungsmöglichkeit wünschenswert wäre.",
+              "hint": "Vgl. E. 3.1–3.3 sowie die Systematik von Art. 59 und Art. 60 ZPO.",
+              "model_answer": "Der Ausschluss der kantonalen Beschwerde ist aus Sicht der Prozessökonomie und der Systemkohärenz überzeugend, da das Sachgericht die Gültigkeit der Klagebewilligung ohnehin von Amtes wegen prüft und der Beklagte seine Einwände dort geltend machen kann. Allerdings kann der Beklagte durch eine fehlerhafte Klagebewilligung gezwungen werden, das gesamte erstinstanzliche Verfahren zu durchlaufen, bevor eine Entscheidung über die Prozessvoraussetzung fällt, was mit erheblichem Aufwand verbunden ist. De lege ferenda wäre allenfalls eine rasche, summarische Überprüfungsmöglichkeit beim Sachgericht vor Eintritt in die Hauptverhandlung diskutabel, jedoch würde eine eigenständige kantonale Beschwerde das Verfahren unnötig fragmentieren und dem Konzept der konzentrierten Prozessleitung widersprechen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Schlichtungsbehörde nicht nur die Klagebewilligung ausgestellt, sondern gleichzeitig einen Kostenentscheid gegen den Beklagten gefällt hätte, und der Beklagte sowohl den Kostenentscheid als auch die Klagebewilligung mit kantonaler Beschwerde anfechten wollte?",
+              "discussion_points": [
+                "Die Klagebewilligung selbst bleibt gemäss BGE 140 III 227 nicht anfechtbar; der entsprechende Beschwerdeteil wäre unzulässig.",
+                "Der Kostenentscheid der Schlichtungsbehörde ist nach E. 3.1 des Urteils ausdrücklich der einzige Teil, der mit kantonaler Beschwerde angefochten werden kann.",
+                "Das kantonale Gericht müsste differenzieren: auf die Beschwerde gegen die Klagebewilligung nicht eintreten, die Beschwerde gegen den Kostenentscheid hingegen materiell prüfen."
+              ],
+              "likely_outcome_shift": "Das Ergebnis würde sich für den Kostenentscheid ändern, da insoweit eine zulässige Beschwerde vorläge und das kantonale Gericht materiell entscheiden müsste. Bezüglich der Klagebewilligung bliebe das Ergebnis identisch: Nichteintreten auf die Beschwerde, mit der Folge, dass die Gültigkeitsprüfung weiterhin dem Sachgericht vorbehalten bleibt. Die Aufspaltung des Beschwerdeobjekts würde die prozessuale Komplexität erhöhen, ohne an der grundlegenden Regelung etwas zu ändern."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht der Beklagte, sondern eine der klagenden Parteien gegen die Klagebewilligung rekurriert hätte, weil sie der Ansicht war, die Schlichtungsbehörde habe die Klagebewilligung zu Unrecht auch für eine Mitklägerschaft ausgestellt, mit der sie nicht gemeinsam klagen wollte?",
+              "discussion_points": [
+                "Die grundsätzliche Unzulässigkeit der kantonalen Beschwerde gegen die Klagebewilligung gilt unabhängig davon, ob Kläger oder Beklagter Beschwerde führt.",
+                "Die klagende Partei kann ihre Einwände gegen die Zusammensetzung der Klägerschaft oder die Ausgestaltung der Klagebewilligung ebenfalls nur beim Sachgericht im Rahmen der Prozessvoraussetzungsprüfung vorbringen.",
+                "Es stellt sich die Folgefrage, ob eine Partei überhaupt ein schutzwürdiges Interesse daran hat, eine zu ihren Gunsten ausgestellte Klagebewilligung anzufechten, oder ob dieser Einwand nur dem Beklagten zusteht."
+              ],
+              "likely_outcome_shift": "Auch in dieser Konstellation wäre die kantonale Beschwerde unzulässig, da das Bundesgericht die Unzulässigkeit nicht personenbezogen, sondern objektbezogen begründet. Das Sachgericht würde die Zusammensetzung der Klägerschaft und die Gültigkeit der Klagebewilligung für jede Partei von Amtes wegen prüfen. Praktisch könnte die klagende Partei ihre Bedenken durch einen Rückzug ihrer eigenen Klage oder durch entsprechende Anträge beim Sachgericht geltend machen, was zu einer veränderten Prozessstruktur, nicht aber zu einer anderen Beurteilung der Beschwerdeunzulässigkeit führen würde."
+            }
+          ]
         }
       ]
     },
@@ -65,7 +214,10 @@
       "name_de": "Beweisrecht und Schlichtung",
       "name_fr": "Droit de la preuve et conciliation",
       "name_it": "Diritto probatorio e conciliazione",
-      "statutes": ["Art. 157 ZPO", "Art. 197 ZPO"],
+      "statutes": [
+        "Art. 157 ZPO",
+        "Art. 197 ZPO"
+      ],
       "cases": [
         {
           "decision_id": "bge_138 III 232",
@@ -74,21 +226,97 @@
           "title_de": "Glaubhaftmachung — Beweismass im summarischen Verfahren",
           "title_fr": "Vraisemblance — degré de la preuve en procédure sommaire",
           "title_it": "",
-          "concepts_de": ["Glaubhaftmachung", "Beweismass", "Freie Beweiswürdigung", "Summarisches Verfahren"],
-          "concepts_fr": ["Vraisemblance", "Degré de la preuve", "Procédure sommaire", "Libre appréciation"],
+          "concepts_de": [
+            "Glaubhaftmachung",
+            "Beweismass",
+            "Freie Beweiswürdigung",
+            "Summarisches Verfahren"
+          ],
+          "concepts_fr": [
+            "Vraisemblance",
+            "Degré de la preuve",
+            "Procédure sommaire",
+            "Libre appréciation"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 157 ZPO", "Art. 254 ZPO"],
+          "statutes": [
+            "Art. 157 ZPO",
+            "Art. 254 ZPO"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum reduzierten Beweismass der Glaubhaftmachung im summarischen Verfahren: Überwiegende Wahrscheinlichkeit genügt, Vollbeweis ist nicht erforderlich.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que, dans la procédure sommaire, la vraisemblance (probabilité prépondérante) suffit comme degré de preuve – une preuve stricte n'est pas requise – et précise les limites du pouvoir de cognition de l'instance de recours cantonale en matière d'opposition à séquestre.",
+          "significance_it": "Questa sentenza di principio stabilisce che nella procedura sommaria è sufficiente la verosimiglianza (probabilità preponderante) come grado di prova – non è richiesta la prova piena – e precisa i limiti del potere cognitivo dell'istanza cantonale di ricorso in materia di opposizione al sequestro.",
+          "key_erwagungen": [
+            "4.1",
+            "4.1.1",
+            "4.1.2",
+            "4.2",
+            "4.3",
+            "4.4",
+            "4.5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 4.1.1, um das Beweismass der Glaubhaftmachung im summarischen Verfahren zu verstehen, und dann E. 4.1.2, um die eingeschränkte Kognition der oberen Instanz nach Art. 320 ZPO zu erfassen. Anschliessend bieten E. 4.2 bis E. 4.5 die konkrete Anwendung dieser Grundsätze auf die Frage der Passivlegitimation der Republik Usbekistan.",
+          "reading_guide_fr": "Commencez par lire le considérant 4.1.1 pour comprendre la notion de vraisemblance comme degré de preuve réduit dans la procédure sommaire, puis le considérant 4.1.2 pour saisir le pouvoir de cognition limité de l'instance cantonale supérieure selon l'art. 320 CPC. Les considérants 4.2 à 4.5 illustrent ensuite l'application concrète de ces principes à la question de la légitimation passive de la République d'Ouzbékistan.",
+          "reading_guide_it": "Si consiglia di leggere prima il considerando 4.1.1 per comprendere il grado di prova ridotto della verosimiglianza nella procedura sommaria, poi il considerando 4.1.2 per cogliere il potere cognitivo limitato dell'istanza cantonale superiore ai sensi dell'art. 320 CPC. I considerandi 4.2–4.5 illustrano quindi l'applicazione concreta di questi principi alla questione della legittimazione passiva della Repubblica dell'Uzbekistan.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was bedeutet «Glaubhaftmachung» im Kontext des Arrestverfahrens nach Art. 272 Abs. 1 Ziff. 1 SchKG, und welches Beweismass ist damit verbunden?",
+              "hint": "Vgl. E. 4.1.1 des Entscheids sowie Art. 157 ZPO",
+              "model_answer": "Glaubhaftmachung bedeutet, dass der Gläubiger das Bestehen seiner Forderung in tatsächlicher und rechtlicher Hinsicht überwiegend wahrscheinlich machen muss. Ein Vollbeweis ist nicht erforderlich. Es genügt, dass für das Vorhandensein der Forderung gewisse Elemente sprechen, auch wenn der Richter die Möglichkeit einräumt, dass sich die behaupteten Tatsachen nicht verwirklicht haben könnten."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen der ZPO regeln das summarische Verfahren und die Kognition der oberen kantonalen Instanz im Arresteinspracheverfahren, und was sehen diese Normen konkret vor?",
+              "hint": "Vgl. E. 4.1.1 und E. 4.1.2 sowie Art. 251 lit. a, Art. 254, Art. 320 ZPO",
+              "model_answer": "Das Arrestverfahren (Bewilligung und Einsprache) ist ein summarisches Verfahren gemäss Art. 251 lit. a ZPO, in dem Art. 254 ZPO die Beweismittel auf Urkunden beschränkt. Die obere kantonale Instanz kann gemäss Art. 320 lit. a ZPO unrichtige Rechtsanwendung frei überprüfen, aber die Sachverhaltsfeststellung und Beweiswürdigung nur auf offensichtliche Unrichtigkeit (Willkür) hin kontrollieren (Art. 320 lit. b ZPO). Diese eingeschränkte Sachverhaltskognition ist für das Beschwerdeverfahren nach Art. 278 Abs. 3 SchKG massgebend."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Im vorliegenden Fall bestritt die Republik Usbekistan ihre Passivlegitimation. Nach welchem Recht bestimmt sich diese Frage, und wie hat das Bundesgericht die Vorgehensweise des Kantonsgerichts bei der Prüfung dieser Frage beurteilt?",
+              "hint": "Vgl. E. 4.2 und E. 4.1.2 zur Sachlegitimation und zur Kognition der kantonalen Instanz",
+              "model_answer": "Die Passivlegitimation (Sachlegitimation) ist eine Frage des materiellen Rechts und richtet sich in internationalen Verhältnissen nach dem auf die Sache anwendbaren Recht. Im vorliegenden Fall war daher usbekisches Recht massgebend, um zu beurteilen, ob Uzselkhozsnabremont eine eigenständige juristische Person oder ein Organ der Republik Usbekistan ist. Das Bundesgericht prüfte, ob das Kantonsgericht zu Recht eine vollständig freie Beweiswürdigung vorgenommen hatte oder ob es die eingeschränkte Kognition nach Art. 320 lit. b ZPO hätte beachten müssen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche Spannungen entstehen zwischen dem summarischen Charakter des Arrestverfahrens (reduziertes Beweismass der Glaubhaftmachung) und dem Schutz des Arrestschuldners, insbesondere wenn wie hier die Passivlegitimation eines Staates in Frage steht?",
+              "hint": "Vgl. E. 4.1.1 zur Glaubhaftmachung, E. 4.2 zur Passivlegitimation sowie den Sachverhalt (A.a–A.b)",
+              "model_answer": "Das summarische Verfahren mit reduziertem Beweismass ermöglicht dem Gläubiger, rasch eine Sicherungsmassnahme zu erwirken, ohne Vollbeweis erbringen zu müssen. Dies birgt die Gefahr, dass ein Arrestschuldner – hier ein souveräner Staat – vorläufig mit einem Arrest belastet wird, obwohl die Passivlegitimation noch nicht abschliessend geklärt ist. Wenn die Arrestforderung gegenüber einer staatlichen Einrichtung (Uzselkhozsnabremont) besteht und nicht gegenüber dem Staat selbst, fehlt die Passivlegitimation der Republik Usbekistan, was zur Aufhebung des Arrests führt. Das Spannungsverhältnis zeigt sich darin, dass die Glaubhaftmachung sowohl des Forderungsbestands als auch der Passivlegitimation nur summarisch geprüft wird, was bei staatsrechtlich komplexen Gebilden zu erheblicher Unsicherheit führt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass im Arresteinspracheverfahren die obere Instanz die Sachverhaltsfeststellung nur auf offensichtliche Unrichtigkeit prüfen darf (Art. 320 lit. b ZPO), obwohl der Arrestschuldner im Ergebnis erheblich in seinen Rechten beeinträchtigt sein kann?",
+              "hint": "Vgl. E. 4.1.2 zur eingeschränkten Kognition sowie die Interessenabwägung zwischen Gläubigerschutz und Schuldnerschutz im Arrestrecht",
+              "model_answer": "Die eingeschränkte Kognition der oberen Instanz lässt sich mit der Natur des Arrestes als vorläufige Sicherungsmassnahme rechtfertigen: Eine vollumfängliche Überprüfung würde den Verfahrenszweck der raschen Sicherung untergraben. Allerdings ist kritisch zu hinterfragen, ob diese Beschränkung ausreicht, wenn – wie im vorliegenden Fall – komplexe Fragen des ausländischen Rechts und der staatlichen Organisation betroffen sind, die der Arrestrichter im Rahmen einer blossen Glaubhaftmachung kaum vollständig erfassen kann. Eine rechtspolitisch stimmige Antwort müsste beide Interessen gewichten: einerseits die Effektivität des Arrestrechts als Gläubigerinstrument, andererseits den Schutz vor ungerechtfertigten Arresten, insbesondere wenn souveräne Staaten betroffen sind, die völkerrechtlichen Sonderregeln unterliegen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn Uzselkhozsnabremont im Laufe des Verfahrens nachweislich aufgelöst und ihr Vermögen vollständig auf die Republik Usbekistan übertragen worden wäre – würde dies die Passivlegitimation der Republik nachträglich begründen?",
+              "discussion_points": [
+                "Würde eine nachträgliche Universalsukzession die Passivlegitimation rückwirkend oder nur ex nunc begründen, und welches Recht gilt für diese Beurteilung?",
+                "Inwiefern verändert sich das Beweismass der Glaubhaftmachung, wenn neue Tatsachen erst nach dem Arrestbefehl entstehen – kann der Gläubiger diese im Einspracheverfahren oder erst in einem ordentlichen Verfahren geltend machen?"
+              ],
+              "likely_outcome_shift": "Eine nachgewiesene Universalsukzession könnte die Passivlegitimation der Republik Usbekistan ex nunc begründen, da Verbindlichkeiten des aufgelösten Rechtsträgers auf den Staat übergegangen wären. Dies würde jedoch einen neuen Arrestbefehl erfordern, da der bestehende Arrest auf die ursprüngliche Schuldnerin (Uzselkhozsnabremont) bezogen war. Im summarischen Verfahren wäre diese neue Tatsache nur dann berücksichtigbar, wenn der Gläubiger sie glaubhaft macht und der Richter eine entsprechende Noveneingabe zulässt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht eine ausländische staatliche Einrichtung, sondern eine private schweizerische AG als Arrestschuldnerin aufgetreten wäre und deren Identität mit der im Vertrag genannten Vertragspartei bestritten worden wäre?",
+              "discussion_points": [
+                "Entfiele das Problem des ausländischen Rechts, und würde dies die Kognition des Arrestrichters und der oberen Instanz bei der Prüfung der Passivlegitimation erleichtern?",
+                "Welche Rolle spielen Handelsregisterauszüge und andere Urkunden im Sinne von Art. 254 ZPO beim Nachweis der Identität einer privaten juristischen Person im summarischen Verfahren?"
+              ],
+              "likely_outcome_shift": "Bei einer rein inländischen privaten Schuldnerin wäre die Identitätsfrage durch einfach zugängliche Handelsregisterauszüge und Urkunden klärbar, was die Glaubhaftmachung erheblich vereinfacht. Das Kantonsgericht hätte keine Notwendigkeit gehabt, ausländisches Organisationsrecht zu prüfen, und die Abgrenzung zwischen staatlicher Haftung und privater Haftung wäre irrelevant. Der Arrest wäre mit hoher Wahrscheinlichkeit aufrechterhalten worden, sofern der Gläubiger die Identität der Vertragspartei mit der Arrestschuldnerin glaubhaft gemacht hätte."
+            }
+          ]
         },
         {
           "decision_id": "bge_146 III 265",
@@ -97,21 +325,91 @@
           "title_de": "Schlichtungsverfahren — örtliche Zuständigkeit und Klagebewilligung",
           "title_fr": "Procédure de conciliation — compétence locale et autorisation de procéder",
           "title_it": "",
-          "concepts_de": ["Schlichtungsverfahren", "Örtliche Zuständigkeit", "Klagebewilligung", "Einrede"],
-          "concepts_fr": ["Procédure de conciliation", "Compétence locale", "Autorisation de procéder"],
+          "concepts_de": [
+            "Schlichtungsverfahren",
+            "Örtliche Zuständigkeit",
+            "Klagebewilligung",
+            "Einrede"
+          ],
+          "concepts_fr": [
+            "Procédure de conciliation",
+            "Compétence locale",
+            "Autorisation de procéder"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 197 ZPO", "Art. 59 ZPO"],
+          "statutes": [
+            "Art. 197 ZPO",
+            "Art. 59 ZPO"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Schlichtungsbehörde: Die örtlich unzuständige Schlichtungsbehörde kann unter kumulativen Voraussetzungen einen Nichteintretensentscheid fällen.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe détermine les conditions cumulatives auxquelles une autorité de conciliation territorialement incompétente peut rendre une décision d'irrecevabilité, et précise dans quelles circonstances le défendeur peut encore se prévaloir, devant le tribunal, de l'invalidité de l'autorisation de procéder ainsi délivrée.",
+          "significance_it": "Questa sentenza di principio stabilisce le condizioni cumulative alle quali un'autorità di conciliazione territorialmente incompetente può pronunciare una decisione di non entrata nel merito, e chiarisce in quali circostanze il convenuto può ancora far valere dinanzi al giudice l'invalidità dell'autorizzazione ad agire così rilasciata.",
+          "key_erwagungen": [
+            "4",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst das Regeste, um die zwei zentralen Rechtsfragen (Nichteintretensentscheid und Gültigkeit der Klagebewilligung) zu erfassen. Konzentrieren Sie sich dann auf Erwägung 4 (Voraussetzungen des Nichteintretensentscheids) und Erwägung 5 (Folgen der ungültigen Klagebewilligung je nach Verhalten des Beklagten im Schlichtungsverfahren), da dort die massgeblichen Regeln entwickelt werden.",
+          "reading_guide_fr": "Commencez par lire le regeste afin de saisir les deux questions juridiques centrales (décision d'irrecevabilité et validité de l'autorisation de procéder). Concentrez-vous ensuite sur le considérant 4 (conditions de la décision d'irrecevabilité) et le considérant 5 (conséquences de l'autorisation de procéder invalide selon le comportement du défendeur lors de la conciliation), qui constituent le cœur de l'arrêt.",
+          "reading_guide_it": "Iniziare con la lettura del regesto per cogliere le due questioni giuridiche centrali (decisione di non entrata nel merito e validità dell'autorizzazione ad agire). Focalizzarsi poi sui considerandi 4 e 5, che sviluppano le regole determinanti rispettivamente sulle condizioni della non entrata nel merito e sulle conseguenze dell'autorizzazione ad agire rilasciata da un'autorità territorialmente incompetente.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht man unter einem 'Nichteintretensentscheid' der Schlichtungsbehörde, und warum ist dieser im Schlichtungsverfahren grundsätzlich problematisch?",
+              "hint": "Vgl. Regeste sowie Art. 197 ff. ZPO; beachten Sie die Rolle der Schlichtungsbehörde als Prozessvoraussetzung.",
+              "model_answer": "Ein Nichteintretensentscheid bedeutet, dass die Schlichtungsbehörde das eingereichte Schlichtungsgesuch mangels Zuständigkeit nicht inhaltlich behandelt. Dies ist im Schlichtungsverfahren problematisch, weil die Schlichtung als obligatorische Prozessvoraussetzung (Art. 59 i.V.m. Art. 197 ZPO) gilt und ein Nichteintretensentscheid die Klägerin zwingt, das Verfahren bei der zuständigen Behörde neu einzuleiten. Damit wird der Zugang zum Gericht erschwert und das Verfahren verzögert."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Unter welchen kumulativen Voraussetzungen kann eine örtlich unzuständige Schlichtungsbehörde von Amtes wegen einen Nichteintretensentscheid fällen, wenn der Beklagte keine Einrede der Unzuständigkeit erhoben hat?",
+              "hint": "Vgl. E. 4 des Entscheids sowie Art. 18 ZPO.",
+              "model_answer": "Gemäss E. 4 des Entscheids kann die Schlichtungsbehörde von Amtes wegen einen Nichteintretensentscheid fällen, wenn erstens ihre Unzuständigkeit offensichtlich ist und zweitens eine Einlassung des Beklagten nach Art. 18 ZPO ohne Weiteres ausgeschlossen ist, weil ein zwingender oder teilzwingender Gerichtsstand vorliegt. Beide Voraussetzungen müssen kumulativ erfüllt sein. Fehlt eine davon – etwa weil kein zwingender Gerichtsstand vorliegt und der Beklagte keine Einrede erhoben hat – ist ein Nichteintretensentscheid nicht zulässig."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Im vorliegenden Fall hatte B. bereits im Schlichtungsverfahren die örtliche Zuständigkeit bestritten. Welche Konsequenz hatte dies für die Gültigkeit der Klagebewilligung und das nachfolgende Gerichtsverfahren?",
+              "hint": "Vgl. E. 5 sowie den Sachverhalt (A.b): B. erhob die Einrede der Unzuständigkeit bereits vor der Schlichtungsbehörde.",
+              "model_answer": "Da B. bereits im Schlichtungsverfahren die örtliche Zuständigkeit bestritt, ist die trotzdem ausgestellte Klagebewilligung gemäss E. 5 grundsätzlich ungültig. B. konnte sich daher im anschliessenden Gerichtsverfahren auf diesen Mangel berufen. Der Beklagte hatte das Recht, die Wiederholung der Schlichtungsverhandlung vor der zuständigen Behörde zu verlangen, weshalb das Gericht die Klage gegenüber B. zu Recht als unzulässig erklärte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet zwischen einem Beklagten, der ohne jeden Vorbehalt am Schlichtungsverfahren teilnahm, und einem Beklagten, der die Zuständigkeit bestritten hatte. Welche Rechtsprinzipien liegen dieser Differenzierung zugrunde, und wie verhält sich diese Lösung zum Grundsatz von Treu und Glauben (Art. 52 ZPO)?",
+              "hint": "Vgl. E. 5; beachten Sie auch Art. 52 ZPO (Handelns nach Treu und Glauben) sowie den Gedanken des Einlassungsgerichtsstands nach Art. 18 ZPO.",
+              "model_answer": "Der Differenzierung liegt der Grundsatz von Treu und Glauben (Art. 52 ZPO) zugrunde: Ein Beklagter, der vorbehaltlos am Schlichtungsverfahren teilnimmt, darf nicht nachträglich die Unzuständigkeit rügen, weil sein Verhalten widersprüchlich wäre und dem Verbot des 'venire contra factum proprium' widerspräche. Dieser Gedanke ist mit dem Einlassungsgerichtsstand nach Art. 18 ZPO verwandt, wonach ein Beklagter durch rügeloses Einlassen die Zuständigkeit begründen kann. Wer hingegen von Anfang an die Unzuständigkeit rügte, hat keinen widersprüchlichen Vertrauenstatbestand geschaffen und kann sich weiterhin auf den Mangel berufen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Wie beurteilen Sie die vom Bundesgericht entwickelte Lösung im Spannungsfeld zwischen Verfahrenseffizienz und dem Schutz des Beklagten vor einer unzuständigen Schlichtungsbehörde? Wäre eine strikte Ungültigkeitsregel für alle durch unzuständige Behörden ausgestellten Klagebewilligungen vorzuziehen?",
+              "hint": "Wägen Sie die Interessen der Parteien, den Zweck der Schlichtung (Art. 197 ZPO) sowie die prozessuale Fairness gegeneinander ab.",
+              "model_answer": "Die differenzierte Lösung des Bundesgerichts ist überzeugend, weil sie Verfahrenseffizienz und Parteienschutz ausgewogen berücksichtigt: Ein Beklagter, der vorbehaltlos mitmacht, soll nicht als Prozesshindernis aus eigenem widersprüchlichem Verhalten profitieren dürfen. Eine strikte Ungültigkeitsregel würde demgegenüber Missbrauchspotenzial schaffen, da Beklagte das Verfahren durch strategisches Schweigen und spätere Rüge gezielt verzögern könnten. Allerdings bleibt eine gewisse Rechtsunsicherheit für Klägerinnen, die nicht wissen können, ob der Beklagte nachträglich den Mangel geltend machen wird; eine klarere gesetzliche Regelung der Zuständigkeitsprüfung durch die Schlichtungsbehörde de lege ferenda wäre daher wünschenswert."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, B. hätte an der Schlichtungsverhandlung teilgenommen und die örtliche Unzuständigkeit zwar mündlich erwähnt, dies aber nicht ausdrücklich als förmliche Einrede protokolliert. Würde dies ausreichen, um sich im nachfolgenden Gerichtsverfahren auf den Mangel der Klagebewilligung zu berufen?",
+              "discussion_points": [
+                "Welche Anforderungen stellt das Bundesgericht an das 'Bestreiten' der Zuständigkeit im Schlichtungsverfahren – genügt eine informelle Erwähnung?",
+                "Wie verhält sich Art. 52 ZPO (Treu und Glauben) zu einer nur teilweise oder unklar vorgebrachten Einrede?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde wohl erhöhte Anforderungen an die Klarheit der Einrede stellen: Eine bloss beiläufige Erwähnung ohne förmliche Einrede könnte als ungenügend qualifiziert werden, da die Gegenseite und die Behörde klar erkennen müssen, dass die Zuständigkeit bestritten wird. In diesem Fall könnten die Grundsätze des Treueprinzips dazu führen, dass B. so behandelt wird wie ein Beklagter, der vorbehaltlos teilnahm, und die nachträgliche Berufung auf den Mangel ausgeschlossen wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht B., sondern die Klägerin A. SA nach Ausstellung der Klagebewilligung durch die örtlich unzuständige Schlichtungsbehörde festgestellt hätte, dass die falsche Behörde zuständig war, und sie deshalb das Gerichtsverfahren nicht einleitete, sondern eine neue Schlichtung bei der zuständigen Behörde beantragte – wäre sie dabei an Fristen gebunden?",
+              "discussion_points": [
+                "Welche Fristen gelten für die Einleitung des Gerichtsverfahrens nach Ausstellung einer Klagebewilligung (Art. 209 ZPO), und läuft diese Frist auch bei einer ungültigen Klagebewilligung?",
+                "Kann die Klägerin die ungültige Klagebewilligung ignorieren und sofort eine neue Schlichtung einleiten, ohne dass Verjährungs- oder Verwirkungsfristen problematisch werden?"
+              ],
+              "likely_outcome_shift": "Die Situation der Klägerin wäre misslich: Die Klagefrist nach Art. 209 ZPO könnte formal zu laufen beginnen, selbst wenn die Klagebewilligung mangelhaft ist, was zu Unsicherheit über den Fristenlauf führt. Das Bundesgericht hat zwar die Ungültigkeit der Klagebewilligung festgestellt, doch die Konsequenzen für laufende Verjährungsfristen blieben ungeklärt; eine rasche Neueinleitung des Schlichtungsverfahrens vor der zuständigen Behörde wäre für die Klägerin aus Vorsichtsgründen dringend geboten, um keine Fristen zu versäumen."
+            }
+          ]
         }
       ]
     },
@@ -120,7 +418,11 @@
       "name_de": "Rechtsmittel und Kognition",
       "name_fr": "Voies de recours et cognition",
       "name_it": "Rimedi giuridici e cognizione",
-      "statutes": ["Art. 74 BGG", "Art. 317 ZPO", "Art. 47 ZPO"],
+      "statutes": [
+        "Art. 74 BGG",
+        "Art. 317 ZPO",
+        "Art. 47 ZPO"
+      ],
       "cases": [
         {
           "decision_id": "bge_133 III 490",
@@ -129,21 +431,92 @@
           "title_de": "BGG-Streitwertgrenze — Bestimmung des Streitwerts",
           "title_fr": "Valeur litigieuse en matière civile — détermination",
           "title_it": "",
-          "concepts_de": ["Streitwert", "Beschwerde in Zivilsachen", "Zulässigkeit", "Vermögensrechtliche Angelegenheit"],
-          "concepts_fr": ["Valeur litigieuse", "Recours en matière civile", "Recevabilité"],
+          "concepts_de": [
+            "Streitwert",
+            "Beschwerde in Zivilsachen",
+            "Zulässigkeit",
+            "Vermögensrechtliche Angelegenheit"
+          ],
+          "concepts_fr": [
+            "Valeur litigieuse",
+            "Recours en matière civile",
+            "Recevabilité"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 74 BGG"],
+          "statutes": [
+            "Art. 74 BGG"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Streitwertbestimmung für die Beschwerde in Zivilsachen: Markeneintragungsstreitigkeiten sind vermögensrechtlich und unterliegen der Streitwertgrenze.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que les litiges portant sur l'enregistrement d'une marque constituent des affaires pécuniaires au sens de l'art. 74 al. 1 LTF et fixe une méthode d'estimation de la valeur litigieuse fondée sur des valeurs empiriques comprises entre CHF 50'000.- et CHF 100'000.- pour les signes de moindre importance.",
+          "significance_it": "Questa sentenza di principio stabilisce che le controversie relative alla registrazione di un marchio costituiscono cause di natura pecuniaria ai sensi dell'art. 74 cpv. 1 LTF e fissa un metodo di stima del valore litigioso basato su valori empirici compresi tra CHF 50'000.- e CHF 100'000.- per i segni di minor rilievo.",
+          "key_erwagungen": [
+            "3.1",
+            "3.2",
+            "3.3",
+            "3.4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 3.2 sorgfältig, um zu verstehen, warum das Bundesgericht Markeneintragungsstreitigkeiten als vermögensrechtlich qualifiziert. Vertiefen Sie danach Erwägung 3.3, die die Methode der Streitwertschätzung anhand von Erfahrungswerten entwickelt, und schliessen Sie mit Erwägung 3.4, die diese Methode auf den konkreten Fall anwendet und die vorinstanzliche Schätzung korrigiert.",
+          "reading_guide_fr": "Commencez par lire attentivement le considérant 3.2 pour comprendre pourquoi le Tribunal fédéral qualifie les litiges relatifs à l'enregistrement de marques d'affaires pécuniaires. Approfondissez ensuite le considérant 3.3, qui développe la méthode d'estimation de la valeur litigieuse à partir de valeurs empiriques, puis terminez par le considérant 3.4, qui applique cette méthode au cas concret et corrige l'estimation de l'instance précédente.",
+          "reading_guide_it": "Leggere dapprima attentamente il considerando 3.2 per comprendere perché il Tribunale federale qualifica le controversie in materia di registrazione di marchi come cause di natura pecuniaria. Approfondire poi il considerando 3.3, che sviluppa il metodo di stima del valore litigioso sulla base di valori empirici, e concludere con il considerando 3.4, che applica tale metodo al caso concreto e corregge la stima dell'istanza precedente.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Warum qualifiziert das Bundesgericht ein Markeneintragungsbegehren als vermögensrechtliche Angelegenheit im Sinne von Art. 74 Abs. 1 BGG?",
+              "hint": "Vgl. Erwägung 3.2, insbesondere die Ausführungen zum wirtschaftlichen Mehrwert des Markenschutzes.",
+              "model_answer": "Das Bundesgericht hält fest, dass der Markenschutz dem Berechtigten ein ausschliessliches Recht gemäss Art. 13 MSchG verleiht und damit einen wirtschaftlichen Mehrwert am Zeichen schafft. Selbst eine noch nicht gebrauchte Marke besitzt einen wirtschaftlichen Grundwert. Der Umstand, dass das Register auch öffentlichen Interessen dient, ändert nichts daran, dass die Eintragung eines konkreten Zeichens primär Vermögensinteressen betrifft."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Normen des BGG sind für die Bestimmung des Streitwerts bei der Beschwerde in Zivilsachen massgebend, und wie wirken sie im vorliegenden Fall zusammen?",
+              "hint": "Vgl. Erwägung 3.1 mit Verweisen auf Art. 74 Abs. 1, Art. 51 Abs. 1 lit. a und Art. 51 Abs. 2 BGG.",
+              "model_answer": "Art. 74 Abs. 1 BGG setzt eine Streitwertgrenze von mindestens Fr. 30'000.- für vermögensrechtliche Angelegenheiten. Art. 51 Abs. 1 lit. a BGG bestimmt, dass sich der Streitwert bei Endentscheiden nach den vor der Vorinstanz streitig gebliebenen Begehren richtet. Da das Markeneintragungsbegehren nicht auf Bezahlung einer bestimmten Geldsumme lautet, greift Art. 51 Abs. 2 BGG, wonach das Bundesgericht den Streitwert nach Ermessen festsetzt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie würde das Bundesgericht den Streitwert schätzen, wenn eine kleine Schweizer Unternehmerin die Eintragung eines noch nicht verwendeten Logos für eine einzige Produktkategorie beantragt und keine konkreten Anhaltspunkte für den Markenwert vorliegen?",
+              "hint": "Vgl. Erwägung 3.3, wo Erfahrungswerte für eher unbedeutende Zeichen zwischen Fr. 50'000.- und Fr. 100'000.- genannt werden.",
+              "model_answer": "Das Bundesgericht würde gestützt auf die in Erwägung 3.3 entwickelten Erfahrungswerte einen Streitwert am unteren Ende der Bandbreite, also um Fr. 50'000.-, annehmen. Da die Marke noch nicht verwendet wird, stünde lediglich der wirtschaftliche Grundwert auf dem Spiel, und es fehlt an Indizien für ein besonders bedeutendes Zeichen. Dieser Betrag läge dennoch über der Streitwertgrenze von Fr. 30'000.-, sodass auf die Beschwerde einzutreten wäre."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet sich die Rechtslage unter dem BGG von jener unter dem alten OG hinsichtlich der Zulässigkeit der Beschwerde bei Markeneintragungsstreitigkeiten, und welche Konsequenzen ergeben sich daraus für die Beschwerdeführerin?",
+              "hint": "Vgl. Erwägung 3.2, zweiter Absatz, zur alten Prozessordnung (Art. 97 ff. OG und Art. 45 OG).",
+              "model_answer": "Unter dem alten OG war die Markeneintragung sowohl auf Verwaltungsgerichtsbeschwerde als auch auf Berufung streitwertunabhängig beim Bundesgericht anfechtbar. Das neue BGG kennt diese streitwertfreien Zugangswege nicht mehr; die Beschwerde in Zivilsachen gegen Urteile des Bundesverwaltungsgerichts setzt grundsätzlich einen Streitwert von mindestens Fr. 30'000.- voraus. Für die Beschwerdeführerin bedeutet dies, dass sie die Zulässigkeit ihres Rechtsmittels nunmehr von der Überschreitung dieser Schwelle abhängig ist, was zugleich neue Unsicherheiten bei der Streitwertschätzung für immaterielle Güterrechte schafft."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht entwickelte Methode der Streitwertschätzung anhand von Erfahrungswerten für Markeneintragungsstreitigkeiten rechtspolitisch überzeugend, oder birgt sie unerwünschte Folgen für den Zugang zum Bundesgericht?",
+              "hint": "Vgl. Erwägungen 3.3 und 3.4 sowie die Kritik an der vorinstanzlichen Schätzung von Fr. 25'000.-.",
+              "model_answer": "Die Methode bietet Rechtssicherheit und Vorhersehbarkeit, da feste Erfahrungswerte willkürliche Einzelfallschätzungen vermeiden. Allerdings besteht das Risiko, dass die Untergrenze von Fr. 50'000.- für eher unbedeutende Zeichen systemisch zu hoch angesetzt ist und damit faktisch den Zugang zum Bundesgericht für kleinere Unternehmen oder Einzelpersonen erleichtert, obwohl der Gesetzgeber mit Art. 74 BGG gerade eine Eingangshürde schaffen wollte. Umgekehrt könnte eine zu tiefe Schätzung die Zulässigkeitsschwelle unterlaufen und das Bundesgericht mit Bagatellsachen belasten, weshalb die Bandbreite zwischen Fr. 50'000.- und Fr. 100'000.- als pragmatischer Kompromiss vertretbar erscheint, aber einer periodischen Überprüfung bedarf."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn die Beschwerdeführerin im Verfahren vor dem Bundesgericht keine Angaben zu ihrem Interesse am Markenschutz gemacht hätte und sich alle Hinweise auf die wirtschaftliche Bedeutung der Marke auf allgemeine Behauptungen beschränkt hätten?",
+              "discussion_points": [
+                "Kann das Bundesgericht den Streitwert auch ohne substantiierte Parteiangaben nach Ermessen (Art. 51 Abs. 2 BGG) festsetzen, und welche Minimalanforderungen gelten an die Mitwirkungspflicht der Parteien?",
+                "Würde das Fehlen konkreter Anhaltspunkte dazu führen, dass das Gericht den Erfahrungswert am unteren Ende der Bandbreite (Fr. 50'000.-) ansetzt, oder könnte es sogar das Nichterreichen der Streitwertgrenze annehmen und auf die Beschwerde nicht eintreten?"
+              ],
+              "likely_outcome_shift": "Ohne substantiierte Angaben der Beschwerdeführerin würde das Bundesgericht wohl den niedrigeren Erfahrungswert von Fr. 50'000.- anwenden, der dennoch die Streitwertgrenze von Fr. 30'000.- übersteigt, sodass auf die Beschwerde einzutreten wäre. Allerdings würde die fehlende Mitwirkung der Partei die Schätzungsunsicherheit erhöhen und könnte bei einem im Grenzbereich liegenden Fall dazu führen, dass das Gericht die Zulässigkeit stärker in Frage stellt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht Alstom Technology Ltd. als grosses internationales Industrieunternehmen, sondern eine Einzelperson als Hobbyerfinderin hätte die Eintragung derselben dreidimensionalen Marke 'Turbinenfuss' für eine einzige, wirtschaftlich marginale Warenklasse beantragt und wäre vom IGE abgewiesen worden.",
+              "discussion_points": [
+                "Würde der Erfahrungswert von Fr. 50'000.-–Fr. 100'000.- als Schätzungsbasis weiterhin gelten, oder rechtfertigen die konkreten Umstände (fehlende kommerzielle Nutzung, fehlende wirtschaftliche Kapazität der Gesuchstellerin) eine abweichende, niedrigere Schätzung?",
+                "Könnte die Beschwerde mangels Erreichens der Streitwertgrenze von Fr. 30'000.- als unzulässig abgewiesen werden, und welche Ausweichmöglichkeiten (z.B. Art. 74 Abs. 2 BGG, subsidiäre Verfassungsbeschwerde) stünden der Gesuchstellerin offen?"
+              ],
+              "likely_outcome_shift": "Bei einer Hobbyerfinderin ohne erkennbare kommerzielle Verwertungsabsicht wäre ein Streitwert unterhalb von Fr. 50'000.- denkbar, was die Frage der Zulässigkeit der Beschwerde in Zivilsachen aufwürfe. Sollte der Streitwert unter Fr. 30'000.- geschätzt werden, müsste das Bundesgericht auf die Beschwerde nicht eintreten, sofern keine Ausnahme nach Art. 74 Abs. 2 BGG greift. Die Gesuchstellerin wäre auf die subsidiäre Verfassungsbeschwerde beschränkt, die jedoch einen deutlich engeren Prüfungsumfang hat."
+            }
+          ]
         },
         {
           "decision_id": "bge_142 III 413",
@@ -152,21 +525,96 @@
           "title_de": "Noven in der Berufung — echte und unechte Noven",
           "title_fr": "Nova en appel — vrais et faux nova",
           "title_it": "",
-          "concepts_de": ["Noven", "Echte Noven", "Unechte Noven", "Berufung", "Novenrecht"],
-          "concepts_fr": ["Nova", "Vrais nova", "Faux nova", "Appel"],
+          "concepts_de": [
+            "Noven",
+            "Echte Noven",
+            "Unechte Noven",
+            "Berufung",
+            "Novenrecht"
+          ],
+          "concepts_fr": [
+            "Nova",
+            "Vrais nova",
+            "Faux nova",
+            "Appel"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 317 ZPO"],
+          "statutes": [
+            "Art. 317 ZPO"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Novenrecht in der Berufung: Letztmöglicher Zeitpunkt für neue Tatsachen, Abgrenzung echter und unechter Noven und Verhältnis zur Revision.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe définit le dernier moment admissible pour invoquer des nova en procédure d'appel selon l'art. 317 CPC, délimite la distinction entre nova proprement dits et nova improprement dits, et précise le rapport subsidiaire avec la révision selon l'art. 328 CPC.",
+          "significance_it": "Questa sentenza di principio stabilisce l'ultimo momento utile per invocare nova nella procedura d'appello ai sensi dell'art. 317 CPC, delimita la distinzione tra nova propri e nova impropri e chiarisce il rapporto sussidiario con la revisione ai sensi dell'art. 328 CPC.",
+          "key_erwagungen": [
+            "2.2.1",
+            "2.2.2",
+            "2.2.3",
+            "2.2.4",
+            "2.2.5",
+            "2.2.6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 2.2.1 und 2.2.2 für die Grundprinzipien des Berufungsverfahrens und die Funktion des Novenrechts nach Art. 317 ZPO, bevor Sie sich in E. 2.2.3 bis 2.2.5 mit der zentralen Frage des letztmöglichen Zeitpunkts für Noveneingaben befassen. Schliessen Sie die Lektüre mit E. 2.2.6 ab, um das Verhältnis zwischen dem Berufungsnovenrecht und der Revision nach Art. 328 ZPO zu verstehen.",
+          "reading_guide_fr": "Commencez par les consid. 2.2.1 et 2.2.2 pour saisir les principes fondamentaux de la procédure d'appel et la fonction du droit des nova selon l'art. 317 CPC, puis abordez les consid. 2.2.3 à 2.2.5 qui traitent de la question centrale du dernier moment possible pour invoquer des nova en appel. Terminez par le consid. 2.2.6 afin de comprendre le rapport entre le droit des nova en appel et la révision au sens de l'art. 328 CPC.",
+          "reading_guide_it": "Iniziare con i consid. 2.2.1 e 2.2.2 per comprendere i principi fondamentali del procedimento d'appello e la funzione del diritto dei nova ai sensi dell'art. 317 CPC, per poi affrontare i consid. 2.2.3–2.2.5 che trattano la questione centrale dell'ultimo momento utile per invocare nova in sede d'appello. Concludere con il consid. 2.2.6 per cogliere il rapporto tra il diritto dei nova in appello e la revisione ai sensi dell'art. 328 CPC.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 142 III 413 unter dem Unterschied zwischen echten und unechten Noven, und welche Gemeinsamkeit haben sie im Berufungsverfahren nach Art. 317 ZPO?",
+              "hint": "Vgl. E. 2.2.2 sowie den Hinweis der Vorinstanz in E. 2.1 auf die fehlende Differenzierung in Art. 317 Abs. 1 ZPO.",
+              "model_answer": "Echte Noven sind Tatsachen oder Beweismittel, die erst nach dem erstinstanzlichen Urteil entstanden sind, während unechte Noven bereits vor dem Urteil existierten, aber nicht vorgebracht wurden. Beide Kategorien unterliegen im Berufungsverfahren denselben restriktiven Zulassungsvoraussetzungen gemäss Art. 317 Abs. 1 ZPO: Sie müssen ohne Verzug vorgebracht werden und durften trotz zumutbarer Sorgfalt nicht schon vor erster Instanz geltend gemacht werden. Art. 317 Abs. 1 ZPO differenziert ausdrücklich nicht zwischen den beiden Kategorien."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen der ZPO regeln das Novenrecht im Berufungsverfahren, und welche gesetzliche Lücke identifiziert das Bundesgericht in Art. 317 Abs. 1 ZPO bezüglich des letztmöglichen Zeitpunkts für die Einreichung von Noven?",
+              "hint": "Vgl. E. 2.2.3 sowie den Verweis auf Art. 310, 311, 316, 317 und 328 ZPO im Regeste.",
+              "model_answer": "Das Novenrecht im Berufungsverfahren wird primär durch Art. 317 ZPO geregelt, der die materiellen Voraussetzungen für die Zulassung neuer Tatsachen und Beweismittel abschliessend festlegt. Das Bundesgericht stellt in E. 2.2.3 fest, dass Art. 317 Abs. 1 ZPO keinen konkreten Verfahrenszeitpunkt nennt, bis zu dem Noven spätestens vorgebracht werden müssen. Diese gesetzliche Lücke erfordert eine richterliche Rechtsfortbildung zur Bestimmung des letztmöglichen Einreichungszeitpunkts im Berufungsverfahren."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die in BGE 142 III 413 entwickelten Grundsätze auf folgenden Fall an: Eine Partei reicht nach Abschluss des ersten Schriftenwechsels im Berufungsverfahren, aber vor einer angesetzten Berufungsverhandlung, neue Beweismittel ein. Sind diese zulässig?",
+              "hint": "Vgl. E. 2.2.3-2.2.5 zum letztmöglichen Zeitpunkt und die Bedeutung der Berufungsverhandlung als prozessualer Zäsur.",
+              "model_answer": "Gemäss den in BGE 142 III 413 entwickelten Grundsätzen bildet die Berufungsverhandlung den letztmöglichen Zeitpunkt für die Einreichung von Noven, sofern eine solche durchgeführt wird. Werden neue Beweismittel nach dem ersten Schriftenwechsel, aber noch vor der Berufungsverhandlung eingereicht, sind sie grundsätzlich rechtzeitig, sofern die materiellen Voraussetzungen von Art. 317 Abs. 1 ZPO (Unverzüglichkeit und fehlende frühere Einreichbarkeit trotz zumutbarer Sorgfalt) erfüllt sind. Die Partei muss also zusätzlich darlegen, warum sie die Beweismittel nicht bereits vor erster Instanz einreichen konnte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht hält fest, dass das Berufungsverfahren «nicht der Vervollständigung des vorinstanzlichen Verfahrens, sondern der Überprüfung und Korrektur des erstinstanzlichen Entscheids» dient. Welche Spannungen entstehen zwischen diesem Grundsatz und dem Gebot des rechtlichen Gehörs (Art. 29 Abs. 2 BV), wenn neue, entscheiderhebliche Tatsachen erst nach dem erstinstanzlichen Urteilszeitpunkt entstehen?",
+              "hint": "Vgl. E. 2.2.2 zur Funktion des Berufungsverfahrens sowie E. 2.2.6 zum Verhältnis zur Revision.",
+              "model_answer": "Das Berufungsverfahren soll die erstinstanzliche Entscheidung anhand konkret vorgebrachter Beanstandungen überprüfen, was eine restriktive Novenpraxis rechtfertigt. Entstehen jedoch erst nach dem erstinstanzlichen Urteil neue entscheiderhebliche Tatsachen (echte Noven), können diese per definitionem nicht in erster Instanz vorgebracht werden, was zu einem Konflikt mit dem Anspruch auf rechtliches Gehör und einem effektiven Rechtsschutz führt. Das Bundesgericht löst diese Spannung teilweise, indem es echte Noven unter den Voraussetzungen von Art. 317 Abs. 1 lit. a ZPO zulässt und subsidiär auf das Revisionsinstrument (Art. 328 ZPO) verweist, womit jedoch eine erneute Instanz beansprucht werden muss, was prozessökonomisch belastend ist."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie die gesetzgeberische Entscheidung, in Art. 317 ZPO kein explizites Novenrecht für echte Noven nach Aktenschluss im Berufungsverfahren vorzusehen, und beurteilen Sie, ob die vom Bundesgericht in BGE 142 III 413 entwickelte Lösung rechtspolitisch überzeugend ist oder ob de lege ferenda eine klarere Regelung vorzuziehen wäre.",
+              "hint": "Vgl. E. 2.2.2-2.2.6, insbesondere das Verhältnis zur Revision (E. 2.2.6) und die Kritik an der fehlenden gesetzlichen Regelung des Einreichungszeitpunkts (E. 2.2.3).",
+              "model_answer": "Die gesetzgeberische Lücke in Art. 317 ZPO schafft erhebliche Rechtsunsicherheit, da weder die Praxis noch ein beträchtlicher Teil der Lehre den letztmöglichen Einreichungszeitpunkt klar definiert hatten. Das Bundesgericht schliesst diese Lücke durch richterliche Rechtsfortbildung, was zwar Rechtssicherheit schafft, jedoch die Frage aufwirft, ob eine klärende Gesetzgebung dem Legalitätsprinzip besser entsprechen würde. Die Verweisung auf die Revision bei echten Noven, die erst nach Aktenschluss entstehen, erscheint prozessökonomisch unbefriedigend, da sie zu einer weiteren Instanz und damit zu erheblichem Zusatzaufwand zwingt; de lege ferenda wäre eine explizite Ausnahmeregelung für echte Noven, die nach dem letztmöglichen Einreichungszeitpunkt im Berufungsverfahren entstehen, rechtspolitisch vorzuziehen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die neue Tatsache, die die Beschwerdeführer mit ihrer Noveneingabe vom 7. April 2015 geltend machten, wäre erst am 1. März 2015 – also nach der Mitteilung des Berufungsgerichts vom 9. Februar 2015 über den Verzicht auf einen zweiten Schriftenwechsel und eine Berufungsverhandlung – eingetreten und wäre daher ein echtes Novum. Würde dies an der Beurteilung des Bundesgerichts etwas ändern?",
+              "discussion_points": [
+                "Unterscheidung zwischen echten Noven (nach dem massgeblichen Zeitpunkt entstanden) und unechten Noven (bereits früher vorhanden, aber nicht vorgebracht) und deren unterschiedliche prozessuale Behandlung im Rahmen von Art. 317 Abs. 1 lit. b ZPO.",
+                "Verhältnis zwischen dem letztmöglichen Zeitpunkt für die Einreichung von Noven im Berufungsverfahren und der subsidiären Möglichkeit der Revision nach Art. 328 ZPO bei echten Noven, die nach Aktenschluss entstehen."
+              ],
+              "likely_outcome_shift": "Bei einem echten Novum, das erst nach dem Aktenschluss im Berufungsverfahren entstanden ist, könnte die Partei das Erfordernis von Art. 317 Abs. 1 lit. b ZPO (fehlende frühere Einreichbarkeit trotz zumutbarer Sorgfalt) grundsätzlich erfüllen, da die Tatsache schlicht noch nicht existierte. Dennoch bliebe die Frage der Unverzüglichkeit nach Art. 317 Abs. 1 lit. a ZPO sowie des letztmöglichen prozessualen Zeitpunkts bestehen. Das Bundesgericht verweist in E. 2.2.6 für solche Konstellationen subsidiär auf die Revision nach Art. 328 ZPO, sodass der Ausgang im Berufungsverfahren möglicherweise unverändert bliebe, der Partei jedoch ein alternativer Rechtsbehelf offenstünde."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, es wäre nicht die beschwerdeführende, sondern die beschwerdegegnerische Partei gewesen, die nach Abschluss des Schriftenwechsels im Berufungsverfahren eine Noveneingabe einreichte, um ein für sie günstiges, bisher unbekanntes Beweismittel (z.B. ein neu aufgefundenes schriftliches Dokument) in das Berufungsverfahren einzubringen.",
+              "discussion_points": [
+                "Gilt das restriktive Novenrecht von Art. 317 Abs. 1 ZPO symmetrisch für beide Parteien, unabhängig davon, ob die Noveneingabe von der berufungsführenden oder der berufungsbeklagten Partei stammt?",
+                "Inwiefern beeinflusst die prozessuale Rolle einer Partei (Berufungskläger vs. Berufungsbeklagter) die Zulässigkeit von Noven, insbesondere im Hinblick auf das Erfordernis der Unverzüglichkeit und die Frage, ab wann die Pflicht zur Einreichung entsteht?"
+              ],
+              "likely_outcome_shift": "Das restriktive Novenrecht gemäss Art. 317 Abs. 1 ZPO gilt nach den Grundsätzen von BGE 142 III 413 für beide Parteien gleichermassen, unabhängig von ihrer prozessualen Rolle als Berufungskläger oder Berufungsbeklagter. Die Noveneingabe der Beschwerdegegnerin wäre damit denselben Zulässigkeitsvoraussetzungen unterworfen: Unverzüglichkeit und fehlende frühere Einreichbarkeit trotz zumutbarer Sorgfalt. Das Ergebnis wäre daher aller Wahrscheinlichkeit nach identisch – die verspätete Noveneingabe würde aus dem Recht gewiesen –, es sei denn, die Beschwerdegegnerin könnte darlegen, dass das Dokument trotz zumutbarer Sorgfalt tatsächlich nicht früher hätte aufgefunden werden können."
+            }
+          ]
         },
         {
           "decision_id": "bge_139 III 433",
@@ -175,21 +623,95 @@
           "title_de": "Ausstandspflicht — Anschein der Befangenheit",
           "title_fr": "Récusation — apparence de prévention",
           "title_it": "",
-          "concepts_de": ["Ausstand", "Befangenheit", "Anschein der Befangenheit", "Unabhängigkeit", "Nebenamtlicher Richter"],
-          "concepts_fr": ["Récusation", "Apparence de prévention", "Indépendance"],
+          "concepts_de": [
+            "Ausstand",
+            "Befangenheit",
+            "Anschein der Befangenheit",
+            "Unabhängigkeit",
+            "Nebenamtlicher Richter"
+          ],
+          "concepts_fr": [
+            "Récusation",
+            "Apparence de prévention",
+            "Indépendance"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 47 ZPO", "Art. 30 BV", "Art. 6 EMRK"],
+          "statutes": [
+            "Art. 47 ZPO",
+            "Art. 30 BV",
+            "Art. 6 EMRK"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Ausstandspflicht: Anschein der Befangenheit bei nebenamtlichen Richtern mit offenem Anwaltsmandat gegenüber einer Verfahrenspartei.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit qu'un juge non professionnel exerçant également comme avocat ou mandataire en brevets doit se récuser lorsque son étude entretient un mandat ouvert avec une partie à la procédure ou une personne qui lui est étroitement liée, indépendamment de la matière concernée ou du montant des honoraires.",
+          "significance_it": "Questa sentenza di principio stabilisce che un giudice non professionale che esercita anche come avvocato o consulente in brevetti è tenuto ad astenersi quando il suo studio detiene un mandato aperto nei confronti di una parte in causa o di una persona a essa strettamente collegata, indipendentemente dalla materia trattata o dall'entità degli onorari.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "2.1.1",
+            "2.1.2"
+          ],
+          "reading_guide_de": "Beim Lesen des Entscheids sollte der Fokus auf Erwägung 2 liegen, in der das Bundesgericht den normativen Rahmen (Art. 30 Abs. 1 BV, Art. 6 Ziff. 1 EMRK, Art. 47 ZPO, Art. 28 PatGG) entfaltet und den Grundsatz des objektiven Anscheins der Befangenheit auf die Konstellation nebenamtlicher Richter mit offenem Kanzleimandat anwendet. Besonders aufschlussreich ist dabei die Abgrenzung zwischen dem subjektiven Unparteilichkeitsgebot und dem objektiv-institutionellen Vertrauensschutz.",
+          "reading_guide_fr": "La lecture de cet arrêt doit se concentrer sur le considérant 2, dans lequel le Tribunal fédéral développe le cadre normatif (art. 30 al. 1 Cst., art. 6 par. 1 CEDH, art. 47 CPC, art. 28 LBrev) et applique le principe de l'apparence de prévention à la situation d'un juge non professionnel dont l'étude détient un mandat ouvert envers une partie. La distinction entre l'impartialité subjective et la protection objective de la confiance institutionnelle est particulièrement éclairante.",
+          "reading_guide_it": "La lettura della sentenza deve concentrarsi sul considerando 2, in cui il Tribunale federale sviluppa il quadro normativo (art. 30 cpv. 1 Cost., art. 6 n. 1 CEDU, art. 47 CPC, art. 28 LTBrev) e applica il principio dell'apparenza di parzialità alla situazione di un giudice non professionale il cui studio legale detiene un mandato aperto nei confronti di una parte in causa.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der konkrete Sachverhalt, der zum Ausstandsbegehren gegen Fachrichter Rigling führte, und warum hielt das Bundespatentgericht diesen zunächst für unproblematisch?",
+              "hint": "Vgl. Sachverhalt B.a und B.b: Schreiben des Präsidenten vom 28. September 2012 sowie Beschluss vom 13. Februar 2013.",
+              "model_answer": "Die Patentanwaltskanzlei Troesch Scheidegger Werner AG, der Fachrichter Rigling angehörte, vertrat seit April 2012 die Gesellschaft Migros France in einer Markensache. Das Bundespatentgericht wies das Ausstandsbegehren ab, weil Migros France nicht Streitpartei im Verfahren sei, es sich um eine andere Rechtssache handle und die finanziellen Einnahmen gering seien. Das Bundesgericht hob diesen Beschluss jedoch auf."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlagen bilden nach dem Bundesgericht den normativen Rahmen für die Beurteilung des Ausstandsbegehrens gegen einen nebenamtlichen Richter am Bundespatentgericht, und in welchem Verhältnis stehen diese zueinander?",
+              "hint": "Vgl. Erwägung 2.1.1: Art. 47 ZPO, Art. 28 PatGG, Art. 27 PatGG, Art. 30 Abs. 1 BV und Art. 6 Ziff. 1 EMRK.",
+              "model_answer": "Art. 28 PatGG enthält eine spezifische Ausstandsregelung für das Bundespatentgericht; ergänzend gelten gemäss Art. 27 PatGG die allgemeinen Ausstandsregeln nach Art. 47 ff. ZPO. Diese prozessrechtlichen Normen konkretisieren den verfassungsmässigen Anspruch auf ein unabhängiges und unparteiisches Gericht gemäss Art. 30 Abs. 1 BV, der seinerseits parallel mit der Garantie des Art. 6 Ziff. 1 EMRK gilt. Die verfassungs- und konventionsrechtliche Rechtsprechung bleibt damit stets massgebend."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie ist der vom Bundesgericht entwickelte Grundsatz zum Anschein der Befangenheit auf einen nebenamtlichen Richter anzuwenden, dessen Kanzlei nicht die Partei selbst, sondern eine mit ihr wirtschaftlich eng verbundene Konzerngesellschaft vertritt?",
+              "hint": "Vgl. Regeste und Erwägung 2: Kriterium des 'offenen Mandats' und der 'eng verbundenen Person'.",
+              "model_answer": "Das Bundesgericht stellt auf den objektiven Anschein der Befangenheit ab: Massgebend ist nicht, ob der Richter persönlich am Mandat beteiligt ist, sondern ob seine Kanzlei ein offenes Mandat gegenüber einer Partei oder einer mit ihr eng verbundenen Person hält. Eine Konzerngesellschaft, die mit einer Verfahrenspartei wirtschaftlich eng verflochten ist, kann einer solchen 'eng verbundenen Person' gleichgestellt werden. In diesem Fall wäre der Ausstandsgrund nach dem in BGE 139 III 433 entwickelten Grundsatz ebenfalls zu bejahen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum genügen die vom Bundespatentgericht und Richter Rigling vorgebrachten Argumente – unterschiedliche Rechtsmaterie, keine Parteiidentität, geringe Einnahmen – nicht, um den Anschein der Befangenheit zu beseitigen, und welches normative Konzept liegt dieser Ablehnung zugrunde?",
+              "hint": "Vgl. Sachverhalt B.a (Stellungnahme Rigling) und Regeste; der objektive Unbefangenheitsmassstab nach Art. 30 Abs. 1 BV.",
+              "model_answer": "Der verfassungsrechtliche Massstab ist objektiver Natur: Entscheidend ist nicht die subjektive Überzeugung des Richters von seiner eigenen Unparteilichkeit, sondern ob ein vernünftiger Beobachter in guten Treuen Zweifel an der Unbefangenheit hegen könnte. Das blosse Fehlen von Parteiidentität oder inhaltlicher Überschneidung der Mandate schließt eine mandatsbedingte wirtschaftliche Abhängigkeit der Kanzlei von der Partei nicht aus. Auch geringe Einnahmen können einen strukturellen Interessenkonflikt begründen, der den Anschein der Befangenheit erzeugt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist der vom Bundesgericht in BGE 139 III 433 entwickelte strenge Massstab für nebenamtliche Richter mit Anwaltsmandat rechtspolitisch überzeugend, oder führt er zu einer unverhältnismässigen Einschränkung des Milizsystems beim Bundespatentgericht?",
+              "hint": "Vgl. Regeste und Erwägung 2; Besonderheit des Bundespatentgerichts, das auf Fachrichter aus der Praxis angewiesen ist.",
+              "model_answer": "Der strenge Massstab ist grundrechtlich kohärent, weil er den Vorrang des Vertrauens der Öffentlichkeit in die Justiz über individuelle Praktikabilitätsinteressen stellt. Allerdings birgt er rechtspolitische Spannungen: Das Bundespatentgericht ist strukturell auf nebenamtliche Fachrichter aus dem Anwalts- und Patentanwaltsbereich angewiesen, weshalb Kanzleimandate gegenüber grossen Wirtschaftsakteuren kaum vollständig vermeidbar sind. Eine verhältnismässige Lösung könnte in klaren, institutionellen Offenlegungspflichten und einem verbindlichen Konfliktmanagementsystem liegen, statt allein auf den Ausstand als einziges Instrument zu setzen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn Richter Rigling das Mandat seiner Kanzlei gegenüber Migros France vor der Instruktionsverhandlung vollständig beendet hätte und seit mindestens einem Jahr keine Geschäftsbeziehung mehr bestanden hätte – würde der Ausstandsgrund dennoch bestehen?",
+              "discussion_points": [
+                "Ist ein bereits beendetes Mandat geeignet, den Anschein der Befangenheit fortzusetzen, und ab welchem Zeitpunkt ist die 'Karenzzeit' ausreichend lang?",
+                "Inwiefern spielt es eine Rolle, ob aus dem früheren Mandat noch finanzielle Ansprüche (z.B. offene Honorarforderungen) oder andere Nachwirkungen bestehen?"
+              ],
+              "likely_outcome_shift": "Ein vollständig und längere Zeit zurückliegendes Mandat ohne Nachwirkungen würde den Ausstandsgrund erheblich abschwächen, da die wirtschaftliche Abhängigkeit der Kanzlei entfallen ist. Das Bundesgericht würde jedoch wohl eine differenzierte Einzelfallbetrachtung vornehmen und dabei prüfen, ob der objektive Eindruck einer fortwirkenden Loyalitätsbindung für einen vernünftigen Beobachter noch plausibel erscheint."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie wäre der Fall zu beurteilen, wenn nicht die Kanzlei des Fachrichters, sondern die Kanzlei des Rechtsvertreters einer Partei gleichzeitig Mandate gegenüber der Gegenpartei hält – kann dies ebenfalls zu einem Ausstand führen oder greift ein anderes Rechtsinstitut?",
+              "discussion_points": [
+                "Ausstand betrifft Gerichtspersonen; für Parteivertreter gelten standesrechtliche Interessenkonfliktregeln (Anwaltsrecht, BGFA) und zivilprozessuale Substitutionsregeln, nicht Art. 47 ZPO.",
+                "Ist ein Befangenheitsproblem auf Seite des Parteivertreters prozessual überhaupt relevant für das Gericht, oder handelt es sich um eine rein standesrechtliche Frage?"
+              ],
+              "likely_outcome_shift": "Ein Ausstandsbegehren gegen den Richter wäre in diesem Szenario von vornherein unzulässig, da Art. 47 ZPO ausschliesslich Gerichtspersonen betrifft. Die Partei könnte allenfalls standesrechtliche Massnahmen gegen den Anwalt ergreifen oder – bei eklatantem Interessenkonflikt – auf dessen Mandatsniederlegung drängen; die Unabhängigkeit des Gerichts selbst bliebe davon jedoch unberührt."
+            }
+          ]
         }
       ]
     }

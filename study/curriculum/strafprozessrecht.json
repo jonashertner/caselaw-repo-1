@@ -10,7 +10,10 @@
       "name_de": "Grundsätze des Strafverfahrens",
       "name_fr": "Principes de la procédure pénale",
       "name_it": "Principi del procedimento penale",
-      "statutes": ["Art. 9 StPO", "Art. 10 StPO"],
+      "statutes": [
+        "Art. 9 StPO",
+        "Art. 10 StPO"
+      ],
       "cases": [
         {
           "decision_id": "bge_133 IV 329",
@@ -19,21 +22,94 @@
           "title_de": "In dubio pro reo — Unschuldsvermutung und Beweiswürdigung",
           "title_fr": "In dubio pro reo — présomption d'innocence et appréciation des preuves",
           "title_it": "",
-          "concepts_de": ["In dubio pro reo", "Unschuldsvermutung", "Beweiswürdigung", "Kognition BGer"],
-          "concepts_fr": ["In dubio pro reo", "Présomption d'innocence", "Appréciation des preuves"],
+          "concepts_de": [
+            "In dubio pro reo",
+            "Unschuldsvermutung",
+            "Beweiswürdigung",
+            "Kognition BGer"
+          ],
+          "concepts_fr": [
+            "In dubio pro reo",
+            "Présomption d'innocence",
+            "Appréciation des preuves"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 10 StPO", "Art. 32 BV", "Art. 6 EMRK"],
+          "statutes": [
+            "Art. 10 StPO",
+            "Art. 32 BV",
+            "Art. 6 EMRK"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Reichweite des Grundsatzes in dubio pro reo: Doppelfunktion als Beweislastregel und Beweiswürdigungsregel sowie die eingeschränkte Kognition des Bundesgerichts.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que l'interdiction d'exploitation prévue à l'art. 9 al. 3 LSCPT est absolue et s'étend aux preuves secondaires obtenues indirectement grâce à une découverte fortuite non autorisée, sans qu'une pesée des intérêts soit possible.",
+          "significance_it": "Questa sentenza di principio stabilisce che il divieto di utilizzazione previsto dall'art. 9 cpv. 3 LSCPT è assoluto e si estende alle prove secondarie ottenute indirettamente tramite una scoperta casuale non autorizzata, senza che sia possibile alcuna ponderazione degli interessi.",
+          "key_erwagungen": [
+            "4.2",
+            "4.3",
+            "4.4",
+            "4.5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 4.2, um den gesetzlichen Rahmen von Art. 9 BÜPF (Zufallsfunde, Genehmigungspflicht, Verwertungsverbot) zu verstehen. Studieren Sie anschliessend E. 4.3 und E. 4.4, um nachzuvollziehen, warum das Bundesgericht eine Güterabwägung ablehnt und das Verwertungsverbot als absolut qualifiziert. Den Kern des Entscheids bildet E. 4.5, in der das Gericht die Fernwirkung des Verwertungsverbots auf mittelbar erlangte Folgebeweise begründet.",
+          "reading_guide_fr": "Commencez par lire le considérant 4.2 pour saisir le cadre légal de l'art. 9 LSCPT (découvertes fortuites, obligation d'autorisation, interdiction d'exploitation). Étudiez ensuite les considérants 4.3 et 4.4 pour comprendre pourquoi le Tribunal fédéral rejette toute pesée des intérêts et qualifie l'interdiction d'exploitation d'absolue. Le cœur de la décision réside dans le considérant 4.5, dans lequel le tribunal fonde l'effet réflexe de l'interdiction d'exploitation sur les preuves secondaires obtenues de manière indirecte.",
+          "reading_guide_it": "Si inizi con il considerando 4.2 per comprendere il quadro legale dell'art. 9 LSCPT (scoperte casuali, obbligo di autorizzazione, divieto di utilizzazione). Si studino poi i considerandi 4.3 e 4.4 per capire perché il Tribunale federale esclude qualsiasi ponderazione degli interessi e qualifica il divieto di utilizzazione come assoluto. Il nucleo della decisione è il considerando 4.5, in cui il Tribunale fonda l'effetto riflesso del divieto di utilizzazione sulle prove secondarie ottenute indirettamente.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 133 IV 329 unter einem 'personellen Zufallsfund' im Sinne von Art. 9 Abs. 2 BÜPF, und wie unterscheidet sich dieser von einem sachlichen Zufallsfund?",
+              "hint": "Vgl. E. 4.3, wo das Gericht erklärt, warum X. als 'personeller Zufallsfund' eingestuft wird.",
+              "model_answer": "Ein personeller Zufallsfund liegt vor, wenn im Rahmen einer rechtmässigen Telefonüberwachung Erkenntnisse über eine Person gewonnen werden, die in der Überwachungsanordnung nicht als verdächtig bezeichnet war. Im vorliegenden Fall wurde X. als mutmassliche Drogenlieferantin entdeckt, weil der Telefonanschluss von A. – nicht derjenige von X. – rechtmässig überwacht wurde. Zuvor bestand keinerlei Tatverdacht gegen X., weshalb das Gericht einen personellen Zufallsfund bejaht."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsfolgen ordnet Art. 9 Abs. 3 BÜPF für den Fall an, dass die Voraussetzungen für die Verwendung eines Zufallsfundes nicht gegeben sind, und welche Bedeutung misst das Bundesgericht dem Wortlaut dieser Bestimmung zu?",
+              "hint": "Vgl. E. 4.2 und E. 4.4, insbesondere die Aussage zur Güterabwägung.",
+              "model_answer": "Art. 9 Abs. 3 BÜPF sieht ein absolutes Verwertungsverbot vor: Die rechtswidrig erlangten Informationen dürfen nicht verwendet werden, und die betreffenden Dokumente sowie Datenträger müssen umgehend vernichtet werden. Das Bundesgericht entnimmt dem expliziten Wortlaut, dass der Gesetzgeber auch eine nachträgliche Genehmigung ausschliessen wollte. Zudem lässt der klare Gesetzeswortlaut keinen Raum für eine richterliche Güterabwägung zwischen öffentlichem Interesse an der Wahrheitsfindung und privatem Interesse der Beschuldigten."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, die Strafverfolgungsbehörden hätten nach Entdeckung des Zufallsfundes sofort bei der Anklagekammer um Genehmigung ersucht und diese erhalten – wäre die anschliessende Observation von X. und ihre spätere Verhaftung dann als verwertbar zu beurteilen?",
+              "hint": "Vgl. E. 4.3 zur Frage des Genehmigungsverfahrens und E. 4.2 zu Art. 9 Abs. 2 Satz 2 BÜPF.",
+              "model_answer": "Ja, wenn die Genehmigungsbehörde rechtzeitig – d.h. vor Einleitung weiterer Ermittlungen – zugestimmt hätte und die materiellen Voraussetzungen für eine Überwachung erfüllt gewesen wären, wäre der Zufallsfund nachträglich legalisiert worden. In diesem Fall hätten auch die darauf aufbauenden Folgebeweise (Observation, Verhaftung, sichergestelltes Kokain) verwertet werden dürfen, da die Fernwirkung des Verwertungsverbots mangels rechtswidrig erlangtem Primärbeweis nicht eingetreten wäre. Entscheidend ist nach Art. 9 Abs. 2 BÜPF, dass die Genehmigung vor – nicht nach – der Einleitung weiterer Ermittlungen eingeholt wird."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht bejaht in E. 4.5 die Fernwirkung des Verwertungsverbots auf Folgebeweise. Welche Kausalitätsformel wendet es dabei an, und inwiefern unterscheidet sich dieser Ansatz von der US-amerikanischen 'fruit of the poisonous tree'-Doktrin sowie von einer einfachen Äquivalenzkausalität?",
+              "hint": "Vgl. E. 4.5 zum massgeblichen Kausalitätskriterium ('nicht hätten erhältlich gemacht werden können').",
+              "model_answer": "Das Bundesgericht stellt auf eine hypothetische Eliminationsmethode ab: Folgebeweise sind nur dann unverwertbar, wenn sie ohne den rechtswidrig erlangten Primärbeweis nicht hätten erlangt werden können ('but-for'-Kausalität). Dies entspricht strukturell der 'fruit of the poisonous tree'-Doktrin des US-amerikanischen Rechts, ist jedoch enger gefasst, weil das Gericht implizit eine Ausnahme für unabhängig erreichbare Beweise ('independent source') zulässt. Im Gegensatz zur blossen Äquivalenzkausalität, die jeden ursächlichen Zusammenhang genügen liesse, verlangt das Bundesgericht eine qualifizierte Kausalbeziehung, die verhindert, dass das Verwertungsverbot grenzenlos auf sämtliche mittelbar beeinflussten Beweismittel ausgedehnt wird."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht gewählte Lösung – ein absolutes Verwertungsverbot ohne Güterabwägung bei explizitem gesetzlichem Verwertungsverbot – rechtspolitisch überzeugend, wenn man bedenkt, dass X. für schwere Betäubungsmitteldelikte mit 500 Gramm Kokain verurteilt wurde?",
+              "hint": "Vgl. E. 4.4 zur Frage der Güterabwägung und zur herrschenden Lehre; beachte den Unterschied zu Fällen ohne explizites gesetzliches Verbot.",
+              "model_answer": "Die Lösung ist aus rechtsstaatlicher Perspektive überzeugend, weil sie den Gesetzgeber beim Wort nimmt und der Polizei einen klaren Anreiz setzt, das Genehmigungsverfahren nach Art. 9 Abs. 2 BÜPF einzuhalten. Eine richterliche Güterabwägung, die bei schwerer Kriminalität regelmässig zugunsten der Verwertung ausschlägt, würde das gesetzliche Verwertungsverbot faktisch aushöhlen und den Behörden erlauben, Verfahrensverstösse nachträglich durch den Schweregrad der Tat zu rechtfertigen. Kritisch lässt sich jedoch einwenden, dass der Gesetzgeber selbst in Art. 9 BÜPF kein ausdifferenziertes System für die Folgebeweise vorgesehen hat und das Bundesgericht durch die weite Fernwirkung möglicherweise über den Willen des Gesetzgebers hinausgeht, was im Ergebnis zu Straflosigkeit trotz erwiesener schwerer Kriminalität führen kann."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Staatsanwaltschaft hätte nach Entdeckung des Zufallsfundes unabhängig von den Telefonüberwachungserkenntnissen eine anonyme Anzeige erhalten, dass X. Kokain verkaufe, und hätte gestützt auf diese Anzeige allein eine separate Observation eingeleitet. Die anschliessende Verhaftung und das sichergestellte Kokain wären dieselben wie im Originalfall. Ändert sich die Verwertbarkeit der Folgebeweise?",
+              "discussion_points": [
+                "Prüfung der 'independent source'-Ausnahme: Kann die anonyme Anzeige als unabhängige Erkenntnisquelle die Kausalitätskette zum rechtswidrigen Primärbeweis unterbrechen?",
+                "Beweislastfrage: Wer muss die Unabhängigkeit der Ermittlungsquelle nachweisen – die Behörden oder die Beschuldigte?"
+              ],
+              "likely_outcome_shift": "Wenn die Strafverfolgungsbehörden überzeugend nachweisen können, dass die Observation und Verhaftung ausschliesslich auf der anonymen Anzeige – und nicht auf den Telefonüberwachungserkenntnissen – beruhen, entfällt die notwendige Kausalität zwischen dem rechtswidrigen Primärbeweis und den Folgebeweisen. In diesem Fall käme die Fernwirkung des Verwertungsverbots nach der bundesgerichtlichen Formel nicht zum Tragen, da die Folgebeweise auch ohne den Zufallsfund 'hätten erhältlich gemacht werden können'. Das Ergebnis wäre eine Verwertbarkeit der Observation und des sichergestellten Kokains, sofern diese Massnahmen ihrerseits den gesetzlichen Anforderungen genügen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht X. als Privatperson, sondern ein Telekommunikationsunternehmen sei im Rahmen seiner Mitwirkungspflichten nach BÜPF der einzige Beschwerdeführer und rüge, die Behörden hätten die übermittelten Daten unter Verletzung von Art. 9 Abs. 2 BÜPF ohne Genehmigung für weitere Ermittlungen gegen X. verwendet. Hat das Unternehmen eine eigenständige Beschwerdeberechtigung, und ändert dies den Ausgang des Verfahrens?",
+              "discussion_points": [
+                "Beschwerdelegitimation: Ist ein Telekommunikationsunternehmen im Strafprozess beschwerdeberechtigt, wenn es nicht selbst Partei des Strafverfahrens ist und keine eigenen Grundrechte (z.B. Fernmeldegeheimnis) unmittelbar verletzt sind?",
+                "Schutzzweck von Art. 9 BÜPF: Schützt die Bestimmung primär die überwachte Person oder auch Dritte, die Daten übermitteln müssen?"
+              ],
+              "likely_outcome_shift": "Ein Telekommunikationsunternehmen wäre im Strafverfahren gegen X. mangels eigener Parteistellung und fehlender unmittelbarer Betroffenheit in eigenen Rechten voraussichtlich nicht zur Beschwerde legitimiert. Da das Verwertungsverbot nach Art. 9 Abs. 3 BÜPF primär dem Schutz der überwachten Person dient, kann nur diese dessen Verletzung im Strafverfahren rügen. Ohne den Beschwerdeführer X. als direkt betroffene Person würde das Bundesgericht auf die Beschwerde des Unternehmens nicht eintreten, womit das Verwertungsverbot im konkreten Fall nicht geprüft würde und das Urteil des Obergerichts in Rechtskraft erwüchse."
+            }
+          ]
         },
         {
           "decision_id": "bge_116 Ia 455",
@@ -42,21 +118,92 @@
           "title_de": "Anklagegrundsatz — Umfang der Anklageschrift bei Fahrlässigkeitstaten",
           "title_fr": "Principe d'accusation — contenu de l'acte d'accusation",
           "title_it": "",
-          "concepts_de": ["Anklagegrundsatz", "Anklageschrift", "Fahrlässigkeit", "Rechtliches Gehör"],
-          "concepts_fr": ["Principe d'accusation", "Acte d'accusation", "Négligence"],
+          "concepts_de": [
+            "Anklagegrundsatz",
+            "Anklageschrift",
+            "Fahrlässigkeit",
+            "Rechtliches Gehör"
+          ],
+          "concepts_fr": [
+            "Principe d'accusation",
+            "Acte d'accusation",
+            "Négligence"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 9 StPO", "Art. 29 BV"],
+          "statutes": [
+            "Art. 9 StPO",
+            "Art. 29 BV"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Anklagegrundsatz: Bei Fahrlässigkeitstaten müssen in der Anklageschrift alle Umstände genannt sein, aus denen sich die Pflichtwidrigkeit ergibt.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que, pour les infractions par négligence, l'acte d'accusation doit mentionner expressément toutes les circonstances dont découle la violation du devoir de prudence, sous peine de violer le principe d'accusation garanti par l'art. 29 Cst. et l'art. 9 CPP.",
+          "significance_it": "Questa sentenza di principio stabilisce che, per i reati colposi, il decreto d'accusa deve indicare espressamente tutte le circostanze da cui risulta la violazione del dovere di diligenza, pena la violazione del principio accusatorio garantito dall'art. 29 Cost. e dall'art. 9 CPP.",
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Konzentrieren Sie sich bei der Lektüre dieses Grundsatzentscheids auf die Erwägungen zur dogmatischen Verankerung des Anklagegrundsatzes im schweizerischen Verfassungs- und Prozessrecht sowie auf die Ausführungen zu den besonderen Anforderungen bei Fahrlässigkeitsdelikten. Achten Sie insbesondere darauf, wie das Bundesgericht die Elemente der Fahrlässigkeit (Pflichtwidrigkeit, Vorhersehbarkeit) mit den Informationspflichten der Anklagebehörde verknüpft. Die Abgrenzung zu den weniger strengen Anforderungen bei Vorsatzdelikten ist für das Verständnis des Entscheids zentral.",
+          "reading_guide_fr": "Lors de la lecture de cet arrêt de principe, concentrez-vous sur les considérants relatifs à l'ancrage dogmatique du principe d'accusation dans le droit constitutionnel et procédural suisse, ainsi que sur les développements concernant les exigences particulières applicables aux infractions par négligence. Prêtez une attention particulière à la manière dont le Tribunal fédéral relie les éléments de la négligence (violation du devoir de prudence, prévisibilité) aux obligations d'information incombant à l'autorité de poursuite pénale. La distinction avec les exigences moins strictes applicables aux infractions intentionnelles est essentielle à la compréhension de l'arrêt.",
+          "reading_guide_it": "Nella lettura di questa sentenza di principio, concentratevi sui considerandi relativi all'ancoraggio dogmatico del principio accusatorio nel diritto costituzionale e processuale svizzero, nonché sugli sviluppi riguardanti le esigenze particolari applicabili ai reati colposi. Prestate particolare attenzione al modo in cui il Tribunale federale collega gli elementi della colpa (violazione del dovere di diligenza, prevedibilità) agli obblighi di informazione dell'autorità requirente. La distinzione rispetto alle esigenze meno rigorose applicabili ai reati dolosi è fondamentale per la comprensione della sentenza.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 116 Ia 455 unter dem Anklagegrundsatz, und welchen Zweck verfolgt dieser Grundsatz im Strafprozess?",
+              "hint": "Suchen Sie in den einleitenden Erwägungen des Entscheids nach der Definition und Funktion des Anklageprinzips.",
+              "model_answer": "Der Anklagegrundsatz (Akkusationsprinzip) besagt, dass eine Person nur für Handlungen verurteilt werden darf, die ihr in der Anklageschrift konkret vorgeworfen werden. Er dient dem Schutz der Verteidigungsrechte, indem er der angeklagten Person ermöglicht, sich gegen die konkreten Vorwürfe zu verteidigen. Zudem begrenzt er die Kognition des Gerichts auf den angeklagten Sachverhalt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche spezifischen Anforderungen stellt BGE 116 Ia 455 an die Anklageschrift bei Fahrlässigkeitsdelikten, und auf welche Rechtsgrundlagen stützt das Bundesgericht diese Anforderungen?",
+              "hint": "Achten Sie auf die Ausführungen zu Art. 9 StPO und Art. 29 BV sowie auf die Unterscheidung zwischen Vorsatz- und Fahrlässigkeitsdelikten.",
+              "model_answer": "Das Bundesgericht verlangt, dass bei Fahrlässigkeitsdelikten in der Anklageschrift alle Umstände ausdrücklich genannt werden müssen, aus denen sich die Pflichtwidrigkeit des Verhaltens ergibt. Dazu gehören insbesondere die konkret verletzte Sorgfaltspflicht und die Umstände, die eine Vorhersehbarkeit des Erfolges begründen. Diese Anforderungen leitet das Gericht aus dem Anklagegrundsatz nach Art. 9 StPO sowie dem verfassungsrechtlichen Anspruch auf ein faires Verfahren gemäss Art. 29 BV ab."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Ein Bauunternehmer wird wegen fahrlässiger schwerer Körperverletzung angeklagt. Die Anklageschrift beschreibt lediglich den Unfallhergang, nennt aber keine spezifischen Sicherheitsvorschriften, gegen die er verstossen haben soll. Ist diese Anklageschrift nach den Grundsätzen von BGE 116 Ia 455 ausreichend?",
+              "hint": "Prüfen Sie, ob alle Elemente der Fahrlässigkeit – insbesondere die Pflichtwidrigkeit – in der Anklageschrift konkret bezeichnet sind.",
+              "model_answer": "Die Anklageschrift wäre nach BGE 116 Ia 455 unzureichend, da die konkret verletzte Sorgfaltspflicht nicht benannt ist. Das blosse Beschreiben des Unfallhergangs genügt nicht; vielmehr müssten die spezifischen Sicherheitsvorschriften (z.B. aus der Bauarbeitenverordnung) genannt werden, gegen die der Bauunternehmer verstossen hat. Ohne diese Angaben kann der Angeklagte seine Verteidigung nicht gezielt auf den Pflichtwidrigkeitsvorwurf ausrichten, was den Anklagegrundsatz verletzt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheiden sich die Anforderungen an die Anklageschrift bei Vorsatzdelikten im Vergleich zu Fahrlässigkeitsdelikten, und warum rechtfertigt die Struktur des Fahrlässigkeitstatbestands erhöhte Anforderungen an die Anklageschrift?",
+              "hint": "Vergleichen Sie die dogmatische Struktur von Vorsatz- und Fahrlässigkeitsdelikten und leiten Sie daraus die unterschiedlichen Informationsbedürfnisse der Verteidigung ab.",
+              "model_answer": "Bei Vorsatzdelikten ergibt sich die Strafbarkeit primär aus dem objektiven Tatgeschehen und dem nachgewiesenen Willen zur Tatbestandsverwirklichung; die Handlung selbst ist meist klar umschrieben. Bei Fahrlässigkeitsdelikten hingegen ist die Pflichtwidrigkeit ein eigenständiges normatives Tatbestandselement, das nicht unmittelbar aus dem Erfolg ableitbar ist, sondern erst durch den Vergleich mit dem Verhalten einer sorgfältigen Person bestimmt wird. Da sich die Verteidigung gegen unterschiedliche Sorgfaltspflichtverstösse auf völlig verschiedene Weise ausrichten muss, sind genaue Angaben in der Anklageschrift unerlässlich, um das rechtliche Gehör und eine effektive Verteidigung zu gewährleisten."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritisieren Sie die vom Bundesgericht in BGE 116 Ia 455 entwickelte strenge Anforderung an Anklageschriften bei Fahrlässigkeitsdelikten: Schützt dieser Ansatz die Beschuldigten angemessen, oder riskiert er, die Strafverfolgung unverhältnismässig zu erschweren?",
+              "hint": "Wägen Sie die Interessen der Verteidigung (rechtliches Gehör, faires Verfahren) gegen die praktischen Bedürfnisse der Strafverfolgung ab.",
+              "model_answer": "Der Ansatz des Bundesgerichts stärkt konsequent den Schutz der Beschuldigten und ist verfassungsrechtlich überzeugend, da nur ein klar umschriebener Vorwurf eine sachgerechte Verteidigung ermöglicht. Kritisch lässt sich einwenden, dass die erhöhten Anforderungen die Anklagebehörde zwingen, bereits vor dem Hauptverfahren umfangreiche Sachverhaltsaufklärungen vorzunehmen, was in komplexen Fahrlässigkeitsfällen zu Verfahrensverzögerungen führen kann. Dennoch überwiegen die rechtsstaatlichen Vorteile, da ungenaue Anklageschriften letztlich zu Verfahrenswiederholungen oder Freisprüchen aus formellen Gründen führen würden, was weder der Strafverfolgung noch der Rechtssicherheit dient."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Anklageschrift zwar die verletzte Sorgfaltspflicht nennt, diese aber erst unmittelbar vor der Hauptverhandlung durch eine Nachtragsanklage ergänzt wird – und der Angeklagte keine Möglichkeit hatte, sich darauf vorzubereiten?",
+              "discussion_points": [
+                "Ist eine Nachtragsanklage mit den Anforderungen des Anklagegrundsatzes vereinbar, wenn dem Beschuldigten keine angemessene Vorbereitungszeit eingeräumt wird?",
+                "Inwiefern berührt die kurzfristige Ergänzung der Anklageschrift das Gebot des fairen Verfahrens nach Art. 29 BV und Art. 6 EMRK?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde eine solche Nachtragsanklage ohne ausreichende Vorbereitungszeit für den Beschuldigten als Verletzung des Anklagegrundsatzes und des rechtlichen Gehörs qualifizieren. Die formelle Vollständigkeit der Anklageschrift allein genügt nicht; entscheidend ist auch, dass der Beschuldigte tatsächlich die Möglichkeit hatte, seine Verteidigung auf den vollständigen Vorwurf auszurichten. Das Gericht würde die Sache voraussichtlich zur Gewährung einer angemessenen Vorbereitungsfrist zurückweisen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht eine Einzelperson, sondern ein Unternehmen (juristische Person) wegen fahrlässiger Unternehmensführung angeklagt würde – müsste die Anklageschrift dann die individuellen Verantwortlichen namentlich bezeichnen oder genügt die Beschreibung organisatorischer Mängel?",
+              "discussion_points": [
+                "Kann der Anklagegrundsatz, der ursprünglich auf natürliche Personen zugeschnitten ist, auf Unternehmensverantwortlichkeit übertragen werden, und welche Anpassungen sind notwendig?",
+                "Wie verhält sich die Anforderung, alle pflichtwidrigen Umstände zu nennen, zu den oft diffusen Verantwortungsstrukturen in Grossunternehmen?"
+              ],
+              "likely_outcome_shift": "Bei juristischen Personen würden die Anforderungen an die Anklageschrift noch komplexer, da sowohl die organisatorischen Mängel als auch – soweit erforderlich – die individuell verantwortlichen Entscheidungsträger identifiziert werden müssten. Die Grundsätze von BGE 116 Ia 455 blieben anwendbar, würden aber eine Spezifizierung verlangen, welche konkreten unternehmerischen Entscheidungen oder Unterlassungen die Sorgfaltspflichtverletzung begründen. Eine pauschale Beschreibung von Organisationsversagen ohne Bezug zu konkreten Handlungen oder Unterlassungen würde den Anforderungen nicht genügen."
+            }
+          ]
         }
       ]
     },
@@ -65,7 +212,10 @@
       "name_de": "Zwangsmassnahmen und Haft",
       "name_fr": "Mesures de contrainte et détention",
       "name_it": "Misure coercitive e detenzione",
-      "statutes": ["Art. 5 StPO", "Art. 221 StPO"],
+      "statutes": [
+        "Art. 5 StPO",
+        "Art. 221 StPO"
+      ],
       "cases": [
         {
           "decision_id": "bge_137 IV 33",
@@ -74,21 +224,94 @@
           "title_de": "Untersuchungshaft — Kollusionsgefahr und Verhältnismässigkeit",
           "title_fr": "Détention provisoire — risque de collusion et proportionnalité",
           "title_it": "",
-          "concepts_de": ["Untersuchungshaft", "Kollusionsgefahr", "Haftvoraussetzungen", "Verhältnismässigkeit"],
-          "concepts_fr": ["Détention provisoire", "Risque de collusion", "Proportionnalité"],
+          "concepts_de": [
+            "Untersuchungshaft",
+            "Kollusionsgefahr",
+            "Haftvoraussetzungen",
+            "Verhältnismässigkeit"
+          ],
+          "concepts_fr": [
+            "Détention provisoire",
+            "Risque de collusion",
+            "Proportionnalité"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 221 StPO", "Art. 31 BV"],
+          "statutes": [
+            "Art. 221 StPO",
+            "Art. 31 BV"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Voraussetzungen der Untersuchungshaft bei Kollusionsgefahr: konkrete Anhaltspunkte erforderlich; abstrakte Gefahr genügt nicht.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe précise que la détention provisoire fondée sur un risque de collusion exige des indices concrets et individualisés, une présomption abstraite étant insuffisante au regard de l'art. 221 CPP et de la garantie de liberté personnelle consacrée à l'art. 31 Cst.",
+          "significance_it": "Questa sentenza di principio chiarisce che la carcerazione preventiva fondata sul pericolo di collusione richiede indizi concreti e individualizzati, non essendo sufficiente un pericolo astratto ai sensi dell'art. 221 CPP e della garanzia della libertà personale sancita dall'art. 31 Cost.",
+          "key_erwagungen": [
+            "2.1.3",
+            "2.2",
+            "2.4",
+            "2.5",
+            "9"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die vier Regestae, um die thematische Breite des Entscheids zu erfassen, und konzentrieren Sie sich anschliessend auf Erwägungen 2.1.3, 2.2, 2.4 und 2.5 zur extraterritorialen Strafverfolgungskompetenz sowie auf Erwägung 9 zur Einziehung im Kosovo gelegener Vermögenswerte. Beachten Sie dabei stets das Zusammenspiel zwischen nationalem Recht (Art. 72, Art. 260ter, Art. 305bis StGB) und völkerrechtlichen Verpflichtungen (EUeR, IRSG).",
+          "reading_guide_fr": "Commencez par lire les quatre regestes afin de saisir la portée thématique de l'arrêt, puis concentrez-vous sur les considérants 2.1.3, 2.2, 2.4 et 2.5 relatifs à la compétence pénale extraterritoriale, ainsi que sur le considérant 9 concernant la confiscation de biens immobiliers situés au Kosovo. Veillez à articuler les dispositions de droit interne (art. 72, 260ter, 305bis CP) avec les obligations découlant du droit international (CEEJ, EIMP).",
+          "reading_guide_it": "Si consiglia di iniziare con la lettura dei quattro regesti per cogliere l'ampiezza tematica della decisione, per poi concentrarsi sui considerandi 2.1.3, 2.2, 2.4 e 2.5 in materia di competenza penale extraterritoriale e sul considerando 9 relativo alla confisca di beni immobili situati in Kosovo, tenendo presente il rapporto tra diritto interno (art. 72, 260ter, 305bis CP) e obblighi internazionali (CEAG, AIMP).",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 137 IV 33 unter dem Begriff der Kollusionsgefahr, und welche Anforderungen stellt es grundsätzlich an deren Nachweis?",
+              "hint": "Vgl. die Regeste sowie die allgemeinen Ausführungen zur Untersuchungshaft nach Art. 221 StPO; die Bedeutung von Art. 31 BV für die Freiheitsgarantie ist ebenfalls zu berücksichtigen.",
+              "model_answer": "Kollusionsgefahr bezeichnet die Gefahr, dass ein Beschuldigter Beweise vernichtet, Zeugen beeinflusst oder sich mit Mitbeschuldigten abspricht, um die Wahrheitsfindung zu vereiteln. Das Bundesgericht hält fest, dass eine abstrakte oder rein theoretische Gefahr nicht genügt; es müssen konkrete Anhaltspunkte vorliegen, die eine solche Einflussnahme als wahrscheinlich erscheinen lassen. Diese Anforderung ergibt sich aus dem Verhältnismässigkeitsprinzip und der verfassungsrechtlichen Freiheitsgarantie gemäss Art. 31 BV."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Voraussetzungen müssen gemäss Art. 221 StPO kumulativ erfüllt sein, damit Untersuchungshaft wegen Kollusionsgefahr angeordnet werden darf?",
+              "hint": "Art. 221 Abs. 1 lit. b StPO; prüfen Sie, welche Tatbestandsmerkmale das Gesetz aufstellt und wie diese miteinander in Beziehung stehen.",
+              "model_answer": "Art. 221 Abs. 1 StPO verlangt zunächst einen dringenden Tatverdacht sowie einen besonderen Haftgrund. Für die Kollusionsgefahr nach lit. b muss die ernstliche Befürchtung bestehen, dass die beschuldigte Person Personen beeinflusst oder auf Beweismittel einwirkt, um die Wahrheitsfindung zu beeinträchtigen. Das Bundesgericht betont, dass diese Befürchtung auf konkreten Tatsachen beruhen muss und nicht allein aus der Art des Delikts oder der Beziehung zwischen Täter und Zeugen abgeleitet werden darf."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Im vorliegenden Fall wurde A.X. unter anderem wegen Beteiligung an einer kriminellen Organisation verurteilt. Wie würden Sie die Kollusionsgefahr bei einem Beschuldigten beurteilen, der nachweislich Mitglied einer straff organisierten kriminellen Vereinigung ist, wenn noch nicht alle Mitglieder identifiziert sind?",
+              "hint": "Wenden Sie die im Entscheid entwickelten Kriterien zu den konkreten Anhaltspunkten auf den Sachverhalt an; berücksichtigen Sie auch die Netzwerkstruktur krimineller Organisationen.",
+              "model_answer": "Die Zugehörigkeit zu einer kriminellen Organisation kann ein gewichtiges Indiz für Kollusionsgefahr darstellen, reicht aber allein nicht aus. Es müssen zusätzliche konkrete Umstände hinzukommen, etwa Hinweise auf bestehende Kommunikationskanäle mit noch unbekannten Komplizen oder frühere Versuche der Einflussnahme auf Zeugen. Die blosse Organisationszugehörigkeit bleibt ein abstraktes Element; erst in Verbindung mit individualisierten Tatsachen wird daraus ein tauglicher Haftgrund im Sinne der bundesgerichtlichen Rechtsprechung."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "BGE 137 IV 33 befasst sich auch mit der Frage der schweizerischen Strafverfolgungskompetenz für im Ausland begangene Geldwäscherei (Kosovo). Wie verhält sich dieses Problem zur übergeordneten Frage der Untersuchungshaft, und welche Konsequenz hätte ein rechtskräftiger Freispruch wegen fehlender Zuständigkeit für eine bereits laufende Haft?",
+              "hint": "E. 2.4 und 2.5 zur extraterritorialen Anwendung von Art. 305bis StGB; Art. 31 BV zur Rechtmässigkeit der Freiheitsentziehung.",
+              "model_answer": "Die Frage der Strafverfolgungskompetenz ist für die Untersuchungshaft mittelbar relevant, weil der dringende Tatverdacht sich auf Taten beziehen muss, für welche die Schweiz überhaupt zuständig ist. Fehlt es an einer Delegierung der Strafverfolgung durch den Tatortstaat oder an einer staatsvertraglichen Grundlage, entfällt insoweit der Tatverdacht als Haftvoraussetzung. Eine auf einen solchen Tatvorwurf gestützte Haft würde Art. 31 BV verletzen und wäre unverzüglich aufzuheben, wobei verbleibende Haftgründe aus anderen angeklagten Taten die Haft allenfalls weiterhin rechtfertigen könnten."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht verlangt in diesem Grundsatzentscheid konkrete Anhaltspunkte für Kollusionsgefahr statt abstrakter Vermutungen. Bewerten Sie kritisch, ob dieses Erfordernis im Spannungsfeld zwischen dem Recht auf persönliche Freiheit (Art. 31 BV) und dem staatlichen Interesse an effektiver Strafverfolgung sachgerecht austariert ist.",
+              "hint": "Art. 31 BV, Verhältnismässigkeitsprinzip (Art. 36 BV), EMRK Art. 5; erwägen Sie auch die praktischen Folgen für Ermittlungen in komplexen OK-Verfahren.",
+              "model_answer": "Das Erfordernis konkreter Anhaltspunkte stellt eine rechtsstaatlich gebotene Schranke dar, die verhindert, dass Untersuchungshaft zur Regel statt zur Ausnahme wird, und die dem Verhältnismässigkeitsprinzip nach Art. 36 BV Rechnung trägt. Kritisch liesse sich einwenden, dass in komplexen Fällen organisierter Kriminalität der Nachweis konkreter Kollusionsakte zu frühen Ermittlungsstadien kaum erbracht werden kann, was effektive Strafverfolgung erschwert. Dennoch erscheint die Balance sachgerecht, da mildere Mittel wie Kontaktverbote oder Überwachungsmassnahmen oft gleichwertige Sicherung bieten und das Freiheitsrecht als Grundrecht einen hohen Schutzstandard verdient, der nicht durch Effizienzerwägungen ausgehöhlt werden darf."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, A.X. hätte während der Untersuchungshaft nachweislich versucht, über verschlüsselte Messenger-Nachrichten Kontakt zu einem noch flüchtigen Mitangeklagten aufzunehmen. Wie würde dieses neue Element die Beurteilung der Kollusionsgefahr verändern, und welche prozessualen Folgen hätte dies?",
+              "discussion_points": [
+                "Konkrete versus abstrakte Kollusionsgefahr: Der Kontaktversuch würde einen individualisierten, tatsächlichen Anhaltspunkt liefern und damit das vom Bundesgericht geforderte Konkretheitskriterium erfüllen.",
+                "Verhältnismässigkeit der Haft: Mit dem Nachweis eines aktiven Kollusionsversuchs würden mildere Ersatzmassnahmen wie Kontaktverbote an Überzeugungskraft verlieren, was die Aufrechterhaltung der Haft zusätzlich rechtfertigen könnte."
+              ],
+              "likely_outcome_shift": "Der Kollusionsversuch würde als konkreter Anhaltspunkt im Sinne des Bundesgerichts qualifizieren und die Fortdauer der Untersuchungshaft klar legitimieren. Gleichzeitig könnten die Nachrichten als eigenständige Straftat (z.B. Begünstigung oder Anstiftung zur Kollusion) verfolgt werden, was den Haftgrund weiter verstärkt und eine Haftentlassung vor Abschluss des Hauptverfahrens praktisch ausschliessen würde."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht das Ministère public de la Confédération, sondern die Verteidigung hätte das Bundesgericht angerufen mit dem Argument, die Untersuchungshaft von über 1900 Tagen (A.X.) sei unverhältnismässig lang und verletze Art. 31 BV sowie Art. 5 EMRK, unabhängig von der Frage der Kollusionsgefahr. Würde das Bundesgericht die Haft allein wegen ihrer Dauer als verfassungswidrig qualifizieren?",
+              "discussion_points": [
+                "Verhältnismässigkeit der Haftdauer: Eine Untersuchungshaft von über fünf Jahren bedarf besonders strenger Prüfung und muss im Verhältnis zur erwarteten Strafe stehen; bei einer Verurteilung zu 15 Jahren wäre die Anrechnung knapp unterhalb der üblichen Grenze.",
+                "EMRK Art. 5 Abs. 3 und die Rechtsprechung des EGMR zur 'reasonable time': Der Europäische Gerichtshof für Menschenrechte hat wiederholt festgehalten, dass die Dauer der Haft allein bei besonders komplexen Verfahren mit internationalen Bezügen gerechtfertigt sein kann, sofern die Behörden mit der nötigen Sorgfalt vorgehen."
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde die Dauer der Haft isoliert betrachtet als an der Grenze des Zulässigen einordnen, jedoch angesichts der ausserordentlichen Komplexität des Verfahrens (internationale Drogenorganisation, Rechtshilfe Kosovo, zahlreiche Angeklagte) keine Verletzung feststellen. Eine Gutheissung wäre nur denkbar, wenn konkrete Verfahrensverzögerungen nachgewiesen werden könnten, die den Behörden anzulasten wären; in diesem Fall müsste das Bundesgericht eine sofortige Entlassung oder Ersatzmassnahmen anordnen."
+            }
+          ]
         },
         {
           "decision_id": "bge_140 IV 74",
@@ -97,21 +320,95 @@
           "title_de": "Beschleunigungsgebot — Verfahrensverzögerung und Haftentlassung",
           "title_fr": "Principe de célérité — retard dans la procédure et libération",
           "title_it": "",
-          "concepts_de": ["Beschleunigungsgebot", "Verfahrensverzögerung", "Untersuchungshaft", "Ersatzmassnahmen"],
-          "concepts_fr": ["Principe de célérité", "Retard de procédure", "Détention provisoire"],
+          "concepts_de": [
+            "Beschleunigungsgebot",
+            "Verfahrensverzögerung",
+            "Untersuchungshaft",
+            "Ersatzmassnahmen"
+          ],
+          "concepts_fr": [
+            "Principe de célérité",
+            "Retard de procédure",
+            "Détention provisoire"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 5 StPO", "Art. 31 BV"],
+          "statutes": [
+            "Art. 5 StPO",
+            "Art. 31 BV"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Beschleunigungsgebot: Haftentlassung wegen Verletzung des Beschleunigungsgebots setzt besonders schwere Verzögerung und fehlende Besserungsbereitschaft voraus.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe précise que la levée de mesures de substitution pour violation du principe de célérité n'est admissible que si le retard est particulièrement grave et que l'autorité de poursuite pénale manifeste son incapacité ou son refus de mener la procédure à terme dans un délai raisonnable.",
+          "significance_it": "Questa sentenza di principio chiarisce che la revoca di misure sostitutive per violazione del principio di celerità è ammissibile soltanto se il ritardo è particolarmente grave e l'autorità di perseguimento penale dimostra di non essere disposta o in grado di portare il procedimento a termine entro un termine ragionevole.",
+          "key_erwagungen": [
+            "1.3",
+            "2",
+            "3",
+            "4.1",
+            "4.2",
+            "4.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 76–77), um den prozessualen Ablauf zu verstehen, und konzentrieren Sie sich dann auf Erwägung 2 (Verhältnismässigkeit der Kontaktverbote) sowie Erwägung 3 (Beschleunigungsgebot und Aufhebungsschwelle). Die Erwägung 4 zum Treu-und-Glauben-Grundsatz bei der Kostenauflage ist ergänzend für das Verständnis des kantonalen Verfahrens relevant.",
+          "reading_guide_fr": "Commencez par lire les faits (p. 76–77) pour saisir le déroulement procédural, puis concentrez-vous sur le considérant 2 (proportionnalité des interdictions de contact) et le considérant 3 (principe de célérité et seuil de levée des mesures). Le considérant 4, relatif à la bonne foi en matière de frais de procédure, complète utilement la compréhension de la procédure cantonale.",
+          "reading_guide_it": "Iniziare con la lettura dei fatti (p. 76–77) per comprendere lo svolgimento procedurale, quindi concentrarsi sul considerando 2 (proporzionalità dei divieti di contatto) e sul considerando 3 (principio di celerità e soglia di revoca delle misure). Il considerando 4 sulla buona fede in materia di spese processuali completa la comprensione del procedimento cantonale.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was sind Ersatzmassnahmen im Sinne des Strafprozessrechts, und welche konkreten Ersatzmassnahmen wurden im Fall X. angeordnet?",
+              "hint": "Sachverhalt Abschnitt B sowie Art. 237 Abs. 2 StPO",
+              "model_answer": "Ersatzmassnahmen sind mildere Zwangsmittel, die anstelle von Untersuchungshaft angeordnet werden können, um Haftgründe wie Kollusions- oder Fluchtgefahr zu bannen. Im vorliegenden Fall wurden X. Kontaktverbote gegenüber seiner Ehefrau und seinen Söhnen auferlegt, ergänzt zunächst durch eine wöchentliche Meldepflicht, eine Weisung zur ambulanten psychiatrischen Behandlung und ein Waffenverbot. Das Obergericht reduzierte diese Massnahmen auf die Kontaktverbote und befristete sie."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen müssen gemäss Art. 5 StPO und der in BGE 140 IV 74 entwickelten Rechtsprechung erfüllt sein, damit eine Verfahrensverzögerung zur Aufhebung von Ersatzmassnahmen führt?",
+              "hint": "Regeste c sowie Erwägung 3",
+              "model_answer": "Gemäss BGE 140 IV 74 (Regeste c, E. 3) genügt eine blosse Verfahrensverzögerung nicht für die Aufhebung von Ersatzmassnahmen. Erstens muss die Verzögerung besonders schwer wiegen. Zweitens muss die Strafverfolgungsbehörde erkennen lassen, dass sie nicht gewillt oder nicht in der Lage ist, das Verfahren mit der gebotenen Beschleunigung voranzutreiben und abzuschliessen. Zudem gilt ein strengerer Massstab als bei der Untersuchungshaft: Je geringer die Belastung durch die Ersatzmassnahme, desto krasser muss die Verzögerung sein."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, das Strafverfahren gegen X. hätte zum Zeitpunkt der dritten Verlängerung der Kontaktverbote (Februar 2014) seit mehr als zwei Jahren ohne erkennbare Fortschritte gestagniert: Wie wäre der Fall nach den in BGE 140 IV 74 aufgestellten Grundsätzen zu beurteilen?",
+              "hint": "Regeste c und Erwägung 3; vgl. auch Art. 5 Abs. 2 StPO",
+              "model_answer": "Bei einer Stagnation von über zwei Jahren ohne erkennbare Fortschritte wäre zunächst zu prüfen, ob die Verzögerung als 'besonders schwer' qualifiziert werden kann. Wenn überdies die Staatsanwaltschaft keinerlei Bereitschaft zeigt, das Verfahren voranzutreiben, wäre die zweite Voraussetzung erfüllt. Da Kontaktverbote die persönliche Freiheit weniger stark einschränken als Untersuchungshaft, müsste die Verzögerung besonders kraß sein; bei zwei Jahren völliger Stagnation dürfte diese Schwelle jedoch erreicht sein, sodass eine Aufhebung der Ersatzmassnahmen ernsthaft in Betracht käme."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht differenziert in BGE 140 IV 74 zwischen der Aufhebung von Untersuchungshaft und der Aufhebung von Ersatzmassnahmen bei Verletzung des Beschleunigungsgebots. Welche rechtssystematischen Gründe erklären diesen abgestuften Massstab?",
+              "hint": "Regeste c, Erwägung 3; Art. 31 BV, Art. 5 EMRK",
+              "model_answer": "Die Abstufung erklärt sich aus dem Verhältnismässigkeitsprinzip (Art. 197 Abs. 1 lit. c StPO) und dem Grundrecht der persönlichen Freiheit (Art. 31 BV, Art. 5 EMRK). Untersuchungshaft stellt den schwersten Eingriff in die persönliche Freiheit dar und bedarf daher der stärksten Rechtfertigung; eine Verletzung des Beschleunigungsgebots wiegt hier besonders schwer. Ersatzmassnahmen beschränken die Freiheit in geringerem Masse, weshalb das öffentliche Interesse an der Strafverfolgung länger überwiegen kann. Das Bundesgericht wendet damit einen proportionalen Massstab an: Die Intensität des Eingriffs bestimmt die Intensität der Kontrolle."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Beurteilen Sie kritisch, ob die in BGE 140 IV 74 entwickelte Formel – 'je weniger die Ersatzmassnahmen belasten, desto krasser muss die Verzögerung sein' – einen angemessenen Schutz des Beschleunigungsgebots gewährleistet oder ob sie strukturelle Schwächen aufweist.",
+              "hint": "Regeste c, Erwägung 3; Art. 5 StPO; Art. 31 BV; EMRK Art. 6 Ziff. 1",
+              "model_answer": "Die Formel hat den Vorzug, dass sie einen differenzierten, verhältnismässigen Ansatz verfolgt und verhindert, dass geringfügige Verfahrensverzögerungen sofort zur Aufhebung sinnvoller Schutzmaßnahmen führen. Kritisch ist jedoch anzumerken, dass die Formel Strafverfolgungsbehörden einen Anreiz geben könnte, leichte Ersatzmassnahmen möglichst lange aufrechtzuerhalten, weil die Aufhebungsschwelle so hoch liegt – was das Beschleunigungsgebot faktisch aushöhlen kann. Zudem bleibt unklar, wie 'besonders schwer' und 'kraß' operationalisiert werden, was Rechtsunsicherheit schafft; ein klarerer zeitlicher Richtwert hätte die Vorhersehbarkeit verbessert."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn X. während der laufenden Ersatzmassnahmen (Kontaktverbote) nachweislich mehrfach Kontakt mit seiner Ehefrau aufgenommen und damit die Massnahmen verletzt hätte, obwohl das Verfahren gleichzeitig eine erhebliche Verzögerung aufwies?",
+              "discussion_points": [
+                "Kann ein Beschuldigter, der Ersatzmassnahmen selbst verletzt, noch geltend machen, das Beschleunigungsgebot sei verletzt und die Massnahmen seien aufzuheben?",
+                "Inwieweit beeinflusst das eigene Verhalten des Beschuldigten die Verhältnismässigkeitsprüfung und die Frage, ob strengere Massnahmen (z.B. Rückkehr in Untersuchungshaft) angezeigt wären?"
+              ],
+              "likely_outcome_shift": "Bei nachgewiesenen Verstössen gegen die Kontaktverbote würde das Bundesgericht die Aufhebung der Massnahmen wegen Verfahrensverzögerung noch weniger in Betracht ziehen, da der Beschuldigte selbst zur Verzögerung beiträgt und die Notwendigkeit der Massnahmen durch sein Verhalten bestätigt. Es wäre zudem denkbar, dass das Zwangsmassnahmengericht stattdessen die Anordnung von Untersuchungshaft prüft, was die Beschleunigungsrüge vollends entkräften würde."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht X. als Beschuldigter, sondern seine Ehefrau als Nebenklägerin die Aufhebung der Kontaktverbote mit dem Argument beantragt hätte, die Verbote hätten ihren eigenen Alltag unverhältnismässig eingeschränkt und das Verfahren dauere zu lange?",
+              "discussion_points": [
+                "Haben Opfer bzw. Nebenkläger nach Art. 81 Abs. 1 lit. b Ziff. 5 BGG überhaupt Beschwerdelegitimation in Haftfragen, und welche Interessen schützt das Gesetz vorrangig?",
+                "Liegt ein Konflikt zwischen dem Schutzbedürfnis des Opfers (das möglicherweise Kontakt wünscht) und dem staatlichen Schutzauftrag gegenüber Opfern häuslicher Gewalt vor?"
+              ],
+              "likely_outcome_shift": "Die Ehefrau hätte als Privatklägerin grundsätzlich kein eigenständiges Beschwerderecht gegen Ersatzmassnahmen, die primär den Beschuldigten betreffen. Inhaltlich würde das Bundesgericht auf das staatliche Schutzinteresse und die Kollusionsgefahr hinweisen: Ein allfälliger Wunsch des Opfers nach Kontaktaufnahme hebt die durch das Gericht festgestellte Gefährdungslage nicht auf, zumal Opfer häuslicher Gewalt unter Druck stehen können."
+            }
+          ]
         }
       ]
     },
@@ -120,7 +417,11 @@
       "name_de": "Beweisrecht und Einstellung",
       "name_fr": "Droit de la preuve et classement",
       "name_it": "Diritto probatorio e abbandono",
-      "statutes": ["Art. 141 StPO", "Art. 168 StPO", "Art. 319 StPO"],
+      "statutes": [
+        "Art. 141 StPO",
+        "Art. 168 StPO",
+        "Art. 319 StPO"
+      ],
       "cases": [
         {
           "decision_id": "bge_139 IV 179",
@@ -129,21 +430,91 @@
           "title_de": "Beweisverwertungsverbot — rechtswidrig erhobene Beweise",
           "title_fr": "Interdiction d'exploiter les preuves — preuves obtenues illicitement",
           "title_it": "",
-          "concepts_de": ["Beweisverwertungsverbot", "Rechtswidrige Beweise", "Interessenabwägung", "Art. 141 StPO"],
-          "concepts_fr": ["Interdiction d'exploiter", "Preuves illicites", "Pesée des intérêts"],
+          "concepts_de": [
+            "Beweisverwertungsverbot",
+            "Rechtswidrige Beweise",
+            "Interessenabwägung",
+            "Art. 141 StPO"
+          ],
+          "concepts_fr": [
+            "Interdiction d'exploiter",
+            "Preuves illicites",
+            "Pesée des intérêts"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 141 StPO"],
+          "statutes": [
+            "Art. 141 StPO"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Beweisverwertungsverbot nach Art. 141 StPO: Abwägung zwischen dem öffentlichen Strafverfolgungsinteresse und dem Schutz der Verfahrensgarantien.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que la décision de maintien en détention pour des motifs de sûreté rendue par le tribunal de première instance en application de l'art. 231 al. 1 CPP doit être motivée par écrit sans délai, conformément aux exigences analogues de l'art. 226 al. 2 CPP et au droit d'être entendu garanti par l'art. 29 al. 2 Cst.",
+          "significance_it": "Questa sentenza di principio stabilisce che la decisione di mantenimento in detenzione di sicurezza pronunciata dal giudice di primo grado ai sensi dell'art. 231 cpv. 1 CPP deve essere motivata per scritto senza indugio, conformemente ai requisiti analoghi dell'art. 226 cpv. 2 CPP e al diritto di essere sentiti garantito dall'art. 29 cpv. 2 Cost.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "2.6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (Abschnitte A–D), um die zeitliche Abfolge der Haftentscheide zu verstehen. Konzentrieren Sie sich sodann auf Erwägung 2 und insbesondere E. 2.1 sowie E. 2.6, wo das Bundesgericht die analoge Anwendung von Art. 226 Abs. 2 StPO auf den Haftverlängerungsentscheid nach Art. 231 Abs. 1 StPO begründet und die Begründungsanforderungen konkretisiert.",
+          "reading_guide_fr": "Commencez par lire les faits (parties A–D) pour comprendre la chronologie des décisions relatives à la détention. Concentrez-vous ensuite sur le considérant 2, en particulier les ch. 2.1 et 2.6, où le Tribunal fédéral justifie l'application analogique de l'art. 226 al. 2 CPP à la décision de maintien en détention rendue en vertu de l'art. 231 al. 1 CPP et précise les exigences de motivation.",
+          "reading_guide_it": "Iniziare con la lettura dei fatti (sezioni A–D) per comprendere la cronologia delle decisioni sulla detenzione. Concentrarsi poi sul considerando 2, in particolare i nn. 2.1 e 2.6, dove il Tribunale federale giustifica l'applicazione analogica dell'art. 226 cpv. 2 CPP alla decisione di mantenimento in detenzione ai sensi dell'art. 231 cpv. 1 CPP e precisa i requisiti di motivazione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat der Tribunal de police am 30. Januar 2013 entschieden, und wann wurde die schriftliche Begründung des Haftverlängerungsentscheids den Parteien zugestellt?",
+              "hint": "Sachverhalt, Abschnitte B und C des Entscheids",
+              "model_answer": "Der Tribunal de police hat am 30. Januar 2013 A. verurteilt und gleichzeitig den Weiterzug der Sicherheitshaft für drei Monate angeordnet. Die schriftliche Begründung wurde jedoch erst am 7./8. Februar 2013 – also rund acht Tage nach der mündlichen Urteilsverkündung – zusammen mit dem vollständigen begründeten Urteil in der Sache zugestellt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Normen hat das Bundesgericht herangezogen, um die Begründungsanforderungen an einen Haftverlängerungsentscheid nach Art. 231 Abs. 1 StPO zu bestimmen, und in welchem Verhältnis stehen diese zueinander?",
+              "hint": "Regeste und Erwägung 2 des Entscheids",
+              "model_answer": "Das Bundesgericht hat Art. 226 Abs. 2 StPO (analog), Art. 3 Abs. 2 lit. c StPO sowie Art. 29 Abs. 2 BV herangezogen. Art. 226 Abs. 2 StPO statuiert die inhaltlichen Begründungsanforderungen für Haftentscheide und findet auf den Haftverlängerungsentscheid des erstinstanzlichen Gerichts analog Anwendung. Art. 3 Abs. 2 lit. c StPO und Art. 29 Abs. 2 BV verankern das rechtliche Gehör als übergeordneten verfassungs- und verfahrensrechtlichen Grundsatz, der die Form und Rechtzeitigkeit der Begründungspflicht konkretisiert."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein erstinstanzliches Gericht verkündet am Tag der Hauptverhandlung mündlich den Haftverlängerungsentscheid und stellt die vollständige schriftliche Begründung drei Tage später separat zu. Entspricht dieses Vorgehen den vom Bundesgericht in BGE 139 IV 179 aufgestellten Anforderungen?",
+              "hint": "Erwägung 2.6 des Entscheids",
+              "model_answer": "Ja, dieses Vorgehen würde den bundesgerichtlichen Anforderungen grundsätzlich entsprechen. Das Bundesgericht hält in E. 2.6 fest, dass eine schriftliche Begründung, die nicht bereits bei der mündlichen Urteilsverkündung vorliegt, «unverzüglich mit separatem Entscheid» zuzustellen ist. Eine Zustellung drei Tage nach der Urteilsverkündung dürfte dem Unverzüglichkeitsgebot noch genügen, sofern die Begründung inhaltlich den Anforderungen von Art. 226 Abs. 2 StPO entspricht und das Beschleunigungsgebot in Haftsachen nicht verletzt wird."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum hat das Bundesgericht die Anwendung von Art. 227 Abs. 5 StPO – wie von der Cour de justice befürwortet – auf den vorliegenden Haftverlängerungsentscheid nach Art. 231 Abs. 1 StPO abgelehnt, und welche systematische Begründung liegt diesem Entscheid zugrunde?",
+              "hint": "Erwägungen 2 und 2.1 sowie Einleitung von Erwägung 2",
+              "model_answer": "Art. 227 Abs. 5 StPO regelt die Verlängerung der Untersuchungshaft durch das Zwangsmassnahmengericht und sieht eine vereinfachte Behandlung ohne schriftliche Begründung unter bestimmten Voraussetzungen vor. Das Bundesgericht hat diese Norm als nicht einschlägig erachtet, weil Art. 231 Abs. 1 StPO eine strukturell andere Konstellation betrifft: Das erstinstanzliche Gericht – nicht das Zwangsmassnahmengericht – entscheidet über die Sicherheitshaft im Anschluss an ein Sachurteil. Die systematische Stellung und der besondere Schutzzweck der Sicherheitshaft verlangen eine analoge Anwendung von Art. 226 Abs. 2 StPO, um sicherzustellen, dass der Verurteilte die Haftgründe kennt und sein Rechtsmittelrecht effektiv wahrnehmen kann."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Wie überzeugend ist die Lösung des Bundesgerichts, die Verletzung des rechtlichen Gehörs festzustellen, A. aber dennoch nicht sofort freizulassen? Welche konkurrierenden Wertungen stehen sich dabei gegenüber, und wie hätte das Gericht alternativ entscheiden können?",
+              "hint": "Sachverhalt D sowie die Schlusserwägungen des Entscheids",
+              "model_answer": "Das Bundesgericht steht vor der Spannung zwischen dem formellen Anspruch auf rechtliches Gehör einerseits und dem materiellen öffentlichen Interesse an der Aufrechterhaltung der Sicherheitshaft bei bestehendem Fluchtrisiko andererseits. Die Lösung, die Gehörsverletzung festzustellen, ohne die Freilassung anzuordnen, ist insofern kohärent, als die Begründung nachträglich erteilt wurde und damit eine Heilung eingetreten ist; zudem bestätigt das Gericht das Vorliegen von Haftgründen in der Sache. Kritisch liesse sich einwenden, dass eine rein deklaratorische Feststellung die präventive Funktion des rechtlichen Gehörs untergräbt und Gerichte wenig zu fristgerechter Begründung anhält; alternativ hätte das Gericht eine kurze Frist zur Nachreichung setzen und die Haft bis dahin suspendieren können, was jedoch dem Beschleunigungsgebot in Haftsachen widersprochen hätte."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn der Tribunal de police die schriftliche Begründung des Haftverlängerungsentscheids nicht nach acht Tagen, sondern erst nach vier Wochen zugestellt hätte und A. inzwischen seine Appellationserklärung ohne Kenntnis der Haftgründe einreichen musste?",
+              "discussion_points": [
+                "Verletzung des Beschleunigungsgebots in Haftsachen und des Anspruchs auf unverzügliche Begründung nach Art. 226 Abs. 2 StPO analog",
+                "Beeinträchtigung der effektiven Ausübung des Rechtsmittelrechts: A. konnte seine Haftbeschwerde nicht zielgerichtet begründen, was den Kerngehalt des rechtlichen Gehörs nach Art. 29 Abs. 2 BV verletzt"
+              ],
+              "likely_outcome_shift": "Bei einer vierwöchigen Verzögerung wäre eine Heilung der Gehörsverletzung deutlich schwerer anzunehmen, da das Beschleunigungsgebot in Haftsachen besonders strenge Anforderungen stellt. Das Bundesgericht hätte die Verletzung mit grösserer Wahrscheinlichkeit als ungeheilt qualifiziert und die sofortige Entlassung oder zumindest eine unverzügliche Haftrüfungspflicht durch die zuständige Instanz angeordnet."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht der Verurteilte A., sondern die Staatsanwaltschaft Beschwerde geführt hätte, weil das Gericht die Sicherheitshaft trotz Fluchtgefahr nicht verlängert und die Freilassung des Verurteilten unmittelbar nach Urteilsverkündung angeordnet hätte?",
+              "discussion_points": [
+                "Legitimation der Staatsanwaltschaft zur Beschwerde gegen die Ablehnung der Sicherheitshaft nach Art. 231 Abs. 1 StPO und die einschlägigen Rechtsmittelwege",
+                "Anforderungen an die gerichtliche Begründungspflicht bei Ablehnung der Sicherheitshaft und die Frage, ob Art. 226 Abs. 2 StPO analog auch zugunsten der Staatsanwaltschaft auf die Begründung der Freilassung Anwendung findet"
+              ],
+              "likely_outcome_shift": "Bei einer Beschwerde der Staatsanwaltschaft verlagert sich der Fokus von der Gehörsverletzung des Verurteilten auf die materielle Prüfung der Haftgründe. Das Bundesgericht würde die Haftvoraussetzungen nach Art. 221 und Art. 231 StPO eigenständig prüfen und bei festgestellter Fluchtgefahr die Haft anordnen; die formellen Begründungsanforderungen würden zwar weiterhin gelten, aber die Parteirollen und das rechtliche Interesse an der unverzüglichen Begründung wären grundlegend verschieden."
+            }
+          ]
         },
         {
           "decision_id": "bge_144 IV 28",
@@ -152,21 +523,95 @@
           "title_de": "Zeugnisverweigerungsrecht — Belehrungspflichten bei der Einvernahme",
           "title_fr": "Droit de refuser de témoigner — obligations d'information lors de l'audition",
           "title_it": "",
-          "concepts_de": ["Zeugnisverweigerungsrecht", "Belehrungspflicht", "Auskunftsperson", "Unverwertbarkeit"],
-          "concepts_fr": ["Droit de refuser de témoigner", "Obligation d'information", "Audition", "Inexploitabilité"],
+          "concepts_de": [
+            "Zeugnisverweigerungsrecht",
+            "Belehrungspflicht",
+            "Auskunftsperson",
+            "Unverwertbarkeit"
+          ],
+          "concepts_fr": [
+            "Droit de refuser de témoigner",
+            "Obligation d'information",
+            "Audition",
+            "Inexploitabilité"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 168 StPO", "Art. 177 StPO", "Art. 178 StPO"],
+          "statutes": [
+            "Art. 168 StPO",
+            "Art. 177 StPO",
+            "Art. 178 StPO"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Belehrungspflichten: Wer bei der polizeilichen Einvernahme als künftiger Zeuge erkennbar ist, muss über alle einschlägigen Rechte belehrt werden.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que la police doit informer une personne de ses droits tant en qualité de personne entendue à titre de renseignement qu'en qualité de témoin dès lors qu'il est prévisible qu'elle sera ultérieurement entendue comme témoin, sous peine d'inexploitabilité de ses déclarations.",
+          "significance_it": "Questa sentenza di principio stabilisce che la polizia deve informare una persona dei suoi diritti sia in qualità di persona sentita a titolo informativo sia in qualità di testimone, qualora sia prevedibile che essa sarà successivamente sentita come testimone, pena l'inutilizzabilità delle sue dichiarazioni.",
+          "key_erwagungen": [
+            "1.2",
+            "1.2.1",
+            "1.2.2",
+            "1.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Leitsatz und die Sachverhaltsdarstellung, um den Hintergrund der Einvernahme der Ehefrau zu verstehen. Konzentrieren Sie sich anschliessend auf Erwägung 1.2 (Systematik der Art. 178–181 StPO) und Erwägung 1.3 (bundesgerichtlicher Grundsatz zur doppelten Belehrungspflicht und Unverwertbarkeitsfolge), da dort der entscheidende Beitrag des Urteils zur Auslegung der Belehrungspflichten entwickelt wird.",
+          "reading_guide_fr": "Commencez par lire le regeste et l'état de fait pour saisir le contexte de l'audition de l'épouse. Portez ensuite votre attention sur le considérant 1.2 (systématique des art. 178 à 181 CPP) et le considérant 1.3 (principe du Tribunal fédéral sur la double obligation d'information et l'inexploitabilité des déclarations), qui constituent le cœur de la contribution de cet arrêt à l'interprétation des devoirs d'information.",
+          "reading_guide_it": "Si consiglia di leggere dapprima il regesto e i fatti per comprendere il contesto dell'audizione della moglie. Ci si concentri poi sui considerandi 1.2 (sistematica degli art. 178–181 CPP) e 1.3 (principio del Tribunale federale sul duplice obbligo di informazione e sull'inutilizzabilità delle dichiarazioni), nei quali si trova il contributo essenziale della sentenza all'interpretazione degli obblighi di avvertimento.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Warum wurde die Ehefrau des Beschwerdeführers von der Polizei als Auskunftsperson nach Art. 178 lit. d StPO und nicht als Zeugin einvernommen?",
+              "hint": "Vgl. Erwägung 1.1 und 1.2.1, insbesondere die Definition der Auskunftsperson nach Art. 178 lit. d StPO.",
+              "model_answer": "Die Ehefrau wurde als Auskunftsperson einvernommen, weil ihre eigene Rolle bei der inkriminierten Tat zum Zeitpunkt der Einvernahme noch unklar war und eine Beteiligung nicht ausgeschlossen werden konnte. Gemäss Art. 178 lit. d StPO ist Auskunftsperson, wer ohne selbst beschuldigt zu sein als mögliche Täterin oder Teilnehmerin nicht ausgeschlossen werden kann. Da die Polizei zunächst die Beteiligungsverhältnisse klären musste, war die Einstufung als Auskunftsperson zunächst folgerichtig."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Belehrungspflichten schreibt Art. 181 Abs. 1 StPO vor, und welche zusätzlichen Rechte hätte die Polizei der Ehefrau laut Bundesgericht mitteilen müssen?",
+              "hint": "Vgl. Erwägung 1.2.1 zu Art. 181 StPO sowie den Leitsatz zu Art. 168 und Art. 177 StPO.",
+              "model_answer": "Art. 181 Abs. 1 StPO verpflichtet die Strafbehörden, Auskunftspersonen zu Beginn der Einvernahme auf ihre Aussagepflicht oder ihre Aussage- bzw. Zeugnisverweigerungsrechte hinzuweisen. Das Bundesgericht hielt fest, dass dann, wenn von vornherein feststeht, dass eine Person später als Zeugin einvernommen werden wird, die Polizei sie nicht nur über die Rechte einer Auskunftsperson, sondern zusätzlich auch über die Zeugnisverweigerungsrechte nach Art. 168 ff. StPO belehren muss. Im vorliegenden Fall hätte die Ehefrau also insbesondere auf ihr Zeugnisverweigerungsrecht als Angehörige (Art. 168 StPO) hingewiesen werden müssen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, eine Person wird bei einer polizeilichen Erstbefragung als mögliche Zeugin eines Verkehrsunfalls einvernommen, und es ist von Beginn weg klar, dass sie im späteren Verfahren als Zeugin aussagen wird. Welche Belehrungen muss die Polizei konkret erteilen?",
+              "hint": "Wenden Sie den Grundsatz aus dem Leitsatz (E. 1.3) auf diesen Sachverhalt an und berücksichtigen Sie Art. 177 und Art. 168 StPO.",
+              "model_answer": "Die Polizei muss die Person zunächst über die Rechte und Pflichten einer Auskunftsperson belehren, also insbesondere über ein allfälliges Aussageverweigerungsrecht nach Art. 180 Abs. 1 StPO. Da von Beginn weg feststeht, dass sie später als Zeugin auftreten wird, muss die Polizei sie zusätzlich nach Art. 177 StPO über ihre Pflichten als Zeugin (Erscheinungspflicht, Wahrheitspflicht) sowie über allfällige Zeugnisverweigerungsrechte nach Art. 168 StPO (z.B. als Angehörige) belehren. Unterlässt die Polizei diese doppelte Belehrung, sind die Aussagen unverwertbar."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welchen Widerspruch zwischen der Argumentation der Vorinstanz und dem Schutzzweck der Belehrungspflichten deckt das Bundesgericht in BGE 144 IV 28 auf?",
+              "hint": "Vergleichen Sie die Begründung des Obergerichts Bern (E. 1.1) mit dem bundesgerichtlichen Grundsatz in E. 1.3 und dem Zweck von Art. 168 ff. StPO.",
+              "model_answer": "Die Vorinstanz argumentierte, eine Belehrung über Zeugnisverweigerungsrechte sei nur für Auskunftspersonen mit Aussagepflicht (Art. 178 lit. a StPO) erforderlich, da nur diese einer Pflicht unterlägen. Das Bundesgericht deckte dabei auf, dass dieses Argument den Schutzzweck der Normen verkehrt: Die Zeugnisverweigerungsrechte nach Art. 168 ff. StPO sollen Personen unabhängig von ihrer formellen Stellung schützen, sobald absehbar ist, dass sie im Verfahren zeugenschaftliche Verantwortung tragen werden. Wer ohne Kenntnis seiner späteren Rechte als Zeuge aussagt, kann seinen Schutz nicht wirksam wahrnehmen – was dem Grundsatz der informierten Selbstbestimmung im Strafprozess widerspricht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass eine fehlende Belehrung über Zeugnisverweigerungsrechte zur vollständigen Unverwertbarkeit der Aussagen führt, auch wenn die betreffende Person möglicherweise ohnehin ausgesagt hätte? Wägen Sie die betroffenen Interessen gegeneinander ab.",
+              "hint": "Berücksichtigen Sie den Leitsatz, die Folge der Unverwertbarkeit im vorliegenden Fall (Aufhebung des Urteils) sowie die konkurrierenden Interessen von Wahrheitsfindung und Verfahrensgerechtigkeit.",
+              "model_answer": "Die strikte Unverwertbarkeitsfolge ist rechtspolitisch vertretbar, weil nur eine konsequente Sanktionierung von Belehrungsfehlern die Strafbehörden wirksam zur Einhaltung der Vorschriften anhält; ein bloss hypothetisches Alternativverhalten der betroffenen Person kann nicht zuverlässig rekonstruiert werden. Andererseits ist kritisch anzumerken, dass die Unverwertbarkeit im Ergebnis dazu führt, dass möglicherweise schwerwiegende Straftaten – hier Kinderpornografie – nicht geahndet werden können, was das Vertrauen der Öffentlichkeit in die Strafjustiz belasten kann. Eine ausgewogenere Lösung könnte in einem differenzierten Verwertungsverbot liegen, das nur dann greift, wenn die fehlende Belehrung kausal für den Inhalt der Aussage war; das Bundesgericht hat diesen Weg jedoch zugunsten von Rechtssicherheit und Systematik nicht beschritten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Ehefrau des Beschwerdeführers zwar korrekt als Auskunftsperson nach Art. 178 lit. d StPO und über ihr Aussageverweigerungsrecht belehrt worden wäre, sie aber erst im Nachhinein – nach ihrer Aussage – erklärt hätte, sie habe nicht gewusst, dass sie als Zeugin und nicht nur als Auskunftsperson befragt werden würde, und deshalb bewusst Details verschwiegen habe?",
+              "discussion_points": [
+                "Stellt das nachträgliche Vorbringen der Person eine relevante Verletzung von Belehrungspflichten dar, wenn die formellen Anforderungen an die Belehrung als Auskunftsperson erfüllt wurden?",
+                "Welche Beweislast trägt die Verteidigung bzw. der Beschwerdeführer beim Nachweis, dass die fehlende Belehrung über die Zeugenstellung kausal für den Inhalt der Aussage war?"
+              ],
+              "likely_outcome_shift": "Da das Bundesgericht in BGE 144 IV 28 auf die objektive Erkennbarkeit der künftigen Zeugenstellung abstellt und nicht auf die subjektive Kenntnis der einvernommenen Person, bliebe die Rechtslage grundsätzlich gleich: War die spätere Zeugenstellung von vornherein erkennbar, hätte die doppelte Belehrung erteilt werden müssen. Allerdings könnte das nachträgliche Vorbringen Einfluss auf die Frage haben, ob ein Beweisverwertungsverbot tatsächlich zu einem anderen Verfahrensausgang führt, was die Gerichte bei der Neubeurteilung zu prüfen hätten."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Ehefrau, sondern ein minderjähriges Opfer (die damals 9-jährige A. selbst) von der Polizei zunächst als Auskunftsperson einvernommen worden wäre, ohne dass sie auf ihre späteren Zeugenpflichten und -rechte hingewiesen wurde?",
+              "discussion_points": [
+                "Gelten die in BGE 144 IV 28 aufgestellten Grundsätze zur doppelten Belehrungspflicht auch bei minderjährigen Opfern, und welche zusätzlichen Schutzvorschriften (z.B. Art. 154 StPO zu kindlichen Opfern) wären zu beachten?",
+                "Würde die Unverwertbarkeit der Aussagen eines minderjährigen Opfers dieselben Konsequenzen haben wie jene eines erwachsenen Zeugen, oder würden die Gerichte bei der Interessenabwägung zugunsten des Opferschutzes anders gewichten?"
+              ],
+              "likely_outcome_shift": "Bei einem minderjährigen Opfer würden neben den allgemeinen Belehrungspflichten die besonderen Schutzvorschriften von Art. 154 StPO greifen, die spezifische Anforderungen an die Einvernahme kindlicher Opfer stellen und bei Verletzung ebenfalls zur Unverwertbarkeit führen. Die Gerichte stünden vor einem verschärften Spannungsfeld: Einerseits gebietet der Kindesschutz besondere Sorgfalt bei der Einvernahme, andererseits wäre bei Unverwertbarkeit der Aussagen des einzigen direkten Opfers eine Verurteilung des Täters kaum mehr möglich, was den Opferschutz paradoxerweise untergraben würde."
+            }
+          ]
         },
         {
           "decision_id": "bge_138 IV 186",
@@ -175,21 +620,95 @@
           "title_de": "Einstellung vs. Freispruch — in dubio pro duriore",
           "title_fr": "Classement vs acquittement — in dubio pro duriore",
           "title_it": "",
-          "concepts_de": ["Einstellung", "Freispruch", "In dubio pro duriore", "Legalitätsprinzip"],
-          "concepts_fr": ["Classement", "Acquittement", "In dubio pro duriore", "Principe de légalité"],
+          "concepts_de": [
+            "Einstellung",
+            "Freispruch",
+            "In dubio pro duriore",
+            "Legalitätsprinzip"
+          ],
+          "concepts_fr": [
+            "Classement",
+            "Acquittement",
+            "In dubio pro duriore",
+            "Principe de légalité"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 319 StPO", "Art. 324 StPO"],
+          "statutes": [
+            "Art. 319 StPO",
+            "Art. 324 StPO"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Abgrenzung Einstellung/Freispruch: Grundsatz in dubio pro duriore — bei unklarer Beweislage ist die Sache an das Gericht zu überweisen.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe fixe la portée du principe 'in dubio pro duriore' en matière de classement: en cas de situation probatoire incertaine, le ministère public doit renvoyer l'affaire en jugement plutôt que de classer la procédure, la question de la culpabilité relevant de la compétence exclusive du tribunal.",
+          "significance_it": "Questa sentenza di principio definisce la portata del principio 'in dubio pro duriore' in materia di abbandono del procedimento: in caso di situazione probatoria incerta, il pubblico ministero deve rinviare la causa al giudice piuttosto che abbandonare il procedimento, poiché la valutazione definitiva della colpevolezza spetta esclusivamente al tribunale.",
+          "key_erwagungen": [
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+            "4"
+          ],
+          "reading_guide_de": "Studieren Sie zunächst die Erwägungen 1.1–1.3 zur Unterscheidung von End- und Zwischenentscheiden beim Fristenstillstand, bevor Sie Erwägung 1.4 zur Beschwerdelegitimation und Erwägung 4 zum Kern des Entscheids – dem Grundsatz 'in dubio pro duriore' – lesen. Achten Sie dabei besonders auf das Zusammenspiel von Art. 319 Abs. 1 und Art. 324 Abs. 1 StPO sowie auf die Frage, unter welchen Bedingungen eine Einstellung trotz bestehenden Verdachts bundesrechtskonform ist.",
+          "reading_guide_fr": "Commencez par les considérants 1.1–1.3 sur la distinction entre décisions finales et décisions incidentes en matière de suspension des délais, puis abordez le considérant 1.4 sur la qualité pour recourir et le considérant 4, cœur de l'arrêt, consacré au principe 'in dubio pro duriore'. Portez une attention particulière à l'articulation entre l'art. 319 al. 1 et l'art. 324 al. 1 CPP, ainsi qu'aux conditions dans lesquelles un classement demeure conforme au droit fédéral malgré l'existence d'un soupçon.",
+          "reading_guide_it": "Si consiglia di leggere dapprima i considerandi 1.1–1.3 sulla distinzione tra decisioni finali e decisioni incidentali ai fini della sospensione dei termini, per poi affrontare il considerando 1.4 sulla legittimazione a ricorrere e il considerando 4, fulcro della decisione, dedicato al principio 'in dubio pro duriore'. Particolare attenzione va riservata all'interazione tra l'art. 319 cpv. 1 e l'art. 324 cpv. 1 CPP, nonché alle condizioni alle quali un abbandono del procedimento rimane conforme al diritto federale nonostante la sussistenza di un sospetto.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Grundsatz 'in dubio pro duriore' im Kontext von Einstellungsverfügungen gemäss Art. 319 StPO?",
+              "hint": "Vgl. Regeste und Erwägung 4 des Entscheids sowie Art. 319 Abs. 1 und Art. 324 Abs. 1 StPO",
+              "model_answer": "Der Grundsatz 'in dubio pro duriore' besagt, dass bei unklarer Beweislage im Zweifel die strengere Verfahrenserledigung zu wählen ist, d.h. die Sache ist ans Gericht zu überweisen statt eingestellt zu werden. Die Staatsanwaltschaft soll nur dann einstellen, wenn eine Verurteilung offensichtlich ausgeschlossen erscheint. Dieser Grundsatz ist das Gegenstück zum strafprozessualen 'in dubio pro reo', das erst vor Gericht zur Anwendung kommt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Voraussetzungen nennt Art. 319 Abs. 1 StPO für eine Einstellung des Strafverfahrens, und wie grenzt das Bundesgericht diese von der Anklageerhebung nach Art. 324 Abs. 1 StPO ab?",
+              "hint": "Vgl. Art. 319 Abs. 1 lit. a–e StPO und Art. 324 Abs. 1 StPO sowie die Regeste des Entscheids",
+              "model_answer": "Art. 319 Abs. 1 StPO sieht eine Einstellung vor, wenn kein Tatverdacht erhärtet wurde, kein Straftatbestand erfüllt ist, Rechtfertigungs- oder Schuldausschlussgründe vorliegen, Prozessvoraussetzungen fehlen oder auf eine Strafe verzichtet werden kann. Demgegenüber verlangt Art. 324 Abs. 1 StPO eine Anklageerhebung, wenn die Staatsanwaltschaft die Untersuchung abgeschlossen und einen hinreichenden Tatverdacht bejaht hat. Das Bundesgericht stellt klar, dass bei ungewisser Beweislage der Grundsatz 'in dubio pro duriore' zur Anklage drängt, da die endgültige Beweiswürdigung dem Gericht obliegt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Der Sohn des verstorbenen Y. fechtet die Einstellungsverfügung als naher Angehöriger an. Welche Voraussetzungen musste er nach Art. 81 Abs. 1 lit. b Ziff. 5 BGG erfüllen, um vor Bundesgericht beschwerdelegitimiert zu sein?",
+              "hint": "Vgl. Erwägung 1.4 und Art. 81 Abs. 1 lit. b Ziff. 5 BGG",
+              "model_answer": "Nach Art. 81 Abs. 1 lit. b Ziff. 5 BGG sind nahe Angehörige des Opfers zur Beschwerde berechtigt, wenn sie ein rechtlich geschütztes Interesse an der Aufhebung oder Änderung des angefochtenen Entscheids haben. X. als Sohn des Verstorbenen ist naher Angehöriger im Sinne dieser Bestimmung. Da er Zivilansprüche als Opferangehöriger geltend macht und die fahrlässige Tötung seines Vaters in Frage steht, hat er ein hinreichendes rechtliches Interesse, womit das Bundesgericht seine Legitimation bejaht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet beim Fristenstillstand nach Art. 46 BGG zwischen End- und Zwischenentscheiden und qualifiziert strafprozessuale Zwischenentscheide (z.B. Beschlagnahmungen) als 'andere vorsorgliche Massnahmen' im Sinne von Art. 46 Abs. 2 BGG. Welche ratio legis liegt dieser Unterscheidung zugrunde, und warum führt sie bei Einstellungsverfügungen zu einem anderen Ergebnis?",
+              "hint": "Vgl. Erwägungen 1.2 und 1.3 sowie BGE 135 I 257 E. 1.5",
+              "model_answer": "Strafprozessuale Zwischenentscheide wie Beschlagnahmungen sind ihrem Wesen nach vorläufig und zeitkritisch; ein Fristenstillstand würde die Verfahrensbeschleunigung und den Zweck solcher Massnahmen gefährden, weshalb Art. 46 Abs. 2 BGG sie den vorsorglichen Massnahmen gleichstellt. Eine Einstellungsverfügung hingegen schliesst das Strafverfahren endgültig ab und ist damit ein Endentscheid, der keine besondere Dringlichkeit aufweist. Daher greift für solche Entscheide der ordentliche Fristenstillstand nach Art. 46 Abs. 1 BGG, was dem Beschwerdeführer die volle Beschwerdefrist sichert."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht verneint im vorliegenden Fall eine Bundesrechtswidrigkeit der Einstellungsverfügung trotz des Grundsatzes 'in dubio pro duriore'. Ist diese Entscheidung überzeugend, und wie lässt sich die Grenze zwischen zulässiger Einstellung und gebotener Anklageerhebung bei medizinischen Kunstfehlervorwürfen sachgerecht ziehen?",
+              "hint": "Vgl. Erwägung 4 sowie das Spannungsverhältnis zwischen Art. 319 und Art. 324 StPO",
+              "model_answer": "Das Bundesgericht überzeugt insoweit, als 'in dubio pro duriore' keine Pflicht zur Anklage bei jeglicher Unklarheit begründet, sondern nur bei einer Beweislage, die eine Verurteilung als realistisch erscheinen lässt. Bei komplexen medizinischen Sachverhalten kann eine gutachterlich belegte fehlende Kausalität die Einstellung trotz bestehendem Verdacht rechtfertigen. Kritisch lässt sich jedoch einwenden, dass gerade bei Todesfällen in medizinischen Einrichtungen die Gerichte besser als die Staatsanwaltschaft positioniert sind, die Beweisfragen abschliessend zu würdigen, was für eine grosszügigere Anwendung des 'in dubio pro duriore' und häufigere Anklageerhebung sprechen würde."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Staatsanwaltschaft hätte die Einstellung nicht nur wegen unklarer Beweislage, sondern ausdrücklich auch wegen Geringfügigkeit der Schuld (Art. 319 Abs. 1 lit. e StPO i.V.m. Art. 52 StGB) verfügt. Würde dies die Anwendung des Grundsatzes 'in dubio pro duriore' verändern?",
+              "discussion_points": [
+                "Art. 319 Abs. 1 lit. e StPO erlaubt eine Einstellung unabhängig von der Beweislage, sofern die Voraussetzungen von Art. 52 ff. StGB erfüllt sind – 'in dubio pro duriore' setzt aber gerade eine ungeklärte Tatsachenlage voraus.",
+                "Es stellt sich die Frage, ob bei einem Todesfall durch fahrlässige Tötung überhaupt ein Absehen von Strafe wegen Geringfügigkeit vertretbar ist und ob das Opferinteresse an der gerichtlichen Klärung diese Ermessensausübung begrenzt."
+              ],
+              "likely_outcome_shift": "Bei einer kumulativen Begründung mit Art. 319 Abs. 1 lit. e StPO würde 'in dubio pro duriore' nur noch den Beweisaspekt betreffen, während die Opportunitätskomponente gesondert zu prüfen wäre. Das Bundesgericht müsste zusätzlich untersuchen, ob das Ermessen der Staatsanwaltschaft beim Absehen von Strafe bundesrechtskonform ausgeübt wurde, was bei einem Todesfall durch medizinisches Personal die Anforderungen erhöhen und eine Aufhebung der Einstellung wahrscheinlicher machen würde."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht der Sohn des Verstorbenen, sondern die beschuldigten Ärzte der Z. AG gegen einen Entscheid des Obergerichts Beschwerde geführt hätten, mit dem die Einstellung aufgehoben und die Staatsanwaltschaft zur Anklageerhebung verpflichtet worden wäre?",
+              "discussion_points": [
+                "Beschuldigte sind nach Art. 81 Abs. 1 lit. b Ziff. 1 BGG grundsätzlich zur Beschwerde in Strafsachen legitimiert; sie können ein rechtlich geschütztes Interesse an der Einstellung haben, um eine belastende Hauptverhandlung zu vermeiden.",
+                "Das Bundesgericht müsste prüfen, ob ein kantonales Obergericht die Staatsanwaltschaft zur Anklage verpflichten darf oder ob dies in deren Ermessen fällt, und ob der Grundsatz 'in dubio pro duriore' auch zulasten der Beschuldigten wirkt."
+              ],
+              "likely_outcome_shift": "Die Konstellation wäre prozessual zulässig, aber materiell würde das Bundesgericht den Beschuldigten wenig Schutz gewähren: Da 'in dubio pro duriore' gerade im Interesse der gerichtlichen Wahrheitsfindung die Anklage bevorzugt, hätte ein kantonales Gericht, das zur Anklage verpflichtet, den Grundsatz korrekt angewandt. Die Beschwerde der Ärzte würde daher aller Voraussicht nach abgewiesen, sofern die Beweislage tatsächlich unklar und eine Verurteilung nicht von vornherein ausgeschlossen war."
+            }
+          ]
         }
       ]
     }

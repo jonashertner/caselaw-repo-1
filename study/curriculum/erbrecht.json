@@ -10,7 +10,10 @@
       "name_de": "Pflichtteil und Herabsetzung",
       "name_fr": "Réserve héréditaire et réduction",
       "name_it": "Quota legittima e riduzione",
-      "statutes": ["Art. 471 ZGB", "Art. 522 ZGB"],
+      "statutes": [
+        "Art. 471 ZGB",
+        "Art. 522 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_115 II 323",
@@ -19,21 +22,92 @@
           "title_de": "Pflichtteilsberechnung und Anrechnungswert",
           "title_fr": "Calcul de la réserve héréditaire et valeur d'imputation",
           "title_it": "",
-          "concepts_de": ["Pflichtteil", "Berechnung", "Anrechnungswert", "Nachlassmasse"],
-          "concepts_fr": ["Réserve héréditaire", "Calcul", "Valeur d'imputation"],
+          "concepts_de": [
+            "Pflichtteil",
+            "Berechnung",
+            "Anrechnungswert",
+            "Nachlassmasse"
+          ],
+          "concepts_fr": [
+            "Réserve héréditaire",
+            "Calcul",
+            "Valeur d'imputation"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 471 ZGB", "Art. 522 ZGB"],
+          "statutes": [
+            "Art. 471 ZGB",
+            "Art. 522 ZGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Berechnung des Pflichtteils und zur Bestimmung der massgeblichen Nachlassmasse unter Einschluss der Zuwendungen.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe précise les critères permettant de distinguer le legs préciputaire de la simple règle de partage au sens de l'art. 608 al. 3 CC, et établit qu'une déclaration informelle des héritiers sur la qualification d'une disposition testamentaire ne constitue ni un contrat de partage au sens de l'art. 634 CC ni une renonciation au legs.",
+          "significance_it": "Questa sentenza di principio chiarisce i criteri per distinguere il legato preciputario dalla semplice regola di divisione ai sensi dell'art. 608 cpv. 3 CC, stabilendo che una dichiarazione informale degli eredi sulla qualificazione di una disposizione testamentaria non costituisce né un contratto di divisione ai sensi dell'art. 634 CC né una rinuncia al legato.",
+          "key_erwagungen": [
+            "1",
+            "1a",
+            "2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 324–325) sorgfältig, um die testamentarische Ausgangslage und den Parteienstreit zu verstehen. Konzentrieren Sie sich dann auf Erwägung 1 (Auslegungsmethode und Qualifikation der Liegenschaften) und Erwägung 2 (rechtliche Wirkung der Einigungserklärung vom 22. Juni 1985), da diese Kernfragen des Entscheids bilden.",
+          "reading_guide_fr": "Lisez d'abord attentivement les faits (p. 324–325) afin de comprendre la situation testamentaire et le litige entre les parties. Concentrez-vous ensuite sur le considérant 1 (méthode d'interprétation et qualification des immeubles) et le considérant 2 (effets juridiques de la déclaration d'accord du 22 juin 1985), qui constituent le cœur de la décision.",
+          "reading_guide_it": "Leggere dapprima attentamente i fatti (p. 324–325) per comprendere la situazione testamentaria e la controversia tra le parti. Concentrarsi poi sul considerando 1 (metodo di interpretazione e qualificazione degli immobili) e sul considerando 2 (effetti giuridici della dichiarazione d'accordo del 22 giugno 1985), che costituiscono il nucleo della decisione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Unterschied zwischen einem Vorausvermächtnis und einer Teilungsregel im Sinne von Art. 608 Abs. 3 ZGB, und welche praktischen Folgen ergeben sich aus dieser Unterscheidung für die Erben D./L. einerseits und R./F. E. andererseits?",
+              "hint": "Vergleiche Ziffer 4 des Testaments mit der Sachverhaltsdarstellung auf S. 324–325 sowie dem Regeste.",
+              "model_answer": "Ein Vorausvermächtnis (Art. 484 ZGB) wird dem Begünstigten ohne Anrechnung auf seinen Erbteil zugewiesen, sodass er die Liegenschaft zusätzlich zu seinem Erbanteil erhält. Eine Teilungsregel (Art. 608 Abs. 3 ZGB) hingegen weist Nachlassgegenstände lediglich der Art nach zu, während die Werte auf den Erbteil angerechnet werden. Im vorliegenden Fall würde ein Vorausvermächtnis dazu führen, dass R. und F. E. die wertvollere Liegenschaft an der V.-Strasse ohne Ausgleich erhalten, was zu einer erheblichen Ungleichbehandlung gegenüber D. und L. führt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Auslegungsmethode wendet das Bundesgericht bei Testamenten an, und unter welchen Voraussetzungen dürfen ausserhalb der Testamentsurkunde liegende Beweismittel herangezogen werden?",
+              "hint": "Erwägung 1a, mit Verweis auf BGE 109 II 406 E. 2b und BGE 100 II 446 E. 6.",
+              "model_answer": "Das Bundesgericht geht zunächst vom Wortlaut des Testaments aus und legt diesen aus sich selbst heraus aus. Nur wenn die Bestimmungen so unklar sind, dass sie mit guten Gründen in verschiedene Richtungen verstanden werden können, dürfen externe Beweismittel zur Auslegung beigezogen werden. Das Bundesgericht prüft die Testamentsauslegung frei, ist jedoch an die tatsächlichen Feststellungen der Vorinstanz gebunden, aus denen der Erblasserwille erschlossen wird."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die bundesgerichtliche Auslegungsmethode auf Ziffer 4 des Testaments von Hanny X. an: Welche Elemente des Testamentstextes sprechen für eine Qualifikation als Vorausvermächtnis?",
+              "hint": "Ziffer 4 lit. a–d des Testaments im Sachverhalt sowie der Gesamtkontext der Ziffern 1–6.",
+              "model_answer": "Der Wortlaut von Ziffer 4 lit. a und b ('kommt D. und L. je zur Hälfte zu' bzw. 'kommt R. und F. E. je zur Hälfte zu') ist von Ziffer 4 lit. c ('soll zu je 1/4 an die eingesetzten Erben fallen') deutlich zu unterscheiden: Nur für den Restlass wird ausdrücklich auf Erbteile Bezug genommen. Dies legt nahe, dass die Liegenschaften gerade nicht auf Anrechnung zugewiesen werden sollten. Zudem schloss Hanny X. ihre gesetzlichen Erben aus und bestimmte die vier Kläger/Beklagten als Erben, was auf eine bewusste, differenzierte Vermögensplanung hindeutet, die mit blossen Teilungsregeln nicht vereinbar wäre."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Aus welchen Gründen qualifiziert das Bundesgericht die von der Willensvollstreckerin verfasste und von den Erben unterzeichnete Erklärung vom 22. Juni 1985 weder als Erbteilungsvertrag noch als Vermächtnisverzicht oder -ausschlagung?",
+              "hint": "Erwägung 2 des Entscheids sowie Art. 634 ZGB.",
+              "model_answer": "Ein Erbteilungsvertrag nach Art. 634 ZGB setzt voraus, dass er auf eine vollständige und endgültige Auseinandersetzung des Nachlasses abzielt; die knappe Erklärung vom 22. Juni 1985 beschränkte sich auf die Frage der Qualifikation der Liegenschaften und regelte die Erbteilung nicht umfassend. Für einen Verzicht auf das Vermächtnis oder dessen Ausschlagung fehlt es an einer eindeutigen rechtsgeschäftlichen Erklärung mit dem entsprechenden Willen, zumal die Erben lediglich eine 'Stellungnahme' abgaben und R./F. E. diese bereits am 2. Juli 1985 widerriefen. Das Bundesgericht berücksichtigt die konkreten Umstände – insbesondere die kurze Frist zwischen Unterzeichnung und Widerruf sowie den fehlenden Überblick der Erben über die rechtlichen Konsequenzen – und verneint daher die Bindungswirkung der Erklärung."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die bundesgerichtliche Lösung, wonach die von der Willensvollstreckerin herbeigeführte Einigungserklärung der Erben nicht bindend ist, aus Sicht der Rechtssicherheit und der Nachlassabwicklung überzeugend? Welche Risiken entstehen, wenn solche informellen Erklärungen grundsätzlich als unverbindlich gelten?",
+              "hint": "Erwägung 2 sowie Art. 634 ZGB; eigene Bewertung erwünscht.",
+              "model_answer": "Die Lösung des Bundesgerichts schützt Erben vor übereilten Rechtsverzichten, die sie in Unkenntnis der vollständigen Konsequenzen unterzeichnet haben, was dem Schutzgedanken des Erbrechts entspricht. Kritisch ist jedoch, dass die Entscheidung die Rechtssicherheit beeinträchtigt: Willensvollstrecker und Miterben können sich nicht darauf verlassen, dass schriftliche Einigungen über Teilungsfragen verbindlich sind, was künftige Erbstreitigkeiten begünstigen könnte. Es wäre zu erwägen, ob klare Formerfordernisse für solche Erklärungen – etwa notarielle Beurkundung analog zu Art. 634 ZGB – mehr Klarheit schaffen würden, als die nachträgliche richterliche Würdigung der konkreten Umstände."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, Hanny X. hätte im Testament ausdrücklich festgehalten: 'Die Zuweisung der Liegenschaften erfolgt in Anrechnung auf die jeweiligen Erbteile.' Würde dies die Qualifikation als Teilungsregel zwingend machen, und welche Auswirkungen hätte dies auf pflichtteilsberechtigte Ansprüche, falls die gesetzlichen Erben trotz Ausschluss einen Pflichtteil geltend machen könnten?",
+              "discussion_points": [
+                "Eine solche ausdrückliche Anrechnungsklausel würde die Auslegungsfrage zugunsten der Teilungsregel (Art. 608 Abs. 3 ZGB) entscheiden und dem Wunsch der Erblasserin eindeutig entsprechen.",
+                "Falls pflichtteilsberechtigte gesetzliche Erben (Art. 471 ZGB) die Herabsetzung der Verfügungen verlangen (Art. 522 ZGB), wäre die massgebliche Nachlassmasse zu berechnen und zu prüfen, ob die Erbquoten der eingesetzten Erben die Pflichtteile der ausgeschlossenen gesetzlichen Erben verletzten."
+              ],
+              "likely_outcome_shift": "Mit einer klaren Anrechnungsklausel entfiele der Auslegungsstreit zwischen Vorausvermächtnis und Teilungsregel, und das Gericht müsste sich primär auf die Pflichtteilsproblematik konzentrieren. Die wertmässige Ungleichheit zwischen den Liegenschaften würde im Rahmen der Teilung durch Ausgleichszahlungen bereinigt, was die finanzielle Belastung des Nachlasses erhöhen könnte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie wäre der Fall zu beurteilen, wenn nicht R. und F. E., sondern D. und L. die Klage auf Zuweisung ihrer Liegenschaft als Vorausvermächtnis erhoben hätten – und die Liegenschaft an der Z.-Gasse den deutlich geringeren Verkehrswert aufgewiesen hätte?",
+              "discussion_points": [
+                "D. und L. hätten als Klägerinnen ein wirtschaftliches Interesse an der Qualifikation als Teilungsregel (mit Ausgleich), nicht als Vorausvermächtnis, was die Parteirollen und Interessenlagen im Vergleich zum Originalfall umkehren würde.",
+                "Die Auslegungsmethode des Bundesgerichts bliebe dieselbe; entscheidend wäre weiterhin der Gesamtkontext des Testaments und nicht die wirtschaftlichen Interessen der Parteien."
+              ],
+              "likely_outcome_shift": "Die rechtliche Qualifikation der Testamentsbestimmung wäre objektiv dieselbe, da die Auslegung vom Erblasserwillen und nicht von den Interessen der Parteien abhängt. Wirtschaftlich würden jedoch D. und L. bei einer Qualifikation als Vorausvermächtnis benachteiligt, sodass sie ein stärkeres Interesse an einer Herabsetzungsklage oder an der Geltendmachung einer Überschreitung der Verfügungsfreiheit der Erblasserin hätten."
+            }
+          ]
         },
         {
           "decision_id": "bge_121 III 249",
@@ -42,21 +116,92 @@
           "title_de": "Herabsetzungsklage — Verwirkungsfrist und Kenntnis",
           "title_fr": "Action en réduction — délai de péremption et connaissance",
           "title_it": "",
-          "concepts_de": ["Herabsetzungsklage", "Verwirkungsfrist", "Kenntnis", "Pflichtteil"],
-          "concepts_fr": ["Action en réduction", "Délai de péremption", "Connaissance"],
+          "concepts_de": [
+            "Herabsetzungsklage",
+            "Verwirkungsfrist",
+            "Kenntnis",
+            "Pflichtteil"
+          ],
+          "concepts_fr": [
+            "Action en réduction",
+            "Délai de péremption",
+            "Connaissance"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 522 ZGB", "Art. 533 ZGB"],
+          "statutes": [
+            "Art. 522 ZGB",
+            "Art. 533 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Herabsetzungsklage ist zulässig, sobald der Pflichtteilsberechtigte die wesentlichen Sachverhaltselemente kennt — auch ohne Kenntnis der genauen Anspruchshöhe.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "L'arrêt BGE 121 III 249 établit que le délai de péremption de l'action en réduction commence à courir dès que l'héritier réservataire a connaissance des éléments essentiels de fait laissant présager une atteinte à sa réserve, sans qu'il soit nécessaire de pouvoir chiffrer précisément sa prétention, et que l'action en réduction doit être admise même sous forme de conclusions non chiffrées, le droit fédéral matériel primant le droit de procédure cantonal restrictif.",
+          "significance_it": "La sentenza BGE 121 III 249 stabilisce che il termine di decadenza dell'azione di riduzione inizia a decorrere dal momento in cui l'erede legittimario conosce gli elementi essenziali di fatto che fanno presagire una lesione della sua quota di legittima, senza che sia necessario poter quantificare con precisione la pretesa, e che l'azione di riduzione deve essere ammessa anche in forma di conclusioni non quantificate, prevalendo il diritto federale materiale sul diritto processuale cantonale più restrittivo.",
+          "key_erwagungen": [
+            "2a",
+            "2b",
+            "2c"
+          ],
+          "reading_guide_de": "Beginnen Sie mit Erwägung 2a, die den massgeblichen Kenntnismassstab für den Fristbeginn nach Art. 533 ZGB definiert, und lesen Sie anschliessend Erwägung 2b sorgfältig, welche die praktischen Konsequenzen für die Zulässigkeit unbezifferter Rechtsbegehren und den Vorrang des materiellen Bundesrechts gegenüber kantonalem Prozessrecht herausarbeitet. Erwägung 2c ergänzt die Analyse um die materielle Frage, wann eine lebzeitige Zuwendung als (teil-)unentgeltlich gilt und damit der Herabsetzung unterliegt.",
+          "reading_guide_fr": "Commencez par le considérant 2a, qui définit le standard de connaissance déterminant pour le début du délai selon l'art. 533 CC, puis lisez attentivement le considérant 2b, qui tire les conséquences pratiques quant à l'admissibilité des conclusions non chiffrées et à la primauté du droit fédéral matériel sur le droit de procédure cantonal. Le considérant 2c complète l'analyse en précisant à quelle condition une disposition entre vifs à titre (partiellement) gratuit est soumise à réduction.",
+          "reading_guide_it": "Iniziate con il considerando 2a, che definisce il grado di conoscenza rilevante per l'inizio del termine di cui all'art. 533 CC, per poi leggere attentamente il considerando 2b, il quale trae le conseguenze pratiche in merito all'ammissibilità di conclusioni non quantificate e alla prevalenza del diritto federale materiale sul diritto processuale cantonale. Il considerando 2c completa l'analisi precisando a quali condizioni un atto di disposizione tra vivi a titolo (parzialmente) gratuito è soggetto a riduzione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was muss ein pflichtteilsberechtigter Erbe gemäss BGE 121 III 249 konkret wissen, damit die einjährige Verwirkungsfrist nach Art. 533 Abs. 1 ZGB zu laufen beginnt?",
+              "hint": "Vgl. Erwägung 2a: Definition der Kenntnis des Klagegrundes",
+              "model_answer": "Der Erbe muss diejenigen Elemente des Sachverhalts kennen, die den möglichen Erfolg einer Herabsetzungsklage erwarten lassen. Es bedarf keiner absoluten Gewissheit über das Vorliegen einer Pflichtteilsverletzung. Insbesondere muss der Erbe noch nicht in der Lage sein, den genauen Umfang der Verletzung oder den exakten Anspruchsbetrag zu beziffern."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzliche Regelung bildet die zentrale Rechtsgrundlage für den Fristbeginn der Herabsetzungsklage, und welche Rechtsnatur kommt dieser Frist nach der bundesgerichtlichen Rechtsprechung zu?",
+              "hint": "Vgl. Erwägung 2 (Einleitung) sowie Verweise auf BGE 108 II 288 E. 2 und BGE 98 II 176 E. 10",
+              "model_answer": "Art. 533 Abs. 1 ZGB regelt den Beginn der Frist für die Herabsetzungsklage. Das Bundesgericht hat — unter Verweis auf BGE 108 II 288 und BGE 98 II 176 — klargestellt, dass es sich bei dieser Frist um eine Verwirkungsfrist handelt, nicht um eine blosse Verjährungsfrist. Dies ist bedeutsam, weil eine Verwirkungsfrist von Amtes wegen zu beachten ist und nicht durch Anerkennung oder Stillstand unterbrochen werden kann."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, eine pflichtteilsberechtigte Tochter erfährt am 1. März 2023, dass ihr Vater kurz vor seinem Tod ein Grundstück an ihren Bruder für einen möglicherweise zu tiefen Preis verkauft hat, kennt aber den Verkehrswert noch nicht. Wann beginnt die Verwirkungsfrist zu laufen, und muss sie dennoch innerhalb eines Jahres klagen?",
+              "hint": "Vgl. Erwägung 2b: Kenntnis der Pflichtteilsverletzung dem Grunde nach genügt; unbezifferte Begehren sind zuzulassen",
+              "model_answer": "Die Verwirkungsfrist beginnt am 1. März 2023 zu laufen, da die Tochter zu diesem Zeitpunkt bereits die wesentlichen Sachverhaltselemente kennt, die eine Pflichtteilsverletzung als möglich erscheinen lassen. Die fehlende Kenntnis des genauen Verkehrswertes und damit die Unfähigkeit, den Anspruch zu beziffern, hemmt den Fristenlauf nicht. Die Tochter muss daher bis spätestens 1. März 2024 Klage erheben, wobei sie ein unbeziffertes Rechtsbegehren stellen darf, selbst wenn das kantonale Prozessrecht dies eigentlich nicht vorsieht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht stellt in Erwägung 2b fest, dass das materielle Bundesrecht dem kantonalen Prozessrecht vorgeht. Welche Interessenabwägung liegt diesem Grundsatz im Kontext der Herabsetzungsklage zugrunde, und in welchem Spannungsverhältnis steht dies zur kantonalen Verfahrensautonomie?",
+              "hint": "Vgl. Erwägung 2b, insbesondere die Ausführungen zur Zulässigkeit unbezifferter Begehren und zu BGE 116 II 215",
+              "model_answer": "Das Bundesgericht wägt das Interesse an der effektiven Durchsetzbarkeit des materiellen Bundeserbrechts gegen die kantonale Prozessautonomie ab und gibt ersterem den Vorrang. Würde man die Bezifferbarkeit des Anspruchs zur Voraussetzung des Fristbeginns machen, stünde dies im Widerspruch zum gesetzgeberischen Ziel, Rechtsunsicherheiten über die Gültigkeit und Tragweite erbrechtlicher Verfügungen rasch zu beseitigen. Dieses Spannungsverhältnis wird dahingehend aufgelöst, dass kantonales Prozessrecht zwar grundsätzlich anwendbar bleibt, bundesrechtliche Klagen jedoch nicht durch strengere kantonale Formvorschriften faktisch vereitelt werden dürfen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass die Verwirkungsfrist bereits mit der blossen Kenntnis der möglichen Pflichtteilsverletzung beginnt, ohne dass der Berechtigte seinen Anspruch beziffern kann? Welche Schutzinteressen werden dadurch gefördert oder vernachlässigt?",
+              "hint": "Vgl. Erwägung 2b: Gesetzgeberisches Ziel der raschen Rechtssicherheit vs. Schutz des Pflichtteilsberechtigten",
+              "model_answer": "Der Ansatz des Bundesgerichts fördert die Rechtssicherheit und die zügige Bereinigung erbrechtlicher Streitigkeiten — ein legitimes Interesse sowohl der Verfügungsempfänger als auch des Rechtsverkehrs insgesamt. Allerdings besteht die Gefahr, dass pflichtteilsberechtigte Erben, die mangels Zugang zu Nachlassinformationen ihren Anspruch nicht beziffern können, unter erheblichem Druck stehen, rechtzeitig eine Klage auf ungewisser Grundlage zu erheben. Als Korrektiv lässt das Bundesgericht unbezifferte Begehren zu, was die Härte des frühen Fristbeginns abmildert, jedoch das Problem der Beweisbeschaffung und der Prozessrisiken nicht vollständig löst."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Klägerin N. nachweisen könnte, dass sie trotz intensiver Bemühungen erst kurz vor Klageerhebung Zugang zu den massgeblichen Kaufvertragsunterlagen erhalten hat, weil die Beklagten die entsprechenden Dokumente aktiv zurückgehalten hatten?",
+              "discussion_points": [
+                "Kann arglistiges oder treuwidriges Verhalten der Beklagten den Beginn der Verwirkungsfrist hinausschieben oder deren Ablauf hemmen?",
+                "Wie verhält sich der Grundsatz von Treu und Glauben (Art. 2 ZGB) zur strikten Verwirkungsnatur der Frist nach Art. 533 ZGB?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht hätte möglicherweise prüfen müssen, ob die aktive Verhinderung der Kenntnisnahme durch die Beklagten die Schutzwürdigkeit ihres Verwirkungseinwands entfallen lässt. In der Literatur wird diskutiert, ob Treu und Glauben auch bei Verwirkungsfristen ausnahmsweise eine Hemmung oder Verlängerung rechtfertigen kann. Obwohl das Bundesgericht bei Verwirkungsfristen grundsätzlich streng ist, hätte ein solcher Sachverhalt allenfalls zu einer anderen Beurteilung des Kenntniszeitpunkts oder zu einer Einschränkung des Verwirkungseinwands geführt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Käuferin (Schwägerin) als Beklagte aufgetreten wäre, sondern ein gutgläubiger Dritter, der die Liegenschaft inzwischen vom ursprünglichen Erwerber weiterveräussert erhalten hat?",
+              "discussion_points": [
+                "Gegen wen richtet sich die Herabsetzungsklage bei Weiterveräusserung an einen gutgläubigen Dritten — gegen den ursprünglichen Erwerber auf Wertersatz oder gegen den Dritten dinglich?",
+                "Welche Rolle spielt Art. 522 Abs. 1 ZGB i.V.m. Art. 527 ZGB und der sachenrechtliche Gutglaubensschutz bei der Frage der passiven Legitimation?"
+              ],
+              "likely_outcome_shift": "Bei einer Weiterveräusserung an einen gutgläubigen Dritten wäre eine dingliche Rückforderung der Liegenschaft ausgeschlossen; die Herabsetzungsklage richtete sich dann auf Wertersatz gegen den ursprünglichen Erwerber. Dies würde die Anspruchsdurchsetzung erheblich erschweren, da der Klägerin nur noch ein schuldrechtlicher Anspruch auf den Mehrwert verbliebe, was die Bezifferung des Anspruchs noch komplexer gestalten und die Frage des Kenntnisstands für den Fristbeginn nochmals neu aufwerfen würde."
+            }
+          ]
         }
       ]
     },
@@ -65,7 +210,10 @@
       "name_de": "Testament und letztwillige Verfügung",
       "name_fr": "Testament et dispositions pour cause de mort",
       "name_it": "Testamento e disposizioni per causa di morte",
-      "statutes": ["Art. 467 ZGB", "Art. 494 ZGB"],
+      "statutes": [
+        "Art. 467 ZGB",
+        "Art. 494 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_120 II 177",
@@ -74,21 +222,94 @@
           "title_de": "Testamentsauslegung — Andeutungstheorie",
           "title_fr": "Interprétation du testament — théorie de l'indication minimale",
           "title_it": "",
-          "concepts_de": ["Testamentsauslegung", "Andeutungstheorie", "Erblasserwille", "Formvorschriften"],
-          "concepts_fr": ["Interprétation du testament", "Volonté du testateur", "Forme"],
+          "concepts_de": [
+            "Testamentsauslegung",
+            "Andeutungstheorie",
+            "Erblasserwille",
+            "Formvorschriften"
+          ],
+          "concepts_fr": [
+            "Interprétation du testament",
+            "Volonté du testateur",
+            "Forme"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 467 ZGB", "Art. 468 ZGB"],
+          "statutes": [
+            "Art. 467 ZGB",
+            "Art. 468 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Testamentsauslegung: Der Erblasserwille ist massgebend, muss aber im Testamentswortlaut zumindest angedeutet sein (Andeutungstheorie).",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt établit que l'obligation d'entretien envers un enfant mineur est strictement indépendante du droit aux relations personnelles, tout en admettant, à titre exceptionnel, qu'un comportement abusif au sens de l'art. 2 CC peut justifier une réduction de la contribution d'entretien.",
+          "significance_it": "Questa sentenza stabilisce che l'obbligo di mantenimento nei confronti di un figlio minorenne è rigorosamente indipendente dal diritto alle relazioni personali, ammettendo eccezionalmente che un comportamento abusivo ai sensi dell'art. 2 CC possa giustificare una riduzione del contributo alimentare.",
+          "key_erwagungen": [
+            "3",
+            "3a",
+            "3b",
+            "3c",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 3a, um die allgemeinen Voraussetzungen der Urteilsabänderung nach Art. 157 ZGB zu verstehen, bevor Sie in E. 3b den Kernsatz zur strikten Trennung von Besuchsrecht und Unterhaltspflicht herausarbeiten. E. 3c und E. 4 sind besonders wichtig für das Verständnis der Ausnahmekonstellationen (volljährige Kinder in Ausbildung; Rechtsmissbrauchsverbot als Korrektiv).",
+          "reading_guide_fr": "Commencez par le considérant 3a pour saisir les conditions générales de modification du jugement de divorce selon l'art. 157 CC, puis concentrez-vous sur le consid. 3b qui pose le principe d'indépendance entre droit de visite et obligation d'entretien. Les consid. 3c et 4 sont essentiels pour comprendre les exceptions applicables aux enfants majeurs en formation et la limite posée par l'interdiction de l'abus de droit.",
+          "reading_guide_it": "Iniziate con il considerando 3a per comprendere le condizioni generali di modifica della sentenza di divorzio secondo l'art. 157 CC, quindi esaminate il consid. 3b che enuncia il principio di indipendenza tra diritto di visita e obbligo di mantenimento. I consid. 3c e 4 sono fondamentali per capire le eccezioni relative ai figli maggiorenni in formazione e il limite posto dal divieto dell'abuso di diritto.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist gemäss dem Bundesgericht in BGE 120 II 177 der grundsätzliche Zusammenhang zwischen dem Besuchsrecht eines Elternteils und seiner Unterhaltspflicht gegenüber dem Kind?",
+              "hint": "Vgl. E. 3b, insbesondere den Abschnitt zur Unabhängigkeit des Unterhaltsrechts vom Besuchsrecht.",
+              "model_answer": "Das Bundesgericht hält fest, dass zwischen dem Recht auf persönlichen Verkehr und der Unterhaltspflicht der Eltern kein Zusammenhang besteht. Die Unterhaltspflicht ergibt sich allein aus dem Kindesverhältnis (Art. 276 Abs. 1 ZGB) und ist an keine Bedingungen geknüpft. Die Unmöglichkeit, das Besuchsrecht auszuüben, stellt daher grundsätzlich keinen triftigen Grund für eine Abänderung des Unterhaltsbeitrages dar."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Voraussetzungen müssen gemäss Art. 157 ZGB erfüllt sein, damit ein Scheidungsurteil hinsichtlich des Unterhaltsbeitrages abgeändert werden kann?",
+              "hint": "Vgl. E. 3a mit den dort zitierten Voraussetzungen und der Rechtsprechung zu ATF 100 II 76 und ATF 95 II 385.",
+              "model_answer": "Eine Abänderung des Scheidungsurteils nach Art. 157 ZGB setzt voraus, dass neue, wichtige Tatsachen eine andere Regelung gebieten und dass die Veränderung der Verhältnisse dauerhaft ist. Die neuen Tatsachen müssen zudem für die Festsetzung der Rechte und Pflichten der Eltern gemäss den Art. 156, 285 und 286 ZGB massgebend sein. Zweck dieser Regelung ist nicht die Korrektur des ursprünglichen Urteils, sondern seine Anpassung an veränderte Lebensumstände."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie würde das Bundesgericht entscheiden, wenn der Vater geltend macht, sein minderjähriger Sohn verweigere jeden Kontakt mit ihm, und er deshalb den Unterhaltsbeitrag herabsetzen lassen möchte?",
+              "hint": "Vgl. E. 3b und E. 4 zum Rechtsmissbrauchsverbot und den engen Ausnahmevoraussetzungen.",
+              "model_answer": "Das Bundesgericht würde den Antrag des Vaters grundsätzlich abweisen, da die Kontaktverweigerung des Kindes kein triftiger Grund für eine Abänderung der Unterhaltspflicht ist. Nur in echten Ausnahmefällen könnte ein missbräuchliches Verhalten der Mutter oder des Kindes eine Herabsetzung rechtfertigen. Im konkreten Fall hat das Bundesgericht ein solches missbräuchliches Verhalten verneint, weshalb der Unterhaltsbeitrag unverändert bestehen bleibt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet das Bundesgericht die Unterhaltspflicht gegenüber minderjährigen Kindern von jener gegenüber volljährigen Kindern in Ausbildung, und warum ist diese Unterscheidung für den Entscheid relevant?",
+              "hint": "Vgl. E. 3c zur Sonderregel des Art. 277 Abs. 2 ZGB und den dort bestehenden Nexus zwischen Unterhalt und persönlichem Verkehr.",
+              "model_answer": "Das Bundesgericht unterscheidet klar zwischen der Unterhaltspflicht gegenüber Minderjährigen und jener gegenüber volljährigen Kindern in Ausbildung nach Art. 277 Abs. 2 ZGB. Bei volljährigen Kindern hängt die Unterhaltspflicht ausdrücklich von den Gesamtumständen ab, zu denen auch die persönlichen Beziehungen zählen, sodass ein alleinig dem Kind zurechenbares Kontaktverhalten die Eltern von der Unterhaltspflicht befreien kann. Diese Differenzierung zeigt, dass der Gesetzgeber bewusst nur für volljährige Kinder einen Nexus zwischen Unterhalt und persönlichem Verkehr vorgesehen hat, was den Grundsatz der strikten Trennung beim Minderjährigenunterhalt noch unterstreicht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht statuierte strikte Trennung von Besuchsrecht und Unterhaltspflicht bei Minderjährigen rechtspolitisch überzeugend, oder birgt sie das Risiko, den unterhaltspflichtigen Elternteil in eine unzumutbare Lage zu bringen?",
+              "hint": "Vgl. E. 3b–3c und E. 4; bedenken Sie die ratio legis des Kindesschutzes sowie das Rechtsmissbrauchsverbot als Korrektiv.",
+              "model_answer": "Die strikte Trennung ist aus Kindesschutzperspektive grundsätzlich überzeugend, da das Kind nicht für das Verhalten seiner Eltern oder für eigene Kontaktablehnungen wirtschaftlich bestraft werden soll. Das Korrektiv des Rechtsmissbrauchsverbots (Art. 2 ZGB) erlaubt es jedoch, in echten Ausnahmefällen einem missbräuchlichen Verhalten Rechnung zu tragen, ohne den Grundsatz aufzuweichen. Kritisch liesse sich einwenden, dass die hohe Schwelle für die Annahme von Rechtsmissbrauch den unterhaltspflichtigen Elternteil in Fällen jahrelanger, von der sorgeberechtigten Mutter oder dem Kind aktiv betriebener Entfremdung faktisch schutzlos stellt, was Fragen der Verhältnismässigkeit aufwirft."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Mutter hat den Sohn aktiv und nachweislich dazu angestiftet, den Vater zu meiden, indem sie dem Kind falsche Behauptungen über den Vater eingeflösst hat (sog. Parental Alienation). Würde dies die Beurteilung des Bundesgerichts hinsichtlich des Rechtsmissbrauchsverbots verändern?",
+              "discussion_points": [
+                "Erfüllt das gezielte Anstiften der Mutter die hohe Schwelle für rechtsmissbräuchliches Verhalten gemäss Art. 2 ZGB, wie sie das Bundesgericht in E. 4 umreisst?",
+                "Inwiefern bleibt das Kindswohl als übergeordnetes Prinzip auch dann massgebend, wenn die Mutter nachweislich missbräuchlich handelt?"
+              ],
+              "likely_outcome_shift": "Bei nachgewiesenem, aktivem Anstiften der Mutter zur Kontaktverweigerung könnte das Bundesgericht eher bereit sein, einen echten Ausnahmefall im Sinne von E. 4 zu bejahen und eine Herabsetzung des Unterhaltsbeitrages zuzulassen. Dennoch würde das Gericht sorgfältig prüfen, ob eine solche Sanktionierung nicht letztlich zulasten des Kindes geht, da der Unterhalt primär dem Kindeswohl dient und nicht als Druckmittel gegenüber der Mutter eingesetzt werden soll."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht der Vater, sondern die Mutter ist der nicht sorgeberechtigte und unterhaltspflichtige Elternteil, und sie macht geltend, das volljährige, noch in Ausbildung befindliche Kind (18 Jahre) verweigere ihr jeden Kontakt. Ändert sich die rechtliche Beurteilung?",
+              "discussion_points": [
+                "Welche Norm ist bei volljährigen Kindern in Ausbildung anwendbar (Art. 277 Abs. 2 ZGB), und welchen Unterschied macht dies gegenüber der Regelung für Minderjährige?",
+                "Muss das kontaktverweigernde Verhalten des volljährigen Kindes diesem gemäss Rechtsprechung schuldhaft zurechenbar sein, um eine Reduktion oder einen Wegfall des Unterhalts zu rechtfertigen?"
+              ],
+              "likely_outcome_shift": "Bei einem volljährigen Kind in Ausbildung käme Art. 277 Abs. 2 ZGB zur Anwendung, der ausdrücklich die Gesamtumstände einschliesslich der persönlichen Beziehungen berücksichtigt. Das Bundesgericht würde prüfen, ob das Kontaktverweigerungsverhalten dem Kind schuldhaft zurechenbar ist; bejahendenfalls könnte dies die Unterhaltspflicht der Mutter reduzieren oder ganz entfallen lassen, was einen grundlegenden Unterschied zur Situation bei Minderjährigen darstellt."
+            }
+          ]
         },
         {
           "decision_id": "bge_133 III 406",
@@ -97,21 +318,91 @@
           "title_de": "Erbvertrag — Bindungswirkung und spätere Verfügungen",
           "title_fr": "Pacte successoral — effet obligatoire et dispositions ultérieures",
           "title_it": "",
-          "concepts_de": ["Erbvertrag", "Bindungswirkung", "Spätere Verfügungen", "Auslegung"],
-          "concepts_fr": ["Pacte successoral", "Effet obligatoire", "Dispositions ultérieures"],
+          "concepts_de": [
+            "Erbvertrag",
+            "Bindungswirkung",
+            "Spätere Verfügungen",
+            "Auslegung"
+          ],
+          "concepts_fr": [
+            "Pacte successoral",
+            "Effet obligatoire",
+            "Dispositions ultérieures"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 494 ZGB"],
+          "statutes": [
+            "Art. 494 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Auslegungsregeln für Erbverträge: Die Frage, ob eine Anordnung bindend oder frei widerruflich ist, richtet sich nach der Interessenlage der Vertragsparteien.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt établit que, lorsque ni la volonté réelle commune des parties ni le texte du pacte successoral ne permettent de trancher, la question de savoir si une clause est contractuellement contraignante ou unilatéralement révocable doit être résolue en fonction de la situation d'intérêts des parties, de sorte que l'institution d'héritiers tiers sans lien avec le conjoint prédécédé peut en principe être librement révoquée par le conjoint survivant.",
+          "significance_it": "La sentenza stabilisce che, qualora né la volontà reale comune delle parti né il testo del patto successorio consentano di determinare se una clausola sia vincolante o liberamente revocabile, occorre fare riferimento alla situazione degli interessi delle parti contraenti, con la conseguenza che l'istituzione di eredi terzi privi di legame con il coniuge premorto può essere in linea di principio liberamente revocata dal coniuge superstite.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste, um die zentrale Auslegungsregel zu erfassen, und wenden Sie sich dann Erwägung 2.1 zu, die das Verhältnis von vertragsmässigen und einseitigen Klauseln im Erbvertrag sowie die Voraussetzungen von Art. 494 Abs. 3 ZGB erläutert. Erwägung 3 konkretisiert, wie das Bundesgericht die Interessenlage der Vertragsparteien im vorliegenden Fall beurteilt und warum die Einsetzung von Dritten ohne Bezug zum erstversterbenden Ehegatten grundsätzlich frei widerruflich ist.",
+          "reading_guide_fr": "Commencez par lire le Regeste afin de saisir la règle d'interprétation centrale, puis consultez le considérant 2.1, qui expose la distinction entre les clauses contractuelles et les clauses unilatérales dans un pacte successoral ainsi que les conditions d'application de l'art. 494 al. 3 CC. Le considérant 3 précise comment le Tribunal fédéral apprécie la situation d'intérêts des parties contractantes en l'espèce et pourquoi l'institution d'héritiers tiers sans lien avec le conjoint prédécédé est en principe librement révocable.",
+          "reading_guide_it": "Si consiglia di leggere dapprima il Regeste per cogliere la regola interpretativa centrale, quindi di esaminare il considerando 2.1, che illustra la distinzione tra clausole contrattuali e clausole unilaterali nel patto successorio e le condizioni di applicazione dell'art. 494 cpv. 3 CC. Il considerando 3 specifica come il Tribunale federale valuta la situazione degli interessi delle parti contraenti nel caso concreto e perché l'istituzione di terzi eredi privi di legame con il coniuge premorto è in linea di principio liberamente revocabile.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was haben die Ehegatten Z. im Erbvertrag von 1973 bezüglich der Erbfolge beim Tod des zweitversterbenden Ehegatten geregelt, und wer wurde als Begünstigte eingesetzt?",
+              "hint": "Sachverhalt, Bst. B Ziff. 2.22 des Erbvertrags",
+              "model_answer": "Die Ehegatten Z. bestimmten im Erbvertrag von 1973, dass der frei verfügbare Teil des Erbschaftsvermögens beim Tod des zweitversterbenden Ehegatten zur Hälfte an die Gesellschaft X. und zur Hälfte an die Stiftung Y. aufzuteilen sei. Diese beiden juristischen Personen standen in keiner verwandtschaftlichen oder persönlichen Beziehung zum erstversterbenden Ehegatten B.Z. A.Z. widerrief diese Anordnung später durch ein eigenhändiges Testament zugunsten von T. und ihren Kindern."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Auslegungsregel hat das Bundesgericht in BGE 133 III 406 für die Abgrenzung zwischen vertragsmässigen (bindenden) und einseitigen (widerruflichen) Klauseln in einem Erbvertrag aufgestellt?",
+              "hint": "Regeste und Erwägung 2.1",
+              "model_answer": "Das Bundesgericht hält fest, dass die Frage, ob eine Klausel vertragsmässig und damit bindend oder einseitig und damit widerruflich ist, vorrangig anhand des übereinstimmenden wirklichen Willens der Vertragsparteien zu beantworten ist. Lässt sich dieser nicht ermitteln und gibt der Wortlaut der Klausel keinen genauen Aufschluss, so ist auf die Interessenlage der Vertragsparteien abzustellen. Diese Auslegungsregel ergibt sich aus Art. 494 ZGB in Verbindung mit Art. 509 Abs. 1 ZGB."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie würde das Bundesgericht den Fall beurteilen, wenn A.Z. im Testament von 1999 nicht T. und ihre Kinder, sondern einen eigenen Bruder als Alleinerben eingesetzt hätte – änderte sich die Beurteilung der freien Widerruflichkeit?",
+              "hint": "Regeste und Erwägungen 2 und 3 zur Interessenlage und zum Verhältnis der Dritten zum Erblasser",
+              "model_answer": "Ein Bruder des A.Z. stünde zu diesem – anders als Gesellschaft X. und Stiftung Y. zu B.Z. – in einer verwandtschaftlichen Beziehung. Das Bundesgericht stellt massgeblich auf das Fehlen einer persönlichen oder verwandtschaftlichen Beziehung der eingesetzten Dritten zum erstversterbenden Ehegatten ab, um die freie Widerruflichkeit zu begründen. Bestünde eine solche Nähebeziehung zum erstversterbenden Ehegatten, könnte eher geschlossen werden, dass die Einsetzung im gemeinsamen Interesse beider Ehegatten erfolgte und damit vertragsmässig bindend sein sollte – was gegen eine freie Widerruflichkeit spräche."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum genügt nach dem Bundesgericht die Verwendung der Vertragsform (öffentliche Urkunde, Bezeichnung als 'Erbvertrag') allein nicht, um alle enthaltenen Klauseln als bindend zu qualifizieren, und welche dogmatische Konsequenz ergibt sich daraus für Art. 494 Abs. 3 ZGB?",
+              "hint": "Erwägung 2.1, insbesondere der Hinweis auf BGE 105 II 253 und das Verhältnis von Art. 494 zu Art. 509 ZGB",
+              "model_answer": "Das Bundesgericht erkennt, dass ein als Erbvertrag bezeichnetes Dokument sowohl vertragliche als auch einseitig-testamentarische Klauseln enthalten kann. Die Wahl der Vertragsform indiziert zwar eine gewisse Bindungswirkung, ersetzt aber nicht die inhaltliche Prüfung, ob eine Klausel tatsächlich im Austausch- oder Interessenverbund beider Parteien steht. Dogmatisch bedeutet dies: Nur soweit eine Klausel als vertragsmässig qualifiziert wird, greift der Anfechtungsmechanismus von Art. 494 Abs. 3 ZGB; bei rein einseitigen Klauseln bleibt hingegen das testamentarische Widerrufsrecht nach Art. 509 Abs. 1 ZGB unberührt, und spätere Verfügungen können nicht angefochten werden."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist das vom Bundesgericht entwickelte Kriterium der 'Interessenlage der Vertragsparteien' als Auslegungsmassstab für Erbverträge überzeugend, oder birgt es Risiken für die Rechtssicherheit im Erbrecht?",
+              "hint": "Regeste und Erwägungen 2–3; allgemeine erbvertragsrechtliche Grundsätze",
+              "model_answer": "Das Kriterium der Interessenlage ist sachgerecht, weil es die privatautonome Gestaltungsfreiheit der Vertragsparteien ernst nimmt und einem rein formalen Bindungsautomatismus entgegenwirkt. Allerdings birgt es erhebliche Rechtsunsicherheit: Da die Interessenlage im Nachhinein – oft Jahrzehnte nach Vertragsschluss und nach dem Tod beider Parteien – rekonstruiert werden muss, besteht die Gefahr richterlicher Willkür und divergierender kantonaler Praxis. Rechtspolitisch wäre daher zu erwägen, ob klare Vermutungsregeln (z.B. Bindungsvermutung bei gegenseitiger Einsetzung unter Ehegatten) mehr Planungssicherheit böten, ohne die notwendige Flexibilität vollständig aufzugeben."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, A.Z. hätte im Erbvertrag von 1973 ausdrücklich festgehalten: 'Die Einsetzung der Gesellschaft X. und der Stiftung Y. erfolgt auf ausdrücklichen Wunsch beider Ehegatten und soll durch den überlebenden Ehegatten nicht abgeändert werden können.' Wie veränderte diese Klausel die rechtliche Beurteilung?",
+              "discussion_points": [
+                "Eine solche explizite Unwiderruflichkeitsklausel würde den Wortlaut der Vertragsbestimmung eindeutig machen und die Auslegung nach der Interessenlage erübrigen.",
+                "Das Testament von 1999 und die Lebensversicherungsklausel wären dann als mit dem Erbvertrag unvereinbare Verfügungen i.S.v. Art. 494 Abs. 3 ZGB anfechtbar."
+              ],
+              "likely_outcome_shift": "Mit einer expliziten Unwiderruflichkeitsklausel entfiele das zentrale Auslegungsproblem, da der Wortlaut eindeutig auf eine vertragsmässige Bindung hinwiese. Die Klagen der Gesellschaft X. und der Stiftung Y. hätten in diesem Szenario voraussichtlich Erfolg gehabt, und das Testament von 1999 wäre gemäss Art. 494 Abs. 3 ZGB anfechtbar gewesen. Die vom Bundesgericht entwickelte Interessenlage-Regel wäre mangels Auslegungsbedürfnis nicht zur Anwendung gekommen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht A.Z. (der Ehemann) als Letztversterbender ein neues Testament errichtet hätte, sondern B.Z. (die Ehefrau) noch zu ihren Lebzeiten – vor ihrem Tod 1981 – die Erbvertragsverfügungen zugunsten der Gesellschaft X. und der Stiftung Y. durch ein eigenhändiges Testament widerrufen und stattdessen ihre eigene Schwester als Alleinerbin eingesetzt hätte?",
+              "discussion_points": [
+                "B.Z. hätte als erstversterbende Ehegattin beim Widerruf die Interessenlage aus ihrer eigenen Perspektive zu berücksichtigen gehabt; ihre Schwester stünde in einer verwandtschaftlichen Beziehung zu ihr, was eher gegen eine freie Widerruflichkeit sprechen könnte.",
+                "Zudem stellt sich die Frage, ob der überlebende Ehegatte A.Z. als Vertragspartei des Erbvertrags in diesem Fall ein eigenes Anfechtungsrecht nach Art. 494 Abs. 3 ZGB gehabt hätte."
+              ],
+              "likely_outcome_shift": "Da die Schwester der B.Z. in einer verwandtschaftlichen Beziehung zur erstversterbenden Ehegattin gestanden hätte, wäre nach der bundesgerichtlichen Interessenlage-Logik eher von einer vertragsmässig bindenden Einsetzung auszugehen. Dies hätte zur Folge, dass das abweichende Testament der B.Z. als mit dem Erbvertrag unvereinbar gemäss Art. 494 Abs. 3 ZGB anfechtbar gewesen wäre – und zwar auf Klage des A.Z. hin, der als Vertragspartei ein schutzwürdiges Interesse an der Einhaltung der erbvertraglichen Regelung gehabt hätte."
+            }
+          ]
         }
       ]
     },
@@ -120,7 +411,11 @@
       "name_de": "Erbteilung, Ausgleichung und Erbunwürdigkeit",
       "name_fr": "Partage, rapport et indignité successorale",
       "name_it": "Divisione, collazione e indegnità successoria",
-      "statutes": ["Art. 540 ZGB", "Art. 607 ZGB", "Art. 626 ZGB"],
+      "statutes": [
+        "Art. 540 ZGB",
+        "Art. 607 ZGB",
+        "Art. 626 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_131 III 601",
@@ -129,21 +424,91 @@
           "title_de": "Ausgleichung — Begriff der Zuwendung unter Lebenden",
           "title_fr": "Rapport — notion de la libéralité entre vifs",
           "title_it": "",
-          "concepts_de": ["Ausgleichung", "Zuwendung", "Lebzeitige Zuwendung", "Erbteilung"],
-          "concepts_fr": ["Rapport", "Libéralité", "Donation entre vifs", "Partage"],
+          "concepts_de": [
+            "Ausgleichung",
+            "Zuwendung",
+            "Lebzeitige Zuwendung",
+            "Erbteilung"
+          ],
+          "concepts_fr": [
+            "Rapport",
+            "Libéralité",
+            "Donation entre vifs",
+            "Partage"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 626 ZGB"],
+          "statutes": [
+            "Art. 626 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Ausgleichungspflicht: Abgrenzung ausgleichungspflichtiger Zuwendungen von Unterhaltsleistungen und üblichen Geschenken.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt précise les conditions dans lesquelles la participation d'un tiers à la rédaction d'un testament olographe entraîne la nullité totale de l'acte au sens des art. 505 et 520 CC, en distinguant les éléments essentiels que le testateur doit impérativement rédiger de sa propre main de ceux d'importance secondaire.",
+          "significance_it": "Questa sentenza chiarisce le condizioni in cui la partecipazione di un terzo alla redazione di un testamento olografo comporta la nullità totale dell'atto ai sensi degli art. 505 e 520 CC, distinguendo gli elementi essenziali che il testatore deve necessariamente redigere di proprio pugno da quelli di importanza secondaria.",
+          "key_erwagungen": [
+            "3",
+            "3.1"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 602–603), um die besondere Entstehungsgeschichte des Testaments zu verstehen, und konzentrieren Sie sich dann auf Erwägung 3.1, in der das Bundesgericht die Formanforderungen des Art. 505 ZGB und die Grenze zwischen heilbarer Mitwirkung Dritter und totaler Nichtigkeit präzise herausarbeitet. Achten Sie besonders auf die Abwägung zwischen dem handschriftlich verfassten Teil der Erblasserin und dem maschinenschriftlichen Rahmentext des Bankiers.",
+          "reading_guide_fr": "Lisez d'abord l'état de fait (p. 602–603) pour comprendre les circonstances particulières dans lesquelles le testament a été rédigé, puis concentrez-vous sur le considérant 3.1, dans lequel le Tribunal fédéral précise les exigences formelles de l'art. 505 CC et trace la frontière entre le concours d'un tiers guérissable et la nullité totale. Prêtez une attention particulière à la balance entre les éléments manuscrits de la testatrice et le texte dactylographié fourni par le banquier.",
+          "reading_guide_it": "Si raccomanda di leggere dapprima i fatti (p. 602–603) per comprendere le circostanze particolari in cui è stato redatto il testamento, quindi di concentrarsi sul considerando 3.1, in cui il Tribunale federale precisa i requisiti formali dell'art. 505 CC e traccia il confine tra la partecipazione di un terzo sanabile e la nullità totale. Particolare attenzione va prestata alla ponderazione tra gli elementi manoscritti della testatrice e il testo dattiloscritto predisposto dal banchiere.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter einem eigenhändigen Testament im Sinne von Art. 505 Abs. 1 ZGB, und welche formellen Mindestanforderungen müssen erfüllt sein?",
+              "hint": "Vgl. E. 3.1, erster Absatz: Die Umschreibung der Formvoraussetzungen des Testament olographe.",
+              "model_answer": "Ein eigenhändiges Testament muss vom Anfang bis zum Ende handschriftlich vom Erblasser selbst verfasst, datiert und unterzeichnet sein. Das Datum muss Jahr, Monat und Tag der Errichtung enthalten. Im vorliegenden Fall war ein wesentlicher Teil des Dokuments maschinenschriftlich von der Sekretärin des Bankiers vorausgefüllt worden, was die Formanforderung des vollständigen Handschriftlichkeitserfordernisses in Frage stellt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Regel entwickelt die Rechtsprechung für den Fall, dass ein Dritter beim Verfassen eines eigenhändigen Testaments mitwirkt, und wo zieht das Gericht die Grenze zwischen heilbarer und unheilbarer Formnichtigkeit?",
+              "hint": "Vgl. E. 3.1, zweiter Absatz: Die Unterscheidung zwischen wesentlichen Bestandteilen und Elementen von untergeordneter Bedeutung.",
+              "model_answer": "Nach Doktrin und Rechtsprechung sind Passagen, die von dritter Hand stammen, nichtig. Das Testament bleibt jedoch gültig, wenn der Erblasser die wesentlichen Elemente – Begünstigte, Gegenstand und Umfang der Zuwendungen, Ort, Datum und Unterschrift – selbst handschriftlich verfasst hat und die Beiträge des Dritten lediglich Nebensächliches oder die Ergänzung offensichtlich fehlender Buchstaben betreffen. Totale Nichtigkeit tritt hingegen ein, wenn der handschriftliche Teil des Erblassers für sich allein keinen Sinn ergibt oder wenn anzunehmen ist, dass der Erblasser seine handschriftlichen Verfügungen ohne den maschinenschriftlichen Teil nicht getroffen hätte."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die Formerfordernisse des Art. 505 ZGB auf den Sachverhalt an: Sind die handschriftlichen Elemente von Madeleine Arthaud ausreichend, um die Gültigkeit des Testaments vom 5. April 1995 zu begründen?",
+              "hint": "Prüfen Sie die konkreten Teile des Dokuments: Der maschinenschriftliche Einleitungstext, die handschriftliche Ergänzung in der Lücke, Datum und Unterschrift.",
+              "model_answer": "Madeleine Arthaud hat zwar die Begünstigte ('Eglise protestante pour fond Cathédrale'), das Datum und ihre Unterschrift handschriftlich eingetragen. Allerdings war der wesentliche Rahmentext – die Einleitung mit dem Hinweis 'En cas de décès, je désire que la totalité de mes avoirs soit répartie comme suit' – maschinenschriftlich vorgefertigt. Ohne diesen maschinenschriftlichen Teil würden die handschriftlichen Elemente allein keinen vollständig verständlichen letzten Willen ergeben, weshalb das Bundesgericht die Gesamtnichtigkeit bejahte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche Spannungen bestehen zwischen dem Ziel der Formerfordernisse des Testaments (Schutz des Erblasserwillens, Warnfunktion) und dem Ergebnis des vorliegenden Urteils, und inwiefern könnte die strikte Auslegung zu einem unbilligen Ergebnis führen?",
+              "hint": "Berücksichtigen Sie die klare Willensäusserung der Erblasserin gegenüber dem Bankier und dem Zeugen Dr. N. sowie den Zweck der Formvorschriften.",
+              "model_answer": "Die Formvorschriften dienen dazu, den echten Erblasserwillen zu schützen, Übereilung zu verhindern und Fälschungen zu erschweren. Im vorliegenden Fall bestand kein Zweifel am tatsächlichen Willen der Erblasserin – sowohl der Bankier als auch der Zeuge Dr. N. bestätigten ihre klare Absicht. Die strikte Formanwendung führt jedoch dazu, dass eine gemeinnützige Institution nicht begünstigt wird und stattdessen der Staat und die Gemeinde erben, obwohl dies dem dokumentierten Willen der Erblasserin widerspricht. Dies verdeutlicht die Janusköpfigkeit der Formstrenge: Sie schützt zwar abstrakt vor Missbrauch, kann aber im Einzelfall den konkreten Erblasserwillen vereiteln."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht angewandte strikte Formanforderung des Art. 505 ZGB rechtspolitisch gerechtfertigt, oder sollte der Gesetzgeber Ausnahmen für Erblasser mit körperlichen Gebrechen vorsehen?",
+              "hint": "Berücksichtigen Sie die Sehschwäche von Madeleine Arthaud als Grund für die Mitwirkung des Bankiers sowie rechtsvergleichende Überlegungen.",
+              "model_answer": "Die strikte Formanforderung lässt sich rechtspolitisch mit dem Gebot der Rechtssicherheit und der Verhinderung von Erbschleicherei begründen. Gleichzeitig erscheint es stossend, dass körperlich eingeschränkte Erblasser faktisch schlechter gestellt werden, weil sie auf fremde Hilfe angewiesen sind. Ein rechtspolitisch überzeugender Ansatz wäre de lege ferenda eine Ausnahmeregelung analog zum öffentlichen Testament (Art. 499 ff. ZGB) für Personen mit dokumentierten körperlichen Gebrechen, verbunden mit erhöhten Zeugenpflichten, um den Erblasserwillen authentisch festzuhalten. Das geltende Recht lässt eine solche Korrektur jedoch nicht zu, weshalb der Richter an die Formvorschriften gebunden bleibt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, Madeleine Arthaud hätte nicht nur die Lücke ausgefüllt, sondern auch den gesamten Einleitungssatz 'En cas de décès, je désire que la totalité de mes avoirs soit répartie comme suit' eigenhändig – wenn auch mühsam – über den maschinenschriftlichen Text hingeschrieben, sodass beide Versionen nebeneinander existierten. Wie würde das Bundesgericht in diesem Fall entscheiden?",
+              "discussion_points": [
+                "Würde die handschriftliche Dopplung des maschinenschriftlichen Texts die Formanforderung des Art. 505 ZGB heilen?",
+                "Welche Bedeutung hätte der maschinenschriftliche Teil noch, wenn alle wesentlichen Elemente handschriftlich vorhanden wären?"
+              ],
+              "likely_outcome_shift": "Wäre der gesamte wesentliche Inhalt handschriftlich verfasst und der maschinenschriftliche Text lediglich als überflüssige Beilage zu betrachten, hätte das Bundesgericht die Formanforderungen als erfüllt ansehen können. Der maschinenschriftliche Teil würde dann als nicht-integrierende Ergänzung gelten, und das Testament wäre nach der in E. 3.1 entwickelten Regel gültig, sofern der handschriftliche Text für sich allein einen vollständigen und verständlichen letzten Willen ergibt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht der Staat Wallis und die Gemeinde Nendaz, sondern ein naher Verwandter von Madeleine Arthaud – etwa ein Neffe, der gesetzlicher Erbe wäre – hätte die Ungültigkeitsklage erhoben, und die Erblasserin hätte in einem späteren, formgültig errichteten öffentlichen Testament denselben Willen zugunsten der protestantischen Kirche bestätigt, ohne Kenntnis vom Formmangel des ersten Testaments. Wäre das Ergebnis ein anderes?",
+              "discussion_points": [
+                "Würde das spätere öffentliche Testament das formungültige eigenhändige Testament ersetzen oder bestätigen?",
+                "Hätte der Neffe als Pflichtteilsberechtigter trotz des gültigen öffentlichen Testaments Ansprüche?"
+              ],
+              "likely_outcome_shift": "Das spätere, formgültige öffentliche Testament würde das frühere formungültige eigenhändige Testament ersetzen und den Willen der Erblasserin rechtswirksam umsetzen. Die protestantische Kirche würde begünstigt. Der Neffe könnte allenfalls Pflichtteils- oder Herabsetzungsansprüche geltend machen, wenn die Zuwendung seinen Pflichtteil verletzt; die Frage der Formungültigkeit des ersten Testaments wäre hingegen prozessual irrelevant geworden."
+            }
+          ]
         },
         {
           "decision_id": "bge_138 III 354",
@@ -152,21 +517,91 @@
           "title_de": "Erbunwürdigkeit — Voraussetzungen und Rechtsfolgen",
           "title_fr": "Indignité successorale — conditions et effets juridiques",
           "title_it": "",
-          "concepts_de": ["Erbunwürdigkeit", "Tötungsdelikt", "Rechtsfolgen", "Geltendmachung"],
-          "concepts_fr": ["Indignité successorale", "Homicide", "Effets juridiques"],
+          "concepts_de": [
+            "Erbunwürdigkeit",
+            "Tötungsdelikt",
+            "Rechtsfolgen",
+            "Geltendmachung"
+          ],
+          "concepts_fr": [
+            "Indignité successorale",
+            "Homicide",
+            "Effets juridiques"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 540 ZGB"],
+          "statutes": [
+            "Art. 540 ZGB"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Konkretisierung der Erbunwürdigkeitsgründe nach Art. 540 ZGB und der prozessualen Geltendmachung durch die übrigen Erben.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt précise les conditions d'une professio iuris valable dans le cadre du traité d'établissement italo-suisse de 1868 et établit que le complémentaire droit à l'information successoral est perdu si l'héritier réservataire entièrement écarté ne forme pas l'action en réduction dans le délai d'un an prévu à l'art. 533 al. 1 CC.",
+          "significance_it": "La sentenza chiarisce le condizioni di una valida professio iuris nell'ambito del trattato di domicilio italo-svizzero del 1868 e stabilisce che il diritto all'informazione successorio decade qualora l'erede legittimario completamente escluso non proponga l'azione di riduzione entro il termine di un anno previsto dall'art. 533 cpv. 1 CC.",
+          "key_erwagungen": [
+            "3",
+            "3.1",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regest a und b, um die zwei zentralen Rechtsfragen — die kollisionsrechtliche Rechtswahl (professio iuris) und die Verwirkung des Auskunftsrechts — zu erfassen. Konzentrieren Sie sich sodann auf Erwägung 3 (anwendbares Recht) und Erwägung 5 (Art. 533 Abs. 1 ZGB), welche die tragenden Begründungslinien des Urteils enthalten. Der Sachverhalt (A–F) verdeutlicht die prozessuale Vorgeschichte und hilft, den Streitgegenstand — das Auskunftsbegehren der Witwe gegenüber der Bank — einzuordnen.",
+          "reading_guide_fr": "Commencez par les Regest a et b afin de saisir les deux questions juridiques centrales : le choix du droit applicable (professio iuris) et la péremption du droit à l'information successoral. Portez ensuite votre attention sur les considérants 3 et 5, qui constituent le cœur du raisonnement du Tribunal fédéral. Les faits (A–F) retracent l'historique procédural et permettent de situer l'objet du litige — la demande de renseignements de la veuve contre la banque.",
+          "reading_guide_it": "Si consiglia di leggere dapprima i regest a e b per cogliere le due questioni giuridiche centrali: la scelta del diritto applicabile (professio iuris) e la decadenza del diritto all'informazione successorio. Ci si concentri poi sui considerandi 3 e 5, che costituiscono il nucleo del ragionamento del Tribunale federale. I fatti (A–F) illustrano la storia procedurale e aiutano a inquadrare l'oggetto della controversia — la domanda di informazioni della vedova nei confronti della banca.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der sachverhaltliche Ausgangspunkt des Verfahrens BGE 138 III 354, und welche Parteien stehen sich gegenüber?",
+              "hint": "Vgl. Sachverhalt A–F, insbesondere die Rolle von B.B. als Witwe und A. SA als Bank.",
+              "model_answer": "C.B., ein italienischer Staatsangehöriger mit letztem Wohnsitz im Kanton Tessin, verstarb 2007 und hinterliess seine Witwe B.B. sowie drei Kinder aus erster Ehe. B.B. versuchte mittels Betreibung, die Bank A. SA zur Herausgabe von Dokumenten über die Bankbeziehungen des Verstorbenen zu verpflichten. Die Bank widersetzte sich diesem Begehren, weshalb der Rechtsstreit durch die Instanzen bis ans Bundesgericht gelangte."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlage regelt das auf den Nachlass eines italienischen Staatsangehörigen mit letztem Wohnsitz in der Schweiz anwendbare Erbrecht, und welche Rolle spielt dabei die sogenannte professio iuris?",
+              "hint": "Vgl. Regeste a sowie Erwägung 3 mit Verweis auf Art. 17 Abs. 3 des Niederlassungs- und Konsularvertrags von 1868.",
+              "model_answer": "Art. 17 Abs. 3 des Niederlassungs- und Konsularvertrags zwischen der Schweiz und Italien vom 22. Juli 1868 bestimmt grundsätzlich das anwendbare Erbrecht. Das Bundesgericht hat in der Rückweisungsentscheidung DTF 136 III 461 festgehalten, dass diese Norm eine professio iuris zugunsten des Rechts des Wohnsitzstaates nicht ausschliesst. Wählt der Erblasser — wie hier — das schweizerische Recht, so ist dieses ausschliesslich auf den Erbgang anwendbar."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Welche konkreten Anforderungen muss ein pflichtteilsberechtigter Erbe nach Art. 533 Abs. 1 ZGB erfüllen, um sein Auskunftsrecht gegenüber einer Bank nicht zu verwirken, wenn er vollständig vom Erbgang ausgeschlossen wurde?",
+              "hint": "Vgl. Regeste b und Erwägung 5 zum Verhältnis zwischen Herabsetzungsklage und erbrechtlichem Auskunftsrecht.",
+              "model_answer": "Ein pflichtteilsberechtigter Erbe, der durch letztwillige Verfügung vollständig vom Erbgang ausgeschlossen wurde, muss die Verfügung innerhalb eines Jahres ab Kenntnis mit der Herabsetzungsklage nach Art. 533 Abs. 1 ZGB anfechten. Versäumt er diese Frist, verliert er nicht nur sein Recht auf die Herabsetzungsklage, sondern auch seine Erbenstellung und damit das erbrechtliche Auskunftsrecht gegenüber Dritten wie Banken. Das Auskunftsrecht setzt somit voraus, dass die betroffene Person ihre Erbenstellung aktiv und fristgerecht geltend macht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern stehen das kollisionsrechtliche Ergebnis (Anwendbarkeit des schweizerischen Rechts aufgrund der professio iuris) und die erbrechtliche Frage des Auskunftsrechts der Witwe in einem sachlichen Zusammenhang, und welche Wechselwirkungen ergeben sich daraus für den konkreten Fall?",
+              "hint": "Vgl. die Verbindung zwischen Erwägung 3 (IPR) und Erwägung 5 (materielles Erbrecht, Art. 533 ZGB).",
+              "model_answer": "Erst durch die kollisionsrechtliche Weichenstellung — Anwendung des schweizerischen Rechts aufgrund der professio iuris — wird bestimmt, welches materielle Erbrecht die Rechtsstellung der Witwe regelt. Unter schweizerischem Recht beurteilt sich damit, ob B.B. als pflichtteilsberechtigte Erbin ein Auskunftsrecht gegen die Bank besitzt. Die Wechselwirkung liegt darin, dass die professio iuris das anwendbare Recht fixiert, welches dann seinerseits die prozessualen und materiellen Voraussetzungen des Auskunftsanspruchs — einschliesslich der Verwirkungsfrist nach Art. 533 Abs. 1 ZGB — determiniert."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die bundesgerichtliche Lösung, wonach die Unterlassung der Herabsetzungsklage auch zum Verlust des erbrechtlichen Auskunftsrechts führt, rechtspolitisch überzeugend, oder schützt sie in unverhältnismässiger Weise die Interessen der eingesetzten Erben auf Kosten übergangener Pflichtteilsberechtigter?",
+              "hint": "Vgl. Erwägung 5 sowie die ratio legis von Art. 533 ZGB und den Schutzzweck der Pflichtteilsrechte.",
+              "model_answer": "Die Lösung des Bundesgerichts ist rechtssystematisch kohärent, weil sie verhindert, dass ein übergangener Pflichtteilsberechtigter über das Auskunftsrecht faktisch Erbenrechte ausübt, ohne die letztwillige Verfügung rechtzeitig anzufechten. Rechtspolitisch lässt sich jedoch kritisieren, dass das Auskunftsrecht gerade die Grundlage für eine informierte Entscheidung über die Erhebung der Herabsetzungsklage bildet, sodass sein Verlust als Folge der Nichtklage einen Zirkelschluss darstellt. Eine differenzierte Lösung, die ein zeitlich begrenztes Auskunftsrecht unabhängig von der Klageerhebung gewährt, könnte den Schutz der Pflichtteilsberechtigten besser wahren, ohne die Rechtssicherheit der eingesetzten Erben übermässig zu belasten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, C.B. hätte keine ausdrückliche professio iuris in seinem Testament vorgenommen, sondern lediglich auf das schweizerische Recht verweisende Klauseln verwendet, die mehrdeutig sind. Wie hätte das Bundesgericht die Rechtswahl beurteilt, und welche Folgen hätte die Anwendung italienischen Erbrechts für das Auskunftsbegehren der Witwe gehabt?",
+              "discussion_points": [
+                "Auslegung einer konkludenten oder unvollständigen professio iuris im Sinne von Art. 17 Abs. 3 des Niederlassungs- und Konsularvertrags und den Anforderungen an deren Deutlichkeit.",
+                "Unterschiede zwischen dem schweizerischen und dem italienischen Erbrecht hinsichtlich des Pflichtteilsschutzes der überlebenden Ehegatten und des damit verbundenen Auskunftsrechts."
+              ],
+              "likely_outcome_shift": "Bei unklarer Rechtswahl hätte das Bundesgericht vermutlich die Grundregel des Staatsvertrags angewendet und auf das italienische Recht verwiesen, da der Erblasser Italiener war. Unter italienischem Erbrecht wäre das Auskunftsbegehren der Witwe nach anderen Massstäben zu beurteilen gewesen, was je nach Ausgestaltung der italienischen Rechtslage zu einem anderen Ergebnis hätte führen können. Die Frage der Verwirkung des Auskunftsrechts hätte sich sodann nicht nach Art. 533 ZGB, sondern nach den entsprechenden italienischen Verjährungs- und Verwirkungsregeln gerichtet."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie wäre der Fall zu beurteilen, wenn nicht die Witwe B.B., sondern einer der drei testamentarisch eingesetzten Kinder das Auskunftsbegehren gegenüber der Bank gestellt hätte, um Informationen über indirekte Bankbeziehungen des Vaters zu erhalten?",
+              "discussion_points": [
+                "Unterschied zwischen der Rechtsstellung eines testamentarisch eingesetzten Erben und eines übergangenen Pflichtteilsberechtigten in Bezug auf das erbrechtliche Auskunftsrecht.",
+                "Ob und unter welchen Voraussetzungen eingesetzte Erben gegen Banken auf Auskunft und Herausgabe von Dokumenten klagen können, namentlich bei indirekten Bankbeziehungen mit wirtschaftlich Berechtigtem."
+              ],
+              "likely_outcome_shift": "Als testamentarisch eingesetzte Erben hätten die Kinder eine unbestrittene Erbenstellung, sodass die Frage der Verwirkung nach Art. 533 ZGB von vornherein nicht relevant wäre. Das Bundesgericht hätte sich stärker auf die materiellen Grenzen des Auskunftsrechts gegenüber der Bank konzentriert — insbesondere hinsichtlich indirekter Bankbeziehungen — und wäre voraussichtlich zu einem günstigeren Ergebnis für die klagenden Erben gelangt, da deren Legitimation nicht in Frage stand."
+            }
+          ]
         },
         {
           "decision_id": "bge_143 III 369",
@@ -175,21 +610,100 @@
           "title_de": "Zusammenspiel von Güterrecht und Erbrecht",
           "title_fr": "Interaction du régime matrimonial et du droit successoral",
           "title_it": "",
-          "concepts_de": ["Güterrecht", "Erbrecht", "Vorschlag", "Errungenschaftsbeteiligung", "Erbteilung"],
-          "concepts_fr": ["Régime matrimonial", "Droit successoral", "Acquêts", "Partage"],
+          "concepts_de": [
+            "Güterrecht",
+            "Erbrecht",
+            "Vorschlag",
+            "Errungenschaftsbeteiligung",
+            "Erbteilung"
+          ],
+          "concepts_fr": [
+            "Régime matrimonial",
+            "Droit successoral",
+            "Acquêts",
+            "Partage"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 207 ZGB", "Art. 607 ZGB"],
+          "statutes": [
+            "Art. 207 ZGB",
+            "Art. 607 ZGB"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Zusammenspiel von güterrechtlicher Auseinandersetzung und Erbrecht: die güterrechtliche Abrechnung ist der erbrechtlichen Teilung vorgelagert.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit qu'un héritier réservataire totalement écarté de la succession par une disposition pour cause de mort n'a pas qualité pour requérir un inventaire public au sens de l'art. 580 al. 1 CC, tant qu'il n'a pas obtenu un jugement en réduction ou en nullité rétablissant sa qualité d'héritier.",
+          "significance_it": "Questa sentenza di principio stabilisce che l'erede legittimario completamente escluso dalla successione mediante disposizione a causa di morte non è legittimato a richiedere un inventario pubblico ai sensi dell'art. 580 cpv. 1 CC fintanto che non abbia ottenuto una sentenza di riduzione o di nullità che ripristini la sua qualità di erede.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "2.2",
+            "2.3",
+            "3",
+            "3.1",
+            "3.2",
+            "3.3",
+            "3.4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 2.1, um die erbrechtliche Ausgangslage der Beschwerdeführerin als 'virtuelle Erbin' zu verstehen, und verfolgen Sie dann, wie das Bundesgericht in E. 3.1 die Anforderungen von Art. 580 Abs. 1 ZGB auf diesen Status anwendet. Besonderes Augenmerk verdient E. 3.2, wo das Bundesgericht die Abgrenzung zum früheren Urteil 5A_610/2013 und damit die Unterscheidung zwischen Sicherungsmassregeln und öffentlichem Inventar klarstellt.",
+          "reading_guide_fr": "Commencez par lire le considérant 2.1 pour comprendre la situation successorale de la recourante en tant qu'héritière dite 'virtuelle', puis suivez le raisonnement du Tribunal fédéral au considérant 3.1, où il applique les conditions de l'art. 580 al. 1 CC à ce statut particulier. Le considérant 3.2 mérite une attention particulière, car il précise la distinction entre les mesures conservatoires (art. 551 ss CC) et l'inventaire public, et délimite la portée de l'arrêt 5A_610/2013.",
+          "reading_guide_it": "Iniziare con il considerando 2.1 per comprendere la posizione successoria della ricorrente quale erede cosiddetta 'virtuale', per poi seguire il ragionamento del Tribunale federale al considerando 3.1, dove vengono applicate le condizioni dell'art. 580 cpv. 1 CC a tale status. Il considerando 3.2 merita particolare attenzione, poiché chiarisce la distinzione tra le misure cautelari (art. 551 segg. CC) e l'inventario pubblico.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was verstand das Bundesgericht unter dem Begriff der 'virtuellen Erbin', und warum verwendete es diesen Begriff in Bezug auf die Beschwerdeführerin A.?",
+              "hint": "Vgl. E. 2.1 und 2.2: Die Beschwerdeführerin bezeichnet sich selbst als virtuelle Erbin.",
+              "model_answer": "Das Bundesgericht bezeichnet A. als 'virtuelle Erbin', weil sie zwar gesetzliche Erbin und pflichtteilsberechtigt ist (Art. 457 und 471 Ziff. 1 ZGB), durch den Ehe- und Erbvertrag jedoch vollständig von der Erbschaft ausgeschlossen wurde. Sie erlangt die tatsächliche Erbenstellung erst durch ein zu ihren Gunsten lautendes Herabsetzungs- oder Ungültigkeitsurteil. Bis dahin ist ihre Erbenstellung bloss virtuell, d.h. rechtlich noch nicht realisiert."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzliche Voraussetzung muss gemäss Art. 580 Abs. 1 ZGB erfüllt sein, um ein öffentliches Inventar verlangen zu können, und wie leitet das Bundesgericht daraus die Ablehnung des Gesuchs der Beschwerdeführerin ab?",
+              "hint": "Vgl. E. 3.1: Das Bundesgericht legt den Wortlaut von Art. 580 Abs. 1 ZGB aus und verknüpft ihn mit dem Ergebnis aus E. 2.",
+              "model_answer": "Art. 580 Abs. 1 ZGB setzt voraus, dass die antragstellende Person 'Erbe' ist und die Befugnis hat, die Erbschaft auszuschlagen. Da A. durch die Verfügung von Todes wegen vollständig übergangen wurde, hat sie noch keine rechtliche Erbenstellung erlangt und kann die Erbschaft weder ausschlagen noch annehmen. Das Bundesgericht folgert daraus, dass die Ausschlagung für A. weder nötig noch möglich ist, weshalb auch die Voraussetzungen von Art. 580 Abs. 1 ZGB nicht erfüllt sind."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, A. hätte vor Einreichung ihres Gesuchs um öffentliches Inventar erfolgreich eine Ungültigkeitsklage gegen den Ehe- und Erbvertrag erhoben: Hätte sie dann Anspruch auf das öffentliche Inventar gehabt? Begründen Sie Ihre Antwort anhand der bundesgerichtlichen Erwägungen.",
+              "hint": "Vgl. E. 2.1 und 3.1: Das Bundesgericht nennt das Ungültigkeits- und das Herabsetzungsurteil als alternative Wege zur Erlangung der Erbenstellung.",
+              "model_answer": "Ja, in diesem Fall hätte A. Anspruch auf das öffentliche Inventar gehabt. Durch ein rechtskräftiges Ungültigkeitsurteil hätte sie ihre Erbenstellung erlangt und wäre damit als Erbin im Sinne von Art. 580 Abs. 1 ZGB berechtigt, die Erbschaft auszuschlagen oder anzunehmen. Die zeitliche Reihenfolge ist entscheidend: Erst die gerichtliche Feststellung der Erbenstellung eröffnet das Recht auf das öffentliche Inventar."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet in E. 3.2 ausdrücklich zwischen dem öffentlichen Inventar (Art. 580 ff. ZGB) und den Sicherungsmassregeln (Art. 551 ff. ZGB, insb. Art. 553 ZGB). Worin liegt der funktionale Unterschied dieser beiden Rechtsinstitute, und warum ist diese Unterscheidung für den vorliegenden Entscheid bedeutsam?",
+              "hint": "Vgl. E. 3.2 sowie die Abgrenzung zum Urteil 5A_610/2013, wo Art. 553 ZGB geprüft wurde.",
+              "model_answer": "Das öffentliche Inventar nach Art. 580 ff. ZGB ist ein erbrechtliches Instrument zur Haftungsbeschränkung für Erben und setzt die Erbenstellung voraus. Die Sicherungsmassregeln nach Art. 551 ff. ZGB dienen hingegen der vorläufigen Sicherung des Nachlasses im Interesse aller Beteiligten und setzen keine vollwertige Erbenstellung voraus. Die Unterscheidung ist für den vorliegenden Fall zentral, weil das frühere Urteil 5A_610/2013 nur die Berechtigung zur Beantragung des Inventars nach Art. 553 ZGB bejaht hatte, ohne damit die Frage des öffentlichen Inventars zu präjudizieren. Das Bundesgericht stellt klar, dass die unterschiedlichen Voraussetzungen der beiden Institute nicht vermengt werden dürfen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Die Beschwerdeführerin rügt in E. 3.3, die Verweigerung des öffentlichen Inventars bewirke eine Ungleichbehandlung zwischen ihr als gesetzlicher Erbin und der begünstigten Ehefrau. Beurteilen Sie kritisch, ob diese Rüge rechtspolitisch überzeugend ist, und nehmen Sie Stellung dazu, ob der Gesetzgeber de lege ferenda eine Anpassung von Art. 580 ZGB in Erwägung ziehen sollte.",
+              "hint": "Vgl. E. 3.3 und 3.4: Das Bundesgericht weist die Rüge ab und verweist auf die Kenntnis der ungefähren Nachlasshöhe als ausreichende Basis für die Herabsetzungsklage.",
+              "model_answer": "Die Rüge der Ungleichbehandlung hat eine gewisse rechtspolitische Plausibilität, denn der übergangene Pflichtteilserbe ist in einer strukturellen Informationsasymmetrie gegenüber der begünstigten Erbin. Das Bundesgericht begegnet dieser Sorge damit, dass für die Herabsetzungsklage nur die ungefähre Kenntnis der Nachlasshöhe genügt (BGE 138 III 354 E. 5.2). De lege ferenda liesse sich gleichwohl argumentieren, dass ein gesondertes Auskunftsrecht für potenzielle Pflichtteilserben sinnvoll wäre, ohne die strenge Voraussetzung der Erbenstellung für das öffentliche Inventar aufzugeben. Eine Ausdehnung von Art. 580 ZGB selbst erscheint jedoch systemwidrig, da das öffentliche Inventar funktional an die Annahme- oder Ausschlagungsentscheidung geknüpft ist, die bei virtuellen Erben noch nicht aktuell ist."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, A. hätte nicht nur ein öffentliches Inventar verlangt, sondern gleichzeitig auch eine vorsorgliche Massnahme nach Art. 553 ZGB (Siegelung des Nachlasses) beantragt, und der Nachlass würde Aktiven umfassen, bei denen ein unmittelbares Risiko der Vermögensverminderung durch die Alleinerbin B.B. bestünde. Würde das Bundesgericht auch diesen Antrag abweisen?",
+              "discussion_points": [
+                "Unterschied zwischen Sicherungsmassregeln (Art. 551 ff. ZGB) und öffentlichem Inventar (Art. 580 ff. ZGB) hinsichtlich der Antragslegitimation",
+                "Ob ein pflichtteilsberechtigter, aber übergangener Erbe nach dem Urteil 5A_610/2013 zur Stellung eines Antrags nach Art. 553 ZGB legitimiert ist"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht hätte diesen Antrag möglicherweise anders beurteilt, da es in E. 3.2 ausdrücklich darauf hinweist, dass im Urteil 5A_610/2013 die Berechtigung eines ausgeschlossenen Pflichtteilserben zur Beantragung eines Inventars nach Art. 553 ZGB (Sicherungsmassregel) bejaht wurde. Ein solcher Antrag wäre damit nicht an die Erbenstellung geknüpft und hätte bessere Erfolgsaussichten gehabt. Das vorliegende Verfahren hätte sich somit auf eine Frage des Sicherungsrechts verlagert, bei der der Ausgang weniger klar wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht A., sondern die überlebende Ehegattin B.B. nach dem Tod des Erblassers C.B. die Aufnahme eines öffentlichen Inventars verlangt hätte – mit der Begründung, sie wolle vor der Übernahme des Nachlasses die Passiven kennen und sich die Möglichkeit der Ausschlagung offenhalten?",
+              "discussion_points": [
+                "B.B. ist als eingesetzte Universalerbin unzweifelhaft Erbin im Sinne von Art. 580 Abs. 1 ZGB und hat die Befugnis zur Ausschlagung",
+                "Ob die güterrechtliche Auseinandersetzung (Art. 207 ZGB) vor der erbrechtlichen Inventaraufnahme abzuwickeln wäre und wie dies das Inventar beeinflusst"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht hätte dem Gesuch von B.B. stattgegeben, da sie als eingesetzte Universalerbin die Erbenstellung und damit die Antragslegitimation nach Art. 580 Abs. 1 ZGB unzweifelhaft erfüllt. Im Unterschied zur Ausgangslage hätte sich die Frage gestellt, wie im Rahmen des Inventars die güterrechtliche Auseinandersetzung – insbesondere die Zuordnung der beiden Vorschläge – zu berücksichtigen ist, was auf die in BGE 143 III 369 thematisierte Vorrangfrage der güterrechtlichen Abrechnung vor der erbrechtlichen Teilung verweist."
+            }
+          ]
         }
       ]
     }

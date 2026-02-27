@@ -312,14 +312,74 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur vorvertraglichen Haftung: Aufklärungs- und Sorgfaltspflichten bei Vertragsverhandlungen entstehen durch Treu und Glauben.",
-          "significance_fr": "Arrêt de principe sur la responsabilité précontractuelle: obligations d'information lors des négociations contractuelles.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que, lors de négociations contractuelles, la bonne foi (art. 2 CC) fait naître des obligations précontractuelles d'information et de diligence, et que le locataire qui se fie sans raison de méfiance aux indications du bailleur ne saurait être tenu pour négligent au sens de l'art. 26 al. 1 CO lorsque le bailleur a lui-même provoqué ou partagé l'erreur.",
+          "significance_it": "Questa sentenza di principio stabilisce che, nel quadro delle trattative contrattuali, la buona fede (art. 2 CC) fa sorgere obblighi precontrattuali di informazione e diligenza, e che il conduttore il quale si fida senza motivo di diffidenza delle indicazioni del locatore non può essere considerato negligente ai sensi dell'art. 26 cpv. 1 CO qualora il locatore abbia egli stesso provocato o condiviso l'errore.",
+          "key_erwagungen": [
+            "1",
+            "1a",
+            "2a",
+            "2b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die tatsächlichen Umstände des Inserats und der Wohnungsbesichtigung zu erfassen. Konzentrieren Sie sich anschliessend auf Erwägung 1 (Abgrenzung Tat- und Rechtsfragen beim Grundlagenirrtum nach Art. 24 Abs. 1 Ziff. 4 OR) und Erwägung 2 (Masssstab der Fahrlässigkeit nach Art. 26 Abs. 1 OR sowie die entscheidende Frage, ob der Vermieter den Irrtum mitverursacht hat), da diese den dogmatischen Kern des Urteils bilden.",
+          "reading_guide_fr": "Commencez par lire attentivement les faits afin de saisir le contexte de l'annonce et de la visite de l'appartement. Concentrez-vous ensuite sur le considérant 1 (distinction entre questions de fait et de droit concernant l'erreur essentielle au sens de l'art. 24 al. 1 ch. 4 CO) et le considérant 2 (critère de la négligence selon l'art. 26 al. 1 CO et la question déterminante de savoir si le bailleur a co-causé l'erreur), car ces développements constituent le cœur dogmatique de l'arrêt.",
+          "reading_guide_it": "Si raccomanda di leggere attentamente i fatti per comprendere il contesto dell'inserzione e della visita dell'appartamento. Ci si concentri poi sul considerando 1 (distinzione tra questioni di fatto e di diritto in merito all'errore essenziale ai sensi dell'art. 24 cpv. 1 n. 4 CO) e sul considerando 2 (criterio della negligenza ex art. 26 cpv. 1 CO e la questione decisiva se il locatore abbia co-causato l'errore), poiché questi passaggi costituiscono il nucleo dogmatico della sentenza.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat der Beklagte B. beim Abschluss des Mietvertrages irrtümlich angenommen, und wie gross war die tatsächliche Abweichung von der im Inserat angegebenen Wohnfläche?",
+              "hint": "Sachverhalt, Abschnitt A und B; Erwägung 1a",
+              "model_answer": "B. ging aufgrund des Inserats davon aus, die Wohnung habe etwa 160 m² Wohnfläche. Nach eigener Messung ermittelte er nur 138 m², und das gerichtlich bestellte Gutachten stellte nach bernischem Ortsgebrauch 146,82 m² fest. Die Abweichung betrug damit rund 13 bis 22 m² gegenüber der beworbenen Fläche."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen müssen gemäss Art. 24 Abs. 1 Ziff. 4 OR erfüllt sein, damit ein Grundlagenirrtum vorliegt, und welche dieser Voraussetzungen hat das Bundesgericht im vorliegenden Fall als Rechtsfrage qualifiziert?",
+              "hint": "Erwägung 1, erster Absatz sowie Erwägung 1a, letzter Abschnitt",
+              "model_answer": "Ein Grundlagenirrtum setzt voraus, dass der Irrende eine falsche Vorstellung über einen Sachverhalt oder eine Rechtslage hatte, die er nach Treu und Glauben als notwendige Vertragsgrundlage betrachten durfte, und dass diese Vorstellung beiden Parteien bewusst oder unbewusst gemeinsam war. Das Bundesgericht qualifiziert die Frage, ob der Irrtum wesentlich im Sinne von Art. 24 Abs. 1 Ziff. 4 OR ist – einschliesslich der Erkennbarkeit für die Gegenpartei und der Schlussfolgerungen aus dem Inserat nach Treu und Glauben – als Rechtsfrage, die es im Berufungsverfahren frei überprüfen kann."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, B. hätte vor Vertragsunterzeichnung einen Architekten beigezogen, der die Wohnfläche hätte schätzen können, aber darauf verzichtet. Wie würde dies die Beurteilung seiner Fahrlässigkeit nach Art. 26 Abs. 1 OR beeinflussen?",
+              "hint": "Erwägung 2a und 2b; Regeste Ziff. 2",
+              "model_answer": "Gemäss Erwägung 2a darf ein Mieter sich auf die Angaben des Vermieters verlassen, sofern er keinen Anlass zu Misstrauen hat. Hätte B. jedoch konkrete Zweifel gehabt und dennoch auf eine Überprüfung verzichtet, könnte ihm dies als Fahrlässigkeit angelastet werden. Der Verzicht auf einen Architekten wäre dann ein Indiz für eigenes Verschulden, was die Schadenersatzpflicht nach Art. 26 Abs. 1 OR begründen oder erhöhen könnte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht unterscheidet zwischen Tat- und Rechtsfragen in Bezug auf den Irrtum des Beklagten. Welche konkreten Feststellungen behandelt es als Tatfragen, und warum ist diese Unterscheidung für das Berufungsverfahren prozessual entscheidend?",
+              "hint": "Erwägung 1a, insbesondere die Hinweise auf BGE 107 II 229 und BGE 96 II 27",
+              "model_answer": "Als Tatfragen – und damit für das Bundesgericht im Berufungsverfahren bindend – qualifiziert das Gericht das Wissen und den Willen des Beklagten bei Vertragsabschluss (z.B. dass er wegen Familienzuwachses eine Wohnung von mindestens 160 m² benötigte) sowie die Feststellung, dass in Bern eine allgemein übliche Messweise für vermietbare Flächen besteht. Diese Unterscheidung ist prozessual entscheidend, weil das Bundesgericht im Berufungsverfahren nur Rechtsfragen frei überprüft und tatsächliche Feststellungen der Vorinstanz nicht erneut beurteilen darf; die rechtliche Qualifikation, ob der festgestellte Irrtum wesentlich ist, bleibt hingegen der freien bundesgerichtlichen Kognition vorbehalten."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass der irrende Mieter gemäss Art. 26 Abs. 1 OR schadenersatzpflichtig sein kann, obwohl der Vermieter dieselbe falsche Flächenangabe in einem öffentlich geschalteten Inserat verbreitet hat? Welche Wertungen streiten für und gegen eine Haftung des Mieters in dieser Konstellation?",
+              "hint": "Regeste Ziff. 2, Erwägung 2b; vgl. Bedeutung von Treu und Glauben (Art. 2 ZGB) im vorvertraglichen Verhältnis",
+              "model_answer": "Für eine Haftung des Mieters spricht das Prinzip der Eigenverantwortung: Wer einen bedeutenden Vertrag abschliesst, sollte Angaben überprüfen, wenn dies zumutbar ist. Gegen eine Haftung spricht hingegen, dass das Vertrauen in öffentlich geschaltete Inserate schutzwürdig ist und der Vermieter durch seine eigene – möglicherweise fahrlässige – Angabe das Informationsgefälle herbeigeführt hat; Treu und Glauben (Art. 2 ZGB) gebieten, dass derjenige, der einen Irrtum veranlasst oder mitverursacht hat, nicht vollen Schadenersatz fordern kann. Das Bundesgericht trägt dieser Wertung in Erwägung 2b Rechnung, indem es eine Haftung des Mieters ausschliesst, wenn der Vermieter sich im gleichen Irrtum befindet oder ihn gar selbst herbeigeführt hat – eine sachgerechte Lösung, die das Risiko der Fehlinformation demjenigen zuweist, der sie in Umlauf gebracht hat."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Stellen Sie sich vor, B. hätte beim ersten Besichtigungstermin einen mitgebrachten Grundrissplan des Architekten erhalten, auf dem die Fläche als '162 m²' eingetragen war, und hätte diesen Plan vor Unterzeichnung des Mietvertrags selbst kurz überflogen, ohne die Zahlen zu hinterfragen. Würde dies die Beurteilung seiner Fahrlässigkeit nach Art. 26 Abs. 1 OR verändern?",
+              "discussion_points": [
+                "Erhöht die aktive Übergabe eines Dokuments durch den Vermieter das berechtigte Vertrauen des Mieters, sodass Fahrlässigkeit noch weniger vorwerfbar ist?",
+                "Kann das blosse Überfliegen eines offiziellen Architektendokuments ohne vertiefte Prüfung als Sorgfaltspflichtverletzung gewertet werden, wenn keine konkreten Anhaltspunkte für Unrichtigkeit bestehen?"
+              ],
+              "likely_outcome_shift": "Die aktive Aushändigung eines professionell wirkenden Architektendokuments mit falscher Flächenangabe würde das Vertrauen des Mieters weiter legitimieren und seine Fahrlässigkeit noch schwerer begründbar machen. Da der Vermieter selbst ein offizielles Dokument mit der unrichtigen Angabe eingesetzt hätte, wäre die Haftung des Mieters nach Art. 26 Abs. 1 OR nach den Grundsätzen von Erwägung 2b wohl vollständig ausgeschlossen, und die Klage der Immobiliengesellschaft würde vollumfänglich abgewiesen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Kehren Sie die Rollen um: Die Immobiliengesellschaft als Mieterin mietet von B. als Privatvermieter ein Geschäftslokal, das im Inserat mit '200 m² Nutzfläche' angegeben wird, tatsächlich aber nur 175 m² aufweist. Die Gesellschaft, vertreten durch einen professionellen Immobilienverwalter, ficht den Vertrag wegen Grundlagenirrtums an. Verändert die professionelle Stellung der irrenden Partei die Bewertung ihrer Fahrlässigkeit?",
+              "discussion_points": [
+                "Gilt ein strengerer Sorgfaltsmassstab für professionelle Akteure im Immobilienbereich, die Flächenangaben vor Vertragsabschluss routinemässig überprüfen können und sollten?",
+                "Ändert sich die Risikoverteilung, wenn der Irrtum beim Abschluss eines Gewerbemietvertrags durch eine juristische Person mit Fachkenntnissen entsteht, gegenüber einem privaten Wohnungsmieter?"
+              ],
+              "likely_outcome_shift": "Bei einer professionellen Immobiliengesellschaft als Mieterin würde die Rechtsprechung einen erhöhten Sorgfaltsmassstab anlegen: Sie hätte die Nutzfläche vor Abschluss eines Gewerbemietvertrags fachkundig messen lassen müssen. Die Fahrlässigkeit nach Art. 26 Abs. 1 OR wäre damit deutlich leichter zu bejahen, und die Gesellschaft trüge einen erheblichen oder sogar den vollen Schaden des Vermieters, sofern dieser seinerseits gutgläubig war."
+            }
+          ]
         }
       ]
     },

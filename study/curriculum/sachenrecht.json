@@ -10,7 +10,10 @@
       "name_de": "Eigentum und Eigentumsschutz",
       "name_fr": "Propriété et protection de la propriété",
       "name_it": "Proprietà e protezione della proprietà",
-      "statutes": ["Art. 641 ZGB", "Art. 679 ZGB"],
+      "statutes": [
+        "Art. 641 ZGB",
+        "Art. 679 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_132 III 651",
@@ -18,14 +21,29 @@
           "actual_language": "de",
           "title_de": "Actio negatoria und Dienstbarkeiten",
           "title_fr": "Action négatoire et servitudes",
-          "concepts_de": ["Eigentumsfreiheitsklage", "Dienstbarkeit", "Abwehrrecht", "Immissionen"],
-          "concepts_fr": ["Action négatoire", "Servitude", "Droit de défense"],
-          "statutes": ["Art. 641 ZGB", "Art. 738 ZGB"],
+          "concepts_de": [
+            "Eigentumsfreiheitsklage",
+            "Dienstbarkeit",
+            "Abwehrrecht",
+            "Immissionen"
+          ],
+          "concepts_fr": [
+            "Action négatoire",
+            "Servitude",
+            "Droit de défense"
+          ],
+          "statutes": [
+            "Art. 641 ZGB",
+            "Art. 738 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Das Abwehrrecht nach Art. 641 Abs. 2 ZGB besteht auch bei mittelbaren Eingriffen",
           "significance_fr": "Le droit de défense selon l'art. 641 al. 2 CC existe aussi en cas d'atteintes indirectes",
-          "key_erwagungen": ["3", "4"],
+          "key_erwagungen": [
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 3: Voraussetzungen der Eigentumsfreiheitsklage (actio negatoria). E. 4: Abgrenzung zu den Nachbarrechten. Achten Sie auf die Unterscheidung zwischen unmittelbaren und mittelbaren Eingriffen.",
           "socratic_questions": [
             {
@@ -68,13 +86,21 @@
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn keine Dienstbarkeit bestünde, sondern nur eine vertragliche Nutzungsvereinbarung?",
-              "discussion_points": ["Dingliche vs. obligatorische Wirkung", "Drittwirkung vertraglicher Vereinbarungen", "Besitzesschutz"],
+              "discussion_points": [
+                "Dingliche vs. obligatorische Wirkung",
+                "Drittwirkung vertraglicher Vereinbarungen",
+                "Besitzesschutz"
+              ],
               "likely_outcome_shift": "Die Klage würde direkt auf Art. 641 Abs. 2 ZGB gestützt ohne Dienstbarkeitsprüfung. Einfachere Subsumtion."
             },
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn der Kläger die Immissionen jahrelang geduldet hätte?",
-              "discussion_points": ["Verwirkung", "Duldungspflicht durch konkludentes Verhalten", "Treu und Glauben (Art. 2 ZGB)"],
+              "discussion_points": [
+                "Verwirkung",
+                "Duldungspflicht durch konkludentes Verhalten",
+                "Treu und Glauben (Art. 2 ZGB)"
+              ],
               "likely_outcome_shift": "Das Abwehrrecht könnte durch Verwirkung eingeschränkt sein, wobei dingliche Rechte grundsätzlich nicht verwirken."
             }
           ]
@@ -86,21 +112,94 @@
           "title_de": "Öffentlicher Glaube des Grundbuchs — gutgläubiger Erwerb",
           "title_fr": "Foi publique du registre foncier — acquisition de bonne foi",
           "title_it": "",
-          "concepts_de": ["Öffentlicher Glaube", "Grundbuch", "Gutgläubiger Erwerb", "Publizitätsprinzip"],
-          "concepts_fr": ["Foi publique", "Registre foncier", "Acquisition de bonne foi", "Publicité"],
+          "concepts_de": [
+            "Öffentlicher Glaube",
+            "Grundbuch",
+            "Gutgläubiger Erwerb",
+            "Publizitätsprinzip"
+          ],
+          "concepts_fr": [
+            "Foi publique",
+            "Registre foncier",
+            "Acquisition de bonne foi",
+            "Publicité"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 973 ZGB"],
+          "statutes": [
+            "Art. 973 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Der öffentliche Glaube des Grundbuchs schützt den gutgläubigen Erwerber dinglicher Rechte auch bei unrichtigem Grundbucheintrag.",
-          "significance_fr": "La foi publique du registre foncier protège l'acquéreur de bonne foi même en cas d'inscription incorrecte.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "L'arrêt précise que la foi publique du registre foncier (art. 973 al. 1 CC) ne protège pas l'acquéreur de bonne foi lorsque le droit inscrit n'est pas susceptible d'inscription, mais confirme qu'une servitude foncière grevant une part de propriété par étages – même subdivisée en copropriété – constitue un droit valablement inscriptible.",
+          "significance_it": "La sentenza chiarisce che la pubblica fede del registro fondiario (art. 973 cpv. 1 CC) non protegge l'acquirente in buona fede quando il diritto iscritto non è suscettibile di iscrizione, ma conferma che una servitù prediale che grava una quota di proprietà per piani – anche suddivisa in comproprietà – costituisce un diritto validamente iscrivibile.",
+          "key_erwagungen": [
+            "3.1",
+            "3.2",
+            "3.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die komplexe Eigentümerstruktur der Autoeinstellhalle (Stockwerkeigentum mit interner Miteigentumsaufteilung) zu verstehen. Konzentrieren Sie sich dann auf E. 3.1 für die dogmatischen Grundlagen des öffentlichen Glaubens und dessen Grenzen sowie auf E. 3.2 und E. 3.3 für die konkrete Prüfung der Eintragungsfähigkeit der strittigen Dienstbarkeit.",
+          "reading_guide_fr": "Lisez d'abord attentivement les faits pour comprendre la structure complexe de la propriété de la halle de stationnement (propriété par étages avec copropriété interne). Concentrez-vous ensuite sur le considérant 3.1 pour les fondements dogmatiques de la foi publique du registre foncier et ses limites, puis sur les considérants 3.2 et 3.3 pour l'examen concret de l'inscriptibilité de la servitude litigieuse.",
+          "reading_guide_it": "Leggere dapprima attentamente i fatti per comprendere la complessa struttura proprietaria del garage (proprietà per piani con comproprietà interna). Concentrarsi poi sul considerando 3.1 per i fondamenti dogmatici della pubblica fede del registro fondiario e i suoi limiti, nonché sui considerandi 3.2 e 3.3 per l'esame concreto dell'iscrivibilità della servitù controversa.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem 'öffentlichen Glauben des Grundbuchs' im Sinne von Art. 973 Abs. 1 ZGB, und welchen Schutz gewährt dieser einem gutgläubigen Erwerber?",
+              "hint": "Vgl. E. 3.1, erster Abschnitt",
+              "model_answer": "Der öffentliche Glaube des Grundbuchs bedeutet, dass ein gutgläubiger Dritter, der gestützt auf einen unrichtigen Grundbucheintrag Eigentum oder andere dingliche Rechte an einem Grundstück erwirbt, in seinem Erwerb geschützt wird. Massgebend ist ausschliesslich der durch den Grundbucheintrag bewirkte Rechtsschein. So kann der gutgläubige Dritte dingliche Rechte selbst von jemandem erwerben, der im Grundbuch zu Unrecht als Eigentümer eingetragen ist oder dessen Grundstück aus einer zu Unrecht eingetragenen Dienstbarkeit berechtigt ist."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche entscheidende Grenze des öffentlichen Glaubens des Grundbuchs nennt das Bundesgericht in E. 3.1, und woraus ergibt sich diese Grenze rechtsdogmatisch?",
+              "hint": "Vgl. E. 3.1, zweiter Abschnitt, sowie den Verweis auf DESCHENAUX und SCHMID",
+              "model_answer": "Der öffentliche Glaube des Grundbuchs reicht nicht so weit, dass Rechte, die das Gesetz nicht als dingliche anerkennt, durch blosse Eintragung im Grundbuch zu dinglichen Rechten werden. Der Eintrag eines nicht eintragungsfähigen Rechts – etwa einer Dienstbarkeit mit unzulässigem Inhalt – geniesst den Schutz von Art. 973 ZGB nicht. Diese Grenze ergibt sich daraus, dass der Gutglaubensschutz nur den Rechtsschein eines bestehenden, gesetzlich anerkannten Rechts absichern kann, nicht aber ein gesetzlich unzulässiges Recht erst erschaffen kann."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die in E. 3.1 entwickelten Grundsätze auf den konkreten Sachverhalt an: Konnte sich K. auf den öffentlichen Glauben des Grundbuchs berufen, als sie 1989 die Stockwerkeinheit 'Nr. 7' samt dem eingetragenen Benutzungsrecht an Einstellplatz Nr. 10 erwarb?",
+              "hint": "Vgl. E. 3.1 i.V.m. E. 3.2 und E. 3.3 sowie den Sachverhalt",
+              "model_answer": "K. konnte sich grundsätzlich auf den öffentlichen Glauben des Grundbuchs berufen, da die eingetragene Grunddienstbarkeit – das Benutzungsrecht am Einstellplatz Nr. 10 – nach der Beurteilung des Bundesgerichts ein eintragungsfähiges Recht darstellt. Da ein Stockwerkeigentumsanteil zugunsten eines anderen mit einer Grunddienstbarkeit belastet werden kann, liegt kein Fall eines nicht eintragungsfähigen Rechts vor. Der Schutz des Art. 973 ZGB greift somit zugunsten der gutgläubigen Erwerberin K."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht prüft in E. 3.2 und E. 3.3 die Eintragungsfähigkeit der Dienstbarkeit in zwei Schritten. Warum war dieser zweistufige Prüfungsaufbau notwendig, und worin liegt der sachliche Unterschied zwischen den beiden Prüfungsschritten?",
+              "hint": "Vgl. E. 3.2 (Belastung eines Stockwerkeigentumsanteils als solche) und E. 3.3 (Aufspaltung in unselbstständiges Miteigentum)",
+              "model_answer": "Der erste Schritt (E. 3.2) klärt die grundsätzliche Frage, ob ein Stockwerkeigentumsanteil überhaupt als dienendes Grundstück einer Grunddienstbarkeit taugen kann – eine Frage, die Rechtsprechung und Lehre bejahten. Der zweite Schritt (E. 3.3) war notwendig, weil die Autoeinstellhalle zusätzlich intern in Miteigentumsanteile aufgeteilt war, was eine eigenständige Rechtsfrage aufwarf: ob diese 'unselbstständige' Miteigentumsstruktur die Eintragungsfähigkeit ausschliesst. Ohne diesen zweiten Schritt wäre die besondere Eigentümerstruktur der Einstellhalle – als Stockwerkeinheit, die ihrerseits in Miteigentum aufgeteilt ist – nicht erfasst worden."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie kritisch die Entscheidung des Bundesgerichts, den Schutz von Art. 973 ZGB auf Dienstbarkeiten zu beschränken, die ein eintragungsfähiges Recht betreffen: Schafft diese Regel ein angemessenes Gleichgewicht zwischen dem Verkehrsschutz und dem Interesse daran, gesetzlich unzulässige Rechtspositionen nicht zu perpetuieren?",
+              "hint": "Vgl. E. 3.1 sowie die dogmatische Begründung in der zitierten Literatur (DESCHENAUX, SCHMID)",
+              "model_answer": "Die Regel schafft grundsätzlich ein sachgerechtes Gleichgewicht: Der Verkehrsschutz des Art. 973 ZGB setzt logisch voraus, dass ein Rechtschein existiert, dem das Gesetz überhaupt Rechtsfolgen beilegt – ein gesetzlich schlechthin unzulässiges Recht kann keinen schutzwürdigen Rechtsschein erzeugen. Gleichzeitig birgt die Grenzziehung praktische Unsicherheiten, weil die Eintragungsfähigkeit eines Rechts nicht immer auf den ersten Blick erkennbar ist, was den Gutglaubenserwerber zwingt, eine eigenständige rechtliche Prüfung vorzunehmen und damit den Verkehrsschutz partiell aushöhlt. De lege ferenda wäre eine klarere gesetzliche Normierung der nicht eintragungsfähigen Rechte wünschenswert, um die Rechtssicherheit zu stärken."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, das eingetragene 'Benutzungsrecht' am Einstellplatz Nr. 10 wäre nicht als Grunddienstbarkeit, sondern als persönliche Dienstbarkeit (Personalservitut) zugunsten von S. persönlich – und nicht zugunsten des jeweiligen Eigentümers der Stockwerkeinheit 'Nr. 7' – ins Grundbuch eingetragen worden. Würde K. beim Erwerb der Stockwerkeinheit im Jahr 1989 trotzdem durch Art. 973 ZGB geschützt?",
+              "discussion_points": [
+                "Personalservituten sind nicht übertragbar und erlöschen mit dem Tod bzw. dem Wegfall des Berechtigten; sie gehen beim Verkauf der Einheit nicht automatisch auf den Erwerber über.",
+                "Art. 973 ZGB schützt den gutgläubigen Erwerber dinglicher Rechte, aber eine persönliche Dienstbarkeit ist an die Person des Berechtigten gebunden und kann nicht als Bestandteil eines Grundstückskaufs übergehen.",
+                "Zu prüfen wäre, ob K. überhaupt einen Rechtsschein des Inhalts geltend machen könnte, dass ihr – und nicht S. – das Benutzungsrecht zusteht."
+              ],
+              "likely_outcome_shift": "K. könnte sich in diesem Fall nicht auf Art. 973 ZGB berufen, um das Benutzungsrecht für sich zu beanspruchen, da eine Personalservitut nicht auf sie übergehen kann und der Grundbucheintrag insoweit keinen auf sie bezogenen Rechtsschein erzeugt. Die Klage wäre abzuweisen, und die Widerklage auf Löschung hätte bessere Aussichten auf Erfolg, sofern das Recht mit S. erloschen wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht K., sondern die Ehegatten B. hätten 1989 einen Dritten gefunden, der – gestützt auf ihr unbelastetes Grundbuchblatt der Stockwerkeinheit 'Nr. 10' – in gutem Glauben lastenfrei Eigentum an Einstellplatz Nr. 10 erworben hätte, bevor K. ihr Benutzungsrecht geltend machte. Könnte dieser gutgläubige Erwerber die Löschung der Dienstbarkeit verlangen?",
+              "discussion_points": [
+                "Art. 973 ZGB schützt den gutgläubigen Erwerber, der auf den Grundbucheintrag vertraut; die Dienstbarkeit war aber im Grundbuch eingetragen, sodass ein Erwerber im Grundbuch davon Kenntnis nehmen konnte.",
+                "Da die Dienstbarkeit ordnungsgemäss auf dem Grundbuchblatt der Autoeinstellhalle eingetragen war, könnte sich ein Erwerber der Stockwerkeinheit 'Nr. 10' nicht auf Unkenntnis berufen – der Grundbucheintrag wirkt gegen jedermann.",
+                "Zu diskutieren ist, ob die Eintragung auf dem Grundbuchblatt der Autoeinstellhalle auch für Erwerber der Stockwerkeinheit 'Nr. 10' ohne Weiteres erkennbar und damit dem Gutglaubensschutz entzogen war."
+              ],
+              "likely_outcome_shift": "Ein gutgläubiger Erwerber der Stockwerkeinheit 'Nr. 10' könnte sich nicht auf Art. 973 ZGB berufen, um die eingetragene Dienstbarkeit zu beseitigen, weil der Eintrag im Grundbuch öffentlich zugänglich und damit erkennbar war. Die Dienstbarkeit würde bestehen bleiben und das Benutzungsrecht der K. weiterhin sichern; das Ergebnis bliebe im Wesentlichen dasselbe wie im entschiedenen Fall."
+            }
+          ]
         },
         {
           "decision_id": "bge_127 III 506",
@@ -108,14 +207,29 @@
           "actual_language": "de",
           "title_de": "Nutzungsrechte bei Stockwerkeigentum",
           "title_fr": "Droits d'usage en propriété par étages",
-          "concepts_de": ["Stockwerkeigentum", "Sondernutzungsrecht", "Gemeinschaftsrecht"],
-          "concepts_fr": ["Propriété par étages", "Droit d'usage exclusif"],
-          "statutes": ["Art. 712m ZGB", "Art. 712n ZGB"],
+          "concepts_de": [
+            "Stockwerkeigentum",
+            "Sondernutzungsrecht",
+            "Gemeinschaftsrecht"
+          ],
+          "concepts_fr": [
+            "Propriété par étages",
+            "Droit d'usage exclusif"
+          ],
+          "statutes": [
+            "Art. 712m ZGB",
+            "Art. 712n ZGB"
+          ],
           "difficulty": 4,
-          "prerequisites": ["bge_132 III 651"],
+          "prerequisites": [
+            "bge_132 III 651"
+          ],
           "significance_de": "Begründung besonderer Nutzungsrechte bei Stockwerkeigentümergemeinschaft",
           "significance_fr": "Fondement des droits d'usage spéciaux dans la propriété par étages",
-          "key_erwagungen": ["3", "4"],
+          "key_erwagungen": [
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 3: Rechtsnatur des Sondernutzungsrechts. E. 4: Zuständigkeit der Gemeinschaftsversammlung. Achten Sie auf die Unterscheidung zwischen dinglichen und obligatorischen Sondernutzungsrechten.",
           "socratic_questions": [
             {
@@ -158,13 +272,21 @@
             {
               "type": "swap_parties",
               "scenario": "Was wäre, wenn der die Sondernutzung beanspruchende Eigentümer seine Einheit an einen Dritten verkauft?",
-              "discussion_points": ["Dingliche vs. persönliche Wirkung", "Grundbucheintrag", "Gutgläubiger Erwerb"],
+              "discussion_points": [
+                "Dingliche vs. persönliche Wirkung",
+                "Grundbucheintrag",
+                "Gutgläubiger Erwerb"
+              ],
               "likely_outcome_shift": "Nur ein im Grundbuch eingetragenes (dingliches) Sondernutzungsrecht geht auf den Käufer über. Ein bloss obligatorisches Recht bindet den Erwerber nicht."
             },
             {
               "type": "extreme_case",
               "scenario": "Was wäre, wenn 99% der Eigentümer zustimmen, aber ein einzelner Eigentümer blockiert?",
-              "discussion_points": ["Rechtsmissbrauch (Art. 2 Abs. 2 ZGB)", "Eigentumsgarantie", "Gestaltungsmöglichkeiten"],
+              "discussion_points": [
+                "Rechtsmissbrauch (Art. 2 Abs. 2 ZGB)",
+                "Eigentumsgarantie",
+                "Gestaltungsmöglichkeiten"
+              ],
               "likely_outcome_shift": "Trotz überwältigender Mehrheit bleibt Einstimmigkeit erforderlich. Nur bei Rechtsmissbrauch (Art. 2 Abs. 2 ZGB) könnte das Blockieren überwunden werden."
             }
           ]
@@ -176,7 +298,11 @@
       "name_de": "Besitz und Besitzesschutz",
       "name_fr": "Possession et protection possessoire",
       "name_it": "Possesso e protezione del possesso",
-      "statutes": ["Art. 919 ZGB", "Art. 926 ZGB", "Art. 928 ZGB"],
+      "statutes": [
+        "Art. 919 ZGB",
+        "Art. 926 ZGB",
+        "Art. 928 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_135 III 633",
@@ -184,14 +310,27 @@
           "actual_language": "de",
           "title_de": "Besitzesstörung und verbotene Eigenmacht",
           "title_fr": "Trouble de la possession et voie de fait illicite",
-          "concepts_de": ["Besitzesstörung", "Verbotene Eigenmacht", "Besitzesschutz", "Öffentliches Recht"],
-          "concepts_fr": ["Trouble de la possession", "Voie de fait illicite"],
-          "statutes": ["Art. 928 ZGB"],
+          "concepts_de": [
+            "Besitzesstörung",
+            "Verbotene Eigenmacht",
+            "Besitzesschutz",
+            "Öffentliches Recht"
+          ],
+          "concepts_fr": [
+            "Trouble de la possession",
+            "Voie de fait illicite"
+          ],
+          "statutes": [
+            "Art. 928 ZGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Voraussetzungen der Besitzesstörungsklage; Verhältnis öffentlich-rechtliche Eigentumsbeschränkung",
           "significance_fr": "Conditions de l'action possessoire; rapport avec les restrictions de droit public",
-          "key_erwagungen": ["3", "4"],
+          "key_erwagungen": [
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 3: Voraussetzungen der Besitzesstörungsklage nach Art. 928 ZGB. E. 4: Verhältnis zum öffentlichen Recht. Achten Sie auf den Unterschied zwischen Besitzesschutz und Eigentumsschutz.",
           "socratic_questions": [
             {
@@ -219,7 +358,9 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Störung durch eine behördliche Anordnung gedeckt wäre?",
-              "discussion_points": ["Verhältnis privater Besitzesschutz und öffentliches Recht"],
+              "discussion_points": [
+                "Verhältnis privater Besitzesschutz und öffentliches Recht"
+              ],
               "model_answer": "Eine gültige behördliche Anordnung würde die Eigenmacht rechtfertigen. Der Besitzesschutz weicht dem öffentlichen Recht, sofern die Anordnung verhältnismässig ist."
             },
             {
@@ -234,7 +375,10 @@
             {
               "type": "change_timeline",
               "scenario": "Was wäre, wenn die Besitzesstörung vor mehr als einem Jahr stattfand?",
-              "discussion_points": ["Verwirkungsfrist (Art. 929 ZGB)", "Unterschied zwischen Klage und Selbsthilfe"],
+              "discussion_points": [
+                "Verwirkungsfrist (Art. 929 ZGB)",
+                "Unterschied zwischen Klage und Selbsthilfe"
+              ],
               "likely_outcome_shift": "Die Besitzesstörungsklage wäre nach der einjährigen Verwirkungsfrist nicht mehr möglich. Der Besitzer müsste auf die Eigentumsklage ausweichen."
             }
           ]
@@ -246,21 +390,95 @@
           "title_de": "Eigentumserwerb an beweglichen Sachen — Übergabe und Traditionsprinzip",
           "title_fr": "Acquisition de la propriété mobilière — remise et principe de tradition",
           "title_it": "",
-          "concepts_de": ["Eigentumserwerb", "Bewegliche Sachen", "Übergabe", "Traditionsprinzip", "Fahrnis"],
-          "concepts_fr": ["Acquisition de la propriété", "Meubles", "Remise", "Principe de tradition"],
+          "concepts_de": [
+            "Eigentumserwerb",
+            "Bewegliche Sachen",
+            "Übergabe",
+            "Traditionsprinzip",
+            "Fahrnis"
+          ],
+          "concepts_fr": [
+            "Acquisition de la propriété",
+            "Meubles",
+            "Remise",
+            "Principe de tradition"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 714 ZGB"],
+          "statutes": [
+            "Art. 714 ZGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Voraussetzungen des Eigentumserwerbs an beweglichen Sachen: Einigung und Übergabe nach Art. 714 ZGB.",
-          "significance_fr": "Conditions de l'acquisition de la propriété mobilière: accord et remise selon l'art. 714 CC.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt précise de manière exhaustive les conditions du transfert de propriété et de possession des meubles selon les art. 714 et 922 ss CC, en excluant notamment la cession de l'action en revendication (art. 641 al. 2 CC) comme mode de transfert valable.",
+          "significance_it": "La sentenza chiarisce in modo esaustivo i presupposti del trasferimento della proprietà e del possesso sui beni mobili ai sensi degli art. 714 e 922 segg. CC, escludendo in particolare la cessione dell'azione rivendicatoria (art. 641 cpv. 2 CC) quale modo di trasferimento valido.",
+          "key_erwagungen": [
+            "4",
+            "5",
+            "6.1",
+            "6.2",
+            "7"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 4 zur Besitzanweisung und dem Erfordernis des gestuften Besitzes, dann Erwägung 5 zur longa manu traditio und schliesslich die Erwägungen 6.1 und 6.2 zur Unzulässigkeit der Vindikationszession als Traditionssurrogat. Diese vier Abschnitte bilden das dogmatische Kernstück des Urteils und verdeutlichen, unter welchen Voraussetzungen Eigentum an Fahrnissachen nach Art. 714 ZGB wirksam übertragen werden kann.",
+          "reading_guide_fr": "Commencez par lire le considérant 4 relatif à l'indication de possession et à l'exigence d'une possession à degrés, puis le considérant 5 sur la tradition longa manu, et enfin les considérants 6.1 et 6.2 sur l'inadmissibilité de la cession de l'action en revendication comme substitut à la tradition. Ces quatre sections constituent le cœur dogmatique de l'arrêt et précisent les conditions auxquelles la propriété mobilière peut être valablement transférée selon l'art. 714 CC.",
+          "reading_guide_it": "Leggere prima il considerando 4 sull'indicazione del possesso e sul requisito del possesso graduale, poi il considerando 5 sulla traditio longa manu, e infine i considerandi 6.1 e 6.2 sull'inammissibilità della cessione dell'azione rivendicatoria come surrogato della tradizione. Questi quattro punti costituiscono il nucleo dogmatico della sentenza e chiariscono i presupposti per un valido trasferimento della proprietà mobiliare ai sensi dell'art. 714 CC.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter einer Besitzanweisung gemäss Art. 924 Abs. 1 ZGB, und welche Grundvoraussetzung muss für deren Anwendung erfüllt sein?",
+              "hint": "Vgl. Erwägung 4 des Urteils zur Besitzanweisung und zum gestuften Besitz.",
+              "model_answer": "Eine Besitzanweisung ist ein Traditionssurrogat, bei dem der Veräusserer den mittelbaren Besitz an einer Sache auf den Erwerber überträgt, indem er dem unmittelbaren Besitzer anweist, die Sache künftig für den neuen mittelbaren Besitzer zu halten. Voraussetzung ist ein gestufter Besitz, d.h. der unmittelbare Besitzer muss die Herrschaft des mittelbaren Besitzers anerkennen. Fehlt diese Anerkennung, existiert kein mittelbarer Besitz, der übertragen werden könnte."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen des ZGB regeln die verschiedenen Formen der Besitzübertragung an beweglichen Sachen, und welche Anforderungen stellt das Gesetz jeweils an die longa manu traditio?",
+              "hint": "Vgl. Art. 922 Abs. 2 ZGB sowie Erwägung 5 des Urteils.",
+              "model_answer": "Die Besitzübertragung an Fahrnissachen wird in Art. 922 ff. ZGB geregelt. Art. 922 Abs. 1 ZGB statuiert die körperliche Übergabe als Grundform, während Art. 922 Abs. 2 ZGB die longa manu traditio als Surrogat vorsieht. Für die longa manu traditio verlangt das Gesetz eine offene und für den Erwerber zugängliche Besitzlage sowie den unmittelbaren Besitz des Veräusserers; fehlen diese Voraussetzungen, ist dieses Traditionssurrogat ausgeschlossen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie beurteilt das Bundesgericht den Versuch der Kläger, sich auf den «Abtretungs- und Übereignungsvertrag» vom 30. Oktober 2002 zu stützen, um Eigentum am Hotelmobiliar erworben zu haben?",
+              "hint": "Vgl. Erwägungen 6.1 und 6.2 zur unselbstständigen und selbstständigen Vindikationszession.",
+              "model_answer": "Das Bundesgericht verneint, dass die Kläger durch den Abtretungsvertrag Eigentum erwerben konnten. Zum einen stellt die Abtretung des Herausgabeanspruchs gemäss Art. 641 Abs. 2 ZGB kein zulässiges Traditionssurrogat dar (unselbstständige Vindikationszession), sodass keine Eigentumsübertragung eintreten kann. Zum anderen kann der Vindikationsanspruch auch nicht selbstständig ohne gleichzeitige Eigentumsübertragung abgetreten werden, da er vom Eigentumsrecht akzessorisch abhängt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum scheidet im vorliegenden Fall sowohl die Besitzanweisung (Art. 924 Abs. 1 ZGB) als auch die longa manu traditio (Art. 922 Abs. 2 ZGB) als Grundlage für eine wirksame Besitz- und Eigentumsübertragung aus, und welcher gemeinsame strukturelle Mangel liegt diesen Unzulässigkeiten zugrunde?",
+              "hint": "Vgl. Erwägungen 4 und 5 sowie den Sachverhalt betreffend die Situation des Hotelmobiliars.",
+              "model_answer": "Beiden Traditionssurrogaten liegt zugrunde, dass E. nach der privaten Versteigerung von 1997 weder unmittelbaren noch mittelbaren Besitz am Hotelmobiliar erlangte: Die Beklagten als unmittelbare Besitzer anerkannten die Herrschaft der Erbengemeinschaft E. nicht, sodass kein gestufter Besitz entstehen konnte. Ohne gestuften Besitz fehlt es an der Voraussetzung der Besitzanweisung, und ohne unmittelbaren Besitz des Veräusserers sowie offene Besitzlage scheitert auch die longa manu traditio. Der gemeinsame Mangel ist das Fehlen jeglicher tatsächlicher Sachherrschaft auf Seiten des Veräusserers."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht lehnt sowohl die unselbstständige als auch die selbstständige Vindikationszession ab. Überzeugt diese Lösung aus rechtspolitischer Sicht, oder sollte de lege ferenda eine Abtretbarkeit des Vindikationsanspruchs als eigenständiges Traditionssurrogat zugelassen werden?",
+              "hint": "Vgl. Erwägungen 6.1 und 6.2 sowie die dogmatischen Grundlagen des Sachenrechts (Publizitätsprinzip, Akzessorietät).",
+              "model_answer": "Die Lösung des Bundesgerichts überzeugt im Kern, weil das Sachenrecht auf dem Publizitätsprinzip beruht: Der Eigentumserwerb an Fahrnissachen muss nach aussen erkennbar sein, was bei einer blossen Zession des Vindikationsanspruchs gerade nicht gewährleistet ist. Eine Zulassung der Vindikationszession als Traditionssurrogat würde dieses Prinzip unterlaufen und Dritten gegenüber zu erheblicher Rechtsunsicherheit führen. De lege ferenda könnte man allenfalls über einen gesetzlich geregelten Anspruchserwerb nachdenken, der jedoch mit strengen Publizitätsanforderungen verknüpft sein müsste, um den Schutz gutgläubiger Dritter zu wahren."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Beklagten (V. und W.) hätten nach der privaten Versteigerung von 1997 schriftlich erklärt, das Hotelmobiliar fortan für E. als mittelbaren Besitzer zu halten, und diese Erklärung wäre dem Grundbuchamt angezeigt worden. Hätte dies an der Beurteilung der Aktivlegitimation der Kläger etwas geändert?",
+              "discussion_points": [
+                "Würde eine schriftliche Anerkennung der mittelbaren Besitzherrschaft durch die Beklagten einen gestuften Besitz i.S.v. Art. 924 Abs. 1 ZGB begründen?",
+                "Könnte E. in diesem Fall den mittelbaren Besitz mittels Besitzanweisung auf die Kläger übertragen und damit die Eigentumsübertragung nach Art. 714 ZGB vollziehen?"
+              ],
+              "likely_outcome_shift": "Hätten die Beklagten die mittelbare Besitzherrschaft von E. anerkannt, wäre die Voraussetzung des gestuften Besitzes erfüllt gewesen, und eine Besitzanweisung gemäss Art. 924 Abs. 1 ZGB wäre grundsätzlich möglich geworden. Die Kläger hätten dann durch den Abtretungsvertrag von 2002 in Verbindung mit einer entsprechenden Besitzanweisung Eigentum am Hotelmobiliar erwerben können, was ihre Aktivlegitimation zur Vindikationsklage begründet hätte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Erbengemeinschaft E., sondern die Beklagten selbst (V. und W.) das Hotelmobiliar an die Kläger verkauft und übergeben hätten, die Beklagten das Mobiliar aber zu diesem Zeitpunkt nur als Mieter besassen und kein Eigentum daran hatten?",
+              "discussion_points": [
+                "Könnten die Kläger nach Art. 933 ZGB gutgläubig Eigentum vom Nichtberechtigten erwerben, wenn sie auf den Besitz der Beklagten vertrauten?",
+                "Welche Rolle spielt der gute Glaube des Erwerbers beim rechtsgeschäftlichen Mobiliareigentumserwerb, und welche Sorgfaltspflichten hätten die Kläger bei einem Hotelmobiliar in einem laufenden Hotelbetrieb?"
+              ],
+              "likely_outcome_shift": "In diesem Szenario wäre primär zu prüfen, ob die Kläger gutgläubig Eigentum nach Art. 933 ZGB erworben hätten. Da es sich um ein grosses Hotelinventar in einem laufenden Betrieb handelt, wären erhöhte Sorgfaltspflichten anzunehmen; die Kläger hätten sich über die Eigentumsverhältnisse informieren müssen. Bei fehlender Gutgläubigkeit wäre auch dieser Erwerbsweg gescheitert, und die ursprünglichen Eigentümer hätten ihr Vindikationsrecht behalten."
+            }
+          ]
         }
       ]
     },
@@ -269,7 +487,11 @@
       "name_de": "Dienstbarkeiten und Grundbuch",
       "name_fr": "Servitudes et registre foncier",
       "name_it": "Servitù e registro fondiario",
-      "statutes": ["Art. 730 ZGB", "Art. 738 ZGB", "Art. 942 ZGB"],
+      "statutes": [
+        "Art. 730 ZGB",
+        "Art. 738 ZGB",
+        "Art. 942 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_128 III 265",
@@ -277,14 +499,29 @@
           "actual_language": "de",
           "title_de": "Dingliche vs. obligatorische Wirkung von Dienstbarkeiten",
           "title_fr": "Effet réel vs. obligatoire des servitudes",
-          "concepts_de": ["Grunddienstbarkeit", "Dingliche Wirkung", "Obligatorische Wirkung", "Verzicht"],
-          "concepts_fr": ["Servitude foncière", "Effet réel", "Renonciation"],
-          "statutes": ["Art. 730 ZGB", "Art. 734 ZGB"],
+          "concepts_de": [
+            "Grunddienstbarkeit",
+            "Dingliche Wirkung",
+            "Obligatorische Wirkung",
+            "Verzicht"
+          ],
+          "concepts_fr": [
+            "Servitude foncière",
+            "Effet réel",
+            "Renonciation"
+          ],
+          "statutes": [
+            "Art. 730 ZGB",
+            "Art. 734 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Unterscheidung dingliche/obligatorische Bestimmungen bei Dienstbarkeiten",
           "significance_fr": "Distinction entre dispositions réelles et obligatoires des servitudes",
-          "key_erwagungen": ["3", "4"],
+          "key_erwagungen": [
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 3: Grundsatz — Dienstbarkeiten haben dingliche Wirkung und binden Rechtsnachfolger. E. 4: Ausnahme — Obligatorische Nebenbestimmungen binden nur die Vertragsparteien, nicht Dritterwerber.",
           "socratic_questions": [
             {
@@ -312,7 +549,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die obligatorische Nebenbestimmung im Grundbuch vorgemerkt wäre?",
-              "discussion_points": ["Grundbuchvormerkung", "Publizitätsprinzip", "Drittwirkung durch Vormerkung"],
+              "discussion_points": [
+                "Grundbuchvormerkung",
+                "Publizitätsprinzip",
+                "Drittwirkung durch Vormerkung"
+              ],
               "model_answer": "Eine Vormerkung im Grundbuch verschafft der obligatorischen Bestimmung keine dingliche Wirkung, erhöht aber die Publizität. Der Erwerber kann sich nicht auf Gutgläubigkeit berufen."
             },
             {
@@ -327,13 +568,21 @@
             {
               "type": "swap_parties",
               "scenario": "Was wäre, wenn das belastete Grundstück an einen gutgläubigen Dritten verkauft würde?",
-              "discussion_points": ["Drittwirkung dinglicher Rechte", "Kein gutgläubiger lastenfreier Erwerb bei Dienstbarkeiten", "Art. 973 ZGB"],
+              "discussion_points": [
+                "Drittwirkung dinglicher Rechte",
+                "Kein gutgläubiger lastenfreier Erwerb bei Dienstbarkeiten",
+                "Art. 973 ZGB"
+              ],
               "likely_outcome_shift": "Die dingliche Dienstbarkeit bindet den Erwerber unabhängig von seiner Kenntnis. Die obligatorische Nebenbestimmung hingegen nicht."
             },
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn die Dienstbarkeit nicht im Grundbuch eingetragen wäre?",
-              "discussion_points": ["Konstitutivwirkung des Grundbucheintrags", "Art. 731 ZGB", "Ersitzung"],
+              "discussion_points": [
+                "Konstitutivwirkung des Grundbucheintrags",
+                "Art. 731 ZGB",
+                "Ersitzung"
+              ],
               "likely_outcome_shift": "Ohne Grundbucheintrag entsteht keine Grunddienstbarkeit (Art. 731 ZGB). Allenfalls könnte eine Ersitzung geltend gemacht werden."
             }
           ]
@@ -344,14 +593,27 @@
           "actual_language": "de",
           "title_de": "Inhalt und Umfang eines Wegrechts",
           "title_fr": "Contenu et étendue d'un droit de passage",
-          "concepts_de": ["Wegrecht", "Dienstbarkeitsauslegung", "Schonende Ausübung"],
-          "concepts_fr": ["Droit de passage", "Interprétation des servitudes"],
-          "statutes": ["Art. 737 ZGB", "Art. 738 ZGB"],
+          "concepts_de": [
+            "Wegrecht",
+            "Dienstbarkeitsauslegung",
+            "Schonende Ausübung"
+          ],
+          "concepts_fr": [
+            "Droit de passage",
+            "Interprétation des servitudes"
+          ],
+          "statutes": [
+            "Art. 737 ZGB",
+            "Art. 738 ZGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Bauliche Anlagen bestimmen Inhalt und Umfang einer Dienstbarkeit; Gebot der schonenden Ausübung",
           "significance_fr": "Les installations déterminent le contenu et l'étendue d'une servitude; obligation d'exercice ménager",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Auslegung der Dienstbarkeit nach Art. 738 ZGB. E. 3: Gebot der schonenden Ausübung nach Art. 737 ZGB. Achten Sie darauf, wie bestehende bauliche Anlagen den Umfang des Wegrechts konkretisieren.",
           "socratic_questions": [
             {
@@ -379,7 +641,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Berechtigte das Wegrecht für schwere Lastwagen statt für Personenwagen nutzen wollte?",
-              "discussion_points": ["Veränderte Bedürfnisse", "Schonende Ausübung", "Anpassung der Dienstbarkeit"],
+              "discussion_points": [
+                "Veränderte Bedürfnisse",
+                "Schonende Ausübung",
+                "Anpassung der Dienstbarkeit"
+              ],
               "likely_outcome_shift": "Eine Nutzungsintensivierung könnte das Gebot der schonenden Ausübung verletzen, es sei denn, der Begründungsakt liesse diese Nutzung zu."
             },
             {
@@ -394,7 +660,11 @@
             {
               "type": "change_timeline",
               "scenario": "Was wäre, wenn das Wegrecht seit 50 Jahren nicht mehr ausgeübt wurde?",
-              "discussion_points": ["Löschung durch Nichtausübung", "Art. 736 ZGB", "Verjährung vs. Verwirkung bei dinglichen Rechten"],
+              "discussion_points": [
+                "Löschung durch Nichtausübung",
+                "Art. 736 ZGB",
+                "Verjährung vs. Verwirkung bei dinglichen Rechten"
+              ],
               "likely_outcome_shift": "Nach 30 Jahren Nichtausübung kann der Belastete die Löschung verlangen. Das Wegrecht könnte durch Verjährung erloschen sein."
             }
           ]

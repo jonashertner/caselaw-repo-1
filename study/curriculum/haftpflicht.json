@@ -10,7 +10,9 @@
       "name_de": "Verschuldenshaftung und Kausalzusammenhang",
       "name_fr": "Responsabilité pour faute et lien de causalité",
       "name_it": "Responsabilità per colpa e nesso causale",
-      "statutes": ["Art. 41 OR"],
+      "statutes": [
+        "Art. 41 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_123 III 110",
@@ -18,13 +20,26 @@
           "actual_language": "de",
           "title_de": "Adäquater Kausalzusammenhang bei Motorfahrzeughaftung",
           "title_fr": "Causalité adéquate en matière de responsabilité automobile",
-          "concepts_de": ["Adäquater Kausalzusammenhang", "Motorfahrzeughaftung", "Richterliche Wertung"],
-          "concepts_fr": ["Causalité adéquate", "Responsabilité automobile"],
-          "statutes": ["Art. 41 OR", "Art. 58 SVG"],
+          "concepts_de": [
+            "Adäquater Kausalzusammenhang",
+            "Motorfahrzeughaftung",
+            "Richterliche Wertung"
+          ],
+          "concepts_fr": [
+            "Causalité adéquate",
+            "Responsabilité automobile"
+          ],
+          "statutes": [
+            "Art. 41 OR",
+            "Art. 58 SVG"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Beurteilung des adäquaten Kausalzusammenhangs nach Recht und Billigkeit",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Definition und Massstab der Adäquanz. E. 3: Unterschied zum Sozialversicherungsrecht. Achten Sie auf die richterliche Wertung nach Art. 4 ZGB (Recht und Billigkeit).",
           "socratic_questions": [
             {
@@ -52,7 +67,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn das Opfer eine ungewöhnliche Vorerkrankung hätte, die den Schaden massiv vergrösserte?",
-              "discussion_points": ["Konstitutionelle Prädisposition", "Adäquanz bei Vorschäden", "Schadensersatzbemessung"],
+              "discussion_points": [
+                "Konstitutionelle Prädisposition",
+                "Adäquanz bei Vorschäden",
+                "Schadensersatzbemessung"
+              ],
               "likely_outcome_shift": "Eine Vorerkrankung unterbricht die Adäquanz in der Regel nicht. Die Schadensersatzbemessung kann aber nach Art. 43/44 OR angepasst werden (Schadenersatzbemessung vs. Schadensberechnung)."
             },
             {
@@ -67,7 +86,11 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre bei einer Kettenreaktion: Auffahrunfall → Stau → verspäteter Krankenwagen → Tod eines Dritten?",
-              "discussion_points": ["Kettenkausalität", "Unterbrechung der Adäquanz", "Haftung für mittelbare Folgen"],
+              "discussion_points": [
+                "Kettenkausalität",
+                "Unterbrechung der Adäquanz",
+                "Haftung für mittelbare Folgen"
+              ],
               "likely_outcome_shift": "Die Adäquanz dürfte bei einer solchen Kettenreaktion fehlen. Der Tod des Dritten liegt ausserhalb des normalen Kausalverlaufs und ist dem Unfallverursacher nicht mehr zurechenbar."
             }
           ]
@@ -79,21 +102,92 @@
           "title_de": "Genugtuung — Bemessung bei schwerer Körperverletzung",
           "title_fr": "Tort moral — calcul en cas de lésions corporelles graves",
           "title_it": "",
-          "concepts_de": ["Genugtuung", "Immaterielle Unbill", "Bemessung", "Schwere Verletzung"],
-          "concepts_fr": ["Tort moral", "Préjudice immatériel", "Calcul"],
+          "concepts_de": [
+            "Genugtuung",
+            "Immaterielle Unbill",
+            "Bemessung",
+            "Schwere Verletzung"
+          ],
+          "concepts_fr": [
+            "Tort moral",
+            "Préjudice immatériel",
+            "Calcul"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 47 OR", "Art. 49 OR"],
+          "statutes": [
+            "Art. 47 OR",
+            "Art. 49 OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Bemessungskriterien der Genugtuung nach Art. 47 OR bei schwerer Körperverletzung.",
-          "significance_fr": "Arrêt de principe sur les critères de calcul du tort moral selon l'art. 47 CO en cas de lésions graves.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe précisant que le coût de la vie au domicile du lésé ne doit en règle générale pas être pris en compte dans la fixation de l'indemnité pour tort moral au sens de l'art. 47 CO, sauf en cas de nette surcompensation en raison des conditions économiques et sociales du pays de domicile.",
+          "significance_it": "Sentenza di principio che precisa che il costo della vita nel luogo di domicilio dell'avente diritto non deve di regola essere considerato nella determinazione dell'indennità per torto morale ai sensi dell'art. 47 CO, salvo in caso di evidente sovracompensazione dovuta alle condizioni economiche e sociali del paese di domicilio.",
+          "key_erwagungen": [
+            "4",
+            "4a",
+            "4b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 10–11) aufmerksam, um die Ausgangslage – Tötung, Wohnsitz der Eltern in China, zugesprochene Fr. 5'000.-- – zu erfassen. Konzentrieren Sie sich danach auf Erwägung 4 (insbesondere 4a und 4b), in der das Bundesgericht die Argumente der Vorinstanz zur Kaufkraftberücksichtigung analysiert und die massgebliche Regel zur Bemessung der Genugtuung bei ausländischem Wohnsitz des Berechtigten entwickelt.",
+          "reading_guide_fr": "Lisez d'abord attentivement les faits (p. 10–11) pour saisir la situation de départ – le meurtre, le domicile des parents en Chine et l'indemnité de Fr. 5'000.-- allouée. Concentrez-vous ensuite sur le considérant 4 (notamment 4a et 4b), dans lequel le Tribunal fédéral analyse les arguments de l'instance précédente relatifs au pouvoir d'achat et développe la règle déterminante pour la fixation du tort moral lorsque l'ayant droit est domicilié à l'étranger.",
+          "reading_guide_it": "Leggere dapprima con attenzione i fatti (p. 10–11) per comprendere la situazione di partenza – l'omicidio, il domicilio dei genitori in Cina e l'indennità di Fr. 5'000.-- accordata. Concentrarsi poi sul considerando 4 (in particolare 4a e 4b), nel quale il Tribunale federale analizza gli argomenti dell'istanza precedente riguardo al potere d'acquisto e sviluppa la regola determinante per la fissazione del torto morale quando l'avente diritto è domiciliato all'estero.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Geschworenengericht des Kantons Zürich den in China lebenden Eltern des Opfers als Genugtuung zugesprochen, und warum hielten die Eltern diesen Betrag für unzureichend?",
+              "hint": "Vgl. Sachverhalt, BGE 123 III 10 S. 11",
+              "model_answer": "Das Geschworenengericht sprach den Eltern je Fr. 5'000.-- als Genugtuung zu. Es begründete diesen vergleichsweise tiefen Betrag damit, dass die Kaufkraft in China rund 20-mal höher sei als in der Schweiz, was einer faktischen Gleichstellung entspreche. Die Eltern hingegen beantragten je Fr. 45'000.--, da sie der Auffassung waren, die Genugtuung müsse nach schweizerischen Massstäben bemessen werden."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Regel zur Berücksichtigung von Lebenskosten am Wohnsitz des Genugtuungsberechtigten entwickelt das Bundesgericht in BGE 123 III 10, und wie verhält sich diese Regel zu derjenigen aus BGE 121 III 252?",
+              "hint": "Vgl. Regeste sowie Erwägung 4 des Entscheids",
+              "model_answer": "Das Bundesgericht hält als Grundsatz fest, dass die Lebenskosten am Wohnsitz des Berechtigten bei der Bemessung der Genugtuung in der Regel nicht zu berücksichtigen sind. Eine Ausnahme gilt nur, wenn der Ansprecher aufgrund der wirtschaftlichen und sozialen Verhältnisse seines Wohnsitzlandes in krasser Weise besser gestellt würde. Damit präzisiert und schränkt das Gericht die in BGE 121 III 252 begründete Rechtsprechung ein, welche die Berücksichtigung solcher Unterschiede grundsätzlicher zugelassen hatte."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, eine in der Schweiz lebende Touristin aus Norwegen wird hier schwer verletzt und kehrt zur Genesung in ihr Heimatland zurück, das ein ähnliches Lohnniveau wie die Schweiz aufweist. Würde das Gericht bei der Bemessung der Genugtuung die norwegischen Lebenskosten berücksichtigen?",
+              "hint": "Vgl. Regeste und die in Erwägung 4 dargelegte Ausnahmeregel",
+              "model_answer": "Nein, da der Grundsatz lautet, dass die Lebenskosten am Wohnsitz des Berechtigten nicht berücksichtigt werden. Die Ausnahme greift nur bei einer krassen Besserstellung aufgrund erheblich tieferer Lebenshaltungskosten im Wohnsitzland. Da Norwegen ein vergleichbares Preis- und Lohnniveau wie die Schweiz aufweist, wäre keine krasse Besserstellung erkennbar, und die Genugtuung wäre nach schweizerischen Massstäben zu bemessen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Die Vorinstanz argumentierte, dass die Nichtberücksichtigung der Kaufkraftunterschiede zu einer ungerechtfertigten Bereicherung und zu einer Ungleichbehandlung gegenüber in der Schweiz lebenden Geschädigten führe. Welche Gegenargumente lassen sich aus der bundesgerichtlichen Konzeption der Genugtuung ableiten?",
+              "hint": "Vgl. Erwägung 4b sowie die Natur der Genugtuung nach Art. 47 OR",
+              "model_answer": "Die Genugtuung nach Art. 47 OR ist eine Ausgleichsleistung für immateriellen Schaden, die sich am Ausmass des erlittenen seelischen Schmerzes und an der Schwere des Verschuldens des Täters orientiert. Der Schmerz der Eltern über den Verlust ihrer Tochter ist unabhängig von ihrem Wohnort gleich gross; eine Reduktion aufgrund des Wohnsitzlandes würde das Leid geringer bewerten als jenes in der Schweiz lebender Personen. Zudem würde ein systematisches Abstellen auf Kaufkraftunterschiede zu praktischen Schwierigkeiten bei der Beweiserhebung führen und das Prinzip der Rechtsgleichheit bei der Anwendung schweizerischen Rechts gefährden."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht entwickelte Regel – Nichtberücksichtigung der Lebenskosten am Wohnsitz, ausser bei krasser Besserstellung – rechtspolitisch überzeugend, oder gibt es gewichtige Gründe, die für eine stärkere oder schwächere Berücksichtigung von Kaufkraftunterschieden sprechen?",
+              "hint": "Vgl. Erwägung 4 (Argumente der Vorinstanz und der Beschwerdeführer) sowie Art. 4 ZGB (Ermessen)",
+              "model_answer": "Die Lösung des Bundesgerichts ist rechtspolitisch vertretbar, weil sie den immateriellen Charakter der Genugtuung betont und eine Diskriminierung ausländischer Opfer verhindert. Kritisch lässt sich einwenden, dass die Genugtuung praktisch nur dann ihre Funktion erfüllt – dem Empfänger etwas zu ermöglichen, das ihn erfreut – wenn die lokale Kaufkraft berücksichtigt wird; ein Betrag von Fr. 5'000.-- kann in China erheblich mehr bewirken als in der Schweiz. Andererseits birgt die Berücksichtigung von Kaufkraftunterschieden das Risiko einer willkürlichen Ungleichbehandlung je nach Herkunftsland des Opfers und würde den Richter vor schwer lösbare Beweisfragen stellen, weshalb die Grundregel des Bundesgerichts aus Gründen der Rechtssicherheit und Gleichbehandlung vorzugswürdig erscheint."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn die Eltern des Opfers nicht in China, sondern in einem Land mit vergleichbarem Lebensstandard wie der Schweiz wohnhaft wären (z.B. Deutschland), das Opfer jedoch zusätzlich schwere Folterungen erlitten hätte, bevor es getötet wurde?",
+              "discussion_points": [
+                "Die Kaufkraftfrage entfällt mangels erheblicher Diskrepanz zum schweizerischen Preisniveau, sodass die Genugtuung nach rein schweizerischen Massstäben bemessen würde.",
+                "Die besondere Schwere des Leidens (Folterung vor dem Tod) und das gesteigerte Verschulden des Täters wären als eigenständige Bemessungskriterien nach Art. 47 OR zu berücksichtigen und würden die Genugtuungssumme erheblich erhöhen."
+              ],
+              "likely_outcome_shift": "Da die Kaufkraftproblematik wegfällt, würde das Gericht die Genugtuung ausschliesslich anhand der Schwere der Tat, des Verschuldens und des immateriellen Leids bemessen. Die besondere Grausamkeit (Folterung) würde als erschwerender Umstand zu einer deutlich höheren Genugtuungssumme führen als im vorliegenden Fall, möglicherweise in der von den Beschwerdeführern beantragten Grössenordnung von Fr. 45'000.-- pro Elternteil oder darüber."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht die Eltern des Opfers, sondern der Täter K. selbst im Ausland (z.B. in einem Entwicklungsland) wohnhaft wäre und die Eltern des Opfers in der Schweiz lebten – würde der Wohnsitz des Täters bei der Bemessung der Genugtuung eine Rolle spielen?",
+              "discussion_points": [
+                "Nach der in BGE 123 III 10 entwickelten Regel ist der Wohnsitz des Berechtigten (Gläubigers) massgebend, nicht derjenige des Schuldners; der wirtschaftliche Hintergrund des Täters ist für die Genugtuungsbemessung grundsätzlich irrelevant.",
+                "Die Fähigkeit des Täters, die Genugtuung tatsächlich zu bezahlen, könnte jedoch indirekt bei der Durchsetzbarkeit des Anspruchs relevant werden, ohne aber die Höhe der geschuldeten Summe zu beeinflussen."
+              ],
+              "likely_outcome_shift": "Da die Genugtuung nach dem Grundsatz von BGE 123 III 10 nach den Verhältnissen am Wohnsitz des Berechtigten bemessen wird und die Eltern nun in der Schweiz leben, würde die volle schweizerische Genugtuungssumme ohne Kaufkraftkorrektur zugesprochen. Der ausländische Wohnsitz des Täters würde die Höhe der Genugtuung nicht mindern, allenfalls aber die Vollstreckung des Urteils erschweren."
+            }
+          ]
         },
         {
           "decision_id": "bge_134 III 529",
@@ -102,21 +196,93 @@
           "title_de": "Widerrechtlichkeit — Schutznormtheorie und reiner Vermögensschaden",
           "title_fr": "Illicéité — théorie de la norme de protection et dommage purement économique",
           "title_it": "",
-          "concepts_de": ["Widerrechtlichkeit", "Schutznormtheorie", "Reiner Vermögensschaden", "Deliktische Haftung"],
-          "concepts_fr": ["Illicéité", "Norme de protection", "Dommage purement économique"],
+          "concepts_de": [
+            "Widerrechtlichkeit",
+            "Schutznormtheorie",
+            "Reiner Vermögensschaden",
+            "Deliktische Haftung"
+          ],
+          "concepts_fr": [
+            "Illicéité",
+            "Norme de protection",
+            "Dommage purement économique"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 41 OR"],
+          "statutes": [
+            "Art. 41 OR"
+          ],
           "difficulty": 3,
-          "prerequisites": ["bge_123 III 110"],
+          "prerequisites": [
+            "bge_123 III 110"
+          ],
           "significance_de": "Massstab der Widerrechtlichkeit nach Art. 41 OR: Schutznormtheorie bei reinen Vermögensschäden.",
-          "significance_fr": "Critère de l'illicéité selon l'art. 41 CO: théorie de la norme de protection pour les dommages purement économiques.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt établit que les dispositions de la loi sur le blanchiment d'argent (LBA) ne constituent pas des normes de protection au sens de l'art. 41 al. 1 CO, car elles visent à protéger l'intégrité du système financier et non les intérêts patrimoniaux individuels des lésés.",
+          "significance_it": "La sentenza stabilisce che le disposizioni della legge sul riciclaggio di denaro (LRD) non costituiscono norme protettive ai sensi dell'art. 41 cpv. 1 CO, poiché esse tutelano l'integrità del sistema finanziario e non gli interessi patrimoniali individuali dei danneggiati.",
+          "key_erwagungen": [
+            "4",
+            "4.1",
+            "4.2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (A.a–A.b) sorgfältig, um die Parteirollen und den schadensbegründenden Sachverhalt zu verstehen. Konzentrieren Sie sich dann auf Erwägung 4, insbesondere E. 4.1 (Meinungsstand in der Lehre) und E. 4.2 (Auslegung des Zwecks des GwG anhand der Botschaft), da dort die Kernfrage des Schutznormcharakters von Art. 3–10 GwG entschieden wird.",
+          "reading_guide_fr": "Commencez par lire attentivement les faits (A.a–A.b) afin de comprendre les rôles des parties et le fondement du dommage allégué. Concentrez-vous ensuite sur le considérant 4, notamment E. 4.1 (état de la doctrine) et E. 4.2 (interprétation téléologique de la LBA à partir du message du Conseil fédéral), où le Tribunal fédéral tranche la question centrale du caractère de norme de protection des art. 3–10 LBA.",
+          "reading_guide_it": "Si raccomanda di leggere con attenzione i fatti (A.a–A.b) per comprendere il ruolo delle parti e il fondamento del danno lamentato. Ci si concentri poi sul considerando 4, in particolare E. 4.1 (posizioni dottrinali) ed E. 4.2 (interpretazione teleologica della LRD sulla base del messaggio del Consiglio federale), dove il Tribunale federale risolve la questione centrale del carattere di norma protettiva degli art. 3–10 LRD.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was warf die Beschwerdeführerin (X. SA) der Beschwerdegegnerin (Y. AG) konkret vor, und auf welche Rechtsgrundlage stützte sie ihren Haftungsanspruch?",
+              "hint": "Vgl. Sachverhalt A.b sowie Regeste",
+              "model_answer": "Die X. SA warf der Y. AG vor, trotz offensichtlicher Anzeichen für Geldwäscherei zugelassen zu haben, dass B. rund USD 2 Mio. von seinem Konto abzog, obwohl das Geld aus einer Veruntreuung stammte. Sie stützte ihren Anspruch auf Art. 41 Abs. 1 OR (ausservertragliche Haftung) und argumentierte, die Y. AG habe ihre Sorgfaltspflichten gemäss GwG verletzt. Das Bundesgericht hatte zu prüfen, ob diese Verletzung die für Art. 41 OR erforderliche Widerrechtlichkeit begründet."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Was versteht man unter der «Schutznormtheorie» im Rahmen von Art. 41 Abs. 1 OR, und welche Voraussetzungen müsste eine Norm erfüllen, um als Schutznorm zu gelten?",
+              "hint": "Vgl. E. 4 sowie den allgemeinen Kontext der Widerrechtlichkeit bei reinen Vermögensschäden",
+              "model_answer": "Nach der Schutznormtheorie kann Widerrechtlichkeit im Sinne von Art. 41 Abs. 1 OR auch dann vorliegen, wenn der Schädiger eine Norm verletzt, die nicht nur öffentliche Interessen, sondern gerade auch den Schutz individueller Rechtsgüter oder Vermögensinteressen des Geschädigten bezweckt. Eine solche Norm muss also einen individualschützenden Charakter aufweisen, d.h. sie muss zumindest auch dazu bestimmt sein, eine bestimmte Personengruppe vor Schäden der konkret eingetretenen Art zu bewahren. Bei reinen Vermögensschäden ist der Rückgriff auf Schutznormen besonders relevant, da keine absolute Rechtsposition verletzt wird."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die Schutznormtheorie auf Art. 3–10 GwG an: Welche Argumente sprechen dafür und dagegen, diese Bestimmungen als Schutznormen im Sinne von Art. 41 OR zu qualifizieren?",
+              "hint": "Vgl. E. 4.1 und E. 4.2 sowie die zitierten Lehrmeinungen und die Botschaft zum GwG",
+              "model_answer": "Für einen Schutznormcharakter spricht, dass Art. 3–10 GwG konkrete Verhaltenspflichten für Finanzintermediäre statuieren und Geschädigte wie die X. SA mittelbar vor dem Abfluss deliktisch erlangter Gelder schützen könnten. Dagegen sprechen der primär öffentlich-rechtliche und strafrechtliche Zweck des GwG – nämlich die Bekämpfung der Geldwäscherei als gesellschaftliches Phänomen und die Ermittlung von Tätern –, sowie die Botschaft, die keinen individualschützenden Zweck nennt. Das Bundesgericht folgte der Mehrheitsmeinung der Lehre und verneinte den Schutznormcharakter, weil das GwG nicht den Schutz individueller Vermögensinteressen bezweckt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern unterscheidet sich die haftungsrechtliche Bedeutung einer Verletzung des GwG von der Verletzung einer klassischen Schutznorm des Privatrechts, und welche Konsequenzen hat dies für Geschädigte wie die X. SA?",
+              "hint": "Vgl. E. 4 und E. 4.2; beachten Sie die Unterscheidung zwischen öffentlich-rechtlichem Schutzzweck und individualschützender Funktion",
+              "model_answer": "Eine klassische privatrechtliche Schutznorm richtet sich zumindest auch an den Schutz bestimmter Personen vor konkreten Schadenstypen, sodass deren Verletzung unmittelbar Widerrechtlichkeit im Sinne von Art. 41 OR begründet. Das GwG hingegen dient primär dem kollektiven Interesse an der Integrität des Finanzsystems und der Verbrechensbekämpfung, nicht dem Schutz individueller Vermögen. Für Geschädigte wie die X. SA bedeutet dies, dass sie aus einer Verletzung der GwG-Pflichten keinen direkten Deliktsanspruch ableiten können und auf andere Anspruchsgrundlagen – wie Vertrag oder allenfalls eine absichtliche sittenwidrige Schädigung nach Art. 41 Abs. 2 OR – angewiesen sind, was ihre Rechtsposition erheblich schwächt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Überzeugt die Argumentation des Bundesgerichts, dass das GwG keine individualschützende Funktion hat? Würde eine gegenteilige Auslegung zu sachgerechteren Ergebnissen führen, oder birgt sie Risiken für das Haftpflichtrecht?",
+              "hint": "Vgl. E. 4.1 (kontroverse Lehrmeinungen) und E. 4.2 (Zweck des GwG gemäss Botschaft); bedenken Sie auch die systematische Funktion der Schutznormtheorie",
+              "model_answer": "Die Argumentation des Bundesgerichts ist systematisch kohärent, da eine Ausweitung des Schutznormbegriffs auf öffentlich-rechtliche Regulierungsnormen zu einer uferlosen Ausdehnung der Deliktshaftung führen würde und den Gesetzgeber faktisch zwingen würde, bei jeder Verhaltensvorschrift Haftungsfolgen mitzubedenken. Andererseits erscheint es rechtspolitisch unbefriedigend, dass gutgläubige Opfer von Veruntreuung keinen Anspruch gegen Banken haben, die offensichtliche Geldwäschereisignale ignorierten. Eine differenzierte Lösung – etwa die Anerkennung des Schutznormcharakters nur unter engen Voraussetzungen bei evidenter Pflichtverletzung – hätte zielgenauer zwischen legitimen Regulierungszielen und dem Schutz konkreter Geschädigter abwägen können, ohne das gesamte Haftpflichtrecht zu destabilisieren."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Y. AG hätte nicht nur die GwG-Sorgfaltspflichten verletzt, sondern wäre von einem Mitarbeiter nachweislich darüber informiert worden, dass die überwiesenen Gelder mit hoher Wahrscheinlichkeit aus einer Veruntreuung stammen, und hätte dennoch bewusst die Weiterüberweisungen zugelassen. Ändert dies die haftungsrechtliche Beurteilung nach Art. 41 OR?",
+              "discussion_points": [
+                "Prüfung von Art. 41 Abs. 2 OR (absichtliche sittenwidrige Schädigung) als alternative Anspruchsgrundlage neben der Schutznormtheorie",
+                "Bedeutung des subjektiven Elements (Vorsatz) für die Widerrechtlichkeit bei reinen Vermögensschäden und Abgrenzung zur blossen Fahrlässigkeit"
+              ],
+              "likely_outcome_shift": "Bei nachgewiesenem Vorsatz könnte Art. 41 Abs. 2 OR greifen, der eine absichtliche sittenwidrige Schädigung sanktioniert, ohne dass es einer Schutznorm bedarf. Das Bundesgericht hätte in diesem Szenario die Haftung der Y. AG möglicherweise bejaht, da die bewusste Mitwirkung an einer Veruntreuung den Anforderungen der Sittenwidrigkeit genügen dürfte. Die Ablehnung des Schutznormcharakters des GwG wäre damit für den Anspruchserfolg nicht mehr entscheidend."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht die geschädigte X. SA, sondern die Schweizer Eidgenossenschaft (vertreten durch die FINMA) klagt gegen die Y. AG – allerdings auf Schadenersatz wegen systematischer Verletzung der GwG-Sorgfaltspflichten zulasten des Schweizer Finanzsystems. Ändert sich die Beurteilung der Schutzrichtung des GwG?",
+              "discussion_points": [
+                "Unterscheidung zwischen öffentlich-rechtlichen Aufsichtsmassnahmen der FINMA (z.B. Entzug der Banklizenz) und privatrechtlichen Schadensersatzansprüchen nach Art. 41 OR",
+                "Frage, ob der kollektive Schutzzweck des GwG zugunsten des Gemeinwesens haftungsrechtliche Ansprüche öffentlich-rechtlicher Natur begründen kann"
+              ],
+              "likely_outcome_shift": "Da das GwG primär öffentliche Interessen schützt, würde eine staatliche Klage auf Schadenersatz nach privatrechtlichen Grundsätzen ebenfalls scheitern; die FINMA ist auf aufsichtsrechtliche Instrumente (Sanktionen, Lizenzentzug, Bussen) angewiesen. Allerdings zeigt dieses Szenario, dass das GwG in seinem Kern ein öffentlich-rechtliches Instrument ist, was die Entscheidung des Bundesgerichts zusätzlich stützt: Der Schutzzweck des GwG ist systemischer Natur und nicht auf individuelle Ansprüche ausgerichtet."
+            }
+          ]
         }
       ]
     },
@@ -125,7 +291,11 @@
       "name_de": "Schadensbeweis und Schadensberechnung",
       "name_fr": "Preuve et calcul du dommage",
       "name_it": "Prova e calcolo del danno",
-      "statutes": ["Art. 42 OR", "Art. 43 OR", "Art. 44 OR"],
+      "statutes": [
+        "Art. 42 OR",
+        "Art. 43 OR",
+        "Art. 44 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_122 III 219",
@@ -133,13 +303,24 @@
           "actual_language": "de",
           "title_de": "Richterliche Schadensschätzung nach Art. 42 Abs. 2 OR",
           "title_fr": "Estimation judiciaire du dommage selon art. 42 al. 2 CO",
-          "concepts_de": ["Schadensschätzung", "Beweiserleichterung", "Richterliches Ermessen"],
-          "concepts_fr": ["Estimation du dommage", "Facilitation de preuve"],
-          "statutes": ["Art. 42 OR"],
+          "concepts_de": [
+            "Schadensschätzung",
+            "Beweiserleichterung",
+            "Richterliches Ermessen"
+          ],
+          "concepts_fr": [
+            "Estimation du dommage",
+            "Facilitation de preuve"
+          ],
+          "statutes": [
+            "Art. 42 OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Voraussetzungen und Tragweite der Beweiserleichterung bei Schadensschätzung",
-          "key_erwagungen": ["3"],
+          "key_erwagungen": [
+            "3"
+          ],
           "reading_guide_de": "E. 3a: Voraussetzungen der Beweiserleichterung. E. 3b-c: Überprüfungsbefugnis des Bundesgerichts. E. 4: Anwendung auf Pressehaftung — wie weit reicht das richterliche Ermessen?",
           "socratic_questions": [
             {
@@ -167,7 +348,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Geschädigte den Schaden exakt hätte berechnen können, dies aber unterlassen hat?",
-              "discussion_points": ["Subsidiarität der Schätzung", "Substanziierungspflicht", "Mitwirkungspflicht"],
+              "discussion_points": [
+                "Subsidiarität der Schätzung",
+                "Substanziierungspflicht",
+                "Mitwirkungspflicht"
+              ],
               "likely_outcome_shift": "Die Beweiserleichterung greift nur, wenn der exakte Beweis nicht möglich oder nicht zumutbar ist. Bei zumutbarer Berechnung gilt die normale Beweislast."
             },
             {
@@ -182,7 +367,11 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre bei einem immateriellen Schaden (z.B. Persönlichkeitsverletzung durch Medien)?",
-              "discussion_points": ["Art. 49 OR", "Genugtuung", "Bemessungskriterien"],
+              "discussion_points": [
+                "Art. 49 OR",
+                "Genugtuung",
+                "Bemessungskriterien"
+              ],
               "likely_outcome_shift": "Bei immateriellen Schäden ist die richterliche Schätzung der Regelfall (Art. 49 OR). Die Bemessung erfolgt nach Schwere der Verletzung und Verschulden, ist aber noch stärker vom Ermessen abhängig."
             }
           ]
@@ -193,13 +382,30 @@
           "actual_language": "de",
           "title_de": "Konstitutionelle Prädisposition und Quotenvorrecht",
           "title_fr": "Prédisposition constitutionnelle et privilège de quotité",
-          "concepts_de": ["Konstitutionelle Prädisposition", "Quotenvorrecht", "Schadenszins", "Schadensberechnung"],
-          "concepts_fr": ["Prédisposition constitutionnelle", "Privilège de quotité"],
-          "statutes": ["Art. 42 OR", "Art. 43 OR", "Art. 44 OR"],
+          "concepts_de": [
+            "Konstitutionelle Prädisposition",
+            "Quotenvorrecht",
+            "Schadenszins",
+            "Schadensberechnung"
+          ],
+          "concepts_fr": [
+            "Prédisposition constitutionnelle",
+            "Privilège de quotité"
+          ],
+          "statutes": [
+            "Art. 42 OR",
+            "Art. 43 OR",
+            "Art. 44 OR"
+          ],
           "difficulty": 3,
-          "prerequisites": ["bge_122 III 219"],
+          "prerequisites": [
+            "bge_122 III 219"
+          ],
           "significance_de": "Berücksichtigung vorbestehender Leiden bei Schadensberechnung vs. Schadenersatzbemessung",
-          "key_erwagungen": ["4", "7"],
+          "key_erwagungen": [
+            "4",
+            "7"
+          ],
           "reading_guide_de": "E. 4: Unterschied Schadensberechnung vs. Schadenersatzbemessung bei konstitutioneller Prädisposition. E. 7: Zweck des Quotenvorrechts und Bereicherungsverbot.",
           "socratic_questions": [
             {
@@ -227,7 +433,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Vorerkrankung erst nach dem Unfall diagnostiziert wurde?",
-              "discussion_points": ["Zeitpunkt der Diagnose", "Kausalitätsbeweis", "Beweislast"],
+              "discussion_points": [
+                "Zeitpunkt der Diagnose",
+                "Kausalitätsbeweis",
+                "Beweislast"
+              ],
               "likely_outcome_shift": "Die nachträgliche Diagnose ändert die Rechtslage nicht: Entscheidend ist, ob die Prädisposition zum Unfallzeitpunkt bestand, nicht wann sie diagnostiziert wurde."
             },
             {
@@ -242,7 +452,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn der Geschädigte seine Vorerkrankung kannte und sich bewusst in Gefahr begab?",
-              "discussion_points": ["Selbstverschulden (Art. 44 OR)", "Mitverschulden", "Schadenersatzreduktion"],
+              "discussion_points": [
+                "Selbstverschulden (Art. 44 OR)",
+                "Mitverschulden",
+                "Schadenersatzreduktion"
+              ],
               "likely_outcome_shift": "Das Selbstverschulden des Geschädigten führt zu einer weiteren Reduktion des Schadenersatzes nach Art. 44 OR. Die Kenntnis der Vorerkrankung erhöht die Eigenverantwortung."
             }
           ]
@@ -254,7 +468,10 @@
       "name_de": "Kausalhaftungen",
       "name_fr": "Responsabilité causale",
       "name_it": "Responsabilità causale",
-      "statutes": ["Art. 55 OR", "Art. 58 OR"],
+      "statutes": [
+        "Art. 55 OR",
+        "Art. 58 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_122 III 225",
@@ -262,13 +479,29 @@
           "actual_language": "de",
           "title_de": "Abgrenzung Organ/Hilfsperson und Verjährung",
           "title_fr": "Distinction organe/auxiliaire et prescription",
-          "concepts_de": ["Geschäftsherrenhaftung", "Hilfsperson", "Organ", "Verjährung"],
-          "concepts_fr": ["Responsabilité de l'employeur", "Auxiliaire", "Organe", "Prescription"],
-          "statutes": ["Art. 55 OR", "Art. 60 OR"],
+          "concepts_de": [
+            "Geschäftsherrenhaftung",
+            "Hilfsperson",
+            "Organ",
+            "Verjährung"
+          ],
+          "concepts_fr": [
+            "Responsabilité de l'employeur",
+            "Auxiliaire",
+            "Organe",
+            "Prescription"
+          ],
+          "statutes": [
+            "Art. 55 OR",
+            "Art. 60 OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Abgrenzung Organ/Hilfsperson; keine längere strafrechtliche Verjährungsfrist bei Hilfspersonenhaftung",
-          "key_erwagungen": ["4", "5"],
+          "key_erwagungen": [
+            "4",
+            "5"
+          ],
           "reading_guide_de": "E. 4: Abgrenzungskriterien Organ vs. Hilfsperson. E. 5: Keine Anwendung der längeren strafrechtlichen Verjährungsfrist (Art. 60 Abs. 2 OR) bei Geschäftsherrenhaftung.",
           "socratic_questions": [
             {
@@ -296,7 +529,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Geschäftsherr die strafbare Handlung der Hilfsperson angeordnet hätte?",
-              "discussion_points": ["Eigenverschulden des Geschäftsherrn", "Anstiftung", "Organhaftung"],
+              "discussion_points": [
+                "Eigenverschulden des Geschäftsherrn",
+                "Anstiftung",
+                "Organhaftung"
+              ],
               "likely_outcome_shift": "Bei Anordnung durch den Geschäftsherrn haftet dieser aus eigenem Verschulden (Art. 41 OR), nicht nur nach Art. 55 OR. Die strafrechtliche Verjährungsfrist wäre dann anwendbar."
             },
             {
@@ -311,7 +548,10 @@
             {
               "type": "swap_parties",
               "scenario": "Was wäre, wenn der Geschäftsherr nachweisen könnte, dass er alle erforderlichen Sorgfalt in der Auswahl und Überwachung der Hilfsperson angewandt hat?",
-              "discussion_points": ["Exkulpationsbeweis (Art. 55 Abs. 1 OR)", "Cura in eligendo/instruendo/custodiendo"],
+              "discussion_points": [
+                "Exkulpationsbeweis (Art. 55 Abs. 1 OR)",
+                "Cura in eligendo/instruendo/custodiendo"
+              ],
               "likely_outcome_shift": "Der Geschäftsherr kann sich nach Art. 55 Abs. 1 OR exkulpieren, wenn er nachweist, dass er bei der Auswahl, Anleitung und Überwachung die erforderliche Sorgfalt angewandt hat."
             }
           ]
@@ -323,21 +563,95 @@
           "title_de": "Werkeigentümerhaftung — Mangelhaftigkeit eines Werkes",
           "title_fr": "Responsabilité du propriétaire d'ouvrage — défectuosité de l'ouvrage",
           "title_it": "",
-          "concepts_de": ["Werkeigentümerhaftung", "Werk", "Mangelhaftigkeit", "Kausalhaftung"],
-          "concepts_fr": ["Responsabilité du propriétaire d'ouvrage", "Défectuosité", "Responsabilité causale"],
+          "concepts_de": [
+            "Werkeigentümerhaftung",
+            "Werk",
+            "Mangelhaftigkeit",
+            "Kausalhaftung"
+          ],
+          "concepts_fr": [
+            "Responsabilité du propriétaire d'ouvrage",
+            "Défectuosité",
+            "Responsabilité causale"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 58 OR"],
+          "statutes": [
+            "Art. 58 OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Voraussetzungen der Werkeigentümerhaftung nach Art. 58 OR: Begriff des Werks und Mangelhaftigkeit.",
-          "significance_fr": "Conditions de la responsabilité du propriétaire d'ouvrage selon l'art. 58 CO: notion d'ouvrage et défectuosité.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt précise les conditions de la responsabilité du propriétaire d'ouvrage selon l'art. 58 CO, notamment la notion de défaut en lien avec l'usage conforme à la destination de l'ouvrage, la délimitation des responsabilités en cas d'ouvrages combinés, et les critères applicables aux accidents impliquant des enfants.",
+          "significance_it": "Questa sentenza precisa le condizioni della responsabilità del proprietario dell'opera ai sensi dell'art. 58 CO, in particolare la nozione di difetto in relazione all'uso conforme alla destinazione dell'opera, la delimitazione delle responsabilità in caso di opere combinate e i criteri applicabili agli incidenti che coinvolgono bambini.",
+          "key_erwagungen": [
+            "1.1",
+            "1.2",
+            "1.3",
+            "1.4",
+            "1.5",
+            "1.6",
+            "2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 1.1 sowie E. 1.3 und 1.4 für die allgemeinen Grundlagen der Werkeigentümerhaftung nach Art. 58 OR, dann E. 1.2 zur Problematik der kombinierten Werke und der Abgrenzung der Verantwortungsbereiche, und schliesslich E. 1.5 und 1.6 zur spezifischen Rechtsprechung bei Kinderunfällen sowie E. 2 zur konkreten Falllösung.",
+          "reading_guide_fr": "Lisez d'abord les consid. 1.1, 1.3 et 1.4 pour les principes généraux de la responsabilité du propriétaire d'ouvrage selon l'art. 58 CO, puis le consid. 1.2 sur la problématique des ouvrages combinés et la délimitation des responsabilités, et enfin les consid. 1.5 et 1.6 sur la jurisprudence spécifique aux accidents d'enfants ainsi que le consid. 2 pour la solution du cas concret.",
+          "reading_guide_it": "Leggere dapprima i consid. 1.1, 1.3 e 1.4 per i principi generali della responsabilità del proprietario dell'opera ai sensi dell'art. 58 CO, poi il consid. 1.2 sulla problematica delle opere combinate e la delimitazione delle responsabilità, e infine i consid. 1.5 e 1.6 sulla giurisprudenza specifica agli incidenti di bambini nonché il consid. 2 per la soluzione del caso concreto.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter einem «Werk» im Sinne von Art. 58 OR, und welche zwei Objekte wurden im vorliegenden Fall als Werke qualifiziert?",
+              "hint": "Vgl. E. 1.1 sowie die Feststellungen der Vorinstanz zum Werkcharakter der Zufahrtsstrasse und des Webereikanals.",
+              "model_answer": "Ein Werk im Sinne von Art. 58 OR ist eine künstliche, durch menschliche Tätigkeit geschaffene oder veränderte Sache, die dauerhaft mit dem Boden verbunden ist. Im vorliegenden Fall qualifizierte die Vorinstanz sowohl die Zufahrtsstrasse (Y.-Weg) als auch den Webereikanal als Werke. Diese Qualifikation war zwischen den Parteien nicht streitig."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen müssen gemäss Art. 58 OR und der bundesgerichtlichen Rechtsprechung kumulativ erfüllt sein, damit eine Werkeigentümerhaftung bejaht werden kann?",
+              "hint": "Vgl. E. 1.1, 1.3 und 1.4 zu Inhalt und Umfang der Werkeigentümerhaftung.",
+              "model_answer": "Die Werkeigentümerhaftung nach Art. 58 OR setzt voraus: (1) das Vorhandensein eines Werkes im Rechtssinne, (2) einen Werkmangel infolge fehlerhafter Erstellung oder mangelhaften Unterhalts, (3) einen Schaden, (4) einen adäquaten Kausalzusammenhang zwischen Werkmangel und Schaden sowie (5) die Eigentümerstellung des Haftpflichtigen. Die Haftung ist eine Kausalhaftung, weshalb kein Verschulden nachgewiesen werden muss."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum verneinte das Bundesgericht im konkreten Fall einen Werkmangel der Zufahrtsstrasse, obwohl ein Kleinkind zu Schaden gekommen ist?",
+              "hint": "Vgl. E. 2 zum bestimmungsgemässen Gebrauch der Zufahrtsstrasse.",
+              "model_answer": "Das Bundesgericht verneinte einen Werkmangel, weil die Zufahrtsstrasse für ihren bestimmungsgemässen Gebrauch tauglich war und keine besondere Gefährlichkeit aufwies. Die Nutzung der Strasse durch ein unbeaufsichtigtes dreieinhalbjähriges Kleinkind stellt keinen bestimmungsgemässen Gebrauch dar. Da auch keine Ausnahmesituation vorlag, die eine Haftung trotz zweckwidrigen Gebrauchs ausgelöst hätte, fehlte es an einem Werkmangel."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Gericht erörtert das Konzept des «kombinierten Werks» und die Abgrenzung der Verantwortungsbereiche. Welche Konsequenzen ergeben sich daraus für die Haftungsverteilung zwischen der Gemeinde Vilters-Wangs und der B. AG, und weshalb musste diese Frage letztlich offengelassen werden?",
+              "hint": "Vgl. E. 1.2 zur Zuordnung der Mängel bei kombinierten Werken sowie die Ausführungen der Vorinstanz zur solidarischen Haftung.",
+              "model_answer": "Bei einem kombinierten Werk, das räumlich und funktional aus mehreren Teilwerken verschiedener Eigentümer besteht, haftet grundsätzlich nur derjenige Eigentümer, dessen Werk im Hinblick auf seine Zweckbestimmung als mangelhaft erscheint. Die Gemeinde wäre für Mängel der Zufahrtsstrasse, die B. AG für Mängel des Webereikanals verantwortlich gewesen. Diese Frage musste jedoch offengelassen werden, weil das Gericht bereits auf der Stufe des Werkmangels zum Ergebnis gelangte, dass keines der Werke mangelhaft war – ein Mangel durch das blosse Nebeneinander der Werke wäre nur bei bestimmungsgemässem Gebrauch denkbar gewesen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht unterscheidet bei Kinderunfällen zwischen bestimmungsgemässem Gebrauch und Ausnahmesituationen, die eine Haftung trotz zweckwidrigen Gebrauchs begründen können. Ist diese Unterscheidung rechtspolitisch überzeugend, oder führt sie dazu, dass schutzwürdige Kleinkinder schutzlos gestellt werden?",
+              "hint": "Vgl. E. 1.5 und 1.6 zur Werkeigentümerhaftung bei Kinderunfällen sowie den Vergleich mit BGE 116 II 422 («Plauschbad-Fall»).",
+              "model_answer": "Die Unterscheidung ist rechtsdogmatisch konsistent, da eine unbegrenzte Haftung des Werkeigentümers für jeden denkbaren Missbrauch seines Werkes durch Kinder zu einer ausufernden Kausalhaftung führen würde und die Eigenverantwortung der Erziehungsberechtigten vollständig aushöhlen würde. Anderseits kann kritisiert werden, dass die Ausnahmekriterien (Verlockungswirkung des Werks, Voraussehbarkeit des kindlichen Verhaltens) zu restriktiv gehandhabt werden und typische Gefahrenkonstellationen im öffentlichen Raum unberücksichtigt lassen. Rechtspolitisch wäre eine präzisere gesetzliche Regelung oder eine grosszügigere Auslegung der Ausnahmetatbestände wünschenswert, um dem besonderen Schutzbedürfnis von Kleinkindern besser Rechnung zu tragen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Webereikanal wäre zum Unfallzeitpunkt nicht mit einem einfachen Böschungsbereich, sondern mit bunten Kacheln und einer attraktiven Wassergestaltung versehen gewesen, die gezielt Kinder anlocken sollte, und die B. AG hätte von früheren ähnlichen Vorfällen Kenntnis gehabt.",
+              "discussion_points": [
+                "Würde eine solche Gestaltung eine 'Verlockungswirkung' begründen, die nach der Rechtsprechung des Bundesgerichts (vgl. Plauschbad-Fall, BGE 116 II 422) eine Haftung trotz zweckwidrigen Gebrauchs auslösen kann?",
+                "Inwiefern verändert die positive Kenntnis der Werkeigentümerin von früheren Vorfällen die Beurteilung der Voraussehbarkeit und damit des Werkmangels?"
+              ],
+              "likely_outcome_shift": "Bei einer gezielt kindanziehenden Gestaltung und nachgewiesener Kenntnis früherer Vorfälle wäre die Ausnahmesituation im Sinne der bundesgerichtlichen Rechtsprechung zu bejahen. Das Werk hätte dann durch sein Wesen und seine Anlage Kinder zu einem gefährlichen, bestimmungswidrigen Gebrauch verleitet, was die Werkeigentümerhaftung der B. AG auch ohne bestimmungsgemässen Gebrauch durch das Kind begründen würde."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht ein Kleinkind, sondern ein erwachsener Fussgänger wäre auf der Zufahrtsstrasse ausgerutscht und in den Webereikanal gefallen, weil die Böschung bei Regen ungesichert und rutschig war und keine Abschrankung vorhanden war.",
+              "discussion_points": [
+                "Ändert sich die Beurteilung des bestimmungsgemässen Gebrauchs, wenn ein Erwachsener die Zufahrtsstrasse als Fussgänger benutzt, und stellt das Fehlen einer Absperrung zur Böschung hin einen Werkmangel dar?",
+                "Welche Sorgfaltsanforderungen gelten für den Werkeigentümer hinsichtlich der Sicherung von Wasserläufen neben öffentlich zugänglichen Wegen, und wie wirkt sich die Vorhersehbarkeit des Schadensereignisses auf die Mangelbeurteilung aus?"
+              ],
+              "likely_outcome_shift": "Bei einem erwachsenen Fussgänger wäre die Nutzung der Zufahrtsstrasse als bestimmungsgemäss zu qualifizieren. Die fehlende Absperrung zwischen Strasse und rutschiger Böschung könnte als Werkmangel gewertet werden, da das Werk in dieser Konfiguration für den vorgesehenen Fussgängerverkehr bei widrigen Witterungsbedingungen nicht hinreichend sicher wäre. Eine Haftung der B. AG als Eigentümerin des Kanalgrundstücks bzw. der Gemeinde als Strasseneigentümerin wäre damit deutlich wahrscheinlicher."
+            }
+          ]
         },
         {
           "decision_id": "bge_98 II 288",
@@ -346,21 +660,92 @@
           "title_de": "Vertrag mit Schutzwirkung für Dritte — Hilfspersonenhaftung",
           "title_fr": "Contrat avec effet protecteur pour les tiers — responsabilité pour auxiliaires",
           "title_it": "",
-          "concepts_de": ["Schutzwirkung für Dritte", "Hilfspersonenhaftung", "Vertragshaftung", "Drittschutz"],
-          "concepts_fr": ["Effet protecteur pour les tiers", "Responsabilité pour auxiliaires", "Protection des tiers"],
+          "concepts_de": [
+            "Schutzwirkung für Dritte",
+            "Hilfspersonenhaftung",
+            "Vertragshaftung",
+            "Drittschutz"
+          ],
+          "concepts_fr": [
+            "Effet protecteur pour les tiers",
+            "Responsabilité pour auxiliaires",
+            "Protection des tiers"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 97 OR", "Art. 101 OR"],
+          "statutes": [
+            "Art. 97 OR",
+            "Art. 101 OR"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Ausdehnung der Vertragshaftung auf drittschützende Verträge: Hilfspersonenhaftung und Schutzwirkung für Dritte.",
-          "significance_fr": "Arrêt de principe sur l'extension de la responsabilité contractuelle aux contrats à effet protecteur pour les tiers.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe clarifie les conditions de la responsabilité contractuelle du débiteur pour le comportement de ses auxiliaires au sens de l'art. 101 CO, en posant notamment que l'employé agissant en violation d'une interdiction n'est pas un auxiliaire dans le cadre du rapport contractuel concerné.",
+          "significance_it": "Questa sentenza di principio chiarisce i presupposti della responsabilità contrattuale del debitore per il comportamento dei suoi ausiliari ai sensi dell'art. 101 CO, stabilendo in particolare che il dipendente che agisce in violazione di un divieto non è un ausiliario nell'ambito del rapporto contrattuale in questione.",
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 2, um die vertragliche Grundlage und die mietrechtlichen Pflichten nach Art. 261 und 271 OR zu verstehen. Wenden Sie sich dann Erwägung 3 zu, um die Unterscheidung zwischen natürlichem und adäquatem Kausalzusammenhang als Tat- und Rechtsfrage nachzuvollziehen. Schliesslich ist Erwägung 4 zentral für das Verständnis des Hilfspersonenbegriffs und dessen Grenzen bei verbotswidrigem Handeln.",
+          "reading_guide_fr": "Commencez par lire le considérant 2 pour comprendre le fondement contractuel et les obligations du locataire selon les art. 261 et 271 CO. Passez ensuite au considérant 3 pour saisir la distinction entre causalité naturelle (question de fait) et causalité adéquate (question de droit). Le considérant 4 est essentiel pour comprendre la notion d'auxiliaire au sens de l'art. 101 CO et ses limites lorsque l'acte dommageable est accompli en violation d'une interdiction.",
+          "reading_guide_it": "Si consiglia di iniziare con il considerando 2 per comprendere il fondamento contrattuale e gli obblighi del conduttore ai sensi degli art. 261 e 271 CO. Il considerando 3 illustra la distinzione tra nesso causale naturale (questione di fatto) e nesso causale adeguato (questione di diritto). Il considerando 4 è centrale per la nozione di ausiliario ai sensi dell'art. 101 CO e i suoi limiti in caso di comportamento vietato.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was waren die wesentlichen Pflichten des Mieters Kindler gegenüber dem Vermieter Umbricht in Bezug auf den gemieteten Bagger, und woraus ergaben sich diese Pflichten?",
+              "hint": "Erwägung 2, Art. 261 und 271 OR",
+              "model_answer": "Als Mieter war Kindler gemäss Art. 261 und 271 OR verpflichtet, den Bagger pfleglich zu behandeln und ihn am Ende der Mietzeit in dem Zustand zurückzugeben, in dem er ihn erhalten hatte. Da der Bagger stark beschädigt zurückgegeben wurde und diese Beschädigung nicht auf den vertragsmässigen Gebrauch zurückzuführen war, stellt sich die Frage seiner Haftung für das Verhalten seiner Angestellten."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Unter welchen Voraussetzungen haftet ein Mieter nach Art. 101 OR für das schädigende Verhalten einer Hilfsperson, und welche Elemente müssen nach dieser Norm kumulativ erfüllt sein?",
+              "hint": "Erwägung 2 und Regeste Ziff. 1 und 3",
+              "model_answer": "Art. 101 OR setzt voraus, dass die Person eine Hilfsperson des Schuldners ist, dass diese Hilfsperson bei der Erfüllung einer vertraglichen Pflicht eingesetzt wurde, und dass das schädigende Verhalten im Rahmen dieser Aufgabenerfüllung erfolgte. Der Hilfspersonenbegriff erfordert also einen funktionalen Zusammenhang zwischen der übertragenen Aufgabe und dem schädigenden Verhalten – wer eigenmächtig und verbotswidrig handelt, kann aus dem Anwendungsbereich herausfallen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Warum qualifizierte das Bundesgericht den Chauffeur Buchli, der verbotswidrig mit dem Bagger hantierte, nicht als Hilfsperson im Sinne von Art. 101 OR, obwohl er ein Angestellter des Mieters war?",
+              "hint": "Erwägung 4 und Regeste Ziff. 3",
+              "model_answer": "Das Bundesgericht verneinte die Hilfspersoneneigenschaft Buchlis, weil er entgegen einem ausdrücklichen Verbot des Mieters handelte und seine Manipulation nicht im Rahmen der Erfüllung einer dem Mieter obliegenden vertraglichen Pflicht erfolgte. Der funktionale Zusammenhang zwischen seiner Tätigkeit und dem Mietverhältnis fehlte. Das Gericht behielt jedoch ausdrücklich vor, ob anders zu entscheiden wäre, wenn er zum Schutz dringlicher Interessen des Mieters eingegriffen hätte."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche dogmatische Spannung besteht zwischen der Frage des natürlichen und des adäquaten Kausalzusammenhangs im Zusammenhang mit dem Verhalten des Baggerführers Suter, und wie trennte das Bundesgericht Tat- und Rechtsfrage in Erwägung 3?",
+              "hint": "Erwägung 3, Art. 63 Abs. 2 und 3 OG",
+              "model_answer": "Der natürliche Kausalzusammenhang ist eine Tatfrage, an deren vorinstanzliche Feststellung das Bundesgericht gebunden ist; die Adäquanz hingegen ist eine Rechtsfrage, die das Bundesgericht frei überprüft. Das Obergericht hatte festgestellt, dass der im Leergang laufende Motor den Schadenseintritt begünstigt habe, und bejahte die Adäquanz. Das Bundesgericht musste somit unterscheiden, welche Feststellungen tatsächlicher Natur waren (natürlicher Kausalzusammenhang) und welche rechtlicher Wertung bedurften (Adäquanz), was methodisch die Anwendbarkeit von Art. 63 Abs. 2 und 3 OG bestimmte."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Inwiefern ist der vom Bundesgericht in BGE 98 II 288 entwickelte Ansatz zur Hilfspersonenhaftung rechtspolitisch überzeugend, und welche Schwächen könnte der Vorbehalt für den Fall 'dringlicher Interessen des Mieters' aus Perspektive der Rechtssicherheit aufwerfen?",
+              "hint": "Erwägung 4; Regeste Ziff. 3 sowie die Gesamtstruktur des Urteils",
+              "model_answer": "Die Entscheidung ist rechtspolitisch überzeugend, weil sie verhindert, dass ein Mieter unbegrenzt für eigenmächtiges, verbotswidriges Handeln seiner Angestellten haftet, das keinen Bezug zur Vertragserfüllung hat. Allerdings schafft der Vorbehalt betreffend 'dringliche Interessen des Mieters' eine erhebliche Rechtsunsicherheit, da die Grenze zwischen unerlaubtem Eingriff und schutzwürdigem Nothandeln im Einzelfall schwer zu ziehen ist. Dies kann zu inkonsistenter Anwendung führen und lädt zur Spekulation ein, ob jede Notsituation eine Hilfspersonenstellung nachträglich begründen kann."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, Buchli hätte den Bagger nicht aus eigenem Antrieb bedient, sondern weil der Baggerführer Suter ihn vor seiner Abreise ausdrücklich gebeten hatte, kurz auf die Maschine zu achten und sie notfalls zu sichern. Wie würde sich dies auf die Hilfspersonenhaftung nach Art. 101 OR auswirken?",
+              "discussion_points": [
+                "Würde eine ausdrückliche Delegation durch den Baggerführer Suter Buchli zur Hilfsperson im Sinne von Art. 101 OR machen, und auf wessen Seite (Vermieter oder Mieter) wäre diese Hilfspersonenstellung zu verorten?",
+                "Verändert sich die Zurechnung, wenn die Delegation vom Baggerführer (Hilfsperson des Vermieters) ausging, und nicht vom Mieter selbst – liegt dann eine Kette von Hilfspersonen vor?"
+              ],
+              "likely_outcome_shift": "Eine ausdrückliche Delegation durch Suter würde die Qualifikation Buchlis als Hilfsperson erheblich näher rücken lassen, da der funktionale Zusammenhang mit der Vertragserfüllung nunmehr gegeben wäre. Es entstünde jedoch ein Zurechnungskonflikt: Buchli ist Angestellter des Mieters, wurde aber vom Baggerführer des Vermieters eingesetzt, was die Frage aufwirft, ob der Vermieter durch die eigenmächtige Delegation seines Baggerführers das Haftungsrisiko auf sich gezogen hat."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht ein Angestellter des Mieters Kindler, sondern ein unbeteiligter Dritter (z.B. ein Passant oder ein Angestellter eines Nachbarunternehmens auf der Baustelle) hätte verbotswidrig mit dem Bagger hantiert und den Schaden verursacht. Wie wäre die Haftungslage zu beurteilen?",
+              "discussion_points": [
+                "Entfällt die vertragliche Haftung des Mieters nach Art. 101 OR vollständig, wenn der Schädiger kein Angestellter des Mieters und auch keine Hilfsperson ist?",
+                "Kommt in diesem Fall eine Haftung des Mieters wegen mangelhafter Sicherung der Baustelle oder des Baggers (Verkehrssicherungspflicht) oder eine ausservertragliche Haftung in Betracht?"
+              ],
+              "likely_outcome_shift": "Mangels jeglicher Zugehörigkeit des Dritten zur Sphäre des Mieters wäre eine Haftung nach Art. 101 OR ausgeschlossen. Der Vermieter müsste den Schaden entweder selbst tragen oder den Dritten direkt aus Delikt belangen. Allerdings könnten dem Mieter Verletzungen von Verkehrssicherungspflichten vorgeworfen werden, wenn er die Baustelle nicht ausreichend gesichert und dadurch den unbefugten Zugriff ermöglicht hat."
+            }
+          ]
         }
       ]
     }

@@ -10,7 +10,9 @@
       "name_de": "Nachehelicher Unterhalt",
       "name_fr": "Entretien après divorce",
       "name_it": "Mantenimento post-divorzio",
-      "statutes": ["Art. 125 ZGB"],
+      "statutes": [
+        "Art. 125 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_147 III 249",
@@ -18,14 +20,30 @@
           "actual_language": "de",
           "title_de": "Methodik der Unterhaltsberechnung — zweistufige Methode",
           "title_fr": "Méthodologie du calcul de l'entretien — méthode en deux étapes",
-          "concepts_de": ["Nachehelicher Unterhalt", "Zweistufige Methode", "Gebührender Unterhalt", "Eigenversorgungskapazität"],
-          "concepts_fr": ["Entretien après divorce", "Méthode en deux étapes", "Entretien convenable"],
-          "statutes": ["Art. 125 ZGB", "Art. 176 ZGB"],
+          "concepts_de": [
+            "Nachehelicher Unterhalt",
+            "Zweistufige Methode",
+            "Gebührender Unterhalt",
+            "Eigenversorgungskapazität"
+          ],
+          "concepts_fr": [
+            "Entretien après divorce",
+            "Méthode en deux étapes",
+            "Entretien convenable"
+          ],
+          "statutes": [
+            "Art. 125 ZGB",
+            "Art. 176 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Methodik der Unterhaltsberechnung: Einführung der zweistufigen Methode mit Überschussverteilung",
           "significance_fr": "Arrêt de principe sur la méthodologie du calcul de l'entretien: introduction de la méthode en deux étapes",
-          "key_erwagungen": ["3", "4", "5"],
+          "key_erwagungen": [
+            "3",
+            "4",
+            "5"
+          ],
           "reading_guide_de": "E. 3: Bisherige Methoden (Existenzminimum, Lebenshaltungskostenmethode). E. 4: Neue zweistufige Methode — Bedarfsermittlung + Überschussverteilung. E. 5: Anwendung auf den konkreten Fall. Dieser Entscheid hat die Praxis grundlegend verändert.",
           "socratic_questions": [
             {
@@ -53,7 +71,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre bei einer Kurzehe (unter 3 Jahre) ohne Kinder?",
-              "discussion_points": ["Eigenversorgungskapazität", "Clean Break", "Dauer des Unterhalts"],
+              "discussion_points": [
+                "Eigenversorgungskapazität",
+                "Clean Break",
+                "Dauer des Unterhalts"
+              ],
               "likely_outcome_shift": "Bei einer Kurzehe ohne Kinder besteht grundsätzlich kein Anspruch auf nachehelichen Unterhalt. Der Clean-Break-Grundsatz kommt zur Anwendung, weil die Ehe nicht lebensprägend war."
             },
             {
@@ -68,13 +90,21 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre bei einem Paar mit sehr hohem Einkommen (CHF 50'000/Monat), wo ein Partner nie gearbeitet hat?",
-              "discussion_points": ["Lebensstandard", "Lebensprägende Ehe", "Obergrenze des Unterhalts"],
+              "discussion_points": [
+                "Lebensstandard",
+                "Lebensprägende Ehe",
+                "Obergrenze des Unterhalts"
+              ],
               "likely_outcome_shift": "Bei lebensprägender Ehe und hohem Einkommen hat der nicht erwerbstätige Partner Anspruch auf Lebenshaltung gemäss ehelichem Standard. Der Überschuss wird geteilt, allerdings gibt es keine unbegrenzte Lebensstandardgarantie."
             },
             {
               "type": "change_timeline",
               "scenario": "Was wäre, wenn der Unterhaltspflichtige 5 Jahre nach der Scheidung arbeitslos wird?",
-              "discussion_points": ["Abänderung des Unterhalts", "Art. 129 ZGB", "Veränderte Verhältnisse"],
+              "discussion_points": [
+                "Abänderung des Unterhalts",
+                "Art. 129 ZGB",
+                "Veränderte Verhältnisse"
+              ],
               "likely_outcome_shift": "Bei wesentlicher und dauerhafter Veränderung der Verhältnisse kann der Unterhalt angepasst werden (Art. 129 ZGB). Arbeitslosigkeit kann eine Reduktion oder Sistierung rechtfertigen."
             }
           ]
@@ -86,21 +116,89 @@
           "title_de": "Nachehelicher Unterhalt — Kriterien und Eigenversorgungskapazität",
           "title_fr": "Entretien après divorce — critères et capacité d'auto-entretien",
           "title_it": "",
-          "concepts_de": ["Nachehelicher Unterhalt", "Eigenversorgungskapazität", "Lebensstandard", "Scheidung"],
-          "concepts_fr": ["Entretien après divorce", "Capacité d'auto-entretien", "Niveau de vie"],
+          "concepts_de": [
+            "Nachehelicher Unterhalt",
+            "Eigenversorgungskapazität",
+            "Lebensstandard",
+            "Scheidung"
+          ],
+          "concepts_fr": [
+            "Entretien après divorce",
+            "Capacité d'auto-entretien",
+            "Niveau de vie"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 125 ZGB"],
+          "statutes": [
+            "Art. 125 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Kriterien des nachehelichen Unterhalts nach Art. 125 ZGB, insbesondere zur Eigenversorgungskapazität und zum ehezeitlichen Lebensstandard.",
-          "significance_fr": "Arrêt de principe sur les critères de l'entretien après divorce selon l'art. 125 CC, notamment sur la capacité d'auto-entretien.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe fixant la méthode en trois étapes pour déterminer la contribution d'entretien après divorce en cas de mariage ayant marqué le destin des époux selon l'art. 125 CC, en particulier la primauté de l'entretien par ses propres moyens et le niveau de vie conjugal comme référence et plafond.",
+          "significance_it": "Decisione di principio che stabilisce il metodo in tre fasi per determinare il contributo di mantenimento post-matrimoniale in caso di matrimonio che ha segnato la vita dei coniugi ai sensi dell'art. 125 CC, con particolare riguardo alla priorità dell'autosufficienza economica e al tenore di vita coniugale quale riferimento e limite massimo.",
+          "key_erwagungen": [
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt, um die Rollenverteilung und die Einkommensverhältnisse der Parteien zu verstehen. Konzentrieren Sie sich dann auf Erwägung 4, wo das Bundesgericht das massgebliche Dreistufenschema für die Unterhaltsbestimmung bei lebensprägender Ehe entwickelt und die Methode der hälftigen Überschussteilung des Obergerichts verwirft. Beachten Sie insbesondere, warum das Gericht im konkreten Fall keinen Raum für nachehelichen Unterhalt sieht, obwohl die Ehe als lebensprägend qualifiziert wurde.",
+          "reading_guide_fr": "Commencez par lire les faits afin de comprendre la répartition des rôles et les revenus des parties. Concentrez-vous ensuite sur le considérant 4, dans lequel le Tribunal fédéral développe le schéma en trois étapes applicable pour fixer la contribution d'entretien après divorce en cas de mariage ayant marqué le destin des époux, tout en écartant la méthode du partage par moitié de l'excédent retenue par la cour cantonale. Notez en particulier pourquoi, dans le cas concret, le tribunal ne laisse aucune place à une contribution d'entretien post-divorce bien que le mariage ait été qualifié de déterminant pour la vie des parties.",
+          "reading_guide_it": "Iniziate leggendo i fatti per comprendere la ripartizione dei ruoli e le condizioni reddituali delle parti. Concentratevi poi sul considerando 4, dove il Tribunale federale elabora lo schema in tre fasi per la determinazione del mantenimento post-matrimoniale in caso di matrimonio che ha segnato la vita dei coniugi, rifiutando al contempo il metodo della ripartizione a metà dell'eccedenza adottato dal tribunale cantonale. Osservate in particolare perché, nel caso concreto, il tribunale non ravvisa spazio per un contributo di mantenimento post-divorzio nonostante il matrimonio sia stato qualificato come determinante.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 134 III 145 unter einer 'lebensprägenden Ehe', und welche Merkmale der Ehe zwischen X. und Y. haben die Gerichte dazu veranlasst, diese Qualifikation vorzunehmen?",
+              "hint": "Vgl. E. 4, erster Absatz: Dauer der Ehe, Kinder, klassische Rollenteilung.",
+              "model_answer": "Eine lebensprägend Ehe ist nach bundesgerichtlicher Rechtsprechung eine Ehe, die die wirtschaftliche Situation der Ehegatten nachhaltig beeinflusst und geprägt hat, sodass eine vollständige Eigenversorgung nach der Scheidung nicht ohne Weiteres erwartet werden kann. Im vorliegenden Fall qualifizierten die Gerichte die Ehe als lebensprägend, weil sie 20 Jahre dauerte, Kinder hervorgegangen sind und die Parteien eine klassische Rollenteilung pflegten, bei der die Ehefrau auf eine eigene Erwerbstätigkeit verzichtete, um Haushalt und Kinderbetreuung zu übernehmen. Diese Faktoren bedingen, dass der nacheheliche Lebensstandard am ehelichen Lebensstandard zu messen ist."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welches dreistufige Prüfungsschema entwickelt das Bundesgericht in E. 4 für die Bestimmung des nachehelichen Unterhalts bei lebensprägender Ehe, und welcher gesetzliche Vorrang ergibt sich aus Art. 125 Abs. 1 ZGB?",
+              "hint": "Vgl. E. 4, zweiter Absatz: die drei Schritte – gebührender Unterhalt, Eigenversorgung, Leistungsfähigkeit.",
+              "model_answer": "Das Bundesgericht legt ein dreistufiges Vorgehen fest: Im ersten Schritt ist der gebührende Unterhalt zu bestimmen, der sich am zuletzt gemeinsam gelebten ehelichen Lebensstandard orientiert und gleichzeitig dessen Obergrenze bildet. Im zweiten Schritt ist zu prüfen, inwieweit jeder Ehegatte diesen Unterhalt durch Eigenversorgung selbst decken kann; der Vorrang der Eigenversorgung folgt direkt aus dem Wortlaut von Art. 125 Abs. 1 ZGB. Erst wenn Eigenversorgung nicht möglich oder nicht zumutbar ist, wird im dritten Schritt die Leistungsfähigkeit des anderen Ehegatten ermittelt und ein angemessener Unterhaltsbeitrag auf Basis nachehelicher Solidarität festgesetzt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie das bundesgerichtliche Dreistufenschema auf folgenden Sachverhalt an: Eine 15-jährige lebensprägende Ehe wird geschieden; die Ehefrau erzielt nach der Scheidung ein hypothetisches Einkommen von Fr. 4'200.– netto, der Ehemann Fr. 4'800.– netto; der eheliche Lebensstandard wurde mit Fr. 3'500.– pro Person beziffert. Besteht ein Unterhaltsanspruch?",
+              "hint": "Vgl. E. 4, letzter Absatz: Kann die Ehefrau kraft Eigenversorgung am ehelichen Lebensstandard anknüpfen, bleibt kein Raum für nachehelichen Unterhalt.",
+              "model_answer": "Im ersten Schritt wird der gebührende Unterhalt auf Fr. 3'500.– pro Person (zuzüglich scheidungsbedingter Mehrkosten) festgesetzt. Im zweiten Schritt zeigt sich, dass die Ehefrau mit einem hypothetischen Einkommen von Fr. 4'200.– den ehelichen Lebensstandard von Fr. 3'500.– aus eigenen Mitteln vollständig decken kann. Da damit Eigenversorgung möglich ist, erübrigt sich der dritte Schritt, und es besteht kein Anspruch auf nachehelichen Unterhalt – analog zur Schlussfolgerung des Bundesgerichts im vorliegenden Fall."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Obergericht Aargau wandte die Methode der hälftigen Überschussteilung an. Aus welchen rechtlichen und konzeptionellen Gründen verwirft das Bundesgericht diese Methode für den nachehelichen Unterhalt, und inwiefern widerspricht sie dem Normzweck von Art. 125 ZGB?",
+              "hint": "Vgl. E. 4, zweiter Absatz: Unterschied zwischen ehelichem Unterhalt (Art. 163 ZGB) und nachehelichem Unterhalt (Art. 125 ZGB); Wirkung der Scheidung.",
+              "model_answer": "Das Bundesgericht kritisiert, dass die hälftige Überschussteilung ein Instrument des ehelichen Unterhalts (Art. 163 ZGB) ist und auf der fortwährenden gegenseitigen Beistands- und Unterhaltspflicht beruht, die mit der Scheidung jedoch endet. Würde man diese Methode auf den nachehelichen Unterhalt übertragen, hätte die Scheidung in finanzieller Hinsicht keinerlei Konsequenzen, da die Ehegatten lebenslänglich gleichgestellt blieben. Art. 125 ZGB bezweckt demgegenüber nicht eine dauerhafte finanzielle Gleichstellung, sondern lediglich den Ausgleich scheidungsbedingter Nachteile auf Basis nachehelicher Solidarität, wobei der eheliche Lebensstandard zugleich Anknüpfungspunkt und Obergrenze bildet. Konzeptionell verfehlt die hälftige Überschussteilung damit den Vorrang der Eigenversorgung und ignoriert, dass der gebührende Unterhalt zunächst eigenständig festzustellen ist."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritisch betrachtet könnte man einwenden, das Bundesgericht gewichte in BGE 134 III 145 die Eigenversorgungskapazität zu stark und benachteilige damit strukturell jenen Ehegatten, der durch die Rollenteilung Karrierenachteile erlitten hat. Bewerten Sie diesen Einwand unter Berücksichtigung des Normzwecks von Art. 125 ZGB und der konkreten Umstände des Falls.",
+              "hint": "Vgl. E. 4 gesamthaft: Verhältnis von Eigenversorgung, ehezeitlichem Lebensstandard als Obergrenze und nachehelicher Solidarität; im konkreten Fall: hypothetisches Einkommen der Ehefrau übersteigt ehelichen Standard.",
+              "model_answer": "Der Einwand hat grundsätzlich Berechtigung, weil Art. 125 ZGB u.a. den Ausgleich von Karrierenachteilen infolge ehebedingter Rollenverteilung bezweckt. Im vorliegenden Fall greift er jedoch nicht durch, weil das der Ehefrau angerechnete hypothetische Vollzeiteinkommen von Fr. 3'690.– den ehelichen Lebensstandard, den der Vierpersonenhaushalt mit Fr. 5'334.– bestritt, bereits deckt oder gar übersteigt; ein realer Einkommensnachteil durch die Rollenteilung ist also faktisch nicht nachgewiesen. Gleichwohl bleibt methodisch zu fragen, ob der eheliche Lebensstandard als starre Obergrenze in Fällen mit langer Ehedauer und ausgeprägtem Karriereverzicht zu einer Unterbewertung der nachehelichen Solidarität führt, was die spätere Rechtsprechung (etwa zur Lebensstandardgarantie) weiter differenziert hat. Das Dreistufenschema des Bundesgerichts ist insofern ausgewogen, als es Eigenversorgung priorisiert, ohne den gebührenden Unterhalt vollständig zu ignorieren – es hängt jedoch stark von der korrekten Feststellung des ehelichen Lebensstandards ab."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Ehefrau Y. leidet nach der Scheidung an einer chronischen Erkrankung, die ihr eine Vollzeittätigkeit dauerhaft verunmöglicht, sodass sie statt des angerechneten hypothetischen Einkommens von Fr. 3'690.– nur noch Fr. 1'800.– netto pro Monat erzielen kann. Wie verändert sich die Prüfung nach dem Dreistufenschema?",
+              "discussion_points": [
+                "Im zweiten Schritt ist zu prüfen, ob Eigenversorgung zumutbar und möglich ist – bei dauerhafter Erkrankung entfällt die Anrechenbarkeit eines höheren hypothetischen Einkommens.",
+                "Der gebührende Unterhalt (Stufe 1) bleibt am ehelichen Lebensstandard orientiert; die Lücke zwischen Fr. 1'800.– und dem gebührenden Unterhalt muss im dritten Schritt durch Prüfung der Leistungsfähigkeit des Ehemanns geschlossen werden."
+              ],
+              "likely_outcome_shift": "Da die Eigenversorgungskapazität der Ehefrau krankheitsbedingt dauerhaft eingeschränkt ist, entfällt der Grund für den Verzicht auf nachehelichen Unterhalt. Das Gericht müsste die Leistungsfähigkeit des Ehemanns prüfen und einen angemessenen Unterhaltsbeitrag festsetzen, der die Differenz zwischen dem erzielbaren Einkommen der Ehefrau und dem gebührenden ehelichen Lebensstandard (als Obergrenze) deckt. Das Ergebnis wäre aller Wahrscheinlichkeit nach eine dauerhafte Unterhaltsverpflichtung des Ehemannes."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, dass nicht die Ehefrau, sondern der Ehemann X. die Rolle des betreuenden und haushaltführenden Ehegatten übernommen hatte und nach der Scheidung ein hypothetisches Einkommen von Fr. 3'690.– erzielt, während die Ehefrau Y. Fr. 5'334.– verdient. X. verlangt nachehelichen Unterhalt. Ändert sich die rechtliche Beurteilung?",
+              "discussion_points": [
+                "Art. 125 ZGB ist geschlechtsneutral formuliert; das Dreistufenschema gilt unabhängig davon, welcher Ehegatte die Betreuungsrolle übernommen hat.",
+                "Die Frage, ob der eheliche Lebensstandard des Ehemanns durch sein hypothetisches Einkommen gedeckt ist, stellt sich identisch; entscheidend ist der konkrete Einkommensvergleich, nicht das Geschlecht."
+              ],
+              "likely_outcome_shift": "Die rechtliche Beurteilung bleibt dieselbe, da Art. 125 ZGB keine geschlechtsspezifische Differenzierung vorsieht und das Bundesgericht das Dreistufenschema geschlechtsneutral entwickelt hat. Sofern das hypothetische Einkommen des Ehemanns den ehelichen Lebensstandard deckt, entfiele auch hier ein Unterhaltsanspruch; die Rollenumkehr ändert an der Anwendung des Schemas nichts, illustriert aber dessen universellen Charakter."
+            }
+          ]
         }
       ]
     },
@@ -109,7 +207,11 @@
       "name_de": "Elterliche Sorge und Kindeswohl",
       "name_fr": "Autorité parentale et bien de l'enfant",
       "name_it": "Autorità parentale e bene del bambino",
-      "statutes": ["Art. 296 ZGB", "Art. 298 ZGB", "Art. 301a ZGB"],
+      "statutes": [
+        "Art. 296 ZGB",
+        "Art. 298 ZGB",
+        "Art. 301a ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_142 III 481",
@@ -117,14 +219,30 @@
           "actual_language": "de",
           "title_de": "Gemeinsame elterliche Sorge als Regelfall",
           "title_fr": "Autorité parentale conjointe comme règle",
-          "concepts_de": ["Gemeinsame elterliche Sorge", "Kindeswohl", "Ausnahmen", "Kooperationsfähigkeit"],
-          "concepts_fr": ["Autorité parentale conjointe", "Bien de l'enfant", "Exceptions"],
-          "statutes": ["Art. 296 ZGB", "Art. 298 ZGB"],
+          "concepts_de": [
+            "Gemeinsame elterliche Sorge",
+            "Kindeswohl",
+            "Ausnahmen",
+            "Kooperationsfähigkeit"
+          ],
+          "concepts_fr": [
+            "Autorité parentale conjointe",
+            "Bien de l'enfant",
+            "Exceptions"
+          ],
+          "statutes": [
+            "Art. 296 ZGB",
+            "Art. 298 ZGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Gemeinsame elterliche Sorge als Regel; alleinige Sorge nur bei schwerwiegender Unfähigkeit zur Kooperation",
           "significance_fr": "Autorité parentale conjointe comme règle; autorité exclusive seulement en cas d'incapacité grave de coopérer",
-          "key_erwagungen": ["2", "3", "4"],
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 2: Grundsatz der gemeinsamen Sorge (Art. 296 ZGB). E. 3: Ausnahme — alleinige Sorge nur bei schwerwiegendem, dauerhaftem Elternkonflikt, der das Kindeswohl gefährdet. E. 4: Kriterien der Beurteilung.",
           "socratic_questions": [
             {
@@ -152,7 +270,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn ein Elternteil ins Ausland ziehen möchte (Umzug mit dem Kind)?",
-              "discussion_points": ["Art. 301a ZGB", "Zustimmungserfordernis", "Freizügigkeit vs. Kindeswohl"],
+              "discussion_points": [
+                "Art. 301a ZGB",
+                "Zustimmungserfordernis",
+                "Freizügigkeit vs. Kindeswohl"
+              ],
               "likely_outcome_shift": "Ein Umzug ins Ausland mit dem Kind erfordert die Zustimmung des anderen Elternteils oder eine gerichtliche Bewilligung (Art. 301a ZGB). Das Kindeswohl ist entscheidend."
             },
             {
@@ -167,7 +289,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn häusliche Gewalt zwischen den Eltern aktenkundig wäre?",
-              "discussion_points": ["Kindeswohlgefährdung", "Schutz des Opfers", "Alleinige Sorge als Schutz"],
+              "discussion_points": [
+                "Kindeswohlgefährdung",
+                "Schutz des Opfers",
+                "Alleinige Sorge als Schutz"
+              ],
               "likely_outcome_shift": "Häusliche Gewalt ist ein starkes Indiz gegen die gemeinsame Sorge. Der gewalttätige Elternteil kann die alleinige Sorge verlieren, besonders wenn das Kind die Gewalt miterlebt hat."
             }
           ]
@@ -179,21 +305,92 @@
           "title_de": "Kindeswohl-Grundsatz — Kriterien bei Obhutszuteilung",
           "title_fr": "Principe du bien de l'enfant — critères pour l'attribution de la garde",
           "title_it": "",
-          "concepts_de": ["Kindeswohl", "Obhutszuteilung", "Elterliche Sorge", "Beurteilungskriterien"],
-          "concepts_fr": ["Bien de l'enfant", "Attribution de la garde", "Autorité parentale", "Critères"],
+          "concepts_de": [
+            "Kindeswohl",
+            "Obhutszuteilung",
+            "Elterliche Sorge",
+            "Beurteilungskriterien"
+          ],
+          "concepts_fr": [
+            "Bien de l'enfant",
+            "Attribution de la garde",
+            "Autorité parentale",
+            "Critères"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 296 ZGB"],
+          "statutes": [
+            "Art. 296 ZGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Das Bundesgericht konkretisiert die Kriterien des Kindeswohls bei der Obhutszuteilung: Stabilität, Bindungstoleranz und Erziehungsfähigkeit.",
-          "significance_fr": "Le Tribunal fédéral précise les critères du bien de l'enfant pour l'attribution de la garde: stabilité, tolérance aux liens et capacité éducative.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Le Tribunal fédéral précise que l'art. 298 al. 1 CC ne s'oppose pas à ce que le juge du divorce attribue l'autorité parentale à un seul parent sur la base d'une requête commune des parties, pour autant que le bien de l'enfant le justifie conformément à l'art. 133 al. 2 CC.",
+          "significance_it": "Il Tribunale federale chiarisce che l'art. 298 cpv. 1 CC non impedisce al giudice del divorzio di attribuire l'autorità parentale a un solo genitore sulla base di una richiesta congiunta dei genitori, purché ciò sia giustificato dall'interesse superiore del figlio ai sensi dell'art. 133 cpv. 2 CC.",
+          "key_erwagungen": [
+            "7",
+            "7.1",
+            "7.2"
+          ],
+          "reading_guide_de": "Lesen Sie zuerst die Regeste, um die zentrale Rechtsfrage – das Verhältnis von Art. 133 Abs. 2 ZGB zu Art. 298 Abs. 1 ZGB – zu erfassen. Vertiefen Sie dann Erwägung 7, in der das Bundesgericht den Anwendungsbereich der beiden Normen abgrenzt und die Argumente der Parteien würdigt. Achten Sie besonders darauf, warum das Gericht den konsensbasierten Antrag der Eltern als zulässig, aber nicht als bindend einstuft.",
+          "reading_guide_fr": "Commencez par lire le regeste afin de saisir la question juridique centrale, soit l'articulation entre l'art. 133 al. 2 CC et l'art. 298 al. 1 CC. Approfondissez ensuite le considérant 7, dans lequel le Tribunal fédéral délimite le champ d'application de ces deux dispositions et apprécie les arguments des parties. Prêtez une attention particulière à la raison pour laquelle le tribunal qualifie la requête commune des parents de recevable mais non contraignante.",
+          "reading_guide_it": "Iniziate leggendo il regesto per cogliere la questione giuridica centrale, ovvero il rapporto tra l'art. 133 cpv. 2 CC e l'art. 298 cpv. 1 CC. Approfondite poi il considerando 7, in cui il Tribunale federale delimita l'ambito di applicazione delle due norme e valuta gli argomenti delle parti. Prestate particolare attenzione al motivo per cui il tribunale qualifica la richiesta comune dei genitori come ammissibile ma non vincolante.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was haben die Eltern in der Teilvereinbarung vom 2. Oktober 2013 bezüglich der elterlichen Sorge vereinbart, und welches Begehren stellte der Beschwerdeführer vor Bundesgericht?",
+              "hint": "Sachverhalt, Bst. B.b und C.",
+              "model_answer": "In der Teilvereinbarung einigten sich beide Eltern darauf, dass das Kind C. unter die elterliche Sorge der Mutter allein gestellt wird. Vor Bundesgericht beantragte der Vater als Beschwerdeführer nachträglich, die gemeinsame elterliche Sorge zu begründen und der Mutter lediglich die ausschliessliche Obhut zuzuweisen. Das Bundesgericht wies die Beschwerde ab."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Bestimmungen stehen im Zentrum der Frage, ob ein Scheidungsrichter die alleinige elterliche Sorge gestützt auf einen gemeinsamen Elternantrag zuweisen darf, und wie grenzt das Bundesgericht deren Anwendungsbereiche ab?",
+              "hint": "Regeste sowie Erwägung 7.",
+              "model_answer": "Im Zentrum stehen Art. 133 Abs. 2 ZGB, der den gemeinsamen Elternantrag im Scheidungsverfahren regelt, und Art. 298 Abs. 1 ZGB, der die Voraussetzungen für die Alleinzuteilung der elterlichen Sorge normiert. Das Bundesgericht hält fest, dass Art. 298 Abs. 1 ZGB primär auf streitige Konstellationen zugeschnitten ist, während Art. 133 Abs. 2 ZGB dem Gericht erlaubt, einen gemeinsamen Antrag der Eltern zu berücksichtigen und dennoch das Kindeswohl eigenständig zu prüfen. Art. 298 Abs. 1 ZGB hindert den Richter also nicht, bei gemeinsamem Antrag die alleinige Sorge zuzuweisen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, in einem neuen Scheidungsfall einigen sich beide Eltern darauf, dass der Vater die alleinige elterliche Sorge erhalten soll, obwohl keine offensichtlichen Konflikte bestehen: Welche Prüfschritte muss das Gericht nach der in BGE 143 III 361 entwickelten Logik vornehmen?",
+              "hint": "Erwägung 7 sowie Regeste zu Art. 133 Abs. 2 Satz 1 ZGB.",
+              "model_answer": "Das Gericht muss zunächst den gemeinsamen Antrag der Eltern zur Kenntnis nehmen, ist daran aber nicht schematisch gebunden. Es hat in einem zweiten Schritt sämtliche für das Kindeswohl relevanten Umstände eigenständig zu prüfen (Art. 133 Abs. 2 Satz 1 ZGB), insbesondere Stabilität, Bindungstoleranz und Erziehungsfähigkeit der Eltern. Nur wenn die Alleinzuteilung dem Kindeswohl entspricht oder zumindest nicht widerspricht, darf das Gericht dem Antrag folgen; andernfalls hat es die gemeinsame elterliche Sorge beizubehalten."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Der Beschwerdeführer argumentierte, ein elterlicher Konsens zugunsten der Alleinsorge verstosse gegen zwingendes Recht und sei widerrechtlich im Sinne von Art. 20 OR. Aus welchen systematischen Gründen verwirft das Bundesgericht dieses Argument?",
+              "hint": "Erwägung 7.1 und 7.2 sowie Regeste.",
+              "model_answer": "Das Bundesgericht verneint die Widerrechtlichkeit, weil Art. 298 Abs. 1 ZGB die Alleinzuteilung der elterlichen Sorge im Scheidungsverfahren ausdrücklich vorsieht und somit kein gesetzliches Verbot besteht. Der elterliche Antrag entzieht die Kindesbelange nicht der richterlichen Kontrolle, sondern bildet lediglich einen Anknüpfungspunkt, den das Gericht im Rahmen der Offizialmaxime selbständig würdigt. Ein Verzicht auf die gemeinsame elterliche Sorge ist daher kein widerrechtlicher Verzicht auf ein Pflichtrecht, sondern eine gerichtlich überprüfte Regelung im Interesse des Kindes."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Inwiefern überzeugt die Lösung des Bundesgerichts, das einem gemeinsamen Elternantrag auf Alleinsorge im Scheidungsverfahren grundsätzlich Rechnung trägt, aus der Perspektive des Kindeswohlprinzips, und wo liegen mögliche Risiken dieses Ansatzes?",
+              "hint": "Regeste und Erwägung 7 insgesamt, sowie Art. 296 ZGB als Leitprinzip.",
+              "model_answer": "Der Ansatz überzeugt insofern, als er die Parteiautonomie respektiert und das Gericht dennoch zur eigenständigen Kindeswohlprüfung verpflichtet, wodurch ein Gleichgewicht zwischen Dispositionsmaxime und Offizialmaxime hergestellt wird. Kritisch ist jedoch anzumerken, dass Eltern unter dem Druck eines Scheidungsverfahrens zu Zugeständnissen neigen können, die nicht dem wahren Kindesinteresse entsprechen; das Gericht muss daher besonders sorgfältig prüfen, ob der Konsens frei und informiert zustande kam. Zudem besteht das Risiko, dass die richterliche Kontrolle in der Praxis oberflächlich bleibt, wenn ein übereinstimmender Elternwille als faktische Vermutung für das Kindeswohl gewertet wird."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn im selben Fall das Kind C. (nun 14-jährig) ausdrücklich erklärt hätte, bei beiden Eltern gleich viel Zeit verbringen zu wollen und die gemeinsame elterliche Sorge zu bevorzugen?",
+              "discussion_points": [
+                "Art. 12 UN-Kinderrechtskonvention und das Recht des Kindes auf Anhörung sowie dessen zunehmende Urteilsfähigkeit mit steigendem Alter.",
+                "Verhältnis zwischen dem Kindeswillen als einem der Kindeswohlkriterien und dem übereinstimmenden Elternantrag auf Alleinsorge."
+              ],
+              "likely_outcome_shift": "Der ausdrücklich geäusserte Wille eines 14-jährigen Kindes wäre ein erhebliches Kindeswohlkriterium, das das Gericht nicht übergehen dürfte. Es müsste sorgfältig prüfen, ob der elterliche Konsens auf Alleinsorge trotz des entgegenstehenden Kindeswillens dem Kindeswohl entspricht, was die Hürde für die Alleinzuteilung erheblich erhöhen würde. Im Ergebnis wäre die gemeinsame elterliche Sorge in einem solchen Szenario wahrscheinlicher."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie wäre der Fall zu beurteilen, wenn nicht beide Eltern, sondern allein der Vater als antragstellende Partei die Alleinsorge der Mutter beantragt hätte, während die Mutter selbst die gemeinsame elterliche Sorge bevorzugte?",
+              "discussion_points": [
+                "Art. 298 Abs. 1 ZGB als Norm für streitige Konstellationen: Das Gericht müsste prüfen, ob die Voraussetzungen für die Alleinzuteilung trotz fehlenden Konsenses vorliegen.",
+                "Bedeutung der Kooperationsfähigkeit und Bindungstoleranz der Eltern als Kriterien des Kindeswohls bei einer streitigen Sorgerechtsfrage."
+              ],
+              "likely_outcome_shift": "Ohne gemeinsamen Elternantrag wäre Art. 298 Abs. 1 ZGB in seiner Kernfunktion einschlägig, und das Gericht müsste eigenständig und ohne stützenden Konsens prüfen, ob wichtige Gründe des Kindeswohls die Alleinzuteilung erfordern. Da das Bundesgericht Art. 298 Abs. 1 ZGB gerade auf streitige Fälle zugeschnitten sieht, wäre die Ausgangslage für die gemeinsame elterliche Sorge günstiger, sofern keine schwerwiegenden Kommunikationsprobleme der Eltern festgestellt werden."
+            }
+          ]
         },
         {
           "decision_id": "bge_144 III 349",
@@ -201,14 +398,31 @@
           "actual_language": "de",
           "title_de": "Kindesunterhalt — Betreuungsunterhalt",
           "title_fr": "Entretien de l'enfant — contribution de prise en charge",
-          "concepts_de": ["Kindesunterhalt", "Betreuungsunterhalt", "Existenzminimum", "Eigenversorgungskapazität"],
-          "concepts_fr": ["Entretien de l'enfant", "Contribution de prise en charge", "Minimum vital"],
-          "statutes": ["Art. 285 ZGB", "Art. 285a ZGB"],
+          "concepts_de": [
+            "Kindesunterhalt",
+            "Betreuungsunterhalt",
+            "Existenzminimum",
+            "Eigenversorgungskapazität"
+          ],
+          "concepts_fr": [
+            "Entretien de l'enfant",
+            "Contribution de prise en charge",
+            "Minimum vital"
+          ],
+          "statutes": [
+            "Art. 285 ZGB",
+            "Art. 285a ZGB"
+          ],
           "difficulty": 3,
-          "prerequisites": ["bge_142 III 481"],
+          "prerequisites": [
+            "bge_142 III 481"
+          ],
           "significance_de": "Grundsatzentscheid zum Betreuungsunterhalt: Wie wird der Lebensunterhalt des betreuenden Elternteils als Teil des Kindesunterhalts berechnet?",
           "significance_fr": "Arrêt de principe sur la contribution de prise en charge: comment calculer les frais d'entretien du parent qui s'occupe de l'enfant",
-          "key_erwagungen": ["4", "5"],
+          "key_erwagungen": [
+            "4",
+            "5"
+          ],
           "reading_guide_de": "E. 4: Definition des Betreuungsunterhalts (Art. 285 Abs. 2 ZGB). E. 5: Berechnung — Differenz zwischen Einkommen des betreuenden Elternteils und seinem familienrechtlichen Existenzminimum. Achten Sie auf das Schulstufenmodell.",
           "socratic_questions": [
             {
@@ -236,7 +450,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der betreuende Elternteil freiwillig auf eine gutbezahlte Stelle verzichtet?",
-              "discussion_points": ["Hypothetisches Einkommen", "Zumutbare Erwerbstätigkeit", "Eigenversorgungskapazität"],
+              "discussion_points": [
+                "Hypothetisches Einkommen",
+                "Zumutbare Erwerbstätigkeit",
+                "Eigenversorgungskapazität"
+              ],
               "likely_outcome_shift": "Dem betreuenden Elternteil wird ein hypothetisches Einkommen angerechnet, wenn er bei zumutbarer Anstrengung mehr verdienen könnte. Dies reduziert den Betreuungsunterhalt."
             },
             {
@@ -251,7 +469,11 @@
             {
               "type": "swap_parties",
               "scenario": "Was wäre, wenn beide Eltern das Kind je zur Hälfte betreuen (echte alternierende Obhut)?",
-              "discussion_points": ["Geteilte Betreuung", "Betreuungsunterhalt bei 50/50", "Barunterhalt vs. Naturalunterhalt"],
+              "discussion_points": [
+                "Geteilte Betreuung",
+                "Betreuungsunterhalt bei 50/50",
+                "Barunterhalt vs. Naturalunterhalt"
+              ],
               "likely_outcome_shift": "Bei echter alternierenden Obhut entfällt der Betreuungsunterhalt grundsätzlich. Es bleibt ggf. ein Barunterhalt bei unterschiedlichen Einkommen der Eltern."
             }
           ]
@@ -263,7 +485,11 @@
       "name_de": "Güterrecht",
       "name_fr": "Régimes matrimoniaux",
       "name_it": "Regime matrimoniale",
-      "statutes": ["Art. 196 ZGB", "Art. 215 ZGB", "Art. 206 ZGB"],
+      "statutes": [
+        "Art. 196 ZGB",
+        "Art. 215 ZGB",
+        "Art. 206 ZGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_141 III 145",
@@ -271,14 +497,32 @@
           "actual_language": "de",
           "title_de": "Güterrechtliche Auseinandersetzung — Errungenschaftsbeteiligung",
           "title_fr": "Liquidation du régime matrimonial — participation aux acquêts",
-          "concepts_de": ["Errungenschaftsbeteiligung", "Eigengut", "Errungenschaft", "Vorschlagsteilung"],
-          "concepts_fr": ["Participation aux acquêts", "Biens propres", "Acquêts", "Partage du bénéfice"],
-          "statutes": ["Art. 196 ZGB", "Art. 197 ZGB", "Art. 198 ZGB", "Art. 215 ZGB"],
+          "concepts_de": [
+            "Errungenschaftsbeteiligung",
+            "Eigengut",
+            "Errungenschaft",
+            "Vorschlagsteilung"
+          ],
+          "concepts_fr": [
+            "Participation aux acquêts",
+            "Biens propres",
+            "Acquêts",
+            "Partage du bénéfice"
+          ],
+          "statutes": [
+            "Art. 196 ZGB",
+            "Art. 197 ZGB",
+            "Art. 198 ZGB",
+            "Art. 215 ZGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Abgrenzung zwischen Eigengut und Errungenschaft; Vermutung zugunsten der Errungenschaft",
           "significance_fr": "Arrêt de principe sur la distinction entre biens propres et acquêts; présomption en faveur des acquêts",
-          "key_erwagungen": ["3", "4"],
+          "key_erwagungen": [
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 3: Systematik des Güterrechts — Eigengut (Art. 198 ZGB) vs. Errungenschaft (Art. 197 ZGB). E. 4: Vermutung zugunsten der Errungenschaft (Art. 200 Abs. 3 ZGB) — wer Eigengut behauptet, muss es beweisen.",
           "socratic_questions": [
             {
@@ -306,7 +550,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn ein Ehegatte eine Erbschaft erhalten, diese aber in eine gemeinsame Liegenschaft investiert hat?",
-              "discussion_points": ["Ersatzanschaffung", "Art. 206 ZGB (Hinzurechnung)", "Surrogation"],
+              "discussion_points": [
+                "Ersatzanschaffung",
+                "Art. 206 ZGB (Hinzurechnung)",
+                "Surrogation"
+              ],
               "likely_outcome_shift": "Die Erbschaft bleibt Eigengut, aber wenn sie in eine Errungenschaftsliegenschaft investiert wurde, entsteht eine Ersatzforderung des Eigenguts gegen die Errungenschaft (Art. 209 ZGB)."
             },
             {
@@ -321,7 +569,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn ein Ehegatte Vermögen absichtlich verschleudert, um den Vorschlag zu schmälern?",
-              "discussion_points": ["Art. 208 ZGB (Hinzurechnung)", "Böswillige Vermögensverminderung", "Schutz des anderen Ehegatten"],
+              "discussion_points": [
+                "Art. 208 ZGB (Hinzurechnung)",
+                "Böswillige Vermögensverminderung",
+                "Schutz des anderen Ehegatten"
+              ],
               "likely_outcome_shift": "Art. 208 ZGB erlaubt die Hinzurechnung böswillig vermindeter Errungenschaft. Die verschleuderten Beträge werden bei der Vorschlagsberechnung wieder hinzugerechnet."
             }
           ]
@@ -333,21 +585,92 @@
           "title_de": "Gütertrennung — güterrechtliche Auseinandersetzung und Beweislast",
           "title_fr": "Séparation de biens — liquidation du régime et fardeau de la preuve",
           "title_it": "",
-          "concepts_de": ["Gütertrennung", "Güterrechtliche Auseinandersetzung", "Beweislast", "Eheliches Güterrecht"],
-          "concepts_fr": ["Séparation de biens", "Liquidation du régime", "Fardeau de la preuve"],
+          "concepts_de": [
+            "Gütertrennung",
+            "Güterrechtliche Auseinandersetzung",
+            "Beweislast",
+            "Eheliches Güterrecht"
+          ],
+          "concepts_fr": [
+            "Séparation de biens",
+            "Liquidation du régime",
+            "Fardeau de la preuve"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 204 ZGB", "Art. 248 ZGB"],
+          "statutes": [
+            "Art. 204 ZGB",
+            "Art. 248 ZGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur güterrechtlichen Auseinandersetzung bei Gütertrennung: Beweislast und Vermögensvermutung.",
-          "significance_fr": "Arrêt de principe sur la liquidation du régime de la séparation de biens: fardeau de la preuve et présomption de propriété.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que le juge du divorce reste seul compétent pour statuer sur la liquidation du régime matrimonial, même lorsque celle-ci a été renvoyée ad separatum, et que cette compétence impérative s'impose d'office, y compris entre époux soumis à la séparation de biens.",
+          "significance_it": "Questa sentenza di principio stabilisce che il giudice del divorzio rimane il solo competente a decidere sulla liquidazione del regime matrimoniale, anche quando questa è stata rinviata ad separatum, e che tale competenza imperativa si impone d'ufficio, anche tra coniugi soggetti alla separazione dei beni.",
+          "key_erwagungen": [
+            "4",
+            "4a",
+            "4b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die prozessuale Geschichte des Falles (Scheidungsurteil 1976, Klage 1982, kantonale Instanzen) nachzuvollziehen. Konzentrieren Sie sich dann auf Erwägung 4 (insbesondere 4a und 4b), in der das Bundesgericht die Zuständigkeitsfrage grundsätzlich klärt und das Verhältnis zwischen Art. 144 ZGB, dem Prinzip der Einheit des Scheidungsurteils und der ad-separatum-Verweisung erörtert. Achten Sie besonders auf die Aussage, dass die zwingende Zuständigkeit des Scheidungsrichters auch durch Einlassung des Beklagten nicht derogiert werden kann.",
+          "reading_guide_fr": "Lisez d'abord attentivement les faits afin de reconstituer l'historique procédural (jugement de divorce 1976, action en 1982, instances cantonales). Concentrez-vous ensuite sur le considérant 4 (en particulier 4a et 4b), dans lequel le Tribunal fédéral tranche la question de compétence de principe et examine le rapport entre l'art. 144 CC, le principe de l'unité du jugement de divorce et le renvoi ad separatum. Prêtez une attention particulière à l'affirmation selon laquelle la compétence impérative du juge du divorce ne peut pas être dérogée par la comparution au fond du défendeur.",
+          "reading_guide_it": "Si legga dapprima con attenzione la fattispecie per ricostruire la storia processuale (sentenza di divorzio 1976, azione 1982, istanze cantonali). Ci si concentri poi sul considerando 4 (in particolare 4a e 4b), nel quale il Tribunale federale risolve in linea di principio la questione della competenza e esamina il rapporto tra l'art. 144 CC, il principio dell'unità della sentenza di divorzio e il rinvio ad separatum. Si presti particolare attenzione all'affermazione secondo cui la competenza imperativa del giudice del divorzio non può essere derogata dalla comparizione in giudizio del convenuto.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat der Scheidungsrichter in Lugano im Urteil vom 20. Dezember 1976 bezüglich der güterrechtlichen Auseinandersetzung entschieden, und warum wandte sich die Ehefrau anschliessend an das Bezirksgericht Oberlandquart?",
+              "hint": "Vgl. den Sachverhalt, insbesondere die Ausführungen zum Scheidungsurteil und zur nachfolgenden Klage.",
+              "model_answer": "Der Scheidungsrichter in Lugano sprach die Scheidung aus und verwies die güterrechtliche Auseinandersetzung als Ganzes ad separatum, d.h. in ein gesondertes Verfahren. Die Ehefrau interpretierte dies dahingehend, dass sie ihre Ansprüche aus Güterrecht beim ordentlichen Richter für Forderungsklagen am Wohnsitz des Beklagten geltend machen könne. Das Bundesgericht wies diese Auffassung jedoch zurück."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche bundesrechtliche Norm regelt die Zuständigkeit für die güterrechtliche Auseinandersetzung nach einer Scheidung, und welche Konsequenz zieht das Bundesgericht daraus für die Frage der Einlassung des Beklagten?",
+              "hint": "Vgl. Erwägung 4a sowie die Verweise auf Art. 144 ZGB (aZGB) und BGE 89 I 313.",
+              "model_answer": "Art. 144 ZGB (in der damals geltenden Fassung) begründet einen zwingenden und ausschliesslichen bundesrechtlichen Gerichtsstand für scheidungsrechtliche Nebenfolgen beim Scheidungsrichter. Da dieser Gerichtsstand zwingend ist, kann er nicht durch die prozessuale Einlassung des Beklagten auf die Klage vor einem unzuständigen Richter derogiert werden. Das Gericht hat seine Zuständigkeit in diesem Bereich von Amtes wegen zu prüfen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, die Ehefrau hätte nicht Ansprüche aus der ehelichen Gemeinschaft, sondern eine rein schuldrechtliche Darlehensforderung gegen ihren geschiedenen Mann geltend gemacht, die keinerlei Bezug zur Ehe hatte – wäre das Bezirksgericht Oberlandquart dann zuständig gewesen?",
+              "hint": "Vgl. Erwägung 4 sowie den Vorbehalt im Regeste: 'Dessen Zuständigkeit käme höchstens für Forderungen in Betracht, die gar keinen Bezug zur ehelichen Gemeinschaft haben.'",
+              "model_answer": "Ja, in diesem Fall wäre der ordentliche Richter für Forderungsklagen zuständig gewesen. Das Bundesgericht hält ausdrücklich fest, dass die ausschliessliche Zuständigkeit des Scheidungsrichters nur für Ansprüche gilt, die einen Bezug zur ehelichen Gemeinschaft aufweisen. Für Forderungen ohne jeden solchen Bezug bleibt der ordentliche Richter kompetent, da Art. 144 ZGB insoweit nicht eingreift."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Kantonsgericht argumentierte, es bestehe keine Gefahr widersprüchlicher Urteile, weshalb auch der ordentliche Richter zuständig sein könne. Warum verwirft das Bundesgericht dieses Argument, und welches übergeordnete Prinzip liegt seiner Entscheidung zugrunde?",
+              "hint": "Vgl. Erwägung 4a und 4b sowie den Verweis auf den Grundsatz der Einheit des Scheidungsurteils und Art. 144 ZGB.",
+              "model_answer": "Das Bundesgericht verwirft das Argument des Kantonsgerichts, weil die Zuständigkeitsfrage nicht von der materiellen Gefahr widersprüchlicher Entscheide abhängt, sondern von der zwingenden bundesrechtlichen Kompetenzordnung. Art. 144 ZGB weist die Zuständigkeit für alle güterrechtlichen Streitigkeiten mit Bezug zur Ehe dem Scheidungsrichter zu, und diese Norm ist von Amtes wegen zu beachten. Das übergeordnete Prinzip ist jenes der Einheit des Scheidungsverfahrens: Die güterrechtliche Auseinandersetzung ist eine Nebenfolge der Scheidung und soll institutionell beim Scheidungsrichter konzentriert bleiben, selbst wenn sie zeitlich in ein Nachverfahren ausgelagert wird."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht trat auf die Klage nicht ein, obwohl das Verfahren bereits durch mehrere Instanzen gelaufen war und der Beklagte nie die Zuständigkeit bestritten hatte. Bewerten Sie diese Lösung aus rechtsstaatlicher und praktischer Sicht: Ist das strikte Festhalten an der Zuständigkeitsnorm im vorliegenden Fall überzeugend?",
+              "hint": "Berücksichtigen Sie den Grundsatz der Verfahrensökonomie, den Schutz zwingender Gerichtsstände und das Risiko von Forum Shopping.",
+              "model_answer": "Das strikte Festhalten an der zwingenden Zuständigkeitsnorm ist aus rechtsstaatlicher Sicht grundsätzlich überzeugend, da zwingende Gerichtsstände gerade den Zweck haben, unabhängig vom Verhalten der Parteien eine kohärente Rechtsprechung zu gewährleisten und Forum Shopping zu verhindern. Aus praktischer Sicht ist das Ergebnis jedoch unbefriedigend: Die Klägerin verlor nach jahrelangem Prozessieren vor drei Instanzen ihren Anspruch auf eine Sachentscheidung infolge eines Zuständigkeitsmangels, den weder sie noch der Beklagte thematisiert hatte. Dies illustriert die Spannung zwischen formeller Rechtssicherheit und materiellem Rechtsschutz und legt nahe, dass der Gesetzgeber klarere Übergangsregelungen für die ad-separatum-Verweisung hätte schaffen sollen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Luganeser Scheidungsrichter hätte im Scheidungsurteil von 1976 nicht nur die güterrechtliche Auseinandersetzung ad separatum verwiesen, sondern zugleich festgehalten, dass die Parteien ihre Ansprüche 'vor dem zuständigen ordentlichen Richter' geltend machen sollen. Hätte diese explizite Anordnung des Scheidungsrichters die Zuständigkeit des Bezirksgerichts Oberlandquart begründen können?",
+              "discussion_points": [
+                "Kann ein Scheidungsrichter durch eine Anordnung im Urteil von einer zwingenden bundesrechtlichen Zuständigkeitsnorm (Art. 144 ZGB) abweichen?",
+                "Welche Bindungswirkung hat eine solche Anordnung für die nachfolgenden Gerichte, und kann sie als Derogation der Zuständigkeit verstanden werden?"
+              ],
+              "likely_outcome_shift": "Auch eine ausdrückliche Anordnung des Scheidungsrichters könnte die zwingende bundesrechtliche Zuständigkeitsnorm des Art. 144 ZGB nicht ausser Kraft setzen, da diese nicht zur Disposition der Parteien oder des Scheidungsrichters steht. Das Bundesgericht würde die Zuständigkeit des Bezirksgerichts aller Wahrscheinlichkeit nach weiterhin verneinen. Allerdings könnte die explizite Verweisung an den 'ordentlichen Richter' als Argument für eine großzügigere Auslegung vorgebracht werden, was die Begründungspflicht des Bundesgerichts erhöhen würde."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie wäre der Fall zu beurteilen, wenn nicht die Ehefrau, sondern der Ehemann als Kläger aufgetreten wäre und seine Ansprüche als ehemaliger Angestellter in den Geschäften der Ehefrau primär auf arbeitsrechtlicher Grundlage (Lohnforderungen) gestützt hätte, diese Forderungen aber sachlich untrennbar mit der güterrechtlichen Auseinandersetzung verknüpft gewesen wären?",
+              "discussion_points": [
+                "Wie ist die Grenze zwischen güterrechtlichen Ansprüchen mit Ehebezug und arbeitsrechtlichen Ansprüchen zu ziehen, wenn beide Sphären sich überschneiden?",
+                "Welches Gericht wäre für gemischte Ansprüche zuständig, und nach welchem Kriterium bestimmt sich der Schwerpunkt der Klage?"
+              ],
+              "likely_outcome_shift": "Die Zuständigkeitsfrage würde erheblich komplizierter: Reine Lohnforderungen ohne Ehebezug fallen grundsätzlich in die arbeitsrechtliche Zuständigkeit, während Ansprüche, die sachlich mit der ehelichen Gütergemeinschaft verknüpft sind, dem Scheidungsrichter zustehen. Das Bundesgericht müsste eine Schwerpunktbetrachtung vornehmen und die Ansprüche gegebenenfalls aufteilen oder einheitlich dem Scheidungsrichter zuweisen, wenn die güterrechtliche Komponente dominiert. Eine eindeutige Trennung dürfte im vorliegenden Sachverhalt kaum möglich sein, was das Risiko von Zuständigkeitskonflikten erhöht."
+            }
+          ]
         }
       ]
     }

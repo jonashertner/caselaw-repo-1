@@ -10,7 +10,11 @@
       "name_de": "Vermögensdelikte",
       "name_fr": "Infractions contre le patrimoine",
       "name_it": "Reati contro il patrimonio",
-      "statutes": ["Art. 139 StGB", "Art. 146 StGB", "Art. 305bis StGB"],
+      "statutes": [
+        "Art. 139 StGB",
+        "Art. 146 StGB",
+        "Art. 305bis StGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_124 IV 127",
@@ -19,21 +23,91 @@
           "title_de": "Betrug — Arglist und Opfermitverantwortung",
           "title_fr": "Escroquerie — astuce et coresponsabilité de la victime",
           "title_it": "",
-          "concepts_de": ["Betrug", "Arglist", "Opfermitverantwortung", "Täuschung"],
-          "concepts_fr": ["Escroquerie", "Astuce", "Coresponsabilité de la victime"],
+          "concepts_de": [
+            "Betrug",
+            "Arglist",
+            "Opfermitverantwortung",
+            "Täuschung"
+          ],
+          "concepts_fr": [
+            "Escroquerie",
+            "Astuce",
+            "Coresponsabilité de la victime"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 146 StGB"],
+          "statutes": [
+            "Art. 146 StGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zur Arglist beim Betrug: einfache Lügen genügen nur dann, wenn dem Opfer keine Opfermitverantwortung anzulasten ist.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe confirmant que la fuite active lors d'un contrôle de police constitue une entrave à un acte officiel (art. 286 CP) même lorsque le but poursuivi est l'auto-favorisation, dès lors que l'impunité de celle-ci (art. 305 CP) ne couvre pas les infractions connexes commises pour y parvenir.",
+          "significance_it": "Decisione di principio che conferma come la fuga attiva durante un controllo di polizia integri gli estremi dell'impedimento di un atto ufficiale (art. 286 CP) anche quando il fine perseguito è l'autofavoreggiamento, poiché l'impunità di quest'ultimo (art. 305 CP) non copre i reati connessi commessi per conseguirlo.",
+          "key_erwagungen": [
+            "2",
+            "2a",
+            "2b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 127–128), um das Verhalten des Beschwerdeführers zu verstehen, und konzentrieren Sie sich dann auf Erwägung 2a (Argumentation des Beschwerdeführers zur Selbstbegünstigung und Art. 1 StGB) sowie Erwägung 2b (bundesgerichtliche Abgrenzung zwischen Art. 286 und Art. 305 StGB). Achten Sie besonders darauf, wie das Gericht das aktive Entziehen durch Davonfahren vom blossen passiven Unterlassen abgrenzt und warum es die Amtshandlungseigenschaft der Ausweiskontrolle bejaht.",
+          "reading_guide_fr": "Commencez par lire les faits (p. 127–128) pour comprendre le comportement du recourant, puis concentrez-vous sur le considérant 2a (argumentation du recourant concernant l'auto-favorisation et l'art. 1 CP) et le considérant 2b (délimitation opérée par le Tribunal fédéral entre les art. 286 et 305 CP). Prêtez une attention particulière à la manière dont le tribunal distingue la fuite active du simple comportement passif et aux raisons pour lesquelles il affirme que le contrôle d'identité constitue un acte officiel au sens de l'art. 286 CP.",
+          "reading_guide_it": "Iniziate con la lettura dei fatti (p. 127–128) per comprendere il comportamento del ricorrente, poi concentratevi sul considerando 2a (argomentazione del ricorrente sull'autofavoreggiamento e sull'art. 1 CP) e sul considerando 2b (distinzione operata dal Tribunale federale tra gli art. 286 e 305 CP). Prestate particolare attenzione al modo in cui il tribunale distingue la fuga attiva dal mero comportamento passivo e alle ragioni per cui afferma che il controllo dell'identità costituisce un atto ufficiale ai sensi dell'art. 286 CP.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat der Beschwerdeführer konkret getan, als der Polizist W. ihn zur Vorlegung seiner Ausweispapiere aufforderte, und welche strafrechtliche Konsequenz zog dieses Verhalten nach sich?",
+              "hint": "Sachverhalt, BGE 124 IV 127 S. 127–128",
+              "model_answer": "Der Beschwerdeführer schloss sich in seinem Wagen ein und fuhr davon, ohne dem uniformierten Polizisten seinen Ausweis vorzulegen. Das Obergericht Zürich verurteilte ihn deshalb u.a. wegen Hinderung einer Amtshandlung gemäss Art. 286 StGB. Der Kassationshof bestätigte diese Beurteilung."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche zwei Strafnormen stehen im Zentrum des Urteils, und wie grenzt das Bundesgericht deren Anwendungsbereiche voneinander ab?",
+              "hint": "Regeste sowie Erwägung 2a–b",
+              "model_answer": "Art. 286 StGB (Hinderung einer Amtshandlung) und Art. 305 Abs. 1 StGB (Selbstbegünstigung) stehen im Spannungsverhältnis zueinander. Das Bundesgericht hält fest, dass Selbstbegünstigung zwar als solche straflos bleibt, ein damit verbundenes weiteres Delikt – hier das aktive Entziehen durch Flucht – aber dennoch nach Art. 286 StGB geahndet werden kann. Die Straflosigkeit der Selbstbegünstigung schützt nicht vor der Strafbarkeit begleitender Handlungen, die eine Amtshandlung behindern."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Fahrzeuglenker verweigert dem Polizisten mündlich die Auskunft über seine Identität, bleibt aber an Ort und Stelle stehen. Wäre dieser Sachverhalt nach der in BGE 124 IV 127 bestätigten Rechtsprechung ebenfalls als Hinderung einer Amtshandlung strafbar?",
+              "hint": "Erwägung 2b: Abgrenzung zwischen blossem Unterlassen und aktivem Entziehen durch Davonfahren",
+              "model_answer": "Das blosse Schweigen oder passive Verweigern der Auskunft ohne räumliches Entziehen ist nach der Rechtsprechung weniger eindeutig als das aktive Davonfahren. Das Bundesgericht stützt die Strafbarkeit gerade auf das aktive Verhalten (Einschliessen im Wagen, Wegfahren), das die Amtshandlung physisch vereitelt. Ein rein passives Schweigen könnte allenfalls als straflose Selbstbegünstigung qualifiziert werden, sofern keine gesetzlich normierte Mitwirkungspflicht verletzt wird."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Der Beschwerdeführer beruft sich auf die Lehrmeinung Stratenwerths und argumentiert, die bundesgerichtliche Abgrenzung zwischen strafloser Selbstbegünstigung und strafbarer Hinderung einer Amtshandlung sei 'formal und unbehelflich'. Worin liegt die Stärke und worin liegt die Schwäche dieses Einwands?",
+              "hint": "Erwägung 2a, Argument des Beschwerdeführers",
+              "model_answer": "Die Stärke des Einwands liegt darin, dass Selbstbegünstigung praktisch immer eine Behinderung jener Amtshandlungen impliziert, die der Strafverfolgung dienen; eine rein formale Trennung kann zu Wertungswidersprüchen führen. Die Schwäche besteht jedoch darin, dass ohne eine solche Abgrenzung Art. 286 StGB faktisch leerliefe und Personen durch die blosse Berufung auf die Selbstbegünstigung jede polizeiliche Kontrollmassnahme aktiv vereiteln könnten. Das Bundesgericht schützt die Funktionsfähigkeit staatlicher Kontrollorgane als eigenständiges Rechtsgut, das über das individuelle Begünstigungsinteresse hinausgeht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht vorgenommene Einschränkung der Selbstbegünstigung rechtspolitisch überzeugend, oder sollte der Gesetzgeber eine explizite Mitwirkungspflicht bei Ausweiskontrollen schaffen, um dem Bestimmtheitsgebot von Art. 1 StGB besser gerecht zu werden?",
+              "hint": "Erwägung 2a (Art. 1 StGB-Rüge) und Erwägung 2b (Verweis auf lex specialis bei Blutprobe)",
+              "model_answer": "Die bundesgerichtliche Lösung ist pragmatisch überzeugend, weil sie die Funktionstüchtigkeit der Strafverfolgung sichert und die Straflosigkeit der Selbstbegünstigung nicht als Freibrief für aktives Entziehen missbrauchen lässt. Rechtspolitisch ist jedoch die Kritik am Bestimmtheitsgebot nicht von der Hand zu weisen: Der Vergleich mit der ausdrücklich normierten Pflicht zur Duldung der Blutprobe zeigt, dass explizite gesetzliche Grundlagen die Rechtssicherheit erhöhen und den Vorwurf der richterlichen Rechtsfortbildung entkräften würden. Eine klarstellende Norm würde das Spannungsverhältnis zwischen Art. 286 und Art. 305 StGB transparenter auflösen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Polizist W. war zum Zeitpunkt der Aufforderung nicht in Uniform, sondern in Zivil, und hatte zwar seinen Polizeiausweis vorgezeigt, diesen aber nur kurz und für den Beschwerdeführer aus einer Distanz von 7–8 m kaum erkennbar. Würde das Davonfahren unter diesen Umständen noch als Hinderung einer Amtshandlung nach Art. 286 StGB gelten?",
+              "discussion_points": [
+                "Erkennbarkeit der Amtseigenschaft als Tatbestandsvoraussetzung von Art. 286 StGB: Musste der Täter wissen oder zumindest damit rechnen, dass eine Amtshandlung vorgenommen wird?",
+                "Bedeutung des Vorsatzerfordernisses: Kann ein Irrtum über die Amtseigenschaft des Zivilpolizisten einen Tatbestandsirrtum i.S.v. Art. 13 StGB begründen und die Strafbarkeit ausschliessen?"
+              ],
+              "likely_outcome_shift": "Wäre die Amtseigenschaft für den Beschwerdeführer unter den gegebenen Umständen nicht erkennbar, fehlt es am Vorsatz bezüglich des Tatbestandsmerkmals 'Amtshandlung', was einen Tatbestandsirrtum begründen und zur Freispruch von Art. 286 StGB führen könnte. Das Gericht müsste sorgfältig prüfen, ob angesichts der kurzen Ausweisvorlegung aus grösserer Distanz objektive Erkennbarkeit vorlag. Das Ergebnis wäre damit deutlich unsicherer als im publizierten Fall, in dem die Amtseigenschaft klar erkennbar war."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Statt eines Fahrzeuglenkers ist es nun eine Fussgängerin, die nach einem beobachteten Taschendiebstahl von einem Polizisten zur Identitätsfeststellung angehalten wird. Sie dreht sich um und läuft rasch davon, ohne körperliche Gewalt anzuwenden. Ändert sich die strafrechtliche Beurteilung gegenüber BGE 124 IV 127?",
+              "discussion_points": [
+                "Gilt die aus dem Strassenverkehrsrecht hergeleitete Argumentation (Kontrollfunktion der Polizei, Gefahren im Strassenverkehr) auch ausserhalb des Verkehrskontexts, oder ist die Ausweispflicht ohne gesetzliche Grundlage im allgemeinen Polizeirecht weniger klar?",
+                "Besteht ausserhalb des SVG eine gesetzliche Pflicht zur Identitätspreisgabe gegenüber der Polizei, und kann das aktive Davonlaufen ohne Verkehrsbezug gleichermassen als Hinderung einer Amtshandlung nach Art. 286 StGB qualifiziert werden?"
+              ],
+              "likely_outcome_shift": "Ohne den spezifischen Verkehrskontext und die daraus abgeleitete polizeiliche Kontrollfunktion ist die Strafbarkeit nach Art. 286 StGB weniger eindeutig, da das Bundesgericht die Amtshandlung im publizierten Fall wesentlich mit der Notwendigkeit von Verkehrskontrollen begründet. Im allgemeinen Polizeirecht hängt die Beurteilung stärker von den kantonalen Polizeigesetzen ab, die eine Mitwirkungspflicht bei der Identitätsfeststellung ausdrücklich normieren oder nicht. Das Ergebnis wäre damit weniger vorhersehbar und könnte kantonal variieren."
+            }
+          ]
         },
         {
           "decision_id": "bge_133 IV 228",
@@ -42,21 +116,91 @@
           "title_de": "Geldwäscherei — Vortaterfordernis und Vortäter",
           "title_fr": "Blanchiment d'argent — infraction préalable",
           "title_it": "",
-          "concepts_de": ["Geldwäscherei", "Vortat", "Vortäter", "Verschleierung"],
-          "concepts_fr": ["Blanchiment d'argent", "Infraction préalable"],
+          "concepts_de": [
+            "Geldwäscherei",
+            "Vortat",
+            "Vortäter",
+            "Verschleierung"
+          ],
+          "concepts_fr": [
+            "Blanchiment d'argent",
+            "Infraction préalable"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 305bis StGB"],
+          "statutes": [
+            "Art. 305bis StGB"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Anforderungen an die Vortat bei Geldwäscherei und zur Frage, ob der Vortäter selbst tauglicher Täter ist.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que le simple lésé qui n'est pas victime au sens de la LAVI n'a en règle générale pas qualité pour former un recours en matière pénale au sens de l'art. 81 al. 1 LTF, car l'action pénale appartient à l'État et ne protège qu'indirectement les intérêts privés.",
+          "significance_it": "Questa sentenza di principio stabilisce che il semplice danneggiato che non è vittima ai sensi della LAV non è di regola legittimato a interporre ricorso in materia penale ai sensi dell'art. 81 cpv. 1 LTF, poiché l'azione penale appartiene allo Stato e tutela solo indirettamente gli interessi privati.",
+          "key_erwagungen": [
+            "2",
+            "2.1",
+            "2.2",
+            "2.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste, um die Kernaussage des Entscheids zu erfassen, und vertiefen Sie sich dann in Erwägung 2, insbesondere E. 2.1 (Wortlaut von Art. 81 Abs. 1 BGG), E. 2.2 (Auslegungsmethodik) und E. 2.3 (Unterscheidung rechtliches vs. faktisches Interesse). Achten Sie dabei besonders auf die Abgrenzung zwischen dem einfachen Geschädigten und dem OHG-Opfer sowie auf die Begründung, weshalb der staatliche Strafanspruch einer extensiven Auslegung der Beschwerdelegitimation entgegensteht.",
+          "reading_guide_fr": "Commencez par lire le regeste pour saisir l'enseignement central de l'arrêt, puis approfondissez le considérant 2, notamment les ch. 2.1 (texte de l'art. 81 al. 1 LTF), 2.2 (méthodes d'interprétation) et 2.3 (distinction entre intérêt juridique et intérêt de fait). Prêtez une attention particulière à la distinction entre le simple lésé et la victime au sens de la LAVI, ainsi qu'à la justification pour laquelle le monopole étatique de l'action pénale s'oppose à une interprétation extensive de la qualité pour recourir.",
+          "reading_guide_it": "Iniziate con la lettura del regesto per cogliere il principio fondamentale della decisione, poi approfondite il considerando 2, in particolare i nn. 2.1 (testo dell'art. 81 cpv. 1 LTF), 2.2 (metodi di interpretazione) e 2.3 (distinzione tra interesse giuridico e interesse di fatto). Prestate particolare attenzione alla distinzione tra il semplice danneggiato e la vittima ai sensi della LAV, nonché alla motivazione per cui il monopolio statale dell'azione penale osta a un'interpretazione estensiva della legittimazione a ricorrere.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 133 IV 228 bezüglich der Beschwerdeberechtigung des Geschädigten entschieden, der nicht Opfer im Sinne des OHG ist?",
+              "hint": "Siehe Regeste und E. 2 des Entscheids.",
+              "model_answer": "Das Bundesgericht hat entschieden, dass ein Geschädigter, der nicht Opfer im Sinne von Art. 2 Abs. 1 OHG ist, grundsätzlich nicht legitimiert ist, Beschwerde in Strafsachen zu erheben. Ein allgemeines oder faktisches Interesse genügt nicht; erforderlich ist ein rechtlich geschütztes, eigenes Interesse. Da die Strafverfolgung im öffentlichen Interesse liegt, hat der einfache Geschädigte in der Regel nur ein faktisches Interesse daran."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen nennt Art. 81 Abs. 1 BGG für die Legitimation zur Beschwerde in Strafsachen, und welche Personenkategorien werden in der nicht abschliessenden Liste unter lit. b aufgeführt?",
+              "hint": "Siehe E. 2.1 des Entscheids mit der Wiedergabe des Gesetzeswortlauts.",
+              "model_answer": "Art. 81 Abs. 1 BGG verlangt zunächst, dass die beschwerdeführende Person am vorinstanzlichen Verfahren teilgenommen hat oder daran gehindert wurde, und ein rechtliches Interesse an der Aufhebung oder Änderung des angefochtenen Entscheids besitzt. Die Liste unter lit. b nennt exemplarisch: die beschuldigte Person, deren gesetzliche Vertretung, die Anklagebehörde, die Privatklägerschaft unter bestimmten Bedingungen, das Opfer bei Auswirkungen auf Zivilansprüche sowie den Anzeigeerstatter bei Streitigkeiten über das Anzeigerecht. Die Liste ist nicht abschliessend."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die vom Bundesgericht entwickelten Grundsätze auf folgenden Fall an: Ein Arbeitgeber erstattet Strafanzeige gegen einen ehemaligen Mitarbeiter wegen Diebstahls von Betriebsgeheimnissen. Die Staatsanwaltschaft stellt das Verfahren ein. Ist der Arbeitgeber zur Beschwerde in Strafsachen legitimiert?",
+              "hint": "Vgl. E. 2.3 zum Erfordernis eines rechtlich geschützten Interesses und zur Unterscheidung von faktischem und rechtlichem Interesse.",
+              "model_answer": "Der Arbeitgeber ist Geschädigter, da sein Betriebsgeheimnis unmittelbar verletzt ist. Entscheidend ist, ob er Opfer im Sinne des OHG ist, was eine körperliche, psychische oder sexuelle Beeinträchtigung voraussetzt – dies trifft auf einen Vermögensschaden oder Geheimnisdiebstahl typischerweise nicht zu. Nach BGE 133 IV 228 hätte der Arbeitgeber als einfacher Geschädigter grundsätzlich nur ein faktisches Interesse an der Strafverfolgung, weshalb er zur Beschwerde in Strafsachen nicht legitimiert wäre, sofern er keine Zivilansprüche adhäsionsweise geltend macht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht wendet in E. 2.2 einen 'pragmatischen Pluralismus' bei der Gesetzesauslegung an. Weshalb lehnt es dennoch die extensive Auslegung von Art. 81 Abs. 1 BGG ab, die der Beschwerdeführer befürwortete, obwohl die Liste unter lit. b ausdrücklich nicht abschliessend ist?",
+              "hint": "Vgl. E. 2.2 und E. 2.3 zur Unterscheidung von faktischem und rechtlichem Interesse sowie zum staatlichen Strafverfolgungsanspruch.",
+              "model_answer": "Obwohl die Liste unter Art. 81 Abs. 1 lit. b BGG nicht abschliessend ist, bedeutet dies nicht, dass jedes faktische Interesse zur Beschwerdelegitimation genügt. Das Bundesgericht betont, dass die Strafklage dem Staat gehört und im öffentlichen Interesse geführt wird; der einfache Geschädigte profitiert davon nur mittelbar. Die nicht abschliessende Liste eröffnet nur dort Raum für weitere Legitimierte, wo ein echtes rechtlich geschütztes Interesse besteht – nicht bloss ein wirtschaftliches oder emotionales Interesse an einer Verurteilung. Eine extensive Auslegung würde die klare Grundentscheidung des Gesetzgebers unterlaufen, wonach der Geschädigte ohne OHG-Opferstellung grundsätzlich auf den Zivilweg verwiesen wird."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Bewerten Sie kritisch, ob der Ausschluss des einfachen Geschädigten von der Beschwerdelegitimation nach Art. 81 Abs. 1 BGG rechtspolitisch überzeugend ist, insbesondere unter dem Gesichtspunkt des Rechtsschutzes und des Verhältnisses zwischen öffentlichem Strafanspruch und privaten Interessen.",
+              "hint": "Vgl. E. 2.3 sowie die allgemeinen Überlegungen zum Verhältnis von staatlichem Strafanspruch und Opferschutz.",
+              "model_answer": "Die Lösung des Bundesgerichts ist systematisch kohärent, da sie den staatlichen Charakter der Strafverfolgung betont und eine Instrumentalisierung des Strafprozesses durch Private verhindert. Kritisch lässt sich jedoch einwenden, dass Geschädigte, die erhebliche Schäden erlitten haben, aber nicht unter das OHG fallen (z.B. bei reinen Vermögensdelikten), schutzlos bleiben können, wenn die Staatsanwaltschaft das Verfahren einstellt. Die enge Auslegung kann zudem bei Delikten mit diffusen Opfern oder bei behördlichem Verfolgungsermessen zu rechtsstaatlichen Lücken führen. De lege ferenda wäre eine differenziertere Regelung denkbar, die dem unmittelbar Geschädigten zumindest bei schwerwiegenden Eingriffen in seine absolut geschützten Rechtsgüter eine subsidiäre Beschwerdelegitimation einräumt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Stellen Sie sich vor, Y. hätte die kopierten Kontoauszüge nicht nur an die Bankdirektion, sondern auch an die Finanzmarktaufsicht (FINMA) weitergeleitet, mit dem Hinweis, X. könnte in Geldwäschereiaktivitäten verwickelt sein. X. erstattet nunmehr sowohl Strafanzeige wegen Verletzung des Schriftgeheimnisses als auch wegen falscher Anschuldigung. Hat dies Auswirkungen auf seine Beschwerdelegitimation?",
+              "discussion_points": [
+                "Qualifiziert die Einschaltung der FINMA und der Vorwurf der falschen Anschuldigung X. möglicherweise als Opfer im Sinne des OHG wegen psychischer Beeinträchtigung durch die berufliche Schädigung?",
+                "Verändert der Bezug zu Art. 303 StGB (falsche Anschuldigung) die Rechtsnatur des Interesses von X. an der Strafverfolgung und damit seine Legitimation nach Art. 81 Abs. 1 BGG?"
+              ],
+              "likely_outcome_shift": "Falls X. durch die Meldung an die FINMA eine ernsthafte psychische Beeinträchtigung oder eine direkte Bedrohung seiner beruflichen Existenz nachweisen kann, könnte er als Opfer im Sinne von Art. 2 Abs. 1 OHG qualifizieren, was ihm die Beschwerdelegitimation nach Art. 81 Abs. 1 lit. b Ziff. 5 BGG eröffnen würde. Allerdings müsste das Bundesgericht prüfen, ob der berufliche Schaden allein die OHG-Opferstellung begründet, was nach bisheriger Rechtsprechung tendenziell verneint wird. Das Ergebnis bliebe somit unsicher und hinge von der konkreten Intensität der psychischen Beeinträchtigung ab."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht X., sondern Y. hätte Strafanzeige gegen X. erstattet – etwa weil X. in ihrer Privatwohnung heimlich Überwachungskameras installiert hätte – und die Staatsanwaltschaft hätte das Verfahren eingestellt. Y. als Privatdetektivin erleidet durch die Überwachung eine attestierte psychische Beeinträchtigung und möchte Beschwerde in Strafsachen erheben.",
+              "discussion_points": [
+                "Qualifiziert Y. unter diesen Umständen als Opfer im Sinne von Art. 2 Abs. 1 OHG aufgrund der psychischen Beeinträchtigung durch die heimliche Überwachung?",
+                "Welchen Einfluss hat die allfällige OHG-Opferstellung auf die Beschwerdelegitimation nach Art. 81 Abs. 1 lit. b Ziff. 5 BGG, insbesondere im Hinblick auf mögliche Zivilansprüche?"
+              ],
+              "likely_outcome_shift": "Wenn Y. eine psychische Beeinträchtigung durch die heimliche Überwachung glaubhaft machen kann, würde sie als Opfer im Sinne des OHG gelten und wäre damit zur Beschwerde in Strafsachen legitimiert, sofern der angefochtene Entscheid ihre Zivilansprüche berührt. Dies stünde im direkten Kontrast zur Situation von X. im Ausgangsfall, der lediglich als einfacher Geschädigter ohne OHG-Opferstellung behandelt wurde. Die Rollenumkehr verdeutlicht die zentrale Bedeutung der OHG-Opferstellung als Schlüsselkriterium für die Beschwerdelegitimation nach BGE 133 IV 228."
+            }
+          ]
         },
         {
           "decision_id": "bge_132 IV 108",
@@ -65,21 +209,91 @@
           "title_de": "Diebstahl — Begriff des Gewahrsams",
           "title_fr": "Vol — notion de la maîtrise de la chose",
           "title_it": "",
-          "concepts_de": ["Diebstahl", "Gewahrsam", "Wegnahme", "Sachherrschaft"],
-          "concepts_fr": ["Vol", "Maîtrise de la chose", "Soustraction"],
+          "concepts_de": [
+            "Diebstahl",
+            "Gewahrsam",
+            "Wegnahme",
+            "Sachherrschaft"
+          ],
+          "concepts_fr": [
+            "Vol",
+            "Maîtrise de la chose",
+            "Soustraction"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 139 StGB"],
+          "statutes": [
+            "Art. 139 StGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Begriff des Gewahrsams beim Diebstahl: Voraussetzungen der Wegnahme und Abgrenzung zur Veruntreuung.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe définit la notion pénale de possession (Gewahrsam) comme maîtrise factuelle selon les règles de la vie sociale et fixe les critères permettant de distinguer le vol (art. 139 CP) de l'appropriation illégitime (art. 137 CP) lorsque la victime n'exerce plus de maîtrise effective sur la chose au moment de l'acte.",
+          "significance_it": "Questa sentenza di principio definisce la nozione penale di possesso (Gewahrsam) come potere fattuale secondo le regole della vita sociale e stabilisce i criteri per distinguere il furto (art. 139 CP) dall'appropriazione indebita (art. 137 CP) quando la vittima non esercita più alcun potere effettivo sulla cosa al momento del fatto.",
+          "key_erwagungen": [
+            "2.1",
+            "2.2",
+            "2.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 109) sorgfältig, um den tatsächlichen Ablauf am Bankomaten zu verstehen. Konzentrieren Sie sich dann auf Erwägung 2.1, welche die strafrechtliche Definition des Gewahrsams und die Abgrenzung zu Art. 137 StGB entwickelt, sowie auf Erwägung 2.2, in der das Bundesgericht diese Definition auf den konkreten Fall anwendet und das Fehlen des Gewahrsams von B. begründet.",
+          "reading_guide_fr": "Commencez par lire attentivement les faits (p. 109) pour comprendre le déroulement des événements au distributeur automatique. Concentrez-vous ensuite sur le considérant 2.1, qui développe la définition pénale de la possession (Gewahrsam) et la délimitation avec l'art. 137 CP, puis sur le considérant 2.2, dans lequel le Tribunal fédéral applique ces critères au cas concret et explique pourquoi B. n'avait plus la possession des billets.",
+          "reading_guide_it": "Leggete dapprima i fatti (p. 109) per comprendere la sequenza degli eventi allo sportello automatico. Focalizzatevi poi sul considerando 2.1, che elabora la definizione penale del possesso (Gewahrsam) e la distinzione rispetto all'art. 137 CP, e sul considerando 2.2, nel quale il Tribunale federale applica tali criteri al caso concreto e spiega perché B. non aveva più il possesso delle banconote.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der sachverhaltliche Kern von BGE 132 IV 108? Beschreiben Sie, was die Bankkunde B. am Bankomaten tat und wie A. in den Besitz des Geldes gelangte.",
+              "hint": "Sachverhalt, S. 109 (Abschnitt A)",
+              "model_answer": "B. wollte am Bankomaten der UBS in Peseux Fr. 1'000.- abheben, glaubte jedoch irrtümlich, der Automat sei defekt, und entfernte sich ohne das Geld. Der Automat gab daraufhin tatsächlich EUR 1'000.- aus. A., der als Nächster an den Automaten trat, eignete sich dieses Geld an und zahlte es auf sein eigenes Bankkonto ein."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Wie definiert das Bundesgericht den strafrechtlichen Begriff des Gewahrsams (Besitz) und worin unterscheidet er sich vom zivilrechtlichen Besitzbegriff gemäss Art. 919 ZGB?",
+              "hint": "Erwägung 2.1, S. 110",
+              "model_answer": "Das Bundesgericht definiert den strafrechtlichen Gewahrsam als tatsächliche Herrschaft über eine Sache nach den Regeln des sozialen Lebens, wobei die effektive Verfügungsmöglichkeit und der Wille zur Sachherrschaft kumulativ vorliegen müssen. Im Gegensatz zum zivilrechtlichen Besitzbegriff (Art. 919 ZGB) knüpft der strafrechtliche Begriff nicht an formale Rechtspositionen an, sondern an die faktische Sachherrschaft im sozialen Kontext."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die bundesgerichtliche Definition des Gewahrsams auf den konkreten Fall an: Hatte B. im Zeitpunkt der Aneignung durch A. noch Gewahrsam an den aus dem Automaten ausgegebenen Banknoten?",
+              "hint": "Erwägung 2.2, S. 110–111",
+              "model_answer": "Nein. Da B. bereits weggegangen war und irrtümlich glaubte, das Gerät habe kein Geld ausgegeben, konnte sie weder eine tatsächliche Verfügungsmacht über die Banknoten ausüben noch hatte sie einen entsprechenden Besitzwillen. Die Voraussetzungen des strafrechtlichen Gewahrsams – faktische Herrschaft und Wille – lagen bei ihr zum massgeblichen Zeitpunkt somit nicht vor."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche Konsequenz hat das Fehlen des Gewahrsams von B. für die rechtliche Qualifikation des Verhaltens von A.? Warum kann A. nicht wegen Diebstahls (Art. 139 StGB) verurteilt werden, und welcher Tatbestand kommt stattdessen in Betracht?",
+              "hint": "Erwägungen 2.1 und 2.2; Abgrenzung zu Art. 137 StGB",
+              "model_answer": "Diebstahl setzt eine Wegnahme voraus, d.h. die Brechung eines fremden und die Begründung eines neuen Gewahrsams. Da B. keinen Gewahrsam an den Banknoten hatte, konnte A. ihr diesen nicht brechen – eine Wegnahme i.S.v. Art. 139 StGB scheidet daher aus. In Betracht kommt stattdessen die unrechtmässige Aneignung gemäss Art. 137 StGB, da A. eine herrenlose bzw. nicht im Gewahrsam einer anderen Person stehende Sache an sich nahm."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritisch betrachtet: Ist die Abgrenzung des Bundesgerichts zwischen Diebstahl und unrechtmässiger Aneignung in diesem Fall überzeugend, oder lässt sich argumentieren, dass B. zumindest einen latenten oder konstruktiven Gewahrsam an den Banknoten innehatte?",
+              "hint": "Erwägungen 2.1 und 2.2; Konzept des gelockerten Gewahrsams in der Lehre",
+              "model_answer": "Die Entscheidung ist dogmatisch konsistent, weil das Bundesgericht konsequent auf die faktische Komponente abstellt. Allerdings lässt sich einwenden, dass B. durch die Kontobelastung einen wirtschaftlichen Anspruch auf die Banknoten hatte und der Automat in ihrem Auftrag handelte, was einen konstruktiven oder institutionellen Gewahrsam begründen könnte. Die strikte Ablehnung eines solchen Konzepts ist rechtspolitisch vertretbar, schützt aber das Opfer weniger effektiv, da Art. 137 StGB in der Regel eine mildere Strafe nach sich zieht als Art. 139 StGB."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, B. hatte den Automaten noch nicht verlassen, als die Banknoten ausgegeben wurden – sie stand noch einen Meter entfernt, hatte sich jedoch bereits abgewandt und glaubte, die Transaktion sei fehlgeschlagen. A. greift in diesem Moment nach den Scheinen, bevor B. reagieren kann. Ändert sich die rechtliche Qualifikation?",
+              "discussion_points": [
+                "Ob räumliche Nähe und die noch laufende Transaktion einen (gelockerten) Gewahrsam der B. begründen können",
+                "Ob der fehlende Wille der B. zur Sachherrschaft auch bei räumlicher Nähe den Gewahrsam ausschliesst oder ob der soziale Kontext (eigene Transaktion, noch am Automaten) ausreicht"
+              ],
+              "likely_outcome_shift": "In diesem Szenario wäre der Gewahrsam der B. wohl zu bejahen, da sie sich noch im unmittelbaren räumlichen Umfeld des Automaten befand und die Transaktion auf ihr Konto lief. Ein vernünftiger Dritter würde die Banknoten noch ihrem Herrschaftsbereich zurechnen, weshalb eine Verurteilung von A. wegen Diebstahls nach Art. 139 StGB wahrscheinlicher wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht A. (ein Dritter) eignet sich das Geld an, sondern ein Bankangestellter, der den Automaten wartet und die liegengebliebenen Banknoten in seine Tasche steckt. Verändert dies die Tatbestandsbeurteilung?",
+              "discussion_points": [
+                "Ob der Bankangestellte als Vertrauensperson der Bank einen eigenen Gewahrsam oder einen abgeleiteten Mitgewahrsam an den Automateninhalten hat",
+                "Ob bei einem Angestellten mit Zugangsberechtigung zum Automaten eher Veruntreuung (Art. 138 StGB) als unrechtmässige Aneignung (Art. 137 StGB) zu prüfen wäre"
+              ],
+              "likely_outcome_shift": "Bei einem Bankangestellten mit funktionaler Zuständigkeit für den Automaten läge möglicherweise ein Mitgewahrsam der Bank vor, und die Banknoten wären ihm anvertraut i.S.v. Art. 138 StGB. Der Tatbestand der Veruntreuung träte an die Stelle der unrechtmässigen Aneignung, was zu einer schwereren Strafbarkeit führen würde."
+            }
+          ]
         }
       ]
     },
@@ -88,7 +302,11 @@
       "name_de": "Körper- und Sexualdelikte",
       "name_fr": "Lésions corporelles et infractions sexuelles",
       "name_it": "Lesioni corporali e reati sessuali",
-      "statutes": ["Art. 122 StGB", "Art. 123 StGB", "Art. 190 StGB"],
+      "statutes": [
+        "Art. 122 StGB",
+        "Art. 123 StGB",
+        "Art. 190 StGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_131 IV 83",
@@ -97,21 +315,93 @@
           "title_de": "Vergewaltigung — Nötigungsmittel und Gewaltbegriff",
           "title_fr": "Viol — moyens de contrainte et notion de la violence",
           "title_it": "",
-          "concepts_de": ["Vergewaltigung", "Nötigungsmittel", "Gewalt", "Sexuelle Selbstbestimmung"],
-          "concepts_fr": ["Viol", "Contrainte", "Violence", "Autodétermination sexuelle"],
+          "concepts_de": [
+            "Vergewaltigung",
+            "Nötigungsmittel",
+            "Gewalt",
+            "Sexuelle Selbstbestimmung"
+          ],
+          "concepts_fr": [
+            "Viol",
+            "Contrainte",
+            "Violence",
+            "Autodétermination sexuelle"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 190 StGB"],
+          "statutes": [
+            "Art. 190 StGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Nötigungsmitteln bei Vergewaltigung: der Gewaltbegriff und die Erheblichkeitsschwelle der Nötigung.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe abandonnant la figure juridique de l'unité en matière de prescription et précisant que l'infraction à l'art. 16 al. 1 LPC constitue un délit instantané dont la prescription commence à courir dès la commission de l'acte.",
+          "significance_it": "Decisione di principio che abbandona la figura giuridica dell'unità in materia di prescrizione e chiarisce che la fattispecie dell'art. 16 cpv. 1 LPC costituisce un reato istantaneo, con decorrenza della prescrizione dal momento della commissione del fatto.",
+          "key_erwagungen": [
+            "2.1",
+            "2.1.3",
+            "2.4",
+            "2.4.5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 2.1, um die Abgrenzung zwischen Dauer- und Zustandsdelikt bei Art. 16 Abs. 1 ELG zu verstehen, und beachten Sie insbesondere Erwägung 2.1.3 zur Frage der Garantenpflicht aus Art. 24 ELV. Wenden Sie sich anschliessend Erwägung 2.4 und 2.4.5 zu, wo das Bundesgericht die Aufgabe der verjährungsrechtlichen Einheit begründet und die verbleibenden Ausnahmekonstellationen definiert.",
+          "reading_guide_fr": "Commencez par lire le considérant 2.1 afin de comprendre la distinction entre délit continu et délit instantané s'agissant de l'art. 16 al. 1 LPC, en prêtant une attention particulière au considérant 2.1.3 sur la question de l'obligation de garant découlant de l'art. 24 OPC-AVS/AI. Poursuivez ensuite avec les considérants 2.4 et 2.4.5, dans lesquels le Tribunal fédéral motive l'abandon de l'unité en matière de prescription et définit les constellations d'exception subsistantes.",
+          "reading_guide_it": "Si raccomanda di iniziare con il considerando 2.1 per comprendere la distinzione tra reato permanente e reato istantaneo in relazione all'art. 16 cpv. 1 LPC, prestando particolare attenzione al considerando 2.1.3 sulla questione dell'obbligo di garante ai sensi dell'art. 24 OPC-AVS/AI. Si prosegua poi con i considerandi 2.4 e 2.4.5, nei quali il Tribunale federale motiva l'abbandono dell'unità in materia di prescrizione e definisce le fattispecie eccezionali residue.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Unterschied zwischen einem Dauerdelikt und einem Zustandsdelikt, und warum ist diese Unterscheidung für die Verjährungsfrage in BGE 131 IV 83 entscheidend?",
+              "hint": "Vgl. Erwägung 2.1: Das Bundesgericht prüft, ob Art. 16 Abs. 1 ELG ein Dauer- oder Zustandsdelikt darstellt.",
+              "model_answer": "Ein Dauerdelikt liegt vor, wenn der rechtswidrige Zustand durch fortlaufendes Tätigwerden oder Unterlassen aufrechterhalten wird; die Verjährung beginnt erst mit dem Ende dieses Zustands. Ein Zustandsdelikt hingegen ist mit der einmaligen Tathandlung vollendet, sodass die Verjährung sofort zu laufen beginnt. Im vorliegenden Fall ist entscheidend, ob die falschen Angaben beim Antrag vom 23. März 1992 das Delikt abschliessend begründeten oder ob das fortgesetzte Schweigen eine neue Tathandlung darstellt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlage begründet die Meldepflicht der Beschwerdeführerin, und weshalb qualifiziert das Bundesgericht diese Pflicht nicht als Garantenpflicht im Sinne des Strafrechts?",
+              "hint": "Vgl. Erwägung 2.1.3: Das Bundesgericht prüft Art. 24 ELV und dessen strafrechtliche Tragweite.",
+              "model_answer": "Die Meldepflicht ergibt sich aus Art. 24 ELV, wonach Leistungsempfänger jede Änderung ihrer Verhältnisse unverzüglich zu melden haben. Das Bundesgericht verneint jedoch eine strafrechtliche Garantenpflicht, weil eine solche eine besondere Rechtspflicht zur Erfolgsabwendung voraussetzt, die über eine blosse verwaltungsrechtliche Meldepflicht hinausgeht. Eine rein gesetzlich normierte Auskunftspflicht genügt nicht, um die strafrechtliche Verantwortlichkeit für einen durch Unterlassen herbeigeführten Erfolg zu begründen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, eine Person verschweigt bei der Anmeldung zu Ergänzungsleistungen im Jahr 2005 Vermögen und meldet eine spätere Vermögensvermehrung im Jahr 2008 ebenfalls nicht. Ab welchem Zeitpunkt beginnt die Verjährung nach der in BGE 131 IV 83 aufgestellten Doktrin zu laufen?",
+              "hint": "Vgl. Erwägungen 2.1 und 2.4: Das Bundesgericht legt fest, wann das Delikt vollendet ist und wie mehrere Tathandlungen verjährungsrechtlich zu behandeln sind.",
+              "model_answer": "Nach der Doktrin des Bundesgerichts ist Art. 16 Abs. 1 ELG kein Dauerdelikt, weshalb die Verjährung für die erste Tathandlung (unwahre Angaben 2005) sofort mit deren Begehung beginnt. Das Verschweigen der Vermögensvermehrung 2008 stellt eine neue, selbstständige Tathandlung dar, für welche die Verjährung ab 2008 läuft. Die Tathandlungen können jedoch unter Umständen nach den in Erwägung 2.4.5 genannten Fallkonstellationen verjährungsrechtlich eine Einheit bilden, sofern die entsprechenden Voraussetzungen erfüllt sind."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht gibt in BGE 131 IV 83 die Rechtsfigur der verjährungsrechtlichen Einheit grundsätzlich auf, lässt aber Ausnahmen bestehen. Welche dogmatischen Spannungen entstehen dadurch, und wie versucht das Gericht, diese aufzulösen?",
+              "hint": "Vgl. Erwägungen 2.4 und 2.4.5: Das Bundesgericht begründet die Aufgabe der Rechtsfigur und benennt verbleibende Ausnahmekonstellationen.",
+              "model_answer": "Die Aufgabe der verjährungsrechtlichen Einheit dient der Rechtssicherheit und dem Grundsatz, dass jede Tathandlung für sich beurteilt werden soll. Gleichzeitig entstehen Spannungen, weil faktisch zusammengehörende Deliktsserien nun verjährungsrechtlich auseinanderfallen können, was zu unbilligen Ergebnissen führt. Das Bundesgericht versucht diese Spannung aufzulösen, indem es in Erwägung 2.4.5 Ausnahmekonstellationen benennt – etwa das fortgesetzte Delikt oder die natürliche Handlungseinheit –, in denen mehrere Handlungen weiterhin verjährungsrechtlich als Einheit behandelt werden, sofern ein hinreichend enger sachlicher und zeitlicher Zusammenhang besteht."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Entscheidung des Bundesgerichts, Art. 16 Abs. 1 ELG als Zustandsdelikt zu qualifizieren und die verjährungsrechtliche Einheit aufzugeben, aus rechtspolitischer Sicht überzeugend, insbesondere im Hinblick auf den Schutz der Sozialversicherungsträger vor langandauerndem Leistungsmissbrauch?",
+              "hint": "Vgl. Erwägungen 2.1, 2.4 und 2.4.5 sowie die Interessenlage der Sozialversicherungsträger und den Grundsatz der Rechtssicherheit.",
+              "model_answer": "Die Qualifikation als Zustandsdelikt ist rechtsstaatlich konsequent, weil sie verhindert, dass der Staat den Verjährungsbeginn durch das Andauern eines Leistungsbezugs faktisch beliebig hinausschieben kann. Rechtspolitisch birgt die Entscheidung jedoch Schwächen, weil Sozialversicherungsbetrug über viele Jahre oft erst spät entdeckt wird und frühe Tathandlungen bei strenger Anwendung verjährt sein können, bevor Strafverfolgung einsetzt. Die Ausnahmekonstellationen gemäss Erwägung 2.4.5 mildern dieses Problem, schaffen aber neue Abgrenzungsschwierigkeiten, was insgesamt eine gewisse dogmatische Inkohärenz hinterlässt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn die Beschwerdeführerin nicht nur beim Antrag auf Ergänzungsleistungen falsche Angaben gemacht hätte, sondern jedes Jahr bei der obligatorischen Überprüfung aktiv neue unwahre schriftliche Erklärungen abgegeben hätte – wie im Sachverhalt für September 1996 beschrieben –, und diese Erklärungen jedes Mal kausal für die Weiterausrichtung der Leistungen gewesen wären?",
+              "discussion_points": [
+                "Ob jede jährliche aktive Falscherklärung als eigenständige, neue Tathandlung im Sinne von Art. 16 Abs. 1 ELG zu qualifizieren ist und damit eine eigene Verjährungsfrist auslöst.",
+                "Ob die Gesamtheit der jährlichen Falscherklärungen unter die Ausnahmekonstellationen der verjährungsrechtlichen Einheit gemäss Erwägung 2.4.5 fallen könnte, insbesondere wenn ein einheitlicher Tatplan vorliegt."
+              ],
+              "likely_outcome_shift": "Bei aktiven jährlichen Falscherklärungen würde jede Erklärung eine neue Tathandlung begründen, was die Verjährungsproblematik für die jüngeren Handlungen entschärft. Das Gericht hätte zudem leichter eine natürliche Handlungseinheit oder ein fortgesetztes Delikt bejahen können, was die Aufgabe der verjährungsrechtlichen Einheit in ihrer Absolutheit relativiert hätte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Leistungsempfängerin, sondern ein Sachbearbeiter der Ausgleichskasse die relevanten Vermögensangaben aus den Akten kannte, die korrekte Neuberechnung jedoch absichtlich unterliess, um die Auszahlungen weiterlaufen zu lassen – wäre Art. 16 Abs. 1 ELG auf diesen Amtsträger anwendbar, oder kämen andere Tatbestände zum Tragen?",
+              "discussion_points": [
+                "Ob Art. 16 Abs. 1 ELG ein Sonderdelikt ist, das nur von Leistungsempfängern begangen werden kann, oder ob es als allgemeines Delikt auch auf Dritte anwendbar ist.",
+                "Welche alternativen Tatbestände – etwa Amtsmissbrauch, Urkundenfälschung oder ungetreue Amtsführung – gegebenenfalls einschlägig wären, und ob dem Amtsträger eine Garantenpflicht zukommt."
+              ],
+              "likely_outcome_shift": "Art. 16 Abs. 1 ELG wäre auf den Sachbearbeiter als Täter nicht unmittelbar anwendbar, da die Norm primär auf den Leistungsempfänger abzielt. Es kämen stattdessen Amtsdelikte oder Untreuetatbestände in Betracht, bei denen die Garantenstellung des Beamten unproblematisch bejaht werden könnte – ein Ergebnis, das in direktem Kontrast zur Verneinung der Garantenpflicht aus Art. 24 ELV für Leistungsempfänger steht."
+            }
+          ]
         },
         {
           "decision_id": "bge_129 IV 1",
@@ -120,21 +410,92 @@
           "title_de": "Schwere Körperverletzung — Abgrenzung zur einfachen Körperverletzung",
           "title_fr": "Lésions corporelles graves — délimitation avec les lésions simples",
           "title_it": "",
-          "concepts_de": ["Schwere Körperverletzung", "Einfache Körperverletzung", "Unbrauchbarkeit Organ", "Abgrenzung"],
-          "concepts_fr": ["Lésions corporelles graves", "Organe inutilisable", "Distinction"],
+          "concepts_de": [
+            "Schwere Körperverletzung",
+            "Einfache Körperverletzung",
+            "Unbrauchbarkeit Organ",
+            "Abgrenzung"
+          ],
+          "concepts_fr": [
+            "Lésions corporelles graves",
+            "Organe inutilisable",
+            "Distinction"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 122 StGB", "Art. 123 StGB"],
+          "statutes": [
+            "Art. 122 StGB",
+            "Art. 123 StGB"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Präzisierung des Begriffs der schweren Körperverletzung: Ein Organ ist nur unbrauchbar, wenn es in seinen Grundfunktionen erheblich gestört ist.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Le Tribunal fédéral précise que la notion d'organe 'inutilisable' au sens de l'art. 122 al. 2 CP suppose une atteinte grave aux fonctions essentielles de l'organe, une atteinte certes durable mais légère ne suffisant pas.",
+          "significance_it": "Il Tribunale federale chiarisce che un organo è 'inservibile' ai sensi dell'art. 122 cpv. 2 CP solo se le sue funzioni fondamentali sono gravemente compromesse, non essendo sufficiente una menomazione duratura ma lieve.",
+          "key_erwagungen": [
+            "3.1",
+            "3.2",
+            "3.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 3.1, um die prozessuale Ausgangslage (verspäteter Strafantrag, Offizialdeliktsprüfung) zu verstehen. Konzentrieren Sie sich dann auf E. 3.2, wo das Bundesgericht den Begriff der schweren Körperverletzung und insbesondere das Merkmal der 'Unbrauchbarkeit' eines wichtigen Organs präzisiert. Beachten Sie schliesslich E. 3.3 zur Frage der Wehrlosigkeit im sadomasochistischen Kontext.",
+          "reading_guide_fr": "Lisez d'abord le considérant 3.1 pour comprendre la situation procédurale (plainte pénale tardive, examen d'office). Concentrez-vous ensuite sur le considérant 3.2, dans lequel le Tribunal fédéral précise la notion de lésion corporelle grave et notamment le critère de l'organe 'inutilisable'. Prenez enfin connaissance du considérant 3.3 concernant l'état de défense dans le contexte sadomasochiste.",
+          "reading_guide_it": "Leggere innanzitutto il considerando 3.1 per comprendere la situazione processuale (querela tardiva, esame d'ufficio). Concentrarsi poi sul considerando 3.2, in cui il Tribunale federale precisa la nozione di lesione corporale grave e in particolare il criterio dell'organo 'inservibile'. Esaminare infine il considerando 3.3 relativo alla questione dell'indifesa nel contesto sadomasochistico.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in E. 3.2 unter dem Begriff 'unbrauchbar' im Sinne von Art. 122 Abs. 2 StGB verstanden, und warum wurde die Verletzung des Beschwerdeführers trotz dauerhafter Schädigung nicht als schwere Körperverletzung qualifiziert?",
+              "hint": "Vgl. E. 3.2, insbesondere die Ausführungen zur Grundfunktion des Penis und zur Beeinträchtigung des Harnstrahls.",
+              "model_answer": "Das Bundesgericht hat festgehalten, dass ein wichtiges Organ nur dann als 'unbrauchbar' gilt, wenn seine Grundfunktionen erheblich gestört sind. Eine zwar dauerhafte, aber nur leichte Beeinträchtigung genügt nicht. Im vorliegenden Fall blieben die urinale und die sexuelle Grundfunktion des Penis des Beschwerdeführers intakt, obwohl der Harnstrahl dauerhaft gefächert und zweigeteilt war; diese Einschränkung wog objektiv nicht schwer genug."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzliche Regelung bestimmt, wann eine einfache Körperverletzung von Amtes wegen verfolgt wird, und welche Voraussetzungen müssen dafür vorliegen?",
+              "hint": "Vgl. E. 3.1 und Art. 123 Ziff. 2 StGB.",
+              "model_answer": "Gemäss Art. 123 Ziff. 2 StGB ist eine einfache vorsätzliche Körperverletzung von Amtes wegen zu verfolgen, wenn sie mit Gift, einer Waffe oder einem gefährlichen Gegenstand zugefügt wurde oder wenn das Opfer wehrlos war beziehungsweise unter der Obhut des Täters stand. Diese Qualifikationsmerkmale machen aus einem Antragsdelikt ein Offizialdelikt und ermöglichen so die Strafverfolgung auch ohne rechtzeitigen Strafantrag des Opfers."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, jemand verliert durch eine Körperverletzung dauerhaft 70% der Sehkraft auf einem Auge, ohne das Auge vollständig zu verlieren. Wäre dieses Organ nach dem in BGE 129 IV 1 entwickelten Massstab als 'unbrauchbar' im Sinne von Art. 122 Abs. 2 StGB zu qualifizieren?",
+              "hint": "Wenden Sie den in E. 3.2 entwickelten Massstab an: erhebliche Störung der Grundfunktionen versus bloss leichte, dauerhafte Beeinträchtigung.",
+              "model_answer": "Nach dem in BGE 129 IV 1 E. 3.2 entwickelten Massstab kommt es darauf an, ob die Grundfunktion des betroffenen Organs erheblich gestört ist. Ein dauerhafter Verlust von 70% der Sehkraft auf einem Auge dürfte als erhebliche Beeinträchtigung der Grundfunktion des Sehens qualifiziert werden, da die Sehfähigkeit dieses Auges massgeblich eingeschränkt ist. Im Gegensatz zur bloss ästhetisch störenden Zweiteilung des Harnstrahls im vorliegenden Fall wäre hier die Schwelle zur schweren Körperverletzung wahrscheinlich überschritten."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche Spannungen ergeben sich aus der Tatsache, dass das Gericht in E. 3.1 den Strafantrag des Beschwerdeführers als verspätet qualifiziert, gleichzeitig aber dennoch die Offizialdelikte (Art. 122 und Art. 123 Ziff. 2 StGB) inhaltlich prüft?",
+              "hint": "Beachten Sie die prozessuale Logik in E. 3.1 und den Zweck der inhaltlichen Prüfung in E. 3.2 und 3.3.",
+              "model_answer": "Das Gericht musste die inhaltliche Prüfung trotz verspätetem Strafantrag vornehmen, weil Offizialdelikte keines Strafantrags bedürfen und von Amtes wegen verfolgt werden. Die Spannung liegt darin, dass das Verfahren nur dann weitergeführt werden konnte, wenn ein Offizialtatbestand erfüllt war; andernfalls wäre die Einstellung rechtmässig. Durch die materielle Prüfung und Verneinung sowohl der schweren Körperverletzung als auch der qualifizierten einfachen Körperverletzung konnte das Gericht die Einstellungsverfügung bestätigen, ohne die heikle Frage offenzulassen, wie die Tat bei rechtzeitigem Strafantrag zu beurteilen gewesen wäre."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in E. 3.2 vorgenommene Abgrenzung zwischen erheblicher und bloss leichter dauerhafter Beeinträchtigung eines Organs überzeugend, oder besteht die Gefahr, dass sie zu Rechtsunsicherheit führt? Welche alternativen Kriterien könnten die Abgrenzung sachgerechter gestalten?",
+              "hint": "Berücksichtigen Sie den Begriff des 'wichtigen Organs', die Grenzfallproblematik und die Zurückhaltung des Bundesgerichts gegenüber der Vorinstanz in E. 3.2.",
+              "model_answer": "Die Abgrenzung nach der Erheblichkeit der Störung von Grundfunktionen ist sachlich nachvollziehbar, birgt aber erhebliche Rechtsunsicherheit, weil die Schwelle zwischen 'leichter' und 'erheblicher' Beeinträchtigung im Einzelfall schwer zu ziehen ist und medizinische Gutachten zu unterschiedlichen Einschätzungen gelangen können. Alternativ könnte man auf quantifizierbare Massstäbe setzen, etwa auf einen prozentualen Funktionsverlust oder auf die Auswirkungen auf die Lebensqualität des Opfers, um objektivierbare Kriterien zu schaffen. Allerdings birgt auch dieser Ansatz Schwächen, da Funktionsverluste je nach individueller Lebensführung sehr unterschiedlich ins Gewicht fallen können."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn der Beschwerdeführer infolge der Verletzung nicht nur einen gefächerten Harnstrahl erlitten hätte, sondern auch dauerhaft impotent geworden wäre und die Fähigkeit zur Fortpflanzung vollständig verloren hätte?",
+              "discussion_points": [
+                "Würde der dauerhafte Verlust der Erektionsfähigkeit und Zeugungsfähigkeit als erhebliche Störung der Grundfunktionen des Penis qualifizieren?",
+                "Inwiefern verändert sich die Subsumtion unter Art. 122 Abs. 2 StGB, wenn nicht nur eine Nebenfunktion, sondern eine als zentral angesehene Grundfunktion dauerhaft ausfällt?"
+              ],
+              "likely_outcome_shift": "Bei dauerhafter Impotenz und Verlust der Zeugungsfähigkeit wären die Grundfunktionen des Penis erheblich gestört, was den vom Bundesgericht aufgestellten Massstab erfüllen würde. In diesem Fall wäre die Qualifikation als schwere Körperverletzung gemäss Art. 122 Abs. 2 StGB wesentlich wahrscheinlicher, da eine blosse ästhetische oder minimale funktionelle Einschränkung nicht mehr vorläge. Die Einstellungsverfügung wäre damit nicht mehr haltbar, und D. hätte sich wegen schwerer Körperverletzung zu verantworten."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht X. als 'Sklave', sondern D. als Domina die Kette an ihrem eigenen Körper befestigt hätte und X. als 'Herr' die Handlungen vorgenommen hätte, bei denen D. verletzt worden wäre – und D. den Strafantrag rechtzeitig gestellt hätte?",
+              "discussion_points": [
+                "Hätte X. sich auf die Einwilligung von D. in die sadomasochistischen Praktiken berufen können, und wo liegen die Grenzen der Einwilligung bei Körperverletzungsdelikten?",
+                "Wäre D. angesichts ihrer Rolle als Domina und ihrer beruflichen Erfahrung mit solchen Praktiken als 'wehrlos' im Sinne von Art. 123 Ziff. 2 StGB zu betrachten gewesen?"
+              ],
+              "likely_outcome_shift": "Bei rechtzeitigem Strafantrag wäre die Frage der Einwilligung in den Vordergrund getreten; das Gericht hätte prüfen müssen, ob die Einwilligung in sadomasochistische Praktiken auch Verletzungen dieser Art abdeckt und ob sie sittlich vertretbar ist. Die Wehrlosigkeit von D. wäre nach den Ausführungen in E. 3.3 des Urteils wohl ebenfalls verneint worden, da sie als erfahrene Domina die Situation aktiv mitgesteuert hätte. Das Verfahren wäre daher möglicherweise als einfache Körperverletzung auf Antrag behandelt worden, sofern keine schwere Verletzungsfolge nachgewiesen worden wäre."
+            }
+          ]
         }
       ]
     },
@@ -143,7 +504,10 @@
       "name_de": "Sonderdelikte",
       "name_fr": "Infractions particulières",
       "name_it": "Reati speciali",
-      "statutes": ["Art. 181 StGB", "Art. 251 StGB"],
+      "statutes": [
+        "Art. 181 StGB",
+        "Art. 251 StGB"
+      ],
       "cases": [
         {
           "decision_id": "bge_128 IV 18",
@@ -152,21 +516,91 @@
           "title_de": "Urkundenfälschung — Urkundenbegriff und Beweiseignung",
           "title_fr": "Faux dans les titres — notion du titre et aptitude à la preuve",
           "title_it": "",
-          "concepts_de": ["Urkundenfälschung", "Urkundenbegriff", "Beweiseignung", "Echtheit"],
-          "concepts_fr": ["Faux dans les titres", "Notion du titre", "Aptitude à la preuve"],
+          "concepts_de": [
+            "Urkundenfälschung",
+            "Urkundenbegriff",
+            "Beweiseignung",
+            "Echtheit"
+          ],
+          "concepts_fr": [
+            "Faux dans les titres",
+            "Notion du titre",
+            "Aptitude à la preuve"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 251 StGB"],
+          "statutes": [
+            "Art. 251 StGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Urkundenbegriff: Die Beweiseignung und Beweisbestimmung als konstitutive Merkmale der strafrechtlich relevanten Urkunde.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt précise que l'astuce doit d'abord être examinée objectivement, et que si la tromperie astucieuse reste sans effet, l'auteur répond d'un délit manqué d'escroquerie au sens des art. 22 al. 1 et 146 CP.",
+          "significance_it": "La sentenza chiarisce che l'astuzia va esaminata in primo luogo sul piano oggettivo e che, se l'inganno astuto rimane senza esito, l'autore risponde di tentativo compiuto di truffa ai sensi degli art. 22 cpv. 1 e 146 CP.",
+          "key_erwagungen": [
+            "3",
+            "3a",
+            "3b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 18–20) sorgfältig, um die chronologische Abfolge der Schadenmeldungen zu verstehen. Konzentrieren Sie sich danach auf Erwägung 3a zur Definition der Arglist und auf Erwägung 3b zur dogmatischen Abgrenzung zwischen vollendetem Versuch und fehlgeschlagenem Versuch.",
+          "reading_guide_fr": "Lisez d'abord attentivement les faits (p. 18–20) pour saisir la chronologie des annonces de sinistre. Concentrez-vous ensuite sur le considérant 3a relatif à la définition de l'astuce et sur le considérant 3b concernant la distinction dogmatique entre le délit manqué et la tentative échouée.",
+          "reading_guide_it": "Leggete dapprima attentamente i fatti (p. 18–20) per comprendere la cronologia delle denunce di sinistro. Concentratevi poi sul considerando 3a relativo alla definizione dell'astuzia e sul considerando 3b riguardante la distinzione dogmatica tra il reato tentato compiuto e il tentativo fallito.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat B. der Gesellschaft Z. Assurances gemeldet, und warum war diese Meldung inhaltlich falsch?",
+              "hint": "Sachverhalt, BGE 128 IV 18 S. 18–19",
+              "model_answer": "B. meldete der Gesellschaft Z. einen Schaden (Windschutzscheibenbruch), der sich angeblich am 2. September 1996 ereignet hatte, tatsächlich aber bereits am 28. Februar 1996 entstanden und von der Gesellschaft Y. im November 1996 bereits entschädigt worden war. Die Meldung war somit in Bezug auf das Schadendatum und die fehlende Vorentschädigung unrichtig."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche tatbestandlichen Voraussetzungen müssen gemäss Art. 146 StGB und der bundesgerichtlichen Rechtsprechung erfüllt sein, damit eine Täuschung als «arglistig» qualifiziert werden kann?",
+              "hint": "Erwägung 3a, mit Verweis auf ATF 122 II 422 und ATF 122 IV 246",
+              "model_answer": "Arglist im Sinne von Art. 146 StGB liegt vor, wenn der Täter ein Lügengebäude errichtet, betrügerische Machenschaften anwendet oder eine Inszenierung vornimmt. Sie ist aber auch gegeben, wenn er schlicht falsche Angaben macht, deren Überprüfung nicht möglich, nur schwer möglich oder nicht zumutbar ist, oder wenn er das Opfer von einer Überprüfung abhält bzw. aufgrund besonderer Vertrauensverhältnisse vorhersehen kann, dass es auf eine solche verzichten wird."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie hat das Bundesgericht die Arglist im vorliegenden Fall konkret begründet, und welche Umstände sprachen dafür, dass die Täuschung des B. die Schwelle der Arglist erreichte?",
+              "hint": "Erwägung 3b sowie Sachverhalt zu den Überprüfungsmöglichkeiten der Gesellschaft Z.",
+              "model_answer": "Das Bundesgericht prüfte zunächst, ob das Vorgehen des B. objektiv arglistig war. Dabei war entscheidend, dass die Gesellschaft Z. den gemeldeten Schaden nicht ohne Weiteres überprüfen konnte – sie musste erst aktiv bei der Vorversicherung Y. nachfragen, um die Doppelmeldung aufzudecken. Die Verwendung der echten Garagenrechnung als Beleg sowie die Falschangabe des Schadendatums begründeten eine Konstellation, in der die Verifikation erschwert war, was die Arglist bejahen liess."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche dogmatische Konsequenz zieht das Bundesgericht daraus, dass die Täuschung objektiv arglistig war, aber keinen Vermögensschaden herbeiführte, weil die Gesellschaft Z. keine Zahlung leistete?",
+              "hint": "Regeste und Erwägung 3b: «vollendeter Betrugsversuch»",
+              "model_answer": "Das Bundesgericht hält fest, dass zunächst die objektive Arglist zu prüfen ist; liegt sie vor, bleibt die Täuschung aber erfolglos, so ist ein vollendeter Versuch («délit manqué») der arglistigen Täuschung gegeben. Diese Unterscheidung ist dogmatisch bedeutsam: Der Versuch ist vollendet, weil der Täter alles Erforderliche getan hat, der Taterfolg (Vermögensschaden) aber aus von ihm unabhängigen Gründen ausblieb – hier weil die Gesellschaft Z. rechtzeitig bei Y. nachforschte."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, bereits das erfolglose arglistige Täuschungsmanöver als vollendeten Versuch zu bestrafen, wenn das potenzielle Opfer durch eigene Sorgfalt den Schaden abwenden konnte?",
+              "hint": "Erwägung 3b; Prinzip der Opfermitverantwortung im Betrugstatbestand",
+              "model_answer": "Das Bundesgericht grenzt die Opfermitverantwortung klar vom Arglistmerkmal ab: Arglist entfällt nur, wenn das Opfer die Täuschung bei zumutbarer Sorgfalt ohne Weiteres hätte erkennen können. Wenn die Aufdeckung – wie hier – aktive Nachforschungen bei Dritten erforderte, bleibt die Arglist bejaht, und die Bestrafung als vollendeter Versuch erscheint folgerichtig, weil das Unrecht in der arglistigen Täuschungshandlung liegt und nicht erst im Schadenseintritt. Kritisch lässt sich gleichwohl einwenden, dass bei konsequenter Anwendung des Opferschutzgedankens Versicherungsgesellschaften als professionelle Akteure zu erhöhter Eigenverantwortung verpflichtet werden könnten, was die Arglistschwelle anheben würde."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, B. hätte der Gesellschaft Z. zusätzlich ein gefälschtes zweites Gutachten eines anderen Garagisten vorgelegt, das den Schaden auf den 2. September 1996 datiert, und die Gesellschaft Z. hätte gestützt darauf tatsächlich 1'239.80 Franken ausbezahlt. Wie würde sich die rechtliche Beurteilung verändern?",
+              "discussion_points": [
+                "Der Tatbestand des vollendeten Betrugs (Art. 146 StGB) wäre erfüllt, da nun ein tatsächlicher Vermögensschaden eingetreten ist.",
+                "Die Verwendung eines gefälschten Dokuments könnte zusätzlich den Tatbestand der Urkundenfälschung (Art. 251 StGB) verwirklichen, was zu einer echten Konkurrenz führen würde."
+              ],
+              "likely_outcome_shift": "Anstelle des vollendeten Versuchs läge nun ein vollendeter Betrug vor, was zu einer deutlich höheren Strafrahmenausschöpfung führte. Durch die Verwendung des gefälschten Gutachtens käme Urkundenfälschung in echter Konkurrenz hinzu, was die Gesamtstrafe weiter erhöhte und den Fall in die unmittelbare Nähe von BGE 128 IV 18 als Urkundenentscheid rückte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht B. als Versicherungsnehmer gehandelt hätte, sondern ein Angestellter der Gesellschaft Z. intern einen Schadensfall zugunsten eines befreundeten Kunden bewusst falsch erfasste, ohne dass dieser Kunde davon wusste?",
+              "discussion_points": [
+                "Es stellt sich die Frage, ob der unwissende Kunde als Täter oder Begünstigter gilt und ob ein Sonderdelikt (z.B. ungetreue Geschäftsbesorgung, Art. 158 StGB) des Angestellten vorliegt.",
+                "Die Arglistprüfung entfällt für einen allfälligen Betrug gegenüber der eigenen Arbeitgeberin, da die interne Tathandlung andere Schutznormen berührt."
+              ],
+              "likely_outcome_shift": "Das Delikt des Angestellten würde primär unter Art. 158 StGB (ungetreue Geschäftsbesorgung) subsumiert, da er als Treuhänder der Gesellschaft Z. handelt und deren Vermögensinteressen direkt schädigt. Ein Betrug gegenüber der Arbeitgeberin scheidet in dieser Konstellation aus, weil die Selbstschädigungskomponente fehlt und stattdessen eine Pflichtverletzung im Innenverhältnis massgeblich ist."
+            }
+          ]
         },
         {
           "decision_id": "bge_137 IV 113",
@@ -175,21 +609,92 @@
           "title_de": "Nötigung — Nötigungsmittel und Freiheitsbeeinträchtigung",
           "title_fr": "Contrainte — moyens de contrainte et atteinte à la liberté",
           "title_it": "",
-          "concepts_de": ["Nötigung", "Nötigungsmittel", "Handlungsfreiheit", "Erheblichkeit"],
-          "concepts_fr": ["Contrainte", "Moyens de contrainte", "Liberté d'action"],
+          "concepts_de": [
+            "Nötigung",
+            "Nötigungsmittel",
+            "Handlungsfreiheit",
+            "Erheblichkeit"
+          ],
+          "concepts_fr": [
+            "Contrainte",
+            "Moyens de contrainte",
+            "Liberté d'action"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 181 StGB"],
+          "statutes": [
+            "Art. 181 StGB"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Nötigungsmitteln: Abgrenzung zwischen zulässiger Ausübung von Druck und strafbarer Nötigung durch Gewalt oder Drohung.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe confirme qu'en droit pénal suisse, la tentative d'homicide volontaire absorbe en concours imparfait les lésions corporelles simples ou graves concomitantes, dès lors que la réduction facultative de la peine prévue à l'art. 22 al. 1 CP permet au juge de tenir compte de l'ensemble du tort causé.",
+          "significance_it": "Questa sentenza di principio conferma che nel diritto penale svizzero il tentativo di omicidio intenzionale assorbe in concorso apparente le lesioni corporali semplici o gravi concomitanti, poiché la riduzione facoltativa della pena prevista dall'art. 22 cpv. 1 CP consente al giudice di tenere conto dell'intero disvalore del fatto.",
+          "key_erwagungen": [
+            "1.2",
+            "1.3",
+            "1.4.1",
+            "1.4.2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 1.2, um den Grundsatz der unechten Konkurrenz bei vollendeter Tötung zu verstehen, und vergleichen Sie diesen anschliessend mit der in E. 1.3 bestätigten Rechtsprechung zur versuchten Tötung. Die dogmatische Kernbegründung des Bundesgerichts findet sich in E. 1.4.2, wo das Gericht unter Verweis auf Art. 22 Abs. 1 StGB die Gegenargumente der Lehre widerlegt.",
+          "reading_guide_fr": "Lisez d'abord le consid. 1.2 pour comprendre le principe du concours imparfait en cas d'homicide consommé, puis comparez-le avec la jurisprudence confirmée au consid. 1.3 concernant la tentative d'homicide. Le cœur du raisonnement juridique du Tribunal fédéral se trouve au consid. 1.4.2, où la cour réfute les arguments contraires de la doctrine en se référant à l'art. 22 al. 1 CP.",
+          "reading_guide_it": "Leggere dapprima il consid. 1.2 per comprendere il principio del concorso apparente nel caso di omicidio consumato, quindi confrontarlo con la giurisprudenza confermata al consid. 1.3 riguardo al tentativo di omicidio. Il nucleo dell'argomentazione giuridica del Tribunale federale si trova al consid. 1.4.2, dove la corte confuta le opinioni contrarie della dottrina richiamandosi all'art. 22 cpv. 1 CP.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Begriff der 'unechten Konkurrenz' im Verhältnis zwischen versuchter Tötung und Körperverletzung, und welche praktische Rechtsfolge ergibt sich daraus für die Verurteilung des Täters?",
+              "hint": "Vgl. E. 1.2 und E. 1.3 des Entscheids.",
+              "model_answer": "Unechte Konkurrenz bedeutet, dass das gesamte Tatunrecht bereits durch die Verurteilung wegen des schwereren Delikts – hier der versuchten Tötung – abgegolten wird. Der Täter wird folglich nicht zusätzlich wegen einfacher oder schwerer Körperverletzung verurteilt. Praktisch bedeutet dies, dass die Körperverletzung als notwendiges Durchgangsstadium gilt und keine eigenständige Strafbarkeit begründet."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzliche Bestimmung bildet das zentrale Argument des Bundesgerichts für die Beibehaltung der unechten Konkurrenz beim Tötungsversuch mit eingetretener Körperverletzung, und warum erachtet das Gericht diese Regelung als ausreichend, um den eingetretenen Körperverletzungserfolg zu berücksichtigen?",
+              "hint": "Vgl. E. 1.3 sowie die Ausführungen zu Art. 22 Abs. 1 StGB in E. 1.4.2.",
+              "model_answer": "Das Bundesgericht stützt sich auf Art. 22 Abs. 1 StGB, welcher die Strafmilderung beim Versuch als fakultativ ausgestaltet. Da das Gericht die versuchte Tötung gleich schwer bestrafen kann wie die vollendete Tat, lässt sich innerhalb dieses Strafrahmens sowohl der Verhaltensunwert als auch der tatsächlich eingetretene Verletzungserfolg angemessen berücksichtigen. Eine zusätzliche Verurteilung wegen Körperverletzung ist daher aus Sicht des Bundesgerichts nicht erforderlich."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Täter schlägt sein Opfer mit einem Messer nieder, um es zu töten; das Opfer überlebt, erleidet jedoch einen dauerhaften Verlust des Sehvermögens auf einem Auge (schwere Körperverletzung gemäss Art. 122 StGB). Wie wäre dieser Sachverhalt nach der vom Bundesgericht bestätigten Rechtsprechung zu qualifizieren?",
+              "hint": "Vgl. E. 1.2, 1.3 und 1.4.2 sowie die Ausführungen zur unechten Konkurrenz.",
+              "model_answer": "Nach der bundesgerichtlichen Rechtsprechung besteht zwischen der versuchten vorsätzlichen Tötung und der schweren Körperverletzung unechte Konkurrenz. Der Täter wäre demnach ausschliesslich wegen versuchter Tötung gemäss Art. 111 i.V.m. Art. 22 Abs. 1 StGB zu verurteilen. Den eingetretenen Verletzungserfolg hätte das Gericht strafzumessend innerhalb des Strafrahmens der versuchten Tötung zu berücksichtigen, ohne eine zusätzliche Verurteilung wegen schwerer Körperverletzung auszusprechen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht weicht mit seinem Entscheid bewusst von der Auffassung des deutschen Bundesgerichtshofs (BGH 44 196) ab, der seit 1998 echte Konkurrenz annimmt. Welche dogmatischen Argumente sprechen jeweils für und gegen die beiden Positionen, und worin liegt der entscheidende Unterschied zwischen den zugrunde liegenden Versuchskonzeptionen?",
+              "hint": "Vgl. E. 1.3 und E. 1.4.1–1.4.2; insbesondere die Argumentation zu Art. 22 Abs. 1 StGB und die Lehrmeinungen beider Seiten.",
+              "model_answer": "Für echte Konkurrenz spricht, dass eine Versuchsstrafe keinen eingetretenen Verletzungserfolg abgelten kann, da der Versuchstatbestand definitionsgemäss das Ausbleiben des Taterfolgs voraussetzt. Für unechte Konkurrenz spricht hingegen die im Schweizer Recht fakultative Strafmilderung beim Versuch (Art. 22 Abs. 1 StGB), die es dem Richter erlaubt, den eingetretenen Zwischenerfolg im Rahmen der Strafzumessung vollumfänglich zu berücksichtigen. Der entscheidende Unterschied liegt darin, dass das deutsche Recht den Versuch konzeptionell stärker vom vollendeten Delikt trennt, während das Schweizer Bundesgericht dem Richter genügend Spielraum einräumt, um den gesamten Unrechtsgehalt innerhalb einer einzigen Verurteilung zu erfassen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht bestätigte Lösung der unechten Konkurrenz rechtspolitisch überzeugend, oder birgt sie das Risiko, dass eingetretene Körperverletzungen im Urteilsspruch unsichtbar bleiben und damit das Gerechtigkeitsempfinden von Opfern verletzt wird?",
+              "hint": "Vgl. E. 1.3, 1.4.1 und 1.4.2; berücksichtigen Sie auch Aspekte der Strafzumessung und der Opferperspektive.",
+              "model_answer": "Die bundesgerichtliche Lösung ist dogmatisch konsistent, solange die Gerichte den eingetretenen Verletzungserfolg konsequent strafschärfend berücksichtigen; sie bietet den Vorteil, eine Doppelbestrafung desselben Lebenssachverhalts zu vermeiden. Kritisch ist jedoch anzumerken, dass der Urteilsspruch nach aussen hin nur die versuchte Tötung widerspiegelt und damit die tatsächlich erlittenen Körperverletzungen für das Opfer nicht explizit anerkannt werden, was die symbolische Funktion des Strafrechts beeinträchtigen kann. Eine Lösung über echte Konkurrenz würde den eingetretenen Unrechtsgehalt transparenter abbilden, birgt aber das Risiko einer systemwidrigen Überschneidung zwischen Versuchs- und Vollendungsunrecht."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was ändert sich an der Konkurrenzfrage, wenn der Täter nicht nur mit Tötungsabsicht handelt, sondern das Opfer zunächst bewusst schwer verletzen will, um es leiden zu lassen, und erst danach – in einem zweiten, separaten Akt – töten will?",
+              "discussion_points": [
+                "Handelt es sich noch um eine einzige Handlung im konkurrenzrechtlichen Sinne, oder liegen zwei selbstständige Tathandlungen vor?",
+                "Ist das dogmatische Argument des 'notwendigen Durchgangsstadiums' noch tragfähig, wenn die Körperverletzung als eigenständiges Zwischenziel angestrebt wird?"
+              ],
+              "likely_outcome_shift": "Bei einer klaren zeitlichen und intentionalen Trennung der beiden Akte wäre das Argument der unechten Konkurrenz geschwächt, da die Körperverletzung nicht mehr als blosse Nebenfolge der Tötungshandlung erscheint, sondern als selbstständig gewollter Unrechtserfolg. Das Gericht müsste in diesem Fall ernstlich prüfen, ob echte Idealkonkurrenz oder gar Realkonkurrenz zwischen Körperverletzung und versuchter Tötung anzunehmen ist, was zu einer kumulativen Verurteilung führen könnte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht die Staatsanwaltschaft, sondern der verurteilte Beschwerdegegner selbst hätte Beschwerde geführt mit dem Argument, er dürfe wegen des Tötungsversuchs nicht verurteilt werden, weil er lediglich eine Körperverletzung beabsichtigt habe, und die Vorinstanz habe den Tötungsvorsatz zu Unrecht bejaht.",
+              "discussion_points": [
+                "Wie verändert sich der Prüfungsschwerpunkt des Bundesgerichts, wenn nicht die Konkurrenzfrage, sondern die Feststellung des Tötungsvorsatzes angefochten wird?",
+                "Welche Anforderungen stellt die bundesgerichtliche Rechtsprechung an den Nachweis des Eventualvorsatzes bei Tötungsdelikten, und inwiefern ist die Sachverhaltsfeststellung der Vorinstanz für das Bundesgericht bindend?"
+              ],
+              "likely_outcome_shift": "Der Fokus des Verfahrens würde sich vollständig von der Konkurrenzproblematik auf die Vorsatzfrage verlagern; das Bundesgericht wäre an die vorinstanzliche Sachverhaltsfeststellung grundsätzlich gebunden (Art. 105 BGG) und könnte nur bei offensichtlicher Unrichtigkeit eingreifen. Eine Gutheissung der Beschwerde wäre nur möglich, wenn die Vorinstanz den Eventualvorsatz rechtsfehlerhaft aus dem objektiven Geschehensablauf abgeleitet hätte, was in der Praxis eine hohe Hürde darstellt."
+            }
+          ]
         }
       ]
     }

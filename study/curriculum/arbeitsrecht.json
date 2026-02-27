@@ -10,7 +10,10 @@
       "name_de": "Missbräuchliche Kündigung",
       "name_fr": "Licenciement abusif",
       "name_it": "Disdetta abusiva",
-      "statutes": ["Art. 336 OR", "Art. 336a OR"],
+      "statutes": [
+        "Art. 336 OR",
+        "Art. 336a OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_136 III 513",
@@ -18,14 +21,29 @@
           "actual_language": "de",
           "title_de": "Missbräuchliche Kündigung — Rachekündigung nach Beschwerde",
           "title_fr": "Licenciement abusif — résiliation en représailles après plainte",
-          "concepts_de": ["Missbräuchliche Kündigung", "Rachekündigung", "Persönlichkeitsschutz", "Beweislast"],
-          "concepts_fr": ["Licenciement abusif", "Représailles", "Protection de la personnalité"],
-          "statutes": ["Art. 336 OR", "Art. 336a OR"],
+          "concepts_de": [
+            "Missbräuchliche Kündigung",
+            "Rachekündigung",
+            "Persönlichkeitsschutz",
+            "Beweislast"
+          ],
+          "concepts_fr": [
+            "Licenciement abusif",
+            "Représailles",
+            "Protection de la personnalité"
+          ],
+          "statutes": [
+            "Art. 336 OR",
+            "Art. 336a OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Kündigung als Reaktion auf berechtigte Beschwerden des Arbeitnehmers ist missbräuchlich",
           "significance_fr": "Le licenciement en réaction à des plaintes justifiées de l'employé est abusif",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Grundsatz der Kündigungsfreiheit und ihre Grenzen (Art. 336 OR). E. 3: Rachekündigung — zeitlicher Zusammenhang zwischen Beschwerde und Kündigung als Indiz. Achten Sie auf die Beweislastverteilung.",
           "socratic_questions": [
             {
@@ -53,7 +71,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Arbeitgeber einen sachlichen Grund (z.B. Leistungsdefizite) nachweisen könnte?",
-              "discussion_points": ["Mischmotivation", "Hauptmotiv", "Beweisschwierigkeiten"],
+              "discussion_points": [
+                "Mischmotivation",
+                "Hauptmotiv",
+                "Beweisschwierigkeiten"
+              ],
               "likely_outcome_shift": "Bei einer Mischmotivation ist entscheidend, welches das Hauptmotiv war. Kann der Arbeitgeber einen sachlichen Grund nachweisen, ist die Kündigung nicht missbräuchlich."
             },
             {
@@ -68,7 +90,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn der Arbeitnehmer ein Whistleblower (Meldung von Compliance-Verstössen) wäre?",
-              "discussion_points": ["Whistleblower-Schutz", "Art. 336 Abs. 1 lit. d OR", "Europäische Entwicklungen"],
+              "discussion_points": [
+                "Whistleblower-Schutz",
+                "Art. 336 Abs. 1 lit. d OR",
+                "Europäische Entwicklungen"
+              ],
               "likely_outcome_shift": "Seit der Revision von Art. 321abis ff. OR geniesst der Whistleblower besonderen Kündigungsschutz. Eine Kündigung als Reaktion auf eine berechtigte Meldung wäre missbräuchlich."
             }
           ]
@@ -80,21 +106,93 @@
           "title_de": "Kündigung zur Unzeit — Sperrfrist bei Krankheit",
           "title_fr": "Résiliation en temps inopportun — délai de protection en cas de maladie",
           "title_it": "",
-          "concepts_de": ["Kündigung zur Unzeit", "Sperrfrist", "Krankheit", "Arbeitsunfähigkeit"],
-          "concepts_fr": ["Résiliation en temps inopportun", "Délai de protection", "Maladie", "Incapacité de travail"],
+          "concepts_de": [
+            "Kündigung zur Unzeit",
+            "Sperrfrist",
+            "Krankheit",
+            "Arbeitsunfähigkeit"
+          ],
+          "concepts_fr": [
+            "Résiliation en temps inopportun",
+            "Délai de protection",
+            "Maladie",
+            "Incapacité de travail"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 336c OR"],
+          "statutes": [
+            "Art. 336c OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Sperrfrist nach Art. 336c OR: Kündigung während Krankheit ist nichtig, wenn die Sperrfrist läuft.",
-          "significance_fr": "Arrêt de principe sur le délai de protection de l'art. 336c CO: la résiliation durant la maladie est nulle si le délai de protection court.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt confirme que seule une incapacité de travail survenant pendant le délai de congé suspendu (art. 336c al. 2 CO) ouvre une nouvelle période de protection, et non celle qui ne se manifeste que durant le délai supplémentaire de l'art. 336c al. 3 CO.",
+          "significance_it": "La sentenza conferma che solo un'incapacità lavorativa sopravvenuta durante il termine di disdetta sospeso (art. 336c cpv. 2 CO) apre un nuovo periodo di protezione, e non quella che si manifesta unicamente durante il termine supplementare dell'art. 336c cpv. 3 CO.",
+          "key_erwagungen": [
+            "1",
+            "2",
+            "2a",
+            "2b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt, um die genauen Daten der Kündigung, der Krankheitsphasen und der strittigen Vertragsbeendigung zu erfassen. Konzentrieren Sie sich dann auf Erwägung 1 (Auslegung von Art. 336c Abs. 1–3 OR) und Erwägung 2 (teleologische Unterscheidung zwischen Abs. 2 und Abs. 3 sowie Auseinandersetzung mit der Lehre), da dort der entscheidende Grundsatz entwickelt wird.",
+          "reading_guide_fr": "Commencez par lire les faits afin de saisir les dates exactes du congé, des périodes d'incapacité et de la fin litigieuse du contrat. Portez ensuite votre attention sur le considérant 1 (interprétation de l'art. 336c al. 1 à 3 CO) et le considérant 2 (distinction téléologique entre les al. 2 et 3, et discussion doctrinale), car c'est là que le Tribunal fédéral développe le principe central de l'arrêt.",
+          "reading_guide_it": "Iniziare con la lettura dei fatti per cogliere le date esatte della disdetta, dei periodi di incapacità lavorativa e della controversa fine del rapporto contrattuale. Concentrarsi poi sul considerando 1 (interpretazione dell'art. 336c cpv. 1–3 CO) e sul considerando 2 (distinzione teleologica tra cpv. 2 e cpv. 3 e discussione dottrinale), dove il Tribunale federale enuncia il principio fondamentale della decisione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Unterschied zwischen dem suspendierten Kündigungsdelai gemäss Art. 336c Abs. 2 OR und der Zusatzfrist gemäss Art. 336c Abs. 3 OR?",
+              "hint": "Vgl. Erwägung 2a, wo das Bundesgericht den Zweck beider Absätze erläutert.",
+              "model_answer": "Art. 336c Abs. 2 OR suspendiert den laufenden Kündigungsdelai, damit der Arbeitnehmer nach Ablauf der Schutzfrist einen vollständigen Kündigungsdelai erhält und so Zeit hat, eine neue Stelle zu suchen. Art. 336c Abs. 3 OR hingegen verlängert den bereits abgelaufenen (suspendierten) Delai lediglich bis zum nächsten vertraglichen Termin, um den Stellenwechsel administrativ zu erleichtern. Der dritte Absatz erfüllt also eine rein praktische Funktion und gewährt keinen eigenständigen Kündigungsschutz."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen müssen gemäss Art. 336c OR erfüllt sein, damit eine Krankheit eine Sperrfrist auslöst, und welche Regel hat das Bundesgericht in BGE 124 III 474 für die Zusatzfrist des Abs. 3 aufgestellt?",
+              "hint": "Vgl. Art. 336c Abs. 1 lit. b OR sowie die Regeste und Erwägung 2a des Urteils.",
+              "model_answer": "Gemäss Art. 336c Abs. 1 lit. b OR löst eine krankheitsbedingte Arbeitsunfähigkeit, die den Arbeitnehmer kein Verschulden trifft, während eines laufenden Kündigungsdelais eine Sperrfrist aus. Das Bundesgericht hält in BGE 124 III 474 fest, dass eine Arbeitsunfähigkeit, die erst während der Zusatzfrist nach Art. 336c Abs. 3 OR eintritt, keine neue Sperrfrist auslöst. Diese Regel ergibt sich aus dem unterschiedlichen Zweck von Abs. 2 (Schutz des Arbeitnehmers) und Abs. 3 (praktische Erleichterung des Stellenwechsels)."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wenden Sie die vom Bundesgericht in BGE 124 III 474 entwickelten Grundsätze auf den Sachverhalt an: Wann endete das Arbeitsverhältnis zwischen M. und der Société X.?",
+              "hint": "Vgl. den Sachverhalt (Kündigung am 10. Dezember 1996, erste Krankheit ab 12. Dezember 1996) und die Erwägungen 1 und 2.",
+              "model_answer": "Die Kündigung vom 10. Dezember 1996 zum 28. Februar 1997 wurde durch die erste Krankheit ab dem 12. Dezember 1996 suspendiert (Art. 336c Abs. 2 OR). Der Delai lief nach Ende der ersten Krankheit weiter und endete am 9. Mai 1997; da dieser Termin kein vertraglicher Endtermin war, wurde er gemäss Art. 336c Abs. 3 OR auf den 31. Mai 1997 verlängert. Die zweite Krankheit, die erst ab dem 26. Mai 1997 – also während der Zusatzfrist – eintrat, löste nach der Bundesgerichtsrechtsprechung keine neue Sperrfrist aus, weshalb das Arbeitsverhältnis am 31. Mai 1997 endete."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum weicht das Bundesgericht in BGE 124 III 474 von der Auffassung der kantonalen Instanz und eines Teils der Lehre ab, und welche teleologischen Argumente trägt es dafür vor?",
+              "hint": "Vgl. Erwägung 2a und 2b, insbesondere den Hinweis auf den unterschiedlichen Zweck von Art. 336c Abs. 2 und Abs. 3 OR sowie die zitierten Autoren.",
+              "model_answer": "Die kantonale Instanz und ein Teil der Lehre waren der Ansicht, jede neue Krankheit löse unabhängig vom Zeitpunkt eine neue Sperrfrist aus. Das Bundesgericht lehnt dies ab, weil Art. 336c Abs. 3 OR nach seinem Telos nicht den Arbeitnehmer vor Kündigung schützen, sondern nur den Zeitpunkt der Beendigung des Arbeitsverhältnisses koordinieren soll. Eine extensive Auslegung würde den Zeitraum des Schutzes über den eigentlichen Schutzzweck hinaus ausdehnen und die Vertragsfreiheit des Arbeitgebers unverhältnismässig einschränken. Das Bundesgericht stützt sich dabei auf den Botschaftstext, auf die systematische Unterscheidung zwischen Abs. 2 und Abs. 3 sowie auf die Mehrheit der Lehrmeinungen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 124 III 474 gewählte Lösung aus arbeitsrechtspolitischer Sicht überzeugend, oder hätte das Gericht dem Schutzgedanken des Art. 336c OR mehr Gewicht beimessen sollen?",
+              "hint": "Berücksichtigen Sie den Zweck des Kündigungsschutzes, die Interessenlagen beider Parteien sowie die in Erwägung 2b genannten abweichenden Lehrmeinungen.",
+              "model_answer": "Die Lösung des Bundesgerichts ist systematisch kohärent, weil sie den unterschiedlichen Regelungszweck von Abs. 2 und Abs. 3 konsequent umsetzt und eine klare Abgrenzung schafft. Aus sozialpolitischer Sicht könnte man allerdings einwenden, dass ein kranker Arbeitnehmer gegen Ende des Arbeitsverhältnisses besonders schutzwürdig ist, da ihm die Krankheit gerade die Stellensuche erschwert. Andererseits hätte eine gegenteilige Lösung zu einem praktisch unbegrenzten Aufschub der Vertragsbeendigung geführt, sobald kurz vor Vertragsende eine neue Krankheit eintritt, was die Interessen des Arbeitgebers übermässig belasten würde. Insgesamt erscheint die Abwägung des Bundesgerichts vertretbar, auch wenn sie zulasten des schwächeren Vertragspartners geht."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn M. bereits am 20. Mai 1997 – also noch innerhalb des (nach Abs. 2 verlängerten) Kündigungsdelais und vor Beginn der Zusatzfrist nach Abs. 3 – erneut erkrankt wäre?",
+              "discussion_points": [
+                "Fällt die neue Krankheit noch in den nach Art. 336c Abs. 2 OR suspendierten und wiederaufgenommenen Delai oder bereits in die Zusatzfrist des Abs. 3?",
+                "Würde eine solche Krankheit eine neue Sperrfrist im Sinne von Art. 336c Abs. 1 lit. b OR auslösen, da sie noch vor Ablauf des originären Delais eingetreten ist?"
+              ],
+              "likely_outcome_shift": "Nach der in BGE 124 III 474 bestätigten Rechtsprechung (vgl. ATF 109 II 330) löst eine Krankheit, die noch während des nach Abs. 2 wiederaufgenommenen Delais eintritt, eine neue Sperrfrist aus. Der Delai würde erneut suspendiert, danach weiterläufen und wiederum auf den nächsten Termin verschoben. Das Arbeitsverhältnis hätte sich damit über den 31. Mai 1997 hinaus verlängert, und M. wäre für die Dauer der neuen Schutzfrist gesichert."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht der Arbeitgeber, sondern M. selbst das Arbeitsverhältnis am 10. Dezember 1996 gekündigt hätte und anschliessend erkrankt wäre?",
+              "discussion_points": [
+                "Art. 336c OR schützt ausschliesslich Arbeitnehmer vor einer Kündigung durch den Arbeitgeber; gilt die Sperrfrist auch bei einer Eigenkündigung des Arbeitnehmers?",
+                "Welche Konsequenzen hätte eine Eigenkündigung für die Pflicht des Arbeitgebers zur Lohnfortzahlung während der Krankheit gemäss Art. 324a OR?"
+              ],
+              "likely_outcome_shift": "Art. 336c OR ist auf Arbeitgeberkündigungen beschränkt und findet bei einer Eigenkündigung des Arbeitnehmers keine Anwendung; eine Sperrfrist würde daher nicht entstehen. Das Arbeitsverhältnis wäre regulär zum 28. Februar 1997 beendet worden, ungeachtet der Krankheit. Der Arbeitgeber wäre jedoch weiterhin zur Lohnfortzahlung gemäss Art. 324a OR bis zum Vertragsende verpflichtet gewesen, sofern die Krankheit vor diesem Datum bestand."
+            }
+          ]
         },
         {
           "decision_id": "bge_132 III 115",
@@ -102,14 +200,31 @@
           "actual_language": "de",
           "title_de": "Fristlose Kündigung wegen schwerer Vertragsverletzung",
           "title_fr": "Résiliation immédiate pour violation grave du contrat",
-          "concepts_de": ["Fristlose Kündigung", "Wichtiger Grund", "Vertrauensverlust", "Verhältnismässigkeit"],
-          "concepts_fr": ["Résiliation immédiate", "Juste motif", "Rupture de confiance"],
-          "statutes": ["Art. 337 OR"],
+          "concepts_de": [
+            "Fristlose Kündigung",
+            "Wichtiger Grund",
+            "Vertrauensverlust",
+            "Verhältnismässigkeit"
+          ],
+          "concepts_fr": [
+            "Résiliation immédiate",
+            "Juste motif",
+            "Rupture de confiance"
+          ],
+          "statutes": [
+            "Art. 337 OR"
+          ],
           "difficulty": 3,
-          "prerequisites": ["bge_136 III 513"],
+          "prerequisites": [
+            "bge_136 III 513"
+          ],
           "significance_de": "Massstab für den 'wichtigen Grund' bei fristloser Kündigung; Zumutbarkeit der Fortsetzung",
           "significance_fr": "Critère du 'juste motif' pour résiliation immédiate; exigibilité de la poursuite",
-          "key_erwagungen": ["2", "3", "4"],
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
           "reading_guide_de": "E. 2: Definition des wichtigen Grundes (Art. 337 OR). E. 3: Zumutbarkeitsprüfung — kann die Fortsetzung bis zum ordentlichen Termin verlangt werden? E. 4: Verhältnismässigkeit — Verwarnung als milderes Mittel.",
           "socratic_questions": [
             {
@@ -137,7 +252,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Arbeitgeber 3 Wochen nach dem Vorfall gekündigt hätte?",
-              "discussion_points": ["Reaktionsfrist", "Verwirkung", "Dulden des Verhaltens"],
+              "discussion_points": [
+                "Reaktionsfrist",
+                "Verwirkung",
+                "Dulden des Verhaltens"
+              ],
               "likely_outcome_shift": "Die fristlose Kündigung muss unverzüglich ausgesprochen werden (Reaktionsfrist 2-3 Arbeitstage). Nach 3 Wochen gilt die Vertragsverletzung als geduldet, die fristlose Kündigung wäre ungerechtfertigt."
             },
             {
@@ -152,7 +271,11 @@
             {
               "type": "swap_parties",
               "scenario": "Was wäre, wenn der Arbeitnehmer fristlos kündigt (statt der Arbeitgeber)?",
-              "discussion_points": ["Art. 337 OR gilt für beide Seiten", "Typische Gründe des Arbeitnehmers", "Schadenersatzanspruch"],
+              "discussion_points": [
+                "Art. 337 OR gilt für beide Seiten",
+                "Typische Gründe des Arbeitnehmers",
+                "Schadenersatzanspruch"
+              ],
               "likely_outcome_shift": "Auch der Arbeitnehmer kann bei wichtigem Grund fristlos kündigen (z.B. Lohnausfall, Mobbing). Er hat dann Anspruch auf Schadenersatz und evtl. eine Entschädigung (Art. 337c OR)."
             }
           ]
@@ -164,7 +287,11 @@
       "name_de": "Lohn und Überstunden",
       "name_fr": "Salaire et heures supplémentaires",
       "name_it": "Salario e ore supplementari",
-      "statutes": ["Art. 321c OR", "Art. 322 OR", "Art. 324a OR"],
+      "statutes": [
+        "Art. 321c OR",
+        "Art. 322 OR",
+        "Art. 324a OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_129 III 171",
@@ -172,14 +299,28 @@
           "actual_language": "de",
           "title_de": "Überstundenvergütung und Darlegungslast",
           "title_fr": "Rémunération des heures supplémentaires et fardeau de l'allégation",
-          "concepts_de": ["Überstunden", "Beweislast", "Darlegungslast", "Arbeitszeiterfassung"],
-          "concepts_fr": ["Heures supplémentaires", "Fardeau de la preuve", "Saisie du temps"],
-          "statutes": ["Art. 321c OR"],
+          "concepts_de": [
+            "Überstunden",
+            "Beweislast",
+            "Darlegungslast",
+            "Arbeitszeiterfassung"
+          ],
+          "concepts_fr": [
+            "Heures supplémentaires",
+            "Fardeau de la preuve",
+            "Saisie du temps"
+          ],
+          "statutes": [
+            "Art. 321c OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Der Arbeitnehmer trägt die Darlegungs- und Beweislast für geleistete Überstunden",
           "significance_fr": "L'employé supporte le fardeau de l'allégation et de la preuve des heures supplémentaires",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Definition der Überstunden (Art. 321c OR). E. 3: Beweislast — der Arbeitnehmer muss Anzahl und Notwendigkeit der Überstunden nachweisen. Achten Sie auf die praktischen Schwierigkeiten der Beweisführung.",
           "socratic_questions": [
             {
@@ -207,7 +348,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Arbeitgeber keine Arbeitszeiterfassung führt, obwohl er dazu verpflichtet wäre?",
-              "discussion_points": ["Beweislastumkehr", "Art. 46 ArG", "Sorgfaltspflichtverletzung"],
+              "discussion_points": [
+                "Beweislastumkehr",
+                "Art. 46 ArG",
+                "Sorgfaltspflichtverletzung"
+              ],
               "likely_outcome_shift": "Bei Verletzung der Pflicht zur Arbeitszeiterfassung könnte eine Beweislastumkehr greifen: Der Arbeitgeber müsste beweisen, dass keine Überstunden geleistet wurden."
             },
             {
@@ -222,7 +367,11 @@
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn der Arbeitsvertrag Überstunden mit dem Lohn als abgegolten erklärt?",
-              "discussion_points": ["Zulässigkeit von Pauschalklauseln", "Schranken", "Art. 321c Abs. 3 OR"],
+              "discussion_points": [
+                "Zulässigkeit von Pauschalklauseln",
+                "Schranken",
+                "Art. 321c Abs. 3 OR"
+              ],
               "likely_outcome_shift": "Pauschalklauseln sind zulässig, wenn das Grundgehalt über dem Mindestlohn liegt und die Mehrarbeit in einem vernünftigen Verhältnis steht. Bei Kadermitarbeitern eher zulässig als bei Normalangestellten."
             }
           ]
@@ -234,21 +383,98 @@
           "title_de": "Lohngleichheit — Diskriminierungsverbot nach Gleichstellungsgesetz",
           "title_fr": "Égalité salariale — interdiction de discrimination selon la loi sur l'égalité",
           "title_it": "",
-          "concepts_de": ["Lohngleichheit", "Gleichstellungsgesetz", "Lohndiskriminierung", "Geschlecht"],
-          "concepts_fr": ["Égalité salariale", "Loi sur l'égalité", "Discrimination salariale", "Sexe"],
+          "concepts_de": [
+            "Lohngleichheit",
+            "Gleichstellungsgesetz",
+            "Lohndiskriminierung",
+            "Geschlecht"
+          ],
+          "concepts_fr": [
+            "Égalité salariale",
+            "Loi sur l'égalité",
+            "Discrimination salariale",
+            "Sexe"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 3 GlG", "Art. 8 BV"],
+          "statutes": [
+            "Art. 3 GlG",
+            "Art. 8 BV"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Lohngleichheit: Beweislast und Methodik des Lohnvergleichs nach dem Gleichstellungsgesetz.",
-          "significance_fr": "Arrêt de principe sur l'égalité salariale: fardeau de la preuve et méthode de comparaison des salaires selon la LEg.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit les critères constitutionnels et méthodologiques du droit à l'égalité salariale dans la fonction publique cantonale, en définissant les conditions auxquelles une autorité peut s'écarter du résultat d'une évaluation analytique des postes de travail sans violer l'interdiction de discrimination fondée sur le sexe.",
+          "significance_it": "Questa sentenza di principio stabilisce i criteri costituzionali e metodologici del diritto alla parità salariale nel pubblico impiego cantonale, definendo le condizioni alle quali un'autorità può discostarsi dal risultato di una valutazione analitica dei posti di lavoro senza violare il divieto di discriminazione basata sul sesso.",
+          "key_erwagungen": [
+            "1",
+            "1a",
+            "1b",
+            "1c",
+            "1d",
+            "2",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 1 sorgfältig, um die verfahrensrechtlichen Voraussetzungen (Beschwerdeweg, Legitimation, Rügeobliegenheit) zu verstehen, bevor Sie sich den materiellen Fragen zuwenden. Erwägung 2 und 3 klären den verfassungsrechtlichen Gehalt des Lohngleichheitsgebots und den Stellenwert analytischer Bewertungssysteme; Erwägung 4 ist entscheidend für das Verständnis, wann eine Abweichung vom Bewertungsergebnis zulässig ist.",
+          "reading_guide_fr": "Commencez par lire attentivement le considérant 1 pour comprendre les conditions procédurales (voie de recours, légitimation, obligation de motivation) avant d'aborder les questions de fond. Les considérants 2 et 3 précisent la portée constitutionnelle du principe d'égalité salariale et la valeur des systèmes d'évaluation analytique; le considérant 4 est décisif pour comprendre dans quelles conditions une dérogation au résultat de l'évaluation est admissible.",
+          "reading_guide_it": "Si consiglia di leggere dapprima il considerando 1 per comprendere i presupposti procedurali (rimedio giuridico, legittimazione, onere di motivazione), prima di affrontare le questioni di merito. I considerandi 2 e 3 chiariscono il contenuto costituzionale del principio della parità salariale e il valore dei sistemi analitici di valutazione del lavoro; il considerando 4 è determinante per capire quando è ammissibile discostarsi dal risultato della valutazione.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der konkrete Anlass der Beschwerde, und weshalb wichen die Einreihung der diplomierten Krankenschwestern/-pfleger in Gehaltsklasse 15 von der durch die Bewertungskommission vorgeschlagenen Klasse 17 ab?",
+              "hint": "Sachverhalt, S. 73: Projekt BEREBE, Bewertungskommission 1991, Regierungsrat Gehaltsverordnung 1996",
+              "model_answer": "Im Rahmen der Besoldungsrevision BEREBE hatte die analytische Bewertungskommission 1991 für die Schlüsselstelle der diplomierten Krankenschwester eine Einreihung in Gehaltsklasse 17 vorgeschlagen. Der Regierungsrat weicht davon ab und stufte die Funktion nur in Klasse 15 ein, was laut den Beschwerdeführerinnen aus finanzpolitischen, nicht sachlichen Gründen erfolgte. Sie rügten dies als indirekte Diskriminierung eines typischen Frauenberufs gemäss Art. 4 Abs. 2 Satz 3 BV."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlagen bilden die massgebliche Normenbasis für den Anspruch auf Lohngleichheit in diesem Fall, und in welchem Verhältnis stehen Art. 4 Abs. 2 Satz 3 BV und das Gleichstellungsgesetz (GlG) zueinander?",
+              "hint": "Regeste und E. 2: Inhalt von Art. 4 Abs. 2 Satz 3 BV; Art. 3 GlG",
+              "model_answer": "Art. 4 Abs. 2 Satz 3 BV (heute Art. 8 Abs. 3 BV) verankert das Gebot des gleichen Lohns für gleichwertige Arbeit von Mann und Frau unmittelbar auf Verfassungsebene. Das Gleichstellungsgesetz konkretisiert und ergänzt diesen Verfassungsauftrag auf Gesetzesstufe, insbesondere durch Regelungen zur Beweislast (Art. 6 GlG) und zum Diskriminierungsverbot (Art. 3 GlG). Im vorliegenden Fall dient die Verfassungsbestimmung als direkt anwendbarer Prüfmassstab für die staatliche Lohnregelung."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Kanton führt ein analytisches Arbeitsplatzbewertungsverfahren durch, dessen Ergebnis eine Einreihung in Lohnklasse 12 vorschlägt, der Regierungsrat weist die Stelle jedoch aus Budgetgründen Lohnklasse 10 zu, wobei es sich um einen überwiegend von Frauen besetzten Beruf handelt. Wie würden die in BGE 125 I 71 entwickelten Grundsätze auf diesen Fall angewendet?",
+              "hint": "E. 4: Zulässigkeit der Abweichung von der vorgeschlagenen Einstufung; E. 3: verfassungsrechtlicher Stellenwert von Bewertungssystemen",
+              "model_answer": "Nach den Grundsätzen von BGE 125 I 71 ist eine Abweichung vom analytisch ermittelten Bewertungsergebnis nicht per se verfassungswidrig, muss aber sachlich begründet sein und darf nicht auf dem Geschlecht der Stelleninhaberinnen beruhen. Eine rein budgetäre Begründung ohne sachlichen Bezug zur Arbeitsbewertung dürfte als unzureichend gelten und den Anschein einer indirekten Diskriminierung begründen. Das Gericht müsste prüfen, ob der Kanton nachweisen kann, dass die Abweichung auf objektiven, geschlechtsneutralen Kriterien beruht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht lässt im zweiten Schriftenwechsel erweiterte Rügen (Überführungssystem, Konfundierung von Merkmalen, Zusammensetzung der Projektorganisation) nicht zu. Welche verfahrensrechtliche Logik liegt dieser Einschränkung zugrunde, und wie spannt sich das Spannungsfeld zwischen Rügebeschränkung und dem erleichterten Beweismass nach Art. 6 GlG auf?",
+              "hint": "E. 1c und 1d: Tragweite von Art. 90 Abs. 1 lit. b und Art. 93 Abs. 2 OG im Verhältnis zu Art. 6 GlG",
+              "model_answer": "Das Bundesgericht stützt die Rügebeschränkung auf die Anforderungen von Art. 90 Abs. 1 lit. b und Art. 93 Abs. 2 OG, wonach die Beschwerdeschrift die wesentlichen Rügen substantiiert enthalten muss und eine Ausdehnung des Streitgegenstands im zweiten Schriftenwechsel unzulässig ist. Diese Verfahrenslogik dient der Rechtssicherheit und der Wahrung des rechtlichen Gehörs der Gegenpartei. Das Spannungsfeld besteht darin, dass Art. 6 GlG zwar die materielle Beweislast zugunsten der diskriminierten Person erleichtert, dies aber keine Lockerung der formellen Substantiierungsanforderungen rechtfertigt – das Gericht hält beide Ebenen klar auseinander."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht weist die Beschwerde ab, obwohl die Bewertungskommission selbst eine höhere Einreihung empfohlen hatte. Ist diese Zurückhaltung des Gerichts gegenüber dem kantonalen Ermessen bei der Lohngestaltung im öffentlichen Dienst mit dem Ziel effektiver Lohngleichheit vereinbar, oder legt der Entscheid die Messlatte für den Diskriminierungsnachweis zu hoch an?",
+              "hint": "E. 3 und E. 4: verfassungsrechtlicher Stellenwert von Bewertungssystemen und Abweichungszulässigkeit; Art. 6 GlG zur Beweislastumkehr",
+              "model_answer": "Die richterliche Zurückhaltung ist verfassungsrechtlich nachvollziehbar, da der Grundsatz der Gewaltenteilung dem Gesetzgeber und der Exekutive einen Gestaltungsspielraum bei der Lohnpolitik einräumt. Kritisch lässt sich jedoch einwenden, dass die Abweichung vom wissenschaftlich fundierten Bewertungsergebnis gerade bei typischen Frauenberufen besonders streng geprüft werden müsste, da ansonsten die strukturelle Unterbewertung solcher Berufe perpetuiert wird. Aus einer feministischen Rechtsperspektive erscheint es problematisch, wenn das Gericht sachfremde finanzpolitische Erwägungen als potentiell legitime Abweichungsgründe akzeptiert, ohne die Beweislastumkehr des Art. 6 GlG konsequent zu aktivieren."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Kanton Bern hätte zeitgleich mit der Einreihung der Krankenschwestern in Klasse 15 eine überwiegend von Männern besetzte Vergleichsfunktion (z.B. Techniker mit ähnlichem analytischen Arbeitswert) in Klasse 17 eingereiht, und diese Paralleleinstufung wäre von den Beschwerdeführerinnen von Anfang an in der Beschwerdeschrift substantiiert gerügt worden.",
+              "discussion_points": [
+                "Würde ein direkter Lohnvergleich mit einer männlich dominierten Vergleichsgruppe gleichen analytischen Arbeitswerts die Vermutung einer Diskriminierung im Sinne von Art. 6 GlG auslösen?",
+                "Wie würde sich das Vorliegen einer konkreten Vergleichsgruppe auf die Beweislastverteilung und die richterliche Kontrolldichte auswirken?"
+              ],
+              "likely_outcome_shift": "Mit einer substantiiert gerügten Paralleleinstufung einer männlich dominierten Vergleichsgruppe mit identischem analytischen Arbeitswert wäre die Diskriminierungsvermutung nach Art. 6 GlG klar aktiviert worden, und die Beweislast für das Fehlen einer Diskriminierung wäre vollständig auf den Kanton übergegangen. Das Gericht hätte unter diesen Umständen kaum anders gekonnt, als die sachliche Rechtfertigung der unterschiedlichen Einreihung vertieft zu prüfen, was die Chancen der Beschwerdeführerinnen erheblich verbessert hätte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht ein kantonaler Berufsverband im Rahmen einer staatsrechtlichen Beschwerde gegen eine generell-abstrakte Norm klagte, sondern eine einzelne Krankenschwester im Privatsektor gestützt auf Art. 3 GlG eine Lohnklage gegen ein privates Spital erhöbe, das seine Lohnstruktur am kantonalen Einreihungsplan orientiert?",
+              "discussion_points": [
+                "Würde die erleichterte Beweislast nach Art. 6 GlG im privatrechtlichen Individualverfahren stärker zur Geltung kommen als im staatsrechtlichen Normenkontrollverfahren?",
+                "Inwiefern unterscheidet sich die Legitimation und die Rügemöglichkeit einer Einzelperson von derjenigen eines Berufsverbands, und welche Konsequenzen hätte dies für die Prozessstrategie?"
+              ],
+              "likely_outcome_shift": "Im privatrechtlichen Lohnklageverfahren einer Einzelperson würde Art. 6 GlG unmittelbarer und mit grösserer praktischer Wirkung greifen, da das Gericht nicht durch die Zurückhaltung gegenüber dem Gestaltungsermessen eines demokratisch legitimierten Normgebers gebunden wäre. Zudem könnte die Klägerin konkrete betriebliche Vergleichsdaten einbringen und einen direkten Lohnvergleich mit männlichen Kollegen verlangen, was im abstrakten Normenkontrollverfahren strukturell schwieriger ist."
+            }
+          ]
         }
       ]
     },
@@ -257,7 +483,11 @@
       "name_de": "Konkurrenzverbot",
       "name_fr": "Prohibition de concurrence",
       "name_it": "Divieto di concorrenza",
-      "statutes": ["Art. 340 OR", "Art. 340a OR", "Art. 340c OR"],
+      "statutes": [
+        "Art. 340 OR",
+        "Art. 340a OR",
+        "Art. 340c OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_138 III 67",
@@ -265,14 +495,29 @@
           "actual_language": "de",
           "title_de": "Konkurrenzverbot — Einblick in Kundenstamm",
           "title_fr": "Prohibition de concurrence — connaissance de la clientèle",
-          "concepts_de": ["Konkurrenzverbot", "Kundenstamm", "Schranken", "Verhältnismässigkeit"],
-          "concepts_fr": ["Prohibition de concurrence", "Clientèle", "Proportionnalité"],
-          "statutes": ["Art. 340 OR", "Art. 340a OR"],
+          "concepts_de": [
+            "Konkurrenzverbot",
+            "Kundenstamm",
+            "Schranken",
+            "Verhältnismässigkeit"
+          ],
+          "concepts_fr": [
+            "Prohibition de concurrence",
+            "Clientèle",
+            "Proportionnalité"
+          ],
+          "statutes": [
+            "Art. 340 OR",
+            "Art. 340a OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Voraussetzungen eines gültigen Konkurrenzverbots; Einblick in Kundenstamm als Voraussetzung",
           "significance_fr": "Conditions d'une prohibition de concurrence valable; connaissance de la clientèle comme condition",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 2: Voraussetzungen (Art. 340 OR): Schriftform, Einblick in Kundenstamm oder Geschäftsgeheimnisse. E. 3: Schranken (Art. 340a OR): Ort, Zeit, Gegenstand müssen angemessen begrenzt sein. Achten Sie auf die Verhältnismässigkeitsprüfung.",
           "socratic_questions": [
             {
@@ -300,7 +545,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Arbeitgeber das Arbeitsverhältnis ohne wichtigen Grund gekündigt hätte?",
-              "discussion_points": ["Art. 340c Abs. 2 OR", "Dahinfallen des Konkurrenzverbots", "Schutzzweck"],
+              "discussion_points": [
+                "Art. 340c Abs. 2 OR",
+                "Dahinfallen des Konkurrenzverbots",
+                "Schutzzweck"
+              ],
               "likely_outcome_shift": "Wenn der Arbeitgeber ohne begründeten Anlass kündigt, fällt das Konkurrenzverbot dahin (Art. 340c Abs. 2 OR). Der Schutz entfällt, weil der Arbeitgeber die Trennung herbeigeführt hat."
             },
             {
@@ -315,7 +564,11 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre, wenn das Konkurrenzverbot global und für 5 Jahre gelten würde?",
-              "discussion_points": ["Übermässigkeit", "Richterliche Herabsetzung (Art. 340a Abs. 2 OR)", "Nichtigkeit vs. Reduktion"],
+              "discussion_points": [
+                "Übermässigkeit",
+                "Richterliche Herabsetzung (Art. 340a Abs. 2 OR)",
+                "Nichtigkeit vs. Reduktion"
+              ],
               "likely_outcome_shift": "Ein globales 5-Jahres-Verbot wäre übermässig. Der Richter kann es auf ein angemessenes Mass herabsetzen (Art. 340a Abs. 2 OR), typischerweise auf 1-2 Jahre und den relevanten Markt."
             }
           ]
@@ -327,21 +580,92 @@
           "title_de": "Arbeitszeugnis — Wahrheitspflicht und wohlwollende Formulierung",
           "title_fr": "Certificat de travail — obligation de vérité et formulation bienveillante",
           "title_it": "",
-          "concepts_de": ["Arbeitszeugnis", "Wahrheitspflicht", "Wohlwollende Formulierung", "Vollständigkeit"],
-          "concepts_fr": ["Certificat de travail", "Obligation de vérité", "Formulation bienveillante", "Exhaustivité"],
+          "concepts_de": [
+            "Arbeitszeugnis",
+            "Wahrheitspflicht",
+            "Wohlwollende Formulierung",
+            "Vollständigkeit"
+          ],
+          "concepts_fr": [
+            "Certificat de travail",
+            "Obligation de vérité",
+            "Formulation bienveillante",
+            "Exhaustivité"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 330a OR"],
+          "statutes": [
+            "Art. 330a OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Arbeitszeugnis: Spannung zwischen Wahrheitspflicht und wohlwollender Formulierung; Anspruch auf vollständiges Zeugnis.",
-          "significance_fr": "Arrêt de principe sur le certificat de travail: tension entre obligation de vérité et formulation bienveillante; droit à un certificat complet.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que l'employeur ne peut délivrer une simple attestation de travail (art. 330a al. 2 CO) qu'à la demande expresse du travailleur, lequel a en principe droit à un certificat qualifié mentionnant ses prestations et son comportement.",
+          "significance_it": "Questa sentenza di principio stabilisce che il datore di lavoro può rilasciare una semplice attestazione di lavoro (art. 330a cpv. 2 CO) solo su esplicita richiesta del lavoratore, il quale ha in linea di principio diritto a un certificato qualificato che menzioni le sue prestazioni e il suo comportamento.",
+          "key_erwagungen": [
+            "3",
+            "3.1",
+            "3.2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 177–178), um das zugrundeliegende Arbeitsverhältnis und den Anlass der fristlosen Kündigung zu verstehen. Konzentrieren Sie sich dann auf Erwägung 3, insbesondere E. 3.1 (Streitpunkt) und E. 3.2 (Auslegung von Art. 330a OR und Abgrenzung qualifiziertes Zeugnis vs. Arbeitsbestätigung). Achten Sie besonders auf die Aussage des Bundesgerichts, dass das Wahlrecht ausschliesslich beim Arbeitnehmer liegt.",
+          "reading_guide_fr": "Commencez par lire les faits (p. 177–178) pour comprendre la relation de travail et les circonstances du licenciement immédiat. Concentrez-vous ensuite sur le considérant 3, en particulier le ch. 3.1 (point litigieux) et le ch. 3.2 (interprétation de l'art. 330a CO et distinction entre certificat qualifié et simple attestation). Notez que le Tribunal fédéral réserve exclusivement au travailleur le droit de choisir entre les deux formes de certificat.",
+          "reading_guide_it": "Iniziate leggendo i fatti (p. 177–178) per comprendere il rapporto di lavoro e le circostanze del licenziamento immediato. Concentratevi poi sul considerando 3, in particolare i punti 3.1 (questione controversa) e 3.2 (interpretazione dell'art. 330a CO e distinzione tra certificato qualificato e semplice attestazione). Prestate particolare attenzione all'affermazione del Tribunale federale secondo cui il diritto di scelta spetta esclusivamente al lavoratore.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was ist der Unterschied zwischen einem qualifizierten Arbeitszeugnis gemäss Art. 330a Abs. 1 OR und einer einfachen Arbeitsbestätigung gemäss Art. 330a Abs. 2 OR?",
+              "hint": "Vgl. E. 3.2 sowie den Wortlaut von Art. 330a OR",
+              "model_answer": "Das qualifizierte Arbeitszeugnis (Vollzeugnis) muss sich sowohl über die Art und Dauer des Arbeitsverhältnisses als auch über die Leistungen und das Verhalten des Arbeitnehmers äussern. Die einfache Arbeitsbestätigung beschränkt sich hingegen auf Angaben über die Art und Dauer des Arbeitsverhältnisses. Entscheidend ist, dass die Arbeitsbestätigung nur auf ausdrückliches Verlangen des Arbeitnehmers ausgestellt werden darf."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Regel leitet das Bundesgericht aus dem Wortlaut von Art. 330a Abs. 2 OR bezüglich der Wahlfreiheit des Arbeitnehmers ab?",
+              "hint": "Vgl. E. 3.2, insbesondere den Abschnitt zur Rechtslehre und zum klaren Wortlaut der Bestimmung",
+              "model_answer": "Das Bundesgericht bestätigt die einhellige Lehrmeinung, dass der Arbeitgeber ein einfaches Zeugnis im Sinne von Art. 330a Abs. 2 OR nur dann ausstellen darf, wenn der Arbeitnehmer dies ausdrücklich verlangt. Das Wahlrecht liegt ausschliesslich beim Arbeitnehmer: Er kann ein qualifiziertes Zeugnis oder eine Arbeitsbestätigung verlangen. Eine gegen den Willen des Arbeitnehmers ausgestellte blosse Arbeitsbestätigung kann der Arbeitnehmer verweigern."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Die Vorinstanz verpflichtete die Beklagte lediglich zur Ausstellung einer Arbeitsbestätigung nach Art. 330a Abs. 2 OR, weil sich die Parteien über den Inhalt des Zeugnisses nicht einigen konnten. Ist diese Begründung nach dem bundesgerichtlichen Urteil haltbar?",
+              "hint": "Vgl. E. 3.1 und 3.2; beachten Sie die Regelung der Wahlfreiheit des Arbeitnehmers",
+              "model_answer": "Die Begründung der Vorinstanz ist nicht haltbar. Das Bundesgericht stellt klar, dass das Recht, lediglich eine Arbeitsbestätigung zu verlangen, ausschliesslich dem Arbeitnehmer zusteht und von diesem ausdrücklich geltend gemacht werden muss. Der Kläger hatte jedoch ausdrücklich ein qualifiziertes Zeugnis mit Angaben zu Leistungen und Verhalten verlangt, weshalb die Vorinstanz ihn nicht auf eine blosse Arbeitsbestätigung verweisen durfte. Die Uneinigkeit der Parteien über den Inhalt des Zeugnisses rechtfertigt diese Reduktion des Anspruchs nicht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern erzeugt der Anspruch auf ein qualifiziertes Arbeitszeugnis eine Spannung für den Arbeitgeber, der – wie hier – dem Arbeitnehmer fristlos gekündigt hat?",
+              "hint": "Beachten Sie den Sachverhalt (Verhalten des Klägers gegenüber der Lizenzgeberin) sowie die allgemeine Doktrin zur Wahrheitspflicht und wohlwollenden Formulierung im Arbeitszeugnis",
+              "model_answer": "Der Arbeitgeber ist einerseits zur wahrheitsgemässen Darstellung verpflichtet und darf ein negatives Verhalten des Arbeitnehmers – wie hier das schädigende Schreiben an die Lizenzgeberin – nicht verschweigen. Andererseits muss das Zeugnis wohlwollend formuliert sein und das wirtschaftliche Fortkommen des Arbeitnehmers fördern. Im vorliegenden Fall ist die Spannung besonders akut, weil der Anlass der fristlosen Kündigung ein gravierendes Fehlverhalten des Klägers war, das im Zeugnis unter dem Aspekt des «Verhaltens» korrekt abgebildet werden müsste, ohne dabei unnötig rufschädigend zu sein."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass ein Arbeitnehmer, der – wie hier – fristlos entlassen wurde, dennoch einen zwingenden Anspruch auf ein qualifiziertes Arbeitszeugnis hat, das sich zu Leistungen und Verhalten äussert?",
+              "hint": "Berücksichtigen Sie den Zweck von Art. 330a OR, den nachwirkenden Fürsorgepflichten des Arbeitgebers (E. 3.2, BGE 107 IV 38) sowie die Interessen beider Parteien",
+              "model_answer": "Es gibt gute Argumente für die Regelung: Der Zeugnisanspruch gehört zur nachwirkenden Fürsorgepflicht und schützt den Arbeitnehmer vor einer allzu einseitigen Darstellung durch den Arbeitgeber; ein vollständiges Zeugnis zwingt den Arbeitgeber zur differenzierten Beurteilung, statt das Arbeitsverhältnis durch Schweigen zu stigmatisieren. Kritisch liesse sich einwenden, dass ein Arbeitgeber, der eine berechtigte fristlose Kündigung ausgesprochen hat, durch den Zwang zur Formulierung von Leistungen und Verhalten in eine unbillige Lage versetzt wird. Überzeugend bleibt die Lösung dennoch, weil die Wahrheitspflicht sicherstellt, dass das Zeugnis den tatsächlichen Umständen entspricht, und weil der Arbeitnehmer das Risiko trägt, dass sein Fehlverhalten wahrheitsgemäss erwähnt wird."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, der Kläger hätte im Berufungsverfahren explizit erklärt, er verzichte auf Angaben zu seinem Verhalten und verlange ausschliesslich ein Zeugnis über Dauer des Arbeitsverhältnisses und Art der Tätigkeit – also eine Arbeitsbestätigung nach Art. 330a Abs. 2 OR. Würde dies das Urteil ändern?",
+              "discussion_points": [
+                "Art. 330a Abs. 2 OR setzt ein ausdrückliches Verlangen des Arbeitnehmers voraus – eine solche ausdrückliche Erklärung läge hier vor.",
+                "Darf der Arbeitgeber in diesem Fall die Ausstellung eines vollständigen Zeugnisses erzwingen, obwohl der Arbeitnehmer dies nicht wünscht?"
+              ],
+              "likely_outcome_shift": "Hätte der Kläger ausdrücklich nur eine Arbeitsbestätigung verlangt, wäre das vorinstanzliche Urteil korrekt gewesen und die Berufung in diesem Punkt abzuweisen. Das Bundesgericht hätte die Beklagte lediglich zur Ausstellung einer Arbeitsbestätigung gemäss Art. 330a Abs. 2 OR verpflichtet, da das Wahlrecht beim Arbeitnehmer liegt und dieser hier von seinem Recht auf das eingeschränkte Zeugnis Gebrauch gemacht hätte."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht der Arbeitnehmer (Kläger), sondern die Arbeitgeberin (Beklagte) von sich aus proaktiv nur eine Arbeitsbestätigung ohne Angaben zu Leistungen und Verhalten ausgestellt hätte, ohne dass der Arbeitnehmer etwas verlangt hatte?",
+              "discussion_points": [
+                "Der Arbeitgeber ist gemäss Art. 330a OR nur auf Verlangen des Arbeitnehmers zur Ausstellung eines Zeugnisses verpflichtet – besteht eine spontane Ausstellungspflicht?",
+                "Kann der Arbeitnehmer eine solche einseitig ausgestellte Arbeitsbestätigung zurückweisen und ein vollständiges qualifiziertes Zeugnis fordern?"
+              ],
+              "likely_outcome_shift": "Der Arbeitnehmer könnte die einseitig ausgestellte Arbeitsbestätigung zurückweisen und gestützt auf Art. 330a Abs. 1 OR ein vollständiges qualifiziertes Zeugnis verlangen, sofern er dieses ausdrücklich begehrt. Die Eigenmächtigkeit des Arbeitgebers ändert nichts am Wahlrecht des Arbeitnehmers; eine gegen dessen Willen ausgestellte Arbeitsbestätigung entfaltet keine befreiende Wirkung für den Arbeitgeber."
+            }
+          ]
         }
       ]
     }
