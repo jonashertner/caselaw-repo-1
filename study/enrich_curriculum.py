@@ -159,7 +159,7 @@ def enrich_all(
         raise RuntimeError("ANTHROPIC_API_KEY not set")
 
     dbp = db_path or str(
-        Path(__file__).resolve().parent.parent / "output" / "swiss_caselaw_fts5.db"
+        Path(__file__).resolve().parent.parent / "output" / "decisions.db"
     )
 
     stats = {"enriched": 0, "skipped": 0, "errors": 0}

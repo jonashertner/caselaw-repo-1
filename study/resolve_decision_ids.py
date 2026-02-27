@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 CURRICULUM_DIR = Path(__file__).resolve().parent / "curriculum"
-DEFAULT_DB = Path(__file__).resolve().parent.parent / "output" / "swiss_caselaw_fts5.db"
+DEFAULT_DB = Path(__file__).resolve().parent.parent / "output" / "decisions.db"
 
 _BGE_PATTERN = re.compile(
     r"BGE\s+(\d+)\s+(Ia|Ib|I{1,3}V?|VI?|IV)\s+(\d+)", re.IGNORECASE
