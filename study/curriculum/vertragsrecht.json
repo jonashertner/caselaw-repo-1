@@ -10,7 +10,13 @@
       "name_de": "Vertragsschluss und AGB",
       "name_fr": "Conclusion du contrat et CGA",
       "name_it": "Conclusione del contratto e CGA",
-      "statutes": ["Art. 1 OR", "Art. 3 OR", "Art. 6 OR", "Art. 7 OR", "Art. 8 OR"],
+      "statutes": [
+        "Art. 1 OR",
+        "Art. 3 OR",
+        "Art. 6 OR",
+        "Art. 7 OR",
+        "Art. 8 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_135 III 1",
@@ -18,13 +24,28 @@
           "actual_language": "de",
           "title_de": "AGB-Kontrolle und Ungewöhnlichkeitsregel",
           "title_fr": "Contrôle des CGA et règle de l'inhabituel",
-          "concepts_de": ["Allgemeine Geschäftsbedingungen", "Ungewöhnlichkeitsregel", "Inhaltskontrolle", "Konsens"],
-          "concepts_fr": ["Conditions générales", "Clause insolite", "Contrôle du contenu"],
-          "statutes": ["Art. 1 OR", "Art. 8 UWG"],
+          "concepts_de": [
+            "Allgemeine Geschäftsbedingungen",
+            "Ungewöhnlichkeitsregel",
+            "Inhaltskontrolle",
+            "Konsens"
+          ],
+          "concepts_fr": [
+            "Conditions générales",
+            "Clause insolite",
+            "Contrôle du contenu"
+          ],
+          "statutes": [
+            "Art. 1 OR",
+            "Art. 8 UWG"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zur AGB-Inhaltskontrolle: Ungewöhnlichkeitsregel und ihre Voraussetzungen",
-          "key_erwagungen": ["2", "3"],
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
           "reading_guide_de": "Fokus auf E. 2 (Auslegung von AGB) und E. 3 (Ungewöhnlichkeitsregel). Achten Sie auf die zweistufige Prüfung: erst Konsens, dann Inhaltskontrolle.",
           "socratic_questions": [
             {
@@ -52,7 +73,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Vertragspartner die AGB vor Vertragsschluss vollständig gelesen hätte?",
-              "discussion_points": ["Tatsächliche vs. normative Kenntnis", "Globalübernahme", "Informierter Konsens"],
+              "discussion_points": [
+                "Tatsächliche vs. normative Kenntnis",
+                "Globalübernahme",
+                "Informierter Konsens"
+              ],
               "likely_outcome_shift": "Die Ungewöhnlichkeitsregel schützt auch bei Globalübernahme, unabhängig davon, ob der Partner die AGB gelesen hat. Die Frage ist, womit er vernünftigerweise rechnen musste."
             },
             {
@@ -67,13 +92,21 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn die AGB-Klausel dem Verwender erlaubt, die Preise einseitig anzupassen?",
-              "discussion_points": ["Einseitige Vertragsänderung", "Art. 2 ZGB", "Zumutbarkeit"],
+              "discussion_points": [
+                "Einseitige Vertragsänderung",
+                "Art. 2 ZGB",
+                "Zumutbarkeit"
+              ],
               "likely_outcome_shift": "Eine einseitige Preisanpassungsklausel ohne Grenzen wäre als ungewöhnlich und evtl. missbräuchlich nach Art. 8 UWG zu qualifizieren."
             },
             {
               "type": "swap_parties",
               "scenario": "Was wäre, wenn beide Parteien Unternehmen wären (B2B)?",
-              "discussion_points": ["Konsumentenschutz vs. B2B", "Ungewöhnlichkeitsregel im B2B-Bereich", "Geschäftserfahrung"],
+              "discussion_points": [
+                "Konsumentenschutz vs. B2B",
+                "Ungewöhnlichkeitsregel im B2B-Bereich",
+                "Geschäftserfahrung"
+              ],
               "likely_outcome_shift": "Im B2B-Bereich wird von höherer Aufmerksamkeit ausgegangen. Die Schwelle der Ungewöhnlichkeit ist höher, aber die Regel gilt grundsätzlich auch hier."
             }
           ]
@@ -84,13 +117,26 @@
           "actual_language": "de",
           "title_de": "Konsens und Auslegung eines Verweisungsvertrags",
           "title_fr": "Consensus et interprétation d'une clause d'élection de for",
-          "concepts_de": ["Konsens", "Vertragsauslegung", "Gerichtsstand", "IPR"],
-          "concepts_fr": ["Consensus", "Interprétation", "For"],
-          "statutes": ["Art. 1 OR"],
+          "concepts_de": [
+            "Konsens",
+            "Vertragsauslegung",
+            "Gerichtsstand",
+            "IPR"
+          ],
+          "concepts_fr": [
+            "Consensus",
+            "Interprétation",
+            "For"
+          ],
+          "statutes": [
+            "Art. 1 OR"
+          ],
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu Konsens und Auslegungsregeln bei Vertragsschluss",
-          "key_erwagungen": ["2"],
+          "key_erwagungen": [
+            "2"
+          ],
           "reading_guide_de": "E. 2 enthält die zentrale Darstellung der Auslegungsregeln: natürlicher Konsens (2a), normativer Konsens (2b-d). Achten Sie auf die Unterscheidung tatsächlicher/rechtlicher Konsens.",
           "socratic_questions": [
             {
@@ -118,7 +164,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn eine Partei ihre interne, abweichende Willensbildung durch E-Mails belegen könnte?",
-              "discussion_points": ["Mentalreservation", "Beweis des natürlichen Konsenses", "Vertrauensschutz"],
+              "discussion_points": [
+                "Mentalreservation",
+                "Beweis des natürlichen Konsenses",
+                "Vertrauensschutz"
+              ],
               "likely_outcome_shift": "Interne E-Mails könnten den tatsächlichen Willen belegen. Wenn beide Parteien dasselbe verstanden haben, gilt der natürliche Konsens. Bei abweichendem internen Willen greift der normative Konsens (Vertrauensschutz)."
             },
             {
@@ -133,7 +183,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn der Vertrag in einer den Parteien nicht geläufigen Sprache abgefasst wäre?",
-              "discussion_points": ["Sprachrisiko", "Verständnismängel", "Erkundigungspflicht"],
+              "discussion_points": [
+                "Sprachrisiko",
+                "Verständnismängel",
+                "Erkundigungspflicht"
+              ],
               "likely_outcome_shift": "Wer einen fremdsprachigen Vertrag unterschreibt, trägt das Sprachrisiko. Er darf sich grundsätzlich nicht auf Unverständnis berufen, es sei denn, die Gegenpartei hat ihn arglistig getäuscht."
             }
           ]
@@ -145,7 +199,9 @@
       "name_de": "Vertragsauslegung",
       "name_fr": "Interprétation du contrat",
       "name_it": "Interpretazione del contratto",
-      "statutes": ["Art. 18 OR"],
+      "statutes": [
+        "Art. 18 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_131 III 606",
@@ -153,13 +209,27 @@
           "actual_language": "fr",
           "title_de": "Grundsätze der Vertragsauslegung",
           "title_fr": "Principes d'interprétation du contrat",
-          "concepts_de": ["Vertragsauslegung", "Vertrauensprinzip", "Wortlautauslegung", "Parteiwille"],
-          "concepts_fr": ["Interprétation", "Principe de la confiance", "Volonté des parties"],
-          "statutes": ["Art. 18 OR"],
+          "concepts_de": [
+            "Vertragsauslegung",
+            "Vertrauensprinzip",
+            "Wortlautauslegung",
+            "Parteiwille"
+          ],
+          "concepts_fr": [
+            "Interprétation",
+            "Principe de la confiance",
+            "Volonté des parties"
+          ],
+          "statutes": [
+            "Art. 18 OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Zusammenstellung der Auslegungsgrundsätze; Grenzen der wortlautbezogenen Auslegung",
-          "key_erwagungen": ["4.1", "4.2"],
+          "key_erwagungen": [
+            "4.1",
+            "4.2"
+          ],
           "reading_guide_de": "Achtung: Volltext auf Französisch, Regeste ist dreisprachig. E. 4.1 fasst die Auslegungsgrundsätze zusammen (consid. 4.1), E. 4.2 zeigt die Grenzen der Wortlautauslegung.",
           "reading_guide_fr": "Consid. 4.1: rappel des principes d'interprétation. Consid. 4.2: limites de l'interprétation littérale.",
           "socratic_questions": [
@@ -188,7 +258,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn die Vertragsparteien eine Auslegungsregel im Vertrag vereinbart hätten ('Entire Agreement Clause')?",
-              "discussion_points": ["Entire Agreement Clause", "Vorrang des Parteiwillens", "Beweiswürdigung"],
+              "discussion_points": [
+                "Entire Agreement Clause",
+                "Vorrang des Parteiwillens",
+                "Beweiswürdigung"
+              ],
               "likely_outcome_shift": "Eine Entire Agreement Clause schliesst den Rückgriff auf Vorverhandlungen aus. Art. 18 OR (tatsächlicher Parteiwille) geht aber grundsätzlich vor, da die Auslegung des Vertragstexts davon umfasst wird."
             },
             {
@@ -203,22 +277,38 @@
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn keine Vorverhandlungen dokumentiert wären?",
-              "discussion_points": ["Beweislast", "Wortlaut als Ausgangspunkt", "Umstände des Vertragsschlusses"],
+              "discussion_points": [
+                "Beweislast",
+                "Wortlaut als Ausgangspunkt",
+                "Umstände des Vertragsschlusses"
+              ],
               "likely_outcome_shift": "Ohne Dokumentation der Vorverhandlungen fällt die Feststellung des tatsächlichen Parteiwillens weg. Der Wortlaut gewinnt als Auslegungskriterium an Gewicht."
             }
           ]
         },
         {
-          "decision_id": "",
+          "decision_id": "bge_113 II 25",
           "bge_ref": "BGE 113 II 25",
           "actual_language": "de",
           "title_de": "Culpa in contrahendo — vorvertragliche Haftung",
           "title_fr": "Culpa in contrahendo — responsabilité précontractuelle",
           "title_it": "",
-          "concepts_de": ["Culpa in contrahendo", "Vorvertragliche Haftung", "Vertragsverhandlungen", "Treu und Glauben"],
-          "concepts_fr": ["Culpa in contrahendo", "Responsabilité précontractuelle", "Négociations"],
+          "concepts_de": [
+            "Culpa in contrahendo",
+            "Vorvertragliche Haftung",
+            "Vertragsverhandlungen",
+            "Treu und Glauben"
+          ],
+          "concepts_fr": [
+            "Culpa in contrahendo",
+            "Responsabilité précontractuelle",
+            "Négociations"
+          ],
           "concepts_it": [],
-          "statutes": ["Art. 2 ZGB", "Art. 41 OR"],
+          "statutes": [
+            "Art. 2 ZGB",
+            "Art. 41 OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur vorvertraglichen Haftung: Aufklärungs- und Sorgfaltspflichten bei Vertragsverhandlungen entstehen durch Treu und Glauben.",
@@ -238,7 +328,12 @@
       "name_de": "Willensmängel",
       "name_fr": "Vices du consentement",
       "name_it": "Vizi della volontà",
-      "statutes": ["Art. 23 OR", "Art. 24 OR", "Art. 25 OR", "Art. 28 OR"],
+      "statutes": [
+        "Art. 23 OR",
+        "Art. 24 OR",
+        "Art. 25 OR",
+        "Art. 28 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_128 III 70",
@@ -246,13 +341,30 @@
           "actual_language": "de",
           "title_de": "Vertragsanfechtung wegen Irrtums oder Täuschung",
           "title_fr": "Invalidation pour erreur ou dol",
-          "concepts_de": ["Irrtum", "Täuschung", "Anfechtung", "Willensmängel", "Unwiderruflichkeit"],
-          "concepts_fr": ["Erreur", "Dol", "Invalidation"],
-          "statutes": ["Art. 23 OR", "Art. 24 OR", "Art. 28 OR"],
+          "concepts_de": [
+            "Irrtum",
+            "Täuschung",
+            "Anfechtung",
+            "Willensmängel",
+            "Unwiderruflichkeit"
+          ],
+          "concepts_fr": [
+            "Erreur",
+            "Dol",
+            "Invalidation"
+          ],
+          "statutes": [
+            "Art. 23 OR",
+            "Art. 24 OR",
+            "Art. 28 OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatz der Unwiderruflichkeit der Anfechtungserklärung und ihre Ausnahmen",
-          "key_erwagungen": ["1", "2"],
+          "key_erwagungen": [
+            "1",
+            "2"
+          ],
           "reading_guide_de": "E. 1: Voraussetzung — Willensmangel muss tatsächlich bestanden haben. E. 2: Ausnahmen von der Unwiderruflichkeit. Achten Sie auf das Zusammenspiel von Gestaltungsrecht und Vertrauensschutz.",
           "socratic_questions": [
             {
@@ -280,7 +392,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Vertragspartner im Vertrauen auf die Anfechtung bereits Dispositionen getroffen hätte?",
-              "discussion_points": ["Vertrauensschutz", "Schadenersatz", "Dispositionsschutz"],
+              "discussion_points": [
+                "Vertrauensschutz",
+                "Schadenersatz",
+                "Dispositionsschutz"
+              ],
               "likely_outcome_shift": "Bei schutzwürdigen Dispositionen des Partners wäre die Rücknahme der Anfechtung unzulässig. Der Vertrauensschutz überwiegt."
             },
             {
@@ -295,7 +411,11 @@
             {
               "type": "change_timeline",
               "scenario": "Was wäre, wenn die Anfechtung erst nach 2 Jahren erklärt würde?",
-              "discussion_points": ["Verwirkungsfrist (Art. 31 OR)", "Ein-Jahres-Frist", "Kenntnis des Willensmangels"],
+              "discussion_points": [
+                "Verwirkungsfrist (Art. 31 OR)",
+                "Ein-Jahres-Frist",
+                "Kenntnis des Willensmangels"
+              ],
               "likely_outcome_shift": "Nach Ablauf der einjährigen Verwirkungsfrist (Art. 31 Abs. 1 OR) ist die Anfechtung verwirkt. Der Vertrag gilt als genehmigt."
             }
           ]
@@ -306,13 +426,30 @@
           "actual_language": "de",
           "title_de": "Grundlagenirrtum bei gerichtlichem Vergleich",
           "title_fr": "Erreur essentielle dans une transaction judiciaire",
-          "concepts_de": ["Grundlagenirrtum", "Gerichtlicher Vergleich", "Kündigung", "Eigenbedarf"],
-          "concepts_fr": ["Erreur essentielle", "Transaction judiciaire"],
-          "statutes": ["Art. 24 OR", "Art. 25 OR"],
+          "concepts_de": [
+            "Grundlagenirrtum",
+            "Gerichtlicher Vergleich",
+            "Kündigung",
+            "Eigenbedarf"
+          ],
+          "concepts_fr": [
+            "Erreur essentielle",
+            "Transaction judiciaire"
+          ],
+          "statutes": [
+            "Art. 24 OR",
+            "Art. 25 OR"
+          ],
           "difficulty": 4,
-          "prerequisites": ["bge_128 III 70"],
+          "prerequisites": [
+            "bge_128 III 70"
+          ],
           "significance_de": "Voraussetzungen für die Anfechtung eines gerichtlichen Vergleichs wegen Grundlagenirrtum",
-          "key_erwagungen": ["1", "2", "3"],
+          "key_erwagungen": [
+            "1",
+            "2",
+            "3"
+          ],
           "reading_guide_de": "E. 1: Voraussetzungen der Anfechtung eines Vergleichs. E. 2: massgebender Zeitpunkt. E. 3: Irrtum über die Person der Vermieterin — kein Verstoss gegen Treu und Glauben.",
           "socratic_questions": [
             {
@@ -340,7 +477,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Irrtum sich auf die Höhe der zukünftigen Mietzinserhöhung bezogen hätte?",
-              "discussion_points": ["Kalkulationsirrtum", "Zukunftsbezogener Irrtum", "Risikozuweisung"],
+              "discussion_points": [
+                "Kalkulationsirrtum",
+                "Zukunftsbezogener Irrtum",
+                "Risikozuweisung"
+              ],
               "likely_outcome_shift": "Ein Irrtum über zukünftige Mietzinsentwicklungen wäre ein Kalkulationsirrtum und grundsätzlich kein Grundlagenirrtum, da er zum Risikobereich des Irrenden gehört."
             },
             {
@@ -355,7 +496,11 @@
             {
               "type": "add_complication",
               "scenario": "Was wäre, wenn der Anwalt des Irrenden von den richtigen Tatsachen wusste?",
-              "discussion_points": ["Zurechnung des Anwaltswissens", "Sorgfaltspflicht", "Art. 26 OR"],
+              "discussion_points": [
+                "Zurechnung des Anwaltswissens",
+                "Sorgfaltspflicht",
+                "Art. 26 OR"
+              ],
               "likely_outcome_shift": "Das Wissen des Anwalts wird der Partei zugerechnet. Die Anfechtung wäre ausgeschlossen, weil der Irrtum auf eigener Nachlässigkeit beruht (Art. 26 OR)."
             }
           ]
@@ -367,7 +512,11 @@
       "name_de": "Leistungsstörungen und Verzug",
       "name_fr": "Inexécution et demeure",
       "name_it": "Inadempimento e mora",
-      "statutes": ["Art. 97 OR", "Art. 102 OR", "Art. 107 OR"],
+      "statutes": [
+        "Art. 97 OR",
+        "Art. 102 OR",
+        "Art. 107 OR"
+      ],
       "cases": [
         {
           "decision_id": "bge_127 III 543",
@@ -375,13 +524,26 @@
           "actual_language": "fr",
           "title_de": "Haftung des Architekten bei Schlechterfüllung",
           "title_fr": "Responsabilité de l'architecte pour mauvaise exécution",
-          "concepts_de": ["Schlechterfüllung", "Vertragshaftung", "Kausalzusammenhang", "Architektenvertrag"],
-          "concepts_fr": ["Mauvaise exécution", "Responsabilité contractuelle"],
-          "statutes": ["Art. 97 OR", "Art. 398 OR"],
+          "concepts_de": [
+            "Schlechterfüllung",
+            "Vertragshaftung",
+            "Kausalzusammenhang",
+            "Architektenvertrag"
+          ],
+          "concepts_fr": [
+            "Mauvaise exécution",
+            "Responsabilité contractuelle"
+          ],
+          "statutes": [
+            "Art. 97 OR",
+            "Art. 398 OR"
+          ],
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Haftung nach Art. 97 OR bei Nicht- oder Schlechterfüllung",
-          "key_erwagungen": ["2"],
+          "key_erwagungen": [
+            "2"
+          ],
           "reading_guide_de": "Achtung: Volltext auf Französisch. E. 2 (consid. 2): Schadensnachweis bei Vertragshaftung — die Genossenschaft muss eine Verminderung ihrer Ansprüche oder eine Erhöhung ihrer Schulden nachweisen.",
           "reading_guide_fr": "Consid. 2: preuve du dommage dans la responsabilité contractuelle de l'architecte.",
           "socratic_questions": [
@@ -410,7 +572,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Architekt einen Subunternehmer eingesetzt hätte, der den Fehler verursachte?",
-              "discussion_points": ["Hilfspersonenhaftung (Art. 101 OR)", "Delegationsrisiko", "Exkulpation"],
+              "discussion_points": [
+                "Hilfspersonenhaftung (Art. 101 OR)",
+                "Delegationsrisiko",
+                "Exkulpation"
+              ],
               "likely_outcome_shift": "Der Architekt haftet für das Verschulden des Subunternehmers als Hilfsperson nach Art. 101 OR. Er kann sich nicht exkulpieren, wenn die Hilfsperson schuldhaft handelte."
             },
             {
@@ -425,7 +591,11 @@
             {
               "type": "remove_element",
               "scenario": "Was wäre, wenn keine vertragliche Beziehung zum Architekten bestünde (z.B. Nachbar schädigt durch Bauarbeiten)?",
-              "discussion_points": ["Deliktische Haftung (Art. 41 OR)", "Verschuldensnachweis", "Beweislast"],
+              "discussion_points": [
+                "Deliktische Haftung (Art. 41 OR)",
+                "Verschuldensnachweis",
+                "Beweislast"
+              ],
               "likely_outcome_shift": "Ohne Vertrag greift Art. 41 OR (deliktische Haftung). Der Geschädigte müsste das Verschulden selbst beweisen, was die Beweislast erheblich erschwert."
             }
           ]
@@ -436,13 +606,27 @@
           "actual_language": "de",
           "title_de": "Wahlrecht des Gläubigers bei Schuldnerverzug",
           "title_fr": "Droit d'option du créancier en cas de demeure",
-          "concepts_de": ["Verzug", "Wahlrecht", "Rücktritt", "Schadenersatz", "Nachfrist"],
-          "concepts_fr": ["Demeure", "Droit d'option", "Résolution"],
-          "statutes": ["Art. 107 OR"],
+          "concepts_de": [
+            "Verzug",
+            "Wahlrecht",
+            "Rücktritt",
+            "Schadenersatz",
+            "Nachfrist"
+          ],
+          "concepts_fr": [
+            "Demeure",
+            "Droit d'option",
+            "Résolution"
+          ],
+          "statutes": [
+            "Art. 107 OR"
+          ],
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Bedeutung und Ausübung der Wahlmöglichkeiten nach Art. 107 OR bei Schuldnerverzug",
-          "key_erwagungen": ["4"],
+          "key_erwagungen": [
+            "4"
+          ],
           "reading_guide_de": "E. 4: Die drei Wahlmöglichkeiten des Gläubigers bei Verzug (Erfüllung, Schadenersatz, Rücktritt). Achten Sie auf die Unwiderruflichkeit der Wahl und die Rolle der Nachfrist.",
           "socratic_questions": [
             {
@@ -470,7 +654,11 @@
               "level": 4,
               "level_label": "Analyse",
               "question": "Was wäre, wenn der Schuldner nach Ablauf der Nachfrist, aber vor der Wahl des Gläubigers, doch noch leistet?",
-              "discussion_points": ["Verspätete Erfüllung", "Annahmeverzug", "Schadenersatz für die Verspätung"],
+              "discussion_points": [
+                "Verspätete Erfüllung",
+                "Annahmeverzug",
+                "Schadenersatz für die Verspätung"
+              ],
               "likely_outcome_shift": "Leistet der Schuldner vor der Wahl, muss der Gläubiger die verspätete Erfüllung annehmen, kann aber Schadenersatz für die Verspätung verlangen."
             },
             {
@@ -485,7 +673,11 @@
             {
               "type": "extreme_case",
               "scenario": "Was wäre bei einem Fixgeschäft (z.B. Hochzeitstorte für den Hochzeitstag)?",
-              "discussion_points": ["Art. 108 OR", "Fixgeschäft", "Keine Nachfrist erforderlich"],
+              "discussion_points": [
+                "Art. 108 OR",
+                "Fixgeschäft",
+                "Keine Nachfrist erforderlich"
+              ],
               "likely_outcome_shift": "Bei einem Fixgeschäft ist keine Nachfristansetzung erforderlich (Art. 108 Ziff. 3 OR). Der Gläubiger kann sofort zurücktreten oder Schadenersatz verlangen."
             }
           ]
