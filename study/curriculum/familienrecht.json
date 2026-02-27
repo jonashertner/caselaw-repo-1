@@ -393,90 +393,40 @@
           ]
         },
         {
-          "decision_id": "bge_144 III 349",
-          "bge_ref": "BGE 144 III 349",
+          "decision_id": "bge_144 III 481",
+          "bge_ref": "BGE 144 III 481",
           "actual_language": "de",
-          "title_de": "Kindesunterhalt — Betreuungsunterhalt",
-          "title_fr": "Entretien de l'enfant — contribution de prise en charge",
+          "title_de": "Kindesunterhalt — Betreuungsunterhalt und Schulstufenmodell",
+          "title_fr": "Entretien de l'enfant — contribution de prise en charge et modèle par degrés scolaires",
           "concepts_de": [
             "Kindesunterhalt",
             "Betreuungsunterhalt",
-            "Existenzminimum",
-            "Eigenversorgungskapazität"
+            "Schulstufenmodell",
+            "Erwerbstätigkeit"
           ],
           "concepts_fr": [
             "Entretien de l'enfant",
             "Contribution de prise en charge",
-            "Minimum vital"
+            "Modèle par degrés scolaires"
           ],
           "statutes": [
-            "Art. 285 ZGB",
-            "Art. 285a ZGB"
+            "Art. 276 ZGB",
+            "Art. 285 ZGB"
           ],
           "difficulty": 3,
           "prerequisites": [
             "bge_142 III 481"
           ],
-          "significance_de": "Grundsatzentscheid zum Betreuungsunterhalt: Wie wird der Lebensunterhalt des betreuenden Elternteils als Teil des Kindesunterhalts berechnet?",
-          "significance_fr": "Arrêt de principe sur la contribution de prise en charge: comment calculer les frais d'entretien du parent qui s'occupe de l'enfant",
-          "key_erwagungen": [
-            "4",
-            "5"
-          ],
-          "reading_guide_de": "E. 4: Definition des Betreuungsunterhalts (Art. 285 Abs. 2 ZGB). E. 5: Berechnung — Differenz zwischen Einkommen des betreuenden Elternteils und seinem familienrechtlichen Existenzminimum. Achten Sie auf das Schulstufenmodell.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der Betreuungsunterhalt und warum wurde er eingeführt?",
-              "hint": "E. 4 und Art. 285 Abs. 2 ZGB.",
-              "model_answer": "Der Betreuungsunterhalt deckt die Lebenskosten des betreuenden Elternteils, soweit diese durch die Kinderbetreuung verursacht werden. Er wurde 2017 eingeführt, um unverheiratete betreuende Elternteile gleichzustellen."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie berechnet das Bundesgericht den Betreuungsunterhalt?",
-              "hint": "E. 5.",
-              "model_answer": "Betreuungsunterhalt = Existenzminimum des betreuenden Elternteils minus dessen tatsächliches Einkommen. Das Schulstufenmodell bestimmt, ab wann eine Erwerbstätigkeit zumutbar ist."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Was besagt das Schulstufenmodell für die Erwerbspflicht des betreuenden Elternteils?",
-              "hint": "E. 5.",
-              "model_answer": "Jüngstes Kind unter Schulalter: keine Erwerbstätigkeit zumutbar. Ab Primarschule: 50% Erwerbstätigkeit. Ab Sekundarstufe: 80% Erwerbstätigkeit. Ab 16 Jahren: 100% Erwerbstätigkeit."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn der betreuende Elternteil freiwillig auf eine gutbezahlte Stelle verzichtet?",
-              "discussion_points": [
-                "Hypothetisches Einkommen",
-                "Zumutbare Erwerbstätigkeit",
-                "Eigenversorgungskapazität"
-              ],
-              "likely_outcome_shift": "Dem betreuenden Elternteil wird ein hypothetisches Einkommen angerechnet, wenn er bei zumutbarer Anstrengung mehr verdienen könnte. Dies reduziert den Betreuungsunterhalt."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist das Schulstufenmodell mit festen Altersgrenzen sachgerecht?",
-              "hint": "Denken Sie an individuelle Betreuungsbedürfnisse und die Verfügbarkeit von Kinderbetreuung.",
-              "model_answer": "Pro: Rechtssicherheit, klare Vorgaben. Contra: Pauschale Grenzen ignorieren individuelle Umstände (z.B. behindertes Kind, fehlende Betreuungsplätze). Eine flexible Beurteilung wäre gerechter, aber weniger vorhersehbar."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn beide Eltern das Kind je zur Hälfte betreuen (echte alternierende Obhut)?",
-              "discussion_points": [
-                "Geteilte Betreuung",
-                "Betreuungsunterhalt bei 50/50",
-                "Barunterhalt vs. Naturalunterhalt"
-              ],
-              "likely_outcome_shift": "Bei echter alternierenden Obhut entfällt der Betreuungsunterhalt grundsätzlich. Es bleibt ggf. ein Barunterhalt bei unterschiedlichen Einkommen der Eltern."
-            }
-          ]
+          "significance_de": "Leitentscheid zum Betreuungsunterhalt: Das Schulstufenmodell legt fest, wann dem betreuenden Elternteil eine Erwerbstätigkeit zumutbar ist (50% ab Schuleintritt, 80% ab Sekundarstufe I, 100% ab 16. Altersjahr).",
+          "significance_fr": "Arrêt de principe sur la contribution de prise en charge: le modèle par degrés scolaires détermine à partir de quand une activité lucrative est exigible du parent gardien (50% dès l'école primaire, 80% dès le secondaire I, 100% dès 16 ans).",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "title_it": "",
+          "significance_it": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },
@@ -579,98 +529,40 @@
           ]
         },
         {
-          "decision_id": "bge_111 II 401",
-          "bge_ref": "BGE 111 II 401",
+          "decision_id": "bge_116 III 32",
+          "bge_ref": "BGE 116 III 32",
           "actual_language": "de",
-          "title_de": "Gütertrennung — güterrechtliche Auseinandersetzung und Beweislast",
-          "title_fr": "Séparation de biens — liquidation du régime et fardeau de la preuve",
+          "title_de": "Gütertrennung — Eigentumsvermutung und Miteigentum an Haushaltsgegenständen",
+          "title_fr": "Séparation de biens — présomption de propriété et copropriété des objets ménagers",
           "title_it": "",
           "concepts_de": [
             "Gütertrennung",
-            "Güterrechtliche Auseinandersetzung",
-            "Beweislast",
-            "Eheliches Güterrecht"
+            "Eigentumsvermutung",
+            "Miteigentum",
+            "Haushaltsgegenstand",
+            "Beweislast"
           ],
           "concepts_fr": [
             "Séparation de biens",
-            "Liquidation du régime",
-            "Fardeau de la preuve"
+            "Présomption de propriété",
+            "Copropriété",
+            "Objets ménagers"
           ],
           "concepts_it": [],
           "statutes": [
-            "Art. 204 ZGB",
             "Art. 248 ZGB"
           ],
           "difficulty": 3,
           "prerequisites": [],
-          "significance_de": "Grundsatzentscheid zur güterrechtlichen Auseinandersetzung bei Gütertrennung: Beweislast und Vermögensvermutung.",
-          "significance_fr": "Cet arrêt de principe établit que le juge du divorce reste seul compétent pour statuer sur la liquidation du régime matrimonial, même lorsque celle-ci a été renvoyée ad separatum, et que cette compétence impérative s'impose d'office, y compris entre époux soumis à la séparation de biens.",
-          "significance_it": "Questa sentenza di principio stabilisce che il giudice del divorzio rimane il solo competente a decidere sulla liquidazione del regime matrimoniale, anche quando questa è stata rinviata ad separatum, e che tale competenza imperativa si impone d'ufficio, anche tra coniugi soggetti alla separazione dei beni.",
-          "key_erwagungen": [
-            "4",
-            "4a",
-            "4b"
-          ],
-          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig, um die prozessuale Geschichte des Falles (Scheidungsurteil 1976, Klage 1982, kantonale Instanzen) nachzuvollziehen. Konzentrieren Sie sich dann auf Erwägung 4 (insbesondere 4a und 4b), in der das Bundesgericht die Zuständigkeitsfrage grundsätzlich klärt und das Verhältnis zwischen Art. 144 ZGB, dem Prinzip der Einheit des Scheidungsurteils und der ad-separatum-Verweisung erörtert. Achten Sie besonders auf die Aussage, dass die zwingende Zuständigkeit des Scheidungsrichters auch durch Einlassung des Beklagten nicht derogiert werden kann.",
-          "reading_guide_fr": "Lisez d'abord attentivement les faits afin de reconstituer l'historique procédural (jugement de divorce 1976, action en 1982, instances cantonales). Concentrez-vous ensuite sur le considérant 4 (en particulier 4a et 4b), dans lequel le Tribunal fédéral tranche la question de compétence de principe et examine le rapport entre l'art. 144 CC, le principe de l'unité du jugement de divorce et le renvoi ad separatum. Prêtez une attention particulière à l'affirmation selon laquelle la compétence impérative du juge du divorce ne peut pas être dérogée par la comparution au fond du défendeur.",
-          "reading_guide_it": "Si legga dapprima con attenzione la fattispecie per ricostruire la storia processuale (sentenza di divorzio 1976, azione 1982, istanze cantonali). Ci si concentri poi sul considerando 4 (in particolare 4a e 4b), nel quale il Tribunale federale risolve in linea di principio la questione della competenza e esamina il rapporto tra l'art. 144 CC, il principio dell'unità della sentenza di divorzio e il rinvio ad separatum. Si presti particolare attenzione all'affermazione secondo cui la competenza imperativa del giudice del divorzio non può essere derogata dalla comparizione in giudizio del convenuto.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was hat der Scheidungsrichter in Lugano im Urteil vom 20. Dezember 1976 bezüglich der güterrechtlichen Auseinandersetzung entschieden, und warum wandte sich die Ehefrau anschliessend an das Bezirksgericht Oberlandquart?",
-              "hint": "Vgl. den Sachverhalt, insbesondere die Ausführungen zum Scheidungsurteil und zur nachfolgenden Klage.",
-              "model_answer": "Der Scheidungsrichter in Lugano sprach die Scheidung aus und verwies die güterrechtliche Auseinandersetzung als Ganzes ad separatum, d.h. in ein gesondertes Verfahren. Die Ehefrau interpretierte dies dahingehend, dass sie ihre Ansprüche aus Güterrecht beim ordentlichen Richter für Forderungsklagen am Wohnsitz des Beklagten geltend machen könne. Das Bundesgericht wies diese Auffassung jedoch zurück."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche bundesrechtliche Norm regelt die Zuständigkeit für die güterrechtliche Auseinandersetzung nach einer Scheidung, und welche Konsequenz zieht das Bundesgericht daraus für die Frage der Einlassung des Beklagten?",
-              "hint": "Vgl. Erwägung 4a sowie die Verweise auf Art. 144 ZGB (aZGB) und BGE 89 I 313.",
-              "model_answer": "Art. 144 ZGB (in der damals geltenden Fassung) begründet einen zwingenden und ausschliesslichen bundesrechtlichen Gerichtsstand für scheidungsrechtliche Nebenfolgen beim Scheidungsrichter. Da dieser Gerichtsstand zwingend ist, kann er nicht durch die prozessuale Einlassung des Beklagten auf die Klage vor einem unzuständigen Richter derogiert werden. Das Gericht hat seine Zuständigkeit in diesem Bereich von Amtes wegen zu prüfen."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Angenommen, die Ehefrau hätte nicht Ansprüche aus der ehelichen Gemeinschaft, sondern eine rein schuldrechtliche Darlehensforderung gegen ihren geschiedenen Mann geltend gemacht, die keinerlei Bezug zur Ehe hatte – wäre das Bezirksgericht Oberlandquart dann zuständig gewesen?",
-              "hint": "Vgl. Erwägung 4 sowie den Vorbehalt im Regeste: 'Dessen Zuständigkeit käme höchstens für Forderungen in Betracht, die gar keinen Bezug zur ehelichen Gemeinschaft haben.'",
-              "model_answer": "Ja, in diesem Fall wäre der ordentliche Richter für Forderungsklagen zuständig gewesen. Das Bundesgericht hält ausdrücklich fest, dass die ausschliessliche Zuständigkeit des Scheidungsrichters nur für Ansprüche gilt, die einen Bezug zur ehelichen Gemeinschaft aufweisen. Für Forderungen ohne jeden solchen Bezug bleibt der ordentliche Richter kompetent, da Art. 144 ZGB insoweit nicht eingreift."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Das Kantonsgericht argumentierte, es bestehe keine Gefahr widersprüchlicher Urteile, weshalb auch der ordentliche Richter zuständig sein könne. Warum verwirft das Bundesgericht dieses Argument, und welches übergeordnete Prinzip liegt seiner Entscheidung zugrunde?",
-              "hint": "Vgl. Erwägung 4a und 4b sowie den Verweis auf den Grundsatz der Einheit des Scheidungsurteils und Art. 144 ZGB.",
-              "model_answer": "Das Bundesgericht verwirft das Argument des Kantonsgerichts, weil die Zuständigkeitsfrage nicht von der materiellen Gefahr widersprüchlicher Entscheide abhängt, sondern von der zwingenden bundesrechtlichen Kompetenzordnung. Art. 144 ZGB weist die Zuständigkeit für alle güterrechtlichen Streitigkeiten mit Bezug zur Ehe dem Scheidungsrichter zu, und diese Norm ist von Amtes wegen zu beachten. Das übergeordnete Prinzip ist jenes der Einheit des Scheidungsverfahrens: Die güterrechtliche Auseinandersetzung ist eine Nebenfolge der Scheidung und soll institutionell beim Scheidungsrichter konzentriert bleiben, selbst wenn sie zeitlich in ein Nachverfahren ausgelagert wird."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Das Bundesgericht trat auf die Klage nicht ein, obwohl das Verfahren bereits durch mehrere Instanzen gelaufen war und der Beklagte nie die Zuständigkeit bestritten hatte. Bewerten Sie diese Lösung aus rechtsstaatlicher und praktischer Sicht: Ist das strikte Festhalten an der Zuständigkeitsnorm im vorliegenden Fall überzeugend?",
-              "hint": "Berücksichtigen Sie den Grundsatz der Verfahrensökonomie, den Schutz zwingender Gerichtsstände und das Risiko von Forum Shopping.",
-              "model_answer": "Das strikte Festhalten an der zwingenden Zuständigkeitsnorm ist aus rechtsstaatlicher Sicht grundsätzlich überzeugend, da zwingende Gerichtsstände gerade den Zweck haben, unabhängig vom Verhalten der Parteien eine kohärente Rechtsprechung zu gewährleisten und Forum Shopping zu verhindern. Aus praktischer Sicht ist das Ergebnis jedoch unbefriedigend: Die Klägerin verlor nach jahrelangem Prozessieren vor drei Instanzen ihren Anspruch auf eine Sachentscheidung infolge eines Zuständigkeitsmangels, den weder sie noch der Beklagte thematisiert hatte. Dies illustriert die Spannung zwischen formeller Rechtssicherheit und materiellem Rechtsschutz und legt nahe, dass der Gesetzgeber klarere Übergangsregelungen für die ad-separatum-Verweisung hätte schaffen sollen."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Angenommen, der Luganeser Scheidungsrichter hätte im Scheidungsurteil von 1976 nicht nur die güterrechtliche Auseinandersetzung ad separatum verwiesen, sondern zugleich festgehalten, dass die Parteien ihre Ansprüche 'vor dem zuständigen ordentlichen Richter' geltend machen sollen. Hätte diese explizite Anordnung des Scheidungsrichters die Zuständigkeit des Bezirksgerichts Oberlandquart begründen können?",
-              "discussion_points": [
-                "Kann ein Scheidungsrichter durch eine Anordnung im Urteil von einer zwingenden bundesrechtlichen Zuständigkeitsnorm (Art. 144 ZGB) abweichen?",
-                "Welche Bindungswirkung hat eine solche Anordnung für die nachfolgenden Gerichte, und kann sie als Derogation der Zuständigkeit verstanden werden?"
-              ],
-              "likely_outcome_shift": "Auch eine ausdrückliche Anordnung des Scheidungsrichters könnte die zwingende bundesrechtliche Zuständigkeitsnorm des Art. 144 ZGB nicht ausser Kraft setzen, da diese nicht zur Disposition der Parteien oder des Scheidungsrichters steht. Das Bundesgericht würde die Zuständigkeit des Bezirksgerichts aller Wahrscheinlichkeit nach weiterhin verneinen. Allerdings könnte die explizite Verweisung an den 'ordentlichen Richter' als Argument für eine großzügigere Auslegung vorgebracht werden, was die Begründungspflicht des Bundesgerichts erhöhen würde."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Wie wäre der Fall zu beurteilen, wenn nicht die Ehefrau, sondern der Ehemann als Kläger aufgetreten wäre und seine Ansprüche als ehemaliger Angestellter in den Geschäften der Ehefrau primär auf arbeitsrechtlicher Grundlage (Lohnforderungen) gestützt hätte, diese Forderungen aber sachlich untrennbar mit der güterrechtlichen Auseinandersetzung verknüpft gewesen wären?",
-              "discussion_points": [
-                "Wie ist die Grenze zwischen güterrechtlichen Ansprüchen mit Ehebezug und arbeitsrechtlichen Ansprüchen zu ziehen, wenn beide Sphären sich überschneiden?",
-                "Welches Gericht wäre für gemischte Ansprüche zuständig, und nach welchem Kriterium bestimmt sich der Schwerpunkt der Klage?"
-              ],
-              "likely_outcome_shift": "Die Zuständigkeitsfrage würde erheblich komplizierter: Reine Lohnforderungen ohne Ehebezug fallen grundsätzlich in die arbeitsrechtliche Zuständigkeit, während Ansprüche, die sachlich mit der ehelichen Gütergemeinschaft verknüpft sind, dem Scheidungsrichter zustehen. Das Bundesgericht müsste eine Schwerpunktbetrachtung vornehmen und die Ansprüche gegebenenfalls aufteilen oder einheitlich dem Scheidungsrichter zuweisen, wenn die güterrechtliche Komponente dominiert. Eine eindeutige Trennung dürfte im vorliegenden Sachverhalt kaum möglich sein, was das Risiko von Zuständigkeitskonflikten erhöht."
-            }
-          ]
+          "significance_de": "Grundsatzentscheid zur Eigentumsvermutung bei Gütertrennung: Bei Haushaltsgegenständen gilt nicht Art. 930 ZGB, sondern Art. 248 Abs. 2 ZGB — ist Alleineigentum nicht nachweisbar, wird Miteigentum beider Ehegatten vermutet.",
+          "significance_fr": "Arrêt de principe sur la présomption de propriété en séparation de biens: l'art. 930 CC ne s'applique pas aux objets ménagers; si la propriété exclusive n'est pas prouvée, l'art. 248 al. 2 CC présume la copropriété.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     }

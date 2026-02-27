@@ -112,85 +112,41 @@
           ]
         },
         {
-          "decision_id": "bge_123 III 35",
-          "bge_ref": "BGE 123 III 35",
-          "actual_language": "de",
-          "title_de": "Konsens und Auslegung eines Verweisungsvertrags",
-          "title_fr": "Consensus et interprétation d'une clause d'élection de for",
+          "decision_id": "bge_144 III 93",
+          "bge_ref": "BGE 144 III 93",
+          "actual_language": "fr",
+          "title_de": "Konsens — Natürlicher und normativer Konsens beim Vertragsschluss",
+          "title_fr": "Consensus — consensus naturel et normatif lors de la conclusion du contrat",
           "concepts_de": [
             "Konsens",
-            "Vertragsauslegung",
-            "Gerichtsstand",
-            "IPR"
+            "Natürlicher Konsens",
+            "Normativer Konsens",
+            "Vertrauensprinzip",
+            "Rechtsbindungswille"
           ],
           "concepts_fr": [
             "Consensus",
-            "Interprétation",
-            "For"
+            "Consensus naturel",
+            "Consensus normatif",
+            "Principe de la confiance",
+            "Volonté de s'engager"
           ],
           "statutes": [
-            "Art. 1 OR"
+            "Art. 1 OR",
+            "Art. 18 OR"
           ],
           "difficulty": 4,
           "prerequisites": [],
-          "significance_de": "Grundsatzentscheid zu Konsens und Auslegungsregeln bei Vertragsschluss",
-          "key_erwagungen": [
-            "2"
-          ],
-          "reading_guide_de": "E. 2 enthält die zentrale Darstellung der Auslegungsregeln: natürlicher Konsens (2a), normativer Konsens (2b-d). Achten Sie auf die Unterscheidung tatsächlicher/rechtlicher Konsens.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der Unterschied zwischen natürlichem und normativem Konsens?",
-              "hint": "Lesen Sie E. 2a-d.",
-              "model_answer": "Natürlicher Konsens: Beide Parteien verstehen die Erklärung gleich (tatsächlicher Parteiwille übereinstimmend). Normativer Konsens: Die Erklärung wird nach dem Vertrauensprinzip so ausgelegt, wie sie der Empfänger nach Treu und Glauben verstehen durfte."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "In welcher Reihenfolge prüft das Bundesgericht die Konsensformen?",
-              "hint": "E. 2.",
-              "model_answer": "1. Natürlicher Konsens (Tatfrage). 2. Normativer Konsens nach Vertrauensprinzip (Rechtsfrage). 3. Ergänzende Vertragsauslegung bei Lücken."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum war der normative Konsens im konkreten Fall entscheidend?",
-              "hint": "E. 2c-d.",
-              "model_answer": "Die Parteien hatten keinen übereinstimmenden tatsächlichen Willen nachgewiesen. Das Gericht musste daher nach dem Vertrauensprinzip bestimmen, wie die Erklärung objektiv zu verstehen war."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn eine Partei ihre interne, abweichende Willensbildung durch E-Mails belegen könnte?",
-              "discussion_points": [
-                "Mentalreservation",
-                "Beweis des natürlichen Konsenses",
-                "Vertrauensschutz"
-              ],
-              "likely_outcome_shift": "Interne E-Mails könnten den tatsächlichen Willen belegen. Wenn beide Parteien dasselbe verstanden haben, gilt der natürliche Konsens. Bei abweichendem internen Willen greift der normative Konsens (Vertrauensschutz)."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die Unterscheidung natürlicher/normativer Konsens praktisch handhabbar?",
-              "hint": "Denken Sie an die Beweisproblematik.",
-              "model_answer": "Theoretisch klar, praktisch problematisch: Der natürliche Konsens ist schwer zu beweisen, weshalb fast immer auf den normativen Konsens zurückgegriffen wird. Dies macht die Unterscheidung teilweise akademisch."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn der Vertrag in einer den Parteien nicht geläufigen Sprache abgefasst wäre?",
-              "discussion_points": [
-                "Sprachrisiko",
-                "Verständnismängel",
-                "Erkundigungspflicht"
-              ],
-              "likely_outcome_shift": "Wer einen fremdsprachigen Vertrag unterschreibt, trägt das Sprachrisiko. Er darf sich grundsätzlich nicht auf Unverständnis berufen, es sei denn, die Gegenpartei hat ihn arglistig getäuscht."
-            }
-          ]
+          "significance_de": "Grundsatzentscheid zu natürlichem und normativem Konsens: Kann kein tatsächlich übereinstimmender Wille festgestellt werden, bestimmt das Gericht den objektiven Willen nach dem Vertrauensprinzip; ein Rechtsbindungswille wird zugerechnet, wenn ihn die Gegenseite nach Treu und Glauben annehmen durfte.",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "socratic_questions": [],
+          "hypotheticals": [],
+          "title_it": "",
+          "significance_fr": "Arrêt de principe sur le consensus naturel et normatif: en l'absence de volontés concordantes réelles, le tribunal détermine la volonté objective selon le principe de la confiance; une volonté de s'engager est imputée si l'autre partie pouvait de bonne foi la déduire.",
+          "significance_it": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": ""
         }
       ]
     },

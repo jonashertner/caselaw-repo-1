@@ -409,99 +409,39 @@
           ]
         },
         {
-          "decision_id": "bge_102 II 224",
-          "bge_ref": "BGE 102 II 224",
+          "decision_id": "bge_108 II 213",
+          "bge_ref": "BGE 108 II 213",
           "actual_language": "de",
-          "title_de": "Konzernhaftung und Durchgriff",
-          "title_fr": "Responsabilité du groupe et action directe",
+          "title_de": "Durchgriff — Rechtsmissbrauch bei Haftungsbeschränkung",
+          "title_fr": "Levée du voile social — abus de droit lors de la limitation de responsabilité",
           "title_it": "",
           "concepts_de": [
-            "Konzernhaftung",
             "Durchgriff",
+            "Haftungsbeschränkung",
             "Rechtsmissbrauch",
-            "Muttergesellschaft"
+            "Rechtliche Selbständigkeit"
           ],
           "concepts_fr": [
-            "Responsabilité du groupe",
-            "Transparence",
+            "Levée du voile social",
+            "Limitation de responsabilité",
             "Abus de droit",
-            "Société mère"
+            "Autonomie juridique"
           ],
           "concepts_it": [],
           "statutes": [
-            "Art. 2 ZGB",
-            "Art. 620 OR"
+            "Art. 2 ZGB"
           ],
           "difficulty": 4,
           "prerequisites": [],
-          "significance_de": "Leitentscheid zur Haftung der Muttergesellschaft für Tochtergesellschaften: Durchgriff bei missbräuchlicher Verwendung der Konzernstruktur.",
-          "significance_fr": "Arrêt de principe sur la responsabilité de la société mère pour les dettes de sa filiale: le Tribunal fédéral admet la levée du voile social en cas d'utilisation abusive de la structure du groupe, fondée sur l'interdiction de l'abus de droit (art. 2 CC).",
-          "significance_it": "Decisione di principio sulla responsabilità della società madre per i debiti della filiale: il Tribunale federale ammette il superamento del velo societario in caso di utilizzo abusivo della struttura del gruppo, fondato sul divieto di abuso del diritto (art. 2 CC).",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "Lesen Sie BGE 102 II 224 mit besonderem Augenmerk auf die Erwägungen zur wirtschaftlichen Einheit von Mutter- und Tochtergesellschaft sowie auf die Voraussetzungen des Rechtsmissbrauchs nach Art. 2 ZGB. Achten Sie darauf, wie das Gericht das Verhältnis zwischen dem Trennungsprinzip des Aktienrechts (Art. 620 OR) und dem ausnahmsweisen Durchgriff dogmatisch einbettet. Die Schlüsselfrage lautet stets: Wann wird die formale Rechtspersönlichkeit der Tochtergesellschaft missbräuchlich als 'Schild' gegen Gläubigeransprüche eingesetzt?",
-          "reading_guide_fr": "Lisez BGE 102 II 224 en prêtant une attention particulière aux considérants relatifs à l'unité économique entre société mère et filiale, ainsi qu'aux conditions de l'abus de droit au sens de l'art. 2 CC. Observez comment le Tribunal fédéral articule le principe de séparation des personnalités juridiques (art. 620 CO) avec l'exception que constitue la levée du voile social. La question centrale est de savoir à quel moment la personnalité juridique distincte de la filiale est utilisée de manière abusive pour faire obstacle aux prétentions des créanciers.",
-          "reading_guide_it": "Leggere BGE 102 II 224 prestando particolare attenzione ai considerandi relativi all'unità economica tra società madre e filiale e alle condizioni dell'abuso di diritto ai sensi dell'art. 2 CC. Osservare come il Tribunale federale inquadra il rapporto tra il principio di separazione delle personalità giuridiche (art. 620 CO) e l'eccezione rappresentata dal superamento del velo societario. La questione centrale è quando la personalità giuridica distinta della filiale viene utilizzata abusivamente come scudo contro le pretese dei creditori.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was versteht man im Kontext von BGE 102 II 224 unter dem Begriff 'Durchgriff' (percement du voile social), und warum ist das Trennungsprinzip zwischen Mutter- und Tochtergesellschaft die Regel?",
-              "hint": "Vgl. Art. 620 OR, der die Aktiengesellschaft als eigenständige juristische Person konstituiert; das Gericht erläutert das Verhältnis zwischen Rechtspersönlichkeit und Haftungsbeschränkung.",
-              "model_answer": "Der Durchgriff bezeichnet die ausnahmsweise Durchbrechung der Haftungstrennung zwischen rechtlich selbstständigen Gesellschaften, sodass die Muttergesellschaft für Verbindlichkeiten der Tochtergesellschaft einsteht. Das Trennungsprinzip ist die Regel, weil jede Aktiengesellschaft gemäss Art. 620 OR eine eigene Rechtspersönlichkeit besitzt und die Gesellschafter grundsätzlich nur das eingebrachte Kapital riskieren. Erst wenn diese Trennung rechtsmissbräuchlich instrumentalisiert wird, greift der Durchgriff als Korrektiv."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Rechtsgrundlage zieht das Bundesgericht in BGE 102 II 224 heran, um den Durchgriff zu begründen, und welche tatbestandlichen Voraussetzungen müssen kumulativ erfüllt sein?",
-              "hint": "Das Gericht stützt sich zentral auf Art. 2 ZGB (Rechtsmissbrauchsverbot); achten Sie auf die Umschreibung der missbräuchlichen Verwendung der Konzernstruktur.",
-              "model_answer": "Das Bundesgericht stützt den Durchgriff auf Art. 2 ZGB, das heisst auf das allgemeine Rechtsmissbrauchsverbot. Voraussetzung ist erstens eine wirtschaftliche Identität oder völlige Beherrschung der Tochtergesellschaft durch die Mutter sowie zweitens die missbräuchliche Instrumentalisierung der rechtlichen Selbstständigkeit der Tochter, etwa um Gläubiger zu schädigen oder gesetzliche Pflichten zu umgehen. Erst bei Erfüllung beider Elemente wird die formale Trennung der Rechtspersönlichkeiten ausnahmsweise ignoriert."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Angenommen, eine Schweizer Muttergesellschaft entzieht ihrer finanziell angeschlagenen Tochtergesellschaft systematisch liquide Mittel durch Darlehen zu marktfremden Konditionen, sodass die Tochter ihre Lieferanten nicht mehr bezahlen kann. Würde das in BGE 102 II 224 entwickelte Kriterium des Rechtsmissbrauchs eine Haftung der Mutter begründen?",
-              "hint": "Prüfen Sie, ob das beschriebene Verhalten die zwei tatbestandlichen Elemente des Durchgriffs (wirtschaftliche Beherrschung + missbräuchliche Verwendung) erfüllt.",
-              "model_answer": "Ja, prima facie wären die Voraussetzungen des Durchgriffs erfüllt: Die Mutter beherrscht die Tochter vollständig und entzieht ihr gezielt Liquidität unter marktwidrigen Bedingungen, was einer missbräuchlichen Verwendung der Konzernstruktur zum Nachteil der Gläubiger entspricht. Die Lieferanten könnten sich auf Art. 2 ZGB berufen und verlangen, dass die Mutter als eigentliche Schuldnerin behandelt wird. Allerdings müssten sie im Prozess die konkreten Umstände der Kapitalentziehung und den Schädigungsvorsatz substanziiert dartun."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Inwiefern unterscheidet sich der in BGE 102 II 224 anerkannte Haftungsdurchgriff von der aktienrechtlichen Verantwortlichkeitsklage gemäss Art. 754 OR, und welche praktischen Konsequenzen hat diese Abgrenzung für Gläubiger eines Konzerns?",
-              "hint": "Vergleichen Sie Schuldner, Anspruchsgrundlage und Beweislast beider Institute; beachten Sie insbesondere, wer klageberechtigt ist.",
-              "model_answer": "Die Verantwortlichkeitsklage nach Art. 754 OR richtet sich gegen Organpersonen (Verwaltungsräte, Geschäftsführer) wegen schuldhafter Pflichtverletzung und setzt ein individuelles Verschulden voraus; Anspruchsberechtigte sind primär die Gesellschaft oder ihre Aktionäre im Sinne des Schadensersatzes. Der Durchgriff nach BGE 102 II 224 hingegen macht die Muttergesellschaft als solche – nicht ihre Organe – direkt haftbar und beruht auf dem Rechtsmissbrauchsverbot, ohne dass ein individuelles Verschulden nachgewiesen werden muss. Für Gläubiger ist der Durchgriff attraktiver, wenn die Organpersonen vermögenslos sind, aber anspruchsvoller in der Beweisführung, weil die missbräuchliche Konzerngestaltung als solche dargetan werden muss."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die vom Bundesgericht in BGE 102 II 224 gewählte Lösung – Haftungsdurchgriff gestützt auf das Rechtsmissbrauchsverbot statt auf eine explizite Konzernhaftungsnorm – rechtspolitisch überzeugend, oder hätte der Gesetzgeber eine spezifische Regelung der Konzernhaftung schaffen sollen?",
-              "hint": "Wägen Sie Rechtssicherheit, Flexibilität und Gläubigerschutz ab; berücksichtigen Sie, dass das Schweizer OR bis heute keine kodifizierte Konzernhaftung kennt.",
-              "model_answer": "Die richterrechtliche Lösung über Art. 2 ZGB bietet Flexibilität und ermöglicht es den Gerichten, auf atypische Missbrauchskonstellationen zu reagieren, ohne starre Tatbestandsgrenzen. Kritisch ist jedoch, dass die Unbestimmtheit des Rechtsmissbrauchsbegriffs die Rechtssicherheit für Konzerne beeinträchtigt und die Beweislast für Gläubiger faktisch sehr hoch bleibt, was den Gläubigerschutz abschwächt. Eine kodifizierte Konzernhaftungsnorm – wie sie etwa das deutsche Recht partiell kennt – würde Transparenz und Vorhersehbarkeit erhöhen, müsste aber sorgfältig ausgestaltet werden, um legitime Konzernstrukturen nicht unverhältnismässig zu belasten."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Stellen Sie sich vor, die Tochtergesellschaft hat ihrerseits eine eigene Enkeltochtergesellschaft gegründet, auf die sämtliche werthaltigen Aktiven verschoben wurden, bevor die Tochtergesellschaft in Konkurs fiel. Die Gläubiger der Tochter verlangen nun Durchgriff sowohl auf die Mutter als auch auf die Enkeltochter. Ändert sich die rechtliche Analyse nach den Grundsätzen von BGE 102 II 224?",
-              "discussion_points": [
-                "Kann der Durchgriff mehrstufig über mehrere Konzernebenen hinweg angewendet werden, oder setzt er eine direkte Beherrschungsbeziehung voraus?",
-                "Wie beurteilt sich die missbräuchliche Verwendung der Konzernstruktur, wenn die Aktiven nicht zur Mutter, sondern zu einer Schwester- oder Enkeltochtergesellschaft verschoben wurden?"
-              ],
-              "likely_outcome_shift": "Die Grundsätze von BGE 102 II 224 lassen sich prinzipiell auf mehrstufige Konzerngeflechte ausdehnen, sofern eine einheitliche Leitung und ein koordinierter Missbrauch nachgewiesen werden können. Der Durchgriff auf die Enkeltochter würde jedoch eine zusätzliche Beweisebene erfordern, da deren rechtliche Selbstständigkeit separat als missbräuchlich charakterisiert werden müsste. In der Praxis steigt damit die Beweislast der Gläubiger erheblich, was den Erfolg der Klage unsicherer macht."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Kehren Sie das Verhältnis um: Eine insolvente Muttergesellschaft will Ansprüche geltend machen, die eigentlich ihrer wirtschaftlich gesunden, aber formal eigenständigen Tochtergesellschaft zustehen. Kann sich die Muttergesellschaft ihrerseits auf eine Art 'umgekehrten Durchgriff' berufen, um auf das Vermögen der Tochter zuzugreifen?",
-              "discussion_points": [
-                "Dient der Durchgriff nach BGE 102 II 224 dem Schutz von Gläubigern oder kann er auch zugunsten der beherrschenden Gesellschaft geltend gemacht werden?",
-                "Würde ein 'umgekehrter Durchgriff' zugunsten der Mutter das Trennungsprinzip nicht in sein Gegenteil verkehren und die Minderheitsaktionäre sowie Gläubiger der Tochter schädigen?"
-              ],
-              "likely_outcome_shift": "Der umgekehrte Durchgriff zugunsten der herrschenden Gesellschaft wird in der Schweizer Rechtslehre und -praxis überwiegend abgelehnt, da der Durchgriff primär ein Gläubigerschutzinstrument ist und nicht dazu dient, der Muttergesellschaft eigennützigen Zugriff auf das Vermögen der Tochter zu verschaffen. Eine solche Ausdehnung würde die Minderheitsaktionäre und Gläubiger der Tochtergesellschaft schutzlos stellen und den Rechtsmissbrauchsgedanken umkehren. Das Bundesgericht würde einen solchen Anspruch der Mutter daher mit grosser Wahrscheinlichkeit zurückweisen."
-            }
-          ]
+          "significance_de": "Grundsatzentscheid zum Durchgriff im Gesellschaftsrecht: Die Haftungsbeschränkung durch Berufung auf die rechtliche Selbständigkeit der Gesellschaft ist nur dann zu durchbrechen, wenn dies als rechtsmissbräuchlich erscheint (Art. 2 ZGB).",
+          "significance_fr": "Arrêt de principe sur la levée du voile social: l'invocation de la personnalité morale pour limiter la responsabilité n'est surmontée que si cela s'avère constitutif d'un abus de droit (art. 2 CC).",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },

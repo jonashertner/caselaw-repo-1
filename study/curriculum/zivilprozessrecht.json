@@ -220,103 +220,42 @@
       ],
       "cases": [
         {
-          "decision_id": "bge_138 III 232",
-          "bge_ref": "BGE 138 III 232",
+          "decision_id": "bge_138 III 76",
+          "bge_ref": "BGE 138 III 76",
           "actual_language": "de",
-          "title_de": "Glaubhaftmachung — Beweismass im summarischen Verfahren",
-          "title_fr": "Vraisemblance — degré de la preuve en procédure sommaire",
+          "title_de": "Glaubhaftmachung — Beweismittel im Massnahmeverfahren nach Art. 254 ZPO",
+          "title_fr": "Vraisemblance — moyens de preuve dans les procédures de mesures selon l'art. 254 CPC",
           "title_it": "",
           "concepts_de": [
             "Glaubhaftmachung",
-            "Beweismass",
-            "Freie Beweiswürdigung",
-            "Summarisches Verfahren"
+            "Massnahmeverfahren",
+            "Gerichtsgutachten",
+            "Beweismittel",
+            "Rechtliches Gehör"
           ],
           "concepts_fr": [
             "Vraisemblance",
-            "Degré de la preuve",
-            "Procédure sommaire",
-            "Libre appréciation"
+            "Procédure de mesures",
+            "Expertise judiciaire",
+            "Moyens de preuve",
+            "Droit d'être entendu"
           ],
           "concepts_it": [],
           "statutes": [
-            "Art. 157 ZPO",
-            "Art. 254 ZPO"
+            "Art. 254 ZPO",
+            "Art. 158 ZPO"
           ],
           "difficulty": 3,
           "prerequisites": [],
-          "significance_de": "Grundsatzentscheid zum reduzierten Beweismass der Glaubhaftmachung im summarischen Verfahren: Überwiegende Wahrscheinlichkeit genügt, Vollbeweis ist nicht erforderlich.",
-          "significance_fr": "Cet arrêt de principe établit que, dans la procédure sommaire, la vraisemblance (probabilité prépondérante) suffit comme degré de preuve – une preuve stricte n'est pas requise – et précise les limites du pouvoir de cognition de l'instance de recours cantonale en matière d'opposition à séquestre.",
-          "significance_it": "Questa sentenza di principio stabilisce che nella procedura sommaria è sufficiente la verosimiglianza (probabilità preponderante) come grado di prova – non è richiesta la prova piena – e precisa i limiti del potere cognitivo dell'istanza cantonale di ricorso in materia di opposizione al sequestro.",
-          "key_erwagungen": [
-            "4.1",
-            "4.1.1",
-            "4.1.2",
-            "4.2",
-            "4.3",
-            "4.4",
-            "4.5"
-          ],
-          "reading_guide_de": "Lesen Sie zunächst E. 4.1.1, um das Beweismass der Glaubhaftmachung im summarischen Verfahren zu verstehen, und dann E. 4.1.2, um die eingeschränkte Kognition der oberen Instanz nach Art. 320 ZPO zu erfassen. Anschliessend bieten E. 4.2 bis E. 4.5 die konkrete Anwendung dieser Grundsätze auf die Frage der Passivlegitimation der Republik Usbekistan.",
-          "reading_guide_fr": "Commencez par lire le considérant 4.1.1 pour comprendre la notion de vraisemblance comme degré de preuve réduit dans la procédure sommaire, puis le considérant 4.1.2 pour saisir le pouvoir de cognition limité de l'instance cantonale supérieure selon l'art. 320 CPC. Les considérants 4.2 à 4.5 illustrent ensuite l'application concrète de ces principes à la question de la légitimation passive de la République d'Ouzbékistan.",
-          "reading_guide_it": "Si consiglia di leggere prima il considerando 4.1.1 per comprendere il grado di prova ridotto della verosimiglianza nella procedura sommaria, poi il considerando 4.1.2 per cogliere il potere cognitivo limitato dell'istanza cantonale superiore ai sensi dell'art. 320 CPC. I considerandi 4.2–4.5 illustrano quindi l'applicazione concreta di questi principi alla questione della legittimazione passiva della Repubblica dell'Uzbekistan.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was bedeutet «Glaubhaftmachung» im Kontext des Arrestverfahrens nach Art. 272 Abs. 1 Ziff. 1 SchKG, und welches Beweismass ist damit verbunden?",
-              "hint": "Vgl. E. 4.1.1 des Entscheids sowie Art. 157 ZPO",
-              "model_answer": "Glaubhaftmachung bedeutet, dass der Gläubiger das Bestehen seiner Forderung in tatsächlicher und rechtlicher Hinsicht überwiegend wahrscheinlich machen muss. Ein Vollbeweis ist nicht erforderlich. Es genügt, dass für das Vorhandensein der Forderung gewisse Elemente sprechen, auch wenn der Richter die Möglichkeit einräumt, dass sich die behaupteten Tatsachen nicht verwirklicht haben könnten."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Normen der ZPO regeln das summarische Verfahren und die Kognition der oberen kantonalen Instanz im Arresteinspracheverfahren, und was sehen diese Normen konkret vor?",
-              "hint": "Vgl. E. 4.1.1 und E. 4.1.2 sowie Art. 251 lit. a, Art. 254, Art. 320 ZPO",
-              "model_answer": "Das Arrestverfahren (Bewilligung und Einsprache) ist ein summarisches Verfahren gemäss Art. 251 lit. a ZPO, in dem Art. 254 ZPO die Beweismittel auf Urkunden beschränkt. Die obere kantonale Instanz kann gemäss Art. 320 lit. a ZPO unrichtige Rechtsanwendung frei überprüfen, aber die Sachverhaltsfeststellung und Beweiswürdigung nur auf offensichtliche Unrichtigkeit (Willkür) hin kontrollieren (Art. 320 lit. b ZPO). Diese eingeschränkte Sachverhaltskognition ist für das Beschwerdeverfahren nach Art. 278 Abs. 3 SchKG massgebend."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Im vorliegenden Fall bestritt die Republik Usbekistan ihre Passivlegitimation. Nach welchem Recht bestimmt sich diese Frage, und wie hat das Bundesgericht die Vorgehensweise des Kantonsgerichts bei der Prüfung dieser Frage beurteilt?",
-              "hint": "Vgl. E. 4.2 und E. 4.1.2 zur Sachlegitimation und zur Kognition der kantonalen Instanz",
-              "model_answer": "Die Passivlegitimation (Sachlegitimation) ist eine Frage des materiellen Rechts und richtet sich in internationalen Verhältnissen nach dem auf die Sache anwendbaren Recht. Im vorliegenden Fall war daher usbekisches Recht massgebend, um zu beurteilen, ob Uzselkhozsnabremont eine eigenständige juristische Person oder ein Organ der Republik Usbekistan ist. Das Bundesgericht prüfte, ob das Kantonsgericht zu Recht eine vollständig freie Beweiswürdigung vorgenommen hatte oder ob es die eingeschränkte Kognition nach Art. 320 lit. b ZPO hätte beachten müssen."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Welche Spannungen entstehen zwischen dem summarischen Charakter des Arrestverfahrens (reduziertes Beweismass der Glaubhaftmachung) und dem Schutz des Arrestschuldners, insbesondere wenn wie hier die Passivlegitimation eines Staates in Frage steht?",
-              "hint": "Vgl. E. 4.1.1 zur Glaubhaftmachung, E. 4.2 zur Passivlegitimation sowie den Sachverhalt (A.a–A.b)",
-              "model_answer": "Das summarische Verfahren mit reduziertem Beweismass ermöglicht dem Gläubiger, rasch eine Sicherungsmassnahme zu erwirken, ohne Vollbeweis erbringen zu müssen. Dies birgt die Gefahr, dass ein Arrestschuldner – hier ein souveräner Staat – vorläufig mit einem Arrest belastet wird, obwohl die Passivlegitimation noch nicht abschliessend geklärt ist. Wenn die Arrestforderung gegenüber einer staatlichen Einrichtung (Uzselkhozsnabremont) besteht und nicht gegenüber dem Staat selbst, fehlt die Passivlegitimation der Republik Usbekistan, was zur Aufhebung des Arrests führt. Das Spannungsverhältnis zeigt sich darin, dass die Glaubhaftmachung sowohl des Forderungsbestands als auch der Passivlegitimation nur summarisch geprüft wird, was bei staatsrechtlich komplexen Gebilden zu erheblicher Unsicherheit führt."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist es rechtspolitisch überzeugend, dass im Arresteinspracheverfahren die obere Instanz die Sachverhaltsfeststellung nur auf offensichtliche Unrichtigkeit prüfen darf (Art. 320 lit. b ZPO), obwohl der Arrestschuldner im Ergebnis erheblich in seinen Rechten beeinträchtigt sein kann?",
-              "hint": "Vgl. E. 4.1.2 zur eingeschränkten Kognition sowie die Interessenabwägung zwischen Gläubigerschutz und Schuldnerschutz im Arrestrecht",
-              "model_answer": "Die eingeschränkte Kognition der oberen Instanz lässt sich mit der Natur des Arrestes als vorläufige Sicherungsmassnahme rechtfertigen: Eine vollumfängliche Überprüfung würde den Verfahrenszweck der raschen Sicherung untergraben. Allerdings ist kritisch zu hinterfragen, ob diese Beschränkung ausreicht, wenn – wie im vorliegenden Fall – komplexe Fragen des ausländischen Rechts und der staatlichen Organisation betroffen sind, die der Arrestrichter im Rahmen einer blossen Glaubhaftmachung kaum vollständig erfassen kann. Eine rechtspolitisch stimmige Antwort müsste beide Interessen gewichten: einerseits die Effektivität des Arrestrechts als Gläubigerinstrument, andererseits den Schutz vor ungerechtfertigten Arresten, insbesondere wenn souveräne Staaten betroffen sind, die völkerrechtlichen Sonderregeln unterliegen."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn Uzselkhozsnabremont im Laufe des Verfahrens nachweislich aufgelöst und ihr Vermögen vollständig auf die Republik Usbekistan übertragen worden wäre – würde dies die Passivlegitimation der Republik nachträglich begründen?",
-              "discussion_points": [
-                "Würde eine nachträgliche Universalsukzession die Passivlegitimation rückwirkend oder nur ex nunc begründen, und welches Recht gilt für diese Beurteilung?",
-                "Inwiefern verändert sich das Beweismass der Glaubhaftmachung, wenn neue Tatsachen erst nach dem Arrestbefehl entstehen – kann der Gläubiger diese im Einspracheverfahren oder erst in einem ordentlichen Verfahren geltend machen?"
-              ],
-              "likely_outcome_shift": "Eine nachgewiesene Universalsukzession könnte die Passivlegitimation der Republik Usbekistan ex nunc begründen, da Verbindlichkeiten des aufgelösten Rechtsträgers auf den Staat übergegangen wären. Dies würde jedoch einen neuen Arrestbefehl erfordern, da der bestehende Arrest auf die ursprüngliche Schuldnerin (Uzselkhozsnabremont) bezogen war. Im summarischen Verfahren wäre diese neue Tatsache nur dann berücksichtigbar, wenn der Gläubiger sie glaubhaft macht und der Richter eine entsprechende Noveneingabe zulässt."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn nicht eine ausländische staatliche Einrichtung, sondern eine private schweizerische AG als Arrestschuldnerin aufgetreten wäre und deren Identität mit der im Vertrag genannten Vertragspartei bestritten worden wäre?",
-              "discussion_points": [
-                "Entfiele das Problem des ausländischen Rechts, und würde dies die Kognition des Arrestrichters und der oberen Instanz bei der Prüfung der Passivlegitimation erleichtern?",
-                "Welche Rolle spielen Handelsregisterauszüge und andere Urkunden im Sinne von Art. 254 ZPO beim Nachweis der Identität einer privaten juristischen Person im summarischen Verfahren?"
-              ],
-              "likely_outcome_shift": "Bei einer rein inländischen privaten Schuldnerin wäre die Identitätsfrage durch einfach zugängliche Handelsregisterauszüge und Urkunden klärbar, was die Glaubhaftmachung erheblich vereinfacht. Das Kantonsgericht hätte keine Notwendigkeit gehabt, ausländisches Organisationsrecht zu prüfen, und die Abgrenzung zwischen staatlicher Haftung und privater Haftung wäre irrelevant. Der Arrest wäre mit hoher Wahrscheinlichkeit aufrechterhalten worden, sofern der Gläubiger die Identität der Vertragspartei mit der Arrestschuldnerin glaubhaft gemacht hätte."
-            }
-          ]
+          "significance_de": "Leitentscheid zu Beweismitteln im Massnahmeverfahren (Art. 254 ZPO): Gerichtsgutachten zu technischen Fragen sind unter der neuen ZPO zulässig; fehlt dem Gericht die Sachkunde, verletzt es das rechtliche Gehör, wenn es ohne Gutachten entscheidet.",
+          "significance_fr": "Arrêt de principe sur les moyens de preuve dans les procédures de mesures (art. 254 CPC): les expertises judiciaires sur des questions techniques restent admissibles; sans compétence technique, le tribunal viole le droit d'être entendu en statuant sans expert.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         },
         {
           "decision_id": "bge_146 III 265",

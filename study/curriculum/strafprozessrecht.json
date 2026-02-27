@@ -16,8 +16,8 @@
       ],
       "cases": [
         {
-          "decision_id": "bge_133 IV 329",
-          "bge_ref": "BGE 133 IV 329",
+          "decision_id": "bge_144 IV 345",
+          "bge_ref": "BGE 144 IV 345",
           "actual_language": "de",
           "title_de": "In dubio pro reo — Unschuldsvermutung und Beweiswürdigung",
           "title_fr": "In dubio pro reo — présomption d'innocence et appréciation des preuves",
@@ -25,13 +25,14 @@
           "concepts_de": [
             "In dubio pro reo",
             "Unschuldsvermutung",
-            "Beweiswürdigung",
-            "Kognition BGer"
+            "Freie Beweiswürdigung",
+            "Erheblicher Zweifel"
           ],
           "concepts_fr": [
             "In dubio pro reo",
             "Présomption d'innocence",
-            "Appréciation des preuves"
+            "Libre appréciation des preuves",
+            "Doute sérieux"
           ],
           "concepts_it": [],
           "statutes": [
@@ -41,78 +42,18 @@
           ],
           "difficulty": 2,
           "prerequisites": [],
-          "significance_de": "Grundsatzentscheid zur Reichweite des Grundsatzes in dubio pro reo: Doppelfunktion als Beweislastregel und Beweiswürdigungsregel sowie die eingeschränkte Kognition des Bundesgerichts.",
-          "significance_fr": "Cet arrêt de principe établit que l'interdiction d'exploitation prévue à l'art. 9 al. 3 LSCPT est absolue et s'étend aux preuves secondaires obtenues indirectement grâce à une découverte fortuite non autorisée, sans qu'une pesée des intérêts soit possible.",
-          "significance_it": "Questa sentenza di principio stabilisce che il divieto di utilizzazione previsto dall'art. 9 cpv. 3 LSCPT è assoluto e si estende alle prove secondarie ottenute indirettamente tramite una scoperta casuale non autorizzata, senza che sia possibile alcuna ponderazione degli interessi.",
-          "key_erwagungen": [
-            "4.2",
-            "4.3",
-            "4.4",
-            "4.5"
-          ],
-          "reading_guide_de": "Lesen Sie zunächst E. 4.2, um den gesetzlichen Rahmen von Art. 9 BÜPF (Zufallsfunde, Genehmigungspflicht, Verwertungsverbot) zu verstehen. Studieren Sie anschliessend E. 4.3 und E. 4.4, um nachzuvollziehen, warum das Bundesgericht eine Güterabwägung ablehnt und das Verwertungsverbot als absolut qualifiziert. Den Kern des Entscheids bildet E. 4.5, in der das Gericht die Fernwirkung des Verwertungsverbots auf mittelbar erlangte Folgebeweise begründet.",
-          "reading_guide_fr": "Commencez par lire le considérant 4.2 pour saisir le cadre légal de l'art. 9 LSCPT (découvertes fortuites, obligation d'autorisation, interdiction d'exploitation). Étudiez ensuite les considérants 4.3 et 4.4 pour comprendre pourquoi le Tribunal fédéral rejette toute pesée des intérêts et qualifie l'interdiction d'exploitation d'absolue. Le cœur de la décision réside dans le considérant 4.5, dans lequel le tribunal fonde l'effet réflexe de l'interdiction d'exploitation sur les preuves secondaires obtenues de manière indirecte.",
-          "reading_guide_it": "Si inizi con il considerando 4.2 per comprendere il quadro legale dell'art. 9 LSCPT (scoperte casuali, obbligo di autorizzazione, divieto di utilizzazione). Si studino poi i considerandi 4.3 e 4.4 per capire perché il Tribunale federale esclude qualsiasi ponderazione degli interessi e qualifica il divieto di utilizzazione come assoluto. Il nucleo della decisione è il considerando 4.5, in cui il Tribunale fonda l'effetto riflesso del divieto di utilizzazione sulle prove secondarie ottenute indirettamente.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was versteht das Bundesgericht in BGE 133 IV 329 unter einem 'personellen Zufallsfund' im Sinne von Art. 9 Abs. 2 BÜPF, und wie unterscheidet sich dieser von einem sachlichen Zufallsfund?",
-              "hint": "Vgl. E. 4.3, wo das Gericht erklärt, warum X. als 'personeller Zufallsfund' eingestuft wird.",
-              "model_answer": "Ein personeller Zufallsfund liegt vor, wenn im Rahmen einer rechtmässigen Telefonüberwachung Erkenntnisse über eine Person gewonnen werden, die in der Überwachungsanordnung nicht als verdächtig bezeichnet war. Im vorliegenden Fall wurde X. als mutmassliche Drogenlieferantin entdeckt, weil der Telefonanschluss von A. – nicht derjenige von X. – rechtmässig überwacht wurde. Zuvor bestand keinerlei Tatverdacht gegen X., weshalb das Gericht einen personellen Zufallsfund bejaht."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Rechtsfolgen ordnet Art. 9 Abs. 3 BÜPF für den Fall an, dass die Voraussetzungen für die Verwendung eines Zufallsfundes nicht gegeben sind, und welche Bedeutung misst das Bundesgericht dem Wortlaut dieser Bestimmung zu?",
-              "hint": "Vgl. E. 4.2 und E. 4.4, insbesondere die Aussage zur Güterabwägung.",
-              "model_answer": "Art. 9 Abs. 3 BÜPF sieht ein absolutes Verwertungsverbot vor: Die rechtswidrig erlangten Informationen dürfen nicht verwendet werden, und die betreffenden Dokumente sowie Datenträger müssen umgehend vernichtet werden. Das Bundesgericht entnimmt dem expliziten Wortlaut, dass der Gesetzgeber auch eine nachträgliche Genehmigung ausschliessen wollte. Zudem lässt der klare Gesetzeswortlaut keinen Raum für eine richterliche Güterabwägung zwischen öffentlichem Interesse an der Wahrheitsfindung und privatem Interesse der Beschuldigten."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Angenommen, die Strafverfolgungsbehörden hätten nach Entdeckung des Zufallsfundes sofort bei der Anklagekammer um Genehmigung ersucht und diese erhalten – wäre die anschliessende Observation von X. und ihre spätere Verhaftung dann als verwertbar zu beurteilen?",
-              "hint": "Vgl. E. 4.3 zur Frage des Genehmigungsverfahrens und E. 4.2 zu Art. 9 Abs. 2 Satz 2 BÜPF.",
-              "model_answer": "Ja, wenn die Genehmigungsbehörde rechtzeitig – d.h. vor Einleitung weiterer Ermittlungen – zugestimmt hätte und die materiellen Voraussetzungen für eine Überwachung erfüllt gewesen wären, wäre der Zufallsfund nachträglich legalisiert worden. In diesem Fall hätten auch die darauf aufbauenden Folgebeweise (Observation, Verhaftung, sichergestelltes Kokain) verwertet werden dürfen, da die Fernwirkung des Verwertungsverbots mangels rechtswidrig erlangtem Primärbeweis nicht eingetreten wäre. Entscheidend ist nach Art. 9 Abs. 2 BÜPF, dass die Genehmigung vor – nicht nach – der Einleitung weiterer Ermittlungen eingeholt wird."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Das Bundesgericht bejaht in E. 4.5 die Fernwirkung des Verwertungsverbots auf Folgebeweise. Welche Kausalitätsformel wendet es dabei an, und inwiefern unterscheidet sich dieser Ansatz von der US-amerikanischen 'fruit of the poisonous tree'-Doktrin sowie von einer einfachen Äquivalenzkausalität?",
-              "hint": "Vgl. E. 4.5 zum massgeblichen Kausalitätskriterium ('nicht hätten erhältlich gemacht werden können').",
-              "model_answer": "Das Bundesgericht stellt auf eine hypothetische Eliminationsmethode ab: Folgebeweise sind nur dann unverwertbar, wenn sie ohne den rechtswidrig erlangten Primärbeweis nicht hätten erlangt werden können ('but-for'-Kausalität). Dies entspricht strukturell der 'fruit of the poisonous tree'-Doktrin des US-amerikanischen Rechts, ist jedoch enger gefasst, weil das Gericht implizit eine Ausnahme für unabhängig erreichbare Beweise ('independent source') zulässt. Im Gegensatz zur blossen Äquivalenzkausalität, die jeden ursächlichen Zusammenhang genügen liesse, verlangt das Bundesgericht eine qualifizierte Kausalbeziehung, die verhindert, dass das Verwertungsverbot grenzenlos auf sämtliche mittelbar beeinflussten Beweismittel ausgedehnt wird."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die vom Bundesgericht gewählte Lösung – ein absolutes Verwertungsverbot ohne Güterabwägung bei explizitem gesetzlichem Verwertungsverbot – rechtspolitisch überzeugend, wenn man bedenkt, dass X. für schwere Betäubungsmitteldelikte mit 500 Gramm Kokain verurteilt wurde?",
-              "hint": "Vgl. E. 4.4 zur Frage der Güterabwägung und zur herrschenden Lehre; beachte den Unterschied zu Fällen ohne explizites gesetzliches Verbot.",
-              "model_answer": "Die Lösung ist aus rechtsstaatlicher Perspektive überzeugend, weil sie den Gesetzgeber beim Wort nimmt und der Polizei einen klaren Anreiz setzt, das Genehmigungsverfahren nach Art. 9 Abs. 2 BÜPF einzuhalten. Eine richterliche Güterabwägung, die bei schwerer Kriminalität regelmässig zugunsten der Verwertung ausschlägt, würde das gesetzliche Verwertungsverbot faktisch aushöhlen und den Behörden erlauben, Verfahrensverstösse nachträglich durch den Schweregrad der Tat zu rechtfertigen. Kritisch lässt sich jedoch einwenden, dass der Gesetzgeber selbst in Art. 9 BÜPF kein ausdifferenziertes System für die Folgebeweise vorgesehen hat und das Bundesgericht durch die weite Fernwirkung möglicherweise über den Willen des Gesetzgebers hinausgeht, was im Ergebnis zu Straflosigkeit trotz erwiesener schwerer Kriminalität führen kann."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Angenommen, die Staatsanwaltschaft hätte nach Entdeckung des Zufallsfundes unabhängig von den Telefonüberwachungserkenntnissen eine anonyme Anzeige erhalten, dass X. Kokain verkaufe, und hätte gestützt auf diese Anzeige allein eine separate Observation eingeleitet. Die anschliessende Verhaftung und das sichergestellte Kokain wären dieselben wie im Originalfall. Ändert sich die Verwertbarkeit der Folgebeweise?",
-              "discussion_points": [
-                "Prüfung der 'independent source'-Ausnahme: Kann die anonyme Anzeige als unabhängige Erkenntnisquelle die Kausalitätskette zum rechtswidrigen Primärbeweis unterbrechen?",
-                "Beweislastfrage: Wer muss die Unabhängigkeit der Ermittlungsquelle nachweisen – die Behörden oder die Beschuldigte?"
-              ],
-              "likely_outcome_shift": "Wenn die Strafverfolgungsbehörden überzeugend nachweisen können, dass die Observation und Verhaftung ausschliesslich auf der anonymen Anzeige – und nicht auf den Telefonüberwachungserkenntnissen – beruhen, entfällt die notwendige Kausalität zwischen dem rechtswidrigen Primärbeweis und den Folgebeweisen. In diesem Fall käme die Fernwirkung des Verwertungsverbots nach der bundesgerichtlichen Formel nicht zum Tragen, da die Folgebeweise auch ohne den Zufallsfund 'hätten erhältlich gemacht werden können'. Das Ergebnis wäre eine Verwertbarkeit der Observation und des sichergestellten Kokains, sofern diese Massnahmen ihrerseits den gesetzlichen Anforderungen genügen."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Stellen Sie sich vor, nicht X. als Privatperson, sondern ein Telekommunikationsunternehmen sei im Rahmen seiner Mitwirkungspflichten nach BÜPF der einzige Beschwerdeführer und rüge, die Behörden hätten die übermittelten Daten unter Verletzung von Art. 9 Abs. 2 BÜPF ohne Genehmigung für weitere Ermittlungen gegen X. verwendet. Hat das Unternehmen eine eigenständige Beschwerdeberechtigung, und ändert dies den Ausgang des Verfahrens?",
-              "discussion_points": [
-                "Beschwerdelegitimation: Ist ein Telekommunikationsunternehmen im Strafprozess beschwerdeberechtigt, wenn es nicht selbst Partei des Strafverfahrens ist und keine eigenen Grundrechte (z.B. Fernmeldegeheimnis) unmittelbar verletzt sind?",
-                "Schutzzweck von Art. 9 BÜPF: Schützt die Bestimmung primär die überwachte Person oder auch Dritte, die Daten übermitteln müssen?"
-              ],
-              "likely_outcome_shift": "Ein Telekommunikationsunternehmen wäre im Strafverfahren gegen X. mangels eigener Parteistellung und fehlender unmittelbarer Betroffenheit in eigenen Rechten voraussichtlich nicht zur Beschwerde legitimiert. Da das Verwertungsverbot nach Art. 9 Abs. 3 BÜPF primär dem Schutz der überwachten Person dient, kann nur diese dessen Verletzung im Strafverfahren rügen. Ohne den Beschwerdeführer X. als direkt betroffene Person würde das Bundesgericht auf die Beschwerde des Unternehmens nicht eintreten, womit das Verwertungsverbot im konkreten Fall nicht geprüft würde und das Urteil des Obergerichts in Rechtskraft erwüchse."
-            }
-          ]
+          "significance_de": "Grundsatzentscheid zur Unschuldsvermutung: Die freie Beweiswürdigung lässt keinen Raum für 'in dubio pro reo' bei Sammlung und Sichtung von Beweismitteln; nur das Übergehen offensichtlich erheblicher Zweifel verletzt Art. 10 StPO.",
+          "significance_fr": "Arrêt de principe sur la présomption d'innocence: la libre appréciation des preuves exclut l''in dubio pro reo' lors de la récolte des preuves; seul le fait d'ignorer des doutes manifestement importants viole l'art. 10 CPP.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         },
         {
-          "decision_id": "bge_116 Ia 455",
+          "decision_id": "bge_116 IA 455",
           "bge_ref": "BGE 116 Ia 455",
           "actual_language": "de",
           "title_de": "Anklagegrundsatz — Umfang der Anklageschrift bei Fahrlässigkeitstaten",
@@ -139,71 +80,12 @@
           "significance_de": "Grundsatzentscheid zum Anklagegrundsatz: Bei Fahrlässigkeitstaten müssen in der Anklageschrift alle Umstände genannt sein, aus denen sich die Pflichtwidrigkeit ergibt.",
           "significance_fr": "Cet arrêt de principe établit que, pour les infractions par négligence, l'acte d'accusation doit mentionner expressément toutes les circonstances dont découle la violation du devoir de prudence, sous peine de violer le principe d'accusation garanti par l'art. 29 Cst. et l'art. 9 CPP.",
           "significance_it": "Questa sentenza di principio stabilisce che, per i reati colposi, il decreto d'accusa deve indicare espressamente tutte le circostanze da cui risulta la violazione del dovere di diligenza, pena la violazione del principio accusatorio garantito dall'art. 29 Cost. e dall'art. 9 CPP.",
-          "key_erwagungen": [
-            "2",
-            "3",
-            "4"
-          ],
-          "reading_guide_de": "Konzentrieren Sie sich bei der Lektüre dieses Grundsatzentscheids auf die Erwägungen zur dogmatischen Verankerung des Anklagegrundsatzes im schweizerischen Verfassungs- und Prozessrecht sowie auf die Ausführungen zu den besonderen Anforderungen bei Fahrlässigkeitsdelikten. Achten Sie insbesondere darauf, wie das Bundesgericht die Elemente der Fahrlässigkeit (Pflichtwidrigkeit, Vorhersehbarkeit) mit den Informationspflichten der Anklagebehörde verknüpft. Die Abgrenzung zu den weniger strengen Anforderungen bei Vorsatzdelikten ist für das Verständnis des Entscheids zentral.",
-          "reading_guide_fr": "Lors de la lecture de cet arrêt de principe, concentrez-vous sur les considérants relatifs à l'ancrage dogmatique du principe d'accusation dans le droit constitutionnel et procédural suisse, ainsi que sur les développements concernant les exigences particulières applicables aux infractions par négligence. Prêtez une attention particulière à la manière dont le Tribunal fédéral relie les éléments de la négligence (violation du devoir de prudence, prévisibilité) aux obligations d'information incombant à l'autorité de poursuite pénale. La distinction avec les exigences moins strictes applicables aux infractions intentionnelles est essentielle à la compréhension de l'arrêt.",
-          "reading_guide_it": "Nella lettura di questa sentenza di principio, concentratevi sui considerandi relativi all'ancoraggio dogmatico del principio accusatorio nel diritto costituzionale e processuale svizzero, nonché sugli sviluppi riguardanti le esigenze particolari applicabili ai reati colposi. Prestate particolare attenzione al modo in cui il Tribunale federale collega gli elementi della colpa (violazione del dovere di diligenza, prevedibilità) agli obblighi di informazione dell'autorità requirente. La distinzione rispetto alle esigenze meno rigorose applicabili ai reati dolosi è fondamentale per la comprensione della sentenza.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was versteht das Bundesgericht in BGE 116 Ia 455 unter dem Anklagegrundsatz, und welchen Zweck verfolgt dieser Grundsatz im Strafprozess?",
-              "hint": "Suchen Sie in den einleitenden Erwägungen des Entscheids nach der Definition und Funktion des Anklageprinzips.",
-              "model_answer": "Der Anklagegrundsatz (Akkusationsprinzip) besagt, dass eine Person nur für Handlungen verurteilt werden darf, die ihr in der Anklageschrift konkret vorgeworfen werden. Er dient dem Schutz der Verteidigungsrechte, indem er der angeklagten Person ermöglicht, sich gegen die konkreten Vorwürfe zu verteidigen. Zudem begrenzt er die Kognition des Gerichts auf den angeklagten Sachverhalt."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche spezifischen Anforderungen stellt BGE 116 Ia 455 an die Anklageschrift bei Fahrlässigkeitsdelikten, und auf welche Rechtsgrundlagen stützt das Bundesgericht diese Anforderungen?",
-              "hint": "Achten Sie auf die Ausführungen zu Art. 9 StPO und Art. 29 BV sowie auf die Unterscheidung zwischen Vorsatz- und Fahrlässigkeitsdelikten.",
-              "model_answer": "Das Bundesgericht verlangt, dass bei Fahrlässigkeitsdelikten in der Anklageschrift alle Umstände ausdrücklich genannt werden müssen, aus denen sich die Pflichtwidrigkeit des Verhaltens ergibt. Dazu gehören insbesondere die konkret verletzte Sorgfaltspflicht und die Umstände, die eine Vorhersehbarkeit des Erfolges begründen. Diese Anforderungen leitet das Gericht aus dem Anklagegrundsatz nach Art. 9 StPO sowie dem verfassungsrechtlichen Anspruch auf ein faires Verfahren gemäss Art. 29 BV ab."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Ein Bauunternehmer wird wegen fahrlässiger schwerer Körperverletzung angeklagt. Die Anklageschrift beschreibt lediglich den Unfallhergang, nennt aber keine spezifischen Sicherheitsvorschriften, gegen die er verstossen haben soll. Ist diese Anklageschrift nach den Grundsätzen von BGE 116 Ia 455 ausreichend?",
-              "hint": "Prüfen Sie, ob alle Elemente der Fahrlässigkeit – insbesondere die Pflichtwidrigkeit – in der Anklageschrift konkret bezeichnet sind.",
-              "model_answer": "Die Anklageschrift wäre nach BGE 116 Ia 455 unzureichend, da die konkret verletzte Sorgfaltspflicht nicht benannt ist. Das blosse Beschreiben des Unfallhergangs genügt nicht; vielmehr müssten die spezifischen Sicherheitsvorschriften (z.B. aus der Bauarbeitenverordnung) genannt werden, gegen die der Bauunternehmer verstossen hat. Ohne diese Angaben kann der Angeklagte seine Verteidigung nicht gezielt auf den Pflichtwidrigkeitsvorwurf ausrichten, was den Anklagegrundsatz verletzt."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Inwiefern unterscheiden sich die Anforderungen an die Anklageschrift bei Vorsatzdelikten im Vergleich zu Fahrlässigkeitsdelikten, und warum rechtfertigt die Struktur des Fahrlässigkeitstatbestands erhöhte Anforderungen an die Anklageschrift?",
-              "hint": "Vergleichen Sie die dogmatische Struktur von Vorsatz- und Fahrlässigkeitsdelikten und leiten Sie daraus die unterschiedlichen Informationsbedürfnisse der Verteidigung ab.",
-              "model_answer": "Bei Vorsatzdelikten ergibt sich die Strafbarkeit primär aus dem objektiven Tatgeschehen und dem nachgewiesenen Willen zur Tatbestandsverwirklichung; die Handlung selbst ist meist klar umschrieben. Bei Fahrlässigkeitsdelikten hingegen ist die Pflichtwidrigkeit ein eigenständiges normatives Tatbestandselement, das nicht unmittelbar aus dem Erfolg ableitbar ist, sondern erst durch den Vergleich mit dem Verhalten einer sorgfältigen Person bestimmt wird. Da sich die Verteidigung gegen unterschiedliche Sorgfaltspflichtverstösse auf völlig verschiedene Weise ausrichten muss, sind genaue Angaben in der Anklageschrift unerlässlich, um das rechtliche Gehör und eine effektive Verteidigung zu gewährleisten."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Kritisieren Sie die vom Bundesgericht in BGE 116 Ia 455 entwickelte strenge Anforderung an Anklageschriften bei Fahrlässigkeitsdelikten: Schützt dieser Ansatz die Beschuldigten angemessen, oder riskiert er, die Strafverfolgung unverhältnismässig zu erschweren?",
-              "hint": "Wägen Sie die Interessen der Verteidigung (rechtliches Gehör, faires Verfahren) gegen die praktischen Bedürfnisse der Strafverfolgung ab.",
-              "model_answer": "Der Ansatz des Bundesgerichts stärkt konsequent den Schutz der Beschuldigten und ist verfassungsrechtlich überzeugend, da nur ein klar umschriebener Vorwurf eine sachgerechte Verteidigung ermöglicht. Kritisch lässt sich einwenden, dass die erhöhten Anforderungen die Anklagebehörde zwingen, bereits vor dem Hauptverfahren umfangreiche Sachverhaltsaufklärungen vorzunehmen, was in komplexen Fahrlässigkeitsfällen zu Verfahrensverzögerungen führen kann. Dennoch überwiegen die rechtsstaatlichen Vorteile, da ungenaue Anklageschriften letztlich zu Verfahrenswiederholungen oder Freisprüchen aus formellen Gründen führen würden, was weder der Strafverfolgung noch der Rechtssicherheit dient."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Was wäre, wenn die Anklageschrift zwar die verletzte Sorgfaltspflicht nennt, diese aber erst unmittelbar vor der Hauptverhandlung durch eine Nachtragsanklage ergänzt wird – und der Angeklagte keine Möglichkeit hatte, sich darauf vorzubereiten?",
-              "discussion_points": [
-                "Ist eine Nachtragsanklage mit den Anforderungen des Anklagegrundsatzes vereinbar, wenn dem Beschuldigten keine angemessene Vorbereitungszeit eingeräumt wird?",
-                "Inwiefern berührt die kurzfristige Ergänzung der Anklageschrift das Gebot des fairen Verfahrens nach Art. 29 BV und Art. 6 EMRK?"
-              ],
-              "likely_outcome_shift": "Das Bundesgericht würde eine solche Nachtragsanklage ohne ausreichende Vorbereitungszeit für den Beschuldigten als Verletzung des Anklagegrundsatzes und des rechtlichen Gehörs qualifizieren. Die formelle Vollständigkeit der Anklageschrift allein genügt nicht; entscheidend ist auch, dass der Beschuldigte tatsächlich die Möglichkeit hatte, seine Verteidigung auf den vollständigen Vorwurf auszurichten. Das Gericht würde die Sache voraussichtlich zur Gewährung einer angemessenen Vorbereitungsfrist zurückweisen."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn nicht eine Einzelperson, sondern ein Unternehmen (juristische Person) wegen fahrlässiger Unternehmensführung angeklagt würde – müsste die Anklageschrift dann die individuellen Verantwortlichen namentlich bezeichnen oder genügt die Beschreibung organisatorischer Mängel?",
-              "discussion_points": [
-                "Kann der Anklagegrundsatz, der ursprünglich auf natürliche Personen zugeschnitten ist, auf Unternehmensverantwortlichkeit übertragen werden, und welche Anpassungen sind notwendig?",
-                "Wie verhält sich die Anforderung, alle pflichtwidrigen Umstände zu nennen, zu den oft diffusen Verantwortungsstrukturen in Grossunternehmen?"
-              ],
-              "likely_outcome_shift": "Bei juristischen Personen würden die Anforderungen an die Anklageschrift noch komplexer, da sowohl die organisatorischen Mängel als auch – soweit erforderlich – die individuell verantwortlichen Entscheidungsträger identifiziert werden müssten. Die Grundsätze von BGE 116 Ia 455 blieben anwendbar, würden aber eine Spezifizierung verlangen, welche konkreten unternehmerischen Entscheidungen oder Unterlassungen die Sorgfaltspflichtverletzung begründen. Eine pauschale Beschreibung von Organisationsversagen ohne Bezug zu konkreten Handlungen oder Unterlassungen würde den Anforderungen nicht genügen."
-            }
-          ]
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },
@@ -218,100 +100,41 @@
       ],
       "cases": [
         {
-          "decision_id": "bge_137 IV 33",
-          "bge_ref": "BGE 137 IV 33",
+          "decision_id": "bge_137 IV 122",
+          "bge_ref": "BGE 137 IV 122",
           "actual_language": "de",
-          "title_de": "Untersuchungshaft — Kollusionsgefahr und Verhältnismässigkeit",
-          "title_fr": "Détention provisoire — risque de collusion et proportionnalité",
+          "title_de": "Untersuchungshaft — Kollusionsgefahr und Ersatzmassnahmen",
+          "title_fr": "Détention provisoire — risque de collusion et mesures de substitution",
           "title_it": "",
           "concepts_de": [
             "Untersuchungshaft",
             "Kollusionsgefahr",
-            "Haftvoraussetzungen",
+            "Ausführungsgefahr",
+            "Ersatzmassnahmen",
             "Verhältnismässigkeit"
           ],
           "concepts_fr": [
             "Détention provisoire",
             "Risque de collusion",
-            "Proportionnalité"
+            "Risque de passage à l'acte",
+            "Mesures de substitution"
           ],
           "concepts_it": [],
           "statutes": [
             "Art. 221 StPO",
-            "Art. 31 BV"
+            "Art. 237 StPO"
           ],
           "difficulty": 3,
           "prerequisites": [],
-          "significance_de": "Grundsatzentscheid zu den Voraussetzungen der Untersuchungshaft bei Kollusionsgefahr: konkrete Anhaltspunkte erforderlich; abstrakte Gefahr genügt nicht.",
-          "significance_fr": "Cet arrêt de principe précise que la détention provisoire fondée sur un risque de collusion exige des indices concrets et individualisés, une présomption abstraite étant insuffisante au regard de l'art. 221 CPP et de la garantie de liberté personnelle consacrée à l'art. 31 Cst.",
-          "significance_it": "Questa sentenza di principio chiarisce che la carcerazione preventiva fondata sul pericolo di collusione richiede indizi concreti e individualizzati, non essendo sufficiente un pericolo astratto ai sensi dell'art. 221 CPP e della garanzia della libertà personale sancita dall'art. 31 Cost.",
-          "key_erwagungen": [
-            "2.1.3",
-            "2.2",
-            "2.4",
-            "2.5",
-            "9"
-          ],
-          "reading_guide_de": "Lesen Sie zunächst die vier Regestae, um die thematische Breite des Entscheids zu erfassen, und konzentrieren Sie sich anschliessend auf Erwägungen 2.1.3, 2.2, 2.4 und 2.5 zur extraterritorialen Strafverfolgungskompetenz sowie auf Erwägung 9 zur Einziehung im Kosovo gelegener Vermögenswerte. Beachten Sie dabei stets das Zusammenspiel zwischen nationalem Recht (Art. 72, Art. 260ter, Art. 305bis StGB) und völkerrechtlichen Verpflichtungen (EUeR, IRSG).",
-          "reading_guide_fr": "Commencez par lire les quatre regestes afin de saisir la portée thématique de l'arrêt, puis concentrez-vous sur les considérants 2.1.3, 2.2, 2.4 et 2.5 relatifs à la compétence pénale extraterritoriale, ainsi que sur le considérant 9 concernant la confiscation de biens immobiliers situés au Kosovo. Veillez à articuler les dispositions de droit interne (art. 72, 260ter, 305bis CP) avec les obligations découlant du droit international (CEEJ, EIMP).",
-          "reading_guide_it": "Si consiglia di iniziare con la lettura dei quattro regesti per cogliere l'ampiezza tematica della decisione, per poi concentrarsi sui considerandi 2.1.3, 2.2, 2.4 e 2.5 in materia di competenza penale extraterritoriale e sul considerando 9 relativo alla confisca di beni immobili situati in Kosovo, tenendo presente il rapporto tra diritto interno (art. 72, 260ter, 305bis CP) e obblighi internazionali (CEAG, AIMP).",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was versteht das Bundesgericht in BGE 137 IV 33 unter dem Begriff der Kollusionsgefahr, und welche Anforderungen stellt es grundsätzlich an deren Nachweis?",
-              "hint": "Vgl. die Regeste sowie die allgemeinen Ausführungen zur Untersuchungshaft nach Art. 221 StPO; die Bedeutung von Art. 31 BV für die Freiheitsgarantie ist ebenfalls zu berücksichtigen.",
-              "model_answer": "Kollusionsgefahr bezeichnet die Gefahr, dass ein Beschuldigter Beweise vernichtet, Zeugen beeinflusst oder sich mit Mitbeschuldigten abspricht, um die Wahrheitsfindung zu vereiteln. Das Bundesgericht hält fest, dass eine abstrakte oder rein theoretische Gefahr nicht genügt; es müssen konkrete Anhaltspunkte vorliegen, die eine solche Einflussnahme als wahrscheinlich erscheinen lassen. Diese Anforderung ergibt sich aus dem Verhältnismässigkeitsprinzip und der verfassungsrechtlichen Freiheitsgarantie gemäss Art. 31 BV."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche gesetzlichen Voraussetzungen müssen gemäss Art. 221 StPO kumulativ erfüllt sein, damit Untersuchungshaft wegen Kollusionsgefahr angeordnet werden darf?",
-              "hint": "Art. 221 Abs. 1 lit. b StPO; prüfen Sie, welche Tatbestandsmerkmale das Gesetz aufstellt und wie diese miteinander in Beziehung stehen.",
-              "model_answer": "Art. 221 Abs. 1 StPO verlangt zunächst einen dringenden Tatverdacht sowie einen besonderen Haftgrund. Für die Kollusionsgefahr nach lit. b muss die ernstliche Befürchtung bestehen, dass die beschuldigte Person Personen beeinflusst oder auf Beweismittel einwirkt, um die Wahrheitsfindung zu beeinträchtigen. Das Bundesgericht betont, dass diese Befürchtung auf konkreten Tatsachen beruhen muss und nicht allein aus der Art des Delikts oder der Beziehung zwischen Täter und Zeugen abgeleitet werden darf."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Im vorliegenden Fall wurde A.X. unter anderem wegen Beteiligung an einer kriminellen Organisation verurteilt. Wie würden Sie die Kollusionsgefahr bei einem Beschuldigten beurteilen, der nachweislich Mitglied einer straff organisierten kriminellen Vereinigung ist, wenn noch nicht alle Mitglieder identifiziert sind?",
-              "hint": "Wenden Sie die im Entscheid entwickelten Kriterien zu den konkreten Anhaltspunkten auf den Sachverhalt an; berücksichtigen Sie auch die Netzwerkstruktur krimineller Organisationen.",
-              "model_answer": "Die Zugehörigkeit zu einer kriminellen Organisation kann ein gewichtiges Indiz für Kollusionsgefahr darstellen, reicht aber allein nicht aus. Es müssen zusätzliche konkrete Umstände hinzukommen, etwa Hinweise auf bestehende Kommunikationskanäle mit noch unbekannten Komplizen oder frühere Versuche der Einflussnahme auf Zeugen. Die blosse Organisationszugehörigkeit bleibt ein abstraktes Element; erst in Verbindung mit individualisierten Tatsachen wird daraus ein tauglicher Haftgrund im Sinne der bundesgerichtlichen Rechtsprechung."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "BGE 137 IV 33 befasst sich auch mit der Frage der schweizerischen Strafverfolgungskompetenz für im Ausland begangene Geldwäscherei (Kosovo). Wie verhält sich dieses Problem zur übergeordneten Frage der Untersuchungshaft, und welche Konsequenz hätte ein rechtskräftiger Freispruch wegen fehlender Zuständigkeit für eine bereits laufende Haft?",
-              "hint": "E. 2.4 und 2.5 zur extraterritorialen Anwendung von Art. 305bis StGB; Art. 31 BV zur Rechtmässigkeit der Freiheitsentziehung.",
-              "model_answer": "Die Frage der Strafverfolgungskompetenz ist für die Untersuchungshaft mittelbar relevant, weil der dringende Tatverdacht sich auf Taten beziehen muss, für welche die Schweiz überhaupt zuständig ist. Fehlt es an einer Delegierung der Strafverfolgung durch den Tatortstaat oder an einer staatsvertraglichen Grundlage, entfällt insoweit der Tatverdacht als Haftvoraussetzung. Eine auf einen solchen Tatvorwurf gestützte Haft würde Art. 31 BV verletzen und wäre unverzüglich aufzuheben, wobei verbleibende Haftgründe aus anderen angeklagten Taten die Haft allenfalls weiterhin rechtfertigen könnten."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Das Bundesgericht verlangt in diesem Grundsatzentscheid konkrete Anhaltspunkte für Kollusionsgefahr statt abstrakter Vermutungen. Bewerten Sie kritisch, ob dieses Erfordernis im Spannungsfeld zwischen dem Recht auf persönliche Freiheit (Art. 31 BV) und dem staatlichen Interesse an effektiver Strafverfolgung sachgerecht austariert ist.",
-              "hint": "Art. 31 BV, Verhältnismässigkeitsprinzip (Art. 36 BV), EMRK Art. 5; erwägen Sie auch die praktischen Folgen für Ermittlungen in komplexen OK-Verfahren.",
-              "model_answer": "Das Erfordernis konkreter Anhaltspunkte stellt eine rechtsstaatlich gebotene Schranke dar, die verhindert, dass Untersuchungshaft zur Regel statt zur Ausnahme wird, und die dem Verhältnismässigkeitsprinzip nach Art. 36 BV Rechnung trägt. Kritisch liesse sich einwenden, dass in komplexen Fällen organisierter Kriminalität der Nachweis konkreter Kollusionsakte zu frühen Ermittlungsstadien kaum erbracht werden kann, was effektive Strafverfolgung erschwert. Dennoch erscheint die Balance sachgerecht, da mildere Mittel wie Kontaktverbote oder Überwachungsmassnahmen oft gleichwertige Sicherung bieten und das Freiheitsrecht als Grundrecht einen hohen Schutzstandard verdient, der nicht durch Effizienzerwägungen ausgehöhlt werden darf."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "add_complication",
-              "scenario": "Angenommen, A.X. hätte während der Untersuchungshaft nachweislich versucht, über verschlüsselte Messenger-Nachrichten Kontakt zu einem noch flüchtigen Mitangeklagten aufzunehmen. Wie würde dieses neue Element die Beurteilung der Kollusionsgefahr verändern, und welche prozessualen Folgen hätte dies?",
-              "discussion_points": [
-                "Konkrete versus abstrakte Kollusionsgefahr: Der Kontaktversuch würde einen individualisierten, tatsächlichen Anhaltspunkt liefern und damit das vom Bundesgericht geforderte Konkretheitskriterium erfüllen.",
-                "Verhältnismässigkeit der Haft: Mit dem Nachweis eines aktiven Kollusionsversuchs würden mildere Ersatzmassnahmen wie Kontaktverbote an Überzeugungskraft verlieren, was die Aufrechterhaltung der Haft zusätzlich rechtfertigen könnte."
-              ],
-              "likely_outcome_shift": "Der Kollusionsversuch würde als konkreter Anhaltspunkt im Sinne des Bundesgerichts qualifizieren und die Fortdauer der Untersuchungshaft klar legitimieren. Gleichzeitig könnten die Nachrichten als eigenständige Straftat (z.B. Begünstigung oder Anstiftung zur Kollusion) verfolgt werden, was den Haftgrund weiter verstärkt und eine Haftentlassung vor Abschluss des Hauptverfahrens praktisch ausschliessen würde."
-            },
-            {
-              "type": "swap_parties",
-              "scenario": "Angenommen, nicht das Ministère public de la Confédération, sondern die Verteidigung hätte das Bundesgericht angerufen mit dem Argument, die Untersuchungshaft von über 1900 Tagen (A.X.) sei unverhältnismässig lang und verletze Art. 31 BV sowie Art. 5 EMRK, unabhängig von der Frage der Kollusionsgefahr. Würde das Bundesgericht die Haft allein wegen ihrer Dauer als verfassungswidrig qualifizieren?",
-              "discussion_points": [
-                "Verhältnismässigkeit der Haftdauer: Eine Untersuchungshaft von über fünf Jahren bedarf besonders strenger Prüfung und muss im Verhältnis zur erwarteten Strafe stehen; bei einer Verurteilung zu 15 Jahren wäre die Anrechnung knapp unterhalb der üblichen Grenze.",
-                "EMRK Art. 5 Abs. 3 und die Rechtsprechung des EGMR zur 'reasonable time': Der Europäische Gerichtshof für Menschenrechte hat wiederholt festgehalten, dass die Dauer der Haft allein bei besonders komplexen Verfahren mit internationalen Bezügen gerechtfertigt sein kann, sofern die Behörden mit der nötigen Sorgfalt vorgehen."
-              ],
-              "likely_outcome_shift": "Das Bundesgericht würde die Dauer der Haft isoliert betrachtet als an der Grenze des Zulässigen einordnen, jedoch angesichts der ausserordentlichen Komplexität des Verfahrens (internationale Drogenorganisation, Rechtshilfe Kosovo, zahlreiche Angeklagte) keine Verletzung feststellen. Eine Gutheissung wäre nur denkbar, wenn konkrete Verfahrensverzögerungen nachgewiesen werden könnten, die den Behörden anzulasten wären; in diesem Fall müsste das Bundesgericht eine sofortige Entlassung oder Ersatzmassnahmen anordnen."
-            }
-          ]
+          "significance_de": "Leitentscheid zu Haftgründen nach der neuen StPO: Bestätigung der Kollusionsgefahr (Art. 221 StPO); Abgrenzung von der Ausführungsgefahr; bei Kollusion ist Ausgrenzung als mildere Ersatzmassnahme vorrangig gegenüber Eingrenzung.",
+          "significance_fr": "Arrêt de principe sur les motifs de détention sous le nouveau CPP: confirmation du risque de collusion (art. 221 CPP); distinction avec le risque de passage à l'acte; en cas de collusion, l'exclusion géographique prime comme mesure de substitution.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         },
         {
           "decision_id": "bge_140 IV 74",
