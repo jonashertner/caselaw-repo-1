@@ -434,14 +434,73 @@
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Durchgriff im Gesellschaftsrecht: Die Haftungsbeschränkung durch Berufung auf die rechtliche Selbständigkeit der Gesellschaft ist nur dann zu durchbrechen, wenn dies als rechtsmissbräuchlich erscheint (Art. 2 ZGB).",
-          "significance_fr": "Arrêt de principe sur la levée du voile social: l'invocation de la personnalité morale pour limiter la responsabilité n'est surmontée que si cela s'avère constitutif d'un abus de droit (art. 2 CC).",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Décision de principe en droit des sociétés suisse : la responsabilité personnelle de l'actionnaire ou propriétaire unique ne peut être engagée par voie de « transparence » (Durchgriff) que si l'invocation de l'autonomie juridique de la société constitue un abus de droit au sens de l'art. 2 CC.",
+          "significance_it": "Decisione di principio nel diritto societario svizzero: la responsabilità personale dell'azionista unico o del proprietario può essere fatta valere mediante il superamento della personalità giuridica (Durchgriff) soltanto qualora l'invocazione dell'autonomia giuridica della società costituisca un abuso di diritto ai sensi dell'art. 2 CC.",
+          "key_erwagungen": [
+            "6",
+            "6a",
+            "6b"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt, um die Vertragsstruktur zwischen Löwe, der ATR und den Klägern zu verstehen, bevor Sie sich der zentralen Erwägung 6 widmen. In Erwägung 6 lit. a entwickelt das Bundesgericht den Grundsatz, dass die rechtliche Selbständigkeit der Gesellschaft auch beim Alleineigentümer gilt und nur bei Rechtsmissbrauch (Art. 2 ZGB) durchbrochen werden kann; in lit. b wird geprüft, ob die konkreten Umstände – insbesondere die Liquidation der ATR – einen solchen Missbrauch begründen.",
+          "reading_guide_fr": "Commencez par lire les faits afin de comprendre la structure contractuelle entre Löwe, l'ATR et les demandeurs, puis concentrez-vous sur le considérant 6, qui constitue le cœur de l'arrêt. Le considérant 6 let. a pose le principe selon lequel l'autonomie juridique de la société s'impose même à l'égard de l'actionnaire unique et ne peut être écartée qu'en cas d'abus de droit au sens de l'art. 2 CC ; le considérant 6 let. b vérifie si les circonstances concrètes – notamment la liquidation de l'ATR – réalisent un tel abus.",
+          "reading_guide_it": "Si consiglia di leggere prima i fatti per comprendere la struttura contrattuale tra Löwe, l'ATR e gli attori, per poi concentrarsi sul considerando 6, che rappresenta il nucleo della sentenza. Il considerando 6 lett. a enuncia il principio secondo cui l'autonomia giuridica della società vale anche nei confronti dell'unico proprietario e può essere superata solo in caso di abuso di diritto ai sensi dell'art. 2 CC; il considerando 6 lett. b esamina se le circostanze concrete – in particolare la liquidazione dell'ATR – integrino tale abuso.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Begriff des 'Durchgriffs' im Gesellschaftsrecht, und weshalb wurde er im vorliegenden Fall von den Klägern geltend gemacht?",
+              "hint": "Vgl. Erwägung 6, Einleitung und lit. a, sowie den Sachverhalt.",
+              "model_answer": "Der Durchgriff bezeichnet die Möglichkeit, die rechtliche Selbständigkeit einer Gesellschaft zu überwinden und den dahinterstehenden wirtschaftlichen Eigentümer persönlich für die Verbindlichkeiten der Gesellschaft haften zu lassen. Die Kläger machten ihn geltend, weil die ATR – deren wirtschaftlicher Eigentümer der Beklagte Löwe war – ihnen noch über Fr. 180'000.-- schuldete und sich in Liquidation befand, sodass sie hofften, Löwe direkt belangen zu können."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsgrundlage und welche Voraussetzung nennt das Bundesgericht für die Zulässigkeit des Durchgriffs auf den Alleineigentümer einer haftungsbeschränkten Gesellschaft?",
+              "hint": "Vgl. Erwägung 6 lit. a, insbesondere den Verweis auf Art. 2 ZGB und die zitierte Rechtsprechung (BGE 102 III 170, BGE 98 II 99, BGE 97 II 293).",
+              "model_answer": "Das Bundesgericht stützt den Durchgriff auf Art. 2 ZGB (Rechtsmissbrauchsverbot / Treu und Glauben). Die einzige Voraussetzung für seine Zulässigkeit ist, dass die Berufung auf die rechtliche Selbständigkeit der Gesellschaft im Einzelfall rechtsmissbräuchlich, d.h. entgegen Treu und Glauben, erscheint. Allein die wirtschaftliche Identität von Gesellschaft und Eigentümer oder die Illiquidität der Gesellschaft genügt hingegen nicht."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, der Beklagte hätte nachweislich Gesellschaftsvermögen der ATR kurz vor deren Liquidation auf sich selbst übertragen, um die Gläubiger zu benachteiligen. Wie hätte das Bundesgericht in diesem Fall den Durchgriff beurteilt?",
+              "hint": "Vgl. Erwägung 6 lit. b, insbesondere die Ausführungen zum Erfordernis unredlichen Verhaltens im Zusammenhang mit der Liquidation.",
+              "model_answer": "In einem solchen Fall wäre das Tatbestandsmerkmal des Rechtsmissbrauchs wohl erfüllt: Ein gezieltes Verschieben von Gesellschaftsvermögen zum eigenen Vorteil und zum Nachteil der Gläubiger würde die Berufung auf die Haftungsbeschränkung als treuwidrig erscheinen lassen. Das Bundesgericht deutet in Erwägung 6 lit. b an, dass unredliches Verhalten im Zusammenhang mit der Liquidation den Durchgriff rechtfertigen könnte – ein solcher Nachweis wurde von den Klägern jedoch nicht rechtsgenüglich erbracht."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welche Spannung besteht zwischen dem gesellschaftsrechtlichen Grundprinzip der Haftungsbeschränkung und dem Schutz von Gläubigerinteressen, und wie löst das Bundesgericht diesen Konflikt in BGE 108 II 213?",
+              "hint": "Vgl. Erwägung 6 lit. a (Legitimität der Haftungsbeschränkung auch für Alleineigentümer) sowie lit. b (Einzelfallbeurteilung des Rechtsmissbrauchs).",
+              "model_answer": "Das Gesellschaftsrecht erlaubt die Haftungsbeschränkung gerade als bewusste rechtspolitische Entscheidung, um unternehmerisches Handeln zu erleichtern – auch zugunsten des Alleineigentümers. Gläubigerschutzinteressen könnten demgegenüber eine unbeschränkte Haftung fordern. Das Bundesgericht löst diesen Konflikt, indem es die Haftungsbeschränkung als Regelfall respektiert und den Durchgriff auf Ausnahmesituationen des Rechtsmissbrauchs beschränkt; damit wird die Rechtssicherheit im Gesellschaftsrecht gewahrt, ohne Gläubiger bei missbräuchlichem Verhalten schutzlos zu stellen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht gewählte Beschränkung des Durchgriffs auf Fälle von Rechtsmissbrauch (Art. 2 ZGB) aus rechtspolitischer Sicht überzeugend, oder sollten Gläubiger weitergehende Durchgriffsmöglichkeiten erhalten?",
+              "hint": "Vgl. Erwägung 6 lit. a und b; berücksichtigen Sie insbesondere das Argument, dass die Kläger bewusst mit der ATR kontrahiert haben.",
+              "model_answer": "Die restriktive Lösung des Bundesgerichts ist rechtspolitisch vertretbar, weil sie die Vorhersehbarkeit und Funktionsfähigkeit des Gesellschaftsrechts sichert: Wer mit einer haftungsbeschränkten Gesellschaft kontrahiert, kann und muss das Risiko der Illiquidität einkalkulieren und ggf. Sicherheiten verlangen. Eine weitergehende Durchgriffsmöglichkeit würde die Haftungsbeschränkung faktisch aushöhlen und den Anreiz zur Gesellschaftsgründung verringern. Allerdings zeigt der vorliegende Fall, dass das hohe Beweiserfordernis für Rechtsmissbrauch schwache Gläubiger benachteiligen kann, was einen gewissen rechtspolitischen Diskussionsbedarf über ergänzende Schutzinstrumente – etwa Kapitalerhaltungsregeln oder Durchgriff bei Unterkapitalisierung – begründet."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn der Beklagte Löwe die ATR von Anfang an mit einem offensichtlich unzureichenden Kapital (z.B. Fr. 10'000.--) ausgestattet hätte, obwohl er wusste, dass sie Verpflichtungen in Millionenhöhe eingehen würde (sog. materielle Unterkapitalisierung)?",
+              "discussion_points": [
+                "Stellt die bewusste Unterkapitalisierung einer Gesellschaft für sich allein oder in Verbindung mit der Haftungsbeschränkung einen Rechtsmissbrauch im Sinne von Art. 2 ZGB dar?",
+                "Inwiefern unterscheidet sich die Unterkapitalisierung von der blossen Nutzung der Haftungsbeschränkung als gesetzlich vorgesehenem Instrument?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht hätte die Frage des Rechtsmissbrauchs wohl deutlich ernsthafter geprüft: Eine von vornherein bewusst herbeigeführte Diskrepanz zwischen eingegangenen Verpflichtungen und Gesellschaftskapital deutet auf eine missbräuchliche Nutzung der Rechtsform hin. In der Lehre und späteren Rechtsprechung wird die materielle Unterkapitalisierung tatsächlich als möglicher Durchgriffsgrund diskutiert, sodass in diesem Szenario ein Durchgriff auf Löwe wahrscheinlicher geworden wäre."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Kläger (Gesellschafter der Baugesellschaft Runs) den Beklagten belangen würden, sondern ein aussenstehender Bauhandwerker, der gutgläubig Werkleistungen erbracht hatte und dabei – ohne ausdrückliche Erwähnung der ATR in den Verträgen – irrtümlich davon ausging, mit Löwe persönlich zu kontrahieren?",
+              "discussion_points": [
+                "Spielt es für den Durchgriff eine Rolle, ob der Gläubiger die Gesellschaftsstruktur kannte und bewusst mit der Gesellschaft kontrahiert hat, oder ob er gutgläubig auf die persönliche Haftung des Eigentümers vertraut hat?",
+                "Könnte neben dem Durchgriff (Art. 2 ZGB) auch eine Haftung aus Vertrauenshaftung oder Stellvertretung (Art. 32 ff. OR) in Betracht kommen, wenn Löwe gegenüber dem Handwerker nie auf die ATR hingewiesen hat?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht hätte die Frage des Schutzes gutgläubiger Dritter stärker gewichten müssen: Wenn der Beklagte im Rechtsverkehr den Eindruck erweckte, persönlich zu handeln, und die Gesellschaft nie offenlegte, käme neben dem Durchgriff auch eine direkte Haftung Löwes aus Rechtsscheinhaftung oder aus Art. 32 Abs. 2 OR in Frage. Zumindest hätte das Gericht prüfen müssen, ob die Berufung auf die ATR in diesem Kontext treuwidrig ist, was den Ausgang zugunsten des Handwerkers hätte verschieben können."
+            }
+          ]
         }
       ]
     },

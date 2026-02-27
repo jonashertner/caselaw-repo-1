@@ -248,14 +248,73 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zu Beweismitteln im Massnahmeverfahren (Art. 254 ZPO): Gerichtsgutachten zu technischen Fragen sind unter der neuen ZPO zulässig; fehlt dem Gericht die Sachkunde, verletzt es das rechtliche Gehör, wenn es ohne Gutachten entscheidet.",
-          "significance_fr": "Arrêt de principe sur les moyens de preuve dans les procédures de mesures (art. 254 CPC): les expertises judiciaires sur des questions techniques restent admissibles; sans compétence technique, le tribunal viole le droit d'être entendu en statuant sans expert.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que la décision rejetant une requête d'administration anticipée des preuves (art. 158 CPC) rendue dans une procédure indépendante constitue une décision finale au sens de l'art. 90 LTF, et précise que l'inspection locale peut être ordonnée à titre provisionnel dans les litiges en matière de brevets sur la base de l'art. 158 al. 1 let. b CPC, indépendamment du droit à la description exacte prévu par l'art. 77 LBI.",
+          "significance_it": "Questa sentenza di principio stabilisce che la decisione che respinge un'istanza di assunzione anticipata delle prove (art. 158 CPC) pronunciata in una procedura indipendente costituisce una decisione finale ai sensi dell'art. 90 LTF, e precisa che l'ispezione locale può essere ordinata in via cautelare nelle controversie in materia di brevetti sulla base dell'art. 158 cpv. 1 lett. b CPC, indipendentemente dal diritto alla descrizione esatta previsto dall'art. 77 LBrev.",
+          "key_erwagungen": [
+            "1.2",
+            "2.4.1",
+            "2.4.2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 1.2, um die prozessuale Eingangsfrage der Zulässigkeit der Beschwerde (Endentscheid vs. Zwischenentscheid) zu verstehen, bevor Sie sich Erwägung 2.4.1 und 2.4.2 zuwenden, in denen das Bundesgericht das Verhältnis zwischen Art. 77 PatG und Art. 158 ZPO sowie den Begriff des schutzwürdigen Interesses an der vorsorglichen Beweisführung klärt. Die Regestae a und b fassen die jeweiligen Kernaussagen prägnant zusammen und eignen sich als Orientierungspunkte für die Lektüre.",
+          "reading_guide_fr": "Commencez par lire le considérant 1.2 pour comprendre la question préalable de la recevabilité du recours (décision finale vs décision incidente), avant d'aborder les considérants 2.4.1 et 2.4.2, dans lesquels le Tribunal fédéral clarifie le rapport entre l'art. 77 LBI et l'art. 158 CPC ainsi que la notion d'intérêt digne de protection à l'administration anticipée des preuves. Les regestae a et b résument succinctement les enseignements essentiels et servent de repères utiles à la lecture.",
+          "reading_guide_it": "Iniziare con la lettura del considerando 1.2 per comprendere la questione pregiudiziale dell'ammissibilità del ricorso (decisione finale vs decisione incidentale), prima di affrontare i considerandi 2.4.1 e 2.4.2, nei quali il Tribunale federale chiarisce il rapporto tra l'art. 77 LBrev e l'art. 158 CPC nonché la nozione di interesse degno di protezione all'assunzione anticipata delle prove. I regestae a e b riassumono in modo conciso i principi essenziali e costituiscono utili punti di riferimento per la lettura.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der konkrete Anlass für das Gesuch der L. GmbH um vorsorgliche Beweisführung, und welches Beweismittel wollte sie sichern?",
+              "hint": "Sachverhalt, Abschnitt A: Eingabe vom 11. April 2011 an das Handelsgericht Aargau",
+              "model_answer": "Die L. GmbH, Inhaberin eines europäischen Patents für ein Schlammzuführungsverfahren, vermutete eine mittelbare Patentverletzung durch die M. AG. Sie wollte mittels eines gerichtlich angeordneten Augenscheins der Anlage in der Kehrichtverbrennungsanlage N. ihre Beweis- und Prozessaussichten für einen allfälligen Patentverletzungsprozess abklären. Das Gesuch stützte sich auf Art. 158 Abs. 1 lit. b ZPO."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche rechtliche Unterscheidung zieht das Bundesgericht zwischen Art. 90 BGG und Art. 93 BGG bei Massnahmenentscheiden, und wie wendet es diese auf den vorliegenden Entscheid an?",
+              "hint": "Erwägung 1.2: Unterscheidung zwischen eigenständigem Verfahren und Verfahren im Rahmen eines Hauptverfahrens",
+              "model_answer": "Das Bundesgericht unterscheidet zwischen Massnahmenentscheiden, die in einem eigenständigen Verfahren ergehen (Endentscheid i.S. Art. 90 BGG), und solchen, die vor oder während eines Hauptverfahrens erlassen werden und nur für dessen Dauer Bestand haben (Zwischenentscheid i.S. Art. 93 BGG). Da das Gesuchsverfahren betreffend vorsorgliche Beweisführung unabhängig von einem ordentlichen Hauptverfahren ist und mit der Abweisung des Gesuchs abgeschlossen wurde, qualifiziert das Bundesgericht den angefochtenen Entscheid als Endentscheid nach Art. 90 BGG, womit die Beschwerde in Zivilsachen zulässig ist."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Eine Unternehmerin vermutet, ein Konkurrent verwende ihr urheberrechtlich geschütztes Computerprogramm ohne Lizenz. Sie stellt noch vor Einleitung eines Hauptverfahrens ein Gesuch um vorsorgliche Beweisführung, das vom Kantonsgericht abgewiesen wird. Ist die Beschwerde in Zivilsachen ans Bundesgericht zulässig?",
+              "hint": "Erwägung 1.2 und Regeste a: Kriterium des eigenständigen Verfahrens und Abschluss durch Abweisung",
+              "model_answer": "Ja, die Beschwerde in Zivilsachen wäre zulässig. Gemäss der in BGE 138 III 76 E. 1.2 entwickelten Regel ist ein abweisender Entscheid in einem Gesuchsverfahren um vorsorgliche Beweisführung ein Endentscheid nach Art. 90 BGG, weil das Verfahren eigenständig – d.h. unabhängig von einem Hauptverfahren – ist. Mit der Abweisung wird dieses eigenständige Gesuchsverfahren abgeschlossen, was die Beschwerdeführerin zur Beschwerde in Zivilsachen berechtigt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Inwiefern besteht ein Spannungsverhältnis zwischen dem patentgesetzlichen Anspruch auf genaue Beschreibung (Art. 77 PatG) und der vorsorglichen Beweisführung nach Art. 158 Abs. 1 lit. b ZPO, und wie löst das Bundesgericht dieses Verhältnis?",
+              "hint": "Regeste b und Erwägung 2.4.1: Qualifikation des Beschreibungsanspruchs und Zulässigkeit anderer Beweismittel",
+              "model_answer": "Das Spannungsverhältnis liegt darin, dass Art. 77 PatG einen eigenständigen gesetzlichen Anspruch auf Beschreibung verleiht, der bereits unter Art. 158 Abs. 1 lit. a ZPO fallen würde, während ein Augenschein kein solcher gesetzlicher Anspruch ist. Das Bundesgericht löst dies, indem es Art. 77 PatG als gesetzlichen Anspruch i.S. Art. 158 Abs. 1 lit. a ZPO einordnet, zugleich aber klarstellt, dass andere Beweismittel wie ein Augenschein gestützt auf Art. 158 Abs. 1 lit. b ZPO vorsorglich abgenommen werden können. Damit eröffnet das Gericht einen zweiten, von Art. 77 PatG unabhängigen Zugangsweg zur vorsorglichen Beweissicherung in Patentsachen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Wie überzeugend ist die Qualifikation eines abgewiesenen Gesuchs um vorsorgliche Beweisführung als Endentscheid (Art. 90 BGG) aus rechtspolitischer Perspektive, und welche Vor- und Nachteile ergeben sich daraus für den Rechtsschutz?",
+              "hint": "Erwägung 1.2 und Regeste a: Eigenständigkeit des Verfahrens; Vergleich mit BGE 134 I 83",
+              "model_answer": "Die Qualifikation ist aus Rechtsschutzperspektive überzeugend, weil die Abweisung das eigenständige Gesuchsverfahren endgültig beendet und die Gesuchstellerin ohne Beschwerdemöglichkeit schutzlos dastünde – die Beweissicherungschance wäre definitiv verloren. Kritisch liesse sich jedoch einwenden, dass die sofortige Bundesgerichtsbeschwerde das zweistufige Instanzensystem belastet und Anreize zur missbräuchlichen Nutzung der vorsorglichen Beweisführung als Ausforschungsinstrument schaffen könnte. Insgesamt erscheint die Lösung des Bundesgerichts vertretbar, weil das Interesse an effektivem Rechtsschutz bei irreversibler Beweisvernichtungsgefahr schwerer wiegt als prozessökonomische Bedenken."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die L. GmbH hätte ihr Gesuch um vorsorgliche Beweisführung nicht vor, sondern während eines bereits hängigen Patentverletzungsverfahrens gegen die M. AG gestellt, und das Handelsgericht hätte das Gesuch erneut abgewiesen. Wäre die Beschwerde in Zivilsachen ans Bundesgericht noch zulässig?",
+              "discussion_points": [
+                "Unterscheidung zwischen eigenständigem Gesuchsverfahren und einem Massnahmenentscheid, der akzessorisch zu einem hängigen Hauptverfahren ergeht",
+                "Anwendung von Art. 93 BGG auf Zwischenentscheide und die Voraussetzungen für deren selbständige Anfechtbarkeit (nicht wieder gutzumachender Nachteil)"
+              ],
+              "likely_outcome_shift": "Da der Massnahmenentscheid in diesem Fall akzessorisch zum hängigen Hauptverfahren wäre und nur für dessen Dauer Bestand hätte, würde das Bundesgericht gemäss seiner in E. 1.2 entwickelten Rechtsprechung keinen Endentscheid nach Art. 90 BGG, sondern einen Zwischenentscheid nach Art. 93 BGG annehmen. Die Beschwerde in Zivilsachen wäre damit nur unter den engeren Voraussetzungen von Art. 93 Abs. 1 BGG zulässig, insbesondere wenn ein nicht wieder gutzumachender Nachteil droht, was die Beschwerdeführerin substanziiert darlegen müsste."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht die Patentinhaberin L. GmbH, sondern die M. AG hätte als mutmassliche Patentverletzerin ein Gesuch um vorsorgliche Beweisführung gestellt, um zu belegen, dass ihr eigenes Verfahren das Patent nicht verletzt (negative Feststellung). Würde das schutzwürdige Interesse an einer vorsorglichen Beweisführung nach Art. 158 Abs. 1 lit. b ZPO in gleicher Weise bejaht?",
+              "discussion_points": [
+                "Definition des schutzwürdigen Interesses nach Art. 158 Abs. 1 lit. b ZPO: Muss die Beweissicherung einer späteren Klage dienen, oder genügt auch ein defensives Interesse an der Abklärung der eigenen Rechtsposition?",
+                "Verhältnismässigkeit und Interessenabwägung: Kann die mutmassliche Verletzerin die Mitwirkung der Patentinhaberin am Augenschein verlangen, und wie verhält sich dies zu Art. 77 PatG, der nur der Patentinhaberin zusteht?"
+              ],
+              "likely_outcome_shift": "Die Frage des schutzwürdigen Interesses wäre deutlich schwieriger zu bejahen, da Art. 158 Abs. 1 lit. b ZPO primär auf die Beweissicherung für eine eigene spätere Klage ausgerichtet ist. Eine mutmassliche Verletzerin könnte ihr Interesse an der vorsorglichen Feststellung der Nicht-Verletzung allenfalls mit dem Risiko einer drohenden Klage begründen, doch müsste sie darlegen, dass die Beweise anderweitig nicht erhoben werden können. Das Ergebnis wäre unsicherer, und ein Augenschein an der eigenen Anlage könnte zudem über eine negative Feststellungsklage im Hauptverfahren gesichert werden, was das schutzwürdige Interesse weiter schwächt."
+            }
+          ]
         },
         {
           "decision_id": "bge_146 III 265",

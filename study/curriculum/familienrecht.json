@@ -418,15 +418,93 @@
             "bge_142 III 481"
           ],
           "significance_de": "Leitentscheid zum Betreuungsunterhalt: Das Schulstufenmodell legt fest, wann dem betreuenden Elternteil eine Erwerbstätigkeit zumutbar ist (50% ab Schuleintritt, 80% ab Sekundarstufe I, 100% ab 16. Altersjahr).",
-          "significance_fr": "Arrêt de principe sur la contribution de prise en charge: le modèle par degrés scolaires détermine à partir de quand une activité lucrative est exigible du parent gardien (50% dès l'école primaire, 80% dès le secondaire I, 100% dès 16 ans).",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
+          "significance_fr": "Cet arrêt de principe introduit le «modèle par degrés scolaires» (Schulstufenmodell), qui fixe de manière uniforme pour toute la Suisse le taux d'activité lucrative exigible du parent gardien (50 % dès la scolarité obligatoire, 80 % dès le degré secondaire I, 100 % dès les 16 ans révolus de l'enfant le plus jeune), déterminant ainsi la durée et l'étendue de la contribution de prise en charge au sens des art. 276 al. 2 et 285 al. 2 CC.",
+          "key_erwagungen": [
+            "4.1",
+            "4.3",
+            "4.4",
+            "4.5",
+            "4.6",
+            "4.6.1",
+            "4.6.2",
+            "4.6.3",
+            "4.7",
+            "4.7.1",
+            "4.7.2",
+            "4.7.3",
+            "4.7.4",
+            "4.7.5",
+            "4.7.6",
+            "4.7.7",
+            "4.7.8",
+            "4.7.9",
+            "4.8",
+            "4.8.1",
+            "4.8.2",
+            "4.8.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst E. 4.3 zum Inhalt der Unterhaltsrechtsrevision und zur Unterhaltsartenhierarchie, bevor Sie sich E. 4.7.6 widmen, wo das Schulstufenmodell mit seinen konkreten Schwellenwerten entwickelt wird. Beachten Sie sodann E. 4.7.9 zur Möglichkeit des Abweichens im Einzelfall sowie E. 4.8 zum Verhältnis zwischen Betreuungsunterhalt und nachehelichem Unterhalt.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Begriff «Betreuungsunterhalt» im Sinne von Art. 276 Abs. 2 ZGB, und wie unterscheidet er sich vom Barunterhalt?",
+              "hint": "Vgl. E. 4.3 zur Hierarchie der Unterhaltsarten und zur Unterhaltsrechtsrevision.",
+              "model_answer": "Der Betreuungsunterhalt nach Art. 276 Abs. 2 ZGB deckt den finanziellen Bedarf des betreuenden Elternteils ab, soweit dieser wegen der persönlichen Kinderbetreuung nicht oder nur eingeschränkt erwerbstätig sein kann. Er ist vom Barunterhalt zu unterscheiden, der die direkten Lebenshaltungskosten des Kindes selbst abdeckt. Die Unterhaltsrechtsrevision von 2017 hat den Betreuungsunterhalt als eigenständige Unterhaltskomponente eingeführt und damit eheliche und nichteheliche Kinder gleichgestellt."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche konkreten Schwellenwerte legt das Bundesgericht im Schulstufenmodell fest, und auf welchen gesetzlichen Grundlagen beruhen diese Richtwerte?",
+              "hint": "Vgl. E. 4.7.6 zum Schulstufenmodell sowie Art. 276 Abs. 2 und Art. 285 Abs. 2 ZGB.",
+              "model_answer": "Das Bundesgericht legt in E. 4.7.6 fest, dass dem betreuenden Elternteil eine Erwerbstätigkeit von 50 % ab Beginn der obligatorischen Schulpflicht des jüngsten Kindes, von 80 % ab dessen Übertritt in die Sekundarstufe I und von 100 % ab dem vollendeten 16. Altersjahr des jüngsten Kindes zumutbar ist. Diese Richtwerte werden aus Art. 276 Abs. 2 ZGB (Betreuungsunterhalt) und Art. 285 Abs. 2 ZGB (Kindesunterhalt allgemein) hergeleitet. Sie dienen als objektivierbare Leitlinien, von denen im Einzelfall abgewichen werden kann."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Im vorliegenden Fall ist F. (geboren 2004) das jüngste Kind. Welchen Erwerbsumfang hätte das Bundesgericht dem betreuenden Elternteil im Jahr 2018 nach dem Schulstufenmodell zugemutet, und warum?",
+              "hint": "Vgl. E. 4.7.6; F. war 2018 ca. 14 Jahre alt und befand sich auf der Sekundarstufe I.",
+              "model_answer": "F. war im Entscheidjahr 2018 rund 14 Jahre alt und besuchte die Sekundarstufe I. Nach dem Schulstufenmodell ist dem betreuenden Elternteil ab Übertritt des jüngsten Kindes in die Sekundarstufe I eine Erwerbstätigkeit von 80 % zumutbar. Da das vollendete 16. Lebensjahr (Schwelle für 100 %) noch nicht erreicht war, wäre der Betreuungsunterhalt entsprechend auf den durch die verbleibende 20%-Betreuungspflicht begründeten Einkommensausfall auszurichten gewesen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht bricht in E. 4.6.2 und 4.7.3 mit der früheren «10/16-Regel». Welche Kritikpunkte führen zu dieser Abkehr, und inwiefern stellt das Schulstufenmodell eine dogmatisch überzeugendere Lösung dar?",
+              "hint": "Vgl. E. 4.6.2 (frühere Regel), E. 4.7.3 (Abkehr) und E. 4.7.4 (kinderpsychologische Literatur).",
+              "model_answer": "Die frühere 10/16-Regel knüpfte die Erwerbsobliegenheit des betreuenden Elternteils starr an das Alter des jüngsten Kindes (Erwerbspflicht ab 10 Jahren, volle Pflicht ab 16 Jahren), ohne auf objektiv überprüfbare Betreuungsstrukturen Bezug zu nehmen. Das Bundesgericht kritisiert, dass diese Regel willkürlich wirkt und kinderpsychologischen Erkenntnissen sowie der gesellschaftlichen Realität nicht Rechnung trägt. Das Schulstufenmodell ist dogmatisch überzeugender, weil es an die institutionelle Fremdbetreuung durch die Schule anknüpft – ein objektivierbares, für alle Kantone nachvollziehbares Kriterium –, wodurch Rechtssicherheit und Einzelfallgerechtigkeit besser in Einklang gebracht werden."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Schulstufenmodell wird als einheitliche Richtlinie für die ganze Schweiz eingeführt. Kritisieren Sie, ob dieses Modell den unterschiedlichen kantonalen Schulsystemen, gesellschaftlichen Realitäten und dem Kindeswohl angemessen Rechnung trägt, und nehmen Sie begründet Stellung.",
+              "hint": "Vgl. E. 4.7.5–4.7.9 sowie E. 4.5 (Elternautonomie, Kontinuitätsprinzip); beachte die Prüfungspflicht hinsichtlich weiterer Drittbetreuungsmöglichkeiten (E. 4.7.7).",
+              "model_answer": "Das Schulstufenmodell bietet erhebliche Vorzüge hinsichtlich Rechtssicherheit und Gleichbehandlung, indem es schweizweit einheitliche Schwellenwerte schafft. Allerdings ist kritisch anzumerken, dass die Schulstrukturen (Blockzeiten, Tagesschulen, Betreuungsangebote) kantonal stark variieren, sodass ein einheitliches Modell strukturell benachteiligende Wirkungen haben kann. Zudem kann eine starre Prozentregel dem individuellen Kindeswohl und besonderen Betreuungsbedürfnissen (z.B. Kinder mit Beeinträchtigungen) nicht immer gerecht werden. Das Bundesgericht mildert diese Schwäche durch die Prüfungspflicht bezüglich weiterer Drittbetreuungsmöglichkeiten (E. 4.7.7) und die Möglichkeit des Abweichens im Einzelfall (E. 4.7.9), was letztlich einen sachgerechten Ausgleich zwischen Vorhersehbarkeit und Einzelfallgerechtigkeit anstrebt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn das jüngste Kind F. eine schwere Behinderung hätte, die auch nach dem vollendeten 16. Altersjahr eine ganztägige persönliche Betreuung durch den betreuenden Elternteil erfordern würde?",
+              "discussion_points": [
+                "Gilt das Schulstufenmodell auch bei Kindern mit besonderen Betreuungsbedürfnissen, oder erlaubt E. 4.7.9 ein generelles Abweichen?",
+                "Welche Beweislast trägt der betreuende Elternteil für die Unmöglichkeit einer Fremdbetreuung, und welche Rolle spielt die Prüfungspflicht nach E. 4.7.7?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht lässt in E. 4.7.9 ausdrücklich Abweichungen von den Richtwerten zu, wenn besondere Umstände dies rechtfertigen. Bei einer schweren Behinderung des Kindes, die eine Fremdbetreuung faktisch verunmöglicht oder unzumutbar macht, würde die Erwerbsobliegenheit des betreuenden Elternteils erheblich reduziert oder ganz aufgehoben. Der Betreuungsunterhalt würde entsprechend länger und in höherem Umfang geschuldet sein."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Angenommen, nicht die Mutter, sondern der Vater wäre der primär betreuende Elternteil und hätte seine Erwerbstätigkeit zugunsten der Kinderbetreuung aufgegeben – würde das Schulstufenmodell in gleicher Weise angewendet?",
+              "discussion_points": [
+                "Ist das Schulstufenmodell geschlechtsneutral formuliert, und entspricht dies dem Gleichbehandlungsgebot (Art. 8 BV)?",
+                "Welche praktischen Unterschiede könnten sich beim Einkommenspotenzial und der Berechnung des hypothetischen Einkommens ergeben, wenn der betreuende Elternteil der Vater ist?"
+              ],
+              "likely_outcome_shift": "Das Schulstufenmodell ist bewusst geschlechtsneutral auf den «betreuenden Elternteil» ausgerichtet und gilt unabhängig davon, ob es sich um Mutter oder Vater handelt. Die Schwellenwerte für die Erwerbsobliegenheit blieben identisch. Allerdings würden sich bei der Berechnung des Betreuungsunterhalts praktische Unterschiede ergeben, da das hypothetische Einkommen des Vaters statistisch höher veranschlagt werden könnte, was den Betreuungsunterhaltsbedarf entsprechend beeinflusst."
+            }
+          ],
           "title_it": "",
-          "significance_it": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_it": "Questa sentenza di principio introduce il «modello per livelli scolastici» (Schulstufenmodell), che stabilisce in modo uniforme per tutta la Svizzera il grado di attività lucrativa esigibile dal genitore affidatario (50% dall'inizio della scolarità obbligatoria, 80% dal passaggio al livello secondario I, 100% dal compimento del 16° anno di età del figlio più giovane), determinando così la durata e l'entità del contributo di custodia ai sensi degli art. 276 cpv. 2 e 285 cpv. 2 CC.",
+          "reading_guide_fr": "Commencez par lire le consid. 4.3 sur le contenu de la révision du droit de l'entretien et la hiérarchie des types de contributions, avant d'aborder le consid. 4.7.6, qui développe le modèle par degrés scolaires avec ses seuils concrets. Examinez ensuite le consid. 4.7.9 sur les possibilités de dérogation au cas par cas, ainsi que le consid. 4.8 sur le rapport entre la contribution de prise en charge et la contribution d'entretien post-conjugal.",
+          "reading_guide_it": "Si consiglia di leggere dapprima il consid. 4.3 sul contenuto della revisione del diritto del mantenimento e sulla gerarchia delle forme di contributo, per poi esaminare il consid. 4.7.6, in cui viene sviluppato il modello per livelli scolastici con le relative soglie concrete. Si presti poi attenzione al consid. 4.7.9 sulle possibilità di deroga nel caso concreto e al consid. 4.8 sul rapporto tra il contributo di custodia e il mantenimento post-coniugale."
         }
       ]
     },
@@ -555,14 +633,72 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Eigentumsvermutung bei Gütertrennung: Bei Haushaltsgegenständen gilt nicht Art. 930 ZGB, sondern Art. 248 Abs. 2 ZGB — ist Alleineigentum nicht nachweisbar, wird Miteigentum beider Ehegatten vermutet.",
-          "significance_fr": "Arrêt de principe sur la présomption de propriété en séparation de biens: l'art. 930 CC ne s'applique pas aux objets ménagers; si la propriété exclusive n'est pas prouvée, l'art. 248 al. 2 CC présume la copropriété.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe établissant que les époux séparés de biens ne peuvent pas invoquer la présomption de propriété de l'art. 930 CC pour les objets ménagers communs, la présomption de copropriété de l'art. 248 al. 2 CC s'appliquant à la place lorsque la propriété exclusive ne peut être prouvée.",
+          "significance_it": "Decisione di principio che stabilisce che i coniugi in regime di separazione dei beni non possono invocare la presunzione di proprietà dell'art. 930 CC per gli oggetti del menage comune, applicandosi invece la presunzione di comproprietà dell'art. 248 cpv. 2 CC quando non si riesce a provare la proprietà esclusiva.",
+          "key_erwagungen": [
+            "1",
+            "2"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste, um die zentrale Rechtsfrage zu erfassen, und konzentrieren Sie sich dann auf Erwägung 2, in der das Bundesgericht das Verhältnis zwischen Art. 930 ZGB und Art. 248 Abs. 2 ZGB klärt. Achten Sie besonders darauf, wie das Gericht die Haushaltszugehörigkeit des Weinkellers bejaht und daraus die Miteigentumsvermutung ableitet.",
+          "reading_guide_fr": "Commencez par lire le regeste pour saisir la question juridique centrale, puis concentrez-vous sur le considérant 2, dans lequel le Tribunal fédéral clarifie le rapport entre l'art. 930 CC et l'art. 248 al. 2 CC. Prêtez une attention particulière à la manière dont le tribunal affirme l'appartenance de la cave à vin au ménage commun et en déduit la présomption de copropriété.",
+          "reading_guide_it": "Iniziate leggendo il regesto per cogliere la questione giuridica centrale, poi concentratevi sul considerando 2, in cui il Tribunale federale chiarisce il rapporto tra l'art. 930 CC e l'art. 248 cpv. 2 CC. Prestate particolare attenzione al modo in cui il tribunale afferma l'appartenenza della cantina al menage comune e ne deduce la presunzione di comproprietà.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was hat das Bundesgericht in BGE 116 III 32 bezüglich der Eigentumsvermutung von Art. 930 ZGB bei Haushaltsgegenständen von Ehegatten entschieden?",
+              "hint": "Vgl. Regeste und Erwägung 2, erster Absatz.",
+              "model_answer": "Das Bundesgericht hat entschieden, dass sich Ehegatten bezüglich der Sachen, die zum gemeinsamen Haushalt gehören, unabhängig vom Güterstand nicht auf die Eigentumsvermutung von Art. 930 ZGB berufen können. An deren Stelle tritt bei Gütertrennung Art. 248 Abs. 2 ZGB, der Miteigentum beider Ehegatten vermutet, wenn das Alleineigentum weder des einen noch des anderen nachgewiesen werden kann."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen stehen im Konflikt, und wie löst das Bundesgericht das Verhältnis zwischen Art. 930 ZGB und Art. 248 Abs. 2 ZGB für Haushaltsgegenstände auf?",
+              "hint": "Vgl. Erwägung 2, insbesondere den Verweis auf den Kommentar STARK zu Art. 930 ZGB und die Ausführungen zu Art. 248 Abs. 2 ZGB.",
+              "model_answer": "Art. 930 ZGB statuiert eine allgemeine Eigentumsvermutung zugunsten des Besitzers, während Art. 248 Abs. 2 ZGB (in der Fassung von 1984) bei Gütertrennung Miteigentum beider Ehegatten vermutet, wenn Alleineigentum nicht bewiesen werden kann. Das Bundesgericht löst den Konflikt durch Spezialität: Art. 248 Abs. 2 ZGB geht als familienrechtliche Sonderregel der allgemeinen sachenrechtlichen Vermutung von Art. 930 ZGB vor, sobald es um Haushaltsgegenstände von Ehegatten geht."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Der Weinkeller befindet sich im gemeinsamen Keller des Wohngebäudes der Eheleute. Die Ehefrau behauptet, der Wein gehöre ihr allein, da sie ihn mit Erbschaftsgeldern gekauft habe. Welche Beweislast trifft sie nach dem in BGE 116 III 32 entwickelten Grundsatz?",
+              "hint": "Vgl. Erwägung 2 zur Anwendung von Art. 248 Abs. 2 ZGB und zur Zuordnung zum gemeinsamen Haushalt.",
+              "model_answer": "Da der Weinkeller zum gemeinsamen Haushalt gehört und keine deutliche örtliche Absonderung nachgewiesen ist, gilt die Vermutung des Miteigentums beider Ehegatten gemäss Art. 248 Abs. 2 ZGB. Die Ehefrau trägt die Beweislast dafür, dass sie Alleineigentümerin ist — die blosse Behauptung, den Wein mit Erbschaftsgeldern gekauft zu haben, genügt nicht; sie muss diesen Nachweis auch erbringen. Gelingt ihr der Beweis nicht, bleibt es bei der Miteigentumsvermutung, und der hälftige Anteil des Ehemannes fällt in die Konkursmasse."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum begründet das Bundesgericht, dass der Mitbesitz auf gleicher Stufe eine Vermutung für Mit- und nicht für Alleineigentum erzeugt, und welche Konsequenz hat dies für die Auslegung der Interessenlage der Gläubiger?",
+              "hint": "Vgl. Erwägung 2, zweiter Absatz, mit dem Verweis auf HINDERLING und die Ausführungen zur Gläubigerinteressen.",
+              "model_answer": "Das Bundesgericht stützt sich auf HINDERLING und argumentiert, dass aus gemeinsamem Mitbesitz auf gleicher Stufe logisch nur Miteigentum — nicht Alleineigentum einer Partei — abgeleitet werden kann. Die Annahme von Alleineigentum der Ehefrau würde die Eigentumsvermutung einseitig zugunsten der Drittanspruchstellerin verkehren und die Gläubigerrechte aushöhlen. Das Bundesgericht schützt damit die Gläubigergesamtheit, indem es sicherstellt, dass der hälftige Anteil des Gemeinschuldners am Miteigentum der Konkursmasse zufliesst, sofern kein Alleineigentum bewiesen wird."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Lösung des Bundesgerichts, Art. 930 ZGB bei Haushaltsgegenständen von Ehegatten generell auszuschliessen, rechtspolitisch überzeugend, oder schützt sie die Gläubiger auf Kosten einer verfassungsrechtlich gebotenen Eigentumsgarantie des nichtschuldenden Ehegatten?",
+              "hint": "Vgl. Erwägung 2 sowie die Spannungsfelder zwischen Art. 26 BV (Eigentumsgarantie), Art. 248 ZGB und dem Schutzzweck von Art. 223 SchKG.",
+              "model_answer": "Die Lösung ist insofern rechtspolitisch kohärent, als sie Umgehungsstrategien verhindert, bei denen Vermögenswerte kurz vor dem Konkurs auf den Ehegatten übertragen werden. Gleichwohl birgt sie eine Härte gegenüber dem gutgläubigen Ehegatten, der tatsächlich Alleineigentümer ist, aber den Beweis wegen fehlender Dokumentation nicht erbringen kann. Eine ausgewogene Kritik muss anerkennen, dass die Miteigentumsvermutung als Zwischenlösung sowohl Gläubigerinteressen schützt als auch dem nichtschuldenden Ehegatten die Hälfte belässt — sie trifft damit einen verhältnismässigen Ausgleich, auch wenn der Beweismassstab für den nicht-schuldenden Ehegatten in der Praxis hoch bleibt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Eheleute S. hätten nicht Gütertrennung, sondern den ordentlichen Güterstand der Errungenschaftsbeteiligung (Art. 196 ff. ZGB) gewählt. Würde Art. 248 Abs. 2 ZGB dennoch gelten, oder käme eine andere Vermutungsregel zur Anwendung?",
+              "discussion_points": [
+                "Art. 248 ZGB gilt nach seinem Wortlaut ausdrücklich nur für den Güterstand der Gütertrennung — bei Errungenschaftsbeteiligung fehlt eine analoge Norm.",
+                "Bei Errungenschaftsbeteiligung könnte auf Art. 930 ZGB zurückgegriffen werden, was die Frage aufwirft, ob das Bundesgericht den Ausschluss von Art. 930 ZGB auf alle Güterstände oder nur auf die Gütertrennung erstreckt."
+              ],
+              "likely_outcome_shift": "Bei Errungenschaftsbeteiligung wäre die Rechtslage weniger klar, da Art. 248 Abs. 2 ZGB nicht direkt anwendbar ist. Das Gericht müsste entscheiden, ob Art. 930 ZGB für Haushaltsgegenstände auch dort verdrängt wird oder ob die allgemeine sachenrechtliche Besitzesvermutung wieder auflebt. Dies könnte die Beschlagnahme erschweren und den Gläubigerschutz schwächen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht der Ehemann, sondern die Ehefrau die Gemeinschuldnerin wäre, und der Ehemann als alleiniger Besitzer des Weinkellers aufträte, da dieser sich in seinem Arbeitskeller befinde, zu dem die Ehefrau keinen Schlüssel habe?",
+              "discussion_points": [
+                "Die deutliche örtliche Absonderung vom gemeinsamen Haushalt könnte die Haushaltszugehörigkeit des Weinkellers verneinen und damit Art. 248 Abs. 2 ZGB ausschliessen.",
+                "Wenn kein gemeinsamer Mitbesitz vorliegt, könnte Art. 930 ZGB zugunsten des alleinbesitzenden Ehemannes wieder eingreifen, was eine Beschlagnahme im Konkurs der Ehefrau erschwerte."
+              ],
+              "likely_outcome_shift": "Ist eine deutliche örtliche Absonderung des Weinkellers vom gemeinsamen Haushalt nachgewiesen und besitzt nur der Ehemann den Schlüssel, entfällt der Mitbesitz der Gemeinschuldnerin. Damit fehlt die Grundlage für Art. 223 SchKG und auch für die Miteigentumsvermutung nach Art. 248 Abs. 2 ZGB, sodass die Beschlagnahme aller Voraussicht nach scheitern würde."
+            }
+          ]
         }
       ]
     }

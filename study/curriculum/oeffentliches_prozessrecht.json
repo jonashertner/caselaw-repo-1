@@ -42,14 +42,72 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundlegendes Urteil zur Begründungspflicht: Die Behörden sind verpflichtet, ihre Entscheide zu begründen (Art. 4 aBV, heute Art. 29 Abs. 2 BV). Die erforderliche Begründungsdichte lässt sich nicht einheitlich festlegen, sondern richtet sich nach den Umständen des Einzelfalls und den Interessen des Betroffenen.",
-          "significance_fr": "Arrêt fondateur sur l'obligation de motiver les décisions: les autorités sont tenues de motiver leurs décisions (art. 4 aCst., aujourd'hui art. 29 al. 2 Cst.). La densité de motivation requise doit être déterminée au cas par cas.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que l'obligation de motiver les décisions découle directement du droit d'être entendu garanti par l'art. 4 aCst. (aujourd'hui art. 29 al. 2 Cst.), tout en précisant que la densité de motivation requise doit être déterminée au cas par cas en fonction des circonstances et des intérêts du justiciable.",
+          "significance_it": "Questa sentenza di principio stabilisce che l'obbligo di motivare le decisioni deriva direttamente dal diritto di essere sentiti garantito dall'art. 4 vCost. (oggi art. 29 cpv. 2 Cost.), precisando altresì che il grado di motivazione richiesto deve essere determinato caso per caso in funzione delle circostanze e degli interessi del destinatario.",
+          "key_erwagungen": [
+            "2",
+            "3"
+          ],
+          "reading_guide_de": "Konzentrieren Sie sich beim Lesen vor allem auf Erwägung 2, in der das Bundesgericht die Begründungspflicht als unmittelbaren Ausfluss des rechtlichen Gehörs (Art. 4 aBV) herleitet und deren Schutzfunktionen erläutert. Beachten Sie zudem Erwägung 3 zum Grundsatz «nulla poena sine lege», da dieser zweite Rügegrund zeigt, wie beide verfassungsrechtlichen Anforderungen – Begründungspflicht und Legalitätsprinzip – im selben Fall zusammentreffen können.",
+          "reading_guide_fr": "Lors de la lecture, concentrez-vous en particulier sur le considérant 2, dans lequel le Tribunal fédéral déduit l'obligation de motiver directement du droit d'être entendu (art. 4 aCst.) et en explique les fonctions protectrices. Prêtez également attention au considérant 3 relatif au principe «nulla poena sine lege», car ce second grief illustre comment deux exigences constitutionnelles distinctes – l'obligation de motiver et le principe de légalité en matière pénale – peuvent se cumuler dans une même affaire.",
+          "reading_guide_it": "Durante la lettura, concentratevi in particolare sul considerando 2, nel quale il Tribunale federale deduce l'obbligo di motivazione direttamente dal diritto di essere sentiti (art. 4 vCost.) e ne illustra le funzioni protettive. Prestate attenzione anche al considerando 3 sul principio «nulla poena sine lege», poiché questo secondo motivo di censura mostra come due distinte esigenze costituzionali – l'obbligo di motivazione e il principio di legalità in materia penale – possano concorrere nella stessa fattispecie.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 112 Ia 107 unter der Begründungspflicht, und welche zwei Schutzfunktionen erfüllt diese Pflicht gemäss Erwägung 2?",
+              "hint": "Siehe Erwägung 2b, insbesondere den Abschnitt zur Offenlegung der Entscheidgründe.",
+              "model_answer": "Die Begründungspflicht bedeutet, dass die Behörde ihren Entscheid so erläutern muss, dass der Betroffene nachvollziehen kann, warum entgegen seinem Antrag entschieden wurde. Sie dient erstens dem Bürger, der wissen soll, warum die Behörde gegen seinen Antrag entschieden hat. Zweitens schützt sie vor unsachlichen Motiven, indem die Offenlegung der Gründe die Selbstkontrolle der Behörde fördert."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Auf welche Verfassungsnorm stützt das Bundesgericht die Begründungspflicht in BGE 112 Ia 107, und wie hat sich die normative Grundlage mit dem Inkrafttreten der neuen Bundesverfassung 1999 verändert?",
+              "hint": "Vgl. Regeste sowie Art. 4 aBV und den heute geltenden Art. 29 Abs. 2 BV.",
+              "model_answer": "Das Bundesgericht leitet die Begründungspflicht in diesem Urteil aus Art. 4 der alten Bundesverfassung (aBV) ab, der den allgemeinen Gleichheits- und Willkürschutz sowie das rechtliche Gehör umfasste. Mit der Totalrevision der Bundesverfassung 1999 wurde der Anspruch auf rechtliches Gehör – einschliesslich der Begründungspflicht – ausdrücklich in Art. 29 Abs. 2 BV verankert. Die Rechtsprechung aus BGE 112 Ia 107 bleibt inhaltlich weiterhin massgebend, da Art. 29 Abs. 2 BV keine inhaltliche Änderung brachte."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Eine Gemeindebehörde weist ein Baugesuch mit einem einzigen Satz ab: «Das Gesuch wird abgewiesen, da die Voraussetzungen nicht erfüllt sind.» Der Gesuchsteller hatte drei detaillierte rechtliche Argumente vorgebracht. Wie wäre dieser Fall nach den Grundsätzen von BGE 112 Ia 107 zu beurteilen?",
+              "hint": "Vgl. Erwägung 2b zur Pflicht, Vorbringen sorgfältig und ernsthaft zu prüfen und in der Entscheidfindung zu berücksichtigen.",
+              "model_answer": "Nach BGE 112 Ia 107 verletzt ein solcher Entscheid die Begründungspflicht. Das rechtliche Gehör verlangt, dass die Behörde die Vorbringen des Betroffenen tatsächlich hört, sorgfältig prüft und in der Entscheidfindung berücksichtigt. Eine pauschale Abweisung ohne jede Auseinandersetzung mit den drei vorgebrachten Argumenten lässt nicht erkennen, ob die Behörde diese überhaupt zur Kenntnis genommen hat. Der Entscheid wäre daher wegen Verletzung des rechtlichen Gehörs aufzuheben."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht hält fest, dass die Begründungsdichte «sich nicht einheitlich festlegen lässt» und von den Umständen des Einzelfalls abhängt. Welche Faktoren dürften die erforderliche Begründungstiefe erhöhen oder verringern, und wie lässt sich diese Flexibilität mit dem Gebot der Rechtssicherheit vereinbaren?",
+              "hint": "Vgl. Regeste und Erwägung 2; berücksichtige auch die Interessen des Betroffenen und die Komplexität der Sache.",
+              "model_answer": "Faktoren, die eine höhere Begründungsdichte erfordern, sind insbesondere die Schwere des Eingriffs in die Rechtsstellung des Betroffenen, die Komplexität der aufgeworfenen Rechtsfragen sowie die Wichtigkeit der Sache für den Betroffenen. Umgekehrt genügt eine knappe Begründung bei einfachen Sachlagen oder wenn der Betroffene die Gründe aus dem Kontext bereits kennt. Die Flexibilität lässt sich mit der Rechtssicherheit vereinbaren, weil das Bundesgericht Leitprinzipien entwickelt, die in der Praxis konkretisiert werden, ohne jede Situation schematisch zu regeln – ein Ansatz, der in einem Rechtsstaat typischerweise durch ständige Rechtsprechung Konturen gewinnt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritiker könnten einwenden, die flexible Begründungsdichte schaffe Rechtsunsicherheit, da Behörden nicht wissen, wann eine Begründung «genügt». Wie überzeugend ist dieser Einwand, und welche alternativen Ansätze wären denkbar?",
+              "hint": "Vgl. Regeste und Erwägung 2; bedenke den Sinn der Einzelfallgerechtigkeit gegenüber dem Bedürfnis nach klaren Regeln.",
+              "model_answer": "Der Einwand hat eine gewisse Berechtigung, weil die Einzelfallabhängigkeit Behörden und Gerichten erheblichen Beurteilungsspielraum lässt und Vorhersehbarkeit erschwert. Demgegenüber wäre ein starres Mindestanforderungsraster zwar klarer, aber auch ineffizient: Es könnte bei einfachen Bagatellentscheiden eine übermässige Begründungslast auferlegen, während es komplexe Grundrechtseingriffe möglicherweise unzureichend schützt. Der vom Bundesgericht gewählte flexible Ansatz ist insgesamt überzeugender, weil er Verhältnismässigkeit gewährleistet und durch die schrittweise Konkretisierung in der Rechtsprechung ausreichend Orientierung bietet."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, das Obergericht Aargau hätte im angefochtenen Urteil zwar keine schriftliche Begründung zur Frage der gesetzlichen Delegationsnorm geliefert, aber B. wäre an einer mündlichen Verhandlung über alle Punkte eingehend angehört worden und das Protokoll dieser Verhandlung enthielte die vollständige Argumentation des Gerichts. Ändert dies die Beurteilung der Begründungspflicht?",
+              "discussion_points": [
+                "Genügt eine mündlich dargelegte Begründung den Anforderungen von Art. 4 aBV (heute Art. 29 Abs. 2 BV), oder muss die Begründung zwingend schriftlich im Entscheid selbst festgehalten sein?",
+                "Welche Bedeutung kommt dem Erfordernis zu, dass der Betroffene die Begründung kennen muss, um ein Rechtsmittel sachgerecht ergreifen zu können?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde prüfen, ob eine mündliche Begründung mit Protokollierung dem Schutzgehalt der Begründungspflicht genügt. Da die Begründung auch die wirksame Ausübung von Rechtsmitteln ermöglichen muss, dürfte eine nicht im schriftlichen Urteil selbst enthaltene Begründung regelmässig als ungenügend gelten. Die Rüge der Gehörsverletzung bliebe damit in den meisten Konstellationen erfolgreich, ausser wenn das Protokoll als integraler Bestandteil des Entscheids gilt und dem Betroffenen vollständig zugänglich war."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht B. (die Betreiberin des Spielsalons) führt Beschwerde, sondern die Staatsanwaltschaft des Kantons Aargau wendet sich gegen ein freisprechendes Urteil des Obergerichts, das seinerseits keinerlei Begründung zur Frage der gesetzlichen Grundlage von § 19 VV WG enthält. Kann sich die Staatsanwaltschaft auf eine Verletzung der Begründungspflicht berufen?",
+              "discussion_points": [
+                "Ist die Begründungspflicht aus Art. 4 aBV bzw. Art. 29 Abs. 2 BV ein rein individualrechtlicher Anspruch des Betroffenen, oder kann auch eine Behörde als Beschwerdeführerin dieses Recht geltend machen?",
+                "Welche prozessrechtlichen und verfassungsrechtlichen Hürden bestehen, wenn eine staatliche Behörde als Partei Grundrechte aus Art. 29 Abs. 2 BV in Anspruch nehmen will?"
+              ],
+              "likely_outcome_shift": "Da Art. 29 Abs. 2 BV primär als Individualgrundrecht konzipiert ist, das natürliche und juristische Personen des Privatrechts schützt, kann sich die Staatsanwaltschaft als staatliche Behörde grundsätzlich nicht auf dieses Recht berufen. Das Bundesgericht würde auf die staatsrechtliche Beschwerde in diesem Punkt wohl nicht eintreten. Die Staatsanwaltschaft müsste stattdessen mit anderen Mitteln – etwa kantonalem Prozessrecht oder dem Willkürverbot – gegen das unbegründete Urteil vorgehen."
+            }
+          ]
         },
         {
           "decision_id": "bge_141 II 307",
@@ -284,14 +342,74 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zur Rechtsweggarantie (Art. 29a BV): In kantonalen Stimmrechtsangelegenheiten muss eine richterliche Behörde als letzte Instanz entscheiden; fehlerhafte Rechtsmittelbelehrungen schaden den Parteien nicht.",
-          "significance_fr": "Arrêt de principe sur la garantie de l'accès au juge (art. 29a Cst.): en matière de droits politiques cantonaux, une autorité judiciaire doit statuer en dernière instance; une indication erronée des voies de droit ne porte pas préjudice aux parties.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur la garantie de l'accès au juge (art. 29a Cst.) : en matière de droits politiques cantonaux et communaux, les cantons sont tenus de prévoir une autorité judiciaire comme dernière instance de recours, et une indication de voie de recours erronée ne peut pas être opposée aux parties.",
+          "significance_it": "Sentenza di principio sulla garanzia della via giudiziaria (art. 29a Cost.): in materia di diritti politici cantonali e comunali, i Cantoni sono tenuti a prevedere un'autorità giudiziaria quale ultima istanza di ricorso, e un'erronea indicazione dei rimedi giuridici non può essere opposta alle parti.",
+          "key_erwagungen": [
+            "1.1",
+            "1.2",
+            "1.2.1",
+            "1.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 200), um den Instanzenzug zu verstehen, und konzentrieren Sie sich dann auf E. 1.2 (Pflicht zur gerichtlichen Rechtsmittelinstanz kraft Art. 29a BV und Art. 88 Abs. 2 BGG) sowie E. 1.2.1 (kantonale Ausführungsgesetzgebung: § 43 VRG und VO BGG). E. 1.3 ist zentral für das Verständnis, wie das Bundesgericht die fehlerhafte Rechtsmittelbelehrung und den Vertrauensschutz handhabt.",
+          "reading_guide_fr": "Commencez par lire l'état de fait (p. 200) pour comprendre la voie de recours cantonale, puis concentrez-vous sur le consid. 1.2 (obligation d'une autorité judiciaire comme dernière instance cantonale en vertu des art. 29a Cst. et 88 al. 2 LTF) et le consid. 1.2.1 (droit cantonal d'exécution : § 43 VRG et VO BGG). Le consid. 1.3 est essentiel pour saisir comment le Tribunal fédéral traite l'indication de voie de recours erronée à la lumière du principe de la bonne foi.",
+          "reading_guide_it": "Iniziate con i fatti (p. 200) per comprendere l'iter dei rimedi giuridici cantonali, poi concentratevi sul consid. 1.2 (obbligo di un'autorità giudiziaria quale ultima istanza cantonale ai sensi degli art. 29a Cost. e 88 cpv. 2 LTF) e sul consid. 1.2.1 (diritto cantonale di esecuzione: § 43 VRG e VO BGG). Il consid. 1.3 è fondamentale per capire come il Tribunale federale gestisce l'erronea indicazione dei rimedi giuridici alla luce del principio della buona fede.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was war der konkrete Ausgangssachverhalt in BGE 134 I 199, und warum wandten sich die Beschwerdeführer an das Bundesgericht?",
+              "hint": "Vgl. Sachverhalt ab S. 200: Beschlüsse des Stadtrats Zürich vom 20. Dezember 2006 und den Instanzenzug bis zum Regierungsrat.",
+              "model_answer": "Der Stadtrat Zürich bewilligte Ausgaben für die Instandsetzung der Hardbrücke ohne Referendumsunterstellung. Die Beschwerdeführer fochten dies mit Stimmrechtsrekurs an, durchliefen den kantonalen Instanzenzug (Bezirksrat, Regierungsrat) und gelangten sodann mit einer Stimmrechtsbeschwerde ans Bundesgericht. Sie rügten, der Finanzbeschluss hätte dem Referendum unterstellt werden müssen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Verfassungs- und Gesetzesbestimmungen verpflichten die Kantone dazu, in Stimmrechtsangelegenheiten eine gerichtliche Behörde als letzte Rechtsmittelinstanz vorzusehen?",
+              "hint": "Vgl. E. 1.2: Art. 29a BV, Art. 88 Abs. 2 BGG sowie die dort zitierten Präjudizien.",
+              "model_answer": "Art. 29a BV garantiert den Anspruch auf Beurteilung durch eine richterliche Behörde (Rechtsweggarantie). Art. 88 Abs. 2 Satz 1 BGG verpflichtet die Kantone, gegen behördliche Akte, welche politische Rechte verletzen können, ein Rechtsmittel vorzusehen. Das Bundesgericht hat aus dem Zusammenspiel dieser Normen und den Zielsetzungen des BGG abgeleitet, dass diese Rechtsmittelinstanz zwingend eine gerichtliche Behörde sein muss – sowohl in kantonalen als auch in kommunalen Stimmrechtssachen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Wie löste das Bundesgericht konkret das Problem, dass die Beschwerdeführer nach der (fehlerhaften) Rechtsmittelbelehrung direkt ans Bundesgericht gelangten, obwohl noch das kantonale Verwaltungsgericht als Vorinstanz hätte entscheiden müssen?",
+              "hint": "Vgl. E. 1.3 (Überweisung ans Verwaltungsgericht) sowie den Grundsatz, dass fehlerhafte Rechtsmittelbelehrungen den Parteien nicht schaden.",
+              "model_answer": "Das Bundesgericht stellte fest, dass der Regierungsrat eine unrichtige Rechtsmittelbelehrung erteilt hatte, die für die Beschwerdeführer nicht ohne Weiteres als fehlerhaft erkennbar war. Gestützt auf den Vertrauensschutzgrundsatz (Art. 5 Abs. 3 BV) durfte dies den Beschwerdeführern nicht zum Nachteil gereichen. Das Bundesgericht überwies die Eingabe daher zuständigkeitshalber dem Verwaltungsgericht des Kantons Zürich zur materiellen Beurteilung."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Welchen Zusammenhang stellt das Bundesgericht zwischen Art. 130 Abs. 3 und 4 BGG und der kantonalen Ausführungsgesetzgebung (§ 43 VRG, VO BGG) her, und warum ist dieser Zusammenhang für die Bejahung der Zuständigkeit des Zürcher Verwaltungsgerichts entscheidend?",
+              "hint": "Vgl. E. 1.2.1: Auslegung von § 43 Abs. 2 VRG i.V.m. § 5 VO BGG und Art. 130 Abs. 3 und 4 BGG.",
+              "model_answer": "Art. 130 Abs. 3 BGG verpflichtet die Kantone, innert zwei Jahren die notwendigen Ausführungsbestimmungen zu erlassen. Der Zürcher Regierungsrat erliess gestützt auf Art. 130 Abs. 4 BGG die VO BGG, welche in § 5 festlegte, dass unter 'Verwaltungsgerichtsbeschwerde an das Bundesgericht' neu die ordentliche Beschwerde zu verstehen ist. Damit wurde § 43 Abs. 2 VRG – der die Verwaltungsgerichtsbeschwerde als Auslöser für die Zuständigkeit des kantonalen Verwaltungsgerichts nennt – auf Stimmrechtssachen anwendbar, womit das Verwaltungsgericht Zürich als zuständige gerichtliche Vorinstanz gilt. Ohne diese Verknüpfung wäre die verfassungsrechtlich gebotene richterliche Letztinstanz auf kantonaler Ebene nicht gewährleistet."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Lösung des Bundesgerichts – Überweisung an das kantonale Verwaltungsgericht statt Rückweisung oder Nichteintretensentscheid – aus rechtsstaatlicher Sicht überzeugend, und welche Risiken birgt sie für die Rechtssicherheit?",
+              "hint": "Vgl. E. 1.3 sowie das Spannungsverhältnis zwischen Vertrauensschutz (Art. 5 Abs. 3 BV), Rechtsweggarantie (Art. 29a BV) und den Zuständigkeitsregeln des BGG.",
+              "model_answer": "Die Überweisung ist aus rechtsstaatlicher Sicht überzeugend, weil sie sowohl die Rechtsweggarantie (Art. 29a BV) als auch den Vertrauensschutz der Beschwerdeführer wahrt und einen Rechtsverlust durch behördliches Fehlverhalten verhindert. Allerdings birgt sie das Risiko, dass unklar bleibt, nach welchem Verfahrensrecht das Verwaltungsgericht die überwiesene Sache behandeln muss, und ob Fristen gewahrt sind. Langfristig ist die Lösung nur tragfähig, wenn die Kantone ihre Ausführungsgesetzgebung klar und eindeutig anpassen, sodass solche Zuständigkeitsunsicherheiten und fehlerhafte Belehrungen gar nicht erst entstehen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Beschwerdeführer hätten die Frist zur Einreichung der Stimmrechtsbeschwerde beim Bundesgericht verpasst und reichen ihre Eingabe erst nach Ablauf der 30-tägigen Beschwerdefrist (Art. 100 Abs. 1 BGG) ein – mit der Begründung, die fehlerhafte Rechtsmittelbelehrung habe sie über die korrekte Frist getäuscht. Wie würde das Bundesgericht mit dieser Konstellation umgehen?",
+              "discussion_points": [
+                "Reichweite des Vertrauensschutzgrundsatzes (Art. 5 Abs. 3 BV) bei verspäteter Einreichung infolge fehlerhafter Rechtsmittelbelehrung",
+                "Verhältnis zwischen der gesetzlichen Nichterstreckbarkeit der Beschwerdefrist (Art. 47 BGG) und dem Schutz vor behördlichem Fehlverhalten gemäss BGE-Rechtsprechung"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde prüfen, ob die fehlerhafte Belehrung kausal für die Verspätung war und ob diese für die Beschwerdeführer nicht erkennbar gewesen ist. Da Art. 47 BGG die Fristen grundsätzlich als nicht erstreckbar erklärt, wäre eine Fristwiederherstellung nur unter sehr engen Voraussetzungen (Art. 50 BGG) möglich; das Bundesgericht müsste jedoch im Lichte des Vertrauensschutzes prüfen, ob ein Nichteintreten verhältnismässig wäre, was die Rechtsprechung in ähnlichen Fällen eher verneint."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht Stimmbürger (Niklaus Scherr und Mitbeteiligte), sondern eine politische Partei als juristische Person die Stimmrechtsbeschwerde erhoben hätte, ohne dass ihre Mitglieder namentlich als stimmberechtigte Personen ausgewiesen wären?",
+              "discussion_points": [
+                "Legitimationsvoraussetzungen nach Art. 89 Abs. 3 BGG: Stimmrechtsbeschwerden setzen individuelle Stimmberechtigung voraus – können Parteien als solche legitimiert sein?",
+                "Möglichkeit der Partei, stellvertretend für ihre stimmberechtigten Mitglieder aufzutreten, und Anforderungen an den Nachweis der Mitgliederstimmberechtigung"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde auf die Beschwerde aller Wahrscheinlichkeit nach nicht eintreten, da Art. 89 Abs. 3 BGG die Legitimation an die persönliche Stimmberechtigung knüpft und eine politische Partei als juristische Person in der Regel nicht selbst stimmberechtigt ist. Die Partei müsste entweder namentlich stimmberechtigte Mitglieder als Beschwerdeführer benennen oder nachweisen, dass sie in deren Namen handelt, was den Ausgang in der Sache selbst nicht beeinflusste, aber zum Nichteintreten mangels Legitimation führen würde."
+            }
+          ]
         }
       ]
     },
@@ -431,14 +549,86 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Verhältnismässigkeitsprüfung nach Art. 36 BV: Das Bundesgericht prüft die Voraussetzungen für Eingriffe in Grundrechte (gesetzliche Grundlage, öffentliches Interesse, Verhältnismässigkeit) am Beispiel medikamentöser Zwangsbehandlung in der Psychiatrie.",
-          "significance_fr": "Arrêt de principe sur le contrôle de proportionnalité selon l'art. 36 Cst.: le Tribunal fédéral examine les conditions d'une restriction aux droits fondamentaux (base légale, intérêt public, proportionnalité) à l'exemple d'un traitement médicamenteux forcé en psychiatrie.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe définit les conditions constitutionnelles – base légale, intérêt public et proportionnalité au sens de l'art. 36 Cst. – auxquelles un traitement médicamenteux forcé en psychiatrie peut être ordonné, en articulant pour la première fois de manière systématique la liberté personnelle (art. 10 al. 2 Cst.) et la dignité humaine (art. 7 Cst.) dans ce contexte.",
+          "significance_it": "Questa sentenza di principio definisce le condizioni costituzionali – base legale, interesse pubblico e proporzionalità ai sensi dell'art. 36 Cost. – alle quali può essere ordinato un trattamento farmacologico coatto in psichiatria, articolando per la prima volta in modo sistematico la libertà personale (art. 10 cpv. 2 Cost.) e la dignità umana (art. 7 Cost.) in tale contesto.",
+          "key_erwagungen": [
+            "2a",
+            "4",
+            "5a",
+            "5b",
+            "5c",
+            "5d",
+            "5e",
+            "5f",
+            "7a",
+            "7b",
+            "7c",
+            "7d",
+            "8",
+            "9b",
+            "9c",
+            "9d"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Erwägungen 2a und 4, um die massgebliche Rechtsgrundlage (Psychiatriegesetz Basel-Stadt) zu verstehen. Wenden Sie sich dann den Erwägungen 5a–5f zu, die die betroffenen Grundrechte (persönliche Freiheit, Menschenwürde, internationale Garantien) entfalten, und schliessen Sie mit den Erwägungen 7b–7d sowie 9b–9d, welche die konkreten Voraussetzungen der Zwangsbehandlung und die Verhältnismässigkeitsprüfung nach Art. 36 BV behandeln.",
+          "reading_guide_fr": "Commencez par lire les considérants 2a et 4 pour comprendre la base légale applicable (loi psychiatrique du canton de Bâle-Ville). Poursuivez avec les considérants 5a à 5f, qui développent les droits fondamentaux en jeu (liberté personnelle, dignité humaine, garanties internationales), puis terminez avec les considérants 7b à 7d et 9b à 9d, qui examinent les conditions concrètes du traitement forcé et le contrôle de la proportionnalité au regard de l'art. 36 Cst.",
+          "reading_guide_it": "Si consiglia di leggere dapprima i considerandi 2a e 4 per comprendere la base legale applicabile (legge psichiatrica del Canton Basilea Città), poi i considerandi 5a–5f, che illustrano i diritti fondamentali coinvolti (libertà personale, dignità umana, garanzie internazionali), e infine i considerandi 7b–7d e 9b–9d, dedicati alle condizioni concrete del trattamento coatto e al controllo della proporzionalità ai sensi dell'art. 36 Cost.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Warum konnte das Bundesgericht die Anordnung des fürsorgerischen Freiheitsentzuges selbst nicht als Rechtsgrundlage für die medikamentöse Zwangsbehandlung heranziehen, und auf welche Rechtsgrundlage stützte sich der angefochtene Entscheid stattdessen?",
+              "hint": "Vgl. Erwägung 2a des Entscheids sowie den Verweis auf BGE 125 III 169 und BGE 126 I 112.",
+              "model_answer": "Art. 397a ff. ZGB, die den fürsorgerischen Freiheitsentzug regeln, ermächtigen die Klinik nicht zur Anordnung einer medikamentösen Behandlung gegen den Willen des Patienten. Das Bundesgericht hat dies bereits in BGE 125 III 169 festgehalten. Die Rechtsgrundlage für die zwangsweise Medikation bildete daher ausschliesslich das kantonale Psychiatriegesetz des Kantons Basel-Stadt vom 18. September 1996."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche drei kumulativen Voraussetzungen müssen gemäss Art. 36 BV erfüllt sein, damit ein Eingriff in ein Grundrecht – hier die persönliche Freiheit nach Art. 10 Abs. 2 BV – verfassungsrechtlich gerechtfertigt ist, und welchen dieser Voraussetzungen widmet das Bundesgericht besondere Aufmerksamkeit?",
+              "hint": "Vgl. Erwägung 9d sowie die Regeste: gesetzliche Grundlage, öffentliches Interesse, Verhältnismässigkeit.",
+              "model_answer": "Art. 36 BV verlangt für jeden Grundrechtseingriff eine ausreichende gesetzliche Grundlage, ein öffentliches oder überwiegendes privates Interesse sowie die Verhältnismässigkeit des Eingriffs. Das Bundesgericht prüft in BGE 127 I 6 alle drei Voraussetzungen, widmet aber der Verhältnismässigkeit (Erwägungen 9b–9d) und der gesetzlichen Grundlage im kantonalen Psychiatriegesetz (Erwägungen 2a, 4, 7a) besondere Aufmerksamkeit, da diese im Bereich der Zwangsbehandlung besonders heikel sind."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "P. lehnte die Medikation mit Neuroleptika ab. Wie prüft das Bundesgericht, ob P. im massgeblichen Zeitpunkt urteilsfähig war, und welche Bedeutung kommt dabei dem mutmasslichen Willen des Patienten zu?",
+              "hint": "Vgl. Erwägungen 7b (Urteilsunfähigkeit) und 7c (mutmasslicher Wille).",
+              "model_answer": "Das Bundesgericht prüft in Erwägung 7b, ob P. aufgrund seiner katatonen Schizophrenie im massgeblichen Zeitpunkt urteilsunfähig war, d.h. ob er die Konsequenzen seiner Ablehnung der Medikation hinreichend einschätzen konnte. Ist Urteilsunfähigkeit festgestellt, tritt an die Stelle des tatsächlichen Willens der mutmassliche Wille des Patienten (Erwägung 7c): Es ist zu fragen, was der Patient in einem urteilsfähigen Zustand entschieden hätte. Erst wenn auch dieser eine Behandlung nicht ausschliesst und die dringende Notwendigkeit (Erwägung 7d) bejaht wird, kann eine Zwangsbehandlung gerechtfertigt sein."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht befasst sich sowohl mit Art. 10 Abs. 2 BV (persönliche Freiheit) als auch mit Art. 7 BV (Menschenwürde) und internationalen Garantien (Art. 3 und 8 EMRK, Art. 7 UNO-Pakt II). Welche Abgrenzungs- und Überschneidungsprobleme entstehen zwischen diesen Normen im Kontext der medikamentösen Zwangsbehandlung, und wie löst das Gericht diese?",
+              "hint": "Vgl. Erwägungen 5a (persönliche Freiheit), 5b (Menschenwürde), 5c–5f (internationale Garantien).",
+              "model_answer": "Die persönliche Freiheit nach Art. 10 Abs. 2 BV schützt die körperliche und psychische Integrität sowie die Bewegungsfreiheit und überlagert sich im Bereich der Zwangsbehandlung mit der Menschenwürdegarantie des Art. 7 BV, die einen absoluten, nicht einschränkbaren Kern aufweist. Das Bundesgericht klärt in Erwägung 5a die Bedeutung der neuen Verfassungsbestimmung gegenüber dem früheren ungeschriebenen Grundrecht und stellt in Erwägung 5b klar, dass Art. 7 BV zwar als Auslegungsleitlinie wirkt, aber keine eigenständige Anspruchsgrundlage jenseits von Art. 10 BV begründet. Die internationalen Garantien (EMRK, UNO-Pakt II) werden in Erwägungen 5c–5f als Interpretationshilfe und Mindeststandardsicherung herangezogen, ohne den verfassungsrechtlichen Prüfungsmassstab zu verdrängen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritiker der Entscheidung argumentieren, dass die Zulassung medikamentöser Zwangsbehandlung auf Basis kantonaler Gesetzgebung den Kerngehalt der persönlichen Freiheit und der Menschenwürde aushöhlt, selbst wenn die Verhältnismässigkeit bejaht wird. Wie überzeugend ist das vom Bundesgericht gewählte Prüfungsschema nach Art. 36 BV, und welche alternativen Schutzansätze wären denkbar?",
+              "hint": "Vgl. Erwägungen 9b–9d (Verhältnismässigkeit) sowie Erwägung 5b (Kerngehalt der Menschenwürde) und den Vergleich mit internationalen Standards in Erwägungen 5c–5f.",
+              "model_answer": "Das Prüfungsschema nach Art. 36 BV bietet eine strukturierte und nachvollziehbare Methode zur Rechtfertigung von Grundrechtseingriffen; es sichert durch das Verhältnismässigkeitsprinzip und den Vorbehalt des Kerngehalts einen wichtigen Schutz. Kritisch ist jedoch anzumerken, dass bei Zwangsbehandlungen die Grenze zwischen rechtfertigbarem Eingriff und Verletzung der Menschenwürde fliessend ist und das Gericht den Kliniken einen erheblichen Ermessensspielraum belässt. Als Alternative wäre ein absolutes Widerspruchsrecht urteilsfähiger Patienten denkbar, oder eine verstärkte richterliche Vorabkontrolle jeder Zwangsbehandlung analog zu Haftprüfungsverfahren, um den Schutz der persönlichen Autonomie gegenüber therapeutischen Interessen stärker zu gewichten."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, P. hätte in einem früheren urteilsfähigen Zustand eine schriftliche Patientenverfügung erstellt, in der er jegliche medikamentöse Behandlung mit Neuroleptika ausdrücklich ablehnt. Würde das Bundesgericht die Zwangsbehandlung unter diesen Umständen dennoch zulassen?",
+              "discussion_points": [
+                "Welches Gewicht kommt einer Patientenverfügung bei der Ermittlung des mutmasslichen Willens (Erwägung 7c) zu, insbesondere wenn sie klar und aktuell ist?",
+                "Steht das öffentliche Interesse an der Behandlung (Erwägung 8) einer ausdrücklichen antizipativen Ablehnung entgegen, oder müsste das Gericht die Verfügung als verbindlich anerkennen?"
+              ],
+              "likely_outcome_shift": "Eine klare und aktuelle Patientenverfügung würde den mutmasslichen Willen des Patienten wesentlich stärken und die Verhältnismässigkeitsprüfung erheblich verschärfen. Es ist wahrscheinlich, dass das Bundesgericht eine Zwangsbehandlung entgegen einer eindeutigen Patientenverfügung nur in extremen Notfallsituationen (unmittelbare Lebensgefahr) als verhältnismässig erachten würde, da der antizipierte Wille eines urteilsfähigen Patienten dem mutmasslichen Willen vorgeht und den Kerngehalt der persönlichen Autonomie tangiert."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht ein Kanton mit einem spezifischen Psychiatriegesetz, sondern der Bund hätte die medikamentöse Zwangsbehandlung im ZGB direkt geregelt und die Psychiatrische Klinik stützte sich auf diese Bundesregelung. Wie würde sich dies auf die Zulässigkeit und den Prüfungsmassstab der Beschwerde vor Bundesgericht auswirken?",
+              "discussion_points": [
+                "Wäre gegen eine auf Bundesrecht gestützte Zwangsbehandlung die staatsrechtliche Beschwerde oder ein anderes Rechtsmittel (Berufung, verwaltungsrechtliche Klage) das richtige Verfahren?",
+                "Würde der Prüfungsmassstab des Bundesgerichts bei der Verhältnismässigkeit strenger oder zurückhaltender sein, wenn es um die Auslegung eigener bundesgesetzlicher Normen geht?"
+              ],
+              "likely_outcome_shift": "Bei einer bundesrechtlichen Grundlage im ZGB wäre die staatsrechtliche Beschwerde nicht das geeignete Rechtsmittel; es käme allenfalls die Berufung in Betracht, was den Zugang zum Bundesgericht und die Kognition verändert. Das Bundesgericht könnte die Bundesregelung mit voller Kognition auslegen und wäre nicht auf die Prüfung verfassungswidriger Anwendung kantonalen Rechts beschränkt, was eine einheitlichere und möglicherweise strengere Schutzwirkung für betroffene Patienten in der ganzen Schweiz zur Folge hätte."
+            }
+          ]
         },
         {
           "decision_id": "bge_138 I 274",

@@ -138,15 +138,72 @@
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu natürlichem und normativem Konsens: Kann kein tatsächlich übereinstimmender Wille festgestellt werden, bestimmt das Gericht den objektiven Willen nach dem Vertrauensprinzip; ein Rechtsbindungswille wird zugerechnet, wenn ihn die Gegenseite nach Treu und Glauben annehmen durfte.",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "socratic_questions": [],
-          "hypotheticals": [],
+          "key_erwagungen": [
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste und Erwägung 5 sorgfältig, um das Zweistufenmodell der Vertragsauslegung (natürlicher Konsens → normativer Konsens nach dem Vertrauensprinzip) zu verstehen. Achten Sie dabei besonders darauf, unter welchen tatsächlichen Umständen das Gericht einen Schenkungswillen zurechnet, obwohl der Überweisende einen Darlehensvertrag behauptete.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 144 III 93 unter dem Begriff des 'natürlichen Konsenses', und warum konnte er zwischen X. und Z. nicht festgestellt werden?",
+              "hint": "Vgl. Regeste und Erwägung 5: Die Parteien behaupteten unterschiedliche Vertragsnatur (Darlehen vs. Schenkung).",
+              "model_answer": "Der natürliche Konsens bezeichnet den tatsächlich übereinstimmenden inneren Willen beider Parteien beim Vertragsschluss. Im vorliegenden Fall konnte er nicht festgestellt werden, weil X. behauptete, die Zahlung von 2'222'000 FF sei ein Darlehen gewesen, während Z. (bzw. ihre Erbin) einen Schenkungswillen geltend machte. Da keine gemeinsame subjektive Willensübereinstimmung beweisbar war, musste das Gericht auf die normative Auslegung zurückgreifen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche gesetzlichen Normen bilden die Grundlage für die vom Bundesgericht angewandte zweistufige Auslegungsmethode, und welche Funktion übernimmt jeweils Art. 1 OR und Art. 18 OR?",
+              "hint": "Die Key Statutes sind Art. 1 OR und Art. 18 OR; das Vertrauensprinzip ist als Auslegungsmaxime im Bundesrecht verankert.",
+              "model_answer": "Art. 1 OR regelt das Zustandekommen eines Vertrages durch übereinstimmende gegenseitige Willensäusserung und ist damit die Grundlage für den Konsensbegriff. Art. 18 Abs. 1 OR ordnet an, dass der wahre und übereinstimmende Wille der Parteien massgebend ist, und bildet die Grundlage für die subjektive (natürliche) Auslegung. Fehlt ein natürlicher Konsens, wird Art. 18 OR in Verbindung mit dem Vertrauensprinzip (als richterrechtlich entwickelter Auslegungsmaxime) herangezogen, um den normativen Konsens zu ermitteln, d.h. den Sinn der Erklärungen, wie sie die Gegenpartei nach Treu und Glauben verstehen durfte."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, X. hätte bei der Überweisung der 2'222'000 FF im Zahlungsauftrag das Wort 'Darlehen' vermerkt, ohne dass Z. diesem Zusatz widersprochen hätte. Wie hätte das Bundesgericht den normativen Konsens in einem solchen Fall bestimmt?",
+              "hint": "Prüfen Sie, wie das Vertrauensprinzip auf schriftliche Erklärungen angewendet wird und welche Bedeutung einer widerspruchslosen Entgegennahme zukommt.",
+              "model_answer": "Hätte X. im Zahlungsauftrag ausdrücklich 'Darlehen' vermerkt und Z. diesen Zusatz widerspruchslos entgegengenommen, wäre nach dem Vertrauensprinzip davon auszugehen, dass Z. den Rechtsbindungswillen als Darlehensnehmerin hätte annehmen müssen. Das Gericht würde normativ einen Darlehensvertrag bejahen, weil eine vernünftige Empfängerin in guten Treuen hätte erkennen müssen, dass eine Rückzahlungspflicht gemeint war. Das Schweigen der Z. wäre als Zustimmung zu werten, sofern keine besonderen Umstände gegen eine solche Auslegung sprechen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht erklärt, dass einem Überweisenden unter Umständen ein Schenkungswille zugerechnet werden kann, auch wenn dieser nicht seinem tatsächlichen inneren Willen entspricht. Welche Spannungen entstehen dadurch zwischen dem Selbstbestimmungsprinzip im Vertragsrecht und dem Vertrauensschutz der Gegenpartei, und wie löst das Gericht diesen Konflikt?",
+              "hint": "Erwägung 5; beachten Sie die Unterscheidung zwischen Willens- und Erklärungstheorie sowie die Rolle von Treu und Glauben (Art. 2 ZGB).",
+              "model_answer": "Das Selbstbestimmungsprinzip verlangt, dass ein Vertrag nur zustande kommt, wenn der Erklärende tatsächlich den Willen hatte, sich zu binden. Die Zurechnung eines Schenkungswillens gegen den inneren Willen des Überweisenden durchbricht dieses Prinzip und nähert sich der Erklärungstheorie an. Das Bundesgericht löst den Konflikt, indem es den Vertrauensschutz der Empfängerpartei priorisiert: Wer durch sein Verhalten oder seine Erklärungen bei der anderen Partei nach objektivem Massstab und Treu und Glauben den Eindruck eines bestimmten Rechtsbindungswillens erweckt, muss sich diesen zurechnen lassen. Damit wird die Risikoverteilung zulasten desjenigen vorgenommen, der die Unklarheit durch sein Verhalten verursacht hat."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 144 III 93 vorgenommene Zurechnung eines Schenkungswillens gegen den tatsächlichen inneren Willen des Überweisenden rechtspolitisch überzeugend, oder schafft sie unerwünschte Anreize für Empfänger von Geldzahlungen?",
+              "hint": "Wägen Sie die Interessen des Vertrauensschutzes, der Rechtssicherheit und des Selbstbestimmungsrechts gegeneinander ab; beziehen Sie die Beweislastverteilung bei formlosen Vermögensübertragungen ein.",
+              "model_answer": "Die Lösung des Bundesgerichts ist rechtspolitisch vertretbar, weil sie Empfänger von Zahlungen schützt, die im berechtigten Vertrauen auf die Endgültigkeit der Zuwendung Dispositionen getroffen haben – hier etwa Z., die eine Frühpension antrat und auf die finanzielle Unterstützung baute. Kritisch lässt sich einwenden, dass die Zurechnung eines Schenkungswillens ohne klare äussere Erklärung des Überweisenden die Beweislast faktisch umkehrt und Zahlende dazu veranlassen könnte, jeden informellen Transfer zu dokumentieren, was Vertrauen und Grosszügigkeit in persönlichen Beziehungen hemmt. Überzeugender wäre allenfalls eine Lösung, die stärker auf die Gesamtumstände der Beziehung abstellt und einen Mittelweg zwischen Darlehen und Schenkung – etwa eine Zuwendung unter Lebenspartnern ohne Rückforderungsrecht – normativ anerkennt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn X. und Z. kurz nach der Überweisung der 2'222'000 FF eine handschriftliche Vereinbarung unterzeichnet hätten, die das Wort 'Rückzahlung' enthielt, aber keine Angaben zu Zinsen, Laufzeit oder Fälligkeit machte – und diese Vereinbarung erst Jahre später und auf mysteriöse Weise dem Gericht zugespielt worden wäre (wie die tatsächlich aufgetauchte Convention vom 30. September 1997)?",
+              "discussion_points": [
+                "Welchen Beweiswert hat ein formloses, unvollständiges Dokument mit ungeklärter Provenienz für die Qualifikation als Darlehensvertrag gemäss Art. 312 OR?",
+                "Wie beeinflusst die Beweislastverteilung nach Art. 8 ZGB die Entscheidung, wenn die Echtheit des Dokuments weder bewiesen noch widerlegt werden kann?"
+              ],
+              "likely_outcome_shift": "Das Gericht müsste prüfen, ob das Dokument trotz ungeklärter Provenienz als Indiz für einen Darlehenscharakter herangezogen werden kann. Da die Echtheit nicht bewiesen ist, könnte es nur als schwaches Indiz dienen, das im Rahmen der freien Beweiswürdigung zu gewichten wäre. Im Ergebnis bliebe die Beweislast beim Kläger X., und ohne vollständige Beweiswürdigung zugunsten der Darlehensqualifikation würde das Ergebnis voraussichtlich unverändert bleiben – der Schenkungswille könnte weiterhin normativ zugerechnet werden."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht X. (der ältere, wohlhabende Partner) Geld an Z. überwiesen hätte, sondern Z. an X. einen gleich hohen Betrag transferiert hätte, um ihm den Kauf eines Ferienhauses zu ermöglichen, und nun ihre Erbin die Rückzahlung verlangte?",
+              "discussion_points": [
+                "Verändert die Rollenverteilung (finanziell schwächere Partei als Geberin) die normative Auslegung des Rechtsbindungswillens nach dem Vertrauensprinzip?",
+                "Inwiefern spielen gesellschaftliche Erwartungen und die wirtschaftliche Abhängigkeit einer Partei bei der Bestimmung eines Schenkungswillens eine Rolle?"
+              ],
+              "likely_outcome_shift": "Wäre Z. die Überweisende und X. der Empfänger, würde das Gericht dieselben normativen Massstäbe anlegen, müsste aber die Gesamtumstände neu gewichten. Da Z. finanziell weniger stark war und kurz vor ihrer Frühpension stand, könnte das Gericht zu dem Schluss kommen, dass ein vernünftiger Empfänger in der Person von X. nicht ohne Weiteres auf eine endgültige Schenkung vertrauen durfte – vielmehr hätte er hinterfragen müssen, ob eine Rückzahlungserwartung besteht. Dies könnte dazu führen, dass normativ eher ein Darlehen angenommen und die Klage der Erbin gutgeheissen würde."
+            }
+          ],
           "title_it": "",
-          "significance_fr": "Arrêt de principe sur le consensus naturel et normatif: en l'absence de volontés concordantes réelles, le tribunal détermine la volonté objective selon le principe de la confiance; une volonté de s'engager est imputée si l'autre partie pouvait de bonne foi la déduire.",
-          "significance_it": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": ""
+          "significance_fr": "Cet arrêt de principe consacre la distinction entre consensus naturel et consensus normatif en droit suisse des contrats, en précisant qu'une volonté de donner peut être imputée à une partie sur la base du principe de la confiance, même en l'absence de volonté interne réelle en ce sens.",
+          "significance_it": "Questa sentenza di principio sancisce la distinzione tra consenso naturale e consenso normativo nel diritto contrattuale svizzero, precisando che una volontà liberale può essere imputata a una parte sulla base del principio dell'affidamento, anche in assenza di una corrispondente volontà interna effettiva.",
+          "reading_guide_fr": "Commencez par lire attentivement le regeste et le considérant 5, qui exposent le modèle à deux niveaux d'interprétation du contrat (consensus naturel → consensus normatif selon le principe de la confiance). Prêtez une attention particulière aux circonstances de fait qui ont conduit le Tribunal fédéral à imputer une intention libérale au demandeur, malgré sa prétention à un prêt.",
+          "reading_guide_it": "Si consiglia di leggere con attenzione il regesto e il considerando 5, che illustrano il modello interpretativo a due livelli (consenso naturale → consenso normativo secondo il principio dell'affidamento). Particolare attenzione va prestata alle circostanze di fatto che hanno indotto il Tribunale federale ad attribuire un'intenzione liberale al ricorrente, nonostante questi sostenesse l'esistenza di un mutuo."
         }
       ]
     },

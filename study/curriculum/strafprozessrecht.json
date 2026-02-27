@@ -43,14 +43,78 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zur Unschuldsvermutung: Die freie Beweiswürdigung lässt keinen Raum für 'in dubio pro reo' bei Sammlung und Sichtung von Beweismitteln; nur das Übergehen offensichtlich erheblicher Zweifel verletzt Art. 10 StPO.",
-          "significance_fr": "Arrêt de principe sur la présomption d'innocence: la libre appréciation des preuves exclut l''in dubio pro reo' lors de la récolte des preuves; seul le fait d'ignorer des doutes manifestement importants viole l'art. 10 CPP.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe clarifie que le principe 'in dubio pro reo' ne s'applique pas à la collecte et à l'appréciation des preuves, mais uniquement lorsque subsistent des doutes manifestement significatifs et insurmontables après une libre appréciation complète de l'ensemble des preuves.",
+          "significance_it": "Questa sentenza di principio chiarisce che il principio 'in dubio pro reo' non si applica alla raccolta e alla valutazione delle prove, bensì soltanto quando, dopo una completa e libera valutazione di tutte le prove, permangono dubbi manifestamente rilevanti e insuperabili.",
+          "key_erwagungen": [
+            "2.2.1",
+            "2.2.3.1",
+            "2.2.3.2",
+            "2.2.3.3",
+            "2.2.3.4",
+            "2.2.3.5",
+            "2.2.3.6",
+            "2.2.3.7"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Regeste-Abschnitt, der die drei Kernaussagen des Entscheids kompakt zusammenfasst. Widmen Sie sich danach E. 2.2.1 für die normative Grundlage (Art. 10 Abs. 2 und 3 StPO, Art. 32 BV, Art. 6 EMRK) und E. 2.2.3.1–2.2.3.3 für die methodische Abgrenzung zwischen freier Beweiswürdigung und dem Einsatz von 'in dubio pro reo'. Die Anwendung dieser Grundsätze auf den konkreten Fall des Mordes finden Sie in E. 2.2.3.4–2.2.3.7.",
+          "reading_guide_fr": "Commencez par lire le Regeste, qui résume les trois enseignements principaux de l'arrêt. Poursuivez avec le consid. 2.2.1 pour les bases normatives (art. 10 al. 2 et 3 CPP, art. 32 Cst., art. 6 CEDH) et les consid. 2.2.3.1 à 2.2.3.3 pour la délimitation méthodique entre l'appréciation libre des preuves et l'application du principe 'in dubio pro reo'. L'application de ces principes aux éléments constitutifs du meurtre qualifié se trouve aux consid. 2.2.3.4 à 2.2.3.7.",
+          "reading_guide_it": "Si raccomanda di iniziare dalla lettura del Regeste, che riassume i tre principi fondamentali della sentenza. Si passi poi al consid. 2.2.1 per le basi normative (art. 10 cpv. 2 e 3 CPP, art. 32 Cost., art. 6 CEDU) e ai consid. 2.2.3.1–2.2.3.3 per la delimitazione metodica tra la libera valutazione delle prove e l'applicazione del principio 'in dubio pro reo'. L'applicazione di tali principi agli elementi costitutivi dell'omicidio qualificato si trova nei consid. 2.2.3.4–2.2.3.7.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was besagt der Grundsatz 'in dubio pro reo' im Strafprozessrecht, und in welchem Stadium des Verfahrens kommt er gemäss BGE 144 IV 345 zur Anwendung?",
+              "hint": "Vgl. Regeste und E. 2.2.1 sowie Art. 10 Abs. 3 StPO",
+              "model_answer": "Der Grundsatz 'in dubio pro reo' verpflichtet das Gericht, bei unüberwindbaren Zweifeln von der für die beschuldigte Person günstigeren Sachlage auszugehen. Gemäss BGE 144 IV 345 kommt dieser Grundsatz erst nach abgeschlossener Beweiswürdigung zum Tragen, also bei der rechtlichen Würdigung des festgestellten Sachverhalts. Er gilt hingegen nicht für die vorgängige Sammlung und Sichtung der Beweismittel."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Normen bilden zusammen die rechtliche Grundlage der Unschuldsvermutung in der Schweiz, und wie verhalten sie sich zueinander gemäss dem Bundesgericht?",
+              "hint": "Vgl. Art. 32 Abs. 1 BV, Art. 6 Ziff. 2 EMRK und Art. 10 Abs. 2 und 3 StPO sowie E. 2.2.1",
+              "model_answer": "Die Unschuldsvermutung stützt sich auf Art. 32 Abs. 1 BV (Verfassungsebene), Art. 6 Ziff. 2 EMRK (völkerrechtliche Ebene) sowie Art. 10 Abs. 2 und 3 StPO (einfachgesetzliche Ebene). Art. 10 Abs. 3 StPO operationalisiert den verfassungs- und konventionsrechtlichen Grundsatz, indem er das Gericht konkret verpflichtet, bei unüberwindbaren Zweifeln zugunsten der beschuldigten Person zu entscheiden. Die drei Normen bilden ein kohärentes Schutzsystem auf verschiedenen Rechtsstufen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Das Obergericht Uri verneinte die Mordqualifikation, weil es Zweifel an den qualifizierenden Tatumständen hatte. Wie hätte es gemäss den in BGE 144 IV 345 dargelegten Grundsätzen korrekt vorgehen müssen?",
+              "hint": "Vgl. E. 2.2.3.1–2.2.3.3 zum zweistufigen Prüfungsvorgang der Beweiswürdigung",
+              "model_answer": "Das Obergericht hätte zunächst sämtliche erhobenen Beweise und Indizien frei und ohne vorzeitige Anwendung von 'in dubio pro reo' würdigen müssen. Erst nach dieser freien Beweiswürdigung und sofern dabei offensichtlich erhebliche, unüberwindbare Zweifel verblieben, hätte es den Grundsatz 'in dubio pro reo' anwenden und zugunsten des Beschuldigten entscheiden dürfen. Eine vorschnelle Anwendung des Zweifelsgrundsatzes bereits bei der Sichtung der Beweismittel würde Art. 10 StPO verletzen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum grenzt das Bundesgericht die Anwendung von 'in dubio pro reo' auf die Phase nach der Beweiswürdigung ein, und welches Spannungsverhältnis zu einem maximalen Schutz der beschuldigten Person ergibt sich daraus?",
+              "hint": "Vgl. E. 2.2.3.1 und E. 2.2.3.2 sowie den Grundsatz der freien Beweiswürdigung nach Art. 10 Abs. 2 StPO",
+              "model_answer": "Das Bundesgericht begründet die Einschränkung damit, dass der Grundsatz der freien Beweiswürdigung (Art. 10 Abs. 2 StPO) dem Richter erlauben muss, alle Beweise ohne präjudizierende Vorannahmen zu würdigen; eine frühzeitige Anwendung von 'in dubio pro reo' würde diesen Prozess verzerren und belastende Beweise systematisch ausblenden. Es entsteht jedoch ein Spannungsverhältnis: Einerseits schützt die freie Beweiswürdigung die Wahrheitsfindung, andererseits könnte ein zu später Einsatz des Zweifelsgrundsatzes die beschuldigte Person benachteiligen, wenn Zweifel im Rahmen der Würdigung bereits 'weggewürdigt' wurden. Das Bundesgericht löst dieses Spannungsverhältnis, indem es das Übergehen offensichtlich erheblicher Zweifel als Verletzungsmassstab definiert."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die in BGE 144 IV 345 gezogene Grenze zwischen freier Beweiswürdigung und dem Einsetzen der Unschuldsvermutung aus grundrechtlicher Perspektive überzeugend, oder besteht die Gefahr, dass der Schutzgehalt von Art. 32 BV und Art. 6 EMRK ausgehöhlt wird?",
+              "hint": "Vgl. Regeste, E. 2.2.3.1–2.2.3.3 sowie die Zielsetzungen von Art. 32 BV und Art. 6 Ziff. 2 EMRK",
+              "model_answer": "Die Abgrenzung ist dogmatisch nachvollziehbar, da sie die freie Beweiswürdigung als eigenständiges Prinzip schützt und einer Überinstrumentalisierung des Zweifelsgrundsatzes entgegenwirkt. Kritisch lässt sich jedoch einwenden, dass die Grenze zwischen 'offensichtlich erheblichen' und bloss 'erheblichen' Zweifeln in der Praxis schwer zu ziehen ist und damit dem Richter ein erheblicher Beurteilungsspielraum verbleibt, der zu Lasten der beschuldigten Person gehen kann. Aus grundrechtlicher Sicht bleibt der Schutzgehalt von Art. 32 BV und Art. 6 EMRK gewahrt, solange das Bundesgericht die Schwelle für eine Verletzung nicht zu hoch ansetzt und die kantonalen Instanzen bei der Anwendung des Massstabs streng kontrolliert."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, X. hätte im Verfahren ein Geständnis abgelegt, dieses aber später widerrufen und geltend gemacht, es sei unter psychischem Druck entstanden. Wie würde dies die Beweiswürdigung und die Anwendung von 'in dubio pro reo' beeinflussen?",
+              "discussion_points": [
+                "Welchen Beweiswert hat ein widerrufenes Geständnis im Rahmen der freien Beweiswürdigung nach Art. 10 Abs. 2 StPO?",
+                "Ab welchem Grad von Zweifeln an der Freiwilligkeit des Geständnisses müsste das Gericht 'in dubio pro reo' anwenden und auf welche Tatbestandselemente?"
+              ],
+              "likely_outcome_shift": "Das widerrufene Geständnis wäre im Rahmen der freien Beweiswürdigung zu würdigen, wobei das Gericht dessen Umstände (Druck, Zeitpunkt des Widerrufs, Kohärenz mit übrigen Beweisen) sorgfältig abwägen müsste. Bestünden nach dieser Gesamtwürdigung offensichtlich erhebliche Zweifel an der Glaubwürdigkeit des Geständnisses, wäre 'in dubio pro reo' zugunsten des Beschuldigten anzuwenden. Dies könnte die Beweislage hinsichtlich der Mordqualifikation weiter schwächen und den Freispruch bezüglich des qualifizierenden Merkmals begünstigen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Staatsanwaltschaft, sondern X. selbst Beschwerde in Strafsachen erhoben hätte mit dem Argument, das Obergericht habe 'in dubio pro reo' zu wenig konsequent angewendet und hätte ihn vom Vorwurf der vorsätzlichen Tötung freisprechen müssen?",
+              "discussion_points": [
+                "Welche Hürden müsste X. als Beschwerdeführer überwinden, um eine Verletzung von Art. 10 Abs. 3 StPO durch das Obergericht darzutun?",
+                "Inwiefern unterscheidet sich die Kognition des Bundesgerichts je nachdem, ob die Staatsanwaltschaft oder die beschuldigte Person den 'in dubio pro reo'-Grundsatz rügt?"
+              ],
+              "likely_outcome_shift": "X. hätte darlegen müssen, dass das Obergericht offensichtlich erhebliche Zweifel an seiner Täterschaft übergangen hat, was angesichts des unbestrittenen Tatgeschehens (X. erstach das Opfer unbestritten) praktisch aussichtslos wäre. Das Bundesgericht hätte die Beschwerde mit hoher Wahrscheinlichkeit abgewiesen, da die Schuldfrage bei vorsätzlicher Tötung durch die Beweislage klar beantwortet war und kein Raum für unüberwindbare Zweifel bestand."
+            }
+          ]
         },
         {
           "decision_id": "bge_116 IA 455",
@@ -78,14 +142,71 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Anklagegrundsatz: Bei Fahrlässigkeitstaten müssen in der Anklageschrift alle Umstände genannt sein, aus denen sich die Pflichtwidrigkeit ergibt.",
-          "significance_fr": "Cet arrêt de principe établit que, pour les infractions par négligence, l'acte d'accusation doit mentionner expressément toutes les circonstances dont découle la violation du devoir de prudence, sous peine de violer le principe d'accusation garanti par l'art. 29 Cst. et l'art. 9 CPP.",
-          "significance_it": "Questa sentenza di principio stabilisce che, per i reati colposi, il decreto d'accusa deve indicare espressamente tutte le circostanze da cui risulta la violazione del dovere di diligenza, pena la violazione del principio accusatorio garantito dall'art. 29 Cost. e dall'art. 9 CPP.",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe établit que, pour les infractions par négligence, l'acte d'accusation doit mentionner toutes les circonstances fondant la violation du devoir de diligence, la prévisibilité et l'évitabilité du résultat, faute de quoi une condamnation sur la base de faits non visés par l'accusation viole le droit d'être entendu garanti par l'art. 4 aCst. (aujourd'hui art. 29 Cst.).",
+          "significance_it": "Questa sentenza di principio stabilisce che, per i reati colposi, l'atto d'accusa deve indicare tutte le circostanze da cui risultano la violazione del dovere di diligenza, la prevedibilità e l'evitabilità dell'evento, pena la violazione del diritto di essere sentiti ai sensi dell'art. 4 vCost. (oggi art. 29 Cost.) qualora la condanna si fondi su fatti non contestati nell'accusa.",
+          "key_erwagungen": [
+            "3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst das Regeste, das den Leitsatz des Entscheids prägnant formuliert, und anschliessend Erwägung 3, insbesondere die Unterabschnitte (aa) und (bb): Dort rekonstruiert das Bundesgericht den genauen Inhalt der Anklageschrift anhand des wörtlichen Zitats der vier Anklagepunkte und zeigt auf, weshalb die beiden neuen Vorwürfe (Absprunghöhe und Notschirmtyp) davon nicht erfasst waren. Achten Sie besonders auf die normative Schlussfolgerung, wonach eine Verurteilung aufgrund abweichender Vorwürfe den Gehörsanspruch verletzt, sofern keine rechtzeitige Ergänzung der Anklage erfolgte.",
+          "reading_guide_fr": "Commencez par lire le regeste, qui résume le principe directeur de l'arrêt, puis concentrez-vous sur le considérant 3, en particulier les sous-sections (aa) et (bb) : le Tribunal fédéral y reconstitue le contenu précis de l'acte d'accusation à partir de la citation littérale des quatre points d'accusation et explique pourquoi les deux nouveaux griefs (hauteur de saut et type de parachute de secours) n'en faisaient pas partie. Prêtez une attention particulière à la conclusion normative selon laquelle une condamnation fondée sur des griefs divergents viole le droit d'être entendu si l'acte d'accusation n'a pas été complété en temps utile.",
+          "reading_guide_it": "Iniziare con la lettura del regesto, che riassume il principio cardine della sentenza, per poi concentrarsi sul considerando 3, in particolare i sottoparagrafi (aa) e (bb): il Tribunale federale vi ricostruisce il contenuto preciso dell'atto d'accusa attraverso la citazione letterale dei quattro punti imputati e spiega perché i due nuovi addebiti (quota di lancio e tipo di paracadute di emergenza) non vi fossero compresi. Prestare particolare attenzione alla conclusione normativa secondo cui una condanna basata su accuse divergenti viola il diritto di essere sentiti qualora l'atto d'accusa non sia stato tempestivamente integrato.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was waren die konkreten Vorwürfe in der Anklageschrift vom 27. August 1987 gegen X. und Y., und welche Vorwürfe tauchten erst in der vorinstanzlichen Urteilsbegründung auf?",
+              "hint": "Vgl. Erwägung 3 sowie die wörtlich zitierte Anklageschrift mit den vier nummerierten Punkten.",
+              "model_answer": "Die Anklageschrift warf X. vor, beim Packen des Fallschirms konkrete Verpackungsfehler gemacht zu haben (Ziff. 1–3), und Y., den Haupt- und Notfallschirm zu wenig sorgfältig kontrolliert zu haben (Ziff. 4). Erst in der vorinstanzlichen Urteilsbegründung wurden zwei neue Vorwürfe erhoben: (1) die gewählte Absprunghöhe von ca. 600 m sei zu niedrig gewesen, und (2) der verwendete Notschirm habe keine barometrische Öffnungsvorrichtung gehabt. Diese beiden Punkte waren weder in der Anklage noch in einem sonstigen Vorhalt während des Verfahrens erwähnt worden."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche verfassungsrechtliche Garantie bildet die Grundlage für den Anklagegrundsatz in diesem Entscheid, und welche konkreten Anforderungen stellt das Bundesgericht speziell für Fahrlässigkeitstaten auf?",
+              "hint": "Vgl. Regeste und Erwägung 3 (bb), insbesondere die Ausführungen zu Art. 4 BV (heute Art. 29 BV) und zum rechtlichen Gehör.",
+              "model_answer": "Das Bundesgericht leitet den Anklagegrundsatz aus dem in Art. 4 aBV (heute Art. 29 BV) verankerten Anspruch auf rechtliches Gehör ab. Für Fahrlässigkeitstaten präzisiert das Gericht, dass in der Anklageschrift sämtliche Umstände aufgeführt werden müssen, aus denen sich (1) die Pflichtwidrigkeit des vorgeworfenen Verhaltens, (2) die Vorhersehbarkeit und (3) die Vermeidbarkeit des eingetretenen Erfolges ergeben sollen. Eine Verurteilung aufgrund eines von der Anklage abweichenden Sachverhalts ist nur dann zulässig, wenn die Anklage rechtzeitig und hinreichend ergänzt oder abgeändert wurde."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, die Staatsanwaltschaft hätte in der Hauptverhandlung – noch vor dem Urteil – einen ergänzenden Vorhalt zur ungenügenden Absprunghöhe gemacht und den Beschwerdeführern Gelegenheit zur Stellungnahme gegeben: Hätte das Obergericht dann eine Verurteilung auf diesen Punkt stützen dürfen?",
+              "hint": "Vgl. Regeste, zweiter Satz: '…wenn die Anklage nicht rechtzeitig und in hinreichender Weise im Verlaufe des Verfahrens entsprechend ergänzt oder abgeändert wurde.'",
+              "model_answer": "Nach den vom Bundesgericht aufgestellten Grundsätzen wäre eine solche Verurteilung unter dieser Bedingung grundsätzlich möglich gewesen. Der Anklagegrundsatz verbietet nicht jede Abweichung vom ursprünglichen Anklageschrif, sondern verlangt, dass Ergänzungen rechtzeitig und hinreichend kommuniziert werden, damit die Beschuldigten ihr Verteidigungsrecht wirksam ausüben können. Ein formeller Vorhalt in der Hauptverhandlung mit Gelegenheit zur Stellungnahme hätte diese Anforderungen in der Regel erfüllt, sofern den Beschuldigten genügend Zeit für eine angemessene Reaktion eingeräumt worden wäre."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum behandelt das Bundesgericht die Anforderungen an die Anklageschrift bei Fahrlässigkeitsdelikten strenger als es bei Vorsatzdelikten der Fall wäre, und welche strukturellen Merkmale der Fahrlässigkeitstat begründen diesen erhöhten Spezifizierungsbedarf?",
+              "hint": "Vgl. Regeste sowie Erwägung 3; beachten Sie den Aufbau der Fahrlässigkeitstat (Pflichtwidrigkeit, Vorhersehbarkeit, Vermeidbarkeit) im Vergleich zur Vorsatztat.",
+              "model_answer": "Fahrlässigkeitsdelikte weisen keine im Tatbestand klar abgegrenzte Handlung auf, sondern knüpfen an eine normative Bewertung des Verhaltens an: Entscheidend sind die konkrete Sorgfaltspflichtverletzung, die Vorhersehbarkeit und die Vermeidbarkeit des Erfolgs. Diese Elemente sind nicht aus der äusseren Tathandlung allein erkennbar, sondern hängen stark vom konkret vorgeworfenen Kontext ab – im vorliegenden Fall also davon, ob der Fehler beim Packen, bei der Absprunghöhe oder bei der Wahl des Notschirms lag. Nur wenn die Anklageschrift alle diese normativen Anknüpfungspunkte benennt, kann sich die beschuldigte Person gezielt verteidigen. Bei Vorsatzdelikten ist demgegenüber die vorgeworfene Handlung oft bereits aus der Sachverhaltsbeschreibung hinreichend deutlich, sodass die normative Bewertung weniger neue Fakten einführt."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht in BGE 116 Ia 455 vertretene Konzeption des Anklagegrundsatzes als Ausfluss des rechtlichen Gehörs überzeugend, oder wäre eine Verankerung primär im Prinzip des fairen Verfahrens (Art. 6 EMRK) sachgerechter gewesen?",
+              "hint": "Vgl. Regeste und Erwägung 3; berücksichtigen Sie auch die spätere Kodifikation in Art. 9 StPO und die parallele Garantie in Art. 6 Ziff. 3 lit. a und b EMRK.",
+              "model_answer": "Die Verankerung im rechtlichen Gehör (Art. 4 aBV) ist insofern kohärent, als der Anklagegrundsatz primär sicherstellt, dass die beschuldigte Person weiss, wogegen sie sich zu verteidigen hat – ein typischer Aspekt des Gehörsanspruchs. Kritisch lässt sich jedoch einwenden, dass das Anklageprinzip auch institutionelle Funktionen erfüllt (Begrenzung der Gerichtsmacht, Gewaltenteilung), die über den individuellen Gehörsanspruch hinausgehen und besser unter dem Gesichtspunkt des fairen Verfahrens i.S.v. Art. 6 EMRK erfasst werden. Die spätere Kodifikation in Art. 9 StPO als eigenständige Maxime bestätigt diese funktionale Eigenständigkeit. Dennoch bleibt die bundesgerichtliche Konstruktion praktisch wirkungsvoll, weil sie den Beschuldigten eine direkt durchsetzbare verfassungsrechtliche Rüge ermöglichte, die damals über die staatsrechtliche Beschwerde geltend gemacht werden konnte."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Wie wäre der Fall zu beurteilen, wenn zwar die Anklageschrift die ungenügende Absprunghöhe nicht erwähnt, der Verteidiger von X. aber in seinem eigenen Plädoyer vor dem Obergericht die Frage der Absprunghöhe ausführlich thematisiert und damit faktisch dazu Stellung genommen hätte?",
+              "discussion_points": [
+                "Kann eine freiwillige Stellungnahme des Verteidigers zu einem nicht angeklagten Vorwurf eine fehlende Anklagepräzisierung heilen?",
+                "Ist der Anklagegrundsatz disponibel, d.h. kann auf ihn durch konkludentes Verhalten verzichtet werden, oder handelt es sich um eine zwingende Verfahrensgarantie?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht würde wohl differenzieren: Allein die Tatsache, dass ein Verteidiger zu einem nicht angeklagten Punkt Stellung nimmt, heilt den Mangel nicht automatisch, da die Initiative zur Anklagepräzisierung bei der Staatsanwaltschaft und dem Gericht liegt. Denkbar wäre aber, dass bei einer sehr detaillierten, offensichtlich vorbereiteten Stellungnahme eine Verletzung des rechtlichen Gehörs im Ergebnis verneint wird, weil die Verteidigungsmöglichkeit faktisch bestand. Das Ergebnis bliebe unsicher und hinge stark vom Ausmass der tatsächlich wahrgenommenen Verteidigungsmöglichkeit ab."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht die Privatpersonen X. und Y. als Kursleiter, sondern der zuständige Kanton als Träger der Kursorganisation angeklagt worden wäre – hätte der Anklagegrundsatz in gleicher Weise gegolten, und welche Besonderheiten hätte dies für die Spezifizierung der Pflichtwidrigkeit in der Anklageschrift?",
+              "discussion_points": [
+                "Gelten die Garantien des rechtlichen Gehörs und der Anklagegrundsatz auch gegenüber juristischen Personen des öffentlichen Rechts im Strafverfahren?",
+                "Wie müsste die Pflichtwidrigkeit in der Anklageschrift umschrieben werden, wenn sie sich nicht aus individuellem Fehlverhalten, sondern aus einer organisatorischen Sorgfaltspflichtverletzung einer Behörde ergibt?"
+              ],
+              "likely_outcome_shift": "Da das Schweizer Strafrecht zur Tatzeit (und auch heute unter Art. 102 StGB nur beschränkt) keine echte strafrechtliche Verantwortlichkeit des Gemeinwesens kannte, hätte eine Anklage gegen den Kanton als solchen damals nicht bestanden. Würde man dennoch ein modernes Organisationsverschulden konstruieren, wäre die Anklageschrift noch detaillierter zu fassen, da die Pflichtwidrigkeit nicht an persönliches Handeln, sondern an Organisationsstrukturen anknüpft – der Anklagegrundsatz würde damit noch höhere Anforderungen an die Sachverhaltsspezifizierung stellen als im Ausgangsfall."
+            }
+          ]
         }
       ]
     },
@@ -127,14 +248,76 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zu Haftgründen nach der neuen StPO: Bestätigung der Kollusionsgefahr (Art. 221 StPO); Abgrenzung von der Ausführungsgefahr; bei Kollusion ist Ausgrenzung als mildere Ersatzmassnahme vorrangig gegenüber Eingrenzung.",
-          "significance_fr": "Arrêt de principe sur les motifs de détention sous le nouveau CPP: confirmation du risque de collusion (art. 221 CPP); distinction avec le risque de passage à l'acte; en cas de collusion, l'exclusion géographique prime comme mesure de substitution.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe clarifie, sous l'empire du nouveau CPP, les conditions du risque de collusion et du risque d'infraction (art. 221 CPP), et pose que l'interdiction de périmètre (Ausgrenzung) prime sur l'assignation à résidence (Eingrenzung) comme mesure de substitution moins restrictive lorsqu'il s'agit de prévenir une influence sur la victime présumée.",
+          "significance_it": "Questa sentenza di principio chiarisce, nel quadro del nuovo CPP, le condizioni del pericolo di collusione e del pericolo di commissione di reati (art. 221 CPP) e stabilisce che il divieto di accesso a una zona (Ausgrenzung) prevale sull'obbligo di non allontanarsi (Eingrenzung) quale misura sostitutiva meno restrittiva per prevenire influenze sulla presunta vittima.",
+          "key_erwagungen": [
+            "3",
+            "4",
+            "5.2",
+            "5.3",
+            "6.2",
+            "6.4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 3 zum dringenden Tatverdacht als allgemeine Haftvoraussetzung, dann Erwägung 4 zur Kollusionsgefahr und Erwägungen 5.2–5.3 zur Abgrenzung von der Ausführungsgefahr (Art. 221 Abs. 2 StPO). Besonderes Augenmerk verdient Erwägung 6.2 und 6.4, in der das Bundesgericht die Unterscheidung zwischen Eingrenzung und Ausgrenzung als Formen der Aufenthaltsbeschränkung (Art. 237 Abs. 2 lit. c StPO) entwickelt und das Verhältnismässigkeitsprinzip konkretisiert.",
+          "reading_guide_fr": "Commencez par le considérant 3 relatif aux soupçons suffisants comme condition générale de la détention, puis le considérant 4 sur le risque de collusion et les considérants 5.2–5.3 sur la distinction avec le risque d'infraction (art. 221 al. 2 CPP). Portez une attention particulière aux considérants 6.2 et 6.4, dans lesquels le Tribunal fédéral développe la distinction entre l'assignation à résidence et l'interdiction de périmètre (art. 237 al. 2 let. c CPP) en appliquant le principe de proportionnalité.",
+          "reading_guide_it": "Iniziate con il considerando 3 sul grave sospetto come presupposto generale della detenzione, poi il considerando 4 sul pericolo di collusione e i considerandi 5.2–5.3 sulla distinzione con il pericolo di commissione di reati (art. 221 cpv. 2 CPP). Prestate particolare attenzione ai considerandi 6.2 e 6.4, nei quali il Tribunale federale elabora la distinzione tra obbligo di non allontanarsi da un territorio e divieto di accesso a una zona determinata (art. 237 cpv. 2 lett. c CPP) applicando il principio di proporzionalità.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was unterscheidet die Kollusionsgefahr (Art. 221 Abs. 1 lit. b StPO) von der Ausführungsgefahr (Art. 221 Abs. 2 StPO) als Haftgründe, und warum bejaht das Bundesgericht im vorliegenden Fall nur erstere?",
+              "hint": "Vgl. Erwägungen 4 und 5.2–5.3 des Entscheids.",
+              "model_answer": "Die Kollusionsgefahr betrifft die Gefahr, dass der Beschuldigte Beweise verfälscht oder Zeugen bzw. Opfer beeinflusst, während die Ausführungsgefahr die Gefahr bezeichnet, dass der Beschuldigte eine angedrohte schwere Straftat tatsächlich begeht. Das Bundesgericht verneint die Ausführungsgefahr, weil sich die Drohungen von X. lediglich auf ein Vergehen im Sinne von Art. 10 Abs. 3 StGB bezogen und Art. 221 Abs. 2 StPO ausdrücklich ein Verbrechen oder schweres Vergehen voraussetzt. Da die angedrohten Handlungen diese Schwelle nicht erreichten, schied Präventivhaft in diesem Punkt aus."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche normativen Voraussetzungen müssen gemäss Art. 221 Abs. 2 StPO kumulativ erfüllt sein, damit Ausführungsgefahr als Haftgrund bejaht werden kann?",
+              "hint": "Vgl. Erwägung 5.2 sowie den Wortlaut von Art. 221 Abs. 2 StPO i.V.m. Art. 10 Abs. 3 StGB.",
+              "model_answer": "Art. 221 Abs. 2 StPO setzt voraus, dass erstens ein dringender Tatverdacht besteht, zweitens ernsthafte Anhaltspunkte dafür vorliegen, dass der Beschuldigte eine bestimmte schwere Straftat ausführen wird, und drittens diese angedrohte Tat die Schwelle eines Verbrechens oder zumindest eines schweren Vergehens erreicht. Das Bundesgericht legt fest, dass blosse Vergehen im Sinne von Art. 10 Abs. 3 StGB für die Anordnung von Präventivhaft gestützt auf Art. 221 Abs. 2 StPO nicht genügen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, X. hätte seiner Ehefrau nicht bloss mit einem Vergehen gedroht, sondern konkret damit, sie mit HIV zu infizieren (schwere Körperverletzung, Art. 122 StGB): Wie würde das Bundesgericht die Ausführungsgefahr in diesem Abwandlungsfall beurteilen?",
+              "hint": "Vgl. Erwägungen 5.2–5.3 sowie den Sachverhalt A (Vorwurf der HIV-Infizierung mehrerer Personen in früheren Jahren).",
+              "model_answer": "In diesem Fall wäre die Schwellenbedingung von Art. 221 Abs. 2 StPO erfüllt, da schwere Körperverletzung gemäss Art. 122 StGB ein Verbrechen darstellt (Strafrahmen über drei Jahre). Zusammen mit dem bereits bejahten dringenden Tatverdacht und dem konkreten Vorwurf früherer HIV-Infizierungen lägen ernsthafte Anhaltspunkte für eine erneute Ausführung vor, sodass Präventivhaft gestützt auf Art. 221 Abs. 2 StPO angeordnet werden könnte. Das Gericht müsste dann zusätzlich prüfen, ob Ersatzmassnahmen die Ausführungsgefahr ebenso wirksam bannen könnten."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Weshalb unterscheidet das Bundesgericht in Erwägung 6.4 zwischen Eingrenzung und Ausgrenzung als Formen der Aufenthaltsbeschränkung, und welche Logik liegt dieser Differenzierung im Lichte des Verhältnismässigkeitsprinzips zugrunde?",
+              "hint": "Vgl. Erwägungen 6.2 und 6.4 sowie Art. 36 BV (Verhältnismässigkeit) und Art. 237 StPO.",
+              "model_answer": "Das Bundesgericht unterscheidet die Eingrenzung (Pflicht, ein bestimmtes Gebiet nicht zu verlassen) von der Ausgrenzung (Pflicht, eine bestimmte Gegend nicht zu betreten), weil diese Massnahmen unterschiedliche Freiheitsbeschränkungen bewirken. Die Eingrenzung ist typischerweise intensiver, da sie die Bewegungsfreiheit räumlich eng beschränkt, und eignet sich primär zur Begegnung von Fluchtgefahr. Bei Kollusionsgefahr genügt es hingegen in der Regel, dem Beschuldigten das Betreten des Aufenthaltsorts des Opfers zu verbieten (Ausgrenzung), was eine mildere, aber ebenso zielgerichtete Massnahme darstellt. Das Verhältnismässigkeitsprinzip gebietet, stets das gelindeste zum Ziel führende Mittel zu wählen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Auslegung des Bundesgerichts, wonach Ausführungsgefahr bei lediglich einem Vergehen von vornherein ausscheidet, rechtspolitisch überzeugend, oder bestehen gute Gründe, auch bei Vergehen Präventivhaft zuzulassen?",
+              "hint": "Vgl. Erwägung 5.3 sowie Art. 10 Abs. 2 und 3 StGB; beachten Sie auch die BV-Garantien (Art. 10 Abs. 2, Art. 31 BV) und die EMRK (Art. 5 Abs. 1 lit. c).",
+              "model_answer": "Die restriktive Auslegung des Bundesgerichts ist grundrechtlich gut begründbar, weil Präventivhaft einen intensiven Eingriff in das Freiheitsrecht (Art. 10 Abs. 2 BV, Art. 5 EMRK) darstellt und der Gesetzgeber bewusst eine hohe Eingriffschwelle normiert hat. Andererseits lässt sich einwenden, dass auch Vergehen – insbesondere wiederholte Tätlichkeiten oder Drohungen im häuslichen Umfeld – für Opfer erhebliche Bedrohungen darstellen können, die durch mildere Ersatzmassnahmen nicht immer wirksam abgewendet werden. Rechtspolitisch wäre allenfalls eine differenzierte Lösung vertretbar, die auf die konkrete Bedrohungsintensität und die Verletzlichkeit des Opfers abstellt, doch verlangt das Legalitätsprinzip klare gesetzliche Grundlagen, die der geltende Art. 221 Abs. 2 StPO für Vergehen gerade nicht bietet."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, X. hätte nach seiner Entlassung aus der Untersuchungshaft das Kontaktverbot wiederholt und nachweislich verletzt und wäre dabei an den Wohnort seiner Ehefrau gefahren. Wie würde dies die Beurteilung der Ersatzmassnahmen und allfälliger Rückversetzung in Haft beeinflussen?",
+              "discussion_points": [
+                "Wiederholte Verletzung von Ersatzmassnahmen als Indiz für verstärkte Kollusionsgefahr und mangelnde Kooperationsbereitschaft des Beschuldigten.",
+                "Verhältnismässigkeit der Rückversetzung in Untersuchungshaft nach Art. 237 Abs. 5 StPO, wenn mildere Mittel sich als unzureichend erwiesen haben."
+              ],
+              "likely_outcome_shift": "Bei nachgewiesener Verletzung des Kontaktverbots würden die Voraussetzungen für eine Rückversetzung in Untersuchungshaft gemäss Art. 237 Abs. 5 StPO erheblich gestärkt, da die Wirkungslosigkeit der Ersatzmassnahmen belegt wäre. Das Gericht könnte die Unverhältnismässigkeit einer erneuten Haft nicht mehr mit dem Argument verneinen, mildere Mittel seien noch nicht ausgeschöpft, und würde die Kollusionsgefahr als konkret und akut einstufen."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Wie würde sich die Rechtslage verändern, wenn nicht X. als Beschuldigter, sondern seine Ehefrau A. die gefährdende Person wäre und X. als mutmassliches Opfer häuslicher Gewalt und Drohungen aufträte?",
+              "discussion_points": [
+                "Symmetrische Anwendbarkeit der Haftgründe (Art. 221 StPO) und Ersatzmassnahmen (Art. 237 StPO) unabhängig vom Geschlecht der beschuldigten Person.",
+                "Mögliche praktische Unterschiede bei der Einschätzung der Glaubwürdigkeit und der Beweislage sowie Wechselwirkungen mit zivilrechtlichen Schutzmassnahmen (Art. 28b ZGB)."
+              ],
+              "likely_outcome_shift": "Die rechtlichen Massstäbe für Kollusionsgefahr und Verhältnismässigkeit der Ersatzmassnahmen würden sich nicht ändern, da StPO und BV geschlechtsneutral gelten. Praktisch könnte die Beweislage anders gewichtet werden, und zivilrechtliche Massnahmen nach Art. 28b ZGB (Rayonverbote im Zivilrecht) könnten parallel oder alternativ angeordnet werden, was die Notwendigkeit strafprozessualer Eingrenzung relativieren würde."
+            }
+          ]
         },
         {
           "decision_id": "bge_140 IV 74",
