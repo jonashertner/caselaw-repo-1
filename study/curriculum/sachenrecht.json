@@ -80,6 +80,29 @@
           ]
         },
         {
+          "decision_id": "bge_130 III 306",
+          "bge_ref": "BGE 130 III 306",
+          "actual_language": "de",
+          "title_de": "Öffentlicher Glaube des Grundbuchs — gutgläubiger Erwerb",
+          "title_fr": "Foi publique du registre foncier — acquisition de bonne foi",
+          "title_it": "",
+          "concepts_de": ["Öffentlicher Glaube", "Grundbuch", "Gutgläubiger Erwerb", "Publizitätsprinzip"],
+          "concepts_fr": ["Foi publique", "Registre foncier", "Acquisition de bonne foi", "Publicité"],
+          "concepts_it": [],
+          "statutes": ["Art. 973 ZGB"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Der öffentliche Glaube des Grundbuchs schützt den gutgläubigen Erwerber dinglicher Rechte auch bei unrichtigem Grundbucheintrag.",
+          "significance_fr": "La foi publique du registre foncier protège l'acquéreur de bonne foi même en cas d'inscription incorrecte.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
+        },
+        {
           "decision_id": "bge_127 III 506",
           "bge_ref": "BGE 127 III 506",
           "actual_language": "de",
@@ -215,6 +238,29 @@
               "likely_outcome_shift": "Die Besitzesstörungsklage wäre nach der einjährigen Verwirkungsfrist nicht mehr möglich. Der Besitzer müsste auf die Eigentumsklage ausweichen."
             }
           ]
+        },
+        {
+          "decision_id": "bge_132 III 155",
+          "bge_ref": "BGE 132 III 155",
+          "actual_language": "de",
+          "title_de": "Eigentumserwerb an beweglichen Sachen — Übergabe und Traditionsprinzip",
+          "title_fr": "Acquisition de la propriété mobilière — remise et principe de tradition",
+          "title_it": "",
+          "concepts_de": ["Eigentumserwerb", "Bewegliche Sachen", "Übergabe", "Traditionsprinzip", "Fahrnis"],
+          "concepts_fr": ["Acquisition de la propriété", "Meubles", "Remise", "Principe de tradition"],
+          "concepts_it": [],
+          "statutes": ["Art. 714 ZGB"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Voraussetzungen des Eigentumserwerbs an beweglichen Sachen: Einigung und Übergabe nach Art. 714 ZGB.",
+          "significance_fr": "Conditions de l'acquisition de la propriété mobilière: accord et remise selon l'art. 714 CC.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },

@@ -74,6 +74,29 @@
           ]
         },
         {
+          "decision_id": "bge_124 III 474",
+          "bge_ref": "BGE 124 III 474",
+          "actual_language": "de",
+          "title_de": "Kündigung zur Unzeit — Sperrfrist bei Krankheit",
+          "title_fr": "Résiliation en temps inopportun — délai de protection en cas de maladie",
+          "title_it": "",
+          "concepts_de": ["Kündigung zur Unzeit", "Sperrfrist", "Krankheit", "Arbeitsunfähigkeit"],
+          "concepts_fr": ["Résiliation en temps inopportun", "Délai de protection", "Maladie", "Incapacité de travail"],
+          "concepts_it": [],
+          "statutes": ["Art. 336c OR"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Sperrfrist nach Art. 336c OR: Kündigung während Krankheit ist nichtig, wenn die Sperrfrist läuft.",
+          "significance_fr": "Arrêt de principe sur le délai de protection de l'art. 336c CO: la résiliation durant la maladie est nulle si le délai de protection court.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
+        },
+        {
           "decision_id": "bge_132 III 115",
           "bge_ref": "BGE 132 III 115",
           "actual_language": "de",
@@ -203,6 +226,29 @@
               "likely_outcome_shift": "Pauschalklauseln sind zulässig, wenn das Grundgehalt über dem Mindestlohn liegt und die Mehrarbeit in einem vernünftigen Verhältnis steht. Bei Kadermitarbeitern eher zulässig als bei Normalangestellten."
             }
           ]
+        },
+        {
+          "decision_id": "bge_125 I 71",
+          "bge_ref": "BGE 125 I 71",
+          "actual_language": "de",
+          "title_de": "Lohngleichheit — Diskriminierungsverbot nach Gleichstellungsgesetz",
+          "title_fr": "Égalité salariale — interdiction de discrimination selon la loi sur l'égalité",
+          "title_it": "",
+          "concepts_de": ["Lohngleichheit", "Gleichstellungsgesetz", "Lohndiskriminierung", "Geschlecht"],
+          "concepts_fr": ["Égalité salariale", "Loi sur l'égalité", "Discrimination salariale", "Sexe"],
+          "concepts_it": [],
+          "statutes": ["Art. 3 GlG", "Art. 8 BV"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Lohngleichheit: Beweislast und Methodik des Lohnvergleichs nach dem Gleichstellungsgesetz.",
+          "significance_fr": "Arrêt de principe sur l'égalité salariale: fardeau de la preuve et méthode de comparaison des salaires selon la LEg.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },
@@ -273,6 +319,29 @@
               "likely_outcome_shift": "Ein globales 5-Jahres-Verbot wäre übermässig. Der Richter kann es auf ein angemessenes Mass herabsetzen (Art. 340a Abs. 2 OR), typischerweise auf 1-2 Jahre und den relevanten Markt."
             }
           ]
+        },
+        {
+          "decision_id": "bge_129 III 177",
+          "bge_ref": "BGE 129 III 177",
+          "actual_language": "de",
+          "title_de": "Arbeitszeugnis — Wahrheitspflicht und wohlwollende Formulierung",
+          "title_fr": "Certificat de travail — obligation de vérité et formulation bienveillante",
+          "title_it": "",
+          "concepts_de": ["Arbeitszeugnis", "Wahrheitspflicht", "Wohlwollende Formulierung", "Vollständigkeit"],
+          "concepts_fr": ["Certificat de travail", "Obligation de vérité", "Formulation bienveillante", "Exhaustivité"],
+          "concepts_it": [],
+          "statutes": ["Art. 330a OR"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zum Arbeitszeugnis: Spannung zwischen Wahrheitspflicht und wohlwollender Formulierung; Anspruch auf vollständiges Zeugnis.",
+          "significance_fr": "Arrêt de principe sur le certificat de travail: tension entre obligation de vérité et formulation bienveillante; droit à un certificat complet.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     }

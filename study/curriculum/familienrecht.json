@@ -78,6 +78,29 @@
               "likely_outcome_shift": "Bei wesentlicher und dauerhafter Veränderung der Verhältnisse kann der Unterhalt angepasst werden (Art. 129 ZGB). Arbeitslosigkeit kann eine Reduktion oder Sistierung rechtfertigen."
             }
           ]
+        },
+        {
+          "decision_id": "bge_134 III 145",
+          "bge_ref": "BGE 134 III 145",
+          "actual_language": "de",
+          "title_de": "Nachehelicher Unterhalt — Kriterien und Eigenversorgungskapazität",
+          "title_fr": "Entretien après divorce — critères et capacité d'auto-entretien",
+          "title_it": "",
+          "concepts_de": ["Nachehelicher Unterhalt", "Eigenversorgungskapazität", "Lebensstandard", "Scheidung"],
+          "concepts_fr": ["Entretien après divorce", "Capacité d'auto-entretien", "Niveau de vie"],
+          "concepts_it": [],
+          "statutes": ["Art. 125 ZGB"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zu den Kriterien des nachehelichen Unterhalts nach Art. 125 ZGB, insbesondere zur Eigenversorgungskapazität und zum ehezeitlichen Lebensstandard.",
+          "significance_fr": "Arrêt de principe sur les critères de l'entretien après divorce selon l'art. 125 CC, notamment sur la capacité d'auto-entretien.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },
@@ -148,6 +171,29 @@
               "likely_outcome_shift": "Häusliche Gewalt ist ein starkes Indiz gegen die gemeinsame Sorge. Der gewalttätige Elternteil kann die alleinige Sorge verlieren, besonders wenn das Kind die Gewalt miterlebt hat."
             }
           ]
+        },
+        {
+          "decision_id": "bge_143 III 361",
+          "bge_ref": "BGE 143 III 361",
+          "actual_language": "de",
+          "title_de": "Kindeswohl-Grundsatz — Kriterien bei Obhutszuteilung",
+          "title_fr": "Principe du bien de l'enfant — critères pour l'attribution de la garde",
+          "title_it": "",
+          "concepts_de": ["Kindeswohl", "Obhutszuteilung", "Elterliche Sorge", "Beurteilungskriterien"],
+          "concepts_fr": ["Bien de l'enfant", "Attribution de la garde", "Autorité parentale", "Critères"],
+          "concepts_it": [],
+          "statutes": ["Art. 296 ZGB"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Das Bundesgericht konkretisiert die Kriterien des Kindeswohls bei der Obhutszuteilung: Stabilität, Bindungstoleranz und Erziehungsfähigkeit.",
+          "significance_fr": "Le Tribunal fédéral précise les critères du bien de l'enfant pour l'attribution de la garde: stabilité, tolérance aux liens et capacité éducative.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         },
         {
           "decision_id": "bge_144 III 349",
@@ -279,6 +325,29 @@
               "likely_outcome_shift": "Art. 208 ZGB erlaubt die Hinzurechnung böswillig vermindeter Errungenschaft. Die verschleuderten Beträge werden bei der Vorschlagsberechnung wieder hinzugerechnet."
             }
           ]
+        },
+        {
+          "decision_id": "bge_111 II 401",
+          "bge_ref": "BGE 111 II 401",
+          "actual_language": "de",
+          "title_de": "Gütertrennung — güterrechtliche Auseinandersetzung und Beweislast",
+          "title_fr": "Séparation de biens — liquidation du régime et fardeau de la preuve",
+          "title_it": "",
+          "concepts_de": ["Gütertrennung", "Güterrechtliche Auseinandersetzung", "Beweislast", "Eheliches Güterrecht"],
+          "concepts_fr": ["Séparation de biens", "Liquidation du régime", "Fardeau de la preuve"],
+          "concepts_it": [],
+          "statutes": ["Art. 204 ZGB", "Art. 248 ZGB"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur güterrechtlichen Auseinandersetzung bei Gütertrennung: Beweislast und Vermögensvermutung.",
+          "significance_fr": "Arrêt de principe sur la liquidation du régime de la séparation de biens: fardeau de la preuve et présomption de propriété.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     }

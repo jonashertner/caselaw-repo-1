@@ -78,6 +78,29 @@
               "likely_outcome_shift": "Bei einem Exekutiventscheid greift die Begründungspflicht unmittelbar nach VwVG/kantonalem Verfahrensrecht. Der Grundrechtsschutz ist einfacher durchzusetzen."
             }
           ]
+        },
+        {
+          "decision_id": "bge_129 I 392",
+          "bge_ref": "BGE 129 I 392",
+          "actual_language": "de",
+          "title_de": "Rechtsgleichheit — Gleichbehandlung im kantonalen Steuerrecht",
+          "title_fr": "Égalité de traitement — égalité dans le droit fiscal cantonal",
+          "title_it": "",
+          "concepts_de": ["Rechtsgleichheit", "Gleichbehandlung", "Sachlicher Grund", "Willkürverbot"],
+          "concepts_fr": ["Égalité de traitement", "Motif objectif", "Interdiction de l'arbitraire"],
+          "concepts_it": [],
+          "statutes": ["Art. 8 BV"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Massstab der Rechtsgleichheit nach Art. 8 Abs. 1 BV: Gleiches muss gleich, Ungleiches muss ungleich behandelt werden; sachliche Gründe für Differenzierung erforderlich.",
+          "significance_fr": "Critère de l'égalité de traitement selon l'art. 8 al. 1 Cst.: l'égal doit être traité également; des motifs objectifs pour la différenciation sont nécessaires.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },

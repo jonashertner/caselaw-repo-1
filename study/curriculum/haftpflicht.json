@@ -73,64 +73,50 @@
           ]
         },
         {
-          "decision_id": "bge_133 III 323",
-          "bge_ref": "BGE 133 III 323",
+          "decision_id": "bge_123 III 10",
+          "bge_ref": "BGE 123 III 10",
           "actual_language": "de",
-          "title_de": "Haftung bei Geldwäscherei als unerlaubte Handlung",
-          "title_fr": "Responsabilité pour blanchiment d'argent comme acte illicite",
-          "concepts_de": ["Unerlaubte Handlung", "Widerrechtlichkeit", "IPR", "Geldwäscherei"],
-          "concepts_fr": ["Acte illicite", "Illicéité", "Blanchiment"],
-          "statutes": ["Art. 41 OR", "Art. 132 IPRG"],
-          "difficulty": 4,
+          "title_de": "Genugtuung — Bemessung bei schwerer Körperverletzung",
+          "title_fr": "Tort moral — calcul en cas de lésions corporelles graves",
+          "title_it": "",
+          "concepts_de": ["Genugtuung", "Immaterielle Unbill", "Bemessung", "Schwere Verletzung"],
+          "concepts_fr": ["Tort moral", "Préjudice immatériel", "Calcul"],
+          "concepts_it": [],
+          "statutes": ["Art. 47 OR", "Art. 49 OR"],
+          "difficulty": 2,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zu den Bemessungskriterien der Genugtuung nach Art. 47 OR bei schwerer Körperverletzung.",
+          "significance_fr": "Arrêt de principe sur les critères de calcul du tort moral selon l'art. 47 CO en cas de lésions graves.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
+        },
+        {
+          "decision_id": "bge_134 III 529",
+          "bge_ref": "BGE 134 III 529",
+          "actual_language": "de",
+          "title_de": "Widerrechtlichkeit — Schutznormtheorie und reiner Vermögensschaden",
+          "title_fr": "Illicéité — théorie de la norme de protection et dommage purement économique",
+          "title_it": "",
+          "concepts_de": ["Widerrechtlichkeit", "Schutznormtheorie", "Reiner Vermögensschaden", "Deliktische Haftung"],
+          "concepts_fr": ["Illicéité", "Norme de protection", "Dommage purement économique"],
+          "concepts_it": [],
+          "statutes": ["Art. 41 OR"],
+          "difficulty": 3,
           "prerequisites": ["bge_123 III 110"],
-          "significance_de": "Anknüpfung bei unerlaubter Handlung im internationalen Privatrecht",
-          "key_erwagungen": ["2", "5.1", "5.2"],
-          "reading_guide_de": "E. 2: IPR-Anknüpfung bei deliktischer Haftung. E. 5.1: Begriff des reinen Vermögensschadens. E. 5.2: Ohne subjektiven Tatbestand der Geldwäscherei keine Widerrechtlichkeit.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist die zivilrechtliche Bedeutung der Geldwäscherei nach Art. 305bis StGB für die Haftung nach Art. 41 OR?",
-              "hint": "Lesen Sie E. 5.1-5.2.",
-              "model_answer": "Die Geldwäscherei kann als Schutznorm im Sinne von Art. 41 OR dienen: Ein Verstoss gegen Art. 305bis StGB begründet die Widerrechtlichkeit, die Voraussetzung der deliktischen Haftung ist."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie wird die IPR-Anknüpfung bei deliktischen Klagen bestimmt?",
-              "hint": "E. 2 und Art. 132 IPRG.",
-              "model_answer": "Art. 132 IPRG: Parteien können nachträglich schweizerisches Recht wählen. Subsidär gilt das Recht des Handlungs- oder Erfolgsorts (Art. 133 IPRG)."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Warum scheiterte die Klage trotz Geldwäschereiverdachts?",
-              "hint": "E. 5.2.",
-              "model_answer": "Ohne Nachweis des subjektiven Tatbestands der Geldwäscherei (Wissen um die verbrecherische Herkunft) fehlt die strafrechtliche Widerrechtlichkeit und damit die Haftungsgrundlage."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn die Bank die verdächtigen Transaktionen der MROS gemeldet hätte?",
-              "discussion_points": ["Meldepflicht (Art. 9 GwG)", "Sorgfaltspflicht", "Haftungsausschluss"],
-              "likely_outcome_shift": "Eine Meldung an die MROS hätte die Sorgfaltspflicht der Bank erfüllt. Dies könnte den Vorwurf der Widerrechtlichkeit entkräften."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Sollte die zivilrechtliche Haftung für Geldwäscherei von der strafrechtlichen Verurteilung abhängen?",
-              "hint": "Denken Sie an die unterschiedlichen Beweismassstäbe und Schutzzwecke.",
-              "model_answer": "Pro Abhängigkeit: Einheit der Rechtsordnung, Vermeidung widersprüchlicher Urteile. Contra: Zivilrechtlich genügt überwiegende Wahrscheinlichkeit, der Geschädigte sollte auch ohne strafrechtliche Verurteilung Schadenersatz erhalten können."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "jurisdictional_shift",
-              "scenario": "Was wäre, wenn die Geldwäscherei in einem Land stattfand, das kein Geldwäschereiverbot kennt?",
-              "discussion_points": ["Art. 133 IPRG", "Ordre public (Art. 17 IPRG)", "Anwendbares Recht"],
-              "likely_outcome_shift": "Wenn das Recht des Handlungsorts keine Geldwäscherei kennt, fehlt die Widerrechtlichkeit nach dem anwendbaren Recht. Der schweizerische Ordre public könnte aber korrigierend eingreifen."
-            }
-          ]
+          "significance_de": "Massstab der Widerrechtlichkeit nach Art. 41 OR: Schutznormtheorie bei reinen Vermögensschäden.",
+          "significance_fr": "Critère de l'illicéité selon l'art. 41 CO: théorie de la norme de protection pour les dommages purement économiques.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },
@@ -264,11 +250,11 @@
       ]
     },
     {
-      "id": "geschaftsherrenhaftung",
-      "name_de": "Geschäftsherrenhaftung",
-      "name_fr": "Responsabilité de l'employeur",
-      "name_it": "Responsabilità del padrone d'azienda",
-      "statutes": ["Art. 55 OR"],
+      "id": "kausalhaftungen",
+      "name_de": "Kausalhaftungen",
+      "name_fr": "Responsabilité causale",
+      "name_it": "Responsabilità causale",
+      "statutes": ["Art. 55 OR", "Art. 58 OR"],
       "cases": [
         {
           "decision_id": "bge_122 III 225",
@@ -329,6 +315,52 @@
               "likely_outcome_shift": "Der Geschäftsherr kann sich nach Art. 55 Abs. 1 OR exkulpieren, wenn er nachweist, dass er bei der Auswahl, Anleitung und Überwachung die erforderliche Sorgfalt angewandt hat."
             }
           ]
+        },
+        {
+          "decision_id": "bge_130 III 736",
+          "bge_ref": "BGE 130 III 736",
+          "actual_language": "de",
+          "title_de": "Werkeigentümerhaftung — Mangelhaftigkeit eines Werkes",
+          "title_fr": "Responsabilité du propriétaire d'ouvrage — défectuosité de l'ouvrage",
+          "title_it": "",
+          "concepts_de": ["Werkeigentümerhaftung", "Werk", "Mangelhaftigkeit", "Kausalhaftung"],
+          "concepts_fr": ["Responsabilité du propriétaire d'ouvrage", "Défectuosité", "Responsabilité causale"],
+          "concepts_it": [],
+          "statutes": ["Art. 58 OR"],
+          "difficulty": 3,
+          "prerequisites": [],
+          "significance_de": "Voraussetzungen der Werkeigentümerhaftung nach Art. 58 OR: Begriff des Werks und Mangelhaftigkeit.",
+          "significance_fr": "Conditions de la responsabilité du propriétaire d'ouvrage selon l'art. 58 CO: notion d'ouvrage et défectuosité.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
+        },
+        {
+          "decision_id": "bge_98 II 288",
+          "bge_ref": "BGE 98 II 288",
+          "actual_language": "de",
+          "title_de": "Vertrag mit Schutzwirkung für Dritte — Hilfspersonenhaftung",
+          "title_fr": "Contrat avec effet protecteur pour les tiers — responsabilité pour auxiliaires",
+          "title_it": "",
+          "concepts_de": ["Schutzwirkung für Dritte", "Hilfspersonenhaftung", "Vertragshaftung", "Drittschutz"],
+          "concepts_fr": ["Effet protecteur pour les tiers", "Responsabilité pour auxiliaires", "Protection des tiers"],
+          "concepts_it": [],
+          "statutes": ["Art. 97 OR", "Art. 101 OR"],
+          "difficulty": 4,
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur Ausdehnung der Vertragshaftung auf drittschützende Verträge: Hilfspersonenhaftung und Schutzwirkung für Dritte.",
+          "significance_fr": "Arrêt de principe sur l'extension de la responsabilité contractuelle aux contrats à effet protecteur pour les tiers.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     }

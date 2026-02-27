@@ -209,65 +209,27 @@
           ]
         },
         {
-          "decision_id": "bge_144 III 93",
-          "bge_ref": "BGE 144 III 93",
-          "actual_language": "fr",
-          "title_de": "Darlehen oder Schenkung — Auslegung des Parteiwillens",
-          "title_fr": "Prêt ou donation — interprétation de la volonté des parties",
-          "concepts_de": ["Vertragsauslegung", "Parteiwille", "Darlehen", "Schenkung", "Vertrauensprinzip"],
-          "concepts_fr": ["Interprétation", "Volonté", "Prêt", "Donation"],
-          "statutes": ["Art. 18 OR", "Art. 312 OR", "Art. 239 OR"],
+          "decision_id": "",
+          "bge_ref": "BGE 113 II 25",
+          "actual_language": "de",
+          "title_de": "Culpa in contrahendo — vorvertragliche Haftung",
+          "title_fr": "Culpa in contrahendo — responsabilité précontractuelle",
+          "title_it": "",
+          "concepts_de": ["Culpa in contrahendo", "Vorvertragliche Haftung", "Vertragsverhandlungen", "Treu und Glauben"],
+          "concepts_fr": ["Culpa in contrahendo", "Responsabilité précontractuelle", "Négociations"],
+          "concepts_it": [],
+          "statutes": ["Art. 2 ZGB", "Art. 41 OR"],
           "difficulty": 3,
-          "prerequisites": ["bge_131 III 606"],
-          "significance_de": "Anwendung der Auslegungsprinzipien auf die Abgrenzung Darlehen/Schenkung",
-          "key_erwagungen": ["5.2", "5.3"],
-          "reading_guide_de": "Achtung: Volltext auf Französisch. Zeigt die praktische Anwendung der in BGE 131 III 606 zusammengefassten Grundsätze. Vergleichen Sie die Methodik.",
-          "reading_guide_fr": "Consid. 5.2-5.3: application des principes d'interprétation à la distinction prêt/donation.",
-          "socratic_questions": [
-            {
-              "level": 1,
-              "level_label": "Verständnis",
-              "question": "Wie grenzt das Gericht Darlehen und Schenkung voneinander ab?",
-              "hint": "Lesen Sie E. 5.2 und vergleichen Sie Art. 312 OR mit Art. 239 OR.",
-              "model_answer": "Darlehen: Rückzahlungspflicht vereinbart. Schenkung: Unentgeltliche Zuwendung ohne Rückzahlungspflicht. Entscheidend ist der Parteiwille bezüglich der Rückzahlung."
-            },
-            {
-              "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Welche Auslegungsmethoden verwendet das Gericht zur Bestimmung des Parteiwillens?",
-              "hint": "E. 5.2-5.3.",
-              "model_answer": "Vertrauensprinzip, Berücksichtigung der Gesamtumstände (familiäre Beziehung, Höhe des Betrags, Verhalten der Parteien nach der Zuwendung)."
-            },
-            {
-              "level": 3,
-              "level_label": "Anwendung",
-              "question": "Welche Indizien sprachen im konkreten Fall für ein Darlehen bzw. eine Schenkung?",
-              "hint": "E. 5.3.",
-              "model_answer": "Für Darlehen: schriftliche Bestätigung, Höhe des Betrags. Für Schenkung: familiäre Beziehung, keine Zinsen, keine Rückzahlungsfrist vereinbart."
-            },
-            {
-              "level": 4,
-              "level_label": "Analyse",
-              "question": "Was wäre, wenn eine schriftliche Bestätigung über die 'Rückzahlung' existiert, aber ohne Datum und Betrag?",
-              "discussion_points": ["Beweiskraft", "Formvorschriften", "Auslegung unvollständiger Urkunden"],
-              "likely_outcome_shift": "Eine unvollständige Bestätigung hat geringe Beweiskraft. Die Gesamtumstände gewinnen an Bedeutung für die Abgrenzung."
-            },
-            {
-              "level": 5,
-              "level_label": "Bewertung",
-              "question": "Ist die bundesgerichtliche Methodik bei der Abgrenzung Darlehen/Schenkung im Familienkontext überzeugend?",
-              "hint": "Denken Sie an die Beweisproblematik und die Formfreiheit.",
-              "model_answer": "Die Methodik ist sachgerecht, aber die Beweislage ist im Familienkontext oft unklar. Ein Formerfordernis für Familiendarlehen ab einer Schwelle könnte Rechtssicherheit schaffen."
-            }
-          ],
-          "hypotheticals": [
-            {
-              "type": "swap_parties",
-              "scenario": "Was wäre, wenn die Zuwendung zwischen Geschäftspartnern (nicht Familienmitgliedern) erfolgt wäre?",
-              "discussion_points": ["Vermutung im geschäftlichen Verkehr", "Handelsbrauch", "Beweislast"],
-              "likely_outcome_shift": "Im geschäftlichen Verkehr wird eine Rückzahlungspflicht eher vermutet. Die Vermutung spricht für ein Darlehen, nicht für eine Schenkung."
-            }
-          ]
+          "prerequisites": [],
+          "significance_de": "Grundsatzentscheid zur vorvertraglichen Haftung: Aufklärungs- und Sorgfaltspflichten bei Vertragsverhandlungen entstehen durch Treu und Glauben.",
+          "significance_fr": "Arrêt de principe sur la responsabilité précontractuelle: obligations d'information lors des négociations contractuelles.",
+          "significance_it": "",
+          "key_erwagungen": [],
+          "reading_guide_de": "",
+          "reading_guide_fr": "",
+          "reading_guide_it": "",
+          "socratic_questions": [],
+          "hypotheticals": []
         }
       ]
     },
