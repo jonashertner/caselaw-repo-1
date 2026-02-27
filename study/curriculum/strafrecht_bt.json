@@ -41,14 +41,73 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zur Arglist beim Betrug (Anlagebetrug): Aggressive mündliche Täuschung über Kommissionsstrukturen erfüllt den Arglisttatbestand auch dann, wenn die Opfer die Kommissionshöhe nachträglich aus korrekt erstellten Abrechnungen hätten erkennen können.",
-          "significance_fr": "Arrêt de principe sur l'astuce dans l'escroquerie: une tromperie orale agressive sur la structure des commissions réalise l'astuce, même si les victimes auraient pu prendre connaissance des commissions a posteriori sur la base de décomptes corrects.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur l'astuce dans l'escroquerie aux placements: la tromperie orale agressive sur les commissions réellement prélevées remplit la condition de l'astuce même si les victimes auraient pu déceler leur montant a posteriori à partir de décomptes corrects.",
+          "significance_it": "Decisione di principio sull'astuzia nella truffa in materia di investimenti: l'inganno orale aggressivo sulle commissioni effettivamente applicate soddisfa il requisito dell'astuzia anche se le vittime avrebbero potuto riconoscerne l'entità a posteriori da conteggi corretti.",
+          "key_erwagungen": [
+            "5",
+            "5.1",
+            "5.3"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst die Regeste, um den Leitsatz zur Arglist beim Anlagebetrug zu erfassen, und vertiefen Sie dann Erwägung 5.1 für die allgemeinen Tatbestandsmerkmale des Betruges nach Art. 146 StGB. Der Kern der Entscheidung findet sich in Erwägung 5.3, wo das Bundesgericht darlegt, warum die nachträgliche Erkennbarkeit der Kommissionen aus korrekten Abrechnungen die Arglist nicht ausschliesst.",
+          "reading_guide_fr": "Commencez par lire le Regeste pour saisir le principe directeur relatif à l'astuce dans l'escroquerie aux placements, puis approfondissez le considérant 5.1 pour les éléments constitutifs généraux de l'escroquerie selon l'art. 146 CP. L'essentiel de la décision se trouve au considérant 5.3, où le Tribunal fédéral explique pourquoi la possibilité de déceler ultérieurement les commissions à partir de décomptes corrects n'exclut pas l'astuce.",
+          "reading_guide_it": "Iniziare con la lettura del Regeste per cogliere il principio guida sull'astuzia nella truffa in materia di investimenti, poi approfondire il considerando 5.1 per gli elementi costitutivi generali della truffa ai sensi dell'art. 146 CP. Il nucleo della decisione si trova nel considerando 5.3, dove il Tribunale federale spiega perché la possibilità di riconoscere successivamente le commissioni da conteggi corretti non esclude l'astuzia.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was wird im vorliegenden Fall unter der 'Verschleierung der Kommissionsstruktur' verstanden, und warum waren die Telefonverkäufer selbst über diese Struktur im Irrtum?",
+              "hint": "Vgl. Regeste und Sachverhalt (BGE 135 IV 76 S. 76–77): Die Verkäufer vermittelten Aktienoptionen, ohne die Kommissionsstruktur zu verstehen.",
+              "model_answer": "Die Telefonverkäufer verschwiegen den Kunden die tatsächliche Höhe der erhobenen Kommissionen beim Verkauf von Aktienoptionen. Sie waren dabei selbst nicht vollständig über die Kommissionsstruktur informiert, d.h. sie handelten nicht aus voller Kenntnis der Verhältnisse, sondern gaben unwissentlich falsche oder unvollständige Auskünfte weiter. Dies ist für die Beurteilung der Arglist relevant, weil die Täuschung auch durch Personen erfolgen kann, die selbst einem Irrtum unterliegen."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Voraussetzungen müssen gemäss Art. 146 Abs. 1 StGB erfüllt sein, damit eine Täuschung als 'arglistig' gilt, und welche Rolle spielt dabei die Selbstschutzmöglichkeit des Opfers?",
+              "hint": "Vgl. Erwägung 5.1 und 5.3: Das Bundesgericht legt den Arglistbegriff aus und prüft, ob nachträgliche Erkenntnismöglichkeiten aus korrekten Abrechnungen Arglist ausschliessen.",
+              "model_answer": "Arglist im Sinne von Art. 146 Abs. 1 StGB liegt vor, wenn der Täter zur Täuschung besondere Machenschaften oder Kniffe einsetzt, oder wenn er einfache Unwahrheiten benutzt, deren Überprüfung dem Opfer nicht zumutbar ist oder nur unter grossen Schwierigkeiten möglich wäre. Die Selbstschutzmöglichkeit des Opfers schliesst Arglist nur aus, wenn es die zumutbare Vorsicht offensichtlich unterlassen hat. Im vorliegenden Fall verneint das Bundesgericht, dass die nachträgliche Erkennbarkeit der Kommissionen aus korrekt erstellten Abrechnungen die Arglist beseitigt, weil die Täuschung bereits bei Vertragsschluss durch aggressive mündliche Vermittlung vollzogen wurde."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, ein Anlageberater verschweigt einem Kunden bei einem persönlichen Gespräch die Höhe der Verwaltungsgebühren, die jedoch im standardisierten Vertragsdokument korrekt aufgeführt sind, das der Kunde vor Unterzeichnung erhält. Wäre nach den Grundsätzen von BGE 135 IV 76 Arglist zu bejahen?",
+              "hint": "Vgl. Erwägung 5.3: Das Bundesgericht differenziert zwischen nachträglicher Erkennbarkeit und zumutbarer Überprüfungsmöglichkeit vor der Vermögensverschiebung.",
+              "model_answer": "In diesem Fall wäre Arglist wohl zu verneinen. Anders als in BGE 135 IV 76 liegt hier das korrekte Dokument dem Opfer bereits vor dem schadensbegründenden Verhalten vor, sodass es die Gebühren vor Vertragsschluss ohne Weiteres hätte erkennen können. Das Bundesgericht betont, dass die Arglist unter anderem dann entfällt, wenn das Opfer die Täuschung bei zumutbarer Aufmerksamkeit leicht hätte durchschauen können. Die nachträgliche Erkennbarkeit in BGE 135 IV 76 unterscheidet sich wesentlich davon, weil die korrekten Abrechnungen erst nach der bereits vollzogenen Täuschung und Vermögensverschiebung zugänglich wurden."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Obergericht Zürich hatte die Angeklagten freigesprochen, weil es Arglist verneinte. Welche dogmatische Weichenstellung nahm das Bundesgericht vor, um diesen Freispruch aufzuheben, und worin liegt der zentrale Unterschied in der Argumentation beider Instanzen?",
+              "hint": "Vgl. Sachverhalt (S. 77–78) und Erwägung 5.3: Das Obergericht stützte sich auf die nachträgliche Erkennbarkeit der Kommissionen; das Bundesgericht setzt dem eine zeitliche und sachliche Grenze.",
+              "model_answer": "Das Obergericht Zürich argumentierte, dass die Opfer aus den korrekt erstellten Abrechnungen die Kommissionshöhe hätten erkennen können, weshalb sie nicht hinreichend schutzbedürftig seien und Arglist ausscheide. Das Bundesgericht hingegen stellte klar, dass der massgebliche Zeitpunkt für die Beurteilung der Arglist derjenige der Täuschungshandlung ist, nicht ein späterer Zeitpunkt, zu dem das Opfer allenfalls Kenntnis erlangen konnte. Zudem gewichtete das Bundesgericht die Intensität der aggressiven mündlichen Täuschung und den durch die Telefonverkäufer erzeugten sozialen Druck als eigenständige Arglistmerkmale, die eine Überprüfungsmöglichkeit faktisch ausschliessen."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist es rechtspolitisch überzeugend, dass das Bundesgericht im Kontext des Anlagebetruges den Arglistbegriff weit auslegt und damit das Strafrecht als primäres Instrument zum Schutz von Anlegern einsetzt, obwohl zivilrechtliche und aufsichtsrechtliche Schutzmechanismen (z.B. Prospektpflichten, FINMA-Aufsicht) zur Verfügung stehen?",
+              "hint": "Vgl. Regeste und Erwägung 5.3: Das Bundesgericht betont den Schutz des Opfers vor aggressiver Täuschung; zu bedenken sind Subsidiaritätserwägungen und die Funktion des Strafrechts.",
+              "model_answer": "Die weite Auslegung des Arglistbegriffs ist vertretbar, weil das Strafrecht im Bereich des Anlagebetruges eine eigenständige Schutzfunktion gegenüber besonders verwerflichen Täuschungshandlungen übernimmt, die zivilrechtliche Mittel strukturell überfordern. Anlegern fehlt es in der Praxis oft an der faktischen Möglichkeit, komplexe Kommissionsstrukturen zu überprüfen, zumal wenn aggressive Verkaufsmethoden eingesetzt werden. Allerdings besteht die rechtspolitische Gefahr einer Ausweitung des Strafrechts auf zivilrechtliche Sphären, was dem ultima-ratio-Prinzip widerspricht; eine kohärente Abstimmung mit aufsichtsrechtlichen Sanktionsmechanismen wäre wünschenswert, um eine unkoordinierte Kriminalisierung von Geschäftspraktiken zu vermeiden."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was würde sich ändern, wenn die geschädigten Anleger ausgewiesene Finanzfachleute (z.B. professionelle Portfoliomanager) gewesen wären, die aufgrund ihrer Kenntnisse die überhöhten Kommissionen aus den Handelsbestätigungen ohne Weiteres hätten erkennen müssen?",
+              "discussion_points": [
+                "Erhöhte Selbstschutzobliegenheit bei Fachkundigen: Ist die Arglist bei Opfern mit professionellem Finanzwissen anders zu beurteilen?",
+                "Bedeutung der 'leichten Erkennbarkeit' im Arglistmerkmal: Schliesst fachkundige Erkennbarkeit die Arglist aus oder bleibt die aggressive Täuschungshandlung dennoch massgeblich?"
+              ],
+              "likely_outcome_shift": "Bei professionellen Anlegern würde die Arglist wesentlich kritischer zu prüfen sein, da das Bundesgericht bei erhöhter Fachkunde des Opfers strengere Sorgfaltsanforderungen anerkennt. Es wäre denkbar, dass das Gericht Arglist verneint, weil professionelle Marktteilnehmer zumutbar in der Lage gewesen wären, die Kommissionsstruktur zu hinterfragen und zu verifizieren. Damit würde sich der strafrechtliche Schutz auf unerfahrene Privatanleger konzentrieren, was dem Schutzzweck von Art. 146 StGB im Kontext des Anlagebetruges entspräche."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht die Telefonverkäufer, sondern die Kunden selbst hätten die Telefonakquise initiiert und dabei aktiv nach den günstigsten Kommissionskonditionen gefragt, woraufhin die Verkäufer falsche Angaben machten. Ändert dies die strafrechtliche Beurteilung?",
+              "discussion_points": [
+                "Opfermitverantwortung und Selbstschutzobliegenheit: Erhöht die aktive Nachfrage der Opfer ihre Sorgfaltspflicht und mindert dies die Arglist?",
+                "Relevanz der Täuschungsintensität: Bleibt die bewusste Falschangabe über konkret erfragte Konditionen arglistig, auch wenn das Opfer eine gezielte Informationsanfrage gestellt hat?"
+              ],
+              "likely_outcome_shift": "Auch in diesem Szenario wäre Arglist zu bejahen, da die bewusste Falschauskunft auf eine direkte und konkrete Frage des Opfers eine qualifizierte Täuschungshandlung darstellt. Das Opfer durfte auf die erteilte Auskunft vertrauen; seine aktive Nachfrage erhöht gerade nicht die Obliegenheit zur Skepsis, sondern begründet ein gesteigertes berechtigtes Vertrauen. Allerdings könnte das Gericht die Intensität des aggressiven Verkaufsdrucks als vermindert ansehen, was die Gesamtbeurteilung der Arglist zugunsten der Angeklagten verschieben könnte, ohne sie jedoch zwingend auszuschliessen."
+            }
+          ]
         },
         {
           "decision_id": "bge_124 IV 274",
@@ -277,14 +336,73 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Anforderungen an das Nötigungsmittel des psychischen Unterdrucksetzens bei erwachsenen Opfern und zur Abgrenzung zwischen therapiebedingter Abhängigkeit (Art. 193 StGB) und psychischem Druck gemäss Art. 189/190 StGB.",
-          "significance_fr": "Arrêt de principe sur les exigences requises pour la pression psychologique comme moyen de contrainte envers des victimes adultes et sur la distinction entre dépendance thérapeutique (art. 193 CP) et contrainte psychologique (art. 189/190 CP).",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe fixe les exigences relatives au moyen de contrainte que constitue la pression psychique au sens des art. 189 et 190 CP à l'égard de victimes adultes et délimite la dépendance thérapeutique relevant de l'art. 193 CP de la contrainte psychique active au sens des dispositions sur la contrainte sexuelle et le viol.",
+          "significance_it": "Questa sentenza di principio stabilisce i requisiti del mezzo di coercizione consistente nella pressione psicologica ai sensi degli art. 189 e 190 CP nei confronti di vittime adulte e delimita la dipendenza terapeutica rilevante ai sensi dell'art. 193 CP dalla coercizione psicologica attiva ai sensi delle disposizioni sulla coercizione sessuale e lo stupro.",
+          "key_erwagungen": [
+            "3a",
+            "3b",
+            "3c"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt sorgfältig (S. 107–109), um die verschiedenen Handlungskomplexe und die Rollenbeziehung zwischen X. und Y. zu erfassen. Konzentrieren Sie sich dann auf Erwägung 3a zur Definition und den Anforderungen an das psychische Unterdrucksetzen bei erwachsenen Opfern sowie auf Erwägungen 3b und 3c zur Abgrenzung zwischen der therapiebedingten Abhängigkeit nach Art. 193 StGB und dem aktiven psychischen Druck nach Art. 189/190 StGB.",
+          "reading_guide_fr": "Lisez d'abord attentivement les faits (p. 107–109) afin de comprendre les différents complexes de faits et la relation de rôle entre X. et Y. Concentrez-vous ensuite sur le considérant 3a relatif à la définition et aux exigences de la contrainte psychique à l'égard de victimes adultes, puis sur les considérants 3b et 3c concernant la délimitation entre la dépendance liée à la thérapie au sens de l'art. 193 CP et la pression psychique active au sens des art. 189/190 CP.",
+          "reading_guide_it": "Leggere dapprima con attenzione i fatti (p. 107–109) per comprendere i diversi complessi di atti e il rapporto di ruolo tra X. e Y. Concentrarsi poi sul considerando 3a riguardante la definizione e i requisiti della coercizione psicologica nei confronti di vittime adulte, nonché sui considerandi 3b e 3c relativi alla delimitazione tra la dipendenza terapeutica ai sensi dell'art. 193 CP e la pressione psicologica attiva ai sensi degli art. 189/190 CP.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht unter dem Nötigungsmittel des 'psychischen Unterdrucksetzens' im Sinne von Art. 189 Abs. 1 und Art. 190 Abs. 1 StGB, und welche konkreten Verhaltensweisen von X. hat das Gericht in diesem Fall als solches qualifiziert?",
+              "hint": "Vgl. Sachverhalt (S. 107–108) und Regeste, Erwägung 3a.",
+              "model_answer": "Psychisches Unterdrucksetzen im Sinne von Art. 189/190 StGB bezeichnet den Einsatz psychischer Mittel, die das Opfer in eine Lage versetzen, in der es sich dem sexuellen Ansinnen nicht zu widersetzen vermag. Im vorliegenden Fall äusserte sich dies durch Drohungen (allen zu erzählen, was für eine Person Y. sei), durch kalt-abweisendes Verhalten, das den Verlust der Therapeuten-Vaterfigur signalisierte, sowie durch das gezielte Auslösen von Schuld- und Minderwertigkeitsgefühlen. Das Gericht betonte, dass diese Mittel gerade im Wissen um die besondere Vulnerabilität von Y. eingesetzt wurden."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Tatbestandsvoraussetzungen müssen nach Art. 193 Abs. 1 StGB erfüllt sein, damit eine therapiebedingte Abhängigkeit strafrechtlich relevant ist, und wie grenzt das Bundesgericht diese Norm von Art. 189 und 190 StGB ab?",
+              "hint": "Vgl. Regeste und Erwägungen 3b und 3c.",
+              "model_answer": "Art. 193 StGB setzt voraus, dass der Täter eine Notlage oder eine Abhängigkeit des Opfers ausnutzt, ohne dass ein qualifiziertes Nötigungsmittel wie Gewalt oder Drohung eingesetzt wird. Das Bundesgericht hält in E. 3b fest, dass eine therapeutische Abhängigkeit zwischen Psychotherapeut und Patient als 'in anderer Weise begründete Abhängigkeit' im Sinne von Art. 193 StGB gelten kann. Die Abgrenzung zu Art. 189/190 StGB erfolgt danach, ob der Täter aktiv psychischen Druck ausübt (dann Art. 189/190) oder ob er lediglich eine bereits bestehende Abhängigkeit passiv ausnutzt (dann Art. 193); im vorliegenden Fall bejahte das Gericht aktiven psychischen Druck."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Angenommen, X. hätte gegenüber Y. keinerlei verbale Drohungen ausgesprochen und kein kalt-abweisendes Verhalten gezeigt, sondern die sexuellen Handlungen lediglich im Rahmen von 'Therapiesitzungen' als notwendige Behandlungsschritte dargestellt: Unter welchen Tatbestand wären seine Handlungen dann zu subsumieren, und weshalb?",
+              "hint": "Vgl. die Abgrenzungskriterien in E. 3b und 3c sowie den Sachverhalt zu den Therapiekontakten.",
+              "model_answer": "Ohne aktive Drohungen oder abweisendes Verhalten wäre das Nötigungsmittel des psychischen Drucks nach Art. 189/190 StGB kaum zu bejahen. In diesem Hypothesenfall käme Art. 193 StGB in Betracht, da X. die therapiebedingte Abhängigkeit von Y. und ihre Erwartung an ihn als Heilsperson ausgenutzt hätte, ohne eigenständig Druck zu erzeugen. Allerdings könnte die täuschende Darstellung der Handlungen als 'Therapie' zusätzlich den Tatbestand des Betrugs oder der Täuschung im Sinne von Art. 193 StGB erfüllen."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht musste im vorliegenden Fall sowohl Art. 189/190 StGB als auch Art. 193 StGB prüfen. Welche strukturellen Unterschiede zwischen diesen Tatbeständen machen die Abgrenzung besonders schwierig, und inwiefern spiegelt der Sachverhalt die Schwierigkeit dieser Abgrenzung wider?",
+              "hint": "Vgl. Sachverhalt (S. 107–109) sowie Regeste und Erwägungen 3a–3c.",
+              "model_answer": "Der strukturelle Unterschied liegt darin, dass Art. 189/190 StGB ein aktives Nötigungsmittel (Gewalt, Drohung oder psychischen Druck) verlangen, während Art. 193 StGB das blosse Ausnutzen einer vorbestehenden Schwächesituation genügen lässt. Im vorliegenden Sachverhalt sind beide Elemente vermengt: Die therapiebedingte Abhängigkeit (Art. 193-Komponente) bildete die Grundlage, auf der X. sodann aktiv durch Drohungen und kalt-abweisendes Verhalten zusätzlichen Druck ausübte (Art. 189/190-Komponente). Diese Überlagerung erschwert die tatbestandliche Zuordnung erheblich, da die Grenze zwischen 'Ausnutzen' und 'Erzeugen' von Druck fliessend ist."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Kritiker argumentieren, dass die bundesgerichtlichen Anforderungen an das 'psychische Unterdrucksetzen' bei erwachsenen Opfern zu hoch sind und strukturelle Machtverhältnisse – wie das Therapeuten-Patient-Verhältnis – zu wenig berücksichtigen. Wie beurteilen Sie diesen Einwand im Licht des Entscheids BGE 128 IV 106, und welche rechtspolitischen Schlussfolgerungen könnten daraus gezogen werden?",
+              "hint": "Vgl. E. 3a zur Anforderung an den psychischen Druck sowie E. 3b/3c zur Schutzlücke bei Art. 193 StGB; beachten Sie auch die spätere Revision des StGB.",
+              "model_answer": "Der Einwand hat erhebliches Gewicht: Das Bundesgericht verlangt in E. 3a für Art. 189/190 StGB einen qualifizierten psychischen Druck, der über das blosse Ausnutzen einer Machtasymmetrie hinausgeht, was im Kontext therapeutischer Beziehungen strukturelle Unterlegenheit des Opfers systematisch unterschätzen kann. Art. 193 StGB bietet zwar einen Auffangtatbestand, ist aber mit tieferer Strafdrohung ausgestattet und erfasst das aktive Missbrauchsverhalten nicht vollständig. Rechtspolitisch spricht dies dafür, einen spezifischen Straftatbestand für den Missbrauch von Berufs- oder Abhängigkeitsverhältnissen zu schaffen oder die Schwelle des psychischen Drucks bei strukturell ungleichen Machtverhältnissen abzusenken – eine Diskussion, die auch die Gesetzgebung zur Revision der Sexualdelikte im StGB (2024) beschäftigt hat."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Was wäre, wenn Y. im Nachhinein schriftlich erklärt hätte, sie habe die sexuellen Handlungen letztlich als 'freiwillig' empfunden und X. nie als bedrohlich wahrgenommen – könnte eine solche nachträgliche Erklärung die Strafbarkeit nach Art. 189/190 StGB ausschliessen?",
+              "discussion_points": [
+                "Massgeblichkeit der Tatsituation versus nachträglicher Bewertung durch das Opfer",
+                "Bedeutung der strukturellen Machtasymmetrie und der manipulativen Ausgangslage für die Beurteilung der Freiwilligkeit"
+              ],
+              "likely_outcome_shift": "Eine nachträgliche Erklärung von Y. wäre rechtlich nicht geeignet, die Strafbarkeit auszuschliessen, da die strafrechtliche Würdigung auf die objektive Tatsituation und den damaligen Gemütszustand des Opfers abstellt, nicht auf spätere Rationalisierungen. Das Bundesgericht hätte die Erklärung allenfalls als Indiz im Rahmen der Beweiswürdigung berücksichtigt, nicht aber als materiellen Strafaufhebungsgrund. Die Abhängigkeit und die manipulative Einflussnahme von X. würden die Aussagekraft einer solchen nachträglichen Erklärung erheblich relativieren."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht eine alkoholabhängige Patientin, sondern ein psychisch unauffälliger, volljähriger Patient ohne bekannte Vulnerabilitäten in einem vergleichbaren Abhängigkeitsverhältnis zu einer Psychotherapeutin gestanden hätte – wäre die Schwelle zum psychischen Unterdrucksetzen nach Art. 189/190 StGB gleich anzusetzen?",
+              "discussion_points": [
+                "Anforderungen an das psychische Unterdrucksetzen bei erwachsenen Opfern ohne besondere Vulnerabilität gemäss E. 3a",
+                "Frage, ob die Therapeuten-Patient-Abhängigkeit allein – ohne zusätzliche Drohungen – für Art. 189/190 StGB genügt oder nur Art. 193 StGB erfüllt"
+              ],
+              "likely_outcome_shift": "Bei einem psychisch unauffälligen Opfer ohne besondere Vulnerabilität wäre die Schwelle für das psychische Unterdrucksetzen nach Art. 189/190 StGB erheblich schwieriger zu erreichen, da das Bundesgericht in E. 3a gerade auf die individuelle Schwäche des Opfers und das Wissen des Täters darum abstellt. Ohne qualifizierte Drohungen oder Gewalt würde das Verhalten der Therapeutin in einem solchen Fall eher unter Art. 193 StGB fallen. Dies illustriert eine potenzielle Ungleichbehandlung von Opfern je nach Vulnerabilitätsgrad."
+            }
+          ]
         },
         {
           "decision_id": "bge_129 IV 1",
@@ -420,14 +538,75 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Leitentscheid zum Urkundenbegriff bei elektronischen Daten: Der Computerausdruck und die Bildschirmanzeige (Output) können Urkunden i.S.v. Art. 110 Ziff. 5 StGB darstellen, nicht aber die bloss elektromagnetisch gespeicherten Rohdaten als solche.",
-          "significance_fr": "Arrêt de principe sur la notion de titre pour les données électroniques: l'impression sur papier et l'affichage à l'écran (output) peuvent constituer des titres au sens de l'art. 110 ch. 5 CP, mais non les données stockées de manière électromagnétique en tant que telles.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe sur la notion de titre en matière de données électroniques: seul l'output visible (impression ou affichage à l'écran) peut constituer un titre au sens de l'art. 110 ch. 5 CP, et non les données brutes stockées sur support électromagnétique.",
+          "significance_it": "Sentenza di principio sulla nozione di documento in materia di dati elettronici: solo l'output visibile (stampa o visualizzazione su schermo) può costituire un documento ai sensi dell'art. 110 n. 5 CP, e non i dati grezzi memorizzati su supporto elettromagnetico.",
+          "key_erwagungen": [
+            "3",
+            "3a",
+            "3b",
+            "5b",
+            "6"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 344) sorgfältig, um den technischen Ablauf der Computermanipulation zu verstehen. Konzentrieren Sie sich danach auf Erwägung 3 (Urkundenbegriff und Präzisierung der Rechtsprechung zu BGE 111 IV 121), Erwägung 5b (Beständigkeitsanforderung bei der Bildschirmanzeige) sowie Erwägung 6 (Beweiseignung von Gutschriften und Kontoauszügen), welche die zentralen dogmatischen Weichenstellungen des Entscheids enthalten.",
+          "reading_guide_fr": "Commencez par lire attentivement les faits (p. 344) afin de comprendre le déroulement technique de la manipulation informatique. Concentrez-vous ensuite sur le considérant 3 (notion de titre et précision de la jurisprudence par rapport à ATF 111 IV 121), le considérant 5b (exigence de permanence pour l'affichage à l'écran) et le considérant 6 (aptitude probatoire des relevés de compte et des crédits), qui contiennent les orientations dogmatiques essentielles de l'arrêt.",
+          "reading_guide_it": "Leggere innanzitutto attentamente i fatti (p. 344) per comprendere lo svolgimento tecnico della manipolazione informatica. Concentrarsi poi sul considerando 3 (nozione di documento e precisazione della giurisprudenza rispetto a DTF 111 IV 121), sul considerando 5b (requisito della stabilità per la visualizzazione su schermo) e sul considerando 6 (idoneità probatoria degli estratti conto e degli accrediti), che contengono i principali orientamenti dogmatici della sentenza.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 116 IV 343 unter dem Begriff «Output» und wie unterscheidet es diesen von den bloss elektromagnetisch gespeicherten Rohdaten?",
+              "hint": "Vgl. Regeste und Erwägung 3 des Urteils, insbesondere die Unterscheidung zwischen den gespeicherten Daten und ihrer äusseren Erscheinungsform.",
+              "model_answer": "Das Bundesgericht versteht unter «Output» die sichtbare Erscheinungsform der auf einem elektromagnetischen Datenträger gespeicherten Daten, namentlich den Computerausdruck (Printout) sowie die Bildschirmanzeige. Die bloss auf einem Datenträger gespeicherten Rohdaten hingegen sind für das menschliche Auge nicht unmittelbar wahrnehmbar und stellen nach Auffassung des Gerichts keine Schriften oder Zeichen im Sinne von Art. 110 Ziff. 5 StGB dar. Der Übergang von den unsichtbaren Rohdaten zum sichtbaren Output ist damit die entscheidende Trennlinie für den strafrechtlichen Urkundenbegriff."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche kumulativen Voraussetzungen müssen gemäss Art. 110 Ziff. 5 StGB erfüllt sein, damit ein Computerausdruck oder eine Bildschirmanzeige als Urkunde gilt, und welche besondere Anforderung stellt das Gericht speziell an die Bildschirmanzeige?",
+              "hint": "Vgl. Art. 110 Ziff. 5 StGB sowie Erwägung 5b des Urteils zur Beständigkeitsanforderung bei der Bildschirmanzeige.",
+              "model_answer": "Art. 110 Ziff. 5 StGB setzt voraus, dass es sich um eine Schrift oder ein Zeichen handelt, die bestimmt oder geeignet ist, eine Tatsache von rechtlicher Bedeutung zu beweisen. Für Schriften wird zusätzlich ein gewisses Mass an Beständigkeit verlangt. Speziell bei der Bildschirmanzeige präzisiert das Bundesgericht in Erwägung 5b, dass diese Beständigkeitsvoraussetzung nur dann bejaht werden kann, wenn die Anzeige nicht bloss flüchtig erscheint, sondern unter Umständen, die ihr eine genügende Dauerhaftigkeit verleihen, auf dem Bildschirm festgehalten wird. Damit werden rein transitorische Anzeigen vom Urkundenschutz ausgenommen."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "H. hat mittels eines Bankterminals unberechtigte Gutschriften in das EDV-System des Schweizerischen Bankvereins eingespeichert, die anschliessend auf Kontoauszügen und Bildschirmen erschienen. Subsumieren Sie diesen Sachverhalt unter die vom Bundesgericht aufgestellten Kriterien des Urkundenbegriffs.",
+              "hint": "Vgl. Sachverhalt (S. 344) sowie Erwägung 6 zur Beweiseignung der Wiedergabe von Gutschriften und Kontoständen.",
+              "model_answer": "Die von H. manipulierten Daten wurden in Form von Kontoauszugsdrucken und Bildschirmanzeigen sichtbar gemacht und stellen damit einen «Output» im Sinne der bundesgerichtlichen Rechtsprechung dar. Diese Ausgaben sind geeignet, eine Tatsache rechtlicher Bedeutung – nämlich die Existenz und Höhe einer Gutschrift auf einem Bankkonto – zu beweisen, was die Beweiseignung gemäss Art. 110 Ziff. 5 StGB begründet. Da die Kontoauszugsdrucke zudem die erforderliche Beständigkeit aufweisen und der inhaltlich falsche Gutschriftseintrag auf eine täuschende Beurkundung abzielte, sind sämtliche Voraussetzungen der Urkundenfälschung nach Art. 251 StGB erfüllt."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht präzisiert in BGE 116 IV 343 seine frühere Rechtsprechung aus BGE 111 IV 121, ohne sie vollständig aufzugeben. Worin liegt der dogmatische Unterschied zwischen den beiden Entscheiden, und warum überzeugt die Präzisierung aus rechtsstaatlicher Perspektive (Art. 1 StGB) mehr?",
+              "hint": "Vgl. Erwägung 3a und 3b sowie die im Urteil zitierte Kritik von Jenny, Schultz und Trechsel.",
+              "model_answer": "BGE 111 IV 121 hatte elektromagnetisch gespeicherte Daten als solche als Schriften im Sinne von Art. 110 Ziff. 5 StGB qualifiziert, was zu einer extensiven, die Wortlautgrenze des Strafgesetzes überschreitenden Analogie führte. BGE 116 IV 343 korrigiert dies, indem es den Urkundenbegriff auf den für Menschen wahrnehmbaren Output beschränkt und damit den Analogieschluss auf nicht unmittelbar wahrnehmbare Daten vermeidet. Aus rechtsstaatlicher Sicht ist diese Präzisierung überzeugender, weil das Legalitätsprinzip (Art. 1 StGB, Art. 7 EMRK) eine Ausdehnung des Straftatbestands über seinen erkennbaren Wortsinn hinaus verbietet und die neue Lösung einen klaren, für den Bürger vorhersehbaren Anknüpfungspunkt bietet."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die vom Bundesgericht gezogene Grenze – Output ja, Rohdaten nein – für das digitale Zeitalter (Cloud-Speicher, verschlüsselte Daten, NFTs) noch sachgerecht, oder bedarf der strafrechtliche Urkundenbegriff einer grundlegenden gesetzgeberischen Überarbeitung?",
+              "hint": "Denken Sie an die ratio legis des Urkundenstrafrechts (Schutz des Rechtsverkehrs vor Täuschung) und prüfen Sie, ob die Sichtbarkeitsgrenze heute noch funktional ist.",
+              "model_answer": "Die Output-Grenze war 1990 pragmatisch sachgerecht, weil sie an die für den Rechtsverkehr relevante Wahrnehmbarkeit anknüpfte. Im digitalen Zeitalter gerät diese Grenze jedoch an ihre Grenzen: Verschlüsselte Daten, Blockchain-Einträge oder algorithmisch verarbeitete Datensätze entfalten ihre rechtserhebliche Beweisfunktion oft ohne klassischen menschlich lesbaren Output, sodass die Schutzlücke faktisch wächst. Eine gesetzgeberische Überarbeitung erscheint deshalb sinnvoll; sie sollte funktional an die Beweiseignung und -bestimmung anknüpfen, unabhängig vom Trägermedium, um den Schutzzweck des Urkundenstrafrechts zu wahren, ohne den Analogieschluss zu überdehnen."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, H. hätte die Gutschriften nicht auf einem Bankterminal mit Bildschirmausgabe eingegeben, sondern über eine vollautomatisierte Batch-Schnittstelle direkt in den Datenbankkernspeicher geschrieben, ohne dass jemals ein Bildschirm oder ein Drucker involviert gewesen wäre. Die Transaktion wäre nur durch interne Log-Dateien dokumentiert, die ausschliesslich von Systemadministratoren maschinell ausgelesen werden können. Wie würde sich dies auf die Urkundenfälschungsprüfung auswirken?",
+              "discussion_points": [
+                "Fehlt der sichtbare Output, entfällt nach BGE 116 IV 343 der Anknüpfungspunkt für den Urkundenbegriff als 'Schrift' – die Rohdaten allein genügen nicht.",
+                "Es stellt sich die Frage, ob eine Strafbarkeitslücke besteht und ob alternative Tatbestände (z.B. Art. 147 StGB – betrügerischer Missbrauch einer Datenverarbeitungsanlage, eingeführt 1995) die Lücke schliessen würden."
+              ],
+              "likely_outcome_shift": "Ein Schuldspruch wegen Urkundenfälschung nach Art. 251 StGB wäre nach der Dogmatik von BGE 116 IV 343 sehr wahrscheinlich zu verneinen, da der für den Urkundenbegriff konstitutive sichtbare Output fehlt. Die Tat könnte jedoch unter andere Tatbestände des Computerstrafrechts subsumiert werden, die gerade zur Schliessung solcher Lücken geschaffen wurden. Dies illustriert, dass die Output-Grenze zwar rechtsstaatlich sauber ist, aber im rein maschinellen Datenverkehr Schutzlücken hinterlässt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Stellen Sie sich vor, nicht ein Bankangestellter, sondern ein externer Hacker hätte sich über das Netzwerk in das Banksystem eingeloggt und identische Buchungen vorgenommen. M. wäre ahnungsloser Kontoinhaber, der die Gutschrift auf seinem Kontoauszug erblickt und gutgläubig einen Teil abgehoben hat. Ändert sich die strafrechtliche Beurteilung des Urkundendelikts, und wie würde die Täterschaft beurteilt?",
+              "discussion_points": [
+                "Die objektiven Voraussetzungen der Urkundenfälschung (falscher Output in Form des Kontoauszugs) blieben identisch; massgebend ist, wer die Falschbeurkundung vornimmt bzw. veranlasst.",
+                "M. als gutgläubiger Empfänger scheidet als Täter aus; es fehlt an Vorsatz und Mittäterschaft – sein Verhalten wäre allenfalls unter dem Gesichtspunkt der Hehlerei oder des Betrugsopfers zu prüfen."
+              ],
+              "likely_outcome_shift": "Der externe Hacker wäre als alleiniger Täter der Urkundenfälschung und des Betrugs zu beurteilen; M. würde vom Vorwurf der Urkundenfälschung freigesprochen, da ihm jede Tatbeteiligung an der Falschbeurkundung fehlt. Die gutgläubige Entgegennahme und Verwendung einer gefälschten Gutschrift begründet für sich allein keine Strafbarkeit nach Art. 251 StGB, allenfalls käme eine Strafbarkeit wegen Diebstahls an den unrechtmässig erlangten Mitteln in Betracht."
+            }
+          ]
         },
         {
           "decision_id": "bge_101 IV 167",
@@ -456,14 +635,72 @@
           "difficulty": 3,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Nötigungsmitteln: Akustische Einwirkung (Lärm) kann eine 'andere Beschränkung der Handlungsfreiheit' i.S.v. Art. 181 StGB begründen; die Rechtswidrigkeit der Nötigung bestimmt sich nach dem Zweck-Mittel-Verhältnis.",
-          "significance_fr": "Arrêt de principe sur les moyens de contrainte: une action acoustique (bruit) peut constituer une 'autre atteinte à la liberté d'action' au sens de l'art. 181 CP; l'illicéité de la contrainte se détermine selon le rapport fin/moyen.",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Arrêt de principe établissant que des perturbations acoustiques organisées (bruit) peuvent constituer une 'autre entrave' à la liberté d'action au sens de l'art. 181 CP, et que l'illicéité de la contrainte se détermine selon le rapport entre le but poursuivi et le moyen employé.",
+          "significance_it": "Decisione di principio che stabilisce che le interferenze acustiche organizzate (rumore) possono costituire un'«altra limitazione» della libertà d'azione ai sensi dell'art. 181 CP e che l'illiceità della coazione si determina in base al rapporto tra lo scopo perseguito e il mezzo impiegato.",
+          "key_erwagungen": [
+            "2",
+            "5"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 167–168), um die faktische Ausgangslage zu verstehen, und konzentrieren Sie sich dann auf Erwägung 2, die den Begriff der 'anderen Beschränkung der Handlungsfreiheit' durch akustische Einwirkung entwickelt und den massgeblichen Schwellenwert festlegt. Erwägung 5 ist für das zweite Leitmotiv – die Rechtswidrigkeit nach dem Zweck-Mittel-Verhältnis – zentral und sollte im Hinblick auf die Abgrenzung von legitimem Protest und strafbarer Nötigung sorgfältig analysiert werden.",
+          "reading_guide_fr": "Commencez par lire l'état de fait (p. 167–168) pour saisir le contexte factuel, puis concentrez-vous sur le considérant 2, qui développe la notion d'«autre entrave» à la liberté d'action par des moyens acoustiques et fixe le seuil déterminant. Le considérant 5, consacré à l'illicéité appréciée selon le rapport entre le but et les moyens, est essentiel pour comprendre la distinction entre protestation légitime et contrainte punissable.",
+          "reading_guide_it": "Si consiglia di leggere dapprima l'esposizione dei fatti (p. 167–168) per comprendere la situazione concreta, poi di concentrarsi sul considerando 2, che elabora la nozione di 'altra limitazione' della libertà d'azione mediante interferenze acustiche e stabilisce la soglia rilevante. Il considerando 5, dedicato all'illiceità valutata secondo il rapporto tra scopo e mezzo, è centrale per distinguere la protesta legittima dalla coazione punibile.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was genau haben die Angeklagten getan, und warum konnte der Vortrag von Korpskommandant Hirschy nicht stattfinden?",
+              "hint": "Sachverhalt, S. 167–168: Beschreibung der Demonstration in der Aula",
+              "model_answer": "Die Angeklagten organisierten eine Demonstration in der Aula der Universität Bern, bei der sie in grosser Lautstärke Parolen skandierten und dabei ein Megaphon einsetzten. Dekan Fricker und Rektor Nef konnten sich trotz Mikrophon kein Gehör verschaffen. Der Lärm stieg jedes Mal an, sobald ein Professor das Wort ergriff, sodass der Rektor schliesslich an die Tafel schreiben musste, dass der Vortrag nicht stattfinde."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche drei Nötigungsmittel nennt Art. 181 StGB, und welches davon hat das Bundesgericht im vorliegenden Fall als erfüllt angesehen?",
+              "hint": "Erwägung 1 und 2: Tatbestandsmerkmale von Art. 181 StGB",
+              "model_answer": "Art. 181 StGB nennt als Nötigungsmittel Gewalt, die Androhung ernstlicher Nachteile sowie 'andere Beschränkung der Handlungsfreiheit' als Generalklausel. Das Bundesgericht erachtete im vorliegenden Fall die dritte Variante als erfüllt, da der organisierte und durch Megaphon verstärkte Lärm eine 'andere Beschränkung' der Handlungsfreiheit der betroffenen Professoren und des Referenten darstellte. Die Generalklausel deckt demnach auch akustische Einwirkungen ab, die das Opfer nicht völlig widerstandsunfähig machen, aber die Handlungsfreiheit spürbar einschränken."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Würde eine einzelne Person, die während einer Vorlesung lautstark 'Buh' ruft und damit kurz für Unruhe sorgt, nach den in BGE 101 IV 167 entwickelten Grundsätzen ebenfalls unter Art. 181 StGB fallen?",
+              "hint": "Erwägung 2: Schwellenwert für die 'andere Beschränkung' – Überschreitung des üblicherweise geduldeten Masses",
+              "model_answer": "Nein, ein einzelner 'Buh'-Ruf würde den Tatbestand nach den bundesgerichtlichen Grundsätzen wahrscheinlich nicht erfüllen. Das Bundesgericht betont, dass das verwendete Zwangsmittel das üblicherweise geduldete Mass der Beeinflussung eindeutig überschreiten muss, vergleichbar mit Gewalt oder der Androhung ernstlicher Nachteile. Ein kurzer Zwischenruf bleibt unterhalb dieser Schwelle, während das koordinierte, mit Megaphon verstärkte Skandieren von Parolen durch eine Gruppe diese Schwelle klar überschreitet."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Das Bundesgericht prüft die Rechtswidrigkeit der Nötigung anhand des Zweck-Mittel-Verhältnisses. Welche Spannungen entstehen dabei zwischen dem Grundrecht der Meinungs- und Versammlungsfreiheit der Demonstranten und dem Recht des Referenten auf freie Meinungsäusserung?",
+              "hint": "Erwägung 5 (Rechtswidrigkeit) sowie Regeste: 'missbräuchlicher und sittenwidriger Eingriff in die Meinungs- und Versammlungsfreiheit'",
+              "model_answer": "Die Demonstranten beriefen sich auf ihre eigene Meinungs- und Versammlungsfreiheit, um einen Vortrag zu verhindern, der nach ihrer Auffassung militaristische Propaganda verbreitete. Damit setzten sie Grundrechte ein, um die Ausübung desselben Grundrechts durch den Referenten zu unterdrücken – ein klassischer Grundrechtskonflikt. Das Bundesgericht löst diese Spannung über das Zweck-Mittel-Verhältnis: Das Mittel der vollständigen akustischen Unterdrückung des Vortrags ist nicht verhältnismässig, auch wenn der politische Zweck für sich genommen legitim sein mag, weil es die Kommunikationsfreiheit anderer Bürger in ihrem Kern trifft und damit die Grenze von der Meinungsäusserung zur Nötigung überschreitet."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Ist die Entscheidung des Bundesgerichts, organisierte akustische Störungen unter Art. 181 StGB zu subsumieren, rechtspolitisch überzeugend, oder öffnet sie eine zu weite Strafbarkeitslücke für legitimen politischen Protest?",
+              "hint": "Erwägung 2 (Generalklausel und Schwellenwert) sowie Erwägung 5 (Rechtswidrigkeit und Zweck-Mittel-Verhältnis)",
+              "model_answer": "Die Entscheidung ist rechtspolitisch vertretbar, weil sie einen klaren Schwellenwert einführt – das eindeutige Überschreiten des üblicherweise Geduldeten – und die Rechtswidrigkeit nicht allein aus dem Mittel, sondern aus dem Zweck-Mittel-Verhältnis ableitet. Damit bleibt Raum für legitimen Protest, der nicht darauf abzielt, andere vollständig zum Schweigen zu bringen. Kritisch lässt sich einwenden, dass die Grenze zwischen unzulässiger Nötigung und geschütztem Protest im politischen Alltag schwer zu ziehen ist und eine zu grosszügige Anwendung dieser Rechtsprechung Minderheiten einschüchtern könnte, die auf laute Protestformen angewiesen sind. Überzeugend bleibt das Urteil dennoch, weil es nicht den Protest als solchen, sondern gezielt die vollständige Verhinderung fremder Kommunikation pönalisiert."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Nehmen wir an, der Veranstalter (die Universität) hätte den Demonstranten ausdrücklich erlaubt, während der Veranstaltung Plakate zu zeigen und leise zu protestieren, die Demonstranten hätten diesen Rahmen jedoch durch den Einsatz des Megaphons gesprengt. Ändert die vorgängige teilweise Erlaubnis etwas an der strafrechtlichen Beurteilung?",
+              "discussion_points": [
+                "Auswirkung einer teilweisen Einwilligung des Veranstalters auf die Rechtswidrigkeit im Sinne von Art. 181 StGB",
+                "Bedeutung der Überschreitung einer erteilten Erlaubnis für das Zweck-Mittel-Verhältnis und die Verhältnismässigkeit des Nötigungsmittels"
+              ],
+              "likely_outcome_shift": "Die vorgängige Teilerlaubnis würde den erlaubten Rahmen des Protests definieren und die Demonstranten könnten sich darauf berufen, soweit sie innerhalb dieses Rahmens blieben. Sobald sie den Rahmen durch den Einsatz des Megaphons und das koordinierte Übertönen aller Redner verliessen, entfällt der Rechtfertigungsgrund der Einwilligung. Das Urteil würde im Ergebnis wohl gleich ausfallen, da der tatbestandsmässige Kern – die vollständige akustische Unterdrückung – nicht von der Erlaubnis gedeckt war."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was wäre, wenn nicht Studierende einen Militärvortrag gestört hätten, sondern eine Gruppe von Offizieren mit organisiertem Lärm eine Antikriegsveranstaltung an der Universität verhindert hätte?",
+              "discussion_points": [
+                "Gilt die Nötigungsdogmatik von Art. 181 StGB unabhängig von der politischen Ausrichtung der Täter und der Opfer?",
+                "Spielt die gesellschaftliche Machtposition der handelnden Gruppe eine Rolle bei der Beurteilung des Zweck-Mittel-Verhältnisses und der Verhältnismässigkeit?"
+              ],
+              "likely_outcome_shift": "Das Bundesgericht müsste die tatbestandliche und rechtswidrigkeitsbezogene Prüfung identisch durchführen, da Art. 181 StGB politisch neutral formuliert ist und das Nötigungsmittel des organisierten akustischen Störens dieselbe Qualität hätte. Eine unterschiedliche Behandlung wäre verfassungsrechtlich bedenklich. In der Praxis könnte die gesellschaftliche Kontextfrage allenfalls bei der Strafzumessung eine Rolle spielen, nicht aber bei der Begründung der Strafbarkeit selbst."
+            }
+          ]
         }
       ]
     }
