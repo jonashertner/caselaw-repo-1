@@ -129,8 +129,8 @@ def _fetch_decision_text(decision_id: str, db_path: str) -> str:
             con.close()
         if row:
             return (row[1] or "") + "\n\n" + (row[0] or "")
-    except Exception:
-        pass
+    except Exception as exc:
+        print(f"    WARN: could not fetch text for {decision_id}: {exc}")
     return ""
 
 
@@ -211,7 +211,7 @@ def enrich_all(
                     print(f"    OK — {len(enrichment['socratic_questions'])} Qs, "
                           f"{len(enrichment['hypotheticals'])} hyps")
                     time.sleep(rate_limit_sleep)
-                except (ValueError, Exception) as e:
+                except Exception as e:
                     print(f"    ERROR: {e}")
                     stats["errors"] += 1
 

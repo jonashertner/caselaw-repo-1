@@ -19,6 +19,8 @@ def _make_case(**kwargs) -> CurriculumCase:
         statutes=["Art. 1 OR"],
         difficulty=3,
         key_erwagungen=["2", "3"],
+        area_id="vertragsrecht",
+        module_id="vertragsschluss",
     )
     defaults.update(kwargs)
     return CurriculumCase(**defaults)
@@ -90,4 +92,11 @@ def test_parse_enrichment_response_wrong_question_count():
         "hypotheticals": [],
     })
     with pytest.raises(ValueError, match="5 socratic questions"):
+        parse_enrichment_response(response)
+
+
+def test_parse_enrichment_response_missing_model_answer():
+    questions = [{"level": i, "question": f"Q{i}?"} for i in range(1, 6)]  # no model_answer
+    response = json.dumps({"socratic_questions": questions, "hypotheticals": []})
+    with pytest.raises(ValueError, match="model_answer"):
         parse_enrichment_response(response)
