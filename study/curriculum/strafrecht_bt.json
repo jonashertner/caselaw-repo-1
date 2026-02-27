@@ -110,7 +110,7 @@
           ]
         },
         {
-          "decision_id": "",
+          "decision_id": "bge_124 IV 274",
           "bge_ref": "BGE 124 IV 274",
           "actual_language": "de",
           "title_de": "Geldwäscherei — Vortäter als eigener Geldwäscher",
@@ -133,14 +133,73 @@
           "difficulty": 4,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zu den Anforderungen an die Vortat bei Geldwäscherei und zur Frage, ob der Vortäter selbst tauglicher Täter ist.",
-          "significance_fr": "",
-          "significance_it": "",
-          "key_erwagungen": [],
-          "reading_guide_de": "",
-          "reading_guide_fr": "",
-          "reading_guide_it": "",
-          "socratic_questions": [],
-          "hypotheticals": []
+          "significance_fr": "Cet arrêt de principe définit les critères objectifs permettant de distinguer les actes de blanchiment d'argent punissables au sens de l'art. 305bis CP des simples opérations bancaires courantes, et confirme que l'auteur de l'infraction préalable peut se rendre coupable de blanchiment de sa propre criminalité.",
+          "significance_it": "Questa sentenza di principio definisce i criteri oggettivi per distinguere gli atti punibili di riciclaggio di denaro ai sensi dell'art. 305bis CP dalle normali operazioni bancarie correnti, e conferma che l'autore del reato presupposto può rispondere anche di autoriciclaggio.",
+          "key_erwagungen": [
+            "2",
+            "3",
+            "4"
+          ],
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 2, um die drei gleichrangigen Handlungsvarianten der Geldwäscherei und das Prinzip der abstrakten Gefährdung zu verstehen. Erwägung 3 klärt die umstrittene Frage der Selbstgeldwäscherei durch den Vortäter. Erwägung 4 – soweit im Auszug erkennbar – enthält die entscheidende Abgrenzung der strafbaren Einzahlung von der straflosen 'einfachen Einzahlung' und ist der dogmatisch innovativste Teil des Urteils.",
+          "reading_guide_fr": "Commencez par lire le considérant 2 afin de comprendre les trois variantes équivalentes du blanchiment d'argent et le principe du délit de mise en danger abstraite. Le considérant 3 clarifie la question controversée de l'auto-blanchiment par l'auteur de l'infraction préalable. Le considérant 4 – dans la mesure où il ressort de l'extrait – contient la délimitation décisive entre le virement punissable et le 'simple dépôt' non punissable, constituant la partie dogmatiquement la plus novatrice de l'arrêt.",
+          "reading_guide_it": "Si raccomanda di leggere dapprima il considerando 2, che illustra le tre varianti equivalenti del riciclaggio di denaro e il principio del reato di pericolo astratto. Il considerando 3 chiarisce la questione controversa dell'autoriciclaggio da parte dell'autore del reato presupposto. Il considerando 4 – nella misura in cui emerge dall'estratto – contiene la distinzione decisiva tra il versamento punibile e il 'semplice versamento' non punibile, rappresentando la parte dogmaticamente più innovativa della sentenza.",
+          "socratic_questions": [
+            {
+              "level": 1,
+              "level_label": "Verständnis",
+              "question": "Was versteht das Bundesgericht in BGE 124 IV 274 unter einer 'Vereitelungshandlung' im Sinne von Art. 305bis StGB, und welche drei gleichrangigen Handlungsvarianten nennt das Gesetz?",
+              "hint": "Vgl. Erwägung 2, insbesondere die Ausführungen zu den Handlungsvarianten und zum Vereitelungserfolg.",
+              "model_answer": "Das Bundesgericht versteht unter einer Vereitelungshandlung jede Handlung, die geeignet ist, den Zugriff der Strafbehörden auf Vermögenswerte verbrecherischer Herkunft zu vereiteln. Das Gesetz nennt gleichrangig die Vereitelung der Ermittlung der Herkunft, der Auffindung und der Einziehung von Vermögenswerten. Strafbar ist bereits die Vereitelungshandlung als solche, unabhängig davon, ob tatsächlich ein Vereitelungserfolg eingetreten ist."
+            },
+            {
+              "level": 2,
+              "level_label": "Regelidentifikation",
+              "question": "Welche Rechtsprechungsregel bestätigt das Bundesgericht in Erwägung 3 bezüglich der Täterschaft bei der Geldwäscherei, und aus welchem früheren Leitentscheid ergibt sich diese Regel?",
+              "hint": "Vgl. Erwägung 3 mit Verweis auf BGE 120 IV 323 E. 3.",
+              "model_answer": "Das Bundesgericht bestätigt in Erwägung 3 die Regel, dass auch der Vortäter sein eigener Geldwäscher sein kann. Diese Regel wurde erstmals in BGE 120 IV 323 E. 3 entwickelt. Sie bedeutet, dass die Person, die das Verbrechen beging, aus dem die Gelder stammen, zusätzlich wegen Geldwäscherei bestraft werden kann, wenn sie anschliessend Handlungen zur Verschleierung dieser Gelder vornimmt."
+            },
+            {
+              "level": 3,
+              "level_label": "Anwendung",
+              "question": "Die Beschwerdegegnerin zahlte Drogengelder in sechs Tranchen von insgesamt Fr. 9'400.-- auf ihr bestehendes persönliches Salärkonto ein. Wie beurteilt das Bundesgericht diesen Sachverhalt in Bezug auf Art. 305bis StGB, und welche konkreten Merkmale des Kontos sind dabei entscheidend?",
+              "hint": "Vgl. Erwägung 4 sowie die Sachverhaltsschilderung in Erwägung 1.",
+              "model_answer": "Das Bundesgericht qualifiziert eine einfache Einzahlung auf ein dem üblichen privaten Zahlungsverkehr dienendes persönliches Bankkonto am Wohnort objektiv nicht als Geldwäscherei. Entscheidend ist, dass es sich um ein bestehendes Konto handelt, das auch für reguläre Ein- und Auszahlungen verwendet wurde, und dass keine weiteren Verschleierungshandlungen vorgenommen wurden. Eine solche Einzahlung erschwert die Auffindung der Vermögenswerte nicht in tatbestandsrelevanter Weise."
+            },
+            {
+              "level": 4,
+              "level_label": "Analyse",
+              "question": "Warum unterscheidet das Bundesgericht die einfache Kontoeinzahlung in diesem Fall grundlegend von der Anlage von Drogengeldern auf einem Konto, wie sie in BGE 119 IV 242 als Geldwäscherei qualifiziert wurde? Welches strukturelle Kriterium liegt dem Unterschied zugrunde?",
+              "hint": "Vgl. Erwägung 1 (Verweis der Vorinstanz auf BGE 119 IV 242) sowie Erwägung 2 zu den Fallgruppen der Vereitelungshandlungen.",
+              "model_answer": "Der entscheidende strukturelle Unterschied liegt darin, ob die Handlung objektiv geeignet ist, den Zugriff der Strafbehörden auf die Verbrechensbeute zu erschweren oder zu vereiteln. In BGE 119 IV 242 wurden Drogengelder aktiv angelegt, um ihre Spur zu tilgen und sie dem Zugriff der Behörden zu entziehen. Die blosse Einzahlung auf ein regulär genutztes Salärkonto hingegen verändert die Rückverfolgbarkeit der Gelder nicht wesentlich, da das Konto ohnehin bekannt und dem normalen Zahlungsverkehr gewidmet ist. Das massgebliche Kriterium ist damit die objektive Verschleierungseignung der Handlung, nicht die blosse Vermischung illegaler mit legalen Mitteln."
+            },
+            {
+              "level": 5,
+              "level_label": "Bewertung",
+              "question": "Das Bundesgericht lehnt eine starre Kasuistik ab und beauftragt die Rechtsprechung, Fallgruppen von Vereitelungshandlungen zu entwickeln. Bewerten Sie kritisch, ob die in BGE 124 IV 274 entwickelte Abgrenzung zwischen tatbestandsmässiger Einzahlung und strafloser 'einfacher Einzahlung' in der Praxis hinreichend klare Konturen bietet, oder ob sie zu Rechtsunsicherheit führt.",
+              "hint": "Vgl. Erwägungen 2 und 4 sowie das Kriterium der objektiven Verschleierungseignung.",
+              "model_answer": "Die vom Bundesgericht gewählte Abgrenzung anhand der objektiven Verschleierungseignung ist dogmatisch überzeugend, birgt jedoch praktische Abgrenzungsschwierigkeiten. Kriterien wie die 'übliche private Nutzung' des Kontos oder die Lage 'am Wohnort' sind einzelfallabhängig und können bei komplexeren Sachverhalten – etwa bei mehreren Konten, grösseren Beträgen oder systematischen Einzahlungen – kaum trennscharf angewendet werden. Positiv ist zu werten, dass das Gericht damit eine ausufernde Kriminalisierung alltäglicher Bankgeschäfte verhindert; kritisch ist jedoch anzumerken, dass die Fallgruppenbildung durch die Rechtsprechung zu einer fragmentierten und wenig vorhersehbaren Rechtslage führen kann, die dem Bestimmtheitsgebot des Strafrechts nicht vollauf genügt."
+            }
+          ],
+          "hypotheticals": [
+            {
+              "type": "add_complication",
+              "scenario": "Angenommen, die Beschwerdegegnerin hätte die Fr. 9'400.-- nicht auf ihr bestehendes Salärkonto eingezahlt, sondern zunächst in bar bei einem Wechselbüro in kleinere Fremdwährungsscheine umgetauscht und diese sodann auf ein neu eröffnetes, auf eine Verwandte lautendes Konto in einem anderen Kanton überwiesen. Wie würde sich diese Abweichung auf die rechtliche Beurteilung gemäss Art. 305bis StGB auswirken?",
+              "discussion_points": [
+                "Das Wechseln von Bargeld wurde in BGE 122 IV 211 bereits als taugliche Vereitelungshandlung anerkannt – inwiefern verändert die Kombination mit einer Kontoüberweisung die Beurteilung?",
+                "Welche Bedeutung hat die Einschaltung einer dritten Person (Verwandte) und die Eröffnung eines neuen Kontos für die objektive Verschleierungseignung der Gesamthandlung?"
+              ],
+              "likely_outcome_shift": "Im abgewandelten Sachverhalt lägen mehrere kumulative Verschleierungshandlungen vor – Währungswechsel, Zwischenschaltung einer dritten Person und Nutzung eines neu eröffneten Fremdkontos –, die zusammen objektiv geeignet sind, die Ermittlung der Herkunft und die Auffindung der Gelder erheblich zu erschweren. Das Bundesgericht würde den objektiven Tatbestand von Art. 305bis StGB mit hoher Wahrscheinlichkeit bejahen, da diese Handlungskette klar über eine 'einfache Einzahlung' hinausgeht und erkennbar auf die Tilgung der Spur der Verbrechensbeute abzielt."
+            },
+            {
+              "type": "swap_parties",
+              "scenario": "Was würde sich ändern, wenn nicht die Mittäterin (Beschwerdegegnerin), sondern ein unbeteiligter Dritter – etwa ein Freund der Angeklagten, der von der Herkunft der Gelder wusste – dieselbe einfache Einzahlung auf sein eigenes Salärkonto vorgenommen hätte?",
+              "discussion_points": [
+                "Kann die Rechtsprechungsregel, dass der Vortäter sein eigener Geldwäscher sein kann (BGE 120 IV 323), umgekehrt auch Rückschlüsse auf die Strafbarkeit unbeteiligter Dritter zulassen?",
+                "Verändert der Umstand, dass ein Dritter handelt, die objektive Verschleierungseignung der Einzahlung – oder hängt die Strafbarkeit allein von der objektiven Handlungsqualität ab?"
+              ],
+              "likely_outcome_shift": "Die objektive Beurteilung der Handlung – einfache Einzahlung auf ein regulär genutztes Konto – bliebe nach der Logik des Bundesgerichts dieselbe, weshalb auch beim unbeteiligten Dritten der objektive Tatbestand zu verneinen wäre. Allerdings könnte der Umstand, dass ein Dritter fremde Gelder entgegennimmt und auf sein Konto einzahlt, je nach Begleitumständen anders gewichtet werden, da das Konto gerade nicht dem eigenen regulären Zahlungsverkehr des Vortäters dient, was die Verschleierungseignung erhöhen könnte. Im Ergebnis bliebe die Abgrenzung eng und einzelfallabhängig, wobei das Bundesgericht voraussichtlich auf die objektive Eignung der konkreten Handlung zur Vereitelung des Behördenzugriffs abstellen würde."
+            }
+          ]
         },
         {
           "decision_id": "bge_132 IV 108",
