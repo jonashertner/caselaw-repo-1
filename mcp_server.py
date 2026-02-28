@@ -878,9 +878,13 @@ def _search_fts5_inner(
         # Sparse search (if sparse_terms table exists)
         sparse_scores = _search_sparse(query=fts_query)
 
-        # Add vector-only candidates to the pool
+        # Add vector-only candidates to the pool (only when VECTOR_WEIGHT > 0)
         if vector_scores:
-            vec_only_ids = set(vector_scores.keys()) - set(candidate_meta.keys())
+            vec_only_ids = (
+                set(vector_scores.keys()) - set(candidate_meta.keys())
+                if VECTOR_WEIGHT > 0
+                else set()
+            )
             if vec_only_ids:
                 ph = ",".join("?" for _ in vec_only_ids)
                 vec_rows = conn.execute(
