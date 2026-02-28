@@ -37,7 +37,8 @@ def test_geschaeftsfuehrer_expands_to_organverantwortlichkeit():
 def test_mietrecht_kuendigung_expands():
     exps = _get_query_expansions("mietrecht")
     all_exps = " ".join(exps).lower()
-    assert "kuendigung" in all_exps or "kundigung" in all_exps or "kuend" in all_exps, (
+    assert "mietzins" in all_exps, f"Expected Mietzins in mietrecht expansions, got: {exps}"
+    assert "kuendigung" in all_exps or "kundigung" in all_exps, (
         f"Expected Kündigung in mietrecht expansions, got: {exps}"
     )
 
@@ -48,4 +49,6 @@ def test_no_existing_entries_removed():
     assert "asile" in asyl_exps or "schutz" in asyl_exps, f"asyl expansions broken: {asyl_exps}"
 
     haftung_exps = _get_query_expansions("haftung")
-    assert len(haftung_exps) >= 2, f"haftung expansions broken: {haftung_exps}"
+    assert "responsabilite" in haftung_exps or "responsabilita" in haftung_exps, (
+        f"haftung expansions broken: {haftung_exps}"
+    )
