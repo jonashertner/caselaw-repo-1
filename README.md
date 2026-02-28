@@ -252,8 +252,8 @@ Available on both remote and local unless noted.
 | `find_leading_cases` | Find the most-cited decisions for a topic or statute |
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Build a research-only mock decision outline from facts, grounded in caselaw + statute references; asks clarification questions before conclusion |
-| `study_leading_case` | Interactive study of a BGE/leading case — Socratic questions, case structure, review cards |
-| `list_study_curriculum` | Browse study curricula: 8 legal areas, graded cases, difficulty levels |
+| `study_leading_case` | Interactive Socratic study of a BGE — questions, hypotheticals, reading guide (guided/brief/quick modes) |
+| `list_study_curriculum` | Browse the curriculum: 14 legal areas, 100 canonical BGEs, difficulty 1–5 |
 | `check_case_brief` | Check a student's case brief against the actual decision with scoring rubric |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
 | `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
@@ -285,9 +285,13 @@ These work on both the remote and local server:
 
 > Search for statute provisions about Verjährung
 
-> Study the leading case on Vertragsschluss
-
 > Trace the appeal chain for 5A_234/2026
+
+> Show me the study curriculum for criminal law
+
+> Let's study BGE 133 III 121 together
+
+> Check my case brief for BGE 133 III 121: [your summary]
 ```
 
 The AI calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
@@ -385,13 +389,13 @@ The statute database covers the top 40 most-cited Swiss federal laws, including 
 
 ### Education tools
 
-Three tools support **Socratic legal education** with structured study of leading Swiss court decisions.
+Three tools support **Socratic legal education** with structured study of 100 canonical BGE decisions across Swiss law.
 
-**`study_leading_case`** — Interactive study of a BGE or Leitentscheid. Returns parsed decision structure (Sachverhalt, Erwägungen, Dispositiv), Socratic questions at 5 Bloom taxonomy levels, hypothetical variations, review cards for spaced repetition, and a case brief template. Three modes: `guided` (full package), `brief` (structure + brief template), `quick` (regeste + ratio + review cards).
+**`list_study_curriculum`** — Browse the curriculum: 14 legal areas, 100 landmark BGEs, each with difficulty rating (1–5) and module grouping. Areas covered: Vertragsrecht · Haftpflicht · Sachenrecht · Familienrecht · Arbeitsrecht · Mietrecht · Strafrecht AT · Strafrecht BT · Grundrechte · Erbrecht · Gesellschaftsrecht · Zivilprozessrecht · Strafprozessrecht · Öffentliches Prozessrecht.
 
-**`list_study_curriculum`** — Browse available study curricula covering 8 legal areas: Vertragsrecht, Haftpflicht, Sachenrecht, Grundrechte, Strafrecht AT, Mietrecht, Arbeitsrecht, Familienrecht. Each area has modules with graded cases and difficulty levels (1–5).
+**`study_leading_case`** — Socratic study package for a BGE. Returns the parsed decision structure, a reading guide, 5 Socratic questions (levels 1–5 with hints and model answers), 2 hypothetical variations with discussion points, and the key Erwägungen. Three modes: `guided` (full package), `brief` (structure + questions only), `quick` (ratio + key statutes).
 
-**`check_case_brief`** — Check a student's case brief against the actual decision. Returns the ground truth alongside the brief for comparison, with a scoring rubric (6 weighted sections: Leitsatz 15%, Rechtsregel 20%, Sachverhalt 15%, Kernerwägungen 25%, Dispositiv 10%, Bedeutung 15%).
+**`check_case_brief`** — Compare a student's brief against the actual decision. Returns the ground truth (ratio, key Erwägungen, Dispositiv, statutes) alongside the brief text so the AI can give structured feedback.
 
 `draft_mock_decision` can use optional Fedlex URLs and caches fetched statute excerpts in
 `~/.swiss-caselaw/fedlex_cache.json` (configurable via `SWISS_CASELAW_FEDLEX_CACHE`).
