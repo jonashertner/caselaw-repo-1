@@ -1464,23 +1464,58 @@ def _get_vector_model():
         return None
     if not VECTOR_DB_PATH.exists():
         return None
+    model_id = "BAAI/bge-m3"
+    # Prefer FlagEmbedding — same library used to build the vectors DB
+    try:
+        from FlagEmbedding import BGEM3FlagModel  # type: ignore[import-untyped]
+        _VECTOR_MODEL = BGEM3FlagModel(model_id, use_fp16=False)
+        logger.info("Loaded %s with FlagEmbedding for vector search", model_id)
+        return _VECTOR_MODEL
+    except Exception as e:
+        logger.debug("FlagEmbedding load failed, trying SentenceTransformer: %s", e)
+    # Fall back to SentenceTransformer with PyTorch (skip ONNX — incompatible output format)
     try:
         from sentence_transformers import SentenceTransformer
-    except ImportError:
-        _VECTOR_MODEL_FAILED = True
-        return None
-    try:
-        model_id = "BAAI/bge-m3"
-        try:
-            _VECTOR_MODEL = SentenceTransformer(model_id, backend="onnx")
-            logger.info("Loaded %s with ONNX backend for vector search", model_id)
-        except Exception:
-            _VECTOR_MODEL = SentenceTransformer(model_id)
-            logger.info("Loaded %s with PyTorch backend for vector search", model_id)
+        _VECTOR_MODEL = SentenceTransformer(model_id)
+        logger.info("Loaded %s with SentenceTransformer (PyTorch) for vector search", model_id)
         return _VECTOR_MODEL
     except Exception as e:
         logger.warning("Vector model load failed: %s", e)
         _VECTOR_MODEL_FAILED = True
+        return None
+
+
+def _encode_query(model, query: str) -> bytes | None:
+    """Encode a query string into packed float32 bytes for sqlite-vec.
+
+    Handles both BGEM3FlagModel (FlagEmbedding) and SentenceTransformer.
+    Returns None on encoding failure.
+    """
+    import struct as _struct
+
+    import numpy as np
+
+    try:
+        if type(model).__name__ == "BGEM3FlagModel":
+            output = model.encode(
+                [query],
+                batch_size=1,
+                max_length=256,
+                return_dense=True,
+                return_sparse=False,
+                return_colbert_vecs=False,
+            )
+            embedding = np.asarray(output["dense_vecs"][0], dtype=np.float32)
+        else:
+            embedding = model.encode(
+                [query],
+                show_progress_bar=False,
+                convert_to_numpy=True,
+                normalize_embeddings=True,
+            )[0]
+        return _struct.pack(f"{len(embedding)}f", *embedding.tolist())
+    except Exception as e:
+        logger.debug("Query encoding failed: %s", e)
         return None
 
 
@@ -1498,14 +1533,9 @@ def _search_vectors(
         return {}
     k = k or VECTOR_K
     try:
-        embedding = model.encode(
-            [query],
-            show_progress_bar=False,
-            convert_to_numpy=True,
-            normalize_embeddings=True,
-        )[0]
-        import struct as _struct
-        query_bytes = _struct.pack(f"{len(embedding)}f", *embedding.tolist())
+        query_bytes = _encode_query(model, query)
+        if query_bytes is None:
+            return {}
 
         if language:
             rows = vec_conn.execute(
@@ -1550,14 +1580,9 @@ def _search_vectors_chunks(
         if not _sqlite_has_table(vec_conn, "vec_chunks"):
             return {}
 
-        embedding = model.encode(
-            [query],
-            show_progress_bar=False,
-            convert_to_numpy=True,
-            normalize_embeddings=True,
-        )[0]
-        import struct as _struct
-        query_bytes = _struct.pack(f"{len(embedding)}f", *embedding.tolist())
+        query_bytes = _encode_query(model, query)
+        if query_bytes is None:
+            return {}
 
         if language:
             rows = vec_conn.execute(
