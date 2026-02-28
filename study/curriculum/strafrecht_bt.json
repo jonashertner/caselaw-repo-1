@@ -226,71 +226,71 @@
           "difficulty": 2,
           "prerequisites": [],
           "significance_de": "Grundsatzentscheid zum Begriff des Gewahrsams beim Diebstahl: Voraussetzungen der Wegnahme und Abgrenzung zur Veruntreuung.",
-          "significance_fr": "Cet arrêt de principe définit la notion pénale de possession (Gewahrsam) comme maîtrise factuelle selon les règles de la vie sociale et fixe les critères permettant de distinguer le vol (art. 139 CP) de l'appropriation illégitime (art. 137 CP) lorsque la victime n'exerce plus de maîtrise effective sur la chose au moment de l'acte.",
+          "significance_fr": "Cet arrêt de principe définit la notion pénale de possession (Gewahrsam) comme un pouvoir de fait sur la chose selon les règles de la vie sociale et établit les critères permettant de distinguer le vol (art. 139 CP) de l'appropriation illégitime (art. 137 CP) lorsque la victime n'exerce plus aucun pouvoir effectif sur la chose au moment des faits.",
           "significance_it": "Questa sentenza di principio definisce la nozione penale di possesso (Gewahrsam) come potere fattuale secondo le regole della vita sociale e stabilisce i criteri per distinguere il furto (art. 139 CP) dall'appropriazione indebita (art. 137 CP) quando la vittima non esercita più alcun potere effettivo sulla cosa al momento del fatto.",
           "key_erwagungen": [
             "2.1",
             "2.2",
             "2.3"
           ],
-          "reading_guide_de": "Lesen Sie zunächst den Sachverhalt (S. 109) sorgfältig, um den tatsächlichen Ablauf am Bankomaten zu verstehen. Konzentrieren Sie sich dann auf Erwägung 2.1, welche die strafrechtliche Definition des Gewahrsams und die Abgrenzung zu Art. 137 StGB entwickelt, sowie auf Erwägung 2.2, in der das Bundesgericht diese Definition auf den konkreten Fall anwendet und das Fehlen des Gewahrsams von B. begründet.",
-          "reading_guide_fr": "Commencez par lire attentivement les faits (p. 109) pour comprendre le déroulement des événements au distributeur automatique. Concentrez-vous ensuite sur le considérant 2.1, qui développe la définition pénale de la possession (Gewahrsam) et la délimitation avec l'art. 137 CP, puis sur le considérant 2.2, dans lequel le Tribunal fédéral applique ces critères au cas concret et explique pourquoi B. n'avait plus la possession des billets.",
-          "reading_guide_it": "Leggete dapprima i fatti (p. 109) per comprendere la sequenza degli eventi allo sportello automatico. Focalizzatevi poi sul considerando 2.1, che elabora la definizione penale del possesso (Gewahrsam) e la distinzione rispetto all'art. 137 CP, e sul considerando 2.2, nel quale il Tribunale federale applica tali criteri al caso concreto e spiega perché B. non aveva più il possesso delle banconote.",
+          "reading_guide_de": "Lesen Sie zunächst Erwägung 2.1, um die strafrechtliche Definition des Gewahrsams und die dogmatische Abgrenzung von Diebstahl und unrechtmässiger Aneignung zu verstehen. Erwägung 2.2 wendet diese Definition auf den konkreten Sachverhalt an und begründet, warum der Kundin kein Gewahrsam mehr an den ausgegebenen Banknoten zustand. Erwägung 2.3 zieht daraus die rechtliche Schlussfolgerung und hebt das kantonale Urteil auf.",
+          "reading_guide_fr": "Commencez par lire le considérant 2.1 pour comprendre la définition pénale de la possession (Gewahrsam) et la distinction dogmatique entre le vol et l'appropriation illégitime. Le considérant 2.2 applique cette définition aux faits concrets et explique pourquoi la cliente n'exerçait plus aucun pouvoir de fait sur les billets au moment décisif. Le considérant 2.3 en tire la conséquence juridique et annule le jugement cantonal.",
+          "reading_guide_it": "Iniziate dalla lettura del considerando 2.1 per comprendere la definizione penale di possesso e la distinzione dogmatica tra furto e appropriazione indebita. Il considerando 2.2 applica tale definizione ai fatti concreti, spiegando perché la cliente non esercitava più alcun potere fattuale sulle banconote al momento rilevante. Il considerando 2.3 trae le conseguenze giuridiche da tale accertamento e annulla la sentenza cantonale.",
           "socratic_questions": [
             {
               "level": 1,
-              "level_label": "Verständnis",
-              "question": "Was ist der sachverhaltliche Kern von BGE 132 IV 108? Beschreiben Sie, was die Bankkunde B. am Bankomaten tat und wie A. in den Besitz des Geldes gelangte.",
-              "hint": "Sachverhalt, S. 109 (Abschnitt A)",
-              "model_answer": "B. wollte am Bankomaten der UBS in Peseux Fr. 1'000.- abheben, glaubte jedoch irrtümlich, der Automat sei defekt, und entfernte sich ohne das Geld. Der Automat gab daraufhin tatsächlich EUR 1'000.- aus. A., der als Nächster an den Automaten trat, eignete sich dieses Geld an und zahlte es auf sein eigenes Bankkonto ein."
+              "level_label": "Comprensione",
+              "question": "Che cosa è accaduto concretamente allo sportello automatico della UBS di Peseux l'8 maggio 2004? Descrivete la sequenza degli eventi che ha coinvolto la cliente B. e l'imputato A.",
+              "hint": "Consultate il Sachverhalt (lettera A) della sentenza, che descrive in dettaglio la vicenda fattuale.",
+              "model_answer": "La cliente B. ha inserito la propria carta bancaria, digitato il codice e l'importo di fr. 1'000.-, ma convinta che l'apparecchio fosse difettoso si è allontanata senza prelevare denaro. Nel frattempo il bancomat ha erogato EUR 1'000.- a carico del suo conto. A., che stava attendendo il proprio turno, si è appropriato delle banconote e le ha versate sul proprio conto bancario in due operazioni successive."
             },
             {
               "level": 2,
-              "level_label": "Regelidentifikation",
-              "question": "Wie definiert das Bundesgericht den strafrechtlichen Begriff des Gewahrsams (Besitz) und worin unterscheidet er sich vom zivilrechtlichen Besitzbegriff gemäss Art. 919 ZGB?",
-              "hint": "Erwägung 2.1, S. 110",
-              "model_answer": "Das Bundesgericht definiert den strafrechtlichen Gewahrsam als tatsächliche Herrschaft über eine Sache nach den Regeln des sozialen Lebens, wobei die effektive Verfügungsmöglichkeit und der Wille zur Sachherrschaft kumulativ vorliegen müssen. Im Gegensatz zum zivilrechtlichen Besitzbegriff (Art. 919 ZGB) knüpft der strafrechtliche Begriff nicht an formale Rechtspositionen an, sondern an die faktische Sachherrschaft im sozialen Kontext."
+              "level_label": "Identificazione della regola",
+              "question": "Come definisce il Tribunale federale la nozione penale di possesso (Gewahrsam) ai sensi dell'art. 139 CP, e in che cosa si distingue dalla nozione civilistica di possesso ex art. 919 CC?",
+              "hint": "Leggete attentamente il considerando 2.1, dove il Tribunale federale richiama la propria giurisprudenza sulla nozione di possesso in ambito penale.",
+              "model_answer": "In ambito penale il Tribunale federale definisce il possesso come potere fattuale sulla cosa secondo le regole della vita sociale, che presuppone l'effettiva disponibilità della cosa unitamente alla volontà di possederla (DTF 112 IV 9). Tale nozione è più ampia e più flessibile di quella civilistica ex art. 919 CC, poiché non si fonda su criteri giuridico-formali bensì su criteri empirici e sociali, permettendo di tutelare la relazione di fatto tra persona e cosa anche in situazioni in cui il possesso civile sarebbe controverso."
             },
             {
               "level": 3,
-              "level_label": "Anwendung",
-              "question": "Wenden Sie die bundesgerichtliche Definition des Gewahrsams auf den konkreten Fall an: Hatte B. im Zeitpunkt der Aneignung durch A. noch Gewahrsam an den aus dem Automaten ausgegebenen Banknoten?",
-              "hint": "Erwägung 2.2, S. 110–111",
-              "model_answer": "Nein. Da B. bereits weggegangen war und irrtümlich glaubte, das Gerät habe kein Geld ausgegeben, konnte sie weder eine tatsächliche Verfügungsmacht über die Banknoten ausüben noch hatte sie einen entsprechenden Besitzwillen. Die Voraussetzungen des strafrechtlichen Gewahrsams – faktische Herrschaft und Wille – lagen bei ihr zum massgeblichen Zeitpunkt somit nicht vor."
+              "level_label": "Applicazione",
+              "question": "Applicando la definizione penale di possesso ai fatti della causa, il Tribunale federale ha concluso che la cliente B. esercitava ancora un potere di fatto sulle banconote erogate dal bancomat nel momento in cui A. se ne è appropriato? Motivate la risposta.",
+              "hint": "Il considerando 2.2 applica concretamente la definizione di possesso ai fatti del caso; verificate se sussistevano sia l'elemento oggettivo (disponibilità effettiva) sia quello soggettivo (volontà di possedere).",
+              "model_answer": "No. Il Tribunale federale ha ritenuto che al momento dell'appropriazione da parte di A. la cliente B. non era in grado di esercitare alcun potere di fatto sulle banconote secondo le regole della vita sociale, poiché si era già allontanata convinta che l'apparecchio fosse difettoso. Mancava inoltre qualsiasi volontà di possesso da parte sua, dato che ignorava completamente che il denaro fosse stato erogato. Pertanto non vi era alcun possesso da ledere, elemento indispensabile per integrare la fattispecie del furto."
             },
             {
               "level": 4,
-              "level_label": "Analyse",
-              "question": "Welche Konsequenz hat das Fehlen des Gewahrsams von B. für die rechtliche Qualifikation des Verhaltens von A.? Warum kann A. nicht wegen Diebstahls (Art. 139 StGB) verurteilt werden, und welcher Tatbestand kommt stattdessen in Betracht?",
-              "hint": "Erwägungen 2.1 und 2.2; Abgrenzung zu Art. 137 StGB",
-              "model_answer": "Diebstahl setzt eine Wegnahme voraus, d.h. die Brechung eines fremden und die Begründung eines neuen Gewahrsams. Da B. keinen Gewahrsam an den Banknoten hatte, konnte A. ihr diesen nicht brechen – eine Wegnahme i.S.v. Art. 139 StGB scheidet daher aus. In Betracht kommt stattdessen die unrechtmässige Aneignung gemäss Art. 137 StGB, da A. eine herrenlose bzw. nicht im Gewahrsam einer anderen Person stehende Sache an sich nahm."
+              "level_label": "Analisi",
+              "question": "Quali sono i criteri distintivi che il Tribunale federale utilizza per separare il furto (art. 139 CP) dall'appropriazione indebita (art. 137 CP)? In quale delle due fattispecie rientra il comportamento di A. e perché?",
+              "hint": "Il considerando 2.1 illustra la differenza strutturale tra le due fattispecie; il considerando 2.2 e 2.3 applicano tali criteri al caso concreto.",
+              "model_answer": "Il criterio distintivo fondamentale risiede nelle modalità di appropriazione: il furto richiede che il reo sottragga la cosa a un altro, ossia leda un possesso altrui preesistente e costituisca un nuovo possesso, mentre l'appropriazione indebita si realizza quando la cosa si trova già nella sfera di disponibilità dell'agente senza che vi sia un possesso altrui da violare. Nel caso di A., poiché B. aveva perso ogni controllo fattuale e soggettivo sulle banconote prima dell'appropriazione, non vi era possesso da ledere: A. si è trovato di fronte a una cosa che non era più nella sfera di possesso di nessuno, e pertanto la sua condotta integra l'appropriazione indebita ex art. 137 CP piuttosto che il furto."
             },
             {
               "level": 5,
-              "level_label": "Bewertung",
-              "question": "Kritisch betrachtet: Ist die Abgrenzung des Bundesgerichts zwischen Diebstahl und unrechtmässiger Aneignung in diesem Fall überzeugend, oder lässt sich argumentieren, dass B. zumindest einen latenten oder konstruktiven Gewahrsam an den Banknoten innehatte?",
-              "hint": "Erwägungen 2.1 und 2.2; Konzept des gelockerten Gewahrsams in der Lehre",
-              "model_answer": "Die Entscheidung ist dogmatisch konsistent, weil das Bundesgericht konsequent auf die faktische Komponente abstellt. Allerdings lässt sich einwenden, dass B. durch die Kontobelastung einen wirtschaftlichen Anspruch auf die Banknoten hatte und der Automat in ihrem Auftrag handelte, was einen konstruktiven oder institutionellen Gewahrsam begründen könnte. Die strikte Ablehnung eines solchen Konzepts ist rechtspolitisch vertretbar, schützt aber das Opfer weniger effektiv, da Art. 137 StGB in der Regel eine mildere Strafe nach sich zieht als Art. 139 StGB."
+              "level_label": "Valutazione",
+              "question": "Ritenete che la soluzione adottata dal Tribunale federale — qualificare il comportamento di A. come appropriazione indebita anziché furto — sia convincente dal punto di vista della politica criminale e della tutela delle vittime? Esistono argomenti a favore di una diversa qualificazione?",
+              "hint": "Riflettete sui considerandi 2.1, 2.2 e 2.3 nel loro insieme, valutando l'equilibrio tra aderenza dogmatica alla nozione di possesso e l'effettiva protezione degli interessi patrimoniali della vittima.",
+              "model_answer": "La soluzione è dogmaticamente coerente con la nozione penale di possesso, poiché evita di estendere artificiosamente la tutela del furto a situazioni in cui la vittima aveva già perso ogni controllo sulla cosa. Tuttavia, dal punto di vista della vittima il disvalore pratico è simile: in entrambi i casi B. subisce una perdita patrimoniale a causa del comportamento doloso di A. Un argomento critico è che la distinzione rischia di privilegiare chi approfitta di situazioni di mancanza di vigilanza momentanea, attribuendogli una risposta sanzionatoria potenzialmente meno severa rispetto a chi compie un furto in presenza del proprietario; d'altra parte, la precisione concettuale è essenziale per garantire certezza del diritto e rispettare il principio di legalità."
             }
           ],
           "hypotheticals": [
             {
               "type": "add_complication",
-              "scenario": "Angenommen, B. hatte den Automaten noch nicht verlassen, als die Banknoten ausgegeben wurden – sie stand noch einen Meter entfernt, hatte sich jedoch bereits abgewandt und glaubte, die Transaktion sei fehlgeschlagen. A. greift in diesem Moment nach den Scheinen, bevor B. reagieren kann. Ändert sich die rechtliche Qualifikation?",
+              "scenario": "Immaginate che la cliente B., anziché allontanarsi convinta del guasto, fosse rimasta nei pressi del bancomat per telefonare all'assistenza della banca, osservando a distanza di pochi metri lo sportello mentre A. prelevava le banconote erogate. La soluzione sulla qualificazione giuridica cambierebbe?",
               "discussion_points": [
-                "Ob räumliche Nähe und die noch laufende Transaktion einen (gelockerten) Gewahrsam der B. begründen können",
-                "Ob der fehlende Wille der B. zur Sachherrschaft auch bei räumlicher Nähe den Gewahrsam ausschliesst oder ob der soziale Kontext (eigene Transaktion, noch am Automaten) ausreicht"
+                "La presenza fisica della vittima nelle immediate vicinanze dello sportello sarebbe sufficiente a mantenere un potere fattuale sulla cosa 'secondo le regole della vita sociale', anche se B. non era fisicamente in grado di afferrare le banconote?",
+                "Rileverebbe la volontà soggettiva di B. di recuperare il denaro, manifestata dalla sua decisione di restare sul posto e contattare la banca, ai fini della sussistenza dell'elemento soggettivo del possesso?"
               ],
-              "likely_outcome_shift": "In diesem Szenario wäre der Gewahrsam der B. wohl zu bejahen, da sie sich noch im unmittelbaren räumlichen Umfeld des Automaten befand und die Transaktion auf ihr Konto lief. Ein vernünftiger Dritter würde die Banknoten noch ihrem Herrschaftsbereich zurechnen, weshalb eine Verurteilung von A. wegen Diebstahls nach Art. 139 StGB wahrscheinlicher wäre."
+              "likely_outcome_shift": "In questo scenario è plausibile che il Tribunale federale avrebbe qualificato il possesso di B. come ancora sussistente, poiché la vittima era presente, consapevole della situazione e intendeva esercitare il proprio diritto sul denaro. Di conseguenza, la sottrazione da parte di A. integrerebbe il furto ex art. 139 CP, con conseguenze sanzionatorie potenzialmente più gravi per l'imputato."
             },
             {
               "type": "swap_parties",
-              "scenario": "Stellen Sie sich vor, nicht A. (ein Dritter) eignet sich das Geld an, sondern ein Bankangestellter, der den Automaten wartet und die liegengebliebenen Banknoten in seine Tasche steckt. Verändert dies die Tatbestandsbeurteilung?",
+              "scenario": "Invertite i ruoli: è la banca stessa, tramite un suo impiegato, ad accorgersi dell'errore di erogazione e a trattenere le banconote già uscite dallo sportello automatico prima che la cliente B. possa recuperarle, con l'intenzione di appropriarsene. Come cambia la qualificazione giuridica della condotta?",
               "discussion_points": [
-                "Ob der Bankangestellte als Vertrauensperson der Bank einen eigenen Gewahrsam oder einen abgeleiteten Mitgewahrsam an den Automateninhalten hat",
-                "Ob bei einem Angestellten mit Zugangsberechtigung zum Automaten eher Veruntreuung (Art. 138 StGB) als unrechtmässige Aneignung (Art. 137 StGB) zu prüfen wäre"
+                "La banca, in quanto gestore dello sportello automatico, esercita un possesso continuativo sull'apparecchio e sul denaro in esso contenuto: l'erogazione erronea interrompe tale possesso o lo trasforma in un possesso di fatto sulle banconote già uscite?",
+                "In che misura il rapporto contrattuale tra banca e cliente (mandato di prelievo) influenza la valutazione del possesso e dell'eventuale violazione di obblighi di fedeltà, aprendo la strada a fattispecie come la gestione infedele (art. 158 CP) o l'appropriazione indebita aggravata?"
               ],
-              "likely_outcome_shift": "Bei einem Bankangestellten mit funktionaler Zuständigkeit für den Automaten läge möglicherweise ein Mitgewahrsam der Bank vor, und die Banknoten wären ihm anvertraut i.S.v. Art. 138 StGB. Der Tatbestand der Veruntreuung träte an die Stelle der unrechtmässigen Aneignung, was zu einer schwereren Strafbarkeit führen würde."
+              "likely_outcome_shift": "La condotta dell'impiegato bancario potrebbe essere qualificata diversamente a seconda che si ritenga che la banca abbia mantenuto il possesso sulle banconote anche dopo la loro erogazione. Se si ammette un residuo possesso bancario, la sottrazione integrerebbe un'appropriazione indebita in violazione di obblighi fiduciari; in alternativa, potrebbe configurarsi una gestione infedele ai sensi dell'art. 158 CP, con pene potenzialmente più severe rispetto alla semplice appropriazione indebita."
             }
           ]
         }
