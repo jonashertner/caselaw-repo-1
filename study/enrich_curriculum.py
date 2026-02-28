@@ -25,6 +25,30 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from study.curriculum_engine import CurriculumCase, load_curriculum, CURRICULUM_DIR
 
+_LANG_CONFIG = {
+    "de": {
+        "bloom_labels": "1=Verständnis, 2=Regelidentifikation, 3=Anwendung, 4=Analyse, 5=Bewertung",
+        "question_lang": "German",
+        "answer_lang": "German",
+        "scenario_lang": "German",
+        "significance_field": "significance_de",
+    },
+    "fr": {
+        "bloom_labels": "1=Compréhension, 2=Identification de la règle, 3=Application, 4=Analyse, 5=Évaluation",
+        "question_lang": "French",
+        "answer_lang": "French",
+        "scenario_lang": "French",
+        "significance_field": "significance_fr",
+    },
+    "it": {
+        "bloom_labels": "1=Comprensione, 2=Identificazione della regola, 3=Applicazione, 4=Analisi, 5=Valutazione",
+        "question_lang": "Italian",
+        "answer_lang": "Italian",
+        "scenario_lang": "Italian",
+        "significance_field": "significance_it",
+    },
+}
+
 ENRICHMENT_PROMPT_TEMPLATE = """\
 You are enriching a Swiss law school curriculum entry for the landmark decision {bge_ref}.
 
@@ -32,33 +56,35 @@ CASE METADATA:
 - BGE reference: {bge_ref}
 - Legal area: {area_id} / {module_id}
 - Key statutes: {statutes}
-- Significance: {significance_de}
+- Significance: {significance}
 - Key Erwägungen: {key_erwagungen}
 - Difficulty: {difficulty}/5
+- Decision language: {decision_lang}
 
 DECISION TEXT (excerpt):
 {decision_text}
 
-Generate the following JSON object (no markdown, pure JSON):
+Generate the following JSON object (no markdown, pure JSON).
+All questions, hints, model answers, scenarios and outcome descriptions MUST be written in {question_lang}.
+
 {{
   "socratic_questions": [
-    // Exactly 5 entries, one per Bloom level (1=Verständnis, 2=Regelidentifikation,
-    // 3=Anwendung, 4=Analyse, 5=Bewertung). Each entry:
+    // Exactly 5 entries, one per Bloom level ({bloom_labels}). Each entry:
     {{
       "level": <1-5>,
-      "level_label": "<label in German>",
-      "question": "<case-specific question in German>",
-      "hint": "<where to look in the decision>",
-      "model_answer": "<2-4 sentence answer in German>"
+      "level_label": "<label in {question_lang}>",
+      "question": "<case-specific question in {question_lang}>",
+      "hint": "<where to look in the decision, in {question_lang}>",
+      "model_answer": "<2-4 sentence answer in {question_lang}>"
     }}
   ],
   "hypotheticals": [
     // Exactly 2 entries, types: "add_complication" and "swap_parties"
     {{
       "type": "<type>",
-      "scenario": "<what-if scenario in German>",
-      "discussion_points": ["<point 1>", "<point 2>"],
-      "likely_outcome_shift": "<how outcome changes, 2-3 sentences>"
+      "scenario": "<what-if scenario in {question_lang}>",
+      "discussion_points": ["<point 1 in {question_lang}>", "<point 2 in {question_lang}>"],
+      "likely_outcome_shift": "<how outcome changes, 2-3 sentences in {question_lang}>"
     }}
   ],
   "reading_guide_de": "<2-3 sentence reading guide in German pointing to key Erwägungen>",
@@ -71,26 +97,38 @@ Generate the following JSON object (no markdown, pure JSON):
 """
 
 
-def needs_enrichment(case: CurriculumCase) -> bool:
-    """Return True if the case is missing metadata and has a resolved decision_id."""
+def needs_enrichment(case: CurriculumCase, *, force: bool = False) -> bool:
+    """Return True if the case needs enrichment."""
     if not case.decision_id:
         return False
-    missing_questions = not case.socratic_questions
-    missing_hypotheticals = not case.hypotheticals
-    return missing_questions or missing_hypotheticals
+    if force:
+        return True
+    return not case.socratic_questions or not case.hypotheticals
 
 
-def build_enrichment_prompt(case: CurriculumCase, *, decision_text: str) -> str:
-    """Build the enrichment prompt for a case."""
+def build_enrichment_prompt(
+    case: CurriculumCase, *, decision_text: str, language: str = "de"
+) -> str:
+    """Build the enrichment prompt for a case in the given language."""
+    lang = language if language in _LANG_CONFIG else "de"
+    cfg = _LANG_CONFIG[lang]
     text_excerpt = decision_text[:6000] if decision_text else "(text unavailable)"
+    significance = (
+        getattr(case, cfg["significance_field"], "") or case.significance_de or "–"
+    )
     return ENRICHMENT_PROMPT_TEMPLATE.format(
         bge_ref=case.bge_ref,
         area_id=case.area_id,
         module_id=case.module_id,
         statutes=", ".join(case.statutes) or "–",
-        significance_de=case.significance_de or "–",
+        significance=significance,
         key_erwagungen=", ".join(case.key_erwagungen) or "–",
         difficulty=case.difficulty,
+        decision_lang=language,
+        question_lang=cfg["question_lang"],
+        answer_lang=cfg["answer_lang"],
+        scenario_lang=cfg["scenario_lang"],
+        bloom_labels=cfg["bloom_labels"],
         decision_text=text_excerpt,
     )
 
@@ -156,10 +194,23 @@ def enrich_all(
     *,
     area: str | None = None,
     dry_run: bool = False,
+    force: bool = False,
+    target_lang: str | None = None,
     rate_limit_sleep: float = 0.35,
     db_path: str | None = None,
 ) -> dict[str, int]:
-    """Enrich all curriculum cases missing metadata."""
+    """Enrich all curriculum cases missing metadata.
+
+    Args:
+        area: Restrict to one area_id.
+        dry_run: Print what would be done without calling the API.
+        force: Re-enrich cases that already have socratic_questions/hypotheticals.
+        target_lang: Only enrich cases whose actual_language matches this value
+                     (e.g. "fr" or "it"). Combined with force, re-generates
+                     questions in the correct language for FR/IT cases.
+        rate_limit_sleep: Seconds to sleep between API calls.
+        db_path: Path to FTS5 decisions DB. Defaults to output/decisions.db.
+    """
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
     if not api_key and not dry_run:
         raise RuntimeError("ANTHROPIC_API_KEY not set")
@@ -181,13 +232,21 @@ def enrich_all(
         changed = False
         for mod_data, mod in zip(data["modules"], curr_area.modules):
             for case_data, case in zip(mod_data["cases"], mod.cases):
-                if not needs_enrichment(case):
+                # Skip if language filter is set and doesn't match
+                if target_lang and case.actual_language != target_lang:
                     stats["skipped"] += 1
                     continue
 
-                print(f"  Enriching {case.bge_ref} ({curr_area.area_id}/{mod.id})...")
+                if not needs_enrichment(case, force=force):
+                    stats["skipped"] += 1
+                    continue
+
+                prompt_lang = case.actual_language if case.actual_language in ("fr", "it") else "de"
+                print(f"  Enriching {case.bge_ref} ({curr_area.area_id}/{mod.id}) [{prompt_lang}]...")
                 decision_text = _fetch_decision_text(case.decision_id, dbp)
-                prompt = build_enrichment_prompt(case, decision_text=decision_text)
+                prompt = build_enrichment_prompt(
+                    case, decision_text=decision_text, language=prompt_lang
+                )
 
                 if dry_run:
                     print(f"    [DRY RUN] Would call API for {case.bge_ref}")
@@ -234,9 +293,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Enrich curriculum metadata via Claude API")
     parser.add_argument("--area", default=None, help="Restrict to one area_id")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--force", action="store_true",
+                        help="Re-enrich cases that already have questions/hypotheticals")
+    parser.add_argument("--lang", default=None, choices=["de", "fr", "it"],
+                        help="Only enrich cases whose actual_language matches this value")
     parser.add_argument("--db", default=None)
     args = parser.parse_args()
-    stats = enrich_all(area=args.area, dry_run=args.dry_run, db_path=args.db)
+    stats = enrich_all(
+        area=args.area,
+        dry_run=args.dry_run,
+        force=args.force,
+        target_lang=args.lang,
+        db_path=args.db,
+    )
     print(f"\nSummary: {stats}")
 
 
