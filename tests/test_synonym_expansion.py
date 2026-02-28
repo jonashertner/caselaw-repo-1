@@ -52,3 +52,11 @@ def test_no_existing_entries_removed():
     assert "responsabilite" in haftung_exps or "responsabilita" in haftung_exps, (
         f"haftung expansions broken: {haftung_exps}"
     )
+
+
+def test_expansion_prompt_contains_fewshot_example():
+    """Verify the LLM prompt includes at least one colloquial→legal example."""
+    from mcp_server import EXPANSION_SYSTEM_PROMPT
+    assert "Hundebiss" in EXPANSION_SYSTEM_PROMPT or "hundebiss" in EXPANSION_SYSTEM_PROMPT.lower(), (
+        "Prompt should contain a colloquial→legal few-shot example (e.g., Hundebiss)"
+    )

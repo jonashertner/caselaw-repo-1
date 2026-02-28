@@ -162,6 +162,12 @@ EXPANSION_SYSTEM_PROMPT = (
     "- German/French/Italian equivalents (Swiss legal terminology)\n"
     "- Related legal doctrines and article references (e.g. Art. 56 OR)\n"
     "- Broader/narrower legal concepts\n"
+    "IMPORTANT: If the query uses colloquial language, translate to the legal "
+    "doctrine name. Examples:\n"
+    "  'Hundebiss' -> Tierhalterhaftung, Haftpflicht\n"
+    "  'Autounfall Schuld' -> Haftpflicht, Kausalzusammenhang, Fahrlässigkeit\n"
+    "  'Mietrecht' -> Mietvertrag, Kündigung, Mietzins\n"
+    "  'Erbschaft' -> Erbrecht, Pflichtteil, Testament\n"
     "Output ONLY the terms, one per line, no numbering or explanation."
 )
 
