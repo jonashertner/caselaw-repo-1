@@ -148,7 +148,6 @@ SPARSE_SIGNAL_WEIGHT = float(os.environ.get("SWISS_CASELAW_SPARSE_SIGNAL_WEIGHT"
 SPARSE_RRF_WEIGHT = float(os.environ.get("SWISS_CASELAW_SPARSE_RRF_WEIGHT", "1.2"))
 SPARSE_K = int(os.environ.get("SWISS_CASELAW_SPARSE_K", "100"))
 
-
 # ── LLM query expansion ───────────────────────────────────────
 LLM_EXPANSION_ENABLED = os.environ.get("LLM_EXPANSION_ENABLED", "true").lower() in {
     "1", "true", "yes",
@@ -2206,7 +2205,7 @@ def _rerank_rows(
         citation_signal = 0.0
         authority_signal = 0.0
         if query_statutes and statute_mentions > 0:
-            statute_signal = 4.0 + min(2.0, 0.5 * statute_mentions)
+            statute_signal = 2.2 + min(1.2, 0.25 * statute_mentions)
         if query_citations and query_citation_hits > 0:
             citation_signal = 2.4 + min(1.2, 0.30 * query_citation_hits)
         if incoming_citations > 0:
