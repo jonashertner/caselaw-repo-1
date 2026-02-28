@@ -1488,7 +1488,8 @@ def _get_vector_model():
 def _encode_query(model, query: str) -> bytes | None:
     """Encode a query string into packed float32 bytes for sqlite-vec.
 
-    Handles both BGEM3FlagModel (FlagEmbedding) and SentenceTransformer.
+    Handles FlagEmbedding models (any version: BGEM3FlagModel / M3Embedder)
+    and SentenceTransformer. Detects model type by output shape, not class name.
     Returns None on encoding failure.
     """
     import struct as _struct
@@ -1496,23 +1497,20 @@ def _encode_query(model, query: str) -> bytes | None:
     import numpy as np
 
     try:
-        if type(model).__name__ == "BGEM3FlagModel":
-            output = model.encode(
-                [query],
-                batch_size=1,
-                max_length=256,
-                return_dense=True,
-                return_sparse=False,
-                return_colbert_vecs=False,
-            )
+        # FlagEmbedding API (v1 BGEM3FlagModel and v2 M3Embedder)
+        output = model.encode(
+            [query],
+            batch_size=1,
+            max_length=256,
+            return_dense=True,
+            return_sparse=False,
+            return_colbert_vecs=False,
+        )
+        if isinstance(output, dict) and "dense_vecs" in output:
             embedding = np.asarray(output["dense_vecs"][0], dtype=np.float32)
         else:
-            embedding = model.encode(
-                [query],
-                show_progress_bar=False,
-                convert_to_numpy=True,
-                normalize_embeddings=True,
-            )[0]
+            # SentenceTransformer returns ndarray directly
+            embedding = np.asarray(output[0], dtype=np.float32)
         return _struct.pack(f"{len(embedding)}f", *embedding.tolist())
     except Exception as e:
         logger.debug("Query encoding failed: %s", e)
