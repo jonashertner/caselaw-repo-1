@@ -80,3 +80,60 @@ def test_difficulty_distribution():
         assert len(set(diffs)) > 1, (
             f"{a.area_id}: all cases have the same difficulty {diffs[0]}"
         )
+
+
+def test_enrichment_completeness():
+    """Every case must have socratic questions, hypotheticals, and reading guide."""
+    areas = load_curriculum()
+    for a in areas:
+        for m in a.modules:
+            for c in m.cases:
+                loc = f"{a.area_id}/{c.bge_ref}"
+                assert c.socratic_questions, f"Missing socratic_questions: {loc}"
+                assert c.hypotheticals, f"Missing hypotheticals: {loc}"
+                assert c.reading_guide_de, f"Missing reading_guide_de: {loc}"
+                assert c.key_erwagungen, f"Missing key_erwagungen: {loc}"
+
+
+def test_socratic_question_structure():
+    """Each case must have exactly 5 questions at levels 1-5, each with hint and model_answer."""
+    areas = load_curriculum()
+    for a in areas:
+        for m in a.modules:
+            for c in m.cases:
+                loc = f"{a.area_id}/{c.bge_ref}"
+                qs = c.socratic_questions
+                assert len(qs) == 5, f"Expected 5 questions, got {len(qs)}: {loc}"
+                levels = sorted(q.get("level") for q in qs)
+                assert levels == [1, 2, 3, 4, 5], (
+                    f"Expected levels [1,2,3,4,5], got {levels}: {loc}"
+                )
+                for q in qs:
+                    lvl = q.get("level")
+                    assert "hint" in q, (
+                        f"Q{lvl} missing 'hint' (has discussion_points?): {loc}"
+                    )
+                    assert "model_answer" in q, (
+                        f"Q{lvl} missing 'model_answer': {loc}"
+                    )
+                    assert "discussion_points" not in q, (
+                        f"Q{lvl} has 'discussion_points' — misplaced hypothetical: {loc}"
+                    )
+
+
+def test_hypothetical_structure():
+    """Each case must have exactly 2 hypotheticals with required fields."""
+    areas = load_curriculum()
+    for a in areas:
+        for m in a.modules:
+            for c in m.cases:
+                loc = f"{a.area_id}/{c.bge_ref}"
+                hyps = c.hypotheticals
+                assert len(hyps) == 2, (
+                    f"Expected 2 hypotheticals, got {len(hyps)}: {loc}"
+                )
+                for i, h in enumerate(hyps):
+                    for key in ("type", "scenario", "discussion_points", "likely_outcome_shift"):
+                        assert key in h, (
+                            f"Hypothetical {i+1} missing '{key}': {loc}"
+                        )
