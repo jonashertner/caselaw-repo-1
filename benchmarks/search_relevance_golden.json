@@ -194,8 +194,7 @@
       "query": "BGE 127 III 481",
       "tags": ["de", "direct-lookup", "exact"],
       "relevant": [
-        {"decision_id": "bge_127 III 481", "grade": 3},
-        {"decision_id": "bge_BGE_127_III_481", "grade": 2}
+        {"decision_id": "bge_127 III 481", "grade": 3}
       ]
     },
     {
@@ -203,8 +202,7 @@
       "query": "BGE 115 IV 162",
       "tags": ["de", "direct-lookup", "exact"],
       "relevant": [
-        {"decision_id": "bge_115 IV 162", "grade": 3},
-        {"decision_id": "bge_BGE_115_IV_162", "grade": 2}
+        {"decision_id": "bge_115 IV 162", "grade": 3}
       ]
     },
     {
@@ -212,8 +210,7 @@
       "query": "BGE 132 III 677",
       "tags": ["de", "direct-lookup", "exact"],
       "relevant": [
-        {"decision_id": "bge_132 III 677", "grade": 3},
-        {"decision_id": "bge_BGE_132_III_677", "grade": 2}
+        {"decision_id": "bge_132 III 677", "grade": 3}
       ]
     },
     {
@@ -355,8 +352,8 @@
       "query": "Datenschutz Auskunftsrecht Personendaten",
       "tags": ["de", "data-protection", "nl"],
       "relevant": [
-        {"decision_id": "bge_127 III 481", "grade": 2},
-        {"decision_id": "bge_133 V 359", "grade": 3}
+        {"decision_id": "bge_133 V 359", "grade": 3},
+        {"decision_id": "bge_127 III 481", "grade": 2}
       ]
     },
     {
