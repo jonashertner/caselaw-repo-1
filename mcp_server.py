@@ -5014,7 +5014,7 @@ def _handle_list_study_curriculum(
     if area:
         areas = load_curriculum(area=area)
         if not areas:
-            return {"error": f"Unknown area: {area}. Available: vertragsrecht, haftpflicht, sachenrecht, grundrechte, strafrecht_at, mietrecht, arbeitsrecht, familienrecht"}
+            return {"error": f"Unknown area: {area}. Available: vertragsrecht, haftpflicht, sachenrecht, familienrecht, arbeitsrecht, mietrecht, strafrecht_at, strafrecht_bt, grundrechte, erbrecht, gesellschaftsrecht, zivilprozessrecht, strafprozessrecht, oeffentliches_prozessrecht"}
 
         a = areas[0]
         lang_key = language if language in ("de", "fr", "it") else "de"
@@ -5658,8 +5658,9 @@ async def handle_list_tools() -> list[Tool]:
                     "topic": {
                         "type": "string",
                         "description": (
-                            "Legal topic or concept (e.g., 'Vertragsschluss', 'Art. 41 OR', "
-                            "'Haftpflicht'). Used to find a matching case from the curriculum."
+                            "Legal topic, concept, or BGE reference. Examples: 'Vertragsschluss', "
+                            "'Art. 41 OR', 'Haftpflicht', 'BGE 133 III 121', '144 IV 313'. "
+                            "BGE references are resolved directly; other strings search the curriculum."
                         ),
                     },
                     "decision_id": {
@@ -5693,8 +5694,9 @@ async def handle_list_tools() -> list[Tool]:
             description=(
                 "List available study curricula for Swiss law. "
                 "Returns areas (Rechtsgebiete), modules with case counts and difficulty ranges, and cases with metadata. "
-                "Covers 8 areas: Vertragsrecht, Haftpflicht, Sachenrecht, Grundrechte, Strafrecht AT, "
-                "Mietrecht, Arbeitsrecht, Familienrecht."
+                "Covers 14 areas and 100 canonical BGEs: Vertragsrecht, Haftpflicht, Sachenrecht, Familienrecht, "
+                "Arbeitsrecht, Mietrecht, Strafrecht AT, Strafrecht BT, Grundrechte, Erbrecht, "
+                "Gesellschaftsrecht, Zivilprozessrecht, Strafprozessrecht, Öffentliches Prozessrecht."
             ),
             inputSchema={
                 "type": "object",
@@ -5702,9 +5704,10 @@ async def handle_list_tools() -> list[Tool]:
                     "area": {
                         "type": "string",
                         "description": (
-                            "Filter by Rechtsgebiet: vertragsrecht, haftpflicht, "
-                            "sachenrecht, grundrechte, strafrecht_at, "
-                            "mietrecht, arbeitsrecht, familienrecht."
+                            "Filter by Rechtsgebiet: vertragsrecht, haftpflicht, sachenrecht, "
+                            "familienrecht, arbeitsrecht, mietrecht, strafrecht_at, strafrecht_bt, "
+                            "grundrechte, erbrecht, gesellschaftsrecht, zivilprozessrecht, "
+                            "strafprozessrecht, oeffentliches_prozessrecht."
                         ),
                     },
                     "difficulty": {

@@ -2,8 +2,15 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
+
+# Matches "BGE 133 III 121", "bge 133 Ia 455", "133 IV 17", etc.
+_BGE_REF_RE = re.compile(
+    r"^(?:bge\s+)?(\d+)\s+(i{1,3}[ab]?|iv|v|vi|\w+)\s+(\d+)$",
+    re.IGNORECASE,
+)
 
 CURRICULUM_DIR = Path(__file__).resolve().parent / "curriculum"
 
@@ -215,10 +222,22 @@ def find_case(
 ) -> CurriculumCase | None:
     """Find the best matching curriculum case for a topic string.
 
-    Searches module ids/names, case concepts, case statutes, and case titles.
-    Difficulty is a soft preference: if no matches at the requested difficulty,
-    returns the best match at any difficulty.
+    Accepts BGE references directly ("BGE 133 III 121", "133 III 121") for
+    exact lookup. Otherwise searches module ids/names, case concepts, case
+    statutes, and case titles. Difficulty is a soft preference: if no matches
+    at the requested difficulty, returns the best match at any difficulty.
     """
+    # Direct BGE ref lookup — try before scoring to avoid false positives
+    m = _BGE_REF_RE.match(topic.strip())
+    if m:
+        normalized = f"BGE {m.group(1)} {m.group(2).upper()} {m.group(3)}"
+        for area in load_curriculum():
+            for mod in area.modules:
+                for case in mod.cases:
+                    if case.bge_ref.upper() == normalized.upper():
+                        return case
+        # No exact match — fall through to scoring (topic might still be useful)
+
     topic_lower = topic.lower()
     topic_words = set(topic_lower.split())
     areas = load_curriculum()
