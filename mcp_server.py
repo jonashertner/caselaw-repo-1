@@ -236,7 +236,7 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "kundigung": ("resiliation", "disdetta", "termination"),
     "resiliation": ("kuendigung", "kundigung", "termination"),
     "disdetta": ("kuendigung", "resiliation", "termination"),
-    "mietrecht": ("bail", "locazione", "mietvertrag"),
+    "mietrecht": ("Kuendigung", "mietvertrag", "bail", "locazione", "Mietzins"),
     "mietvertrag": ("bail", "locazione", "mietrecht"),
     "permis": ("baubewilligung", "baugesuch", "autorizzazione"),
     "construire": ("baubewilligung", "bauen", "construction"),
@@ -299,6 +299,23 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     # Competition / data protection
     "kartell": ("cartel", "cartello", "wettbewerb"),
     "wettbewerb": ("concurrence", "concorrenza", "competition"),
+    # Colloquial→legal concept bridges
+    "hundebiss": ("Tierhalterhaftung", "ZGB 56", "Haftpflicht Tier"),
+    "tierhalterhaftung": ("hundebiss", "ZGB 56", "Haftpflicht"),
+    "autounfall": ("Haftpflicht", "Kausalzusammenhang", "Fahrlassigkeit"),
+    "verkehrsunfall": ("Haftpflicht", "Kausalzusammenhang", "SVG"),
+    "erbschaft": ("Erbrecht", "Pflichtteil", "Nachlassplanung"),
+    "erbe": ("Erbrecht", "Pflichtteil", "Testament", "letztwillig"),
+    "pflichtteil": ("erbschaft", "erbe", "Erbrecht", "ZGB 470"),
+    "geschaeftsfuehrer": ("Organverantwortlichkeit", "Sorgfaltspflicht", "OR 754"),
+    "organverantwortlichkeit": ("Sorgfaltspflicht", "OR 754", "Aktienrecht"),
+    "steuerbetrug": ("Steuerhinterziehung", "Steuerpflicht", "DBG"),
+    "steuerhinterziehung": ("Steuerbetrug", "Steuerpflicht", "DBG"),
+    "entlassung": ("fristlose Kuendigung", "Arbeitsrecht", "OR 337"),
+    "mobbing": ("Persoenlichkeitsschutz", "Arbeitsrecht", "OR 328"),
+    "nachbarrecht": ("Immissionen", "Grundeigentum", "ZGB 684"),
+    "laermschutz": ("Immissionen", "laerm", "Grundeigentum"),
+    "eigentuemer": ("Grundeigentum", "Sachenrecht", "ZGB 641"),
 }
 ASYL_QUERY_TERMS = {"asyl", "asile", "asilo", "wegweisung", "renvoi", "allontanamento"}
 LEGAL_ANCHOR_PAIRS: tuple[tuple[str, str], ...] = (
