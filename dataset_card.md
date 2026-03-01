@@ -41,7 +41,7 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 The largest open collection of Swiss court decisions — over 1,024,000 decisions from 92 courts across all 26 cantons, scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are added every night.
 
 - **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, and more
-- **93 cantonal courts** across all 26 cantons
+- **80 cantonal courts** across all 26 cantons
 - **4 languages**: German, French, Italian, Romansh
 - **Temporal range**: 1880–present
 - **34 structured fields** per decision: full text, docket number, date, court, canton, language, legal area, judges, citations, headnote, and more
