@@ -36,6 +36,11 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
+# Minimum full_text length for a decision to be ingested.
+# Entscheidsuche metadata-only stubs (court header + docket in 3 languages)
+# are typically 150-400 chars and contain no legal content.
+MIN_TEXT_LENGTH = 500
+
 # ============================================================================
 # Spider → Court/Canton mapping
 # ============================================================================
@@ -580,6 +585,12 @@ def ingest_spider(
             decision = build_decision(meta, spider, full_text)
             if not decision:
                 errors += 1
+                continue
+
+            # Skip metadata-only stubs with very short text
+            text_len = len(decision.get("full_text", "") or "")
+            if text_len < MIN_TEXT_LENGTH:
+                skipped += 1
                 continue
 
             # Write

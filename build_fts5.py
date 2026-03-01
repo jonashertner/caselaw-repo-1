@@ -247,6 +247,102 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
     return deleted
 
 
+# Courts whose decisions may overlap across different court codes.
+# Entscheidsuche often maps to a generic code (e.g. zh_gerichte) while
+# direct scrapers use specific codes (zh_obergericht).  Grouping allows
+# cross-court dedup within each set.
+_COURT_OVERLAP_GROUPS: list[set[str]] = [
+    # ZH Obergericht: entscheidsuche → zh_gerichte, direct scraper → zh_obergericht
+    {"zh_gerichte", "zh_obergericht"},
+    # SG: publications vs court decisions
+    {"sg_publikationen", "sg_gerichte"},
+    # AG: entscheidsuche generic vs specific
+    {"ag_gerichte", "ag_obergericht", "ag_versicherungsgericht",
+     "ag_handelsgericht", "ag_spezialverwaltungsgericht"},
+    # SH: entscheidsuche generic vs specific
+    {"sh_gerichte", "sh_obergericht"},
+]
+
+# Build a lookup: court_code → frozenset of group members
+_COURT_TO_GROUP: dict[str, frozenset[str]] = {}
+for _group in _COURT_OVERLAP_GROUPS:
+    _frozen = frozenset(_group)
+    for _code in _group:
+        _COURT_TO_GROUP[_code] = _frozen
+
+
+def _cross_court_dedup(conn: sqlite3.Connection) -> int:
+    """Remove duplicates where the same docket exists under overlapping court codes.
+
+    Only matches within explicit court overlap groups (not all courts in a canton).
+    Keeps the version with the longest full_text.
+    """
+    # Load decisions from courts that belong to overlap groups
+    overlap_courts = set()
+    for group in _COURT_OVERLAP_GROUPS:
+        overlap_courts.update(group)
+
+    if not overlap_courts:
+        return 0
+
+    placeholders = ",".join("?" * len(overlap_courts))
+    rows = conn.execute(
+        f"SELECT decision_id, court, docket_number, decision_date, "
+        f"LENGTH(COALESCE(full_text, '')), LENGTH(COALESCE(regeste, '')) "
+        f"FROM decisions "
+        f"WHERE court IN ({placeholders}) "
+        f"AND docket_number IS NOT NULL AND LENGTH(TRIM(docket_number)) > 0",
+        list(overlap_courts),
+    ).fetchall()
+
+    # Group by (overlap_group_id, normalized_docket)
+    groups: dict[str, list[tuple[str, int, int]]] = defaultdict(list)
+    for did, court, docket, date, tlen, rlen in rows:
+        group = _COURT_TO_GROUP.get(court)
+        if not group:
+            continue
+        docket_norm = re.sub(r"[^A-Z0-9]", "", (docket or "").upper())
+        # Include date to avoid false matches across years
+        date_compact = (date or "").replace("-", "")[:8]
+        key = f"{id(group)}|{docket_norm}|{date_compact}"
+        groups[key].append((did, tlen, rlen))
+
+    deleted = 0
+    for entries in groups.values():
+        if len(entries) < 2:
+            continue
+        # Keep version with longest full_text, then non-empty regeste
+        entries.sort(key=lambda x: (-x[1], 0 if x[2] > 0 else 1))
+        for did, _, _ in entries[1:]:
+            conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
+            deleted += 1
+
+    if deleted:
+        conn.commit()
+    return deleted
+
+
+def _remove_stubs(conn: sqlite3.Connection, min_text_length: int = 500) -> int:
+    """Remove decisions with text shorter than min_text_length characters.
+
+    Entscheidsuche imports often contain metadata-only entries where the
+    full_text is just a court header and docket number repeated in multiple
+    languages (~150-400 chars).  These have no legal content and pollute
+    search results.
+
+    A genuine court decision, even a brief procedural ruling, exceeds
+    500 characters of actual text.
+    """
+    result = conn.execute(
+        "DELETE FROM decisions WHERE LENGTH(COALESCE(full_text, '')) < ?",
+        (min_text_length,),
+    )
+    deleted = result.rowcount
+    if deleted:
+        conn.commit()
+    return deleted
+
+
 def _fill_missing_regeste(conn: sqlite3.Connection) -> int:
     """Extract regeste from full_text for BGer/BGE decisions with empty regeste."""
     cursor = conn.execute(
@@ -549,6 +645,16 @@ def build_database(
         deduped = _dedup_decisions(conn)
         if deduped:
             logger.info(f"  Removed {deduped} duplicate decisions")
+
+        logger.info("Cross-court deduplication (overlapping court codes)...")
+        cross_deduped = _cross_court_dedup(conn)
+        if cross_deduped:
+            logger.info(f"  Removed {cross_deduped} cross-court duplicates")
+
+        logger.info("Removing stub decisions (<500 chars)...")
+        stubs_removed = _remove_stubs(conn)
+        if stubs_removed:
+            logger.info(f"  Removed {stubs_removed} stub decisions")
 
         logger.info("Filling missing regeste for BGer/BGE decisions...")
         filled = _fill_missing_regeste(conn)
