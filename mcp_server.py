@@ -4374,6 +4374,23 @@ def _build_outcome_note(*, case_law: list[dict], statute_materials: list[dict]) 
     return "Tendenz nur auf Basis caselaw-Ähnlichkeit; Normtexte konnten nicht vollständig geladen werden."
 
 
+def _dedup_bge_citations(items: list[dict], id_key: str) -> list[dict]:
+    """Deduplicate BGE citation entries that appear with two ID formats."""
+    seen: set[str] = set()
+    out: list[dict] = []
+    for c in items:
+        did = c.get(id_key) or ""
+        court = c.get("court") or ""
+        dn = re.sub(r"[^A-Z0-9]", "", (c.get("docket_number") or did).upper())
+        if court == "bge":
+            dn = re.sub(r"^(?:CH)?(?:BGE|ATF|DTF)", "", dn)
+        key = f"{court}|{dn}"
+        if key not in seen:
+            seen.add(key)
+            out.append(c)
+    return out
+
+
 def _format_citations_response(result: dict) -> str:
     """Format find_citations result into markdown."""
     if result.get("error"):
@@ -4384,6 +4401,7 @@ def _format_citations_response(result: dict) -> str:
 
     outgoing = result.get("outgoing", [])
     if outgoing is not None:
+        outgoing = _dedup_bge_citations(outgoing, "target_decision_id")
         text += f"## Outgoing ({len(outgoing)} \u2014 what this decision cites)\n"
         if not outgoing:
             text += "No outgoing citations found.\n"
@@ -4409,6 +4427,7 @@ def _format_citations_response(result: dict) -> str:
 
     incoming = result.get("incoming", [])
     if incoming is not None:
+        incoming = _dedup_bge_citations(incoming, "source_decision_id")
         text += f"## Incoming ({len(incoming)} \u2014 what cites this decision)\n"
         if not incoming:
             text += "No incoming citations found.\n"
