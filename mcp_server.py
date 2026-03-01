@@ -5044,7 +5044,7 @@ def _handle_study_leading_case(
                     "relationship": "prerequisite",
                 })
 
-    result = build_study_package(
+    return build_study_package(
         decision=decision,
         mode=mode,
         curriculum_case=curriculum_case,
@@ -5052,11 +5052,6 @@ def _handle_study_leading_case(
         related_cases=related_cases,
         requested_language=language,
     )
-    # DEBUG: log statute count to verify filtering
-    _statutes = result.get("all_statutes", [])
-    logger.info("study_leading_case %s mode=%s → %d statutes: %s",
-                decision_id, mode, len(_statutes), _statutes[:5])
-    return result
 
 
 def _handle_list_study_curriculum(
