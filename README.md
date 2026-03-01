@@ -850,7 +850,7 @@ Full schema definition: [`models.py`](models.py)
 
 ### Cantonal courts
 
-93 courts across all 26 cantons. The largest cantonal collections:
+92 courts across all 26 cantons. The largest cantonal collections:
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|

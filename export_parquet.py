@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-export_parquet.py — Export JSONL decisions to Parquet files
-============================================================
+export_parquet.py — Export decisions to per-court Parquet files
+================================================================
 
-Reads all output/decisions/*.jsonl files, deduplicates by decision_id
-(keeps first-seen immutable record), and writes one Parquet file per court.
-
-Output: output/dataset/{court}.parquet
+Reads from the deduplicated FTS5 SQLite database (preferred) or falls
+back to JSONL files.  One Parquet file per court in output/dataset/.
 
 Usage:
-    python3 export_parquet.py
-    python3 export_parquet.py --input output/decisions --output output/dataset
+    python3 export_parquet.py                          # auto-detect DB
+    python3 export_parquet.py --db output/decisions.db  # explicit DB
+    python3 export_parquet.py --jsonl                   # force JSONL
 """
 from __future__ import annotations
 
@@ -18,6 +17,7 @@ import argparse
 import json
 import logging
 import os
+import sqlite3
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -259,11 +259,83 @@ def _write_rows(
     writers[court].write_table(table)
 
 
+def export_from_db(db_path: Path, output_dir: Path) -> dict[str, int]:
+    """Export decisions from the deduplicated FTS5 SQLite DB to Parquet.
+
+    Reads from the database built by build_fts5.py, ensuring Parquet files
+    match the search index exactly (same dedup, same row count).
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(f"file:{db_path}?immutable=1", uri=True)
+    conn.row_factory = sqlite3.Row
+
+    schema_fields = {f.name for f in DECISION_SCHEMA}
+    results: dict[str, int] = {}
+    writers: dict[str, pq.ParquetWriter] = {}
+
+    try:
+        total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+        courts = [r[0] for r in conn.execute(
+            "SELECT DISTINCT court FROM decisions ORDER BY court"
+        ).fetchall()]
+        logger.info(f"Exporting {total} decisions from {len(courts)} courts")
+
+        for court in courts:
+            cursor = conn.execute(
+                "SELECT * FROM decisions WHERE court = ?", (court,)
+            )
+            col_names = [desc[0] for desc in cursor.description]
+
+            batch: list[dict] = []
+            for row_tuple in cursor:
+                d = dict(zip(col_names, row_tuple))
+                batch.append(d)
+
+                if len(batch) >= BATCH_SIZE:
+                    _write_rows(batch, court, output_dir, writers, schema_fields)
+                    results[court] = results.get(court, 0) + len(batch)
+                    batch = []
+
+            if batch:
+                _write_rows(batch, court, output_dir, writers, schema_fields)
+                results[court] = results.get(court, 0) + len(batch)
+
+            logger.info(f"  {court}: {results.get(court, 0)} decisions")
+
+    finally:
+        conn.close()
+        for court, writer in writers.items():
+            writer.close()
+            tmp_path = output_dir / f"{court}.parquet.tmp"
+            final_path = output_dir / f"{court}.parquet"
+            if tmp_path.exists():
+                os.replace(str(tmp_path), str(final_path))
+
+    # Remove stale parquet files for courts no longer in DB
+    existing_pq = {p.stem for p in output_dir.glob("*.parquet")}
+    stale = existing_pq - set(results.keys())
+    for court_name in stale:
+        stale_path = output_dir / f"{court_name}.parquet"
+        stale_path.unlink()
+        logger.info(f"  Removed stale {court_name}.parquet")
+
+    logger.info(f"Exported {sum(results.values())} decisions across {len(results)} courts")
+    return results
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Export JSONL decisions to Parquet")
+    parser = argparse.ArgumentParser(description="Export decisions to Parquet")
+    parser.add_argument(
+        "--db", type=str, default="output/decisions.db",
+        help="FTS5 SQLite database (preferred source, default: output/decisions.db)",
+    )
+    parser.add_argument(
+        "--jsonl", action="store_true",
+        help="Force reading from JSONL files instead of the database",
+    )
     parser.add_argument(
         "--input", type=str, default="output/decisions",
-        help="Input directory containing JSONL files (default: output/decisions)",
+        help="Input directory for JSONL files (fallback, default: output/decisions)",
     )
     parser.add_argument(
         "--output", type=str, default="output/dataset",
@@ -277,7 +349,14 @@ def main():
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
 
-    results = export_parquet(Path(args.input), Path(args.output))
+    db_path = Path(args.db)
+    if not args.jsonl and db_path.exists():
+        logger.info(f"Reading from FTS5 database: {db_path}")
+        results = export_from_db(db_path, Path(args.output))
+    else:
+        if not args.jsonl:
+            logger.warning(f"No database at {db_path}, falling back to JSONL")
+        results = export_parquet(Path(args.input), Path(args.output))
     if results:
         total = sum(results.values())
         print(f"\nExported {total} decisions to {len(results)} Parquet files")

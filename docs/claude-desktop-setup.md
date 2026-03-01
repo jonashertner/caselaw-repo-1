@@ -342,7 +342,7 @@ Once connected, just ask questions in natural language. Examples:
 | *"Search for BVGer asylum cases involving Eritrea"* | Searches Federal Administrative Court asylum decisions |
 | *"Look up BGE 133 I 106"* | Fetches that specific leading case with full text |
 | *"Find decisions citing Art. 8 BV"* | Searches for decisions that reference this constitutional article |
-| *"How many decisions does each court have?"* | Shows statistics across all 93 courts |
+| *"How many decisions does each court have?"* | Shows statistics across all 92 courts |
 | *"Draft a legal analysis of whether X constitutes Y"* | Builds a research outline grounded in actual case law |
 | *"Show me the study curriculum for contract law"* | Lists curated BGEs for Vertragsrecht with difficulty levels |
 | *"Let's study BGE 133 III 121 together"* | Walks through Socratic questions, hypotheticals, and reading guide |
@@ -383,7 +383,7 @@ The tool returns the ground truth from the decision so the AI can tell you exact
 |------|-------------|
 | `search_decisions` | Full-text search with filters (court, canton, language, date range) |
 | `get_decision` | Fetch one decision by docket number (e.g., `6B_1234/2025`) or ID |
-| `list_courts` | List all 93 courts with decision counts and date ranges |
+| `list_courts` | List all 92 courts with decision counts and date ranges |
 | `get_statistics` | Aggregate statistics by court, canton, or year |
 | `find_citations` | Show what a decision cites and what cites it |
 | `find_appeal_chain` | Trace the appeal chain (Instanzenzug) across court levels |
