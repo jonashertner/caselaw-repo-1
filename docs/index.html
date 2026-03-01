@@ -670,6 +670,20 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .copy-wrap:hover .copy-btn { opacity: 1; }
 .copy-btn:hover { color: var(--tx); border-color: var(--brd); }
+
+/* ── Maintenance banner ── */
+.maint-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, rgba(209,36,47,0.06) 0%, rgba(37,99,235,0.04) 100%);
+  border: 1px solid var(--ac); border-radius: var(--r);
+  padding: 14px 18px; margin-bottom: 24px; margin-top: 12px;
+  font-size: var(--fs-sm); line-height: 1.5; color: var(--tx);
+}
+[data-theme="dark"] .maint-banner {
+  background: linear-gradient(135deg, rgba(239,68,68,0.08) 0%, rgba(96,165,250,0.04) 100%);
+}
+.maint-banner svg { flex-shrink: 0; color: var(--ac); }
+.maint-banner strong { font-weight: 600; }
 </style>
 </head>
 <body>
@@ -720,6 +734,11 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 </div>
 
 <div class="w">
+
+  <div class="maint-banner">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+    <div><strong data-t="maint_title">Maintenance</strong> — <span data-t="maint_desc">We're optimizing the search database to make AI search even smarter. Back online Monday, 2 March at 6:00 AM CET.</span></div>
+  </div>
 
   <header>
     <h1><span class="ch">+</span> <span data-t="title">Swiss Case Law Open Dataset</span></h1>
@@ -1060,6 +1079,8 @@ cd caselaw-repo-1
 <script>
 const I18N = {
   de: {
+    maint_title:'Wartung',
+    maint_desc:'Wir optimieren die Suchdatenbank, um die AI-Suche noch besser zu machen. Wieder online am Montag, 2. M\u00e4rz um 6:00 Uhr MEZ.',
     title:'Swiss Case Law Open Dataset',
     subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
@@ -1126,6 +1147,8 @@ const I18N = {
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
+    maint_title:'Maintenance',
+    maint_desc:'Nous optimisons la base de donn\u00e9es de recherche pour rendre la recherche IA encore plus performante. Retour en ligne lundi 2 mars \u00e0 6h00 CET.',
     title:'Swiss Case Law Open Dataset',
     subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
     loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
@@ -1192,6 +1215,8 @@ const I18N = {
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
+    maint_title:'Manutenzione',
+    maint_desc:'Stiamo ottimizzando il database di ricerca per rendere la ricerca IA ancora pi\u00f9 intelligente. Di nuovo online luned\u00ec 2 marzo alle 6:00 CET.',
     title:'Swiss Case Law Open Dataset',
     subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
     loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
@@ -1258,6 +1283,8 @@ const I18N = {
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
+    maint_title:'Manteniment',
+    maint_desc:'Nus optimain la banca da datas da tschertga per render la tschertga IA anc pli intelligenta. Puspè online glindesdi, ils 2 da mars a las 6:00 CET.',
     title:'Swiss Case Law Open Dataset',
     subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Tschertgar directamain cun IA u telechargiar il set da datas cumplain.',
     loading:'Chargiar', kpi_decisions:'Decisiuns', kpi_courts:'Dretgiras', kpi_cantons:'Chantuns', kpi_languages:'Linguas', kpi_coverage:'Perioda',
@@ -1324,6 +1351,8 @@ const I18N = {
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
+    maint_title:'Maintenance',
+    maint_desc:'We\u2019re optimizing the search database to make AI search even smarter. Back online Monday, 2 March at 6:00 AM CET.',
     title:'Swiss Case Law Open Dataset',
     subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
