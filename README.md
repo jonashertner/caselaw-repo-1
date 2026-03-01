@@ -15,7 +15,7 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 
 A structured, searchable archive of Swiss court decisions — from the Federal Supreme Court (BGer) down to cantonal courts in all 26 cantons. Every decision includes the full decision text, docket number, date, language, legal area, judges, cited decisions, and 20+ additional metadata fields.
 
-The dataset is built from three sources: direct scraping of official court websites, cantonal court portals, and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are scraped, deduplicated, and published every night.
+The dataset is built by direct scraping of official court websites and cantonal court portals. New decisions are scraped, deduplicated, and published every night.
 
 There are six ways to use it, depending on what you need:
 
@@ -818,7 +818,7 @@ Every decision has 34 structured fields:
 | `pdf_url` | string | Direct URL to PDF |
 | `external_id` | string | Cross-reference ID |
 | `scraped_at` | datetime | When this decision was scraped |
-| `source` | string | Data source (`entscheidsuche`, `direct_scrape`) |
+| `source` | string | Data source identifier |
 | `source_id` | string | Source-specific ID (e.g. Signatur) |
 | `source_spider` | string | Source spider/scraper name |
 | `content_hash` | string | MD5 of full_text for deduplication |
@@ -835,18 +835,18 @@ Full schema definition: [`models.py`](models.py)
 
 | Court | Code | Decisions | Period | Source |
 |-------|------|-----------|--------|--------|
-| Federal Supreme Court (BGer) | `bger` | ~173,000 | 1996–present | bger.ch + entscheidsuche |
+| Federal Supreme Court (BGer) | `bger` | ~173,000 | 1996–present | bger.ch |
 | BGE Leading Cases | `bge` | ~45,000 | 1954–present | bger.ch CLIR |
-| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present | bvger.ch + entscheidsuche |
-| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982–2016 | entscheidsuche |
-| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2004–present | bstger.weblaw.ch + entscheidsuche |
-| EDÖB (Data Protection) | `edoeb` | ~1,200 | 1994–present | edoeb.admin.ch + entscheidsuche |
-| FINMA | `finma` | ~1,200 | 2008–2024 | finma.ch + entscheidsuche |
+| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present | bvger.ch |
+| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982–2016 | admin.ch |
+| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2004–present | bstger.weblaw.ch |
+| EDÖB (Data Protection) | `edoeb` | ~1,200 | 1994–present | edoeb.admin.ch |
+| FINMA | `finma` | ~1,200 | 2008–2024 | finma.ch |
 | ECHR (Swiss cases) | `bge_egmr` | ~475 | 1974–present | bger.ch CLIR |
-| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch + entscheidsuche |
-| Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch + entscheidsuche |
-| Sports Tribunal | `ta_sst` | ~50 | 2024–present | entscheidsuche |
-| Federal Council | `ch_bundesrat` | ~15 | 2012–present | bj.admin.ch + entscheidsuche |
+| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch |
+| Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch |
+| Sports Tribunal | `ta_sst` | ~50 | 2024–present | ta-sst.ch |
+| Federal Council | `ch_bundesrat` | ~15 | 2012–present | bj.admin.ch |
 
 ### Cantonal courts
 
@@ -881,7 +881,7 @@ Court websites ────────►│  Scrapers ──► JSONL ──�
   bger.ch               │  (45 scrapers,        │                              │
   bvger.ch              │   rate-limited,        ├──► FTS5 DB ───┐             │
   cantonal portals      │   resumable)           │               ├► MCP Server │
-  entscheidsuche.ch     │                        └──► Graph DB ──┘             │
+                        │                        └──► Graph DB ──┘             │
                         │                                          ▲           │
 Fedlex (SPARQL) ───────►│  Fedlex scraper ──► XML ──► Statutes DB ─┘           │
                         │                                                      │
@@ -893,7 +893,7 @@ Fedlex (SPARQL) ───────►│  Fedlex scraper ──► XML ──
 
 1. **Scrape** (01:00 UTC daily) — 45 scrapers run in parallel, each targeting a specific court's website or API. Every scraper is rate-limited and resumable: it tracks which decisions it has already seen and only fetches new ones. Output: one JSONL file per court. A separate Fedlex scraper downloads federal law texts (Akoma Ntoso XML) via SPARQL for the statute database.
 
-2. **Build search index** (04:00 UTC) — JSONL files are ingested into a SQLite FTS5 database for full-text search. On Mon–Sat, this runs in **incremental mode**: a byte-offset checkpoint tracks how far each JSONL file has been read, so only newly appended decisions are processed (typically < 1 minute). On Sundays, a **full rebuild** compacts the FTS5 index and resets the checkpoint (~3 hours). Decisions from multiple sources (e.g., a BGer decision scraped directly *and* found on entscheidsuche.ch) are merged by `decision_id`. Direct scrapes take priority because they typically have richer metadata. A quality enrichment step fills in missing titles, regestes, and content hashes.
+2. **Build search index** (04:00 UTC) — JSONL files are ingested into a SQLite FTS5 database for full-text search. On Mon–Sat, this runs in **incremental mode**: a byte-offset checkpoint tracks how far each JSONL file has been read, so only newly appended decisions are processed (typically < 1 minute). On Sundays, a **full rebuild** compacts the FTS5 index and resets the checkpoint (~3 hours). Decisions appearing in multiple sources are deduplicated by `decision_id`, keeping the version with the longest full text. A quality enrichment step fills in missing titles, regestes, and content hashes.
 
 3. **Export** — JSONL files are converted to Parquet (one file per court) with a fixed 34-field schema.
 
@@ -973,9 +973,8 @@ Converts JSONL files to Parquet format (one file per court). Output goes to `out
 | **Official court websites** | Federal courts (bger.ch, bvger.ch, bstger.ch, bpatger.ch) | JSON APIs, structured HTML |
 | **Federal regulatory bodies** | FINMA, WEKO, EDÖB, VPB | Sitecore/custom APIs |
 | **Cantonal court portals** | 26 cantonal platforms (Weblaw, Tribuna, FindInfo, custom portals) | Court-specific scrapers |
-| **[entscheidsuche.ch](https://entscheidsuche.ch)** | Community-maintained archive of Swiss court decisions | Bulk download + ingest |
 
-Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The most metadata-rich version is kept.
+Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The version with the longest full text is kept.
 
 ---
 

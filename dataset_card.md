@@ -38,7 +38,7 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions — over 1,024,000 decisions from 92 courts across all 26 cantons, scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are added every night.
+The largest open collection of Swiss court decisions — over 1,024,000 decisions from 92 courts across all 26 cantons, scraped from official court websites and cantonal court portals. New decisions are added every night.
 
 - **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, and more
 - **80 cantonal courts** across all 26 cantons
@@ -214,7 +214,7 @@ See the [Web UI guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) 
 | 26 | `cited_decisions` | string | JSON array of cited references |
 | 27 | `scraped_at` | string | Scrape timestamp |
 | 28 | `external_id` | string | External cross-reference ID |
-| 29 | `source` | string | Data source: `entscheidsuche`, `direct_scrape` |
+| 29 | `source` | string | Data source identifier |
 | 30 | `source_id` | string | Source-specific ID (e.g. Signatur) |
 | 31 | `source_spider` | string | Source spider/scraper name |
 | 32 | `content_hash` | string | MD5 hash of full_text for deduplication |
@@ -261,10 +261,9 @@ Live coverage statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ## Data Sources
 
-1. **Official court websites** — direct scraping from federal and cantonal court platforms (45 scrapers)
-2. **[entscheidsuche.ch](https://entscheidsuche.ch)** — public archive maintained by the Swiss legal community
+**Official court websites** — direct scraping from federal and cantonal court platforms (45 scrapers targeting court APIs, Weblaw, Tribuna, FindInfo, and other portals).
 
-Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The most metadata-rich version is kept.
+Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The version with the longest full text is kept.
 
 ## Update Frequency
 
