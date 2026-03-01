@@ -5559,8 +5559,10 @@ def _get_legislation(
 
             # Paginate to find exact match by SR number and entity
             best = None
+            sr_only_match = None  # SR matches but entity doesn't
             first_result_id = None
             found_exact = False
+            canton_explicit = canton is not None  # user explicitly specified a canton
             target_canton = (canton or "CH").upper()
             sr_stripped = systematic_number.strip()
             for page_no in range(1, 4):  # max 3 pages
@@ -5582,8 +5584,8 @@ def _get_legislation(
                         best = tol.get("id")
                         found_exact = True
                         break
-                    elif tol_sr == sr_stripped and not best:
-                        best = tol.get("id")
+                    elif tol_sr == sr_stripped and sr_only_match is None:
+                        sr_only_match = tol.get("id")
 
                 if found_exact:
                     break
@@ -5592,10 +5594,13 @@ def _get_legislation(
                     break
 
             if not best:
-                best = first_result_id
+                if not canton_explicit:
+                    # No canton filter: accept any SR match as fallback
+                    best = sr_only_match or first_result_id
+                # When canton was explicitly specified, don't fall back to wrong-canton results
 
             if not best:
-                return {"error": f"No legislation found for SR {systematic_number}."}
+                return {"error": f"No legislation found for SR {systematic_number} in {target_canton}."}
 
             lexfind_id = best
             _lexfind_cache_set(cache_key, lexfind_id)
