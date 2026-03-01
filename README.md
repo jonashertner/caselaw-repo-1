@@ -24,17 +24,18 @@ There are six ways to use it, depending on what you need:
 | [**Search with AI**](#1-search-with-ai) | Lawyers, researchers | Natural-language search in Claude, ChatGPT, or Gemini — instant access, no download |
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, appeal chains, jurisprudence trends |
 | [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 40+ federal laws (OR, ZGB, StGB, BV, ...) |
+| [**Legislation Search**](#legislation-tools) | Legal professionals | Search 33,000+ federal and cantonal legislative texts via LexFind.ch |
 | [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1M+ decisions, citation analysis, statute lookup, and education tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1M+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
 
 ---
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 16 tools that lets AI search across all 1M+ decisions, look up federal law articles, analyze citation networks, and study leading cases. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 19 tools that lets AI search across all 1M+ decisions, look up federal law articles, search 33,000+ legislative texts, analyze citation networks, and study leading cases. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
 ### Remote vs. local
 
@@ -42,7 +43,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 16 
 |---|---|---|
 | **Setup** | 30 seconds | 30–60 minutes |
 | **Disk** | None | ~65 GB |
-| **Tools** | 14 | 16 (+update_database, check_update_status) |
+| **Tools** | 17 | 19 (+update_database, check_update_status) |
 | **Freshness** | Nightly (automatic) | Manual |
 | **Offline** | No | Yes |
 | **Requires** | Claude, ChatGPT, or Gemini CLI (see plans below) | Any MCP client |
@@ -257,6 +258,9 @@ Available on both remote and local unless noted.
 | `check_case_brief` | Check a student's case brief against the actual decision with scoring rubric |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
 | `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
+| `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
+| `get_legislation` | Get details for a specific law by LexFind ID or SR number, with version history and source URLs |
+| `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
 | `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database *(local only)* |
 | `check_update_status` | Check progress of a running database update *(local only)* |
 
@@ -292,6 +296,12 @@ These work on both the remote and local server:
 > Let's study BGE 133 III 121 together
 
 > Check my case brief for BGE 133 III 121: [your summary]
+
+> Search for cantonal data protection laws
+
+> Show me the details of SR 220 (Obligationenrecht)
+
+> What legislation changed recently in Zürich?
 ```
 
 The AI calls the MCP tools automatically — you see the search results inline and can ask follow-up questions about specific decisions.
@@ -386,6 +396,53 @@ Parameters: `sr_number` or `abbreviation` (at least one required), `article` (op
 Parameters: `query` (required, FTS5 syntax), `sr_number` (optional — restrict to one law), `language` (de/fr/it), `limit` (1–50).
 
 The statute database covers the top 40 most-cited Swiss federal laws, including OR, ZGB, StGB, BV, BGG, StPO, ZPO, SchKG, and more. Data is sourced from [Fedlex](https://www.fedlex.admin.ch) (Akoma Ntoso XML).
+
+### Legislation tools
+
+Three tools provide access to **Swiss legislation** across all levels of government — federal, cantonal, and intercantonal — via the [LexFind.ch](https://www.lexfind.ch) API. This covers 33,000+ legislative texts including laws, ordinances, regulations, and international treaties.
+
+> **Legislation vs. statute tools:** The statute tools (`get_law`, `search_laws`) provide article-level text from 40+ federal laws via a local Fedlex database. The legislation tools (`search_legislation`, `get_legislation`, `browse_legislation_changes`) cover a broader scope — all 26 cantons plus federal — but link to official sources rather than returning inline article text.
+
+**`search_legislation`** — Full-text search across all Swiss legislative texts. Filter by canton, active/abrogated status, and whether to search titles only or full content.
+
+```
+> Search for cantonal data protection laws
+
+1. Gesetz über die Information und den Datenschutz (SR 170.4, ZH)
+   URL: https://www.zh.ch/...
+2. Loi sur l'information du public, la protection des données... (SR 170.4, VD)
+   URL: https://prestations.vd.ch/...
+```
+
+Parameters: `query` (required), `canton` (optional — CH, ZH, BE, etc.), `active_only` (default true), `search_in_content` (default false — searches titles/keywords; set true to search law text), `language` (de/fr/it), `limit` (1–60, default 20).
+
+**`get_legislation`** — Get details for a specific law including metadata, version history, and links to official sources (Fedlex, cantonal portals).
+
+```
+> Show me the Obligationenrecht on LexFind
+
+SR 220 — Bundesgesetz betreffend die Ergänzung des Schweizerischen
+Zivilgesetzbuches (Fünfter Teil: Obligationenrecht)
+Entity: Bund (CH) | Category: Gesetz | Keywords: OR
+In force since: 01.01.2026
+Sources:
+  DE: https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de
+  FR: https://www.fedlex.admin.ch/eli/cc/27/317_321_377/fr
+```
+
+Parameters: `lexfind_id` (from search results) or `systematic_number` + `canton` (e.g., "220" + "CH"), `include_versions` (default false), `language` (de/fr/it).
+
+**`browse_legislation_changes`** — Recent legislation changes for a canton or federal level. Shows new laws, amendments, and abrogations with dates and links.
+
+```
+> What legislation changed recently in Zürich?
+
+1. [01.03.2026] version — Vollzugsverordnung zur Finanzverordnung (SR 181.131)
+2. [01.03.2026] new — Studienordnung für den Masterstudiengang... (SR 414.253.125)
+3. [01.03.2026] version — Organisationsverordnung der Finanzdirektion (SR 172.110.3)
+```
+
+Parameters: `canton` (default CH), `language` (de/fr/it).
 
 ### Education tools
 

@@ -395,6 +395,9 @@ The tool returns the ground truth from the decision so the AI can tell you exact
 | `check_case_brief` | Check a student's case brief against the actual decision |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation |
 | `search_laws` | Full-text search across Swiss federal law articles |
+| `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
+| `get_legislation` | Get details for a specific law by LexFind ID or SR number |
+| `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
 | `update_database` | Download the latest data from HuggingFace *(local only)* |
 | `check_update_status` | Check progress of a running database update *(local only)* |
 

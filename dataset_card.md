@@ -141,10 +141,13 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Research-only mock decision outline from facts, grounded in caselaw + statutes |
 | `study_leading_case` | Interactive study of a BGE/leading case with Socratic questions and review cards |
-| `list_study_curriculum` | Browse study curricula: 8 legal areas, graded cases, difficulty levels |
+| `list_study_curriculum` | Browse study curricula: 14 legal areas, 100 canonical BGEs, difficulty 1–5 |
 | `check_case_brief` | Check a student's case brief against the actual decision with scoring rubric |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
 | `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
+| `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
+| `get_legislation` | Get details for a specific law by LexFind ID or SR number, with version history and source URLs |
+| `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
 | `update_database` | Re-download latest data and rebuild the local database (local mode only) |
 | `check_update_status` | Check progress of a running database update (local mode only) |
 
@@ -157,7 +160,9 @@ The citation graph tools (`find_citations`, `find_appeal_chain`, `find_leading_c
 
 The statute tools (`get_law`, `search_laws`) provide direct access to **Swiss federal law text** from the Classified Compilation (SR/RS), sourced from [Fedlex](https://www.fedlex.admin.ch). Covers the top 40 most-cited federal laws (OR, ZGB, StGB, BV, BGG, StPO, ZPO, SchKG, etc.) with 25,000+ articles in three languages.
 
-The education tools (`study_leading_case`, `list_study_curriculum`, `check_case_brief`) support **Socratic legal study** of leading Swiss court decisions across 8 legal areas with graded difficulty.
+The legislation tools (`search_legislation`, `get_legislation`, `browse_legislation_changes`) search **33,000+ Swiss legislative texts** across all levels of government — federal, cantonal, and intercantonal — via the [LexFind.ch](https://www.lexfind.ch) API. Covers laws, ordinances, regulations, and international treaties from all 26 cantons plus the federal level. Returns metadata, version history, and links to official sources (Fedlex/cantonal portals).
+
+The education tools (`study_leading_case`, `list_study_curriculum`, `check_case_brief`) support **Socratic legal study** of leading Swiss court decisions across 14 legal areas with graded difficulty.
 
 See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
 
