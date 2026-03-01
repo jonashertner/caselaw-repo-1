@@ -25,6 +25,7 @@ import logging
 import re
 import sqlite3
 import time
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -213,6 +214,34 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
             for row in rows[1:]:
                 conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
                 deleted += 1
+
+    # ── Pass 2: date-agnostic dedup ──
+    # Same court+docket but different dates (common with entscheidsuche vs
+    # direct scrape where publication vs decision date differs).
+    # Group by the court|docket portion of canonical_key, ignoring the date.
+    all_rows = conn.execute(
+        "SELECT decision_id, canonical_key, LENGTH(COALESCE(full_text, '')), "
+        "LENGTH(COALESCE(regeste, '')) FROM decisions "
+        "WHERE canonical_key IS NOT NULL AND canonical_key <> ''"
+    ).fetchall()
+    groups2 = defaultdict(list)
+    for did, ckey, tlen, rlen in all_rows:
+        parts = ckey.split("|")
+        if len(parts) == 3 and parts[1]:
+            groups2[f"{parts[0]}|{parts[1]}"].append((did, tlen, rlen))
+
+    deleted2 = 0
+    for entries in groups2.values():
+        if len(entries) < 2:
+            continue
+        # Keep version with non-empty regeste first, then longest full_text
+        entries.sort(key=lambda x: (0 if x[2] > 0 else 1, -x[1]))
+        for did, _, _ in entries[1:]:
+            conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
+            deleted2 += 1
+    if deleted2:
+        logger.info(f"  Pass 2 (date-agnostic): removed {deleted2} duplicates")
+    deleted += deleted2
 
     conn.commit()
     return deleted
