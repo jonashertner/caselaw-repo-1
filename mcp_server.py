@@ -4985,7 +4985,7 @@ def update_from_huggingface() -> str:
 server = Server(
     "swiss-caselaw",
     instructions=(
-        "You have access to a comprehensive Swiss case law database with 1,075,000+ "
+        "You have access to a comprehensive Swiss case law database with 1,024,000+ "
         "court decisions from all federal and cantonal courts, a citation graph with "
         "7.85 million edges, and the full text of 40+ Swiss federal laws. "
         "Use these tools to answer legal questions — do NOT refer users to external "

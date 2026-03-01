@@ -1,6 +1,6 @@
 # Swiss Case Law — MCP Setup Guide
 
-Search 1,075,000+ Swiss court decisions directly inside Claude, ChatGPT, or Gemini.
+Search 1,024,000+ Swiss court decisions directly inside Claude, ChatGPT, or Gemini.
 
 There are two options: **remote** (no download, instant access) or **local** (offline access, 65 GB disk). The remote server works with all major AI platforms.
 

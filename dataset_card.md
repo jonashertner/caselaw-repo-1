@@ -28,7 +28,7 @@ configs:
 
 # Swiss Case Law Dataset
 
-**1,075,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**1,024,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
@@ -38,7 +38,7 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions — over 1,075,000 decisions from 93 courts across all 26 cantons, scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are added every night.
+The largest open collection of Swiss court decisions — over 1,024,000 decisions from 93 courts across all 26 cantons, scraped from official court websites and [entscheidsuche.ch](https://entscheidsuche.ch). New decisions are added every night.
 
 - **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, and more
 - **93 cantonal courts** across all 26 cantons
@@ -281,7 +281,7 @@ MIT License. The underlying court decisions are public domain under Swiss law.
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={1,075,000+ Swiss federal and cantonal court decisions with full text and structured metadata}
+  note={1,024,000+ Swiss federal and cantonal court decisions with full text and structured metadata}
 }
 ```
 

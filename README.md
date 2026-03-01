@@ -1,6 +1,6 @@
 # Swiss Case Law Open Dataset
 
-**1,075,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**1,024,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
