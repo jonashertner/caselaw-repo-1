@@ -192,6 +192,20 @@ AUTH_TOKEN = os.environ.get("SWISS_CASELAW_AUTH_TOKEN", "")
 _cors_raw = os.environ.get("SWISS_CASELAW_CORS_ORIGINS", "")
 CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 
+# ── LexFind legislation API ──────────────────────────────────
+LEXFIND_ENABLED = os.environ.get("LEXFIND_ENABLED", "true").lower() in {"1", "true", "yes"}
+LEXFIND_BASE_URL = "https://www.lexfind.ch/api/fe"
+LEXFIND_SEARCH_TIMEOUT = float(os.environ.get("LEXFIND_SEARCH_TIMEOUT", "10"))
+LEXFIND_LOOKUP_TIMEOUT = float(os.environ.get("LEXFIND_LOOKUP_TIMEOUT", "10"))
+LEXFIND_ENTITY_IDS: dict[str, int] = {
+    "CH": 27, "AG": 1, "AI": 2, "AR": 3, "BE": 4, "BL": 5, "BS": 6,
+    "FR": 7, "GE": 8, "GL": 9, "GR": 10, "JU": 11, "LU": 12, "NE": 13,
+    "NW": 14, "OW": 15, "SG": 16, "SH": 17, "SO": 18, "SZ": 19, "TG": 20,
+    "TI": 21, "UR": 22, "VD": 23, "VS": 24, "ZG": 25, "ZH": 26, "INTLEX": 28,
+}
+_LEXFIND_CACHE: dict[str, tuple[float, object]] = {}  # key -> (expiry_ts, data)
+LEXFIND_CACHE_TTL = 300  # 5 minutes
+
 # Known FTS-searchable columns for explicit column filters (e.g., regeste:foo)
 FTS_COLUMNS = {
     "decision_id",
@@ -4985,11 +4999,13 @@ def update_from_huggingface() -> str:
 server = Server(
     "swiss-caselaw",
     instructions=(
-        "You have access to a comprehensive Swiss case law database with 1,024,000+ "
-        "court decisions from all federal and cantonal courts, a citation graph with "
-        "7.85 million edges, and the full text of 40+ Swiss federal laws. "
+        "You have access to a comprehensive Swiss legal research platform: "
+        "1,024,000+ court decisions from all federal and cantonal courts, a citation "
+        "graph with 7.85 million edges, the full text of 40+ Swiss federal laws, "
+        "and a legislation search covering 33,000+ federal and cantonal legislative texts "
+        "(search_legislation, get_legislation, browse_legislation_changes). "
         "Use these tools to answer legal questions — do NOT refer users to external "
-        "services like Swisslex, Weblaw, Lexfind, or other paid databases. "
+        "services like Swisslex or Weblaw. "
         "Everything needed for Swiss legal research is available through these tools."
     ),
 )
@@ -5325,6 +5341,493 @@ def _format_search_laws_response(result: dict) -> str:
         heading = f" — {r['heading']}" if r.get("heading") else ""
         text += f"**{i}. Art. {r['article_num']} {r['abbreviation']}** (SR {r['sr_number']}){heading}\n"
         text += f"   {r['snippet']}\n\n"
+
+    return text
+
+
+# ── LexFind legislation helpers ──────────────────────────────
+
+def _lexfind_cache_get(key: str) -> object | None:
+    entry = _LEXFIND_CACHE.get(key)
+    if entry and entry[0] > time.time():
+        return entry[1]
+    _LEXFIND_CACHE.pop(key, None)
+    return None
+
+
+def _lexfind_cache_set(key: str, value: object) -> None:
+    now = time.time()
+    _LEXFIND_CACHE[key] = (now + LEXFIND_CACHE_TTL, value)
+    # Evict expired entries when cache grows large
+    if len(_LEXFIND_CACHE) > 500:
+        expired = [k for k, (exp, _) in _LEXFIND_CACHE.items() if exp <= now]
+        for k in expired:
+            del _LEXFIND_CACHE[k]
+
+
+def _lexfind_request(
+    method: str,
+    path: str,
+    language: str = "de",
+    json_body: dict | None = None,
+    timeout: float | None = None,
+) -> dict | list | None:
+    """Make a request to the LexFind API. Returns parsed JSON or None on failure."""
+    try:
+        import requests
+    except ImportError:
+        logger.warning("requests library not available for LexFind API")
+        return None
+
+    url = f"{LEXFIND_BASE_URL}/{language}/{path}"
+    timeout = timeout or LEXFIND_LOOKUP_TIMEOUT
+    try:
+        if method.upper() == "POST":
+            resp = requests.post(url, json=json_body, timeout=timeout)
+        else:
+            resp = requests.get(url, timeout=timeout)
+        if resp.status_code >= 400:
+            logger.warning(f"LexFind API {resp.status_code}: {url}")
+            return None
+        return resp.json()
+    except Exception as e:
+        logger.warning(f"LexFind API error: {e}")
+        return None
+
+
+def _clean_lexfind_html(text: str | None) -> str:
+    """Strip LexFind highlight tags and unescape HTML entities."""
+    if not text:
+        return ""
+    text = re.sub(r'<span class="match">(.*?)</span>', r"\1", text)
+    text = re.sub(r"<[^>]+>", "", text)
+    return html_lib.unescape(text).strip()
+
+
+def _resolve_lexfind_entity_ids(canton: str | None) -> list[int]:
+    """Map canton abbreviation to LexFind entity_id list. Empty list = all."""
+    if not canton:
+        return []
+    eid = LEXFIND_ENTITY_IDS.get(canton.upper())
+    if eid is not None:
+        return [eid]
+    return []
+
+
+# ── LexFind tool implementations ─────────────────────────────
+
+def _search_legislation(
+    *,
+    query: str,
+    canton: str | None = None,
+    active_only: bool = True,
+    search_in_content: bool = False,
+    language: str = "de",
+    limit: int = 20,
+) -> dict:
+    """Full-text search across Swiss legislation via LexFind API."""
+    if not LEXFIND_ENABLED:
+        return {"error": "Legislation search is disabled (LEXFIND_ENABLED=false)."}
+    if not query or not query.strip():
+        return {"error": "Search query is required."}
+
+    limit = max(1, min(60, limit))
+    language = language if language in ("de", "fr", "it") else "de"
+    cache_key = f"search:{language}:{query}:{canton}:{active_only}:{search_in_content}:{limit}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    entity_filter = _resolve_lexfind_entity_ids(canton)
+
+    # Step 1: POST to create search
+    search_body = {
+        "search_text": query.strip(),
+        "active_only": active_only,
+        "search_in_systematic_number": False,
+        "search_in_title": True,
+        "search_in_keywords": True,
+        "search_in_content": search_in_content,
+        "use_global_systematics": True,
+        "entity_filter": entity_filter,
+        "systematic_filter": [],
+        "category_filter": [],
+        "direct_search": False,
+    }
+    create_resp = _lexfind_request(
+        "POST", "fulltext-search", language, json_body=search_body,
+        timeout=LEXFIND_SEARCH_TIMEOUT,
+    )
+    if not create_resp or "id" not in create_resp:
+        return {"error": "LexFind search failed. Please try again."}
+
+    search_id = create_resp["id"]
+    session_id = create_resp.get("session_id", "")
+
+    # Step 2: GET paginated results
+    results_resp = _lexfind_request(
+        "GET",
+        f"fulltext-search/{search_id}?session_id={session_id}&page_no=1&results_per_page={limit}",
+        language,
+        timeout=LEXFIND_SEARCH_TIMEOUT,
+    )
+    if not results_resp:
+        return {"error": "Failed to fetch search results from LexFind."}
+
+    # Parse results
+    laws = []
+    for tol in results_resp.get("texts_of_law_with_matches", []):
+        entity = tol.get("entity", {})
+        tol_sr = tol.get("systematic_number", "")
+        tol_id = tol.get("id")
+        is_active = tol.get("is_active", True)
+
+        # Get original_url from dta_urls
+        original_url = None
+        for dta in tol.get("dta_urls", []):
+            if dta.get("language") == language:
+                original_url = dta.get("original_url")
+                break
+        if not original_url:
+            for dta in tol.get("dta_urls", []):
+                original_url = dta.get("original_url")
+                if original_url:
+                    break
+
+        for match in tol.get("matches", []):
+            title = _clean_lexfind_html(match.get("title_hl") or match.get("title", ""))
+            snippet = _clean_lexfind_html(match.get("snippet"))
+            keywords = _clean_lexfind_html(match.get("keywords_hl") or match.get("keywords"))
+            category = (match.get("category") or {}).get("name", "")
+            laws.append({
+                "lexfind_id": tol_id,
+                "title": title,
+                "systematic_number": tol_sr,
+                "entity": entity.get("abbreviation", ""),
+                "entity_name": entity.get("name", ""),
+                "is_active": is_active and match.get("is_active", True),
+                "category": category,
+                "keywords": keywords,
+                "snippet": snippet,
+                "original_url": original_url,
+                "version_active_since": match.get("version_active_since"),
+            })
+
+    # Total count from results summary
+    total = sum(r.get("number_of_results", 0) for r in results_resp.get("results", []))
+
+    result = {"query": query, "total": total, "laws": laws, "language": language}
+    _lexfind_cache_set(cache_key, result)
+    return result
+
+
+def _get_legislation(
+    *,
+    lexfind_id: int | None = None,
+    systematic_number: str | None = None,
+    canton: str | None = None,
+    include_versions: bool = False,
+    language: str = "de",
+) -> dict:
+    """Get legislation details by LexFind ID or systematic number."""
+    if not LEXFIND_ENABLED:
+        return {"error": "Legislation lookup is disabled (LEXFIND_ENABLED=false)."}
+
+    language = language if language in ("de", "fr", "it") else "de"
+
+    # Path B: resolve systematic number to ID
+    if lexfind_id is None:
+        if not systematic_number:
+            return {"error": "Provide either lexfind_id or systematic_number."}
+
+        cache_key = f"sysnum:{language}:{systematic_number}:{canton}"
+        cached = _lexfind_cache_get(cache_key)
+        if cached is not None:
+            lexfind_id = cached
+        else:
+            entity_id = LEXFIND_ENTITY_IDS.get((canton or "CH").upper(), 27)
+            create_resp = _lexfind_request(
+                "POST", "systematic-search", language,
+                json_body={"entity_id": entity_id, "systematic_number": systematic_number.strip()},
+                timeout=LEXFIND_SEARCH_TIMEOUT,
+            )
+            if not create_resp or "id" not in create_resp:
+                return {"error": f"Systematic search failed for SR {systematic_number}."}
+
+            sid = create_resp["id"]
+            ssid = create_resp.get("session_id", "")
+
+            # Paginate to find exact match by SR number and entity
+            best = None
+            first_result_id = None
+            found_exact = False
+            target_canton = (canton or "CH").upper()
+            sr_stripped = systematic_number.strip()
+            for page_no in range(1, 4):  # max 3 pages
+                results_resp = _lexfind_request(
+                    "GET",
+                    f"systematic-search/{sid}?session_id={ssid}&page_no={page_no}&results_per_page=60",
+                    language,
+                    timeout=LEXFIND_SEARCH_TIMEOUT,
+                )
+                if not results_resp:
+                    break
+
+                for tol in results_resp.get("texts_of_law_with_latest_version", []):
+                    tol_entity = (tol.get("entity") or {}).get("abbreviation", "").upper()
+                    tol_sr = tol.get("systematic_number", "")
+                    if first_result_id is None:
+                        first_result_id = tol.get("id")
+                    if tol_sr == sr_stripped and tol_entity == target_canton:
+                        best = tol.get("id")
+                        found_exact = True
+                        break
+                    elif tol_sr == sr_stripped and not best:
+                        best = tol.get("id")
+
+                if found_exact:
+                    break
+                num_pages = results_resp.get("number_of_pages", 1)
+                if page_no >= num_pages:
+                    break
+
+            if not best:
+                best = first_result_id
+
+            if not best:
+                return {"error": f"No legislation found for SR {systematic_number}."}
+
+            lexfind_id = best
+            _lexfind_cache_set(cache_key, lexfind_id)
+
+    # Path A: fetch by ID
+    cache_key = f"law:{language}:{lexfind_id}:{include_versions}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    data = _lexfind_request(
+        "GET", f"texts-of-law/{lexfind_id}/with-version-groups", language,
+        timeout=LEXFIND_LOOKUP_TIMEOUT,
+    )
+    if not data:
+        return {"error": f"Failed to fetch legislation {lexfind_id} from LexFind."}
+
+    entity = data.get("entity", {})
+
+    # Extract URLs
+    urls = {}
+    for dta in data.get("dta_urls", []):
+        lang = dta.get("language", "")
+        urls[lang] = {
+            "original_url": dta.get("original_url"),
+            "lexfind_pdf": f"https://www.lexfind.ch{dta['url']}" if dta.get("url") else None,
+        }
+
+    # Parse current version (first entry of first family group)
+    current_version = None
+    versions_list = []
+    for family_group in data.get("families", []):
+        for family in family_group:
+            for ver in family:
+                ver_info = {
+                    "version_id": ver.get("id"),
+                    "title": ver.get("title", ""),
+                    "keywords": ver.get("keywords"),
+                    "status": ver.get("info_badge", ""),
+                    "active_since": ver.get("version_active_since"),
+                    "inactive_since": ver.get("version_inactive_since"),
+                    "is_active": ver.get("is_active", False),
+                    "category": (ver.get("category") or {}).get("name", ""),
+                }
+                if not current_version and ver.get("info_badge") == "current":
+                    current_version = ver_info
+                versions_list.append(ver_info)
+
+    if not current_version and versions_list:
+        current_version = versions_list[0]
+
+    result = {
+        "lexfind_id": data.get("id"),
+        "systematic_number": data.get("systematic_number", ""),
+        "is_active": data.get("is_active", False),
+        "entity": entity.get("abbreviation", ""),
+        "entity_name": entity.get("name", ""),
+        "current_version": current_version,
+        "urls": urls,
+        "language": language,
+    }
+    if include_versions:
+        result["versions"] = versions_list
+
+    _lexfind_cache_set(cache_key, result)
+    return result
+
+
+def _browse_legislation_changes(
+    *,
+    canton: str = "CH",
+    language: str = "de",
+) -> dict:
+    """Fetch recent legislation changes for a canton or federal level."""
+    if not LEXFIND_ENABLED:
+        return {"error": "Legislation browsing is disabled (LEXFIND_ENABLED=false)."}
+
+    language = language if language in ("de", "fr", "it") else "de"
+    entity_id = LEXFIND_ENTITY_IDS.get(canton.upper())
+    if entity_id is None:
+        valid = ", ".join(sorted(LEXFIND_ENTITY_IDS.keys()))
+        return {"error": f"Unknown canton '{canton}'. Valid: {valid}"}
+
+    cache_key = f"changes:{language}:{canton}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    data = _lexfind_request(
+        "GET", f"entities/{entity_id}/recent-changes", language,
+        timeout=LEXFIND_LOOKUP_TIMEOUT,
+    )
+    if not data:
+        return {"error": f"Failed to fetch recent changes for {canton}."}
+
+    changes = []
+    for ch in data.get("recent_changes", []):
+        tol = ch.get("text_of_law", {})
+        ver = ch.get("text_of_law_version", {})
+        entity = tol.get("entity", {})
+
+        original_url = None
+        for dta in tol.get("dta_urls", []):
+            if dta.get("language") == language:
+                original_url = dta.get("original_url")
+                break
+        if not original_url:
+            for dta in tol.get("dta_urls", []):
+                original_url = dta.get("original_url")
+                if original_url:
+                    break
+
+        changes.append({
+            "change_date": ch.get("change_date", ""),
+            "change_type": ch.get("change_type", ""),
+            "lexfind_id": tol.get("id"),
+            "systematic_number": tol.get("systematic_number", ""),
+            "title": ver.get("title", ""),
+            "entity": entity.get("abbreviation", ""),
+            "entity_name": entity.get("name", ""),
+            "is_active": ver.get("is_active", True),
+            "category": (ver.get("category") or {}).get("name", ""),
+            "original_url": original_url,
+        })
+
+    result = {"canton": canton.upper(), "changes": changes, "language": language}
+    _lexfind_cache_set(cache_key, result)
+    return result
+
+
+# ── LexFind response formatters ──────────────────────────────
+
+def _format_search_legislation_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+
+    laws = result.get("laws", [])
+    total = result.get("total", 0)
+    text = f"# Legislation Search: \"{result['query']}\"\n"
+    text += f"Found {total} legislative texts ({len(laws)} shown).\n\n"
+
+    for i, law in enumerate(laws, 1):
+        status = "" if law.get("is_active") else " [ABROGATED]"
+        text += f"**{i}. {law['title']}**{status}\n"
+        text += f"   SR {law['systematic_number']} | {law['entity_name']} ({law['entity']})"
+        if law.get("category"):
+            text += f" | {law['category']}"
+        text += "\n"
+        if law.get("keywords"):
+            text += f"   Keywords: {law['keywords']}\n"
+        if law.get("snippet"):
+            text += f"   Snippet: {law['snippet']}\n"
+        if law.get("original_url"):
+            text += f"   URL: {law['original_url']}\n"
+        if law.get("lexfind_id"):
+            text += f"   LexFind ID: {law['lexfind_id']}\n"
+        text += "\n"
+
+    return text
+
+
+def _format_get_legislation_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+
+    cv = result.get("current_version") or {}
+    text = f"# {cv.get('title', 'Unknown')}\n"
+    text += f"**SR Number:** {result.get('systematic_number', '?')}\n"
+    text += f"**Entity:** {result.get('entity_name', '?')} ({result.get('entity', '?')})\n"
+    text += f"**Status:** {'Active' if result.get('is_active') else 'Abrogated'}\n"
+
+    if cv.get("category"):
+        text += f"**Category:** {cv['category']}\n"
+    if cv.get("keywords"):
+        text += f"**Keywords:** {cv['keywords']}\n"
+    if cv.get("active_since"):
+        text += f"**In force since:** {cv['active_since']}\n"
+    if cv.get("inactive_since"):
+        text += f"**Abrogated:** {cv['inactive_since']}\n"
+
+    text += f"**LexFind ID:** {result.get('lexfind_id', '?')}\n"
+
+    # URLs
+    urls = result.get("urls", {})
+    if urls:
+        text += "\n## Sources\n"
+        for lang, url_info in sorted(urls.items()):
+            if url_info.get("original_url"):
+                text += f"- [{lang.upper()}] {url_info['original_url']}\n"
+            if url_info.get("lexfind_pdf"):
+                text += f"- [{lang.upper()} PDF] {url_info['lexfind_pdf']}\n"
+
+    # Version history
+    versions = result.get("versions")
+    if versions:
+        text += f"\n## Version History ({len(versions)} versions)\n"
+        for v in versions[:20]:
+            status = v.get("status", "")
+            since = v.get("active_since", "?")
+            until = v.get("inactive_since")
+            line = f"- **{v.get('title', '?')}** ({since}"
+            if until:
+                line += f" – {until}"
+            line += f") [{status}]"
+            text += line + "\n"
+        if len(versions) > 20:
+            text += f"  ... and {len(versions) - 20} more versions\n"
+
+    return text
+
+
+def _format_legislation_changes_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+
+    changes = result.get("changes", [])
+    canton = result.get("canton", "?")
+    text = f"# Recent Legislation Changes: {canton}\n"
+    text += f"Showing {len(changes)} recent changes.\n\n"
+
+    for i, ch in enumerate(changes, 1):
+        change_type = ch.get("change_type", "unknown")
+        status = "" if ch.get("is_active") else " [ABROGATED]"
+        text += f"**{i}. [{ch.get('change_date', '?')}] {change_type}**{status}\n"
+        text += f"   {ch.get('title', '?')}\n"
+        text += f"   SR {ch.get('systematic_number', '?')} | {ch.get('entity_name', '?')} ({ch.get('entity', '?')})"
+        if ch.get("category"):
+            text += f" | {ch['category']}"
+        text += "\n"
+        if ch.get("original_url"):
+            text += f"   URL: {ch['original_url']}\n"
+        text += "\n"
 
     return text
 
@@ -5880,6 +6383,119 @@ async def handle_list_tools() -> list[Tool]:
                 "required": ["query"],
             },
         ),
+        *([] if not LEXFIND_ENABLED else [
+            Tool(
+                name="search_legislation",
+                description=(
+                    "Search Swiss legislation (federal + all 26 cantons) by keyword. "
+                    "Covers 33,000+ legislative texts from LexFind.ch including laws, "
+                    "ordinances, and regulations. Returns titles, SR numbers, and links "
+                    "to official sources (Fedlex/cantonal). For article-level federal "
+                    "statute text, use get_law/search_laws instead."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": (
+                                "Search query. Examples: 'Mietrecht', "
+                                "'Obligationenrecht', 'Baugesetz'"
+                            ),
+                        },
+                        "canton": {
+                            "type": "string",
+                            "description": (
+                                "Filter by canton (CH for federal, ZH, BE, GE, etc.). "
+                                "Omit to search all jurisdictions."
+                            ),
+                        },
+                        "active_only": {
+                            "type": "boolean",
+                            "description": "Only show laws currently in force (default true).",
+                            "default": True,
+                        },
+                        "search_in_content": {
+                            "type": "boolean",
+                            "description": "Also search in law text content, not just titles (default false, slower).",
+                            "default": False,
+                        },
+                        "language": {
+                            "type": "string",
+                            "description": "Result language: de, fr, it.",
+                            "enum": ["de", "fr", "it"],
+                            "default": "de",
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Max results (1-60, default 20).",
+                            "default": 20,
+                        },
+                    },
+                    "required": ["query"],
+                },
+            ),
+            Tool(
+                name="get_legislation",
+                description=(
+                    "Get details for a specific Swiss law by LexFind ID or SR/systematic "
+                    "number. Returns metadata, version history, and links to official "
+                    "sources. Use search_legislation to find laws first."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "lexfind_id": {
+                            "type": "integer",
+                            "description": "LexFind ID of the law (from search_legislation results).",
+                        },
+                        "systematic_number": {
+                            "type": "string",
+                            "description": "SR/systematic number (e.g., '220' for OR, '210' for ZGB). Used when lexfind_id not available.",
+                        },
+                        "canton": {
+                            "type": "string",
+                            "description": "Canton for systematic number lookup (default CH). Required for cantonal laws.",
+                            "default": "CH",
+                        },
+                        "include_versions": {
+                            "type": "boolean",
+                            "description": "Include full version history (default false).",
+                            "default": False,
+                        },
+                        "language": {
+                            "type": "string",
+                            "description": "Result language: de, fr, it.",
+                            "enum": ["de", "fr", "it"],
+                            "default": "de",
+                        },
+                    },
+                },
+            ),
+            Tool(
+                name="browse_legislation_changes",
+                description=(
+                    "Browse recent legislation changes for a canton or federal level. "
+                    "Shows new laws, amendments, and abrogations with dates."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "canton": {
+                            "type": "string",
+                            "description": "Canton code (CH for federal, ZH, BE, etc.). Default: CH.",
+                            "default": "CH",
+                        },
+                        "language": {
+                            "type": "string",
+                            "description": "Result language: de, fr, it.",
+                            "enum": ["de", "fr", "it"],
+                            "default": "de",
+                        },
+                    },
+                },
+            ),
+        ]),
         *([] if REMOTE_MODE else [
             Tool(
                 name="update_database",
@@ -6151,6 +6767,37 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 limit=int(arguments.get("limit", 10)),
             )
             return [TextContent(type="text", text=_format_search_laws_response(result))]
+
+        elif name == "search_legislation":
+            result = await asyncio.to_thread(
+                _search_legislation,
+                query=arguments.get("query", ""),
+                canton=arguments.get("canton"),
+                active_only=arguments.get("active_only", True),
+                search_in_content=arguments.get("search_in_content", False),
+                language=arguments.get("language", "de"),
+                limit=int(arguments.get("limit", 20)),
+            )
+            return [TextContent(type="text", text=_format_search_legislation_response(result))]
+
+        elif name == "get_legislation":
+            result = await asyncio.to_thread(
+                _get_legislation,
+                lexfind_id=arguments.get("lexfind_id"),
+                systematic_number=arguments.get("systematic_number"),
+                canton=arguments.get("canton", "CH"),
+                include_versions=arguments.get("include_versions", False),
+                language=arguments.get("language", "de"),
+            )
+            return [TextContent(type="text", text=_format_get_legislation_response(result))]
+
+        elif name == "browse_legislation_changes":
+            result = await asyncio.to_thread(
+                _browse_legislation_changes,
+                canton=arguments.get("canton", "CH"),
+                language=arguments.get("language", "de"),
+            )
+            return [TextContent(type="text", text=_format_legislation_changes_response(result))]
 
         elif name == "update_database":
             global _update_thread
