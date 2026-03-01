@@ -1880,6 +1880,25 @@ def _resolve_decision_id(decision_id: str) -> str:
     return decision_id
 
 
+def _decision_id_variants(decision_id: str) -> list[str]:
+    """Generate ID variants for graph DB lookups.
+
+    The FTS5 DB and graph DB may store the same decision under different ID
+    formats (e.g. 'bge_BGE 138 III 374' vs 'bge_BGE_138_III_374').
+    Returns a list of variant IDs to try with IN clauses.
+    """
+    variants = {decision_id}
+    # Split court prefix from the rest
+    parts = decision_id.split("_", 1)
+    if len(parts) == 2:
+        court, rest = parts
+        # Variant: underscores in rest → spaces
+        variants.add(f"{court}_{rest.replace('_', ' ')}")
+        # Variant: spaces in rest → underscores
+        variants.add(f"{court}_{rest.replace(' ', '_')}")
+    return list(variants)
+
+
 def _count_citations(decision_id: str) -> tuple[int, int]:
     """Return (incoming_count, outgoing_count) for a decision from the graph DB.
 
@@ -1919,8 +1938,12 @@ def _find_outgoing_citations(
     if conn is None:
         return []
     try:
+        # Try ID variants (space vs underscore) since FTS5 DB and graph DB
+        # may store the same decision under different ID formats.
+        variants = _decision_id_variants(decision_id)
+        placeholders = ",".join(["?"] * len(variants))
         rows = conn.execute(
-            """
+            f"""
             SELECT dc.target_ref, dc.target_type, dc.mention_count,
                    ct.target_decision_id, ct.confidence_score,
                    d.docket_number, d.court, d.decision_date
@@ -1930,12 +1953,12 @@ def _find_outgoing_citations(
              AND ct.target_ref = dc.target_ref
             LEFT JOIN decisions d
               ON d.decision_id = ct.target_decision_id
-            WHERE dc.source_decision_id = ?
+            WHERE dc.source_decision_id IN ({placeholders})
               AND (ct.confidence_score IS NULL OR ct.confidence_score >= ?)
             ORDER BY dc.mention_count DESC, ct.confidence_score DESC
             LIMIT ?
             """,
-            (decision_id, min_confidence, limit),
+            (*variants, min_confidence, limit),
         ).fetchall()
         return [dict(r) for r in rows]
     except sqlite3.Error as e:
@@ -1953,8 +1976,12 @@ def _find_incoming_citations(
     if conn is None:
         return []
     try:
+        # Try ID variants (space vs underscore) since FTS5 DB and graph DB
+        # may store the same decision under different ID formats.
+        variants = _decision_id_variants(decision_id)
+        placeholders = ",".join(["?"] * len(variants))
         rows = conn.execute(
-            """
+            f"""
             SELECT ct.source_decision_id, ct.confidence_score, ct.target_ref,
                    dc.mention_count,
                    d.docket_number, d.court, d.decision_date
@@ -1964,12 +1991,12 @@ def _find_incoming_citations(
              AND dc.target_ref = ct.target_ref
             JOIN decisions d
               ON d.decision_id = ct.source_decision_id
-            WHERE ct.target_decision_id = ?
+            WHERE ct.target_decision_id IN ({placeholders})
               AND ct.confidence_score >= ?
             ORDER BY d.decision_date DESC, ct.confidence_score DESC
             LIMIT ?
             """,
-            (decision_id, min_confidence, limit),
+            (*variants, min_confidence, limit),
         ).fetchall()
         return [dict(r) for r in rows]
     except sqlite3.Error as e:
