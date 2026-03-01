@@ -1,0 +1,693 @@
+{
+  "summary": {
+    "k": 10,
+    "db_path": "/Users/jonashertner/.swiss-caselaw/decisions.db",
+    "db_rows": 1078177,
+    "golden_path": "/Users/jonashertner/caselaw-repo-1/benchmarks/search_relevance_golden.json",
+    "golden_paths": [
+      "/Users/jonashertner/caselaw-repo-1/benchmarks/search_relevance_golden.json"
+    ],
+    "queries_total": 16,
+    "queries_evaluated": 16,
+    "queries_skipped": 0,
+    "relevant_aliases_resolved": 0,
+    "relevant_unresolved": 0,
+    "mrr_at_k": 0.5115327380952381,
+    "recall_at_k": 0.6875,
+    "ndcg_at_k": 0.760150555503122,
+    "hit_at_1": 0.375,
+    "latency_ms_avg": 1061.6084660723573,
+    "latency_ms_p95": 3869.738250039518,
+    "by_tag": {
+      "asylum": {
+        "count": 3,
+        "mrr_at_k": 0.3333333333333333,
+        "recall_at_k": 0.5,
+        "ndcg_at_k": 0.7239969327121103,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 3942.9650416132063
+      },
+      "civil": {
+        "count": 1,
+        "mrr_at_k": 0.14285714285714285,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 312.921374803409
+      },
+      "concept-match": {
+        "count": 2,
+        "mrr_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "ndcg_at_k": 0.0,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 365.99741608370095
+      },
+      "constitutional": {
+        "count": 1,
+        "mrr_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 1.0,
+        "latency_ms_avg": 80.04187513142824
+      },
+      "construction": {
+        "count": 1,
+        "mrr_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 1.0,
+        "latency_ms_avg": 349.50537513941526
+      },
+      "criminal": {
+        "count": 1,
+        "mrr_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 1.0,
+        "latency_ms_avg": 58.51737502962351
+      },
+      "cross-lingual": {
+        "count": 1,
+        "mrr_at_k": 1.0,
+        "recall_at_k": 0.6666666666666666,
+        "ndcg_at_k": 0.8838695436828513,
+        "hit_at_1": 1.0,
+        "latency_ms_avg": 384.8615421447903
+      },
+      "de": {
+        "count": 9,
+        "mrr_at_k": 0.5509259259259259,
+        "recall_at_k": 0.6666666666666666,
+        "ndcg_at_k": 0.6805007306334876,
+        "hit_at_1": 0.4444444444444444,
+        "latency_ms_avg": 800.1275647224652
+      },
+      "docket": {
+        "count": 1,
+        "mrr_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 1.0,
+        "latency_ms_avg": 30.084332916885614
+      },
+      "employment": {
+        "count": 1,
+        "mrr_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "ndcg_at_k": 0.0,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 642.6252911332995
+      },
+      "exact": {
+        "count": 1,
+        "mrr_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 1.0,
+        "latency_ms_avg": 30.084332916885614
+      },
+      "fr": {
+        "count": 3,
+        "mrr_at_k": 0.5277777777777778,
+        "recall_at_k": 0.6666666666666666,
+        "ndcg_at_k": 0.7344211623075501,
+        "hit_at_1": 0.3333333333333333,
+        "latency_ms_avg": 574.4432223339876
+      },
+      "human-rights": {
+        "count": 1,
+        "mrr_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 1.0,
+        "latency_ms_avg": 303.9972500409931
+      },
+      "insurance": {
+        "count": 1,
+        "mrr_at_k": 0.3333333333333333,
+        "recall_at_k": 0.5,
+        "ndcg_at_k": 0.7871546029909718,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 1352.5049169547856
+      },
+      "it": {
+        "count": 1,
+        "mrr_at_k": 0.14285714285714285,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 312.921374803409
+      },
+      "liability": {
+        "count": 2,
+        "mrr_at_k": 0.5,
+        "recall_at_k": 0.3333333333333333,
+        "ndcg_at_k": 0.44193477184142566,
+        "hit_at_1": 0.5,
+        "latency_ms_avg": 237.11554158944637
+      },
+      "nl": {
+        "count": 3,
+        "mrr_at_k": 0.5277777777777778,
+        "recall_at_k": 0.6111111111111112,
+        "ndcg_at_k": 0.7021828487435903,
+        "hit_at_1": 0.3333333333333333,
+        "latency_ms_avg": 681.3306389376521
+      },
+      "public-law": {
+        "count": 1,
+        "mrr_at_k": 0.25,
+        "recall_at_k": 0.3333333333333333,
+        "ndcg_at_k": 0.31939394323979897,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 387.48974981717765
+      },
+      "punctuation": {
+        "count": 1,
+        "mrr_at_k": 0.25,
+        "recall_at_k": 0.5,
+        "ndcg_at_k": 0.9173194127129571,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 3848.5137498937547
+      },
+      "quote": {
+        "count": 1,
+        "mrr_at_k": 0.25,
+        "recall_at_k": 0.5,
+        "ndcg_at_k": 0.9173194127129571,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 3869.738250039518
+      },
+      "robustness": {
+        "count": 2,
+        "mrr_at_k": 0.25,
+        "recall_at_k": 0.5,
+        "ndcg_at_k": 0.9173194127129571,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 3859.1259999666363
+      },
+      "semantic": {
+        "count": 3,
+        "mrr_at_k": 0.3333333333333333,
+        "recall_at_k": 0.2222222222222222,
+        "ndcg_at_k": 0.2946231812276171,
+        "hit_at_1": 0.3333333333333333,
+        "latency_ms_avg": 372.28545810406405
+      },
+      "tax": {
+        "count": 1,
+        "mrr_at_k": 0.3333333333333333,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 950.9783750399947
+      },
+      "tenancy": {
+        "count": 1,
+        "mrr_at_k": 0.125,
+        "recall_at_k": 1.0,
+        "ndcg_at_k": 1.0,
+        "hit_at_1": 0.0,
+        "latency_ms_avg": 213.9433331321925
+      }
+    }
+  },
+  "per_query": [
+    {
+      "id": "q001",
+      "query": "1A.122/2005",
+      "tags": [
+        "docket",
+        "exact"
+      ],
+      "status": "ok",
+      "rr": 1.0,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 1.0,
+      "latency_ms": 30.084332916885614,
+      "topk_ids": [
+        "bger_1A.122_2005",
+        "bger_1A.121_2005",
+        "bger_1A.123_2005",
+        "bger_1A.120_2005",
+        "bger_1A.124_2005",
+        "bger_1A.125_2005",
+        "bger_1A.119_2005",
+        "bger_1A.118_2005",
+        "bger_1A.126_2005",
+        "bger_1A.127_2005"
+      ],
+      "matched_ranks": {
+        "bger_1A.122_2005": 1,
+        "bger_1A.124_2005": 5
+      }
+    },
+    {
+      "id": "q002",
+      "query": "Je cherche un arrêt sur le permis de construire d'un parc éolien",
+      "tags": [
+        "nl",
+        "fr",
+        "public-law"
+      ],
+      "status": "ok",
+      "rr": 0.25,
+      "recall": 0.3333333333333333,
+      "ndcg": 0.31939394323979897,
+      "hit1": 0.0,
+      "latency_ms": 387.48974981717765,
+      "topk_ids": [
+        "bger_1C_500_2023",
+        "be_verwaltungsgericht_100_2019_297",
+        "bger_1C_33_2011",
+        "bger_1A.124_2005",
+        "vd_omni_AC.2016.0243",
+        "vd_omni_AC.2019.0372",
+        "ne_gerichte_CDP.2022.149",
+        "vd_omni_AC.2017.0208",
+        "bger_1C_407_2020",
+        "vd_omni_AC.2016.0103"
+      ],
+      "matched_ranks": {
+        "bger_1A.124_2005": 4
+      }
+    },
+    {
+      "id": "q003",
+      "query": "Art. 8 EMRK Umwandlung des Status der vorläufigen Aufnahme",
+      "tags": [
+        "nl",
+        "de",
+        "human-rights"
+      ],
+      "status": "ok",
+      "rr": 1.0,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 1.0,
+      "latency_ms": 303.9972500409931,
+      "topk_ids": [
+        "bge_147 I 268",
+        "bge_BGE_147_I_268",
+        "bge_BGE_150_I_93",
+        "bge_150 I 93",
+        "bge_BGE_151_I_62",
+        "bge_151 I 62",
+        "bger_2C_201_2025",
+        "bger_2C_175_2020",
+        "zh_verwaltungsgericht_VB.2021.00010",
+        "zh_verwaltungsgericht__VB.2021.00010"
+      ],
+      "matched_ranks": {
+        "bge_147 I 268": 1,
+        "bge_151 I 62": 6,
+        "bge_150 I 93": 4
+      }
+    },
+    {
+      "id": "q004",
+      "query": "Art. 34 BV Finanzreferendum Verpflichtungskredit",
+      "tags": [
+        "constitutional",
+        "de"
+      ],
+      "status": "ok",
+      "rr": 1.0,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 1.0,
+      "latency_ms": 80.04187513142824,
+      "topk_ids": [
+        "bge_151 I 32",
+        "bge_BGE_151_I_32",
+        "zh_verwaltungsgericht__VB.2024.00435",
+        "zh_verwaltungsgericht_VB.2024.00435",
+        "bger_1C_236_2024",
+        "bger_1C_137_2024",
+        "bge_111 IA 34",
+        "bger_1P.503_2005",
+        "bge_BGE_111_IA_34",
+        "bge_BGE_111_Ia_34"
+      ],
+      "matched_ranks": {
+        "bge_151 I 32": 1
+      }
+    },
+    {
+      "id": "q005",
+      "query": "Asyl und Wegweisung beschleunigtes Verfahren",
+      "tags": [
+        "asylum",
+        "de"
+      ],
+      "status": "ok",
+      "rr": 0.5,
+      "recall": 0.5,
+      "ndcg": 0.3373519727104165,
+      "hit1": 0.0,
+      "latency_ms": 4110.643124906346,
+      "topk_ids": [
+        "bvger_D-7801_2024",
+        "bvger_E-7414_2015",
+        "bvger_D-5894_2016",
+        "bvger_E-47_2015",
+        "bvger_E-2403_2015",
+        "bger_2C_186_2025",
+        "bvger_E-3262_2012",
+        "bvger_E-68_2014",
+        "bvger_E-4286_2008",
+        "bvger_E-2041_2013"
+      ],
+      "matched_ranks": {
+        "bvger_E-7414_2015": 2
+      }
+    },
+    {
+      "id": "q006",
+      "query": "Asyl: Wegweisung?",
+      "tags": [
+        "asylum",
+        "punctuation",
+        "robustness"
+      ],
+      "status": "ok",
+      "rr": 0.25,
+      "recall": 0.5,
+      "ndcg": 0.9173194127129571,
+      "hit1": 0.0,
+      "latency_ms": 3848.5137498937547,
+      "topk_ids": [
+        "bvger_E-4286_2008",
+        "bvger_E-2041_2013",
+        "bger_2D_26_2021",
+        "bvger_E-7414_2015",
+        "bvger_D-5262_2013",
+        "bvger_E-7572_2016",
+        "bvger_E-4835_2016",
+        "bvger_D-5894_2016",
+        "bvger_E-3891_2012",
+        "bvger_E-350_2018"
+      ],
+      "matched_ranks": {
+        "bvger_E-7414_2015": 4
+      }
+    },
+    {
+      "id": "q007",
+      "query": "\"Asyl und Wegweisung",
+      "tags": [
+        "asylum",
+        "quote",
+        "robustness"
+      ],
+      "status": "ok",
+      "rr": 0.25,
+      "recall": 0.5,
+      "ndcg": 0.9173194127129571,
+      "hit1": 0.0,
+      "latency_ms": 3869.738250039518,
+      "topk_ids": [
+        "bvger_E-4286_2008",
+        "bvger_E-2041_2013",
+        "bger_2D_26_2021",
+        "bvger_E-7414_2015",
+        "bvger_D-5262_2013",
+        "bvger_E-7572_2016",
+        "bvger_E-4835_2016",
+        "bvger_D-5894_2016",
+        "bvger_E-3891_2012",
+        "bvger_E-350_2018"
+      ],
+      "matched_ranks": {
+        "bvger_E-7414_2015": 4
+      }
+    },
+    {
+      "id": "q008",
+      "query": "Was sagt das Bundesgericht zum Kausalzusammenhang in der Unfallversicherung?",
+      "tags": [
+        "nl",
+        "de",
+        "insurance"
+      ],
+      "status": "ok",
+      "rr": 0.3333333333333333,
+      "recall": 0.5,
+      "ndcg": 0.7871546029909718,
+      "hit1": 0.0,
+      "latency_ms": 1352.5049169547856,
+      "topk_ids": [
+        "bger_8C_75_2016",
+        "bger_8C_296_2014",
+        "bger_8C_47_2011",
+        "bger_8C_685_2010",
+        "bger_8C_337_2015",
+        "bger_8C_255_2022",
+        "bger_8C_393_2013",
+        "bger_8C_24_2013",
+        "bger_8C_563_2016",
+        "bger_8C_802_2010"
+      ],
+      "matched_ranks": {
+        "bger_8C_47_2011": 3
+      }
+    },
+    {
+      "id": "q009",
+      "query": "Auslieferung an Rumänien",
+      "tags": [
+        "criminal",
+        "de"
+      ],
+      "status": "ok",
+      "rr": 1.0,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 1.0,
+      "latency_ms": 58.51737502962351,
+      "topk_ids": [
+        "bstger_RR.2012.25",
+        "bstger_RR.2013.89",
+        "bstger_RR.2016.300",
+        "bstger_RR.2019.222",
+        "bstger_RR.2023.159",
+        "bstger_RR.2023.148",
+        "bstger_RR.2023.180",
+        "bstger_RR.2025.116",
+        "bstger_RR.2025.106",
+        "bstger_RR.2025.140"
+      ],
+      "matched_ranks": {
+        "bstger_RR.2012.25": 1
+      }
+    },
+    {
+      "id": "q010",
+      "query": "Impôt sur la fortune et estimation fiscale",
+      "tags": [
+        "tax",
+        "fr"
+      ],
+      "status": "ok",
+      "rr": 0.3333333333333333,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 0.0,
+      "latency_ms": 950.9783750399947,
+      "topk_ids": [
+        "bger_2C_458_2017",
+        "ge_gerichte_A_128_1998",
+        "ge_gerichte_A_279_2011",
+        "vd_omni_FI.2005.0121",
+        "ge_gerichte_A_2203_2013",
+        "vd_omni_FI.2022.0011",
+        "vd_omni_FI.2006.0002",
+        "ge_gerichte_ATA_87_2014",
+        "ge_gerichte_A_1503_2017",
+        "vd_omni_FI.2018.0269"
+      ],
+      "matched_ranks": {
+        "ge_gerichte_A_279_2011": 3
+      }
+    },
+    {
+      "id": "q011",
+      "query": "responsabilità civile danno morale",
+      "tags": [
+        "civil",
+        "it"
+      ],
+      "status": "ok",
+      "rr": 0.14285714285714285,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 0.0,
+      "latency_ms": 312.921374803409,
+      "topk_ids": [
+        "ti_gerichte_12.2009.196",
+        "bge_BGE_108_II_422",
+        "bge_BGE_86_I_251",
+        "bge_BGE_107_II_151",
+        "bge_BGE_104_II_259",
+        "bge_BGE_116_II_645",
+        "ti_gerichte_12.2004.29",
+        "bge_BGE_126_III_161",
+        "bger_4A_29_2008",
+        "bger_4A_65_2009"
+      ],
+      "matched_ranks": {
+        "ti_gerichte_12.2004.29": 7
+      }
+    },
+    {
+      "id": "q012",
+      "query": "Baubewilligung Lärm Immissionen",
+      "tags": [
+        "construction",
+        "de"
+      ],
+      "status": "ok",
+      "rr": 1.0,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 1.0,
+      "latency_ms": 349.50537513941526,
+      "topk_ids": [
+        "zh_verwaltungsgericht_VB.2001.00187",
+        "zh_verwaltungsgericht_VB.2012.00157",
+        "zh_verwaltungsgericht_VB.2004.00254",
+        "zh_verwaltungsgericht_VB.2012.00729",
+        "zh_verwaltungsgericht__VB.2001.00187",
+        "zh_verwaltungsgericht_VB.2013.00440",
+        "zh_verwaltungsgericht_VB.2008.00227",
+        "zh_baurekursgericht_BRGE IV Nr. 0072_2014",
+        "zh_verwaltungsgericht__VB.2012.00157",
+        "zh_verwaltungsgericht__VB.2004.00254"
+      ],
+      "matched_ranks": {
+        "zh_verwaltungsgericht_VB.2001.00187": 1
+      }
+    },
+    {
+      "id": "q013",
+      "query": "Kündigung Mietvertrag missbräuchlich",
+      "tags": [
+        "tenancy",
+        "de"
+      ],
+      "status": "ok",
+      "rr": 0.125,
+      "recall": 1.0,
+      "ndcg": 1.0,
+      "hit1": 0.0,
+      "latency_ms": 213.9433331321925,
+      "topk_ids": [
+        "bger_4C.365_2006",
+        "sz_gerichte_ZK1 2021 37",
+        "bger_4A_576_2024",
+        "bger_4A_227_2011",
+        "bger_4A_383_2015",
+        "sz_gerichte_ZK1_2021_37",
+        "bger_4A_364_2014",
+        "bs_appellationsgericht_ZB.2020.42",
+        "bger_4A_452_2023",
+        "bs_appellationsgericht_ZB.2021.3"
+      ],
+      "matched_ranks": {
+        "bs_appellationsgericht_ZB.2020.42": 8
+      }
+    },
+    {
+      "id": "q014",
+      "query": "Hundebiss",
+      "tags": [
+        "semantic",
+        "concept-match",
+        "de",
+        "liability"
+      ],
+      "status": "ok",
+      "rr": 0.0,
+      "recall": 0.0,
+      "ndcg": 0.0,
+      "hit1": 0.0,
+      "latency_ms": 89.36954103410244,
+      "topk_ids": [
+        "gr_gerichte_BK_2003_3",
+        "gr_gerichte_BK 2003 3",
+        "zh_obergericht_UE120144",
+        "be_verwaltungsgericht_200 2019 366",
+        "gr_gerichte_BK 2002 57",
+        "zh_sozialversicherungsgericht_UV.2012.00268",
+        "be_zivilstraf_BK 2019 318",
+        "zh_sozialversicherungsgericht_IV.2007.00672",
+        "bger_I_538_99",
+        "zh_obergericht_UE240051"
+      ],
+      "matched_ranks": {}
+    },
+    {
+      "id": "q015",
+      "query": "Kündigung wegen Krankheit",
+      "tags": [
+        "semantic",
+        "concept-match",
+        "de",
+        "employment"
+      ],
+      "status": "ok",
+      "rr": 0.0,
+      "recall": 0.0,
+      "ndcg": 0.0,
+      "hit1": 0.0,
+      "latency_ms": 642.6252911332995,
+      "topk_ids": [
+        "zh_verwaltungsgericht_PB.2005.00018",
+        "zh_verwaltungsgericht__PB.2005.00018",
+        "zh_verwaltungsgericht__VB.2018.00330",
+        "ar_gerichte_O4V-20-34_ARGVP_2021_3810",
+        "zh_verwaltungsgericht_VB.2018.00330",
+        "zh_verwaltungsgericht_VB.2015.00656",
+        "zh_verwaltungsgericht_VB.2019.00673",
+        "zh_verwaltungsgericht_VB.2023.00570",
+        "bge_BGE_124_II_53",
+        "bge_BGE_109_II_330"
+      ],
+      "matched_ranks": {}
+    },
+    {
+      "id": "q016",
+      "query": "responsabilité du détenteur d'animal",
+      "tags": [
+        "semantic",
+        "cross-lingual",
+        "fr",
+        "liability"
+      ],
+      "status": "ok",
+      "rr": 1.0,
+      "recall": 0.6666666666666666,
+      "ndcg": 0.8838695436828513,
+      "hit1": 1.0,
+      "latency_ms": 384.8615421447903,
+      "topk_ids": [
+        "bge_BGE_110_II_136",
+        "bge_BGE_85_II_243",
+        "bge_BGE_126_III_14",
+        "vs_gerichte_C1_21_118",
+        "bge_BGE_102_II_232",
+        "bge_BGE_104_II_23",
+        "ne_gerichte_CC.1994.266",
+        "bge_BGE_115_II_237",
+        "bge_110 II 136",
+        "vd_findinfo_D_cision___2014___165"
+      ],
+      "matched_ranks": {
+        "bge_BGE_85_II_243": 2,
+        "bge_BGE_110_II_136": 1
+      }
+    }
+  ]
+}
