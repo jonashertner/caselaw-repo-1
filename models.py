@@ -162,8 +162,14 @@ def make_canonical_key(court: str, docket: str, decision_date: str | None = None
     Examples:
         ('bl_gerichte', 'BL.2020.1', '2020-05-15') → 'bl_gerichte|BL20201|20200515'
         ('bl_gerichte', 'BL_2020_1', '2020-05-15') → 'bl_gerichte|BL20201|20200515'
+        ('bge', 'BGE 125 III 231', ...)  → 'bge|125III231|...'
+        ('bge', 'CH_BGE_125_III_231', ...) → 'bge|125III231|...'
     """
     docket_norm = re.sub(r"[^A-Z0-9]", "", (docket or "").upper())
+    # Strip BGE/ATF/DTF prefixes (with optional CH_ prefix from entscheidsuche
+    # Signatur) so that "BGE125III231" and "CHBGE125III231" normalize the same.
+    if court == "bge":
+        docket_norm = re.sub(r"^(?:CH)?(?:BGE|ATF|DTF)", "", docket_norm)
     date_compact = (decision_date or "").replace("-", "")[:8]
     return f"{court}|{docket_norm}|{date_compact}"
 

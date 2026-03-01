@@ -196,7 +196,7 @@ CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 LEXFIND_ENABLED = os.environ.get("LEXFIND_ENABLED", "true").lower() in {"1", "true", "yes"}
 LEXFIND_BASE_URL = "https://www.lexfind.ch/api/fe"
 LEXFIND_SEARCH_TIMEOUT = float(os.environ.get("LEXFIND_SEARCH_TIMEOUT", "10"))
-LEXFIND_LOOKUP_TIMEOUT = float(os.environ.get("LEXFIND_LOOKUP_TIMEOUT", "10"))
+LEXFIND_LOOKUP_TIMEOUT = float(os.environ.get("LEXFIND_LOOKUP_TIMEOUT", "30"))
 LEXFIND_ENTITY_IDS: dict[str, int] = {
     "CH": 27, "AG": 1, "AI": 2, "AR": 3, "BE": 4, "BL": 5, "BS": 6,
     "FR": 7, "GE": 8, "GL": 9, "GR": 10, "JU": 11, "LU": 12, "NE": 13,
@@ -1851,6 +1851,35 @@ def _load_graph_signal_map(
     return signal_map
 
 
+def _resolve_decision_id(decision_id: str) -> str:
+    """Resolve a user-supplied decision_id to the actual stored decision_id.
+
+    Uses the FTS5 DB lookup (exact match → docket match → partial match),
+    same logic as get_decision_by_id. Returns the input unchanged if no match.
+    """
+    conn = get_db()
+    try:
+        for query, params in [
+            ("SELECT decision_id FROM decisions WHERE decision_id = ?", (decision_id,)),
+            (
+                "SELECT decision_id FROM decisions WHERE docket_number = ? "
+                "ORDER BY decision_date DESC LIMIT 1",
+                (decision_id,),
+            ),
+            (
+                "SELECT decision_id FROM decisions WHERE docket_number LIKE ? "
+                "ORDER BY decision_date DESC LIMIT 1",
+                (f"%{decision_id}%",),
+            ),
+        ]:
+            row = conn.execute(query, params).fetchone()
+            if row:
+                return row[0]
+    finally:
+        conn.close()
+    return decision_id
+
+
 def _count_citations(decision_id: str) -> tuple[int, int]:
     """Return (incoming_count, outgoing_count) for a decision from the graph DB.
 
@@ -1958,6 +1987,9 @@ def _find_appeal_chain(
     Uses the is_prior_instance flag on decision_citations to distinguish
     procedural links (appeal chain) from doctrinal citations.
     """
+    # Resolve user-supplied ID to actual stored ID (handles format differences)
+    decision_id = _resolve_decision_id(decision_id)
+
     conn = _get_graph_conn()
     if conn is None:
         return {"decision_id": decision_id, "error": "Reference graph not available."}
@@ -3187,6 +3219,9 @@ def find_citations(
     """Find outgoing and/or incoming citations for a decision."""
     limit = max(1, min(limit, 200))
     min_confidence = max(0.0, min(min_confidence, 1.0))
+
+    # Resolve user-supplied ID to actual stored ID (handles format differences)
+    decision_id = _resolve_decision_id(decision_id)
 
     result: dict = {"decision_id": decision_id, "direction": direction}
 
@@ -5599,6 +5634,43 @@ def _get_legislation(
                     best = sr_only_match or first_result_id
                 # When canton was explicitly specified, don't fall back to wrong-canton results
 
+            # Fallback: fulltext search with systematic_number search enabled
+            if not best:
+                entity_filter = _resolve_lexfind_entity_ids(target_canton)
+                fb_body = {
+                    "search_text": sr_stripped,
+                    "active_only": False,
+                    "search_in_systematic_number": True,
+                    "search_in_title": False,
+                    "search_in_keywords": False,
+                    "search_in_content": False,
+                    "use_global_systematics": True,
+                    "entity_filter": entity_filter,
+                    "systematic_filter": [],
+                    "category_filter": [],
+                    "direct_search": False,
+                }
+                fb_create = _lexfind_request(
+                    "POST", "fulltext-search", language,
+                    json_body=fb_body, timeout=LEXFIND_SEARCH_TIMEOUT,
+                )
+                if fb_create and "id" in fb_create:
+                    fb_sid = fb_create["id"]
+                    fb_ssid = fb_create.get("session_id", "")
+                    fb_results = _lexfind_request(
+                        "GET",
+                        f"fulltext-search/{fb_sid}?session_id={fb_ssid}"
+                        f"&page_no=1&results_per_page=20",
+                        language, timeout=LEXFIND_SEARCH_TIMEOUT,
+                    )
+                    if fb_results:
+                        for tol in fb_results.get("texts_of_law_with_matches", []):
+                            fb_entity = (tol.get("entity") or {}).get("abbreviation", "").upper()
+                            fb_sr = tol.get("systematic_number", "").strip()
+                            if fb_sr == sr_stripped and fb_entity == target_canton:
+                                best = tol.get("id")
+                                break
+
             if not best:
                 return {"error": f"No legislation found for SR {systematic_number} in {target_canton}."}
 
@@ -6562,6 +6634,20 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 for r in results:
                     if r.get("snippet"):
                         r["snippet"] = r["snippet"].replace("<mark>", "").replace("</mark>", "")
+
+                # Deduplicate BGE results that appear with two ID formats
+                # (e.g. "bge_125 III 231" and "bge_BGE_125_III_231").
+                seen_dockets: set[str] = set()
+                deduped: list[dict] = []
+                for r in results:
+                    dn = re.sub(r"[^A-Z0-9]", "", (r.get("docket_number") or "").upper())
+                    if r.get("court") == "bge":
+                        dn = re.sub(r"^(?:CH)?(?:BGE|ATF|DTF)", "", dn)
+                    key = f"{r.get('court')}|{dn}"
+                    if key not in seen_dockets:
+                        seen_dockets.add(key)
+                        deduped.append(r)
+                results = deduped
 
                 end = req_offset + len(results)
                 text = f"Found {total_count} decisions (showing {req_offset + 1}\u2013{end}):\n\n"
