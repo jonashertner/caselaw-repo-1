@@ -1884,8 +1884,9 @@ def _decision_id_variants(decision_id: str) -> list[str]:
     """Generate ID variants for graph DB lookups.
 
     The FTS5 DB and graph DB may store the same decision under different ID
-    formats (e.g. 'bge_BGE 138 III 374' vs 'bge_BGE_138_III_374').
-    Returns a list of variant IDs to try with IN clauses.
+    formats. For BGE decisions, the direct scraper uses 'bge_138 III 374'
+    while entscheidsuche uses 'bge_BGE_138_III_374'. This function generates
+    all plausible variants so IN-clause lookups can match either.
     """
     variants = {decision_id}
     # Split court prefix from the rest
@@ -1896,6 +1897,14 @@ def _decision_id_variants(decision_id: str) -> list[str]:
         variants.add(f"{court}_{rest.replace('_', ' ')}")
         # Variant: spaces in rest → underscores
         variants.add(f"{court}_{rest.replace(' ', '_')}")
+
+        # BGE-specific: strip BGE/ATF/DTF/CH_BGE prefixes from rest
+        if court == "bge":
+            stripped = re.sub(r"^(?:CH[_ ])?(?:BGE|ATF|DTF)[_ ]?", "", rest)
+            if stripped != rest:
+                variants.add(f"bge_{stripped}")
+                variants.add(f"bge_{stripped.replace('_', ' ')}")
+                variants.add(f"bge_{stripped.replace(' ', '_')}")
     return list(variants)
 
 
