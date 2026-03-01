@@ -177,8 +177,8 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
                 FROM decisions
                 WHERE canonical_key = ?
                 ORDER BY
-                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
-                    LENGTH(COALESCE(full_text, '')) DESC
+                    LENGTH(COALESCE(full_text, '')) DESC,
+                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END
                 """,
                 (canonical_key,),
             ).fetchall()
@@ -206,8 +206,8 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
                 FROM decisions
                 WHERE court = ? AND docket_number = ? AND decision_date IS ?
                 ORDER BY
-                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
-                    LENGTH(COALESCE(full_text, '')) DESC
+                    LENGTH(COALESCE(full_text, '')) DESC,
+                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END
                 """,
                 (court, docket, date),
             ).fetchall()
@@ -234,8 +234,8 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
     for entries in groups2.values():
         if len(entries) < 2:
             continue
-        # Keep version with non-empty regeste first, then longest full_text
-        entries.sort(key=lambda x: (0 if x[2] > 0 else 1, -x[1]))
+        # Keep version with longest full_text, then non-empty regeste as tiebreaker
+        entries.sort(key=lambda x: (-x[1], 0 if x[2] > 0 else 1))
         for did, _, _ in entries[1:]:
             conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
             deleted2 += 1
