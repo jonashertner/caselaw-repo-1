@@ -21,28 +21,32 @@ _FOLLOWING_MARKER = r"(?:ff|ss|segg)\.?"  # "and following" markers
 _SUB_MARKER = r"(?:Ziff(?:er)?|lit|Bst|Buchst|S|Satz|ch|let|n)"
 _SUB_TOKEN = r"(?:\d+|[a-z])"
 _INVALID_LAW_CODES = {
-    "AL",
-    "ABS",
-    "ABSATZ",
-    "ALIN",
-    "ALINEA",
-    "CPV",
-    "PARA",
-    "BIS",
-    "TER",
-    "QUATER",
-    "QUINQUIES",
-    "SEXIES",
-    # Qualifiers that should never be law codes (safety net)
-    "FF",
-    "SS",
-    "SEGG",
-    "ZIFF",
-    "ZIFFER",
-    "LIT",
-    "BST",
-    "BUCHST",
-    "SATZ",
+    # ── Statute structural markers ──
+    "AL", "ABS", "ABSATZ", "ALIN", "ALINEA", "CPV", "PARA",
+    "BIS", "TER", "QUATER", "QUINQUIES", "SEXIES",
+    "FF", "SS", "SEGG", "ZIFF", "ZIFFER", "LIT", "BST", "BUCHST", "SATZ",
+    # ── German articles, prepositions, conjunctions ──
+    "AB", "AM", "AN", "AUS", "BEI", "BZW", "DA", "DAS", "DEM", "DEN",
+    "DER", "DES", "DIE", "DIES", "DURCH", "EIN", "EINE", "EINEM",
+    "EINEN", "EINER", "EINES", "ER", "ES", "GEGEN", "HA", "IM", "IN",
+    "IST", "JE", "MIT", "NACH", "NEBEN", "NICHT", "NOCH", "NUR",
+    "ODER", "OHNE", "SICH", "SIE", "SIND", "SOWIE", "UM", "UND",
+    "UNTER", "VOM", "VON", "VOR", "WAR", "WIE", "WIRD", "ZU",
+    "ZUM", "ZUR", "ZWISCHEN",
+    # ── French articles, prepositions, conjunctions ──
+    "AU", "AUX", "AVEC", "CE", "CES", "CETTE", "COMME", "DANS",
+    "DE", "DU", "EN", "EST", "ET", "IL", "LA", "LE", "LES",
+    "MAIS", "OU", "PAR", "PEUT", "POUR", "QUE", "QUI", "SE",
+    "SONT", "SUR", "UN", "UNE",
+    # ── Italian articles, prepositions ──
+    "CHE", "CON", "CUI", "DAL", "DEI", "DEL", "DELL", "DELLA",
+    "DELLE", "DELLO", "DI", "FRA", "GLI", "NEL", "NELL", "NELLA",
+    "NON", "PER", "SUL", "TRA", "UNA", "UNO",
+    # ── Ordinal / structural words ──
+    "ART", "CUM", "DRITTER", "ERSTER", "LETT", "LET", "LETTRE",
+    "LITT", "NAPR", "PHR", "PRIMA", "RZ", "SECONDA", "ZWEITER",
+    # ── Common abbreviations that are not law codes ──
+    "AD", "AGB", "BI", "CH", "NE", "NI", "NO", "OF", "QU", "RE", "SI",
 }
 
 STATUTE_PATTERN = re.compile(
@@ -110,7 +114,18 @@ def extract_statute_references(text: str) -> list[StatuteReference]:
         article = re.sub(r"\s+", "", (match.group("article") or "").lower())
         paragraph_raw = match.group("paragraph")
         paragraph = re.sub(r"\s+", "", paragraph_raw.lower()) if paragraph_raw else None
-        law_code = match.group("law").upper()
+        law_raw = match.group("law")
+        # Require the matched text to look like a legal abbreviation, not a
+        # regular word.  Lowercase words (der, des, in, ihrer) and long
+        # title-case words (Oder, Della, Ihrer) are filtered out.
+        # Short title-case (Cst, Abs) are allowed — the blocklist catches
+        # the false positives among those.
+        n_upper = sum(1 for c in law_raw if c.isupper())
+        if n_upper == 0:
+            continue
+        if n_upper == 1 and len(law_raw) > 3:
+            continue
+        law_code = law_raw.upper()
         if law_code in _INVALID_LAW_CODES:
             continue
         normalized = _normalize_statute(article=article, paragraph=paragraph, law_code=law_code)
