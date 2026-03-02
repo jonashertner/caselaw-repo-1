@@ -139,6 +139,14 @@ a:hover { text-decoration: underline; }
 .tbtn:hover { color: var(--tx); }
 .tbtn svg { width: 16px; height: 16px; }
 
+/* ── Maintenance banner ── */
+.maint-banner {
+  background: var(--bg2); border-bottom: 1px solid var(--brd2);
+  padding: 10px 24px; text-align: center; font-size: var(--fs-sm);
+  color: var(--tx2); line-height: 1.5;
+}
+.maint-banner strong { color: var(--tx); font-weight: 600; }
+
 /* ── Hero ── */
 header { padding: 80px 0 24px; text-align: center; position: relative; }
 header::before { display: none; }
@@ -722,6 +730,11 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
 <div class="w">
 
+  <div class="maint-banner">
+    <strong data-t="maint_title">Scheduled Maintenance</strong> &mdash;
+    <span data-t="maint_desc">Search database optimization in progress. Some queries may be slower than usual.</span>
+  </div>
+
   <header>
     <h1><span class="ch">+</span> <span data-t="title">Swiss Case Law Open Dataset</span></h1>
     <p class="sub" data-t="subtitle">The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Download and search locally with AI tools.</p>
@@ -1124,6 +1137,7 @@ const I18N = {
     study_p5:'Was wäre, wenn der Schädiger nicht widerrechtlich gehandelt hätte?',
     study_p6:'Repetitionskarten für die Voraussetzungen der Geschäftsführung ohne Auftrag',
     hero_mcp:'Mit AI durchsuchen',
+    maint_title:'Geplante Wartung', maint_desc:'Optimierung der Suchdatenbank l\u00e4uft. Einige Abfragen k\u00f6nnen langsamer sein als \u00fcblich.',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
@@ -1190,6 +1204,7 @@ const I18N = {
     study_p5:'Et si l\'auteur n\'avait pas agi de manière illicite?',
     study_p6:'Cartes de révision sur les conditions de la gestion d\'affaires sans mandat',
     hero_mcp:'Recherche avec IA',
+    maint_title:'Maintenance pr\u00e9vue', maint_desc:'Optimisation de la base de donn\u00e9es de recherche en cours. Certaines requ\u00eates peuvent \u00eatre plus lentes que d\u2019habitude.',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   },
   it: {
@@ -1256,6 +1271,7 @@ const I18N = {
     study_p5:'E se il danneggiante non avesse agito illecitamente?',
     study_p6:'Carte di ripetizione sui presupposti della gestione d\'affari senza mandato',
     hero_mcp:'Ricerca con IA',
+    maint_title:'Manutenzione programmata', maint_desc:'Ottimizzazione del database di ricerca in corso. Alcune query potrebbero essere pi\u00f9 lente del solito.',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   },
   rm: {
@@ -1322,6 +1338,7 @@ const I18N = {
     study_p5:'E sche il donnegiader n\'avess betg agì illicitamain?',
     study_p6:'Cartas da repetiziun per las premissas da la gestiun d\'affars senza incumbensa',
     hero_mcp:'Tschertgar cun IA',
+    maint_title:'Mantegniment planisà', maint_desc:'Optimaziun da la banca da datas da tschertga en cuors. Tschertas dumondas pon esser pli lentas che uschiglio.',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
@@ -1388,6 +1405,7 @@ const I18N = {
     study_p5:'What if the tortfeasor had not acted unlawfully (widerrechtlich)?',
     study_p6:'Review cards for the requirements of Gesch\u00e4ftsf\u00fchrung ohne Auftrag',
     hero_mcp:'Search with AI',
+    maint_title:'Scheduled Maintenance', maint_desc:'Search database optimization in progress. Some queries may be slower than usual.',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   },
 };
