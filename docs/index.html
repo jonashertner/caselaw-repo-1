@@ -1473,7 +1473,7 @@ if (hamburgerBtn && mobileMenu) {
   });
 }
 
-const FED = new Set(['bger','bge','bvger','bstger','bpatger','weko','finma','edoeb','ch_vb','ta_sst','ch_bundesrat','bge_egmr']);
+const FED = new Set(['bger','bge','bvger','bstger','bpatger','weko','finma','edoeb','ch_vb','ta_sst','ch_bundesrat','bge_egmr','ubi','elcom','postcom','comcom']);
 const CANTON_NAMES = {
   AG:'Aargau', AI:'Appenzell I.Rh.', AR:'Appenzell A.Rh.',
   BE:'Bern', BL:'Basel-Land', BS:'Basel-Stadt', FR:'Fribourg',
@@ -1501,6 +1501,10 @@ const COURT_DISPLAY = {
   ta_sst:     {de:'Sportschiedsgericht',         fr:'Tribunal arbitral du sport',    en:'Sports Tribunal'},
   ch_bundesrat:{de:'Bundesrat',                 fr:'Conseil f\u00e9d\u00e9ral',               en:'Federal Council'},
   bge_egmr:   {de:'EGMR',                      fr:'CEDH',                          en:'ECHR'},
+  ubi:        {de:'UBI',                       fr:'AIEP',                          en:'Media Complaints Authority'},
+  elcom:      {de:'ElCom',                     fr:'ElCom',                         en:'Electricity Commission'},
+  postcom:    {de:'PostCom',                   fr:'PostCom',                       en:'Postal Commission'},
+  comcom:     {de:'ComCom',                    fr:'ComCom',                        en:'Communications Commission'},
   // AG
   ag_gerichte:                {de:'Obergericht',               fr:'Tribunal sup\u00e9rieur',                    en:'High Court'},
   ag_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
@@ -1536,6 +1540,7 @@ const COURT_DISPLAY = {
   // BS
   bs_appellationsgericht:     {de:'Appellationsgericht',       fr:'Cour d\'appel',                         en:'Court of Appeal'},
   bs_sozialversicherungsgericht:{de:'Sozialversicherungsgericht',fr:'Tribunal des assurances sociales',    en:'Social Insurance Court'},
+  bs_gerichte:                {de:'Gerichte (BS)',              fr:'Tribunaux (BS)',                        en:'Courts (BS)'},
   // FR
   fr_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
   // GE
