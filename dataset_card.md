@@ -102,7 +102,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude Code or Claude Desktop for natural-language search over all 930K+ decisions.
+Connect the dataset to Claude, ChatGPT, or Gemini for natural-language search over all 1M+ decisions.
 
 **Remote (no download needed):**
 
@@ -111,6 +111,26 @@ Connect the dataset to Claude Code or Claude Desktop for natural-language search
 claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 
 # Claude Desktop: Settings → Connectors → Add custom connector → https://mcp.opencaselaw.ch
+
+# Gemini CLI: add to ~/.gemini/settings.json
+# { "mcpServers": { "swiss-caselaw": { "url": "https://mcp.opencaselaw.ch" } } }
+```
+
+**Google ADK (programmatic):**
+
+```python
+from google.adk.agents import LlmAgent
+from google.adk.tools import MCPToolset
+from mcp.client.sse import SseConnectionParams
+
+agent = LlmAgent(
+    model="gemini-2.5-pro",
+    name="swiss_law_agent",
+    instruction="You are a Swiss legal research assistant.",
+    tools=[MCPToolset(connection_params=SseConnectionParams(
+        url="https://mcp.opencaselaw.ch/sse",
+    ))],
+)
 ```
 
 **Local (offline access, ~65 GB disk):**

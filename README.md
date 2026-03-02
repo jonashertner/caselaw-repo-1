@@ -116,6 +116,31 @@ Add to `~/.gemini/settings.json`:
 
 Restart Gemini CLI after saving. No account plan required — Gemini CLI is free.
 
+**Google ADK (Agent Development Kit):**
+
+Build a Gemini-powered agent with access to all tools:
+
+```python
+from google.adk.agents import LlmAgent
+from google.adk.tools import MCPToolset
+from mcp.client.sse import SseConnectionParams
+
+agent = LlmAgent(
+    model="gemini-2.5-pro",
+    name="swiss_law_agent",
+    instruction="You are a Swiss legal research assistant.",
+    tools=[
+        MCPToolset(
+            connection_params=SseConnectionParams(
+                url="https://mcp.opencaselaw.ch/sse",
+            ),
+        ),
+    ],
+)
+```
+
+See the [full MCP setup guide](docs/claude-desktop-setup.md) for Google Gen AI SDK examples and all other platforms.
+
 > See the **[full MCP setup guide](docs/claude-desktop-setup.md)** for detailed instructions for all platforms.
 
 > The `update_database` and `check_update_status` tools are only available on the local server — the remote dataset is updated automatically every night.

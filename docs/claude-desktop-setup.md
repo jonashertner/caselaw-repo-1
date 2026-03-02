@@ -60,6 +60,64 @@ Add to `~/.gemini/settings.json`:
 
 Restart Gemini CLI after saving.
 
+### Google ADK (Agent Development Kit)
+
+Build a Gemini-powered agent with access to all 19 tools:
+
+```bash
+pip install google-adk mcp
+```
+
+```python
+from google.adk.agents import LlmAgent
+from google.adk.tools import MCPToolset
+from mcp.client.sse import SseConnectionParams
+
+agent = LlmAgent(
+    model="gemini-2.5-pro",
+    name="swiss_law_agent",
+    instruction="You are a Swiss legal research assistant.",
+    tools=[
+        MCPToolset(
+            connection_params=SseConnectionParams(
+                url="https://mcp.opencaselaw.ch/sse",
+            ),
+        ),
+    ],
+)
+```
+
+The agent auto-discovers all tools (`search_decisions`, `find_citations`, `get_law`, etc.) and can call them during conversations. See the [ADK MCP docs](https://google.github.io/adk-docs/tools-custom/mcp-tools/) for authentication options and advanced configuration.
+
+### Google Gen AI SDK
+
+Use MCP tools directly with the Gemini API without the full ADK framework:
+
+```bash
+pip install google-genai mcp
+```
+
+```python
+from google import genai
+from google.genai import types
+from mcp.client.sse import SseClientTransport
+
+client = genai.Client()
+tools = types.Tool(mcp_tool=types.McpTool(
+    server=types.McpToolServer(
+        url="https://mcp.opencaselaw.ch/sse",
+    ),
+))
+
+response = client.models.generate_content(
+    model="gemini-2.5-pro",
+    contents="What are the leading cases on Art. 8 EMRK?",
+    config=types.GenerateContentConfig(tools=[tools]),
+)
+```
+
+The SDK handles tool discovery and execution automatically. See the [Gen AI SDK docs](https://googleapis.github.io/python-genai/) for details.
+
 ### Other MCP clients
 
 The server uses the SSE (Server-Sent Events) transport at `https://mcp.opencaselaw.ch`. Any MCP client that supports remote SSE servers can connect using this URL. No authentication required.
