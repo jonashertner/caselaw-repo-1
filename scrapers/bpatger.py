@@ -102,20 +102,18 @@ class BPatGerScraper(BaseScraper):
     def court_code(self) -> str:
         return "bpatger"
 
-    # Year-based listing URLs (more reliable than TYPO3 form with expiring HMAC tokens)
-    LISTING_URLS = [
-        "/rechtsprechung/aktuelle-entscheide",
+    # Proceedings types to crawl per year
+    PROCEEDING_TYPES = [
+        "entscheide-im-ordentlichen-verfahren",
+        "entscheide-im-summarischen-verfahren",
     ]
-    # Add year pages dynamically
-    YEAR_URL_TEMPLATE = "/rechtsprechung/entschiede-{year}/entscheide-im-ordentlichen-verfahren"
-    YEAR_URL_TEMPLATE_ALT = "/rechtsprechung/entscheide-{year}/entscheide-im-ordentlichen-verfahren"
 
     def discover_new(self, since_date=None) -> Iterator[dict]:
         """
         Discover BPatGer decisions from listing pages.
 
-        Strategy: Parse 'aktuelle-entscheide' first (catches newest),
-        then year-based pages for historical coverage.
+        Strategy: Parse 'aktuelle-entscheide' and 'leitentscheide' first,
+        then year-based pages for both ordinary and summary proceedings.
         """
 
         seen_urls = set()
@@ -129,11 +127,18 @@ class BPatGerScraper(BaseScraper):
             start_year = max(since_date.year, start_year)
 
         # Build list of pages to crawl
-        pages = [f"{HOST}/rechtsprechung/aktuelle-entscheide"]
+        pages = [
+            f"{HOST}/rechtsprechung/aktuelle-entscheide",
+            f"{HOST}/rechtsprechung/leitentscheide",
+        ]
         for year in range(current_year, start_year - 1, -1):
-            # BPatGer uses inconsistent URL patterns (entschiede vs entscheide)
-            pages.append(f"{HOST}{self.YEAR_URL_TEMPLATE.format(year=year)}")
-            pages.append(f"{HOST}{self.YEAR_URL_TEMPLATE_ALT.format(year=year)}")
+            for proc_type in self.PROCEEDING_TYPES:
+                # BPatGer uses inconsistent URL patterns (entschiede vs entscheide)
+                pages.append(f"{HOST}/rechtsprechung/entschiede-{year}/{proc_type}")
+                pages.append(f"{HOST}/rechtsprechung/entscheide-{year}/{proc_type}")
+                # Some years have pagination suffixes (-1, -2, etc.)
+                for suffix in range(1, 4):
+                    pages.append(f"{HOST}/rechtsprechung/entscheide-{year}/{proc_type}-{suffix}")
 
         for page_url in pages:
             try:
