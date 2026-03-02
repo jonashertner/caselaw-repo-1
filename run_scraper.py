@@ -89,6 +89,8 @@ SCRAPERS = {
     "ju_gerichte": ("scrapers.cantonal.ju_gerichte", "JUGerichteScraper"),
     # Cantonal — Weblaw Vaadin
     "ow_gerichte": ("scrapers.cantonal.ow_gerichte", "OWGerichteScraper"),
+    # Federal — Sports Tribunal
+    "ta_sst": ("scrapers.ta_sst", "TaSSTScraper"),
 }
 
 
