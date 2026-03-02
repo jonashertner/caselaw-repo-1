@@ -5245,6 +5245,316 @@ def _handle_check_case_brief(
     )
 
 
+# ── get_case_brief and helpers ─────────────────────────────────
+
+
+def _handle_get_case_brief(*, case: str) -> dict:
+    """Handler for get_case_brief tool.
+
+    Accepts any case reference: BGE ref ("BGE 133 III 121", "133 III 121"),
+    decision_id, or docket number. Returns structured case data for Claude
+    to use as a tutor — facts, reasoning, statutes, authority, related cases.
+    """
+    if not case or not case.strip():
+        return {"error": "Provide a case reference (BGE ref, decision_id, or docket number)."}
+
+    # Resolve to a stored decision_id
+    resolved_id = _resolve_decision_id(case.strip())
+    decision = get_decision_by_id(resolved_id)
+    if not decision:
+        return {"error": f"Case not found: {case!r}. Try a BGE reference like 'BGE 133 III 121'."}
+
+    decision_id = decision.get("decision_id", resolved_id)
+    full_text = decision.get("full_text") or ""
+    regeste = decision.get("regeste") or ""
+
+    # Extract Sachverhalt (facts section)
+    sachverhalt = _extract_section(
+        full_text,
+        start_patterns=[r"^Sachverhalt\s*:", r"^A\.\s*[-–]", r"^Faits\s*:"],
+        end_patterns=[r"^Erwägungen\s*:", r"^Considérant\s*", r"^Das Bundesgericht"],
+        fallback_chars=800,
+    )
+
+    # Extract key Erwägungen (numbered reasoning sections)
+    key_erwaegungen = _extract_erwaegungen(full_text)
+
+    # Extract Dispositiv (holding)
+    dispositiv = _extract_section(
+        full_text,
+        start_patterns=[r"^Dispositiv\s*:", r"^Aus diesen Gründen", r"^Par ces motifs"],
+        end_patterns=[],
+        fallback_chars=0,
+        from_end=True,
+    )
+
+    # Statutes from reference graph
+    statutes = _get_decision_statutes(decision_id, limit=5)
+
+    # Authority (citation counts)
+    incoming, outgoing = _count_citations(decision_id)
+
+    # Related cases (cited_by and cites) — top 3 each
+    related = _get_related_cases(decision_id, limit=3)
+
+    return {
+        "decision_id": decision_id,
+        "bge_ref": decision.get("docket_number", ""),
+        "court": decision.get("court", ""),
+        "date": decision.get("decision_date", ""),
+        "language": decision.get("language", ""),
+        "regeste": regeste,
+        "sachverhalt": sachverhalt,
+        "key_erwaegungen": key_erwaegungen,
+        "dispositiv": dispositiv,
+        "statutes": statutes,
+        "authority": {
+            "incoming_citations": incoming,
+            "outgoing_citations": outgoing,
+        },
+        "related": related,
+    }
+
+
+def _extract_section(
+    text: str,
+    *,
+    start_patterns: list[str],
+    end_patterns: list[str],
+    fallback_chars: int = 800,
+    from_end: bool = False,
+) -> str:
+    """Extract a named section from decision full_text using header patterns.
+
+    Tries each start_pattern in order. Extracts text until an end_pattern
+    is found or until 1200 chars. Returns fallback_chars from start/end if
+    no pattern matches.
+    """
+    import re as _re
+    lines = text.splitlines()
+    start_idx = None
+
+    for i, line in enumerate(lines):
+        for pat in start_patterns:
+            if _re.match(pat, line.strip(), _re.IGNORECASE):
+                start_idx = i + 1  # skip the header line itself
+                break
+        if start_idx is not None:
+            break
+
+    if start_idx is None:
+        if fallback_chars <= 0:
+            return ""
+        if from_end:
+            return text[-fallback_chars:].strip()
+        return text[:fallback_chars].strip()
+
+    # Collect until end pattern or 1200 chars
+    collected: list[str] = []
+    total_chars = 0
+    for line in lines[start_idx:]:
+        if end_patterns:
+            for pat in end_patterns:
+                if _re.match(pat, line.strip(), _re.IGNORECASE):
+                    return "\n".join(collected).strip()
+        collected.append(line)
+        total_chars += len(line)
+        if total_chars >= 1200:
+            break
+
+    return "\n".join(collected).strip()
+
+
+def _extract_erwaegungen(full_text: str) -> list[dict]:
+    """Extract numbered Erwägungen sections from a BGE full_text.
+
+    Returns list of {"number": "3.1", "text": "..."} for up to 5 sections.
+    """
+    import re as _re
+    # Find the Erwägungen block
+    erw_start = None
+    lines = full_text.splitlines()
+    for i, line in enumerate(lines):
+        if _re.match(r"^Erwägungen\s*:", line.strip(), _re.IGNORECASE) or \
+           _re.match(r"^Das Bundesgericht zieht in Erwägung", line.strip(), _re.IGNORECASE) or \
+           _re.match(r"^Considérant\s*", line.strip(), _re.IGNORECASE):
+            erw_start = i + 1
+            break
+
+    if erw_start is None:
+        return []
+
+    # Numbered section pattern: "3.", "3.1", etc.
+    section_pat = _re.compile(r"^(\d+(?:\.\d+)?)\.\s+\S")
+    sections: list[dict] = []
+    current_num: str | None = None
+    current_lines: list[str] = []
+
+    for line in lines[erw_start:]:
+        m = section_pat.match(line.strip())
+        if m:
+            if current_num is not None:
+                text = " ".join(current_lines).strip()
+                sections.append({"number": current_num, "text": text[:400]})
+                if len(sections) >= 5:
+                    break
+            current_num = m.group(1)
+            current_lines = [line.strip()]
+        elif current_num is not None:
+            current_lines.append(line.strip())
+
+    if current_num is not None and len(sections) < 5:
+        text = " ".join(current_lines).strip()
+        sections.append({"number": current_num, "text": text[:400]})
+
+    return sections
+
+
+def _get_decision_statutes(decision_id: str, *, limit: int = 5) -> list[dict]:
+    """Return top statutes cited by a decision, with Fedlex text if available.
+
+    Queries the reference graph DB for statute mentions, then enriches each
+    statute with an article text excerpt from the Fedlex statutes DB.
+    The graph DB statutes table uses: statute_id, law_code, article, paragraph.
+    The Fedlex statutes DB articles table uses: sr_number, article_num, lang, text.
+    """
+    conn = _get_graph_conn()
+    if conn is None:
+        return []
+    try:
+        rows = conn.execute(
+            """
+            SELECT ds.statute_id, s.law_code, s.article, s.paragraph,
+                   ds.mention_count
+            FROM decision_statutes ds
+            JOIN statutes s ON s.statute_id = ds.statute_id
+            WHERE ds.decision_id = ?
+            ORDER BY ds.mention_count DESC
+            LIMIT ?
+            """,
+            (decision_id, limit),
+        ).fetchall()
+    except Exception:
+        return []
+    finally:
+        conn.close()
+
+    statutes = []
+    for row in rows:
+        entry: dict = {
+            "statute_id": row["statute_id"],
+            "law_code": row["law_code"],
+            "article": row["article"],
+            "mention_count": row["mention_count"],
+            "text_excerpt": "",
+        }
+        # Try to fetch Fedlex article text (statutes.db uses article_num, lang, text columns)
+        stat_conn = _get_statutes_conn()
+        if stat_conn:
+            try:
+                art_row = stat_conn.execute(
+                    """
+                    SELECT a.text FROM articles a
+                    JOIN laws l ON l.sr_number = a.sr_number
+                    WHERE (UPPER(l.abbr_de) = UPPER(?) OR UPPER(l.abbr_fr) = UPPER(?)
+                           OR UPPER(l.abbr_it) = UPPER(?))
+                      AND a.article_num = ?
+                      AND a.lang = 'de'
+                    LIMIT 1
+                    """,
+                    (row["law_code"], row["law_code"], row["law_code"], row["article"]),
+                ).fetchone()
+                if art_row:
+                    entry["text_excerpt"] = (art_row["text"] or "")[:300]
+            except Exception:
+                pass
+            finally:
+                stat_conn.close()
+        statutes.append(entry)
+    return statutes
+
+
+def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
+    """Return top cited_by and cites cases with their regeste.
+
+    cited_by: decisions that cite this decision (incoming), ranked by confidence.
+    cites: decisions that this decision cites (outgoing), ranked by mention_count.
+    """
+    conn = _get_graph_conn()
+    cited_by: list[dict] = []
+    cites: list[dict] = []
+    cited_by_ids: list[str] = []
+    cites_ids: list[str] = []
+
+    if conn is not None:
+        try:
+            # cited_by: top incoming citations by confidence
+            if _sqlite_has_table(conn, "citation_targets"):
+                rows = conn.execute(
+                    """
+                    SELECT ct.source_decision_id, ct.confidence_score
+                    FROM citation_targets ct
+                    WHERE ct.target_decision_id = ?
+                    ORDER BY ct.confidence_score DESC
+                    LIMIT ?
+                    """,
+                    (decision_id, limit),
+                ).fetchall()
+                cited_by_ids = [r["source_decision_id"] for r in rows]
+
+            # cites: outgoing citations resolved to decision IDs
+            rows = conn.execute(
+                """
+                SELECT ct.target_decision_id
+                FROM decision_citations dc
+                JOIN citation_targets ct
+                  ON ct.source_decision_id = dc.source_decision_id
+                 AND ct.target_ref = dc.target_ref
+                WHERE dc.source_decision_id = ?
+                  AND ct.target_decision_id IS NOT NULL
+                ORDER BY dc.mention_count DESC
+                LIMIT ?
+                """,
+                (decision_id, limit),
+            ).fetchall()
+            cites_ids = [r["target_decision_id"] for r in rows]
+        except Exception:
+            cited_by_ids = []
+            cites_ids = []
+        finally:
+            conn.close()
+
+        # Fetch regeste for each from FTS5 DB
+        fts_conn = get_db()
+        try:
+            for did in cited_by_ids:
+                row = fts_conn.execute(
+                    "SELECT decision_id, docket_number, regeste FROM decisions WHERE decision_id = ?",
+                    (did,),
+                ).fetchone()
+                if row:
+                    cited_by.append({
+                        "decision_id": row["decision_id"],
+                        "bge_ref": row["docket_number"],
+                        "regeste": (row["regeste"] or "")[:200],
+                    })
+            for did in cites_ids:
+                row = fts_conn.execute(
+                    "SELECT decision_id, docket_number, regeste FROM decisions WHERE decision_id = ?",
+                    (did,),
+                ).fetchone()
+                if row:
+                    cites.append({
+                        "decision_id": row["decision_id"],
+                        "bge_ref": row["docket_number"],
+                        "regeste": (row["regeste"] or "")[:200],
+                    })
+        finally:
+            fts_conn.close()
+
+    return {"cited_by": cited_by, "cites": cites}
+
+
 # ── Statute tools ──────────────────────────────────────────────
 
 
