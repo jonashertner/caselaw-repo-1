@@ -5697,13 +5697,16 @@ def _handle_get_doctrine(*, query: str) -> dict:
     leading_cases: list[dict] = []
 
     if statute_refs:
-        # Statute path: pick the first parsed ref
-        ref = next(iter(statute_refs))
-        # ref format: "ART.41.OR"
+        # Statute path: pick the first parsed ref (prefer non-ABS variants)
+        ref = next(
+            (r for r in statute_refs if ".ABS." not in r),
+            next(iter(statute_refs)),
+        )
+        # ref formats: "ART.41.OR" or "ART.41.ABS.1.OR"
         parts = ref.split(".")
         if len(parts) >= 3:
             article = parts[1]
-            law_code = parts[2]
+            law_code = parts[-1]  # always last: "OR", "BV", etc.
         else:
             article = ""
             law_code = ""
