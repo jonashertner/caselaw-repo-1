@@ -6609,8 +6609,7 @@ def _format_legislation_changes_response(result: dict) -> str:
     return text
 
 
-@server.list_tools()
-async def handle_list_tools() -> list[Tool]:
+def _list_tools() -> list[Tool]:
     return [
         Tool(
             name="search_decisions",
@@ -6977,20 +6976,66 @@ async def handle_list_tools() -> list[Tool]:
             },
         ),
         Tool(
-            name="study_leading_case",
+            name="get_case_brief",
             description=(
-                "Study a leading Swiss court decision (BGE/Leitentscheid) interactively. "
-                "Returns parsed decision structure (Sachverhalt, numbered Erwägungen with "
-                "statute references, Dispositiv), curriculum metadata, and citation graph data. "
-                "Use for Socratic legal education: the returned structure enables generating "
-                "comprehension questions, reading guides, and case briefing exercises.\n\n"
-                "Study modes:\n"
-                "- 'guided' (default): Full package with Socratic questions (5 Bloom levels), "
-                "study phases (3-phase progression), hypothetical variations, review cards, "
-                "brief template, and related cases.\n"
-                "- 'brief': Decision structure + brief template (6 weighted sections) + review cards. "
-                "Ideal for case briefing exercises.\n"
-                "- 'quick': Regeste + ratio + review cards for spaced repetition revision."
+                "Get a structured case brief for any Swiss court decision. "
+                "Accepts any reference format: BGE reference ('BGE 133 III 121', '133 III 121'), "
+                "decision_id, or docket number. Returns: regeste (official headnote), "
+                "Sachverhalt (facts), key Erwägungen (reasoning excerpts with paragraph numbers), "
+                "Dispositiv (holding), applicable statutes with Fedlex text, citation authority "
+                "(how often this case is cited), and related cases (what it cites, what cites it). "
+                "Use this when a student wants to understand or brief a specific case."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "case": {
+                        "type": "string",
+                        "description": (
+                            "Any case reference: BGE ref ('BGE 133 III 121', '133 III 121'), "
+                            "decision_id ('bge_BGE_133_III_121'), or docket number."
+                        ),
+                    },
+                },
+                "required": ["case"],
+            },
+        ),
+        Tool(
+            name="get_doctrine",
+            description=(
+                "Get the leading cases and doctrine for a Swiss law statute article or legal concept. "
+                "Input: statute reference ('Art. 41 OR', 'Art. 8 BV') or legal concept "
+                "('Tierhalterhaftung', 'culpa in contrahendo', 'Vertragsfreiheit'). "
+                "Returns: statute text (from Fedlex), top 5-8 BGEs ranked by citation authority, "
+                "the specific rule each case establishes (from regeste), and a doctrine evolution "
+                "timeline showing how the rule developed chronologically. "
+                "Use this when a student asks about the leading cases on a statute or doctrine, "
+                "or needs to understand how a legal rule developed over time."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": (
+                            "Statute article ('Art. 41 OR', 'Art. 8 BV') or legal concept "
+                            "('Tierhalterhaftung', 'culpa in contrahendo'). German preferred."
+                        ),
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
+        Tool(
+            name="generate_exam_question",
+            description=(
+                "Generate a Swiss law exam practice question (Fallbearbeitung) based on a real BGE. "
+                "Returns a fact pattern (Sachverhalt) from a real court decision and a hidden analysis "
+                "(applicable statutes, leading case, legal test, correct outcome). "
+                "Workflow: present the fact_pattern and hint to the student, wait for their analysis, "
+                "then reveal the analysis field and compare. "
+                "The student can then call get_case_brief(source_decision_id) to study the full case. "
+                "Pass exclude_ids from previous calls to avoid repeating the same case."
             ),
             inputSchema={
                 "type": "object",
@@ -6998,99 +7043,17 @@ async def handle_list_tools() -> list[Tool]:
                     "topic": {
                         "type": "string",
                         "description": (
-                            "Legal topic, concept, or BGE reference. Examples: 'Vertragsschluss', "
-                            "'Art. 41 OR', 'Haftpflicht', 'BGE 133 III 121', '144 IV 313'. "
-                            "BGE references are resolved directly; other strings search the curriculum."
+                            "Legal area, statute, or concept. Examples: 'Haftpflichtrecht', "
+                            "'Art. 41 OR', 'Mietrecht', 'Strafrecht', 'Vertragsrecht'."
                         ),
                     },
-                    "decision_id": {
-                        "type": "string",
-                        "description": "Specific BGE decision_id to study (e.g., 'bge_144_III_93').",
-                    },
-                    "difficulty": {
-                        "type": "integer",
-                        "description": "Target difficulty (1=introductory, 5=complex). Filters curriculum cases.",
-                    },
-                    "language": {
-                        "type": "string",
-                        "description": "Preferred language for labels (de, fr, it).",
-                        "enum": ["de", "fr", "it"],
-                    },
-                    "mode": {
-                        "type": "string",
-                        "description": (
-                            "Study mode: 'guided' (full structure + Socratic questions + hypotheticals + review cards), "
-                            "'brief' (decision structure + brief template + review cards), "
-                            "'quick' (regeste + ratio + review cards only)."
-                        ),
-                        "enum": ["guided", "brief", "quick"],
-                        "default": "guided",
+                    "exclude_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "decision_ids already used in this session — avoids repetition.",
                     },
                 },
-            },
-        ),
-        Tool(
-            name="list_study_curriculum",
-            description=(
-                "List available study curricula for Swiss law. "
-                "Returns areas (Rechtsgebiete), modules with case counts and difficulty ranges, and cases with metadata. "
-                "Covers 14 areas and 100 canonical BGEs: Vertragsrecht, Haftpflicht, Sachenrecht, Familienrecht, "
-                "Arbeitsrecht, Mietrecht, Strafrecht AT, Strafrecht BT, Grundrechte, Erbrecht, "
-                "Gesellschaftsrecht, Zivilprozessrecht, Strafprozessrecht, Öffentliches Prozessrecht."
-            ),
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "area": {
-                        "type": "string",
-                        "description": (
-                            "Filter by Rechtsgebiet: vertragsrecht, haftpflicht, sachenrecht, "
-                            "familienrecht, arbeitsrecht, mietrecht, strafrecht_at, strafrecht_bt, "
-                            "grundrechte, erbrecht, gesellschaftsrecht, zivilprozessrecht, "
-                            "strafprozessrecht, oeffentliches_prozessrecht."
-                        ),
-                    },
-                    "difficulty": {
-                        "type": "integer",
-                        "description": "Show only cases up to this difficulty (1-5).",
-                    },
-                    "language": {
-                        "type": "string",
-                        "description": "Language for labels (de, fr, it).",
-                        "enum": ["de", "fr", "it"],
-                    },
-                },
-            },
-        ),
-        Tool(
-            name="check_case_brief",
-            description=(
-                "Check a student's case brief against the actual decision. "
-                "Returns the parsed decision ground truth (ratio from regeste, statute list, "
-                "Erwägung summaries, Dispositiv) alongside the student's brief, structured "
-                "for comparison and pedagogical feedback generation. "
-                "Includes a scoring rubric (6 weighted sections: Leitsatz 15%, Rechtsregel 20%, "
-                "Sachverhalt 15%, Kernerwägungen 25%, Dispositiv 10%, Bedeutung 15%), "
-                "common mistakes per section, and the brief template for reference."
-            ),
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "decision_id": {
-                        "type": "string",
-                        "description": "The BGE decision_id being briefed.",
-                    },
-                    "brief": {
-                        "type": "string",
-                        "description": "The student's case brief text.",
-                    },
-                    "language": {
-                        "type": "string",
-                        "description": "Feedback language preference (de, fr, it).",
-                        "enum": ["de", "fr", "it"],
-                    },
-                },
-                "required": ["decision_id", "brief"],
+                "required": ["topic"],
             },
         ),
         Tool(
@@ -7303,6 +7266,11 @@ async def handle_list_tools() -> list[Tool]:
     ]
 
 
+@server.list_tools()
+async def handle_list_tools() -> list[Tool]:
+    return _list_tools()
+
+
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
     try:
@@ -7510,32 +7478,25 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 text=_format_mock_decision_report(report),
             )]
 
-        elif name == "study_leading_case":
+        elif name == "get_case_brief":
             result = await asyncio.to_thread(
-                _handle_study_leading_case,
-                topic=arguments.get("topic"),
-                decision_id=arguments.get("decision_id"),
-                difficulty=arguments.get("difficulty"),
-                language=arguments.get("language", "de"),
-                mode=arguments.get("mode", "guided"),
+                _handle_get_case_brief,
+                case=arguments.get("case", ""),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
-        elif name == "list_study_curriculum":
+        elif name == "get_doctrine":
             result = await asyncio.to_thread(
-                _handle_list_study_curriculum,
-                area=arguments.get("area"),
-                difficulty=arguments.get("difficulty"),
-                language=arguments.get("language", "de"),
+                _handle_get_doctrine,
+                query=arguments.get("query", ""),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
-        elif name == "check_case_brief":
+        elif name == "generate_exam_question":
             result = await asyncio.to_thread(
-                _handle_check_case_brief,
-                decision_id=arguments["decision_id"],
-                brief=arguments["brief"],
-                language=arguments.get("language", "de"),
+                _handle_generate_exam_question,
+                topic=arguments.get("topic", ""),
+                exclude_ids=arguments.get("exclude_ids", []),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 

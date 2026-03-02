@@ -145,3 +145,23 @@ def test_generate_exam_question_exclude_ids():
     # Either returns a different case or an error if no alternatives
     if "error" not in result2:
         assert result2["source_decision_id"] != source_id
+
+
+# ── Tool registration ─────────────────────────────────────────────────────────
+
+def test_new_tools_registered():
+    """Verify new tools appear in the tool list."""
+    from mcp_server import _list_tools
+    tool_names = {t.name for t in _list_tools()}
+    assert "get_case_brief" in tool_names
+    assert "get_doctrine" in tool_names
+    assert "generate_exam_question" in tool_names
+
+
+def test_old_tools_removed():
+    """Verify old study tools are gone from the tool list."""
+    from mcp_server import _list_tools
+    tool_names = {t.name for t in _list_tools()}
+    assert "study_leading_case" not in tool_names
+    assert "list_study_curriculum" not in tool_names
+    assert "check_case_brief" not in tool_names
