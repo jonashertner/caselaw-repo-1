@@ -14,7 +14,7 @@ tags:
   - full-text
 pretty_name: Swiss Case Law
 size_categories:
-  - 1M<n<10M
+  - 100K<n<1M
 task_categories:
   - text-classification
   - summarization
@@ -28,7 +28,7 @@ configs:
 
 # Swiss Case Law Dataset
 
-**1,024,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**907,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
@@ -38,7 +38,7 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions — over 1,024,000 decisions from 92 courts across all 26 cantons, scraped from official court websites and cantonal court portals. New decisions are added every night.
+The largest open collection of Swiss court decisions — over 907,000 decisions from 92 courts across all 26 cantons, scraped from official court websites and cantonal court portals. New decisions are added every night.
 
 - **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, and more
 - **80 cantonal courts** across all 26 cantons
@@ -102,7 +102,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude Code or Claude Desktop for natural-language search over all 1M+ decisions.
+Connect the dataset to Claude Code or Claude Desktop for natural-language search over all 900K+ decisions.
 
 **Remote (no download needed):**
 
@@ -151,7 +151,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | `update_database` | Re-download latest data and rebuild the local database (local mode only) |
 | `check_update_status` | Check progress of a running database update (local mode only) |
 
-The citation graph tools (`find_citations`, `find_appeal_chain`, `find_leading_cases`, `analyze_legal_trend`) use a **reference graph** with 7.85 million citation edges linking 1M+ decisions and 330K statute references:
+The citation graph tools (`find_citations`, `find_appeal_chain`, `find_leading_cases`, `analyze_legal_trend`) use a **reference graph** with 7.85 million citation edges linking 900K+ decisions and 330K statute references:
 
 - *"What are the leading cases on Art. 8 EMRK?"* → Top decisions ranked by citation count
 - *"Show me the citation network for BGE 138 III 374"* → 13 outgoing, 13,621 incoming citations
@@ -285,7 +285,7 @@ MIT License. The underlying court decisions are public domain under Swiss law.
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={1,024,000+ Swiss federal and cantonal court decisions with full text and structured metadata}
+  note={907,000+ Swiss federal and cantonal court decisions with full text and structured metadata}
 }
 ```
 

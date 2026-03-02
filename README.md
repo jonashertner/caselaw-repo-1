@@ -1,6 +1,6 @@
 # Swiss Case Law Open Dataset
 
-**1,024,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**907,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
@@ -25,17 +25,17 @@ There are six ways to use it, depending on what you need:
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, appeal chains, jurisprudence trends |
 | [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 40+ federal laws (OR, ZGB, StGB, BV, ...) |
 | [**Legislation Search**](#legislation-tools) | Legal professionals | Search 33,000+ federal and cantonal legislative texts via LexFind.ch |
-| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 1M+ decisions |
+| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 900K+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1M+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 900K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
 
 ---
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 19 tools that lets AI search across all 1M+ decisions, look up federal law articles, search 33,000+ legislative texts, analyze citation networks, and study leading cases. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 19 tools that lets AI search across all 900K+ decisions, look up federal law articles, search 33,000+ legislative texts, analyze citation networks, and study leading cases. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
 ### Remote vs. local
 
@@ -52,7 +52,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 19 
 
 ### Option A: Remote server (recommended)
 
-Connect directly to the hosted MCP server — no data download, no local database, instant access to 1M+ decisions.
+Connect directly to the hosted MCP server — no data download, no local database, instant access to 900K+ decisions.
 
 **Claude.ai / Claude Desktop** (easiest):
 
@@ -216,9 +216,9 @@ All data stays on your machine. No API calls are made during search — the MCP 
 
 - **`decisions`** — the main table with one row per decision. Holds all 23 columns (decision_id, court, canton, chamber, docket_number, full_text, regeste, etc.) plus a `json_data` column with the complete 34-field record. Indexed on `court`, `canton`, `decision_date`, `language`, `docket_number`, `chamber`, and `decision_type` for fast filtered queries.
 
-- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 1M+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
+- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 900K+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
 
-**Why ~58 GB.** The full text of 1M+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
+**Why ~58 GB.** The full text of 900K+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
 
 **Search pipeline.** When you search, the server:
 
@@ -308,7 +308,7 @@ The AI calls the MCP tools automatically — you see the search results inline a
 
 ### Citation graph tools
 
-Four tools expose the **reference graph** — 7.85 million citation edges linking 1M+ decisions, plus 330K statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+Four tools expose the **reference graph** — 7.85 million citation edges linking 900K+ decisions, plus 330K statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
 
 **`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
 
@@ -546,7 +546,7 @@ from datasets import load_dataset
 # Load a single court (~170k decisions, ~800 MB)
 bger = load_dataset("voilaj/swiss-caselaw", data_files="data/bger.parquet")
 
-# Load all courts (~1M decisions, ~6.5 GB download)
+# Load all courts (~900K decisions, ~6.5 GB download)
 ds = load_dataset("voilaj/swiss-caselaw", data_files="data/*.parquet")
 ```
 
@@ -944,7 +944,7 @@ Output is written to `output/decisions/{court}.jsonl` — one JSON object per li
 ### Build a local search database
 
 ```bash
-# Full build (reads all JSONL, optimizes FTS index — ~3h for 1M decisions)
+# Full build (reads all JSONL, optimizes FTS index — ~3h for 900K decisions)
 python build_fts5.py --output output -v
 
 # Incremental build (reads only new JSONL bytes, skips optimize — seconds)
@@ -954,7 +954,7 @@ python build_fts5.py --output output --incremental --no-optimize -v
 python build_fts5.py --output output --full-rebuild -v
 ```
 
-This reads JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. A full build of 1M decisions takes about 3 hours and produces a ~58 GB database. Incremental mode uses a checkpoint file (`output/.fts5_checkpoint.json`) to skip unchanged files and seek past already-processed bytes, completing in seconds when few new decisions exist.
+This reads JSONL files from `output/decisions/` and builds a SQLite FTS5 database at `output/decisions.db`. A full build of 900K decisions takes about 3 hours and produces a ~58 GB database. Incremental mode uses a checkpoint file (`output/.fts5_checkpoint.json`) to skip unchanged files and seek past already-processed bytes, completing in seconds when few new decisions exist.
 
 ### Export to Parquet
 
