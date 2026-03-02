@@ -94,3 +94,54 @@ def test_get_doctrine_leading_cases_have_required_fields():
         assert "decision_id" in case
         assert "incoming_citations" in case
         assert "rule_summary" in case
+
+
+# ── generate_exam_question ────────────────────────────────────────────────────
+
+def test_generate_exam_question_returns_fact_pattern():
+    from mcp_server import _handle_generate_exam_question
+    result = _handle_generate_exam_question(topic="Haftpflichtrecht")
+    assert "error" not in result, f"Unexpected error: {result.get('error')}"
+    assert "fact_pattern" in result
+    assert len(result["fact_pattern"]) > 50
+
+
+def test_generate_exam_question_has_hidden_analysis():
+    from mcp_server import _handle_generate_exam_question
+    result = _handle_generate_exam_question(topic="Haftpflichtrecht")
+    assert "error" not in result
+    assert "analysis" in result
+    analysis = result["analysis"]
+    assert "applicable_statutes" in analysis
+    assert "leading_case" in analysis
+    assert "legal_test" in analysis
+
+
+def test_generate_exam_question_has_difficulty():
+    from mcp_server import _handle_generate_exam_question
+    result = _handle_generate_exam_question(topic="Vertragsrecht")
+    assert "error" not in result
+    assert "difficulty" in result
+    assert 1 <= result["difficulty"] <= 5
+
+
+def test_generate_exam_question_has_hint():
+    from mcp_server import _handle_generate_exam_question
+    result = _handle_generate_exam_question(topic="Mietrecht")
+    assert "error" not in result
+    assert "hint" in result
+    assert isinstance(result["hint"], str)
+
+
+def test_generate_exam_question_exclude_ids():
+    """Verify exclude_ids prevents returning the same case twice."""
+    from mcp_server import _handle_generate_exam_question
+    result1 = _handle_generate_exam_question(topic="Haftpflichtrecht")
+    assert "error" not in result1
+    source_id = result1["source_decision_id"]
+    result2 = _handle_generate_exam_question(
+        topic="Haftpflichtrecht", exclude_ids=[source_id]
+    )
+    # Either returns a different case or an error if no alternatives
+    if "error" not in result2:
+        assert result2["source_decision_id"] != source_id

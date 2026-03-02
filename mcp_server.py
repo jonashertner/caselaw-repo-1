@@ -5776,6 +5776,120 @@ def _handle_get_doctrine(*, query: str) -> dict:
     }
 
 
+def _handle_generate_exam_question(
+    *, topic: str, exclude_ids: list[str] | None = None
+) -> dict:
+    """Handler for generate_exam_question tool.
+
+    Returns a real BGE fact pattern as a Fallbearbeitung exercise.
+    The analysis is included but Claude should reveal it only after
+    the student submits their answer.
+    """
+    if not topic or not topic.strip():
+        return {"error": "Provide a legal topic, area, or statute reference."}
+
+    exclude = set(exclude_ids or [])
+
+    # Build candidate pool from find_leading_cases (graph path) with FTS fallback
+    lc_result = _find_leading_cases(query=topic.strip(), limit=30)
+    candidates = lc_result.get("results", [])
+
+    # Fallback: if citation_targets unavailable, use plain FTS search
+    if not candidates and "error" in lc_result:
+        candidates = _find_leading_cases_by_fts_fallback(query=topic.strip(), limit=30)
+
+    # Also check curriculum for topic-matching cases with difficulty scores
+    try:
+        curriculum_cases = _get_curriculum_cases_for_topic(topic)
+        curriculum_map = {c["decision_id"]: c for c in curriculum_cases}
+    except Exception:
+        curriculum_map = {}
+
+    # Filter and pick: need full_text >= 1000 chars and regeste >= 50 chars
+    selected = None
+    for case in candidates:
+        did = case.get("decision_id", "")
+        if did in exclude:
+            continue
+        decision = get_decision_by_id(did)
+        if not decision:
+            continue
+        full_text = decision.get("full_text") or ""
+        regeste = decision.get("regeste") or ""
+        if len(full_text) < 1000 or len(regeste) < 50:
+            continue
+        selected = (case, decision)
+        break
+
+    if selected is None:
+        return {"error": f"No suitable case found for topic '{topic}'. Try a broader topic."}
+
+    case_meta, decision = selected
+    decision_id = decision.get("decision_id", "")
+    full_text = decision.get("full_text") or ""
+    regeste = decision.get("regeste") or ""
+
+    # Extract fact pattern from Sachverhalt section
+    fact_pattern = _extract_section(
+        full_text,
+        start_patterns=[r"^Sachverhalt\s*:", r"^A\.\s*[-–]", r"^Faits\s*:"],
+        end_patterns=[r"^Erwägungen\s*:", r"^Considérant\s*", r"^Das Bundesgericht"],
+        fallback_chars=600,
+    )
+    if not fact_pattern:
+        fact_pattern = full_text[:600].strip()
+
+    # Difficulty: prefer curriculum difficulty, else default 3; clamp to 1-5
+    raw_difficulty = curriculum_map.get(decision_id, {}).get("difficulty", 3)
+    difficulty = max(1, min(5, int(raw_difficulty)))
+
+    # Statutes for hidden analysis
+    statutes = _get_decision_statutes(decision_id, limit=3)
+    statute_labels = [
+        f"{s['law_code']} {s['article']}" for s in statutes if s.get("law_code")
+    ]
+
+    # Legal test and outcome from regeste
+    regeste_parts = [p.strip() for p in regeste.split(".") if p.strip()]
+    legal_test = regeste_parts[0][:150] if regeste_parts else regeste[:150]
+    correct_outcome = regeste_parts[-1][:150] if len(regeste_parts) > 1 else regeste[-150:].strip()
+
+    hint = "Prüfen Sie, welches Rechtsgebiet auf den Sachverhalt anwendbar ist."
+
+    return {
+        "fact_pattern": fact_pattern,
+        "difficulty": difficulty,
+        "hint": hint,
+        "source_decision_id": decision_id,
+        "analysis": {
+            "applicable_statutes": statute_labels,
+            "leading_case": decision.get("docket_number", decision_id),
+            "legal_test": legal_test,
+            "correct_outcome": correct_outcome,
+        },
+    }
+
+
+def _get_curriculum_cases_for_topic(topic: str) -> list[dict]:
+    """Return curriculum cases matching topic (area_id or keyword search)."""
+    from study.curriculum_engine import load_curriculum
+    areas = load_curriculum()
+    results_list = []
+    topic_lower = topic.lower()
+    for area in areas:
+        # Match by area_id or display name
+        area_name = getattr(area, "area_de", None) or getattr(area, "name", "") or ""
+        if topic_lower in area.area_id.lower() or topic_lower in area_name.lower():
+            for mod in area.modules:
+                for case in mod.cases:
+                    results_list.append({
+                        "decision_id": case.decision_id,
+                        "difficulty": getattr(case, "difficulty", 3),
+                        "area_id": area.area_id,
+                    })
+    return results_list
+
+
 # ── Statute tools ──────────────────────────────────────────────
 
 
