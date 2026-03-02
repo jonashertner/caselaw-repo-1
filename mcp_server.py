@@ -5558,6 +5558,221 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
     return {"cited_by": cited_by, "cites": cites}
 
 
+def _fetch_statute_text(*, law_code: str, article: str) -> dict:
+    """Fetch statute article text from statutes.db. Returns {} if unavailable."""
+    conn = _get_statutes_conn()
+    if conn is None:
+        return {}
+    try:
+        # Find SR number for the law abbreviation
+        law_row = conn.execute(
+            "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = UPPER(?) "
+            "OR UPPER(abbr_fr) = UPPER(?) OR UPPER(abbr_it) = UPPER(?) LIMIT 1",
+            (law_code, law_code, law_code),
+        ).fetchone()
+        if not law_row:
+            return {"law_code": law_code, "article": article}
+        sr = law_row["sr_number"]
+
+        art_row = conn.execute(
+            "SELECT article_num, text, lang FROM articles "
+            "WHERE sr_number = ? AND article_num = ? AND lang = 'de' LIMIT 1",
+            (sr, article),
+        ).fetchone()
+        if not art_row:
+            return {"law_code": law_code, "article": article, "sr_number": sr}
+
+        return {
+            "law_code": law_code,
+            "article": article,
+            "sr_number": sr,
+            "text_de": (art_row["text"] or "")[:600],
+        }
+    except Exception:
+        return {"law_code": law_code, "article": article}
+    finally:
+        conn.close()
+
+
+def _find_leading_cases_by_statute_fallback(
+    law_code: str, article: str, limit: int
+) -> list[dict]:
+    """Fallback for statute path when citation_targets table is unavailable.
+
+    Primary: queries decision_statutes in graph DB and enriches from FTS5 DB.
+    Secondary: if graph DB is also unavailable, falls back to FTS5 text search
+    for the statute reference (e.g. "Art. 41 OR").
+    Returns list of raw case dicts compatible with _find_leading_cases results.
+    """
+    conn = _get_graph_conn()
+    if conn is not None:
+        try:
+            rows = conn.execute(
+                """
+                SELECT ds.decision_id
+                FROM decision_statutes ds
+                JOIN statutes s ON s.statute_id = ds.statute_id
+                WHERE s.law_code = ? AND s.article = ?
+                LIMIT ?
+                """,
+                (law_code, article, limit),
+            ).fetchall()
+            decision_ids = [r["decision_id"] for r in rows]
+        except sqlite3.Error as e:
+            logger.debug("Statute fallback graph query failed: %s", e)
+            decision_ids = []
+        finally:
+            conn.close()
+
+        if decision_ids:
+            # Enrich from FTS5 DB
+            fts_rows = _fetch_decision_rows_by_ids(decision_ids)
+            result = []
+            for row in fts_rows:
+                result.append({
+                    "decision_id": row.get("decision_id", ""),
+                    "docket_number": row.get("docket_number", ""),
+                    "decision_date": row.get("decision_date", ""),
+                    "court": row.get("court", ""),
+                    "citation_count": 0,
+                    "regeste": (row.get("regeste") or "")[:300],
+                })
+            return result
+
+    # Final fallback: FTS5 text search for statute mention
+    fts_query = f'"Art. {article} {law_code}"'
+    return _find_leading_cases_by_fts_fallback(query=fts_query, limit=limit)
+
+
+def _find_leading_cases_by_fts_fallback(query: str, limit: int) -> list[dict]:
+    """Fallback for concept path when citation_targets table is unavailable.
+
+    Runs a plain FTS5 search and returns results as raw case dicts.
+    """
+    try:
+        fts_conn = get_db()
+        rows = fts_conn.execute(
+            """
+            SELECT d.decision_id, d.docket_number, d.decision_date,
+                   d.court, d.regeste
+            FROM decisions_fts f
+            JOIN decisions d ON d.decision_id = f.decision_id
+            WHERE decisions_fts MATCH ?
+            LIMIT ?
+            """,
+            (query, limit),
+        ).fetchall()
+        fts_conn.close()
+        result = []
+        for row in rows:
+            result.append({
+                "decision_id": row["decision_id"],
+                "docket_number": row["docket_number"] or "",
+                "decision_date": row["decision_date"] or "",
+                "court": row["court"] or "",
+                "citation_count": 0,
+                "regeste": (row["regeste"] or "")[:300],
+            })
+        return result
+    except Exception as e:
+        logger.debug("FTS fallback for doctrine concept path failed: %s", e)
+        return []
+
+
+def _handle_get_doctrine(*, query: str) -> dict:
+    """Handler for get_doctrine tool.
+
+    Accepts a statute reference ("Art. 41 OR") or legal concept
+    ("Tierhalterhaftung"). Returns statute text + top authority-ranked BGEs
+    + the rule each establishes + doctrine evolution timeline.
+    """
+    if not query or not query.strip():
+        return {"error": "Provide a statute reference or legal concept."}
+
+    q = query.strip()
+
+    # Detect statute reference
+    statute_refs = _extract_query_statute_refs(q)
+    statute_info: dict = {}
+    leading_cases: list[dict] = []
+
+    if statute_refs:
+        # Statute path: pick the first parsed ref
+        ref = next(iter(statute_refs))
+        # ref format: "ART.41.OR"
+        parts = ref.split(".")
+        if len(parts) >= 3:
+            article = parts[1]
+            law_code = parts[2]
+        else:
+            article = ""
+            law_code = ""
+
+        # Fetch statute text from statutes.db
+        if article and law_code:
+            statute_info = _fetch_statute_text(law_code=law_code, article=article)
+
+        # Find leading cases via graph (statute path)
+        lc_result = _find_leading_cases(
+            law_code=law_code, article=article, court=None, limit=8
+        )
+        raw_cases = lc_result.get("results", [])
+
+        # Fallback: if citation_targets unavailable, use decision_statutes directly
+        if not raw_cases and "error" in lc_result and article and law_code:
+            raw_cases = _find_leading_cases_by_statute_fallback(
+                law_code=law_code, article=article, limit=8
+            )
+    else:
+        # Concept path: FTS search
+        lc_result = _find_leading_cases(query=q, limit=8)
+        raw_cases = lc_result.get("results", [])
+
+        # Fallback: if citation_targets unavailable, use plain FTS search
+        if not raw_cases and "error" in lc_result:
+            raw_cases = _find_leading_cases_by_fts_fallback(query=q, limit=8)
+
+    # Enrich each case with authority count and rule_summary
+    for case in raw_cases:
+        did = case.get("decision_id", "")
+        incoming, _ = _count_citations(did)
+        regeste = case.get("regeste") or ""
+        # rule_summary: first sentence of regeste, max 150 chars
+        first_sentence = regeste.split(".")[0].strip() if regeste else ""
+        leading_cases.append({
+            "decision_id": did,
+            "bge_ref": case.get("docket_number", ""),
+            "date": case.get("decision_date", ""),
+            "regeste": regeste[:300],
+            "incoming_citations": incoming if incoming else case.get("citation_count", 0),
+            "rule_summary": first_sentence[:150],
+        })
+
+    # Sort by incoming_citations desc
+    leading_cases.sort(key=lambda c: c["incoming_citations"], reverse=True)
+
+    # Doctrine timeline: same cases sorted chronologically
+    timeline = sorted(
+        [
+            {
+                "year": (c["date"] or "")[:4],
+                "bge_ref": c["bge_ref"],
+                "rule_added": c["rule_summary"],
+            }
+            for c in leading_cases
+            if c.get("date")
+        ],
+        key=lambda x: x["year"],
+    )
+
+    return {
+        "query": q,
+        "statute": statute_info,
+        "leading_cases": leading_cases,
+        "doctrine_timeline": timeline,
+    }
+
+
 # ── Statute tools ──────────────────────────────────────────────
 
 

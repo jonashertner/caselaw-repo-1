@@ -50,3 +50,47 @@ def test_get_case_brief_related_structure():
     assert "related" in result
     assert "cited_by" in result["related"]
     assert "cites" in result["related"]
+
+
+# ── get_doctrine ──────────────────────────────────────────────────────────────
+
+def test_get_doctrine_statute_path_returns_leading_cases():
+    from mcp_server import _handle_get_doctrine
+    result = _handle_get_doctrine(query="Art. 41 OR")
+    assert "error" not in result, f"Unexpected error: {result.get('error')}"
+    assert "leading_cases" in result
+    assert len(result["leading_cases"]) > 0
+
+
+def test_get_doctrine_statute_path_returns_statute_text():
+    from mcp_server import _handle_get_doctrine
+    result = _handle_get_doctrine(query="Art. 41 OR")
+    assert "error" not in result
+    # statute field present (may be empty if statutes.db unavailable)
+    assert "statute" in result
+
+
+def test_get_doctrine_concept_path_works():
+    from mcp_server import _handle_get_doctrine
+    result = _handle_get_doctrine(query="Tierhalterhaftung")
+    assert "error" not in result
+    assert "leading_cases" in result
+    assert len(result["leading_cases"]) > 0
+
+
+def test_get_doctrine_has_doctrine_timeline():
+    from mcp_server import _handle_get_doctrine
+    result = _handle_get_doctrine(query="Art. 41 OR")
+    assert "error" not in result
+    assert "doctrine_timeline" in result
+    assert isinstance(result["doctrine_timeline"], list)
+
+
+def test_get_doctrine_leading_cases_have_required_fields():
+    from mcp_server import _handle_get_doctrine
+    result = _handle_get_doctrine(query="Art. 41 OR")
+    assert "error" not in result
+    for case in result["leading_cases"]:
+        assert "decision_id" in case
+        assert "incoming_citations" in case
+        assert "rule_summary" in case
