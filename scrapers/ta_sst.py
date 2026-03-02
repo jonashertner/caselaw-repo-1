@@ -117,7 +117,7 @@ class TaSSTScraper(BaseScraper):
         docket = stub["docket_number"]
         pdf_url = stub["url"]
 
-        self.rate_limit()
+        self._rate_limit()
 
         try:
             resp = self.session.get(pdf_url, timeout=30)
