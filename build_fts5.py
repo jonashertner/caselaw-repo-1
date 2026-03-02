@@ -254,8 +254,10 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
 _COURT_OVERLAP_GROUPS: list[set[str]] = [
     # ZH Obergericht: entscheidsuche → zh_gerichte, direct scraper → zh_obergericht
     {"zh_gerichte", "zh_obergericht"},
-    # SG: publications vs court decisions
-    {"sg_publikationen", "sg_gerichte"},
+    # SG: entscheidsuche → sg_gerichte, direct scraper (sg_publikationen) → sub-courts
+    {"sg_gerichte", "sg_publikationen", "sg_versicherungsgericht",
+     "sg_verwaltungsgericht", "sg_verwaltungsrekurskommission",
+     "sg_kantonsgericht", "sg_handelsgericht"},
     # AG: entscheidsuche generic vs specific
     {"ag_gerichte", "ag_obergericht", "ag_versicherungsgericht",
      "ag_handelsgericht", "ag_spezialverwaltungsgericht"},
