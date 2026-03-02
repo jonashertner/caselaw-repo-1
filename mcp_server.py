@@ -75,12 +75,6 @@ from mcp.types import TextContent, Tool
 # Add repo root to path so db_schema can be imported when run from any directory
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
-from study.socratic import build_study_package, build_brief_comparison  # noqa: E402
-from study.curriculum_engine import (  # noqa: E402
-    find_case as curriculum_find_case,
-    load_curriculum,
-    list_areas as curriculum_list_areas,
-)
 
 # Set to True when running with --remote (SSE transport).
 # Gates off update_database / check_update_status for remote clients.
@@ -5101,148 +5095,6 @@ server = Server(
 )
 
 
-# ── Socratic study tool handlers ─────────────────────────────
-
-def _handle_study_leading_case(
-    *,
-    topic: str | None,
-    decision_id: str | None,
-    difficulty: int | None,
-    language: str,
-    mode: str,
-) -> dict:
-    """Internal handler for study_leading_case tool."""
-    curriculum_case = None
-
-    # Resolve decision_id
-    if decision_id:
-        # Check if it's in curriculum
-        areas = load_curriculum()
-        for area in areas:
-            for mod in area.modules:
-                for case in mod.cases:
-                    if case.decision_id == decision_id:
-                        curriculum_case = case
-                        break
-    elif topic:
-        curriculum_case = curriculum_find_case(topic, difficulty=difficulty, language=language)
-        if curriculum_case:
-            decision_id = curriculum_case.decision_id
-        else:
-            # Fallback: find_leading_cases
-            lc_result = _find_leading_cases(query=topic, court="bge", limit=1)
-            cases = lc_result.get("cases", [])
-            if cases:
-                decision_id = cases[0].get("decision_id")
-
-    if not decision_id:
-        return {"error": "No matching case found. Provide a decision_id or try a different topic."}
-
-    # Fetch the full decision
-    decision = get_decision_by_id(decision_id)
-    if not decision:
-        return {"error": f"Decision not found: {decision_id}"}
-
-    # Get citation counts
-    citation_counts = _count_citations(decision_id)
-
-    # Get related cases from curriculum
-    related_cases = None
-    if curriculum_case and curriculum_case.prerequisites:
-        related_cases = []
-        for prereq_id in curriculum_case.prerequisites:
-            prereq = get_decision_by_id(prereq_id)
-            if prereq:
-                related_cases.append({
-                    "decision_id": prereq_id,
-                    "docket_number": prereq.get("docket_number", ""),
-                    "decision_date": prereq.get("decision_date", ""),
-                    "relationship": "prerequisite",
-                })
-
-    return build_study_package(
-        decision=decision,
-        mode=mode,
-        curriculum_case=curriculum_case,
-        citation_counts=citation_counts,
-        related_cases=related_cases,
-        requested_language=language,
-    )
-
-
-def _handle_list_study_curriculum(
-    *,
-    area: str | None,
-    difficulty: int | None,
-    language: str,
-) -> dict:
-    """Internal handler for list_study_curriculum tool."""
-    if area:
-        areas = load_curriculum(area=area)
-        if not areas:
-            return {"error": f"Unknown area: {area}. Available: vertragsrecht, haftpflicht, sachenrecht, familienrecht, arbeitsrecht, mietrecht, strafrecht_at, strafrecht_bt, grundrechte, erbrecht, gesellschaftsrecht, zivilprozessrecht, strafprozessrecht, oeffentliches_prozessrecht"}
-
-        a = areas[0]
-        lang_key = language if language in ("de", "fr", "it") else "de"
-        modules = []
-        for mod in a.modules:
-            cases = []
-            for case in mod.cases:
-                if difficulty is not None and case.difficulty > difficulty:
-                    continue
-                cases.append({
-                    "decision_id": case.decision_id,
-                    "bge_ref": case.bge_ref,
-                    "title": getattr(case, f"title_{lang_key}", case.title_de) or case.title_de,
-                    "difficulty": case.difficulty,
-                    "statutes": case.statutes,
-                    "prerequisites": case.prerequisites,
-                })
-            modules.append({
-                "id": mod.id,
-                "name": getattr(mod, f"name_{lang_key}", mod.name_de) or mod.name_de,
-                "statutes": mod.statutes,
-                "case_count": len(cases),
-                "cases": cases,
-            })
-        return {
-            "area_id": a.area_id,
-            "name": getattr(a, f"area_{lang_key}", a.area_de) or a.area_de,
-            "description": a.description_de,
-            "modules": modules,
-        }
-
-    # Overview of all areas
-    return {"areas": curriculum_list_areas(language=language)}
-
-
-def _handle_check_case_brief(
-    *,
-    decision_id: str,
-    brief: str,
-    language: str,
-) -> dict:
-    """Internal handler for check_case_brief tool."""
-    decision = get_decision_by_id(decision_id)
-    if not decision:
-        return {"error": f"Decision not found: {decision_id}"}
-
-    # Find curriculum case for extra context
-    curriculum_case = None
-    areas = load_curriculum()
-    for area in areas:
-        for mod in area.modules:
-            for case in mod.cases:
-                if case.decision_id == decision_id:
-                    curriculum_case = case
-                    break
-
-    return build_brief_comparison(
-        decision=decision,
-        student_brief=brief,
-        language=language,
-        curriculum_case=curriculum_case,
-    )
 
 
 # ── get_case_brief and helpers ─────────────────────────────────
@@ -5330,13 +5182,12 @@ def _extract_section(
     is found or until 1200 chars. Returns fallback_chars from start/end if
     no pattern matches.
     """
-    import re as _re
     lines = text.splitlines()
     start_idx = None
 
     for i, line in enumerate(lines):
         for pat in start_patterns:
-            if _re.match(pat, line.strip(), _re.IGNORECASE):
+            if re.match(pat, line.strip(), re.IGNORECASE):
                 start_idx = i + 1  # skip the header line itself
                 break
         if start_idx is not None:
@@ -5355,7 +5206,7 @@ def _extract_section(
     for line in lines[start_idx:]:
         if end_patterns:
             for pat in end_patterns:
-                if _re.match(pat, line.strip(), _re.IGNORECASE):
+                if re.match(pat, line.strip(), re.IGNORECASE):
                     return "\n".join(collected).strip()
         collected.append(line)
         total_chars += len(line)
@@ -5370,14 +5221,13 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
 
     Returns list of {"number": "3.1", "text": "..."} for up to 5 sections.
     """
-    import re as _re
     # Find the Erwägungen block
     erw_start = None
     lines = full_text.splitlines()
     for i, line in enumerate(lines):
-        if _re.match(r"^Erwägungen\s*:", line.strip(), _re.IGNORECASE) or \
-           _re.match(r"^Das Bundesgericht zieht in Erwägung", line.strip(), _re.IGNORECASE) or \
-           _re.match(r"^Considérant\s*", line.strip(), _re.IGNORECASE):
+        if re.match(r"^Erwägungen\s*:", line.strip(), re.IGNORECASE) or \
+           re.match(r"^Das Bundesgericht zieht in Erwägung", line.strip(), re.IGNORECASE) or \
+           re.match(r"^Considérant\s*", line.strip(), re.IGNORECASE):
             erw_start = i + 1
             break
 
@@ -5385,7 +5235,7 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
         return []
 
     # Numbered section pattern: "3.", "3.1", etc.
-    section_pat = _re.compile(r"^(\d+(?:\.\d+)?)\.\s+\S")
+    section_pat = re.compile(r"^(\d+(?:\.\d+)?)\.\s+\S")
     sections: list[dict] = []
     current_num: str | None = None
     current_lines: list[str] = []
