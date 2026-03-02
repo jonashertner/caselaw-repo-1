@@ -204,7 +204,7 @@ The dataset is updated daily. To get the latest decisions, ask Claude to run the
 │   └── data/
 │       ├── bger.parquet
 │       ├── bvger.parquet
-│       └── ...           # 93 files, one per court
+│       └── ...           # 89 files, one per court
 ├── decisions.db          # SQLite FTS5 search index (~58 GB)
 ├── reference_graph.db    # Citation graph (7.85M edges, ~3.5 GB)
 └── statutes.db           # Federal law articles from Fedlex (~42 MB)
@@ -850,7 +850,7 @@ Full schema definition: [`models.py`](models.py)
 
 ### Cantonal courts
 
-88 courts across all 26 cantons. The largest cantonal collections:
+77 courts across all 26 cantons. The largest cantonal collections:
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|

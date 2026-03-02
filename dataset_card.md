@@ -38,10 +38,10 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions — over 930,000 decisions from 88 courts across all 26 cantons, scraped from official court websites and cantonal court portals. New decisions are added every night.
+The largest open collection of Swiss court decisions — over 1,024,000 decisions from 89 courts across all 26 cantons, scraped from official court websites and cantonal court portals. New decisions are added every night.
 
-- **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, and more
-- **80 cantonal courts** across all 26 cantons
+- **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, Sports Tribunal, and more
+- **77 cantonal courts** across all 26 cantons
 - **4 languages**: German, French, Italian, Romansh
 - **Temporal range**: 1880–present
 - **34 structured fields** per decision: full text, docket number, date, court, canton, language, legal area, judges, citations, headnote, and more
@@ -240,7 +240,7 @@ See the [Web UI guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) 
 | Sports Tribunal | `ta_sst` | ~50 | 2024–present |
 | Federal Council | `ch_bundesrat` | ~15 | 2012–present |
 
-### Cantonal Courts (26 cantons, 88 courts)
+### Cantonal Courts (26 cantons, 77 courts)
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|
