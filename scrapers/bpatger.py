@@ -22,6 +22,7 @@ Rate limiting: 3 seconds
 
 from __future__ import annotations
 
+import io
 import logging
 from datetime import date, datetime, timezone
 from typing import Iterator
@@ -39,6 +40,20 @@ from models import (
 logger = logging.getLogger(__name__)
 
 HOST = "https://www.bundespatentgericht.ch"
+
+
+def _extract_pdf_text(data: bytes) -> str:
+    """Extract text from PDF bytes using fitz (PyMuPDF) with pdfplumber fallback."""
+    try:
+        import fitz
+
+        with fitz.open(stream=data, filetype="pdf") as doc:
+            return "\n\n".join(page.get_text() for page in doc)
+    except Exception:
+        import pdfplumber
+
+        with pdfplumber.open(io.BytesIO(data)) as pdf:
+            return "\n\n".join(p.extract_text() or "" for p in pdf.pages)
 SEARCH_URL = (
     f"{HOST}/rechtsprechung/datenbankabfrage/"
     "?tx_iscourtcases_entscheidesuche[action]=suche"
@@ -229,7 +244,11 @@ class BPatGerScraper(BaseScraper):
                 return None
 
             pdf_href = get_cell_link("Entscheid als PDF")
-            pdf_url = f"{HOST}{pdf_href}" if pdf_href else None
+            pdf_url = (
+                pdf_href if pdf_href and pdf_href.startswith("http")
+                else f"{HOST}{pdf_href}" if pdf_href
+                else None
+            )
 
             decision_type = get_cell("Art des Verfahrens")
 
@@ -280,7 +299,21 @@ class BPatGerScraper(BaseScraper):
                             subject = ", ".join(items)
                             break
 
-            full_text = f"{title or ''}\n\n{subject or ''}"
+            # Try to extract full text from PDF
+            full_text = ""
+            if pdf_url:
+                try:
+                    pdf_resp = self.get(pdf_url)
+                    if pdf_resp.status_code == 200 and len(pdf_resp.content) > 100:
+                        full_text = _extract_pdf_text(pdf_resp.content)
+                        logger.info(f"[bpatger] PDF text extracted: {len(full_text)} chars for {docket}")
+                except Exception as e:
+                    logger.warning(f"[bpatger] PDF extraction failed for {docket}: {e}")
+
+            # Fallback to metadata if PDF extraction failed
+            if len(full_text.strip()) < 100:
+                full_text = f"{title or ''}\n\n{subject or ''}"
+
             lang = detect_language(full_text) if full_text.strip() else "de"
 
             decision = Decision(
@@ -293,7 +326,7 @@ class BPatGerScraper(BaseScraper):
                 title=title,
                 legal_area=subject,
                 regeste=subject,
-                full_text=self.clean_text(full_text) if full_text.strip() else "(metadata only — PDF available)",
+                full_text=self.clean_text(full_text) if full_text.strip() else "",
                 decision_type=decision_type,
                 appeal_info=appeal.strip() or None,
                 source_url=stub["url"],
