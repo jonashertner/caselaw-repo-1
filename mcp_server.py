@@ -5090,7 +5090,7 @@ server = Server(
     "swiss-caselaw",
     instructions=(
         "You have access to a comprehensive Swiss legal research platform: "
-        "907,000+ court decisions from all federal and cantonal courts, a citation "
+        "930,000+ court decisions from all federal and cantonal courts, a citation "
         "graph with 7.85 million edges, the full text of 40+ Swiss federal laws, "
         "and a legislation search covering 33,000+ federal and cantonal legislative texts "
         "(search_legislation, get_legislation, browse_legislation_changes). "
