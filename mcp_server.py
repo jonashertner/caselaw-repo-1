@@ -5128,7 +5128,7 @@ def _handle_get_case_brief(*, case: str) -> dict:
     sachverhalt = _extract_section(
         full_text,
         start_patterns=[r"^Sachverhalt\s*:", r"^A\.\s*[-–]", r"^Faits\s*:"],
-        end_patterns=[r"^Erwägungen\s*:", r"^Considérant\s*", r"^Das Bundesgericht"],
+        end_patterns=[r"^Erwägungen\s*:?$", r"^Considérant\s*", r"^Das Bundesgericht"],
         fallback_chars=800,
     )
 
@@ -5225,11 +5225,11 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
 
     Returns list of {"number": "3.1", "text": "..."} for up to 5 sections.
     """
-    # Find the Erwägungen block
+    # Find the Erwägungen block — colon is optional ("Erwägungen" alone is common)
     erw_start = None
     lines = full_text.splitlines()
     for i, line in enumerate(lines):
-        if re.match(r"^Erwägungen\s*:", line.strip(), re.IGNORECASE) or \
+        if re.match(r"^Erwägungen\s*:?$", line.strip(), re.IGNORECASE) or \
            re.match(r"^Das Bundesgericht zieht in Erwägung", line.strip(), re.IGNORECASE) or \
            re.match(r"^Considérant\s*", line.strip(), re.IGNORECASE):
             erw_start = i + 1
@@ -5238,24 +5238,31 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
     if erw_start is None:
         return []
 
-    # Numbered section pattern: "3.", "3.1", etc.
-    section_pat = re.compile(r"^(\d+(?:\.\d+)?)\.\s+\S")
+    # Numbered section patterns:
+    #   Inline:     "3. Some text"  or  "3.1. Some text"
+    #   Standalone: "3."            or  "3.1"  (number alone on its own line)
+    section_pat = re.compile(
+        r"^(\d{1,3}(?:\.\d{1,3})?)\.\s+\S"   # inline: "3. text" or "3.1. text"
+        r"|^(\d{1,3}(?:\.\d{1,3})?)\.?\s*$"   # standalone: "3." or "3.1"
+    )
     sections: list[dict] = []
     current_num: str | None = None
     current_lines: list[str] = []
 
     for line in lines[erw_start:]:
-        m = section_pat.match(line.strip())
+        stripped = line.strip()
+        m = section_pat.match(stripped)
         if m:
+            num = m.group(1) or m.group(2)  # whichever branch matched
             if current_num is not None:
                 text = " ".join(current_lines).strip()
                 sections.append({"number": current_num, "text": text[:400]})
                 if len(sections) >= 5:
                     break
-            current_num = m.group(1)
-            current_lines = [line.strip()]
+            current_num = num
+            current_lines = [stripped] if stripped not in (num, num + ".") else []
         elif current_num is not None:
-            current_lines.append(line.strip())
+            current_lines.append(stripped)
 
     if current_num is not None and len(sections) < 5:
         text = " ".join(current_lines).strip()
@@ -5690,7 +5697,7 @@ def _handle_generate_exam_question(
     fact_pattern = _extract_section(
         full_text,
         start_patterns=[r"^Sachverhalt\s*:", r"^A\.\s*[-–]", r"^Faits\s*:"],
-        end_patterns=[r"^Erwägungen\s*:", r"^Considérant\s*", r"^Das Bundesgericht"],
+        end_patterns=[r"^Erwägungen\s*:?$", r"^Considérant\s*", r"^Das Bundesgericht"],
         fallback_chars=600,
     )
     if not fact_pattern:
