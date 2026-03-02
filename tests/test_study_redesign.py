@@ -1,7 +1,15 @@
 """Tests for the redesigned study tools: get_case_brief, get_doctrine, generate_exam_question."""
 import sys
+import pytest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+# Skip all tests if the production DB is not present (integration tests require live DB)
+_DB_PATH = Path(__file__).resolve().parent.parent / "output" / "decisions.db"
+pytestmark = pytest.mark.skipif(
+    not _DB_PATH.exists(),
+    reason="Production DB not available — integration tests require live decisions.db",
+)
 
 
 # ── get_case_brief ────────────────────────────────────────────────────────────

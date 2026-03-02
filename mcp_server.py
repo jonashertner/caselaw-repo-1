@@ -5525,7 +5525,10 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
             conn.close()
 
         # Fetch regeste for each from FTS5 DB
-        fts_conn = get_db()
+        try:
+            fts_conn = get_db()
+        except Exception:
+            return {"cited_by": cited_by, "cites": cites}
         try:
             for did in cited_by_ids:
                 row = fts_conn.execute(
