@@ -1731,7 +1731,7 @@
     "2026-02": 4641,
     "2026-03": 6
   },
-  "generated_at": "2026-03-02T04:06:12.632705+00:00",
+  "generated_at": "2026-03-02T04:20:00.157126+00:00",
   "scraper_health": {
     "run_at": "2026-03-02T02:53:00.504161+00:00",
     "run_duration_s": 6778.6,
@@ -2357,39 +2357,9 @@
     }
   },
   "delta": {
-    "total": -168247,
-    "by_court": {
-      "bger": 337,
-      "bvger": 11,
-      "vd_gerichte": 88,
-      "zh_sozialversicherungsgericht": 6,
-      "zh_obergericht": 36,
-      "fr_gerichte": 90,
-      "bstger": 9406,
-      "so_gerichte": 13,
-      "bs_appellationsgericht": 34,
-      "sg_versicherungsgericht": 3,
-      "zh_handelsgericht": 3,
-      "edoeb": 629,
-      "gl_gerichte": 1,
-      "zg_obergericht": 11,
-      "zh_bezirksgericht_zuerich": 72,
-      "zh_bezirksgericht_horgen": 28,
-      "zh_bezirksgericht_winterthur": 1,
-      "zh_bezirksgericht_dietikon": 5,
-      "zh_bezirksgericht_buelach": 3,
-      "zh_bezirksgericht_pfaeffikon": 1,
-      "zh_bezirksgericht_dielsdorf": 5,
-      "zh_bezirksgericht_hinwil": 7,
-      "zh_bezirksgericht_uster": 7,
-      "zh_bezirksgericht_meilen": 1
-    },
-    "by_canton": {
-      "FR": 90,
-      "BS": 32,
-      "SO": 13,
-      "GL": 1
-    },
-    "previous_generated_at": "2026-02-22T06:04:39.251205+00:00"
+    "total": 0,
+    "by_court": {},
+    "by_canton": {},
+    "previous_generated_at": "2026-03-02T04:06:12.632705+00:00"
   }
 }
