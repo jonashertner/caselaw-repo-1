@@ -124,7 +124,7 @@ from google.adk.tools import MCPToolset
 from mcp.client.sse import SseConnectionParams
 
 agent = LlmAgent(
-    model="gemini-2.5-pro",
+    model="gemini-3.1-pro",
     name="swiss_law_agent",
     instruction="You are a Swiss legal research assistant.",
     tools=[MCPToolset(connection_params=SseConnectionParams(
