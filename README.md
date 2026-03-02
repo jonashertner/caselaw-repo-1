@@ -278,9 +278,9 @@ Available on both remote and local unless noted.
 | `find_leading_cases` | Find the most-cited decisions for a topic or statute |
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Build a research-only mock decision outline from facts, grounded in caselaw + statute references; asks clarification questions before conclusion |
-| `study_leading_case` | Interactive Socratic study of a BGE — questions, hypotheticals, reading guide (guided/brief/quick modes) |
-| `list_study_curriculum` | Browse the curriculum: 14 legal areas, 100 canonical BGEs, difficulty 1–5 |
-| `check_case_brief` | Check a student's case brief against the actual decision with scoring rubric |
+| `get_case_brief` | Structured brief for any case — regeste, key Erwägungen, cited statutes, and citation authority |
+| `get_doctrine` | Statute article or legal concept → ranked leading cases + doctrine timeline |
+| `generate_exam_question` | Legal topic → real BGE fact pattern with hidden analysis for Fallbearbeitung practice |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
 | `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
 | `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
@@ -316,11 +316,11 @@ These work on both the remote and local server:
 
 > Trace the appeal chain for 5A_234/2026
 
-> Show me the study curriculum for criminal law
+> Explain BGE 133 III 121 to me
 
-> Let's study BGE 133 III 121 together
+> What are the leading cases on Art. 41 OR and how has the doctrine evolved?
 
-> Check my case brief for BGE 133 III 121: [your summary]
+> Give me a practice case on Haftpflichtrecht
 
 > Search for cantonal data protection laws
 
@@ -471,13 +471,13 @@ Parameters: `canton` (default CH), `language` (de/fr/it).
 
 ### Education tools
 
-Three tools support **Socratic legal education** with structured study of 100 canonical BGE decisions across Swiss law.
+Three tools support **legal study** covering the three core student workflows: understanding a case, understanding a doctrine, and practicing exam subsumption. Tools return rich structured data; Claude acts as the tutor and generates all pedagogy dynamically.
 
-**`list_study_curriculum`** — Browse the curriculum: 14 legal areas, 100 landmark BGEs, each with difficulty rating (1–5) and module grouping. Areas covered: Vertragsrecht · Haftpflicht · Sachenrecht · Familienrecht · Arbeitsrecht · Mietrecht · Strafrecht AT · Strafrecht BT · Grundrechte · Erbrecht · Gesellschaftsrecht · Zivilprozessrecht · Strafprozessrecht · Öffentliches Prozessrecht.
+**`get_case_brief`** — Any case reference ("BGE 133 III 121", docket number, or decision_id) → structured brief. Returns regeste, Sachverhalt, key numbered Erwägungen, Dispositiv, cited statutes with text excerpts, citation authority (incoming/outgoing count), and the top cited-by and cites cases.
 
-**`study_leading_case`** — Socratic study package for a BGE. Returns the parsed decision structure, a reading guide, 5 Socratic questions (levels 1–5 with hints and model answers), 2 hypothetical variations with discussion points, and the key Erwägungen. Three modes: `guided` (full package), `brief` (structure + questions only), `quick` (ratio + key statutes).
+**`get_doctrine`** — Statute article ("Art. 41 OR") or legal concept ("culpa in contrahendo", "Tierhalterhaftung") → doctrine overview. Returns the leading cases ranked by citation count, a chronological doctrine timeline showing how rules evolved, and the statute text (if applicable).
 
-**`check_case_brief`** — Compare a student's brief against the actual decision. Returns the ground truth (ratio, key Erwägungen, Dispositiv, statutes) alongside the brief text so the AI can give structured feedback.
+**`generate_exam_question`** — Legal topic ("Haftpflichtrecht", "Art. 41 OR", "Mietrecht") → real Fallbearbeitung. Picks a leading BGE, returns the anonymized Sachverhalt as fact pattern plus a hidden analysis (applicable statutes, legal test, correct outcome). The student writes a subsumption, then asks Claude to reveal the analysis for comparison and feedback. Pass `exclude_ids` to avoid repeating the same case.
 
 `draft_mock_decision` can use optional Fedlex URLs and caches fetched statute excerpts in
 `~/.swiss-caselaw/fedlex_cache.json` (configurable via `SWISS_CASELAW_FEDLEX_CACHE`).
