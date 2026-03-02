@@ -44,6 +44,9 @@ SCRAPERS = {
     "finma": ("scrapers.finma", "FINMAScraper"),
     "weko": ("scrapers.weko", "WEKOScraper"),
     "edoeb": ("scrapers.edoeb", "EDOEBScraper"),
+    "ubi": ("scrapers.ubi", "UBIScraper"),
+    "elcom": ("scrapers.elcom", "ElComScraper"),
+    "postcom": ("scrapers.postcom", "PostComScraper"),
     # Cantonal — implemented
     "ag_gerichte": ("scrapers.cantonal.ag_gerichte", "AGGerichteScraper"),
     "ai_gerichte": ("scrapers.cantonal.ai_gerichte", "AIGerichteScraper"),
