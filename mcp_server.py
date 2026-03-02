@@ -1905,23 +1905,27 @@ def _decision_id_variants(decision_id: str) -> list[str]:
 def _count_citations(decision_id: str) -> tuple[int, int]:
     """Return (incoming_count, outgoing_count) for a decision from the graph DB.
 
+    Uses all ID variants (FTS5 vs graph format) so format mismatches are handled.
     Returns (0, 0) if graph DB unavailable or decision not found.
     """
     conn = _get_graph_conn()
     if conn is None:
         return (0, 0)
     try:
+        variants = _decision_id_variants(decision_id)
+        placeholders = ",".join("?" for _ in variants)
+
         incoming = 0
         if _sqlite_has_table(conn, "citation_targets"):
             row = conn.execute(
-                "SELECT COUNT(*) AS n FROM citation_targets WHERE target_decision_id = ?",
-                (decision_id,),
+                f"SELECT COUNT(*) AS n FROM citation_targets WHERE target_decision_id IN ({placeholders})",
+                variants,
             ).fetchone()
             incoming = int(row["n"]) if row else 0
 
         row = conn.execute(
-            "SELECT COUNT(*) AS n FROM decision_citations WHERE source_decision_id = ?",
-            (decision_id,),
+            f"SELECT COUNT(*) AS n FROM decision_citations WHERE source_decision_id IN ({placeholders})",
+            variants,
         ).fetchone()
         outgoing = int(row["n"]) if row else 0
 
@@ -5338,34 +5342,37 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
 
     if conn is not None:
         try:
+            variants = _decision_id_variants(decision_id)
+            ph = ",".join("?" for _ in variants)
+
             # cited_by: top incoming citations by confidence
             if _sqlite_has_table(conn, "citation_targets"):
                 rows = conn.execute(
-                    """
+                    f"""
                     SELECT ct.source_decision_id, ct.confidence_score
                     FROM citation_targets ct
-                    WHERE ct.target_decision_id = ?
+                    WHERE ct.target_decision_id IN ({ph})
                     ORDER BY ct.confidence_score DESC
                     LIMIT ?
                     """,
-                    (decision_id, limit),
+                    variants + [limit],
                 ).fetchall()
                 cited_by_ids = [r["source_decision_id"] for r in rows]
 
             # cites: outgoing citations resolved to decision IDs
             rows = conn.execute(
-                """
+                f"""
                 SELECT ct.target_decision_id
                 FROM decision_citations dc
                 JOIN citation_targets ct
                   ON ct.source_decision_id = dc.source_decision_id
                  AND ct.target_ref = dc.target_ref
-                WHERE dc.source_decision_id = ?
+                WHERE dc.source_decision_id IN ({ph})
                   AND ct.target_decision_id IS NOT NULL
                 ORDER BY dc.mention_count DESC
                 LIMIT ?
                 """,
-                (decision_id, limit),
+                variants + [limit],
             ).fetchall()
             cites_ids = [r["target_decision_id"] for r in rows]
         except Exception:
