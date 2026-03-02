@@ -5794,8 +5794,8 @@ def _handle_generate_exam_question(
     lc_result = _find_leading_cases(query=topic.strip(), limit=30)
     candidates = lc_result.get("results", [])
 
-    # Fallback: if citation_targets unavailable, use plain FTS search
-    if not candidates and "error" in lc_result:
+    # Fallback: if graph returned no candidates (or errored), use plain FTS search
+    if not candidates:
         candidates = _find_leading_cases_by_fts_fallback(query=topic.strip(), limit=30)
 
     # Also check curriculum for topic-matching cases with difficulty scores
@@ -5852,7 +5852,7 @@ def _handle_generate_exam_question(
     # Legal test and outcome from regeste
     regeste_parts = [p.strip() for p in regeste.split(".") if p.strip()]
     legal_test = regeste_parts[0][:150] if regeste_parts else regeste[:150]
-    correct_outcome = regeste_parts[-1][:150] if len(regeste_parts) > 1 else regeste[-150:].strip()
+    correct_outcome = regeste_parts[-1][:150] if len(regeste_parts) > 1 else ""
 
     hint = "Prüfen Sie, welches Rechtsgebiet auf den Sachverhalt anwendbar ist."
 
