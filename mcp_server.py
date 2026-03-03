@@ -3986,9 +3986,12 @@ def _fetch_decision_rows_by_ids(decision_ids: list[str]) -> list[dict]:
     ids = [d for d in dict.fromkeys(decision_ids) if d]
     if not ids:
         return []
+    # Expand each ID to all format variants so graph-format IDs (e.g. "bge_126 I 97")
+    # also match FTS5-format IDs (e.g. "bge_BGE_126_I_97").
+    expanded = list(dict.fromkeys(v for did in ids for v in _decision_id_variants(did)))
     conn = get_db()
     try:
-        placeholders = ",".join("?" for _ in ids)
+        placeholders = ",".join("?" for _ in expanded)
         rows = conn.execute(
             f"""
             SELECT decision_id, court, decision_date, docket_number, language,
@@ -3996,7 +3999,7 @@ def _fetch_decision_rows_by_ids(decision_ids: list[str]) -> list[dict]:
             FROM decisions
             WHERE decision_id IN ({placeholders})
             """,
-            tuple(ids),
+            tuple(expanded),
         ).fetchall()
         return [dict(r) for r in rows]
     finally:
@@ -5395,9 +5398,11 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
             return {"cited_by": cited_by, "cites": cites}
         try:
             for did in cited_by_ids:
+                dvariants = _decision_id_variants(did)
+                dph = ",".join("?" for _ in dvariants)
                 row = fts_conn.execute(
-                    "SELECT decision_id, docket_number, regeste FROM decisions WHERE decision_id = ?",
-                    (did,),
+                    f"SELECT decision_id, docket_number, regeste FROM decisions WHERE decision_id IN ({dph}) LIMIT 1",
+                    dvariants,
                 ).fetchone()
                 if row:
                     cited_by.append({
@@ -5406,9 +5411,11 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
                         "regeste": (row["regeste"] or "")[:200],
                     })
             for did in cites_ids:
+                dvariants = _decision_id_variants(did)
+                dph = ",".join("?" for _ in dvariants)
                 row = fts_conn.execute(
-                    "SELECT decision_id, docket_number, regeste FROM decisions WHERE decision_id = ?",
-                    (did,),
+                    f"SELECT decision_id, docket_number, regeste FROM decisions WHERE decision_id IN ({dph}) LIMIT 1",
+                    dvariants,
                 ).fetchone()
                 if row:
                     cites.append({
