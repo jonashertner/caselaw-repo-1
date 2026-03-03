@@ -57,14 +57,19 @@ def test_ingest_spider_keeps_same_docket_if_decision_date_differs(tmp_path: Path
         encoding="utf-8",
     )
 
+    # HTML companions must have enough text to pass MIN_TEXT_LENGTH (500 chars)
+    long_text = "<html><body>" + "Sachverhalt und Erwägungen. " * 30 + "</body></html>"
+
     (spider_dir / "doc_a.json").write_text(
         json.dumps(_meta(signatur="SIG-A", docket="BL.2020.1", datum="2024-01-01"), ensure_ascii=False),
         encoding="utf-8",
     )
+    (spider_dir / "doc_a.html").write_text(long_text, encoding="utf-8")
     (spider_dir / "doc_b.json").write_text(
         json.dumps(_meta(signatur="SIG-B", docket="BL.2020.1", datum="2024-06-01"), ensure_ascii=False),
         encoding="utf-8",
     )
+    (spider_dir / "doc_b.html").write_text(long_text, encoding="utf-8")
 
     known = load_existing_ids(existing_dir)
     processed, new_count, skipped = ingest_spider(

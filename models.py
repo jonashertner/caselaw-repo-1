@@ -265,16 +265,22 @@ _DATE_PATTERNS = [
     (re.compile(r"(\d{1,2})\.?\s*(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+(\d{4})", re.IGNORECASE), None),
     # DD mois YYYY (French months)
     (re.compile(r"(\d{1,2})\.?\s*(?:er)?\s*(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(\d{4})", re.IGNORECASE), None),
+    # DD mese YYYY (Italian months)
+    (re.compile(r"(\d{1,2})\.?\s*(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})", re.IGNORECASE), None),
     # Just a year
     (re.compile(r"^(\d{4})$"), lambda m: date(int(m.group(1)), 1, 1)),
 ]
 
 _MONTH_NAMES = {
-    "januar": 1, "février": 2, "februar": 2, "märz": 3, "mars": 3,
-    "april": 4, "avril": 4, "mai": 5, "juni": 6, "juin": 6,
-    "juli": 7, "juillet": 7, "august": 8, "août": 8,
-    "september": 9, "septembre": 9, "oktober": 10, "octobre": 10,
-    "november": 11, "novembre": 11, "dezember": 12, "décembre": 12,
+    # German
+    "januar": 1, "februar": 2, "märz": 3, "april": 4, "mai": 5,
+    "juni": 6, "juli": 7, "august": 8, "september": 9, "oktober": 10,
+    "november": 11, "dezember": 12,
+    # French
+    "janvier": 1, "février": 2, "mars": 3, "avril": 4,
+    "juin": 6, "juillet": 7, "août": 8, "septembre": 9, "octobre": 10,
+    "novembre": 11, "décembre": 12,
+    # Italian
     "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4, "maggio": 5,
     "giugno": 6, "luglio": 7, "agosto": 8, "settembre": 9,
     "ottobre": 10, "dicembre": 12,
@@ -302,7 +308,7 @@ def parse_date(text: str) -> date | None:
                 continue
 
     # Try month name patterns (de/fr/it)
-    for pattern, _ in _DATE_PATTERNS[2:4]:
+    for pattern, _ in _DATE_PATTERNS[2:5]:
         m = pattern.search(text)
         if m:
             day = int(m.group(1))
@@ -316,7 +322,7 @@ def parse_date(text: str) -> date | None:
                     continue
 
     # Try bare year (guard against year 0 or obviously invalid years)
-    m = _DATE_PATTERNS[4][0].match(text)
+    m = _DATE_PATTERNS[5][0].match(text)
     if m:
         year = int(m.group(1))
         if 1800 <= year <= 2100:

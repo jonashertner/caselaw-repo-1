@@ -75,7 +75,7 @@ class HUDOCScraper(BaseScraper):
             pass
 
         found = 0
-        seen_appnos = set()  # HUDOC returns same case in multiple languages
+        seen_keys = set()  # Dedup by appno+collection (not just appno)
 
         for collection in COLLECTIONS:
             query = QUERY_TEMPLATE.format(respondent="CHE", collection=collection)
@@ -141,10 +141,13 @@ class HUDOCScraper(BaseScraper):
                         continue
 
                     # Skip duplicate language versions (keep first encountered)
-                    if appno and appno in seen_appnos:
+                    # Key on appno+collection so both judgments and decisions
+                    # for the same application number are retained
+                    dedup_key = f"{appno}|{collection}" if appno else None
+                    if dedup_key and dedup_key in seen_keys:
                         continue
-                    if appno:
-                        seen_appnos.add(appno)
+                    if dedup_key:
+                        seen_keys.add(dedup_key)
 
                     # Parse date — HUDOC format: "19/02/2026 00:00:00"
                     decision_date = None

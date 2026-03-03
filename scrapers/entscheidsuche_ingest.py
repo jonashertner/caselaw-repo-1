@@ -547,7 +547,12 @@ def ingest_spider(
             if docket_day_key and docket_day_key in known_ids:
                 skipped += 1
                 continue
-            if not docket_day_key and docket_fallback_key in known_ids:
+            # Check date-less fallback key: catches duplicates where one side
+            # has a date and the other doesn't.  The fallback key (court::docket
+            # without date) is only present in known_ids when the existing row
+            # had no valid date, so this won't falsely merge decisions that
+            # legitimately differ by date.
+            if docket_fallback_key in known_ids:
                 skipped += 1
                 continue
 
