@@ -5627,10 +5627,20 @@ def _handle_get_doctrine(*, query: str) -> dict:
         did = case.get("decision_id", "")
         incoming, _ = _count_citations(did)
         regeste = case.get("regeste") or ""
-        # rule_summary: first sentence of regeste, max 150 chars.
+        # rule_summary: first substantive clause of regeste, max 150 chars.
         # Strip "Regeste" header line that appears at the start of some BGE fields.
         clean = re.sub(r"^Regeste[^\n]*\n\s*", "", regeste).strip()
-        first_sentence = clean.split(".")[0].strip() if clean else ""
+        # BGE regeste often starts with "Art. 41 OR (...); widerrechtlich..." —
+        # skip leading statute citation segments (start with Art./Abs./§) and
+        # use the first non-citation segment as rule_summary.
+        first_sentence = ""
+        for seg in re.split(r";\s*", clean):
+            seg = seg.strip()
+            if seg and not re.match(r"^(?:Art|Abs|§|Ziff)\b", seg, re.I):
+                first_sentence = seg.split(".")[0].strip()[:150]
+                break
+        if not first_sentence and clean:
+            first_sentence = clean.split(".")[0].strip()[:150]
         leading_cases.append({
             "decision_id": did,
             "bge_ref": case.get("docket_number", ""),
