@@ -6,12 +6,12 @@ Scrapes published decisions from the Swiss Competition Commission (WEKO/COMCO)
 at weko.admin.ch.
 
 Architecture:
-- Single static HTML listing page with ~84 PDF links
+- Nuxt SSR app (same platform as ComCom, migrated from Adobe AEM ~2025)
+- Single listing page at /de/entscheide with all PDF links
 - All decisions are PDF-only (some 20+ MB)
-- Adobe AEM CMS, no API
-- PDF links under /dam/weko/ path
+- PDF links under /dam/{lang}/sd-web/{hash}/ path
 
-Coverage: ~84 decisions
+Coverage: ~230 decisions
 Rate limiting: 2.0 seconds (large PDFs)
 """
 from __future__ import annotations
@@ -35,7 +35,7 @@ from models import (
 
 logger = logging.getLogger(__name__)
 
-LISTING_URL = "https://www.weko.admin.ch/weko/de/home/praxis/publizierte-entscheide.html"
+LISTING_URL = "https://www.weko.admin.ch/de/entscheide"
 BASE_URL = "https://www.weko.admin.ch"
 
 # Parse title: "Name: Type vom DD. Monat YYYY (PDF, size, DD.MM.YYYY)"
@@ -44,8 +44,14 @@ TITLE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# Fallback: extract date from "(PDF, size, DD.MM.YYYY)" suffix
+# Fallback: extract date from "(PDF, size, DD.MM.YYYY)" suffix (old AEM format)
 PUB_DATE_PATTERN = re.compile(r"\(PDF,\s*[\d.,]+\s*[kKmMgG][bB],?\s*(\d{2}\.\d{2}\.\d{4})\)")
+
+# New Nuxt format: publication date "DD. Monat YYYY" in <p> metadata
+META_DATE_PATTERN = re.compile(
+    r"(\d{1,2})\.?\s*(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s+(\d{4})",
+    re.IGNORECASE,
+)
 
 # Date from "vom DD. Monat YYYY" in title (German)
 VOM_DATE_PATTERN = re.compile(
@@ -111,41 +117,52 @@ class WEKOScraper(BaseScraper):
 
         for a in links:
             href = a["href"]
-            # Only PDF links under /dam/weko/
-            if "/dam/weko/" not in href or not href.endswith(".pdf"):
+            # PDF links under /dam/ path
+            if "/dam/" not in href or not href.endswith(".pdf"):
                 continue
 
             pdf_url = urljoin(BASE_URL, href)
-            link_text = a.get_text(strip=True)
-            if not link_text:
+
+            # New Nuxt layout: title in <h4>, metadata in <p> inside the <a>
+            h4 = a.find("h4")
+            title = h4.get_text(strip=True) if h4 else a.get_text(strip=True)
+            if not title:
                 continue
 
-            # Clean title: strip "(PDF, size, DD.MM.YYYY)" suffix
-            title = re.sub(r"\s*\(PDF,\s*[\d.,]+\s*[kKmMgG][bB],?\s*\d{2}\.\d{2}\.\d{4}\)\s*$", "", link_text).strip()
+            # Clean title: strip "(PDF, size, DD.MM.YYYY)" suffix (old AEM format)
+            title = re.sub(r"\s*\(PDF,\s*[\d.,]+\s*[kKmMgG][bB],?\s*\d{2}\.\d{2}\.\d{4}\)\s*$", "", title).strip()
+            # Strip language tags
+            title_clean = re.sub(r"\s*\((Französisch|Italienisch|Francese|Italiano)\)\s*$", "", title).strip()
+
             decision_date_str = None
             doc_type = None
 
-            m = TITLE_PATTERN.match(link_text)
+            m = TITLE_PATTERN.match(title)
             if m:
                 case_name = m.group(1).strip()
                 doc_type = m.group(2).strip()
-                date_part = m.group(3).strip()
-                decision_date_str = date_part
             else:
-                case_name = link_text.split("(")[0].strip()
+                case_name = title_clean.split(":")[0].strip() if ":" in title_clean else title_clean
 
-            # Try to extract date from "vom DD. Monat YYYY" (DE) or "du DD mois YYYY" (FR)
-            vom_m = VOM_DATE_PATTERN.search(link_text)
+            # Try to extract decision date from "vom DD. Monat YYYY" or "du DD mois YYYY"
+            vom_m = VOM_DATE_PATTERN.search(title)
             if vom_m:
                 decision_date_str = f"{vom_m.group(1)}. {vom_m.group(2)} {vom_m.group(3)}"
             else:
-                du_m = DU_DATE_PATTERN.search(link_text)
+                du_m = DU_DATE_PATTERN.search(title)
                 if du_m:
                     decision_date_str = f"{du_m.group(1)} {du_m.group(2)} {du_m.group(3)}"
 
-            # Fallback: publication date from "(PDF, size, DD.MM.YYYY)"
-            pub_m = PUB_DATE_PATTERN.search(link_text)
-            pub_date_str = pub_m.group(1) if pub_m else None
+            # Fallback: publication date from <p> metadata (Nuxt) or old format
+            pub_date_str = None
+            p_tags = a.find_all("p")
+            meta_text = " ".join(p.get_text(strip=True) for p in p_tags)
+            meta_m = META_DATE_PATTERN.search(meta_text)
+            if meta_m:
+                pub_date_str = f"{meta_m.group(1)}. {meta_m.group(2)} {meta_m.group(3)}"
+            else:
+                pub_m = PUB_DATE_PATTERN.search(a.get_text(strip=True))
+                pub_date_str = pub_m.group(1) if pub_m else None
 
             # Build docket from case name + date
             date_suffix = ""
@@ -170,7 +187,7 @@ class WEKOScraper(BaseScraper):
                 "docket_number": docket,
                 "decision_date": decision_date_str or pub_date_str or "",
                 "pdf_url": pdf_url,
-                "title": title,
+                "title": title_clean,
                 "case_name": case_name,
                 "doc_type": doc_type,
                 "pub_date": pub_date_str,
