@@ -1892,13 +1892,19 @@ def _decision_id_variants(decision_id: str) -> list[str]:
         # Variant: spaces in rest → underscores
         variants.add(f"{court}_{rest.replace(' ', '_')}")
 
-        # BGE-specific: strip BGE/ATF/DTF/CH_BGE prefixes from rest
+        # BGE-specific: handle both directions of FTS5/graph ID format mismatch.
+        # FTS5 DB uses "bge_BGE_138_III_374"; graph DB uses "bge_138 III 374".
         if court == "bge":
             stripped = re.sub(r"^(?:CH[_ ])?(?:BGE|ATF|DTF)[_ ]?", "", rest)
             if stripped != rest:
+                # Had a prefix — add stripped variants (FTS5 → graph direction)
                 variants.add(f"bge_{stripped}")
                 variants.add(f"bge_{stripped.replace('_', ' ')}")
                 variants.add(f"bge_{stripped.replace(' ', '_')}")
+            else:
+                # No prefix — add BGE_ prefixed variants (graph → FTS5 direction)
+                variants.add(f"bge_BGE_{rest.replace(' ', '_')}")
+                variants.add(f"bge_BGE {rest.replace('_', ' ')}")
     return list(variants)
 
 
