@@ -3457,10 +3457,16 @@ def _find_leading_cases(
     if not candidates:
         return {"results": [], "total": 0}
 
-    # Enrich with metadata from FTS5 decisions table
+    # Enrich with metadata from FTS5 decisions table.
+    # Build rows_by_id with all ID variants as keys so graph-format IDs
+    # (e.g. "bge_126 I 97") resolve to the FTS5 row ("bge_BGE_126_I_97").
     candidate_ids = [c[0] for c in candidates]
     rows = _fetch_decision_rows_by_ids(candidate_ids)
-    rows_by_id = {r["decision_id"]: r for r in rows}
+    rows_by_id: dict = {}
+    for r in rows:
+        rows_by_id[r["decision_id"]] = r
+        for v in _decision_id_variants(r["decision_id"]):
+            rows_by_id.setdefault(v, r)
 
     results = []
     for did, cite_count in candidates:
