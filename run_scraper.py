@@ -95,6 +95,10 @@ SCRAPERS = {
     "ow_gerichte": ("scrapers.cantonal.ow_gerichte", "OWGerichteScraper"),
     # Federal — Sports Tribunal
     "ta_sst": ("scrapers.ta_sst", "TaSSTScraper"),
+    # Federal — historical / international
+    "emark": ("scrapers.emark", "EMARKScraper"),
+    "bge_historical": ("scrapers.bge_historical", "BGEHistoricalScraper"),
+    "hudoc_ch": ("scrapers.hudoc", "HUDOCScraper"),
 }
 
 
