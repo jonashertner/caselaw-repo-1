@@ -402,38 +402,41 @@ Once connected, just ask questions in natural language. Examples:
 | *"Find decisions citing Art. 8 BV"* | Searches for decisions that reference this constitutional article |
 | *"How many decisions does each court have?"* | Shows statistics across all 89 courts |
 | *"Draft a legal analysis of whether X constitutes Y"* | Builds a research outline grounded in actual case law |
-| *"Show me the study curriculum for contract law"* | Lists curated BGEs for Vertragsrecht with difficulty levels |
-| *"Let's study BGE 133 III 121 together"* | Walks through Socratic questions, hypotheticals, and reading guide |
-| *"Check my case brief: [your summary]"* | Compares your brief against the decision's actual ratio and key Erwägungen |
+| *"Get a case brief for BGE 133 III 121"* | Structured brief: Sachverhalt, key Erwägungen, statutes, authority, related cases |
+| *"Explain the doctrine of Art. 41 OR"* | Statute text + authority-ranked BGEs + doctrine timeline |
+| *"Generate an exam question on Haftpflichtrecht"* | Real BGE fact pattern with hidden analysis for Fallbearbeitung practice |
 
 The AI automatically picks the right search tool, runs the query, and shows you the results. You can then ask follow-up questions like *"Show me the full text of the second result"* or *"Find more recent decisions on the same topic."*
 
 ---
 
-## Studying leading cases
+## Studying Swiss law
 
-The server includes a curated curriculum of **100 canonical BGE decisions** across 14 fields of law, each with pre-generated Socratic questions, hypotheticals, and reading guides. No extra setup needed — just ask.
+Three tools power legal study and exam prep. No curriculum browsing needed — Claude builds the full session dynamically from real decisions.
 
-**Browse the curriculum:**
+**Unpack a decision:**
 
-> *"List the study curriculum for criminal law"*
-> *"What are the most important BGEs in contract law, starting with difficulty 1?"*
-> *"Show me all areas in the curriculum"*
+> *"Get a case brief for BGE 133 III 121"*
+> *"Walk me through the key Erwägungen of BGE 120 II 331"*
 
-**Study a specific case:**
+Returns the Sachverhalt, key Erwägungen (numbered), statutes with article text, citation authority, and related cases. Claude can then generate Socratic questions, hypotheticals, or a reading guide on top of this.
 
-> *"Let's study BGE 133 III 121 in guided mode"*
-> *"Walk me through the key points of BGE 120 II 331"*
+**Explore doctrine:**
 
-Guided mode (default) gives you the full case structure, reading guide, and Socratic questions one at a time. Quick mode gives you just the ratio and key statutes for a fast overview.
+> *"Explain the doctrine of Art. 41 OR"*
+> *"What are the leading cases on Art. 8 EMRK?"*
+> *"How has Tierhalterhaftung evolved in BGer case law?"*
 
-**Practice briefing:**
+Returns statute text (if applicable), the most-cited BGEs ranked by authority, and a doctrine timeline showing how the rule developed year by year.
 
-> *"Check my case brief for BGE 133 III 121: [your summary of facts, ratio, and outcome]"*
+**Practice with exam questions:**
 
-The tool returns the ground truth from the decision so the AI can tell you exactly what you got right, what you missed, and what to review.
+> *"Generate an exam question on Haftpflichtrecht"*
+> *"Give me a Fallbearbeitung on Vertragsrecht"*
 
-**Covered areas:** Vertragsrecht · Haftpflicht · Sachenrecht · Familienrecht · Arbeitsrecht · Mietrecht · Strafrecht AT · Strafrecht BT · Grundrechte · Erbrecht · Gesellschaftsrecht · Zivilprozessrecht · Strafprozessrecht · Öffentliches Prozessrecht
+Returns a real BGE fact pattern adapted as a Fallbearbeitung scenario. The applicable statutes, legal test, and correct outcome are hidden — ask Claude to reveal the analysis after you've worked through it.
+
+**Covered areas (100 canonical BGEs):** Vertragsrecht · Haftpflicht · Sachenrecht · Familienrecht · Arbeitsrecht · Mietrecht · Strafrecht AT · Strafrecht BT · Grundrechte · Erbrecht · Gesellschaftsrecht · Zivilprozessrecht · Strafprozessrecht · Öffentliches Prozessrecht
 
 ### Available tools
 
@@ -448,9 +451,9 @@ The tool returns the ground truth from the decision so the AI can tell you exact
 | `find_leading_cases` | Find the most-cited decisions for a topic or statute |
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Legal research outline grounded in case law and statutes |
-| `study_leading_case` | Interactive Socratic study of a BGE with questions, hypotheticals, and reading guide |
-| `list_study_curriculum` | Browse the curriculum: 14 legal areas, 100 canonical BGEs, difficulty 1–5 |
-| `check_case_brief` | Check a student's case brief against the actual decision |
+| `get_case_brief` | Structured case brief: Sachverhalt, key Erwägungen, statutes, authority, related cases |
+| `get_doctrine` | Statute text + authority-ranked BGEs + doctrine timeline for any statute or concept |
+| `generate_exam_question` | Real BGE fact pattern as Fallbearbeitung exercise with hidden analysis |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation |
 | `search_laws` | Full-text search across Swiss federal law articles |
 | `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |

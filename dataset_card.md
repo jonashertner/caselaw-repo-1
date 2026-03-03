@@ -160,9 +160,9 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | `find_leading_cases` | Find the most-cited decisions for a topic or statute |
 | `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
 | `draft_mock_decision` | Research-only mock decision outline from facts, grounded in caselaw + statutes |
-| `study_leading_case` | Interactive study of a BGE/leading case with Socratic questions and review cards |
-| `list_study_curriculum` | Browse study curricula: 14 legal areas, 100 canonical BGEs, difficulty 1–5 |
-| `check_case_brief` | Check a student's case brief against the actual decision with scoring rubric |
+| `get_case_brief` | Structured case brief for any BGE or decision: Sachverhalt, key Erwägungen, statutes, authority, and related cases |
+| `get_doctrine` | Statute text, authority-ranked leading BGEs, and doctrine timeline for a statute or legal concept |
+| `generate_exam_question` | Real BGE fact pattern as a Fallbearbeitung exercise with hidden analysis (applicable statutes, legal test, outcome) |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
 | `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
 | `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
@@ -182,7 +182,7 @@ The statute tools (`get_law`, `search_laws`) provide direct access to **Swiss fe
 
 The legislation tools (`search_legislation`, `get_legislation`, `browse_legislation_changes`) search **33,000+ Swiss legislative texts** across all levels of government — federal, cantonal, and intercantonal — via the [LexFind.ch](https://www.lexfind.ch) API. Covers laws, ordinances, regulations, and international treaties from all 26 cantons plus the federal level. Returns metadata, version history, and links to official sources (Fedlex/cantonal portals).
 
-The education tools (`study_leading_case`, `list_study_curriculum`, `check_case_brief`) support **Socratic legal study** of leading Swiss court decisions across 14 legal areas with graded difficulty.
+The education tools (`get_case_brief`, `get_doctrine`, `generate_exam_question`) support **Swiss legal study and exam prep** directly in Claude. No curriculum browsing or tool chaining needed — ask about a case, statute, or topic and Claude builds the full pedagogical session dynamically.
 
 See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
 
