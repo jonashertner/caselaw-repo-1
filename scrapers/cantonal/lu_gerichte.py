@@ -98,7 +98,7 @@ class LUGerichteScraper(BaseScraper):
         for seg_name, seg_range, max_gap in [
             ("segment 2", SEGMENT_2, 500),
             ("segment 1", SEGMENT_1, 500),
-            ("segment 0", SEGMENT_0, 100),
+            ("segment 0", SEGMENT_0, 200),
         ]:
             if since_date and since_date.year >= 2013 and seg_name != "segment 2":
                 continue
