@@ -41,10 +41,12 @@ logger = logging.getLogger(__name__)
 BASE_URL = "https://gerichte.lu.ch"
 AJAX_URL = f"{BASE_URL}/recht_sprechung/lgve/Ajax"
 
-# ID segments (empirically determined Feb 2026)
-# Segment 1: 684-3843 (decisions ~1996-2012)
-# Segment 2: 10001-11102+ (decisions ~2012-present, growing)
-SEGMENT_1 = (684, 3843)
+# ID segments (empirically determined Mar 2026)
+# Segment 0: 1-683 (early decisions, ~164 valid IDs)
+# Segment 1: 684-5000 (decisions ~1996-2012, extends past old 3843 boundary)
+# Segment 2: 10001-11500+ (decisions ~2012-present, growing)
+SEGMENT_0 = (1, 683)
+SEGMENT_1 = (684, 5000)
 SEGMENT_2 = (10001, 11500)  # Upper bound with margin for growth
 
 # Invalid response size (error page)
@@ -83,7 +85,7 @@ class LUGerichteScraper(BaseScraper):
 
     def discover_new(self, since_date=None) -> Iterator[dict]:
         """
-        Enumerate IDs in both segments, newest first.
+        Enumerate IDs in all three segments, newest first.
         Since we get full decisions from the AJAX endpoint,
         discover_new yields stubs with the ID, and fetch_decision
         re-fetches (or we could cache — but keeping it simple).
@@ -92,40 +94,18 @@ class LUGerichteScraper(BaseScraper):
             since_date = date.fromisoformat(since_date)
 
         total_yielded = 0
-        consecutive_invalid = 0
 
-        # Segment 2 first (newer decisions)
-        logger.info(f"LU: scanning segment 2 (IDs {SEGMENT_2[0]}-{SEGMENT_2[1]})")
-        for en_id in range(SEGMENT_2[1], SEGMENT_2[0] - 1, -1):
-            decision_id = f"lu_gerichte_{en_id}"
-            if self.state.is_known(decision_id):
-                consecutive_invalid = 0  # Known IDs reset the counter
-                continue
-
-            # Probe the ID
-            stub = self._probe_id(en_id)
-            if stub is None:
-                consecutive_invalid += 1
-                # Allow up to 500 consecutive invalids (segment has sparse IDs at edges)
-                if consecutive_invalid > 500:
-                    logger.info(f"LU: 500 consecutive invalid IDs at {en_id}, moving on")
-                    break
+        for seg_name, seg_range, max_gap in [
+            ("segment 2", SEGMENT_2, 500),
+            ("segment 1", SEGMENT_1, 500),
+            ("segment 0", SEGMENT_0, 100),
+        ]:
+            if since_date and since_date.year >= 2013 and seg_name != "segment 2":
                 continue
 
             consecutive_invalid = 0
-
-            if since_date and stub.get("decision_date"):
-                if stub["decision_date"] < since_date:
-                    continue
-
-            total_yielded += 1
-            yield stub
-
-        # Segment 1 (older decisions)
-        if not since_date or since_date.year < 2013:
-            consecutive_invalid = 0
-            logger.info(f"LU: scanning segment 1 (IDs {SEGMENT_1[0]}-{SEGMENT_1[1]})")
-            for en_id in range(SEGMENT_1[1], SEGMENT_1[0] - 1, -1):
+            logger.info(f"LU: scanning {seg_name} (IDs {seg_range[0]}-{seg_range[1]})")
+            for en_id in range(seg_range[1], seg_range[0] - 1, -1):
                 decision_id = f"lu_gerichte_{en_id}"
                 if self.state.is_known(decision_id):
                     consecutive_invalid = 0
@@ -134,8 +114,11 @@ class LUGerichteScraper(BaseScraper):
                 stub = self._probe_id(en_id)
                 if stub is None:
                     consecutive_invalid += 1
-                    if consecutive_invalid > 100:
-                        logger.info(f"LU: 100 consecutive invalid IDs at {en_id}, done")
+                    if consecutive_invalid > max_gap:
+                        logger.info(
+                            f"LU: {max_gap} consecutive invalid IDs at {en_id}, "
+                            f"moving on from {seg_name}"
+                        )
                         break
                     continue
 
