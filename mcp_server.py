@@ -5379,7 +5379,11 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
                     """,
                     variants + [limit],
                 ).fetchall()
-                cited_by_ids = [r["source_decision_id"] for r in rows]
+                variant_set = set(variants)
+                cited_by_ids = [
+                    r["source_decision_id"] for r in rows
+                    if r["source_decision_id"] not in variant_set
+                ]
 
             # cites: outgoing citations resolved to decision IDs
             rows = conn.execute(
@@ -5623,8 +5627,10 @@ def _handle_get_doctrine(*, query: str) -> dict:
         did = case.get("decision_id", "")
         incoming, _ = _count_citations(did)
         regeste = case.get("regeste") or ""
-        # rule_summary: first sentence of regeste, max 150 chars
-        first_sentence = regeste.split(".")[0].strip() if regeste else ""
+        # rule_summary: first sentence of regeste, max 150 chars.
+        # Strip "Regeste" header line that appears at the start of some BGE fields.
+        clean = re.sub(r"^Regeste[^\n]*\n\s*", "", regeste).strip()
+        first_sentence = clean.split(".")[0].strip() if clean else ""
         leading_cases.append({
             "decision_id": did,
             "bge_ref": case.get("docket_number", ""),
