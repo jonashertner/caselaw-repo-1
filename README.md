@@ -93,10 +93,9 @@ Restart Claude Desktop after saving.
 
 **ChatGPT:**
 
-1. Open **Settings** → **Connectors** → enable **Developer Mode**
-2. Click **Create**
-3. Enter name `swiss-caselaw` and paste `https://mcp.opencaselaw.ch`
-4. Check **"I trust this application"** → **Create**
+1. Open **Settings** → **Apps** → **Advanced settings** → enable **Developer mode**
+2. Click **Create app** → name it `Swiss Caselaw`, paste `https://mcp.opencaselaw.ch`, auth: None
+3. In any chat: click **+** → **Developer mode** → select **Swiss Caselaw**
 
 > Available on Plus, Pro, Team, Enterprise, and Edu plans.
 

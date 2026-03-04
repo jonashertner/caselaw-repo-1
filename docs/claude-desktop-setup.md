@@ -33,14 +33,15 @@ claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 
 **Plan required:** Plus, Pro, Team, Enterprise, or Edu.
 
-1. Open **Settings** → **Connectors**
-2. Enable **Developer Mode** (under Advanced)
-3. Click **Create**
-4. Enter name: `swiss-caselaw`
-5. Paste MCP server URL: `https://mcp.opencaselaw.ch`
-6. Check **"I trust this application"** → **Create**
+**One-time setup:**
 
-To use in a chat: click **+** → **More** → **Developer Mode** → enable the swiss-caselaw connector.
+1. Open **Settings** → **Apps** → scroll to **Advanced settings** → enable **Developer mode**
+2. Click **Create app** (appears next to Advanced settings once Developer mode is on)
+3. Enter name: `Swiss Caselaw`
+4. Paste URL: `https://mcp.opencaselaw.ch`
+5. Set authentication to **None** → click **Create**
+
+**To use in a chat:** click the **+** button → **Developer mode** → select **Swiss Caselaw**.
 
 ### Gemini CLI
 

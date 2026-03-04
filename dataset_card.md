@@ -112,6 +112,8 @@ claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 
 # Claude Desktop: Settings → Connectors → Add custom connector → https://mcp.opencaselaw.ch
 
+# ChatGPT: Settings → Apps → Advanced settings → Developer mode → Create app → https://mcp.opencaselaw.ch
+
 # Gemini CLI: add to ~/.gemini/settings.json
 # { "mcpServers": { "swiss-caselaw": { "url": "https://mcp.opencaselaw.ch" } } }
 ```
