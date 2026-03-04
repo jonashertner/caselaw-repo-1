@@ -46,8 +46,8 @@ AJAX_URL = f"{BASE_URL}/recht_sprechung/lgve/Ajax"
 # Segment 1: 684-5000 (decisions ~1996-2012, extends past old 3843 boundary)
 # Segment 2: 10001-11500+ (decisions ~2012-present, growing)
 SEGMENT_0 = (1, 683)
-SEGMENT_1 = (684, 5000)
-SEGMENT_2 = (10001, 11500)  # Upper bound with margin for growth
+SEGMENT_1 = (684, 5050)
+SEGMENT_2 = (9950, 11500)  # Upper bound with margin for growth
 
 # Invalid response size (error page)
 INVALID_SIZE = 1995
