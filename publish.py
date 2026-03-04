@@ -48,26 +48,43 @@ HF_REPO_ID = "voilaj/swiss-caselaw"
 
 
 def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: int = 3600) -> bool:
-    """Run a command, return True on success."""
+    """Run a command, return True on success.
+
+    Streams stdout/stderr line-by-line to the logger instead of buffering
+    the full output in memory (avoids OOM on long-running steps like
+    build_fts5 or graph build that can produce hundreds of MB of output).
+    """
     logger.info(f"  $ {' '.join(cmd)}")
     if dry_run:
         logger.info("  [dry-run] skipped")
         return True
     try:
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout, cwd=str(REPO_DIR),
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=str(REPO_DIR),
         )
-        if result.stdout.strip():
-            for line in result.stdout.strip().split("\n"):
+        # Stream stdout/stderr line-by-line
+        assert proc.stdout is not None
+        for line in proc.stdout:
+            line = line.rstrip("\n")
+            if line:
                 logger.info(f"  stdout: {line}")
-        if result.returncode != 0:
-            logger.error(f"  exit code {result.returncode}")
-            if result.stderr.strip():
-                for line in result.stderr.strip().split("\n"):
+        proc.wait(timeout=timeout)
+        # Read any remaining stderr after process exits
+        assert proc.stderr is not None
+        stderr_text = proc.stderr.read()
+        if proc.returncode != 0:
+            logger.error(f"  exit code {proc.returncode}")
+            if stderr_text.strip():
+                for line in stderr_text.strip().split("\n"):
                     logger.error(f"  stderr: {line}")
             return False
         return True
     except subprocess.TimeoutExpired:
+        proc.kill()
         logger.error(f"  timed out after {timeout}s")
         return False
     except Exception as e:

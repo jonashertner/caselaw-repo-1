@@ -530,15 +530,17 @@ async def chat(request: ChatRequest, raw_request: Request):
                             tool_args["limit"] = MIN_SEARCH_LIMIT
                         if request.filters:
                             f = request.filters
-                            if f.court and "court" not in tool_args:
+                            # User-set filters are authoritative — override
+                            # any conflicting values the model may have set.
+                            if f.court:
                                 tool_args["court"] = f.court
-                            if f.canton and "canton" not in tool_args:
+                            if f.canton:
                                 tool_args["canton"] = f.canton
-                            if f.language and "language" not in tool_args:
+                            if f.language:
                                 tool_args["language"] = f.language
-                            if f.date_from and "date_from" not in tool_args:
+                            if f.date_from:
                                 tool_args["date_from"] = f.date_from
-                            if f.date_to and "date_to" not in tool_args:
+                            if f.date_to:
                                 tool_args["date_to"] = f.date_to
 
                     tool_t0 = time.monotonic()

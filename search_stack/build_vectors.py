@@ -14,6 +14,7 @@ This module provides:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -623,9 +624,12 @@ def build_vectors(
             if not decision_id:
                 continue
 
-            # Shard filter: skip decisions not assigned to this shard
+            # Shard filter: skip decisions not assigned to this shard.
+            # Use MD5 (deterministic) instead of hash() which is randomized
+            # by PYTHONHASHSEED across processes.
             if num_shards and num_shards > 1 and shard_index is not None:
-                if hash(decision_id) % num_shards != shard_index:
+                h = int(hashlib.md5(decision_id.encode()).hexdigest(), 16)
+                if h % num_shards != shard_index:
                     continue
 
             if decision_id in seen_ids:
