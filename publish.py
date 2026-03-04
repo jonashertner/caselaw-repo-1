@@ -62,25 +62,19 @@ def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: in
         proc = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.STDOUT,  # merge stderr into stdout to avoid pipe deadlock
             text=True,
             cwd=str(REPO_DIR),
         )
-        # Stream stdout/stderr line-by-line
+        # Stream combined output line-by-line
         assert proc.stdout is not None
         for line in proc.stdout:
             line = line.rstrip("\n")
             if line:
-                logger.info(f"  stdout: {line}")
+                logger.info(f"  | {line}")
         proc.wait(timeout=timeout)
-        # Read any remaining stderr after process exits
-        assert proc.stderr is not None
-        stderr_text = proc.stderr.read()
         if proc.returncode != 0:
             logger.error(f"  exit code {proc.returncode}")
-            if stderr_text.strip():
-                for line in stderr_text.strip().split("\n"):
-                    logger.error(f"  stderr: {line}")
             return False
         return True
     except subprocess.TimeoutExpired:
