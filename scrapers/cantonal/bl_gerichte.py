@@ -173,6 +173,7 @@ class BLGerichteScraper(BaseScraper):
         total_yielded = 0
         page = 1
         consecutive_known = 0
+        seen_ids: set[str] = set()  # Dedup within run (multi-docket → same decision_id)
 
         # First request to get total count and transactionId
         data = self._search_page(page, date_from_filter)
@@ -191,12 +192,14 @@ class BLGerichteScraper(BaseScraper):
 
         # Process page 1
         for stub in self._parse_hits(data, since_date):
-            if not self.state.is_known(stub["decision_id"]):
-                consecutive_known = 0
-                total_yielded += 1
-                yield stub
-            else:
+            did = stub["decision_id"]
+            if did in seen_ids or self.state.is_known(did):
                 consecutive_known += 1
+                continue
+            seen_ids.add(did)
+            consecutive_known = 0
+            total_yielded += 1
+            yield stub
 
         # Remaining pages
         for page in range(2, total_pages + 1):
@@ -218,13 +221,15 @@ class BLGerichteScraper(BaseScraper):
 
             page_yielded = 0
             for stub in self._parse_hits(data, since_date):
-                if not self.state.is_known(stub["decision_id"]):
-                    consecutive_known = 0
-                    total_yielded += 1
-                    page_yielded += 1
-                    yield stub
-                else:
+                did = stub["decision_id"]
+                if did in seen_ids or self.state.is_known(did):
                     consecutive_known += 1
+                    continue
+                seen_ids.add(did)
+                consecutive_known = 0
+                total_yielded += 1
+                page_yielded += 1
+                yield stub
 
             logger.info(f"BL: page {page}/{total_pages}: {page_yielded} new stubs")
 
