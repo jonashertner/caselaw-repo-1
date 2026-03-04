@@ -193,7 +193,9 @@ class BLGerichteScraper(BaseScraper):
         # Process page 1
         for stub in self._parse_hits(data, since_date):
             did = stub["decision_id"]
-            if did in seen_ids or self.state.is_known(did):
+            if did in seen_ids:
+                continue  # in-run duplicate (multi-docket), don't count toward early stop
+            if self.state.is_known(did):
                 consecutive_known += 1
                 continue
             seen_ids.add(did)
@@ -222,7 +224,9 @@ class BLGerichteScraper(BaseScraper):
             page_yielded = 0
             for stub in self._parse_hits(data, since_date):
                 did = stub["decision_id"]
-                if did in seen_ids or self.state.is_known(did):
+                if did in seen_ids:
+                    continue  # in-run duplicate (multi-docket), don't count toward early stop
+                if self.state.is_known(did):
                     consecutive_known += 1
                     continue
                 seen_ids.add(did)

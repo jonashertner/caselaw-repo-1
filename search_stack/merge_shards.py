@@ -77,7 +77,7 @@ def merge_shards(
                 batch.clear()
         if batch:
             conn.executemany(
-                "INSERT INTO vec_decisions (decision_id, embedding, language) "
+                "INSERT OR IGNORE INTO vec_decisions (decision_id, embedding, language) "
                 "VALUES (?, ?, ?)",
                 batch,
             )
@@ -95,7 +95,7 @@ def merge_shards(
                     batch.append(row)
                     if len(batch) >= 10000:
                         conn.executemany(
-                            "INSERT INTO sparse_terms (decision_id, token_id, weight) "
+                            "INSERT OR IGNORE INTO sparse_terms (decision_id, token_id, weight) "
                             "VALUES (?, ?, ?)",
                             batch,
                         )

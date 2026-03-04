@@ -32,6 +32,7 @@ import argparse
 import logging
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -66,21 +67,33 @@ def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: in
             text=True,
             cwd=str(REPO_DIR),
         )
-        # Stream combined output line-by-line
-        assert proc.stdout is not None
-        for line in proc.stdout:
-            line = line.rstrip("\n")
-            if line:
-                logger.info(f"  | {line}")
-        proc.wait(timeout=timeout)
+        # Watchdog timer: kill the process if it exceeds the timeout.
+        # We can't rely on proc.wait(timeout=) because the for-loop
+        # over proc.stdout blocks until EOF (i.e. process exit).
+        timed_out = threading.Event()
+
+        def _kill_on_timeout():
+            timed_out.set()
+            proc.kill()
+
+        timer = threading.Timer(timeout, _kill_on_timeout)
+        timer.start()
+        try:
+            assert proc.stdout is not None
+            for line in proc.stdout:
+                line = line.rstrip("\n")
+                if line:
+                    logger.info(f"  | {line}")
+            proc.wait()
+        finally:
+            timer.cancel()
+        if timed_out.is_set():
+            logger.error(f"  timed out after {timeout}s")
+            return False
         if proc.returncode != 0:
             logger.error(f"  exit code {proc.returncode}")
             return False
         return True
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        logger.error(f"  timed out after {timeout}s")
-        return False
     except Exception as e:
         logger.error(f"  failed: {e}")
         return False
