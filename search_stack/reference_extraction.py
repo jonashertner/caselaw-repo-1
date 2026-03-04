@@ -63,7 +63,7 @@ STATUTE_PATTERN = re.compile(
 )
 
 BGE_PATTERN = re.compile(
-    r"\bBGE\s+(?P<vol>\d{2,3})\s+(?P<div>[IVX]{1,4})\s+(?P<page>\d{1,4})\b",
+    r"\bBGE\s+(?P<vol>\d{1,3})\s+(?P<div>[IVX]{1,4})\s+(?P<page>\d{1,4})\b",
     flags=re.IGNORECASE,
 )
 
@@ -73,7 +73,7 @@ DOCKET_PATTERNS = [
     # VB.2018.00411, RR.2012.25
     re.compile(r"\b[A-Z]{1,6}\.\d{4}\.\d{1,6}\b"),
     # 151 I 62 (internal BGE style references without explicit "BGE")
-    re.compile(r"\b\d{2,3}\s+[IVX]{1,4}\s+\d{1,4}\b"),
+    re.compile(r"\b\d{1,3}\s+[IVX]{1,4}\s+\d{1,4}\b"),
 ]
 
 
@@ -187,7 +187,7 @@ def _normalize_statute(*, article: str, paragraph: str | None, law_code: str) ->
 def _normalize_docket(text: str) -> str:
     # Preserve BGE-like spacing while normalizing punctuation/case.
     compact = re.sub(r"\s+", " ", text.strip().upper())
-    if re.match(r"^\d{2,3}\s+[IVX]{1,4}\s+\d{1,4}$", compact):
+    if re.match(r"^\d{1,3}\s+[IVX]{1,4}\s+\d{1,4}$", compact):
         return compact
 
     normalized = text.strip().upper()

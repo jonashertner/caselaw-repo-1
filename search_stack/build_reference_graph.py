@@ -100,7 +100,14 @@ def _docket_norm(value: str | None) -> str:
     out = value.strip().upper().replace("-", "_").replace(".", "_").replace("/", "_")
     while "__" in out:
         out = out.replace("__", "_")
-    return out.strip("_")
+    out = out.strip("_")
+    # Normalize BGE-style vol_div_page patterns (e.g. "79_IV_170") to use
+    # spaces ("79 IV 170") — consistent with how citation extraction normalizes
+    # BGE references.  Without this, bge_historical docket_norms won't match
+    # citation target_refs during resolution.
+    if re.match(r"^\d{1,3}_[IVX]{1,4}_\d{1,4}$", out):
+        out = out.replace("_", " ")
+    return out
 
 
 # BStGer two-letter prefixes
@@ -297,7 +304,7 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
             FROM decision_citations dc
             JOIN decisions td
               ON td.docket_norm = SUBSTR(dc.target_ref, 5)
-             AND td.court IN ('bge', 'bger')
+             AND td.court IN ('bge', 'bger', 'bge_historical')
             LEFT JOIN decisions sd
               ON sd.decision_id = dc.source_decision_id
             WHERE dc.target_type = 'bge'
