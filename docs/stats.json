@@ -1982,7 +1982,7 @@
     "2026-02": 4699,
     "2026-03": 6
   },
-  "generated_at": "2026-03-04T04:46:45.436254+00:00",
+  "generated_at": "2026-03-04T08:25:42.639719+00:00",
   "scraper_health": {
     "run_at": "2026-03-04T02:15:31.440547+00:00",
     "run_duration_s": 4529.6,
@@ -2720,43 +2720,9 @@
     }
   },
   "delta": {
-    "total": 185,
-    "by_court": {
-      "bger": 22,
-      "ge_gerichte": 47,
-      "bvger": 14,
-      "ti_gerichte": 2,
-      "vd_gerichte": 6,
-      "zh_sozialversicherungsgericht": 6,
-      "gr_gerichte": 2,
-      "bstger": 2,
-      "so_gerichte": 6,
-      "be_verwaltungsgericht": 6,
-      "sg_verwaltungsgericht": 8,
-      "bs_sozialversicherungsgericht": 10,
-      "ag_strafgericht": 2,
-      "ag_versicherungsgericht": 8,
-      "edoeb": 4,
-      "ag_zivilgericht": 3,
-      "gl_gerichte": 2,
-      "ag_spezialverwaltungsgericht": 6,
-      "hudoc_ch": 27,
-      "ag_handelsgericht": 1,
-      "sg_kantonsgericht": 1
-    },
-    "by_canton": {
-      "GE": 47,
-      "VD": 6,
-      "ZH": 6,
-      "TI": 2,
-      "BE": 6,
-      "GR": 2,
-      "SG": 9,
-      "AG": 20,
-      "BS": 10,
-      "SO": 6,
-      "GL": 2
-    },
-    "previous_generated_at": "2026-03-03T22:34:51.768057+00:00"
+    "total": 0,
+    "by_court": {},
+    "by_canton": {},
+    "previous_generated_at": "2026-03-04T04:46:45.436254+00:00"
   }
 }
