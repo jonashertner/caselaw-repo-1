@@ -29,7 +29,7 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from db_schema import INSERT_COLUMNS, INSERT_OR_IGNORE_SQL, SCHEMA_SQL
+from db_schema import COVERAGE_SCHEMA_SQL, INSERT_COLUMNS, INSERT_OR_IGNORE_SQL, SCHEMA_SQL
 from models import make_canonical_key
 
 logger = logging.getLogger("build_fts5")
@@ -613,6 +613,7 @@ def build_database(
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA_SQL)
+    conn.executescript(COVERAGE_SCHEMA_SQL)
 
     # Migrate: add columns that may be missing in older databases
     _migrate_schema(conn)

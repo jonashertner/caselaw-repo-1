@@ -33,10 +33,11 @@ all = ["swiss-caselaw-scrapers[crypto,pdf,api,semantic,dev]"]
 include = ["scrapers*", "search_stack*"]
 
 [tool.setuptools]
-py-modules = ["pipeline", "base_scraper", "models", "db_schema", "run_scraper", "mcp_server", "fts5_server", "export_parquet", "build_fts5"]
+py-modules = ["pipeline", "base_scraper", "models", "db_schema", "run_scraper", "mcp_server", "fts5_server", "export_parquet", "build_fts5", "coverage_report"]
 
 [project.scripts]
 swiss-caselaw = "pipeline:main"
+swiss-caselaw-gap-report = "coverage_report:main"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

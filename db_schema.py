@@ -88,6 +88,37 @@ SCHEMA_SQL = """
     END;
 """
 
+# Coverage tracking schema (completeness / reconciliation)
+COVERAGE_SCHEMA_SQL = """
+    CREATE TABLE IF NOT EXISTS coverage_targets (
+        source_key TEXT PRIMARY KEY,
+        source_name TEXT,
+        source_kind TEXT,
+        start_date TEXT,
+        end_date TEXT,
+        active INTEGER NOT NULL DEFAULT 1,
+        notes TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS source_snapshots (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_key TEXT NOT NULL,
+        snapshot_year INTEGER NOT NULL,
+        snapshot_date TEXT NOT NULL,
+        expected_count INTEGER NOT NULL,
+        expected_ids_json TEXT NOT NULL DEFAULT '[]',
+        notes TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_source_snapshots_unique
+        ON source_snapshots(source_key, snapshot_year, snapshot_date);
+    CREATE INDEX IF NOT EXISTS idx_source_snapshots_source_year
+        ON source_snapshots(source_key, snapshot_year);
+"""
+
 # Column order for INSERT statements (must match SCHEMA_SQL table definition)
 INSERT_COLUMNS = (
     "decision_id", "court", "canton", "chamber", "docket_number",

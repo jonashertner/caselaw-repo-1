@@ -22,8 +22,11 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import re
+import sqlite3
 import sys
 import time
+from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
 
@@ -112,12 +115,129 @@ def serialize_decision(d) -> str:
     return json.dumps(data, ensure_ascii=False, default=str)
 
 
+_YEAR_RE = re.compile(r"\b(18|19|20)\d{2}\b")
+
+
+def _infer_decision_year(
+    *,
+    decision_id: str,
+    docket_number: str | None,
+    decision_date: date | datetime | str | None,
+) -> int | None:
+    """Infer decision year from explicit date first, then docket/ID text."""
+    if isinstance(decision_date, datetime):
+        year = int(decision_date.year)
+        return year if 1800 <= year <= 2100 else None
+    if isinstance(decision_date, date):
+        year = int(decision_date.year)
+        return year if 1800 <= year <= 2100 else None
+    if isinstance(decision_date, str):
+        decision_date = decision_date.strip()
+        if len(decision_date) >= 4 and decision_date[:4].isdigit():
+            year = int(decision_date[:4])
+            if 1800 <= year <= 2100:
+                return year
+
+    for text in (docket_number or "", decision_id or ""):
+        for match in _YEAR_RE.finditer(text):
+            year = int(match.group(0))
+            if 1800 <= year <= 2100:
+                return year
+    return None
+
+
+def _load_written_ids_and_years(jsonl_path: Path) -> tuple[set[str], dict[int, set[str]]]:
+    """Load already-written decision IDs and year buckets from a JSONL file."""
+    written_ids: set[str] = set()
+    ids_by_year: dict[int, set[str]] = defaultdict(set)
+    if not jsonl_path.exists():
+        return written_ids, ids_by_year
+
+    with open(jsonl_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            decision_id = str(obj.get("decision_id", "")).strip()
+            if not decision_id:
+                continue
+            written_ids.add(decision_id)
+
+            year = _infer_decision_year(
+                decision_id=decision_id,
+                docket_number=str(obj.get("docket_number", "") or ""),
+                decision_date=obj.get("decision_date"),
+            )
+            if year is not None:
+                ids_by_year[year].add(decision_id)
+
+    return written_ids, ids_by_year
+
+
+def _record_coverage_snapshots(
+    *,
+    scraper_key: str,
+    output_dir: Path,
+    ids_by_year: dict[int, set[str]],
+    changed_years: set[int],
+) -> None:
+    """Persist per-year source snapshots for this scraper into coverage tables."""
+    if not ids_by_year:
+        return
+
+    from coverage_report import ensure_coverage_tables, record_snapshot
+
+    db_path = output_dir / "decisions.db"
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    try:
+        ensure_coverage_tables(conn)
+        existing_rows = int(
+            conn.execute(
+                "SELECT COUNT(*) FROM source_snapshots WHERE source_key = ?",
+                (scraper_key,),
+            ).fetchone()[0]
+        )
+        years_to_write = set(changed_years)
+        if existing_rows == 0:
+            # Initial backfill for this source from existing JSONL.
+            years_to_write = set(ids_by_year.keys())
+        if not years_to_write:
+            return
+
+        snapshot_date = date.today().isoformat()
+        for year in sorted(years_to_write):
+            ids = sorted(ids_by_year.get(year, set()))
+            if not ids:
+                continue
+            record_snapshot(
+                conn,
+                source_key=scraper_key,
+                snapshot_year=year,
+                snapshot_date=snapshot_date,
+                decision_ids=ids,
+                notes="auto: run_scraper",
+            )
+        logger.info(
+            f"[{scraper_key}] Coverage snapshots updated for years: {sorted(years_to_write)}"
+        )
+    finally:
+        conn.close()
+
+
 def run_with_persistence(
     scraper_key: str,
     since_date: str | None = None,
     max_decisions: int | None = None,
     output_dir: Path = Path("output"),
     state_dir: Path = Path("state"),
+    auto_coverage_snapshot: bool = True,
 ) -> int:
     """Run scraper and write each decision to JSONL incrementally.
 
@@ -143,17 +263,8 @@ def run_with_persistence(
     jsonl_path = decisions_dir / f"{scraper_key}.jsonl"
 
     # Load already-written decision IDs from output JSONL (for dedup on restart)
-    written_ids = set()
+    written_ids, written_ids_by_year = _load_written_ids_and_years(jsonl_path)
     if jsonl_path.exists():
-        with open(jsonl_path) as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    try:
-                        obj = json.loads(line)
-                        written_ids.add(obj.get("decision_id", ""))
-                    except json.JSONDecodeError:
-                        pass
         logger.info(f"Loaded {len(written_ids)} already-written decisions from {jsonl_path}")
 
     # Initialize scraper
@@ -169,6 +280,7 @@ def run_with_persistence(
     skips = 0
     errors = 0
     none_count = 0
+    changed_years: set[int] = set()
     start = time.time()
 
     logger.info(
@@ -190,10 +302,15 @@ def run_with_persistence(
                         f.write(serialize_decision(decision) + "\n")
                         f.flush()
                     written_ids.add(decision.decision_id)
+                    year = _infer_decision_year(
+                        decision_id=decision.decision_id,
+                        docket_number=decision.docket_number,
+                        decision_date=decision.decision_date,
+                    )
+                    if year is not None:
+                        written_ids_by_year[year].add(decision.decision_id)
+                        changed_years.add(year)
                     new_count += 1
-                else:
-                    skips += 1
-
                     if new_count % 100 == 0:
                         elapsed = time.time() - start
                         rate = new_count / elapsed * 3600
@@ -201,6 +318,8 @@ def run_with_persistence(
                             f"[{scraper_key}] Progress: {new_count} decisions, "
                             f"{rate:.0f}/hour, file: {jsonl_path.stat().st_size / 1024 / 1024:.1f} MB"
                         )
+                else:
+                    skips += 1
 
                 # Mark scraped AFTER durable write to avoid gaps on crash
                 scraper.state.mark_scraped(decision.decision_id)
@@ -249,6 +368,17 @@ def run_with_persistence(
         f"File: {jsonl_path} ({file_size:.1f} MB)"
     )
 
+    if auto_coverage_snapshot:
+        try:
+            _record_coverage_snapshots(
+                scraper_key=scraper_key,
+                output_dir=output_dir,
+                ids_by_year=written_ids_by_year,
+                changed_years=changed_years,
+            )
+        except Exception as e:
+            logger.warning(f"[{scraper_key}] Coverage snapshot update failed: {e}")
+
     # Return total failures so callers can enforce strict completeness.
     return errors
 
@@ -265,6 +395,11 @@ def main():
     parser.add_argument("--max", type=int, help="Max decisions to scrape")
     parser.add_argument("--output", type=str, default="output", help="Output directory")
     parser.add_argument("--state", type=str, default="state", help="State directory")
+    parser.add_argument(
+        "--no-coverage-snapshot",
+        action="store_true",
+        help="Disable automatic source snapshot update after scrape run",
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
 
     args = parser.parse_args()
@@ -298,6 +433,7 @@ def main():
         max_decisions=args.max,
         output_dir=Path(args.output),
         state_dir=Path(args.state),
+        auto_coverage_snapshot=not args.no_coverage_snapshot,
     )
 
     if exit_code:

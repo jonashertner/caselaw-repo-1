@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 def test_db_schema_imports():
     """Verify db_schema.py exports are importable and consistent."""
-    from db_schema import SCHEMA_SQL, INSERT_COLUMNS, INSERT_SQL
+    from db_schema import COVERAGE_SCHEMA_SQL, SCHEMA_SQL, INSERT_COLUMNS, INSERT_SQL
 
     # INSERT_COLUMNS should match the CREATE TABLE columns
     assert "decision_id" in INSERT_COLUMNS
@@ -40,6 +40,10 @@ def test_db_schema_imports():
     assert "source" in INSERT_COLUMNS
     assert "source_id" in INSERT_COLUMNS
     assert "content_hash" in INSERT_COLUMNS
+
+    # Coverage tracking tables should be present
+    assert "coverage_targets" in COVERAGE_SCHEMA_SQL
+    assert "source_snapshots" in COVERAGE_SCHEMA_SQL
 
     print("  OK: db_schema exports consistent")
 
@@ -90,8 +94,8 @@ def test_db_parquet_alignment():
     db_cols = set(INSERT_COLUMNS)
     pq_cols = {f.name for f in DECISION_SCHEMA}
 
-    # These columns are only in the DB (json_data is a blob)
-    db_only_expected = {"json_data"}
+    # These columns are only in the DB (json_data is a blob, canonical_key is dedup index)
+    db_only_expected = {"json_data", "canonical_key"}
     # These columns are only in Parquet (computed fields)
     pq_only_expected = {
         "has_full_text", "text_length", "chamber", "docket_number_2",
@@ -103,8 +107,10 @@ def test_db_parquet_alignment():
         "external_id", "source_spider",
     }
 
-    db_cols - pq_cols - db_only_expected
-    pq_cols - db_cols - pq_only_expected
+    db_unexpected = db_cols - pq_cols - db_only_expected
+    assert not db_unexpected, f"DB columns not in Parquet or db_only_expected: {db_unexpected}"
+    pq_unexpected = pq_cols - db_cols - pq_only_expected
+    assert not pq_unexpected, f"Parquet columns not in DB or pq_only_expected: {pq_unexpected}"
 
     # Core columns that should be in BOTH
     core_shared = {"decision_id", "court", "canton", "language", "full_text",
