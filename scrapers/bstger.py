@@ -48,7 +48,7 @@ PDF_URL = f"{HOST}/api/getDocumentFile/"
 
 # Starting date range (days) — halved adaptively if >100 results
 INITIAL_WINDOW_DAYS = 64
-START_DATE = "2005-01-01"
+START_DATE = "2004-01-01"
 MAX_RESULTS_PER_WINDOW = 100
 
 # Request headers
