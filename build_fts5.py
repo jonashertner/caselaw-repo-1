@@ -263,6 +263,8 @@ _COURT_OVERLAP_GROUPS: list[set[str]] = [
      "ag_handelsgericht", "ag_spezialverwaltungsgericht"},
     # SH: entscheidsuche generic vs specific
     {"sh_gerichte", "sh_obergericht"},
+    # TG: entscheidsuche → tg_obergericht, direct scraper → tg_gerichte
+    {"tg_gerichte", "tg_obergericht"},
 ]
 
 # Build a lookup: court_code → frozenset of group members
@@ -304,6 +306,7 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
         if not group:
             continue
         docket_norm = re.sub(r"[^A-Z0-9]", "", (docket or "").upper())
+        docket_norm = re.sub(r"NR(?=\d)", "", docket_norm)  # Strip "Nr." noise
         # Include date to avoid false matches across years
         date_compact = (date or "").replace("-", "")[:8]
         key = f"{id(group)}|{docket_norm}|{date_compact}"
