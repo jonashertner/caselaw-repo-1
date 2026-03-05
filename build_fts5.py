@@ -306,7 +306,8 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
         if not group:
             continue
         docket_norm = re.sub(r"[^A-Z0-9]", "", (docket or "").upper())
-        docket_norm = re.sub(r"NR(?=\d)", "", docket_norm)  # Strip "Nr." noise
+        if "tg_gerichte" in group:
+            docket_norm = re.sub(r"NR(?=\d)", "", docket_norm)  # TG "Nr." noise
         # Include date to avoid false matches across years
         date_compact = (date or "").replace("-", "")[:8]
         key = f"{id(group)}|{docket_norm}|{date_compact}"

@@ -202,6 +202,7 @@ class TGGerichteScraper(BaseScraper):
 
         total_yielded = 0
         today = date.today()
+        seen_ids: set[str] = set()  # Run-level dedup across all sections
 
         # 1. Main RBOG/TVR series
         for section_path, series_slug, series_prefix, default_start in SECTIONS:
@@ -210,12 +211,15 @@ class TGGerichteScraper(BaseScraper):
 
             for year in range(today.year, start_year - 1, -1):
                 for stub in self._discover_year(section_path, series_slug, series_prefix, year):
-                    if not self.state.is_known(stub["decision_id"]):
-                        if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
-                            continue
-                        total_yielded += 1
-                        section_count += 1
-                        yield stub
+                    did = stub["decision_id"]
+                    if did in seen_ids or self.state.is_known(did):
+                        continue
+                    seen_ids.add(did)
+                    if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
+                        continue
+                    total_yielded += 1
+                    section_count += 1
+                    yield stub
 
             if section_count > 0:
                 logger.info(f"TG/{series_prefix}: {section_count} new stubs")
@@ -224,10 +228,13 @@ class TGGerichteScraper(BaseScraper):
         for section_path, index_suffix, label in MEDIA_SECTIONS:
             section_count = 0
             for stub in self._discover_extra_section(section_path, index_suffix, label, since_date):
-                if not self.state.is_known(stub["decision_id"]):
-                    total_yielded += 1
-                    section_count += 1
-                    yield stub
+                did = stub["decision_id"]
+                if did in seen_ids or self.state.is_known(did):
+                    continue
+                seen_ids.add(did)
+                total_yielded += 1
+                section_count += 1
+                yield stub
             if section_count > 0:
                 logger.info(f"TG/{label}: {section_count} new stubs")
 
@@ -235,10 +242,13 @@ class TGGerichteScraper(BaseScraper):
         for section_path, index_suffix, label in PENDING_SECTIONS:
             section_count = 0
             for stub in self._discover_pending_section(section_path, index_suffix, label, since_date):
-                if not self.state.is_known(stub["decision_id"]):
-                    total_yielded += 1
-                    section_count += 1
-                    yield stub
+                did = stub["decision_id"]
+                if did in seen_ids or self.state.is_known(did):
+                    continue
+                seen_ids.add(did)
+                total_yielded += 1
+                section_count += 1
+                yield stub
             if section_count > 0:
                 logger.info(f"TG/{label}: {section_count} new stubs")
 
@@ -310,12 +320,12 @@ class TGGerichteScraper(BaseScraper):
 
         soup = BeautifulSoup(r.text, "html.parser")
 
-        # Find year links (e.g. /og/2024, /og/2025)
-        years = []
+        # Find year links (e.g. /og/2024, /og/2025), deduped
+        years = set()
         for a in soup.find_all("a", href=True):
             m = RE_YEAR_LINK.search(a["href"])
             if m:
-                years.append(int(m.group(1)))
+                years.add(int(m.group(1)))
 
         for year in sorted(years, reverse=True):
             if since_date and year < since_date.year - 1:
