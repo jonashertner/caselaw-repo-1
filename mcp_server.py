@@ -6612,7 +6612,7 @@ def _list_tools() -> list[Tool]:
                 "Fetch a single court decision with full text. "
                 "Look up by decision_id (e.g., bger_6B_1234_2025), "
                 "docket number (e.g., 6B_1234/2025), or partial match. "
-                "Full text is truncated at 50,000 characters for very long decisions. "
+                "Full text is truncated at 200,000 characters for very long decisions. "
                 "Set full_text=false to get only metadata and regeste."
             ),
             inputSchema={
@@ -7269,8 +7269,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 text += f"\n## Regeste\n{result['regeste']}\n"
             if include_full_text and result.get("full_text"):
                 ft = result["full_text"]
-                if len(ft) > 50000:
-                    text += f"\n## Full Text (first 50,000 of {len(ft)} chars)\n{ft[:50000]}\n..."
+                if len(ft) > 200000:
+                    text += f"\n## Full Text (first 200,000 of {len(ft)} chars)\n{ft[:200000]}\n..."
                 else:
                     text += f"\n## Full Text\n{ft}\n"
             if result.get("source_url"):
