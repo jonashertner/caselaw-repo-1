@@ -259,18 +259,31 @@ def _fetch_existing_ids(conn: sqlite3.Connection, decision_ids: list[str]) -> se
 
 
 def _ingested_count_by_year(conn: sqlite3.Connection, source_key: str, snapshot_year: int) -> int:
-    # Try source_spider first (scraper key), fall back to court for older data
-    return int(
-        conn.execute(
-            """
-            SELECT COUNT(*)
-            FROM decisions
-            WHERE (source_spider = ? OR court = ?)
-              AND SUBSTR(COALESCE(decision_date, ''), 1, 4) = ?
-            """,
-            (source_key, source_key, str(snapshot_year)),
-        ).fetchone()[0]
-    )
+    # Try source_spider first (scraper key), fall back to court for older/minimal schemas.
+    try:
+        return int(
+            conn.execute(
+                """
+                SELECT COUNT(*)
+                FROM decisions
+                WHERE (source_spider = ? OR court = ?)
+                  AND SUBSTR(COALESCE(decision_date, ''), 1, 4) = ?
+                """,
+                (source_key, source_key, str(snapshot_year)),
+            ).fetchone()[0]
+        )
+    except sqlite3.OperationalError:
+        return int(
+            conn.execute(
+                """
+                SELECT COUNT(*)
+                FROM decisions
+                WHERE court = ?
+                  AND SUBSTR(COALESCE(decision_date, ''), 1, 4) = ?
+                """,
+                (source_key, str(snapshot_year)),
+            ).fetchone()[0]
+        )
 
 
 def _has_decisions_table(conn: sqlite3.Connection) -> bool:
@@ -282,6 +295,85 @@ def _has_decisions_table(conn: sqlite3.Connection) -> bool:
         """
     ).fetchone()
     return row is not None
+
+
+def mark_gap_failure(
+    conn: sqlite3.Connection,
+    *,
+    source_key: str,
+    decision_year: int,
+    decision_id: str,
+    error_message: str,
+    retry_delay_days: int = 1,
+) -> None:
+    """Upsert one gap_queue row as failed/missing."""
+    conn.execute(
+        """
+        INSERT INTO gap_queue (
+            source_key, decision_year, decision_id, status,
+            retry_count, next_retry_at, first_seen_at, last_seen_at,
+            last_error, resolved_at, resolution
+        ) VALUES (
+            ?, ?, ?, 'retrying', 1, datetime('now', ?), datetime('now'), datetime('now'),
+            ?, NULL, NULL
+        )
+        ON CONFLICT(source_key, decision_year, decision_id)
+        DO UPDATE SET
+            status = CASE WHEN gap_queue.status = 'ignored' THEN 'ignored' ELSE 'retrying' END,
+            retry_count = CASE
+                WHEN gap_queue.status = 'ignored' THEN gap_queue.retry_count
+                ELSE gap_queue.retry_count + 1
+            END,
+            next_retry_at = CASE
+                WHEN gap_queue.status = 'ignored' THEN gap_queue.next_retry_at
+                ELSE datetime('now', ?)
+            END,
+            last_seen_at = datetime('now'),
+            last_error = ?,
+            resolved_at = CASE WHEN gap_queue.status = 'ignored' THEN gap_queue.resolved_at ELSE NULL END,
+            resolution = CASE WHEN gap_queue.status = 'ignored' THEN gap_queue.resolution ELSE NULL END
+        """,
+        (
+            source_key,
+            decision_year,
+            decision_id,
+            f"+{int(retry_delay_days)} day",
+            error_message[:500],
+            f"+{int(retry_delay_days)} day",
+            error_message[:500],
+        ),
+    )
+
+
+def mark_gap_resolved(
+    conn: sqlite3.Connection,
+    *,
+    source_key: str,
+    decision_year: int,
+    decision_id: str,
+    resolution: str = "ingested",
+) -> None:
+    """Mark one existing gap_queue row resolved."""
+    conn.execute(
+        """
+        UPDATE gap_queue
+        SET status = 'resolved',
+            last_seen_at = datetime('now'),
+            last_error = NULL,
+            resolved_at = datetime('now'),
+            resolution = ?
+        WHERE source_key = ?
+          AND decision_year = ?
+          AND decision_id = ?
+          AND status IN ('open', 'retrying')
+        """,
+        (
+            resolution,
+            source_key,
+            decision_year,
+            decision_id,
+        ),
+    )
 
 
 def generate_gap_report(
@@ -350,6 +442,116 @@ def generate_gap_report(
         report.append(item)
 
     return report
+
+
+def sync_gap_queue_from_snapshots(
+    conn: sqlite3.Connection,
+    *,
+    sources: list[str] | None = None,
+    year_from: int | None = None,
+    year_to: int | None = None,
+) -> dict[str, int]:
+    """Reconcile gap_queue against latest snapshots (ID-aware rows only)."""
+    has_decisions = _has_decisions_table(conn)
+    rows = _latest_snapshots(
+        conn,
+        sources=sources,
+        year_from=year_from,
+        year_to=year_to,
+    )
+
+    inserted_or_updated = 0
+    resolved = 0
+
+    for row in rows:
+        source_key = str(row["source_key"])
+        snapshot_year = int(row["snapshot_year"])
+        expected_ids_raw = str(row["expected_ids_json"] or "[]")
+        try:
+            expected_ids = _dedupe_preserve_order(
+                [str(x).strip() for x in json.loads(expected_ids_raw)]
+            )
+        except json.JSONDecodeError:
+            expected_ids = []
+
+        # Without explicit expected IDs we cannot queue per-decision gaps.
+        if not expected_ids:
+            continue
+
+        existing_ids = _fetch_existing_ids(conn, expected_ids) if has_decisions else set()
+        missing_ids = [did for did in expected_ids if did not in existing_ids]
+
+        for did in missing_ids:
+            conn.execute(
+                """
+                INSERT INTO gap_queue (
+                    source_key, decision_year, decision_id, status,
+                    retry_count, next_retry_at, first_seen_at, last_seen_at,
+                    last_error, resolved_at, resolution
+                ) VALUES (
+                    ?, ?, ?, 'open', 0, datetime('now'), datetime('now'), datetime('now'),
+                    'snapshot_missing', NULL, NULL
+                )
+                ON CONFLICT(source_key, decision_year, decision_id)
+                DO UPDATE SET
+                    status = CASE WHEN gap_queue.status = 'ignored' THEN 'ignored' ELSE 'open' END,
+                    last_seen_at = datetime('now'),
+                    next_retry_at = CASE
+                        WHEN gap_queue.status = 'ignored' THEN gap_queue.next_retry_at
+                        ELSE datetime('now')
+                    END,
+                    last_error = CASE
+                        WHEN gap_queue.status = 'ignored' THEN gap_queue.last_error
+                        ELSE 'snapshot_missing'
+                    END,
+                    resolved_at = CASE WHEN gap_queue.status = 'ignored' THEN gap_queue.resolved_at ELSE NULL END,
+                    resolution = CASE WHEN gap_queue.status = 'ignored' THEN gap_queue.resolution ELSE NULL END
+                """,
+                (source_key, snapshot_year, did),
+            )
+            inserted_or_updated += 1
+
+        # Resolve queue rows for this source/year that are no longer missing.
+        if missing_ids:
+            placeholders = ",".join("?" for _ in missing_ids)
+            rowcount = conn.execute(
+                f"""
+                UPDATE gap_queue
+                SET status = 'resolved',
+                    last_seen_at = datetime('now'),
+                    last_error = NULL,
+                    resolved_at = datetime('now'),
+                    resolution = 'snapshot_reconciled'
+                WHERE source_key = ?
+                  AND decision_year = ?
+                  AND status IN ('open', 'retrying')
+                  AND decision_id NOT IN ({placeholders})
+                """,
+                [source_key, snapshot_year, *missing_ids],
+            ).rowcount
+        else:
+            rowcount = conn.execute(
+                """
+                UPDATE gap_queue
+                SET status = 'resolved',
+                    last_seen_at = datetime('now'),
+                    last_error = NULL,
+                    resolved_at = datetime('now'),
+                    resolution = 'snapshot_reconciled'
+                WHERE source_key = ?
+                  AND decision_year = ?
+                  AND status IN ('open', 'retrying')
+                """,
+                (source_key, snapshot_year),
+            ).rowcount
+        resolved += int(rowcount or 0)
+
+    conn.commit()
+    return {
+        "upserted_missing": inserted_or_updated,
+        "resolved": resolved,
+        "rows": len(rows),
+    }
 
 
 def _print_report(rows: list[dict[str, Any]], *, show_ids: bool = False) -> None:
@@ -448,6 +650,16 @@ def main() -> None:
         help="Optional JSON output path",
     )
 
+    sync = sub.add_parser("sync-gap-queue", help="Reconcile gap_queue from latest snapshots")
+    sync.add_argument(
+        "--source",
+        action="append",
+        default=None,
+        help="Filter source key (repeatable)",
+    )
+    sync.add_argument("--year-from", type=int, default=None, help="Filter minimum year")
+    sync.add_argument("--year-to", type=int, default=None, help="Filter maximum year")
+
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -500,6 +712,22 @@ def main() -> None:
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_text(json.dumps(rows, indent=2, ensure_ascii=False), encoding="utf-8")
             print(f"wrote {len(rows)} rows to {out_path}")
+        conn.close()
+        return
+
+    if args.command == "sync-gap-queue":
+        stats = sync_gap_queue_from_snapshots(
+            conn,
+            sources=args.source,
+            year_from=args.year_from,
+            year_to=args.year_to,
+        )
+        print(
+            "sync-gap-queue: "
+            f"rows={stats['rows']} "
+            f"upserted_missing={stats['upserted_missing']} "
+            f"resolved={stats['resolved']}"
+        )
         conn.close()
         return
 

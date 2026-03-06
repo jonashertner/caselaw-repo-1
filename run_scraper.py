@@ -231,6 +231,156 @@ def _record_coverage_snapshots(
         conn.close()
 
 
+class _RunEventWriter:
+    """Persist discovery/fetch events and maintain gap queue for one run."""
+
+    def __init__(self, *, output_dir: Path, source_key: str, run_id: str):
+        self.output_dir = output_dir
+        self.source_key = source_key
+        self.run_id = run_id
+        self._conn: sqlite3.Connection | None = None
+        self._attempt_counts: dict[str, int] = defaultdict(int)
+        self._pending = 0
+        self._enabled = False
+        self._init_db()
+
+    def _init_db(self) -> None:
+        try:
+            from coverage_report import ensure_coverage_tables
+
+            db_path = self.output_dir / "decisions.db"
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            conn = sqlite3.connect(str(db_path))
+            ensure_coverage_tables(conn)
+            self._conn = conn
+            self._enabled = True
+        except Exception as e:
+            logger.warning(f"[{self.source_key}] Event tracking disabled: {e}")
+            self._enabled = False
+
+    def _maybe_commit(self) -> None:
+        if not self._conn:
+            return
+        self._pending += 1
+        if self._pending >= 200:
+            self._conn.commit()
+            self._pending = 0
+
+    def close(self) -> None:
+        if not self._conn:
+            return
+        try:
+            if self._pending:
+                self._conn.commit()
+        finally:
+            self._conn.close()
+            self._conn = None
+            self._enabled = False
+
+    def log_discovery(self, stub: dict) -> None:
+        if not self._enabled or not self._conn:
+            return
+        try:
+            decision_id = str(stub.get("decision_id", "")).strip() or None
+            docket_number = str(stub.get("docket_number", "")).strip() or None
+            decision_year = _infer_decision_year(
+                decision_id=decision_id or "",
+                docket_number=docket_number,
+                decision_date=stub.get("decision_date"),
+            )
+            stub_json = json.dumps(stub, ensure_ascii=False, default=str)
+            self._conn.execute(
+                """
+                INSERT INTO source_discoveries (
+                    run_id, source_key, decision_id, docket_number, decision_year,
+                    status, stub_json, discovered_at
+                ) VALUES (?, ?, ?, ?, ?, 'discovered', ?, datetime('now'))
+                """,
+                (
+                    self.run_id,
+                    self.source_key,
+                    decision_id,
+                    docket_number,
+                    decision_year,
+                    stub_json[:20000],
+                ),
+            )
+            self._maybe_commit()
+        except Exception as e:
+            logger.debug(f"[{self.source_key}] discovery event logging failed: {e}")
+
+    def log_fetch_attempt(
+        self,
+        *,
+        stub: dict,
+        status: str,
+        decision_id: str | None = None,
+        docket_number: str | None = None,
+        decision_date: date | datetime | str | None = None,
+        error_type: str | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        if not self._enabled or not self._conn:
+            return
+
+        did = decision_id or str(stub.get("decision_id", "")).strip() or None
+        docket = docket_number or str(stub.get("docket_number", "")).strip() or None
+        year = _infer_decision_year(
+            decision_id=did or "",
+            docket_number=docket,
+            decision_date=decision_date if decision_date is not None else stub.get("decision_date"),
+        )
+        attempt_key = did or docket or "<unknown>"
+        self._attempt_counts[attempt_key] += 1
+        attempt_no = self._attempt_counts[attempt_key]
+
+        try:
+            self._conn.execute(
+                """
+                INSERT INTO source_fetch_attempts (
+                    run_id, source_key, decision_id, docket_number, decision_year,
+                    attempt_no, status, error_type, error_message, fetched_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+                """,
+                (
+                    self.run_id,
+                    self.source_key,
+                    did,
+                    docket,
+                    year,
+                    attempt_no,
+                    status,
+                    error_type,
+                    (error_message or "")[:1000] or None,
+                ),
+            )
+
+            if did and year is not None:
+                from coverage_report import mark_gap_failure, mark_gap_resolved
+
+                if status == "success":
+                    mark_gap_resolved(
+                        self._conn,
+                        source_key=self.source_key,
+                        decision_year=year,
+                        decision_id=did,
+                        resolution="ingested",
+                    )
+                elif status in {"none", "error"}:
+                    mark_gap_failure(
+                        self._conn,
+                        source_key=self.source_key,
+                        decision_year=year,
+                        decision_id=did,
+                        error_message=(error_message or status)[:500],
+                        retry_delay_days=1,
+                    )
+
+            self._maybe_commit()
+        except Exception as e:
+            logger.debug(f"[{self.source_key}] fetch event logging failed: {e}")
+
+
 def run_with_persistence(
     scraper_key: str,
     since_date: str | None = None,
@@ -269,6 +419,12 @@ def run_with_persistence(
 
     # Initialize scraper
     scraper = scraper_class(state_dir=state_dir)
+    run_id = f"{scraper_key}:{datetime.now().isoformat(timespec='seconds')}"
+    event_writer = _RunEventWriter(
+        output_dir=output_dir,
+        source_key=scraper_key,
+        run_id=run_id,
+    )
 
     # Parse since_date
     since = None
@@ -288,71 +444,95 @@ def run_with_persistence(
         f"Written: {len(written_ids)}"
     )
 
-    for i, stub in enumerate(scraper.discover_new(since)):
-        if max_decisions and new_count >= max_decisions:
-            logger.info(f"[{scraper_key}] Reached max_decisions={max_decisions}")
-            break
+    try:
+        for i, stub in enumerate(scraper.discover_new(since)):
+            if max_decisions and new_count >= max_decisions:
+                logger.info(f"[{scraper_key}] Reached max_decisions={max_decisions}")
+                break
 
-        try:
-            decision = scraper.fetch_decision(stub)
-            if decision:
-                # Write full decision to JSONL (skip if already written)
-                if decision.decision_id not in written_ids:
-                    with open(jsonl_path, "a", encoding="utf-8") as f:
-                        f.write(serialize_decision(decision) + "\n")
-                        f.flush()
-                    written_ids.add(decision.decision_id)
-                    year = _infer_decision_year(
+            event_writer.log_discovery(stub)
+
+            try:
+                decision = scraper.fetch_decision(stub)
+                if decision:
+                    # Write full decision to JSONL (skip if already written)
+                    if decision.decision_id not in written_ids:
+                        with open(jsonl_path, "a", encoding="utf-8") as f:
+                            f.write(serialize_decision(decision) + "\n")
+                            f.flush()
+                        written_ids.add(decision.decision_id)
+                        year = _infer_decision_year(
+                            decision_id=decision.decision_id,
+                            docket_number=decision.docket_number,
+                            decision_date=decision.decision_date,
+                        )
+                        if year is not None:
+                            written_ids_by_year[year].add(decision.decision_id)
+                            changed_years.add(year)
+                        new_count += 1
+                        if new_count % 100 == 0:
+                            elapsed = time.time() - start
+                            rate = new_count / elapsed * 3600
+                            logger.info(
+                                f"[{scraper_key}] Progress: {new_count} decisions, "
+                                f"{rate:.0f}/hour, file: {jsonl_path.stat().st_size / 1024 / 1024:.1f} MB"
+                            )
+                    else:
+                        skips += 1
+
+                    # Mark scraped AFTER durable write to avoid gaps on crash
+                    scraper.state.mark_scraped(decision.decision_id)
+                    event_writer.log_fetch_attempt(
+                        stub=stub,
+                        status="success",
                         decision_id=decision.decision_id,
                         docket_number=decision.docket_number,
                         decision_date=decision.decision_date,
                     )
-                    if year is not None:
-                        written_ids_by_year[year].add(decision.decision_id)
-                        changed_years.add(year)
-                    new_count += 1
-                    if new_count % 100 == 0:
-                        elapsed = time.time() - start
-                        rate = new_count / elapsed * 3600
-                        logger.info(
-                            f"[{scraper_key}] Progress: {new_count} decisions, "
-                            f"{rate:.0f}/hour, file: {jsonl_path.stat().st_size / 1024 / 1024:.1f} MB"
-                        )
-                else:
-                    skips += 1
 
-                # Mark scraped AFTER durable write to avoid gaps on crash
-                scraper.state.mark_scraped(decision.decision_id)
-
-                logger.info(
-                    f"[{scraper_key}] Scraped: {decision.decision_id} "
-                    f"({decision.decision_date})"
-                )
-            else:
-                none_count += 1
-                logger.warning(
-                    f"[{scraper_key}] fetch_decision returned None ({none_count}): "
-                    f"{stub.get('docket_number', '?')}"
-                )
-                # Consecutive Nones beyond a threshold suggest a systemic issue
-                max_none = getattr(scraper, "MAX_NONE_RETURNS", 200)
-                if none_count >= max_none:
-                    errors += 1  # promote to real error for exit code
-                    logger.error(
-                        f"[{scraper_key}] Too many None returns ({none_count}), "
-                        f"possible portal issue — stopping."
+                    logger.info(
+                        f"[{scraper_key}] Scraped: {decision.decision_id} "
+                        f"({decision.decision_date})"
                     )
-                    break
+                else:
+                    none_count += 1
+                    event_writer.log_fetch_attempt(
+                        stub=stub,
+                        status="none",
+                        error_type="NoneReturn",
+                        error_message="fetch_decision returned None",
+                    )
+                    logger.warning(
+                        f"[{scraper_key}] fetch_decision returned None ({none_count}): "
+                        f"{stub.get('docket_number', '?')}"
+                    )
+                    # Consecutive Nones beyond a threshold suggest a systemic issue
+                    max_none = getattr(scraper, "MAX_NONE_RETURNS", 200)
+                    if none_count >= max_none:
+                        errors += 1  # promote to real error for exit code
+                        logger.error(
+                            f"[{scraper_key}] Too many None returns ({none_count}), "
+                            f"possible portal issue — stopping."
+                        )
+                        break
 
-        except Exception as e:
-            errors += 1
-            logger.error(
-                f"[{scraper_key}] Error scraping {stub.get('docket_number', '?')}: {e}",
-                exc_info=True,
-            )
-            if errors >= getattr(scraper, "MAX_ERRORS", 50):
-                logger.error(f"[{scraper_key}] Too many errors ({errors}), stopping.")
-                break
+            except Exception as e:
+                errors += 1
+                event_writer.log_fetch_attempt(
+                    stub=stub,
+                    status="error",
+                    error_type=e.__class__.__name__,
+                    error_message=str(e),
+                )
+                logger.error(
+                    f"[{scraper_key}] Error scraping {stub.get('docket_number', '?')}: {e}",
+                    exc_info=True,
+                )
+                if errors >= getattr(scraper, "MAX_ERRORS", 50):
+                    logger.error(f"[{scraper_key}] Too many errors ({errors}), stopping.")
+                    break
+    finally:
+        event_writer.close()
 
     elapsed = time.time() - start
     file_size = jsonl_path.stat().st_size / 1024 / 1024 if jsonl_path.exists() else 0

@@ -117,6 +117,65 @@ COVERAGE_SCHEMA_SQL = """
         ON source_snapshots(source_key, snapshot_year, snapshot_date);
     CREATE INDEX IF NOT EXISTS idx_source_snapshots_source_year
         ON source_snapshots(source_key, snapshot_year);
+
+    CREATE TABLE IF NOT EXISTS source_discoveries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        run_id TEXT NOT NULL,
+        source_key TEXT NOT NULL,
+        decision_id TEXT,
+        docket_number TEXT,
+        decision_year INTEGER,
+        status TEXT NOT NULL DEFAULT 'discovered',
+        stub_json TEXT,
+        discovered_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_source_discoveries_run
+        ON source_discoveries(run_id);
+    CREATE INDEX IF NOT EXISTS idx_source_discoveries_source_year
+        ON source_discoveries(source_key, decision_year);
+    CREATE INDEX IF NOT EXISTS idx_source_discoveries_decision_id
+        ON source_discoveries(decision_id);
+
+    CREATE TABLE IF NOT EXISTS source_fetch_attempts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        run_id TEXT NOT NULL,
+        source_key TEXT NOT NULL,
+        decision_id TEXT,
+        docket_number TEXT,
+        decision_year INTEGER,
+        attempt_no INTEGER NOT NULL DEFAULT 1,
+        status TEXT NOT NULL,
+        error_type TEXT,
+        error_message TEXT,
+        fetched_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+    CREATE INDEX IF NOT EXISTS idx_source_fetch_attempts_run
+        ON source_fetch_attempts(run_id);
+    CREATE INDEX IF NOT EXISTS idx_source_fetch_attempts_source_year
+        ON source_fetch_attempts(source_key, decision_year);
+    CREATE INDEX IF NOT EXISTS idx_source_fetch_attempts_decision_id
+        ON source_fetch_attempts(decision_id);
+
+    CREATE TABLE IF NOT EXISTS gap_queue (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source_key TEXT NOT NULL,
+        decision_year INTEGER NOT NULL,
+        decision_id TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'open',
+        retry_count INTEGER NOT NULL DEFAULT 0,
+        next_retry_at TEXT NOT NULL DEFAULT (datetime('now')),
+        first_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+        last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+        last_error TEXT,
+        resolved_at TEXT,
+        resolution TEXT,
+        notes TEXT,
+        UNIQUE(source_key, decision_year, decision_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_gap_queue_status_retry
+        ON gap_queue(status, next_retry_at);
+    CREATE INDEX IF NOT EXISTS idx_gap_queue_source_year
+        ON gap_queue(source_key, decision_year);
 """
 
 # Column order for INSERT statements (must match SCHEMA_SQL table definition)

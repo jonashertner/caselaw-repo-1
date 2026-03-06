@@ -44,6 +44,9 @@ def test_db_schema_imports():
     # Coverage tracking tables should be present
     assert "coverage_targets" in COVERAGE_SCHEMA_SQL
     assert "source_snapshots" in COVERAGE_SCHEMA_SQL
+    assert "source_discoveries" in COVERAGE_SCHEMA_SQL
+    assert "source_fetch_attempts" in COVERAGE_SCHEMA_SQL
+    assert "gap_queue" in COVERAGE_SCHEMA_SQL
 
     print("  OK: db_schema exports consistent")
 
