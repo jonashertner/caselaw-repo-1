@@ -123,6 +123,7 @@ CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT"
 
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
+OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -1421,6 +1422,7 @@ def _normalize_docket_ref(value: str) -> str:
 _graph_warned = False
 _vec_warned = False
 _statutes_warned = False
+_ok_warned = False
 
 
 def _get_graph_conn() -> sqlite3.Connection | None:
@@ -1485,6 +1487,24 @@ def _get_statutes_conn() -> sqlite3.Connection | None:
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open statutes DB: %s", e)
+        return None
+
+
+def _get_ok_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the OK commentaries DB, or None if unavailable."""
+    global _ok_warned
+    if not OK_COMMENTARIES_DB_PATH.exists():
+        if not _ok_warned:
+            logger.warning("OK commentaries DB not found at %s — commentary tools disabled", OK_COMMENTARIES_DB_PATH)
+            _ok_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(str(OK_COMMENTARIES_DB_PATH), timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only = ON")
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open OK commentaries DB: %s", e)
         return None
 
 
@@ -5667,12 +5687,294 @@ def _handle_get_doctrine(*, query: str) -> dict:
         key=lambda x: x["year"],
     )
 
+    # Enrich with OnlineKommentar commentary if statute ref available
+    commentary_info = None
+    if statute_refs and article and law_code:
+        try:
+            ok_conn = _get_ok_conn()
+            if ok_conn:
+                try:
+                    row = ok_conn.execute(
+                        """SELECT title, content_text, authors, html_link, suggested_citation
+                           FROM commentaries
+                           WHERE (abbr = ? OR sr_number = ?) AND article_num = ?
+                           ORDER BY CASE WHEN language = 'de' THEN 0
+                                         WHEN language = 'en' THEN 1
+                                         ELSE 2 END
+                           LIMIT 1""",
+                        (law_code, statute_info.get("sr_number", ""), article),
+                    ).fetchone()
+                    if row:
+                        commentary_info = {
+                            "title": row["title"],
+                            "excerpt": (row["content_text"] or "")[:800],
+                            "authors": json.loads(row["authors"]) if row["authors"] else [],
+                            "html_link": row["html_link"],
+                            "suggested_citation": row["suggested_citation"],
+                            "source": "OnlineKommentar.ch (CC-BY-4.0)",
+                        }
+                finally:
+                    ok_conn.close()
+        except Exception as e:
+            logger.debug("OK commentary lookup failed: %s", e)
+
     return {
         "query": q,
         "statute": statute_info,
         "leading_cases": leading_cases,
         "doctrine_timeline": timeline,
+        "commentary": commentary_info,
     }
+
+
+# ── OnlineKommentar commentary handlers ─────────────────────
+
+
+# Abbreviation → SR number mapping for commentary lookups
+_OK_ABBR_TO_SR = {
+    "BV": "101", "OR": "220", "ZGB": "210", "StGB": "311.0",
+    "StPO": "312.0", "ZPO": "272", "GwG": "955.0", "DSG": "235.1",
+    "IRSG": "351.1", "SchKG": "281.1", "MepV": "812.213",
+    "CCC": "0.311.43", "KGTG": "444.1", "BPR": "161.1", "KG": "251",
+    "IPRG": "291", "LugU": "0.275.12",
+}
+
+
+def get_commentary(
+    abbreviation: str | None = None,
+    sr_number: str | None = None,
+    article: str | None = None,
+    language: str = "de",
+) -> dict:
+    """Fetch OnlineKommentar commentary for a statute article."""
+    conn = _get_ok_conn()
+    if conn is None:
+        return {"error": "OnlineKommentar commentaries database not available."}
+
+    try:
+        # Resolve abbreviation → sr_number
+        if abbreviation and not sr_number:
+            sr_number = _OK_ABBR_TO_SR.get(abbreviation.upper())
+            if not sr_number:
+                # Try DB lookup
+                row = conn.execute(
+                    "SELECT sr_number FROM commentaries WHERE UPPER(abbr) = ? LIMIT 1",
+                    (abbreviation.upper(),),
+                ).fetchone()
+                if row:
+                    sr_number = row["sr_number"]
+                else:
+                    return {"error": f"No commentaries found for '{abbreviation}'."}
+
+        if not sr_number and not abbreviation:
+            return {"error": "Provide abbreviation or sr_number."}
+
+        # Build filter
+        sr_filter = sr_number or ""
+        abbr_filter = (abbreviation or "").upper()
+
+        if article:
+            # Fetch specific article commentary with language fallback
+            rows = conn.execute(
+                """SELECT * FROM commentaries
+                   WHERE (sr_number = ? OR UPPER(abbr) = ?) AND article_num = ?
+                   ORDER BY CASE WHEN language = ? THEN 0
+                                 WHEN language = 'de' THEN 1
+                                 ELSE 2 END
+                   LIMIT 1""",
+                (sr_filter, abbr_filter, article, language),
+            ).fetchall()
+
+            if not rows:
+                return {
+                    "law": abbreviation or sr_number,
+                    "article": article,
+                    "error": f"No commentary found for Art. {article}.",
+                }
+
+            row = rows[0]
+            return {
+                "law": row["abbr"] or row["sr_number"],
+                "sr_number": row["sr_number"],
+                "article": row["article_num"],
+                "title": row["title"],
+                "language": row["language"],
+                "date": row["date"],
+                "authors": json.loads(row["authors"]) if row["authors"] else [],
+                "editors": json.loads(row["editors"]) if row["editors"] else [],
+                "suggested_citation": row["suggested_citation"],
+                "html_link": row["html_link"],
+                "pdf_link": row["pdf_link"],
+                "content_text": row["content_text"],
+                "legal_text": row["legal_text"],
+                "source": "OnlineKommentar.ch (CC-BY-4.0)",
+            }
+        else:
+            # List available articles for this law
+            rows = conn.execute(
+                """SELECT DISTINCT article_num, title, language, authors
+                   FROM commentaries
+                   WHERE (sr_number = ? OR UPPER(abbr) = ?)
+                   ORDER BY CAST(article_num AS INTEGER), article_num""",
+                (sr_filter, abbr_filter),
+            ).fetchall()
+
+            if not rows:
+                return {
+                    "law": abbreviation or sr_number,
+                    "error": "No commentaries found for this law.",
+                }
+
+            articles = []
+            for r in rows:
+                articles.append({
+                    "article_num": r["article_num"],
+                    "title": r["title"],
+                    "language": r["language"],
+                    "authors": json.loads(r["authors"]) if r["authors"] else [],
+                })
+
+            return {
+                "law": abbreviation or sr_number,
+                "sr_number": sr_filter,
+                "article_count": len(articles),
+                "articles": articles,
+                "source": "OnlineKommentar.ch (CC-BY-4.0)",
+            }
+    except sqlite3.Error as e:
+        logger.error("OK commentary lookup error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def search_commentaries(
+    query: str,
+    abbreviation: str | None = None,
+    language: str | None = None,
+    limit: int = 10,
+) -> dict:
+    """Full-text search across OnlineKommentar commentaries."""
+    conn = _get_ok_conn()
+    if conn is None:
+        return {"error": "OnlineKommentar commentaries database not available."}
+
+    limit = min(max(1, limit), 50)
+
+    try:
+        # Build FTS5 query with optional filters
+        conditions = ["commentaries_fts MATCH ?"]
+        params: list = [query]
+
+        if abbreviation:
+            conditions.append("c.abbr = ?")
+            params.append(abbreviation.upper())
+
+        if language:
+            conditions.append("c.language = ?")
+            params.append(language)
+
+        params.append(limit)
+        where = " AND ".join(conditions)
+
+        rows = conn.execute(
+            f"""SELECT c.sr_number, c.abbr, c.article_num, c.title,
+                       c.authors, c.language, c.html_link,
+                       snippet(commentaries_fts, 4, '>>>', '<<<', '...', 40) AS snippet
+                FROM commentaries_fts f
+                JOIN commentaries c ON c.id = f.rowid
+                WHERE {where}
+                ORDER BY f.rank
+                LIMIT ?""",
+            params,
+        ).fetchall()
+
+        results = []
+        for r in rows:
+            results.append({
+                "abbreviation": r["abbr"],
+                "sr_number": r["sr_number"],
+                "article_num": r["article_num"],
+                "title": r["title"],
+                "authors": json.loads(r["authors"]) if r["authors"] else [],
+                "language": r["language"],
+                "snippet": r["snippet"],
+                "html_link": r["html_link"],
+            })
+
+        return {
+            "query": query,
+            "count": len(results),
+            "results": results,
+            "source": "OnlineKommentar.ch (CC-BY-4.0)",
+        }
+    except sqlite3.Error as e:
+        logger.error("OK commentary search error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def _format_get_commentary_response(result: dict) -> str:
+    """Format get_commentary result as markdown."""
+    if result.get("error"):
+        return result["error"]
+
+    # List mode
+    if "articles" in result and "content_text" not in result:
+        text = f"# OnlineKommentar — {result['law']}\n"
+        text += f"**{result['article_count']} commentaries available**\n"
+        text += f"Source: {result.get('source', 'OnlineKommentar.ch')}\n\n"
+        for art in result["articles"]:
+            authors = ", ".join(art.get("authors", []))
+            author_str = f" ({authors})" if authors else ""
+            text += f"- **Art. {art['article_num']}** — {art['title']}{author_str} [{art['language']}]\n"
+        return text
+
+    # Detail mode
+    authors = ", ".join(result.get("authors", []))
+    text = f"# {result['title']}\n"
+    if authors:
+        text += f"**Authors:** {authors}\n"
+    text += f"**Language:** {result.get('language', '?')} | "
+    text += f"**Date:** {result.get('date', '?')}\n"
+    if result.get("suggested_citation"):
+        text += f"**Citation:** {result['suggested_citation']}\n"
+    if result.get("html_link"):
+        text += f"**Link:** {result['html_link']}\n"
+    text += f"Source: {result.get('source', 'OnlineKommentar.ch')}\n\n"
+
+    if result.get("legal_text"):
+        text += "## Gesetzestext\n\n"
+        text += result["legal_text"] + "\n\n"
+
+    if result.get("content_text"):
+        text += "## Kommentar\n\n"
+        text += result["content_text"] + "\n"
+
+    return text
+
+
+def _format_search_commentaries_response(result: dict) -> str:
+    """Format search_commentaries result as markdown."""
+    if result.get("error"):
+        return result["error"]
+
+    results = result.get("results", [])
+    text = f"# Commentary Search: \"{result['query']}\"\n"
+    text += f"Found {result['count']} results. "
+    text += f"Source: {result.get('source', 'OnlineKommentar.ch')}\n\n"
+
+    for i, r in enumerate(results, 1):
+        authors = ", ".join(r.get("authors", []))
+        author_str = f" ({authors})" if authors else ""
+        text += f"**{i}. Art. {r['article_num']} {r['abbreviation']}** — {r['title']}{author_str} [{r['language']}]\n"
+        text += f"   {r['snippet']}\n"
+        if r.get("html_link"):
+            text += f"   Link: {r['html_link']}\n"
+        text += "\n"
+
+    return text
 
 
 def _handle_generate_exam_question(
@@ -7022,6 +7324,69 @@ def _list_tools() -> list[Tool]:
                 "required": ["query"],
             },
         ),
+        Tool(
+            name="get_commentary",
+            description=(
+                "Look up a scholarly legal commentary from OnlineKommentar.ch (CC-BY-4.0) "
+                "for a Swiss federal law article. Without article: lists available commentaries "
+                "for that law. With article: returns the full commentary text, authors, and citation. "
+                "Covers 19 Swiss laws including BV, OR, ZGB, StGB, StPO, ZPO, DSG, SchKG, and more."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "abbreviation": {
+                        "type": "string",
+                        "description": "Law abbreviation (e.g., 'OR', 'BV', 'ZGB', 'StGB'). Preferred over sr_number.",
+                    },
+                    "sr_number": {
+                        "type": "string",
+                        "description": "SR number of the law (e.g., '220' for OR). Use if abbreviation unknown.",
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": "Article number (e.g., '41', '8'). Omit to list available articles.",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Preferred language (de, en, fr, it). Falls back to de if unavailable.",
+                        "default": "de",
+                    },
+                },
+            },
+        ),
+        Tool(
+            name="search_commentaries",
+            description=(
+                "Full-text search across all OnlineKommentar.ch legal commentaries. "
+                "Searches commentary text, titles, and article numbers. "
+                "Returns ranked results with snippets, authors, and links. "
+                "Useful for finding doctrinal discussion of a legal concept across multiple laws."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query (supports FTS5 syntax: quotes for phrases, OR for alternatives).",
+                    },
+                    "abbreviation": {
+                        "type": "string",
+                        "description": "Filter by law abbreviation (e.g., 'OR', 'StGB').",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Filter by language: de, en, fr, it.",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results (1-50, default 10).",
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
         *([] if not LEXFIND_ENABLED else [
             Tool(
                 name="search_legislation",
@@ -7418,6 +7783,26 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 limit=int(arguments.get("limit", 10)),
             )
             return [TextContent(type="text", text=_format_search_laws_response(result))]
+
+        elif name == "get_commentary":
+            result = await asyncio.to_thread(
+                get_commentary,
+                abbreviation=arguments.get("abbreviation"),
+                sr_number=arguments.get("sr_number"),
+                article=arguments.get("article"),
+                language=arguments.get("language", "de"),
+            )
+            return [TextContent(type="text", text=_format_get_commentary_response(result))]
+
+        elif name == "search_commentaries":
+            result = await asyncio.to_thread(
+                search_commentaries,
+                query=arguments["query"],
+                abbreviation=arguments.get("abbreviation"),
+                language=arguments.get("language"),
+                limit=int(arguments.get("limit", 10)),
+            )
+            return [TextContent(type="text", text=_format_search_commentaries_response(result))]
 
         elif name == "search_legislation":
             result = await asyncio.to_thread(
