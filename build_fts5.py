@@ -329,17 +329,18 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
 
 
 def _remove_stubs(conn: sqlite3.Connection, min_text_length: int = 500) -> int:
-    """Remove decisions that have no meaningful content.
+    """Remove decisions that are completely empty (no text AND no regeste).
 
-    Only removes entries where BOTH full_text AND regeste are too short.
-    Many decisions have failed PDF extraction but carry a substantive
-    regeste — these are real decisions and must be kept.
+    Only removes entries where both full_text and regeste are empty or
+    near-empty.  Even short entries carry docket numbers, dates, court
+    assignments and topic keywords that enable search and coverage.
+    Decisions with failed PDF extraction but a regeste, or entscheidsuche
+    metadata entries with topic keywords, are all kept.
     """
     result = conn.execute(
         """DELETE FROM decisions
-           WHERE LENGTH(COALESCE(full_text, '')) < ?
-             AND LENGTH(COALESCE(regeste, '')) < ?""",
-        (min_text_length, 50),
+           WHERE LENGTH(COALESCE(full_text, '')) < 10
+             AND LENGTH(COALESCE(regeste, '')) < 10""",
     )
     deleted = result.rowcount
     if deleted:
