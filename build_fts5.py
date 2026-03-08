@@ -328,7 +328,7 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
     return deleted
 
 
-def _remove_stubs(conn: sqlite3.Connection, min_text_length: int = 500) -> int:
+def _remove_stubs(conn: sqlite3.Connection) -> int:
     """Remove decisions that are completely empty (no text AND no regeste).
 
     Only removes entries where both full_text and regeste are empty or
@@ -657,7 +657,7 @@ def build_database(
         if cross_deduped:
             logger.info(f"  Removed {cross_deduped} cross-court duplicates")
 
-        logger.info("Removing stub decisions (<500 chars)...")
+        logger.info("Removing stub decisions (text <10 AND regeste <10 chars)...")
         stubs_removed = _remove_stubs(conn)
         if stubs_removed:
             logger.info(f"  Removed {stubs_removed} stub decisions")
