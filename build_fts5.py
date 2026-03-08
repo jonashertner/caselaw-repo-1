@@ -329,19 +329,17 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
 
 
 def _remove_stubs(conn: sqlite3.Connection, min_text_length: int = 500) -> int:
-    """Remove decisions with text shorter than min_text_length characters.
+    """Remove decisions that have no meaningful content.
 
-    Entscheidsuche imports often contain metadata-only entries where the
-    full_text is just a court header and docket number repeated in multiple
-    languages (~150-400 chars).  These have no legal content and pollute
-    search results.
-
-    A genuine court decision, even a brief procedural ruling, exceeds
-    500 characters of actual text.
+    Only removes entries where BOTH full_text AND regeste are too short.
+    Many decisions have failed PDF extraction but carry a substantive
+    regeste — these are real decisions and must be kept.
     """
     result = conn.execute(
-        "DELETE FROM decisions WHERE LENGTH(COALESCE(full_text, '')) < ?",
-        (min_text_length,),
+        """DELETE FROM decisions
+           WHERE LENGTH(COALESCE(full_text, '')) < ?
+             AND LENGTH(COALESCE(regeste, '')) < ?""",
+        (min_text_length, 50),
     )
     deleted = result.rowcount
     if deleted:
