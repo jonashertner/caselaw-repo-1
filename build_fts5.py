@@ -234,8 +234,8 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
     for entries in groups2.values():
         if len(entries) < 2:
             continue
-        # Keep version with regeste first, then longest full_text as tiebreaker
-        entries.sort(key=lambda x: (0 if x[2] > 0 else 1, -x[1]))
+        # Keep version with the most total content (full_text + regeste)
+        entries.sort(key=lambda x: -(x[1] + x[2]))
         for did, _, _ in entries[1:]:
             conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
             deleted2 += 1
@@ -252,19 +252,35 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
 # direct scrapers use specific codes (zh_obergericht).  Grouping allows
 # cross-court dedup within each set.
 _COURT_OVERLAP_GROUPS: list[set[str]] = [
-    # ZH Obergericht: entscheidsuche → zh_gerichte, direct scraper → zh_obergericht
-    {"zh_gerichte", "zh_obergericht"},
+    # ZH: entscheidsuche → zh_gerichte, direct scraper → sub-courts
+    {"zh_gerichte", "zh_obergericht", "zh_kassationsgericht", "zh_handelsgericht",
+     "zh_bezirksgericht_zuerich", "zh_bezirksgericht_winterthur",
+     "zh_bezirksgericht_horgen", "zh_bezirksgericht_dietikon",
+     "zh_bezirksgericht_buelach", "zh_bezirksgericht_dielsdorf",
+     "zh_bezirksgericht_uster", "zh_bezirksgericht_pfaeffikon",
+     "zh_bezirksgericht_hinwil", "zh_bezirksgericht_meilen",
+     "zh_bezirksgericht_affoltern", "zh_mietgericht", "zh_arbeitsgericht"},
     # SG: entscheidsuche → sg_gerichte, direct scraper (sg_publikationen) → sub-courts
     {"sg_gerichte", "sg_publikationen", "sg_versicherungsgericht",
      "sg_verwaltungsgericht", "sg_verwaltungsrekurskommission",
      "sg_kantonsgericht", "sg_handelsgericht"},
-    # AG: entscheidsuche generic vs specific
+    # AG: entscheidsuche → ag_gerichte, direct scraper → sub-courts
     {"ag_gerichte", "ag_obergericht", "ag_versicherungsgericht",
-     "ag_handelsgericht", "ag_spezialverwaltungsgericht"},
+     "ag_handelsgericht", "ag_spezialverwaltungsgericht",
+     "ag_strafgericht", "ag_zivilgericht", "ag_verwaltungsgericht",
+     "ag_anwaltskommission", "ag_aufsichtskommission", "ag_regierungsrat",
+     "ag_departement_bks", "ag_departement_bvu", "ag_departement_gs",
+     "ag_departement_vi", "ag_justizgericht", "ag_justizleitung", "ag_weitere"},
     # SH: entscheidsuche generic vs specific
     {"sh_gerichte", "sh_obergericht"},
     # TG: entscheidsuche → tg_obergericht, direct scraper → tg_gerichte
     {"tg_gerichte", "tg_obergericht"},
+    # VD: historical findinfo/omni vs current scraper
+    {"vd_findinfo", "vd_gerichte", "vd_omni"},
+    # BS: entscheidsuche → bs_gerichte, direct scraper → sub-courts
+    {"bs_gerichte", "bs_appellationsgericht", "bs_sozialversicherungsgericht"},
+    # BE: steuerrekurs overlaps with verwaltungsgericht
+    {"be_steuerrekurs", "be_verwaltungsgericht"},
 ]
 
 # Build a lookup: court_code → frozenset of group members
@@ -317,8 +333,8 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
     for entries in groups.values():
         if len(entries) < 2:
             continue
-        # Keep version with regeste first, then longest full_text as tiebreaker
-        entries.sort(key=lambda x: (0 if x[2] > 0 else 1, -x[1]))
+        # Keep version with the most total content (full_text + regeste)
+        entries.sort(key=lambda x: -(x[1] + x[2]))
         for did, _, _ in entries[1:]:
             conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
             deleted += 1
