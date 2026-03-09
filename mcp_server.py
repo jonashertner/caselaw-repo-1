@@ -7962,7 +7962,9 @@ def main_remote(host: str, port: int):
     global REMOTE_MODE
     REMOTE_MODE = True
 
+    import contextlib
     from mcp.server.sse import SseServerTransport
+    from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
     from starlette.applications import Starlette
     from starlette.responses import JSONResponse, Response
     from starlette.routing import Mount, Route
@@ -7985,12 +7987,33 @@ def main_remote(host: str, port: int):
 
     sse = SseServerTransport("/messages/")
 
+    session_manager = StreamableHTTPSessionManager(
+        app=server,
+        json_response=False,
+        stateless=False,
+    )
+
     async def handle_sse(request):
+        """SSE-only handler for /sse path."""
         async with sse.connect_sse(
             request.scope, request.receive, request._send
         ) as streams:
             await server.run(
                 streams[0], streams[1], server.create_initialization_options()
+            )
+
+    async def handle_mcp_root(request):
+        """Root / handler: GET → SSE, POST/DELETE → Streamable HTTP."""
+        if request.method == "GET":
+            async with sse.connect_sse(
+                request.scope, request.receive, request._send
+            ) as streams:
+                await server.run(
+                    streams[0], streams[1], server.create_initialization_options()
+                )
+        else:
+            await session_manager.handle_request(
+                request.scope, request.receive, request._send
             )
 
     # ── Health / readiness endpoint (exempt from auth) ────────
@@ -8295,14 +8318,21 @@ def main_remote(host: str, port: int):
 
     logger.info("REST API mounted at /api with %d routes", len(rest_api.routes))
 
+    @contextlib.asynccontextmanager
+    async def lifespan(app):
+        async with session_manager.run():
+            logger.info("Streamable HTTP session manager started")
+            yield
+
     app = Starlette(
         routes=[
             Route("/health", endpoint=handle_health),
             Route("/sse", endpoint=handle_sse),
-            Route("/", endpoint=handle_sse),
+            Route("/", endpoint=handle_mcp_root, methods=["GET", "POST", "DELETE"]),
             Mount("/messages/", app=sse.handle_post_message),
             Mount("/api", app=rest_api),
         ],
+        lifespan=lifespan,
     )
 
     # ── CORS (inner layer) ────────────────────────────────────
@@ -8313,7 +8343,7 @@ def main_remote(host: str, port: int):
         app.add_middleware(
             _StarletteCORS,
             allow_origins=CORS_ORIGINS,
-            allow_methods=["GET", "POST"],
+            allow_methods=["GET", "POST", "DELETE"],
             allow_headers=["Authorization", "Content-Type"],
         )
 
