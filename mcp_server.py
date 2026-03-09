@@ -7990,7 +7990,7 @@ def main_remote(host: str, port: int):
     session_manager = StreamableHTTPSessionManager(
         app=server,
         json_response=False,
-        stateless=False,
+        stateless=True,
     )
 
     async def handle_sse(request):
