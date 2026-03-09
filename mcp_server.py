@@ -72,6 +72,11 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import TextContent, Tool
 
+from fastapi import FastAPI, Query, Path as PathParam, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional
+
 # Add repo root to path so db_schema can be imported when run from any directory
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
@@ -7987,12 +7992,313 @@ def main_remote(host: str, port: int):
                 {"status": "error", "detail": str(e)}, status_code=503,
             )
 
+    # ── REST API (FastAPI sub-app at /api) ─────────────────────
+    rest_api = FastAPI(
+        title="OpenCaseLaw API",
+        description=(
+            "Swiss court decisions, statutes, commentaries, and citation graph. "
+            "956,000+ decisions from all federal and cantonal courts."
+        ),
+        version="1.0.0",
+        docs_url="/docs",
+        redoc_url="/redoc",
+    )
+    rest_api.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
+    )
+
+    # ── Case Law endpoints ─────────────────────────────────────
+
+    @rest_api.get("/decisions", tags=["Case Law"],
+                  summary="Search court decisions",
+                  description="Full-text search across 956k Swiss court decisions. "
+                              "Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), "
+                              "and prefix matching (word*).")
+    async def api_search_decisions(
+        query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT)"),
+        court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
+        canton: str = Query(None, description="Filter by canton (CH, ZH, BE, GE, etc.)"),
+        language: str = Query(None, description="Filter by language: de, fr, it, rm"),
+        date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
+        date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
+        chamber: str = Query(None, description="Filter by chamber/division (substring match)"),
+        decision_type: str = Query(None, description="Filter by decision type (Urteil, Beschluss, etc.)"),
+        limit: int = Query(50, ge=1, le=2000, description="Max results to return"),
+        offset: int = Query(0, ge=0, description="Skip results for pagination"),
+        sort: str = Query(None, description="Sort: relevance (default), date_desc, date_asc"),
+        fields: str = Query("full", description="Detail level: full or compact"),
+    ):
+        results, total = await asyncio.to_thread(
+            search_fts5, query=query or "", court=court, canton=canton,
+            language=language, date_from=date_from, date_to=date_to,
+            chamber=chamber, decision_type=decision_type,
+            limit=limit, offset=offset, sort=sort,
+        )
+        if fields == "compact":
+            compact_keys = ("decision_id", "docket_number", "court", "language", "decision_date")
+            results = [{k: r[k] for k in compact_keys if k in r} for r in results]
+        return {"total": total, "results": results, "limit": limit, "offset": offset}
+
+    @rest_api.get("/decisions/{decision_id}", tags=["Case Law"],
+                  summary="Get a single decision",
+                  description="Fetch a decision by decision_id or docket number. Returns full text and metadata.")
+    async def api_get_decision(
+        decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025) or docket number (e.g., 6B_1/2025)"),
+        full_text: bool = Query(True, description="Include full text in response"),
+    ):
+        result = await asyncio.to_thread(get_decision_by_id, decision_id)
+        if not result:
+            raise HTTPException(status_code=404, detail=f"Decision not found: {decision_id}")
+        if not full_text:
+            result.pop("full_text", None)
+        return result
+
+    @rest_api.get("/courts", tags=["Case Law"],
+                  summary="List available courts",
+                  description="List all courts with decision counts, date ranges, and language coverage.")
+    async def api_list_courts():
+        return await asyncio.to_thread(list_courts)
+
+    @rest_api.get("/statistics", tags=["Case Law"],
+                  summary="Get dataset statistics",
+                  description="Aggregate statistics about the dataset. Optionally filter by court, canton, or year.")
+    async def api_get_statistics(
+        court: str = Query(None, description="Filter by court code"),
+        canton: str = Query(None, description="Filter by canton code"),
+        year: int = Query(None, description="Filter by year"),
+    ):
+        return await asyncio.to_thread(get_statistics, court=court, canton=canton, year=year)
+
+    @rest_api.get("/citations/{decision_id}", tags=["Citation Graph"],
+                  summary="Find citations for a decision",
+                  description="Show what a decision cites and what cites it. Uses the reference graph with 7.85M citation edges.")
+    async def api_find_citations(
+        decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025)"),
+        direction: str = Query("both", description="Citation direction: both, outgoing, or incoming"),
+        min_confidence: float = Query(0.3, ge=0, le=1, description="Minimum confidence score (0-1)"),
+        limit: int = Query(50, ge=1, le=200, description="Max citations per direction"),
+    ):
+        return await asyncio.to_thread(
+            find_citations, decision_id=decision_id, direction=direction,
+            min_confidence=min_confidence, limit=limit,
+        )
+
+    @rest_api.get("/appeal-chain/{decision_id}", tags=["Citation Graph"],
+                  summary="Trace appeal chain",
+                  description="Trace the appeal chain (Instanzenzug) for a decision. "
+                              "Shows prior and subsequent instances.")
+    async def api_find_appeal_chain(
+        decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025)"),
+        min_confidence: float = Query(0.3, ge=0, le=1, description="Minimum confidence score (0-1)"),
+    ):
+        return await asyncio.to_thread(
+            _find_appeal_chain, decision_id, min_confidence=min_confidence,
+        )
+
+    @rest_api.get("/leading-cases", tags=["Citation Graph"],
+                  summary="Find leading cases",
+                  description="Find the most-cited decisions for a topic or statute. Authority ranking based on citation graph.")
+    async def api_find_leading_cases(
+        query: str = Query(None, description="Text query to filter by topic"),
+        law_code: str = Query(None, description="Law code (e.g., BV, OR, ZGB, StGB)"),
+        article: str = Query(None, description="Article number (requires law_code)"),
+        court: str = Query(None, description="Court filter (e.g., bger, bge, bvger)"),
+        date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
+        date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
+        limit: int = Query(20, ge=1, le=100, description="Max results"),
+    ):
+        return await asyncio.to_thread(
+            _find_leading_cases, query=query, law_code=law_code, article=article,
+            court=court, date_from=date_from, date_to=date_to, limit=limit,
+        )
+
+    # ── Analysis endpoints ─────────────────────────────────────
+
+    @rest_api.get("/trends", tags=["Analysis"],
+                  summary="Analyze legal trend",
+                  description="Year-by-year decision counts showing jurisprudence evolution.")
+    async def api_analyze_legal_trend(
+        query: str = Query(None, description="Text query"),
+        law_code: str = Query(None, description="Law code (e.g., BV, OR). Requires article."),
+        article: str = Query(None, description="Article number (requires law_code)"),
+        court: str = Query(None, description="Court filter"),
+        date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
+        date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
+    ):
+        return await asyncio.to_thread(
+            analyze_legal_trend, query=query, law_code=law_code, article=article,
+            court=court, date_from=date_from, date_to=date_to,
+        )
+
+    class MockDecisionRequest(BaseModel):
+        facts: str
+        question: Optional[str] = None
+        deciding_court: Optional[str] = None
+        preferred_language: Optional[str] = None
+        statute_references: Optional[list] = None
+        clarifications: Optional[list] = None
+        fedlex_urls: Optional[list[str]] = None
+        limit: int = 8
+
+    @rest_api.post("/mock-decision", tags=["Analysis"],
+                   summary="Draft a mock decision",
+                   description="Build a research-only mock decision outline from user facts, "
+                               "grounded in case law and statute references.")
+    async def api_mock_decision(req: MockDecisionRequest):
+        return await asyncio.to_thread(
+            draft_mock_decision, facts=req.facts, question=req.question,
+            deciding_court=req.deciding_court, preferred_language=req.preferred_language,
+            statute_references=req.statute_references, clarifications=req.clarifications,
+            fedlex_urls=req.fedlex_urls, limit=req.limit,
+        )
+
+    # ── Statute endpoints ──────────────────────────────────────
+
+    @rest_api.get("/laws/search", tags=["Statutes"],
+                  summary="Search federal law articles",
+                  description="Full-text search across Swiss federal law articles.")
+    async def api_search_laws(
+        query: str = Query(..., description="Search query"),
+        sr_number: str = Query(None, description="Restrict to specific law by SR number"),
+        language: str = Query("de", description="Language: de, fr, it"),
+        limit: int = Query(10, ge=1, le=50, description="Max results"),
+    ):
+        return await asyncio.to_thread(
+            search_laws, query=query, sr_number=sr_number, language=language, limit=limit,
+        )
+
+    @rest_api.get("/laws/{abbreviation}", tags=["Statutes"],
+                  summary="Look up a federal law",
+                  description="Look up a Swiss federal law by abbreviation or SR number. "
+                              "Returns article list or specific article text.")
+    async def api_get_law(
+        abbreviation: str = PathParam(description="Law abbreviation (e.g., BV, OR, ZGB, StGB)"),
+        sr_number: str = Query(None, description="SR number (e.g., 210 for ZGB)"),
+        article: str = Query(None, description="Article number to retrieve (e.g., 8, 41a)"),
+        language: str = Query("de", description="Language: de, fr, it"),
+    ):
+        return await asyncio.to_thread(
+            get_law, sr_number=sr_number, abbreviation=abbreviation,
+            article=article, language=language,
+        )
+
+    # ── Commentary endpoints ───────────────────────────────────
+
+    @rest_api.get("/commentaries/search", tags=["Commentaries"],
+                  summary="Search commentaries",
+                  description="Search OnlineKommentar.ch scholarly commentaries on Swiss law.")
+    async def api_search_commentaries(
+        query: str = Query(..., description="Search query"),
+        abbreviation: str = Query(None, description="Filter by law abbreviation"),
+        language: str = Query(None, description="Filter by language"),
+        limit: int = Query(10, ge=1, le=50, description="Max results"),
+    ):
+        return await asyncio.to_thread(
+            search_commentaries, query=query, abbreviation=abbreviation,
+            language=language, limit=limit,
+        )
+
+    @rest_api.get("/commentaries/{abbreviation}", tags=["Commentaries"],
+                  summary="Get commentary for a law",
+                  description="Get OnlineKommentar commentary for a specific law article.")
+    async def api_get_commentary(
+        abbreviation: str = PathParam(description="Law abbreviation (e.g., OR, ZGB)"),
+        sr_number: str = Query(None, description="SR number"),
+        article: str = Query(None, description="Article number"),
+        language: str = Query("de", description="Language: de, fr, it"),
+    ):
+        return await asyncio.to_thread(
+            get_commentary, abbreviation=abbreviation, sr_number=sr_number,
+            article=article, language=language,
+        )
+
+    # ── Legislation endpoints ──────────────────────────────────
+
+    @rest_api.get("/legislation/search", tags=["Legislation"],
+                  summary="Search legislation",
+                  description="Search Swiss legislation (federal + all 26 cantons) by keyword. "
+                              "Covers 33,000+ legislative texts from LexFind.ch.")
+    async def api_search_legislation(
+        query: str = Query(..., description="Search query"),
+        canton: str = Query(None, description="Filter by canton (CH, ZH, BE, etc.)"),
+        language: str = Query("de", description="Language: de, fr, it"),
+        limit: int = Query(20, ge=1, le=60, description="Max results"),
+        active_only: bool = Query(True, description="Only show laws currently in force"),
+        search_in_content: bool = Query(False, description="Also search in law text content"),
+    ):
+        return await asyncio.to_thread(
+            _search_legislation, query=query, canton=canton, language=language,
+            limit=limit, active_only=active_only, search_in_content=search_in_content,
+        )
+
+    @rest_api.get("/legislation/changes", tags=["Legislation"],
+                  summary="Browse legislation changes",
+                  description="Browse recent legislation changes for a canton or federal level.")
+    async def api_browse_legislation_changes(
+        canton: str = Query("CH", description="Canton code (CH for federal, ZH, BE, etc.)"),
+        language: str = Query("de", description="Language: de, fr, it"),
+    ):
+        return await asyncio.to_thread(
+            _browse_legislation_changes, canton=canton, language=language,
+        )
+
+    @rest_api.get("/legislation/{lexfind_id}", tags=["Legislation"],
+                  summary="Get legislation details",
+                  description="Get details for a specific Swiss law by LexFind ID or systematic number.")
+    async def api_get_legislation(
+        lexfind_id: int = PathParam(description="LexFind ID of the law"),
+        systematic_number: str = Query(None, description="SR/systematic number"),
+        canton: str = Query("CH", description="Canton for systematic number lookup"),
+        language: str = Query("de", description="Language: de, fr, it"),
+        include_versions: bool = Query(False, description="Include full version history"),
+    ):
+        return await asyncio.to_thread(
+            _get_legislation, lexfind_id=lexfind_id, systematic_number=systematic_number,
+            canton=canton, include_versions=include_versions, language=language,
+        )
+
+    # ── Research endpoints ─────────────────────────────────────
+
+    @rest_api.get("/doctrine", tags=["Research"],
+                  summary="Get doctrine for a legal topic",
+                  description="Statute text + authority-ranked BGEs + doctrine timeline + commentary excerpt.")
+    async def api_get_doctrine(
+        query: str = Query(..., description="Legal topic, statute reference, or concept"),
+    ):
+        return await asyncio.to_thread(_handle_get_doctrine, query=query)
+
+    @rest_api.get("/case-brief/{case}", tags=["Research"],
+                  summary="Get structured case brief",
+                  description="Structured case brief: facts, reasoning, statutes, authority, related cases.")
+    async def api_get_case_brief(
+        case: str = PathParam(description="Decision ID, docket number, or BGE reference"),
+    ):
+        return await asyncio.to_thread(_handle_get_case_brief, case=case)
+
+    @rest_api.get("/exam-question", tags=["Research"],
+                  summary="Generate exam question",
+                  description="Generate a law exam question from a real BGE fact pattern.")
+    async def api_generate_exam_question(
+        topic: str = Query(..., description="Legal topic (e.g., Vertragsrecht, Haftpflicht)"),
+        exclude_ids: str = Query(None, description="Comma-separated decision IDs to exclude"),
+    ):
+        exclude_list = [x.strip() for x in exclude_ids.split(",")] if exclude_ids else None
+        return await asyncio.to_thread(
+            _handle_generate_exam_question, topic=topic, exclude_ids=exclude_list,
+        )
+
+    logger.info("REST API mounted at /api with %d routes", len(rest_api.routes))
+
     app = Starlette(
         routes=[
             Route("/health", endpoint=handle_health),
             Route("/sse", endpoint=handle_sse),
             Route("/", endpoint=handle_sse),
             Mount("/messages/", app=sse.handle_post_message),
+            Mount("/api", app=rest_api),
         ],
     )
 
@@ -8019,7 +8325,7 @@ def main_remote(host: str, port: int):
             async def __call__(self, scope, receive, send):
                 if scope["type"] == "http":
                     path = scope.get("path", "")
-                    if path != "/health":
+                    if path != "/health" and not path.startswith("/api"):
                         headers = dict(scope.get("headers", []))
                         auth = headers.get(b"authorization", b"").decode()
                         if auth != f"Bearer {AUTH_TOKEN}":
