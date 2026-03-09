@@ -8306,9 +8306,9 @@ def main_remote(host: str, port: int):
     # Only mounted when explicit origins are configured via env var.
     # Non-browser clients (mcp-remote, Claude Code) ignore CORS entirely.
     if CORS_ORIGINS:
-        from starlette.middleware.cors import CORSMiddleware
+        from starlette.middleware.cors import CORSMiddleware as _StarletteCORS
         app.add_middleware(
-            CORSMiddleware,
+            _StarletteCORS,
             allow_origins=CORS_ORIGINS,
             allow_methods=["GET", "POST"],
             allow_headers=["Authorization", "Content-Type"],
