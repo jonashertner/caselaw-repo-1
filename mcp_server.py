@@ -77,6 +77,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
+
+class MockDecisionRequest(BaseModel):
+    """Request body for the mock decision endpoint."""
+    facts: str
+    question: Optional[str] = None
+    deciding_court: Optional[str] = None
+    preferred_language: Optional[str] = None
+    statute_references: Optional[list[dict]] = None
+    clarifications: Optional[list[dict]] = None
+    fedlex_urls: Optional[list[str]] = None
+    limit: int = 8
+
+
 # Add repo root to path so db_schema can be imported when run from any directory
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
@@ -8132,16 +8145,6 @@ def main_remote(host: str, port: int):
             analyze_legal_trend, query=query, law_code=law_code, article=article,
             court=court, date_from=date_from, date_to=date_to,
         )
-
-    class MockDecisionRequest(BaseModel):
-        facts: str
-        question: Optional[str] = None
-        deciding_court: Optional[str] = None
-        preferred_language: Optional[str] = None
-        statute_references: Optional[list] = None
-        clarifications: Optional[list] = None
-        fedlex_urls: Optional[list[str]] = None
-        limit: int = 8
 
     @rest_api.post("/mock-decision", tags=["Analysis"],
                    summary="Draft a mock decision",
