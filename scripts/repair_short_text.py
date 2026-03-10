@@ -56,6 +56,98 @@ JSONL_DIR = Path("output/decisions")
 PDF_CACHE_DIR = Path("output/.pdf_cache")
 PROGRESS_FILE = Path("output/.repair_progress.json")
 
+# ---------------------------------------------------------------------------
+# Cross-court dedup (mirrors build_fts5.py overlap groups)
+# ---------------------------------------------------------------------------
+_COURT_OVERLAP_GROUPS: list[set[str]] = [
+    # ZH: entscheidsuche → zh_gerichte, direct scraper → sub-courts
+    {"zh_gerichte", "zh_obergericht", "zh_kassationsgericht", "zh_handelsgericht",
+     "zh_bezirksgericht_zuerich", "zh_bezirksgericht_winterthur",
+     "zh_bezirksgericht_horgen", "zh_bezirksgericht_dietikon",
+     "zh_bezirksgericht_buelach", "zh_bezirksgericht_dielsdorf",
+     "zh_bezirksgericht_uster", "zh_bezirksgericht_pfaeffikon",
+     "zh_bezirksgericht_hinwil", "zh_bezirksgericht_meilen",
+     "zh_bezirksgericht_affoltern", "zh_mietgericht", "zh_arbeitsgericht"},
+    # SG
+    {"sg_gerichte", "sg_publikationen", "sg_versicherungsgericht",
+     "sg_verwaltungsgericht", "sg_verwaltungsrekurskommission",
+     "sg_kantonsgericht", "sg_handelsgericht"},
+    # AG
+    {"ag_gerichte", "ag_obergericht", "ag_versicherungsgericht",
+     "ag_handelsgericht", "ag_spezialverwaltungsgericht",
+     "ag_strafgericht", "ag_zivilgericht", "ag_verwaltungsgericht",
+     "ag_anwaltskommission", "ag_aufsichtskommission", "ag_regierungsrat",
+     "ag_departement_bks", "ag_departement_bvu", "ag_departement_gs",
+     "ag_departement_vi", "ag_justizgericht", "ag_justizleitung", "ag_weitere"},
+    # SH
+    {"sh_gerichte", "sh_obergericht"},
+    # TG
+    {"tg_gerichte", "tg_obergericht"},
+    # VD
+    {"vd_findinfo", "vd_gerichte", "vd_omni"},
+    # BS
+    {"bs_gerichte", "bs_appellationsgericht", "bs_sozialversicherungsgericht"},
+    # BE
+    {"be_steuerrekurs", "be_verwaltungsgericht"},
+]
+
+_COURT_TO_GROUP: dict[str, str] = {}
+for _group in _COURT_OVERLAP_GROUPS:
+    _representative = sorted(_group)[0]  # deterministic group ID
+    for _code in _group:
+        _COURT_TO_GROUP[_code] = _representative
+
+
+def _make_dedup_key(court: str, docket: str, decision_date: str | None) -> str:
+    """Build a dedup key that accounts for cross-court overlap groups."""
+    group_court = _COURT_TO_GROUP.get(court, court)
+    docket_norm = re.sub(r"[^A-Z0-9]", "", (docket or "").upper())
+    # TG: strip NR noise word (matches build_fts5.py)
+    if court in ("tg_gerichte", "tg_obergericht"):
+        docket_norm = re.sub(r"NR(?=\d)", "", docket_norm)
+    # BGE: strip BGE/ATF/DTF prefixes
+    if court == "bge":
+        docket_norm = re.sub(r"^(?:CH)?(?:BGE|ATF|DTF)", "", docket_norm)
+    date_compact = (decision_date or "").replace("-", "")[:8]
+    return f"{group_court}|{docket_norm}|{date_compact}"
+
+
+def build_dedup_index(threshold: int) -> set[str]:
+    """
+    Pre-scan ALL JSONL files and return the set of dedup keys that already
+    have at least one entry with text >= threshold. Entries matching such a
+    key in other files can be skipped (they'd lose dedup at publish time).
+    """
+    logger.info("Building dedup index across all JSONL files...")
+    covered: set[str] = set()
+    total_entries = 0
+
+    for jsonl_path in sorted(JSONL_DIR.glob("*.jsonl")):
+        with open(jsonl_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                total_entries += 1
+                full_text = obj.get("full_text", "")
+                if len(full_text) >= threshold:
+                    court = obj.get("court", "")
+                    docket = obj.get("docket_number", "")
+                    date_str = str(obj.get("decision_date", "") or "")
+                    key = _make_dedup_key(court, docket, date_str)
+                    covered.add(key)
+
+    logger.info(
+        f"Dedup index built: {total_entries} entries scanned, "
+        f"{len(covered)} unique decisions already have good text"
+    )
+    return covered
+
+
 # Language detection (from models.py)
 _LANG_WORDS = {
     "de": re.compile(
@@ -306,19 +398,22 @@ def repair_file(
     session: requests.Session,
     rate_limiter: DomainRateLimiter,
     processed: set[str],
+    covered_keys: set[str],
+    attempted_keys: set[str],
     threshold: int,
     use_ocr: bool,
     dry_run: bool,
     max_count: int | None,
-) -> tuple[int, int, int, int]:
+) -> tuple[int, int, int, int, int]:
     """
     Repair a single JSONL file by streaming.
-    Returns (total_lines, candidates, fixed, skipped_already_done).
+    Returns (total_lines, candidates, fixed, skipped_already_done, skipped_dedup).
     """
     total = 0
     candidates = 0
     fixed = 0
     skipped = 0
+    skipped_dedup = 0
     file_processed_ids: list[str] = []
 
     tmp_fd, tmp_path = tempfile.mkstemp(
@@ -349,6 +444,24 @@ def repair_file(
 
                 candidates += 1
 
+                # Skip if another entry already has good text for this decision
+                court = obj.get("court", "")
+                docket = obj.get("docket_number", "")
+                date_str = str(obj.get("decision_date", "") or "")
+                dedup_key = _make_dedup_key(court, docket, date_str)
+
+                if dedup_key in covered_keys:
+                    skipped_dedup += 1
+                    fout.write(line)
+                    continue
+
+                # Skip if we already attempted this dedup key in this run
+                # (avoids downloading same PDF for duplicate entries)
+                if dedup_key in attempted_keys:
+                    skipped_dedup += 1
+                    fout.write(line)
+                    continue
+
                 # Already processed in a previous run?
                 if decision_id in processed:
                     skipped += 1
@@ -356,13 +469,16 @@ def repair_file(
                     continue
 
                 # Respect --max across the whole run
-                if max_count is not None and (fixed + skipped) >= max_count:
+                if max_count is not None and fixed >= max_count:
                     fout.write(line)
                     continue
 
                 if dry_run:
                     fout.write(line)
                     continue
+
+                # Mark this dedup key as attempted
+                attempted_keys.add(dedup_key)
 
                 # Download PDF
                 pdf_bytes = download_pdf(session, rate_limiter, pdf_url, decision_id)
@@ -412,7 +528,7 @@ def repair_file(
     # Update processed set
     processed.update(file_processed_ids)
 
-    return total, candidates, fixed, skipped
+    return total, candidates, fixed, skipped, skipped_dedup
 
 
 # ---------------------------------------------------------------------------
@@ -421,9 +537,17 @@ def repair_file(
 def scan_candidates(
     court_filter: str | None,
     threshold: int,
+    covered_keys: set[str],
 ) -> list[tuple[Path, int]]:
-    """Scan JSONL files and return list of (path, candidate_count)."""
+    """Scan JSONL files and return list of (path, candidate_count).
+
+    Excludes entries whose dedup key is already covered (another entry
+    already has good text for the same decision).
+    """
     target_files = []
+    seen_keys: set[str] = set()  # track within-scan to count unique only
+    total_raw = 0
+    total_dedup_skipped = 0
 
     for jsonl_path in sorted(JSONL_DIR.glob("*.jsonl")):
         # Filter by court if specified
@@ -445,11 +569,29 @@ def scan_candidates(
                 full_text = obj.get("full_text", "")
                 pdf_url = obj.get("pdf_url", "")
                 if len(full_text) < threshold and pdf_url:
+                    total_raw += 1
+                    court = obj.get("court", "")
+                    docket = obj.get("docket_number", "")
+                    date_str = str(obj.get("decision_date", "") or "")
+                    key = _make_dedup_key(court, docket, date_str)
+                    if key in covered_keys:
+                        total_dedup_skipped += 1
+                        continue
+                    if key in seen_keys:
+                        total_dedup_skipped += 1
+                        continue
+                    seen_keys.add(key)
                     count += 1
 
         if count > 0:
             target_files.append((jsonl_path, count))
-            logger.info(f"  {jsonl_path.name}: {count} candidates")
+            logger.info(f"  {jsonl_path.name}: {count} unique candidates")
+
+    if total_dedup_skipped > 0:
+        logger.info(
+            f"  (Skipped {total_dedup_skipped} duplicates of {total_raw} "
+            f"raw candidates)"
+        )
 
     return target_files
 
@@ -503,13 +645,16 @@ def main() -> None:
         logger.error(f"JSONL directory not found: {JSONL_DIR}")
         sys.exit(1)
 
-    # Scan for candidates
+    # Build dedup index to skip entries that are duplicates of good-text entries
+    covered_keys = build_dedup_index(args.threshold)
+
+    # Scan for candidates (dedup-aware)
     logger.info(f"Scanning for decisions with < {args.threshold} chars of text...")
-    target_files = scan_candidates(args.court, args.threshold)
+    target_files = scan_candidates(args.court, args.threshold, covered_keys)
 
     total_candidates = sum(c for _, c in target_files)
     logger.info(
-        f"Found {total_candidates} candidates across {len(target_files)} files"
+        f"Found {total_candidates} unique candidates across {len(target_files)} files"
     )
 
     if not target_files:
@@ -528,6 +673,7 @@ def main() -> None:
     session = build_session()
     rate_limiter = DomainRateLimiter(REQUEST_DELAY)
     use_ocr = not args.no_ocr
+    attempted_keys: set[str] = set()  # dedup keys attempted this run
 
     if not use_ocr:
         logger.info("OCR disabled (--no-ocr)")
@@ -537,17 +683,20 @@ def main() -> None:
     grand_candidates = 0
     grand_fixed = 0
     grand_skipped = 0
+    grand_skipped_dedup = 0
 
     for jsonl_path, candidate_count in target_files:
         logger.info(
-            f"\nProcessing {jsonl_path.name} ({candidate_count} candidates)..."
+            f"\nProcessing {jsonl_path.name} ({candidate_count} unique candidates)..."
         )
 
-        total, candidates, fixed, skipped = repair_file(
+        total, candidates, fixed, skipped, skipped_dedup = repair_file(
             jsonl_path=jsonl_path,
             session=session,
             rate_limiter=rate_limiter,
             processed=processed,
+            covered_keys=covered_keys,
+            attempted_keys=attempted_keys,
             threshold=args.threshold,
             use_ocr=use_ocr,
             dry_run=False,
@@ -558,10 +707,11 @@ def main() -> None:
         grand_candidates += candidates
         grand_fixed += fixed
         grand_skipped += skipped
+        grand_skipped_dedup += skipped_dedup
 
         logger.info(
             f"  {jsonl_path.name}: {total} total, {candidates} candidates, "
-            f"{fixed} fixed, {skipped} skipped (already done)"
+            f"{fixed} fixed, {skipped} resumed, {skipped_dedup} dedup-skipped"
         )
 
         # Save progress after each file
@@ -570,6 +720,7 @@ def main() -> None:
             "total_candidates": grand_candidates,
             "total_fixed": grand_fixed,
             "total_skipped": grand_skipped,
+            "total_skipped_dedup": grand_skipped_dedup,
         })
 
     # Summary
@@ -579,7 +730,9 @@ def main() -> None:
     logger.info(f"  Candidates found: {grand_candidates}")
     logger.info(f"  Successfully fixed: {grand_fixed}")
     logger.info(f"  Skipped (already done): {grand_skipped}")
-    logger.info(f"  Remaining unfixed: {grand_candidates - grand_fixed - grand_skipped}")
+    logger.info(f"  Skipped (dedup): {grand_skipped_dedup}")
+    remaining = grand_candidates - grand_fixed - grand_skipped - grand_skipped_dedup
+    logger.info(f"  Remaining unfixed: {remaining}")
     if grand_candidates > 0:
         pct = grand_fixed / grand_candidates * 100
         logger.info(f"  Fix rate: {pct:.1f}%")
