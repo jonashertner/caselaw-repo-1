@@ -85,13 +85,20 @@ def create_schema(conn: sqlite3.Connection):
     """)
 
 
-def extract_text(element) -> str:
+def extract_text(element, skip_tags: set[str] | None = None) -> str:
     """Recursively extract all text content from an XML element."""
     parts = []
     if element.text:
         parts.append(element.text.strip())
     for child in element:
-        parts.append(extract_text(child))
+        # Strip namespace for tag comparison
+        tag = child.tag.split("}")[-1] if "}" in child.tag else child.tag
+        if skip_tags and tag in skip_tags:
+            # Still include tail text (text after the skipped element)
+            if child.tail:
+                parts.append(child.tail.strip())
+            continue
+        parts.append(extract_text(child, skip_tags))
         if child.tail:
             parts.append(child.tail.strip())
     return " ".join(p for p in parts if p)
@@ -99,13 +106,18 @@ def extract_text(element) -> str:
 
 def parse_article(article_elem) -> tuple[str, str | None, str]:
     """Parse an article element, return (article_num, heading, full_text)."""
-    # Extract article number
+    # Extract article number (skip authorialNote footnotes embedded in <num>)
     num_elem = article_elem.find("akn:num", NS)
     if num_elem is None:
         num_elem = article_elem.find(f"{{{AKN_NS}}}num")
-    article_num = extract_text(num_elem) if num_elem is not None else ""
+    article_num = extract_text(num_elem, skip_tags={"authorialNote"}) if num_elem is not None else ""
     # Clean article number: "Art. 41" -> "41", "Art. 41a" -> "41a"
     article_num = re.sub(r"^Art\.?\s*", "", article_num).strip()
+    # Strip any remaining footnote text after the article number
+    # e.g. "5 a Angenommen in der..." -> "5a"
+    m = re.match(r"(\d+)\s*((?:bis|ter|quater|quinquies|sexies|septies|octies|novies)|[a-z])?", article_num)
+    if m:
+        article_num = m.group(1) + (m.group(2) or "")
     if not article_num:
         # Try eId attribute: "art_41" -> "41"
         eid = article_elem.get("eId", "")
