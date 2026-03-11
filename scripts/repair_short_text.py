@@ -432,7 +432,12 @@ def repair_file(
                     fout.write(line)
                     continue
 
-                obj = json.loads(stripped)
+                try:
+                    obj = json.loads(stripped)
+                except json.JSONDecodeError as e:
+                    log.warning("Skipping malformed JSON line in %s: %s", jsonl_path.name, e)
+                    fout.write(line)
+                    continue
                 full_text = obj.get("full_text", "")
                 pdf_url = obj.get("pdf_url", "")
                 decision_id = obj.get("decision_id", "")
