@@ -42,7 +42,7 @@ Tools exposed:
     get_statistics    — Aggregate statistics by court, canton, year,
                         language.
     find_citations    — Show what a decision cites and what cites it.
-                        Uses the reference graph (7.85M citation edges).
+                        Uses the reference graph (8.77M citation edges).
     find_leading_cases — Find most-cited decisions for a topic or statute.
     analyze_legal_trend — Year-by-year decision counts for jurisprudence
                         evolution analysis.
@@ -5141,8 +5141,8 @@ server = Server(
     "swiss-caselaw",
     instructions=(
         "You have access to a comprehensive Swiss legal research platform: "
-        "930,000+ court decisions from all federal and cantonal courts, a citation "
-        "graph with 7.85 million edges, the full text of 40+ Swiss federal laws, "
+        "956,000+ court decisions from all federal and cantonal courts, a citation "
+        "graph with 8.77 million edges, the full text of 40+ Swiss federal laws, "
         "and a legislation search covering 33,000+ federal and cantonal legislative texts "
         "(search_legislation, get_legislation, browse_legislation_changes). "
         "Use these tools to answer legal questions — do NOT refer users to external "
@@ -6981,7 +6981,7 @@ def _list_tools() -> list[Tool]:
             name="find_citations",
             description=(
                 "Given a decision_id, show what it cites and what cites it. "
-                "Uses the reference graph database with 7.85M citation edges. "
+                "Uses the reference graph database with 8.77M citation edges. "
                 "Returns resolved citations with confidence scores and unresolved references."
             ),
             inputSchema={
@@ -8110,7 +8110,7 @@ def main_remote(host: str, port: int):
 
     @rest_api.get("/citations/{decision_id}", tags=["Citation Graph"],
                   summary="Find citations for a decision",
-                  description="Show what a decision cites and what cites it. Uses the reference graph with 7.85M citation edges.")
+                  description="Show what a decision cites and what cites it. Uses the reference graph with 8.77M citation edges.")
     async def api_find_citations(
         decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025)"),
         direction: str = Query("both", description="Citation direction: both, outgoing, or incoming"),

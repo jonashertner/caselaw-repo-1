@@ -13,6 +13,8 @@ tags:
   - nlp
   - full-text
 pretty_name: Swiss Case Law
+authors:
+  - Jonas Hertner
 size_categories:
   - 100K<n<1M
 task_categories:
@@ -28,7 +30,7 @@ configs:
 
 # Swiss Case Law Dataset
 
-**930,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**956,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
@@ -38,13 +40,13 @@ Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions — over 1,024,000 decisions from 89 courts across all 26 cantons, scraped from official court websites and cantonal court portals. New decisions are added every night.
+The largest open collection of Swiss court decisions — over 956,000 decisions from 100 courts across all 26 cantons, scraped from official court websites and cantonal court portals. New decisions are added every night.
 
-- **12 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, Sports Tribunal, and more
-- **77 cantonal courts** across all 26 cantons
-- **4 languages**: German, French, Italian, Romansh
-- **Temporal range**: 1880–present
-- **34 structured fields** per decision: full text, docket number, date, court, canton, language, legal area, judges, citations, headnote, and more
+- **19 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, Sports Tribunal, and more
+- **81 cantonal courts** across all 26 cantons
+- **4 languages**: German (46.4%), French (45.3%), Italian (8.3%), Romansh
+- **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
+- **24 structured fields** per decision in the FTS5 search index; full 34-field schema in Parquet
 
 ## Quick Start
 
@@ -102,7 +104,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, or Gemini for natural-language search over all 1M+ decisions.
+Connect the dataset to Claude, ChatGPT, or Gemini for natural-language search over all 956,000+ decisions. 21 tools available — see [full documentation](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai).
 
 **Remote (no download needed):**
 
@@ -118,23 +120,6 @@ claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 # { "mcpServers": { "swiss-caselaw": { "url": "https://mcp.opencaselaw.ch" } } }
 ```
 
-**Google ADK (programmatic):**
-
-```python
-from google.adk.agents import LlmAgent
-from google.adk.tools import MCPToolset
-from mcp.client.sse import SseConnectionParams
-
-agent = LlmAgent(
-    model="gemini-3.1-pro",
-    name="swiss_law_agent",
-    instruction="You are a Swiss legal research assistant.",
-    tools=[MCPToolset(connection_params=SseConnectionParams(
-        url="https://mcp.opencaselaw.ch/sse",
-    ))],
-)
-```
-
 **Local (offline access, ~65 GB disk):**
 
 ```bash
@@ -147,64 +132,71 @@ claude mcp add swiss-caselaw -- /path/to/.venv/bin/python3 /path/to/mcp_server.p
 # Windows: use .venv\Scripts\python.exe instead
 ```
 
-On first search, the server downloads the Parquet files (~7 GB) from this dataset and builds a local SQLite FTS5 index (~58 GB). This takes 30-60 minutes and only happens once. After that, searches are instant.
+On first search, the server downloads the Parquet files (~7 GB) from this dataset and builds a local SQLite FTS5 index (~58 GB). This takes 30–60 minutes and only happens once. After that, searches are instant.
 
-#### MCP tools
+## Dataset Statistics
 
-| Tool | Description |
-|------|-------------|
-| `search_decisions` | Full-text search with filters (court, canton, language, date range, chamber, decision type) |
-| `get_decision` | Fetch a single decision by docket number or ID. Includes citation graph counts. |
-| `list_courts` | List all courts with decision counts |
-| `get_statistics` | Aggregate stats by court, canton, or year |
-| `find_citations` | Show what a decision cites and what cites it, with confidence scores |
-| `find_appeal_chain` | Trace the appeal chain (Instanzenzug) — prior and subsequent instances |
-| `find_leading_cases` | Find the most-cited decisions for a topic or statute |
-| `analyze_legal_trend` | Year-by-year decision counts for a statute or topic |
-| `draft_mock_decision` | Research-only mock decision outline from facts, grounded in caselaw + statutes |
-| `get_case_brief` | Structured case brief for any BGE or decision: Sachverhalt, key Erwägungen, statutes, authority, and related cases |
-| `get_doctrine` | Statute text, authority-ranked leading BGEs, and doctrine timeline for a statute or legal concept |
-| `generate_exam_question` | Real BGE fact pattern as a Fallbearbeitung exercise with hidden analysis (applicable statutes, legal test, outcome) |
-| `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
-| `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
-| `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
-| `get_legislation` | Get details for a specific law by LexFind ID or SR number, with version history and source URLs |
-| `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
-| `update_database` | Re-download latest data and rebuild the local database (local mode only) |
-| `check_update_status` | Check progress of a running database update (local mode only) |
+| Metric | Value |
+|--------|-------|
+| Total decisions | 956,603 |
+| Courts | 100 |
+| Temporal range | 1875–present |
+| Average decision length | ~22,000 characters |
+| Full text coverage | 100% |
+| Regeste (headnote) coverage | 54.3% |
+| Citation graph edges | 8.77 million |
+| Resolved citation links | 2.33 million |
 
-The citation graph tools (`find_citations`, `find_appeal_chain`, `find_leading_cases`, `analyze_legal_trend`) use a **reference graph** with 7.85 million citation edges linking 930K+ decisions and 330K statute references:
+**Language distribution:**
 
-- *"What are the leading cases on Art. 8 EMRK?"* → Top decisions ranked by citation count
-- *"Show me the citation network for BGE 138 III 374"* → 13 outgoing, 13,621 incoming citations
-- *"How has Art. 29 BV jurisprudence evolved?"* → Year-by-year trend from 2000 to present
-- *"Trace the appeal chain for 5A_234/2026"* → Lower court → Obergericht → Bundesgericht
+| Language | Count | Share |
+|----------|-------|-------|
+| German (de) | 443,332 | 46.3% |
+| French (fr) | 433,360 | 45.3% |
+| Italian (it) | 79,911 | 8.4% |
 
-The statute tools (`get_law`, `search_laws`) provide direct access to **Swiss federal law text** from the Classified Compilation (SR/RS), sourced from [Fedlex](https://www.fedlex.admin.ch). Covers the top 40 most-cited federal laws (OR, ZGB, StGB, BV, BGG, StPO, ZPO, SchKG, etc.) with 25,000+ articles in three languages.
+**Recent annual volumes:**
 
-The legislation tools (`search_legislation`, `get_legislation`, `browse_legislation_changes`) search **33,000+ Swiss legislative texts** across all levels of government — federal, cantonal, and intercantonal — via the [LexFind.ch](https://www.lexfind.ch) API. Covers laws, ordinances, regulations, and international treaties from all 26 cantons plus the federal level. Returns metadata, version history, and links to official sources (Fedlex/cantonal portals).
+| Year | Decisions |
+|------|-----------|
+| 2026 | 7,054 (partial) |
+| 2025 | 43,049 |
+| 2024 | 44,256 |
+| 2023 | 44,758 |
 
-The education tools (`get_case_brief`, `get_doctrine`, `generate_exam_question`) support **Swiss legal study and exam prep** directly in Claude. No curriculum browsing or tool chaining needed — ask about a case, statute, or topic and Claude builds the full pedagogical session dynamically.
+The citation graph links decisions to each other and to statute provisions extracted from full text. Historical BGE decisions (volumes 1–79, 1875–1953) contribute 25,548 resolved citation links.
 
-See the [full setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) for details.
+## Intended Uses
 
-### Web UI — chat interface with cited decisions
+- **Legal research and case law analysis**: full-text search and citation network analysis across the Swiss court system
+- **NLP research on multilingual legal text**: classification, summarization, named entity recognition, and cross-lingual tasks on German/French/Italian legal corpora
+- **Legal tech development**: building search engines, citation analysis tools, and document drafting assistants grounded in Swiss jurisprudence
+- **Academic study of Swiss jurisprudence**: tracking doctrinal evolution, identifying leading cases, analyzing court output over time
 
-A local chat interface for legal research. Ask questions in natural language, get answers backed by cited Swiss court decisions. Supports 5 LLM providers: Claude, OpenAI, Gemini (cloud), plus Qwen 2.5 and Llama 3.3 via [Ollama](https://ollama.com) (local, no API key needed).
+**Not intended for**: automated legal advice or replacing professional legal counsel. This dataset is a research and analysis resource, not a substitute for qualified legal representation.
 
-```bash
-git clone https://github.com/jonashertner/caselaw-repo-1.git
-cd caselaw-repo-1
-pip install fastapi uvicorn python-dotenv mcp pyarrow pydantic openai
-cd web_ui && npm install && cd ..
-./scripts/run_web_local.sh
-```
+## Limitations
 
-Open http://localhost:5173. For local models, install Ollama and run `ollama pull qwen2.5:14b` — the UI auto-detects it.
+- **Temporal coverage varies by court**: federal courts from 1996, some cantonal courts from 2000+; historical BGE volumes from 1875
+- **Historical OCR artifacts**: BGE decisions from volumes 1–79 (1875–1953) were digitized from print and may contain OCR errors
+- **Publication delays**: some cantonal courts have irregular publication schedules; decisions may appear weeks after being rendered
+- **Language distribution is unbalanced by design**: it reflects actual court output (German and French cantons are larger), not balanced sampling
+- **Anonymization varies by court**: most federal decisions are anonymized; some cantonal decisions may contain personal names or details
+- **~1.9% short-text decisions**: some decisions are PDF-only publications where text extraction produced fewer than 500 characters; full text may be available at the source URL
 
-See the [Web UI guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) for full details.
+## Dataset Creation
+
+**Collection**: 54 automated scrapers target official court websites, APIs, and publication portals (Weblaw, Tribuna, FindInfo, Omnis, and direct court APIs). Each scraper is rate-limited and resumable — it tracks already-seen decisions and fetches only new ones.
+
+**Deduplication**: `decision_id` is a deterministic hash of court code + normalized docket number. Decisions appearing across multiple sources are grouped and the version with the longest full text is kept. Cross-court overlap groups cover courts whose decisions are published on multiple portals (ZH: 17 sub-courts, AG: 18, VD: 3, BS: 3, BE: 2).
+
+**Quality control**: content hashing (MD5 of full text) detects duplicate text; stub removal discards entries with fewer than 10 characters in both full text and regeste; text length validation flags suspicious entries.
+
+**Pipeline**: daily at 01:00 UTC scrapers run; at 04:00 UTC the pipeline builds the FTS5 index, exports Parquet files, and uploads to HuggingFace. Mon–Sat runs are incremental (byte-offset checkpointing, typically under a minute); Sunday runs a full rebuild and FTS5 optimization.
 
 ## Schema
+
+The Parquet files use a 34-field schema. The 24 columns available in the FTS5 search index are listed below.
 
 | # | Field | Type | Description |
 |---|-------|------|-------------|
@@ -213,83 +205,76 @@ See the [Web UI guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) 
 | 3 | `canton` | string | `CH` for federal, two-letter canton code otherwise |
 | 4 | `chamber` | string | Chamber / Abteilung |
 | 5 | `docket_number` | string | Original docket number (e.g., `6B_1234/2025`) |
-| 6 | `docket_number_2` | string | Secondary docket number |
-| 7 | `decision_date` | string | ISO date of decision |
-| 8 | `publication_date` | string | Date published online |
-| 9 | `language` | string | Language code: `de`, `fr`, `it`, `rm` |
-| 10 | `title` | string | Subject / Gegenstand |
-| 11 | `legal_area` | string | Rechtsgebiet / Domaine juridique |
-| 12 | `regeste` | string | Headnote / Regeste |
-| 13 | `abstract_de` | string | German abstract |
-| 14 | `abstract_fr` | string | French abstract |
-| 15 | `abstract_it` | string | Italian abstract |
-| 16 | `full_text` | string | Complete decision text |
-| 17 | `outcome` | string | Decision outcome |
-| 18 | `decision_type` | string | Urteil, Beschluss, Verfügung, etc. |
-| 19 | `judges` | string | Participating judges |
-| 20 | `clerks` | string | Court clerks |
-| 21 | `collection` | string | Official collection reference |
-| 22 | `appeal_info` | string | Appeal status |
-| 23 | `source_url` | string | Permanent URL to original |
-| 24 | `pdf_url` | string | Direct PDF link |
-| 25 | `bge_reference` | string | BGE reference if published |
-| 26 | `cited_decisions` | string | JSON array of cited references |
-| 27 | `scraped_at` | string | Scrape timestamp |
-| 28 | `external_id` | string | External cross-reference ID |
-| 29 | `source` | string | Data source identifier |
-| 30 | `source_id` | string | Source-specific ID (e.g. Signatur) |
-| 31 | `source_spider` | string | Source spider/scraper name |
-| 32 | `content_hash` | string | MD5 hash of full_text for deduplication |
-| 33 | `has_full_text` | bool | Whether full text is non-empty |
-| 34 | `text_length` | int | Character count of full_text |
+| 6 | `decision_date` | string | ISO date of decision |
+| 7 | `publication_date` | string | Date published online |
+| 8 | `language` | string | Language code: `de`, `fr`, `it`, `rm` |
+| 9 | `title` | string | Subject / Gegenstand |
+| 10 | `legal_area` | string | Rechtsgebiet / Domaine juridique |
+| 11 | `regeste` | string | Headnote / Regeste (present in 54.3% of decisions) |
+| 12 | `full_text` | string | Complete decision text |
+| 13 | `decision_type` | string | Urteil, Beschluss, Verfügung, etc. |
+| 14 | `outcome` | string | Decision outcome (Gutheissung, Abweisung, ...) |
+| 15 | `source_url` | string | Permanent URL to the original |
+| 16 | `pdf_url` | string | Direct PDF link |
+| 17 | `cited_decisions` | string | JSON array of cited decision references |
+| 18 | `scraped_at` | string | Scrape timestamp |
+| 19 | `source` | string | Data source identifier |
+| 20 | `source_id` | string | Source-specific ID (e.g., Signatur) |
+| 21 | `source_spider` | string | Name of the scraper that collected this decision |
+| 22 | `content_hash` | string | MD5 hash of full_text for deduplication |
+| 23 | `json_data` | string | Complete 34-field record as JSON |
+| 24 | `canonical_key` | string | Normalized key for cross-source deduplication |
+
+Full schema definition (all 34 fields): [`models.py`](https://github.com/jonashertner/caselaw-repo-1/blob/main/models.py)
 
 ## Court Coverage
 
-### Federal Courts
+### Federal Courts (19)
 
 | Court | Code | Decisions | Period |
 |-------|------|-----------|--------|
-| Federal Supreme Court (BGer) | `bger` | ~173,000 | 1996–present |
-| Federal Administrative Court (BVGer) | `bvger` | ~91,000 | 2007–present |
-| BGE Leading Cases | `bge` | ~45,000 | 1954–present |
-| Federal Admin. Practice (VPB) | `ch_vb` | ~23,000 | 1982–2016 |
-| Federal Criminal Court (BStGer) | `bstger` | ~11,000 | 2004–present |
-| EDÖB (Data Protection) | `edoeb` | ~1,200 | 1994–present |
-| FINMA | `finma` | ~1,200 | 2008–2024 |
+| Federal Supreme Court (BGer) | `bger` | ~174,000 | 1996–present |
+| Federal Administrative Court (BVGer) | `bvger` | ~91,500 | 2007–present |
+| BGE Leading Cases | `bge` | ~21,200 | 1954–present |
+| BGE Historical (vol. 1–79) | `bge_historical` | ~14,600 | 1875–1953 |
+| Federal Admin. Practice (VPB) | `ch_vb` | ~22,900 | 1982–2016 |
+| Federal Criminal Court (BStGer) | `bstger` | ~11,400 | 2004–present |
+| EDÖB (Data Protection) | `edoeb` | ~1,800 | 1994–present |
+| FINMA | `finma` | ~405 | 2008–present |
 | ECHR (Swiss cases) | `bge_egmr` | ~475 | 1974–present |
-| Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present |
-| Competition Commission (WEKO) | `weko` | ~120 | 2009–present |
-| Sports Tribunal | `ta_sst` | ~50 | 2024–present |
-| Federal Council | `ch_bundesrat` | ~15 | 2012–present |
+| Federal Patent Court (BPatGer) | `bpatger` | ~189 | 2012–present |
+| Competition Commission (WEKO) | `weko` | ~256 | 2009–present |
+| Sports Tribunal | `ta_sst` | ~49 | 2024–present |
 
-### Cantonal Courts (26 cantons, 77 courts)
+### Cantonal Courts (26 cantons, 81 courts)
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|
+| Genève (GE) | 1 | ~167,000 | 1993–present |
 | Vaud (VD) | 3 | ~155,000 | 1984–present |
-| Zürich (ZH) | 20 | ~126,000 | 1980–present |
-| Genève (GE) | 1 | ~116,000 | 1993–present |
-| Ticino (TI) | 1 | ~58,000 | 1995–present |
-| St. Gallen (SG) | 7 | ~35,000 | 2001–present |
-| Graubünden (GR) | 1 | ~29,000 | 2002–present |
-| Basel-Landschaft (BL) | 1 | ~26,000 | 2000–present |
-| Bern (BE) | 6 | ~26,000 | 2002–present |
-| Aargau (AG) | 18 | ~21,000 | 1993–present |
-| Basel-Stadt (BS) | 3 | ~19,000 | 2001–present |
+| Zürich (ZH) | 21 | ~81,000 | 1980–present |
+| Ticino (TI) | 1 | ~59,000 | 1995–present |
+| Bern (BE) | 6 | ~20,000 | 2002–present |
+| Basel-Landschaft (BL) | 1 | ~17,000 | 2000–present |
+| Graubünden (GR) | 1 | ~14,400 | 2002–present |
+| Fribourg (FR) | 1 | ~14,100 | 2007–present |
+| St. Gallen (SG) | 7 | ~13,100 | 2001–present |
+| Aargau (AG) | 17 | ~11,800 | 1993–present |
+| Basel-Stadt (BS) | 3 | ~10,100 | 2001–present |
 
 All 26 cantons covered: AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, TI, UR, VD, VS, ZG, ZH.
 
-Live coverage statistics: **[Dashboard](https://opencaselaw.ch)**
+Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ## Data Sources
 
-**Official court websites** — direct scraping from federal and cantonal court platforms (45 scrapers targeting court APIs, Weblaw, Tribuna, FindInfo, and other portals).
+**Official court websites** — direct scraping from federal and cantonal court platforms (54 scrapers targeting court APIs, Weblaw, Tribuna, FindInfo, Omnis, and other portals).
 
 Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The version with the longest full text is kept.
 
 ## Update Frequency
 
-The dataset is updated daily via automated pipeline. New decisions are scraped, deduplicated, exported to Parquet, and uploaded.
+The dataset is updated daily via automated pipeline. New decisions are scraped, deduplicated, exported to Parquet, and uploaded to HuggingFace.
 
 ## Legal Basis
 
@@ -307,7 +292,7 @@ MIT License. The underlying court decisions are public domain under Swiss law.
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={930,000+ Swiss federal and cantonal court decisions with full text and structured metadata}
+  note={956,000+ Swiss federal and cantonal court decisions with full text and structured metadata}
 }
 ```
 
@@ -315,5 +300,4 @@ MIT License. The underlying court decisions are public domain under Swiss law.
 
 - **Website**: [opencaselaw.ch](https://opencaselaw.ch) — live coverage statistics and dashboard
 - **GitHub**: [github.com/jonashertner/caselaw-repo-1](https://github.com/jonashertner/caselaw-repo-1) — source code, scrapers, pipeline
-- **MCP Server**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) — full-text search for Claude Code and Claude Desktop
-- **Web UI**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#4-web-ui) — chat interface with Claude, OpenAI, Gemini, or local models via Ollama
+- **MCP Server**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) — full-text search for Claude Code, Claude Desktop, ChatGPT, and Gemini

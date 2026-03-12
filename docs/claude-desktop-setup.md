@@ -1,6 +1,6 @@
 # Swiss Case Law — MCP Setup Guide
 
-Search 930,000+ Swiss court decisions directly inside Claude, ChatGPT, or Gemini.
+Search 956,000+ Swiss court decisions directly inside Claude, ChatGPT, or Gemini.
 
 There are two options: **remote** (no download, instant access) or **local** (offline access, 65 GB disk). The remote server works with all major AI platforms.
 
@@ -63,7 +63,7 @@ Restart Gemini CLI after saving.
 
 ### Google ADK (Agent Development Kit)
 
-Build a Gemini-powered agent with access to all 19 tools:
+Build a Gemini-powered agent with access to all 21 tools:
 
 ```bash
 pip install google-adk mcp

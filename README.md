@@ -1,6 +1,6 @@
 # Swiss Case Law Open Dataset
 
-**930,000+ court decisions from all Swiss federal courts and 26 cantons.**
+**956,000+ court decisions from all Swiss federal courts and 26 cantons.**
 
 Full text, structured metadata, four languages (DE/FR/IT/RM), updated daily. The largest open collection of Swiss jurisprudence.
 
@@ -25,17 +25,17 @@ There are six ways to use it, depending on what you need:
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, appeal chains, jurisprudence trends |
 | [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 40+ federal laws (OR, ZGB, StGB, BV, ...) |
 | [**Legislation Search**](#legislation-tools) | Legal professionals | Search 33,000+ federal and cantonal legislative texts via LexFind.ch |
-| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 930K+ decisions |
+| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 956K+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 930K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 956K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
 
 ---
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 19 tools that lets AI search across all 930K+ decisions, look up federal law articles, search 33,000+ legislative texts, analyze citation networks, and study leading cases. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 21 tools that lets AI search across all 956K+ decisions, look up federal law articles, search 33,000+ legislative texts, analyze citation networks, and study leading cases. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
 ### Remote vs. local
 
@@ -43,7 +43,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 19 
 |---|---|---|
 | **Setup** | 30 seconds | 30–60 minutes |
 | **Disk** | None | ~65 GB |
-| **Tools** | 17 | 19 (+update_database, check_update_status) |
+| **Tools** | 19 | 21 (+update_database, check_update_status) |
 | **Freshness** | Nightly (automatic) | Manual |
 | **Offline** | No | Yes |
 | **Requires** | Claude, ChatGPT, or Gemini CLI (see plans below) | Any MCP client |
@@ -52,7 +52,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) with 19 
 
 ### Option A: Remote server (recommended)
 
-Connect directly to the hosted MCP server — no data download, no local database, instant access to 930K+ decisions.
+Connect directly to the hosted MCP server — no data download, no local database, instant access to 956K+ decisions.
 
 **Claude.ai / Claude Desktop** (easiest):
 
@@ -228,9 +228,9 @@ The dataset is updated daily. To get the latest decisions, ask Claude to run the
 │   └── data/
 │       ├── bger.parquet
 │       ├── bvger.parquet
-│       └── ...           # 89 files, one per court
+│       └── ...           # 100 files, one per court
 ├── decisions.db          # SQLite FTS5 search index (~58 GB)
-├── reference_graph.db    # Citation graph (7.85M edges, ~3.5 GB)
+├── reference_graph.db    # Citation graph (8.77M edges, ~3.5 GB)
 └── statutes.db           # Federal law articles from Fedlex (~42 MB)
 ```
 
@@ -240,9 +240,9 @@ All data stays on your machine. No API calls are made during search — the MCP 
 
 - **`decisions`** — the main table with one row per decision. Holds all 23 columns (decision_id, court, canton, chamber, docket_number, full_text, regeste, etc.) plus a `json_data` column with the complete 34-field record. Indexed on `court`, `canton`, `decision_date`, `language`, `docket_number`, `chamber`, and `decision_type` for fast filtered queries.
 
-- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 930K+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
+- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 956K+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
 
-**Why ~58 GB.** The full text of 930K+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
+**Why ~58 GB.** The full text of 956K+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
 
 **Search pipeline.** When you search, the server:
 
@@ -282,6 +282,8 @@ Available on both remote and local unless noted.
 | `generate_exam_question` | Legal topic → real BGE fact pattern with hidden analysis for Fallbearbeitung practice |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
 | `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
+| `get_commentary` | Look up scholarly commentary for a specific law article from OnlineKommentar.ch (CC-BY-4.0) |
+| `search_commentaries` | Full-text search across 362 legal commentaries covering 19 Swiss federal laws |
 | `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
 | `get_legislation` | Get details for a specific law by LexFind ID or SR number, with version history and source URLs |
 | `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
@@ -332,7 +334,7 @@ The AI calls the MCP tools automatically — you see the search results inline a
 
 ### Citation graph tools
 
-Four tools expose the **reference graph** — 7.85 million citation edges linking 930K+ decisions, plus 330K statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+Four tools expose the **reference graph** — 8.77 million citation edges linking 956K+ decisions, plus 11.3 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
 
 **`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
 
