@@ -190,7 +190,7 @@ def repair_jsonl(
                 extracted = result.extracted_date
 
                 # Sanity check: extracted date should be reasonable
-                if extracted and extracted.year < 1900:
+                if extracted and (extracted.year < 1900 or extracted > date.today()):
                     if fout:
                         fout.write(line)
                     stats["invalid_year"] += 1

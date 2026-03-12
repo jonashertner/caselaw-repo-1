@@ -68,7 +68,6 @@ SLOW_SCRAPERS = {
 # Scrapers to skip by default (broken, redundant, or handled separately)
 SKIP_BY_DEFAULT: set[str] = {
     "be_steuerrekurs",  # Portal DB disconnected (Feb 2026), returns 0 results
-"ne_gerichte",      # Portal blocks Hetzner IPs; needs NE_PROXY env var (SOCKS5 tunnel)
 }
 
 # Disk usage thresholds (percent)
