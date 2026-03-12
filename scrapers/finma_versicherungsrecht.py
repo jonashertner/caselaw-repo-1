@@ -225,8 +225,8 @@ class FINMAVersicherungsrechtScraper(BaseScraper):
         # Parse decision date
         decision_date = parse_date(stub.get("decision_date", ""))
 
-        # Extract canton from parsed title
-        canton = parsed["canton_code"]
+        # FINMA is a federal authority — always CH regardless of insurer location
+        canton = "CH"
 
         # Citations from full text
         citations = extract_citations(full_text)
