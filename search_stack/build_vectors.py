@@ -503,7 +503,7 @@ def build_vectors(
     """
     t0 = time.time()
     input_dir = Path(input_dir)
-    db_path = Path(db_path)
+    db_path = Path(db_path).resolve()  # resolve symlinks for atomic rename
     tmp_path = db_path.parent / f".{db_path.name}.tmp"
 
     use_flagembedding = enable_sparse

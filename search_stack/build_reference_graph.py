@@ -363,6 +363,8 @@ def build_graph(
     courts: list[str] | None = None,
 ) -> dict:
     t0 = time.time()
+    # Resolve symlinks so temp file is on same filesystem (atomic rename)
+    db_path = db_path.resolve()
     db_path.parent.mkdir(parents=True, exist_ok=True)
     tmp_path = db_path.with_name(f".{db_path.name}.tmp")
     if tmp_path.exists():

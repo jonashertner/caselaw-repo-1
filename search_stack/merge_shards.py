@@ -35,6 +35,7 @@ def merge_shards(
     )
 
     t0 = time.time()
+    output_path = output_path.resolve()  # resolve symlinks for atomic rename
     tmp_path = output_path.parent / f".{output_path.name}.tmp"
 
     # Create target DB

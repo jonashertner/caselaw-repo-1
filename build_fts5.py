@@ -606,10 +606,11 @@ def build_database(
     checkpoint_path = output_dir / ".fts5_checkpoint.json"
 
     # Full rebuild: build to a temp file, swap at the end (zero downtime)
+    # Resolve symlinks so temp file is on the same filesystem (atomic rename)
     final_db_path = None
     if full_rebuild:
-        final_db_path = db_path
-        db_path = db_path.with_suffix(".db.tmp")
+        final_db_path = db_path.resolve()
+        db_path = final_db_path.with_suffix(".db.tmp")
         if db_path.exists():
             logger.info(f"Full rebuild: removing stale temp DB {db_path}")
             db_path.unlink()
