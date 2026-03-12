@@ -606,6 +606,19 @@
       ]
     },
     {
+      "court": "finma_versicherungsrecht",
+      "canton": "CH",
+      "count": 900,
+      "earliest": "2011-02-04",
+      "latest": "2024-10-21",
+      "last_scraped": "2026-03-12T12:40:03.450580+00:00",
+      "languages": [
+        "it",
+        "de",
+        "fr"
+      ]
+    },
+    {
       "court": "zh_steuerrekursgericht",
       "canton": "ZH",
       "count": 878,
@@ -737,19 +750,6 @@
       ]
     },
     {
-      "court": "finma_versicherungsrecht",
-      "canton": "CH",
-      "count": 371,
-      "earliest": "2011-02-04",
-      "latest": "2024-09-10",
-      "last_scraped": "2026-03-12T12:40:03.450580+00:00",
-      "languages": [
-        "de",
-        "fr",
-        "it"
-      ]
-    },
-    {
       "court": "be_steuerrekurs",
       "canton": "BE",
       "count": 343,
@@ -869,34 +869,12 @@
       ]
     },
     {
-      "court": "finma_versicherungsrecht",
-      "canton": "GE",
-      "count": 114,
-      "earliest": "2011-02-07",
-      "latest": "2024-06-26",
-      "last_scraped": "2026-03-12T12:40:01.686955+00:00",
-      "languages": [
-        "fr"
-      ]
-    },
-    {
       "court": "sg_kantonsgericht",
       "canton": "SG",
       "count": 114,
       "earliest": "1989-07-01",
       "latest": "2026-02-05",
       "last_scraped": "2026-03-04T01:30:58.526463+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "ZH",
-      "count": 93,
-      "earliest": "2013-05-22",
-      "latest": "2024-02-27",
-      "last_scraped": "2026-03-12T12:32:36.060262+00:00",
       "languages": [
         "de"
       ]
@@ -910,17 +888,6 @@
       "last_scraped": "2026-02-10T18:15:10.528196",
       "languages": [
         "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "TI",
-      "count": 83,
-      "earliest": "2011-02-17",
-      "latest": "2024-10-21",
-      "last_scraped": "2026-03-12T12:39:55.853935+00:00",
-      "languages": [
-        "it"
       ]
     },
     {
@@ -945,17 +912,6 @@
       "languages": [
         "de",
         "fr"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "AG",
-      "count": 56,
-      "earliest": "2011-03-01",
-      "latest": "2022-11-28",
-      "last_scraped": "2026-03-12T12:39:46.676351+00:00",
-      "languages": [
-        "de"
       ]
     },
     {
@@ -1005,17 +961,6 @@
       ]
     },
     {
-      "court": "finma_versicherungsrecht",
-      "canton": "VD",
-      "count": 34,
-      "earliest": "2011-03-16",
-      "latest": "2014-06-18",
-      "last_scraped": "2026-03-12T12:39:33.182025+00:00",
-      "languages": [
-        "fr"
-      ]
-    },
-    {
       "court": "ag_anwaltskommission",
       "canton": "AG",
       "count": 32,
@@ -1027,34 +972,12 @@
       ]
     },
     {
-      "court": "finma_versicherungsrecht",
-      "canton": "LU",
-      "count": 32,
-      "earliest": "2011-04-20",
-      "latest": "2023-11-06",
-      "last_scraped": "2026-03-12T12:39:02.207731+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
       "court": "zh_bezirksgericht_dietikon",
       "canton": "ZH",
       "count": 30,
       "earliest": "2012-06-18",
       "latest": "2025-10-01",
       "last_scraped": "2026-03-11T21:06:38.171891+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "BL",
-      "count": 25,
-      "earliest": "2011-03-23",
-      "latest": "2018-08-30",
-      "last_scraped": "2026-03-12T12:39:25.661399+00:00",
       "languages": [
         "de"
       ]
@@ -1080,17 +1003,6 @@
       "languages": [
         "de",
         "fr"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "SG",
-      "count": 23,
-      "earliest": "2015-02-10",
-      "latest": "2020-07-15",
-      "last_scraped": "2026-03-12T12:28:28.508574+00:00",
-      "languages": [
-        "de"
       ]
     },
     {
@@ -1122,17 +1034,6 @@
       "earliest": "2007-06-04",
       "latest": "2025-12-17",
       "last_scraped": "2026-03-11T21:04:05.478701+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "SZ",
-      "count": 15,
-      "earliest": "2011-06-29",
-      "latest": "2019-04-10",
-      "last_scraped": "2026-03-12T12:38:18.154230+00:00",
       "languages": [
         "de"
       ]
@@ -1182,58 +1083,12 @@
       ]
     },
     {
-      "court": "finma_versicherungsrecht",
-      "canton": "VS",
-      "count": 12,
-      "earliest": "2012-11-08",
-      "latest": "2022-11-03",
-      "last_scraped": "2026-03-12T12:33:45.004911+00:00",
-      "languages": [
-        "fr",
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "FR",
-      "count": 11,
-      "earliest": "2011-06-01",
-      "latest": "2020-08-24",
-      "last_scraped": "2026-03-12T12:38:30.175793+00:00",
-      "languages": [
-        "fr",
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "TG",
-      "count": 9,
-      "earliest": "2012-06-04",
-      "latest": "2019-04-24",
-      "last_scraped": "2026-03-12T12:34:57.985462+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
       "court": "zh_bezirksgericht_meilen",
       "canton": "ZH",
       "count": 7,
       "earliest": "2010-12-21",
       "latest": "2023-07-05",
       "last_scraped": "2026-02-26T02:21:20.096737+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "ZG",
-      "count": 6,
-      "earliest": "2012-09-24",
-      "latest": "2018-03-14",
-      "last_scraped": "2026-03-12T12:34:05.007686+00:00",
       "languages": [
         "de"
       ]
@@ -1261,28 +1116,6 @@
       ]
     },
     {
-      "court": "finma_versicherungsrecht",
-      "canton": "NE",
-      "count": 4,
-      "earliest": "2012-04-24",
-      "latest": "2018-01-03",
-      "last_scraped": "2026-03-12T12:35:31.642349+00:00",
-      "languages": [
-        "fr"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "SO",
-      "count": 4,
-      "earliest": "2011-10-26",
-      "latest": "2018-03-08",
-      "last_scraped": "2026-03-12T12:37:19.720093+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
       "court": "sg_handelsgericht",
       "canton": "SG",
       "count": 4,
@@ -1305,68 +1138,12 @@
       ]
     },
     {
-      "court": "finma_versicherungsrecht",
-      "canton": "BE",
-      "count": 2,
-      "earliest": "2012-10-24",
-      "latest": "2016-01-29",
-      "last_scraped": "2026-03-12T12:33:52.623987+00:00",
-      "languages": [
-        "de",
-        "fr"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "BS",
-      "count": 2,
-      "earliest": "2011-03-25",
-      "latest": "2015-12-08",
-      "last_scraped": "2026-03-12T12:39:21.265619+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "JU",
-      "count": 2,
-      "earliest": "2015-07-21",
-      "latest": "2017-04-06",
-      "last_scraped": "2026-03-12T12:27:14.941315+00:00",
-      "languages": [
-        "fr"
-      ]
-    },
-    {
       "court": "zh_bezirksgericht_affoltern",
       "canton": "ZH",
       "count": 2,
       "earliest": "2020-06-22",
       "latest": "2022-09-20",
       "last_scraped": "2026-02-12T00:14:03.197870",
-      "languages": [
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "OW",
-      "count": 1,
-      "earliest": "2018-10-11",
-      "latest": "2018-10-11",
-      "last_scraped": "2026-03-12T12:20:31.464486+00:00",
-      "languages": [
-        "de"
-      ]
-    },
-    {
-      "court": "finma_versicherungsrecht",
-      "canton": "SH",
-      "count": 1,
-      "earliest": "2011-04-15",
-      "latest": "2011-04-15",
-      "last_scraped": "2026-03-12T12:39:06.185750+00:00",
       "languages": [
         "de"
       ]
@@ -1398,8 +1175,8 @@
     {
       "canton": "GE",
       "name": "Genève",
-      "count": 166941,
-      "court_count": 2,
+      "count": 166827,
+      "court_count": 1,
       "earliest": "1908-11-08",
       "latest": "2026-02-23",
       "languages": [
@@ -1411,8 +1188,8 @@
     {
       "canton": "VD",
       "name": "Vaud",
-      "count": 155364,
-      "court_count": 4,
+      "count": 155330,
+      "court_count": 3,
       "earliest": "1958-10-27",
       "latest": "2026-03-09",
       "languages": [
@@ -1424,8 +1201,8 @@
     {
       "canton": "ZH",
       "name": "Zürich",
-      "count": 82664,
-      "court_count": 22,
+      "count": 82571,
+      "court_count": 21,
       "earliest": "1935-09-17",
       "latest": "2026-02-12",
       "languages": [
@@ -1436,8 +1213,8 @@
     {
       "canton": "TI",
       "name": "Ticino",
-      "count": 59313,
-      "court_count": 2,
+      "count": 59230,
+      "court_count": 1,
       "earliest": "1953-02-09",
       "latest": "2026-01-26",
       "languages": [
@@ -1449,8 +1226,8 @@
     {
       "canton": "BE",
       "name": "Bern",
-      "count": 20200,
-      "court_count": 7,
+      "count": 20198,
+      "court_count": 6,
       "earliest": "1966-06-02",
       "latest": "2026-02-24",
       "languages": [
@@ -1461,8 +1238,8 @@
     {
       "canton": "BL",
       "name": "Basel-Landschaft",
-      "count": 16972,
-      "court_count": 2,
+      "count": 16947,
+      "court_count": 1,
       "earliest": "1962-06-08",
       "latest": "2025-12-22",
       "languages": [
@@ -1472,8 +1249,8 @@
     {
       "canton": "SG",
       "name": "St. Gallen",
-      "count": 14957,
-      "court_count": 8,
+      "count": 14934,
+      "court_count": 7,
       "earliest": "1965-06-08",
       "latest": "2026-02-10",
       "languages": [
@@ -1495,8 +1272,8 @@
     {
       "canton": "FR",
       "name": "Fribourg",
-      "count": 14118,
-      "court_count": 2,
+      "count": 14107,
+      "court_count": 1,
       "earliest": "2002-07-31",
       "latest": "2026-02-26",
       "languages": [
@@ -1508,8 +1285,8 @@
     {
       "canton": "AG",
       "name": "Aargau",
-      "count": 12092,
-      "court_count": 18,
+      "count": 12036,
+      "court_count": 17,
       "earliest": "1923-09-07",
       "latest": "2026-02-24",
       "languages": [
@@ -1519,8 +1296,8 @@
     {
       "canton": "BS",
       "name": "Basel-Stadt",
-      "count": 10104,
-      "court_count": 4,
+      "count": 10102,
+      "court_count": 3,
       "earliest": "1996-07-17",
       "latest": "2026-03-09",
       "languages": [
@@ -1530,8 +1307,8 @@
     {
       "canton": "SO",
       "name": "Solothurn",
-      "count": 8935,
-      "court_count": 2,
+      "count": 8931,
+      "court_count": 1,
       "earliest": "1956-11-07",
       "latest": "2026-03-02",
       "languages": [
@@ -1541,8 +1318,8 @@
     {
       "canton": "NE",
       "name": "Neuchâtel",
-      "count": 7457,
-      "court_count": 2,
+      "count": 7453,
+      "court_count": 1,
       "earliest": "1913-04-02",
       "latest": "2026-03-06",
       "languages": [
@@ -1553,8 +1330,8 @@
     {
       "canton": "VS",
       "name": "Valais",
-      "count": 6601,
-      "court_count": 2,
+      "count": 6589,
+      "court_count": 1,
       "earliest": "1990-09-04",
       "latest": "2026-02-03",
       "languages": [
@@ -1565,8 +1342,8 @@
     {
       "canton": "SZ",
       "name": "Schwyz",
-      "count": 5306,
-      "court_count": 3,
+      "count": 5291,
+      "court_count": 2,
       "earliest": "2008-02-19",
       "latest": "2026-02-20",
       "languages": [
@@ -1587,8 +1364,8 @@
     {
       "canton": "LU",
       "name": "Luzern",
-      "count": 3970,
-      "court_count": 2,
+      "count": 3938,
+      "court_count": 1,
       "earliest": "1934-03-26",
       "latest": "2025-11-10",
       "languages": [
@@ -1598,8 +1375,8 @@
     {
       "canton": "TG",
       "name": "Thurgau",
-      "count": 3524,
-      "court_count": 3,
+      "count": 3515,
+      "court_count": 2,
       "earliest": "1907-12-10",
       "latest": "2025-07-10",
       "languages": [
@@ -1609,9 +1386,9 @@
     {
       "canton": "ZG",
       "name": "Zug",
-      "count": 2521,
-      "court_count": 3,
-      "earliest": "2012-09-24",
+      "count": 2515,
+      "court_count": 2,
+      "earliest": "2019-04-16",
       "latest": "2026-01-22",
       "languages": [
         "de"
@@ -1620,8 +1397,8 @@
     {
       "canton": "OW",
       "name": "Obwalden",
-      "count": 2207,
-      "court_count": 2,
+      "count": 2206,
+      "court_count": 1,
       "earliest": "1911-01-25",
       "latest": "2022-12-19",
       "languages": [
@@ -1631,8 +1408,8 @@
     {
       "canton": "SH",
       "name": "Schaffhausen",
-      "count": 1414,
-      "court_count": 3,
+      "count": 1413,
+      "court_count": 2,
       "earliest": "2000-02-24",
       "latest": "2026-02-20",
       "languages": [
@@ -1664,8 +1441,8 @@
     {
       "canton": "JU",
       "name": "Jura",
-      "count": 1054,
-      "court_count": 2,
+      "count": 1052,
+      "court_count": 1,
       "earliest": "2011-01-17",
       "latest": "2026-01-12",
       "languages": [
@@ -1883,7 +1660,7 @@
     "earliest": "1875-01-01",
     "latest": "2026-03-09"
   },
-  "court_count": 121,
+  "court_count": 101,
   "top_courts": [
     {
       "court": "bger",
@@ -2090,8 +1867,8 @@
     "2026": -90.6
   },
   "federal_vs_cantonal": {
-    "federal": 341595,
-    "cantonal": 618307
+    "federal": 342124,
+    "cantonal": 617778
   },
   "language_by_year": {
     "2005": {
@@ -2244,7 +2021,7 @@
     "2026-02": 2057,
     "2026-03": 32
   },
-  "generated_at": "2026-03-12T15:22:31.775710+00:00",
+  "generated_at": "2026-03-12T15:49:43.774075+00:00",
   "scraper_health": {
     "run_at": "2026-03-12T02:17:03.830928+00:00",
     "run_duration_s": 4622.1,
@@ -2982,44 +2759,11 @@
     }
   },
   "delta": {
-    "total": 3299,
+    "total": 0,
     "by_court": {
-      "ne_gerichte": 2,
-      "sg_gerichte": 1695,
-      "ag_gerichte": 279,
-      "bs_sozialversicherungsgericht": 1,
-      "ag_verwaltungsgericht": 4,
-      "ag_zivilgericht": 1,
-      "zh_gerichte": 1246,
-      "sg_publikationen": 135,
-      "finma_versicherungsrecht": 1,
-      "ag_handelsgericht": 1,
-      "ag_regierungsrat": 1,
-      "sg_verwaltungsrekurskommission": 1,
-      "sg_kantonsgericht": 1,
-      "ag_departement_vi": 3
+      "finma_versicherungsrecht": 899
     },
-    "by_canton": {
-      "GE": 114,
-      "VD": 15,
-      "ZH": 1261,
-      "TI": 83,
-      "BE": 2,
-      "BL": 25,
-      "SG": 1854,
-      "FR": 11,
-      "AG": 342,
-      "BS": 3,
-      "SO": 4,
-      "NE": 6,
-      "VS": 12,
-      "SZ": 15,
-      "LU": 32,
-      "ZG": 6,
-      "OW": 1,
-      "SH": 1,
-      "JU": 2
-    },
-    "previous_generated_at": "2026-03-12T04:11:16.338749+00:00"
+    "by_canton": {},
+    "previous_generated_at": "2026-03-12T15:22:31.775710+00:00"
   }
 }
