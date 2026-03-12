@@ -45,6 +45,7 @@ SCRAPERS = {
     "ch_bundesrat": ("scrapers.ch_bundesrat", "CHBundesratScraper"),
     # Federal — regulatory
     "finma": ("scrapers.finma", "FINMAScraper"),
+    "finma_versicherungsrecht": ("scrapers.finma_versicherungsrecht", "FINMAVersicherungsrechtScraper"),
     "weko": ("scrapers.weko", "WEKOScraper"),
     "edoeb": ("scrapers.edoeb", "EDOEBScraper"),
     "ubi": ("scrapers.ubi", "UBIScraper"),

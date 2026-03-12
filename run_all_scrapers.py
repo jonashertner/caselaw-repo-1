@@ -63,6 +63,7 @@ SLOW_SCRAPERS = {
     "bvger": 10800,         # 3h — 90k decisions
     "zh_gerichte": 10800,   # 3h — 34k decisions
     "zh_sozialversicherungsgericht": 10800,  # 3h — 34k decisions
+    "finma_versicherungsrecht": 14400,  # 4h — 2.6k PDFs, first run downloads all
 }
 
 # Scrapers to skip by default (broken, redundant, or handled separately)
