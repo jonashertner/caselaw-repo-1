@@ -605,11 +605,19 @@ def build_database(
     db_path.parent.mkdir(parents=True, exist_ok=True)
     checkpoint_path = output_dir / ".fts5_checkpoint.json"
 
-    # Full rebuild: delete DB and checkpoint
+    # Full rebuild: build to a temp file, swap at the end (zero downtime)
+    final_db_path = None
     if full_rebuild:
+        final_db_path = db_path
+        db_path = db_path.with_suffix(".db.tmp")
         if db_path.exists():
-            logger.info(f"Full rebuild: deleting {db_path}")
+            logger.info(f"Full rebuild: removing stale temp DB {db_path}")
             db_path.unlink()
+        # Also remove any leftover WAL/SHM for the temp DB
+        for suffix in (".db.tmp-wal", ".db.tmp-shm"):
+            p = db_path.parent / (db_path.stem.replace(".db", "") + suffix)
+            if p.exists():
+                p.unlink()
         if checkpoint_path.exists():
             logger.info(f"Full rebuild: deleting {checkpoint_path}")
             checkpoint_path.unlink()
@@ -700,7 +708,22 @@ def build_database(
         "SELECT court, COUNT(*) as n FROM decisions GROUP BY court ORDER BY n DESC"
     ).fetchall()
 
+    # Switch from WAL to DELETE mode before closing (immutable=1 compat)
+    conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+    conn.execute("PRAGMA journal_mode=DELETE")
     conn.close()
+
+    # Full rebuild: atomically swap temp DB into place
+    if final_db_path is not None:
+        import os
+        logger.info(f"Swapping {db_path} → {final_db_path}")
+        os.replace(str(db_path), str(final_db_path))
+        # Clean up any leftover WAL/SHM from the temp DB
+        for ext in ("-wal", "-shm"):
+            tmp_wal = Path(str(db_path) + ext)
+            if tmp_wal.exists():
+                tmp_wal.unlink()
+        db_path = final_db_path
 
     # Save checkpoint
     if incremental or full_rebuild:
