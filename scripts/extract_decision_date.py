@@ -258,13 +258,15 @@ def extract_decision_date(
                 all_dates.append((d, method))
                 break
 
-    # If no typed header, try bare date in header (medium confidence)
+    # If no typed header, try bare date in first 500 chars only (medium confidence)
+    # Restricted to 500 chars to avoid picking up cited decision dates from body
     if not header_date:
-        for m in RE_BARE_DATE.finditer(header):
+        header_narrow = full_text[:500]
+        for m in RE_BARE_DATE.finditer(header_narrow):
             d = _parse_match(m)
             if d and 1900 <= d.year:
                 # Skip dates that look like statute dates ("vom 17. Juni 2005 (BGG)")
-                context = header[max(0, m.start()-30):m.end()+30]
+                context = header_narrow[max(0, m.start()-30):m.end()+30]
                 if _is_statute_date(context, m.group(0)):
                     continue
                 header_date = d
@@ -311,12 +313,43 @@ def extract_decision_date(
             result.confidence = "high"
             result.raw_match = header_match
         else:
-            # Header and sign-off disagree
-            # Prefer header date (more structured), but lower confidence
-            result.extracted_date = header_date
-            result.method = header_method
-            result.confidence = "medium"
-            result.raw_match = f"{header_match} vs {signoff_match}"
+            # Header and sign-off disagree — determine which to trust
+            delta = abs((header_date - signoff_date).days)
+            header_is_typed = header_method.startswith("header") or header_method == "echr"
+
+            if delta <= 7 and header_is_typed:
+                # Small disagreement with typed header → trust header
+                result.extracted_date = header_date
+                result.method = header_method
+                result.confidence = "medium"
+                result.raw_match = f"{header_match} vs {signoff_match}"
+            elif delta > 90 and not header_is_typed:
+                # Large disagreement with bare header → trust sign-off
+                # (bare_header likely picked up a cited decision date)
+                result.extracted_date = signoff_date
+                result.method = "signoff"
+                result.confidence = "medium"
+                result.raw_match = f"{signoff_match} (header had: {header_match})"
+            elif delta > 365 and header_is_typed:
+                # Very large disagreement even with typed header →
+                # the header "Urteil vom" might reference an earlier decision
+                # being reviewed; sign-off is the current decision's date
+                result.extracted_date = signoff_date
+                result.method = "signoff"
+                result.confidence = "medium"
+                result.raw_match = f"{signoff_match} (header had: {header_match})"
+            elif header_is_typed:
+                # Moderate disagreement with typed header → trust header
+                result.extracted_date = header_date
+                result.method = header_method
+                result.confidence = "medium"
+                result.raw_match = f"{header_match} vs {signoff_match}"
+            else:
+                # Moderate disagreement with bare header → trust sign-off
+                result.extracted_date = signoff_date
+                result.method = "signoff"
+                result.confidence = "medium"
+                result.raw_match = f"{signoff_match} (header had: {header_match})"
     elif header_date:
         result.extracted_date = header_date
         result.method = header_method
