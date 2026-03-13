@@ -217,8 +217,9 @@ def build_db():
             for entry in json.load(f):
                 law_index[entry["sr_number"]] = entry
 
-    # Prepare output
-    tmp_db = OUTPUT_DB.with_suffix(".tmp")
+    # Prepare output — resolve symlinks so temp file is on same filesystem (atomic rename)
+    resolved_db = OUTPUT_DB.resolve()
+    tmp_db = resolved_db.with_suffix(".tmp")
     tmp_db.unlink(missing_ok=True)
 
     conn = sqlite3.connect(str(tmp_db))
@@ -321,11 +322,9 @@ def build_db():
 
     conn.close()
 
-    # Atomic rename
-    if OUTPUT_DB.exists():
-        OUTPUT_DB.unlink()
-    tmp_db.rename(OUTPUT_DB)
-    log.info("Saved to %s (%.1f MB)", OUTPUT_DB, OUTPUT_DB.stat().st_size / 1e6)
+    # Atomic swap
+    os.replace(str(tmp_db), str(resolved_db))
+    log.info("Saved to %s (%.1f MB)", resolved_db, resolved_db.stat().st_size / 1e6)
 
 
 def main():

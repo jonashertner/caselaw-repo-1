@@ -142,6 +142,7 @@ CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT"
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
+LEXFIND_CACHE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_LEXFIND_CACHE", str(DATA_DIR / "lexfind_cache.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -216,8 +217,7 @@ LEXFIND_ENTITY_IDS: dict[str, int] = {
     "NW": 14, "OW": 15, "SG": 16, "SH": 17, "SO": 18, "SZ": 19, "TG": 20,
     "TI": 21, "UR": 22, "VD": 23, "VS": 24, "ZG": 25, "ZH": 26, "INTLEX": 28,
 }
-_LEXFIND_CACHE: dict[str, tuple[float, object]] = {}  # key -> (expiry_ts, data)
-LEXFIND_CACHE_TTL = 300  # 5 minutes
+_lexfind_cache_broken = False  # set True on first SQLite failure, skip cache for process lifetime
 
 # Known FTS-searchable columns for explicit column filters (e.g., regeste:foo)
 FTS_COLUMNS = {
@@ -6301,22 +6301,86 @@ def _format_search_laws_response(result: dict) -> str:
 
 # ── LexFind legislation helpers ──────────────────────────────
 
+_LEXFIND_CACHE_TTL_MAP = {
+    "search:": 86400,      # 24h
+    "sysnum:": 2592000,    # 30d
+    "law:": 604800,        # 7d
+    "changes:": 86400,     # 24h
+}
+
+
+def _ttl_for_key(key: str) -> float:
+    """Return TTL in seconds based on cache key prefix."""
+    for prefix, ttl in _LEXFIND_CACHE_TTL_MAP.items():
+        if key.startswith(prefix):
+            return ttl
+    return 86400  # default 24h
+
+
+def _get_lexfind_cache_conn() -> sqlite3.Connection | None:
+    """Open or create the LexFind cache DB. Returns None if broken."""
+    global _lexfind_cache_broken
+    if _lexfind_cache_broken:
+        return None
+    try:
+        conn = sqlite3.connect(str(LEXFIND_CACHE_DB_PATH), timeout=3.0)
+        conn.execute("PRAGMA journal_mode = WAL")
+        conn.execute("PRAGMA busy_timeout = 3000")
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS cache (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL,
+                expires_at REAL NOT NULL
+            )
+        """)
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_cache_expires ON cache(expires_at)
+        """)
+        conn.commit()
+        return conn
+    except Exception as e:
+        logger.warning("LexFind cache DB broken, disabling: %s", e)
+        _lexfind_cache_broken = True
+        return None
+
+
 def _lexfind_cache_get(key: str) -> object | None:
-    entry = _LEXFIND_CACHE.get(key)
-    if entry and entry[0] > time.time():
-        return entry[1]
-    _LEXFIND_CACHE.pop(key, None)
-    return None
+    """Get a value from the persistent LexFind cache. Returns None on miss/expired/error."""
+    conn = _get_lexfind_cache_conn()
+    if conn is None:
+        return None
+    try:
+        row = conn.execute(
+            "SELECT value FROM cache WHERE key = ? AND expires_at > ?",
+            (key, time.time()),
+        ).fetchone()
+        return json.loads(row[0]) if row else None
+    except Exception as e:
+        logger.warning("LexFind cache read error: %s", e)
+        return None
+    finally:
+        conn.close()
 
 
 def _lexfind_cache_set(key: str, value: object) -> None:
-    now = time.time()
-    _LEXFIND_CACHE[key] = (now + LEXFIND_CACHE_TTL, value)
-    # Evict expired entries when cache grows large
-    if len(_LEXFIND_CACHE) > 500:
-        expired = [k for k, (exp, _) in _LEXFIND_CACHE.items() if exp <= now]
-        for k in expired:
-            del _LEXFIND_CACHE[k]
+    """Write a value to the persistent LexFind cache with prefix-based TTL."""
+    conn = _get_lexfind_cache_conn()
+    if conn is None:
+        return
+    try:
+        expires_at = time.time() + _ttl_for_key(key)
+        conn.execute(
+            "INSERT OR REPLACE INTO cache (key, value, expires_at) VALUES (?, ?, ?)",
+            (key, json.dumps(value, ensure_ascii=False), expires_at),
+        )
+        count = conn.execute("SELECT COUNT(*) FROM cache").fetchone()[0]
+        if count > 5000:
+            conn.execute("DELETE FROM cache WHERE expires_at < ?", (time.time(),))
+        conn.commit()
+    except Exception as e:
+        logger.warning("LexFind cache write error: %s", e)
+    finally:
+        conn.close()
 
 
 def _lexfind_request(
@@ -6475,6 +6539,53 @@ def _search_legislation(
     return result
 
 
+def _get_legislation_local(
+    systematic_number: str, language: str = "de"
+) -> dict | None:
+    """Try to serve legislation from local statutes.db. Returns None if not found."""
+    conn = _get_statutes_conn()
+    if conn is None:
+        return None
+    try:
+        sr = re.sub(r"^SR\s*", "", systematic_number.strip(), flags=re.IGNORECASE)
+        law = conn.execute(
+            "SELECT * FROM laws WHERE sr_number = ?", (sr,)
+        ).fetchone()
+        if not law:
+            return None
+
+        articles = conn.execute(
+            "SELECT article_num, heading, text FROM articles "
+            "WHERE sr_number = ? AND lang = ? ORDER BY rowid",
+            (sr, language),
+        ).fetchall()
+
+        return {
+            "systematic_number": sr,
+            "entity": "CH",
+            "entity_name": "Bund",
+            "source": "local",
+            "title": law[f"title_{language}"] or law["title_de"],
+            "abbreviation": law[f"abbr_{language}"] or law["abbr_de"],
+            "consolidation_date": law["consolidation_date"],
+            "articles": [
+                {
+                    "article_num": a["article_num"],
+                    "heading": a["heading"],
+                    "text": a["text"],
+                }
+                for a in articles
+            ],
+            "article_count": len(articles),
+            "language": language,
+        }
+    except Exception as e:
+        logger.warning("Local legislation lookup failed: %s", e)
+        return None
+    finally:
+        conn.close()
+
+
 def _get_legislation(
     *,
     lexfind_id: int | None = None,
@@ -6484,10 +6595,26 @@ def _get_legislation(
     language: str = "de",
 ) -> dict:
     """Get legislation details by LexFind ID or systematic number."""
-    if not LEXFIND_ENABLED:
-        return {"error": "Legislation lookup is disabled (LEXFIND_ENABLED=false)."}
-
     language = language if language in ("de", "fr", "it") else "de"
+
+    # Local-first: serve federal laws from statutes.db when available
+    if (
+        lexfind_id is None
+        and systematic_number
+        and (canton is None or canton.upper() == "CH")
+        and not include_versions
+    ):
+        local = _get_legislation_local(systematic_number, language)
+        if local is not None:
+            return local
+
+    if not LEXFIND_ENABLED:
+        # Still check local for federal laws even when LexFind is off
+        if systematic_number and (canton is None or canton.upper() == "CH"):
+            local = _get_legislation_local(systematic_number, language)
+            if local is not None:
+                return local
+        return {"error": "Legislation lookup is disabled (LEXFIND_ENABLED=false)."}
 
     # Path B: resolve systematic number to ID
     if lexfind_id is None:
@@ -6757,6 +6884,30 @@ def _format_get_legislation_response(result: dict) -> str:
     if result.get("error"):
         return result["error"]
 
+    # Local source: has articles array from statutes.db
+    if result.get("source") == "local":
+        text = f"# {result.get('title', 'Unknown')}\n"
+        text += f"**SR Number:** {result.get('systematic_number', '?')}\n"
+        text += f"**Abbreviation:** {result.get('abbreviation', '?')}\n"
+        text += f"**Entity:** {result.get('entity_name', '?')} ({result.get('entity', '?')})\n"
+        text += f"**Consolidation date:** {result.get('consolidation_date', '?')}\n"
+        text += f"**Articles:** {result.get('article_count', 0)}\n"
+        text += f"**Source:** Local Fedlex database\n\n"
+
+        articles = result.get("articles", [])
+        if len(articles) <= 30:
+            for a in articles:
+                heading = f" — {a['heading']}" if a.get("heading") else ""
+                text += f"### Art. {a['article_num']}{heading}\n"
+                text += f"{a['text']}\n\n"
+        else:
+            text += (
+                f"_Law has {len(articles)} articles. "
+                f"Use `get_law` with `article` parameter to read specific articles._\n"
+            )
+        return text
+
+    # LexFind source: existing format
     cv = result.get("current_version") or {}
     text = f"# {cv.get('title', 'Unknown')}\n"
     text += f"**SR Number:** {result.get('systematic_number', '?')}\n"
