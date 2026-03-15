@@ -1040,6 +1040,46 @@ def _search_fts5_inner(
                     )
                     cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
 
+    # ── LLM BGE direct-lookup ──
+    # When LLM expansion outputs "BGE NNN X NNN", resolve to decision_id and inject.
+    LLM_BGE_RRF_WEIGHT = 2.0  # Strong weight: LLM knows the leading case
+    if llm_terms and not is_docket_query:
+        bge_pattern = re.compile(r"BGE\s+(\d{1,3})\s+([IVX]{1,4})\s+(\d{1,4})", re.IGNORECASE)
+        llm_bge_ids: list[str] = []
+        for term in llm_terms:
+            for m in bge_pattern.finditer(term):
+                candidate_id = f"bge_BGE_{m.group(1)}_{m.group(2).upper()}_{m.group(3)}"
+                llm_bge_ids.append(candidate_id)
+        if llm_bge_ids:
+            # Fetch rows for BGE IDs not already in pool
+            new_bge_ids = [did for did in llm_bge_ids if did not in candidate_meta]
+            if new_bge_ids:
+                ph = ",".join("?" for _ in new_bge_ids)
+                bge_rows = conn.execute(
+                    f"""SELECT d.decision_id, d.court, d.canton, d.chamber,
+                           d.docket_number, d.decision_date, d.language,
+                           d.title, d.regeste, d.full_text AS full_text_raw,
+                           '' as snippet, d.source_url, d.pdf_url,
+                           0.0 as bm25_score
+                    FROM decisions d WHERE d.decision_id IN ({ph})""",
+                    new_bge_ids,
+                ).fetchall()
+                for row in bge_rows:
+                    did = row["decision_id"]
+                    candidate_meta[did] = {
+                        "row": row,
+                        "best_bm25": 0.0,
+                        "rrf_score": 0.0,
+                        "strategy_hits": 0,
+                    }
+            for rank, did in enumerate(llm_bge_ids, start=1):
+                if did in candidate_meta:
+                    cm = candidate_meta[did]
+                    cm["rrf_score"] = float(cm["rrf_score"]) + (
+                        LLM_BGE_RRF_WEIGHT / (RRF_RANK_CONSTANT + rank)
+                    )
+                    cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
+
     if candidate_meta:
         rows_for_rerank = [m["row"] for m in candidate_meta.values()]
         fusion_scores = {
