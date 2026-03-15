@@ -56,6 +56,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
 import os
 import re
 import shutil
@@ -996,6 +997,46 @@ def _search_fts5_inner(
                     )
                     cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
 
+    # ── Statute-graph retrieval (citation graph candidate source) ──
+    STATUTE_GRAPH_RRF_WEIGHT = 1.0
+    if not is_docket_query:
+        query_statutes = _extract_query_statute_refs(fts_query)
+        if llm_terms:
+            for t in llm_terms:
+                query_statutes |= _extract_query_statute_refs(t)
+        statute_graph_results = _search_statute_graph(query_statutes, limit=30)
+        if statute_graph_results:
+            sg_only_ids = [
+                did for did, _sc in statute_graph_results
+                if did not in candidate_meta
+            ]
+            if sg_only_ids:
+                ph = ",".join("?" for _ in sg_only_ids)
+                sg_rows = conn.execute(
+                    f"""SELECT d.decision_id, d.court, d.canton, d.chamber,
+                           d.docket_number, d.decision_date, d.language,
+                           d.title, d.regeste, d.full_text AS full_text_raw,
+                           '' as snippet, d.source_url, d.pdf_url,
+                           0.0 as bm25_score
+                    FROM decisions d WHERE d.decision_id IN ({ph})""",
+                    sg_only_ids,
+                ).fetchall()
+                for row in sg_rows:
+                    did = row["decision_id"]
+                    candidate_meta[did] = {
+                        "row": row,
+                        "best_bm25": 0.0,
+                        "rrf_score": 0.0,
+                        "strategy_hits": 0,
+                    }
+            for rank, (did, _score) in enumerate(statute_graph_results, start=1):
+                if did in candidate_meta:
+                    cm = candidate_meta[did]
+                    cm["rrf_score"] = float(cm["rrf_score"]) + (
+                        STATUTE_GRAPH_RRF_WEIGHT / (RRF_RANK_CONSTANT + rank)
+                    )
+                    cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
+
     if candidate_meta:
         rows_for_rerank = [m["row"] for m in candidate_meta.values()]
         fusion_scores = {
@@ -1018,6 +1059,7 @@ def _search_fts5_inner(
                 sparse_scores=sparse_scores,
                 offset=0,
                 sort=sort,
+                is_docket_query=is_docket_query,
             )
             merged = _merge_priority_results(
                 primary=inline_docket_results,
@@ -1038,6 +1080,7 @@ def _search_fts5_inner(
             sparse_scores=sparse_scores,
             offset=offset,
             sort=sort,
+            is_docket_query=is_docket_query,
         )
         reranked = _dedupe_results_by_decision_id(reranked)
         return reranked, total_candidates
@@ -1883,6 +1926,100 @@ def _load_graph_signal_map(
     return signal_map
 
 
+def _search_statute_graph(
+    statute_refs: set[str],
+    *,
+    limit: int = 20,
+) -> list[tuple[str, float]]:
+    """Query citation graph for top decisions citing given statutes, ranked by authority.
+
+    Returns list of (decision_id, authority_score) tuples sorted by authority desc.
+    """
+    if not statute_refs:
+        return []
+
+    conn = _get_graph_conn()
+    if conn is None:
+        return []
+
+    try:
+        has_citation_targets = _sqlite_has_table(conn, "citation_targets")
+        refs = sorted(statute_refs)
+        ph = ",".join("?" for _ in refs)
+
+        # Find decisions that cite these statutes
+        citing_rows = conn.execute(
+            f"""
+            SELECT decision_id, SUM(mention_count) AS total_mentions
+            FROM decision_statutes
+            WHERE statute_id IN ({ph})
+            GROUP BY decision_id
+            ORDER BY total_mentions DESC
+            LIMIT 500
+            """,
+            tuple(refs),
+        ).fetchall()
+
+        if not citing_rows:
+            return []
+
+        citing_ids = [r["decision_id"] for r in citing_rows]
+        mention_by_id = {r["decision_id"]: float(r["total_mentions"]) for r in citing_rows}
+
+        # Get incoming citation counts for these decisions (authority signal)
+        cid_ph = ",".join("?" for _ in citing_ids)
+        if has_citation_targets:
+            has_confidence = _sqlite_has_column(conn, "citation_targets", "confidence_score")
+            if has_confidence:
+                auth_rows = conn.execute(
+                    f"""
+                    SELECT ct.target_decision_id AS decision_id,
+                           SUM(dc.mention_count * COALESCE(ct.confidence_score, 1.0)) AS n
+                    FROM citation_targets ct
+                    JOIN decision_citations dc
+                      ON dc.source_decision_id = ct.source_decision_id
+                     AND dc.target_ref = ct.target_ref
+                    WHERE ct.target_decision_id IN ({cid_ph})
+                    GROUP BY ct.target_decision_id
+                    """,
+                    tuple(citing_ids),
+                ).fetchall()
+            else:
+                auth_rows = conn.execute(
+                    f"""
+                    SELECT ct.target_decision_id AS decision_id, SUM(dc.mention_count) AS n
+                    FROM citation_targets ct
+                    JOIN decision_citations dc
+                      ON dc.source_decision_id = ct.source_decision_id
+                     AND dc.target_ref = ct.target_ref
+                    WHERE ct.target_decision_id IN ({cid_ph})
+                    GROUP BY ct.target_decision_id
+                    """,
+                    tuple(citing_ids),
+                ).fetchall()
+        else:
+            auth_rows = []
+
+        auth_by_id = {r["decision_id"]: float(r["n"] or 0.0) for r in auth_rows}
+
+        # Score: log(incoming_citations + 1) + 0.3 * log(statute_mentions + 1)
+        scored = []
+        for did in citing_ids:
+            authority = auth_by_id.get(did, 0.0)
+            mentions = mention_by_id.get(did, 0.0)
+            score = math.log1p(authority) + 0.3 * math.log1p(mentions)
+            scored.append((did, score))
+
+        scored.sort(key=lambda x: -x[1])
+        return scored[:limit]
+
+    except sqlite3.Error as e:
+        logger.debug("Statute-graph search failed: %s", e)
+        return []
+    finally:
+        conn.close()
+
+
 def _resolve_decision_id(decision_id: str) -> str:
     """Resolve a user-supplied decision_id to the actual stored decision_id.
 
@@ -2271,6 +2408,7 @@ def _rerank_rows(
     sparse_scores: dict[str, float] | None = None,
     offset: int = 0,
     sort: str | None = None,
+    is_docket_query: bool = False,
 ) -> list[dict]:
     """
     Re-rank lexical FTS candidates with lightweight query-intent signals.
@@ -2392,6 +2530,9 @@ def _rerank_rows(
         if query_languages and row_language in query_languages:
             language_signal += 0.9
 
+        # BGE/BGer authority boost — disabled, log-authority already handles this
+        court_authority_boost = 0.0
+
         # Vector similarity signal
         vector_signal = 0.0
         if vector_scores:
@@ -2425,6 +2566,7 @@ def _rerank_rows(
             + local_ref_signal
             + court_prior_signal
             + court_intent_signal
+            + court_authority_boost
             + procedure_signal
             + language_signal
             + vector_signal
