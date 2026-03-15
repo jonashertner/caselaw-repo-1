@@ -285,7 +285,8 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
         conn.executemany(insert_sql, payload)
 
     # Second pass: resolve BGE citations.
-    # BGE target_ref = "BGE 147 I 268", BGE docket_norm = "147 I 268".
+    # BGE target_ref = "BGE 147 I 268", BGE docket_norm = "BGE 147 I 268".
+    # Match both full ref and stripped (without "BGE " prefix) against docket_norm.
     cursor = conn.execute(
         """
         WITH bge_matches AS (
@@ -303,7 +304,8 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
                 1 AS candidate_count
             FROM decision_citations dc
             JOIN decisions td
-              ON td.docket_norm = SUBSTR(dc.target_ref, 5)
+              ON (td.docket_norm = dc.target_ref
+                  OR td.docket_norm = SUBSTR(dc.target_ref, 5))
              AND td.court IN ('bge', 'bger', 'bge_historical')
             LEFT JOIN decisions sd
               ON sd.decision_id = dc.source_decision_id
@@ -339,6 +341,79 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
                     row["target_ref"],
                     row["target_decision_id"],
                     "bge_norm",
+                    _citation_confidence(
+                        source_court=row["source_court"],
+                        source_canton=row["source_canton"],
+                        source_date=row["source_date"],
+                        target_court=row["target_court"],
+                        target_canton=row["target_canton"],
+                        target_date=row["target_date"],
+                        candidate_rank=int(row["candidate_rank"] or 1),
+                        candidate_count=int(row["candidate_count"] or 1),
+                    ),
+                )
+            )
+        conn.executemany(insert_sql, payload)
+
+    # Third pass: resolve bare BGE docket refs (target_type='docket', e.g. "131 III 115").
+    # These are BGE volume references without the "BGE " prefix.
+    cursor = conn.execute(
+        """
+        WITH bare_bge_matches AS (
+            SELECT
+                dc.source_decision_id,
+                dc.target_ref,
+                sd.court AS source_court,
+                sd.canton AS source_canton,
+                sd.decision_date AS source_date,
+                td.decision_id AS target_decision_id,
+                td.court AS target_court,
+                td.canton AS target_canton,
+                td.decision_date AS target_date,
+                1 AS candidate_rank,
+                1 AS candidate_count
+            FROM decision_citations dc
+            JOIN decisions td
+              ON td.docket_norm = 'BGE ' || dc.target_ref
+             AND td.court IN ('bge', 'bger', 'bge_historical')
+            LEFT JOIN decisions sd
+              ON sd.decision_id = dc.source_decision_id
+            LEFT JOIN citation_targets ct
+              ON ct.source_decision_id = dc.source_decision_id
+             AND ct.target_ref = dc.target_ref
+            WHERE dc.target_type = 'docket'
+              AND dc.target_ref GLOB '[0-9]* [IVX]* [0-9]*'
+              AND ct.source_decision_id IS NULL
+              AND td.decision_id <> dc.source_decision_id
+        )
+        SELECT
+            source_decision_id,
+            target_ref,
+            target_decision_id,
+            source_court,
+            source_canton,
+            source_date,
+            target_court,
+            target_canton,
+            target_date,
+            candidate_rank,
+            candidate_count
+        FROM bare_bge_matches
+        ORDER BY source_decision_id, target_ref
+        """
+    )
+    while True:
+        rows = cursor.fetchmany(batch_size)
+        if not rows:
+            break
+        payload = []
+        for row in rows:
+            payload.append(
+                (
+                    row["source_decision_id"],
+                    row["target_ref"],
+                    row["target_decision_id"],
+                    "bge_bare",
                     _citation_confidence(
                         source_court=row["source_court"],
                         source_canton=row["source_canton"],

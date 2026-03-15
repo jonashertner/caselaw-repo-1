@@ -5,446 +5,883 @@
     {
       "id": "q001",
       "query": "1A.122/2005",
-      "tags": ["docket", "exact"],
+      "tags": [
+        "docket",
+        "exact"
+      ],
       "relevant": [
-        {"decision_id": "bger_1A.122_2005", "grade": 3},
-        {"decision_id": "bger_1A.124_2005", "grade": 1}
+        {
+          "decision_id": "bger_1A.122_2005",
+          "grade": 3
+        },
+        {
+          "decision_id": "bger_1A.124_2005",
+          "grade": 1
+        }
       ]
     },
     {
       "id": "q002",
       "query": "Je cherche un arrêt sur le permis de construire d'un parc éolien",
-      "tags": ["nl", "fr", "public-law"],
+      "tags": [
+        "nl",
+        "fr",
+        "public-law"
+      ],
       "relevant": [
-        {"decision_id": "bger_1A.122_2005", "grade": 3},
-        {"decision_id": "bger_1A.124_2005", "grade": 2},
-        {"decision_id": "bge_147 II 319", "grade": 1}
+        {
+          "decision_id": "bger_1A.122_2005",
+          "grade": 3
+        },
+        {
+          "decision_id": "bger_1A.124_2005",
+          "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_147_II_319",
+          "grade": 1
+        }
       ]
     },
     {
       "id": "q003",
       "query": "Art. 8 EMRK Umwandlung des Status der vorläufigen Aufnahme",
-      "tags": ["nl", "de", "human-rights"],
+      "tags": [
+        "nl",
+        "de",
+        "human-rights"
+      ],
       "relevant": [
-        {"decision_id": "bge_147 I 268", "grade": 3},
-        {"decision_id": "bge_151 I 62", "grade": 2},
-        {"decision_id": "bge_150 I 93", "grade": 2}
+        {
+          "decision_id": "bge_BGE_147_I_268",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_151_I_62",
+          "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_150_I_93",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q004",
       "query": "Art. 34 BV Finanzreferendum Verpflichtungskredit",
-      "tags": ["constitutional", "de"],
+      "tags": [
+        "constitutional",
+        "de"
+      ],
       "relevant": [
-        {"decision_id": "bge_151 I 32", "grade": 3}
+        {
+          "decision_id": "bge_BGE_151_I_32",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q005",
       "query": "Asyl und Wegweisung beschleunigtes Verfahren",
-      "tags": ["asylum", "de"],
+      "tags": [
+        "asylum",
+        "de"
+      ],
       "relevant": [
-        {"decision_id": "bvger_BVGE 2013_10", "grade": 3},
-        {"decision_id": "bvger_E-7414_2015", "grade": 2}
+        {
+          "decision_id": "bvger_BVGE 2013_10",
+          "grade": 3
+        },
+        {
+          "decision_id": "bvger_E-7414_2015",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q006",
       "query": "Asyl: Wegweisung?",
-      "tags": ["asylum", "punctuation", "robustness"],
+      "tags": [
+        "asylum",
+        "punctuation",
+        "robustness"
+      ],
       "relevant": [
-        {"decision_id": "bvger_E-7414_2015", "grade": 3},
-        {"decision_id": "bvger_BVGE 2013_10", "grade": 1}
+        {
+          "decision_id": "bvger_E-7414_2015",
+          "grade": 3
+        },
+        {
+          "decision_id": "bvger_BVGE 2013_10",
+          "grade": 1
+        }
       ]
     },
     {
       "id": "q007",
       "query": "\"Asyl und Wegweisung",
-      "tags": ["asylum", "quote", "robustness"],
+      "tags": [
+        "asylum",
+        "quote",
+        "robustness"
+      ],
       "relevant": [
-        {"decision_id": "bvger_E-7414_2015", "grade": 3},
-        {"decision_id": "bvger_BVGE 2013_10", "grade": 1}
+        {
+          "decision_id": "bvger_E-7414_2015",
+          "grade": 3
+        },
+        {
+          "decision_id": "bvger_BVGE 2013_10",
+          "grade": 1
+        }
       ]
     },
     {
       "id": "q008",
       "query": "Was sagt das Bundesgericht zum Kausalzusammenhang in der Unfallversicherung?",
-      "tags": ["nl", "de", "insurance"],
+      "tags": [
+        "nl",
+        "de",
+        "insurance"
+      ],
       "relevant": [
-        {"decision_id": "bger_8C_47_2011", "grade": 3},
-        {"decision_id": "bger_8C_928_2011", "grade": 2}
+        {
+          "decision_id": "bger_8C_47_2011",
+          "grade": 3
+        },
+        {
+          "decision_id": "bger_8C_928_2011",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q009",
       "query": "Auslieferung an Rumänien",
-      "tags": ["criminal", "de"],
+      "tags": [
+        "criminal",
+        "de"
+      ],
       "relevant": [
-        {"decision_id": "bstger_RR.2012.25", "grade": 3}
+        {
+          "decision_id": "bstger_RR.2012.25",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q010",
       "query": "Impôt sur la fortune et estimation fiscale",
-      "tags": ["tax", "fr"],
+      "tags": [
+        "tax",
+        "fr"
+      ],
       "relevant": [
-        {"decision_id": "ge_gerichte_A_279_2011", "grade": 3}
+        {
+          "decision_id": "ge_gerichte_A_279_2011",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q011",
       "query": "responsabilità civile danno morale",
-      "tags": ["civil", "it"],
+      "tags": [
+        "civil",
+        "it"
+      ],
       "relevant": [
-        {"decision_id": "ti_gerichte_12.2004.29", "grade": 3}
+        {
+          "decision_id": "ti_gerichte_12.2004.29",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q012",
       "query": "Baubewilligung Lärm Immissionen",
-      "tags": ["construction", "de"],
+      "tags": [
+        "construction",
+        "de"
+      ],
       "relevant": [
-        {"decision_id": "zh_verwaltungsgericht_VB.2001.00187", "grade": 3}
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2001.00187",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q013",
       "query": "Kündigung Mietvertrag missbräuchlich",
-      "tags": ["tenancy", "de"],
+      "tags": [
+        "tenancy",
+        "de"
+      ],
       "relevant": [
-        {"decision_id": "bs_appellationsgericht_ZB.2020.42", "grade": 3}
+        {
+          "decision_id": "bs_appellationsgericht_ZB.2020.42",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q014",
       "query": "Hundebiss",
-      "tags": ["semantic", "concept-match", "de", "liability"],
+      "tags": [
+        "semantic",
+        "concept-match",
+        "de",
+        "liability"
+      ],
       "relevant": [
-        {"decision_id": "bge_131 III 115", "grade": 3},
-        {"decision_id": "bge_81 II 512", "grade": 3},
-        {"decision_id": "bge_BGE_110_II_136", "grade": 2}
+        {
+          "decision_id": "bge_BGE_131_III_115",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_81_II_512",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_110_II_136",
+          "grade": 2
+        }
       ],
       "note": "Semantic: no keyword overlap with 'Tierhalterhaftung' — tests concept matching"
     },
     {
       "id": "q015",
       "query": "Kündigung wegen Krankheit",
-      "tags": ["semantic", "concept-match", "de", "employment"],
+      "tags": [
+        "semantic",
+        "concept-match",
+        "de",
+        "employment"
+      ],
       "relevant": [
-        {"decision_id": "bge_115 V 437", "grade": 3}
+        {
+          "decision_id": "bge_BGE_115_V_437",
+          "grade": 3
+        }
       ],
       "note": "Semantic: should find Art. 336c OR (Verlängerung bei Erkrankung) without exact wording"
     },
     {
       "id": "q016",
       "query": "responsabilité du détenteur d'animal",
-      "tags": ["semantic", "cross-lingual", "fr", "liability"],
+      "tags": [
+        "semantic",
+        "cross-lingual",
+        "fr",
+        "liability"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_85_II_243", "grade": 3},
-        {"decision_id": "bge_BGE_110_II_136", "grade": 3},
-        {"decision_id": "bge_131 III 115", "grade": 2}
+        {
+          "decision_id": "bge_BGE_85_II_243",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_110_II_136",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_131_III_115",
+          "grade": 2
+        }
       ],
       "note": "Cross-lingual: French query should find German Tierhalterhaftung Art. 56 OR cases"
     },
     {
       "id": "q017",
       "query": "Art. 41 OR Schadenersatz ausservertragliche Haftung",
-      "tags": ["de", "liability", "statute"],
+      "tags": [
+        "de",
+        "liability",
+        "statute"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_105_II_87", "grade": 3}
+        {
+          "decision_id": "bge_BGE_105_II_87",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q018",
       "query": "Art. 97 OR Haftung Vertragsverletzung Schaden",
-      "tags": ["de", "liability", "statute"],
+      "tags": [
+        "de",
+        "liability",
+        "statute"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_135_III_405", "grade": 3}
+        {
+          "decision_id": "bge_BGE_135_III_405",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q019",
       "query": "Art. 28 ZGB Persönlichkeitsschutz Verletzung",
-      "tags": ["de", "personality", "statute"],
+      "tags": [
+        "de",
+        "personality",
+        "statute"
+      ],
       "relevant": [
-        {"decision_id": "bge_127 III 481", "grade": 3},
-        {"decision_id": "bge_BGE_127_III_481", "grade": 2}
+        {
+          "decision_id": "bge_BGE_127_III_481",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q020",
       "query": "Art. 56 OR Tierhalterhaftung",
-      "tags": ["de", "liability", "statute"],
+      "tags": [
+        "de",
+        "liability",
+        "statute"
+      ],
       "relevant": [
-        {"decision_id": "bge_142 III 433", "grade": 3},
-        {"decision_id": "bge_131 III 115", "grade": 2},
-        {"decision_id": "bge_BGE_110_II_136", "grade": 2}
+        {
+          "decision_id": "bge_BGE_142_III_433",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_131_III_115",
+          "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_110_II_136",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q021",
       "query": "Art. 336c OR Kündigungsschutz Krankheit Sperrfrist",
-      "tags": ["de", "employment", "statute"],
+      "tags": [
+        "de",
+        "employment",
+        "statute"
+      ],
       "relevant": [
-        {"decision_id": "bge_115 V 437", "grade": 3}
+        {
+          "decision_id": "bge_BGE_115_V_437",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q022",
       "query": "BGE 127 III 481",
-      "tags": ["de", "direct-lookup", "exact"],
+      "tags": [
+        "de",
+        "direct-lookup",
+        "exact"
+      ],
       "relevant": [
-        {"decision_id": "bge_127 III 481", "grade": 3}
+        {
+          "decision_id": "bge_BGE_127_III_481",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q023",
       "query": "BGE 115 IV 162",
-      "tags": ["de", "direct-lookup", "exact"],
+      "tags": [
+        "de",
+        "direct-lookup",
+        "exact"
+      ],
       "relevant": [
-        {"decision_id": "bge_115 IV 162", "grade": 3}
+        {
+          "decision_id": "bge_BGE_115_IV_162",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q024",
       "query": "BGE 132 III 677",
-      "tags": ["de", "direct-lookup", "exact"],
+      "tags": [
+        "de",
+        "direct-lookup",
+        "exact"
+      ],
       "relevant": [
-        {"decision_id": "bge_132 III 677", "grade": 3}
+        {
+          "decision_id": "bge_BGE_132_III_677",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q025",
       "query": "BVGE 2013/10",
-      "tags": ["de", "direct-lookup", "asylum"],
+      "tags": [
+        "de",
+        "direct-lookup",
+        "asylum"
+      ],
       "relevant": [
-        {"decision_id": "bvger_BVGE 2013_10", "grade": 3}
+        {
+          "decision_id": "bvger_BVGE 2013_10",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q026",
       "query": "impôt sur la fortune évaluation fiscale immobilière",
-      "tags": ["fr", "tax", "nl"],
+      "tags": [
+        "fr",
+        "tax",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_144_II_313", "grade": 3},
-        {"decision_id": "bge_BGE_143_II_65", "grade": 2}
+        {
+          "decision_id": "bge_BGE_144_II_313",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_143_II_65",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q027",
       "query": "entretien après divorce contribution conjoint",
-      "tags": ["fr", "family", "nl"],
+      "tags": [
+        "fr",
+        "family",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_132_III_209", "grade": 3},
-        {"decision_id": "bge_BGE_137_III_102", "grade": 2}
+        {
+          "decision_id": "bge_BGE_132_III_209",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_137_III_102",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q028",
       "query": "double imposition intercantonale impôt",
-      "tags": ["fr", "tax"],
+      "tags": [
+        "fr",
+        "tax"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_143_II_65", "grade": 3},
-        {"decision_id": "bge_BGE_140_II_157", "grade": 2}
+        {
+          "decision_id": "bge_BGE_143_II_65",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_140_II_157",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q029",
       "query": "grève syndicat licenciement droit du travail",
-      "tags": ["fr", "employment", "nl"],
+      "tags": [
+        "fr",
+        "employment",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bger_4A_64_2018", "grade": 3}
+        {
+          "decision_id": "bger_4A_64_2018",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q030",
       "query": "danno morale responsabilità civile risarcimento",
-      "tags": ["it", "liability", "nl"],
+      "tags": [
+        "it",
+        "liability",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "ti_gerichte_12.2009.196", "grade": 3}
+        {
+          "decision_id": "ti_gerichte_12.2009.196",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q031",
       "query": "Asyl Eritrea abgelehnt Wegweisung BVGer",
-      "tags": ["de", "asylum", "nl"],
+      "tags": [
+        "de",
+        "asylum",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bvger_E-4286_2008", "grade": 3},
-        {"decision_id": "bvger_E-2041_2013", "grade": 2},
-        {"decision_id": "bvger_E-7414_2015", "grade": 1}
+        {
+          "decision_id": "bvger_E-4286_2008",
+          "grade": 3
+        },
+        {
+          "decision_id": "bvger_E-2041_2013",
+          "grade": 2
+        },
+        {
+          "decision_id": "bvger_E-7414_2015",
+          "grade": 1
+        }
       ]
     },
     {
       "id": "q032",
       "query": "Kausalzusammenhang Unfall IV-Rente Unfallversicherung",
-      "tags": ["de", "insurance", "nl"],
+      "tags": [
+        "de",
+        "insurance",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bger_8C_720_2017", "grade": 3},
-        {"decision_id": "bger_8C_568_2015", "grade": 2}
+        {
+          "decision_id": "bger_8C_720_2017",
+          "grade": 3
+        },
+        {
+          "decision_id": "bger_8C_568_2015",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q033",
       "query": "Lärmschutzverordnung Baubewilligung Immissionsgrenzwert",
-      "tags": ["de", "construction", "nl"],
+      "tags": [
+        "de",
+        "construction",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "zh_verwaltungsgericht_VB.2010.00061", "grade": 3},
-        {"decision_id": "zh_verwaltungsgericht_VB.2022.00249", "grade": 2},
-        {"decision_id": "zh_verwaltungsgericht_VB.2001.00187", "grade": 1}
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2010.00061",
+          "grade": 3
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2022.00249",
+          "grade": 2
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2001.00187",
+          "grade": 1
+        }
       ]
     },
     {
       "id": "q034",
       "query": "Auslieferung Beschwerdekammer Strafrecht",
-      "tags": ["de", "criminal", "nl"],
+      "tags": [
+        "de",
+        "criminal",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bstger_RR.2012.25", "grade": 3},
-        {"decision_id": "bstger_RR.2013.89", "grade": 2}
+        {
+          "decision_id": "bstger_RR.2012.25",
+          "grade": 3
+        },
+        {
+          "decision_id": "bstger_RR.2013.89",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q035",
       "query": "Notwehr Angriff straflos Strafrecht",
-      "tags": ["de", "criminal"],
+      "tags": [
+        "de",
+        "criminal"
+      ],
       "relevant": [
-        {"decision_id": "bge_115 IV 162", "grade": 3},
-        {"decision_id": "bge_BGE_115_IV_162", "grade": 2}
+        {
+          "decision_id": "bge_BGE_115_IV_162",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q036",
       "query": "Pflichtteil Erbrecht Enterbung Testament",
-      "tags": ["de", "inheritance", "nl"],
+      "tags": [
+        "de",
+        "inheritance",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bge_132 III 677", "grade": 3},
-        {"decision_id": "bge_BGE_132_III_677", "grade": 2}
+        {
+          "decision_id": "bge_BGE_132_III_677",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q037",
       "query": "Stockwerkeigentum Beschlüsse Gemeinschaft Stimmrecht",
-      "tags": ["de", "property"],
+      "tags": [
+        "de",
+        "property"
+      ],
       "relevant": [
-        {"decision_id": "bge_119 II 404", "grade": 3},
-        {"decision_id": "bge_BGE_119_II_404", "grade": 2}
+        {
+          "decision_id": "bge_BGE_119_II_404",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q038",
       "query": "Vertragsirrtum Anfechtung Willensmangel",
-      "tags": ["de", "contract"],
+      "tags": [
+        "de",
+        "contract"
+      ],
       "relevant": [
-        {"decision_id": "bge_128 III 70", "grade": 3},
-        {"decision_id": "bge_BGE_128_III_70", "grade": 2}
+        {
+          "decision_id": "bge_BGE_128_III_70",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q039",
       "query": "Persönlichkeitsverletzung Medien Privatsphäre",
-      "tags": ["de", "personality", "nl"],
+      "tags": [
+        "de",
+        "personality",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bge_143 III 297", "grade": 3},
-        {"decision_id": "bge_BGE_143_III_297", "grade": 2}
+        {
+          "decision_id": "bge_BGE_143_III_297",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q040",
       "query": "Datenschutz Auskunftsrecht Personendaten",
-      "tags": ["de", "data-protection", "nl"],
+      "tags": [
+        "de",
+        "data-protection",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bge_133 V 359", "grade": 3},
-        {"decision_id": "bge_127 III 481", "grade": 2}
+        {
+          "decision_id": "bge_BGE_133_V_359",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_127_III_481",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q041",
       "query": "vorläufige Aufnahme Flüchtling Art. 8 EMRK",
-      "tags": ["de", "asylum", "human-rights"],
+      "tags": [
+        "de",
+        "asylum",
+        "human-rights"
+      ],
       "relevant": [
-        {"decision_id": "bge_147 I 268", "grade": 3},
-        {"decision_id": "bge_151 I 62", "grade": 2},
-        {"decision_id": "bge_150 I 93", "grade": 1}
+        {
+          "decision_id": "bge_BGE_147_I_268",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_151_I_62",
+          "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_150_I_93",
+          "grade": 1
+        }
       ]
     },
     {
       "id": "q042",
       "query": "Mietrecht",
-      "tags": ["de", "tenancy", "short"],
+      "tags": [
+        "de",
+        "tenancy",
+        "short"
+      ],
       "relevant": [
-        {"decision_id": "bs_appellationsgericht_ZB.2020.42", "grade": 2}
+        {
+          "decision_id": "bs_appellationsgericht_ZB.2020.42",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q043",
       "query": "Erbschaft Streit Familie",
-      "tags": ["de", "inheritance", "short"],
+      "tags": [
+        "de",
+        "inheritance",
+        "short"
+      ],
       "relevant": [
-        {"decision_id": "bge_132 III 677", "grade": 2}
+        {
+          "decision_id": "bge_BGE_132_III_677",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q044",
       "query": "Was ist der Unterschied zwischen ausservertraglicher und vertraglicher Haftung?",
-      "tags": ["de", "liability", "nl", "concept-match"],
+      "tags": [
+        "de",
+        "liability",
+        "nl",
+        "concept-match"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_105_II_87", "grade": 3},
-        {"decision_id": "bge_BGE_135_III_405", "grade": 2}
+        {
+          "decision_id": "bge_BGE_105_II_87",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_135_III_405",
+          "grade": 2
+        }
       ],
       "note": "Concept: query uses explanatory framing, decisions use technical OR terms"
     },
     {
       "id": "q045",
       "query": "Tierhalterhaftung Hund Biss Eigentümer",
-      "tags": ["de", "liability", "concept-match"],
+      "tags": [
+        "de",
+        "liability",
+        "concept-match"
+      ],
       "relevant": [
-        {"decision_id": "bge_131 III 115", "grade": 3},
-        {"decision_id": "bge_81 II 512", "grade": 3},
-        {"decision_id": "bge_BGE_110_II_136", "grade": 2},
-        {"decision_id": "bge_142 III 433", "grade": 2}
+        {
+          "decision_id": "bge_BGE_131_III_115",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_81_II_512",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_110_II_136",
+          "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_142_III_433",
+          "grade": 2
+        }
       ],
       "note": "Keyword variant of q014 — uses legal term 'Tierhalterhaftung' instead of 'Hundebiss'"
     },
     {
       "id": "q046",
       "query": "détenteur d'animal responsabilité chien morsure",
-      "tags": ["fr", "liability", "cross-lingual", "concept-match"],
+      "tags": [
+        "fr",
+        "liability",
+        "cross-lingual",
+        "concept-match"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_85_II_243", "grade": 3},
-        {"decision_id": "bge_BGE_110_II_136", "grade": 2},
-        {"decision_id": "bge_131 III 115", "grade": 2}
+        {
+          "decision_id": "bge_BGE_85_II_243",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_110_II_136",
+          "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_131_III_115",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q047",
       "query": "Fristlose Entlassung wichtiger Grund Arbeitnehmer",
-      "tags": ["de", "employment"],
+      "tags": [
+        "de",
+        "employment"
+      ],
       "relevant": [
-        {"decision_id": "bge_129 III 177", "grade": 3}
+        {
+          "decision_id": "bge_BGE_129_III_177",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q048",
       "query": "Scheidung Unterhalt Kinder Sorgerecht",
-      "tags": ["de", "family", "nl"],
+      "tags": [
+        "de",
+        "family",
+        "nl"
+      ],
       "relevant": [
-        {"decision_id": "bge_BGE_132_III_209", "grade": 2}
+        {
+          "decision_id": "bge_BGE_132_III_209",
+          "grade": 2
+        }
       ]
     },
     {
       "id": "q049",
       "query": "Finanzreferendum Verpflichtungskredit Volksrechte",
-      "tags": ["de", "constitutional"],
+      "tags": [
+        "de",
+        "constitutional"
+      ],
       "relevant": [
-        {"decision_id": "bge_151 I 32", "grade": 3}
+        {
+          "decision_id": "bge_BGE_151_I_32",
+          "grade": 3
+        }
       ]
     },
     {
       "id": "q050",
       "query": "Art. 8 EMRK Privatleben Familie Ausweisung",
-      "tags": ["de", "human-rights", "statute"],
+      "tags": [
+        "de",
+        "human-rights",
+        "statute"
+      ],
       "relevant": [
-        {"decision_id": "bge_147 I 268", "grade": 3},
-        {"decision_id": "bge_151 I 62", "grade": 2}
+        {
+          "decision_id": "bge_BGE_147_I_268",
+          "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_151_I_62",
+          "grade": 2
+        }
       ]
     }
   ]
