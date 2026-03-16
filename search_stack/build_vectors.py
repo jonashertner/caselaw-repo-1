@@ -258,10 +258,12 @@ def load_model(
 
     try:
         model = SentenceTransformer(model_id, backend="onnx")
+        # Validate with a test encode — ONNX may load but fail at runtime
+        model.encode(["test"], show_progress_bar=False)
         logger.info("Loaded %s with ONNX backend", model_id)
         return model
     except Exception:
-        logger.info("ONNX backend unavailable, falling back to PyTorch for %s", model_id)
+        logger.info("ONNX backend unavailable or broken, falling back to PyTorch for %s", model_id)
         model = SentenceTransformer(model_id)
         logger.info("Loaded %s with PyTorch backend", model_id)
         return model
