@@ -139,7 +139,7 @@ LLM_RERANK_ENABLED = os.environ.get("SWISS_CASELAW_LLM_RERANK", "true").lower() 
     "1", "true", "yes",
 }
 LLM_RERANK_TOP_N = int(os.environ.get("SWISS_CASELAW_LLM_RERANK_TOP_N", "15"))
-LLM_RERANK_WEIGHT = float(os.environ.get("SWISS_CASELAW_LLM_RERANK_WEIGHT", "4.0"))
+LLM_RERANK_WEIGHT = float(os.environ.get("SWISS_CASELAW_LLM_RERANK_WEIGHT", "3.0"))
 LLM_RERANK_TIMEOUT = float(os.environ.get("SWISS_CASELAW_LLM_RERANK_TIMEOUT", "3.0"))
 LLM_RERANK_CONFIDENCE_GATE = float(os.environ.get("SWISS_CASELAW_LLM_RERANK_GATE", "2.0"))
 CROSS_ENCODER_MODEL = os.environ.get(
