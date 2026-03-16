@@ -191,6 +191,89 @@ EXPANSION_SYSTEM_PROMPT = (
 
 _LLM_EXPANSION_CACHE: dict[str, list[str]] = {}
 
+# ── Structured LLM query parsing ────────────────────────────────
+# Returns deterministic JSON instead of free-text terms.
+# Drives statute-graph retrieval and BGE direct-lookup reliably.
+STRUCTURED_PARSE_PROMPT = (
+    "You are a Swiss legal search assistant. Parse the user's query and return "
+    "a JSON object with these fields:\n"
+    '  "statutes": list of statute references as "ABBREV ART" (e.g. ["OR 41", "OR 42", "ZGB 28"])\n'
+    '  "doctrine": the precise German legal doctrine name (Rechtsbegriff), e.g. "Tierhalterhaftung"\n'
+    '  "leading_bge": list of leading BGE references you are CERTAIN about, as "BGE VOL DIV PAGE" '
+    '(e.g. ["BGE 131 III 115"]). Only include if you are confident.\n'
+    '  "synonyms": 2-4 alternative German/French/Italian legal terms\n'
+    '  "domain": one of "civil", "criminal", "public", "social-insurance", "administrative"\n'
+    "Rules:\n"
+    "- ALWAYS translate colloquial language to the legal doctrine name\n"
+    "- For statutes, use the standard abbreviation (OR, ZGB, StGB, StPO, ZPO, SchKG, BV, AIG, etc.)\n"
+    "- If unsure about a BGE, omit it from leading_bge rather than guessing\n"
+    "- Output ONLY valid JSON, no markdown fences, no explanation\n"
+    "Examples:\n"
+    '  "Hundebiss" -> {"statutes":["OR 56"],"doctrine":"Tierhalterhaftung","leading_bge":["BGE 131 III 115"],"synonyms":["responsabilité du détenteur d\'animaux","Haftpflicht"],"domain":"civil"}\n'
+    '  "Notwehr Strafrecht" -> {"statutes":["StGB 15","StGB 16"],"doctrine":"Notwehr","leading_bge":["BGE 107 IV 12"],"synonyms":["légitime défense","legittima difesa","Notwehrexzess"],"domain":"criminal"}\n'
+    '  "Pflichtteil Enterbung" -> {"statutes":["ZGB 470","ZGB 471","ZGB 477"],"doctrine":"Pflichtteilsrecht","leading_bge":["BGE 132 III 677"],"synonyms":["réserve héréditaire","Enterbung","riserva ereditaria"],"domain":"civil"}\n'
+)
+
+_STRUCTURED_PARSE_CACHE: dict[str, dict] = {}
+
+
+def _parse_query_structured(query: str) -> dict:
+    """Parse query into structured facets using LLM (deterministic JSON output).
+
+    Returns dict with keys: statutes, doctrine, leading_bge, synonyms, domain.
+    Returns empty dict on failure/timeout/disabled.
+    """
+    if not LLM_EXPANSION_ENABLED or not ANTHROPIC_API_KEY:
+        return {}
+
+    cache_key = query.strip().lower()
+    if cache_key in _STRUCTURED_PARSE_CACHE:
+        return _STRUCTURED_PARSE_CACHE[cache_key]
+
+    try:
+        import httpx
+    except ImportError:
+        return {}
+
+    try:
+        with httpx.Client(timeout=LLM_EXPANSION_TIMEOUT + 1.0) as client:
+            resp = client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-haiku-4-5-20251001",
+                    "max_tokens": 300,
+                    "system": STRUCTURED_PARSE_PROMPT,
+                    "messages": [{"role": "user", "content": query}],
+                },
+            )
+            resp.raise_for_status()
+            text = resp.json()["content"][0]["text"].strip()
+            # Strip markdown fences if present
+            if text.startswith("```"):
+                text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+            import json as _json
+            parsed = _json.loads(text)
+            # Validate structure
+            result = {
+                "statutes": list(parsed.get("statutes") or []),
+                "doctrine": str(parsed.get("doctrine") or ""),
+                "leading_bge": list(parsed.get("leading_bge") or []),
+                "synonyms": list(parsed.get("synonyms") or []),
+                "domain": str(parsed.get("domain") or ""),
+            }
+            _STRUCTURED_PARSE_CACHE[cache_key] = result
+            logger.debug("Structured parse for %r: %s", query, result)
+            return result
+    except Exception as e:
+        logger.debug("Structured parse failed for %r: %s", query, e)
+        return {}
+
+
 FEDLEX_CACHE_PATH = Path(
     os.environ.get("SWISS_CASELAW_FEDLEX_CACHE", str(DATA_DIR / "fedlex_cache.json"))
 )
@@ -839,6 +922,34 @@ def _search_fts5_inner(
     had_success = False
     candidate_meta: dict[str, dict] = {}
     strategies, llm_terms = _build_query_strategies(fts_query)
+
+    # ── Structured query parsing (deterministic JSON) ──
+    structured_parse: dict = {}
+    if not is_docket_query:
+        structured_parse = _parse_query_structured(fts_query)
+        # Inject doctrine + synonyms as FTS strategy
+        if structured_parse:
+            sp_parts: list[str] = []
+            if structured_parse.get("doctrine"):
+                doctrine = structured_parse["doctrine"]
+                words = doctrine.strip().split()
+                if len(words) >= 2:
+                    sp_parts.append(f'"{" ".join(words)}"')
+                elif words:
+                    sp_parts.append(words[0])
+            for syn in (structured_parse.get("synonyms") or [])[:4]:
+                words = syn.strip().split()
+                if len(words) >= 2:
+                    sp_parts.append(f'"{" ".join(words)}"')
+                elif words:
+                    sp_parts.append(words[0])
+            if sp_parts:
+                sp_query = " OR ".join(sp_parts)
+                strategies.append({
+                    "name": "structured_doctrine",
+                    "query": sp_query,
+                    "weight": 1.1,
+                })
     target_pool = _target_candidate_pool(
         limit=limit,
         offset=offset,
@@ -1001,13 +1112,26 @@ def _search_fts5_inner(
                     cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
 
     # ── Statute-graph retrieval (citation graph candidate source) ──
+    # Use both regex extraction AND structured parse for maximum coverage
     STATUTE_GRAPH_RRF_WEIGHT = 1.0
+    has_structured_statutes = False
     if not is_docket_query:
         query_statutes = _extract_query_statute_refs(fts_query)
         if llm_terms:
             for t in llm_terms:
                 query_statutes |= _extract_query_statute_refs(t)
-        statute_graph_results = _search_statute_graph(query_statutes, limit=30)
+        # Structured parse statutes (deterministic, not regex-dependent)
+        if structured_parse.get("statutes"):
+            for sref in structured_parse["statutes"]:
+                parts = sref.strip().split()
+                if len(parts) >= 2:
+                    law = parts[0].upper()
+                    art = parts[1].lower().replace(".", "")
+                    query_statutes.add(f"ART.{art}.{law}")
+            has_structured_statutes = True
+        # Boost weight when we have LLM-parsed statutes (higher confidence)
+        sg_weight = 1.5 if has_structured_statutes else STATUTE_GRAPH_RRF_WEIGHT
+        statute_graph_results = _search_statute_graph(query_statutes, limit=50 if has_structured_statutes else 30)
         if statute_graph_results:
             sg_only_ids = [
                 did for did, _sc in statute_graph_results
@@ -1036,23 +1160,35 @@ def _search_fts5_inner(
                 if did in candidate_meta:
                     cm = candidate_meta[did]
                     cm["rrf_score"] = float(cm["rrf_score"]) + (
-                        STATUTE_GRAPH_RRF_WEIGHT / (RRF_RANK_CONSTANT + rank)
+                        sg_weight / (RRF_RANK_CONSTANT + rank)
                     )
                     cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
 
-    # ── LLM BGE direct-lookup ──
-    # When LLM expansion outputs "BGE NNN X NNN", resolve to decision_id and inject.
+    # ── BGE direct-lookup (structured parse + LLM free-text) ──
+    # Structured parse provides deterministic BGE refs; LLM free-text is fallback.
     LLM_BGE_RRF_WEIGHT = 2.0  # Strong weight: LLM knows the leading case
-    if llm_terms and not is_docket_query:
+    STRUCTURED_BGE_RRF_WEIGHT = 2.5  # Even stronger: structured parse is more reliable
+    if not is_docket_query:
         bge_pattern = re.compile(r"BGE\s+(\d{1,3})\s+([IVX]{1,4})\s+(\d{1,4})", re.IGNORECASE)
         llm_bge_ids: list[str] = []
-        for term in llm_terms:
-            for m in bge_pattern.finditer(term):
+        structured_bge_ids: list[str] = []
+        # From structured parse (deterministic)
+        for bge_ref in (structured_parse.get("leading_bge") or []):
+            m = bge_pattern.search(bge_ref)
+            if m:
                 candidate_id = f"bge_BGE_{m.group(1)}_{m.group(2).upper()}_{m.group(3)}"
-                llm_bge_ids.append(candidate_id)
-        if llm_bge_ids:
+                structured_bge_ids.append(candidate_id)
+        # From LLM free-text expansion (stochastic, fallback)
+        if llm_terms:
+            for term in llm_terms:
+                for m in bge_pattern.finditer(term):
+                    candidate_id = f"bge_BGE_{m.group(1)}_{m.group(2).upper()}_{m.group(3)}"
+                    if candidate_id not in structured_bge_ids:
+                        llm_bge_ids.append(candidate_id)
+        all_bge_ids = structured_bge_ids + llm_bge_ids
+        if all_bge_ids:
             # Fetch rows for BGE IDs not already in pool
-            new_bge_ids = [did for did in llm_bge_ids if did not in candidate_meta]
+            new_bge_ids = [did for did in all_bge_ids if did not in candidate_meta]
             if new_bge_ids:
                 ph = ",".join("?" for _ in new_bge_ids)
                 bge_rows = conn.execute(
@@ -1072,11 +1208,14 @@ def _search_fts5_inner(
                         "rrf_score": 0.0,
                         "strategy_hits": 0,
                     }
-            for rank, did in enumerate(llm_bge_ids, start=1):
+            # Structured BGE refs get higher weight (deterministic)
+            structured_set = set(structured_bge_ids)
+            for rank, did in enumerate(all_bge_ids, start=1):
                 if did in candidate_meta:
+                    weight = STRUCTURED_BGE_RRF_WEIGHT if did in structured_set else LLM_BGE_RRF_WEIGHT
                     cm = candidate_meta[did]
                     cm["rrf_score"] = float(cm["rrf_score"]) + (
-                        LLM_BGE_RRF_WEIGHT / (RRF_RANK_CONSTANT + rank)
+                        weight / (RRF_RANK_CONSTANT + rank)
                     )
                     cm["strategy_hits"] = int(cm["strategy_hits"]) + 1
 
@@ -1960,6 +2099,31 @@ def _load_graph_signal_map(
                 0.0,
                 float(row["n"] or 0.0),
             )
+        # ── In-pool citation signal ──
+        # Count how many OTHER candidates cite each candidate.
+        # This is a topical relevance signal: if many search results
+        # cite decision X, then X is likely a leading case for this query.
+        if has_citation_targets and len(unique_ids) >= 3:
+            try:
+                rows = conn.execute(
+                    f"""
+                    SELECT ct.target_decision_id AS target_id,
+                           COUNT(DISTINCT ct.source_decision_id) AS pool_cites
+                    FROM citation_targets ct
+                    WHERE ct.source_decision_id IN ({placeholders})
+                      AND ct.target_decision_id IN ({placeholders})
+                      AND ct.source_decision_id != ct.target_decision_id
+                    GROUP BY ct.target_decision_id
+                    """,
+                    tuple(unique_ids) + tuple(unique_ids),
+                ).fetchall()
+                for row in rows:
+                    tid = row["target_id"]
+                    if tid in signal_map:
+                        signal_map[tid]["in_pool_citations"] = float(row["pool_cites"])
+            except sqlite3.Error:
+                pass  # non-critical signal
+
     except sqlite3.Error as e:
         logger.debug("Graph-signal lookup failed: %s", e)
         return {}
@@ -2538,6 +2702,11 @@ def _rerank_rows(
             citation_signal = 2.4 + min(1.2, 0.30 * query_citation_hits)
         if incoming_citations > 0:
             authority_signal = min(1.0, incoming_citations * 0.03)
+        in_pool_citations = float(graph.get("in_pool_citations", 0.0))
+        in_pool_signal = 0.0
+        if in_pool_citations >= 2:
+            # Logarithmic: 2 pool cites = 0.5, 5 = 0.9, 10+ = 1.2
+            in_pool_signal = min(1.2, 0.5 * math.log2(in_pool_citations))
 
         local_ref_signal = 0.0
         local_text = f"{title_text} {regeste_text} {snippet_text}"
@@ -2606,6 +2775,7 @@ def _rerank_rows(
             + statute_signal
             + citation_signal
             + authority_signal
+            + in_pool_signal
             + local_ref_signal
             + court_prior_signal
             + court_intent_signal
