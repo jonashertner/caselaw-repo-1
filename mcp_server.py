@@ -428,7 +428,7 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     # Italian legal terms
     "responsabilita": ("haftung", "responsabilite", "haftpflicht"),
     "risarcimento": ("schadenersatz", "dommages", "indemnite"),
-    "danno": ("schaden", "dommage", "risarcimento"),
+    "danno": ("schaden", "dommage", "risarcimento", "torto"),
     "locazione": ("mietrecht", "mietvertrag", "bail"),
     "contratto": ("vertrag", "contrat", "contract"),
     "divorzio": ("scheidung", "divorce", "ehescheidung"),
@@ -445,6 +445,11 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "auslieferung": ("extradition", "estradizione", "rechtshilfe", "irsg"),
     "rechtshilfe": ("auslieferung", "extradition", "entraide"),
     "notwehr": ("legitime", "legittima", "notwehrexzess"),
+    # Synonym pairs (same concept, different words)
+    "zahlungsverzug": ("zahlungsrueckstand", "mietzinsrueckstand", "verzug"),
+    "zahlungsrueckstand": ("zahlungsverzug", "mietzinsrueckstand", "verzug"),
+    "mietzinsrueckstand": ("zahlungsverzug", "zahlungsrueckstand"),
+    "torto": ("danno", "genugtuung", "tort"),
     # Colloquial→legal concept bridges
     "hundebiss": ("tierhalterhaftung", "haftpflicht"),
     "tierhalterhaftung": ("hundebiss", "haftpflicht"),
