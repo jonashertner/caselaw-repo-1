@@ -197,7 +197,9 @@ _LLM_EXPANSION_CACHE: dict[str, list[str]] = {}
 STRUCTURED_PARSE_PROMPT = (
     "You are a Swiss legal search assistant. Parse the user's query and return "
     "a JSON object with these fields:\n"
-    '  "statutes": list of statute references as "ABBREV ART" (e.g. ["OR 41", "OR 42", "ZGB 28"])\n'
+    '  "statutes": list of statute references as "ABBREV ART" (e.g. ["OR 41", "ZGB 28"]). '
+    "ALWAYS infer relevant statutes even when no article is explicitly mentioned — "
+    "use the legal topic to identify the governing provisions.\n"
     '  "doctrine": the precise German legal doctrine name (Rechtsbegriff), e.g. "Tierhalterhaftung"\n'
     '  "leading_bge": list of leading BGE references you are CERTAIN about, as "BGE VOL DIV PAGE" '
     '(e.g. ["BGE 131 III 115"]). Only include if you are confident.\n'
@@ -205,13 +207,17 @@ STRUCTURED_PARSE_PROMPT = (
     '  "domain": one of "civil", "criminal", "public", "social-insurance", "administrative"\n'
     "Rules:\n"
     "- ALWAYS translate colloquial language to the legal doctrine name\n"
-    "- For statutes, use the standard abbreviation (OR, ZGB, StGB, StPO, ZPO, SchKG, BV, AIG, etc.)\n"
+    "- For statutes, use standard abbreviations: OR, ZGB, StGB, StPO, ZPO, SchKG, BV, AIG, "
+    "IRSG, AsylG, BGG, VwVG, EMRK, SVG, UVG, KVG, AHVG, IVG, etc.\n"
+    "- Even for semantic queries without 'Art.', infer the most relevant statute provisions\n"
     "- If unsure about a BGE, omit it from leading_bge rather than guessing\n"
     "- Output ONLY valid JSON, no markdown fences, no explanation\n"
     "Examples:\n"
     '  "Hundebiss" -> {"statutes":["OR 56"],"doctrine":"Tierhalterhaftung","leading_bge":["BGE 131 III 115"],"synonyms":["responsabilité du détenteur d\'animaux","Haftpflicht"],"domain":"civil"}\n'
     '  "Notwehr Strafrecht" -> {"statutes":["StGB 15","StGB 16"],"doctrine":"Notwehr","leading_bge":["BGE 107 IV 12"],"synonyms":["légitime défense","legittima difesa","Notwehrexzess"],"domain":"criminal"}\n'
     '  "Pflichtteil Enterbung" -> {"statutes":["ZGB 470","ZGB 471","ZGB 477"],"doctrine":"Pflichtteilsrecht","leading_bge":["BGE 132 III 677"],"synonyms":["réserve héréditaire","Enterbung","riserva ereditaria"],"domain":"civil"}\n'
+    '  "Auslieferung an Rumänien" -> {"statutes":["IRSG 25","IRSG 55"],"doctrine":"Auslieferung","leading_bge":[],"synonyms":["extradition","estradizione","entraide judiciaire"],"domain":"criminal"}\n'
+    '  "danno morale responsabilità civile" -> {"statutes":["OR 49","OR 47"],"doctrine":"Genugtuung","leading_bge":[],"synonyms":["tort moral","Genugtuung","Persönlichkeitsverletzung","immaterielle Unbill"],"domain":"civil"}\n'
 )
 
 _STRUCTURED_PARSE_CACHE: dict[str, dict] = {}
@@ -419,6 +425,26 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     # Competition / data protection
     "kartell": ("cartel", "cartello", "wettbewerb"),
     "wettbewerb": ("concurrence", "concorrenza", "competition"),
+    # Italian legal terms
+    "responsabilita": ("haftung", "responsabilite", "haftpflicht"),
+    "risarcimento": ("schadenersatz", "dommages", "indemnite"),
+    "danno": ("schaden", "dommage", "risarcimento"),
+    "locazione": ("mietrecht", "mietvertrag", "bail"),
+    "contratto": ("vertrag", "contrat", "contract"),
+    "divorzio": ("scheidung", "divorce", "ehescheidung"),
+    "custodia": ("sorgerecht", "garde", "obhut"),
+    "alimenti": ("unterhalt", "entretien", "pension"),
+    "ricorso": ("beschwerde", "recours", "appel"),
+    "estradizione": ("auslieferung", "extradition", "rechtshilfe"),
+    "furto": ("diebstahl", "vol", "theft"),
+    "truffa": ("betrug", "escroquerie", "fraud"),
+    "lavoro": ("arbeitsrecht", "travail", "arbeit"),
+    "proprietà": ("eigentum", "propriete", "grundeigentum"),
+    "personalita": ("persoenlichkeitsschutz", "personnalite", "privacy"),
+    # Criminal law bridges
+    "auslieferung": ("extradition", "estradizione", "rechtshilfe", "irsg"),
+    "rechtshilfe": ("auslieferung", "extradition", "entraide"),
+    "notwehr": ("legitime", "legittima", "notwehrexzess"),
     # Colloquial→legal concept bridges
     "hundebiss": ("tierhalterhaftung", "haftpflicht"),
     "tierhalterhaftung": ("hundebiss", "haftpflicht"),
@@ -1160,8 +1186,20 @@ def _search_fts5_inner(
                     art = parts[1].lower().replace(".", "")
                     query_statutes.add(f"ART.{art}.{law}")
             has_structured_statutes = True
-        # Boost weight when we have LLM-parsed statutes (higher confidence)
-        sg_weight = 1.5 if has_structured_statutes else STATUTE_GRAPH_RRF_WEIGHT
+        # Adjust weight based on query context:
+        # - Pure statute queries ("Art. 41 OR"): high weight, statute-graph is primary signal
+        # - Mixed queries ("Art. 41 OR Haftpflicht Schadenersatz"): lower weight,
+        #   FTS keyword matches are more relevant for ranking
+        query_tokens = set(re.findall(r'[a-zäöü]+', fts_query.lower()))
+        statute_noise = {"art", "abs", "or", "zpo", "stpo", "stgb", "zgb", "schkg", "bv",
+                         "aig", "irsg", "bgg", "vwvg", "emrk", "svg", "uvg", "kvg",
+                         "ahvg", "ivg", "asylg", "lit", "abs", "al", "cpv"}
+        non_statute_tokens = query_tokens - statute_noise
+        has_keyword_context = len(non_statute_tokens) >= 2
+        if has_structured_statutes:
+            sg_weight = 1.0 if has_keyword_context else 1.5
+        else:
+            sg_weight = 0.7 if has_keyword_context else STATUTE_GRAPH_RRF_WEIGHT
         statute_graph_results = _search_statute_graph(query_statutes, limit=50 if has_structured_statutes else 30)
         if statute_graph_results:
             sg_only_ids = [
@@ -2248,12 +2286,12 @@ def _search_statute_graph(
 
         auth_by_id = {r["decision_id"]: float(r["n"] or 0.0) for r in auth_rows}
 
-        # Score: log(incoming_citations + 1) + 0.3 * log(statute_mentions + 1)
+        # Score: balanced authority + mentions (both matter for statute queries)
         scored = []
         for did in citing_ids:
             authority = auth_by_id.get(did, 0.0)
             mentions = mention_by_id.get(did, 0.0)
-            score = math.log1p(authority) + 0.3 * math.log1p(mentions)
+            score = 0.7 * math.log1p(authority) + 0.7 * math.log1p(mentions)
             scored.append((did, score))
 
         scored.sort(key=lambda x: -x[1])
