@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "description": "Golden relevance judgments for Swiss caselaw search quality checks.",
   "queries": [
     {
@@ -616,8 +616,34 @@
         {
           "decision_id": "bge_BGE_115_IV_162",
           "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_102_IV_1",
+          "grade": 3,
+          "note": "Leading Notwehr case: Art. 33 StGB, Angriff on Hausrecht, 392 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_122_IV_1",
+          "grade": 2,
+          "note": "Notwehr vs Notstand distinction, Haustyrann case, 246 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_107_IV_12",
+          "grade": 2,
+          "note": "Notwehrlage and proportionality (Schussabgabe auf Dieb), Art. 33 StGB"
+        },
+        {
+          "decision_id": "bge_BGE_136_IV_49",
+          "grade": 2,
+          "note": "Notwehr with knife, proportionality of defense"
+        },
+        {
+          "decision_id": "bge_BGE_142_IV_14",
+          "grade": 1,
+          "note": "Notwehrexzess, provocation and proportionality"
         }
-      ]
+      ],
+      "note": "Original only had BGE 115 IV 162. Added leading Notwehr BGEs found via citation graph."
     },
     {
       "id": "q036",
@@ -631,8 +657,29 @@
         {
           "decision_id": "bge_BGE_132_III_677",
           "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_106_II_304",
+          "grade": 3,
+          "note": "Leading Enterbung case: Art. 477 ZGB, familienrechtliche Pflichten, 25 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_138_III_497",
+          "grade": 2,
+          "note": "Erbverzichtsvertrag vs Ausschlagung, Art. 578 ZGB, 35 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_107_II_119",
+          "grade": 2,
+          "note": "Erbteilung and Herabsetzung, top-cited inheritance case, 47 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_85_II_597",
+          "grade": 1,
+          "note": "Enterbter beharrt auf Pflichtteil, Art. 479 ZGB, Herabsetzungsklage"
         }
-      ]
+      ],
+      "note": "Original only had BGE 132 III 677. Added leading Pflichtteil/Enterbung BGEs."
     },
     {
       "id": "q037",
@@ -645,8 +692,19 @@
         {
           "decision_id": "bge_BGE_119_II_404",
           "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_134_III_481",
+          "grade": 3,
+          "note": "Leading case: Art. 712m/68 ZGB, Stimmrecht exclusion in Stockwerkeigentum, 21 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_106_II_11",
+          "grade": 1,
+          "note": "Stockwerkeigentum Sonderrecht and gemeinschaftliche Teile, 16 incoming citations"
         }
-      ]
+      ],
+      "note": "Original only had BGE 119 II 404. Added BGE 134 III 481 which directly addresses Stimmrecht."
     },
     {
       "id": "q038",
@@ -693,8 +751,29 @@
         {
           "decision_id": "bge_BGE_127_III_481",
           "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_125_II_473",
+          "grade": 3,
+          "note": "Leading case: Art. 8 DSG Auskunftsrecht, interne Akten, 672 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_138_III_425",
+          "grade": 2,
+          "note": "Bank data Auskunftsrecht, Art. 8/9 DSG, 289 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_136_II_508",
+          "grade": 2,
+          "note": "Personendaten P2P networks, Art. 3/4/12/13 DSG, 390 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_123_II_534",
+          "grade": 1,
+          "note": "Art. 8 DSG Auskunftsrecht vs Unfallversicherung, 128 incoming citations"
         }
-      ]
+      ],
+      "note": "Original had BGE 133 V 359 and BGE 127 III 481. Added top Datenschutz/Auskunftsrecht BGEs from citation graph."
     },
     {
       "id": "q041",
@@ -746,8 +825,19 @@
         {
           "decision_id": "bge_BGE_132_III_677",
           "grade": 2
+        },
+        {
+          "decision_id": "bge_BGE_86_II_451",
+          "grade": 2,
+          "note": "Erbteilung Art. 604 ZGB, Passivlegitimation, 59 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_93_II_11",
+          "grade": 1,
+          "note": "Erbengemeinschaft liability, 51 incoming citations"
         }
-      ]
+      ],
+      "note": "Original only had BGE 132 III 677. Added leading Erbschaft BGEs."
     },
     {
       "id": "q044",
@@ -883,6 +973,112 @@
           "grade": 2
         }
       ]
+    },
+    {
+      "id": "q051",
+      "query": "Art. 41 OR Haftpflicht Schadenersatz",
+      "tags": [
+        "de",
+        "liability",
+        "statute"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_132_III_359",
+          "grade": 3,
+          "note": "Top-cited Art. 41 OR case (471 incoming citations), Arztvertrag/Sterilisationsfehler"
+        },
+        {
+          "decision_id": "bge_BGE_134_III_529",
+          "grade": 2,
+          "note": "Art. 41 Abs. 1 OR Widerrechtlichkeit, GwG as Schutznorm"
+        },
+        {
+          "decision_id": "bge_BGE_88_II_276",
+          "grade": 2,
+          "note": "Art. 41 OR Schadenersatz from ungerechtfertigte vorsorgliche Verfügung"
+        },
+        {
+          "decision_id": "bge_BGE_105_II_87",
+          "grade": 1,
+          "note": "Also relevant for ausservertragliche Haftung (already in q017)"
+        }
+      ],
+      "note": "Practitioner statute-lookup query for Art. 41 OR liability"
+    },
+    {
+      "id": "q052",
+      "query": "Art. 257d OR Zahlungsverzug Miete Kündigung",
+      "tags": [
+        "de",
+        "tenancy",
+        "statute"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_119_II_147",
+          "grade": 3,
+          "note": "Leading Art. 257d OR case: Zahlungsrückstand, Fristansetzung, Kündigung"
+        },
+        {
+          "decision_id": "bge_BGE_125_III_120",
+          "grade": 3,
+          "note": "Art. 257d OR and 259g OR: Hinterlegung of Mietzinsen, ungültige Kündigung"
+        },
+        {
+          "decision_id": "bge_BGE_140_III_591",
+          "grade": 2,
+          "note": "Art. 257d OR Kündigung vs Treu und Glauben (Art. 271 OR)"
+        },
+        {
+          "decision_id": "bge_BGE_137_III_123",
+          "grade": 2,
+          "note": "Art. 257d OR: Kündigung of multiple connected leases for partial arrears"
+        },
+        {
+          "decision_id": "bge_BGE_132_III_747",
+          "grade": 1,
+          "note": "Art. 257d OR: Ausweisungsverfahren after Zahlungsrückstand Kündigung"
+        }
+      ],
+      "note": "Practitioner statute-lookup query for Art. 257d OR tenancy payment default"
+    },
+    {
+      "id": "q053",
+      "query": "Art. 321a OR Sorgfaltspflicht Arbeitnehmer",
+      "tags": [
+        "de",
+        "employment",
+        "statute"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_117_II_72",
+          "grade": 3,
+          "note": "Art. 321a Abs. 1 OR: Treuepflicht, no violation by founding firm while employed"
+        },
+        {
+          "decision_id": "bge_BGE_130_III_213",
+          "grade": 3,
+          "note": "Art. 321a/717 OR: Treuepflicht of organ-level employees in AG/Konzern"
+        },
+        {
+          "decision_id": "bge_BGE_127_III_310",
+          "grade": 2,
+          "note": "Art. 321a/337 OR: Verschwiegenheit, fristlose Kündigung for confidentiality breach"
+        },
+        {
+          "decision_id": "bge_BGE_144_III_327",
+          "grade": 2,
+          "note": "Art. 321a/321e OR: Konventionalstrafe compatibility with employee liability"
+        },
+        {
+          "decision_id": "bge_BGE_138_III_67",
+          "grade": 1,
+          "note": "Art. 321a/340 OR: Treuepflicht and Konkurrenzverbot, Geschäftsgeheimnisse"
+        }
+      ],
+      "note": "Practitioner statute-lookup query for Art. 321a OR employee duty of care"
     }
   ]
 }
