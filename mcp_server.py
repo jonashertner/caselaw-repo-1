@@ -961,15 +961,22 @@ def _search_fts5_inner(
                     "query": sp_query,
                     "weight": doctrine_weight,
                 })
-            # For concept translations, also add regeste-focused doctrine strategy
+            # For concept translations, also add regeste/title-focused doctrine strategies.
+            # Insert AFTER standard strategies (nl_and, regeste_focus, title_focus)
+            # to avoid displacing them from early slots.
             if is_concept_translation and doctrine_fts:
                 doctrine_norm = _normalize_token_for_fts(doctrine) if len(doctrine.split()) == 1 else doctrine_fts
-                strategies.insert(0, {
+                # Find insertion point: after title_focus or regeste_focus
+                insert_pos = 0
+                for si, s in enumerate(strategies):
+                    if s.get("name") in {"title_focus", "regeste_focus"}:
+                        insert_pos = si + 1
+                strategies.insert(insert_pos, {
                     "name": "doctrine_regeste",
                     "query": f"regeste:{doctrine_norm}",
                     "weight": 1.6,
                 })
-                strategies.insert(1, {
+                strategies.insert(insert_pos + 1, {
                     "name": "doctrine_title",
                     "query": f"title:{doctrine_norm}",
                     "weight": 1.3,
