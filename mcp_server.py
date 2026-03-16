@@ -133,6 +133,15 @@ CROSS_ENCODER_ENABLED = os.environ.get("SWISS_CASELAW_CROSS_ENCODER", "0").lower
     "true",
     "yes",
 }
+
+# ── Haiku reranking ──────────────────────────────────────────
+LLM_RERANK_ENABLED = os.environ.get("SWISS_CASELAW_LLM_RERANK", "true").lower() in {
+    "1", "true", "yes",
+}
+LLM_RERANK_TOP_N = int(os.environ.get("SWISS_CASELAW_LLM_RERANK_TOP_N", "15"))
+LLM_RERANK_WEIGHT = float(os.environ.get("SWISS_CASELAW_LLM_RERANK_WEIGHT", "4.0"))
+LLM_RERANK_TIMEOUT = float(os.environ.get("SWISS_CASELAW_LLM_RERANK_TIMEOUT", "3.0"))
+LLM_RERANK_CONFIDENCE_GATE = float(os.environ.get("SWISS_CASELAW_LLM_RERANK_GATE", "2.0"))
 CROSS_ENCODER_MODEL = os.environ.get(
     "SWISS_CASELAW_CROSS_ENCODER_MODEL",
     "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1",
@@ -2873,6 +2882,7 @@ def _rerank_rows(
         scored.append((final_score, bm25_score, idx, row))
 
     scored = _apply_cross_encoder_boosts(scored, raw_query)
+    scored = _apply_llm_rerank(scored, raw_query, is_docket_query=is_docket_query)
     scored.sort(key=lambda x: (-x[0], x[1], x[2]))
 
     # Apply user-requested sort order (overrides relevance ranking)
@@ -3551,6 +3561,120 @@ def _normalize_score_list(scores) -> list[float]:
         return [0.5 for _ in values]
     span = hi - lo
     return [(v - lo) / span for v in values]
+
+
+LLM_RERANK_PROMPT = (
+    "You are a Swiss legal search relevance judge. Given a search query and a list of "
+    "court decision candidates, rank them by relevance to the query.\n"
+    "Consider: (1) legal doctrine match, (2) applicable statute provisions, "
+    "(3) factual pattern similarity, (4) court authority level.\n"
+    "Return ONLY a JSON array of decision_id strings in order from most to least relevant. "
+    "Include ALL candidates in the array. Example: [\"bge_BGE_131_III_115\",\"bge_BGE_110_II_136\"]\n"
+    "Output ONLY the JSON array, nothing else."
+)
+
+
+def _apply_llm_rerank(
+    scored: list[tuple[float, float, int, sqlite3.Row]],
+    query: str,
+    *,
+    is_docket_query: bool = False,
+) -> list[tuple[float, float, int, sqlite3.Row]]:
+    """Rerank top candidates using Haiku for legal relevance judgment.
+
+    Gating rules:
+    - Skip if disabled or no API key
+    - Skip for docket queries (already exact match)
+    - Skip if top result dominates (score >= gate * second)
+    """
+    if not LLM_RERANK_ENABLED or not ANTHROPIC_API_KEY or not scored:
+        return scored
+    if is_docket_query:
+        return scored
+
+    # Sort to find top candidates
+    pre_sorted = sorted(scored, key=lambda x: (-x[0], x[1], x[2]))
+
+    # Confidence gate: skip if top result clearly dominates
+    if len(pre_sorted) >= 2:
+        top_score = pre_sorted[0][0]
+        second_score = pre_sorted[1][0]
+        if second_score > 0 and top_score >= LLM_RERANK_CONFIDENCE_GATE * second_score:
+            return scored
+
+    top_n = min(LLM_RERANK_TOP_N, len(pre_sorted))
+    if top_n < 2:
+        return scored
+
+    rerank_subset = pre_sorted[:top_n]
+
+    # Build candidate descriptions for Haiku
+    candidates_text = []
+    for _s, _b, _i, row in rerank_subset:
+        did = row["decision_id"]
+        docket = row["docket_number"] or ""
+        regeste = (row["regeste"] or "")[:300]
+        candidates_text.append(f"- {did} ({docket}): {regeste}")
+
+    user_msg = (
+        f"Query: {query}\n\nCandidates:\n" + "\n".join(candidates_text)
+    )
+
+    try:
+        import httpx
+    except ImportError:
+        return scored
+
+    try:
+        with httpx.Client(timeout=LLM_RERANK_TIMEOUT + 1.0) as client:
+            resp = client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-haiku-4-5-20251001",
+                    "max_tokens": 400,
+                    "system": LLM_RERANK_PROMPT,
+                    "messages": [{"role": "user", "content": user_msg}],
+                },
+            )
+            resp.raise_for_status()
+            text = resp.json()["content"][0]["text"].strip()
+
+            # Parse JSON array of decision_ids
+            if text.startswith("```"):
+                text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+            import json as _json
+            ranked_ids = _json.loads(text)
+            if not isinstance(ranked_ids, list):
+                logger.debug("LLM rerank: unexpected response type %s", type(ranked_ids))
+                return scored
+
+    except Exception as e:
+        logger.debug("LLM rerank failed: %s", e)
+        return scored
+
+    # Apply position-based boost: rank 1 gets full weight, rank N gets ~0
+    rank_by_id: dict[str, int] = {}
+    for rank, did in enumerate(ranked_ids):
+        if isinstance(did, str) and did not in rank_by_id:
+            rank_by_id[did] = rank
+
+    boosted: list[tuple[float, float, int, sqlite3.Row]] = []
+    for score, bm25, idx, row in scored:
+        did = row["decision_id"]
+        rank = rank_by_id.get(did)
+        if rank is not None:
+            # Linear decay: rank 0 → weight, rank N-1 → 0
+            boost = LLM_RERANK_WEIGHT * max(0.0, 1.0 - rank / max(top_n, 1))
+            boosted.append((score + boost, bm25, idx, row))
+        else:
+            boosted.append((score, bm25, idx, row))
+
+    return boosted
 
 
 def _build_rerank_document(row: sqlite3.Row | dict) -> str:
