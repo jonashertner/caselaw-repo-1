@@ -193,7 +193,18 @@
       "relevant": [
         {
           "decision_id": "ti_gerichte_12.2004.29",
-          "grade": 3
+          "grade": 3,
+          "note": "Ticino: torto morale, atto illecito, responsabilità civile"
+        },
+        {
+          "decision_id": "bge_BGE_108_II_422",
+          "grade": 2,
+          "note": "Art. 47 OR Genugtuung (Italian language BGE), top-ranked result"
+        },
+        {
+          "decision_id": "bge_BGE_107_II_151",
+          "grade": 1,
+          "note": "Haftung für Schaden, related tort liability"
         }
       ]
     },
@@ -302,8 +313,19 @@
       ],
       "relevant": [
         {
-          "decision_id": "bge_BGE_105_II_87",
-          "grade": 3
+          "decision_id": "bge_BGE_132_III_359",
+          "grade": 3,
+          "note": "Leading Art. 41 OR case (Arztvertrag, Sterilisationsfehler), 469 incoming citations"
+        },
+        {
+          "decision_id": "bge_BGE_131_III_12",
+          "grade": 2,
+          "note": "Art. 42-44 OR Schadenszins, 971 citations"
+        },
+        {
+          "decision_id": "bge_BGE_123_III_110",
+          "grade": 2,
+          "note": "Haftung des Motorfahrzeughalters, adäquater Kausalzusammenhang, 965 citations"
         }
       ]
     },
@@ -317,8 +339,19 @@
       ],
       "relevant": [
         {
+          "decision_id": "bge_BGE_130_III_591",
+          "grade": 3,
+          "note": "Art. 104 und 97 ff. OR; Verzugszins und Schadenszins, 929 citations"
+        },
+        {
+          "decision_id": "bge_BGE_127_III_357",
+          "grade": 2,
+          "note": "Haftung des Anwalts Art. 398 Abs. 2 OR, Sorgfaltspflicht, 409 citations"
+        },
+        {
           "decision_id": "bge_BGE_135_III_405",
-          "grade": 3
+          "grade": 1,
+          "note": "Art. 337c OR; entgangener Gewinn Art. 97 OR — mentions Art. 97 incidentally"
         }
       ]
     },
@@ -332,8 +365,19 @@
       ],
       "relevant": [
         {
+          "decision_id": "bge_BGE_143_III_297",
+          "grade": 3,
+          "note": "Art. 28/28a ZGB Persönlichkeitsverletzung durch Medienkampagne, 1134 citations"
+        },
+        {
           "decision_id": "bge_BGE_127_III_481",
-          "grade": 3
+          "grade": 2,
+          "note": "Art. 28a ZGB Feststellungsklage Persönlichkeitsverletzung, 489 citations"
+        },
+        {
+          "decision_id": "bge_BGE_125_III_70",
+          "grade": 2,
+          "note": "Mobbing, Persönlichkeitsverletzung Art. 328/49 OR, 1239 citations"
         }
       ]
     },
@@ -347,12 +391,9 @@
       ],
       "relevant": [
         {
-          "decision_id": "bge_BGE_142_III_433",
-          "grade": 3
-        },
-        {
           "decision_id": "bge_BGE_131_III_115",
-          "grade": 2
+          "grade": 3,
+          "note": "Leading Art. 56 OR Tierhalterhaftung case (Pferdeweide), top search result"
         },
         {
           "decision_id": "bge_BGE_110_II_136",
@@ -371,7 +412,18 @@
       "relevant": [
         {
           "decision_id": "bge_BGE_115_V_437",
-          "grade": 3
+          "grade": 3,
+          "note": "Leading Art. 336c OR case: Verlängerung Arbeitsverhältnis bei Erkrankung"
+        },
+        {
+          "decision_id": "bge_BGE_133_III_517",
+          "grade": 2,
+          "note": "Art. 336c OR Sperrfrist bei Verhinderung an Arbeitsleistung"
+        },
+        {
+          "decision_id": "bge_BGE_131_III_467",
+          "grade": 2,
+          "note": "Art. 335b und 336c OR Probezeit und Kündigung"
         }
       ]
     },
@@ -967,6 +1019,21 @@
         {
           "decision_id": "bge_BGE_147_I_268",
           "grade": 3
+        },
+        {
+          "decision_id": "bge_BGE_135_I_143",
+          "grade": 3,
+          "note": "Art. 8 EMRK Aufenthaltsbewilligung ausländische Mutter, 4944 citations"
+        },
+        {
+          "decision_id": "bge_BGE_130_II_281",
+          "grade": 2,
+          "note": "Art. 8 EMRK Familiennachzug, 4503 citations"
+        },
+        {
+          "decision_id": "bge_BGE_139_I_330",
+          "grade": 2,
+          "note": "Art. 8 EMRK Familieneinheit Asyl, 3272 citations"
         },
         {
           "decision_id": "bge_BGE_151_I_62",
