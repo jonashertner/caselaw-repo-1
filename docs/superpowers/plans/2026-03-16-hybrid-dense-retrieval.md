@@ -2,13 +2,26 @@
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Improve Swiss caselaw search from MRR 0.456 to MRR 0.60+ by fixing vector search integration, upgrading the cross-encoder, and expanding evaluation infrastructure.
+**Goal:** Improve Swiss caselaw search from MRR 0.456 to MRR 0.60+ by upgrading the cross-encoder, fixing vector search integration, and expanding evaluation infrastructure.
 
-**Architecture:** Incremental upgrade to existing FTS5+RRF pipeline. Phase 1 reactivates BGE-M3 vectors as a reranking signal (not candidate injection). Phase 2 swaps the cross-encoder from 33M to 278M+ params. Both gated by benchmark results. Phases 3-4 (fine-tuning, Haiku reranking) are conditional and planned separately if needed.
+**Architecture:** Incremental upgrade to existing FTS5+RRF pipeline. Start with the highest-leverage, lowest-risk change (cross-encoder swap), then add vector search if needed. Each change is independently deployable and reversible. Phases 3-4 (fine-tuning, Haiku reranking) are conditional and planned separately if needed.
 
 **Tech Stack:** Python 3, SQLite FTS5, sqlite-vec, SentenceTransformers, BGE-M3 (BAAI/bge-m3), bge-reranker-base (BAAI/bge-reranker-base), PyTorch (CPU), Anthropic API (Haiku for existing LLM expansion)
 
 **Spec:** `docs/superpowers/specs/2026-03-16-hybrid-dense-retrieval-design.md`
+
+---
+
+## Availability Rules
+
+The MCP server must remain available to users throughout all changes. These rules apply to every task:
+
+1. **Never restart all 4 workers simultaneously.** Use rolling restart: `for p in 8770 8771 8772 8773; do systemctl restart mcp-server@$p && sleep 5; done`
+2. **Never pip install without checking existing versions first.** Run `pip3 show <package>` before installing. Use `--no-deps` if the package is already installed and only needs an upgrade.
+3. **Never run CPU-intensive builds at default priority.** Use `nice -n 19 ionice -c3` for vector builds and model downloads to avoid impacting live search.
+4. **Benchmark runs use a separate Python process**, not the live workers. Benchmarks don't affect availability.
+5. **All config changes via env vars** — no code changes needed for rollback. Just update `.env.mcp` and rolling-restart.
+6. **Verify health after every restart:** `curl -s https://mcp.opencaselaw.ch/health | python3 -m json.tool`
 
 ---
 
@@ -20,7 +33,7 @@
 | `benchmarks/generate_golden_queries.py` | Create | Semi-automated golden set generation from citation graph |
 | `benchmarks/run_citation_eval.py` | Create | Automated citation-pair regression check (~5K pairs) |
 | `benchmarks/run_search_benchmark.py` | No change | Existing benchmark runner, used as-is |
-| `mcp_server.py` | Modify | Vector signal integration (mode A/B), cross-encoder config |
+| `mcp_server.py` | Modify | Vector signal integration (mode A/B) |
 | `search_stack/build_vectors.py` | No change | Existing vector DB builder, used as-is |
 | `.env.mcp` (VPS only) | Modify | Add new env vars for cross-encoder model, vector config |
 
@@ -51,7 +64,7 @@ ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && python3 benchm
   --output benchmarks/golden_candidates.json'
 ```
 
-Expected: JSON file with ~27 candidate queries from statute domains.
+Expected: JSON file with ~27 candidate queries from statute domains. This is a read-only operation — no impact on live service.
 
 - [ ] **Step 3: Review candidates and add to golden set**
 
@@ -114,6 +127,8 @@ git push origin main
 ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && git stash && git pull --rebase origin main && git stash pop'
 ```
 
+No restart needed — benchmark scripts don't affect running workers.
+
 - [ ] **Step 2: Run golden set baseline**
 
 ```bash
@@ -149,38 +164,201 @@ git commit -m "data: record baseline benchmarks before dense retrieval changes"
 
 ---
 
-## Chunk 2: Vector Search Integration (Phase 1)
+## Chunk 2: Cross-Encoder Upgrade (Highest Leverage, Lowest Risk)
 
-### Task 4: Rebuild vectors.db on VPS
+This goes first because it requires no build step, no new dependencies (sentence-transformers already installed), and is fully configurable via env vars. Zero impact on availability.
 
-- [ ] **Step 1: Install dependencies on VPS**
+### Task 4: Verify Dependencies and Test Cross-Encoder Models
 
-```bash
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'pip3 install sqlite-vec FlagEmbedding'
-```
-
-If FlagEmbedding fails, fall back to sentence-transformers:
+- [ ] **Step 1: Check existing packages on VPS**
 
 ```bash
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'pip3 install sqlite-vec sentence-transformers'
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'pip3 show sentence-transformers torch | grep -E "^(Name|Version)"'
 ```
 
-- [ ] **Step 2: Run vector build in tmux**
+Expected: sentence-transformers and torch already installed (used by existing cross-encoder).
+
+- [ ] **Step 2: Download bge-reranker-base model (background, low priority)**
+
+Download the model without affecting live service. This just downloads files to the HuggingFace cache:
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'nice -n 19 python3 -c "
+from sentence_transformers import CrossEncoder
+model = CrossEncoder(\"BAAI/bge-reranker-base\")
+scores = model.predict([(\"Swiss tort liability\", \"Art. 41 OR Schadenersatz\")])
+print(f\"bge-reranker-base loaded OK, test score: {scores[0]:.4f}\")
+del model
+"'
+```
+
+Expected: model downloads (~1GB), loads, returns a score. No impact on running workers.
+
+- [ ] **Step 3: Benchmark bge-reranker-base (separate process, no restart)**
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
+  export $(grep -v "^#" .env.mcp | xargs) && \
+  SWISS_CASELAW_CROSS_ENCODER=1 \
+  SWISS_CASELAW_CROSS_ENCODER_MODEL="BAAI/bge-reranker-base" \
+  SWISS_CASELAW_CROSS_ENCODER_TOP_N=20 \
+  python3 benchmarks/run_search_benchmark.py \
+    --db /mnt/HC_Volume_104655575/output/decisions.db'
+```
+
+This runs the benchmark in a separate Python process with the new model. Live workers are unaffected. Compare MRR, Hit@1, and latency against baseline.
+
+- [ ] **Step 4: If quality gain is large, also download and test bge-reranker-v2-m3**
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'nice -n 19 python3 -c "
+from sentence_transformers import CrossEncoder
+model = CrossEncoder(\"BAAI/bge-reranker-v2-m3\")
+scores = model.predict([(\"Swiss tort liability\", \"Art. 41 OR Schadenersatz\")])
+print(f\"bge-reranker-v2-m3 loaded OK, test score: {scores[0]:.4f}\")
+del model
+"'
+```
+
+Then benchmark:
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
+  export $(grep -v "^#" .env.mcp | xargs) && \
+  SWISS_CASELAW_CROSS_ENCODER=1 \
+  SWISS_CASELAW_CROSS_ENCODER_MODEL="BAAI/bge-reranker-v2-m3" \
+  SWISS_CASELAW_CROSS_ENCODER_TOP_N=15 \
+  python3 benchmarks/run_search_benchmark.py \
+    --db /mnt/HC_Volume_104655575/output/decisions.db'
+```
+
+Compare quality vs latency tradeoff against bge-reranker-base.
+
+### Task 5: Tune and Deploy Best Cross-Encoder
+
+- [ ] **Step 1: Sweep CROSS_ENCODER_WEIGHT for winning model**
+
+Test weights 1.0, 1.4, 2.0, 3.0 with the best model from Task 4. All benchmarks run in separate processes — no worker restart needed.
+
+- [ ] **Step 2: Check memory impact before deploying**
+
+Estimate per-worker memory with new model:
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'python3 -c "
+import psutil, os
+proc = psutil.Process(os.getpid())
+from sentence_transformers import CrossEncoder
+model = CrossEncoder(\"BAAI/bge-reranker-base\")  # or winning model
+mem_mb = proc.memory_info().rss / 1024 / 1024
+print(f\"Memory after model load: {mem_mb:.0f} MB\")
+# Check total system memory
+total = psutil.virtual_memory()
+print(f\"System: {total.used/1024/1024/1024:.1f}GB used / {total.total/1024/1024/1024:.1f}GB total\")
+del model
+"'
+```
+
+If the model uses >4GB per worker, consider reducing to 2 workers instead of 4.
+
+- [ ] **Step 3: Update .env.mcp on VPS with winning config**
+
+Add/update these lines in `/opt/caselaw/repo/.env.mcp`:
+```
+SWISS_CASELAW_CROSS_ENCODER=1
+SWISS_CASELAW_CROSS_ENCODER_MODEL=<winning model>
+SWISS_CASELAW_CROSS_ENCODER_TOP_N=<winning top_n>
+SWISS_CASELAW_CROSS_ENCODER_WEIGHT=<winning weight>
+```
+
+- [ ] **Step 4: Rolling restart workers (one at a time)**
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'for p in 8770 8771 8772 8773; do
+  echo "Restarting worker $p..."
+  systemctl restart mcp-server@$p
+  sleep 15  # wait for model to load before restarting next
+  echo "Worker $p restarted"
+done'
+```
+
+- [ ] **Step 5: Verify health after restart**
+
+```bash
+curl -s https://mcp.opencaselaw.ch/health | python3 -m json.tool
+```
+
+Expected: `{"status": "ok", "decisions": 979431}` (or similar count).
+
+- [ ] **Step 6: Run final benchmark to confirm production deployment matches test**
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
+  export $(grep -v "^#" .env.mcp | xargs) && \
+  python3 benchmarks/run_search_benchmark.py \
+    --db /mnt/HC_Volume_104655575/output/decisions.db \
+    --json-output benchmarks/benchmark_cross_encoder_upgrade.json'
+```
+
+- [ ] **Step 7: Decision gate — is vector search needed?**
+
+Compare MRR against baseline and 0.60 target:
+- **MRR >= 0.60**: Skip Chunk 3. Update memory, commit results, done.
+- **MRR < 0.60 but significant improvement**: Proceed to Chunk 3 (vector search) for additional gains.
+- **MRR regressed**: Rollback by removing `SWISS_CASELAW_CROSS_ENCODER=1` from .env.mcp and rolling-restart.
+
+- [ ] **Step 8: Commit results**
+
+```bash
+git add benchmarks/benchmark_cross_encoder_upgrade.json
+git commit -m "data: benchmark results after cross-encoder upgrade"
+```
+
+---
+
+## Chunk 3: Vector Search Integration (Conditional — Only If MRR < 0.60)
+
+### Task 6: Rebuild vectors.db on VPS
+
+- [ ] **Step 1: Check dependencies**
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'pip3 show sqlite-vec FlagEmbedding 2>&1 | grep -E "^(Name|Version)" || echo "MISSING"'
+```
+
+If missing, install at low priority:
+
+```bash
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'nice -n 19 pip3 install sqlite-vec FlagEmbedding --no-deps 2>&1 || nice -n 19 pip3 install sqlite-vec sentence-transformers --no-deps'
+```
+
+After installing, verify existing workers still respond:
+
+```bash
+curl -s https://mcp.opencaselaw.ch/health | python3 -m json.tool
+```
+
+- [ ] **Step 2: Run vector build in tmux (low priority, background)**
 
 ```bash
 ssh -i ~/.ssh/caselaw root@46.225.212.40
 tmux new -s vecbuild
 cd /opt/caselaw/repo
-python3 search_stack/build_vectors.py \
+nice -n 19 ionice -c3 python3 search_stack/build_vectors.py \
   --db /mnt/HC_Volume_104655575/output/decisions.db \
-  --output /mnt/HC_Volume_104655575/output/vectors.db \
+  --output /mnt/HC_Volume_104655575/output/vectors.db.tmp \
   --model BAAI/bge-m3 \
   --batch-size 32 \
   --text-field regeste \
   2>&1 | tee logs/build_vectors.log
+# After completion, atomic swap:
+mv /mnt/HC_Volume_104655575/output/vectors.db /mnt/HC_Volume_104655575/output/vectors.db.prev 2>/dev/null
+mv /mnt/HC_Volume_104655575/output/vectors.db.tmp /mnt/HC_Volume_104655575/output/vectors.db
 ```
 
-Expected: ~2-3 hours. Monitor with `tail -f logs/build_vectors.log`.
+Build to `.tmp` file, then atomic rename. Live workers see old (empty) vectors.db until swap. Expected: ~2-3 hours. Monitor with `tail -f logs/build_vectors.log` from another session.
+
+**Note**: `nice -n 19 ionice -c3` ensures the build doesn't compete with live search for CPU/IO.
 
 - [ ] **Step 3: Verify vectors.db**
 
@@ -198,7 +376,7 @@ conn.close()
 
 Expected: ~500K-900K vectors (decisions with regeste text).
 
-### Task 5: Implement Vector Signal Mode A (Reranking Only)
+### Task 7: Implement Vector Signal Mode A (Reranking Only)
 
 **Files:**
 - Modify: `mcp_server.py` (vector integration in `_search_fts5_inner`)
@@ -209,52 +387,36 @@ In `_search_fts5_inner`, find the existing vector search block (around lines 110
 
 Current behavior: vector results are injected as new candidates into `candidate_meta`.
 
-New behavior (mode A): only compute vector similarity for candidates already in `candidate_meta`. The key change: encode the query, run KNN on the full vector DB (top 200), then intersect results with existing pool IDs. Store cosine distances in `vector_scores` dict.
+New behavior (mode A): only compute vector similarity for candidates already in `candidate_meta`. Encode the query, run KNN on the full vector DB (top 200), then intersect results with existing pool IDs. Store cosine distances in `vector_scores` dict.
 
 The existing code at lines 2833-2836 already applies `vector_signal = VECTOR_SIGNAL_WEIGHT * max(0.0, 1.0 - vec_dist)` in `_rerank_rows`. Just ensure `vector_scores` is populated correctly.
 
 Check `build_vectors.py` for the exact sqlite-vec KNN query syntax before implementing.
 
-- [ ] **Step 2: Test vector signal activates**
-
-Restart workers and run a test search. Verify no errors in logs:
+- [ ] **Step 2: Benchmark mode A (separate process, no restart needed)**
 
 ```bash
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'systemctl restart mcp-server@8770 mcp-server@8771 mcp-server@8772 mcp-server@8773'
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
+  export $(grep -v "^#" .env.mcp | xargs) && \
+  python3 benchmarks/run_search_benchmark.py \
+    --db /mnt/HC_Volume_104655575/output/decisions.db \
+    --json-output benchmarks/benchmark_vector_modeA.json'
 ```
 
-- [ ] **Step 3: Commit mode A**
+Compare MRR against cross-encoder-only baseline. If regression, try lower `VECTOR_SIGNAL_WEIGHT`.
+
+- [ ] **Step 3: Sweep vector signal weight if needed**
+
+Test VECTOR_SIGNAL_WEIGHT values of 1.0, 2.0, 3.0, 5.0. All benchmarks run in separate processes.
+
+- [ ] **Step 4: Commit mode A**
 
 ```bash
 git add mcp_server.py
 git commit -m "feat: vector search mode A — similarity signal for pool reranking only"
 ```
 
-### Task 6: Benchmark Mode A and Tune Weights
-
-- [ ] **Step 1: Deploy and benchmark with default VECTOR_SIGNAL_WEIGHT=3.0**
-
-```bash
-git push origin main
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && git stash && git pull --rebase origin main && git stash pop && \
-  systemctl restart mcp-server@8770 mcp-server@8771 mcp-server@8772 mcp-server@8773'
-# Wait 30s for model load, then:
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
-  export $(grep -v "^#" .env.mcp | xargs) && \
-  python3 benchmarks/run_search_benchmark.py \
-    --db /mnt/HC_Volume_104655575/output/decisions.db \
-    --json-output benchmarks/benchmark_vector_modeA_w3.json'
-```
-
-Compare MRR against baseline. If regression, try lower weight.
-
-- [ ] **Step 2: Sweep weights if needed**
-
-Test VECTOR_SIGNAL_WEIGHT values of 1.0, 2.0, 3.0, 5.0. Deploy the weight that gives highest MRR without regressions.
-
-- [ ] **Step 3: Update default weight and commit if changed**
-
-### Task 7: Implement and Test Mode B (Gated Candidate Injection)
+### Task 8: Implement and Test Mode B (Gated Candidate Injection)
 
 - [ ] **Step 1: Add mode B alongside mode A**
 
@@ -262,7 +424,7 @@ Add env var `SWISS_CASELAW_VECTOR_MODE` with values `signal` (mode A, default) o
 
 For mode B: run open KNN search (top 50), inject up to 10 candidates NOT already in pool with low base RRF weight (0.3). Also add vector signal for all KNN matches that ARE in pool.
 
-- [ ] **Step 2: Benchmark mode B**
+- [ ] **Step 2: Benchmark mode B (separate process)**
 
 ```bash
 ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
@@ -274,103 +436,41 @@ ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
 
 Compare against mode A and baseline. Deploy the winner.
 
-- [ ] **Step 3: Commit and deploy winner**
+- [ ] **Step 3: Commit**
 
 ```bash
 git add mcp_server.py
 git commit -m "feat: add vector mode B (gated candidate injection, max 10)"
 ```
 
-Set `SWISS_CASELAW_VECTOR_MODE` in `.env.mcp` on VPS to the winning mode.
+- [ ] **Step 4: Deploy winning vector mode with rolling restart**
 
----
-
-## Chunk 3: Cross-Encoder Upgrade (Phase 2)
-
-### Task 8: Benchmark Cross-Encoder Candidates
-
-**Files:**
-- Modify: `mcp_server.py` (cross-encoder config is already configurable via env vars)
-
-- [ ] **Step 1: Verify CROSS_ENCODER_MODEL is configurable via env var**
-
-Check `mcp_server.py` line 136-138. `SWISS_CASELAW_CROSS_ENCODER_MODEL` env var should already exist. If so, no code change needed.
-
-- [ ] **Step 2: Install and test bge-reranker-base on VPS**
+Update `.env.mcp` with winning vector mode and weight, then:
 
 ```bash
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'python3 -c "
-from sentence_transformers import CrossEncoder
-model = CrossEncoder(\"BAAI/bge-reranker-base\")
-print(\"Loaded successfully\")
-scores = model.predict([(\"Swiss tort liability\", \"Art. 41 OR Schadenersatz\")])
-print(f\"Test score: {scores[0]:.4f}\")
-"'
+ssh -i ~/.ssh/caselaw root@46.225.212.40 'for p in 8770 8771 8772 8773; do
+  echo "Restarting worker $p..."
+  systemctl restart mcp-server@$p
+  sleep 15
+  echo "Worker $p restarted"
+done'
 ```
 
-Expected: model downloads (~1GB), loads, returns a score.
+Verify health: `curl -s https://mcp.opencaselaw.ch/health`
 
-- [ ] **Step 3: Benchmark bge-reranker-base**
+### Task 9: Final Benchmark and Decision Gate
 
-```bash
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
-  export $(grep -v "^#" .env.mcp | xargs) && \
-  SWISS_CASELAW_CROSS_ENCODER=1 \
-  SWISS_CASELAW_CROSS_ENCODER_MODEL="BAAI/bge-reranker-base" \
-  SWISS_CASELAW_CROSS_ENCODER_TOP_N=20 \
-  python3 benchmarks/run_search_benchmark.py \
-    --db /mnt/HC_Volume_104655575/output/decisions.db'
-```
-
-Compare MRR, Hit@1, and latency against baseline.
-
-- [ ] **Step 4: If quality gain is large, also test bge-reranker-v2-m3**
-
-```bash
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
-  export $(grep -v "^#" .env.mcp | xargs) && \
-  SWISS_CASELAW_CROSS_ENCODER=1 \
-  SWISS_CASELAW_CROSS_ENCODER_MODEL="BAAI/bge-reranker-v2-m3" \
-  SWISS_CASELAW_CROSS_ENCODER_TOP_N=15 \
-  python3 benchmarks/run_search_benchmark.py \
-    --db /mnt/HC_Volume_104655575/output/decisions.db'
-```
-
-Compare quality vs latency tradeoff against bge-reranker-base.
-
-### Task 9: Tune and Deploy Best Cross-Encoder
-
-- [ ] **Step 1: Sweep CROSS_ENCODER_WEIGHT for winning model**
-
-Test weights 1.0, 1.4, 2.0, 3.0 with the best-performing model from Task 8.
-
-- [ ] **Step 2: Update .env.mcp on VPS with winning config**
-
-Add/update these lines in `/opt/caselaw/repo/.env.mcp`:
-```
-SWISS_CASELAW_CROSS_ENCODER=1
-SWISS_CASELAW_CROSS_ENCODER_MODEL=<winning model>
-SWISS_CASELAW_CROSS_ENCODER_TOP_N=<winning top_n>
-SWISS_CASELAW_CROSS_ENCODER_WEIGHT=<winning weight>
-```
-
-- [ ] **Step 3: Restart workers and verify**
-
-```bash
-ssh -i ~/.ssh/caselaw root@46.225.212.40 'systemctl restart mcp-server@8770 mcp-server@8771 mcp-server@8772 mcp-server@8773'
-```
-
-- [ ] **Step 4: Run final benchmark with all Phase 1+2 improvements**
+- [ ] **Step 1: Run final benchmark with all improvements**
 
 ```bash
 ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
   export $(grep -v "^#" .env.mcp | xargs) && \
   python3 benchmarks/run_search_benchmark.py \
     --db /mnt/HC_Volume_104655575/output/decisions.db \
-    --json-output benchmarks/benchmark_dense_phase1_2.json'
+    --json-output benchmarks/benchmark_dense_final.json'
 ```
 
-Also run citation-pair eval to check for regressions:
+Also run citation-pair eval:
 
 ```bash
 ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
@@ -381,17 +481,17 @@ ssh -i ~/.ssh/caselaw root@46.225.212.40 'cd /opt/caselaw/repo && \
     -n 2000 -k 10'
 ```
 
-- [ ] **Step 5: Decision gate**
+- [ ] **Step 2: Decision gate**
 
 Compare final MRR against baseline and 0.60 target:
-- **MRR >= 0.60**: Done. Update memory, commit results, celebrate.
-- **MRR < 0.60**: Proceed to Phase 3 (fine-tuning). Write a separate plan for the training pipeline covering: training data extraction, LoRA fine-tuning script, vector rebuild, and Haiku reranking.
+- **MRR >= 0.60**: Done. Update memory, commit results.
+- **MRR < 0.60**: Write a separate plan for Phase 3 (LoRA fine-tuning) and Phase 4 (Haiku reranking).
 
-- [ ] **Step 6: Commit results and update memory**
+- [ ] **Step 3: Commit results and update memory**
 
 ```bash
-git add benchmarks/benchmark_dense_phase1_2.json
-git commit -m "data: benchmark results after vector search + cross-encoder upgrade"
+git add benchmarks/benchmark_dense_final.json
+git commit -m "data: final benchmark results after dense retrieval integration"
 ```
 
-Update `memory/search_improvement_progress.md` with new MRR numbers and deployment state.
+Update `memory/search_improvement_progress.md` with new MRR numbers, deployed models, and config.
