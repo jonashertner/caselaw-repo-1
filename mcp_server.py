@@ -446,9 +446,10 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "rechtshilfe": ("auslieferung", "extradition", "entraide"),
     "notwehr": ("legitime", "legittima", "notwehrexzess"),
     # Synonym pairs (same concept, different words)
-    "zahlungsverzug": ("zahlungsrueckstand", "mietzinsrueckstand", "verzug"),
-    "zahlungsrueckstand": ("zahlungsverzug", "mietzinsrueckstand", "verzug"),
-    "mietzinsrueckstand": ("zahlungsverzug", "zahlungsrueckstand"),
+    # Use FTS-normalized forms (u not ue, since FTS5 strips ü→u via NFKD)
+    "zahlungsverzug": ("zahlungsruckstand", "mietzinsruckstand", "verzug"),
+    "zahlungsruckstand": ("zahlungsverzug", "mietzinsruckstand", "verzug"),
+    "mietzinsruckstand": ("zahlungsverzug", "zahlungsruckstand"),
     "torto": ("danno", "genugtuung", "tort"),
     # Colloquial→legal concept bridges
     "hundebiss": ("tierhalterhaftung", "haftpflicht"),
@@ -3304,12 +3305,19 @@ def _extract_query_terms(
 
 def _get_query_expansions(term: str) -> list[str]:
     expansions = LEGAL_QUERY_EXPANSIONS.get(term, ())
+    if not expansions:
+        # FTS NFKD normalizes ü→u, ö→o, ä→a, but expansion keys use ue/oe/ae.
+        # Use prebuilt reverse lookup to match FTS-normalized terms to expansion keys.
+        expansions = _FTS_NORMALIZED_EXPANSIONS.get(term, ())
     out: list[str] = []
     for exp in expansions[:MAX_EXPANSIONS_PER_TERM]:
         normalized = _normalize_token_for_fts(exp)
         if normalized and normalized != term:
             out.append(normalized)
     return out
+
+
+_FTS_NORMALIZED_EXPANSIONS: dict[str, tuple[str, ...]] = {}  # populated after _normalize_token_for_fts definition
 
 
 def _normalize_token_for_fts(token: str) -> str:
@@ -3335,6 +3343,21 @@ def _normalize_token_for_match(token: str) -> str:
 
 def _collapse_umlaut_variants(token: str) -> str:
     return token.replace("ae", "a").replace("oe", "o").replace("ue", "u")
+
+
+# Prebuilt reverse lookup: FTS-normalized key → expansion values.
+# Handles two mismatches:
+# 1. Keys with Unicode (proprietà → proprieta via NFKD)
+# 2. Keys with digraphs (kuendigung → kundigung via umlaut collapse)
+# When a user types "Kündigung", FTS produces "kundigung", but the
+# expansion key is "kuendigung" — this lookup bridges that gap.
+for _key, _vals in LEGAL_QUERY_EXPANSIONS.items():
+    _collapsed = _collapse_umlaut_variants(_key)
+    if _collapsed != _key and _collapsed not in LEGAL_QUERY_EXPANSIONS:
+        _FTS_NORMALIZED_EXPANSIONS[_collapsed] = _vals
+    _normed = _normalize_token_for_fts(_key)
+    if _normed != _key and _normed not in LEGAL_QUERY_EXPANSIONS:
+        _FTS_NORMALIZED_EXPANSIONS.setdefault(_normed, _vals)
 
 
 def _normalize_text_for_match(text: str | None) -> str:
