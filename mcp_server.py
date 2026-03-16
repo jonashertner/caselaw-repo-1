@@ -929,14 +929,25 @@ def _search_fts5_inner(
         structured_parse = _parse_query_structured(fts_query)
         # Inject doctrine + synonyms as FTS strategy
         if structured_parse:
+            doctrine = (structured_parse.get("doctrine") or "").strip()
+            # Detect concept translation: doctrine terms not in original query
+            query_tokens = {t.lower() for t in re.findall(r'\w+', fts_query)}
+            doctrine_tokens = {t.lower() for t in re.findall(r'\w+', doctrine)}
+            is_concept_translation = bool(
+                doctrine_tokens and not doctrine_tokens.issubset(query_tokens)
+            )
+            # Higher weight for concept translations (Hundebiss → Tierhalterhaftung)
+            doctrine_weight = 1.5 if is_concept_translation else 1.1
+
             sp_parts: list[str] = []
-            if structured_parse.get("doctrine"):
-                doctrine = structured_parse["doctrine"]
-                words = doctrine.strip().split()
+            doctrine_fts: str = ""
+            if doctrine:
+                words = doctrine.split()
                 if len(words) >= 2:
-                    sp_parts.append(f'"{" ".join(words)}"')
+                    doctrine_fts = f'"{" ".join(words)}"'
                 elif words:
-                    sp_parts.append(words[0])
+                    doctrine_fts = words[0]
+                sp_parts.append(doctrine_fts)
             for syn in (structured_parse.get("synonyms") or [])[:4]:
                 words = syn.strip().split()
                 if len(words) >= 2:
@@ -948,7 +959,20 @@ def _search_fts5_inner(
                 strategies.append({
                     "name": "structured_doctrine",
                     "query": sp_query,
-                    "weight": 1.1,
+                    "weight": doctrine_weight,
+                })
+            # For concept translations, also add regeste-focused doctrine strategy
+            if is_concept_translation and doctrine_fts:
+                doctrine_norm = _normalize_token_for_fts(doctrine) if len(doctrine.split()) == 1 else doctrine_fts
+                strategies.insert(0, {
+                    "name": "doctrine_regeste",
+                    "query": f"regeste:{doctrine_norm}",
+                    "weight": 1.6,
+                })
+                strategies.insert(1, {
+                    "name": "doctrine_title",
+                    "query": f"title:{doctrine_norm}",
+                    "weight": 1.3,
                 })
     target_pool = _target_candidate_pool(
         limit=limit,
