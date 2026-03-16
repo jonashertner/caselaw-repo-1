@@ -2154,7 +2154,8 @@ def _search_statute_graph(
         refs = sorted(statute_refs)
         ph = ",".join("?" for _ in refs)
 
-        # Find decisions that cite these statutes
+        # Two-path retrieval: top by mentions + top by authority
+        # Path 1: Top 300 by statute mention count (catches frequently-discussing decisions)
         citing_rows = conn.execute(
             f"""
             SELECT decision_id, SUM(mention_count) AS total_mentions
@@ -2162,7 +2163,7 @@ def _search_statute_graph(
             WHERE statute_id IN ({ph})
             GROUP BY decision_id
             ORDER BY total_mentions DESC
-            LIMIT 500
+            LIMIT 300
             """,
             tuple(refs),
         ).fetchall()
@@ -2170,40 +2171,47 @@ def _search_statute_graph(
         if not citing_rows:
             return []
 
-        citing_ids = [r["decision_id"] for r in citing_rows]
         mention_by_id = {r["decision_id"]: float(r["total_mentions"]) for r in citing_rows}
+        all_ids: set[str] = {r["decision_id"] for r in citing_rows}
 
-        # Get incoming citation counts for these decisions (authority signal)
+        # Path 2: Top 200 by incoming citations among ALL statute-citing decisions
+        # This catches authoritative decisions that mention the statute only once
+        if has_citation_targets:
+            auth_top_rows = conn.execute(
+                f"""
+                SELECT ds.decision_id,
+                       SUM(ds.mention_count) AS total_mentions,
+                       COUNT(DISTINCT ct.source_decision_id) AS auth_count
+                FROM decision_statutes ds
+                JOIN citation_targets ct ON ct.target_decision_id = ds.decision_id
+                WHERE ds.statute_id IN ({ph})
+                GROUP BY ds.decision_id
+                ORDER BY auth_count DESC
+                LIMIT 200
+                """,
+                tuple(refs),
+            ).fetchall()
+            for r in auth_top_rows:
+                did = r["decision_id"]
+                if did not in mention_by_id:
+                    mention_by_id[did] = float(r["total_mentions"])
+                all_ids.add(did)
+
+        citing_ids = list(all_ids)
+
+        # Get incoming citation counts for ALL candidate decisions
         cid_ph = ",".join("?" for _ in citing_ids)
         if has_citation_targets:
-            has_confidence = _sqlite_has_column(conn, "citation_targets", "confidence_score")
-            if has_confidence:
-                auth_rows = conn.execute(
-                    f"""
-                    SELECT ct.target_decision_id AS decision_id,
-                           SUM(dc.mention_count * COALESCE(ct.confidence_score, 1.0)) AS n
-                    FROM citation_targets ct
-                    JOIN decision_citations dc
-                      ON dc.source_decision_id = ct.source_decision_id
-                     AND dc.target_ref = ct.target_ref
-                    WHERE ct.target_decision_id IN ({cid_ph})
-                    GROUP BY ct.target_decision_id
-                    """,
-                    tuple(citing_ids),
-                ).fetchall()
-            else:
-                auth_rows = conn.execute(
-                    f"""
-                    SELECT ct.target_decision_id AS decision_id, SUM(dc.mention_count) AS n
-                    FROM citation_targets ct
-                    JOIN decision_citations dc
-                      ON dc.source_decision_id = ct.source_decision_id
-                     AND dc.target_ref = ct.target_ref
-                    WHERE ct.target_decision_id IN ({cid_ph})
-                    GROUP BY ct.target_decision_id
-                    """,
-                    tuple(citing_ids),
-                ).fetchall()
+            auth_rows = conn.execute(
+                f"""
+                SELECT ct.target_decision_id AS decision_id,
+                       COUNT(DISTINCT ct.source_decision_id) AS n
+                FROM citation_targets ct
+                WHERE ct.target_decision_id IN ({cid_ph})
+                GROUP BY ct.target_decision_id
+                """,
+                tuple(citing_ids),
+            ).fetchall()
         else:
             auth_rows = []
 
