@@ -626,10 +626,27 @@ def _batch_fetch_statutes(decision_ids: list[str], limit_per: int = 5) -> dict[s
                 result[did] = []
             if len(result[did]) < limit_per:
                 # Convert "ART.41.OR" → "Art. 41 OR"
+                # Convert "ART.56.ABS.1.OR" → "Art. 56 Abs. 1 OR"
                 parts = statute_id.split(".")
                 if len(parts) >= 3 and parts[0] == "ART":
-                    formatted = f"Art. {parts[1]} {'.'.join(parts[2:])}"
-                    result[did].append(formatted)
+                    art_num = parts[1]
+                    rest = parts[2:]
+                    # Reassemble: handle ABS/LIT sub-parts
+                    law_parts = []
+                    i = 0
+                    while i < len(rest):
+                        if rest[i] == "ABS" and i + 1 < len(rest):
+                            law_parts.append(f"Abs. {rest[i+1]}")
+                            i += 2
+                        elif rest[i] == "LIT" and i + 1 < len(rest):
+                            law_parts.append(f"lit. {rest[i+1].lower()}")
+                            i += 2
+                        else:
+                            law_parts.append(rest[i])
+                            i += 1
+                    formatted = f"Art. {art_num} {' '.join(law_parts)}"
+                    if formatted not in result[did]:
+                        result[did].append(formatted)
         return result
     except Exception:
         return {}
