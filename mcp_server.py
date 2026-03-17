@@ -503,6 +503,139 @@ DECISION_INTENT_TERMS = {
     "gericht",
 }
 HIGH_COURTS = {"bger", "bge", "bvger", "bstger", "egmr"}
+
+# ── Court metadata for enriched output ──────────────────────
+COURT_DISPLAY_NAMES: dict[str, str] = {
+    "bger": "Bundesgericht", "bge": "Bundesgericht (BGE)",
+    "bge_historical": "Bundesgericht (historisch)",
+    "bvger": "Bundesverwaltungsgericht", "bstger": "Bundesstrafgericht",
+    "bpatger": "Bundespatentgericht", "bge_egmr": "EGMR (Schweiz)",
+    "ch_bundesrat": "Bundesrat", "ch_vb": "Bundesverwaltung",
+    "finma": "FINMA", "finma_versicherungsrecht": "FINMA Versicherungsrecht",
+    "weko": "WEKO", "edoeb": "EDÖB", "ubi": "UBI",
+    "elcom": "ElCom", "postcom": "PostCom", "comcom": "ComCom",
+    "ag_gerichte": "AG Gerichte", "ag_verwaltungsgericht": "AG Verwaltungsgericht",
+    "ai_gerichte": "AI Gerichte", "ar_gerichte": "AR Gerichte",
+    "be_verwaltungsgericht": "BE Verwaltungsgericht",
+    "be_zivilstraf": "BE Obergericht", "be_steuerrekurs": "BE Steuerrekursgericht",
+    "bl_gerichte": "BL Gerichte", "bs_appellationsgericht": "BS Appellationsgericht",
+    "fr_gerichte": "FR Kantonsgericht", "ge_gerichte": "GE Cour de justice",
+    "gl_gerichte": "GL Gerichte", "gr_gerichte": "GR Gerichte",
+    "ju_gerichte": "JU Tribunal cantonal", "lu_gerichte": "LU Gerichte",
+    "ne_gerichte": "NE Tribunal cantonal", "nw_gerichte": "NW Gerichte",
+    "ow_gerichte": "OW Obergericht", "sg_gerichte": "SG Gerichte",
+    "sg_publikationen": "SG Gerichte", "sh_gerichte": "SH Obergericht",
+    "so_gerichte": "SO Obergericht", "sz_gerichte": "SZ Gerichte",
+    "tg_gerichte": "TG Obergericht", "ti_gerichte": "TI Tribunale d'appello",
+    "ur_gerichte": "UR Obergericht", "vd_gerichte": "VD Tribunal cantonal",
+    "vd_findinfo": "VD Tribunal cantonal", "vd_omni": "VD Tribunal cantonal",
+    "vs_gerichte": "VS Kantonsgericht", "zg_obergericht": "ZG Obergericht",
+    "zg_verwaltungsgericht": "ZG Verwaltungsgericht",
+    "zh_obergericht": "ZH Obergericht", "zh_verwaltungsgericht": "ZH Verwaltungsgericht",
+    "zh_sozialversicherungsgericht": "ZH Sozialversicherungsgericht",
+    "zh_steuerrekursgericht": "ZH Steuerrekursgericht",
+    "zh_baurekursgericht": "ZH Baurekursgericht",
+}
+
+COURT_LEVELS: dict[str, str] = {
+    "bger": "federal_supreme", "bge": "federal_supreme",
+    "bge_historical": "federal_supreme",
+    "bvger": "federal_appellate", "bstger": "federal_appellate",
+    "bpatger": "federal_appellate", "bge_egmr": "international",
+    "ch_bundesrat": "federal_executive", "ch_vb": "federal_executive",
+    "finma": "regulatory", "finma_versicherungsrecht": "regulatory",
+    "weko": "regulatory", "edoeb": "regulatory", "ubi": "regulatory",
+    "elcom": "regulatory", "postcom": "regulatory", "comcom": "regulatory",
+}
+# Default: cantonal courts → "cantonal"
+
+# Statute abbreviation → legal area mapping
+_STATUTE_TO_AREA: dict[str, str] = {
+    "OR": "civil", "ZGB": "civil", "SchKG": "civil", "ZPO": "civil",
+    "StGB": "criminal", "StPO": "criminal", "JStG": "criminal",
+    "BV": "public", "BGG": "public", "VwVG": "public",
+    "AIG": "public", "AsylG": "public", "BüG": "public",
+    "EMRK": "public", "IRSG": "criminal",
+    "UVG": "social_insurance", "KVG": "social_insurance",
+    "AHVG": "social_insurance", "IVG": "social_insurance",
+    "AVIG": "social_insurance", "BVG": "social_insurance",
+    "SVG": "administrative", "RPG": "administrative",
+    "USG": "administrative", "LFG": "administrative",
+    "DBG": "tax", "StHG": "tax", "MWSTG": "tax",
+}
+
+# Court → default legal area (when no statutes available)
+_COURT_TO_AREA: dict[str, str] = {
+    "bstger": "criminal", "bvger": "administrative",
+}
+
+LEADING_CASE_THRESHOLD_FEDERAL = 200
+LEADING_CASE_THRESHOLD_CANTONAL = 30
+
+
+def _get_court_display_name(court: str) -> str:
+    return COURT_DISPLAY_NAMES.get(court, court.replace("_", " ").title())
+
+
+def _get_court_level(court: str) -> str:
+    return COURT_LEVELS.get(court, "cantonal")
+
+
+def _derive_legal_area(statutes: list[str], court: str) -> str:
+    """Derive legal area from statute abbreviations and court code."""
+    area_votes: dict[str, int] = {}
+    for ref in statutes:
+        # Extract law abbreviation from "Art. 41 OR" → "OR"
+        parts = ref.split()
+        if parts:
+            abbr = parts[-1]
+            area = _STATUTE_TO_AREA.get(abbr)
+            if area:
+                area_votes[area] = area_votes.get(area, 0) + 1
+    if area_votes:
+        return max(area_votes, key=area_votes.get)
+    return _COURT_TO_AREA.get(court, "")
+
+
+def _batch_fetch_statutes(decision_ids: list[str], limit_per: int = 5) -> dict[str, list[str]]:
+    """Fetch top statute references for a batch of decisions from reference graph.
+
+    Returns dict: decision_id → ["Art. 41 OR", "Art. 42 OR", ...] (top N by mention count).
+    """
+    conn = _get_graph_conn()
+    if conn is None:
+        return {}
+
+    try:
+        if not _sqlite_has_table(conn, "decision_statutes"):
+            return {}
+        ph = ",".join("?" for _ in decision_ids)
+        rows = conn.execute(
+            f"""
+            SELECT decision_id, statute_id, mention_count
+            FROM decision_statutes
+            WHERE decision_id IN ({ph})
+            ORDER BY decision_id, mention_count DESC
+            """,
+            tuple(decision_ids),
+        ).fetchall()
+
+        result: dict[str, list[str]] = {}
+        for did, statute_id, _count in rows:
+            if did not in result:
+                result[did] = []
+            if len(result[did]) < limit_per:
+                # Convert "ART.41.OR" → "Art. 41 OR"
+                parts = statute_id.split(".")
+                if len(parts) >= 3 and parts[0] == "ART":
+                    formatted = f"Art. {parts[1]} {'.'.join(parts[2:])}"
+                    result[did].append(formatted)
+        return result
+    except Exception:
+        return {}
+    finally:
+        conn.close()
+
 ACCELERATED_PROCEDURE_TERMS = {
     "beschleunigt",
     "beschleunigtes",
@@ -2903,8 +3036,13 @@ def _rerank_rows(
         reverse = sort == "date_desc"
         scored.sort(key=lambda x: (x[3]["decision_date"] or ""), reverse=reverse)
 
+    # ── Enrich results with graph + metadata ──
+    result_slice = scored[offset:offset + limit]
+    result_ids = [row["decision_id"] for _, _, _, row in result_slice]
+    statutes_by_id = _batch_fetch_statutes(result_ids, limit_per=8)
+
     results: list[dict] = []
-    for final_score, _bm25, _idx, row in scored[offset:offset + limit]:
+    for final_score, _bm25, _idx, row in result_slice:
         full_text = _row_get(row, "full_text_raw")
         best_snippet = _select_best_passage_snippet(
             full_text,
@@ -2913,9 +3051,27 @@ def _rerank_rows(
             raw_query=raw_query,
             fallback=row["snippet"],
         )
-        results.append({
-            "decision_id": row["decision_id"],
-            "court": row["court"],
+        did = row["decision_id"]
+        court = row["court"] or ""
+
+        # Graph signals
+        graph = graph_signals.get(did, {})
+        incoming = int(graph.get("incoming_citations", 0))
+        in_pool = int(graph.get("in_pool_citations", 0))
+
+        # Statute references from graph
+        statutes = statutes_by_id.get(did, [])
+
+        # Court metadata
+        court_level = _get_court_level(court)
+        is_federal = court_level.startswith("federal")
+        threshold = LEADING_CASE_THRESHOLD_FEDERAL if is_federal else LEADING_CASE_THRESHOLD_CANTONAL
+
+        result = {
+            "decision_id": did,
+            "court": court,
+            "court_name": _get_court_display_name(court),
+            "court_level": court_level,
             "canton": row["canton"],
             "chamber": row["chamber"],
             "docket_number": row["docket_number"],
@@ -2927,7 +3083,20 @@ def _rerank_rows(
             "source_url": row["source_url"],
             "pdf_url": row["pdf_url"],
             "relevance_score": round(final_score, 4),
-        })
+        }
+        # Enrichment fields (only included when non-empty)
+        if statutes:
+            result["statutes"] = statutes
+        legal_area = _derive_legal_area(statutes, court)
+        if legal_area:
+            result["legal_area"] = legal_area
+        if incoming > 0:
+            result["citation_count"] = incoming
+        if in_pool > 0:
+            result["cited_by_results"] = in_pool
+        if incoming >= threshold:
+            result["is_leading_case"] = True
+        results.append(result)
     return results
 
 
@@ -7644,7 +7813,12 @@ def _list_tools() -> list[Tool]:
                 "Filter by court, canton, language, date range, chamber, and decision type. "
                 "Also handles docket number lookup (e.g., 6B_1234/2025) and "
                 "column-scoped search (regeste:keyword, full_text:keyword). "
-                "Returns BM25-ranked results with snippets. "
+                "Returns relevance-ranked results enriched with:\n"
+                "- court_name (human-readable), court_level, legal_area\n"
+                "- statutes: relevant statute articles (e.g. Art. 41 OR)\n"
+                "- citation_count: how many decisions cite this one\n"
+                "- cited_by_results: how many other results cite this one\n"
+                "- is_leading_case: true for highly-cited authoritative decisions\n"
                 "Use offset for pagination through large result sets.\n\n"
                 "To find the MOST RECENT decisions: omit the query (or set it empty) "
                 "and use sort='date_desc' with optional court/canton filters. "
