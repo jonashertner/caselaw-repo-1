@@ -1692,6 +1692,852 @@
           "note": "Cantonal BE: Art. 14 LPG Passivlegitimation Veräusserung Pachtobjekt"
         }
       ]
+    },
+    {
+      "id": "q071",
+      "query": "bail à loyer résiliation abusive",
+      "tags": [
+        "fr",
+        "tenancy",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_120_II_31",
+          "grade": 3,
+          "note": "Art. 271/257d OR résiliation Treu und Glauben (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_139_III_7",
+          "grade": 2,
+          "note": "Art. 266m/266n OR Kündigung Familienwohnung (fr)"
+        },
+        {
+          "decision_id": "ge_gerichte_4A_345_2007",
+          "grade": 2,
+          "note": "Cantonal GE: congé contraire bonne foi bail"
+        },
+        {
+          "decision_id": "vd_findinfo_HC___2018___729",
+          "grade": 1,
+          "note": "Cantonal VD: résiliation abusive bail à loyer"
+        }
+      ]
+    },
+    {
+      "id": "q072",
+      "query": "responsabilité médicale faute chirurgien",
+      "tags": [
+        "fr",
+        "liability",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_105_II_284",
+          "grade": 3,
+          "note": "Responsabilité chirurgien, Aufklärungspflicht (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_133_III_121",
+          "grade": 3,
+          "note": "Haftung Arzt als Beauftragter (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_108_II_59",
+          "grade": 2,
+          "note": "Haftung Chirurg ohne Aufklärung (fr)"
+        },
+        {
+          "decision_id": "ge_gerichte_C_5228_2005",
+          "grade": 1,
+          "note": "Cantonal GE: responsabilité contractuelle chirurgien"
+        }
+      ]
+    },
+    {
+      "id": "q073",
+      "query": "droit de visite enfant divorce",
+      "tags": [
+        "fr",
+        "family",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_111_II_405",
+          "grade": 3,
+          "note": "Besuchsrecht geschiedener Elternteil Art. 156/273 ZGB"
+        },
+        {
+          "decision_id": "bge_BGE_120_II_177",
+          "grade": 2,
+          "note": "Abänderung Scheidungsurteil Rechtsmissbrauch (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_95_II_385",
+          "grade": 2,
+          "note": "Besuchsrecht Abänderung Art. 156/157 ZGB (fr)"
+        }
+      ]
+    },
+    {
+      "id": "q074",
+      "query": "permis de construire voisin opposition",
+      "tags": [
+        "fr",
+        "construction",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "vd_omni_AC.2017.0250",
+          "grade": 3,
+          "note": "Cantonal VD: opposition voisin permis construire"
+        },
+        {
+          "decision_id": "vd_omni_AC.2016.0147",
+          "grade": 2,
+          "note": "Cantonal VD: recours voisin décision municipale"
+        },
+        {
+          "decision_id": "bger_1C_111_2016",
+          "grade": 2,
+          "note": "BGer: permis de construire recours (fr)"
+        }
+      ]
+    },
+    {
+      "id": "q075",
+      "query": "recours tardif délai restitution",
+      "tags": [
+        "fr",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "vd_omni_GE.2015.0137",
+          "grade": 3,
+          "note": "Cantonal VD: recours tardif irrecevable restitution"
+        },
+        {
+          "decision_id": "vd_omni_AC.2017.0086",
+          "grade": 2,
+          "note": "Cantonal VD: recours tardif restitution délai"
+        },
+        {
+          "decision_id": "bger_6B_1079_2021",
+          "grade": 1,
+          "note": "BGer: recours tardif (fr)"
+        }
+      ]
+    },
+    {
+      "id": "q076",
+      "query": "discrimination raciale employeur licenciement",
+      "tags": [
+        "fr",
+        "employment",
+        "criminal"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_143_IV_308",
+          "grade": 3,
+          "note": "Rassendiskriminierung Art. 261bis StGB (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_131_IV_78",
+          "grade": 2,
+          "note": "Art. 261bis StGB Opferhilfe (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_140_IV_102",
+          "grade": 2,
+          "note": "Rassendiskriminierung Ideologien Art. 261bis StGB"
+        }
+      ]
+    },
+    {
+      "id": "q077",
+      "query": "assurance-accidents rechute causalité",
+      "tags": [
+        "fr",
+        "insurance"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bger_8C_335_2018",
+          "grade": 3,
+          "note": "BGer: assurance-accidents rechute causalité (fr)"
+        },
+        {
+          "decision_id": "bger_8C_807_2019",
+          "grade": 2,
+          "note": "BGer: assurance-accidents rechute causalité (fr)"
+        },
+        {
+          "decision_id": "bger_8C_450_2019",
+          "grade": 2,
+          "note": "BGer: assurance-accidents rechute (fr)"
+        },
+        {
+          "decision_id": "bger_8C_571_2016",
+          "grade": 1,
+          "note": "BGer: assurance-accidents causalité (fr)"
+        }
+      ]
+    },
+    {
+      "id": "q078",
+      "query": "droit d'asile renvoi Erythrée",
+      "tags": [
+        "fr",
+        "asylum"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bvger_E-1633_2015",
+          "grade": 3,
+          "note": "BVGer: asile non-entrée renvoi (fr)"
+        },
+        {
+          "decision_id": "bvger_E-6266_2012",
+          "grade": 2,
+          "note": "BVGer: asile nouvelle procédure renvoi (fr)"
+        },
+        {
+          "decision_id": "bvger_E-5237_2013",
+          "grade": 2,
+          "note": "BVGer: asile non-entrée renvoi (fr)"
+        }
+      ]
+    },
+    {
+      "id": "q079",
+      "query": "licenziamento abusivo contratto lavoro",
+      "tags": [
+        "it",
+        "employment"
+      ],
+      "relevant": [
+        {
+          "decision_id": "ti_gerichte_12.2005.75",
+          "grade": 3,
+          "note": "Cantonal TI: licenziamento abusivo indennità"
+        },
+        {
+          "decision_id": "ti_gerichte_12.2005.164",
+          "grade": 3,
+          "note": "Cantonal TI: riduzione termine disdetta licenziamento"
+        },
+        {
+          "decision_id": "ti_gerichte_12.2005.74",
+          "grade": 2,
+          "note": "Cantonal TI: licenziamento abusivo prove testimoniali"
+        },
+        {
+          "decision_id": "bger_4A_2_2008",
+          "grade": 1,
+          "note": "BGer: licenziamento abusivo (it)"
+        }
+      ]
+    },
+    {
+      "id": "q080",
+      "query": "diritto di visita minore affidamento",
+      "tags": [
+        "it",
+        "family"
+      ],
+      "relevant": [
+        {
+          "decision_id": "ti_gerichte_9.2014.39",
+          "grade": 3,
+          "note": "Cantonal TI: affidamento minore nonni paterni"
+        },
+        {
+          "decision_id": "ti_gerichte_9.2022.152",
+          "grade": 2,
+          "note": "Cantonal TI: trasferimento domicilio figlio autorità parentale"
+        },
+        {
+          "decision_id": "ti_gerichte_9.2015.58",
+          "grade": 2,
+          "note": "Cantonal TI: custodia parentale affidamento minore"
+        },
+        {
+          "decision_id": "bger_5A_634_2017",
+          "grade": 1,
+          "note": "BGer: trasferimento minore estero (it)"
+        }
+      ]
+    },
+    {
+      "id": "q081",
+      "query": "ricorso tardivo restituzione termine",
+      "tags": [
+        "it",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "ti_gerichte_38.2018.25",
+          "grade": 3,
+          "note": "Cantonal TI: ricorso tardivo restituzione termine"
+        },
+        {
+          "decision_id": "ti_gerichte_32.2017.183",
+          "grade": 2,
+          "note": "Cantonal TI: ricorso irricevibile tardivo"
+        },
+        {
+          "decision_id": "ti_gerichte_32.2020.62",
+          "grade": 2,
+          "note": "Cantonal TI: ricorso tardivo restituzione in intero"
+        }
+      ]
+    },
+    {
+      "id": "q082",
+      "query": "contratto di locazione disdetta",
+      "tags": [
+        "it",
+        "tenancy"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_121_III_260",
+          "grade": 3,
+          "note": "Resolutiv bedingter Mietvertrag Anfechtung Kündigung (it)"
+        },
+        {
+          "decision_id": "bger_4C.432_2006",
+          "grade": 2,
+          "note": "BGer: contratto locazione disdetta (it)"
+        },
+        {
+          "decision_id": "bger_4A_155_2009",
+          "grade": 2,
+          "note": "BGer: contratto locazione (it)"
+        }
+      ]
+    },
+    {
+      "id": "q083",
+      "query": "responsabilità medica danno paziente",
+      "tags": [
+        "it",
+        "liability"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_108_II_422",
+          "grade": 3,
+          "note": "Haftung Arzt Art. 47 OR Genugtuung (it)"
+        },
+        {
+          "decision_id": "bge_BGE_113_Ib_420",
+          "grade": 2,
+          "note": "Staatshaftung spitalärztliche Tätigkeit"
+        },
+        {
+          "decision_id": "bge_BGE_117_Ib_197",
+          "grade": 2,
+          "note": "Aufklärungspflicht Arzt Staatshaftung"
+        },
+        {
+          "decision_id": "bger_4A_403_2007",
+          "grade": 1,
+          "note": "BGer: responsabilità medico torto morale (it)"
+        }
+      ]
+    },
+    {
+      "id": "q084",
+      "query": "Arbeitsvertrag Kündigung missbräuchlich",
+      "tags": [
+        "de",
+        "employment",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_125_III_277",
+          "grade": 3,
+          "note": "Missbräuchliche Kündigung Streikrecht Art. 336 OR"
+        },
+        {
+          "decision_id": "bge_BGE_132_III_115",
+          "grade": 3,
+          "note": "Art. 336/328 OR missbräuchliche Kündigung Fürsorgepflicht"
+        },
+        {
+          "decision_id": "bge_BGE_123_III_246",
+          "grade": 2,
+          "note": "Änderungskündigung missbräuchlich Art. 336 OR"
+        },
+        {
+          "decision_id": "bge_BGE_125_III_70",
+          "grade": 2,
+          "note": "Mobbing missbräuchliche Kündigung Art. 336/328/49 OR"
+        }
+      ]
+    },
+    {
+      "id": "q085",
+      "query": "Grundstückkauf Gewährleistung Sachmangel",
+      "tags": [
+        "de",
+        "nl",
+        "liability"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_107_II_161",
+          "grade": 3,
+          "note": "Grundstückkauf Wegbedingung Gewährleistung Sachmängel"
+        },
+        {
+          "decision_id": "bge_BGE_88_II_410",
+          "grade": 3,
+          "note": "Grundstückkauf Täuschung Gewährleistung"
+        },
+        {
+          "decision_id": "bge_BGE_131_III_145",
+          "grade": 2,
+          "note": "Art. 200/201/203 OR Grundstückkauf Gewährleistung (it)"
+        },
+        {
+          "decision_id": "bge_BGE_104_II_265",
+          "grade": 2,
+          "note": "Grundstückkauf Gewährleistung Freizeichnung (fr)"
+        }
+      ]
+    },
+    {
+      "id": "q086",
+      "query": "Geldwäscherei Sorgfaltspflicht Finanzintermediär",
+      "tags": [
+        "de",
+        "criminal"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bvger_B-6815_2013",
+          "grade": 3,
+          "note": "BVGer: Geldwäscherei Finanzintermediär"
+        },
+        {
+          "decision_id": "bger_2C_422_2018",
+          "grade": 2,
+          "note": "BGer: Geldwäscherei Sorgfaltspflicht"
+        },
+        {
+          "decision_id": "bger_6B_731_2021",
+          "grade": 2,
+          "note": "BGer: Geldwäscherei"
+        },
+        {
+          "decision_id": "zh_obergericht_UE140091",
+          "grade": 1,
+          "note": "Cantonal ZH: Geldwäscherei"
+        }
+      ]
+    },
+    {
+      "id": "q087",
+      "query": "sexuelle Handlungen Kinder Strafrecht",
+      "tags": [
+        "de",
+        "criminal"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_146_IV_153",
+          "grade": 3,
+          "note": "Art. 187/189 StGB sexuelle Freiheit Kinder"
+        },
+        {
+          "decision_id": "bge_BGE_124_IV_154",
+          "grade": 3,
+          "note": "Art. 187/189/190 StGB sexueller Kindsmissbrauch"
+        },
+        {
+          "decision_id": "bge_BGE_125_IV_58",
+          "grade": 2,
+          "note": "Art. 187/189 StGB sexuelle Handlungen Kinder Konkurrenz"
+        },
+        {
+          "decision_id": "be_zivilstraf_SK_2009_64",
+          "grade": 1,
+          "note": "Cantonal BE: sexuelle Handlungen Kinder Leitentscheid"
+        }
+      ]
+    },
+    {
+      "id": "q088",
+      "query": "Raub Gewalt Drohung",
+      "tags": [
+        "de",
+        "criminal",
+        "short"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_113_IV_63",
+          "grade": 3,
+          "note": "Art. 139/185 StGB Raub vs Geiselnahme"
+        },
+        {
+          "decision_id": "bge_BGE_133_IV_297",
+          "grade": 2,
+          "note": "Art. 140/185 StGB Raub Geiselnahme Konkurrenz (fr)"
+        },
+        {
+          "decision_id": "lu_gerichte_21_03_136",
+          "grade": 2,
+          "note": "Cantonal LU: Art. 140/185 StGB Raub Geiselnahme"
+        },
+        {
+          "decision_id": "so_gerichte_ZZ.1992.18",
+          "grade": 1,
+          "note": "Cantonal SO: Raub Geiselnahme Freiheitsberaubung"
+        }
+      ]
+    },
+    {
+      "id": "q089",
+      "query": "Führerausweisentzug Geschwindigkeitsüberschreitung",
+      "tags": [
+        "de",
+        "criminal"
+      ],
+      "relevant": [
+        {
+          "decision_id": "lu_gerichte_RRE_Nr._2364",
+          "grade": 3,
+          "note": "Cantonal LU: Führerausweisentzug Geschwindigkeit Art. 16 SVG"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2023.00452",
+          "grade": 3,
+          "note": "Cantonal ZH: Führerausweisentzug Geschwindigkeit"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2020.00717",
+          "grade": 2,
+          "note": "Cantonal ZH: Geschwindigkeit schwere Widerhandlung"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2017.00383",
+          "grade": 1,
+          "note": "Cantonal ZH: mittelschwere Widerhandlung Geschwindigkeit"
+        }
+      ]
+    },
+    {
+      "id": "q090",
+      "query": "Nachbar macht Lärm was tun",
+      "tags": [
+        "de",
+        "concept-match",
+        "nl",
+        "property"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_120_II_15",
+          "grade": 3,
+          "note": "Art. 684 ZGB übermässige Einwirkung Dancing Lärm"
+        },
+        {
+          "decision_id": "bge_BGE_81_II_439",
+          "grade": 2,
+          "note": "Übermässige Immissionen Nachbargrundstücke"
+        },
+        {
+          "decision_id": "ow_gerichte_OGVE 2018_19 Nr. 3",
+          "grade": 2,
+          "note": "Cantonal OW: Art. 641/684 ZGB Schutznormen"
+        },
+        {
+          "decision_id": "so_gerichte_ZZ.1991.4",
+          "grade": 1,
+          "note": "Cantonal SO: Nachbarrecht Immissionen Tierheim"
+        }
+      ]
+    },
+    {
+      "id": "q091",
+      "query": "Chef hat mich gemobbt Entschädigung",
+      "tags": [
+        "de",
+        "concept-match",
+        "nl",
+        "employment"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_125_III_70",
+          "grade": 3,
+          "note": "Mobbing Persönlichkeitsverletzung Genugtuung Art. 328/49 OR"
+        },
+        {
+          "decision_id": "bge_BGE_132_III_115",
+          "grade": 2,
+          "note": "Missbräuchliche Kündigung Fürsorgepflicht Art. 336/328 OR"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__PB.2004.00085",
+          "grade": 2,
+          "note": "Cantonal ZH: Mobbing Diskriminierung Arbeitsplatz"
+        }
+      ]
+    },
+    {
+      "id": "q092",
+      "query": "Vermieter will nicht reparieren",
+      "tags": [
+        "de",
+        "concept-match",
+        "nl",
+        "tenancy"
+      ],
+      "relevant": [
+        {
+          "decision_id": "sg_gerichte_BZ.2006.44",
+          "grade": 3,
+          "note": "Cantonal SG: Art. 259a Mängel Mietsache Mietzinsreduktion"
+        },
+        {
+          "decision_id": "sg_gerichte_VZ.2004.35",
+          "grade": 2,
+          "note": "Cantonal SG: Art. 257g OR Beweislast Mängel"
+        },
+        {
+          "decision_id": "bger_4C.11_2006",
+          "grade": 2,
+          "note": "BGer: Mietvertrag Mängel Mietzinsreduktion"
+        }
+      ]
+    },
+    {
+      "id": "q093",
+      "query": "Familiennachzug vorläufige Aufnahme Härtefall",
+      "tags": [
+        "de",
+        "asylum",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_126_II_335",
+          "grade": 3,
+          "note": "Art. 8 EMRK Familiennachzug Asyl vorläufige Aufnahme"
+        },
+        {
+          "decision_id": "ag_verwaltungsgericht_WBE.2012.1036",
+          "grade": 2,
+          "note": "Cantonal AG: Aufenthaltsbewilligung vorläufig Aufgenommene Härtefall"
+        },
+        {
+          "decision_id": "sg_publikationen_B 2018_218",
+          "grade": 1,
+          "note": "Cantonal SG: Art. 84 Abs. 5 AuG Härtefall"
+        }
+      ]
+    },
+    {
+      "id": "q094",
+      "query": "Art. 261 OR Veräusserung Mietobjekt Rechte Mieter",
+      "tags": [
+        "de",
+        "statute",
+        "tenancy"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_127_III_273",
+          "grade": 3,
+          "note": "Art. 257e/261 OR Sicherheitsleistung Übergang Mietverhältnis"
+        },
+        {
+          "decision_id": "bge_BGE_125_III_123",
+          "grade": 2,
+          "note": "Art. 261 OR Doppelaufruf Mietverträge"
+        },
+        {
+          "decision_id": "bl_gerichte_2007_16",
+          "grade": 1,
+          "note": "Cantonal BL: Rückforderung Nebenkosten neue Vermieterschaft"
+        }
+      ]
+    },
+    {
+      "id": "q095",
+      "query": "Art. 725 OR Kapitalverlust Überschuldung Pflichten Verwaltungsrat",
+      "tags": [
+        "de",
+        "statute"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bger_4A_236_2015",
+          "grade": 3,
+          "note": "BGer: Art. 725 OR Überschuldung Verwaltungsrat"
+        },
+        {
+          "decision_id": "bger_4A_496_2010",
+          "grade": 2,
+          "note": "BGer: aktienrechtliche Verantwortlichkeit"
+        },
+        {
+          "decision_id": "zh_obergericht_NF040011",
+          "grade": 1,
+          "note": "Cantonal ZH: Verantwortlichkeit Verwaltungsrat"
+        }
+      ]
+    },
+    {
+      "id": "q096",
+      "query": "Einbürgerung Voraussetzungen Integration",
+      "tags": [
+        "de",
+        "nl",
+        "constitutional"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_138_I_242",
+          "grade": 3,
+          "note": "Einbürgerung Bürgerversammlung Ermessensspielraum"
+        },
+        {
+          "decision_id": "bge_BGE_137_I_235",
+          "grade": 3,
+          "note": "Art. 14/50 BüG Einbürgerung Gemeindeautonomie"
+        },
+        {
+          "decision_id": "bge_BGE_135_II_161",
+          "grade": 2,
+          "note": "Art. 27/41 BüG Nichtigerklärung Einbürgerung"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2024.00703",
+          "grade": 1,
+          "note": "Cantonal ZH: ordentliche Einbürgerung Integration"
+        }
+      ]
+    },
+    {
+      "id": "q097",
+      "query": "Öffentlichkeitsprinzip Zugang Dokumente Verwaltung",
+      "tags": [
+        "de",
+        "constitutional",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bvger_A-1156_2011",
+          "grade": 3,
+          "note": "BVGer: Öffentlichkeitsprinzip"
+        },
+        {
+          "decision_id": "bger_1C_129_2016",
+          "grade": 2,
+          "note": "BGer: Öffentlichkeitsprinzip Zugang"
+        },
+        {
+          "decision_id": "bs_appellationsgericht_VD.2014.100",
+          "grade": 1,
+          "note": "Cantonal BS: Öffentlichkeitsprinzip"
+        }
+      ]
+    },
+    {
+      "id": "q098",
+      "query": "Welche Voraussetzungen gelten für die Anordnung von Untersuchungshaft?",
+      "tags": [
+        "de",
+        "nl",
+        "criminal"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bl_gerichte_350_2012_133",
+          "grade": 3,
+          "note": "Cantonal BL: Anordnung Untersuchungshaft Voraussetzungen"
+        },
+        {
+          "decision_id": "bl_gerichte_350_2012_48",
+          "grade": 2,
+          "note": "Cantonal BL: Untersuchungshaft Verfahrensfragen"
+        },
+        {
+          "decision_id": "bs_appellationsgericht_HB.2018.19",
+          "grade": 1,
+          "note": "Cantonal BS: Untersuchungshaft"
+        }
+      ]
+    },
+    {
+      "id": "q099",
+      "query": "Wann liegt ein Härtefall bei der Aufenthaltsbewilligung vor?",
+      "tags": [
+        "de",
+        "nl",
+        "asylum"
+      ],
+      "relevant": [
+        {
+          "decision_id": "ag_verwaltungsgericht_WBE.2012.1036",
+          "grade": 3,
+          "note": "Cantonal AG: Härtefall Aufenthaltsbewilligung vorläufig Aufgenommene"
+        },
+        {
+          "decision_id": "ag_gerichte_AGVE_2014_23",
+          "grade": 2,
+          "note": "Cantonal AG: Härtefall Aufenthaltsbewilligung"
+        },
+        {
+          "decision_id": "sg_publikationen_B 2015_301",
+          "grade": 2,
+          "note": "Cantonal SG: Art. 50 AuG Härtefall"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2021.00568",
+          "grade": 1,
+          "note": "Cantonal ZH: Aufenthaltsbewilligung Aus-/Weiterbildung"
+        }
+      ]
+    },
+    {
+      "id": "q100",
+      "query": "Wie wird der Streitwert bei mietrechtlichen Streitigkeiten berechnet?",
+      "tags": [
+        "de",
+        "nl",
+        "tenancy"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_141_III_569",
+          "grade": 3,
+          "note": "Art. 243 ZPO Streitwert Mietrecht beschränkte Kognition (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_125_III_231",
+          "grade": 2,
+          "note": "Mietrecht Streitwert Kündigungsschutz"
+        },
+        {
+          "decision_id": "bger_4A_371_2024",
+          "grade": 1,
+          "note": "BGer: Kostenentscheid Mietrecht"
+        }
+      ]
     }
   ]
 }
