@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import logging
 import re
@@ -495,11 +496,15 @@ def import_jsonl(
             prev_size = 0
 
         file_imported = 0
-        with open(jsonl_file, encoding="utf-8") as f:
+        with open(jsonl_file, "rb") as fb:
             if prev_size > 0:
-                f.seek(prev_size)
-                logger.debug(f"  {fname}: seeking to byte {prev_size}")
-
+                fb.seek(prev_size)
+                # Discard partial line at seek position (seek may land mid-
+                # UTF-8 character or mid-JSON line if file was rewritten)
+                fb.readline()
+                logger.debug(f"  {fname}: seeking to byte {prev_size} (skipped partial line)")
+            # Wrap in text mode for remaining lines
+            f = io.TextIOWrapper(fb, encoding="utf-8", errors="replace")
             for line in f:
                 line = line.strip()
                 if not line:
