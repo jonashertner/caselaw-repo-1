@@ -71,7 +71,10 @@ from pathlib import Path
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import TextContent, Tool
+from mcp.types import TextContent, Tool, ToolAnnotations
+
+# All tools are read-only (search/lookup, no mutations)
+_READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False)
 
 from fastapi import FastAPI, Query, Path as PathParam, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -7829,6 +7832,7 @@ def _format_legislation_changes_response(result: dict) -> str:
 def _list_tools() -> list[Tool]:
     return [
         Tool(
+            annotations=_READ_ONLY,
             name="search_decisions",
             description=(
                 "Search Swiss court decisions using full-text search. "
@@ -7930,6 +7934,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="get_decision",
             description=(
                 "Fetch a single court decision with full text. "
@@ -7955,6 +7960,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="list_courts",
             description=(
                 "List all available courts with decision counts, date ranges, "
@@ -7966,6 +7972,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="get_statistics",
             description=(
                 "Get aggregate statistics about the dataset. "
@@ -7981,6 +7988,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="find_citations",
             description=(
                 "Given a decision_id, show what it cites and what cites it. "
@@ -8015,6 +8023,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="find_appeal_chain",
             description=(
                 "Trace the appeal chain (Instanzenzug) for a decision. "
@@ -8039,6 +8048,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="find_leading_cases",
             description=(
                 "Find the most-cited decisions for a topic or statute. "
@@ -8081,6 +8091,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="analyze_legal_trend",
             description=(
                 "Year-by-year decision counts showing jurisprudence evolution. "
@@ -8118,6 +8129,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="draft_mock_decision",
             description=(
                 "Build a research-only mock decision outline from user facts. "
@@ -8198,6 +8210,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="get_case_brief",
             description=(
                 "Get a structured case brief for any Swiss court decision. "
@@ -8223,6 +8236,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="get_doctrine",
             description=(
                 "Get the leading cases and doctrine for a Swiss law statute article or legal concept. "
@@ -8249,6 +8263,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="generate_exam_question",
             description=(
                 "Generate a Swiss law exam practice question (Fallbearbeitung) based on a real BGE. "
@@ -8279,6 +8294,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="get_law",
             description=(
                 "Look up a Swiss federal law by SR number or abbreviation. "
@@ -8312,6 +8328,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="search_laws",
             description=(
                 "Full-text search across Swiss federal law articles. "
@@ -8346,6 +8363,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="get_commentary",
             description=(
                 "Look up a scholarly legal commentary from OnlineKommentar.ch (CC-BY-4.0) "
@@ -8377,6 +8395,7 @@ def _list_tools() -> list[Tool]:
             },
         ),
         Tool(
+            annotations=_READ_ONLY,
             name="search_commentaries",
             description=(
                 "Full-text search across all OnlineKommentar.ch legal commentaries. "
