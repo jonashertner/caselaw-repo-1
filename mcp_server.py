@@ -9006,7 +9006,17 @@ def main_remote(host: str, port: int):
             )
 
     async def handle_mcp_root(request):
-        """Root / handler: GET → SSE, POST/DELETE → Streamable HTTP."""
+        """Root / handler: GET → SSE, POST/DELETE → Streamable HTTP, OPTIONS → CORS."""
+        if request.method == "OPTIONS":
+            return Response(
+                status_code=204,
+                headers={
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type, Authorization, Mcp-Session-Id",
+                    "Access-Control-Max-Age": "86400",
+                },
+            )
         if request.method == "GET":
             async with sse.connect_sse(
                 request.scope, request.receive, request._send
@@ -9331,7 +9341,7 @@ def main_remote(host: str, port: int):
         routes=[
             Route("/health", endpoint=handle_health),
             Route("/sse", endpoint=handle_sse),
-            Route("/", endpoint=handle_mcp_root, methods=["GET", "POST", "DELETE"]),
+            Route("/", endpoint=handle_mcp_root, methods=["GET", "POST", "DELETE", "OPTIONS"]),
             Mount("/messages/", app=sse.handle_post_message),
             Mount("/api", app=rest_api),
         ],
