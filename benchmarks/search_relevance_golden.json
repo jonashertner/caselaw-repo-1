@@ -1146,6 +1146,552 @@
         }
       ],
       "note": "Practitioner statute-lookup query for Art. 321a OR employee duty of care"
+    },
+    {
+      "id": "q054",
+      "query": "Mietzinserhöhung quartierüblich",
+      "tags": [
+        "tenancy",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_118_II_130",
+          "grade": 3,
+          "note": "Art. 269a lit. a/269d OR: Mietzinserhöhung Begründung"
+        },
+        {
+          "decision_id": "bge_BGE_123_III_317",
+          "grade": 3,
+          "note": "Mietzinserhöhung orts-/quartierüblicher Mietzins"
+        },
+        {
+          "decision_id": "bge_BGE_141_III_569",
+          "grade": 2,
+          "note": "Art. 269a lit. a OR quartierübliche Mietzinse (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_136_III_74",
+          "grade": 2,
+          "note": "Quartier-Definition Art. 269a lit. a OR"
+        },
+        {
+          "decision_id": "so_gerichte_ZZ.1998.7",
+          "grade": 2,
+          "note": "Cantonal: Mietzinserhöhung orts-/quartierüblich"
+        }
+      ]
+    },
+    {
+      "id": "q055",
+      "query": "Anfechtung Kündigung Mietvertrag Treu und Glauben",
+      "tags": [
+        "tenancy",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_142_III_91",
+          "grade": 3,
+          "note": "Art. 271 OR: Kündigung Umbau, Begründungspflicht"
+        },
+        {
+          "decision_id": "bge_BGE_125_III_231",
+          "grade": 3,
+          "note": "Kündigungsschutz Autoabstellplatz"
+        },
+        {
+          "decision_id": "bge_BGE_120_II_105",
+          "grade": 2,
+          "note": "Art. 271 OR Anfechtbarkeit Kündigung Treu und Glauben (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_132_III_737",
+          "grade": 2,
+          "note": "Grundlagenirrtum Vergleich Kündigung Eigenbedarf"
+        },
+        {
+          "decision_id": "so_gerichte_ZKBER.2024.20",
+          "grade": 1,
+          "note": "Cantonal SO: Anfechtung Kündigung / Erstreckung"
+        }
+      ]
+    },
+    {
+      "id": "q056",
+      "query": "Mängel Mietsache Mietzinsreduktion",
+      "tags": [
+        "tenancy",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "sg_gerichte_BZ.2006.44",
+          "grade": 3,
+          "note": "Cantonal SG: Art. 259a Mietzinsreduktion Mängel"
+        },
+        {
+          "decision_id": "bger_4C.11_2006",
+          "grade": 3,
+          "note": "BGer: Mietvertrag Mängel Mietzinsreduktion"
+        },
+        {
+          "decision_id": "bge_BGE_146_III_63",
+          "grade": 2,
+          "note": "Art. 243 ZPO Hinterlegung Mietzinsen"
+        },
+        {
+          "decision_id": "tg_obergericht_RBOG_1995_Nr._9",
+          "grade": 1,
+          "note": "Cantonal TG: Mietzinsreduktion Hinterlegung"
+        }
+      ]
+    },
+    {
+      "id": "q057",
+      "query": "Untermiete Kündigung Einwilligung Vermieter",
+      "tags": [
+        "tenancy",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_138_III_59",
+          "grade": 3,
+          "note": "Art. 262/271 OR Untermiete Kündigung Treu und Glauben"
+        },
+        {
+          "decision_id": "bge_BGE_113_II_31",
+          "grade": 3,
+          "note": "Kündigung Untermiete Optionsrecht"
+        },
+        {
+          "decision_id": "bge_BGE_139_III_353",
+          "grade": 2,
+          "note": "Art. 262/263 OR Übertragung Mietverhältnis Untermietvertrag (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_123_III_124",
+          "grade": 2,
+          "note": "Art. 257f Abs. 3 OR ausserordentliche Kündigung"
+        }
+      ]
+    },
+    {
+      "id": "q058",
+      "query": "Steuerpflicht Einkünfte Liegenschaft",
+      "tags": [
+        "tax",
+        "de"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_125_II_113",
+          "grade": 3,
+          "note": "Art. 18 DBG Kapitalgewinn Liegenschaftenhandel"
+        },
+        {
+          "decision_id": "bge_BGE_139_II_363",
+          "grade": 2,
+          "note": "Art. 16 DBG steuerbare Einkünfte Grundstück"
+        },
+        {
+          "decision_id": "bge_BGE_143_II_8",
+          "grade": 2,
+          "note": "Art. 58/59 DBG Gewinnsteuer"
+        },
+        {
+          "decision_id": "zh_steuerrekursgericht_ST.2013.97",
+          "grade": 1,
+          "note": "Cantonal ZH: beschränkte Steuerpflicht Liegenschaft"
+        }
+      ]
+    },
+    {
+      "id": "q059",
+      "query": "Degressive Steuertarife Verfassungsmässigkeit",
+      "tags": [
+        "tax",
+        "de",
+        "constitutional"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_133_I_206",
+          "grade": 3,
+          "note": "Verfassungsmässigkeit degressive Obwaldner Steuertarife"
+        },
+        {
+          "decision_id": "bge_BGE_131_II_697",
+          "grade": 2,
+          "note": "Art. 191 BV tarifliche Gleichbehandlung"
+        },
+        {
+          "decision_id": "bge_BGE_136_I_142",
+          "grade": 2,
+          "note": "Art. 127 BV Lenkungsabgabe Zweitwohnungsbau"
+        }
+      ]
+    },
+    {
+      "id": "q060",
+      "query": "Fristlose Kündigung wichtiger Grund Arbeitgeber",
+      "tags": [
+        "employment",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_130_III_28",
+          "grade": 3,
+          "note": "Art. 337 OR fristlose Kündigung wichtiger Grund (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_129_III_380",
+          "grade": 3,
+          "note": "Art. 337 OR fristlose Auflösung Arbeitsverhältnis"
+        },
+        {
+          "decision_id": "bge_BGE_117_II_560",
+          "grade": 2,
+          "note": "Fristlose Entlassung Treuepflicht"
+        },
+        {
+          "decision_id": "bge_BGE_142_III_579",
+          "grade": 2,
+          "note": "Art. 337 OR Nachschieben Kündigungsgrund"
+        },
+        {
+          "decision_id": "ar_gerichte_ARGVP_2021_1572",
+          "grade": 1,
+          "note": "Cantonal AR: fristlose Kündigung öffentliches Personalrecht"
+        }
+      ]
+    },
+    {
+      "id": "q061",
+      "query": "Mobbing Arbeitsplatz Persönlichkeitsverletzung Genugtuung",
+      "tags": [
+        "employment",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_125_III_70",
+          "grade": 3,
+          "note": "Mobbing missbräuchliche Kündigung Genugtuung Art. 328/49 OR"
+        },
+        {
+          "decision_id": "bge_BGE_132_III_115",
+          "grade": 3,
+          "note": "Art. 336/328 OR missbräuchliche Kündigung Fürsorgepflicht"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__PB.2004.00085",
+          "grade": 2,
+          "note": "Cantonal ZH: Diskriminierung Mobbing am Arbeitsplatz"
+        },
+        {
+          "decision_id": "sg_publikationen_K 2015_3, K 2017_3",
+          "grade": 1,
+          "note": "Cantonal SG: missbräuchliche Kündigung Persönlichkeitsverletzung"
+        }
+      ]
+    },
+    {
+      "id": "q062",
+      "query": "Treuepflicht Geschäftsleitung Aktiengesellschaft",
+      "tags": [
+        "employment",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_130_III_213",
+          "grade": 3,
+          "note": "Art. 321a/717 OR Treuepflicht geschäftsleitende Organe AG"
+        },
+        {
+          "decision_id": "bge_BGE_129_III_276",
+          "grade": 2,
+          "note": "Art. 322/322d OR Gratifikation vs Lohn"
+        },
+        {
+          "decision_id": "ow_gerichte_OGVE 2018_19 Nr. 5",
+          "grade": 1,
+          "note": "Cantonal OW: Art. 706b OR Nichtigkeit Gesellschaftsbeschluss"
+        }
+      ]
+    },
+    {
+      "id": "q063",
+      "query": "Nachehelicher Unterhalt Berechnung Methode",
+      "tags": [
+        "family",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_147_III_293",
+          "grade": 3,
+          "note": "Art. 125 ZGB zweistufige Methode nachehelicher Unterhalt"
+        },
+        {
+          "decision_id": "bge_BGE_137_III_102",
+          "grade": 3,
+          "note": "Art. 125 ZGB Unterhaltsbeitrag Methode Festsetzung (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_147_III_265",
+          "grade": 2,
+          "note": "Art. 285/286a ZGB Kindesunterhalt zweistufige Methode"
+        },
+        {
+          "decision_id": "be_zivilstraf_ZK_2007_480",
+          "grade": 1,
+          "note": "Cantonal BE: Kindesunterhalt Zürcher-Tabellen nachehelicher Unterhalt"
+        }
+      ]
+    },
+    {
+      "id": "q064",
+      "query": "Kindesunterhalt Betreuungsunterhalt zweistufige Methode",
+      "tags": [
+        "family",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_147_III_265",
+          "grade": 3,
+          "note": "Leading: zweistufige Methode Überschussverteilung"
+        },
+        {
+          "decision_id": "bge_BGE_144_III_481",
+          "grade": 3,
+          "note": "Art. 276/285 ZGB Betreuungsunterhalt Dauer Umfang"
+        },
+        {
+          "decision_id": "bge_BGE_149_III_441",
+          "grade": 2,
+          "note": "Kindesunterhalt Überschussverteilung unverheiratete Eltern"
+        },
+        {
+          "decision_id": "bge_BGE_150_III_153",
+          "grade": 2,
+          "note": "Art. 286 ZGB Neufestsetzung Betreuungsunterhalt"
+        },
+        {
+          "decision_id": "ag_weitere_unknown_AG_OG_003",
+          "grade": 1,
+          "note": "Cantonal AG: Methode Berechnung Kindesunterhalt Betreuungsunterhalt"
+        }
+      ]
+    },
+    {
+      "id": "q065",
+      "query": "Schleudertrauma Kausalzusammenhang Unfallversicherung",
+      "tags": [
+        "insurance",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_117_V_359",
+          "grade": 3,
+          "note": "Art. 6 UVG Schleudertrauma HWS ohne organische Befunde"
+        },
+        {
+          "decision_id": "bge_BGE_119_V_335",
+          "grade": 3,
+          "note": "Art. 6 UVG natürliche Kausalität Schleudertrauma HWS"
+        },
+        {
+          "decision_id": "bge_BGE_135_V_465",
+          "grade": 2,
+          "note": "Art. 6 EMRK Beweiswürdigung Unfallversicherung"
+        },
+        {
+          "decision_id": "bge_BGE_118_V_286",
+          "grade": 2,
+          "note": "Art. 6 UVG adäquate Kausalität physische Unfallfolgen"
+        },
+        {
+          "decision_id": "lu_gerichte_S_91_574",
+          "grade": 1,
+          "note": "Cantonal LU: Schleudertrauma Kausalzusammenhang Rückfall"
+        }
+      ]
+    },
+    {
+      "id": "q066",
+      "query": "Strafzumessung Grundsätze Verschulden",
+      "tags": [
+        "criminal",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_134_IV_132",
+          "grade": 3,
+          "note": "Strafzumessung verminderte Schuldfähigkeit Art. 47 StGB"
+        },
+        {
+          "decision_id": "bger_6B_611_2010",
+          "grade": 2,
+          "note": "BGer: Strafzumessung"
+        },
+        {
+          "decision_id": "bger_6B_291_2017",
+          "grade": 1,
+          "note": "BGer: Strafzumessung Verschulden"
+        }
+      ]
+    },
+    {
+      "id": "q067",
+      "query": "Verletzung rechtliches Gehör Begründungspflicht",
+      "tags": [
+        "constitutional",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_124_V_180",
+          "grade": 3,
+          "note": "Art. 4 BV rechtliches Gehör Vorbescheidverfahren"
+        },
+        {
+          "decision_id": "bge_BGE_145_IV_99",
+          "grade": 2,
+          "note": "Verletzung elementarer Verfahrensgrundsätze"
+        },
+        {
+          "decision_id": "zh_verwaltungsgericht__VB.2016.00122",
+          "grade": 2,
+          "note": "Cantonal ZH: Begründungspflicht rechtliches Gehör Baubewilligung"
+        },
+        {
+          "decision_id": "zh_gerichte_AA050123",
+          "grade": 1,
+          "note": "Cantonal ZH: rechtliches Gehör Begründungspflicht Dispositionsmaxime"
+        }
+      ]
+    },
+    {
+      "id": "q068",
+      "query": "Haftung Grundeigentümer übermässige Einwirkung Nachbar",
+      "tags": [
+        "property",
+        "de",
+        "nl"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_143_III_242",
+          "grade": 3,
+          "note": "Art. 679 ZGB Verantwortlichkeit Grundeigentümer (fr)"
+        },
+        {
+          "decision_id": "bge_BGE_114_II_230",
+          "grade": 3,
+          "note": "Art. 679 ZGB Verantwortlichkeit bauender Grundeigentümer"
+        },
+        {
+          "decision_id": "bge_BGE_81_II_439",
+          "grade": 2,
+          "note": "Übermässige Immissionen Versickern Abwässer"
+        },
+        {
+          "decision_id": "bge_BGE_120_II_15",
+          "grade": 2,
+          "note": "Art. 684 ZGB Dancing Lärm übermässige Einwirkung"
+        },
+        {
+          "decision_id": "so_gerichte_ZZ.1991.4",
+          "grade": 1,
+          "note": "Cantonal SO: Nachbarrecht Immissionen Tierheim Hunde"
+        }
+      ]
+    },
+    {
+      "id": "q069",
+      "query": "Verjährung Schadenersatz",
+      "tags": [
+        "short",
+        "de",
+        "liability"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_137_III_16",
+          "grade": 3,
+          "note": "Verjährung Schadenersatz vertragliche Pflichten Art. 130 OR"
+        },
+        {
+          "decision_id": "bge_BGE_133_III_335",
+          "grade": 3,
+          "note": "Kaufvertrag Schadenersatz Verjährung Sachgewährleistung"
+        },
+        {
+          "decision_id": "bge_BGE_135_V_74",
+          "grade": 2,
+          "note": "Art. 52 AHVG/Art. 60 OR Verjährung Schadenersatzanspruch"
+        },
+        {
+          "decision_id": "bge_BGE_109_II_418",
+          "grade": 2,
+          "note": "Verjährung Schadenersatz Art. 679 ZGB"
+        },
+        {
+          "decision_id": "sg_gerichte_AHV_2015_3",
+          "grade": 1,
+          "note": "Cantonal SG: Schadenersatz Verschulden Verjährung"
+        }
+      ]
+    },
+    {
+      "id": "q070",
+      "query": "Eigentümerwechsel Mietvertrag",
+      "tags": [
+        "short",
+        "de",
+        "tenancy"
+      ],
+      "relevant": [
+        {
+          "decision_id": "bge_BGE_110_II_309",
+          "grade": 3,
+          "note": "Art. 28 BMM Kündigungsschutzfrist Eigentümerwechsel"
+        },
+        {
+          "decision_id": "bge_BGE_124_III_108",
+          "grade": 2,
+          "note": "Anwendbarkeit Schutzbestimmungen Miete Geschäftsräume"
+        },
+        {
+          "decision_id": "bge_BGE_127_III_273",
+          "grade": 2,
+          "note": "Art. 257e/261 OR Sicherheitsleistung Übergang Mietverhältnis"
+        },
+        {
+          "decision_id": "be_zivilstraf_ZK_2009_24",
+          "grade": 1,
+          "note": "Cantonal BE: Art. 14 LPG Passivlegitimation Veräusserung Pachtobjekt"
+        }
+      ]
     }
   ]
 }
