@@ -654,6 +654,10 @@ QUERY_BGE_PATTERN = re.compile(
     r"\bBGE\s+\d{2,3}\s+[IVX]{1,4}\s+\d{1,4}\b",
     flags=re.IGNORECASE,
 )
+QUERY_BVGE_PATTERN = re.compile(
+    r"\bBVGE\s+\d{4}\s*/\s*\d{1,4}\b",
+    flags=re.IGNORECASE,
+)
 QUERY_DOCKET_PATTERNS = [
     re.compile(r"\b[A-Z0-9]{1,4}[._-]\d{1,6}[/_]\d{4}\b", flags=re.IGNORECASE),
     re.compile(r"\b[A-Z]{1,6}\.\d{4}\.\d{1,6}\b", flags=re.IGNORECASE),
@@ -1616,6 +1620,15 @@ def _build_docket_variants(raw_query: str) -> set[str]:
         q.replace("_", "-"),
         q.replace(".", "-"),
     }
+    # BVGE references: "BVGE 2013/10" stored with space in docket_number
+    bvge_match = QUERY_BVGE_PATTERN.search(raw_query or "")
+    if bvge_match:
+        bvge_text = re.sub(r"\s+", " ", bvge_match.group(0).strip().upper())
+        # Normalize slash spacing: "BVGE 2013 / 10" → "BVGE 2013/10"
+        bvge_text = re.sub(r"\s*/\s*", "/", bvge_text)
+        variants.add(bvge_text)  # "BVGE 2013/10"
+        variants.add(bvge_text.replace("/", "_"))  # "BVGE 2013_10"
+        variants.add(bvge_text.replace("/", " "))  # "BVGE 2013 10"
     clean: set[str] = set()
     for v in variants:
         v = re.sub(r"[/_.-]{2,}", lambda m: m.group(0)[0], v).strip("/_.-")
@@ -3303,6 +3316,10 @@ def _extract_query_terms(
             for expansion in _get_query_expansions(normalized):
                 if expansion and expansion not in variants:
                     variants.append(expansion)
+        if include_variants:
+            for part in _decompose_compound(normalized):
+                if part not in variants:
+                    variants.append(part)
         for term in variants:
             if term in seen:
                 continue
@@ -3311,6 +3328,57 @@ def _extract_query_terms(
             if len(keep) >= limit:
                 return keep
     return keep
+
+
+# Common German legal compound word suffixes/prefixes for decomposition
+_COMPOUND_SUFFIXES = [
+    "verordnung", "gesetz", "recht", "pflicht", "schutz", "haftung",
+    "versicherung", "bewilligung", "verfahren", "verhaltnis", "vertrag",
+    "anspruch", "verletzung", "bestimmung", "regelung", "voraussetzung",
+    "massnahme", "entscheid", "beschluss", "urteil", "klage",
+    "forderung", "leistung", "zahlung", "beitrag", "grenzwert",
+]
+
+_COMPOUND_PREFIXES = [
+    "arbeits", "miet", "straf", "verwaltungs", "sozial", "bundes",
+    "kantons", "gemeinde", "verkehrs", "bau", "steuer", "erb",
+    "familien", "handels", "schuld", "sach", "grund", "eigen",
+    "ober", "unter", "vor", "nach", "aus", "ein",
+]
+
+
+def _decompose_compound(term: str) -> list[str]:
+    """Split a German compound word into sub-words for broader FTS matching.
+
+    E.g., "larmschutzverordnung" → ["larmschutz", "verordnung"]
+          "arbeitnehmerschutz" → ["arbeitnehmer", "schutz"]
+
+    Only decomposes words ≥ 10 chars to avoid false splits on short words.
+    Returns empty list if no valid decomposition found.
+    """
+    if len(term) < 10:
+        return []
+
+    parts = []
+    # Try suffix-based decomposition (most reliable)
+    for suffix in _COMPOUND_SUFFIXES:
+        if term.endswith(suffix) and len(term) > len(suffix) + 3:
+            prefix = term[:-len(suffix)]
+            if len(prefix) >= 3:
+                parts = [prefix, suffix]
+                break
+
+    if not parts:
+        # Try prefix-based decomposition
+        for prefix in _COMPOUND_PREFIXES:
+            if term.startswith(prefix) and len(term) > len(prefix) + 3:
+                remainder = term[len(prefix):]
+                if len(remainder) >= 4:
+                    parts = [prefix, remainder]
+                    break
+
+    # Filter: both parts must be ≥ 3 chars
+    return [p for p in parts if len(p) >= 3] if len(parts) >= 2 else []
 
 
 def _get_query_expansions(term: str) -> list[str]:
@@ -3440,6 +3508,8 @@ def _looks_like_docket_query(query: str) -> bool:
         return False
 
     if QUERY_BGE_PATTERN.fullmatch(q):
+        return True
+    if QUERY_BVGE_PATTERN.fullmatch(q):
         return True
     for pattern in QUERY_DOCKET_PATTERNS:
         if pattern.fullmatch(q):
