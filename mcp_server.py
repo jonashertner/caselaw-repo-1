@@ -9005,29 +9005,35 @@ def main_remote(host: str, port: int):
                 streams[0], streams[1], server.create_initialization_options()
             )
 
-    async def handle_mcp_root(request):
-        """Root / handler: GET → SSE, POST/DELETE → Streamable HTTP, OPTIONS → CORS."""
-        if request.method == "OPTIONS":
-            return Response(
-                status_code=204,
-                headers={
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type, Authorization, Mcp-Session-Id",
-                    "Access-Control-Max-Age": "86400",
-                },
-            )
-        if request.method == "GET":
-            async with sse.connect_sse(
-                request.scope, request.receive, request._send
-            ) as streams:
-                await server.run(
-                    streams[0], streams[1], server.create_initialization_options()
+    class MCPRootApp:
+        """Raw ASGI app for / — dispatches GET→SSE, POST/DELETE→Streamable HTTP."""
+
+        async def __call__(self, scope, receive, send):
+            if scope["type"] != "http":
+                return
+
+            method = scope.get("method", "GET")
+
+            if method == "OPTIONS":
+                resp = Response(
+                    status_code=204,
+                    headers={
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+                        "Access-Control-Allow-Headers": "Content-Type, Authorization, Mcp-Session-Id",
+                        "Access-Control-Max-Age": "86400",
+                    },
                 )
-        else:
-            await session_manager.handle_request(
-                request.scope, request.receive, request._send
-            )
+                await resp(scope, receive, send)
+            elif method == "GET":
+                async with sse.connect_sse(scope, receive, send) as streams:
+                    await server.run(
+                        streams[0], streams[1], server.create_initialization_options()
+                    )
+            else:
+                await session_manager.handle_request(scope, receive, send)
+
+    mcp_root_app = MCPRootApp()
 
     # ── Health / readiness endpoint (exempt from auth) ────────
     async def handle_health(request):
@@ -9341,9 +9347,10 @@ def main_remote(host: str, port: int):
         routes=[
             Route("/health", endpoint=handle_health),
             Route("/sse", endpoint=handle_sse),
-            Route("/", endpoint=handle_mcp_root, methods=["GET", "POST", "DELETE", "OPTIONS"]),
-            Mount("/messages/", app=sse.handle_post_message),
+            Mount("/messages", app=sse.handle_post_message),
             Mount("/api", app=rest_api),
+            # Must be last — Mount("/") catches all unmatched paths
+            Mount("/", app=mcp_root_app),
         ],
         lifespan=lifespan,
     )
