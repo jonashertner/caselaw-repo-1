@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<title>Swiss Case Law Open Dataset — 956K+ Court Decisions | OpenCaseLaw.ch</title>
-<meta name="description" content="The largest open dataset of Swiss court decisions. Over 956,000 decisions from all federal courts and 26 cantons, with 8M+ citation links. Updated daily. Search with AI, download Parquet, or query via MCP API.">
+<title>Swiss Case Law Open Dataset — 960K+ Court Decisions | OpenCaseLaw.ch</title>
+<meta name="description" content="The largest open dataset of Swiss court decisions. Over 960,000 decisions from all federal courts and 26 cantons, with 8M+ citation links. Updated daily. Search with AI, download Parquet, or query via MCP API.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -17,8 +17,8 @@
 <link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
-<meta property="og:title" content="Swiss Case Law Open Dataset — 956K+ Court Decisions">
-<meta property="og:description" content="The largest open dataset of Swiss court decisions. 956,000+ decisions from all federal courts and 26 cantons, with 8M+ citation links. Updated daily.">
+<meta property="og:title" content="Swiss Case Law Open Dataset — 960K+ Court Decisions">
+<meta property="og:description" content="The largest open dataset of Swiss court decisions. 960,000+ decisions from all federal courts and 26 cantons, with 8M+ citation links. Updated daily.">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,8 +29,8 @@
 <meta property="og:locale:alternate" content="fr_CH">
 <meta property="og:locale:alternate" content="it_CH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Swiss Case Law Open Dataset — 956K+ Court Decisions">
-<meta name="twitter:description" content="956,000+ Swiss court decisions from all federal courts and 26 cantons. 8M+ citation links. Search with AI, download, or query via API.">
+<meta name="twitter:title" content="Swiss Case Law Open Dataset — 960K+ Court Decisions">
+<meta name="twitter:description" content="960,000+ Swiss court decisions from all federal courts and 26 cantons. 8M+ citation links. Search with AI, download, or query via API.">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
@@ -40,7 +40,7 @@
     "@type": "Dataset",
     "name": "Swiss Case Law Open Dataset",
     "alternateName": "OpenCaseLaw",
-    "description": "The largest open dataset of Swiss court decisions. Over 956,000 decisions from all federal courts and 26 cantons, with 8 million citation links. Updated daily.",
+    "description": "The largest open dataset of Swiss court decisions. Over 960,000 decisions from all federal courts and 26 cantons, with 8.7 million citation links. Updated daily. Searchable via MCP (Claude, ChatGPT, Gemini).",
     "url": "https://opencaselaw.ch/",
     "license": "https://creativecommons.org/publicdomain/zero/1.0/",
     "isAccessibleForFree": true,
@@ -804,7 +804,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 8l1.5 1.5M14.5 8l-1 1" stroke-linecap="round"/></svg>
           <span data-t="access_featured_title">Search with AI</span>
         </h3>
-        <p data-t="access_featured_desc">Über 956'000 Schweizer Gerichtsentscheide in natürlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.</p>
+        <p data-t="access_featured_desc">Über 960'000 Schweizer Gerichtsentscheide in natürlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.</p>
         <div class="setup-paths">
           <div class="setup-path">
             <div class="setup-path-label"><span class="rec" data-t="access_remote_label">Remote (recommended)</span></div>
@@ -821,9 +821,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   https://mcp.opencaselaw.ch</code>
             </div>
             <div class="setup-steps" style="margin-top:10px">
-              <strong>ChatGPT</strong><br>
-              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_chatgpt_steps">Settings → Apps → Advanced settings → enable Developer mode → Create app → name "Swiss Caselaw", paste URL below, auth: None. In chat: + → Developer mode → select app.</span><br>
-              <code>https://mcp.opencaselaw.ch</code>
+              <strong>ChatGPT</strong> <span style="color:var(--tx2);font-size:var(--fs-xs)">(Pro/Team/Enterprise)</span><br>
+              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_chatgpt_steps">Settings → Apps → Advanced settings → enable Developer mode → Create app → name "Swiss Caselaw", paste URL below, auth: None. In chat: + → Developer mode → select app. Works with GPT models; tool invocation may vary by model version.</span><br>
+              <code>https://mcp.opencaselaw.ch/sse</code>
             </div>
             <div class="setup-steps" style="margin-top:10px">
               <strong>Gemini CLI</strong>
@@ -1118,7 +1118,7 @@ const I18N = {
     access_remote_label:'Remote (empfohlen)', access_local_label:'Lokal (offline)',
     access_remote_desc:'Sofort verf\u00fcgbar, immer aktuell. Kein Download n\u00f6tig.',
     access_local_desc:'Volle Kontrolle, offline verf\u00fcgbar. ~65 GB Speicher, 30\u201360 Min. Einrichtung.',
-    access_chatgpt_steps:'Settings → Apps → Advanced settings → Developer mode aktivieren → Create app → Name \"Swiss Caselaw\", URL unten einf\u00fcgen, Auth: None. Im Chat: + → Developer mode → App w\u00e4hlen.',
+    access_chatgpt_steps:'Settings \u2192 Apps \u2192 Advanced settings \u2192 Developer mode aktivieren \u2192 Create app \u2192 Name \"Swiss Caselaw\", URL unten einf\u00fcgen, Auth: None. Im Chat: + \u2192 Developer mode \u2192 App w\u00e4hlen. Funktioniert mit GPT-Modellen; Tool-Aufruf kann je nach Modellversion variieren.',
     access_plan_note:'Claude: Pro, Max, Team oder Enterprise (Desktop) / jeder Plan (Code). ChatGPT: Plus, Pro, Team, Enterprise oder Edu. Gemini CLI: kostenlos.',
     access_local_note:'Kompatibel mit jedem MCP-Client. Lokaler Modus enthält Datenbank-Update-Tools.',
     access_local_clone:'Klonen → installieren → mit beliebigem MCP-Client registrieren',
