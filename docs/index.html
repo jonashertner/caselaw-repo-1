@@ -822,7 +822,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
             </div>
             <div class="setup-steps" style="margin-top:10px">
               <strong>ChatGPT</strong> <span style="color:var(--tx2);font-size:var(--fs-xs)">(Pro/Team/Enterprise)</span><br>
-              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_chatgpt_steps">Settings → Apps → Advanced settings → enable Developer mode → Create app → name "Swiss Caselaw", paste URL below, auth: None. In chat: + → Developer mode → select app. Works with GPT models; tool invocation may vary by model version.</span><br>
+              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_chatgpt_steps">Settings → Apps → Advanced settings → enable Developer mode → Create app → name "Swiss Caselaw", paste URL below, auth: None. In chat: + → Developer mode → select app. Recommended with GPT-5.3 (GPT-5.4 does not currently support MCP tool invocation).</span><br>
               <code>https://mcp.opencaselaw.ch/sse</code>
             </div>
             <div class="setup-steps" style="margin-top:10px">
@@ -1118,7 +1118,7 @@ const I18N = {
     access_remote_label:'Remote (empfohlen)', access_local_label:'Lokal (offline)',
     access_remote_desc:'Sofort verf\u00fcgbar, immer aktuell. Kein Download n\u00f6tig.',
     access_local_desc:'Volle Kontrolle, offline verf\u00fcgbar. ~65 GB Speicher, 30\u201360 Min. Einrichtung.',
-    access_chatgpt_steps:'Settings \u2192 Apps \u2192 Advanced settings \u2192 Developer mode aktivieren \u2192 Create app \u2192 Name \"Swiss Caselaw\", URL unten einf\u00fcgen, Auth: None. Im Chat: + \u2192 Developer mode \u2192 App w\u00e4hlen. Funktioniert mit GPT-Modellen; Tool-Aufruf kann je nach Modellversion variieren.',
+    access_chatgpt_steps:'Settings \u2192 Apps \u2192 Advanced settings \u2192 Developer mode aktivieren \u2192 Create app \u2192 Name \"Swiss Caselaw\", URL unten einf\u00fcgen, Auth: None. Im Chat: + \u2192 Developer mode \u2192 App w\u00e4hlen. Empfohlen mit GPT-5.3 (GPT-5.4 unterst\u00fctzt MCP-Tool-Aufrufe derzeit nicht).',
     access_plan_note:'Claude: Pro, Max, Team oder Enterprise (Desktop) / jeder Plan (Code). ChatGPT: Plus, Pro, Team, Enterprise oder Edu. Gemini CLI: kostenlos.',
     access_local_note:'Kompatibel mit jedem MCP-Client. Lokaler Modus enthält Datenbank-Update-Tools.',
     access_local_clone:'Klonen → installieren → mit beliebigem MCP-Client registrieren',

@@ -97,7 +97,7 @@ Restart Claude Desktop after saving.
 2. Click **Create app** → name it `Swiss Caselaw`, paste `https://mcp.opencaselaw.ch/sse`, auth: None
 3. In any chat: click **+** → **Developer mode** → select **Swiss Caselaw**
 
-> Available on Plus, Pro, Team, Enterprise, and Edu plans. Works with GPT models; tool invocation may vary by model version.
+> Available on Plus, Pro, Team, Enterprise, and Edu plans. Recommended with GPT-5.3 (GPT-5.4 does not currently support MCP tool invocation).
 
 **Gemini CLI:**
 
