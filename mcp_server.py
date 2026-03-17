@@ -8429,6 +8429,7 @@ def _list_tools() -> list[Tool]:
         ),
         *([] if not LEXFIND_ENABLED else [
             Tool(
+                annotations=_READ_ONLY,
                 name="search_legislation",
                 description=(
                     "Search Swiss legislation (federal + all 26 cantons) by keyword. "
@@ -8480,6 +8481,7 @@ def _list_tools() -> list[Tool]:
                 },
             ),
             Tool(
+                annotations=_READ_ONLY,
                 name="get_legislation",
                 description=(
                     "Get details for a specific Swiss law by LexFind ID or SR/systematic "
@@ -8517,6 +8519,7 @@ def _list_tools() -> list[Tool]:
                 },
             ),
             Tool(
+                annotations=_READ_ONLY,
                 name="browse_legislation_changes",
                 description=(
                     "Browse recent legislation changes for a canton or federal level. "
@@ -8542,6 +8545,7 @@ def _list_tools() -> list[Tool]:
         ]),
         *([] if REMOTE_MODE else [
             Tool(
+                annotations=_READ_ONLY,
                 name="update_database",
                 description=(
                     "Download the latest Swiss caselaw data from HuggingFace "
@@ -8555,6 +8559,7 @@ def _list_tools() -> list[Tool]:
                 },
             ),
             Tool(
+                annotations=_READ_ONLY,
                 name="check_update_status",
                 description=(
                     "Check progress of a running database update. "
