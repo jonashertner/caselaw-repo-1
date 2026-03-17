@@ -581,14 +581,21 @@ def _get_court_level(court: str) -> str:
     return COURT_LEVELS.get(court, "cantonal")
 
 
+_PROCEDURAL_LAWS = {"BGG", "OG", "VwVG", "ZPO", "StPO", "ATSG", "BGerR"}
+
+
 def _derive_legal_area(statutes: list[str], court: str) -> str:
-    """Derive legal area from statute abbreviations and court code."""
+    """Derive legal area from statute abbreviations and court code.
+
+    Prioritizes substantive law over procedural law (BGG, ZPO, StPO).
+    """
     area_votes: dict[str, int] = {}
     for ref in statutes:
-        # Extract law abbreviation from "Art. 41 OR" → "OR"
         parts = ref.split()
         if parts:
             abbr = parts[-1]
+            if abbr in _PROCEDURAL_LAWS:
+                continue  # skip procedural statutes for area detection
             area = _STATUTE_TO_AREA.get(abbr)
             if area:
                 area_votes[area] = area_votes.get(area, 0) + 1
