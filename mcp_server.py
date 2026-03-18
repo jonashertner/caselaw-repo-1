@@ -9367,9 +9367,36 @@ def main_remote(host: str, port: int):
             logger.info("Streamable HTTP session manager started")
             yield
 
+    # ── SEO decision pages + sitemaps ───────────────────────────
+    from seo_pages import render_decision_page, render_sitemap_index, render_court_sitemap, BASE_URL
+
+    async def handle_decision_page(request):
+        decision_id = request.path_params["decision_id"]
+        html_content, status = await asyncio.to_thread(render_decision_page, decision_id)
+        return Response(html_content, status_code=status, media_type="text/html")
+
+    async def handle_sitemap_index(request):
+        content = await asyncio.to_thread(render_sitemap_index)
+        return Response(content, media_type="application/xml")
+
+    async def handle_court_sitemap(request):
+        court = request.path_params["court"]
+        content = await asyncio.to_thread(render_court_sitemap, court)
+        return Response(content, media_type="application/xml")
+
+    async def handle_robots(request):
+        return Response(
+            f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n",
+            media_type="text/plain",
+        )
+
     app = Starlette(
         routes=[
             Route("/health", endpoint=handle_health),
+            Route("/robots.txt", endpoint=handle_robots),
+            Route("/sitemap.xml", endpoint=handle_sitemap_index),
+            Route("/sitemap-{court}.xml", endpoint=handle_court_sitemap),
+            Route("/entscheid/{decision_id:path}", endpoint=handle_decision_page),
             Route("/sse", endpoint=handle_sse),
             Mount("/messages", app=sse.handle_post_message),
             Mount("/api", app=rest_api),
