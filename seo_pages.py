@@ -256,32 +256,56 @@ def _render_404(decision_id: str) -> str:
 </html>"""
 
 
+MAX_URLS_PER_SITEMAP = 40_000  # Google limit is 50K; stay under
+
+
 def render_sitemap_index() -> str:
-    """Generate sitemap index pointing to per-court sitemaps."""
+    """Generate sitemap index pointing to per-court chunk sitemaps."""
     conn = _get_db()
     try:
         courts = conn.execute(
-            "SELECT DISTINCT court FROM decisions WHERE court IS NOT NULL ORDER BY court"
+            "SELECT court, COUNT(*) as n FROM decisions "
+            "WHERE court IS NOT NULL GROUP BY court ORDER BY court"
         ).fetchall()
     finally:
         conn.close()
 
     lines = ['<?xml version="1.0" encoding="UTF-8"?>']
     lines.append('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-    for row in courts:
-        court = row[0]
-        lines.append(f"  <sitemap><loc>{BASE_URL}/sitemap-{court}.xml</loc></sitemap>")
+    for court, count in courts:
+        chunks = (count // MAX_URLS_PER_SITEMAP) + 1
+        for chunk in range(chunks):
+            if chunks == 1:
+                lines.append(f"  <sitemap><loc>{BASE_URL}/sitemap-{court}.xml</loc></sitemap>")
+            else:
+                lines.append(f"  <sitemap><loc>{BASE_URL}/sitemap-{court}-{chunk}.xml</loc></sitemap>")
     lines.append("</sitemapindex>")
     return "\n".join(lines)
 
 
-def render_court_sitemap(court: str) -> str:
-    """Generate sitemap for a single court's decisions."""
+def render_court_sitemap(court_and_chunk: str) -> str:
+    """Generate sitemap for a single court's decisions (with optional chunk).
+
+    court_and_chunk can be "bger" or "bger-0", "bger-1", etc.
+    """
+    # Parse court and chunk from path
+    parts = court_and_chunk.rsplit("-", 1)
+    if len(parts) == 2 and parts[1].isdigit():
+        court = parts[0]
+        chunk = int(parts[1])
+    else:
+        court = court_and_chunk
+        chunk = 0
+
+    offset = chunk * MAX_URLS_PER_SITEMAP
+
     conn = _get_db()
     try:
         rows = conn.execute(
-            "SELECT decision_id, decision_date FROM decisions WHERE court = ? ORDER BY decision_date DESC",
-            (court,),
+            "SELECT decision_id, decision_date FROM decisions "
+            "WHERE court = ? ORDER BY decision_date DESC "
+            "LIMIT ? OFFSET ?",
+            (court, MAX_URLS_PER_SITEMAP, offset),
         ).fetchall()
     finally:
         conn.close()
