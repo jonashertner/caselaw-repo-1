@@ -314,11 +314,6 @@ def render_court_sitemap(court_and_chunk: str) -> str:
     lines.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
     for row in rows:
         did = row[0]
-        date = row[1] or ""
-        lines.append(f"  <url><loc>{BASE_URL}/entscheid/{_esc(did)}</loc>")
-        if date:
-            lines.append(f"    <lastmod>{_esc(date)}</lastmod>")
-        lines.append("    <changefreq>yearly</changefreq>")
-        lines.append("  </url>")
+        lines.append(f"  <url><loc>{BASE_URL}/entscheid/{_esc(did)}</loc></url>")
     lines.append("</urlset>")
     return "\n".join(lines)
