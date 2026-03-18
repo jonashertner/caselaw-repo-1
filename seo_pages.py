@@ -174,6 +174,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
 <title>{_esc(page_title)}</title>
 <meta name="description" content="{_esc(meta_desc)}">
 <meta name="robots" content="index, follow">
@@ -242,6 +243,7 @@ def _render_404(decision_id: str) -> str:
 <meta charset="UTF-8">
 <title>Entscheid nicht gefunden | OpenCaseLaw</title>
 <meta name="robots" content="noindex">
+<meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
 <style>
     body {{ font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }}
 </style>

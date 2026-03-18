@@ -9050,10 +9050,36 @@ def main_remote(host: str, port: int):
                 )
                 await resp(scope, receive, send)
             elif method == "GET":
-                async with sse.connect_sse(scope, receive, send) as streams:
-                    await server.run(
-                        streams[0], streams[1], server.create_initialization_options()
+                # Check Accept header: browsers/bots get HTML, MCP clients get SSE
+                headers = dict(scope.get("headers", []))
+                accept = (headers.get(b"accept", b"")).decode("utf-8", errors="ignore")
+                if "text/event-stream" in accept or "application/json" in accept:
+                    # MCP client — serve SSE
+                    async with sse.connect_sse(scope, receive, send) as streams:
+                        await server.run(
+                            streams[0], streams[1], server.create_initialization_options()
+                        )
+                else:
+                    # Browser/bot — serve HTML landing page with verification tag
+                    resp = Response(
+                        '<!DOCTYPE html><html lang="de"><head>'
+                        '<meta charset="UTF-8">'
+                        '<meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">'
+                        '<title>OpenCaseLaw MCP Server</title>'
+                        '<meta name="description" content="MCP server for Swiss court decisions. 962,000+ decisions searchable via Claude, ChatGPT, and Gemini.">'
+                        '</head><body>'
+                        '<h1>OpenCaseLaw MCP Server</h1>'
+                        '<p>This is the MCP (Model Context Protocol) server for <a href="https://opencaselaw.ch">OpenCaseLaw.ch</a>.</p>'
+                        '<p>962,000+ Swiss court decisions from 101 courts, searchable via AI.</p>'
+                        '<ul>'
+                        '<li><a href="/api/docs">REST API Documentation</a></li>'
+                        '<li><a href="/sitemap.xml">Sitemap</a></li>'
+                        '<li><a href="https://opencaselaw.ch">Dashboard</a></li>'
+                        '</ul>'
+                        '</body></html>',
+                        media_type="text/html",
                     )
+                    await resp(scope, receive, send)
             else:
                 await session_manager.handle_request(scope, receive, send)
 
@@ -9396,6 +9422,12 @@ def main_remote(host: str, port: int):
             Route("/robots.txt", endpoint=handle_robots),
             Route("/sitemap.xml", endpoint=handle_sitemap_index),
             Route("/sitemap-{court}.xml", endpoint=handle_court_sitemap),
+            Route("/google-verify", endpoint=lambda r: Response(
+                '<!DOCTYPE html><html><head>'
+                '<meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">'
+                '</head><body>Google verification</body></html>',
+                media_type="text/html",
+            )),
             Route("/entscheid/{decision_id:path}", endpoint=handle_decision_page),
             Route("/sse", endpoint=handle_sse),
             Mount("/messages", app=sse.handle_post_message),
