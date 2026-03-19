@@ -43,11 +43,12 @@ def get_short_text_decisions(db_path: str, max_decisions: int) -> list[dict]:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     rows = conn.execute("""
-        SELECT decision_id, court, language, pdf_url,
+        SELECT decision_id, court, language, pdf_url, source_url,
                LENGTH(COALESCE(full_text, '')) as text_len
         FROM decisions
         WHERE LENGTH(COALESCE(full_text, '')) < 500
-          AND pdf_url IS NOT NULL AND pdf_url != ''
+          AND (pdf_url IS NOT NULL AND pdf_url != ''
+               OR source_url IS NOT NULL AND source_url != '')
         ORDER BY text_len ASC
         LIMIT ?
     """, (max_decisions,)).fetchall()
@@ -57,11 +58,17 @@ def get_short_text_decisions(db_path: str, max_decisions: int) -> list[dict]:
 
 def download_pdf(url: str) -> bytes | None:
     """Download PDF, return bytes or None on failure."""
+    # Extract domain for Referer header (some courts block direct access)
+    from urllib.parse import urlparse
+    parsed = urlparse(url)
+    referer = f"{parsed.scheme}://{parsed.netloc}/"
+
     for attempt in range(MAX_RETRIES):
         try:
             with httpx.Client(timeout=TIMEOUT, follow_redirects=True) as client:
                 resp = client.get(url, headers={
-                    "User-Agent": "OpenCaseLaw-OCR/1.0 (+https://opencaselaw.ch)"
+                    "User-Agent": "OpenCaseLaw-OCR/1.0 (+https://opencaselaw.ch)",
+                    "Referer": referer,
                 })
                 if resp.status_code == 200 and len(resp.content) > 100:
                     return resp.content
@@ -162,7 +169,8 @@ def main():
 
     for i, dec in enumerate(decisions):
         did = dec["decision_id"]
-        url = dec["pdf_url"]
+        url = dec["pdf_url"] or ""
+        source_url = dec.get("source_url") or ""
         lang = dec["language"] or "de"
         court = dec["court"]
 
@@ -176,7 +184,34 @@ def main():
             )
 
         # Download PDF
-        pdf_bytes = download_pdf(url)
+        pdf_bytes = download_pdf(url) if url else None
+        if not pdf_bytes and source_url:
+            # Fallback: try source_url (HTML page) for inline text
+            try:
+                with httpx.Client(timeout=TIMEOUT, follow_redirects=True) as client:
+                    resp = client.get(source_url, headers={
+                        "User-Agent": "OpenCaseLaw-OCR/1.0 (+https://opencaselaw.ch)"
+                    })
+                    if resp.status_code == 200 and len(resp.text) > MIN_OCR_CHARS:
+                        from bs4 import BeautifulSoup
+                        soup = BeautifulSoup(resp.text, "html.parser")
+                        # Remove script/style
+                        for tag in soup(["script", "style", "nav", "header", "footer"]):
+                            tag.decompose()
+                        html_text = soup.get_text(separator="\n", strip=True)
+                        if len(html_text) >= MIN_OCR_CHARS:
+                            if not args.dry_run:
+                                if update_jsonl(args.jsonl_dir, court, did, html_text):
+                                    ocr_success += 1
+                                    logger.debug(f"  {did}: HTML fallback extracted {len(html_text)} chars")
+                                    continue
+                            else:
+                                ocr_success += 1
+                                logger.debug(f"  {did}: [dry-run] HTML would extract {len(html_text)} chars")
+                                continue
+            except Exception as e:
+                logger.debug(f"  {did}: HTML fallback failed: {e}")
+
         if not pdf_bytes:
             download_fail += 1
             continue
