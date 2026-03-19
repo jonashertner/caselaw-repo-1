@@ -1,4 +1,4 @@
-# OpenCaseLaw: A Versioned Open Corpus and Citation Graph for Published Swiss Case Law
+# OpenCaseLaw: An Open Dataset and Search Platform for Swiss Court Decisions
 
 **Jonas Hertner**
 
@@ -8,235 +8,193 @@ March 2026
 
 ## Abstract
 
-We introduce OpenCaseLaw, a versioned open corpus of published Swiss case law collected from official federal and cantonal publication channels. The March 2026 snapshot contains 962,272 decisions from 101 federal, cantonal, and quasi-judicial sources, covering all 26 cantons and the period 1875–2026, in German (448,215), French (434,470), and Italian (79,587). The release includes a 34-field Parquet export, a local SQLite FTS5 search index, and a reference database containing 8.75 million extracted case-citation references (6.46 million resolved to in-corpus decisions, 73.8% resolution rate) and 11.2 million decision-to-statute links across 281,391 distinct provisions. We describe the collection, deduplication, and reference extraction pipeline, and release a 100-query multilingual retrieval benchmark with an open baseline system combining BM25, citation graph features, and optional LLM reranking. The corpus is updated daily; all code is MIT-licensed; decisions are official publications excluded from copyright under Art. 5 URG.
+We present OpenCaseLaw, an open corpus and retrieval stack for Swiss case law. In the repository snapshot generated on March 18, 2026, the dataset contains 962,272 decisions from 101 federal, cantonal, and regulatory courts or public bodies, covering all 26 cantons and the period 1875-2026. The current snapshot contains 448,215 German decisions (46.6%), 434,470 French decisions (45.2%), and 79,587 Italian decisions (8.3%); the export schema also reserves a Romansh language code. OpenCaseLaw releases a 34-field Parquet export, a local SQLite FTS5 index, a citation/reference database with 8.75 million extracted case-citation references, 6.46 million resolved in-corpus decision links, and 11.3 million decision-statute links, plus REST and Model Context Protocol (MCP) interfaces for retrieval from conventional clients and LLM tools. We describe the collection, normalization, deduplication, export, and retrieval pipeline, and we release a multilingual benchmark harness with 100 tagged evaluation queries. The code is MIT-licensed and all records link back to the decisions as published by the originating courts.
 
 ## 1. Introduction
 
-Published Swiss case law is distributed across a fragmented landscape of federal and cantonal publication channels. The Federal Supreme Court publishes on bger.ch; the Federal Administrative Court uses a Weblaw-hosted platform; each of the 26 cantons maintains its own portal with distinct formats, search interfaces, and publication schedules. This fragmentation creates practical barriers for legal research, computational legal studies, and access to justice.
+Swiss case law is published across a fragmented landscape of federal and cantonal court websites, publication portals, and administrative repositories. The result is a difficult retrieval environment: coverage varies by court, interfaces are heterogeneous, and cross-court search is poor. Commercial systems such as Swisslex and Weblaw partially solve this problem, but they are closed, subscription-based products. Open Swiss resources exist, but they typically emphasize either a subset of courts, a narrow NLP task, or raw publication access without a reusable retrieval stack.
 
-Existing open Swiss legal datasets address parts of this landscape. Swiss-Judgment-Prediction (Niklaus et al., 2021) provides 85,000 Federal Supreme Court decisions for outcome prediction. SwissRulings (RCDS) covers 637,000 Federal Supreme Court cases. The Swiss Federal Supreme Court Dataset (Stürmer et al., 2024) offers 122,000 cases with 31 structured variables. SCALE (Niklaus et al., 2023b) benchmarks citation extraction, summarization, and other tasks on Swiss multilingual legal text. However, none of these covers cantonal courts, and none includes a citation graph extracted across the full corpus. Commercial aggregators (Swisslex, Weblaw) provide comprehensive coverage but restrict access through paid subscriptions.
+OpenCaseLaw is intended as infrastructure rather than a single benchmark dataset. It combines corpus acquisition, normalization, searchable exports, reference extraction, and interfaces for both programmatic and LLM-mediated access. The project makes three main contributions:
 
-OpenCaseLaw is intended as infrastructure rather than a single benchmark dataset. It combines corpus acquisition, normalization, searchable exports, reference extraction, and interfaces for both programmatic and LLM-mediated access. The project makes three contributions:
+1. **A broad open Swiss case-law corpus.** The March 18, 2026 snapshot contains 962,272 decisions from 101 courts or public bodies, including all 26 cantons, federal courts, and several regulatory or quasi-judicial bodies.
+2. **Reusable retrieval artifacts.** The release includes Parquet exports, a local SQLite FTS5 database, a citation/reference database, REST endpoints, and an MCP server.
+3. **Evaluation infrastructure.** The repository includes a multilingual search benchmark harness and a 100-query tagged gold set designed for retrieval regression testing and system comparison.
 
-1. **A broad open Swiss case-law corpus.** The March 2026 snapshot contains 962,272 decisions from 101 sources — 20 federal courts and quasi-judicial bodies, 81 cantonal courts — covering all 26 cantons and the period 1875–2026.
-
-2. **An extracted reference database.** 8.75 million case-citation references (6.46 million resolved in-corpus) and 11.2 million decision-to-statute links, with formal quantity definitions and a report of resolution methodology.
-
-3. **Retrieval infrastructure.** A 100-query multilingual benchmark, an open baseline retrieval system, and distribution via Parquet, REST API, and Model Context Protocol (MCP) server.
+The paper focuses on what is versioned and inspectable in the repository. Where the implementation distinguishes between core data models, search indexes, and export schemas, we state that explicitly instead of collapsing them into a single "dataset" abstraction.
 
 ## 2. Related Work
 
-**Swiss legal NLP datasets.** Swiss-Judgment-Prediction (Niklaus et al., 2021) provides 85,000 Federal Supreme Court decisions labeled for binary outcome prediction. Rasiah et al. (2023) extended this with natural language explanations. SwissRulings provides 637,000 Federal Supreme Court cases. Stürmer et al. (2024) released 122,000 cases with 31 structured variables. All of these cover a single court. OpenCaseLaw covers 101 sources across all court levels and cantons, with a cross-corpus citation graph.
+**Swiss legal datasets.** Swiss-Judgment-Prediction (Niklaus et al., 2021) and later work by Rasiah et al. (2023) provide labeled Federal Supreme Court datasets for downstream NLP tasks. SwissRulings (RCDS) covers 637,000 Federal Supreme Court cases. Stürmer et al. (2024) released 122,000 cases with 31 structured variables. SCALE (Niklaus et al., 2023b) benchmarks citation extraction, summarization, and other tasks on Swiss multilingual legal text. All of these focus on the Federal Supreme Court. OpenCaseLaw covers 101 sources across all court levels and cantons, with a cross-corpus reference database.
 
-**Multilingual legal benchmarks.** SCALE (Niklaus et al., 2023b) benchmarks citation extraction, summarization, and other tasks on Swiss multilingual legal text and is the most directly relevant benchmark work. MultiLegalPile (Niklaus et al., 2023a) provides a 689GB multilingual legal corpus for pretraining. LexGLUE (Chalkidis et al., 2022) benchmarks legal NLP on EU and US law. None include cross-court Swiss citation graphs.
+**Broader legal corpora.** MultiLegalPile (Niklaus et al., 2023a) is a large multilingual legal corpus for language-model pretraining, and LexGLUE (Chalkidis et al., 2022) is a benchmark suite for legal NLP tasks. These resources are valuable for representation learning and evaluation, but they do not provide Swiss court-wide retrieval infrastructure, court-level normalization, or citation/statute reference databases for Swiss jurisprudence.
 
-**Open case law infrastructure.** The Caselaw Access Project (Harvard Law School) provides 6.7 million US court decisions. Open Legal Data covers German court decisions. Entscheidsuche.ch aggregates Swiss cantonal decisions but provides limited search, no structured metadata beyond basic fields, and no citation analysis. We verified that the OpenCaseLaw corpus covers all decisions available through entscheidsuche.ch, plus additional sources they do not index (regulatory bodies, historical collections, ECHR Swiss cases).
+**Open case law infrastructure.** The Caselaw Access Project (Harvard Law School) provides 6.7 million US court decisions. Open Legal Data covers German court decisions. Entscheidsuche.ch aggregates Swiss cantonal decisions but provides limited search, no structured metadata beyond basic fields, and no citation analysis.
 
-**Legal information retrieval.** Locke et al. (2024) survey legal text retrieval approaches. COLIEE (Kano et al., 2024) evaluates retrieval and entailment on Japanese and Canadian law. Our retrieval baseline uses BM25 and Reciprocal Rank Fusion (Cormack et al., 2009; Robertson and Zaragoza, 2009) with citation graph features.
+**Legal information retrieval.** BM25 and Reciprocal Rank Fusion remain robust retrieval baselines (Robertson and Zaragoza, 2009; Cormack et al., 2009). Locke et al. (2024) survey legal text retrieval approaches. OpenCaseLaw uses BM25 and RRF as part of a practical search pipeline optimized for multilingual Swiss legal text rather than as the sole research contribution.
 
-**Re-identification risk in legal data.** Pilan et al. (2024) assess re-identification capabilities of LLMs in court decisions, finding that aggregation and structured metadata increase privacy risk even when party names are redacted. This is directly relevant to large-scale case law corpora.
+**Re-identification risk.** Pilan et al. (2024) assess re-identification capabilities of LLMs in court decisions, finding that aggregation and structured metadata increase privacy risk even when party names are redacted. This is directly relevant to large-scale case law corpora like ours.
 
-## 3. Corpus
+## 3. Dataset and Processing Pipeline
 
-### 3.1 Source Taxonomy
+### 3.1 Snapshot Statistics
 
-We distinguish four source types. This distinction matters because the corpus is not exclusively composed of court decisions in the strict judicial sense.
+Table 1 reports the repository snapshot reflected in `docs/stats.json`, generated on March 18, 2026.
 
-| Type | Count | Decisions | Examples |
-|------|-------|-----------|----------|
-| Federal courts | 7 | 298,731 | BGer (174,213), BVGer (91,560), BStGer (11,406), BPatGer (189), BGE published (21,228), BGE historical (14,578) |
-| Cantonal courts | 81 | 618,241 | GE (166,912), VD (155,399 across 3 portals), ZH (81,000 across 21 sub-courts), TI (59,247) |
-| Federal quasi-judicial bodies | 11 | 29,953 | FINMA (2,988), EDÖB (1,797), WEKO (256), VPB (22,884), ElCom (422), ComCom (64), PostCom (213), UBI (641) |
-| Supranational (Swiss subset) | 2 | 1,285 | ECHR Swiss cases (475), EMARK asylum commission (810) |
-| **Total** | **101** | **962,272** | |
+| Metric | Value |
+|--------|-------|
+| Snapshot timestamp | 2026-03-18T21:29:11Z |
+| Decisions | 962,272 |
+| Courts / public bodies | 101 |
+| Federal sources | 20 |
+| Cantonal sources | 81 |
+| Federal decisions | 344,031 |
+| Cantonal decisions | 618,241 |
+| Earliest decision date | 1875-01-01 |
+| Latest decision date | 2026-03-17 |
+| German | 448,215 (46.58%) |
+| French | 434,470 (45.15%) |
+| Italian | 79,587 (8.27%) |
 
-All 26 cantons are represented. The smallest (AI: 79, NW: 992, SH: 695) reflect genuinely smaller court systems, not incomplete scraping.
+Unless otherwise noted, corpus-wide counts in this paper come from this snapshot file. Retrieval metrics in Section 5.3 come from the frozen benchmark artifact named there.
 
-### 3.2 Languages
+The largest single sources in the current snapshot are the Federal Supreme Court (`bger`, 174,213 decisions), Geneva (`ge_gerichte`, 166,912), the Federal Administrative Court (`bvger`, 91,560), and Vaud across three publication pipelines (`vd_findinfo`, `vd_gerichte`, `vd_omni`, together 155,399).
 
-| Language | Decisions | Share |
-|----------|-----------|-------|
-| German | 448,215 | 46.6% |
-| French | 434,470 | 45.1% |
-| Italian | 79,587 | 8.3% |
+### 3.2 Collection
 
-The near-parity between German and French reflects the large volume of Geneva (166,912) and Vaud (155,399) decisions. Italian decisions come primarily from Ticino (59,247) and the Federal Supreme Court.
+The canonical scraper registry in `run_scraper.py` currently contains 54 scraper or ingest jobs. These jobs target official court websites, cantonal publication portals, and auxiliary public repositories. The codebase includes direct scrapers for many courts as well as ingestion paths for bulk sources such as entscheidsuche.ch and Fedlex-derived statute material.
 
-### 3.3 Collection
+Each decision is normalized into a shared `Decision` model (`models.py`). The model captures 28 core fields, including court identity, docket information, dates, language, title, legal area, regeste, full text, selected metadata, and source URLs.
 
-54 automated scrapers run nightly at 01:00 UTC. Each targets a specific publication channel — court websites, Weblaw APIs, FindInfo portals, Omnis platforms, or direct court APIs. Scrapers are idempotent and checkpoint-resumable: they track previously seen decisions by docket number and fetch only new content.
+### 3.3 Normalization and Deduplication
 
-Text extraction uses fitz (PyMuPDF) and pdfplumber for PDFs, BeautifulSoup for HTML, and Playwright with stealth plugins for JavaScript-rendered portals.
+OpenCaseLaw uses deterministic identifiers and a more aggressive canonical key for deduplication:
 
-### 3.4 Deduplication
+- `decision_id` is typically `{court}_{normalized_docket}`.
+- `canonical_key` normalizes court, docket, and date more aggressively to collapse formatting variants.
+- `build_fts5.py` applies within-court deduplication first, keeping the version with the richest content, then performs explicit cross-court deduplication within hand-maintained overlap groups such as Zurich, Vaud, Basel-Stadt, Bern, and Aargau.
 
-The corpus is deduplicated from approximately 1.24 million raw entries to 962,272 unique decisions using two passes:
+This is an engineering compromise rather than a perfect legal identity model. It is strong enough for operational search and export, but it should not be confused with a fully curated jurisprudential ontology of proceedings, appeals, and republications.
 
-1. **Within-source deduplication.** A canonical key derived from court code, normalized docket number, and decision date collapses formatting variants (dots, underscores, slashes, case). The version with the longest full text is kept, preferring entries with a regeste.
+### 3.4 Schemas and Access Artifacts
 
-2. **Cross-source deduplication.** Hand-maintained overlap groups handle decisions published on multiple portals. For example, Zürich decisions appear under 17 court codes; Aargau under 18. Only decisions within the same defined overlap group are compared.
+The repository intentionally uses three related but distinct schemas:
 
-Two important non-deduplication cases: a BGE leading case (official excerpt published in the BGE collection) and its underlying BGer decision (full ruling) are retained as distinct records — they have different courts, different docket numbers, and different content scope. Similarly, a cantonal decision and its federal appeal are both retained as distinct proceedings.
+1. **Core model.** `models.py` defines a 28-field `Decision` object used by scrapers.
+2. **Search database.** `db_schema.py` defines a 24-column SQLite table optimized for local search plus a JSON blob for full record preservation.
+3. **Parquet export.** `export_parquet.py` defines a 34-field Arrow schema, adding export-oriented provenance and computed fields such as `has_full_text` and `text_length`.
 
-**Validation status.** The deduplication logic has not been evaluated on a manually annotated sample. This is a limitation; precision and recall of the deduplication should be assessed in future work.
+For a paper, this distinction matters. The project does not have a single monolithic "34-field model"; it has a layered data contract designed for scraping, retrieval, and export.
 
-### 3.5 Schema
+## 4. Reference Databases
 
-Each decision has 34 fields in the Parquet export. The repository uses three related schemas by design:
+OpenCaseLaw builds a second SQLite artifact, `reference_graph.db`, from decision text. The current implementation stores case citations and statute references in related but separate tables, rather than as one homogeneous graph.
 
-1. **Core model** (`models.py`): 28 fields used by scrapers.
-2. **Search index** (`db_schema.py`): 24-column SQLite FTS5 table.
-3. **Parquet export** (`export_parquet.py`): 34-field Arrow schema with provenance and computed fields.
+### 4.1 Extraction
 
-Key fields: `decision_id`, `court`, `canton`, `docket_number`, `decision_date`, `language`, `regeste` (official headnote, present in 503,557 decisions = 52.3%), `full_text`, `legal_area`, `source_url`, `pdf_url`.
+The reference builder (`search_stack/build_reference_graph.py`) extracts:
 
-### 3.6 Text Statistics
+- BGE references such as `BGE 131 III 115`
+- federal docket references such as `4A_372/2019`
+- BVGer and BStGer docket formats
+- statute references such as `Art. 41 OR`
 
-| Statistic | Value |
-|-----------|-------|
-| Mean full text length | 22,039 characters |
-| Decisions with full text ≥ 500 chars | 936,273 (97.3%) |
-| Decisions with full text < 500 chars | 25,999 (2.7%) |
-| Decisions with regeste ≥ 20 chars | 503,557 (52.3%) |
-
-The 2.7% short-text decisions are primarily scanned PDFs without text layers; full text may be available at the source URL.
-
-## 4. Reference Database
-
-OpenCaseLaw builds a second artifact, `reference_graph.db`, from decision full text. The database stores case citations and statute references in separate tables.
-
-### 4.1 Definitions
-
-We define the following quantities precisely to avoid conflation:
-
-- **Case-citation reference** (`decision_citations` table): an extracted textual reference from a source decision to a target decision or case identifier. One row per unique (source, target_ref) pair. Multiple mentions of the same target in one decision produce one row with a `mention_count`.
-
-- **Resolved citation link** (`citation_targets` table): a case-citation reference successfully matched to a `decision_id` in the corpus. Each row maps a specific reference to a resolved target with a confidence score.
-
-- **Statute-decision link** (`decision_statutes` table): a reference from a decision to a specific statute provision (e.g., Art. 41 OR). One row per unique (decision, statute_article) pair with a `mention_count`.
+Case-reference resolution is then attempted against the in-corpus decision database using normalized dockets and confidence scoring based on court compatibility, canton compatibility, temporal plausibility, and ambiguity among candidate matches.
 
 ### 4.2 Scale
 
-Table: Reference database quantities, March 2026 snapshot.
+Table 2 summarizes the currently documented reference-database scale.
 
-| Quantity | Table | Count |
-|----------|-------|-------|
-| Case-citation references (unique source-target pairs) | `decision_citations` | 8,751,616 |
-| Resolved citation links (matched to in-corpus decision_id) | `citation_targets` | 6,463,313 |
-| Resolution rate | | 73.8% |
-| Statute-decision links (unique decision-article pairs) | `decision_statutes` | 11,220,293 |
-| Distinct statute provisions referenced | | 281,391 |
+| Metric | Value |
+|--------|-------|
+| Extracted case-citation references | 8.75 million |
+| Resolved source-reference pairs | 6.46 million |
+| Resolution rate | 73.7% |
+| Decision-statute links | 11.3 million |
 
-These quantities are not additive. Case-citation references and statute-decision links are distinct relation types stored in separate tables.
+The important distinction is that `8.75 million` refers to extracted case-citation references, whereas `11.3 million` refers to decision-statute mention links. These should not be merged into one undifferentiated edge count.
 
-Unresolved references (26.2%) include citations to unpublished lower court decisions, decisions not yet in the corpus, and references with non-standard formatting that the regex extractor does not capture.
+### 4.3 Uses
 
-### 4.3 Extraction Methodology
+The reference database supports several retrieval and analysis tasks implemented in `mcp_server.py`:
 
-References are extracted using regular expressions targeting four formats:
+- incoming and outgoing citation lookup for a decision
+- leading-case discovery by topic or statute article
+- appeal-chain tracing through prior-instance references
+- year-by-year topic trend analysis
+- statute-aware enrichment of search results
 
-1. BGE references: `BGE 131 III 115`, `ATF 140 III 264`, `DTF 142 IV 245`
-2. Docket numbers: `4A_372/2019`, `6B_1234/2025`, `E-5483/2016`
-3. BVGE references: `BVGE 2013/10`
-4. Statute provisions: `Art. 41 OR`, `Art. 8 BV`, `§ 261bis StGB`
-
-Resolution uses normalized docket matching with confidence scoring based on court compatibility and format specificity.
-
-**Validation status.** The extraction has not been evaluated for precision and recall on a manually annotated sample. This is a significant limitation. Informal inspection suggests high precision for BGE and docket references (distinctive formats) and lower recall for informal citations ("the cited judgment," implicit references). Negative citations (distinguishing rather than following a precedent) are not distinguished from positive citations.
-
-### 4.4 Applications
-
-The reference database supports: incoming/outgoing citation lookup, leading-case identification by statute article, appeal chain reconstruction via prior-instance flags, year-by-year topic trend analysis, and in-pool citation signal for search ranking.
-
-## 5. Retrieval
+## 5. Retrieval Stack and Interfaces
 
 ### 5.1 Search Pipeline
 
-The retrieval implementation (`mcp_server.py`) uses a five-stage pipeline:
+The main search implementation lives in `mcp_server.py`. Its retrieval pipeline is staged:
 
-1. **Query parsing.** Multiple FTS5 query variants are constructed. A hand-maintained 120-entry legal synonym dictionary expands terms across languages with automatic umlaut normalization. German compound words are decomposed at morpheme boundaries. Optionally, an LLM (Claude Haiku) parses the query into structured facets: statute references, doctrine name, and multilingual synonyms (~$0.0001/query).
+1. **Query parsing and expansion.** The system builds multiple lexical query variants, applies hand-maintained legal synonym expansions, handles umlaut normalization, and can optionally call a small LLM for structured parsing and multilingual expansion.
+2. **Candidate retrieval.** Several FTS5 strategies are executed and fused with Reciprocal Rank Fusion.
+3. **Signal scoring.** Candidates are reweighted using lexical match features, metadata, docket cues, court priors, and citation/statute-reference signals when the graph database is available.
+4. **Optional reranking.** The implementation can invoke confidence-gated LLM reranking for ambiguous cases and can also incorporate optional vector or cross-encoder signals depending on deployment settings.
+5. **Result enrichment.** Returned hits are enriched with court metadata, citation counts, statute mentions, and related research signals.
 
-2. **Candidate retrieval.** 6–8 FTS5 strategies run in parallel (AND, OR, field-focused, language-focused, LLM-expanded). Results are fused via Reciprocal Rank Fusion with per-strategy weights.
+This design is pragmatic rather than theoretically pure: it prioritizes recoverable legal search behavior over a single learned ranker.
 
-3. **Signal scoring.** Candidates are scored on 15+ features: BM25, docket match, term coverage, statute graph mentions, incoming citation count, in-pool citation signal, language match, and court-type priors.
+### 5.2 Distribution Interfaces
 
-4. **Optional LLM reranking.** Top 15 candidates are sent to Claude Haiku for legal relevance reranking. Confidence-gated: fires only when top results are close in score. Skipped for docket lookups. ~$0.0002/query.
+OpenCaseLaw is available in several forms:
 
-5. **Result enrichment.** Each result is enriched with court name (human-readable), court level, legal area (derived from statute references, excluding procedural statutes), top statute articles discussed, incoming citation count, and a leading-case flag.
+- **Parquet dataset** for bulk analysis and offline ML workflows
+- **local SQLite FTS5 index** for offline search
+- **REST API** for conventional HTTP clients
+- **MCP server** for tool use from Claude, ChatGPT, Gemini, and similar systems
 
-### 5.2 Benchmark
+The tool surface is deployment-dependent. The repository defines up to 21 MCP tools. Remote mode omits local update-management tools, and legislation-search tools depend on optional LexFind-backed deployment configuration.
 
-The repository includes a 100-query benchmark (`benchmarks/search_relevance_golden.json`) covering 74 German, 16 French, 7 Italian, and 3 cross-lingual queries across 15 legal domains. Each query has 3–5 expected decisions identified using citation graph authority and manual verification.
+### 5.3 Evaluation Assets
 
-Table: Retrieval results on the full 100-query set, March 2026 snapshot. All configurations use the same query set.
+The repository includes:
 
-| Configuration | MRR@10 | Hit@1 |
-|---------------|--------|-------|
-| BM25 baseline (no LLM, no citation features) | 0.363 | 0.264 |
-| + LLM query parsing + synonym expansion | 0.456 | 0.377 |
-| + LLM reranking (Haiku, w=3.0, top 15) | 0.501 | 0.434 |
-| + Compound decomposition + BVGE normalization | 0.510 | 0.443 |
-| Full system (above + expanded 100-query set) | 0.647 | 0.570 |
+- `benchmarks/run_search_benchmark.py`
+- `benchmarks/search_relevance_golden.json`
 
-**Important caveat.** The jump from 0.510 to 0.647 in the last row reflects the expansion of the query set from 53 to 100 queries. The new queries were selected to cover underrepresented legal domains (tenancy, tax, employment, criminal) and happened to have higher baseline performance. On the original 53-query subset, the final system scores MRR 0.510. The 0.647 figure is the result on the complete 100-query set and should not be directly compared with the 53-query ablation rows.
+The current gold set contains 100 tagged queries. Language tags mark 74 German-tagged queries, 16 French-tagged queries, 7 Italian-tagged queries, and 3 queries without a language tag. By query type, the set includes 46 natural-language queries, 11 statute-oriented queries, 8 concept-match queries, and 2 explicitly cross-lingual queries, plus smaller slices for docket lookup, short queries, and other robustness cases.
 
-**Validation status.** Relevance judgments were produced by a single annotator (the author) using citation graph authority as a guide. Inter-annotator agreement has not been computed. A submission to a peer-reviewed venue should obtain judgments from multiple legal experts and report agreement.
+This benchmark infrastructure is one of the more important research artifacts in the repository because it makes retrieval changes testable on fixed inputs instead of anecdotal examples. To anchor the current paper to a versioned result, the repository now includes `benchmarks/search_benchmark_2026-03-19_offline_full.json`, a frozen run on the 100-query set against a 1,078,177-row local `decisions.db`. That offline baseline achieved MRR@10 = 0.4697, Recall@10 = 0.4958, nDCG@10 = 0.5250, and Hit@1 = 0.33.
 
-We also evaluated bge-reranker-base (278M parameters, trained on English MS MARCO). It reduced MRR at all weight settings, consistent with the observation that general-purpose rerankers underperform on domain-specific multilingual text. This is not a strong baseline comparison; a multilingual legal-domain reranker would be more informative.
+This number should be interpreted carefully. It is a deterministic local baseline, not a full hosted-system score: the evaluation environment for that run did not have a local reference-graph database, local statutes/commentary databases, vector search, or Anthropic-backed query expansion and reranking available. The benchmark remains useful for publication because it is frozen and inspectable, but it is not yet a balanced benchmark for strong multilingual claims: it is still dominated by German natural-language queries, and its hardest slices remain concept-match and statute-oriented retrieval.
 
-### 5.3 Distribution
+## 6. Ethics, Legal Basis, and Limitations
 
-The corpus is available via:
+### 6.1 Legal Basis and Governance
 
-- **Parquet** on HuggingFace for bulk analysis (~7 GB, 100 files)
-- **Local SQLite FTS5 index** for offline search (~65 GB)
-- **REST API** with OpenAPI documentation
-- **MCP server** supporting SSE and Streamable HTTP transports, with 19 read-only tools covering search, citation analysis, statute lookup, legislation search, and scholarly commentary. Compatible with Claude, ChatGPT (Developer Mode, recommended with GPT-5.3), and Gemini CLI.
+Published Swiss court decisions are excluded from copyright protection under Art. 5 para. 1 lit. c URG (Federal Act on Copyright), which exempts official works including judicial decisions. The duty to publish Federal Supreme Court decisions is established by Art. 27 BGG. Cantonal publication duties vary by jurisdiction.
 
-## 6. Legal Framework
+OpenCaseLaw indexes decisions in the form published by the originating courts. The project does not itself perform anonymization; it preserves the published form of the source material and links back to the original URLs. That makes court publication policy a first-order dependency of the dataset, especially for cantonal courts whose anonymization practices vary.
 
-Published Swiss court decisions are excluded from copyright protection under Art. 5 para. 1 lit. c of the Federal Act on Copyright and Related Rights (URG), which exempts official works including judicial decisions. The duty to publish Federal Supreme Court decisions is established by Art. 27 of the Federal Supreme Court Act (BGG). Cantonal publication duties vary by jurisdiction.
+Large-scale aggregation changes the privacy risk profile compared to individual court-website publication. Structured metadata combined with full text may enable re-identification even when party names are redacted (Pilan et al., 2024). The repository documents a process for courts or affected parties to request removal of specific decisions.
 
-OpenCaseLaw indexes decisions in the form published by the originating courts. Anonymization is performed by the courts; we do not add or remove anonymization. Federal courts consistently anonymize parties. Cantonal anonymization practices vary.
+### 6.2 Limitations
 
-Large-scale aggregation changes the privacy risk profile compared to individual court-website publication. Structured metadata (court, date, legal area, canton) combined with full text may enable re-identification even when party names are redacted (Pilan et al., 2024). Users of the corpus should be aware of this risk, particularly for cantonal decisions with less stringent anonymization.
+- **Coverage is broad, not perfect.** The corpus spans all cantons and federal courts, but publication depth still varies by court and era.
+- **Historical quality varies.** Older BGE material and scanned PDFs can contain OCR artifacts or short extracted text.
+- **Reference extraction is rule-based.** Citation and statute extraction are regex-driven and therefore miss non-standard, implicit, or stylistically unusual references.
+- **Identity is operational, not jurisprudential.** `decision_id` and `canonical_key` are strong engineering identifiers, but they are not the same thing as a fully curated canonical case identity across republications and appeal stages.
+- **Schema layering increases complexity.** The distinction between the core model, search schema, and export schema is useful in code but easy to misstate in documentation or papers.
+- **Published artifacts are generated by multiple pipelines.** The corpus, search index, reference database, and dashboard statistics are closely related but operationally distinct build products; papers should state clearly which artifact a reported number comes from.
+- **The archived benchmark is still a baseline, not a final system result.** The March 19, 2026 frozen report is reproducible and useful, but it reflects the offline local configuration available in that environment rather than a fully provisioned hosted deployment.
 
-The corpus is intended for legal research, computational legal studies, and tool development. It is not intended as a substitute for qualified legal counsel.
+## 7. Availability
 
-## 7. Limitations
-
-- **Coverage is broad, not audited.** The corpus spans all cantons and federal courts, but we have not conducted a court-by-court recall audit against official publication counts. Publication depth varies by court and era.
-- **Publication bias.** The corpus contains only decisions that courts chose to publish. It should not be interpreted as a complete record of Swiss judicial activity.
-- **Reference extraction is rule-based.** The 73.8% resolution rate is a system-level number without per-type precision/recall evaluation on manually annotated data.
-- **Deduplication is untested.** The canonical key approach has not been evaluated against manual judgments. Edge cases (e.g., corrected republications, multi-language versions of the same decision) may produce false negatives or false positives.
-- **Retrieval evaluation is preliminary.** Single annotator, no inter-annotator agreement, no dev/test split, and the evaluation set changed during system development. Results should be interpreted as indicative, not definitive.
-- **Entity taxonomy is not purely judicial.** The corpus includes quasi-judicial bodies (FINMA, WEKO, EDÖB) and a supranational court (ECHR). The title and description reflect this but could be clearer.
-- **LLM dependency.** Query parsing and reranking depend on Claude Haiku API availability. The system degrades gracefully to BM25-only search.
-
-## 8. Future Work
-
-Three areas would strengthen the corpus as a research artifact:
-
-1. **Manual evaluation.** Citation extraction precision/recall on annotated samples. Deduplication accuracy on reviewed pairs. Multi-annotator relevance judgments with agreement statistics for the retrieval benchmark.
-
-2. **Versioned benchmark.** A frozen dev/test split of the query set with all results reported on the held-out test partition only. This is standard practice and should be done before peer-reviewed submission.
-
-3. **Coverage audit.** Court-by-court comparison against official publication counts where available, documenting known gaps.
-
-## 9. Availability
-
-| Artifact | URL |
+| Resource | URL |
 |----------|-----|
-| Corpus (Parquet, updated daily) | [huggingface.co/datasets/voilaj/swiss-caselaw](https://huggingface.co/datasets/voilaj/swiss-caselaw) |
-| Source code (MIT) | [github.com/jonashertner/caselaw-repo-1](https://github.com/jonashertner/caselaw-repo-1) |
-| MCP server (19 tools, no auth) | `https://mcp.opencaselaw.ch` |
-| REST API documentation | [mcp.opencaselaw.ch/api/docs](https://mcp.opencaselaw.ch/api/docs) |
-| Decision pages (Schema.org LegalCase) | `https://mcp.opencaselaw.ch/entscheid/{id}` |
-| Live statistics | [opencaselaw.ch](https://opencaselaw.ch) |
-| Benchmark queries | `benchmarks/search_relevance_golden.json` in repository |
+| Dataset (Parquet) | [huggingface.co/datasets/voilaj/swiss-caselaw](https://huggingface.co/datasets/voilaj/swiss-caselaw) |
+| Source code | [github.com/jonashertner/caselaw-repo-1](https://github.com/jonashertner/caselaw-repo-1) |
+| Frozen benchmark report | `benchmarks/search_benchmark_2026-03-19_offline_full.json` |
+| MCP server | `https://mcp.opencaselaw.ch` |
+| REST API docs | [mcp.opencaselaw.ch/api/docs](https://mcp.opencaselaw.ch/api/docs) |
+| Public stats snapshot | [opencaselaw.ch](https://opencaselaw.ch) |
 
 ## References
 
+- Caselaw Access Project. Harvard Law School Library Innovation Lab. https://case.law
 - Chalkidis, I., Jana, A., Hartung, D., Bommarito, M., Androutsopoulos, I., Katz, D., and Aletras, N. (2022). LexGLUE: A Benchmark Dataset for Legal Language Understanding in English. In *Proceedings of ACL 2022*.
 - Cormack, G., Clarke, C., and Buettcher, S. (2009). Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods. In *Proceedings of SIGIR 2009*.
 - Kano, Y., Soh, J., Ngo, L., Rabelo, J., and Satoh, K. (2024). COLIEE 2024: Competition on Legal Information Extraction/Entailment. In *JSAI 2024*.
