@@ -6,10 +6,10 @@ publish.py — Daily publishing pipeline for Swiss Case Law
 Orchestration script for VPS cron job. Runs the full pipeline:
   1.  Ingest new entscheidsuche.ch downloads (if entscheidsuche_ingest.py exists)
   2.  Build/update FTS5 database
+  2d. Quality enrichment (titles, regeste, dates, hashes, dedup)
   2b. Quality report (optional)
   2c. Build reference graph (citations + statutes, ~78 min)
-  2d. Quality enrichment (titles, regeste, dates, hashes, dedup)
-  3.  Export JSONL → Parquet
+  3.  Export database/JSONL → Parquet
   4.  Upload Parquet + dataset card to HuggingFace
   5.  Generate stats.json
   6.  Git commit + push docs/stats.json
@@ -241,7 +241,7 @@ def step_2d_enrich_quality(dry_run: bool = False, full_rebuild: bool = False) ->
 
 
 def step_3_export_parquet(dry_run: bool = False) -> bool:
-    """Step 3: Export JSONL → Parquet."""
+    """Step 3: Export SQLite/JSONL corpus to Parquet."""
     logger.info("Step 3: Export Parquet")
 
     script = REPO_DIR / "export_parquet.py"
@@ -368,15 +368,21 @@ def step_6_git_push(dry_run: bool = False) -> bool:
     if not ok:
         return False
 
+    # Pull --rebase first to avoid conflicts when local commits
+    # were pushed from development machines between cron runs.
+    run_cmd(["git", "pull", "--rebase", "origin", "main"], "git pull --rebase", dry_run)
     return run_cmd(["git", "push"], "git push", dry_run)
 
 
+# Execution order intentionally differs from the step IDs to preserve the
+# existing CLI surface (`--step 2b`, `--step 2c`, `--step 2d`) while ensuring
+# weekly enrichment happens before quality gating and graph construction.
 STEPS = [
     (1, "Ingest", step_1_ingest),
     (2, "Build FTS5", step_2_build_fts5),
+    ("2d", "Quality Enrichment", step_2d_enrich_quality),
     ("2b", "Quality Report", step_2b_quality_report),
     ("2c", "Reference Graph", step_2c_build_reference_graph),
-    ("2d", "Quality Enrichment", step_2d_enrich_quality),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
     (5, "Generate Stats", step_5_generate_stats),
