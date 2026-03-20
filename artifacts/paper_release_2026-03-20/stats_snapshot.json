@@ -1,0 +1,582 @@
+{
+  "total": 962724,
+  "by_court": [
+    {
+      "court": "bger",
+      "canton": "CH",
+      "count": 174270
+    },
+    {
+      "court": "ge_gerichte",
+      "canton": "GE",
+      "count": 167003
+    },
+    {
+      "court": "bvger",
+      "canton": "CH",
+      "count": 91613
+    },
+    {
+      "court": "vd_findinfo",
+      "canton": "VD",
+      "count": 74819
+    },
+    {
+      "court": "ti_gerichte",
+      "canton": "TI",
+      "count": 59246
+    },
+    {
+      "court": "vd_gerichte",
+      "canton": "VD",
+      "count": 52572
+    },
+    {
+      "court": "zh_sozialversicherungsgericht",
+      "canton": "ZH",
+      "count": 33664
+    },
+    {
+      "court": "vd_omni",
+      "canton": "VD",
+      "count": 28032
+    },
+    {
+      "court": "zh_obergericht",
+      "canton": "ZH",
+      "count": 27388
+    },
+    {
+      "court": "ch_vb",
+      "canton": "CH",
+      "count": 22884
+    },
+    {
+      "court": "bge",
+      "canton": "CH",
+      "count": 21228
+    },
+    {
+      "court": "bl_gerichte",
+      "canton": "BL",
+      "count": 16947
+    },
+    {
+      "court": "bge_historical",
+      "canton": "CH",
+      "count": 14578
+    },
+    {
+      "court": "gr_gerichte",
+      "canton": "GR",
+      "count": 14407
+    },
+    {
+      "court": "fr_gerichte",
+      "canton": "FR",
+      "count": 14143
+    },
+    {
+      "court": "zh_verwaltungsgericht",
+      "canton": "ZH",
+      "count": 11488
+    },
+    {
+      "court": "bstger",
+      "canton": "CH",
+      "count": 11391
+    },
+    {
+      "court": "be_verwaltungsgericht",
+      "canton": "BE",
+      "count": 11198
+    },
+    {
+      "court": "so_gerichte",
+      "canton": "SO",
+      "count": 8960
+    },
+    {
+      "court": "bs_appellationsgericht",
+      "canton": "BS",
+      "count": 8031
+    },
+    {
+      "court": "sg_versicherungsgericht",
+      "canton": "SG",
+      "count": 7488
+    },
+    {
+      "court": "ne_gerichte",
+      "canton": "NE",
+      "count": 7486
+    },
+    {
+      "court": "vs_gerichte",
+      "canton": "VS",
+      "count": 6597
+    },
+    {
+      "court": "be_zivilstraf",
+      "canton": "BE",
+      "count": 5673
+    },
+    {
+      "court": "zh_handelsgericht",
+      "canton": "ZH",
+      "count": 4654
+    },
+    {
+      "court": "ar_gerichte",
+      "canton": "AR",
+      "count": 4447
+    },
+    {
+      "court": "lu_gerichte",
+      "canton": "LU",
+      "count": 3938
+    },
+    {
+      "court": "sg_gerichte",
+      "canton": "SG",
+      "count": 3854
+    },
+    {
+      "court": "sz_gerichte",
+      "canton": "SZ",
+      "count": 3255
+    },
+    {
+      "court": "ag_gerichte",
+      "canton": "AG",
+      "count": 2831
+    },
+    {
+      "court": "sg_verwaltungsgericht",
+      "canton": "SG",
+      "count": 2723
+    },
+    {
+      "court": "finma_versicherungsrecht",
+      "canton": "CH",
+      "count": 2582
+    },
+    {
+      "court": "tg_obergericht",
+      "canton": "TG",
+      "count": 2443
+    },
+    {
+      "court": "ow_gerichte",
+      "canton": "OW",
+      "count": 2206
+    },
+    {
+      "court": "be_bvd",
+      "canton": "BE",
+      "count": 2094
+    },
+    {
+      "court": "bs_sozialversicherungsgericht",
+      "canton": "BS",
+      "count": 2080
+    },
+    {
+      "court": "sz_verwaltungsgericht",
+      "canton": "SZ",
+      "count": 2049
+    },
+    {
+      "court": "ag_strafgericht",
+      "canton": "AG",
+      "count": 1906
+    },
+    {
+      "court": "ag_versicherungsgericht",
+      "canton": "AG",
+      "count": 1864
+    },
+    {
+      "court": "edoeb",
+      "canton": "CH",
+      "count": 1797
+    },
+    {
+      "court": "ag_verwaltungsgericht",
+      "canton": "AG",
+      "count": 1762
+    },
+    {
+      "court": "ag_zivilgericht",
+      "canton": "AG",
+      "count": 1710
+    },
+    {
+      "court": "zh_kassationsgericht",
+      "canton": "ZH",
+      "count": 1454
+    },
+    {
+      "court": "zh_gerichte",
+      "canton": "ZH",
+      "count": 1436
+    },
+    {
+      "court": "gl_gerichte",
+      "canton": "GL",
+      "count": 1401
+    },
+    {
+      "court": "zg_verwaltungsgericht",
+      "canton": "ZG",
+      "count": 1323
+    },
+    {
+      "court": "zg_obergericht",
+      "canton": "ZG",
+      "count": 1220
+    },
+    {
+      "court": "ur_gerichte",
+      "canton": "UR",
+      "count": 1202
+    },
+    {
+      "court": "zh_baurekursgericht",
+      "canton": "ZH",
+      "count": 1139
+    },
+    {
+      "court": "tg_gerichte",
+      "canton": "TG",
+      "count": 1072
+    },
+    {
+      "court": "ju_gerichte",
+      "canton": "JU",
+      "count": 1052
+    },
+    {
+      "court": "ag_spezialverwaltungsgericht",
+      "canton": "AG",
+      "count": 1034
+    },
+    {
+      "court": "nw_gerichte",
+      "canton": "NW",
+      "count": 992
+    },
+    {
+      "court": "zh_steuerrekursgericht",
+      "canton": "ZH",
+      "count": 878
+    },
+    {
+      "court": "be_weitere",
+      "canton": "BE",
+      "count": 836
+    },
+    {
+      "court": "hudoc_ch",
+      "canton": "CH",
+      "count": 816
+    },
+    {
+      "court": "sh_obergericht",
+      "canton": "SH",
+      "count": 718
+    },
+    {
+      "court": "sh_gerichte",
+      "canton": "SH",
+      "count": 696
+    },
+    {
+      "court": "sg_publikationen",
+      "canton": "SG",
+      "count": 658
+    },
+    {
+      "court": "ubi",
+      "canton": "CH",
+      "count": 644
+    },
+    {
+      "court": "bge_egmr",
+      "canton": "CH",
+      "count": 475
+    },
+    {
+      "court": "zh_bezirksgericht_zuerich",
+      "canton": "ZH",
+      "count": 448
+    },
+    {
+      "court": "elcom",
+      "canton": "CH",
+      "count": 423
+    },
+    {
+      "court": "finma",
+      "canton": "CH",
+      "count": 405
+    },
+    {
+      "court": "be_steuerrekurs",
+      "canton": "BE",
+      "count": 343
+    },
+    {
+      "court": "ag_handelsgericht",
+      "canton": "AG",
+      "count": 311
+    },
+    {
+      "court": "weko",
+      "canton": "CH",
+      "count": 256
+    },
+    {
+      "court": "emark",
+      "canton": "CH",
+      "count": 237
+    },
+    {
+      "court": "ag_regierungsrat",
+      "canton": "AG",
+      "count": 232
+    },
+    {
+      "court": "postcom",
+      "canton": "CH",
+      "count": 216
+    },
+    {
+      "court": "ag_baugesetzgebung",
+      "canton": "AG",
+      "count": 196
+    },
+    {
+      "court": "bpatger",
+      "canton": "CH",
+      "count": 189
+    },
+    {
+      "court": "ai_gerichte",
+      "canton": "AI",
+      "count": 174
+    },
+    {
+      "court": "sg_verwaltungsrekurskommission",
+      "canton": "SG",
+      "count": 158
+    },
+    {
+      "court": "sg_kantonsgericht",
+      "canton": "SG",
+      "count": 114
+    },
+    {
+      "court": "ag_departement_bvu",
+      "canton": "AG",
+      "count": 91
+    },
+    {
+      "court": "be_anwaltsaufsicht",
+      "canton": "BE",
+      "count": 72
+    },
+    {
+      "court": "comcom",
+      "canton": "CH",
+      "count": 64
+    },
+    {
+      "court": "zh_bezirksgericht_horgen",
+      "canton": "ZH",
+      "count": 59
+    },
+    {
+      "court": "ta_sst",
+      "canton": "CH",
+      "count": 49
+    },
+    {
+      "court": "zh_bezirksgericht_winterthur",
+      "canton": "ZH",
+      "count": 44
+    },
+    {
+      "court": "ag_departement_vi",
+      "canton": "AG",
+      "count": 37
+    },
+    {
+      "court": "ag_anwaltskommission",
+      "canton": "AG",
+      "count": 32
+    },
+    {
+      "court": "zh_bezirksgericht_dietikon",
+      "canton": "ZH",
+      "count": 31
+    },
+    {
+      "court": "ag_weitere",
+      "canton": "AG",
+      "count": 24
+    },
+    {
+      "court": "ch_bundesrat",
+      "canton": "CH",
+      "count": 24
+    },
+    {
+      "court": "zh_bezirksgericht_dielsdorf",
+      "canton": "ZH",
+      "count": 20
+    },
+    {
+      "court": "ag_departement_gs",
+      "canton": "AG",
+      "count": 19
+    },
+    {
+      "court": "zh_bezirksgericht_hinwil",
+      "canton": "ZH",
+      "count": 18
+    },
+    {
+      "court": "zh_bezirksgericht_buelach",
+      "canton": "ZH",
+      "count": 17
+    },
+    {
+      "court": "zh_bezirksgericht_uster",
+      "canton": "ZH",
+      "count": 16
+    },
+    {
+      "court": "zh_bezirksgericht_pfaeffikon",
+      "canton": "ZH",
+      "count": 14
+    },
+    {
+      "court": "ag_departement_bks",
+      "canton": "AG",
+      "count": 12
+    },
+    {
+      "court": "zh_bezirksgericht_meilen",
+      "canton": "ZH",
+      "count": 7
+    },
+    {
+      "court": "zh_bezirksgericht_affoltern",
+      "canton": "ZH",
+      "count": 6
+    },
+    {
+      "court": "ag_aufsichtskommission",
+      "canton": "AG",
+      "count": 5
+    },
+    {
+      "court": "ag_justizgericht",
+      "canton": "AG",
+      "count": 4
+    },
+    {
+      "court": "sg_handelsgericht",
+      "canton": "SG",
+      "count": 4
+    },
+    {
+      "court": "bs_gerichte",
+      "canton": "BS",
+      "count": 2
+    },
+    {
+      "court": "zh_bezirksgericht_andelfingen",
+      "canton": "ZH",
+      "count": 2
+    },
+    {
+      "court": "zh_arbeitsgericht",
+      "canton": "ZH",
+      "count": 1
+    },
+    {
+      "court": "zh_mietgericht",
+      "canton": "ZH",
+      "count": 1
+    }
+  ],
+  "by_language": {
+    "de": 448461,
+    "fr": 434663,
+    "it": 79600
+  },
+  "date_range": {
+    "earliest": "1875-01-01",
+    "latest": "2026-03-19"
+  },
+  "court_count": 102,
+  "top_courts": [
+    {
+      "court": "bger",
+      "canton": "CH",
+      "count": 174270
+    },
+    {
+      "court": "ge_gerichte",
+      "canton": "GE",
+      "count": 167003
+    },
+    {
+      "court": "bvger",
+      "canton": "CH",
+      "count": 91613
+    },
+    {
+      "court": "vd_findinfo",
+      "canton": "VD",
+      "count": 74819
+    },
+    {
+      "court": "ti_gerichte",
+      "canton": "TI",
+      "count": 59246
+    },
+    {
+      "court": "vd_gerichte",
+      "canton": "VD",
+      "count": 52572
+    },
+    {
+      "court": "zh_sozialversicherungsgericht",
+      "canton": "ZH",
+      "count": 33664
+    },
+    {
+      "court": "vd_omni",
+      "canton": "VD",
+      "count": 28032
+    },
+    {
+      "court": "zh_obergericht",
+      "canton": "ZH",
+      "count": 27388
+    },
+    {
+      "court": "ch_vb",
+      "canton": "CH",
+      "count": 22884
+    }
+  ],
+  "federal_vs_cantonal": {
+    "federal": 344141,
+    "cantonal": 618583
+  },
+  "generated_at": "2026-03-20T08:54:27.170794+00:00"
+}

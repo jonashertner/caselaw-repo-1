@@ -41,7 +41,9 @@ def generate_stats(db_path: Path) -> dict:
     conn.row_factory = sqlite3.Row
 
     stats: dict = {}
-    current_year = datetime.now(timezone.utc).year
+    now_utc = datetime.now(timezone.utc)
+    current_year = now_utc.year
+    today_iso = now_utc.date().isoformat()
 
     # Total decisions
     stats["total"] = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
@@ -52,14 +54,16 @@ def generate_stats(db_path: Path) -> dict:
             court,
             canton,
             COUNT(*) as count,
-            MIN(decision_date) as earliest,
-            MAX(decision_date) as latest,
+            MIN(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None'
+                     AND decision_date > '1800-01-01' AND decision_date <= ? THEN decision_date END) as earliest,
+            MAX(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None'
+                     AND decision_date > '1800-01-01' AND decision_date <= ? THEN decision_date END) as latest,
             MAX(scraped_at) as last_scraped,
             GROUP_CONCAT(DISTINCT language) as languages
         FROM decisions
         GROUP BY court, canton
         ORDER BY count DESC
-    """).fetchall()
+    """, (today_iso, today_iso)).fetchall()
     stats["by_court"] = [
         {
             "court": r["court"],
@@ -117,6 +121,7 @@ def generate_stats(db_path: Path) -> dict:
         SELECT decision_date as day, COUNT(*) as count
         FROM decisions
         WHERE decision_date >= date('now', '-30 days')
+          AND decision_date <= date('now')
         GROUP BY day
         ORDER BY day ASC
     """).fetchall()
@@ -129,8 +134,8 @@ def generate_stats(db_path: Path) -> dict:
         WHERE decision_date IS NOT NULL
           AND decision_date != 'None'
           AND decision_date > '1800-01-01'
-          AND decision_date < '2100-01-01'
-    """).fetchone()
+          AND decision_date <= ?
+    """, (today_iso,)).fetchone()
     stats["date_range"] = {
         "earliest": date_range["earliest"],
         "latest": date_range["latest"],
@@ -170,14 +175,14 @@ def generate_stats(db_path: Path) -> dict:
             canton,
             COUNT(DISTINCT court) as court_count,
             MIN(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None'
-                     AND decision_date > '1800-01-01' THEN decision_date END) as earliest,
+                     AND decision_date > '1800-01-01' AND decision_date <= ? THEN decision_date END) as earliest,
             MAX(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None'
-                     AND decision_date < '2100-01-01' THEN decision_date END) as latest,
+                     AND decision_date <= ? THEN decision_date END) as latest,
             GROUP_CONCAT(DISTINCT language) as languages
         FROM decisions
         WHERE canton != 'CH'
         GROUP BY canton
-    """).fetchall()
+    """, (today_iso, today_iso)).fetchall()
     canton_detail_map = {
         r["canton"]: {
             "court_count": r["court_count"],

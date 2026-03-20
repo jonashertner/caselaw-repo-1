@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -21,6 +22,7 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+from build_paper_release_bundle import _bundle_readme, _display_path, _sha256_path, _write_checksums
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -67,9 +69,37 @@ def _write_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+def _sanitize_external_path(path: Path) -> str:
+    try:
+        return _display_path(path)
+    except Exception:
+        return f"external:{path.name}"
+
+
+def _bool_env(name: str, default: bool = False) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.lower() in {"1", "true", "yes"}
+
+
+def _environment_profile(db_path: Path) -> dict:
+    base = db_path.parent
+    return {
+        "graph_db_available": (base / "reference_graph.db").exists(),
+        "vector_db_available": (base / "vectors.db").exists(),
+        "statutes_db_available": (base / "statutes.db").exists(),
+        "commentary_db_available": (base / "ok_commentaries.db").exists(),
+        "anthropic_api_configured": bool(os.environ.get("ANTHROPIC_API_KEY")),
+        "llm_expansion_enabled": _bool_env("LLM_EXPANSION_ENABLED", default=True),
+        "llm_rerank_enabled": _bool_env("LLM_RERANK_ENABLED", default=True),
+    }
+
+
 def _profile_db(db_path: Path) -> dict:
     conn = sqlite3.connect(str(db_path))
     try:
+        today_iso = datetime.now(timezone.utc).date().isoformat()
         total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
         court_count = conn.execute(
             "SELECT COUNT(DISTINCT court) FROM decisions WHERE court IS NOT NULL AND TRIM(court) != ''"
@@ -78,11 +108,15 @@ def _profile_db(db_path: Path) -> dict:
             """
             SELECT
                 MIN(CASE WHEN decision_date IS NOT NULL AND decision_date != '' AND decision_date NOT LIKE '0000-%'
+                    AND decision_date > '1800-01-01' AND decision_date <= ?
                     THEN decision_date END),
                 MAX(CASE WHEN decision_date IS NOT NULL AND decision_date != '' AND decision_date NOT LIKE '0000-%'
+                    AND decision_date > '1800-01-01' AND decision_date <= ?
                     THEN decision_date END)
             FROM decisions
             """
+            ,
+            (today_iso, today_iso),
         ).fetchone()
         langs = {
             row[0]: row[1]
@@ -160,6 +194,94 @@ def _run_benchmark(db_path: Path, golden_path: Path, k: int, output_path: Path) 
     subprocess.run(cmd, cwd=REPO_ROOT, check=True)
 
 
+def _refresh_manifest_and_bundle_metadata(
+    manifest_path: Path,
+    benchmark_json_path: Path,
+    report_json_path: Path | None,
+    db_path: Path,
+    golden_path: Path,
+    payload: dict,
+) -> None:
+    bundle_dir = manifest_path.parent
+    manifest = _load_json(manifest_path)
+    stats = _load_json(bundle_dir / "stats_snapshot.json")
+    summary = payload["summary"]
+
+    benchmark_rel = _display_path(benchmark_json_path)
+    report_rel = _display_path(report_json_path) if report_json_path else None
+    manifest_rel = _display_path(manifest_path)
+    golden_rel = _display_path(golden_path)
+    db_label = _sanitize_external_path(db_path)
+
+    manifest["benchmark"] = {
+        "source_path": benchmark_rel,
+        "golden_source_path": golden_rel,
+        "db_path": db_label,
+        "db_rows": summary["db_rows"],
+        "queries_total": summary["queries_total"],
+        "queries_evaluated": summary["queries_evaluated"],
+        "k": summary["k"],
+        "metrics": {
+            "mrr_at_k": summary["mrr_at_k"],
+            "recall_at_k": summary["recall_at_k"],
+            "ndcg_at_k": summary["ndcg_at_k"],
+            "hit_at_1": summary["hit_at_1"],
+            "latency_ms_avg": summary["latency_ms_avg"],
+            "latency_ms_p95": summary["latency_ms_p95"],
+        },
+        "release_matched": True,
+        "release_match_note": "Benchmark DB row count matches corpus snapshot.",
+        "reproduction_command": (
+            "python3 scripts/run_release_matched_benchmark.py "
+            f"--manifest {manifest_rel} "
+            "--db /path/to/decisions.db "
+            f"--report-json {report_rel or _display_path(bundle_dir / 'release_match_check.json')} "
+            f"--benchmark-json {benchmark_rel}"
+        ),
+        "release_matched_command_template": (
+            "python3 scripts/run_release_matched_benchmark.py "
+            f"--manifest {manifest_rel} "
+            "--db /path/to/decisions.db "
+            f"--report-json {report_rel or _display_path(bundle_dir / 'release_match_check.json')} "
+            f"--benchmark-json {benchmark_rel}"
+        ),
+        "environment": payload.get("environment"),
+    }
+
+    if report_json_path and report_json_path.exists():
+        manifest["release_match_check"] = {
+            "path": report_rel,
+            "matched": True,
+            "sha256": _sha256_path(report_json_path),
+        }
+        manifest.setdefault("files", {})["release_match_check.json"] = {
+            "path": report_json_path.name,
+            "bytes": report_json_path.stat().st_size,
+            "sha256": _sha256_path(report_json_path),
+        }
+
+    manifest.setdefault("files", {})[benchmark_json_path.name] = {
+        "path": benchmark_json_path.name,
+        "bytes": benchmark_json_path.stat().st_size,
+        "sha256": _sha256_path(benchmark_json_path),
+    }
+    _write_json(manifest_path, manifest)
+
+    stats_source_ref = manifest["stats_source"].get("label") or manifest["stats_source"].get("git_revision") or "stats_snapshot.json"
+    readme = _bundle_readme(
+        manifest["release_id"],
+        stats,
+        summary,
+        stats_source_ref,
+        _display_path(bundle_dir),
+        release_matched=True,
+        benchmark_report_name=benchmark_json_path.name,
+        benchmark_environment=payload.get("environment"),
+    )
+    (bundle_dir / "README.md").write_text(readme, encoding="utf-8")
+    _write_checksums(bundle_dir)
+
+
 def main() -> int:
     args = parse_args()
     manifest_path = args.manifest.resolve()
@@ -177,9 +299,9 @@ def main() -> int:
 
     report = {
         "checked_at": datetime.now(timezone.utc).isoformat(),
-        "manifest_path": str(manifest_path),
+        "manifest_path": _display_path(manifest_path),
         "release_id": manifest.get("release_id"),
-        "db_path": str(db_path),
+        "db_path": _sanitize_external_path(db_path),
         "expected": expected,
         "actual": actual,
         "matched": not mismatches,
@@ -214,14 +336,26 @@ def main() -> int:
         _run_benchmark(db_path=db_path, golden_path=golden_path, k=args.k, output_path=tmp_output)
         payload = _load_json(tmp_output)
 
+    payload["summary"]["db_path"] = _sanitize_external_path(db_path)
+    payload["summary"]["golden_path"] = _display_path(golden_path)
+    payload["summary"]["golden_paths"] = [_display_path(golden_path)]
+    payload["environment"] = _environment_profile(db_path)
     payload["release_verification"] = {
         "release_id": manifest.get("release_id"),
-        "manifest_path": str(manifest_path),
-        "db_path": str(db_path),
+        "manifest_path": _display_path(manifest_path),
+        "db_path": _sanitize_external_path(db_path),
         "matched": True,
         "expected_snapshot": expected,
     }
     _write_json(benchmark_json_path, payload)
+    _refresh_manifest_and_bundle_metadata(
+        manifest_path=manifest_path,
+        benchmark_json_path=benchmark_json_path,
+        report_json_path=args.report_json.resolve() if args.report_json else None,
+        db_path=db_path,
+        golden_path=golden_path,
+        payload=payload,
+    )
     print(f"Wrote release-matched benchmark: {benchmark_json_path}")
     return 0
 

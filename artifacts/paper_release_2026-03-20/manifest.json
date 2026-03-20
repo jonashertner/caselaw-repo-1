@@ -1,0 +1,104 @@
+{
+  "release_id": "opencaselaw-paper-2026-03-20",
+  "created_at": "2026-03-20T11:05:55.407900+00:00",
+  "repo_head_revision": "947339f1209732fefb2e2ca6c8a8e8deb2848c44",
+  "stats_source": {
+    "type": "file",
+    "label": "stats_snapshot.json",
+    "origin_label": "derived from the March 20, 2026 release database snapshot",
+    "git_revision": null,
+    "git_path": null,
+    "file_path": null,
+    "bundled_path": "stats_snapshot.json",
+    "generated_at": "2026-03-20T08:54:27.170794+00:00",
+    "sha256": "be24da45a47ddb8e9fa51110e6deded29a1a6b987c399398b5bfc875df88b479"
+  },
+  "paper": {
+    "source_path": "docs/paper/opencaselaw-arxiv-final.md",
+    "sha256": "557a90144104680ca7db0f2955f22393d01e19e33892ae7fe3bd2b197a098541"
+  },
+  "corpus_snapshot": {
+    "decisions": 962724,
+    "court_count": 102,
+    "date_range": {
+      "earliest": "1875-01-01",
+      "latest": "2026-03-19"
+    },
+    "by_language": {
+      "de": 448461,
+      "fr": 434663,
+      "it": 79600
+    }
+  },
+  "benchmark": {
+    "source_path": "artifacts/paper_release_2026-03-20/benchmark_report_release_matched.json",
+    "golden_source_path": "artifacts/paper_release_2026-03-20/benchmark_golden.json",
+    "db_path": "external:decisions.db",
+    "db_rows": 962724,
+    "queries_total": 100,
+    "queries_evaluated": 100,
+    "k": 10,
+    "metrics": {
+      "mrr_at_k": 0.6041944444444445,
+      "recall_at_k": 0.5835,
+      "ndcg_at_k": 0.6061718117779089,
+      "hit_at_1": 0.52,
+      "latency_ms_avg": 2452.4513737196685,
+      "latency_ms_p95": 10406.053792015882
+    },
+    "release_matched": true,
+    "release_match_note": "Benchmark DB row count matches corpus snapshot.",
+    "reproduction_command": "python3 scripts/run_release_matched_benchmark.py --manifest artifacts/paper_release_2026-03-20/manifest.json --db /path/to/decisions.db --report-json artifacts/paper_release_2026-03-20/release_match_check.json --benchmark-json artifacts/paper_release_2026-03-20/benchmark_report_release_matched.json",
+    "release_matched_command_template": "python3 scripts/run_release_matched_benchmark.py --manifest artifacts/paper_release_2026-03-20/manifest.json --db /path/to/decisions.db --report-json artifacts/paper_release_2026-03-20/release_match_check.json --benchmark-json artifacts/paper_release_2026-03-20/benchmark_report_release_matched.json",
+    "environment": {
+      "graph_db_available": true,
+      "vector_db_available": false,
+      "statutes_db_available": false,
+      "commentary_db_available": false,
+      "anthropic_api_configured": false,
+      "llm_expansion_enabled": true,
+      "llm_rerank_enabled": true
+    }
+  },
+  "golden_summary": {
+    "queries": 100,
+    "sha256": "39ae33d1755a318f6d35d93a1bc895e3de4c08d90f5b77715fc9f991c49ff119"
+  },
+  "files": {
+    "paper.md": {
+      "path": "paper.md",
+      "bytes": 20639,
+      "sha256": "557a90144104680ca7db0f2955f22393d01e19e33892ae7fe3bd2b197a098541"
+    },
+    "stats_snapshot.json": {
+      "path": "stats_snapshot.json",
+      "bytes": 10256,
+      "sha256": "be24da45a47ddb8e9fa51110e6deded29a1a6b987c399398b5bfc875df88b479"
+    },
+    "benchmark_golden.json": {
+      "path": "benchmark_golden.json",
+      "bytes": 65130,
+      "sha256": "39ae33d1755a318f6d35d93a1bc895e3de4c08d90f5b77715fc9f991c49ff119"
+    },
+    "benchmark_report.json": {
+      "path": "benchmark_report.json",
+      "bytes": 81867,
+      "sha256": "e94b1cdb57fa5734f2fc7f9c3a390df15da5f5a863c797265530667b213cb24f"
+    },
+    "release_match_check.json": {
+      "path": "release_match_check.json",
+      "bytes": 735,
+      "sha256": "de5edd8c3cf0a31dd56c37a1cdea12ae8662992aa3a1c038a0c607fcf6c8a0b6"
+    },
+    "benchmark_report_release_matched.json": {
+      "path": "benchmark_report_release_matched.json",
+      "bytes": 85308,
+      "sha256": "32599cff516f3f5975f40a31a7f72fe92df390b3d4f61fa95b7560db0bb4d48f"
+    }
+  },
+  "release_match_check": {
+    "path": "artifacts/paper_release_2026-03-20/release_match_check.json",
+    "matched": true,
+    "sha256": "de5edd8c3cf0a31dd56c37a1cdea12ae8662992aa3a1c038a0c607fcf6c8a0b6"
+  }
+}

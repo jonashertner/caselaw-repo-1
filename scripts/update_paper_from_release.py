@@ -94,12 +94,29 @@ def _graph_counts(graph_db: Path) -> dict:
     conn = sqlite3.connect(str(graph_db))
     try:
         extracted = conn.execute("SELECT COUNT(*) FROM decision_citations").fetchone()[0]
-        resolved = conn.execute(
-            """
-            SELECT COUNT(*) FROM decision_citations
-            WHERE target_decision_id IS NOT NULL AND TRIM(target_decision_id) != ''
-            """
-        ).fetchone()[0]
+        columns = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(decision_citations)").fetchall()
+        }
+        if "target_decision_id" in columns:
+            resolved = conn.execute(
+                """
+                SELECT COUNT(*) FROM decision_citations
+                WHERE target_decision_id IS NOT NULL AND TRIM(target_decision_id) != ''
+                """
+            ).fetchone()[0]
+        else:
+            resolved = conn.execute(
+                """
+                SELECT COUNT(*) FROM decision_citations dc
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM citation_targets ct
+                    WHERE ct.source_decision_id = dc.source_decision_id
+                      AND ct.target_ref = dc.target_ref
+                )
+                """
+            ).fetchone()[0]
         statutes = conn.execute("SELECT COUNT(*) FROM decision_statutes").fetchone()[0]
     finally:
         conn.close()
@@ -124,6 +141,7 @@ def _benchmark_context(bundle_dir: Path) -> dict:
         "path": _display_path(report_path),
         "summary": summary,
         "release_matched": is_release_matched,
+        "environment": report.get("environment") or {},
     }
 
 
@@ -224,8 +242,8 @@ def update_paper(path: Path, manifest: dict, stats: dict, benchmark: dict, graph
         statutes_m = _format_million(graph["statutes"])
         rate = f"{graph['resolution_rate']:.1f}%"
         text = _replace(
-            r"a reference database with [\d.]+ million extracted case-citation references, [\d.]+ million resolved in-corpus decision links, and [\d.]+ million decision-statute links",
-            f"a reference database with {extracted_m} extracted case-citation references, {resolved_m} resolved in-corpus decision links, and {statutes_m} decision-statute links",
+            r"((?:a reference database with|that database contains)) [\d.]+ million extracted case-citation references, [\d.]+ million resolved in-corpus decision links, and [\d.]+ million decision-statute links",
+            rf"\1 {extracted_m} extracted case-citation references, {resolved_m} resolved in-corpus decision links, and {statutes_m} decision-statute links",
             text,
             count=1,
         )
@@ -255,6 +273,7 @@ def update_paper(path: Path, manifest: dict, stats: dict, benchmark: dict, graph
     )
 
     summary = benchmark["summary"]
+    environment = benchmark.get("environment") or {}
     if benchmark["release_matched"]:
         bench_para = (
             f"To anchor the current paper to a versioned result, the repository now includes `{benchmark['path']}`, "
@@ -284,19 +303,61 @@ def update_paper(path: Path, manifest: dict, stats: dict, benchmark: dict, graph
         )
 
     text = _replace(
-        r"To anchor the current paper to a versioned result, the repository now includes `artifacts/[^`]+/benchmark_report\.json`,.+?Hit@1 = [\d.]+\.",
+        r"To anchor the current paper to a versioned result, the repository now includes `artifacts/[^`]+/benchmark_report(?:_release_matched)?\.json`,.+?Hit@1 = [\d.]+\.",
         bench_para,
         text,
         count=1,
     )
+
+    if benchmark["release_matched"]:
+        graph_clause = (
+            "used the local release-matched search database together with the sibling reference-graph database"
+            if environment.get("graph_db_available")
+            else "used the local release-matched search database without a sibling reference-graph database"
+        )
+        vector_clause = (
+            "vector search was available"
+            if environment.get("vector_db_available")
+            else "vector search was not available"
+        )
+        statutes_clause = (
+            "statute/commentary side databases were available"
+            if (environment.get("statutes_db_available") or environment.get("commentary_db_available"))
+            else "statute/commentary side databases were not available"
+        )
+        anthropic_clause = (
+            "Anthropic-backed query expansion and reranking were available"
+            if environment.get("anthropic_api_configured")
+            else "Anthropic-backed query expansion and reranking were not available"
+        )
+        interpretation_para = (
+            "This baseline should be interpreted carefully. "
+            "It is deterministic and inspectable, but not a full hosted-system score: "
+            f"the reported run {graph_clause}; {vector_clause}; {statutes_clause}; and {anthropic_clause}. "
+            "It is also not yet a balanced benchmark for strong multilingual claims: it is still dominated by German natural-language queries, and its hardest slices remain concept-match and statute-oriented retrieval."
+        )
+    else:
+        interpretation_para = (
+            "This baseline should be interpreted carefully. "
+            "It is deterministic and inspectable, but not a full hosted-system score: the evaluation environment for that run did not have a local reference-graph database, local statutes/commentary databases, vector search, or Anthropic-backed query expansion and reranking available. "
+            "It is also not yet a balanced benchmark for strong multilingual claims: it is still dominated by German natural-language queries, and its hardest slices remain concept-match and statute-oriented retrieval."
+        )
     text = _replace(
-        r"- \*\*The archived benchmark is operational, not release-matched\.\*\* .+",
+        r"This baseline should be interpreted carefully\..+?retrieval\.",
+        interpretation_para,
+        text,
+        count=1,
+    )
+
+    text = _replace(
+        r"- \*\*The (?:archived )?benchmark[^*]+\.\*\* .+",
         f"- **{limitation.split('.')[0]}.** {'.'.join(limitation.split('.')[1:]).strip()}",
         text,
         count=1,
     )
 
     availability_replacements = {
+        r"(\| Resource \| ).+(\|)": rf"\g<1>Location \2",
         r"(\| Paper release manifest \| ).+(\|)": rf"\g<1>`{bundle_dir_ref}/manifest.json` \2",
         r"(\| Paper release stats snapshot \| ).+(\|)": rf"\g<1>`{bundle_dir_ref}/stats_snapshot.json` \2",
         r"(\| Paper release benchmark gold set \| ).+(\|)": rf"\g<1>`{bundle_dir_ref}/benchmark_golden.json` \2",

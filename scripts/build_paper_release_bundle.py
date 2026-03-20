@@ -109,24 +109,76 @@ def _display_path(path: Path) -> str:
         return str(path.resolve())
 
 
+def _external_label(path: Path) -> str:
+    return f"external:{path.name}"
+
+
+def _write_checksums(output_dir: Path) -> None:
+    checksum_names = [
+        "README.md",
+        "manifest.json",
+        "paper.md",
+        "stats_snapshot.json",
+        "benchmark_golden.json",
+        "benchmark_report.json",
+    ]
+    for optional in ("release_match_check.json", "benchmark_report_release_matched.json"):
+        if (output_dir / optional).exists():
+            checksum_names.append(optional)
+
+    checksum_entries = []
+    for name in checksum_names:
+        path = output_dir / name
+        checksum_entries.append(f"{_sha256_path(path)}  {name}")
+    (output_dir / "checksums.sha256").write_text("\n".join(checksum_entries) + "\n", encoding="utf-8")
+
+
 def _bundle_readme(
     release_id: str,
     stats: dict,
-    benchmark: dict,
+    benchmark_summary: dict,
     stats_source_ref: str,
     output_dir_ref: str,
+    *,
+    release_matched: bool,
+    benchmark_report_name: str,
+    benchmark_environment: dict | None = None,
 ) -> str:
-    summary = benchmark["summary"]
+    included_files = [
+        "- `manifest.json`: machine-readable release manifest",
+        "- `checksums.sha256`: SHA-256 checksums for bundled files",
+        "- `paper.md`: bundled copy of the current paper text",
+        "- `stats_snapshot.json`: frozen corpus stats snapshot",
+        "- `benchmark_golden.json`: frozen benchmark judgments bundled with this release",
+        "- `benchmark_report.json`: archived offline benchmark report copied into the bundle",
+    ]
+    if benchmark_report_name != "benchmark_report.json":
+        included_files.append(
+            f"- `{benchmark_report_name}`: canonical release-matched benchmark report for this bundle"
+        )
+    if release_matched:
+        included_files.append(
+            "- `release_match_check.json`: verification report confirming the benchmark DB matches the frozen snapshot"
+        )
+
+    status_block = (
+        "## Release Status\n\n"
+        f"The canonical benchmark report in `{benchmark_report_name}` is release-matched to the "
+        "corpus snapshot in `stats_snapshot.json`.\n\n"
+    ) if release_matched else (
+        "## Important Caveat\n\n"
+        "The archived benchmark report is reproducible and inspectable, but it is not "
+        "release-matched to the corpus snapshot in `stats_snapshot.json`: it was run "
+        "against a larger local `decisions.db`. The manifest records that mismatch "
+        "explicitly so the paper can distinguish corpus-release counts from offline "
+        "retrieval-baseline counts.\n\n"
+    )
     return (
         f"# {release_id}\n\n"
         "This directory freezes the paper-facing artifacts used by the arXiv draft.\n\n"
         "## Included files\n\n"
-        "- `manifest.json`: machine-readable release manifest\n"
-        "- `checksums.sha256`: SHA-256 checksums for bundled files\n"
-        "- `paper.md`: bundled copy of the current paper text\n"
-        "- `stats_snapshot.json`: frozen corpus stats snapshot\n"
-        "- `benchmark_golden.json`: frozen benchmark judgments bundled with this release\n"
-        "- `benchmark_report.json`: frozen offline benchmark report bundled with this release\n\n"
+        + "\n".join(included_files)
+        + "\n\n"
         "## Corpus snapshot\n\n"
         f"- Source snapshot reference: `{stats_source_ref}`\n"
         f"- Snapshot generated at: `{stats.get('generated_at')}`\n"
@@ -134,20 +186,25 @@ def _bundle_readme(
         f"- Courts/public bodies: `{stats.get('court_count')}`\n"
         f"- Date range: `{stats.get('date_range', {}).get('earliest')}` to `{stats.get('date_range', {}).get('latest')}`\n\n"
         "## Retrieval benchmark\n\n"
-        f"- Queries evaluated: `{summary['queries_evaluated']}` / `{summary['queries_total']}`\n"
-        f"- Benchmark DB rows: `{summary['db_rows']}`\n"
-        f"- MRR@{summary['k']}: `{summary['mrr_at_k']:.4f}`\n"
-        f"- Recall@{summary['k']}: `{summary['recall_at_k']:.4f}`\n"
-        f"- nDCG@{summary['k']}: `{summary['ndcg_at_k']:.4f}`\n"
-        f"- Hit@1: `{summary['hit_at_1']:.2f}`\n\n"
-        "## Important caveat\n\n"
-        "The bundled benchmark report is reproducible and inspectable, but it is not "
-        "release-matched to the corpus snapshot in `stats_snapshot.json`: it was run "
-        "against a larger local `decisions.db`. The manifest records that mismatch "
-        "explicitly so the paper can distinguish corpus-release counts from offline "
-        "retrieval-baseline counts.\n\n"
-        "## To produce a true release-matched benchmark\n\n"
-        "Once the exact release-matched `decisions.db` is available, run:\n\n"
+        f"- Benchmark report: `{benchmark_report_name}`\n"
+        f"- Queries evaluated: `{benchmark_summary['queries_evaluated']}` / `{benchmark_summary['queries_total']}`\n"
+        f"- Benchmark DB rows: `{benchmark_summary['db_rows']}`\n"
+        f"- MRR@{benchmark_summary['k']}: `{benchmark_summary['mrr_at_k']:.4f}`\n"
+        f"- Recall@{benchmark_summary['k']}: `{benchmark_summary['recall_at_k']:.4f}`\n"
+        f"- nDCG@{benchmark_summary['k']}: `{benchmark_summary['ndcg_at_k']:.4f}`\n"
+        f"- Hit@1: `{benchmark_summary['hit_at_1']:.2f}`\n\n"
+        + status_block
+        + (
+            "## Benchmark Environment\n\n"
+            f"- Reference graph DB available: `{benchmark_environment.get('graph_db_available')}`\n"
+            f"- Vector DB available: `{benchmark_environment.get('vector_db_available')}`\n"
+            f"- Statutes DB available: `{benchmark_environment.get('statutes_db_available')}`\n"
+            f"- Commentary DB available: `{benchmark_environment.get('commentary_db_available')}`\n"
+            f"- Anthropic API configured: `{benchmark_environment.get('anthropic_api_configured')}`\n\n"
+            if benchmark_environment
+            else ""
+        )
+        + "## To Reproduce the Canonical Benchmark\n\n"
         "```bash\n"
         "python3 scripts/run_release_matched_benchmark.py "
         f"--manifest {output_dir_ref}/manifest.json "
@@ -182,12 +239,22 @@ def main() -> int:
         if not stats_file_path.exists():
             raise FileNotFoundError(f"Stats file not found: {stats_file_path}")
         stats_source_rev = None
-        stats_source_label = str(stats_file_path.relative_to(REPO_ROOT))
+        try:
+            stats_source_origin = str(stats_file_path.relative_to(REPO_ROOT))
+        except ValueError:
+            stats_source_origin = _external_label(stats_file_path)
+        try:
+            stats_source_file_path = str(stats_file_path.relative_to(REPO_ROOT))
+        except ValueError:
+            stats_source_file_path = None
+        stats_source_label = "stats_snapshot.json"
         stats_bytes = stats_file_path.read_bytes()
     else:
         stats_source_rev = _git("rev-parse", args.stats_rev)
         stats_source_label = f"{stats_source_rev}:{args.stats_path}"
         stats_bytes = _git_file(stats_source_rev, args.stats_path)
+        stats_source_file_path = None
+        stats_source_origin = args.stats_path
 
     stats = json.loads(stats_bytes.decode("utf-8"))
     benchmark = json.loads(benchmark_path.read_text(encoding="utf-8"))
@@ -229,9 +296,11 @@ def main() -> int:
         "stats_source": {
             "type": "git" if stats_source_rev else "file",
             "label": stats_source_label,
+            "origin_label": stats_source_origin,
             "git_revision": stats_source_rev,
             "git_path": args.stats_path if stats_source_rev else None,
-            "file_path": str(stats_file_path) if args.stats_file else None,
+            "file_path": stats_source_file_path,
+            "bundled_path": "stats_snapshot.json",
             "generated_at": stats.get("generated_at"),
             "sha256": file_manifest["stats_snapshot.json"]["sha256"],
         },
@@ -293,22 +362,20 @@ def main() -> int:
     }
 
     _write_json(manifest_path, manifest)
+    benchmark_release_matched = benchmark_summary["db_rows"] == stats.get("total")
     readme_path.write_text(
         _bundle_readme(
             args.release_id,
             stats,
-            benchmark,
+            benchmark_summary,
             stats_source_rev or stats_source_label,
             output_dir_ref,
+            release_matched=benchmark_release_matched,
+            benchmark_report_name="benchmark_report.json",
         ),
         encoding="utf-8",
     )
-
-    checksum_entries = []
-    for name in ["README.md", "manifest.json", "paper.md", "stats_snapshot.json", "benchmark_golden.json", "benchmark_report.json"]:
-        path = output_dir / name
-        checksum_entries.append(f"{_sha256_path(path)}  {name}")
-    checksums_path.write_text("\n".join(checksum_entries) + "\n", encoding="utf-8")
+    _write_checksums(output_dir)
 
     print(f"Wrote paper release bundle to {output_dir}")
     return 0

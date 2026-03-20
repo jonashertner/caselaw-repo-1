@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-03-20T11:06:03.655959+00:00",
+  "manifest_path": "artifacts/paper_release_2026-03-20/manifest.json",
+  "release_id": "opencaselaw-paper-2026-03-20",
+  "db_path": "external:decisions.db",
+  "expected": {
+    "decisions": 962724,
+    "court_count": 102,
+    "date_range": {
+      "earliest": "1875-01-01",
+      "latest": "2026-03-19"
+    },
+    "by_language": {
+      "de": 448461,
+      "fr": 434663,
+      "it": 79600
+    }
+  },
+  "actual": {
+    "decisions": 962724,
+    "court_count": 102,
+    "date_range": {
+      "earliest": "1875-01-01",
+      "latest": "2026-03-19"
+    },
+    "by_language": {
+      "de": 448461,
+      "fr": 434663,
+      "it": 79600
+    }
+  },
+  "matched": true,
+  "mismatches": []
+}
