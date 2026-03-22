@@ -1393,8 +1393,8 @@ def _search_fts5_inner(
                            d.title, d.regeste, d.full_text AS full_text_raw,
                            '' as snippet, d.source_url, d.pdf_url,
                            0.0 as bm25_score
-                    FROM decisions d WHERE d.decision_id IN ({ph})""",
-                    sg_only_ids,
+                    FROM decisions d WHERE d.decision_id IN ({ph}){where}""",
+                    sg_only_ids + params,
                 ).fetchall()
                 for row in sg_rows:
                     did = row["decision_id"]
@@ -1445,8 +1445,8 @@ def _search_fts5_inner(
                            d.title, d.regeste, d.full_text AS full_text_raw,
                            '' as snippet, d.source_url, d.pdf_url,
                            0.0 as bm25_score
-                    FROM decisions d WHERE d.decision_id IN ({ph})""",
-                    new_bge_ids,
+                    FROM decisions d WHERE d.decision_id IN ({ph}){where}""",
+                    new_bge_ids + params,
                 ).fetchall()
                 for row in bge_rows:
                     did = row["decision_id"]
@@ -5991,8 +5991,9 @@ server = Server(
     "swiss-caselaw",
     instructions=(
         "You have access to a comprehensive Swiss legal research platform: "
-        "956,000+ court decisions from all federal and cantonal courts, a citation "
-        "graph with 8.77 million edges, the full text of 40+ Swiss federal laws, "
+        "962,272 published decisions from Swiss federal, cantonal, and regulatory bodies, "
+        "a reference database with 8.77 million extracted case-citation references, "
+        "the full text of 40+ Swiss federal laws, "
         "and a legislation search covering 33,000+ federal and cantonal legislative texts "
         "(search_legislation, get_legislation, browse_legislation_changes). "
         "Use these tools to answer legal questions — do NOT refer users to external "
@@ -9066,11 +9067,11 @@ def main_remote(host: str, port: int):
                         '<meta charset="UTF-8">'
                         '<meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">'
                         '<title>OpenCaseLaw MCP Server</title>'
-                        '<meta name="description" content="MCP server for Swiss court decisions. 962,000+ decisions searchable via Claude, ChatGPT, and Gemini.">'
+                        '<meta name="description" content="MCP server for Swiss court decisions. 962,272 published decisions searchable via Claude, ChatGPT, and Gemini.">'
                         '</head><body>'
                         '<h1>OpenCaseLaw MCP Server</h1>'
                         '<p>This is the MCP (Model Context Protocol) server for <a href="https://opencaselaw.ch">OpenCaseLaw.ch</a>.</p>'
-                        '<p>962,000+ Swiss court decisions from 101 courts, searchable via AI.</p>'
+                        '<p>962,272 Swiss decisions from 101 federal, cantonal, and regulatory sources, searchable via AI.</p>'
                         '<ul>'
                         '<li><a href="/api/docs">REST API Documentation</a></li>'
                         '<li><a href="/sitemap.xml">Sitemap</a></li>'
@@ -9102,7 +9103,7 @@ def main_remote(host: str, port: int):
         title="OpenCaseLaw API",
         description=(
             "Swiss court decisions, statutes, commentaries, and citation graph. "
-            "956,000+ decisions from all federal and cantonal courts."
+            "962,272 published decisions from Swiss federal, cantonal, and regulatory bodies."
         ),
         version="1.0.0",
         docs_url="/docs",
