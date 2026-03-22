@@ -138,7 +138,7 @@ curl -s https://mcp.opencaselaw.ch/health
 |----------|---------|
 | `REMOTE_MODE=True` | Hides update_database/check_update_status tools |
 | `SWISS_CASELAW_DIR=/opt/caselaw/repo/output` | Data directory |
-| `ANTHROPIC_API_KEY=sk-ant-...` | Haiku API for query parsing + reranking (~$0.30/day) |
+| `ANTHROPIC_API_KEY=<redacted>` | Haiku API for query parsing + reranking (~$0.30/day) |
 | `LLM_EXPANSION_ENABLED=true` | Enable LLM query expansion |
 | `SPARSE_SEARCH_ENABLED=false` | Sparse vector search disabled |
 | `SWISS_CASELAW_VECTOR_SEARCH=false` | Dense vector search disabled |
@@ -146,7 +146,7 @@ curl -s https://mcp.opencaselaw.ch/health
 
 **NE_PROXY and HF_TOKEN** are set in crontab, not in .env.mcp:
 - `NE_PROXY=socks5h://127.0.0.1:1080` — SOCKS tunnel for Neuchâtel scraper (court blocks Hetzner IPs)
-- `HF_TOKEN=hf_...` — HuggingFace upload token
+- `HF_TOKEN=<redacted>` — HuggingFace upload token
 
 ---
 
