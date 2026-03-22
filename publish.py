@@ -132,11 +132,14 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
     # Sunday (weekday 6) = full rebuild, other days = incremental
     is_rebuild_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
 
-    cmd = [sys.executable, str(script), "--output", str(OUTPUT_DIR)]
+    # Use ionice/nice to prevent I/O starvation of live MCP workers
+    # during long FTS5 rebuilds (which can cause 503s).
+    cmd = ["ionice", "-c3", "nice", "-n", "19",
+           sys.executable, str(script), "--output", str(OUTPUT_DIR)]
 
     if is_rebuild_day:
         cmd.append("--full-rebuild")
-        logger.info("Step 2: Full FTS5 rebuild (weekly)")
+        logger.info("Step 2: Full FTS5 rebuild (weekly, low I/O priority)")
         timeout = 18000  # ~3h40m for 1M decisions + optimize
     else:
         cmd.extend(["--incremental", "--no-optimize"])
