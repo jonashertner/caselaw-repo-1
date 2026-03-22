@@ -29,6 +29,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import fcntl
 import logging
 import subprocess
 import sys
@@ -36,6 +37,8 @@ import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+
+LOCK_FILE_PATH = "/tmp/opencaselaw-publish.lock"
 
 logger = logging.getLogger("publish")
 
@@ -372,11 +375,13 @@ def step_6_git_push(dry_run: bool = False) -> bool:
         return False
 
     # Pull --rebase to avoid conflicts when local commits were pushed
-    # from development machines between cron runs.  Stash first in case
-    # there are untracked/unstaged files on VPS that block rebase.
-    run_cmd(["git", "stash"], "git stash", dry_run)
-    run_cmd(["git", "pull", "--rebase", "origin", "main"], "git pull --rebase", dry_run)
+    # from development machines between cron runs.  Stash with --include-untracked
+    # to handle temp scripts and other untracked files that block rebase.
+    run_cmd(["git", "stash", "--include-untracked"], "git stash --include-untracked", dry_run)
+    rebase_ok = run_cmd(["git", "pull", "--rebase", "origin", "main"], "git pull --rebase", dry_run)
     run_cmd(["git", "stash", "pop"], "git stash pop", dry_run)
+    if not rebase_ok:
+        return False
     return run_cmd(["git", "push"], "git push", dry_run)
 
 
@@ -420,6 +425,15 @@ def main():
     )
 
     logger.info(f"=== Swiss Case Law publish pipeline — {datetime.now(timezone.utc).isoformat()} ===")
+
+    # Prevent concurrent publish runs (cron + manual overlap)
+    lock_file = open(LOCK_FILE_PATH, "w")
+    try:
+        fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except (BlockingIOError, OSError):
+        logger.error("Another publish process is already running. Exiting.")
+        return
+    logger.info("Acquired publish lock")
 
     if args.dry_run:
         logger.info("DRY RUN — no changes will be made")
