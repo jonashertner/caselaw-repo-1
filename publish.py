@@ -368,9 +368,12 @@ def step_6_git_push(dry_run: bool = False) -> bool:
     if not ok:
         return False
 
-    # Pull --rebase first to avoid conflicts when local commits
-    # were pushed from development machines between cron runs.
+    # Pull --rebase to avoid conflicts when local commits were pushed
+    # from development machines between cron runs.  Stash first in case
+    # there are untracked/unstaged files on VPS that block rebase.
+    run_cmd(["git", "stash"], "git stash", dry_run)
     run_cmd(["git", "pull", "--rebase", "origin", "main"], "git pull --rebase", dry_run)
+    run_cmd(["git", "stash", "pop"], "git stash pop", dry_run)
     return run_cmd(["git", "push"], "git push", dry_run)
 
 
