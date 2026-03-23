@@ -124,43 +124,28 @@ def step_1_ingest(dry_run: bool = False) -> bool:
 def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool:
     """Step 2: Build/update FTS5 search database.
 
-    Sunday or --full-rebuild: full rebuild with optimize (~3h).
-    Mon–Sat: incremental mode, no optimize (< 1 min).
+    Always uses full rebuild: builds to .db.tmp then atomic os.replace().
+    This avoids DB locks with live MCP workers (immutable=1 connections).
     """
     script = REPO_DIR / "build_fts5.py"
     if not script.exists():
         logger.error("  build_fts5.py not found")
         return False
 
-    # Sunday (weekday 6) = full rebuild, other days = incremental
-    is_rebuild_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
-
-    # Use ionice/nice to prevent I/O starvation of live MCP workers
-    # during long FTS5 rebuilds (which can cause 503s).
+    # Use ionice/nice to prevent I/O starvation of live MCP workers.
     cmd = ["ionice", "-c3", "nice", "-n", "19",
-           sys.executable, str(script), "--output", str(OUTPUT_DIR)]
+           sys.executable, str(script), "--output", str(OUTPUT_DIR),
+           "--full-rebuild"]
 
-    if is_rebuild_day:
-        cmd.append("--full-rebuild")
-        logger.info("Step 2: Full FTS5 rebuild (weekly, low I/O priority)")
-        timeout = 18000  # ~3h40m for 1M decisions + optimize
-    else:
-        cmd.extend(["--incremental", "--no-optimize"])
-        logger.info("Step 2: Incremental FTS5 update")
-        timeout = 7200  # 2h — allows for large weekly entscheidsuche batches
+    logger.info("Step 2: Full FTS5 rebuild (low I/O priority, zero-downtime swap)")
+    timeout = 18000  # ~3h40m for 1M decisions + optimize
 
     return run_cmd(cmd, "Build FTS5 database", dry_run, timeout=timeout)
 
 
 def step_2b_quality_report(dry_run: bool = False, full_rebuild: bool = False) -> bool:
-    """Step 2b: Generate quality report and check gates (weekly)."""
-    is_rebuild_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
-
-    if not is_rebuild_day:
-        logger.info("Step 2b: Quality report — skipped (runs on Sundays)")
-        return True
-
-    logger.info("Step 2b: Quality report (weekly)")
+    """Step 2b: Generate quality report and check gates."""
+    logger.info("Step 2b: Quality report")
 
     script = REPO_DIR / "quality_report.py"
     if not script.exists():
@@ -183,14 +168,8 @@ def step_2b_quality_report(dry_run: bool = False, full_rebuild: bool = False) ->
 
 
 def step_2c_build_reference_graph(dry_run: bool = False, full_rebuild: bool = False) -> bool:
-    """Step 2c: Build reference graph (citations + statutes, weekly)."""
-    is_rebuild_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
-
-    if not is_rebuild_day:
-        logger.info("Step 2c: Reference graph — skipped (runs on Sundays)")
-        return True
-
-    logger.info("Step 2c: Build reference graph (weekly)")
+    """Step 2c: Build reference graph (citations + statutes)."""
+    logger.info("Step 2c: Build reference graph")
 
     script = REPO_DIR / "search_stack" / "build_reference_graph.py"
     if not script.exists():
@@ -213,18 +192,8 @@ def step_2c_build_reference_graph(dry_run: bool = False, full_rebuild: bool = Fa
 
 
 def step_2d_enrich_quality(dry_run: bool = False, full_rebuild: bool = False) -> bool:
-    """Step 2d: Enrich data quality (titles, regeste, dates, hashes, dedup).
-
-    Only runs on Sunday (or --full-rebuild). Uses checkpoint internally so
-    even a full run is fast when no new decisions exist.
-    """
-    is_enrichment_day = full_rebuild or datetime.now(timezone.utc).weekday() == 6
-
-    if not is_enrichment_day:
-        logger.info("Step 2d: Quality enrichment — skipped (runs weekly on Sunday)")
-        return True
-
-    logger.info("Step 2d: Quality enrichment (weekly)")
+    """Step 2d: Enrich data quality (titles, regeste, dates, hashes, dedup)."""
+    logger.info("Step 2d: Quality enrichment")
 
     script = REPO_DIR / "scripts" / "enrich_quality.py"
     if not script.exists():
