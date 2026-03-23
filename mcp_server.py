@@ -6562,7 +6562,7 @@ def _handle_get_doctrine(*, query: str) -> dict:
             if ok_conn:
                 try:
                     row = ok_conn.execute(
-                        """SELECT title, content_text, authors, html_link, suggested_citation
+                        """SELECT ok_uuid, title, content_text, authors, html_link, suggested_citation
                            FROM commentaries
                            WHERE (abbr = ? OR sr_number = ?) AND article_num = ?
                            ORDER BY CASE WHEN language = 'de' THEN 0
@@ -6572,13 +6572,17 @@ def _handle_get_doctrine(*, query: str) -> dict:
                         (law_code, statute_info.get("sr_number", ""), article),
                     ).fetchone()
                     if row:
+                        ok_uuid = row["ok_uuid"] if "ok_uuid" in row.keys() else ""
+                        src = ("OpenLegalCommentary.ch (CC BY-SA 4.0)"
+                               if (ok_uuid or "").startswith("olc_")
+                               else "OnlineKommentar.ch (CC-BY-4.0)")
                         commentary_info = {
                             "title": row["title"],
                             "excerpt": (row["content_text"] or "")[:800],
                             "authors": json.loads(row["authors"]) if row["authors"] else [],
                             "html_link": row["html_link"],
                             "suggested_citation": row["suggested_citation"],
-                            "source": "OnlineKommentar.ch (CC-BY-4.0)",
+                            "source": src,
                         }
                 finally:
                     ok_conn.close()
@@ -6599,7 +6603,8 @@ def _handle_get_doctrine(*, query: str) -> dict:
 
 # Abbreviation → SR number mapping for commentary lookups
 _OK_ABBR_TO_SR = {
-    "BV": "101", "OR": "220", "ZGB": "210", "StGB": "311.0",
+    "BV": "101", "CST.": "101", "COST.": "101",  # Bundesverfassung / Constitution fédérale / Costituzione federale
+    "OR": "220", "ZGB": "210", "StGB": "311.0",
     "StPO": "312.0", "ZPO": "272", "GwG": "955.0", "DSG": "235.1",
     "IRSG": "351.1", "SchKG": "281.1", "MepV": "812.213",
     "CCC": "0.311.43", "KGTG": "444.1", "BPR": "161.1", "KG": "251",
@@ -6660,6 +6665,10 @@ def get_commentary(
                 }
 
             row = rows[0]
+            ok_uuid = row["ok_uuid"] or ""
+            source = ("OpenLegalCommentary.ch (CC BY-SA 4.0)"
+                      if ok_uuid.startswith("olc_")
+                      else "OnlineKommentar.ch (CC-BY-4.0)")
             return {
                 "law": row["abbr"] or row["sr_number"],
                 "sr_number": row["sr_number"],
@@ -6674,7 +6683,7 @@ def get_commentary(
                 "pdf_link": row["pdf_link"],
                 "content_text": row["content_text"],
                 "legal_text": row["legal_text"],
-                "source": "OnlineKommentar.ch (CC-BY-4.0)",
+                "source": source,
             }
         else:
             # List available articles for this law
@@ -6706,7 +6715,7 @@ def get_commentary(
                 "sr_number": sr_filter,
                 "article_count": len(articles),
                 "articles": articles,
-                "source": "OnlineKommentar.ch (CC-BY-4.0)",
+                "sources": "OnlineKommentar.ch (CC-BY-4.0), OpenLegalCommentary.ch (CC BY-SA 4.0)",
             }
     except sqlite3.Error as e:
         logger.error("OK commentary lookup error: %s", e)
