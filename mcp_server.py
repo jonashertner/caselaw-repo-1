@@ -6127,7 +6127,9 @@ def _extract_section(
 def _extract_erwaegungen(full_text: str) -> list[dict]:
     """Extract numbered Erwägungen sections from a BGE full_text.
 
-    Returns list of {"number": "3.1", "text": "..."} for up to 5 sections.
+    Returns ALL top-level sections (1, 2, ... N) with text truncated to
+    800 chars each.  Sub-sections (3.1, 9.3.1) are included in their
+    parent's text so that specific Erwägung references can be verified.
     """
     # Find the Erwägungen block — colon is optional ("Erwägungen" alone is common)
     erw_start = None
@@ -6142,12 +6144,10 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
     if erw_start is None:
         return []
 
-    # Numbered section patterns:
-    #   Inline:     "3. Some text"  or  "3.1. Some text"
-    #   Standalone: "3."            or  "3.1"  (number alone on its own line)
-    section_pat = re.compile(
-        r"^(\d{1,3}(?:\.\d{1,3})?)\.\s+\S"   # inline: "3. text" or "3.1. text"
-        r"|^(\d{1,3}(?:\.\d{1,3})?)\.?\s*$"   # standalone: "3." or "3.1"
+    # Top-level section pattern: "3. text" or "3." standalone
+    toplevel_pat = re.compile(
+        r"^(\d{1,3})\.\s+\S"       # inline: "3. Some text"
+        r"|^(\d{1,3})\.?\s*$"       # standalone: "3." or "3"
     )
     sections: list[dict] = []
     current_num: str | None = None
@@ -6155,22 +6155,20 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
 
     for line in lines[erw_start:]:
         stripped = line.strip()
-        m = section_pat.match(stripped)
+        m = toplevel_pat.match(stripped)
         if m:
-            num = m.group(1) or m.group(2)  # whichever branch matched
+            num = m.group(1) or m.group(2)
             if current_num is not None:
                 text = " ".join(current_lines).strip()
-                sections.append({"number": current_num, "text": text[:400]})
-                if len(sections) >= 5:
-                    break
+                sections.append({"number": current_num, "text": text[:800]})
             current_num = num
             current_lines = [stripped] if stripped not in (num, num + ".") else []
         elif current_num is not None:
             current_lines.append(stripped)
 
-    if current_num is not None and len(sections) < 5:
+    if current_num is not None:
         text = " ".join(current_lines).strip()
-        sections.append({"number": current_num, "text": text[:400]})
+        sections.append({"number": current_num, "text": text[:800]})
 
     return sections
 
