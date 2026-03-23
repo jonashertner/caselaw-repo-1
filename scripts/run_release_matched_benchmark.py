@@ -22,6 +22,7 @@ import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_paper_release_bundle import _bundle_readme, _display_path, _sha256_path, _write_checksums
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
