@@ -176,12 +176,13 @@ def _insert_into_db(entries: list[dict], db_path: Path):
             olc_id = f"olc_{e['abbr']}_{e['article_num']}_{e['language']}"
             conn.execute(
                 """INSERT OR REPLACE INTO commentaries
-                   (ok_uuid, sr_number, abbr, article_num, title, language,
-                    date, authors, editors, suggested_citation,
+                   (ok_uuid, legislative_act_uuid, sr_number, abbr, article_num,
+                    title, language, date, authors, editors, suggested_citation,
                     html_link, pdf_link, content_html, content_text, legal_text)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     olc_id,
+                    "olc_bv_101",  # synthetic legislative_act_uuid
                     e["sr_number"],
                     e["abbr"],
                     e["article_num"],
