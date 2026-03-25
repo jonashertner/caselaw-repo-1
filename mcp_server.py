@@ -6127,11 +6127,11 @@ def _extract_section(
 def _extract_erwaegungen(full_text: str) -> list[dict]:
     """Extract numbered Erwägungen sections from a BGE full_text.
 
-    Returns ALL top-level sections (1, 2, ... N) with text truncated to
-    800 chars each.  Sub-sections (3.1, 9.3.1) are included in their
-    parent's text so that specific Erwägung references can be verified.
+    Returns ALL top-level sections (1, 2, ... N).  Sub-sections (3.1, 9.3.1)
+    are included in their parent's full text so that specific Erwägung
+    references can be verified.  Stops at Dispositiv boundary.
     """
-    # Find the Erwägungen block — colon is optional ("Erwägungen" alone is common)
+    # Find the Erwägungen block
     erw_start = None
     lines = full_text.splitlines()
     for i, line in enumerate(lines):
@@ -6144,6 +6144,16 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
     if erw_start is None:
         return []
 
+    # Dispositiv boundary — stop parsing here
+    dispositiv_pat = re.compile(
+        r"^Demnach erkennt"
+        r"|^Dispositiv\s*:"
+        r"|^Aus diesen Gründen"
+        r"|^Par ces motifs"
+        r"|^Per questi motivi",
+        re.IGNORECASE,
+    )
+
     # Top-level section pattern: "3. text" or "3." standalone
     toplevel_pat = re.compile(
         r"^(\d{1,3})\.\s+\S"       # inline: "3. Some text"
@@ -6155,12 +6165,15 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
 
     for line in lines[erw_start:]:
         stripped = line.strip()
+        # Stop at Dispositiv
+        if dispositiv_pat.match(stripped):
+            break
         m = toplevel_pat.match(stripped)
         if m:
             num = m.group(1) or m.group(2)
             if current_num is not None:
                 text = " ".join(current_lines).strip()
-                sections.append({"number": current_num, "text": text[:800]})
+                sections.append({"number": current_num, "text": text})
             current_num = num
             current_lines = [stripped] if stripped not in (num, num + ".") else []
         elif current_num is not None:
@@ -6168,7 +6181,7 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
 
     if current_num is not None:
         text = " ".join(current_lines).strip()
-        sections.append({"number": current_num, "text": text[:800]})
+        sections.append({"number": current_num, "text": text})
 
     return sections
 
