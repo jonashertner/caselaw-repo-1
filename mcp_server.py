@@ -974,14 +974,18 @@ import collections
 
 _metrics = {
     "tool_calls": collections.Counter(),       # tool_name → count
-    "tool_latency_sum": collections.Counter(),  # tool_name → total ms
+    "tool_latency_ms": collections.defaultdict(list),  # tool_name → [ms, ms, ...]
     "tool_errors": collections.Counter(),       # tool_name → error count
     "haiku_rerank_fired": 0,
     "haiku_rerank_skipped": 0,
     "haiku_rerank_changed_top": 0,
     "zero_results": [],                        # recent zero-result queries
+    "recent_queries": [],                      # last 200 search queries (text only)
+    "search_followups": 0,                     # searches followed by get_decision/case_brief
+    "search_total": 0,                         # total searches (for followup rate)
+    "last_tool_was_search": False,             # tracks if previous call was search
     "clients": collections.Counter(),          # client type → call count
-    "sessions": 0,                             # total MCP sessions opened
+    "sessions": 0,
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
 
@@ -989,9 +993,32 @@ _metrics = {
 def _record_tool_call(name: str, duration_ms: float, *, error: bool = False):
     """Record a tool invocation for metrics."""
     _metrics["tool_calls"][name] += 1
-    _metrics["tool_latency_sum"][name] += duration_ms
+    # Store individual latencies for percentile calc (cap at 500 per tool)
+    lat_list = _metrics["tool_latency_ms"][name]
+    lat_list.append(duration_ms)
+    if len(lat_list) > 500:
+        _metrics["tool_latency_ms"][name] = lat_list[-500:]
     if error:
         _metrics["tool_errors"][name] += 1
+    # Track search → followup pattern
+    if name in ("search_decisions",):
+        _metrics["search_total"] += 1
+        _metrics["last_tool_was_search"] = True
+    elif name in ("get_decision", "get_case_brief", "find_citations", "get_doctrine"):
+        if _metrics["last_tool_was_search"]:
+            _metrics["search_followups"] += 1
+        _metrics["last_tool_was_search"] = False
+    else:
+        _metrics["last_tool_was_search"] = False
+
+
+def _record_query(query: str):
+    """Track search query text (for top queries, no user info)."""
+    q = query.strip()[:150]
+    if q:
+        _metrics["recent_queries"].append(q)
+        if len(_metrics["recent_queries"]) > 1000:
+            _metrics["recent_queries"] = _metrics["recent_queries"][-1000:]
 
 
 def _record_zero_result(tool: str, query: str):
@@ -1010,12 +1037,19 @@ def _get_metrics() -> dict:
     """Return current metrics snapshot."""
     tool_stats = {}
     for name, count in _metrics["tool_calls"].most_common():
-        avg_ms = _metrics["tool_latency_sum"][name] / count if count else 0
+        lats = sorted(_metrics["tool_latency_ms"].get(name, []))
+        n = len(lats)
         tool_stats[name] = {
             "calls": count,
-            "avg_ms": round(avg_ms, 1),
+            "avg_ms": round(sum(lats) / n, 1) if n else 0,
+            "p50_ms": round(lats[n // 2], 0) if n else 0,
+            "p95_ms": round(lats[int(n * 0.95)], 0) if n else 0,
             "errors": _metrics["tool_errors"].get(name, 0),
         }
+
+    # Top queries
+    query_counter = collections.Counter(_metrics["recent_queries"])
+    top_queries = [{"query": q, "count": n} for q, n in query_counter.most_common(15)]
 
     # Aggregate zero-result queries by query text
     zero_agg = collections.Counter()
@@ -1025,11 +1059,15 @@ def _get_metrics() -> dict:
     sessions = max(_metrics["sessions"], 1)
     total_calls = sum(s["calls"] for s in tool_stats.values())
 
+    followup_rate = round(_metrics["search_followups"] / max(_metrics["search_total"], 1) * 100)
+
     return {
         "uptime_since": _metrics["startup_time"],
         "sessions": _metrics["sessions"],
         "calls_per_session": round(total_calls / sessions, 1),
+        "followup_rate": followup_rate,
         "clients": dict(_metrics["clients"].most_common()),
+        "top_queries": top_queries,
         "tools": tool_stats,
         "haiku_rerank": {
             "fired": _metrics["haiku_rerank_fired"],
@@ -8901,6 +8939,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 results = deduped
 
                 end = req_offset + len(results)
+                _record_query(arguments.get("query", ""))
                 text = f"Found {total_count} decisions (showing {req_offset + 1}\u2013{end}):\n\n"
 
                 if fields_arg == "compact":
@@ -9483,9 +9522,10 @@ async function render(){
         <td>${name}</td>
         <td class="r mono">${f(s.calls)}</td>
         <td class="bw"><div class="bt"><div class="bf"style="width:${w}%"></div></div></td>
-        <td class="r mono d">${ms2s(s.avg_ms)}</td>
+        <td class="r mono d">${ms2s(s.p50_ms||s.avg_ms)}</td>
+        <td class="r mono d">${ms2s(s.p95_ms||s.avg_ms)}</td>
         <td class="r">${s.errors?'<span class="tag tag-w">'+s.errors+'</span>':'<span class="d">&mdash;</span>'}</td></tr>`
-    }).join('')||'<tr><td colspan="5"class="empty">awaiting first request</td></tr>';
+    }).join('')||'<tr><td colspan="6"class="empty">awaiting first request</td></tr>';
 
     const zR=z.map(q=>`<tr><td class="mono w">${q.query}</td><td class="r mono">${q.count}</td></tr>`).join('');
 
@@ -9494,7 +9534,7 @@ async function render(){
         <div class="k"><div class="n">${f(d.sessions||0)}</div><div class="l">sessions</div></div>
         <div class="k"><div class="n">${f(tot)}</div><div class="l">tool calls</div></div>
         <div class="k"><div class="n">${d.calls_per_session||0}</div><div class="l">calls / session</div></div>
-        <div class="k"><div class="n">${hR}<u>%</u></div><div class="l">rerank rate</div></div>
+        <div class="k"><div class="n">${d.followup_rate||0}<u>%</u></div><div class="l">follow-up rate</div></div>
         <div class="k"><div class="n ${z.length?'w':'g'}">${z.length}</div><div class="l">gaps</div></div>
       </div>
       ${Object.keys(d.clients||{}).length?`<div class="panel"><div class="panel-h">Clients</div>
@@ -9504,8 +9544,11 @@ async function render(){
           return`<tr><td>${c}</td><td class="r mono">${f(n)}</td><td class="bw"><div class="bt"><div class="bf"style="width:${Math.max(2,n/cmx*100)}%"></div></div></td></tr>`
         }).join('')}</table></div>`:''}
       <div class="panel"><div class="panel-h">Tool usage</div>
-        <table><tr><th>Tool</th><th class="r">Calls</th><th></th><th class="r">Avg</th><th class="r">Err</th></tr>${toolR}</table>
+        <table><tr><th>Tool</th><th class="r">Calls</th><th></th><th class="r">P50</th><th class="r">P95</th><th class="r">Err</th></tr>${toolR}</table>
       </div>
+      ${(d.top_queries||[]).length?`<div class="panel"><div class="panel-h">Top queries</div>
+        <table><tr><th>Query</th><th class="r">Count</th></tr>
+        ${(d.top_queries||[]).map(q=>'<tr><td class="mono">'+q.query+'</td><td class="r mono">'+q.count+'</td></tr>').join('')}</table></div>`:''}
       ${z.length?`<div class="panel"><div class="panel-h">Zero-result queries</div><table><tr><th>Query</th><th class="r">Hits</th></tr>${zR}</table></div>`:''}`;
 
     const el=Date.now()-new Date(d.uptime_since).getTime();
@@ -9540,6 +9583,12 @@ render();setInterval(render,60000);
                         combined["tools"][tool]["_total_ms"] += stats["avg_ms"] * stats["calls"]
                         combined["tools"][tool]["errors"] += stats["errors"]
                     combined["sessions"] += d.get("sessions", 0)
+                    combined.setdefault("_search_followups", 0)
+                    combined.setdefault("_search_total", 0)
+                    combined["_search_followups"] += d.get("_search_followups", 0)
+                    combined["_search_total"] += d.get("_search_total", 0)
+                    for tq in d.get("top_queries", []):
+                        combined.setdefault("_all_queries", []).append(tq)
                     for client_name, count in d.get("clients", {}).items():
                         combined["clients"][client_name] = combined["clients"].get(client_name, 0) + count
                     for k in ("fired", "skipped", "changed_top"):
@@ -9559,6 +9608,15 @@ render();setInterval(render,60000);
         combined["zero_result_queries"] = [{"query": q, "count": n} for q, n in zc.most_common(30)]
         total_calls = sum(s["calls"] for s in combined["tools"].values())
         combined["calls_per_session"] = round(total_calls / max(combined["sessions"], 1), 1)
+        st = combined.pop("_search_total", 0)
+        sf = combined.pop("_search_followups", 0)
+        combined["followup_rate"] = round(sf / max(st, 1) * 100)
+        # Aggregate top queries across workers
+        aq = combined.pop("_all_queries", [])
+        qc = collections.Counter()
+        for tq in aq:
+            qc[tq["query"]] += tq["count"]
+        combined["top_queries"] = [{"query": q, "count": n} for q, n in qc.most_common(15)]
         combined["uptime_since"] = _metrics["startup_time"]
         combined["workers"] = 4
         return JSONResponse(combined)
