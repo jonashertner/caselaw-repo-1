@@ -1021,6 +1021,29 @@ def _record_query(query: str):
             _metrics["recent_queries"] = _metrics["recent_queries"][-1000:]
 
 
+# ── Research telemetry (JSON lines, no PII) ──────────────────
+# Appends one JSON line per search to a daily log file.
+# Purpose: scientific evaluation of search pipeline components.
+import threading
+
+_RESEARCH_LOG_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / ".swiss-caselaw"))) / "research_logs"
+_research_log_lock = threading.Lock()
+
+
+def _log_search_trace(trace: dict):
+    """Append a search trace to the daily research log (non-blocking)."""
+    try:
+        _RESEARCH_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        path = _RESEARCH_LOG_DIR / f"search_traces_{day}.jsonl"
+        line = json.dumps(trace, ensure_ascii=False, default=str) + "\n"
+        with _research_log_lock:
+            with open(path, "a") as f:
+                f.write(line)
+    except Exception:
+        pass  # never break search for logging
+
+
 def _record_zero_result(tool: str, query: str):
     """Log queries that returned no results (for quality improvement)."""
     _metrics["zero_results"].append({
@@ -1137,6 +1160,12 @@ def _search_fts5_inner(
     sort: str | None = None,
 ) -> tuple[list[dict], int]:
     """Inner search logic. Returns (results, total_count). Caller closes conn."""
+    _trace_t0 = time.monotonic()
+    _trace = {
+        "query": query[:200],
+        "language_filter": language,
+        "court_filter": court,
+    }
     is_filter_only = not query.strip()
     effective_max = FILTER_MAX_LIMIT if is_filter_only else MAX_LIMIT
     limit = max(1, min(limit, effective_max))
@@ -1250,8 +1279,18 @@ def _search_fts5_inner(
 
     # ── Structured query parsing (deterministic JSON) ──
     structured_parse: dict = {}
+    _trace["parse_start_ms"] = round((time.monotonic() - _trace_t0) * 1000)
     if not is_docket_query:
         structured_parse = _parse_query_structured(fts_query)
+    _trace["parse_ms"] = round((time.monotonic() - _trace_t0) * 1000) - _trace.get("parse_start_ms", 0)
+    if structured_parse:
+        _trace["structured_parse"] = {
+            "doctrine": structured_parse.get("doctrine", ""),
+            "doctrine_fr": structured_parse.get("doctrine_fr", ""),
+            "statutes": structured_parse.get("statutes", []),
+            "synonyms": structured_parse.get("synonyms", []),
+            "domain": structured_parse.get("domain", ""),
+        }
         # Inject doctrine + synonyms as FTS strategy
         if structured_parse:
             doctrine = (structured_parse.get("doctrine") or "").strip()
@@ -1322,6 +1361,7 @@ def _search_fts5_inner(
                         "weight": 1.3,
                     })
 
+    _trace["strategies_planned"] = len(strategies)
     target_pool = _target_candidate_pool(
         limit=limit,
         offset=offset,
@@ -1679,6 +1719,23 @@ def _search_fts5_inner(
                 # Append remaining cross-lingual
                 merged.extend(cross[ci:])
                 reranked = merged[:len(reranked)]
+
+        # Emit research trace
+        _trace["total_candidates"] = total_candidates
+        _trace["result_count"] = len(reranked)
+        _trace["total_ms"] = round((time.monotonic() - _trace_t0) * 1000)
+        _trace["is_docket"] = is_docket_query
+        _trace["result_ids"] = [r.get("decision_id", "") for r in reranked[:20]]
+        _trace["result_langs"] = [r.get("language", "") for r in reranked[:20]]
+        _trace["result_courts"] = [r.get("court", "") for r in reranked[:20]]
+        # Cross-lingual analysis
+        query_langs = _detect_query_languages(query)
+        primary = query_langs[0] if query_langs else "de"
+        cross = [i+1 for i, r in enumerate(reranked[:20]) if r.get("language", "") != primary]
+        _trace["query_language"] = primary
+        _trace["cross_lingual_positions"] = cross
+        _trace["timestamp"] = datetime.now(timezone.utc).isoformat()
+        _log_search_trace(_trace)
 
         return reranked, total_candidates
 
@@ -4138,6 +4195,17 @@ def _apply_llm_rerank(
     post_top = post_sorted[0][3]["decision_id"] if post_sorted else None
     if pre_top and post_top and pre_top != post_top:
         _metrics["haiku_rerank_changed_top"] += 1
+
+    # Research trace: log rerank details
+    _log_search_trace({
+        "type": "rerank",
+        "query": query[:200],
+        "pre_top": pre_top,
+        "post_top": post_top,
+        "changed": pre_top != post_top,
+        "candidates": top_n,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
 
     return boosted
 
