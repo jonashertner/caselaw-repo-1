@@ -417,15 +417,24 @@ def _log_quality_summary(conn: sqlite3.Connection) -> None:
 COURT_REMAP = {
     "bge_historical": "bge",
 }
+# Decision ID prefix remapping (must match COURT_REMAP)
+ID_PREFIX_REMAP = {
+    "bge_historical_": "bge_",
+}
 
 
 def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
     """Insert a single decision. Returns True if inserted, False if skipped (duplicate)."""
     try:
-        # Remap court codes (e.g. bge_historical → bge)
+        # Remap court codes and decision IDs (e.g. bge_historical → bge)
         court = row.get("court", "")
         if court in COURT_REMAP:
             row["court"] = COURT_REMAP[court]
+        did = row.get("decision_id", "")
+        for old_prefix, new_prefix in ID_PREFIX_REMAP.items():
+            if did.startswith(old_prefix):
+                row["decision_id"] = new_prefix + did[len(old_prefix):]
+                break
 
         # Clean text fields
         for field in ("full_text", "regeste", "title"):

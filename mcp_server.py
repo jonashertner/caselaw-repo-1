@@ -2594,17 +2594,22 @@ def _resolve_decision_id(decision_id: str) -> str:
     Uses the FTS5 DB lookup (exact match → docket match → partial match),
     same logic as get_decision_by_id. Returns the input unchanged if no match.
     """
-    # Generate all ID variants (handles bge vs bge_historical, BGE_ prefix, etc.)
+    # Generate ID candidates for lookup
     candidates = [decision_id]
-    # If it looks like a BGE reference, construct both bge_BGE_* and bge_historical_* IDs
+    # If it looks like a BGE reference ("BGE 54 II 100" or "54 II 100"),
+    # construct the canonical decision_id format
     bge_m = re.match(r"(?:BGE\s+)?(\d+)\s+([IVX]+)\s+(\d+)", decision_id)
     if bge_m:
         vol, div, page = bge_m.group(1), bge_m.group(2), bge_m.group(3)
         candidates.extend([
             f"bge_BGE_{vol}_{div}_{page}",
-            f"bge_historical_{vol}_{div}_{page}",
+            f"bge_{vol}_{div}_{page}",
             f"bge_{vol} {div} {page}",
+            f"bge_historical_{vol}_{div}_{page}",  # pre-rebuild compat
         ])
+    # Normalize bge_historical_ → bge_ (DB uses bge_ after rebuild)
+    if decision_id.startswith("bge_historical_"):
+        candidates.append("bge_" + decision_id[len("bge_historical_"):])
 
     conn = get_db()
     try:
@@ -2654,25 +2659,20 @@ def _decision_id_variants(decision_id: str) -> list[str]:
         # Variant: spaces in rest → underscores
         variants.add(f"{court}_{rest.replace(' ', '_')}")
 
-        # BGE-specific: handle both directions of FTS5/graph ID format mismatch.
-        # FTS5 DB uses "bge_BGE_138_III_374"; graph DB uses "bge_138 III 374".
-        # Historical BGE use "bge_historical_54_II_100".
+        # BGE-specific: handle FTS5/graph ID format mismatches.
+        # FTS5 uses "bge_BGE_138_III_374"; graph uses "bge_138 III 374".
         if court in ("bge", "bge_historical"):
             stripped = re.sub(r"^(?:CH[_ ])?(?:BGE|ATF|DTF)[_ ]?", "", rest)
-            if stripped != rest:
-                # Had a prefix — add stripped variants (FTS5 → graph direction)
-                variants.add(f"bge_{stripped}")
-                variants.add(f"bge_{stripped.replace('_', ' ')}")
-                variants.add(f"bge_{stripped.replace(' ', '_')}")
-            else:
-                # No prefix — add BGE_ prefixed variants (graph → FTS5 direction)
-                variants.add(f"bge_BGE_{rest.replace(' ', '_')}")
-                variants.add(f"bge_BGE {rest.replace('_', ' ')}")
-            # Always add bge_historical variants for early BGE volumes
             core = stripped if stripped != rest else rest
             core_under = core.replace(" ", "_")
-            variants.add(f"bge_historical_{core_under}")
-            variants.add(f"bge_historical_{core.replace('_', ' ')}")
+            core_space = core.replace("_", " ")
+            # All plausible bge_* variants
+            variants.update([
+                f"bge_{core_under}",
+                f"bge_{core_space}",
+                f"bge_BGE_{core_under}",
+                f"bge_historical_{core_under}",  # pre-rebuild compat
+            ])
     return list(variants)
 
 
