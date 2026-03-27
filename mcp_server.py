@@ -981,6 +981,7 @@ _metrics = {
     "haiku_rerank_changed_top": 0,
     "zero_results": [],                        # recent zero-result queries
     "clients": collections.Counter(),          # client type → call count
+    "sessions": 0,                             # total MCP sessions opened
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
 
@@ -1021,8 +1022,13 @@ def _get_metrics() -> dict:
     for zr in _metrics["zero_results"]:
         zero_agg[zr["query"]] += 1
 
+    sessions = max(_metrics["sessions"], 1)
+    total_calls = sum(s["calls"] for s in tool_stats.values())
+
     return {
         "uptime_since": _metrics["startup_time"],
+        "sessions": _metrics["sessions"],
+        "calls_per_session": round(total_calls / sessions, 1),
         "clients": dict(_metrics["clients"].most_common()),
         "tools": tool_stats,
         "haiku_rerank": {
@@ -9315,6 +9321,9 @@ def main_remote(host: str, port: int):
             ua = (headers.get(b"user-agent", b"")).decode("utf-8", errors="ignore").lower()
             _skip_tracking = path in ("/health", "/metrics", "/dev")
             if not _skip_tracking:
+                # Count new sessions (SSE or Streamable HTTP connects)
+                if method in ("GET", "POST") and path in ("/", "/sse", ""):
+                    _metrics["sessions"] += 1
                 if "claude-user" in ua:
                     _metrics["clients"]["claude.ai"] += 1
                 elif "claude-code" in ua or "claude-vscode" in ua:
@@ -9407,8 +9416,8 @@ header{margin-bottom:2.5rem}
 .status::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px;box-shadow:0 0 6px var(--ok);animation:pulse 2.5s ease infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
 
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:2.5rem}
-@media(max-width:600px){.kpi{grid-template-columns:repeat(2,1fr)}}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:2.5rem}
+@media(max-width:600px){.kpi{grid-template-columns:repeat(3,1fr)}}
 .k{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem}
 .k .n{font-size:1.8rem;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
 .k .n u{text-decoration:none;font-size:.85rem;font-weight:400;color:var(--mute)}
@@ -9482,10 +9491,11 @@ async function render(){
 
     $('#root').innerHTML=`
       <div class="kpi">
-        <div class="k"><div class="n">${f(tot)}</div><div class="l">requests</div></div>
+        <div class="k"><div class="n">${f(d.sessions||0)}</div><div class="l">sessions</div></div>
+        <div class="k"><div class="n">${f(tot)}</div><div class="l">tool calls</div></div>
+        <div class="k"><div class="n">${d.calls_per_session||0}</div><div class="l">calls / session</div></div>
         <div class="k"><div class="n">${hR}<u>%</u></div><div class="l">rerank rate</div></div>
-        <div class="k"><div class="n">${hC}<u>%</u></div><div class="l">changed #1</div></div>
-        <div class="k"><div class="n ${z.length?'w':'g'}">${z.length}</div><div class="l">search gaps</div></div>
+        <div class="k"><div class="n ${z.length?'w':'g'}">${z.length}</div><div class="l">gaps</div></div>
       </div>
       ${Object.keys(d.clients||{}).length?`<div class="panel"><div class="panel-h">Clients</div>
         <table><tr><th>Client</th><th class="r">Requests</th><th></th></tr>
@@ -9517,7 +9527,7 @@ render();setInterval(render,60000);
     async def handle_metrics_all(request):
         """Aggregate metrics from all workers."""
         import httpx
-        combined = {"tools": {}, "clients": {}, "haiku_rerank": {"fired": 0, "skipped": 0, "changed_top": 0}, "zero_result_queries": []}
+        combined = {"tools": {}, "clients": {}, "sessions": 0, "calls_per_session": 0, "haiku_rerank": {"fired": 0, "skipped": 0, "changed_top": 0}, "zero_result_queries": []}
         async with httpx.AsyncClient(timeout=2) as client:
             for port in range(8770, 8774):
                 try:
@@ -9529,6 +9539,7 @@ render();setInterval(render,60000);
                         combined["tools"][tool]["calls"] += stats["calls"]
                         combined["tools"][tool]["_total_ms"] += stats["avg_ms"] * stats["calls"]
                         combined["tools"][tool]["errors"] += stats["errors"]
+                    combined["sessions"] += d.get("sessions", 0)
                     for client_name, count in d.get("clients", {}).items():
                         combined["clients"][client_name] = combined["clients"].get(client_name, 0) + count
                     for k in ("fired", "skipped", "changed_top"):
@@ -9546,6 +9557,8 @@ render();setInterval(render,60000);
         for z in combined["zero_result_queries"]:
             zc[z["query"]] += z.get("count", 1)
         combined["zero_result_queries"] = [{"query": q, "count": n} for q, n in zc.most_common(30)]
+        total_calls = sum(s["calls"] for s in combined["tools"].values())
+        combined["calls_per_session"] = round(total_calls / max(combined["sessions"], 1), 1)
         combined["uptime_since"] = _metrics["startup_time"]
         combined["workers"] = 4
         return JSONResponse(combined)
