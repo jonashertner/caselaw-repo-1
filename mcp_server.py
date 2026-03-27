@@ -9305,18 +9305,22 @@ def main_remote(host: str, port: int):
                 return
 
             # Track client type from User-Agent (no IP, no PII)
+            # Skip health, metrics, dev dashboard — not real client traffic
+            path = scope.get("path", "")
             headers = dict(scope.get("headers", []))
             ua = (headers.get(b"user-agent", b"")).decode("utf-8", errors="ignore").lower()
-            if "claude-user" in ua:
-                _metrics["clients"]["claude.ai"] += 1
-            elif "claude-code" in ua or "claude-vscode" in ua:
-                _metrics["clients"]["claude-code"] += 1
-            elif "undici" in ua or "chatgpt" in ua or "openai" in ua:
-                _metrics["clients"]["chatgpt"] += 1
-            elif "gemini" in ua or "google" in ua:
-                _metrics["clients"]["gemini"] += 1
-            elif ua and "bot" not in ua and "crawler" not in ua:
-                _metrics["clients"]["other"] += 1
+            _skip_tracking = path in ("/health", "/metrics", "/dev")
+            if not _skip_tracking:
+                if "claude-user" in ua:
+                    _metrics["clients"]["claude.ai"] += 1
+                elif "claude-code" in ua or "claude-vscode" in ua:
+                    _metrics["clients"]["claude-code"] += 1
+                elif "undici" in ua or "chatgpt" in ua or "openai" in ua:
+                    _metrics["clients"]["chatgpt"] += 1
+                elif "gemini" in ua or "google" in ua:
+                    _metrics["clients"]["gemini"] += 1
+                elif ua and "bot" not in ua and "crawler" not in ua:
+                    _metrics["clients"]["other"] += 1
 
             method = scope.get("method", "GET")
 
