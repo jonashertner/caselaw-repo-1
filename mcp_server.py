@@ -1202,7 +1202,7 @@ def _search_fts5_inner(
                 elif words:
                     doctrine_fts = words[0]
                 sp_parts.append(doctrine_fts)
-            for syn in (structured_parse.get("synonyms") or [])[:4]:
+            for syn in (structured_parse.get("synonyms") or [])[:6]:
                 words = syn.strip().split()
                 if len(words) >= 2:
                     sp_parts.append(f'"{" ".join(words)}"')
@@ -1264,9 +1264,10 @@ def _search_fts5_inner(
         strategy_name = strategy.get("name", "")
         strategy_weight = float(strategy.get("weight", 1.0))
         expensive_strategy = strategy_name in {"nl_or", "nl_or_expanded"}
+        cross_lingual = strategy_name.startswith("doctrine_fr") or strategy_name.startswith("doctrine_it")
         effective_need = offset + limit
         early_enough = max(effective_need * 2, 20)
-        if expensive_strategy and len(candidate_meta) >= early_enough:
+        if expensive_strategy and not cross_lingual and len(candidate_meta) >= early_enough:
             break
         if strategy_name == "nl_or_expanded" and not query_has_expandable_terms:
             continue
