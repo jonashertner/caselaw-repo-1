@@ -1101,9 +1101,8 @@ def _search_fts5_inner(
     if decision_type:
         filters.append("d.decision_type LIKE ?")
         params.append(f"%{decision_type}%")
-    if legal_area:
-        filters.append("d.legal_area LIKE ?")
-        params.append(f"%{legal_area}%")
+    # legal_area is NOT a WHERE filter — too many decisions lack this field.
+    # Instead it's used as a reranking boost (see _rerank_rows).
 
     where = (" AND " + " AND ".join(filters)) if filters else ""
 
@@ -1579,6 +1578,13 @@ def _search_fts5_inner(
             is_docket_query=is_docket_query,
         )
         reranked = _dedupe_results_by_decision_id(reranked)
+        # Soft boost: if legal_area filter given, promote matching results
+        # to the top without removing non-matching ones
+        if legal_area and reranked:
+            la_lower = legal_area.lower()
+            matching = [r for r in reranked if la_lower in (r.get("legal_area") or "").lower()]
+            others = [r for r in reranked if la_lower not in (r.get("legal_area") or "").lower()]
+            reranked = matching + others
         return reranked, total_candidates
 
     if had_success:
