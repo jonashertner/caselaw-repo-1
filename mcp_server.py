@@ -2605,11 +2605,7 @@ def _resolve_decision_id(decision_id: str) -> str:
             f"bge_BGE_{vol}_{div}_{page}",
             f"bge_{vol}_{div}_{page}",
             f"bge_{vol} {div} {page}",
-            f"bge_historical_{vol}_{div}_{page}",  # pre-rebuild compat
         ])
-    # Normalize bge_historical_ → bge_ (DB uses bge_ after rebuild)
-    if decision_id.startswith("bge_historical_"):
-        candidates.append("bge_" + decision_id[len("bge_historical_"):])
 
     conn = get_db()
     try:
@@ -2671,7 +2667,6 @@ def _decision_id_variants(decision_id: str) -> list[str]:
                 f"bge_{core_under}",
                 f"bge_{core_space}",
                 f"bge_BGE_{core_under}",
-                f"bge_historical_{core_under}",  # pre-rebuild compat
             ])
     return list(variants)
 
