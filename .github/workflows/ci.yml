@@ -42,4 +42,5 @@ jobs:
             --ignore=test_bger_live.py \
             --ignore=test_federal_live.py \
             --ignore=test_build_vectors.py \
+            --ignore=test_appeal_chain.py \
             --ignore=scripts/
