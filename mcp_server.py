@@ -281,6 +281,8 @@ def _parse_query_structured(query: str) -> dict:
             result = {
                 "statutes": list(parsed.get("statutes") or []),
                 "doctrine": str(parsed.get("doctrine") or ""),
+                "doctrine_fr": str(parsed.get("doctrine_fr") or ""),
+                "doctrine_it": str(parsed.get("doctrine_it") or ""),
                 "leading_bge": list(parsed.get("leading_bge") or []),
                 "synonyms": list(parsed.get("synonyms") or []),
                 "domain": str(parsed.get("domain") or ""),
@@ -1058,7 +1060,6 @@ def _search_fts5_inner(
     date_to: str | None,
     chamber: str | None,
     decision_type: str | None,
-    legal_area: str | None,
     limit: int,
     offset: int = 0,
     sort: str | None = None,
@@ -1072,7 +1073,7 @@ def _search_fts5_inner(
     fts_query = query.strip()
     if not fts_query:
         # No search query — return recent decisions with filters
-        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, legal_area, limit, offset, sort=sort)
+        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset, sort=sort)
 
     # Build WHERE clause for filters (applied to main table via JOIN)
     filters = []
@@ -1234,6 +1235,22 @@ def _search_fts5_inner(
                     "query": f"title:{doctrine_norm}",
                     "weight": 1.3,
                 })
+        # Cross-lingual doctrine strategies (FR/IT equivalents)
+        if structured_parse:
+            for lang_key, lang_label in [("doctrine_fr", "fr"), ("doctrine_it", "it")]:
+                cross_doc = (structured_parse.get(lang_key) or "").strip()
+                if cross_doc and len(cross_doc) > 2:
+                    words = cross_doc.split()
+                    if len(words) >= 2:
+                        cross_fts = f'"{" ".join(words)}"'
+                    else:
+                        cross_fts = words[0]
+                    strategies.append({
+                        "name": f"doctrine_{lang_label}",
+                        "query": cross_fts,
+                        "weight": 1.3,
+                    })
+
     target_pool = _target_candidate_pool(
         limit=limit,
         offset=offset,
@@ -5720,7 +5737,6 @@ def _list_recent(
     date_to: str | None,
     chamber: str | None = None,
     decision_type: str | None = None,
-    legal_area: str | None = None,
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
     sort: str | None = None,
@@ -5751,9 +5767,6 @@ def _list_recent(
     if decision_type:
         filters.append("decision_type LIKE ?")
         params.append(f"%{decision_type}%")
-    if legal_area:
-        filters.append("legal_area LIKE ?")
-        params.append(f"%{legal_area}%")
 
     where = ("WHERE " + " AND ".join(filters)) if filters else ""
 
@@ -6228,7 +6241,8 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
             num = m.group(1) or m.group(2)
             if current_num is not None:
                 text = " ".join(current_lines).strip()
-                sections.append({"number": current_num, "text": text})
+                subs = _find_subsection_numbers(current_num, text)
+                sections.append({"number": current_num, "text": text, "subsections": subs})
             current_num = num
             current_lines = [stripped] if stripped not in (num, num + ".") else []
         elif current_num is not None:
@@ -6236,9 +6250,30 @@ def _extract_erwaegungen(full_text: str) -> list[dict]:
 
     if current_num is not None:
         text = " ".join(current_lines).strip()
-        sections.append({"number": current_num, "text": text})
+        subs = _find_subsection_numbers(current_num, text)
+        sections.append({"number": current_num, "text": text, "subsections": subs})
 
     return sections
+
+
+def _find_subsection_numbers(parent_num: str, text: str) -> list[str]:
+    """Extract all sub-section numbers within an Erwägung's text.
+
+    For E. 9 text containing "9.1 ... 9.2 ... 9.3 ... 9.3.1 ...",
+    returns ["9.1", "9.2", "9.3", "9.3.1"].
+    """
+    # Match patterns like "9.1." or "9.3.1" at word boundaries
+    pattern = re.compile(
+        rf"(?:^|\s)({re.escape(parent_num)}\.\d+(?:\.\d+)*)[\.\s]",
+    )
+    seen = set()
+    result = []
+    for m in pattern.finditer(text):
+        num = m.group(1)
+        if num not in seen:
+            seen.add(num)
+            result.append(num)
+    return result
 
 
 def _get_decision_statutes(decision_id: str, *, limit: int = 5) -> list[dict]:
@@ -6521,6 +6556,47 @@ def _find_leading_cases_by_fts_fallback(query: str, limit: int) -> list[dict]:
         return []
 
 
+def _build_doctrine_summary(leading_cases: list[dict], law_code: str) -> dict:
+    """Build a structured doctrine summary from leading cases.
+
+    Groups cases by their key holding and identifies the dominant rule,
+    any evolution, and dissenting positions.
+    """
+    if not leading_cases:
+        return {"note": "No leading cases found for this topic."}
+
+    # Extract the main rule from the most-cited case
+    top = leading_cases[0]
+    total_citations = sum(c.get("incoming_citations", 0) for c in leading_cases)
+
+    # Group by decade to show evolution
+    by_decade: dict[str, list] = {}
+    for c in leading_cases:
+        year = (c.get("date") or "")[:4]
+        if year:
+            decade = year[:3] + "0s"
+            by_decade.setdefault(decade, []).append(c["bge_ref"])
+
+    summary = {
+        "principal_rule": top.get("rule_summary", ""),
+        "established_by": top.get("bge_ref", ""),
+        "authority": f"{top.get('incoming_citations', 0)} citations",
+        "total_leading_cases": len(leading_cases),
+        "total_citations": total_citations,
+        "coverage_decades": {k: len(v) for k, v in sorted(by_decade.items())},
+    }
+
+    # Note if doctrine has evolved (different rules across time)
+    rules = [c["rule_summary"] for c in leading_cases if c.get("rule_summary")]
+    if len(set(rules)) > 1:
+        summary["note"] = (
+            f"Doctrine has evolved across {len(set(rules))} distinct holdings. "
+            "Review the timeline for shifts in court reasoning."
+        )
+
+    return summary
+
+
 def _handle_get_doctrine(*, query: str) -> dict:
     """Handler for get_doctrine tool.
 
@@ -6657,9 +6733,13 @@ def _handle_get_doctrine(*, query: str) -> dict:
         except Exception as e:
             logger.debug("OK commentary lookup failed: %s", e)
 
+    # Build structured doctrine summary from leading cases
+    doctrine_summary = _build_doctrine_summary(leading_cases, law_code if statute_refs else "")
+
     return {
         "query": q,
         "statute": statute_info,
+        "doctrine_summary": doctrine_summary,
         "leading_cases": leading_cases,
         "doctrine_timeline": timeline,
         "commentary": commentary_info,
