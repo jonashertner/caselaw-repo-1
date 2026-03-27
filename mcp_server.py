@@ -9586,7 +9586,11 @@ footer a{color:var(--mute);text-decoration:none}
 <body>
 <header>
   <div class="brand">open<b>caselaw</b></div>
-  <span class="status" id="st">connecting</span>
+  <div style="display:flex;gap:1rem;align-items:center">
+    <button id="btn-live" onclick="setMode('live')" style="background:none;border:1px solid var(--border);color:var(--fg);padding:.3rem .8rem;border-radius:5px;cursor:pointer;font-size:.65rem;letter-spacing:.05em">LIVE</button>
+    <button id="btn-hist" onclick="setMode('history')" style="background:none;border:1px solid var(--border);color:var(--mute);padding:.3rem .8rem;border-radius:5px;cursor:pointer;font-size:.65rem;letter-spacing:.05em">ALL TIME</button>
+    <span class="status" id="st">connecting</span>
+  </div>
 </header>
 <div id="root"><div class="empty">loading metrics...</div></div>
 <footer>
@@ -9600,7 +9604,7 @@ const ms2s=ms=>ms<1000?ms.toFixed(0)+'ms':(ms/1000).toFixed(1)+'s';
 
 async function render(){
   try{
-    const d=await(await fetch('/metrics/all')).json();
+    const d=await(await fetch(_mode==='history'?'/metrics/history':'/metrics/all')).json();
     const t=d.tools||{},h=d.haiku_rerank||{},z=d.zero_result_queries||[];
     const ns=Object.keys(t).sort((a,b)=>t[b].calls-t[a].calls);
     const tot=ns.reduce((s,n)=>s+t[n].calls,0);
@@ -9653,6 +9657,8 @@ async function render(){
     $('#up').textContent='up '+hr+'h '+mn+'m';
   }catch(e){$('#root').innerHTML='<div class="empty w">'+e+'</div>';$('#st').textContent='error'}
 }
+let _mode='live';
+function setMode(m){_mode=m;document.getElementById('btn-live').style.color=m==='live'?'var(--fg)':'var(--mute)';document.getElementById('btn-hist').style.color=m==='history'?'var(--fg)':'var(--mute)';render()}
 render();setInterval(render,60000);
 </script>
 </body>
@@ -9661,6 +9667,68 @@ render();setInterval(render,60000);
     # ── Metrics endpoint ────────────────────────────────────────
     async def handle_metrics(request):
         return JSONResponse(_get_metrics())
+
+    async def handle_metrics_history(request):
+        """Return aggregated metrics from persistent daily log (survives restarts)."""
+        try:
+            entries = []
+            if _METRICS_HISTORY.exists():
+                with open(_METRICS_HISTORY) as f:
+                    for line in f:
+                        try:
+                            entries.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            pass
+            if not entries:
+                return JSONResponse({"error": "No historical data yet"})
+
+            # Aggregate all flush snapshots
+            combined_tools = {}
+            combined_clients = {}
+            total_sessions = 0
+            total_followup = 0
+            total_search = 0
+            haiku = {"fired": 0, "skipped": 0, "changed_top": 0}
+            all_zero = []
+
+            for e in entries:
+                for tool, stats in e.get("tools", {}).items():
+                    if tool not in combined_tools:
+                        combined_tools[tool] = {"calls": 0, "errors": 0, "_latencies": []}
+                    combined_tools[tool]["calls"] += stats.get("calls", 0)
+                    combined_tools[tool]["errors"] += stats.get("errors", 0)
+                for client, count in e.get("clients", {}).items():
+                    combined_clients[client] = combined_clients.get(client, 0) + count
+                total_sessions += e.get("sessions", 0)
+                total_followup += e.get("_search_followups", e.get("followup_rate", 0))
+                for k in ("fired", "skipped", "changed_top"):
+                    haiku[k] += e.get("haiku_rerank", {}).get(k, 0)
+                all_zero.extend(e.get("zero_result_queries", []))
+
+            # Compute tool stats
+            for tool in combined_tools.values():
+                tool.pop("_latencies", None)
+                tool["avg_ms"] = 0  # can't compute from snapshots
+
+            # Dedup zero results
+            from collections import Counter as _C
+            zc = _C()
+            for z in all_zero:
+                zc[z.get("query", "")] += z.get("count", 1)
+
+            first = entries[0].get("flushed_at", entries[0].get("uptime_since", ""))
+            last = entries[-1].get("flushed_at", "")
+
+            return JSONResponse({
+                "period": {"from": first, "to": last, "snapshots": len(entries)},
+                "sessions": total_sessions,
+                "clients": combined_clients,
+                "tools": combined_tools,
+                "haiku_rerank": haiku,
+                "zero_result_queries": [{"query": q, "count": n} for q, n in zc.most_common(30)],
+            })
+        except Exception as e:
+            return JSONResponse({"error": str(e)}, status_code=500)
 
     async def handle_metrics_all(request):
         """Aggregate metrics from all workers."""
@@ -10085,6 +10153,7 @@ render();setInterval(render,60000);
             Route("/health", endpoint=handle_health),
             Route("/dev", endpoint=handle_dev_dashboard),
             Route("/metrics", endpoint=handle_metrics),
+            Route("/metrics/history", endpoint=handle_metrics_history),
             Route("/metrics/all", endpoint=handle_metrics_all),
             Route("/robots.txt", endpoint=handle_robots),
             Route("/sitemap.xml", endpoint=handle_sitemap_index),
