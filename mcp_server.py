@@ -9371,52 +9371,56 @@ def main_remote(host: str, port: int):
 <title>ocl / metrics</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#fafafa;--fg:#111;--mute:#999;--mute2:#ccc;--mute3:#eee;--card:#fff;--border:#f0f0f0;--hover:#fafafa;--bar:#111;--ok:#2a6;--warn:#d44;--accent:#111}
-@media(prefers-color-scheme:dark){:root{--bg:#0a0a0a;--fg:#e5e5e5;--mute:#555;--mute2:#333;--mute3:#1a1a1a;--card:#111;--border:#1a1a1a;--hover:#151515;--bar:#e5e5e5;--ok:#4a5;--warn:#c45;--accent:#fff}}
-body{font-family:'Inter','SF Pro Text',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--fg);padding:clamp(1.5rem,4vw,3rem);max-width:960px;margin:0 auto;-webkit-font-smoothing:antialiased;font-size:14px}
+:root{--bg:#111;--fg:#ddd;--mute:#666;--mute2:#444;--mute3:#222;--card:#181818;--border:#252525;--hover:#1c1c1c;--bar:linear-gradient(90deg,#4a7cff,#6c5ce7);--ok:#34d399;--warn:#fb7185;--accent:#fff}
+@media(prefers-color-scheme:light){:root{--bg:#f8f8f8;--fg:#1a1a1a;--mute:#888;--mute2:#bbb;--mute3:#e8e8e8;--card:#fff;--border:#eaeaea;--hover:#f5f5f5;--bar:linear-gradient(90deg,#3b5bdb,#5c4bd9);--ok:#059669;--warn:#e11d48;--accent:#111}}
+body{font-family:'Inter',-apple-system,system-ui,'Segoe UI',sans-serif;background:var(--bg);color:var(--fg);padding:clamp(1.5rem,4vw,3rem);max-width:900px;margin:0 auto;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.5}
 
-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-h1{font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
-h1 b{color:var(--fg);font-weight:600}
-.live{font-size:.6rem;color:var(--mute);letter-spacing:.05em}
-.live::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:5px;animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+header{margin-bottom:2.5rem}
+.brand{font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--mute);margin-bottom:.25rem}
+.brand b{color:var(--fg)}
+.status{font-size:.7rem;color:var(--mute)}
+.status::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px;box-shadow:0 0 6px var(--ok);animation:pulse 2.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.85)}}
 
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-bottom:2.5rem}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:2.5rem}
 @media(max-width:600px){.kpi{grid-template-columns:repeat(2,1fr)}}
-.k{padding:1.5rem 0;text-align:center}
-.k .n{font-size:2rem;font-weight:200;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
-.k .n span{font-size:.9rem;font-weight:400;color:var(--mute)}
-.k .l{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mute);margin-top:.5rem}
+.k{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem}
+.k .n{font-size:1.8rem;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1}
+.k .n u{text-decoration:none;font-size:.85rem;font-weight:400;color:var(--mute)}
+.k .l{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:.4rem}
 
-.s{margin-bottom:2rem}
-.s-h{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mute);margin-bottom:.75rem}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1rem}
+.panel-h{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:1rem;font-weight:600}
 table{width:100%;border-collapse:collapse}
-th{font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mute2);text-align:left;padding:.6rem 0;border-bottom:1px solid var(--border);font-weight:500}
-td{padding:.65rem 0;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+th{font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mute2);text-align:left;padding:.5rem 0;font-weight:500}
+td{padding:.55rem 0;border-top:1px solid var(--border);font-variant-numeric:tabular-nums;font-size:.8rem}
+tr:first-child td{border-top:none}
 tr:hover td{background:var(--hover)}
 th.r,td.r{text-align:right}
-.bar-w{width:30%;padding-right:1rem}
-.bar-t{height:2px;background:var(--mute3);border-radius:1px;overflow:hidden}
-.bar-f{height:100%;background:var(--bar);border-radius:1px;transition:width .8s cubic-bezier(.4,0,.2,1)}
-.mono{font-family:'SF Mono','Fira Code',monospace;font-size:.75rem}
+
+.bw{width:28%}
+.bt{height:4px;background:var(--mute3);border-radius:2px;overflow:hidden}
+.bf{height:100%;background:var(--bar);border-radius:2px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+
+.mono{font-family:'JetBrains Mono','SF Mono',monospace;font-size:.72rem}
 .d{color:var(--mute)}
 .w{color:var(--warn)}
 .g{color:var(--ok)}
-.empty{color:var(--mute2);padding:2rem;text-align:center;font-size:.75rem;font-style:italic}
-.pill{display:inline-block;font-size:.55rem;padding:.15rem .5rem;border-radius:99px;letter-spacing:.05em}
-.pill-g{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
-.pill-w{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
+.tag{display:inline-block;font-size:.55rem;font-weight:600;padding:.2rem .55rem;border-radius:5px;letter-spacing:.03em}
+.tag-w{background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--warn)}
+.tag-g{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.empty{color:var(--mute);padding:1.75rem;text-align:center;font-size:.75rem}
 
-footer{font-size:.6rem;color:var(--mute2);margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+footer{font-size:.6rem;color:var(--mute2);margin-top:2rem;display:flex;justify-content:space-between;align-items:center}
+footer a{color:var(--mute);text-decoration:none}
 </style>
 </head>
 <body>
 <header>
-  <h1>open<b>caselaw</b></h1>
-  <span class="live" id="live">live</span>
+  <div class="brand">open<b>caselaw</b></div>
+  <span class="status" id="st">connecting</span>
 </header>
-<div id="root"></div>
+<div id="root"><div class="empty">loading metrics...</div></div>
 <footer>
   <span id="ts"></span>
   <span id="up"></span>
@@ -9424,6 +9428,7 @@ footer{font-size:.6rem;color:var(--mute2);margin-top:3rem;padding-top:1rem;borde
 <script>
 const $=s=>document.querySelector(s);
 const f=n=>n>=10000?(n/1000).toFixed(0)+'k':n>=1000?(n/1000).toFixed(1)+'k':n.toString();
+const ms2s=ms=>ms<1000?ms.toFixed(0)+'ms':(ms/1000).toFixed(1)+'s';
 
 async function render(){
   try{
@@ -9438,36 +9443,36 @@ async function render(){
     const hC=h.fired?Math.round(h.changed_top/h.fired*100):0;
 
     const toolR=ns.map(n=>{
-      const s=t[n],w=Math.max(1,s.calls/mx*100);
+      const s=t[n],w=Math.max(2,s.calls/mx*100);
+      const name=n.replace(/_/g,' ');
       return`<tr>
-        <td>${n.replace(/_/g,' ')}</td>
+        <td>${name}</td>
         <td class="r mono">${f(s.calls)}</td>
-        <td class="bar-w"><div class="bar-t"><div class="bar-f"style="width:${w}%"></div></div></td>
-        <td class="r mono d">${s.avg_ms<1000?s.avg_ms.toFixed(0)+'ms':(s.avg_ms/1000).toFixed(1)+'s'}</td>
-        <td class="r">${s.errors?'<span class="pill pill-w">'+s.errors+'</span>':'<span class="d">\u2014</span>'}</td></tr>`
-    }).join('')||'<tr><td colspan="5"class="empty">waiting for first request</td></tr>';
+        <td class="bw"><div class="bt"><div class="bf"style="width:${w}%"></div></div></td>
+        <td class="r mono d">${ms2s(s.avg_ms)}</td>
+        <td class="r">${s.errors?'<span class="tag tag-w">'+s.errors+'</span>':'<span class="d">&mdash;</span>'}</td></tr>`
+    }).join('')||'<tr><td colspan="5"class="empty">awaiting first request</td></tr>';
 
-    const zR=z.map(q=>`<tr><td class="mono w">${q.query}</td><td class="r mono">${q.count}</td></tr>`).join('')
-      ||'<tr><td colspan="2"class="empty g">all queries returned results</td></tr>';
+    const zR=z.map(q=>`<tr><td class="mono w">${q.query}</td><td class="r mono">${q.count}</td></tr>`).join('');
 
     $('#root').innerHTML=`
       <div class="kpi">
         <div class="k"><div class="n">${f(tot)}</div><div class="l">requests</div></div>
-        <div class="k"><div class="n">${hR}<span>%</span></div><div class="l">rerank rate</div></div>
-        <div class="k"><div class="n">${hC}<span>%</span></div><div class="l">changed #1</div></div>
-        <div class="k"><div class="n ${z.length?'w':'g'}">${z.length}</div><div class="l">gaps</div></div>
+        <div class="k"><div class="n">${hR}<u>%</u></div><div class="l">rerank rate</div></div>
+        <div class="k"><div class="n">${hC}<u>%</u></div><div class="l">changed #1</div></div>
+        <div class="k"><div class="n ${z.length?'w':'g'}">${z.length}</div><div class="l">search gaps</div></div>
       </div>
-      <div class="s"><div class="s-h">Tools</div>
-        <table><tr><th>Name</th><th class="r">Calls</th><th></th><th class="r">Latency</th><th class="r">Errors</th></tr>${toolR}</table>
+      <div class="panel"><div class="panel-h">Tool usage</div>
+        <table><tr><th>Tool</th><th class="r">Calls</th><th></th><th class="r">Avg</th><th class="r">Err</th></tr>${toolR}</table>
       </div>
-      ${z.length?'<div class="s"><div class="s-h">Zero-result queries</div><table><tr><th>Query</th><th class="r">Count</th></tr>'+zR+'</table></div>':''}`;
+      ${z.length?`<div class="panel"><div class="panel-h">Zero-result queries</div><table><tr><th>Query</th><th class="r">Hits</th></tr>${zR}</table></div>`:''}`;
 
-    const ms=Date.now()-new Date(d.uptime_since).getTime();
-    const hr=Math.floor(ms/36e5),mn=Math.floor(ms%36e5/6e4);
+    const el=Date.now()-new Date(d.uptime_since).getTime();
+    const hr=Math.floor(el/36e5),mn=Math.floor(el%36e5/6e4);
+    $('#st').textContent='live \u00b7 '+ns.length+' tools \u00b7 '+f(tot)+' calls';
     $('#ts').textContent=new Date().toLocaleTimeString();
-    $('#up').textContent='uptime '+hr+'h '+mn+'m';
-    $('#live').textContent='live \u00b7 '+ns.length+' tools';
-  }catch(e){$('#root').innerHTML='<div class="empty w">'+e+'</div>'}
+    $('#up').textContent='up '+hr+'h '+mn+'m';
+  }catch(e){$('#root').innerHTML='<div class="empty w">'+e+'</div>';$('#st').textContent='error'}
 }
 render();setInterval(render,60000);
 </script>
