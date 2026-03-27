@@ -42,3 +42,35 @@ This policy covers:
 - UFW firewall with explicit port allowlist
 - fail2ban for SSH brute-force protection
 - Rate limiting on all API and SSE endpoints
+
+## Data Collection & Privacy
+
+OpenCaseLaw collects minimal, anonymized operational data to improve search quality. **No user tracking, no IP logging, no session tracking.**
+
+### What is collected
+
+| Data | Purpose | Retention |
+|------|---------|-----------|
+| Tool call counts | Which features are used/unused | In-memory, resets on restart |
+| Per-tool avg latency | Performance monitoring | In-memory, resets on restart |
+| Zero-result query text | Fix search gaps | In-memory, last 500, resets on restart |
+| Haiku rerank fire/change rate | Validate reranking value | In-memory, resets on restart |
+
+### What is NOT collected
+
+- No IP addresses or geolocation
+- No user agents or device fingerprints  
+- No session IDs or user identification
+- No query text (except zero-result queries)
+- No personal data of any kind
+- No cookies or tracking pixels
+
+### Access
+
+Aggregated metrics are available at `/metrics` (public, JSON). A developer dashboard is available at `/dev` (token-protected, read-only).
+
+### Principles
+
+1. **Collect only what improves the product** — every data point must be actionable
+2. **No persistent storage** — all metrics are in-memory and reset on worker restart
+3. **No user tracking** — court decisions are public records; who reads them is not our business

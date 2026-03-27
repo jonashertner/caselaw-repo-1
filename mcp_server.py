@@ -9363,9 +9363,138 @@ def main_remote(host: str, port: int):
                 {"status": "error", "detail": str(e)}, status_code=503,
             )
 
+    _DEV_DASHBOARD_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenCaseLaw — Dev Dashboard</title>
+<style>
+  :root { --bg:#0d1117; --fg:#c9d1d9; --accent:#58a6ff; --card:#161b22; --border:#30363d; --green:#3fb950; --red:#f85149; --yellow:#d29922; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,system-ui,sans-serif; background:var(--bg); color:var(--fg); padding:1.5rem; }
+  h1 { color:var(--accent); margin-bottom:.5rem; font-size:1.4rem; }
+  .subtitle { color:#8b949e; margin-bottom:1.5rem; font-size:.85rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem; margin-bottom:1.5rem; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:1rem; }
+  .card h2 { font-size:.9rem; color:#8b949e; margin-bottom:.75rem; text-transform:uppercase; letter-spacing:.05em; }
+  .stat { font-size:2rem; font-weight:600; color:var(--fg); }
+  .stat small { font-size:.8rem; color:#8b949e; font-weight:400; }
+  table { width:100%; border-collapse:collapse; font-size:.85rem; }
+  th { text-align:left; color:#8b949e; padding:.4rem .6rem; border-bottom:1px solid var(--border); }
+  td { padding:.4rem .6rem; border-bottom:1px solid var(--border); }
+  .bar { height:6px; background:var(--accent); border-radius:3px; min-width:2px; }
+  .zero { color:var(--red); }
+  .good { color:var(--green); }
+  #error { color:var(--red); padding:1rem; }
+  .refresh { color:#8b949e; font-size:.75rem; margin-top:1rem; }
+</style>
+</head>
+<body>
+<h1>OpenCaseLaw Dev Dashboard</h1>
+<p class="subtitle">Metrics since last worker restart. Auto-refreshes every 60s.</p>
+<div id="content"><p>Loading...</p></div>
+<p class="refresh" id="lastUpdate"></p>
+<script>
+async function load() {
+  try {
+    const r = await fetch('/metrics');
+    const d = await r.json();
+    const tools = d.tools || {};
+    const haiku = d.haiku_rerank || {};
+    const zeros = d.zero_result_queries || [];
+
+    // Tool stats
+    const toolNames = Object.keys(tools).sort((a,b) => tools[b].calls - tools[a].calls);
+    const maxCalls = toolNames.length ? tools[toolNames[0]].calls : 1;
+    const totalCalls = toolNames.reduce((s,t) => s + tools[t].calls, 0);
+    const totalErrors = toolNames.reduce((s,t) => s + tools[t].errors, 0);
+
+    let toolRows = toolNames.map(t => {
+      const s = tools[t];
+      const pct = (s.calls / maxCalls * 100).toFixed(0);
+      return `<tr>
+        <td>${t}</td>
+        <td>${s.calls}</td>
+        <td><div class="bar" style="width:${pct}%"></div></td>
+        <td>${s.avg_ms.toFixed(0)} ms</td>
+        <td class="${s.errors ? 'zero' : ''}">${s.errors}</td>
+      </tr>`;
+    }).join('');
+    if (!toolRows) toolRows = '<tr><td colspan="5">No tool calls yet</td></tr>';
+
+    // Zero-result queries
+    let zeroRows = zeros.map(z =>
+      `<tr><td class="zero">${z.query}</td><td>${z.count}</td></tr>`
+    ).join('');
+    if (!zeroRows) zeroRows = '<tr><td colspan="2" class="good">No zero-result queries</td></tr>';
+
+    // Haiku stats
+    const haikuTotal = haiku.fired + haiku.skipped;
+    const haikuRate = haikuTotal ? ((haiku.fired / haikuTotal) * 100).toFixed(0) : '—';
+    const changeRate = haiku.fired ? ((haiku.changed_top / haiku.fired) * 100).toFixed(0) : '—';
+
+    document.getElementById('content').innerHTML = `
+      <div class="grid">
+        <div class="card">
+          <h2>Total Tool Calls</h2>
+          <div class="stat">${totalCalls} <small>${totalErrors} errors</small></div>
+        </div>
+        <div class="card">
+          <h2>Haiku Rerank</h2>
+          <div class="stat">${haikuRate}% <small>fire rate (${haiku.fired}/${haikuTotal})</small></div>
+          <div style="margin-top:.5rem;font-size:.85rem">Changed #1: <b>${changeRate}%</b> (${haiku.changed_top} times)</div>
+        </div>
+        <div class="card">
+          <h2>Zero-Result Queries</h2>
+          <div class="stat ${zeros.length ? 'zero' : 'good'}">${zeros.length}</div>
+        </div>
+        <div class="card">
+          <h2>Uptime Since</h2>
+          <div class="stat" style="font-size:1rem">${d.uptime_since || '?'}</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <h2>Tool Usage</h2>
+        <table>
+          <tr><th>Tool</th><th>Calls</th><th></th><th>Avg</th><th>Errors</th></tr>
+          ${toolRows}
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Zero-Result Queries (fix these!)</h2>
+        <table>
+          <tr><th>Query</th><th>Count</th></tr>
+          ${zeroRows}
+        </table>
+      </div>
+    `;
+    document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    document.getElementById('content').innerHTML = '<p id="error">Failed to load metrics: ' + e + '</p>';
+  }
+}
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>"""
+
     # ── Metrics endpoint ────────────────────────────────────────
     async def handle_metrics(request):
         return JSONResponse(_get_metrics())
+
+    # ── Developer dashboard (auth-protected) ──────────────────
+    DEV_TOKEN = os.environ.get("DEV_DASHBOARD_TOKEN", "")
+
+    async def handle_dev_dashboard(request):
+        """Developer dashboard — protected by token query param."""
+        token = request.query_params.get("token", "")
+        if not DEV_TOKEN or token != DEV_TOKEN:
+            return Response("Unauthorized. Use /dev?token=YOUR_TOKEN", status_code=401)
+        return Response(_DEV_DASHBOARD_HTML, media_type="text/html")
 
     # ── REST API (FastAPI sub-app at /api) ─────────────────────
     rest_api = FastAPI(
@@ -9689,6 +9818,7 @@ def main_remote(host: str, port: int):
     app = Starlette(
         routes=[
             Route("/health", endpoint=handle_health),
+            Route("/dev", endpoint=handle_dev_dashboard),
             Route("/metrics", endpoint=handle_metrics),
             Route("/robots.txt", endpoint=handle_robots),
             Route("/sitemap.xml", endpoint=handle_sitemap_index),
