@@ -1058,6 +1058,7 @@ def _search_fts5_inner(
     date_to: str | None,
     chamber: str | None,
     decision_type: str | None,
+    legal_area: str | None,
     limit: int,
     offset: int = 0,
     sort: str | None = None,
@@ -1071,7 +1072,7 @@ def _search_fts5_inner(
     fts_query = query.strip()
     if not fts_query:
         # No search query — return recent decisions with filters
-        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset, sort=sort)
+        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, legal_area, limit, offset, sort=sort)
 
     # Build WHERE clause for filters (applied to main table via JOIN)
     filters = []
@@ -5719,6 +5720,7 @@ def _list_recent(
     date_to: str | None,
     chamber: str | None = None,
     decision_type: str | None = None,
+    legal_area: str | None = None,
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
     sort: str | None = None,
@@ -5749,6 +5751,9 @@ def _list_recent(
     if decision_type:
         filters.append("decision_type LIKE ?")
         params.append(f"%{decision_type}%")
+    if legal_area:
+        filters.append("legal_area LIKE ?")
+        params.append(f"%{legal_area}%")
 
     where = ("WHERE " + " AND ".join(filters)) if filters else ""
 
