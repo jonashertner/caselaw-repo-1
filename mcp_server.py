@@ -9558,6 +9558,7 @@ render();setInterval(render,60000);
         allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
+    rest_api.add_middleware(_MetricsMiddleware)
 
     # ── Case Law endpoints ─────────────────────────────────────
 
