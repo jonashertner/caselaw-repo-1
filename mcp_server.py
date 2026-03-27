@@ -9538,9 +9538,22 @@ render();setInterval(render,60000);
                 raise
             finally:
                 path = request.url.path.strip("/")
-                tool = path.split("/")[-1] if path.startswith("api") else path
-                if tool and tool not in ("docs", "openapi.json", ""):
-                    _record_tool_call(f"api:{tool}", (time.monotonic() - t0) * 1000, error=err)
+                if path.startswith("api/"):
+                    # Use the route pattern, not the actual path
+                    # api/decisions → "search", api/decision/{id} → "get_decision"
+                    parts = path.split("/")
+                    if len(parts) >= 2:
+                        endpoint = parts[1]  # "decisions", "decision", "laws", etc.
+                        if endpoint == "decisions":
+                            tool = "search_decisions"
+                        elif endpoint == "decision":
+                            tool = "get_decision"
+                        elif endpoint in ("docs", "openapi.json", "redoc"):
+                            tool = None
+                        else:
+                            tool = endpoint
+                        if tool:
+                            _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
 
     rest_api = FastAPI(
         title="OpenCaseLaw API",
