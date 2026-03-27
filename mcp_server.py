@@ -978,6 +978,8 @@ _metrics = {
     "tool_errors": collections.Counter(),       # tool_name → error count
     "haiku_rerank_fired": 0,
     "haiku_rerank_skipped": 0,
+    "haiku_rerank_changed_top": 0,
+    "zero_results": [],                        # recent zero-result queries
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
 
@@ -990,6 +992,18 @@ def _record_tool_call(name: str, duration_ms: float, *, error: bool = False):
         _metrics["tool_errors"][name] += 1
 
 
+def _record_zero_result(tool: str, query: str):
+    """Log queries that returned no results (for quality improvement)."""
+    _metrics["zero_results"].append({
+        "tool": tool,
+        "query": query[:200],
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+    })
+    # Keep only last 500 to bound memory
+    if len(_metrics["zero_results"]) > 500:
+        _metrics["zero_results"] = _metrics["zero_results"][-500:]
+
+
 def _get_metrics() -> dict:
     """Return current metrics snapshot."""
     tool_stats = {}
@@ -1000,13 +1014,24 @@ def _get_metrics() -> dict:
             "avg_ms": round(avg_ms, 1),
             "errors": _metrics["tool_errors"].get(name, 0),
         }
+
+    # Aggregate zero-result queries by query text
+    zero_agg = collections.Counter()
+    for zr in _metrics["zero_results"]:
+        zero_agg[zr["query"]] += 1
+
     return {
         "uptime_since": _metrics["startup_time"],
         "tools": tool_stats,
         "haiku_rerank": {
             "fired": _metrics["haiku_rerank_fired"],
             "skipped": _metrics["haiku_rerank_skipped"],
+            "changed_top": _metrics["haiku_rerank_changed_top"],
         },
+        "zero_result_queries": [
+            {"query": q, "count": n}
+            for q, n in zero_agg.most_common(30)
+        ],
     }
 
 
@@ -4048,6 +4073,9 @@ def _apply_llm_rerank(
         if isinstance(did, str) and did not in rank_by_id:
             rank_by_id[did] = rank
 
+    # Record pre-rerank top result for impact tracking
+    pre_top = pre_sorted[0][3]["decision_id"] if pre_sorted else None
+
     boosted: list[tuple[float, float, int, sqlite3.Row]] = []
     for score, bm25, idx, row in scored:
         did = row["decision_id"]
@@ -4058,6 +4086,12 @@ def _apply_llm_rerank(
             boosted.append((score + boost, bm25, idx, row))
         else:
             boosted.append((score, bm25, idx, row))
+
+    # Track whether Haiku changed the top result
+    post_sorted = sorted(boosted, key=lambda x: (-x[0], x[1], x[2]))
+    post_top = post_sorted[0][3]["decision_id"] if post_sorted else None
+    if pre_top and post_top and pre_top != post_top:
+        _metrics["haiku_rerank_changed_top"] += 1
 
     return boosted
 
