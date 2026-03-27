@@ -1060,6 +1060,7 @@ def _search_fts5_inner(
     date_to: str | None,
     chamber: str | None,
     decision_type: str | None,
+    legal_area: str | None,
     limit: int,
     offset: int = 0,
     sort: str | None = None,
