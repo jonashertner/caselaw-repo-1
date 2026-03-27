@@ -9448,6 +9448,8 @@ def main_remote(host: str, port: int):
             if scope["type"] != "http":
                 return
 
+            method = scope.get("method", "GET")
+
             # Track client type from User-Agent (no IP, no PII)
             # Skip health, metrics, dev dashboard — not real client traffic
             path = scope.get("path", "")
@@ -9468,8 +9470,6 @@ def main_remote(host: str, port: int):
                     _metrics["clients"]["gemini"] += 1
                 elif ua and "bot" not in ua and "crawler" not in ua:
                     _metrics["clients"]["other"] += 1
-
-            method = scope.get("method", "GET")
 
             if method == "OPTIONS":
                 resp = Response(
