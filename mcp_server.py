@@ -58,6 +58,7 @@ import json
 import logging
 import math
 import os
+import time
 import re
 import shutil
 import sqlite3
@@ -965,6 +966,48 @@ def _cache_clear():
     logger.info("Query cache cleared")
 
 
+# ── Metrics ──────────────────────────────────────────────────
+# Lightweight in-process counters. Thread-safe via GIL for simple increments.
+import collections
+
+_metrics = {
+    "tool_calls": collections.Counter(),       # tool_name → count
+    "tool_latency_sum": collections.Counter(),  # tool_name → total ms
+    "tool_errors": collections.Counter(),       # tool_name → error count
+    "haiku_rerank_fired": 0,
+    "haiku_rerank_skipped": 0,
+    "startup_time": datetime.now(timezone.utc).isoformat(),
+}
+
+
+def _record_tool_call(name: str, duration_ms: float, *, error: bool = False):
+    """Record a tool invocation for metrics."""
+    _metrics["tool_calls"][name] += 1
+    _metrics["tool_latency_sum"][name] += duration_ms
+    if error:
+        _metrics["tool_errors"][name] += 1
+
+
+def _get_metrics() -> dict:
+    """Return current metrics snapshot."""
+    tool_stats = {}
+    for name, count in _metrics["tool_calls"].most_common():
+        avg_ms = _metrics["tool_latency_sum"][name] / count if count else 0
+        tool_stats[name] = {
+            "calls": count,
+            "avg_ms": round(avg_ms, 1),
+            "errors": _metrics["tool_errors"].get(name, 0),
+        }
+    return {
+        "uptime_since": _metrics["startup_time"],
+        "tools": tool_stats,
+        "haiku_rerank": {
+            "fired": _metrics["haiku_rerank_fired"],
+            "skipped": _metrics["haiku_rerank_skipped"],
+        },
+    }
+
+
 # ── Search functions ──────────────────────────────────────────
 
 def search_fts5(
@@ -976,6 +1019,7 @@ def search_fts5(
     date_to: str | None = None,
     chamber: str | None = None,
     decision_type: str | None = None,
+    legal_area: str | None = None,
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
     sort: str | None = None,
@@ -997,8 +1041,8 @@ def search_fts5(
     try:
         return _search_fts5_inner(
             conn, query, court, canton, language,
-            date_from, date_to, chamber, decision_type, limit, offset,
-            sort=sort,
+            date_from, date_to, chamber, decision_type, legal_area,
+            limit, offset, sort=sort,
         )
     finally:
         conn.close()
@@ -1054,6 +1098,9 @@ def _search_fts5_inner(
     if decision_type:
         filters.append("d.decision_type LIKE ?")
         params.append(f"%{decision_type}%")
+    if legal_area:
+        filters.append("d.legal_area LIKE ?")
+        params.append(f"%{legal_area}%")
 
     where = (" AND " + " AND ".join(filters)) if filters else ""
 
@@ -3866,7 +3913,10 @@ def _apply_llm_rerank(
         top_score = pre_sorted[0][0]
         second_score = pre_sorted[1][0]
         if second_score > 0 and top_score >= LLM_RERANK_CONFIDENCE_GATE * second_score:
+            _metrics["haiku_rerank_skipped"] += 1
             return scored
+
+    _metrics["haiku_rerank_fired"] += 1
 
     top_n = min(LLM_RERANK_TOP_N, len(pre_sorted))
     if top_n < 2:
@@ -7930,6 +7980,15 @@ def _list_tools() -> list[Tool]:
                             "'BVGE', 'Verfügung', 'Endentscheid'"
                         ),
                     },
+                    "legal_area": {
+                        "type": "string",
+                        "description": (
+                            "Filter by legal area/Rechtsgebiet (substring match). "
+                            "Examples: 'Strafrecht', 'Zivilrecht', 'Arbeitsrecht', "
+                            "'Mietrecht', 'Familienrecht', 'Sozialversicherung', "
+                            "'Schuldbetreibung', 'Ausländerrecht'"
+                        ),
+                    },
                     "limit": {
                         "type": "integer",
                         "description": "Max results to return (max 2000). Omit to use default of 50. Do not set low values like 5 or 10 unless the user explicitly asked for fewer results.",
@@ -8603,6 +8662,8 @@ async def handle_list_tools() -> list[Tool]:
 
 @server.call_tool()
 async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
+    _tool_start = time.monotonic()
+    _tool_error = False
     try:
         if REMOTE_MODE and name in ("update_database", "check_update_status"):
             return [TextContent(type="text", text="This tool is not available on the remote server.")]
@@ -8621,6 +8682,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
                 date_to=arguments.get("date_to"),
                 chamber=arguments.get("chamber"),
                 decision_type=arguments.get("decision_type"),
+                legal_area=arguments.get("legal_area"),
                 limit=arguments.get("limit", DEFAULT_LIMIT),
                 offset=req_offset,
                 sort=sort_arg,
@@ -9118,6 +9180,10 @@ def main_remote(host: str, port: int):
                 {"status": "error", "detail": str(e)}, status_code=503,
             )
 
+    # ── Metrics endpoint ────────────────────────────────────────
+    async def handle_metrics(request):
+        return JSONResponse(_get_metrics())
+
     # ── REST API (FastAPI sub-app at /api) ─────────────────────
     rest_api = FastAPI(
         title="OpenCaseLaw API",
@@ -9440,6 +9506,7 @@ def main_remote(host: str, port: int):
     app = Starlette(
         routes=[
             Route("/health", endpoint=handle_health),
+            Route("/metrics", endpoint=handle_metrics),
             Route("/robots.txt", endpoint=handle_robots),
             Route("/sitemap.xml", endpoint=handle_sitemap_index),
             Route("/sitemap-{court}.xml", endpoint=handle_court_sitemap),

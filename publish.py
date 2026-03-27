@@ -30,6 +30,8 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import json
+import urllib.request
 import logging
 import subprocess
 import sys
@@ -39,6 +41,48 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 LOCK_FILE_PATH = "/tmp/opencaselaw-publish.lock"
+CHECKPOINT_PATH = Path("/tmp/opencaselaw-publish-checkpoint.json")
+NTFY_TOPIC = "opencaselaw-publish"  # https://ntfy.sh/opencaselaw-publish
+
+
+def _notify(title: str, message: str, *, priority: str = "default"):
+    """Send push notification via ntfy.sh (best-effort, never fails the pipeline)."""
+    try:
+        req = urllib.request.Request(
+            f"https://ntfy.sh/{NTFY_TOPIC}",
+            data=message.encode(),
+            headers={"Title": title, "Priority": priority},
+        )
+        urllib.request.urlopen(req, timeout=5)
+    except Exception:
+        pass  # notification failure must never break the pipeline
+
+
+def _save_checkpoint(step_num, results: dict):
+    """Save completed step so pipeline can resume after crash."""
+    CHECKPOINT_PATH.write_text(json.dumps({
+        "last_completed_step": str(step_num),
+        "results": {str(k): v for k, v in results.items()},
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }))
+
+
+def _load_checkpoint() -> dict | None:
+    """Load checkpoint from prior crashed run (if any)."""
+    if CHECKPOINT_PATH.exists():
+        try:
+            data = json.loads(CHECKPOINT_PATH.read_text())
+            age_hours = (datetime.now(timezone.utc) - datetime.fromisoformat(data["timestamp"])).total_seconds() / 3600
+            if age_hours < 12:  # only resume if < 12h old
+                return data
+        except Exception:
+            pass
+    return None
+
+
+def _clear_checkpoint():
+    """Remove checkpoint after successful completion."""
+    CHECKPOINT_PATH.unlink(missing_ok=True)
 
 logger = logging.getLogger("publish")
 
@@ -416,8 +460,24 @@ def main():
     CRITICAL_STEPS = {2, 3}
     GUARDED_STEPS = {4, 6}
 
+    # Resume from checkpoint if prior run crashed
+    checkpoint = _load_checkpoint() if not manual_step_mode else None
+    if checkpoint:
+        logger.info(f"  Resuming from checkpoint (last completed: step {checkpoint['last_completed_step']})")
+        for k, v in checkpoint["results"].items():
+            # Restore prior results; step keys can be int or str
+            for snum, _, _ in STEPS:
+                if str(snum) == k:
+                    results[snum] = v
+                    break
+
     for num, name, func in STEPS:
         if args.step is not None and str(args.step) != str(num):
+            continue
+        # Skip steps already completed in a prior checkpoint
+        if checkpoint and str(num) in checkpoint["results"] and checkpoint["results"][str(num)]:
+            logger.info(f"  Step {num} ({name}): SKIPPED (completed in prior run)")
+            results[num] = True
             continue
         # Step 1 (ingest) is opt-in: skip unless --ingest or --step 1
         if num == 1 and not args.ingest and not manual_step_mode:
@@ -450,22 +510,44 @@ def main():
             elapsed = time.time() - step_start
             status = "OK" if ok else "FAILED"
             logger.info(f"  → {status} ({elapsed:.1f}s)\n")
+            if ok:
+                _save_checkpoint(num, results)
         except Exception as e:
             results[num] = False
             logger.error(f"  → EXCEPTION: {e}\n", exc_info=True)
 
     # Summary
     total_elapsed = time.time() - start
+    failed_steps = []
     logger.info("=== Summary ===")
     for num, name, _ in STEPS:
         if num in results:
             status = "OK" if results[num] else "FAILED"
             logger.info(f"  Step {num} ({name}): {status}")
+            if not results[num]:
+                failed_steps.append(f"{num} ({name})")
     logger.info(f"  Total time: {total_elapsed:.1f}s")
 
-    # Exit with error if any step failed
-    if any(not v for v in results.values()):
+    # Notify on completion
+    if failed_steps:
+        _notify(
+            "Publish FAILED",
+            f"Failed steps: {', '.join(failed_steps)}\nTotal: {total_elapsed/60:.0f} min",
+            priority="high",
+        )
         sys.exit(1)
+    else:
+        _clear_checkpoint()
+        # Count decisions from stats if available
+        try:
+            stats = json.loads((DOCS_DIR / "stats.json").read_text())
+            n = stats.get("total_decisions", "?")
+        except Exception:
+            n = "?"
+        _notify(
+            "Publish OK",
+            f"{n} decisions, {total_elapsed/60:.0f} min",
+        )
 
 
 if __name__ == "__main__":
