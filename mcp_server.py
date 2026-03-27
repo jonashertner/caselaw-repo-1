@@ -980,6 +980,7 @@ _metrics = {
     "haiku_rerank_skipped": 0,
     "haiku_rerank_changed_top": 0,
     "zero_results": [],                        # recent zero-result queries
+    "clients": collections.Counter(),          # client type → call count
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
 
@@ -1022,6 +1023,7 @@ def _get_metrics() -> dict:
 
     return {
         "uptime_since": _metrics["startup_time"],
+        "clients": dict(_metrics["clients"].most_common()),
         "tools": tool_stats,
         "haiku_rerank": {
             "fired": _metrics["haiku_rerank_fired"],
@@ -9302,6 +9304,20 @@ def main_remote(host: str, port: int):
             if scope["type"] != "http":
                 return
 
+            # Track client type from User-Agent (no IP, no PII)
+            headers = dict(scope.get("headers", []))
+            ua = (headers.get(b"user-agent", b"")).decode("utf-8", errors="ignore").lower()
+            if "claude-user" in ua:
+                _metrics["clients"]["claude.ai"] += 1
+            elif "claude-code" in ua or "claude-vscode" in ua:
+                _metrics["clients"]["claude-code"] += 1
+            elif "undici" in ua or "chatgpt" in ua or "openai" in ua:
+                _metrics["clients"]["chatgpt"] += 1
+            elif "gemini" in ua or "google" in ua:
+                _metrics["clients"]["gemini"] += 1
+            elif ua and "bot" not in ua and "crawler" not in ua:
+                _metrics["clients"]["other"] += 1
+
             method = scope.get("method", "GET")
 
             if method == "OPTIONS":
@@ -9463,6 +9479,12 @@ async function render(){
         <div class="k"><div class="n">${hC}<u>%</u></div><div class="l">changed #1</div></div>
         <div class="k"><div class="n ${z.length?'w':'g'}">${z.length}</div><div class="l">search gaps</div></div>
       </div>
+      ${Object.keys(d.clients||{}).length?`<div class="panel"><div class="panel-h">Clients</div>
+        <table><tr><th>Client</th><th class="r">Requests</th><th></th></tr>
+        ${Object.entries(d.clients||{}).sort((a,b)=>b[1]-a[1]).map(([c,n])=>{
+          const cmx=Math.max(...Object.values(d.clients||{}));
+          return`<tr><td>${c}</td><td class="r mono">${f(n)}</td><td class="bw"><div class="bt"><div class="bf"style="width:${Math.max(2,n/cmx*100)}%"></div></div></td></tr>`
+        }).join('')}</table></div>`:''}
       <div class="panel"><div class="panel-h">Tool usage</div>
         <table><tr><th>Tool</th><th class="r">Calls</th><th></th><th class="r">Avg</th><th class="r">Err</th></tr>${toolR}</table>
       </div>
