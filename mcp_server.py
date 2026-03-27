@@ -4295,6 +4295,8 @@ def _find_leading_cases(
 
         if law_code and article:
             # Statute-filtered: find decisions citing this statute, ranked by incoming citations
+            # Graph DB uses uppercase law codes (STGB, OR, ZGB)
+            law_code = law_code.upper()
             overfetch = limit * 3 if query else limit
             rows = conn.execute(
                 """
@@ -6558,6 +6560,13 @@ def _find_leading_cases_by_fts_fallback(query: str, limit: int) -> list[dict]:
     Runs a plain FTS5 search and returns results as raw case dicts.
     """
     try:
+        # Sanitize query for FTS5: remove periods, colons, special chars
+        import re as _re
+        safe_query = _re.sub(r'[.:/*(){}\[\]]+', ' ', query).strip()
+        # Quote multi-word terms that look like article refs
+        safe_query = _re.sub(r'(Art)\s+(\d+\w*)', r'"\1 \2"', safe_query)
+        if not safe_query:
+            return []
         fts_conn = get_db()
         rows = fts_conn.execute(
             """
@@ -6568,7 +6577,7 @@ def _find_leading_cases_by_fts_fallback(query: str, limit: int) -> list[dict]:
             WHERE decisions_fts MATCH ?
             LIMIT ?
             """,
-            (query, limit),
+            (safe_query, limit),
         ).fetchall()
         fts_conn.close()
         result = []
