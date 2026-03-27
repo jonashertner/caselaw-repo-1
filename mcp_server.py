@@ -9457,7 +9457,7 @@ const ms2s=ms=>ms<1000?ms.toFixed(0)+'ms':(ms/1000).toFixed(1)+'s';
 
 async function render(){
   try{
-    const d=await(await fetch('/metrics')).json();
+    const d=await(await fetch('/metrics/all')).json();
     const t=d.tools||{},h=d.haiku_rerank||{},z=d.zero_result_queries||[];
     const ns=Object.keys(t).sort((a,b)=>t[b].calls-t[a].calls);
     const tot=ns.reduce((s,n)=>s+t[n].calls,0);
@@ -9513,6 +9513,42 @@ render();setInterval(render,60000);
     # ── Metrics endpoint ────────────────────────────────────────
     async def handle_metrics(request):
         return JSONResponse(_get_metrics())
+
+    async def handle_metrics_all(request):
+        """Aggregate metrics from all workers."""
+        import httpx
+        combined = {"tools": {}, "clients": {}, "haiku_rerank": {"fired": 0, "skipped": 0, "changed_top": 0}, "zero_result_queries": []}
+        async with httpx.AsyncClient(timeout=2) as client:
+            for port in range(8770, 8774):
+                try:
+                    resp = await client.get(f"http://127.0.0.1:{port}/metrics")
+                    d = resp.json()
+                    for tool, stats in d.get("tools", {}).items():
+                        if tool not in combined["tools"]:
+                            combined["tools"][tool] = {"calls": 0, "avg_ms": 0, "errors": 0, "_total_ms": 0}
+                        combined["tools"][tool]["calls"] += stats["calls"]
+                        combined["tools"][tool]["_total_ms"] += stats["avg_ms"] * stats["calls"]
+                        combined["tools"][tool]["errors"] += stats["errors"]
+                    for client_name, count in d.get("clients", {}).items():
+                        combined["clients"][client_name] = combined["clients"].get(client_name, 0) + count
+                    for k in ("fired", "skipped", "changed_top"):
+                        combined["haiku_rerank"][k] += d.get("haiku_rerank", {}).get(k, 0)
+                    combined["zero_result_queries"].extend(d.get("zero_result_queries", []))
+                except Exception:
+                    pass
+        # Compute avg_ms
+        for tool in combined["tools"].values():
+            tool["avg_ms"] = round(tool["_total_ms"] / tool["calls"], 1) if tool["calls"] else 0
+            del tool["_total_ms"]
+        # Dedup zero-result queries
+        from collections import Counter
+        zc = Counter()
+        for z in combined["zero_result_queries"]:
+            zc[z["query"]] += z.get("count", 1)
+        combined["zero_result_queries"] = [{"query": q, "count": n} for q, n in zc.most_common(30)]
+        combined["uptime_since"] = _metrics["startup_time"]
+        combined["workers"] = 4
+        return JSONResponse(combined)
 
     # ── Developer dashboard (auth-protected) ──────────────────
     DEV_TOKEN = os.environ.get("DEV_DASHBOARD_TOKEN", "")
@@ -9883,6 +9919,7 @@ render();setInterval(render,60000);
             Route("/health", endpoint=handle_health),
             Route("/dev", endpoint=handle_dev_dashboard),
             Route("/metrics", endpoint=handle_metrics),
+            Route("/metrics/all", endpoint=handle_metrics_all),
             Route("/robots.txt", endpoint=handle_robots),
             Route("/sitemap.xml", endpoint=handle_sitemap_index),
             Route("/sitemap-{court}.xml", endpoint=handle_court_sitemap),
