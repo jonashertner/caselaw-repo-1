@@ -1586,6 +1586,28 @@ def _search_fts5_inner(
             matching = [r for r in reranked if la_lower in (r.get("legal_area") or "").lower()]
             others = [r for r in reranked if la_lower not in (r.get("legal_area") or "").lower()]
             reranked = matching + others
+
+        # Cross-lingual interleaving: ensure FR/IT results appear in top results
+        # when the query language differs from result language.
+        # Reserve ~20% of slots for cross-lingual results if available.
+        if reranked and not language:  # only when no language filter is set
+            query_lang = _detect_query_languages(fts_query)
+            primary_lang = query_lang[0] if query_lang else "de"
+            cross = [r for r in reranked if r.get("language", "") != primary_lang]
+            if cross and len(cross) >= 2:
+                same = [r for r in reranked if r.get("language", "") == primary_lang]
+                # Interleave: every 4th result is cross-lingual
+                merged = []
+                ci = 0
+                for i, r in enumerate(same):
+                    merged.append(r)
+                    if (i + 1) % 4 == 0 and ci < len(cross):
+                        merged.append(cross[ci])
+                        ci += 1
+                # Append remaining cross-lingual
+                merged.extend(cross[ci:])
+                reranked = merged[:len(reranked)]
+
         return reranked, total_candidates
 
     if had_success:
