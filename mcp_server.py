@@ -1028,6 +1028,32 @@ import threading
 
 _RESEARCH_LOG_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / ".swiss-caselaw"))) / "research_logs"
 _research_log_lock = threading.Lock()
+_METRICS_HISTORY = _RESEARCH_LOG_DIR / "daily_metrics.jsonl"
+
+
+def _flush_metrics_to_disk():
+    """Append current metrics snapshot to persistent daily log.
+    Called periodically so data survives worker restarts."""
+    try:
+        _RESEARCH_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        snapshot = _get_metrics()
+        snapshot["flushed_at"] = datetime.now(timezone.utc).isoformat()
+        snapshot["type"] = "periodic_flush"
+        with _research_log_lock:
+            with open(_METRICS_HISTORY, "a") as f:
+                f.write(json.dumps(snapshot, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
+def _start_metrics_flusher():
+    """Start background thread that flushes metrics every 10 minutes."""
+    def _flusher():
+        while True:
+            time.sleep(600)  # 10 min
+            _flush_metrics_to_disk()
+    t = threading.Thread(target=_flusher, daemon=True)
+    t.start()
 
 
 def _log_search_trace(trace: dict):
@@ -9346,6 +9372,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 def _log_startup():
     """Log database status on startup."""
+    _start_metrics_flusher()
     logger.info("Swiss Case Law MCP Server starting")
     logger.info(f"Database: {DB_PATH}")
     if DB_PATH.exists():
