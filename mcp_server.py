@@ -1596,14 +1596,15 @@ def _search_fts5_inner(
             cross = [r for r in reranked if r.get("language", "") != primary_lang]
             if cross and len(cross) >= 2:
                 same = [r for r in reranked if r.get("language", "") == primary_lang]
-                # Interleave: every 4th result is cross-lingual
-                merged = []
+                # Interleave: insert cross-lingual results at positions 5, 10, 15...
+                # Top 4 slots always go to best-matching (usually primary language)
+                merged = list(same[:4])
                 ci = 0
-                for i, r in enumerate(same):
-                    merged.append(r)
-                    if (i + 1) % 4 == 0 and ci < len(cross):
+                for i, r in enumerate(same[4:], start=4):
+                    if (i) % 5 == 0 and ci < len(cross):
                         merged.append(cross[ci])
                         ci += 1
+                    merged.append(r)
                 # Append remaining cross-lingual
                 merged.extend(cross[ci:])
                 reranked = merged[:len(reranked)]
