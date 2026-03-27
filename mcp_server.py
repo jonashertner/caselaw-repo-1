@@ -9587,8 +9587,7 @@ footer a{color:var(--mute);text-decoration:none}
 <header>
   <div class="brand">open<b>caselaw</b></div>
   <div style="display:flex;gap:1rem;align-items:center">
-    <button id="btn-live" onclick="setMode('live')" style="background:none;border:1px solid var(--border);color:var(--fg);padding:.3rem .8rem;border-radius:5px;cursor:pointer;font-size:.65rem;letter-spacing:.05em">LIVE</button>
-    <button id="btn-hist" onclick="setMode('history')" style="background:none;border:1px solid var(--border);color:var(--mute);padding:.3rem .8rem;border-radius:5px;cursor:pointer;font-size:.65rem;letter-spacing:.05em">ALL TIME</button>
+    <div id="range-btns" style="display:flex;gap:2px"></div>
     <span class="status" id="st">connecting</span>
   </div>
 </header>
@@ -9604,7 +9603,7 @@ const ms2s=ms=>ms<1000?ms.toFixed(0)+'ms':(ms/1000).toFixed(1)+'s';
 
 async function render(){
   try{
-    const d=await(await fetch(_mode==='history'?'/metrics/history':'/metrics/all')).json();
+    const d=await(await fetch(_mode==='live'?'/metrics/all':'/metrics/history?range='+_mode)).json();
     const t=d.tools||{},h=d.haiku_rerank||{},z=d.zero_result_queries||[];
     const ns=Object.keys(t).sort((a,b)=>t[b].calls-t[a].calls);
     const tot=ns.reduce((s,n)=>s+t[n].calls,0);
@@ -9653,12 +9652,16 @@ async function render(){
     const el=Date.now()-new Date(d.uptime_since).getTime();
     const hr=Math.floor(el/36e5),mn=Math.floor(el%36e5/6e4);
     $('#st').textContent='live \u00b7 '+ns.length+' tools \u00b7 '+f(tot)+' calls';
-    $('#ts').textContent=new Date().toLocaleTimeString();
+    $('#ts').textContent=_mode==='live'?new Date().toLocaleTimeString():(d.period?d.period.range+' \u00b7 '+d.period.snapshots+' snapshots':'');
     $('#up').textContent='up '+hr+'h '+mn+'m';
   }catch(e){$('#root').innerHTML='<div class="empty w">'+e+'</div>';$('#st').textContent='error'}
 }
 let _mode='live';
-function setMode(m){_mode=m;document.getElementById('btn-live').style.color=m==='live'?'var(--fg)':'var(--mute)';document.getElementById('btn-hist').style.color=m==='history'?'var(--fg)':'var(--mute)';render()}
+const _ranges=[['live','Live'],['1d','24h'],['7d','7d'],['30d','30d'],['all','All']];
+const _bc=document.getElementById('range-btns');
+_ranges.forEach(([k,l])=>{const b=document.createElement('button');b.textContent=l;b.id='btn-'+k;b.onclick=()=>setMode(k);Object.assign(b.style,{background:'none',border:'1px solid var(--border)',color:'var(--mute)',padding:'.3rem .7rem',borderRadius:'5px',cursor:'pointer',fontSize:'.6rem',letterSpacing:'.05em',fontFamily:'inherit'});_bc.appendChild(b)});
+function setMode(m){_mode=m;_ranges.forEach(([k])=>{document.getElementById('btn-'+k).style.color=k===m?'var(--fg)':'var(--mute)'});render()}
+document.getElementById('btn-live').style.color='var(--fg)';
 render();setInterval(render,60000);
 </script>
 </body>
@@ -9671,16 +9674,32 @@ render();setInterval(render,60000);
     async def handle_metrics_history(request):
         """Return aggregated metrics from persistent daily log (survives restarts)."""
         try:
+            range_param = request.query_params.get("range", "all")
+            # Compute cutoff time
+            now = datetime.now(timezone.utc)
+            cutoffs = {
+                "1d": 86400, "7d": 604800, "30d": 2592000,
+                "90d": 7776000, "365d": 31536000, "all": 0,
+            }
+            cutoff_secs = cutoffs.get(range_param, 0)
+
             entries = []
             if _METRICS_HISTORY.exists():
                 with open(_METRICS_HISTORY) as f:
                     for line in f:
                         try:
-                            entries.append(json.loads(line))
-                        except json.JSONDecodeError:
+                            e = json.loads(line)
+                            if cutoff_secs:
+                                ts = e.get("flushed_at", "")
+                                if ts:
+                                    age = (now - datetime.fromisoformat(ts)).total_seconds()
+                                    if age > cutoff_secs:
+                                        continue
+                            entries.append(e)
+                        except (json.JSONDecodeError, ValueError):
                             pass
             if not entries:
-                return JSONResponse({"error": "No historical data yet"})
+                return JSONResponse({"error": "No data for this range", "range": range_param})
 
             # Aggregate all flush snapshots
             combined_tools = {}
@@ -9720,7 +9739,7 @@ render();setInterval(render,60000);
             last = entries[-1].get("flushed_at", "")
 
             return JSONResponse({
-                "period": {"from": first, "to": last, "snapshots": len(entries)},
+                "period": {"from": first, "to": last, "snapshots": len(entries), "range": range_param},
                 "sessions": total_sessions,
                 "clients": combined_clients,
                 "tools": combined_tools,
