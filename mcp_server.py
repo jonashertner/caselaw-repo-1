@@ -9368,116 +9368,108 @@ def main_remote(host: str, port: int):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OpenCaseLaw — Dev Dashboard</title>
+<title>ocl / metrics</title>
 <style>
-  :root { --bg:#0d1117; --fg:#c9d1d9; --accent:#58a6ff; --card:#161b22; --border:#30363d; --green:#3fb950; --red:#f85149; --yellow:#d29922; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:-apple-system,system-ui,sans-serif; background:var(--bg); color:var(--fg); padding:1.5rem; }
-  h1 { color:var(--accent); margin-bottom:.5rem; font-size:1.4rem; }
-  .subtitle { color:#8b949e; margin-bottom:1.5rem; font-size:.85rem; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem; margin-bottom:1.5rem; }
-  .card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:1rem; }
-  .card h2 { font-size:.9rem; color:#8b949e; margin-bottom:.75rem; text-transform:uppercase; letter-spacing:.05em; }
-  .stat { font-size:2rem; font-weight:600; color:var(--fg); }
-  .stat small { font-size:.8rem; color:#8b949e; font-weight:400; }
-  table { width:100%; border-collapse:collapse; font-size:.85rem; }
-  th { text-align:left; color:#8b949e; padding:.4rem .6rem; border-bottom:1px solid var(--border); }
-  td { padding:.4rem .6rem; border-bottom:1px solid var(--border); }
-  .bar { height:6px; background:var(--accent); border-radius:3px; min-width:2px; }
-  .zero { color:var(--red); }
-  .good { color:var(--green); }
-  #error { color:var(--red); padding:1rem; }
-  .refresh { color:#8b949e; font-size:.75rem; margin-top:1rem; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fafafa;--fg:#111;--mute:#999;--mute2:#ccc;--mute3:#eee;--card:#fff;--border:#f0f0f0;--hover:#fafafa;--bar:#111;--ok:#2a6;--warn:#d44;--accent:#111}
+@media(prefers-color-scheme:dark){:root{--bg:#0a0a0a;--fg:#e5e5e5;--mute:#555;--mute2:#333;--mute3:#1a1a1a;--card:#111;--border:#1a1a1a;--hover:#151515;--bar:#e5e5e5;--ok:#4a5;--warn:#c45;--accent:#fff}}
+body{font-family:'Inter','SF Pro Text',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--fg);padding:clamp(1.5rem,4vw,3rem);max-width:960px;margin:0 auto;-webkit-font-smoothing:antialiased;font-size:14px}
+
+header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+h1{font-size:.7rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+h1 b{color:var(--fg);font-weight:600}
+.live{font-size:.6rem;color:var(--mute);letter-spacing:.05em}
+.live::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:5px;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-bottom:2.5rem}
+@media(max-width:600px){.kpi{grid-template-columns:repeat(2,1fr)}}
+.k{padding:1.5rem 0;text-align:center}
+.k .n{font-size:2rem;font-weight:200;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.k .n span{font-size:.9rem;font-weight:400;color:var(--mute)}
+.k .l{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mute);margin-top:.5rem}
+
+.s{margin-bottom:2rem}
+.s-h{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--mute);margin-bottom:.75rem}
+table{width:100%;border-collapse:collapse}
+th{font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mute2);text-align:left;padding:.6rem 0;border-bottom:1px solid var(--border);font-weight:500}
+td{padding:.65rem 0;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+tr:hover td{background:var(--hover)}
+th.r,td.r{text-align:right}
+.bar-w{width:30%;padding-right:1rem}
+.bar-t{height:2px;background:var(--mute3);border-radius:1px;overflow:hidden}
+.bar-f{height:100%;background:var(--bar);border-radius:1px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.mono{font-family:'SF Mono','Fira Code',monospace;font-size:.75rem}
+.d{color:var(--mute)}
+.w{color:var(--warn)}
+.g{color:var(--ok)}
+.empty{color:var(--mute2);padding:2rem;text-align:center;font-size:.75rem;font-style:italic}
+.pill{display:inline-block;font-size:.55rem;padding:.15rem .5rem;border-radius:99px;letter-spacing:.05em}
+.pill-g{background:color-mix(in srgb,var(--ok) 15%,transparent);color:var(--ok)}
+.pill-w{background:color-mix(in srgb,var(--warn) 15%,transparent);color:var(--warn)}
+
+footer{font-size:.6rem;color:var(--mute2);margin-top:3rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between}
 </style>
 </head>
 <body>
-<h1>OpenCaseLaw Dev Dashboard</h1>
-<p class="subtitle">Metrics since last worker restart. Auto-refreshes every 60s.</p>
-<div id="content"><p>Loading...</p></div>
-<p class="refresh" id="lastUpdate"></p>
+<header>
+  <h1>open<b>caselaw</b></h1>
+  <span class="live" id="live">live</span>
+</header>
+<div id="root"></div>
+<footer>
+  <span id="ts"></span>
+  <span id="up"></span>
+</footer>
 <script>
-async function load() {
-  try {
-    const r = await fetch('/metrics');
-    const d = await r.json();
-    const tools = d.tools || {};
-    const haiku = d.haiku_rerank || {};
-    const zeros = d.zero_result_queries || [];
+const $=s=>document.querySelector(s);
+const f=n=>n>=10000?(n/1000).toFixed(0)+'k':n>=1000?(n/1000).toFixed(1)+'k':n.toString();
 
-    // Tool stats
-    const toolNames = Object.keys(tools).sort((a,b) => tools[b].calls - tools[a].calls);
-    const maxCalls = toolNames.length ? tools[toolNames[0]].calls : 1;
-    const totalCalls = toolNames.reduce((s,t) => s + tools[t].calls, 0);
-    const totalErrors = toolNames.reduce((s,t) => s + tools[t].errors, 0);
+async function render(){
+  try{
+    const d=await(await fetch('/metrics')).json();
+    const t=d.tools||{},h=d.haiku_rerank||{},z=d.zero_result_queries||[];
+    const ns=Object.keys(t).sort((a,b)=>t[b].calls-t[a].calls);
+    const tot=ns.reduce((s,n)=>s+t[n].calls,0);
+    const errs=ns.reduce((s,n)=>s+t[n].errors,0);
+    const mx=ns.length?t[ns[0]].calls:1;
+    const hT=h.fired+h.skipped;
+    const hR=hT?Math.round(h.fired/hT*100):0;
+    const hC=h.fired?Math.round(h.changed_top/h.fired*100):0;
 
-    let toolRows = toolNames.map(t => {
-      const s = tools[t];
-      const pct = (s.calls / maxCalls * 100).toFixed(0);
-      return `<tr>
-        <td>${t}</td>
-        <td>${s.calls}</td>
-        <td><div class="bar" style="width:${pct}%"></div></td>
-        <td>${s.avg_ms.toFixed(0)} ms</td>
-        <td class="${s.errors ? 'zero' : ''}">${s.errors}</td>
-      </tr>`;
-    }).join('');
-    if (!toolRows) toolRows = '<tr><td colspan="5">No tool calls yet</td></tr>';
+    const toolR=ns.map(n=>{
+      const s=t[n],w=Math.max(1,s.calls/mx*100);
+      return`<tr>
+        <td>${n.replace(/_/g,' ')}</td>
+        <td class="r mono">${f(s.calls)}</td>
+        <td class="bar-w"><div class="bar-t"><div class="bar-f"style="width:${w}%"></div></div></td>
+        <td class="r mono d">${s.avg_ms<1000?s.avg_ms.toFixed(0)+'ms':(s.avg_ms/1000).toFixed(1)+'s'}</td>
+        <td class="r">${s.errors?'<span class="pill pill-w">'+s.errors+'</span>':'<span class="d">\u2014</span>'}</td></tr>`
+    }).join('')||'<tr><td colspan="5"class="empty">waiting for first request</td></tr>';
 
-    // Zero-result queries
-    let zeroRows = zeros.map(z =>
-      `<tr><td class="zero">${z.query}</td><td>${z.count}</td></tr>`
-    ).join('');
-    if (!zeroRows) zeroRows = '<tr><td colspan="2" class="good">No zero-result queries</td></tr>';
+    const zR=z.map(q=>`<tr><td class="mono w">${q.query}</td><td class="r mono">${q.count}</td></tr>`).join('')
+      ||'<tr><td colspan="2"class="empty g">all queries returned results</td></tr>';
 
-    // Haiku stats
-    const haikuTotal = haiku.fired + haiku.skipped;
-    const haikuRate = haikuTotal ? ((haiku.fired / haikuTotal) * 100).toFixed(0) : '—';
-    const changeRate = haiku.fired ? ((haiku.changed_top / haiku.fired) * 100).toFixed(0) : '—';
-
-    document.getElementById('content').innerHTML = `
-      <div class="grid">
-        <div class="card">
-          <h2>Total Tool Calls</h2>
-          <div class="stat">${totalCalls} <small>${totalErrors} errors</small></div>
-        </div>
-        <div class="card">
-          <h2>Haiku Rerank</h2>
-          <div class="stat">${haikuRate}% <small>fire rate (${haiku.fired}/${haikuTotal})</small></div>
-          <div style="margin-top:.5rem;font-size:.85rem">Changed #1: <b>${changeRate}%</b> (${haiku.changed_top} times)</div>
-        </div>
-        <div class="card">
-          <h2>Zero-Result Queries</h2>
-          <div class="stat ${zeros.length ? 'zero' : 'good'}">${zeros.length}</div>
-        </div>
-        <div class="card">
-          <h2>Uptime Since</h2>
-          <div class="stat" style="font-size:1rem">${d.uptime_since || '?'}</div>
-        </div>
+    $('#root').innerHTML=`
+      <div class="kpi">
+        <div class="k"><div class="n">${f(tot)}</div><div class="l">requests</div></div>
+        <div class="k"><div class="n">${hR}<span>%</span></div><div class="l">rerank rate</div></div>
+        <div class="k"><div class="n">${hC}<span>%</span></div><div class="l">changed #1</div></div>
+        <div class="k"><div class="n ${z.length?'w':'g'}">${z.length}</div><div class="l">gaps</div></div>
       </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <h2>Tool Usage</h2>
-        <table>
-          <tr><th>Tool</th><th>Calls</th><th></th><th>Avg</th><th>Errors</th></tr>
-          ${toolRows}
-        </table>
+      <div class="s"><div class="s-h">Tools</div>
+        <table><tr><th>Name</th><th class="r">Calls</th><th></th><th class="r">Latency</th><th class="r">Errors</th></tr>${toolR}</table>
       </div>
+      ${z.length?'<div class="s"><div class="s-h">Zero-result queries</div><table><tr><th>Query</th><th class="r">Count</th></tr>'+zR+'</table></div>':''}`;
 
-      <div class="card">
-        <h2>Zero-Result Queries (fix these!)</h2>
-        <table>
-          <tr><th>Query</th><th>Count</th></tr>
-          ${zeroRows}
-        </table>
-      </div>
-    `;
-    document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
-  } catch(e) {
-    document.getElementById('content').innerHTML = '<p id="error">Failed to load metrics: ' + e + '</p>';
-  }
+    const ms=Date.now()-new Date(d.uptime_since).getTime();
+    const hr=Math.floor(ms/36e5),mn=Math.floor(ms%36e5/6e4);
+    $('#ts').textContent=new Date().toLocaleTimeString();
+    $('#up').textContent='uptime '+hr+'h '+mn+'m';
+    $('#live').textContent='live \u00b7 '+ns.length+' tools';
+  }catch(e){$('#root').innerHTML='<div class="empty w">'+e+'</div>'}
 }
-load();
-setInterval(load, 60000);
+render();setInterval(render,60000);
 </script>
 </body>
 </html>"""
