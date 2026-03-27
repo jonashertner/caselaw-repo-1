@@ -413,9 +413,20 @@ def _log_quality_summary(conn: sqlite3.Connection) -> None:
     logger.info(f"  Quality: {short} short text (<500), {no_regeste} no regeste, {no_date} no date (of {total})")
 
 
+# Court code remapping: merge historical variants into canonical codes
+COURT_REMAP = {
+    "bge_historical": "bge",
+}
+
+
 def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
     """Insert a single decision. Returns True if inserted, False if skipped (duplicate)."""
     try:
+        # Remap court codes (e.g. bge_historical → bge)
+        court = row.get("court", "")
+        if court in COURT_REMAP:
+            row["court"] = COURT_REMAP[court]
+
         # Clean text fields
         for field in ("full_text", "regeste", "title"):
             if field in row and row[field]:
