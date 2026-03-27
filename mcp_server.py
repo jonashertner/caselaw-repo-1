@@ -9213,6 +9213,7 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
 
     except FileNotFoundError as e:
+        _tool_error = True
         return [TextContent(
             type="text",
             text=(
@@ -9221,8 +9222,11 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
             ),
         )]
     except Exception as e:
+        _tool_error = True
         logger.error(f"Tool error {name}: {e}", exc_info=True)
         return [TextContent(type="text", text=f"Error: {e}")]
+    finally:
+        _record_tool_call(name, (time.monotonic() - _tool_start) * 1000, error=_tool_error)
 
 
 # ── Main ──────────────────────────────────────────────────────
