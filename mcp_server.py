@@ -4337,12 +4337,16 @@ def _find_leading_cases(
             conn = None  # signal we closed it
             try:
                 fts_conn = get_db()
+                # Sanitize query for FTS5: remove periods and special chars
+                safe_q = re.sub(r"[.:/*(){}\[\]]+", " ", query).strip()
+                if not safe_q:
+                    return {"results": [], "total": 0}
                 fts_sql = """
                     SELECT d.decision_id FROM decisions_fts f
                     JOIN decisions d ON d.decision_id = f.decision_id
                     WHERE decisions_fts MATCH ?
                 """
-                fts_params: list = [query]
+                fts_params: list = [safe_q]
                 if court:
                     fts_sql += " AND d.court = ?"
                     fts_params.append(court)
