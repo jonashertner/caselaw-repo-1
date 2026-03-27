@@ -8987,6 +8987,9 @@ async def handle_list_tools() -> list[Tool]:
 async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
     _tool_start = time.monotonic()
     _tool_error = False
+    # Log tool call with key arguments for usage analysis
+    _log_args = {k: v for k, v in arguments.items() if k in ("query", "decision_id", "case", "topic", "law_code", "abbreviation", "sr_number", "article", "court")}
+    logger.info("tool_call: %s %s", name, json.dumps(_log_args, ensure_ascii=False) if _log_args else "")
     try:
         if REMOTE_MODE and name in ("update_database", "check_update_status"):
             return [TextContent(type="text", text="This tool is not available on the remote server.")]
