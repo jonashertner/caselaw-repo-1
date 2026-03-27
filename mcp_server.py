@@ -2594,10 +2594,29 @@ def _resolve_decision_id(decision_id: str) -> str:
     Uses the FTS5 DB lookup (exact match → docket match → partial match),
     same logic as get_decision_by_id. Returns the input unchanged if no match.
     """
+    # Generate all ID variants (handles bge vs bge_historical, BGE_ prefix, etc.)
+    candidates = [decision_id]
+    # If it looks like a BGE reference, construct both bge_BGE_* and bge_historical_* IDs
+    bge_m = re.match(r"(?:BGE\s+)?(\d+)\s+([IVX]+)\s+(\d+)", decision_id)
+    if bge_m:
+        vol, div, page = bge_m.group(1), bge_m.group(2), bge_m.group(3)
+        candidates.extend([
+            f"bge_BGE_{vol}_{div}_{page}",
+            f"bge_historical_{vol}_{div}_{page}",
+            f"bge_{vol} {div} {page}",
+        ])
+
     conn = get_db()
     try:
+        # Try exact ID match for all candidates
+        for cid in candidates:
+            row = conn.execute(
+                "SELECT decision_id FROM decisions WHERE decision_id = ?", (cid,)
+            ).fetchone()
+            if row:
+                return row[0]
+        # Fallback: docket number match
         for query, params in [
-            ("SELECT decision_id FROM decisions WHERE decision_id = ?", (decision_id,)),
             (
                 "SELECT decision_id FROM decisions WHERE docket_number = ? "
                 "ORDER BY decision_date DESC LIMIT 1",
@@ -2637,7 +2656,8 @@ def _decision_id_variants(decision_id: str) -> list[str]:
 
         # BGE-specific: handle both directions of FTS5/graph ID format mismatch.
         # FTS5 DB uses "bge_BGE_138_III_374"; graph DB uses "bge_138 III 374".
-        if court == "bge":
+        # Historical BGE use "bge_historical_54_II_100".
+        if court in ("bge", "bge_historical"):
             stripped = re.sub(r"^(?:CH[_ ])?(?:BGE|ATF|DTF)[_ ]?", "", rest)
             if stripped != rest:
                 # Had a prefix — add stripped variants (FTS5 → graph direction)
@@ -2648,6 +2668,11 @@ def _decision_id_variants(decision_id: str) -> list[str]:
                 # No prefix — add BGE_ prefixed variants (graph → FTS5 direction)
                 variants.add(f"bge_BGE_{rest.replace(' ', '_')}")
                 variants.add(f"bge_BGE {rest.replace('_', ' ')}")
+            # Always add bge_historical variants for early BGE volumes
+            core = stripped if stripped != rest else rest
+            core_under = core.replace(" ", "_")
+            variants.add(f"bge_historical_{core_under}")
+            variants.add(f"bge_historical_{core.replace('_', ' ')}")
     return list(variants)
 
 
