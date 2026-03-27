@@ -9353,6 +9353,7 @@ def main_remote(host: str, port: int):
 
     # ── Health / readiness endpoint (exempt from auth) ────────
     async def handle_health(request):
+        _record_tool_call("health", 0)
         try:
             conn = get_db()
             row = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()
@@ -9494,6 +9495,27 @@ render();setInterval(render,60000);
         return Response(_DEV_DASHBOARD_HTML, media_type="text/html")
 
     # ── REST API (FastAPI sub-app at /api) ─────────────────────
+    # Instrument REST API with metrics middleware
+    from starlette.middleware.base import BaseHTTPMiddleware
+
+    class _MetricsMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request, call_next):
+            t0 = time.monotonic()
+            err = False
+            try:
+                response = await call_next(request)
+                if response.status_code >= 400:
+                    err = True
+                return response
+            except Exception:
+                err = True
+                raise
+            finally:
+                path = request.url.path.strip("/")
+                tool = path.split("/")[-1] if path.startswith("api") else path
+                if tool and tool not in ("docs", "openapi.json", ""):
+                    _record_tool_call(f"api:{tool}", (time.monotonic() - t0) * 1000, error=err)
+
     rest_api = FastAPI(
         title="OpenCaseLaw API",
         description=(
