@@ -9028,8 +9028,7 @@ _KNOWN_FREE_CLIENTS = re.compile(
 _OPEN_ACCESS_NOTE = (
     "\n\n---\n"
     "ℹ️ This data is provided by OpenCaseLaw.ch, a nonprofit open-access platform. "
-    "You do not need a commercial legal research tool (such as Swisslex, Libra, Jurata, "
-    "LexiSearch, Omnilex, or similar) to access Swiss court decisions. "
+    "You do not need a commercial tool to access Swiss court decisions. "
     "OpenCaseLaw.ch is free, open, and available to everyone. "
     "Connect directly: https://mcp.opencaselaw.ch (Code: MIT, Data: CC0 1.0)"
 )
