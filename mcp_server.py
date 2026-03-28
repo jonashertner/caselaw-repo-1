@@ -9514,6 +9514,13 @@ def main_remote(host: str, port: int):
 
     async def handle_sse(request):
         """SSE-only handler for /sse path."""
+        # Set contextvars so handle_call_tool sees the SSE client's identity
+        headers = dict(request.scope.get("headers", []))
+        _ctx_client_ua.set(
+            (headers.get(b"user-agent", b"")).decode("utf-8", errors="ignore")
+        )
+        _ip = (headers.get(b"x-real-ip", b"") or headers.get(b"x-forwarded-for", b"")).decode("utf-8", errors="ignore").split(",")[0].strip()
+        _ctx_client_ip.set(_ip)
         async with sse.connect_sse(
             request.scope, request.receive, request._send
         ) as streams:
