@@ -24,29 +24,56 @@ var state = {
   courts: [],
 };
 
-// Initialization
-Office.onReady(async function (info) {
-  if (info.host !== Office.HostType.Word) return;
+// Track whether we're running inside Word or standalone browser
+var _insideWord = false;
 
-  var settings = Office.context.roamingSettings;
-  state.lang = settings.get('ocl_lang') || 'de';
-  document.getElementById('lang-select').value = state.lang;
-
+// Initialize — works both inside Word (Office.onReady) and in plain browser
+function initApp() {
   document.getElementById('lang-select').addEventListener('change', function (e) {
     state.lang = e.target.value;
-    settings.set('ocl_lang', state.lang);
-    settings.saveAsync();
+    if (_insideWord && Office.context && Office.context.roamingSettings) {
+      try {
+        Office.context.roamingSettings.set('ocl_lang', state.lang);
+        Office.context.roamingSettings.saveAsync();
+      } catch (err) { /* roamingSettings not available */ }
+    } else {
+      try { localStorage.setItem('ocl_lang', state.lang); } catch (e) {}
+    }
     render();
   });
 
-  document.getElementById('settings-btn').addEventListener('click', function () {
+  document.getElementById('btn-settings').addEventListener('click', function () {
     state.view = 'settings';
     render();
   });
 
-  try { state.courts = await listCourts(); } catch (e) { /* filters won't show courts */ }
+  // Load saved language
+  if (!_insideWord) {
+    try { state.lang = localStorage.getItem('ocl_lang') || 'de'; } catch (e) {}
+  }
+  document.getElementById('lang-select').value = state.lang;
+
+  // Render immediately, then fetch courts in background
   render();
-});
+  listCourts().then(function (c) { state.courts = c; }).catch(function () {});
+}
+
+// Try Office.js initialization (fires if inside Word)
+if (typeof Office !== 'undefined' && Office.onReady) {
+  Office.onReady(async function (info) {
+    if (info.host === Office.HostType.Word) {
+      _insideWord = true;
+      try {
+        var settings = Office.context.roamingSettings;
+        state.lang = settings.get('ocl_lang') || 'de';
+      } catch (e) {}
+    }
+    initApp();
+  });
+} else {
+  // Standalone browser — init on DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', function () { initApp(); });
+}
 
 // Rendering — all values passed through escHtml() for XSS safety
 function render() {

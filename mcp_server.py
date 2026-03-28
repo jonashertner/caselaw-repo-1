@@ -10031,7 +10031,7 @@ render();setInterval(render,60000);
     )
     rest_api.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=CORS_ORIGINS if CORS_ORIGINS else ["*"],
         allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
@@ -10366,17 +10366,8 @@ render();setInterval(render,60000);
         lifespan=lifespan,
     )
 
-    # ── CORS (inner layer) ────────────────────────────────────
-    # Only mounted when explicit origins are configured via env var.
-    # Non-browser clients (mcp-remote, Claude Code) ignore CORS entirely.
-    if CORS_ORIGINS:
-        from starlette.middleware.cors import CORSMiddleware as _StarletteCORS
-        app.add_middleware(
-            _StarletteCORS,
-            allow_origins=CORS_ORIGINS,
-            allow_methods=["GET", "POST", "DELETE"],
-            allow_headers=["Authorization", "Content-Type"],
-        )
+    # CORS for non-API routes (SSE, health, etc.) handled by MCPRootApp OPTIONS handler.
+    # REST API CORS handled by FastAPI CORSMiddleware above.
 
     # ── Bearer-token auth (outer layer) ───────────────────────
     # Wraps the ASGI app; checks Authorization header on every HTTP
