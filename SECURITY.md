@@ -45,7 +45,7 @@ This policy covers:
 
 ## Data Collection & Privacy
 
-OpenCaseLaw collects minimal, anonymized operational data to improve search quality. **No user tracking, no IP logging, no session tracking.**
+OpenCaseLaw collects minimal operational data to improve search quality and to ensure transparency about how this nonprofit platform is used.
 
 ### What is collected
 
@@ -55,15 +55,33 @@ OpenCaseLaw collects minimal, anonymized operational data to improve search qual
 | Per-tool avg latency | Performance monitoring | In-memory, resets on restart |
 | Zero-result query text | Fix search gaps | In-memory, last 500, resets on restart |
 | Haiku rerank fire/change rate | Validate reranking value | In-memory, resets on restart |
+| Search query text | Usage analysis, search quality research | In-memory, resets on restart |
+| Client type (claude.ai, chatgpt, cursor, etc.) | Understand platform adoption | In-memory, resets on restart |
 
-### What is NOT collected
+### Commercial platform monitoring
 
-- No IP addresses or geolocation
-- No user agents or device fingerprints  
-- No session IDs or user identification
-- No query text (except zero-result queries)
-- No personal data of any kind
-- No cookies or tracking pixels
+OpenCaseLaw is a nonprofit, open-access legal research platform. We log connection metadata (IP addresses, user agents, MCP session IDs, and tool call details) to detect when commercial platforms route their users' requests through our infrastructure.
+
+**Why this matters:** Users of commercial AI products (e.g. Copilot, ChatGPT, Cursor) should know when their service provider is sourcing legal research from a nonprofit platform rather than from proprietary databases. Transparency about the data supply chain is important for informed use.
+
+**What is logged for this purpose:**
+
+| Data | Purpose | Retention |
+|------|---------|-----------|
+| IP address of connecting client | Identify commercial infrastructure (e.g. Azure, AWS) | In-memory + daily report (JSON) |
+| User-Agent string | Classify client type (python-httpx, openai-mcp, etc.) | In-memory + daily report |
+| MCP session ID | Correlate tool calls within a session | In-memory, resets on restart |
+| Tool name and query arguments | Understand usage patterns | In-memory, resets on restart |
+
+**What is NOT logged:**
+
+- No end-user identity (we see the commercial platform's IP, not the individual user's)
+- No personal data, cookies, or device fingerprints
+- No geolocation beyond what is inherent in an IP address
+
+### Nginx access logs
+
+Standard nginx access logs (IP, timestamp, path, status, user-agent) are retained for 14 days and analyzed daily for commercial integrator detection. These logs are not shared with third parties.
 
 ### Access
 
@@ -71,6 +89,6 @@ Aggregated metrics are available at `/metrics` (public, JSON). A developer dashb
 
 ### Principles
 
-1. **Collect only what improves the product** — every data point must be actionable
-2. **No persistent storage** — all metrics are in-memory and reset on worker restart
-3. **No user tracking** — court decisions are public records; who reads them is not our business
+1. **Collect only what improves the product or ensures transparency** — every data point must be actionable
+2. **No end-user tracking** — we identify platforms, not people
+3. **Court decisions are public records** — but who profits from routing access through a nonprofit is our business

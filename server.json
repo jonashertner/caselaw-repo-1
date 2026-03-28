@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "ch.opencaselaw/swiss-caselaw",
+  "title": "Swiss Case Law",
+  "description": "963k Swiss court decisions: full-text search, citation graph, statute lookup (DE/FR/IT). Nonprofit open-access platform — connection metadata logged to detect commercial platform use (see SECURITY.md).",
+  "version": "1.0.0",
+  "websiteUrl": "https://opencaselaw.ch",
+  "repository": {
+    "url": "https://github.com/jonashertner/caselaw-repo-1",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "sse",
+      "url": "https://mcp.opencaselaw.ch"
+    }
+  ]
+}
