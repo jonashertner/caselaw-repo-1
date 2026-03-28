@@ -24,31 +24,33 @@ A **Microsoft Office Web Add-in** (Office.js) — a single-page web app hosted a
 
 No new backend infrastructure needed. The add-in is purely static files served by nginx + API calls to the existing server.
 
+### CORS Configuration Required
+
+The REST API's CORS is controlled by the `SWISS_CASELAW_CORS_ORIGINS` env var. Before deployment, add `https://word.opencaselaw.ch` to `SWISS_CASELAW_CORS_ORIGINS` in `/opt/caselaw/repo/.env.mcp` and restart workers. Without this, all fetch() calls from the plugin will fail.
+
 ### Existing API Endpoints Used
 
-| Feature | Endpoint | Method |
-|---------|----------|--------|
-| Search decisions | `/api/decisions` | GET |
-| Get decision detail | `/api/decisions/{id}` | GET |
-| Case brief (for verify) | `/api/case-brief/{case}` | GET |
-| List courts | `/api/courts` | GET |
-| Search laws | `/api/laws/search` | GET |
-| Get statute article | `/api/laws/{abbreviation}` | GET |
-| Leading cases | `/api/leading-cases` | GET |
-| Doctrine | `/api/doctrine` | GET |
-
-All endpoints already have `Access-Control-Allow-Origin: *` CORS headers. No API changes required.
+| Feature | Endpoint | Key Parameters |
+|---------|----------|---------------|
+| Search decisions | `GET /api/decisions` | `query`, `court`, `canton`, `language`, `date_from`, `date_to`, `limit` (default 50), `offset`, `sort` |
+| Get decision detail | `GET /api/decisions/{decision_id}` | `full_text` (bool) |
+| Case brief (for verify) | `GET /api/case-brief/{case}` | path param: docket number or BGE ref |
+| List courts | `GET /api/courts` | — |
+| Search laws | `GET /api/laws/search` | `query`, `sr_number`, `language`, `limit` |
+| Get statute article | `GET /api/laws/{abbreviation}` | `article`, `language` |
+| Leading cases | `GET /api/leading-cases` | `query`, `law_code`, `article`, `limit` |
+| Doctrine | `GET /api/doctrine` | `query` |
 
 ## UI Design
 
 ### Theme & Layout
 
-Light theme matching Word's native look. Task pane width: 350px (Office.js default). Language selector (DE/FR/IT/EN) in header bar.
+Light theme matching Word's native look. Task pane width: 350px (Office.js default). Language selector (DE/FR/IT/EN) in header bar. System font stack (`-apple-system, Segoe UI, sans-serif`).
 
 ### Header
 
 - OpenCaseLaw logo (16px red square "OCL") + "OpenCaseLaw" text
-- Language dropdown (DE ▾) — persists in localStorage
+- Language dropdown (DE ▾) — persists via `Office.context.roamingSettings` (syncs across devices)
 
 ### Views
 
@@ -62,6 +64,10 @@ Light theme matching Word's native look. Task pane width: 350px (Office.js defau
   - Leading case badge (★ Leitentscheid) when applicable
   - Regeste excerpt (2-3 lines)
   - Two buttons: green "Einfügen" (insert citation at cursor), grey "Volltext" (open detail)
+- **Pagination:** Show 20 results initially, "Weitere laden" button at bottom loads next 20 (offset-based)
+- **Loading state:** Skeleton cards (3 grey pulsing rectangles) while fetching
+- **Empty state:** "Keine Treffer" with suggestion to broaden search
+- **Error state:** "Verbindungsfehler — erneut versuchen" with retry button. On 429: "Zu viele Anfragen — bitte warten" with countdown
 
 **2. Detail View**
 
@@ -76,6 +82,8 @@ Light theme matching Word's native look. Task pane width: 350px (Office.js defau
   - Per-section green "Einfügen" button (inserts citation with specific E. reference)
 - Statute articles section: clickable pills (Art. 253a OR, Art. 266l OR, etc.)
 - Main "Einfügen" button at bottom (inserts citation without specific E.)
+
+**Erwägung extraction:** The `/api/case-brief/{case}` endpoint returns pre-segmented Erwägungen with section numbers. The detail view renders these directly — no client-side parsing needed.
 
 **3. Laws View**
 
@@ -103,11 +111,12 @@ Light theme matching Word's native look. Task pane width: 350px (Office.js defau
 - Language selector (DE/FR/IT/EN) with preview of citation format
 - Tier B: Anthropic API key field (stored in localStorage, never transmitted to our servers)
 - "API-Key testen" button to validate
+- "Schlüssel löschen" button
 - Link to opencaselaw.ch, GitHub, SECURITY.md
 
 ## Citation Format
 
-Inserts **inline bracketed reference** at cursor position using `Office.context.document.setSelectedDataAsync()`. Format adapts to selected language:
+Inserts **inline bracketed reference** at cursor position. Uses `Word.Range.insertText()` with `InsertLocation.after` on the current selection range to avoid overwriting selected text. Format adapts to selected language:
 
 ### BGE (Leitentscheide)
 
@@ -144,7 +153,7 @@ Inserts **inline bracketed reference** at cursor position using `Office.context.
 1. User selects a paragraph in Word containing one or more case references
 2. Clicks "Referenz prüfen" button in the sidebar
 3. Plugin extracts citation(s) from selected text via regex:
-   - BGE pattern: `BGE \d+ [IVX]+ \d+` / `ATF` / `DTF`
+   - BGE pattern: `(BGE|ATF|DTF)\s+\d+\s+[IVX]+\s+\d+`
    - BGer pattern: `\d[A-Z]_\d+/\d{4}`
 4. Fetches each cited decision via `/api/case-brief/{case}`
 5. Sends prompt to Claude Haiku via Anthropic API (using user's key):
@@ -152,14 +161,25 @@ Inserts **inline bracketed reference** at cursor position using `Office.context.
    - User: selected text + decision brief
    - Output: JSON with verdict (supports/partial/contradicts), explanation, relevant_erwaegung
 6. Displays color-coded verdict in sidebar
-7. "Kommentar einfügen" calls `Office.context.document.getSelection()` then inserts a comment via the Word API with the verdict text
+7. "Kommentar einfügen" inserts a Word comment via `Word.Range.insertComment()` with the verdict text
+
+### Word Comment Insertion — API Version
+
+`Word.Range.insertComment()` requires **WordApi 1.4** (Word 2019+). The manifest declares WordApi 1.1 as minimum for Tier A features. The "Kommentar einfügen" button is **feature-detected at runtime**: if `insertComment` is unavailable (Word 2016), the button is replaced with "Ergebnis als Text einfügen" which inserts the verdict as inline text instead.
+
+### Anthropic API — Browser Access
+
+Direct browser calls to `api.anthropic.com` require the `anthropic-dangerous-direct-browser-access: true` header. This is functional but Anthropic discourages it for production use.
+
+**Fallback plan:** If Anthropic tightens browser CORS, add a thin proxy endpoint at `mcp.opencaselaw.ch/api/verify` that forwards the request using the user's key (passed as a header, not stored server-side). This is a single-endpoint change, not a redesign.
 
 ### API Key Security
 
 - Stored in browser localStorage (key: `ocl_anthropic_key`)
-- Sent directly from browser to `api.anthropic.com` (CORS-enabled)
+- Sent directly from browser to `api.anthropic.com` with `anthropic-dangerous-direct-browser-access: true`
 - Never transmitted to opencaselaw.ch servers
 - Settings view has "Schlüssel löschen" button
+- Note: In some Office clients (especially Word Online), localStorage may be scoped to the task pane iframe. This is acceptable — the key is only needed within the plugin.
 
 ### LLM Prompt
 
@@ -187,9 +207,9 @@ tools/word-addin/
 │   └── style.css         # Light theme, system font, Word-matching
 ├── js/
 │   ├── app.js            # Main: routing, state management, render loop
-│   ├── api.js            # REST API client (fetch wrapper, error handling)
+│   ├── api.js            # REST API client (fetch wrapper, error handling, retry)
 │   ├── citation.js       # Citation formatting (4 languages × court types)
-│   ├── office.js         # Word API: insert text, insert comment, get selection
+│   ├── word-api.js       # Word interaction (insert text, insert comment, get selection)
 │   └── verify.js         # Tier B: extract refs, call Haiku, display verdict
 ├── assets/
 │   ├── icon-16.png       # Ribbon icon 16×16
@@ -202,15 +222,16 @@ tools/word-addin/
 
 ### Hosting
 
-Static files served by nginx on the existing VPS. Add a new server block for `word.opencaselaw.ch` with TLS (Let's Encrypt). The add-in is ~50KB total — negligible load.
+Static files served by nginx on the existing VPS at `46.225.79.22` (same server as `mcp.opencaselaw.ch`). Add a new server block for `word.opencaselaw.ch` with TLS (Let's Encrypt). The add-in is ~50KB total — negligible load.
 
+CSP headers on the static hosting:
 ```
-word.opencaselaw.ch → nginx → static files (tools/word-addin/)
+default-src 'self'; connect-src https://mcp.opencaselaw.ch https://api.anthropic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:;
 ```
 
 ### DNS
 
-Add A record: `word.opencaselaw.ch` → `46.225.212.40` (same VPS)
+Add A record: `word.opencaselaw.ch` → `46.225.79.22` (same server as mcp.opencaselaw.ch)
 
 ### Distribution
 
@@ -220,7 +241,7 @@ Add A record: `word.opencaselaw.ch` → `46.225.212.40` (same VPS)
 
 ### Manifest Requirements
 
-- `<AppDomains>`: `mcp.opencaselaw.ch`, `api.anthropic.com`
+- `<AppDomains>`: `mcp.opencaselaw.ch`
 - `<Hosts>`: Document (Word only)
 - `<Requirements>`: WordApi 1.1+ (covers Word 2016+, Word for Mac, Word Online)
 - `<DefaultSettings><SourceLocation>`: `https://word.opencaselaw.ch/index.html`
@@ -231,7 +252,8 @@ Add A record: `word.opencaselaw.ch` → `46.225.212.40` (same VPS)
 - **Manual test matrix:** Word for Windows, Word for Mac, Word Online
 - **API integration:** search, get decision, get law — verify results render correctly
 - **Tier B:** mock Anthropic API response for verification flow
-- **Edge cases:** no results, API timeout, invalid API key, decision not found, no citation in selected text
+- **Edge cases:** no results, API timeout (show retry), 429 rate limit (show countdown), invalid API key (show error in settings), decision not found, no citation found in selected text, Word 2016 without insertComment support
+- **Citation insertion:** verify `insertText` with `InsertLocation.after` does not overwrite selected text
 
 ## Success Criteria
 
