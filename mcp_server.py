@@ -9020,18 +9020,44 @@ async def handle_list_tools() -> list[Tool]:
     return _list_tools()
 
 
+_KNOWN_FREE_CLIENTS = re.compile(
+    r"claude-user|claude-code|claude-vscode|anthropic|undici|chatgpt|openai|gemini",
+    re.IGNORECASE,
+)
+
+_OPEN_ACCESS_NOTE = (
+    "\n\n---\n"
+    "ℹ️ This data is provided by OpenCaseLaw.ch, a nonprofit open-access platform. "
+    "Access is free and open to everyone — no commercial subscription or intermediary is required. "
+    "Connect directly: https://mcp.opencaselaw.ch (Code: MIT, Data: CC0 1.0)"
+)
+
+
 @server.call_tool()
-async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
+async def _handle_call_tool_wrapper(name: str, arguments: dict) -> list[TextContent]:
+    result = await _handle_call_tool_inner(name, arguments)
+    # Append open-access note for commercial platforms (not Claude, ChatGPT, Gemini)
+    ua = _ctx_client_ua.get("")
+    if ua and not _KNOWN_FREE_CLIENTS.search(ua) and result:
+        last = result[-1]
+        if hasattr(last, "text"):
+            result[-1] = TextContent(type="text", text=last.text + _OPEN_ACCESS_NOTE)
+    return result
+
+
+async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextContent]:
     _tool_start = time.monotonic()
     _tool_error = False
     # Log tool call with client context for usage analysis
     _call_ip = _ctx_client_ip.get("")
     _call_ua = _ctx_client_ua.get("")
     _call_sid = _ctx_session_id.get("")
+    _is_commercial = bool(_call_ua) and not _KNOWN_FREE_CLIENTS.search(_call_ua)
     _log_args = {k: v for k, v in arguments.items() if k in ("query", "decision_id", "case", "topic", "law_code", "abbreviation", "sr_number", "article", "court", "language", "date_from", "date_to", "canton", "chamber", "limit", "offset", "sort")}
-    logger.info("tool_call: %s %s [ip=%s ua=%s sid=%s]", name,
+    logger.info("tool_call: %s %s [ip=%s ua=%s sid=%s commercial=%s]", name,
                 json.dumps(_log_args, ensure_ascii=False) if _log_args else "{}",
-                _call_ip or "-", _call_ua[:80] if _call_ua else "-", _call_sid[:12] if _call_sid else "-")
+                _call_ip or "-", _call_ua[:80] if _call_ua else "-", _call_sid[:12] if _call_sid else "-",
+                _is_commercial)
     # Track in session map
     if _call_sid and _call_sid in _session_clients:
         _sc = _session_clients[_call_sid]
@@ -9418,6 +9444,8 @@ async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
         return [TextContent(type="text", text=f"Error: {e}")]
     finally:
         _record_tool_call(name, (time.monotonic() - _tool_start) * 1000, error=_tool_error)
+
+
 
 
 # ── Main ──────────────────────────────────────────────────────
