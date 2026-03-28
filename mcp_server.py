@@ -54,6 +54,7 @@ Tools exposed:
 from __future__ import annotations
 
 import asyncio
+import contextvars
 import json
 import logging
 import math
@@ -988,6 +989,15 @@ _metrics = {
     "sessions": 0,
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
+
+# ── Per-request context (ASGI → handle_call_tool) ──
+_ctx_client_ip = contextvars.ContextVar("client_ip", default="")
+_ctx_client_ua = contextvars.ContextVar("client_ua", default="")
+_ctx_session_id = contextvars.ContextVar("session_id", default="")
+
+# ── Session → client mapping (for integrator detection) ──
+_session_clients: dict[str, dict] = {}  # session_id → {ip, ua, first_seen, tools: []}
+_SESSION_LOG_MAX = 2000  # cap to prevent memory growth
 
 
 def _record_tool_call(name: str, duration_ms: float, *, error: bool = False):
@@ -8987,9 +8997,21 @@ async def handle_list_tools() -> list[Tool]:
 async def handle_call_tool(name: str, arguments: dict) -> list[TextContent]:
     _tool_start = time.monotonic()
     _tool_error = False
-    # Log tool call with key arguments for usage analysis
-    _log_args = {k: v for k, v in arguments.items() if k in ("query", "decision_id", "case", "topic", "law_code", "abbreviation", "sr_number", "article", "court")}
-    logger.info("tool_call: %s %s", name, json.dumps(_log_args, ensure_ascii=False) if _log_args else "")
+    # Log tool call with client context for usage analysis
+    _call_ip = _ctx_client_ip.get("")
+    _call_ua = _ctx_client_ua.get("")
+    _call_sid = _ctx_session_id.get("")
+    _log_args = {k: v for k, v in arguments.items() if k in ("query", "decision_id", "case", "topic", "law_code", "abbreviation", "sr_number", "article", "court", "language", "date_from", "date_to", "canton", "chamber", "limit", "offset", "sort")}
+    logger.info("tool_call: %s %s [ip=%s ua=%s sid=%s]", name,
+                json.dumps(_log_args, ensure_ascii=False) if _log_args else "{}",
+                _call_ip or "-", _call_ua[:80] if _call_ua else "-", _call_sid[:12] if _call_sid else "-")
+    # Track in session map
+    if _call_sid and _call_sid in _session_clients:
+        _sc = _session_clients[_call_sid]
+        _sc["tools"].append({"tool": name, "args": _log_args, "ts": datetime.now(timezone.utc).isoformat()})
+        # Cap per-session tool list
+        if len(_sc["tools"]) > 100:
+            _sc["tools"] = _sc["tools"][-100:]
     try:
         if REMOTE_MODE and name in ("update_database", "check_update_status"):
             return [TextContent(type="text", text="This tool is not available on the remote server.")]
@@ -9453,25 +9475,50 @@ def main_remote(host: str, port: int):
 
             method = scope.get("method", "GET")
 
-            # Track client type from User-Agent (no IP, no PII)
-            # Skip health, metrics, dev dashboard — not real client traffic
+            # Extract client identity
             path = scope.get("path", "")
             headers = dict(scope.get("headers", []))
-            ua = (headers.get(b"user-agent", b"")).decode("utf-8", errors="ignore").lower()
+            ua = (headers.get(b"user-agent", b"")).decode("utf-8", errors="ignore")
+            ip = (headers.get(b"x-real-ip", b"") or headers.get(b"x-forwarded-for", b"")).decode("utf-8", errors="ignore").split(",")[0].strip()
+            ua_lower = ua.lower()
+
+            # Set context vars for downstream (handle_call_tool)
+            _ctx_client_ip.set(ip)
+            _ctx_client_ua.set(ua)
+
+            # Extract and track session_id
+            qs = scope.get("query_string", b"").decode("utf-8", errors="ignore")
+            sid = ""
+            if "session_id=" in qs:
+                sid = qs.split("session_id=")[1].split("&")[0]
+                _ctx_session_id.set(sid)
+                # Track session → client mapping
+                if sid not in _session_clients:
+                    if len(_session_clients) >= _SESSION_LOG_MAX:
+                        # Evict oldest
+                        oldest = next(iter(_session_clients))
+                        del _session_clients[oldest]
+                    _session_clients[sid] = {
+                        "ip": ip, "ua": ua, "tools": [],
+                        "first_seen": datetime.now(timezone.utc).isoformat(),
+                    }
+
+            # Track client type from User-Agent
+            # Skip health, metrics, dev dashboard — not real client traffic
             _skip_tracking = path in ("/health", "/metrics", "/dev")
             if not _skip_tracking:
                 # Count new sessions (SSE or Streamable HTTP connects)
                 if method in ("GET", "POST") and path in ("/", "/sse", ""):
                     _metrics["sessions"] += 1
-                if "claude-user" in ua:
+                if "claude-user" in ua_lower:
                     _metrics["clients"]["claude.ai"] += 1
-                elif "claude-code" in ua or "claude-vscode" in ua:
+                elif "claude-code" in ua_lower or "claude-vscode" in ua_lower:
                     _metrics["clients"]["claude-code"] += 1
-                elif "undici" in ua or "chatgpt" in ua or "openai" in ua:
+                elif "undici" in ua_lower or "chatgpt" in ua_lower or "openai" in ua_lower:
                     _metrics["clients"]["chatgpt"] += 1
-                elif "gemini" in ua or "google" in ua:
+                elif "gemini" in ua_lower or "google" in ua_lower:
                     _metrics["clients"]["gemini"] += 1
-                elif ua and "bot" not in ua and "crawler" not in ua:
+                elif ua_lower and "bot" not in ua_lower and "crawler" not in ua_lower:
                     _metrics["clients"]["other"] += 1
 
             if method == "OPTIONS":
@@ -9805,6 +9852,58 @@ render();setInterval(render,60000);
         combined["uptime_since"] = _metrics["startup_time"]
         combined["workers"] = 4
         return JSONResponse(combined)
+
+    async def handle_sessions(request):
+        """Dump session→client tracking data (dev-only, auth-protected)."""
+        token = request.query_params.get("token", "")
+        dev_token = os.environ.get("DEV_DASHBOARD_TOKEN", "")
+        if not dev_token or token != dev_token:
+            return Response("Unauthorized", status_code=401)
+        # Aggregate from all workers
+        import httpx
+        all_sessions = {}
+        async with httpx.AsyncClient(timeout=3) as client:
+            for port in range(8770, 8774):
+                try:
+                    resp = await client.get(f"http://127.0.0.1:{port}/metrics/sessions?token={dev_token}")
+                    if resp.status_code == 200:
+                        for sid, data in resp.json().items():
+                            all_sessions[sid] = data
+                except Exception:
+                    pass
+        if not all_sessions:
+            # Single worker — return local data
+            all_sessions = {sid: info for sid, info in _session_clients.items() if info.get("tools")}
+        # Group by IP for integrator analysis
+        by_ip: dict[str, dict] = {}
+        for sid, info in all_sessions.items():
+            ip = info.get("ip", "unknown")
+            if ip not in by_ip:
+                by_ip[ip] = {"ua": info.get("ua", ""), "sessions": 0, "total_calls": 0, "tools": collections.Counter(), "queries": [], "first_seen": info.get("first_seen")}
+            by_ip[ip]["sessions"] += 1
+            for tc in info.get("tools", []):
+                by_ip[ip]["total_calls"] += 1
+                by_ip[ip]["tools"][tc["tool"]] += 1
+                q = tc.get("args", {}).get("query") or tc.get("args", {}).get("case") or tc.get("args", {}).get("topic")
+                if q:
+                    by_ip[ip]["queries"].append({"tool": tc["tool"], "query": q, "ts": tc.get("ts")})
+        # Convert counters and sort by total_calls
+        result = []
+        for ip, data in sorted(by_ip.items(), key=lambda x: -x[1]["total_calls"]):
+            data["ip"] = ip
+            data["tools"] = dict(data["tools"])
+            data["queries"] = data["queries"][-50:]  # last 50 per IP
+            result.append(data)
+        return JSONResponse(result[:50])
+
+    async def handle_sessions_local(request):
+        """Return local worker session data."""
+        token = request.query_params.get("token", "")
+        dev_token = os.environ.get("DEV_DASHBOARD_TOKEN", "")
+        if not dev_token or token != dev_token:
+            return Response("Unauthorized", status_code=401)
+        filtered = {sid: info for sid, info in _session_clients.items() if info.get("tools")}
+        return JSONResponse(filtered)
 
     # ── Developer dashboard (auth-protected) ──────────────────
     DEV_TOKEN = os.environ.get("DEV_DASHBOARD_TOKEN", "")
@@ -10177,6 +10276,8 @@ render();setInterval(render,60000);
             Route("/metrics", endpoint=handle_metrics),
             Route("/metrics/history", endpoint=handle_metrics_history),
             Route("/metrics/all", endpoint=handle_metrics_all),
+            Route("/metrics/sessions", endpoint=handle_sessions_local),
+            Route("/metrics/integrators", endpoint=handle_sessions),
             Route("/robots.txt", endpoint=handle_robots),
             Route("/sitemap.xml", endpoint=handle_sitemap_index),
             Route("/sitemap-{court}.xml", endpoint=handle_court_sitemap),
