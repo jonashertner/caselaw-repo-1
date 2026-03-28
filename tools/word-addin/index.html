@@ -35,15 +35,18 @@
   </header>
 
   <main id="app">
-    <!-- Views rendered here by app.js -->
+    <input class="search-bar" id="search-input-fallback" type="text"
+           placeholder="Entscheide, Gesetze, Doktrin suchen..."
+           style="margin-top:8px;">
+    <div class="state-message" id="init-msg" style="margin-top:24px;">Wird geladen...</div>
   </main>
 
   <!-- Scripts (order matters) -->
-  <script src="js/citation.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/word-api.js"></script>
-  <script src="js/verify.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/citation.js?v=3"></script>
+  <script src="js/api.js?v=3"></script>
+  <script src="js/word-api.js?v=3"></script>
+  <script src="js/verify.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
 
 </body>
 </html>

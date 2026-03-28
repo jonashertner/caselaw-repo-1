@@ -53,6 +53,9 @@ function initApp() {
   }
   document.getElementById('lang-select').value = state.lang;
 
+  // Bind delegated click handler ONCE (never re-bind)
+  document.getElementById('app').addEventListener('click', handleAppClick);
+
   // Render immediately, then fetch courts in background
   render();
   listCourts().then(function (c) { state.courts = c; }).catch(function () {});
@@ -289,7 +292,7 @@ function renderError() {
     '<button class="retry-btn" data-action="retry">Erneut versuchen</button></div>';
 }
 
-// Event Binding (delegated)
+// Post-render setup (input focus + keydown only — click is bound once in initApp)
 function bindEvents() {
   var searchInput = document.getElementById('search-input');
   if (searchInput) {
@@ -306,8 +309,10 @@ function bindEvents() {
     });
     lawInput.focus();
   }
+}
 
-  document.getElementById('app').addEventListener('click', async function (e) {
+// Delegated click handler — bound ONCE in initApp, never re-added
+async function handleAppClick(e) {
     var btn = e.target.closest('[data-action]');
     if (!btn) return;
     var action = btn.dataset.action;
@@ -354,7 +359,6 @@ function bindEvents() {
         render();
         break;
     }
-  });
 }
 
 // Actions
@@ -520,10 +524,10 @@ async function testApiKey() {
         messages: [{ role: 'user', content: 'Say OK' }],
       }),
     });
-    if (resp.ok) alert('\u2713 API-Key ist g\u00FCltig.');
-    else alert('\u2717 API-Key ung\u00FCltig oder abgelaufen.');
+    if (resp.ok) console.log('\u2713 API-Key ist g\u00FCltig.');
+    else console.log('\u2717 API-Key ung\u00FCltig oder abgelaufen.');
   } catch (e) {
-    alert('\u2717 Verbindungsfehler zu Anthropic.');
+    console.log('\u2717 Verbindungsfehler zu Anthropic.');
   }
 }
 

@@ -89,24 +89,29 @@ function formatCitation(decision, lang, erwaegung) {
   lang = lang || 'de';
   var parts = [];
 
-  if (isBge(decision)) {
+  // Normalize field names (API uses docket_number/decision_date/court, module uses docket/date/court_id)
+  var docket = decision.docket || decision.docket_number || '';
+  var date = decision.date || decision.decision_date || '';
+  var courtId = (decision.court_id || decision.court || '').toLowerCase();
+  // Patch decision for isBge/extractBgeRef
+  var d = { docket: docket, date: date, court_id: courtId, court: courtId };
+
+  if (isBge(d)) {
     // BGE format: replace "BGE" with language-appropriate prefix, no date
-    var ref = extractBgeRef(decision.docket);
+    var ref = extractBgeRef(docket);
     var prefix = COURT_NAMES.bge[lang];
     parts.push(prefix + ' ' + ref);
   } else {
     // Non-BGE format: court name + docket + date
-    var courtId = (decision.court_id || '').toLowerCase();
     var courtName;
     if (COURT_NAMES[courtId]) {
       courtName = COURT_NAMES[courtId][lang];
     } else {
-      // Fallback: use court_id as-is
-      courtName = decision.court_id || decision.court || '';
+      courtName = courtId || '';
     }
-    var citation = courtName + ' ' + decision.docket;
-    if (decision.date) {
-      citation += ' ' + formatDate(decision.date, lang);
+    var citation = courtName + ' ' + docket;
+    if (date) {
+      citation += ' ' + formatDate(date, lang);
     }
     parts.push(citation);
   }
