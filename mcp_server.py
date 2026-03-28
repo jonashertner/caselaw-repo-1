@@ -9513,7 +9513,12 @@ def main_remote(host: str, port: int):
     )
 
     async def handle_sse(request):
-        """SSE-only handler for /sse path."""
+        """SSE-only handler for /sse path.
+
+        Writes directly to ASGI send channel via sse.connect_sse.
+        Returns an empty Response to satisfy Starlette's Route wrapper
+        (the actual response was already sent via SSE).
+        """
         # Set contextvars so handle_call_tool sees the SSE client's identity
         headers = dict(request.scope.get("headers", []))
         _ctx_client_ua.set(
@@ -9527,6 +9532,7 @@ def main_remote(host: str, port: int):
             await server.run(
                 streams[0], streams[1], server.create_initialization_options()
             )
+        return Response(status_code=200)
 
     class MCPRootApp:
         """Raw ASGI app for / — dispatches GET→SSE, POST/DELETE→Streamable HTTP."""
