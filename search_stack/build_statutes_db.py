@@ -82,6 +82,17 @@ def create_schema(conn: sqlite3.Connection):
             content_rowid='id',
             tokenize='unicode61 remove_diacritics 2'
         );
+
+        CREATE TABLE IF NOT EXISTS amendment_refs (
+            ref_type TEXT NOT NULL,
+            year INTEGER NOT NULL,
+            page_num INTEGER NOT NULL,
+            eli_uri TEXT NOT NULL,
+            PRIMARY KEY (ref_type, year, page_num)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_amendment_refs_eli
+            ON amendment_refs(eli_uri);
     """)
 
 

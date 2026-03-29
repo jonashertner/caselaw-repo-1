@@ -37,7 +37,7 @@ async function verifyReference(selectedText, apiKey, lang) {
   // Extract citations
   var refs = extractCitations(selectedText);
   if (refs.length === 0) {
-    throw { type: 'no_citation', message: 'Keine Entscheidreferenz im markierten Text gefunden.' };
+    throw { type: 'no_citation', message: typeof t === 'function' ? t('no_citation_found', lang) : 'No decision reference found.' };
   }
 
   // Fetch first cited decision
@@ -46,7 +46,7 @@ async function verifyReference(selectedText, apiKey, lang) {
   try {
     caseBrief = await getCaseBrief(mainRef);
   } catch (e) {
-    throw { type: 'decision_not_found', message: 'Entscheid "' + mainRef + '" nicht gefunden.' };
+    throw { type: 'decision_not_found', message: typeof t === 'function' ? t('decision_not_found', lang, { ref: mainRef }) : 'Decision "' + mainRef + '" not found.' };
   }
 
   // Build brief text for LLM (max 4000 chars)
@@ -85,8 +85,8 @@ async function verifyReference(selectedText, apiKey, lang) {
   if (!resp.ok) {
     var err = {};
     try { err = await resp.json(); } catch (e) { /* ignore */ }
-    if (resp.status === 401) throw { type: 'invalid_key', message: 'API-Key ungueltig.' };
-    throw { type: 'llm_error', message: (err.error && err.error.message) || 'Fehler bei der Analyse.' };
+    if (resp.status === 401) throw { type: 'invalid_key', message: 'API key invalid.' };
+    throw { type: 'llm_error', message: (err.error && err.error.message) || 'Verification error.' };
   }
 
   var data = await resp.json();
@@ -101,7 +101,7 @@ async function verifyReference(selectedText, apiKey, lang) {
     if (jsonMatch) {
       result = JSON.parse(jsonMatch[0]);
     } else {
-      throw { type: 'parse_error', message: 'Analyse konnte nicht verarbeitet werden.' };
+      throw { type: 'parse_error', message: 'Could not parse verification result.' };
     }
   }
 

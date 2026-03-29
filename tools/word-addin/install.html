@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCaseLaw Word Add-in — Install</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      background: #f7f7f8;
+      color: #18181b;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page { max-width: 520px; width: 100%; }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+    .logo {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: #b91c24; color: #fff; font-size: 12px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand { font-size: 18px; font-weight: 700; }
+    .badge {
+      display: inline-flex; padding: 3px 10px; border-radius: 4px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+      background: #fef2f2; color: #b91c24; border: 1px solid #fecaca;
+      margin-left: 8px;
+    }
+    h1 { font-size: 26px; font-weight: 200; line-height: 1.3; margin-bottom: 8px; }
+    .subtitle { font-size: 14px; color: #52525b; line-height: 1.6; margin-bottom: 32px; }
+    .download-btn {
+      display: block; width: 100%; padding: 14px;
+      background: #18181b; color: #fff; border: none; border-radius: 8px;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-align: center; text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .download-btn:hover { opacity: 0.88; }
+    .download-btn:active { transform: scale(0.98); }
+    .steps { margin-top: 32px; }
+    .steps h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: #52525b; margin-bottom: 16px; }
+    .step {
+      display: flex; gap: 14px; padding: 14px 0;
+      border-bottom: 1px solid #e4e4e7;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #18181b; color: #fff;
+      font-size: 12px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .step-text { font-size: 14px; line-height: 1.55; color: #18181b; }
+    .step-text strong { font-weight: 600; }
+    .note {
+      margin-top: 28px; padding: 14px 16px;
+      background: #fff; border: 1px solid #e4e4e7; border-radius: 8px;
+      font-size: 13px; color: #52525b; line-height: 1.6;
+    }
+    .footer {
+      margin-top: 32px; text-align: center;
+      font-size: 12px; color: #a1a1aa;
+    }
+    .footer a { color: #18181b; text-decoration: none; font-weight: 500; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="logo">O</div>
+      <span class="brand">OpenCaseLaw</span>
+      <span class="badge">Beta</span>
+    </div>
+
+    <h1>Word Add-in</h1>
+    <p class="subtitle">
+      Instantly look up and cite 963,000+ Swiss court decisions and federal statutes directly in Word.
+      Currently in beta testing — your feedback helps shape the final product.
+    </p>
+
+    <a class="download-btn" href="https://word.opencaselaw.ch/OpenCaseLaw.xml" download="OpenCaseLaw.xml">
+      Download Add-in Manifest
+    </a>
+
+    <div class="steps">
+      <h2>Installation</h2>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Open <strong>Word</strong> (Online or Desktop)</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Insert</strong> &rarr; <strong>Office Add-ins</strong> &rarr; <strong>My Add-ins</strong> &rarr; <strong>Upload My Add-in</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Select the downloaded <strong>OpenCaseLaw.xml</strong> file</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">The OpenCaseLaw panel appears on the right. Start typing a reference.</div>
+      </div>
+    </div>
+
+    <div class="note">
+      This is a beta version pending Microsoft AppSource review. The add-in needs to be re-uploaded each session. Once approved, it will be available permanently from the Office Add-in Store.
+    </div>
+
+    <div class="footer">
+      <a href="https://opencaselaw.ch">opencaselaw.ch</a> &middot;
+      <a href="https://word.opencaselaw.ch/privacy.html">Privacy</a> &middot;
+      <a href="https://word.opencaselaw.ch/terms.html">Terms</a>
+      <br>Feedback: info@opencaselaw.ch
+    </div>
+  </div>
+</body>
+</html>

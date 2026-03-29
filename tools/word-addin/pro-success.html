@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenCaseLaw Pro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+      background: #f8f9fa;
+      color: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 40px 32px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+    }
+    .icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 28px;
+    }
+    .icon-ok { background: linear-gradient(135deg, #7c3aed, #2563eb); color: #fff; }
+    .icon-wait { background: #f1f5f9; color: #64748b; }
+    .icon-err { background: #fef2f2; color: #dc2626; }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    p { font-size: 14px; color: #64748b; line-height: 1.6; margin-bottom: 16px; }
+    .key-box {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'SF Mono', 'Cascadia Code', monospace;
+      font-size: 13px;
+      word-break: break-all;
+      margin: 16px 0;
+      text-align: left;
+      color: #1a1a2e;
+      position: relative;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .key-box:hover { border-color: #2563eb; }
+    .copy-hint {
+      position: absolute;
+      top: -8px;
+      right: 8px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    }
+    .copied { border-color: #059669 !important; }
+    .copied .copy-hint { background: #059669; }
+    .steps {
+      text-align: left;
+      margin: 20px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .steps li {
+      font-size: 13px;
+      color: #64748b;
+      padding: 6px 0 6px 28px;
+      position: relative;
+    }
+    .step-num {
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #2563eb;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    a { color: #18181b; }
+    .key-actions { text-align: center; margin: 12px 0 4px; }
+    .key-btn {
+      font-family: inherit; font-size: 12px; font-weight: 500;
+      color: #18181b; background: none; border: 1px solid #e4e4e7;
+      border-radius: 6px; padding: 6px 14px; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .key-btn:hover { border-color: #18181b; }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="spinner"></div>
+    <p>Retrieving your license key...</p>
+  </div>
+
+  <script>
+    var API = 'https://mcp.opencaselaw.ch/api';
+
+    function getSessionId() {
+      var params = new URLSearchParams(window.location.search);
+      return params.get('session_id') || '';
+    }
+
+    function renderCard(content) {
+      // Safe: all content is built from hardcoded strings and server-generated hex tokens
+      document.getElementById('card').innerHTML = content; // eslint-disable-line no-unsanitized/property
+    }
+
+    function showSuccess(licenseKey) {
+      renderCard(
+        '<div class="icon icon-ok">&#10003;</div>' +
+        '<h1>Welcome to Pro!</h1>' +
+        '<p>Your license key is ready. Copy it and paste it into the Word Add-in settings.</p>' +
+        '<div class="key-box" id="key-box" title="Click to copy">' +
+          '<span class="copy-hint" id="copy-hint">Click to copy</span>' +
+          licenseKey +
+        '</div>' +
+        '<div class="key-actions">' +
+          '<button class="key-btn" id="btn-save-key">Save as file</button>' +
+        '</div>' +
+        '<ol class="steps">' +
+          '<li><span class="step-num">1</span>Open the OpenCaseLaw panel in Word</li>' +
+          '<li><span class="step-num">2</span>Go to Settings (gear icon)</li>' +
+          '<li><span class="step-num">3</span>Paste your license key and click Activate</li>' +
+        '</ol>'
+      );
+
+      document.getElementById('btn-save-key').addEventListener('click', function () {
+        var blob = new Blob(['OpenCaseLaw Pro License Key\n\n' + licenseKey + '\n\nKeep this file safe.\n'], { type: 'text/plain' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'OpenCaseLaw-Pro-License.txt';
+        a.click();
+      });
+
+      document.getElementById('key-box').addEventListener('click', function () {
+        navigator.clipboard.writeText(licenseKey).then(function () {
+          var box = document.getElementById('key-box');
+          var hint = document.getElementById('copy-hint');
+          box.classList.add('copied');
+          hint.textContent = 'Copied!';
+          setTimeout(function () {
+            box.classList.remove('copied');
+            hint.textContent = 'Click to copy';
+          }, 2000);
+        });
+      });
+    }
+
+    function showWaiting() {
+      renderCard(
+        '<div class="icon icon-wait">&#8987;</div>' +
+        '<h1>Almost there!</h1>' +
+        '<p>Your payment is being processed. Your license key will appear here in a moment.</p>' +
+        '<div class="spinner"></div>' +
+        '<p style="font-size:12px;">This page refreshes automatically...</p>'
+      );
+    }
+
+    function showError(msg) {
+      renderCard(
+        '<div class="icon icon-err">!</div>' +
+        '<h1>Something went wrong</h1>' +
+        '<p>' + msg + '</p>' +
+        '<p style="font-size:12px;">Contact <a href="mailto:info@opencaselaw.ch">info@opencaselaw.ch</a> for help.</p>'
+      );
+    }
+
+    async function fetchLicense() {
+      var sessionId = getSessionId();
+      if (!sessionId) {
+        showError('No session ID found. Please check your email for the license key.');
+        return;
+      }
+
+      var attempts = 0;
+      var maxAttempts = 10;
+
+      async function poll() {
+        attempts++;
+        try {
+          var resp = await fetch(API + '/billing/license-for-session?session_id=' + encodeURIComponent(sessionId));
+          var data = await resp.json();
+          if (data.found && data.license_key) {
+            showSuccess(data.license_key);
+            return;
+          }
+        } catch (e) {
+          // Network error — keep polling
+        }
+
+        if (attempts >= maxAttempts) {
+          showError('License key not ready yet. The payment webhook may be delayed. Please refresh in a minute.');
+          return;
+        }
+
+        showWaiting();
+        setTimeout(poll, 3000);
+      }
+
+      poll();
+    }
+
+    fetchLicense();
+  </script>
+</body>
+</html>

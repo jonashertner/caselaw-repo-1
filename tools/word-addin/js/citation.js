@@ -106,6 +106,8 @@ function formatCitation(decision, lang, erwaegung) {
     var courtName;
     if (COURT_NAMES[courtId]) {
       courtName = COURT_NAMES[courtId][lang];
+    } else if (typeof getCourtName === 'function') {
+      courtName = getCourtName(courtId, lang);
     } else {
       courtName = courtId || '';
     }

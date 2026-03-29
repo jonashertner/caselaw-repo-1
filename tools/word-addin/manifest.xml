@@ -3,27 +3,46 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:type="TaskPaneApp">
   <Id>c0a83f2e-4d5b-4e9a-b1c7-000000000001</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.1.0.0</Version>
   <ProviderName>OpenCaseLaw</ProviderName>
-  <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="OpenCaseLaw"/>
-  <Description DefaultValue="Search and cite Swiss court decisions directly in Word. 963000+ decisions from all courts."/>
+  <DefaultLocale>de-DE</DefaultLocale>
+
+  <DisplayName DefaultValue="OpenCaseLaw - Schweizer Rechtsprechung">
+    <Override Locale="fr-FR" Value="OpenCaseLaw - Jurisprudence suisse"/>
+    <Override Locale="it-IT" Value="OpenCaseLaw - Giurisprudenza svizzera"/>
+    <Override Locale="en-US" Value="OpenCaseLaw - Swiss Case Law"/>
+  </DisplayName>
+
+  <Description DefaultValue="Durchsuchen und zitieren Sie 963'000+ Schweizer Gerichtsentscheide direkt in Word. Bundesgericht, BVGer, BStGer, alle 26 Kantone. Referenzpruefung mit KI.">
+    <Override Locale="fr-FR" Value="Recherchez et citez 963'000+ decisions de justice suisses dans Word. TF, TAF, TPF, 26 cantons. Verification des references par IA."/>
+    <Override Locale="it-IT" Value="Cerca e cita 963'000+ decisioni giudiziarie svizzere in Word. TF, TAF, TPF, 26 cantoni. Verifica dei riferimenti con IA."/>
+    <Override Locale="en-US" Value="Search and cite 963,000+ Swiss court decisions directly in Word. Federal Supreme Court, all 26 cantons. AI-powered reference verification."/>
+  </Description>
+
   <IconUrl DefaultValue="https://word.opencaselaw.ch/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://word.opencaselaw.ch/assets/icon-80.png"/>
+  <HighResolutionIconUrl DefaultValue="https://word.opencaselaw.ch/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://opencaselaw.ch"/>
+
   <AppDomains>
     <AppDomain>https://mcp.opencaselaw.ch</AppDomain>
+    <AppDomain>https://checkout.stripe.com</AppDomain>
+    <AppDomain>https://api.stripe.com</AppDomain>
+    <AppDomain>https://api.anthropic.com</AppDomain>
   </AppDomains>
+
   <Hosts>
     <Host Name="Document"/>
   </Hosts>
+
   <Requirements>
     <Sets>
       <Set Name="WordApi" MinVersion="1.1"/>
     </Sets>
   </Requirements>
+
   <DefaultSettings>
     <SourceLocation DefaultValue="https://word.opencaselaw.ch/index.html"/>
   </DefaultSettings>
+
   <Permissions>ReadWriteDocument</Permissions>
 </OfficeApp>

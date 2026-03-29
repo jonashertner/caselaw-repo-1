@@ -11,13 +11,26 @@ function _wordAvailable() {
 /** Insert text at the current cursor position without overwriting selection. */
 async function insertTextAtCursor(text) {
   if (!_wordAvailable()) {
-    console.log('Text kopiert: ' + text);
+    // Browser fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      // Fallback for older browsers / restricted contexts
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
     return;
   }
   return Word.run(async function (context) {
-    var range = context.document.getSelection();
-    range.insertText(text, Word.InsertLocation.after);
-    range.select(Word.SelectionMode.end);
+    var sel = context.document.getSelection();
+    sel.insertText(text, 'After');
+    sel.select('End');
     await context.sync();
   });
 }

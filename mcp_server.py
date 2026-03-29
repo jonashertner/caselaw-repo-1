@@ -78,9 +78,9 @@ from mcp.types import TextContent, Tool, ToolAnnotations
 # All tools are read-only (search/lookup, no mutations)
 _READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False)
 
-from fastapi import FastAPI, Query, Path as PathParam, HTTPException
+from fastapi import FastAPI, Query, Path as PathParam, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 
@@ -94,6 +94,21 @@ class MockDecisionRequest(BaseModel):
     clarifications: Optional[list[dict]] = None
     fedlex_urls: Optional[list[str]] = None
     limit: int = 8
+
+
+class VerifyRequest(BaseModel):
+    """Request body for Pro reference verification."""
+    license_key: str
+    selected_text: str = Field(..., max_length=5000)
+    case_ref: str = Field(..., max_length=200)
+    lang: str = "de"
+
+
+class FindSupportRequest(BaseModel):
+    """Request body for finding supporting decisions."""
+    license_key: str
+    statement: str = Field(..., max_length=2000)
+    lang: str = "de"
 
 
 # Add repo root to path so db_schema can be imported when run from any directory
@@ -1208,7 +1223,9 @@ def _search_fts5_inner(
     offset = max(0, offset)
 
     fts_query = query.strip()
-    if not fts_query:
+    # Sanitize apostrophes for FTS5 (French: l'obligation → l obligation)
+    fts_query = fts_query.replace("\u2019", " ").replace("'", " ")
+    if not fts_query.strip():
         # No search query — return recent decisions with filters
         return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset, sort=sort)
 
@@ -9486,6 +9503,7 @@ def main_remote(host: str, port: int):
     from mcp.server.sse import SseServerTransport
     from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
     from starlette.applications import Starlette
+    from starlette.requests import Request
     from starlette.responses import JSONResponse, Response
     from starlette.routing import Mount, Route
     import uvicorn
@@ -10202,6 +10220,32 @@ render();setInterval(render,60000);
             article=article, language=language,
         )
 
+    @rest_api.get("/amendment-ref", tags=["Statutes"],
+                  summary="Resolve AS/BBl reference to Fedlex ELI URI",
+                  description="Maps an AS or BBl page reference to its Fedlex ELI URI.")
+    async def api_amendment_ref(
+        ref_type: str = Query(..., description="Reference type: AS, BBl, RO, RU, FF"),
+        year: int = Query(..., description="Publication year"),
+        page: int = Query(..., description="Page number"),
+    ):
+        def _lookup():
+            import sqlite3
+            _dir = os.environ.get("SWISS_CASELAW_DIR", os.path.expanduser("~/.swiss-caselaw"))
+            db_path = os.path.join(_dir, "statutes.db")
+            try:
+                db = sqlite3.connect(db_path)
+                row = db.execute(
+                    "SELECT eli_uri FROM amendment_refs WHERE ref_type=? AND year=? AND page_num=?",
+                    (ref_type, year, page),
+                ).fetchone()
+                db.close()
+                if row:
+                    return {"eli_uri": row[0], "url": "https://www.fedlex.admin.ch/" + row[0]}
+                return {"eli_uri": None}
+            except Exception:
+                return {"eli_uri": None}
+        return await asyncio.to_thread(_lookup)
+
     # ── Commentary endpoints ───────────────────────────────────
 
     @rest_api.get("/commentaries/search", tags=["Commentaries"],
@@ -10307,7 +10351,244 @@ render();setInterval(render,60000);
             _handle_generate_exam_question, topic=topic, exclude_ids=exclude_list,
         )
 
-    logger.info("REST API mounted at /api with %d routes", len(rest_api.routes))
+    # ── Billing endpoints (Stripe + Pro verify) ─────────────────
+
+    from stripe_billing import (
+        create_checkout_session,
+        handle_webhook,
+        validate_license,
+        increment_usage,
+        verify_reference_pro,
+        get_license_by_session,
+    )
+    @rest_api.post("/billing/portal", tags=["Billing"],
+                   summary="Create Stripe Customer Portal session",
+                   description="Returns a URL where the user can manage their subscription, cancel, or update payment.")
+    async def api_billing_portal(
+        key: str = Query(..., description="License key"),
+    ):
+        from stripe_billing import get_customer_for_license, create_portal_session
+        customer_id = await asyncio.to_thread(get_customer_for_license, key)
+        if not customer_id:
+            return JSONResponse({"error": "License not found"}, status_code=404)
+        result = await asyncio.to_thread(
+            create_portal_session, customer_id, "https://word.opencaselaw.ch/install.html",
+        )
+        if "error" in result:
+            return JSONResponse(result, status_code=500)
+        return result
+
+    @rest_api.post("/billing/checkout", tags=["Billing"],
+                   summary="Create Stripe Checkout session",
+                   description="Returns a Stripe Checkout URL for Pro subscription (CHF 5/month).")
+    async def api_billing_checkout(
+        success_url: str = Query("https://word.opencaselaw.ch/pro-success.html", description="Redirect after payment"),
+        cancel_url: str = Query("https://word.opencaselaw.ch/", description="Redirect on cancel"),
+        locale: str = Query("", description="Stripe checkout locale (de, fr, it, en)"),
+    ):
+        ALLOWED_REDIRECT = "https://word.opencaselaw.ch/"
+        if not success_url.startswith(ALLOWED_REDIRECT) or not cancel_url.startswith(ALLOWED_REDIRECT):
+            return JSONResponse({"error": "Invalid redirect URL"}, status_code=400)
+        result = await asyncio.to_thread(create_checkout_session, success_url, cancel_url, locale)
+        if "error" in result:
+            return JSONResponse(result, status_code=500)
+        return result
+
+    @rest_api.post("/billing/webhook", tags=["Billing"],
+                   summary="Stripe webhook handler",
+                   description="Handles Stripe subscription events. Do not call directly.")
+    async def api_billing_webhook(request: Request):
+        payload = await request.body()
+        sig = request.headers.get("stripe-signature", "")
+        result = await asyncio.to_thread(handle_webhook, payload, sig)
+        status = result.pop("status", 200)
+        return JSONResponse(result, status_code=status)
+
+    @rest_api.get("/billing/validate", tags=["Billing"],
+                  summary="Validate a Pro license key",
+                  description="Check if a license key is valid and active.")
+    async def api_billing_validate(
+        key: str = Query(..., description="License key (ocl_pro_...)"),
+    ):
+        license_info = await asyncio.to_thread(validate_license, key)
+        if not license_info:
+            return JSONResponse({"valid": False}, status_code=200)
+        return {"valid": True, "usage_today": license_info["usage_today"]}
+
+    @rest_api.get("/billing/license-for-session", tags=["Billing"],
+                  summary="Get license key for a completed checkout session",
+                  description="After Stripe Checkout completes, retrieve the license key using the session ID.")
+    async def api_billing_license_for_session(
+        session_id: str = Query(..., description="Stripe Checkout session ID (cs_...)"),
+    ):
+        license_info = await asyncio.to_thread(get_license_by_session, session_id)
+        if not license_info:
+            return JSONResponse({"found": False}, status_code=200)
+        return {"found": True, "license_key": license_info["license_key"], "email": license_info["email"]}
+
+    @rest_api.post("/billing/verify", tags=["Billing"],
+                   summary="Pro reference verification",
+                   description="Server-side reference verification for Pro subscribers. "
+                               "Fetches the case brief and calls Claude to verify the citation.")
+    async def api_billing_verify(req: VerifyRequest):
+        # Validate license
+        license_info = await asyncio.to_thread(validate_license, req.license_key)
+        if not license_info:
+            return JSONResponse({"error": "Invalid or expired license key"}, status_code=401)
+
+        # Check daily usage limit
+        allowed = await asyncio.to_thread(increment_usage, req.license_key)
+        if not allowed:
+            return JSONResponse({"error": "Daily limit reached (25/day)"}, status_code=429)
+
+        # Fetch full decision text (better for Sonnet verification than case brief)
+        resolved_id = _resolve_decision_id(req.case_ref.strip())
+        decision = await asyncio.to_thread(get_decision_by_id, resolved_id)
+        if not decision:
+            return JSONResponse({"error": f"Case not found: {req.case_ref}"}, status_code=404)
+
+        # Build verification context from full text (up to 6000 chars)
+        full_text = decision.get("full_text") or ""
+        regeste = decision.get("regeste") or ""
+        verify_context = {"regeste": regeste, "full_text": full_text[:6000]}
+
+        # Run verification with Sonnet
+        result = await asyncio.to_thread(
+            verify_reference_pro, req.selected_text, verify_context, req.case_ref, req.lang,
+        )
+        if "error" in result:
+            return JSONResponse(result, status_code=500)
+
+        # Attach decision metadata for client navigation
+        result["_decision"] = {
+            "decision_id": decision.get("decision_id", ""),
+            "docket_number": decision.get("docket_number", ""),
+            "court": decision.get("court", ""),
+            "date": decision.get("decision_date", ""),
+        }
+        result["_ref"] = req.case_ref
+        return result
+
+    @rest_api.post("/billing/find-support", tags=["Billing"],
+                   summary="Find decisions supporting a legal statement",
+                   description="AI parses the legal claim, searches for relevant decisions, "
+                               "and scores how well each supports the statement. Pro feature.")
+    async def api_billing_find_support(req: FindSupportRequest):
+        from stripe_billing import parse_legal_statement, score_supporting_results
+
+        # Validate license
+        license_info = await asyncio.to_thread(validate_license, req.license_key)
+        if not license_info:
+            return JSONResponse({"error": "Invalid or expired license key"}, status_code=401)
+
+        # Check daily usage limit
+        allowed = await asyncio.to_thread(increment_usage, req.license_key)
+        if not allowed:
+            return JSONResponse({"error": "Daily limit reached (25/day)"}, status_code=429)
+
+        # Step 1: Parse statement → extract claim + generate search queries
+        parsed = await asyncio.to_thread(parse_legal_statement, req.statement)
+        if "error" in parsed:
+            return JSONResponse(parsed, status_code=500)
+
+        queries = parsed.get("queries", [req.statement])
+        legal_area = parsed.get("legal_area", "")
+        statutes = parsed.get("statutes", [])
+        claim = parsed.get("claim", req.statement)
+
+        # Step 2: Search with generated queries + dedup by normalized docket
+        all_results = []
+        seen_dockets = set()
+        # Always include the original statement as a search query (catches exact phrase matches)
+        all_queries = queries[:3] + [req.statement[:200]]
+        for q in all_queries:
+            results, total = await asyncio.to_thread(
+                search_fts5, query=q, limit=15, offset=0,
+            )
+            for r in results:
+                # Dedup by normalized docket (handles "RBOG 2014 Nr. 8" vs "RBOG 2014 Nr. 08")
+                docket = (r.get("docket_number") or r.get("decision_id", "")).strip()
+                norm = docket.lower().replace(" nr. 0", " nr. ").replace("  ", " ")
+                if norm not in seen_dockets:
+                    seen_dockets.add(norm)
+                    all_results.append(r)
+
+        # Prioritize BGE/Leitentscheide: sort BGEs first, then by citation count
+        all_results.sort(key=lambda r: (
+            -(1 if (r.get("court") or "").startswith("bge") else 0),
+            -(r.get("citation_count") or 0),
+        ))
+
+        if not all_results:
+            return {"statement": req.statement, "claim": claim, "legal_area": legal_area,
+                    "statutes": statutes, "results": []}
+
+        # Step 3: Enrich top candidates with case brief (for better scoring context)
+        for r in all_results[:8]:
+            if r.get("regeste"):
+                continue  # already has summary
+            try:
+                did = r.get("decision_id") or r.get("docket_number", "")
+                brief = _handle_get_case_brief(case=did)
+                if brief and "error" not in brief:
+                    r["regeste"] = brief.get("regeste", "")
+            except Exception:
+                pass
+
+        # Step 4: Score results against the original statement
+        _api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+        scored = await asyncio.to_thread(
+            score_supporting_results, req.statement, all_results[:12], _api_key, req.lang,
+        )
+
+        # Return top 10 supporting results
+        top = [r for r in scored if r.get("_supports", False)][:10]
+        if len(top) < 5:
+            top = scored[:10]  # Fall back to top by relevance
+
+        return {
+            "statement": req.statement,
+            "claim": claim,
+            "legal_area": legal_area,
+            "statutes": statutes,
+            "results": top,
+        }
+
+    @rest_api.get("/billing/admin", tags=["Billing"],
+                  summary="Pro subscriber admin stats (requires dev token)")
+    async def api_billing_admin(
+        token: str = Query(..., description="Dev dashboard token"),
+    ):
+        dev_token = os.environ.get("DEV_DASHBOARD_TOKEN", "")
+        if not token or token != dev_token:
+            return JSONResponse({"error": "Unauthorized"}, status_code=401)
+
+        def _stats():
+            from stripe_billing import _get_db
+            db = _get_db()
+            try:
+                total = db.execute("SELECT COUNT(*) FROM licenses").fetchone()[0]
+                active = db.execute("SELECT COUNT(*) FROM licenses WHERE status='active'").fetchone()[0]
+                cancelled = db.execute("SELECT COUNT(*) FROM licenses WHERE status='cancelled'").fetchone()[0]
+                today_usage = db.execute(
+                    "SELECT license_key, email, usage_today, usage_date FROM licenses WHERE status='active' AND usage_today > 0 ORDER BY usage_today DESC"
+                ).fetchall()
+                subscribers = db.execute(
+                    "SELECT license_key, email, status, created_at, usage_today, usage_date FROM licenses ORDER BY created_at DESC"
+                ).fetchall()
+                return {
+                    "total_licenses": total,
+                    "active": active,
+                    "cancelled": cancelled,
+                    "today_usage": [{"key": r[0][:20]+"...", "email": r[1], "usage": r[2], "date": r[3]} for r in today_usage],
+                    "subscribers": [{"key": r[0][:20]+"...", "email": r[1], "status": r[2], "created": r[3], "usage_today": r[4], "usage_date": r[5]} for r in subscribers],
+                }
+            finally:
+                db.close()
+
+        return await asyncio.to_thread(_stats)
+
+    logger.info("REST API mounted at /api with %d routes (incl. billing)", len(rest_api.routes))
 
     @contextlib.asynccontextmanager
     async def lifespan(app):
