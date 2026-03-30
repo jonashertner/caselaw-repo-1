@@ -89,10 +89,10 @@
     </a>
 
     <div class="steps">
-      <h2>Installation</h2>
+      <h2>Word Online</h2>
       <div class="step">
         <div class="step-num">1</div>
-        <div class="step-text">Open <strong>Word</strong> (Online or Desktop)</div>
+        <div class="step-text">Open <strong>Word Online</strong> (word.new)</div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
@@ -108,8 +108,43 @@
       </div>
     </div>
 
+    <div class="steps">
+      <h2>Word for Mac (persistent)</h2>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Open Finder. Press <strong>Cmd+Shift+G</strong> and go to:<br>
+        <code style="font-size:12px;background:#f4f4f5;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:4px;">~/Library/Containers/com.microsoft.Word/Data/Documents/wef</code></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Copy <strong>OpenCaseLaw.xml</strong> into this folder</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Restart Word. The add-in loads automatically and <strong>persists across sessions</strong>.</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <h2>Word for Windows (persistent)</h2>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Open File Explorer. Navigate to:<br>
+        <code style="font-size:12px;background:#f4f4f5;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:4px;">%APPDATA%\Microsoft\Word\STARTUP\wef</code><br>
+        <span style="font-size:12px;color:#71717a;">(Create the <strong>wef</strong> folder if it doesn't exist)</span></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Copy <strong>OpenCaseLaw.xml</strong> into this folder</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Restart Word. The add-in loads automatically and <strong>persists across sessions</strong>.</div>
+      </div>
+    </div>
+
     <div class="note">
-      This is a beta version pending Microsoft AppSource review. The add-in needs to be re-uploaded each session. Once approved, it will be available permanently from the Office Add-in Store.
+      This is a beta version pending Microsoft AppSource review. The Desktop sideloading methods (Mac/Windows) are persistent — the add-in stays installed across Word sessions. Word Online requires re-upload each session. Once approved on AppSource, installation will be a single click.
     </div>
 
     <div class="footer">
