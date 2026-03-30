@@ -85,9 +85,10 @@
 
     <h2>2. What the add-in does</h2>
     <p>
-      The OpenCaseLaw Word Add-in lets you search Swiss court decisions and insert
-      citations directly into your Word document. An optional Pro feature verifies
-      legal references using AI-assisted analysis.
+      The OpenCaseLaw Word Add-in lets you look up Swiss court decisions and statute
+      articles and insert citations directly into your Word document. Optional Pro
+      features use AI to verify references, find similar decisions, and find
+      supporting decisions.
     </p>
 
     <h2>3. Data we process</h2>
@@ -109,12 +110,13 @@
       </li>
     </ul>
 
-    <h2>4. Reference verification (Pro)</h2>
+    <h2>4. Pro features (AI-assisted)</h2>
     <p>
-      When you use the "Verify reference" feature, your selected text is sent to our server,
-      which forwards it to Anthropic's Claude AI for analysis. The text is processed in real
-      time and is not stored by us or by Anthropic beyond the duration of the API request.
-      Anthropic's data usage policy applies to their processing:
+      When you use the Pro features (Verify reference, Find similar, Find supporting decision,
+      Scan &amp; verify), your selected text is sent to our server, which forwards it to
+      Anthropic's Claude (Sonnet) for analysis. The text is processed in real time and is not
+      stored by us or by Anthropic beyond the duration of the API request. The Scan feature
+      reads the full document text to extract citations. Anthropic's data usage policy applies:
       <a href="https://www.anthropic.com/privacy">anthropic.com/privacy</a>.
     </p>
 
@@ -138,7 +140,7 @@
       The only third-party sub-processor is:
     </p>
     <ul>
-      <li><strong>Anthropic</strong> (Claude AI) &mdash; for Pro reference verification only.</li>
+      <li><strong>Anthropic</strong> (Claude Sonnet) &mdash; for Pro features (verify, find similar, find supporting, scan).</li>
       <li><strong>Stripe</strong> &mdash; for Pro payment processing only.</li>
     </ul>
     <p>No data is sold, shared with advertisers, or used for any purpose beyond providing the service.</p>
