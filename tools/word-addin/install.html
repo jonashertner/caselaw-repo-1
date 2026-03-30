@@ -63,7 +63,7 @@
         title: 'Word Add-in',
         sub: 'Schweizer Gerichtsentscheide und Gesetzesartikel sofort nachschlagen und korrekt zitieren \u2014 direkt in Word. Kostenlos.',
         dl: 'Manifest herunterladen (XML-Datei)',
-        t1: 'Word Online', t2: 'Mac', t3: 'Windows',
+        t1: 'Windows', t2: 'Mac', t3: 'Word Online',
         o: [
           '<strong>Word Online</strong> \u00f6ffnen (z.\u202fB. <a href="https://word.new" target="_blank" style="color:#18181b;">word.new</a>)',
           'Im Men\u00fc: <strong>Einf\u00fcgen</strong> \u2192 <strong>Add-Ins</strong> oder <strong>Office-Add-Ins</strong> \u2192 <strong>Meine Add-Ins</strong> \u2192 <strong>Eigenes Add-In hochladen</strong>',
@@ -90,7 +90,7 @@
         title: 'Add-in Word',
         sub: 'Consultez et citez instantan\u00e9ment les d\u00e9cisions de justice et articles de loi suisses \u2014 directement dans Word. Gratuit.',
         dl: 'T\u00e9l\u00e9charger le manifeste (fichier XML)',
-        t1: 'Word Online', t2: 'Mac', t3: 'Windows',
+        t1: 'Windows', t2: 'Mac', t3: 'Word Online',
         o: [
           'Ouvrir <strong>Word Online</strong> (p.\u202fex. <a href="https://word.new" target="_blank" style="color:#18181b;">word.new</a>)',
           'Dans le menu\u00a0: <strong>Insertion</strong> \u2192 <strong>Compl\u00e9ments</strong> ou <strong>Compl\u00e9ments Office</strong> \u2192 <strong>Mes compl\u00e9ments</strong> \u2192 <strong>Charger mon compl\u00e9ment</strong>',
@@ -117,7 +117,7 @@
         title: 'Add-in per Word',
         sub: 'Consulta e cita istantaneamente le decisioni giudiziarie e gli articoli di legge svizzeri \u2014 direttamente in Word. Gratuito.',
         dl: 'Scarica il manifesto (file XML)',
-        t1: 'Word Online', t2: 'Mac', t3: 'Windows',
+        t1: 'Windows', t2: 'Mac', t3: 'Word Online',
         o: [
           'Aprire <strong>Word Online</strong> (es. <a href="https://word.new" target="_blank" style="color:#18181b;">word.new</a>)',
           'Nel menu: <strong>Inserisci</strong> \u2192 <strong>Componenti aggiuntivi</strong> o <strong>Componenti aggiuntivi di Office</strong> \u2192 <strong>Componenti aggiuntivi personali</strong> \u2192 <strong>Carica componente aggiuntivo</strong>',
@@ -144,7 +144,7 @@
         title: 'Word Add-in',
         sub: 'Instantly look up and cite 963,000+ Swiss court decisions and federal statutes \u2014 directly in Word. Free.',
         dl: 'Download Manifest (XML file)',
-        t1: 'Word Online', t2: 'Mac', t3: 'Windows',
+        t1: 'Windows', t2: 'Mac', t3: 'Word Online',
         o: [
           'Open <strong>Word Online</strong> (e.g. <a href="https://word.new" target="_blank" style="color:#18181b;">word.new</a>)',
           'In the menu: <strong>Insert</strong> \u2192 <strong>Add-ins</strong> or <strong>Office Add-ins</strong> \u2192 <strong>My Add-ins</strong> \u2192 <strong>Upload My Add-in</strong>',
@@ -168,7 +168,7 @@
         note: 'Beta version, pending Microsoft review. Once available in the AppSource Store, installation will be a single click.'
       }
     };
-    var lang = 'de', tab = 'online';
+    var lang = 'de', tab = 'win';
     function S(n, txt) { return '<div class="step"><div class="step-num">'+n+'</div><div class="step-text">'+txt+'</div></div>'; }
     function setLang(l) { lang=l; render(); }
     function setTab(t) { tab=t; render(); }
@@ -180,9 +180,9 @@
       var h='<h1>'+t.title+'</h1><p class="subtitle">'+t.sub+'</p>'+
         '<a class="download-btn" href="https://word.opencaselaw.ch/OpenCaseLaw.xml" download="OpenCaseLaw.xml">'+t.dl+'</a>'+
         '<div class="tabs">'+
-        '<button class="tab'+(tab==='online'?' active':'')+'" onclick="setTab(\'online\')">'+t.t1+'</button>'+
+        '<button class="tab'+(tab==='win'?' active':'')+'" onclick="setTab(\'win\')">'+t.t1+' <span class="persist">'+t.p+'</span></button>'+
         '<button class="tab'+(tab==='mac'?' active':'')+'" onclick="setTab(\'mac\')">'+t.t2+' <span class="persist">'+t.p+'</span></button>'+
-        '<button class="tab'+(tab==='win'?' active':'')+'" onclick="setTab(\'win\')">'+t.t3+' <span class="persist">'+t.p+'</span></button>'+
+        '<button class="tab'+(tab==='online'?' active':'')+'" onclick="setTab(\'online\')">'+t.t3+'</button>'+
         '</div>';
       if(tab==='online') h+=S(1,t.o[0])+S(2,t.o[1])+S(3,t.o[2])+S(4,t.o[3])+'<div class="hint">'+t.oh+'</div>';
       if(tab==='mac') h+=S(1,t.m[0])+S(2,t.m[1]+'<br><code>~/Library/Containers/com.microsoft.Word/Data/Documents/wef</code>')+S(3,t.m[2])+S(4,t.m[3]);
