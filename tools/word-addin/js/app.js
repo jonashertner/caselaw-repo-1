@@ -33,16 +33,18 @@ var state = {
 };
 
 // Pattern to detect law article queries like "Art. 41 OR", "Art. 8 BV", "OR 41", "ZGB 8"
-var LAW_ABBREVS = 'OR|ZGB|StGB|BV|StPO|ZPO|SchKG|AHVG|AIG|AHVV|KVV|BGG|VwVG|ATSG|UVG|BVG|MSchG|URG|PatG|DSG|FINMAG|GwG|BankG|FusG|IPRG|Lug\u00DC|KKG|CO|CC|CP|Cst|Cost|CPP|CPC|LP|LAJ|LAI|LATF|LPA|LPGA|LAA|LPP';
-// Matches: "Art. 41 OR", "Art 8 BV", "OR 41", "BV 8", "StGB 261bis"
-var LAW_PATTERN = new RegExp('(?:Art\\.?\\s*)(\\d+[a-z]?(?:bis|ter|quater)?(?:\\s*(?:Abs|al|cpv)\\.?\\s*\\d+)?)\\s+(' + LAW_ABBREVS + ')', 'i');
-var LAW_PATTERN_REVERSE = new RegExp('^(' + LAW_ABBREVS + ')\\s+(\\d+[a-z]?(?:bis|ter|quater)?)$', 'i');
+var LAW_ABBREVS = 'OR|ZGB|StGB|BV|StPO|ZPO|SchKG|AHVG|AIG|AHVV|KVV|BGG|VwVG|ATSG|UVG|BVG|UWG|KG|MSchG|URG|PatG|DSG|FINMAG|GwG|BankG|FusG|IPRG|Lug\u00DC|KKG|CO|CC|CP|Cst\\.?|Cost\\.?|CPP|CPC|LP|LTF|LCD|LEtr|LDIP|LFus|LCart|LDA|LPM|LBI|LPD|LAJ|LAI|LATF|LPA|LPGA|LAA|LPP';
+// Matches: "Art. 41 OR", "Art 8 BV", "OR 41", "BV 8", "StGB 261bis", "art. 41 CO", "Cst. 8", "art. 2 al. 1 CC"
+var LAW_PATTERN = new RegExp('(?:[Aa]rt\\.?\\s*)(\\d+[a-z]?(?:bis|ter|quater)?(?:\\s*(?:Abs|al|cpv|let|ch|lit)\\.?\\s*\\d*[a-z]?)?)\\s+(' + LAW_ABBREVS + ')', 'i');
+var LAW_PATTERN_REVERSE = new RegExp('^(' + LAW_ABBREVS.replace(/\\\.\?/g, '\\.?') + ')\\s+(\\d+[a-z]?(?:bis|ter|quater)?)$', 'i');
 
 // French/Italian abbreviation → German canonical form for API lookup
 var LAW_ALIAS = {
-  'co': 'OR', 'cc': 'ZGB', 'cp': 'StGB', 'cst': 'BV', 'cost': 'BV',
-  'cpp': 'StPO', 'cpc': 'ZPO', 'lp': 'SchKG', 'laj': 'AHVG',
-  'lai': 'AIG', 'latf': 'BGG', 'lpa': 'VwVG', 'lpga': 'ATSG',
+  'co': 'OR', 'cc': 'ZGB', 'cp': 'StGB', 'cst': 'BV', 'cst.': 'BV', 'cost': 'BV', 'cost.': 'BV',
+  'cpp': 'StPO', 'cpc': 'ZPO', 'lp': 'SchKG', 'ltf': 'BGG', 'lcd': 'UWG', 'lcart': 'KG',
+  'letr': 'AIG', 'ldip': 'IPRG', 'lfus': 'FusG',
+  'lda': 'URG', 'lpm': 'MSchG', 'lbi': 'PatG', 'lpd': 'DSG',
+  'laj': 'AHVG', 'lai': 'AIG', 'latf': 'BGG', 'lpa': 'VwVG', 'lpga': 'ATSG',
   'laa': 'UVG', 'lpp': 'BVG'
 };
 

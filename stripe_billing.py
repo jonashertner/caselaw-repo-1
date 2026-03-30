@@ -96,6 +96,66 @@ def _get_db():
     return db
 
 
+def log_pro_usage(key: str, feature: str):
+    """Log a Pro feature usage for analytics."""
+    db = _get_db()
+    try:
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS pro_usage_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                license_key TEXT NOT NULL,
+                feature TEXT NOT NULL,
+                timestamp TEXT NOT NULL
+            )
+        """)
+        db.execute(
+            "INSERT INTO pro_usage_log (license_key, feature, timestamp) VALUES (?, ?, ?)",
+            (key, feature, datetime.now(timezone.utc).isoformat()),
+        )
+        db.commit()
+    except Exception:
+        pass
+    finally:
+        db.close()
+
+
+def get_pro_usage_stats() -> dict:
+    """Get Pro feature usage stats for admin dashboard."""
+    db = _get_db()
+    try:
+        db.execute("""
+            CREATE TABLE IF NOT EXISTS pro_usage_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                license_key TEXT NOT NULL,
+                feature TEXT NOT NULL,
+                timestamp TEXT NOT NULL
+            )
+        """)
+        # Today's usage by feature
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        today_rows = db.execute(
+            "SELECT feature, COUNT(*) FROM pro_usage_log WHERE timestamp LIKE ? GROUP BY feature ORDER BY COUNT(*) DESC",
+            (today + "%",),
+        ).fetchall()
+        # All-time usage by feature
+        all_rows = db.execute(
+            "SELECT feature, COUNT(*) FROM pro_usage_log GROUP BY feature ORDER BY COUNT(*) DESC",
+        ).fetchall()
+        # Last 10 calls
+        recent = db.execute(
+            "SELECT license_key, feature, timestamp FROM pro_usage_log ORDER BY id DESC LIMIT 10",
+        ).fetchall()
+        return {
+            "today": {r[0]: r[1] for r in today_rows},
+            "all_time": {r[0]: r[1] for r in all_rows},
+            "recent": [{"key": r[0][:20] + "...", "feature": r[1], "time": r[2]} for r in recent],
+        }
+    except Exception:
+        return {"today": {}, "all_time": {}, "recent": []}
+    finally:
+        db.close()
+
+
 def create_license(email: str, stripe_customer: str = "", stripe_sub: str = "") -> str:
     """Create a new license key and store it. Returns the key."""
     key = "ocl_pro_" + secrets.token_hex(20)

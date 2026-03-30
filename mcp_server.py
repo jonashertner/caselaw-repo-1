@@ -10452,6 +10452,7 @@ render();setInterval(render,60000);
                    description="Server-side reference verification for Pro subscribers. "
                                "Fetches the case brief and calls Claude to verify the citation.")
     async def api_billing_verify(req: VerifyRequest):
+        from stripe_billing import log_pro_usage
         # Validate license
         license_info = await asyncio.to_thread(validate_license, req.license_key)
         if not license_info:
@@ -10461,6 +10462,7 @@ render();setInterval(render,60000);
         allowed = await asyncio.to_thread(increment_usage, req.license_key)
         if not allowed:
             return JSONResponse({"error": "Daily limit reached (25/day)"}, status_code=429)
+        await asyncio.to_thread(log_pro_usage, req.license_key, "verify")
 
         # Fetch full decision text (better for Sonnet verification than case brief)
         resolved_id = _resolve_decision_id(req.case_ref.strip())
@@ -10494,7 +10496,7 @@ render();setInterval(render,60000);
                    description="AI parses the legal claim, searches for relevant decisions, "
                                "and scores how well each supports the statement. Pro feature.")
     async def api_billing_find_support(req: FindSupportRequest):
-        from stripe_billing import parse_legal_statement, score_supporting_results
+        from stripe_billing import parse_legal_statement, score_supporting_results, log_pro_usage
 
         # Validate license
         license_info = await asyncio.to_thread(validate_license, req.license_key)
@@ -10505,6 +10507,7 @@ render();setInterval(render,60000);
         allowed = await asyncio.to_thread(increment_usage, req.license_key)
         if not allowed:
             return JSONResponse({"error": "Daily limit reached (25/day)"}, status_code=429)
+        await asyncio.to_thread(log_pro_usage, req.license_key, "find_support")
 
         # Step 1: Parse statement → extract claim + generate search queries
         parsed = await asyncio.to_thread(parse_legal_statement, req.statement)
@@ -10584,7 +10587,7 @@ render();setInterval(render,60000);
             return JSONResponse({"error": "Unauthorized"}, status_code=401)
 
         def _stats():
-            from stripe_billing import _get_db
+            from stripe_billing import _get_db, get_pro_usage_stats
             db = _get_db()
             try:
                 total = db.execute("SELECT COUNT(*) FROM licenses").fetchone()[0]
@@ -10596,15 +10599,17 @@ render();setInterval(render,60000);
                 subscribers = db.execute(
                     "SELECT license_key, email, status, created_at, usage_today, usage_date FROM licenses ORDER BY created_at DESC"
                 ).fetchall()
-                return {
-                    "total_licenses": total,
-                    "active": active,
-                    "cancelled": cancelled,
-                    "today_usage": [{"key": r[0][:20]+"...", "email": r[1], "usage": r[2], "date": r[3]} for r in today_usage],
-                    "subscribers": [{"key": r[0][:20]+"...", "email": r[1], "status": r[2], "created": r[3], "usage_today": r[4], "usage_date": r[5]} for r in subscribers],
-                }
             finally:
                 db.close()
+            feature_stats = get_pro_usage_stats()
+            return {
+                "total_licenses": total,
+                "active": active,
+                "cancelled": cancelled,
+                "today_usage": [{"key": r[0][:20]+"...", "email": r[1], "usage": r[2], "date": r[3]} for r in today_usage],
+                "subscribers": [{"key": r[0][:20]+"...", "email": r[1], "status": r[2], "created": r[3], "usage_today": r[4], "usage_date": r[5]} for r in subscribers],
+                "features": feature_stats,
+            }
 
         return await asyncio.to_thread(_stats)
 
