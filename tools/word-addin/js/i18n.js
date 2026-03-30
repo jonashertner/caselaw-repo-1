@@ -799,6 +799,12 @@ var UI_STRINGS = {
   },
 
   // Errors
+  error_daily_limit: {
+    de: 'Tageslimit erreicht (25 pro Tag). Morgen stehen wieder alle Abfragen zur Verf\u00FCgung.',
+    fr: 'Limite quotidienne atteinte (25 par jour). Toutes les requ\u00EAtes seront \u00E0 nouveau disponibles demain.',
+    it: 'Limite giornaliero raggiunto (25 al giorno). Domani tutte le richieste saranno nuovamente disponibili.',
+    en: 'Daily limit reached (25 per day). All queries will be available again tomorrow.',
+  },
   error_rate_limit: {
     de: 'Zu viele Anfragen.',
     fr: 'Trop de requêtes.',

@@ -1550,6 +1550,7 @@ html, body {
 }
 
 .scan-ok .scan-icon { color: var(--green); }
+.scan-stub .scan-icon { color: var(--text-muted); }
 .scan-missing .scan-icon { color: var(--red); }
 
 .scan-ref { flex: 1; }
@@ -1564,6 +1565,17 @@ html, body {
   font-size: 11px;
   color: var(--text-muted);
   margin-top: 1px;
+}
+
+.scan-link {
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.scan-link:hover {
+  border-bottom-color: var(--text);
 }
 
 .scan-verdict-text {

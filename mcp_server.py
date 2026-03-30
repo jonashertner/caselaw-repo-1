@@ -1157,6 +1157,22 @@ def _get_metrics() -> dict:
 
 # ── Search functions ──────────────────────────────────────────
 
+def _sanitize_fts5(query: str) -> str:
+    """Sanitize a query for FTS5 — remove characters that cause syntax errors."""
+    q = query.strip()
+    # Replace apostrophes (French: l'obligation)
+    q = q.replace("\u2019", " ").replace("'", " ")
+    # Remove bare periods/dots that aren't part of abbreviations (e.g. "Art." is fine, lone "." is not)
+    import re
+    q = re.sub(r'(?<!\w)\.(?!\w)', ' ', q)
+    # Remove other FTS5 problematic characters
+    q = q.replace("(", " ").replace(")", " ").replace("{", " ").replace("}", " ")
+    q = q.replace("[", " ").replace("]", " ").replace("^", " ").replace("~", " ")
+    # Collapse multiple spaces
+    q = re.sub(r'\s+', ' ', q).strip()
+    return q
+
+
 def search_fts5(
     query: str,
     court: str | None = None,
@@ -1222,9 +1238,7 @@ def _search_fts5_inner(
     limit = max(1, min(limit, effective_max))
     offset = max(0, offset)
 
-    fts_query = query.strip()
-    # Sanitize apostrophes for FTS5 (French: l'obligation → l obligation)
-    fts_query = fts_query.replace("\u2019", " ").replace("'", " ")
+    fts_query = _sanitize_fts5(query)
     if not fts_query.strip():
         # No search query — return recent decisions with filters
         return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset, sort=sort)
@@ -7178,7 +7192,10 @@ def search_commentaries(
     limit = min(max(1, limit), 50)
 
     try:
-        # Build FTS5 query with optional filters
+        # Sanitize and build FTS5 query with optional filters
+        query = _sanitize_fts5(query)
+        if not query:
+            return {"query": query, "count": 0, "results": [], "source": "OnlineKommentar.ch (CC-BY-4.0)"}
         conditions = ["commentaries_fts MATCH ?"]
         params: list = [query]
 
@@ -7505,6 +7522,10 @@ def search_laws(
     limit = min(max(1, limit), 50)
 
     try:
+        # Sanitize query for FTS5
+        query = _sanitize_fts5(query)
+        if not query:
+            return {"query": query, "count": 0, "results": []}
         # Build FTS5 query
         if sr_number:
             rows = conn.execute(
@@ -10447,10 +10468,9 @@ render();setInterval(render,60000);
         if not decision:
             return JSONResponse({"error": f"Case not found: {req.case_ref}"}, status_code=404)
 
-        # Build verification context from full text (up to 6000 chars)
+        # Send complete decision text — Sonnet handles large context
         full_text = decision.get("full_text") or ""
-        regeste = decision.get("regeste") or ""
-        verify_context = {"regeste": regeste, "full_text": full_text[:6000]}
+        verify_context = {"full_text": full_text}
 
         # Run verification with Sonnet
         result = await asyncio.to_thread(

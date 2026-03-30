@@ -26,6 +26,7 @@ var state = {
   relatedRef: '',
   relatedResult: null,
   consent: false,
+  previousView: null,
   recentLookups: [],
   scanResults: null,
   scanDocText: '',
@@ -753,6 +754,9 @@ function renderSettings() {
 function renderError() {
   var lang = state.lang;
   if (!state.error) return '';
+  if (state.error.type === 'daily_limit') {
+    return '<div class="state-message">' + escHtml(t('error_daily_limit', lang)) + '</div>';
+  }
   if (state.error.type === 'rate_limit') {
     return '<div class="state-message">' + escHtml(t('error_rate_limit', lang)) + '<br>' +
       escHtml(t('error_rate_wait', lang, { n: state.error.retryAfter })) +
@@ -826,16 +830,25 @@ async function handleAppClick(e) {
       case 'insert-main':  await insertCitation(state.detail); break;
       case 'insert-ew':    await insertCitation(state.detail, btn.dataset.ew); break;
       case 'back':
-        state.view = 'search';
-        state.detail = null;
-        state.caseBrief = null;
-        state.verifyResult = null;
-        state.supportResult = null;
-        state.supportText = '';
-        state.relatedResult = null;
-        state.relatedRef = '';
-        state.scanResults = null;
-        state.error = null;
+        if (state.view === 'detail' && state.previousView) {
+          // Return to the view that opened the detail
+          state.view = state.previousView;
+          state.detail = null;
+          state.caseBrief = null;
+          state.error = null;
+        } else {
+          state.view = 'search';
+          state.detail = null;
+          state.caseBrief = null;
+          state.verifyResult = null;
+          state.supportResult = null;
+          state.supportText = '';
+          state.relatedResult = null;
+          state.relatedRef = '';
+          state.scanResults = null;
+          state.scanDocText = '';
+          state.error = null;
+        }
         render();
         break;
       case 'retry':
@@ -1002,6 +1015,7 @@ async function doQuickInsert(query) {
 }
 
 async function showDetail(decision) {
+  state.previousView = state.view;
   state.view = 'detail';
   state.detail = decision;
   state.caseBrief = null;
@@ -1183,17 +1197,17 @@ async function findRelated() {
       var refs = list
         .map(function (c) { return c.docket_number || c.bge_ref || c.decision_id || ''; })
         .filter(function (r) { return r && r !== 'None'; })
-        .slice(0, 8);
-      var results = await Promise.all(refs.map(function (ref) {
-        return searchDecisions(ref, { limit: 1 }).catch(function () { return { results: [] }; });
-      }));
+        .slice(0, 5);
+      // Sequential to avoid overwhelming the connection
       var enriched = [];
-      for (var i = 0; i < results.length && enriched.length < 5; i++) {
-        var data = results[i];
-        if (data.results && data.results.length > 0) {
-          var d = data.results[0];
-          if (d.regeste || d.title || stripHtml(d.snippet)) enriched.push(d);
-        }
+      for (var i = 0; i < refs.length && enriched.length < 3; i++) {
+        try {
+          var data = await searchDecisions(refs[i], { limit: 1 });
+          if (data.results && data.results.length > 0) {
+            var d = data.results[0];
+            if (d.regeste || d.title || stripHtml(d.snippet)) enriched.push(d);
+          }
+        } catch (e) {}
       }
       return enriched;
     }
@@ -1302,19 +1316,28 @@ async function scanDocument() {
     if (!seen[r]) { seen[r] = true; refs.push(r); }
   }
 
-  // Look up each citation
+  // Look up each citation — verify actual content exists
+  function docketMatch(decision, ref) {
+    if (!decision) return false;
+    var dn = (decision.docket_number || '').trim();
+    var r = ref.trim();
+    return dn === r || dn.replace(/\s+/g, ' ') === r.replace(/\s+/g, ' ');
+  }
   var results = await Promise.all(refs.map(function (ref) {
     return getDecision(ref).then(function (d) {
-      return { ref: ref, found: true, decision: d };
+      if (!d || !docketMatch(d, ref)) return { ref: ref, found: false, hasText: false, decision: null };
+      var hasText = d.regeste || d.full_text || d.title;
+      return { ref: ref, found: true, hasText: !!hasText, decision: d };
     }).catch(function () {
-      // Try search as fallback
       return searchDecisions(ref, { limit: 1 }).then(function (data) {
-        if (data.results && data.results.length > 0) {
-          return { ref: ref, found: true, decision: data.results[0] };
+        if (data.results && data.results.length > 0 && docketMatch(data.results[0], ref)) {
+          var d = data.results[0];
+          var hasText = d.regeste || d.full_text || d.title;
+          return { ref: ref, found: true, hasText: !!hasText, decision: d };
         }
-        return { ref: ref, found: false, decision: null };
+        return { ref: ref, found: false, hasText: false, decision: null };
       }).catch(function () {
-        return { ref: ref, found: false, decision: null };
+        return { ref: ref, found: false, hasText: false, decision: null };
       });
     });
   }));
@@ -1333,7 +1356,7 @@ async function verifyAllScanned() {
 
   for (var i = 0; i < state.scanResults.length; i++) {
     var r = state.scanResults[i];
-    if (!r.found || r.verdict) continue;
+    if (!r.found || !r.hasText || r.verdict) continue;
 
     // Extract context: find the sentence(s) around this reference in the document
     var refIdx = docText.indexOf(r.ref);
@@ -1382,7 +1405,7 @@ function renderScan() {
     var found = results.filter(function (r) { return r.found; }).length;
     var notFound = results.length - found;
 
-    var verifiable = results.filter(function (r) { return r.found; }).length;
+    var verifiable = results.filter(function (r) { return r.found && r.hasText; }).length;
     var verified = results.filter(function (r) { return r.verdict; }).length;
 
     html += '<div class="scan-summary">' +
@@ -1395,10 +1418,13 @@ function renderScan() {
         escHtml(t('scan_verify_all', lang, { n: verifiable })) + '</button>';
     }
 
+    // Store decisions in state.results so detail handler works
+    state.results = results.map(function (r) { return r.decision; }).filter(Boolean);
+
     for (var i = 0; i < results.length; i++) {
       var r = results[i];
-      var statusClass = r.found ? 'scan-ok' : 'scan-missing';
-      var statusIcon = r.found ? '\u2713' : '\u2717';
+      var statusClass = r.found ? (r.hasText ? 'scan-ok' : 'scan-stub') : 'scan-missing';
+      var statusIcon = r.found ? (r.hasText ? '\u2713' : '\u2014') : '\u2717';
 
       // Show verdict if verified
       if (r.verdict) {
@@ -1408,10 +1434,17 @@ function renderScan() {
         statusClass = 'scan-verified';
       }
 
+      // Find index in state.results for detail navigation
+      var resultIdx = r.decision ? state.results.indexOf(r.decision) : -1;
+
       html += '<div class="scan-item ' + statusClass + '">' +
         '<span class="scan-icon"' + (r.verdict ? ' style="color:' + (vColors[r.verdict] || '') + '"' : '') + '>' + statusIcon + '</span>' +
-        '<div class="scan-ref">' +
-          '<div class="scan-ref-name">' + escHtml(r.ref) + '</div>';
+        '<div class="scan-ref">';
+      if (r.found && resultIdx >= 0) {
+        html += '<div class="scan-ref-name"><a class="scan-link" data-action="detail" data-idx="' + resultIdx + '">' + escHtml(r.ref) + '</a></div>';
+      } else {
+        html += '<div class="scan-ref-name">' + escHtml(r.ref) + '</div>';
+      }
       if (r.found && r.decision) {
         var courtName = r.decision.court ? getCourtName(r.decision.court, lang) : '';
         var date = r.decision.decision_date || r.decision.date || '';

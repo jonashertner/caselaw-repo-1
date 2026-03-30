@@ -55,7 +55,8 @@ VERIFY_SYSTEM_PROMPT_TEMPLATE = (
     "the terminology differs, or you are not fully certain — err on the side of 'partial' rather than 'contradicts'. "
     "'contradicts' means the decision EXPRESSLY establishes the opposite principle — use this ONLY when clearly contradicted. "
     "If uncertain, say 'partial' and explain what to check. "
-    "Always note if the user should verify the original text for full accuracy.\n\n"
+    "NEVER claim the text is truncated or broken — you have the complete decision text (marked with [Ende des Entscheids]). "
+    "If a claimed principle is not found, say it was not found in this decision, not that the text is incomplete.\n\n"
     "Respond ONLY in valid JSON. Write the explanation and quote in {lang_name}:\n"
     "{{\n"
     '  "verdict": "supports" or "partial" or "contradicts",\n'
@@ -385,8 +386,9 @@ def verify_reference_pro(
     if not ANTHROPIC_API_KEY:
         return {"error": "Anthropic API not configured on server"}
 
-    # Send full decision text to Sonnet (regeste is already part of full_text for most decisions)
-    brief_text = (case_brief.get("full_text") or case_brief.get("regeste") or "")[:16000]
+    # Send the complete decision text — Sonnet handles up to 200K tokens
+    raw_text = case_brief.get("full_text") or case_brief.get("regeste") or ""
+    brief_text = raw_text + "\n\n[Ende des Entscheids]"
 
     resp = httpx.post(
         "https://api.anthropic.com/v1/messages",
@@ -452,9 +454,9 @@ PARSE_STATEMENT_PROMPT = (
     "}\n\n"
     "IMPORTANT:\n"
     "- Generate queries in the SAME LANGUAGE as the statement\n"
-    "- First query: include the exact statute article (e.g. 'Art. 271 OR Kündigung Treu und Glauben')\n"
-    "- Second query: the most distinctive legal phrase from the statement in quotes for exact match (e.g. '\"begründeter Anlass\" fristlose Entlassung')\n"
-    "- Third query: broader context with key terms (e.g. 'missbräuchliche Kündigung Mietrecht BGE')\n"
+    "- First query: the most distinctive legal phrase in quotes for exact match (e.g. '\"begründeter Anlass\" fristlose Entlassung')\n"
+    "- Second query: include the statute article + key terms (e.g. 'Art. 271 OR Kündigung Treu und Glauben')\n"
+    "- Third query: the core legal concept WITHOUT domain-specific context, to find the principle across different legal areas (e.g. if the statement is about 'Wiederholungsgefahr bei Vertragsverletzung', search for 'Wiederholungsgefahr Zeitpunkt Urteilsfällung Unterlassungsklage' — the principle may originate from a different legal domain)\n"
     "- Use CORRECT statute references (Mietrecht = OR, not ZGB)\n"
     "- Prefer queries that will find BGE Leitentscheide"
 )

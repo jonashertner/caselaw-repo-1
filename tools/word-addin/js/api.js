@@ -144,6 +144,11 @@ async function _apiPostOnce(path, body) {
   }
   var resp = await fetch(url, opts);
   if (resp.status === 429) {
+    var limitData = {};
+    try { limitData = await resp.json(); } catch (e) {}
+    if (limitData.error && limitData.error.indexOf('Daily') >= 0) {
+      throw { type: 'daily_limit', message: limitData.error };
+    }
     throw { type: 'rate_limit', retryAfter: parseInt(resp.headers.get('Retry-After') || '30', 10) };
   }
   if (resp.status === 401) {
