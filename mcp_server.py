@@ -68,7 +68,7 @@ import threading
 import time
 import unicodedata
 import html as html_lib
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from mcp.server import Server
@@ -1055,24 +1055,261 @@ _RESEARCH_LOG_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / "
 _research_log_lock = threading.Lock()
 _METRICS_HISTORY = _RESEARCH_LOG_DIR / "daily_metrics.jsonl"
 
+# ── Persistent metrics (SQLite) ──────────────────────────────
+# Stores true deltas per day so lifetime totals survive restarts.
+_METRICS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / ".swiss-caselaw"))) / "metrics.db"
+_metrics_db_lock = threading.Lock()
+
+# Track last-flushed state to compute deltas
+_last_flushed: dict = {
+    "tool_calls": collections.Counter(),
+    "tool_errors": collections.Counter(),
+    "clients": collections.Counter(),
+    "sessions": 0,
+    "haiku_rerank_fired": 0,
+    "haiku_rerank_skipped": 0,
+    "haiku_rerank_changed_top": 0,
+    "search_total": 0,
+    "search_followups": 0,
+}
+
+
+def _init_metrics_db():
+    """Create persistent metrics tables if they don't exist."""
+    try:
+        conn = sqlite3.connect(str(_METRICS_DB_PATH), timeout=5)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=3000")
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS daily_tools (
+                date TEXT NOT NULL,
+                tool TEXT NOT NULL,
+                calls INTEGER NOT NULL DEFAULT 0,
+                errors INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (date, tool)
+            );
+            CREATE TABLE IF NOT EXISTS daily_clients (
+                date TEXT NOT NULL,
+                client TEXT NOT NULL,
+                sessions INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (date, client)
+            );
+            CREATE TABLE IF NOT EXISTS daily_summary (
+                date TEXT PRIMARY KEY,
+                sessions INTEGER NOT NULL DEFAULT 0,
+                haiku_fired INTEGER NOT NULL DEFAULT 0,
+                haiku_skipped INTEGER NOT NULL DEFAULT 0,
+                haiku_changed_top INTEGER NOT NULL DEFAULT 0,
+                search_total INTEGER NOT NULL DEFAULT 0,
+                search_followups INTEGER NOT NULL DEFAULT 0
+            );
+            CREATE TABLE IF NOT EXISTS daily_queries (
+                date TEXT NOT NULL,
+                query TEXT NOT NULL,
+                count INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (date, query)
+            );
+        """)
+        conn.close()
+    except Exception as e:
+        logger.warning("metrics db init failed: %s", e)
+
 
 def _flush_metrics_to_disk():
-    """Append current metrics snapshot to persistent daily log.
-    Called periodically so data survives worker restarts."""
+    """Compute deltas since last flush and write to SQLite + JSONL."""
+    global _last_flushed
     try:
         _RESEARCH_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+        # ── Compute deltas ──
+        delta_tools = {}
+        for tool, count in _metrics["tool_calls"].items():
+            prev = _last_flushed["tool_calls"].get(tool, 0)
+            d_calls = count - prev
+            d_errors = _metrics["tool_errors"].get(tool, 0) - _last_flushed["tool_errors"].get(tool, 0)
+            if d_calls > 0 or d_errors > 0:
+                delta_tools[tool] = {"calls": max(d_calls, 0), "errors": max(d_errors, 0)}
+
+        delta_clients = {}
+        for client, count in _metrics["clients"].items():
+            prev = _last_flushed["clients"].get(client, 0)
+            d = count - prev
+            if d > 0:
+                delta_clients[client] = d
+
+        d_sessions = _metrics["sessions"] - _last_flushed["sessions"]
+        d_haiku_fired = _metrics["haiku_rerank_fired"] - _last_flushed["haiku_rerank_fired"]
+        d_haiku_skipped = _metrics["haiku_rerank_skipped"] - _last_flushed["haiku_rerank_skipped"]
+        d_haiku_changed = _metrics["haiku_rerank_changed_top"] - _last_flushed["haiku_rerank_changed_top"]
+        d_search_total = _metrics["search_total"] - _last_flushed["search_total"]
+        d_search_followups = _metrics["search_followups"] - _last_flushed["search_followups"]
+
+        # ── Update last_flushed to current state ──
+        _last_flushed = {
+            "tool_calls": collections.Counter(_metrics["tool_calls"]),
+            "tool_errors": collections.Counter(_metrics["tool_errors"]),
+            "clients": collections.Counter(_metrics["clients"]),
+            "sessions": _metrics["sessions"],
+            "haiku_rerank_fired": _metrics["haiku_rerank_fired"],
+            "haiku_rerank_skipped": _metrics["haiku_rerank_skipped"],
+            "haiku_rerank_changed_top": _metrics["haiku_rerank_changed_top"],
+            "search_total": _metrics["search_total"],
+            "search_followups": _metrics["search_followups"],
+        }
+
+        # ── Write deltas to SQLite ──
+        with _metrics_db_lock:
+            conn = sqlite3.connect(str(_METRICS_DB_PATH), timeout=5)
+            conn.execute("PRAGMA busy_timeout=3000")
+            try:
+                for tool, stats in delta_tools.items():
+                    conn.execute(
+                        "INSERT INTO daily_tools (date, tool, calls, errors) VALUES (?, ?, ?, ?) "
+                        "ON CONFLICT(date, tool) DO UPDATE SET calls = calls + ?, errors = errors + ?",
+                        (today, tool, stats["calls"], stats["errors"], stats["calls"], stats["errors"]),
+                    )
+                for client, count in delta_clients.items():
+                    conn.execute(
+                        "INSERT INTO daily_clients (date, client, sessions) VALUES (?, ?, ?) "
+                        "ON CONFLICT(date, client) DO UPDATE SET sessions = sessions + ?",
+                        (today, client, count, count),
+                    )
+                if d_sessions > 0 or d_haiku_fired > 0:
+                    conn.execute(
+                        "INSERT INTO daily_summary (date, sessions, haiku_fired, haiku_skipped, haiku_changed_top, search_total, search_followups) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?) "
+                        "ON CONFLICT(date) DO UPDATE SET "
+                        "sessions = sessions + ?, haiku_fired = haiku_fired + ?, "
+                        "haiku_skipped = haiku_skipped + ?, haiku_changed_top = haiku_changed_top + ?, "
+                        "search_total = search_total + ?, search_followups = search_followups + ?",
+                        (today, max(d_sessions, 0), max(d_haiku_fired, 0), max(d_haiku_skipped, 0),
+                         max(d_haiku_changed, 0), max(d_search_total, 0), max(d_search_followups, 0),
+                         max(d_sessions, 0), max(d_haiku_fired, 0), max(d_haiku_skipped, 0),
+                         max(d_haiku_changed, 0), max(d_search_total, 0), max(d_search_followups, 0)),
+                    )
+                # Top queries (from recent_queries buffer)
+                query_counter = collections.Counter(_metrics["recent_queries"])
+                for q, n in query_counter.most_common(50):
+                    conn.execute(
+                        "INSERT INTO daily_queries (date, query, count) VALUES (?, ?, ?) "
+                        "ON CONFLICT(date, query) DO UPDATE SET count = MAX(count, ?)",
+                        (today, q, n, n),
+                    )
+                conn.commit()
+            finally:
+                conn.close()
+
+        # ── Also append to JSONL for backward compat ──
         snapshot = _get_metrics()
         snapshot["flushed_at"] = datetime.now(timezone.utc).isoformat()
         snapshot["type"] = "periodic_flush"
         with _research_log_lock:
             with open(_METRICS_HISTORY, "a") as f:
                 f.write(json.dumps(snapshot, ensure_ascii=False) + "\n")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("metrics flush failed: %s", e)
+
+
+def _get_lifetime_metrics(range_param: str = "all") -> dict:
+    """Read lifetime metrics from SQLite. Accurate across restarts."""
+    try:
+        if not _METRICS_DB_PATH.exists():
+            return {"error": "No persistent metrics yet"}
+
+        now = datetime.now(timezone.utc)
+        cutoffs = {
+            "1d": 1, "7d": 7, "30d": 30, "90d": 90, "365d": 365, "all": 0,
+        }
+        days = cutoffs.get(range_param, 0)
+        if days:
+            cutoff_date = (now - timedelta(days=days)).strftime("%Y-%m-%d")
+            date_clause = "WHERE date >= ?"
+            date_params: tuple = (cutoff_date,)
+        else:
+            date_clause = ""
+            date_params = ()
+
+        conn = sqlite3.connect(f"file:{_METRICS_DB_PATH}?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+
+        # Tool stats
+        tools = {}
+        for row in conn.execute(
+            f"SELECT tool, SUM(calls) as calls, SUM(errors) as errors "
+            f"FROM daily_tools {date_clause} GROUP BY tool ORDER BY SUM(calls) DESC", date_params
+        ):
+            tools[row["tool"]] = {"calls": row["calls"], "errors": row["errors"], "avg_ms": 0}
+
+        # Client stats
+        clients = {}
+        for row in conn.execute(
+            f"SELECT client, SUM(sessions) as sessions FROM daily_clients {date_clause} GROUP BY client ORDER BY SUM(sessions) DESC", date_params
+        ):
+            clients[row["client"]] = row["sessions"]
+
+        # Summary
+        summary = conn.execute(
+            f"SELECT SUM(sessions) as sessions, SUM(haiku_fired) as hf, SUM(haiku_skipped) as hs, "
+            f"SUM(haiku_changed_top) as hc, SUM(search_total) as st, SUM(search_followups) as sf "
+            f"FROM daily_summary {date_clause}", date_params
+        ).fetchone()
+
+        sessions = summary["sessions"] or 0
+        total_calls = sum(t["calls"] for t in tools.values())
+        st = summary["st"] or 0
+        sf = summary["sf"] or 0
+
+        # Date range
+        date_range = conn.execute(
+            f"SELECT MIN(date) as first, MAX(date) as last, COUNT(DISTINCT date) as days FROM daily_summary {date_clause}", date_params
+        ).fetchone()
+
+        # Top queries (across all days in range)
+        top_queries = []
+        for row in conn.execute(
+            f"SELECT query, SUM(count) as total FROM daily_queries {date_clause} GROUP BY query ORDER BY total DESC LIMIT 20", date_params
+        ):
+            top_queries.append({"query": row["query"], "count": row["total"]})
+
+        # Daily breakdown
+        daily = []
+        for row in conn.execute(
+            f"SELECT date, sessions, haiku_fired, search_total FROM daily_summary {date_clause} ORDER BY date", date_params
+        ):
+            daily.append({"date": row["date"], "sessions": row["sessions"],
+                          "searches": row["search_total"], "haiku_fired": row["haiku_fired"]})
+
+        conn.close()
+
+        return {
+            "period": {
+                "from": date_range["first"] or "",
+                "to": date_range["last"] or "",
+                "days": date_range["days"] or 0,
+                "range": range_param,
+            },
+            "sessions": sessions,
+            "total_tool_calls": total_calls,
+            "calls_per_session": round(total_calls / max(sessions, 1), 1),
+            "followup_rate": round(sf / max(st, 1) * 100),
+            "clients": clients,
+            "tools": tools,
+            "haiku_rerank": {
+                "fired": summary["hf"] or 0,
+                "skipped": summary["hs"] or 0,
+                "changed_top": summary["hc"] or 0,
+            },
+            "top_queries": top_queries,
+            "daily": daily,
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 
 def _start_metrics_flusher():
     """Start background thread that flushes metrics every 10 minutes."""
+    _init_metrics_db()
     def _flusher():
         while True:
             time.sleep(600)  # 10 min
@@ -9830,80 +10067,11 @@ render();setInterval(render,60000);
         return JSONResponse(_get_metrics())
 
     async def handle_metrics_history(request):
-        """Return aggregated metrics from persistent daily log (survives restarts)."""
+        """Return accurate lifetime metrics from persistent SQLite store."""
         try:
             range_param = request.query_params.get("range", "all")
-            # Compute cutoff time
-            now = datetime.now(timezone.utc)
-            cutoffs = {
-                "1d": 86400, "7d": 604800, "30d": 2592000,
-                "90d": 7776000, "365d": 31536000, "all": 0,
-            }
-            cutoff_secs = cutoffs.get(range_param, 0)
-
-            entries = []
-            if _METRICS_HISTORY.exists():
-                with open(_METRICS_HISTORY) as f:
-                    for line in f:
-                        try:
-                            e = json.loads(line)
-                            if cutoff_secs:
-                                ts = e.get("flushed_at", "")
-                                if ts:
-                                    age = (now - datetime.fromisoformat(ts)).total_seconds()
-                                    if age > cutoff_secs:
-                                        continue
-                            entries.append(e)
-                        except (json.JSONDecodeError, ValueError):
-                            pass
-            if not entries:
-                return JSONResponse({"error": "No data for this range", "range": range_param})
-
-            # Aggregate all flush snapshots
-            combined_tools = {}
-            combined_clients = {}
-            total_sessions = 0
-            total_followup = 0
-            total_search = 0
-            haiku = {"fired": 0, "skipped": 0, "changed_top": 0}
-            all_zero = []
-
-            for e in entries:
-                for tool, stats in e.get("tools", {}).items():
-                    if tool not in combined_tools:
-                        combined_tools[tool] = {"calls": 0, "errors": 0, "_latencies": []}
-                    combined_tools[tool]["calls"] += stats.get("calls", 0)
-                    combined_tools[tool]["errors"] += stats.get("errors", 0)
-                for client, count in e.get("clients", {}).items():
-                    combined_clients[client] = combined_clients.get(client, 0) + count
-                total_sessions += e.get("sessions", 0)
-                total_followup += e.get("_search_followups", e.get("followup_rate", 0))
-                for k in ("fired", "skipped", "changed_top"):
-                    haiku[k] += e.get("haiku_rerank", {}).get(k, 0)
-                all_zero.extend(e.get("zero_result_queries", []))
-
-            # Compute tool stats
-            for tool in combined_tools.values():
-                tool.pop("_latencies", None)
-                tool["avg_ms"] = 0  # can't compute from snapshots
-
-            # Dedup zero results
-            from collections import Counter as _C
-            zc = _C()
-            for z in all_zero:
-                zc[z.get("query", "")] += z.get("count", 1)
-
-            first = entries[0].get("flushed_at", entries[0].get("uptime_since", ""))
-            last = entries[-1].get("flushed_at", "")
-
-            return JSONResponse({
-                "period": {"from": first, "to": last, "snapshots": len(entries), "range": range_param},
-                "sessions": total_sessions,
-                "clients": combined_clients,
-                "tools": combined_tools,
-                "haiku_rerank": haiku,
-                "zero_result_queries": [{"query": q, "count": n} for q, n in zc.most_common(30)],
-            })
+            result = _get_lifetime_metrics(range_param)
+            return JSONResponse(result)
         except Exception as e:
             return JSONResponse({"error": str(e)}, status_code=500)
 
