@@ -10057,6 +10057,9 @@ render();setInterval(render,60000);
                             tool = endpoint
                         if tool:
                             _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
+                            # Track word-addin client
+                            if request.headers.get("x-client") == "word-addin":
+                                _record_tool_call("word-addin:" + tool, (time.monotonic() - t0) * 1000, error=err)
 
     rest_api = FastAPI(
         title="OpenCaseLaw API",

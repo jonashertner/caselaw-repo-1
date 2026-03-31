@@ -159,14 +159,13 @@ def _render_decision(row: sqlite3.Row) -> str:
             if para:
                 regeste_html += f"<p>{_esc(para)}</p>\n"
 
-    # Full text excerpt (first 2000 chars for SEO, not full text)
+    # Full decision text
     text_excerpt = ""
     if full_text:
-        excerpt = _truncate(full_text, 2000)
         text_excerpt = f"""
-        <details>
-            <summary>Volltext (Auszug)</summary>
-            <div class="fulltext">{_esc(excerpt)}</div>
+        <details open>
+            <summary>Volltext</summary>
+            <div class="fulltext">{_esc(full_text)}</div>
         </details>"""
 
     return f"""<!DOCTYPE html>

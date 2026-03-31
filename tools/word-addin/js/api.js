@@ -6,15 +6,6 @@
 const API_BASE = 'https://mcp.opencaselaw.ch/api';
 
 async function apiFetch(path, params) {
-  return _apiFetchOnce(path, params).catch(function (e) {
-    if (e.type === 'rate_limit' || e.type === 'http_error') throw e;
-    // Network error — retry once after 1s
-    return new Promise(function (resolve) { setTimeout(resolve, 1000); })
-      .then(function () { return _apiFetchOnce(path, params); });
-  });
-}
-
-async function _apiFetchOnce(path, params) {
   params = params || {};
   var url = new URL(API_BASE + path);
   Object.keys(params).forEach(function (k) {
@@ -91,18 +82,9 @@ async function getDoctrine(query) {
 
 // ── Billing / Pro ───────────────────────────────────────────
 
-async function findCitations(decisionId, direction, limit) {
-  return apiFetch('/citations/' + encodeURIComponent(decisionId), {
-    direction: direction || 'both',
-    limit: limit || 10,
-  });
-}
-
-async function createCheckout(successUrl, cancelUrl, locale) {
-  var params = 'success_url=' + encodeURIComponent(successUrl) +
-    '&cancel_url=' + encodeURIComponent(cancelUrl);
-  if (locale) params += '&locale=' + encodeURIComponent(locale);
-  return apiPost('/billing/checkout?' + params);
+async function createCheckout(successUrl, cancelUrl) {
+  return apiPost('/billing/checkout?success_url=' + encodeURIComponent(successUrl) +
+    '&cancel_url=' + encodeURIComponent(cancelUrl));
 }
 
 async function validateLicense(key) {
@@ -118,24 +100,7 @@ async function verifyReferencePro(licenseKey, selectedText, caseRef, lang) {
   });
 }
 
-async function findSupportingDecisions(licenseKey, statement, lang) {
-  return apiPost('/billing/find-support', {
-    license_key: licenseKey,
-    statement: statement,
-    lang: lang || 'de',
-  });
-}
-
 async function apiPost(path, body) {
-  return _apiPostOnce(path, body).catch(function (e) {
-    if (e.type === 'rate_limit' || e.type === 'invalid_license' || e.type === 'http_error') throw e;
-    // Network error — retry once after 2s
-    return new Promise(function (resolve) { setTimeout(resolve, 2000); })
-      .then(function () { return _apiPostOnce(path, body); });
-  });
-}
-
-async function _apiPostOnce(path, body) {
   var url = API_BASE + path;
   var opts = { method: 'POST' };
   if (body) {
@@ -144,11 +109,6 @@ async function _apiPostOnce(path, body) {
   }
   var resp = await fetch(url, opts);
   if (resp.status === 429) {
-    var limitData = {};
-    try { limitData = await resp.json(); } catch (e) {}
-    if (limitData.error && limitData.error.indexOf('Daily') >= 0) {
-      throw { type: 'daily_limit', message: limitData.error };
-    }
     throw { type: 'rate_limit', retryAfter: parseInt(resp.headers.get('Retry-After') || '30', 10) };
   }
   if (resp.status === 401) {
