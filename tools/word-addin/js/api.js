@@ -13,7 +13,7 @@ async function apiFetch(path, params) {
     if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
   });
 
-  var resp = await fetch(url.toString());
+  var resp = await fetch(url.toString(), { headers: { 'X-Client': 'word-addin' } });
 
   if (resp.status === 429) {
     var retryAfter = parseInt(resp.headers.get('Retry-After') || '30', 10);
@@ -102,9 +102,9 @@ async function verifyReferencePro(licenseKey, selectedText, caseRef, lang) {
 
 async function apiPost(path, body) {
   var url = API_BASE + path;
-  var opts = { method: 'POST' };
+  var opts = { method: 'POST', headers: { 'X-Client': 'word-addin' } };
   if (body) {
-    opts.headers = { 'Content-Type': 'application/json' };
+    opts.headers['Content-Type'] = 'application/json';
     opts.body = JSON.stringify(body);
   }
   var resp = await fetch(url, opts);
