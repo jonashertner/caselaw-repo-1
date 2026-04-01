@@ -95,44 +95,38 @@ DB_PATH = OUTPUT_DIR / "decisions.db"
 HF_REPO_ID = "voilaj/swiss-caselaw"
 
 
-def _count_jsonl_decisions() -> int:
-    """Count total decisions across all JSONL source files."""
-    import glob
-    total = 0
-    jsonl_dir = OUTPUT_DIR / "decisions"
-    if not jsonl_dir.exists():
-        return 0
-    for path in jsonl_dir.glob("*.jsonl"):
-        with open(path) as f:
-            for _ in f:
-                total += 1
-    return total
+def _check_should_rebuild() -> tuple[bool, int]:
+    """Check if a rebuild is needed by comparing JSONL modification times.
 
+    Compares newest JSONL mtime against last successful publish timestamp
+    stored in stats.json. If any JSONL file was modified after the last
+    publish, new decisions exist and a rebuild is needed.
 
-def _count_db_decisions() -> int:
-    """Count decisions in the current FTS5 database."""
-    import sqlite3
-    if not DB_PATH.exists():
-        return 0
-    try:
-        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
-        n = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
-        conn.close()
-        return n
-    except Exception:
-        return 0
-
-
-def _check_should_rebuild() -> tuple[bool, int, int]:
-    """Check if a rebuild is needed by comparing JSONL count vs DB count.
-
-    Returns (should_rebuild, jsonl_count, db_count).
-    Skips rebuild only when counts match exactly (zero new decisions).
+    Returns (should_rebuild, new_file_count).
     """
-    db_count = _count_db_decisions()
-    jsonl_count = _count_jsonl_decisions()
-    delta = jsonl_count - db_count
-    return delta != 0, jsonl_count, db_count
+    stats_path = DOCS_DIR / "stats.json"
+    jsonl_dir = OUTPUT_DIR / "decisions"
+
+    if not stats_path.exists() or not jsonl_dir.exists():
+        return True, 0  # first run or missing data — always rebuild
+
+    try:
+        stats = json.loads(stats_path.read_text())
+        last_publish = stats.get("generated_at", "")
+        if not last_publish:
+            return True, 0
+        from datetime import datetime as _dt
+        last_ts = _dt.fromisoformat(last_publish).timestamp()
+    except Exception:
+        return True, 0
+
+    # Check if any JSONL was modified after last publish
+    modified = 0
+    for path in jsonl_dir.glob("*.jsonl"):
+        if path.stat().st_mtime > last_ts:
+            modified += 1
+
+    return modified > 0, modified
 
 
 def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: int = 3600) -> bool:
@@ -495,15 +489,14 @@ def main():
     skip_heavy = False
     HEAVY_STEPS = {2, "2d", "2b", "2c", 3, 4}
     if not args.step and not args.full_rebuild:
-        should_rebuild, jsonl_count, db_count = _check_should_rebuild()
-        delta = jsonl_count - db_count
+        should_rebuild, modified_files = _check_should_rebuild()
         if not should_rebuild:
-            logger.info(f"  No new decisions (JSONL={jsonl_count:,}, DB={db_count:,}) — skipping heavy steps")
+            logger.info(f"  No JSONL files modified since last publish — skipping heavy steps")
             logger.info(f"  Will only run: stats + git push")
             skip_heavy = True
-            _notify("Publish skipped", f"No new decisions ({db_count:,} in DB)", priority="low")
+            _notify("Publish skipped", "No new decisions since last publish", priority="low")
         else:
-            logger.info(f"  {delta:+,} new decisions (JSONL={jsonl_count:,}, DB={db_count:,}) — full rebuild")
+            logger.info(f"  {modified_files} JSONL file(s) modified since last publish — full rebuild")
 
     results = {}
     start = time.time()
