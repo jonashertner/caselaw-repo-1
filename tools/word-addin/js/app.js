@@ -966,6 +966,10 @@ async function handleAppClick(e) {
           contLinks.forEach(function(el) { el.remove(); });
         }
         break;
+      case 'open-external':
+        var extUrl = btn.dataset.url;
+        if (extUrl) openExternal(extUrl);
+        break;
       case 'clear-search':
         state.query = '';
         state.results = [];
