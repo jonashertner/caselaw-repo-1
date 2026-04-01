@@ -95,6 +95,46 @@ DB_PATH = OUTPUT_DIR / "decisions.db"
 HF_REPO_ID = "voilaj/swiss-caselaw"
 
 
+def _count_jsonl_decisions() -> int:
+    """Count total decisions across all JSONL source files."""
+    import glob
+    total = 0
+    jsonl_dir = OUTPUT_DIR / "decisions"
+    if not jsonl_dir.exists():
+        return 0
+    for path in jsonl_dir.glob("*.jsonl"):
+        with open(path) as f:
+            for _ in f:
+                total += 1
+    return total
+
+
+def _count_db_decisions() -> int:
+    """Count decisions in the current FTS5 database."""
+    import sqlite3
+    if not DB_PATH.exists():
+        return 0
+    try:
+        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+        n = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+        conn.close()
+        return n
+    except Exception:
+        return 0
+
+
+def _check_should_rebuild() -> tuple[bool, int, int]:
+    """Check if a rebuild is needed by comparing JSONL count vs DB count.
+
+    Returns (should_rebuild, jsonl_count, db_count).
+    Skips rebuild only when counts match exactly (zero new decisions).
+    """
+    db_count = _count_db_decisions()
+    jsonl_count = _count_jsonl_decisions()
+    delta = jsonl_count - db_count
+    return delta != 0, jsonl_count, db_count
+
+
 def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: int = 3600) -> bool:
     """Run a command, return True on success.
 
@@ -451,6 +491,20 @@ def main():
     if args.dry_run:
         logger.info("DRY RUN — no changes will be made")
 
+    # ── Skip-if-unchanged: avoid 5h rebuild when scrapers found nothing ──
+    skip_heavy = False
+    HEAVY_STEPS = {2, "2d", "2b", "2c", 3, 4}
+    if not args.step and not args.full_rebuild:
+        should_rebuild, jsonl_count, db_count = _check_should_rebuild()
+        delta = jsonl_count - db_count
+        if not should_rebuild:
+            logger.info(f"  No new decisions (JSONL={jsonl_count:,}, DB={db_count:,}) — skipping heavy steps")
+            logger.info(f"  Will only run: stats + git push")
+            skip_heavy = True
+            _notify("Publish skipped", f"No new decisions ({db_count:,} in DB)", priority="low")
+        else:
+            logger.info(f"  {delta:+,} new decisions (JSONL={jsonl_count:,}, DB={db_count:,}) — full rebuild")
+
     results = {}
     start = time.time()
     manual_step_mode = args.step is not None
@@ -482,6 +536,11 @@ def main():
         # Step 1 (ingest) is opt-in: skip unless --ingest or --step 1
         if num == 1 and not args.ingest and not manual_step_mode:
             logger.info(f"  Step {num} ({name}): SKIPPED (use --ingest to enable)")
+            results[num] = True
+            continue
+        # Skip heavy steps when no new decisions (skip-if-unchanged)
+        if skip_heavy and num in HEAVY_STEPS:
+            logger.info(f"  Step {num} ({name}): SKIPPED (no new decisions)")
             results[num] = True
             continue
         # Skip guarded steps if a critical step failed (unless running single step)
