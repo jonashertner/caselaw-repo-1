@@ -96,37 +96,26 @@ HF_REPO_ID = "voilaj/swiss-caselaw"
 
 
 def _check_should_rebuild() -> tuple[bool, int]:
-    """Check if a rebuild is needed by comparing JSONL modification times.
+    """Check if a rebuild is needed using scraper health report.
 
-    Compares newest JSONL mtime against last successful publish timestamp
-    stored in stats.json. If any JSONL file was modified after the last
-    publish, new decisions exist and a rebuild is needed.
+    Reads logs/scraper_health.json which the daily scraper writes with
+    an accurate count of new decisions found per scraper. If total is 0,
+    no rebuild is needed.
 
-    Returns (should_rebuild, new_file_count).
+    Returns (should_rebuild, new_decision_count).
     """
-    stats_path = DOCS_DIR / "stats.json"
-    jsonl_dir = OUTPUT_DIR / "decisions"
+    health_path = REPO_DIR / "logs" / "scraper_health.json"
 
-    if not stats_path.exists() or not jsonl_dir.exists():
-        return True, 0  # first run or missing data — always rebuild
+    if not health_path.exists():
+        return True, 0  # no health report — always rebuild
 
     try:
-        stats = json.loads(stats_path.read_text())
-        last_publish = stats.get("generated_at", "")
-        if not last_publish:
-            return True, 0
-        from datetime import datetime as _dt
-        last_ts = _dt.fromisoformat(last_publish).timestamp()
+        data = json.loads(health_path.read_text())
+        scrapers = data.get("scrapers", {})
+        new_total = sum(v.get("new_decisions", 0) for v in scrapers.values())
+        return new_total > 0, new_total
     except Exception:
-        return True, 0
-
-    # Check if any JSONL was modified after last publish
-    modified = 0
-    for path in jsonl_dir.glob("*.jsonl"):
-        if path.stat().st_mtime > last_ts:
-            modified += 1
-
-    return modified > 0, modified
+        return True, 0  # can't read — be safe, rebuild
 
 
 def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: int = 3600) -> bool:
@@ -489,14 +478,14 @@ def main():
     skip_heavy = False
     HEAVY_STEPS = {2, "2d", "2b", "2c", 3, 4}
     if not args.step and not args.full_rebuild:
-        should_rebuild, modified_files = _check_should_rebuild()
+        should_rebuild, new_count = _check_should_rebuild()
         if not should_rebuild:
-            logger.info(f"  No JSONL files modified since last publish — skipping heavy steps")
+            logger.info(f"  Scrapers found 0 new decisions — skipping heavy steps")
             logger.info(f"  Will only run: stats + git push")
             skip_heavy = True
-            _notify("Publish skipped", "No new decisions since last publish", priority="low")
+            _notify("Publish skipped", "Scrapers found 0 new decisions", priority="low")
         else:
-            logger.info(f"  {modified_files} JSONL file(s) modified since last publish — full rebuild")
+            logger.info(f"  Scrapers found {new_count:,} new decision(s) — full rebuild")
 
     results = {}
     start = time.time()
