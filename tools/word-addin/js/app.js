@@ -405,6 +405,7 @@ function renderDetail() {
     html += '<a class="source-link" href="' + escHtml(d.source_url) + '" target="_blank">' + escHtml(t('source_link', lang)) + ' \u2192</a>';
   }
 
+  // ── Regeste ──
   if (d.regeste) {
     var needsCollapse = d.regeste.length > 300;
     html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_regeste', lang)) + '</div>' +
@@ -413,6 +414,16 @@ function renderDetail() {
       '</div>';
   }
 
+  // ── Sachverhalt (from case brief) ──
+  if (cb && cb.sachverhalt) {
+    var svCollapse = cb.sachverhalt.length > 200;
+    html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_sachverhalt', lang)) + '</div>' +
+      '<div class="section-body' + (svCollapse ? ' collapsible' : '') + '" id="sv-body">' + escHtml(cb.sachverhalt) + '</div>' +
+      (svCollapse ? '<button class="expand-btn" data-action="toggle-expand" data-target="sv-body">' + escHtml(t('btn_show_more', lang)) + '</button>' : '') +
+      '</div>';
+  }
+
+  // ── Erwägungen (accordion with sub-sections) ──
   var ewList = cb && (cb.key_erwaegungen || cb.erwaegungen);
   if (ewList && ewList.length) {
     html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_erwaegungen', lang)) + '</div>';
@@ -420,7 +431,6 @@ function renderDetail() {
       var e = ewList[i];
       var num = e.number || '?';
       var ewText = e.text || '';
-      // Split into sub-sections (e.g. 3.1, 3.2, 3.2.1)
       var subSections = splitErwaegung(num, ewText);
       html += '<div class="erwaegung-block">';
       for (var si = 0; si < subSections.length; si++) {
@@ -444,21 +454,16 @@ function renderDetail() {
     html += '<div class="section-card">' + renderSkeletonLines(4) + '</div>';
   }
 
-  // Full text — show with collapse for very long decisions
-  if (d.full_text) {
-    var ftLen = d.full_text.length;
-    var ftCollapse = ftLen > 3000;
-    var ftDisplay = ftCollapse ? d.full_text.substring(0, 3000) : d.full_text;
-    var ftSizeLabel = ftLen > 1000 ? Math.round(ftLen / 1000) + 'k' : String(ftLen);
-    html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_fulltext', lang)) +
-      ' <span style="font-weight:400;color:var(--text-tertiary,#999);">(' + ftSizeLabel + ' chars)</span></div>' +
-      '<div class="fulltext-body collapsible" id="fulltext-body">' + escHtml(ftDisplay) + '</div>';
-    if (ftCollapse) {
-      html += '<button class="expand-btn" data-action="expand-fulltext">' + escHtml(t('btn_show_more', lang)) + '</button>';
-    }
-    html += '</div>';
+  // ── Dispositiv (from case brief) ──
+  if (cb && cb.dispositiv) {
+    var dpCollapse = cb.dispositiv.length > 200;
+    html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_dispositiv', lang)) + '</div>' +
+      '<div class="section-body' + (dpCollapse ? ' collapsible' : '') + '" id="dp-body">' + escHtml(cb.dispositiv) + '</div>' +
+      (dpCollapse ? '<button class="expand-btn" data-action="toggle-expand" data-target="dp-body">' + escHtml(t('btn_show_more', lang)) + '</button>' : '') +
+      '</div>';
   }
 
+  // ── Statutes ──
   if (cb && cb.statutes && cb.statutes.length) {
     html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_statutes', lang)) + '</div><div class="pills">';
     for (var j = 0; j < cb.statutes.length; j++) {
@@ -468,6 +473,26 @@ function renderDetail() {
     }
     html += '</div></div>';
   }
+
+  // ── Full text: fallback when no Erwägungen were extracted ──
+  var hasErwaegungen = ewList && ewList.length;
+  if (d.full_text && !hasErwaegungen) {
+    // No structured sections — show truncated full text as fallback
+    var ftLen = d.full_text.length;
+    var ftCollapse = ftLen > 3000;
+    var ftDisplay = ftCollapse ? d.full_text.substring(0, 3000) : d.full_text;
+    html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_fulltext', lang)) + '</div>' +
+      '<div class="fulltext-body collapsible" id="fulltext-body">' + escHtml(ftDisplay) + '</div>';
+    if (ftCollapse) {
+      html += '<button class="expand-btn" data-action="expand-fulltext">' + escHtml(t('btn_show_more', lang)) + '</button>';
+    }
+    html += '</div>';
+  }
+
+  // Link to full text on opencaselaw.ch
+  var entscheidUrl = 'https://mcp.opencaselaw.ch/entscheid/' + encodeURIComponent(d.decision_id || '');
+  html += '<a class="fulltext-link" data-action="open-external" data-url="' + escHtml(entscheidUrl) + '">' +
+    escHtml(t('fulltext_link', lang)) + ' \u2192</a>';
 
   return html;
 }
@@ -910,7 +935,20 @@ async function handleAppClick(e) {
       case 'expand-fulltext':
         var ftEl = document.getElementById('fulltext-body');
         if (ftEl && state.detail && state.detail.full_text) {
-          ftEl.textContent = state.detail.full_text;
+          var MAX_DOM_CHARS = 50000;
+          var ft = state.detail.full_text;
+          if (ft.length > MAX_DOM_CHARS) {
+            ftEl.textContent = ft.substring(0, MAX_DOM_CHARS);
+            // Add "continue on opencaselaw.ch" link after the text
+            var contLink = document.createElement('a');
+            contLink.className = 'fulltext-link';
+            contLink.dataset.action = 'open-external';
+            contLink.dataset.url = 'https://mcp.opencaselaw.ch/entscheid/' + encodeURIComponent(state.detail.decision_id || '');
+            contLink.textContent = t('fulltext_continue', state.lang);
+            ftEl.parentNode.insertBefore(contLink, ftEl.nextSibling.nextSibling || null);
+          } else {
+            ftEl.textContent = ft;
+          }
           ftEl.classList.add('expanded');
           btn.textContent = t('btn_show_less', state.lang);
           btn.dataset.action = 'collapse-fulltext';
@@ -923,6 +961,9 @@ async function handleAppClick(e) {
           ftEl2.classList.remove('expanded');
           btn.textContent = t('btn_show_more', state.lang);
           btn.dataset.action = 'expand-fulltext';
+          // Remove "continue" link if added
+          var contLinks = ftEl2.parentNode.querySelectorAll('.fulltext-link');
+          contLinks.forEach(function(el) { el.remove(); });
         }
         break;
       case 'clear-search':

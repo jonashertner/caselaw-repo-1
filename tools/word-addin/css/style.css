@@ -1429,6 +1429,21 @@ html, body {
   text-decoration: underline;
 }
 
+/* --- Full text link (to opencaselaw.ch) --- */
+.fulltext-link {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-top: 12px;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: color var(--transition);
+}
+.fulltext-link:hover {
+  color: var(--blue);
+}
+
 /* --- Citation preview --- */
 .citation-preview {
   background: var(--bg);

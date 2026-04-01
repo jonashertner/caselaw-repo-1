@@ -410,8 +410,26 @@ var UI_STRINGS = {
     it: 'Considerandi',
     en: 'Considerations',
   },
+  section_sachverhalt: {
+    de: 'Sachverhalt', fr: 'Faits', it: 'Fatti', en: 'Facts',
+  },
+  section_dispositiv: {
+    de: 'Dispositiv', fr: 'Dispositif', it: 'Dispositivo', en: 'Holding',
+  },
   section_fulltext: {
     de: 'Volltext', fr: 'Texte int\u00E9gral', it: 'Testo integrale', en: 'Full text',
+  },
+  fulltext_link: {
+    de: 'Volltext auf opencaselaw.ch lesen',
+    fr: 'Lire le texte int\u00E9gral sur opencaselaw.ch',
+    it: 'Leggi il testo integrale su opencaselaw.ch',
+    en: 'Read full text on opencaselaw.ch',
+  },
+  fulltext_continue: {
+    de: 'Weiter auf opencaselaw.ch lesen\u2026',
+    fr: 'Continuer la lecture sur opencaselaw.ch\u2026',
+    it: 'Continua a leggere su opencaselaw.ch\u2026',
+    en: 'Continue reading on opencaselaw.ch\u2026',
   },
   section_statutes: {
     de: 'Gesetzesartikel',
