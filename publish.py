@@ -95,27 +95,6 @@ DB_PATH = OUTPUT_DIR / "decisions.db"
 HF_REPO_ID = "voilaj/swiss-caselaw"
 
 
-def _check_should_rebuild() -> tuple[bool, int]:
-    """Check if a rebuild is needed using scraper health report.
-
-    Reads logs/scraper_health.json which the daily scraper writes with
-    an accurate count of new decisions found per scraper. If total is 0,
-    no rebuild is needed.
-
-    Returns (should_rebuild, new_decision_count).
-    """
-    health_path = REPO_DIR / "logs" / "scraper_health.json"
-
-    if not health_path.exists():
-        return True, 0  # no health report — always rebuild
-
-    try:
-        data = json.loads(health_path.read_text())
-        scrapers = data.get("scrapers", {})
-        new_total = sum(v.get("new_decisions", 0) for v in scrapers.values())
-        return new_total > 0, new_total
-    except Exception:
-        return True, 0  # can't read — be safe, rebuild
 
 
 def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: int = 3600) -> bool:
@@ -474,19 +453,6 @@ def main():
     if args.dry_run:
         logger.info("DRY RUN — no changes will be made")
 
-    # ── Skip-if-unchanged: avoid 5h rebuild when scrapers found nothing ──
-    skip_heavy = False
-    HEAVY_STEPS = {2, "2d", "2b", "2c", 3, 4}
-    if not args.step and not args.full_rebuild:
-        should_rebuild, new_count = _check_should_rebuild()
-        if not should_rebuild:
-            logger.info(f"  Scrapers found 0 new decisions — skipping heavy steps")
-            logger.info(f"  Will only run: stats + git push")
-            skip_heavy = True
-            _notify("Publish skipped", "Scrapers found 0 new decisions", priority="low")
-        else:
-            logger.info(f"  Scrapers found {new_count:,} new decision(s) — full rebuild")
-
     results = {}
     start = time.time()
     manual_step_mode = args.step is not None
@@ -518,11 +484,6 @@ def main():
         # Step 1 (ingest) is opt-in: skip unless --ingest or --step 1
         if num == 1 and not args.ingest and not manual_step_mode:
             logger.info(f"  Step {num} ({name}): SKIPPED (use --ingest to enable)")
-            results[num] = True
-            continue
-        # Skip heavy steps when no new decisions (skip-if-unchanged)
-        if skip_heavy and num in HEAVY_STEPS:
-            logger.info(f"  Step {num} ({name}): SKIPPED (no new decisions)")
             results[num] = True
             continue
         # Skip guarded steps if a critical step failed (unless running single step)
