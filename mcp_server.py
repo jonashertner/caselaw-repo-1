@@ -173,6 +173,7 @@ GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "re
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
 LEXFIND_CACHE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_LEXFIND_CACHE", str(DATA_DIR / "lexfind_cache.db")))
+ANWALTSRECHT_TAGS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_ANWALTSRECHT_DB", str(DATA_DIR / "anwaltsrecht_tags.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -1995,12 +1996,32 @@ def _search_fts5_inner(
         )
         reranked = _dedupe_results_by_decision_id(reranked)
         # Soft boost: if legal_area filter given, promote matching results
-        # to the top without removing non-matching ones
         if legal_area and reranked:
             la_lower = legal_area.lower()
-            matching = [r for r in reranked if la_lower in (r.get("legal_area") or "").lower()]
-            others = [r for r in reranked if la_lower not in (r.get("legal_area") or "").lower()]
-            reranked = matching + others
+            if la_lower == "anwaltsrecht":
+                # Use Anwaltsrecht tags DB for hard filtering
+                aw_conn = _get_anwaltsrecht_conn()
+                if aw_conn:
+                    try:
+                        tagged_ids = {
+                            row[0] for row in aw_conn.execute(
+                                "SELECT DISTINCT decision_id FROM anwaltsrecht_tags"
+                            ).fetchall()
+                        }
+                        matching = [r for r in reranked if r.get("decision_id") in tagged_ids]
+                        others = [r for r in reranked if r.get("decision_id") not in tagged_ids]
+                        reranked = matching + others
+                    finally:
+                        aw_conn.close()
+                else:
+                    # Fallback to text-based matching
+                    matching = [r for r in reranked if la_lower in (r.get("legal_area") or "").lower()]
+                    others = [r for r in reranked if la_lower not in (r.get("legal_area") or "").lower()]
+                    reranked = matching + others
+            else:
+                matching = [r for r in reranked if la_lower in (r.get("legal_area") or "").lower()]
+                others = [r for r in reranked if la_lower not in (r.get("legal_area") or "").lower()]
+                reranked = matching + others
 
         # Cross-lingual interleaving: ensure FR/IT results appear in top results
         # when the query language differs from result language.
@@ -2468,6 +2489,26 @@ def _get_graph_conn() -> sqlite3.Connection | None:
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open graph DB: %s", e)
+        return None
+
+
+_anwaltsrecht_warned = False
+
+def _get_anwaltsrecht_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the Anwaltsrecht tags DB, or None if unavailable."""
+    global _anwaltsrecht_warned
+    if not ANWALTSRECHT_TAGS_DB_PATH.exists():
+        if not _anwaltsrecht_warned:
+            logger.info("Anwaltsrecht tags DB not found at %s — anwaltsrecht filter disabled", ANWALTSRECHT_TAGS_DB_PATH)
+            _anwaltsrecht_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(str(ANWALTSRECHT_TAGS_DB_PATH), timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only = ON")
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open Anwaltsrecht tags DB: %s", e)
         return None
 
 
