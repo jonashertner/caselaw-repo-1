@@ -261,6 +261,30 @@ def step_2d_enrich_quality(dry_run: bool = False, full_rebuild: bool = False) ->
     return run_cmd(cmd, "Quality enrichment", dry_run, timeout=7200)
 
 
+def step_2e_build_anwaltsrecht_tags(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2e: Build Anwaltsrecht tags DB from SAV PDFs."""
+    logger.info("Step 2e: Build Anwaltsrecht tags")
+
+    script = REPO_DIR / "search_stack" / "build_anwaltsrecht_tags.py"
+    if not script.exists():
+        logger.info("  build_anwaltsrecht_tags.py not found, skipping")
+        return True
+
+    if not DB_PATH.exists():
+        logger.info("  FTS5 database not found, skipping Anwaltsrecht tags")
+        return True
+
+    tags_db = OUTPUT_DIR / "anwaltsrecht_tags.db"
+    return run_cmd(
+        [sys.executable, str(script),
+         "--fts5-db", str(DB_PATH),
+         "--output", str(tags_db)],
+        "Build Anwaltsrecht tags",
+        dry_run,
+        timeout=600,
+    )
+
+
 def step_3_export_parquet(dry_run: bool = False) -> bool:
     """Step 3: Export SQLite/JSONL corpus to Parquet."""
     logger.info("Step 3: Export Parquet")
@@ -407,6 +431,7 @@ STEPS = [
     (1, "Ingest", step_1_ingest),
     (2, "Build FTS5", step_2_build_fts5),
     ("2d", "Quality Enrichment", step_2d_enrich_quality),
+    ("2e", "Anwaltsrecht Tags", step_2e_build_anwaltsrecht_tags),
     ("2b", "Quality Report", step_2b_quality_report),
     ("2c", "Reference Graph", step_2c_build_reference_graph),
     (3, "Export Parquet", step_3_export_parquet),
@@ -420,7 +445,7 @@ def main():
     parser = argparse.ArgumentParser(description="Swiss Case Law publishing pipeline")
     parser.add_argument(
         "--step", type=str, default=None,
-        help="Run only a specific step (1, 2, 2b, 2c, 2d, 3, 4, 5, 6)",
+        help="Run only a specific step (1, 2, 2b, 2c, 2d, 2e, 3, 4, 5, 6)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Log actions without executing")
     parser.add_argument(
@@ -501,7 +526,7 @@ def main():
         try:
             if num == 2:
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
-            elif num in ("2b", "2c", "2d"):
+            elif num in ("2b", "2c", "2d", "2e"):
                 ok = func(
                     dry_run=args.dry_run,
                     full_rebuild=(args.full_rebuild or manual_step_mode),
