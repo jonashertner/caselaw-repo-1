@@ -61,6 +61,7 @@ SECTIONS = {
     "cst": "GE_CJ_015",      # CST
     "jtp": "GE_TP_001",      # Tribunal pénal
     "dccr": "GE_TAPI_001",   # Tribunal admin. première instance
+    "dcba": "GE_DCBA_001",   # Commission du barreau (attorney discipline)
 }
 
 RE_TOTAL = re.compile(r"<strong>(\d+)</strong>\s*(?:enregistrement|resultats?)")
