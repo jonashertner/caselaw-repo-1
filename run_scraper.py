@@ -103,6 +103,8 @@ SCRAPERS = {
     "emark": ("scrapers.emark", "EMARKScraper"),
     "bge_historical": ("scrapers.bge_historical", "BGEHistoricalScraper"),
     "hudoc_ch": ("scrapers.hudoc", "HUDOCScraper"),
+    # Attorney discipline — SAV portal
+    "sav_kantone": ("scrapers.sav_kantone", "SAVKantoneScraper"),
 }
 
 
