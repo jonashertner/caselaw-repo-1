@@ -108,6 +108,8 @@ SCRAPERS = {
     "sav_international": ("scrapers.sav_international", "SAVInternationalScraper"),
     # Attorney discipline — TG Anwaltskommission
     "tg_anwaltskommission": ("scrapers.cantonal.tg_anwaltskommission", "TGAnwaltskommissionScraper"),
+    # Attorney discipline — FR Anwaltsaufsicht
+    "fr_anwaltsaufsicht": ("scrapers.cantonal.fr_anwaltsaufsicht", "FRAnwaltsaufsichtScraper"),
 }
 
 
