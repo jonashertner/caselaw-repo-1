@@ -105,6 +105,7 @@ SCRAPERS = {
     "hudoc_ch": ("scrapers.hudoc", "HUDOCScraper"),
     # Attorney discipline — SAV portal
     "sav_kantone": ("scrapers.sav_kantone", "SAVKantoneScraper"),
+    "sav_international": ("scrapers.sav_international", "SAVInternationalScraper"),
 }
 
 
