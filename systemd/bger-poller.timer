@@ -1,0 +1,11 @@
+[Unit]
+Description=BGer Neuheiten poller — every 15 min Mon-Fri 07:00-18:00 CET
+
+[Timer]
+# Every 15 min, Mon-Fri. The poller script itself is cheap (~1s).
+# Runs 05:00-16:45 UTC (07:00-18:45 CET) to cover business hours.
+OnCalendar=Mon..Fri *-*-* 05..16:00/15:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenCaseLaw midday federal court scrape (BVGer, BStGer, BPatGer)
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 run_all_scrapers.py --courts bvger,bstger,bpatger,bge
+TimeoutStartSec=7200
+StandardOutput=append:/opt/caselaw/repo/logs/daily_scrape.log
+StandardError=append:/opt/caselaw/repo/logs/daily_scrape.log

@@ -1,0 +1,11 @@
+[Unit]
+Description=BGer Neuheiten poller — check for new decisions and trigger scraper
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 scripts/bger_poller.py
+TimeoutStartSec=3900
+StandardOutput=append:/opt/caselaw/repo/logs/bger_poller.log
+StandardError=append:/opt/caselaw/repo/logs/bger_poller.log
