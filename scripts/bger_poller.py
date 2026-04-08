@@ -131,10 +131,8 @@ def main():
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
-        handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler(str(LOG_FILE), mode="a"),
-        ],
+        # Only StreamHandler — systemd captures stdout to the log file.
+        # Adding FileHandler would cause duplicate lines.
     )
 
     today = date.today().strftime("%Y%m%d")
@@ -159,10 +157,10 @@ def main():
     prev_dockets = set(state.get("dockets", []))
 
     if state.get("date") != today_iso:
-        # New day — reset
-        new_dockets = current_dockets
-    else:
-        new_dockets = current_dockets - prev_dockets
+        # New day — start fresh (don't carry over yesterday's dockets)
+        prev_dockets = set()
+
+    new_dockets = current_dockets - prev_dockets
 
     if new_dockets:
         logger.info("NEW decisions detected: %d (%s)", len(new_dockets), ", ".join(sorted(new_dockets)[:5]))
@@ -173,7 +171,7 @@ def main():
             logger.info("[dry-run] Would trigger BGer scraper")
     else:
         logger.info("No new decisions since last check")
-        _save_state(today_iso, current_dockets | prev_dockets)
+        _save_state(today_iso, current_dockets)
 
 
 if __name__ == "__main__":
