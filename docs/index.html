@@ -1487,7 +1487,7 @@ if (hamburgerBtn && mobileMenu) {
   });
 }
 
-const FED = new Set(['bger','bge','bvger','bstger','bpatger','weko','finma','edoeb','ch_vb','ta_sst','ch_bundesrat','bge_egmr','ubi','elcom','postcom','comcom']);
+const FED = new Set(['bger','bge','bvger','bstger','bpatger','weko','finma','finma_versicherungsrecht','edoeb','ch_vb','ta_sst','ch_bundesrat','bge_egmr','ubi','elcom','postcom','comcom','sav_kantone','sav_international','hudoc_ch','emark','bge_historical']);
 const CANTON_NAMES = {
   AG:'Aargau', AI:'Appenzell I.Rh.', AR:'Appenzell A.Rh.',
   BE:'Bern', BL:'Basel-Land', BS:'Basel-Stadt', FR:'Fribourg',
@@ -1515,6 +1515,13 @@ const COURT_DISPLAY = {
   ta_sst:     {de:'Sportschiedsgericht',         fr:'Tribunal arbitral du sport',    en:'Sports Tribunal'},
   ch_bundesrat:{de:'Bundesrat',                 fr:'Conseil f\u00e9d\u00e9ral',               en:'Federal Council'},
   bge_egmr:   {de:'EGMR',                      fr:'CEDH',                          en:'ECHR'},
+  bge_historical:{de:'BGE historisch (1875\u20131953)',fr:'ATF historiques (1875\u20131953)',    en:'Historical BGE (1875\u20131953)'},
+  finma_versicherungsrecht:{de:'FINMA Versicherungsrecht',fr:'FINMA Droit des assurances', en:'FINMA Insurance Law'},
+  hudoc_ch:   {de:'EGMR Schweiz (HUDOC)',       fr:'CEDH Suisse (HUDOC)',           en:'ECHR Switzerland (HUDOC)'},
+  emark:      {de:'EMARK (Asylrekurskommission)',fr:'JICRA (Commission de recours en mati\u00e8re d\u2019asile)',en:'EMARK (Asylum Appeals)'},
+  // Attorney law (Anwaltsrecht)
+  sav_kantone:{de:'Anwaltsrecht \u2014 Kantonale Aufsichtsentscheide',fr:'Droit des avocats \u2014 D\u00e9cisions cantonales de surveillance',en:'Attorney Law \u2014 Cantonal Supervisory Decisions'},
+  sav_international:{de:'Anwaltsrecht \u2014 Internationale Entscheide',fr:'Droit des avocats \u2014 D\u00e9cisions internationales',en:'Attorney Law \u2014 International Decisions'},
   ubi:        {de:'UBI',                       fr:'AIEP',                          en:'Media Complaints Authority'},
   elcom:      {de:'ElCom',                     fr:'ElCom',                         en:'Electricity Commission'},
   postcom:    {de:'PostCom',                   fr:'PostCom',                       en:'Postal Commission'},
@@ -1548,7 +1555,7 @@ const COURT_DISPLAY = {
   // BE
   be_verwaltungsgericht:      {de:'Verwaltungsgericht',        fr:'Tribunal administratif',                en:'Administrative Court'},
   be_zivilstraf:              {de:'Obergericht (Zivil/Straf)', fr:'Tribunal sup\u00e9rieur (civil/p\u00e9nal)',      en:'High Court (Civil/Criminal)'},
-  be_anwaltsaufsicht:         {de:'Anwaltsaufsicht',           fr:'Surveillance des avocats',              en:'Bar Supervision'},
+  be_anwaltsaufsicht:         {de:'Anwaltsaufsicht \u2014 Disziplinarentscheide',fr:'Surveillance des avocats \u2014 D\u00e9cisions disciplinaires',en:'Bar Supervision \u2014 Disciplinary Decisions'},
   be_bvd:                     {de:'BVD (Bau/Verkehr/Energie)', fr:'BVD',                                   en:'BVD (Construction/Transport/Energy)'},
   be_steuerrekurs:            {de:'Steuerrekurskommission',    fr:'Commission de recours fiscal',          en:'Tax Appeal Commission'},
   be_weitere:                 {de:'Weitere Gerichte',          fr:'Autres tribunaux',                      en:'Other Courts'},
@@ -1560,6 +1567,7 @@ const COURT_DISPLAY = {
   bs_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                             en:'Courts'},
   // FR
   fr_gerichte:                {de:'Kantonsgericht',            fr:'Tribunal cantonal',                     en:'Cantonal Court'},
+  fr_anwaltsaufsicht:         {de:'Commission du barreau \u2014 Disziplinarentscheide',fr:'Commission du barreau \u2014 D\u00e9cisions disciplinaires',en:'Bar Commission \u2014 Disciplinary Decisions'},
   // GE
   ge_gerichte:                {de:'Justiz',                    fr:'Pouvoir judiciaire',                    en:'Judiciary'},
   // GL
@@ -1595,6 +1603,7 @@ const COURT_DISPLAY = {
   // TG
   tg_obergericht:             {de:'Obergericht (Archiv)',       fr:'Tribunal sup\u00e9rieur (archives)',          en:'High Court (archive)'},
   tg_gerichte:                {de:'Obergericht / TVR',          fr:'Tribunal sup\u00e9rieur / TVR',              en:'High Court / TVR'},
+  tg_anwaltskommission:       {de:'Anwaltskommission \u2014 Disziplinarentscheide',fr:'Commission des avocats \u2014 D\u00e9cisions disciplinaires',en:'Bar Commission \u2014 Disciplinary Decisions'},
   // TI
   ti_gerichte:                {de:'Gerichte',                  fr:'Tribunaux',                              it:'Tribunali',en:'Courts'},
   // UR

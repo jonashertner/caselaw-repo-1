@@ -558,6 +558,12 @@ COURT_DISPLAY_NAMES: dict[str, str] = {
     "zh_sozialversicherungsgericht": "ZH Sozialversicherungsgericht",
     "zh_steuerrekursgericht": "ZH Steuerrekursgericht",
     "zh_baurekursgericht": "ZH Baurekursgericht",
+    # Attorney law (Anwaltsrecht)
+    "be_anwaltsaufsicht": "BE Anwaltsaufsicht",
+    "sav_kantone": "SAV Kantonale Aufsichtsentscheide",
+    "sav_international": "SAV Internationale Entscheide",
+    "tg_anwaltskommission": "TG Anwaltskommission",
+    "fr_anwaltsaufsicht": "FR Commission du barreau",
 }
 
 COURT_LEVELS: dict[str, str] = {
