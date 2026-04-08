@@ -33,6 +33,15 @@
     .step-text strong { font-weight: 600; }
     code { font-size: 11px; background: #f4f4f5; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-top: 4px; word-break: break-all; }
     .hint { font-size: 12px; color: #71717a; margin-top: 12px; line-height: 1.5; }
+    .perm-box { margin-top: 16px; border: 1px solid #e4e4e7; border-radius: 8px; overflow: hidden; }
+    .perm-toggle { width: 100%; padding: 12px 16px; background: #fafafa; border: none; font-family: inherit; font-size: 13px; font-weight: 500; color: #52525b; cursor: pointer; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+    .perm-toggle:hover { background: #f4f4f5; }
+    .perm-toggle .arrow { transition: transform 0.2s; }
+    .perm-body { display: none; padding: 16px; font-size: 13px; line-height: 1.7; border-top: 1px solid #e4e4e7; }
+    .perm-body.open { display: block; }
+    .perm-option { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f4f4f5; }
+    .perm-option:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .perm-label { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #71717a; margin-bottom: 8px; }
     .persist { display: inline-flex; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; background: #ecfdf5; color: #047857; margin-left: 4px; }
     .note { margin-top: 24px; padding: 14px 16px; background: #fff; border: 1px solid #e4e4e7; border-radius: 8px; font-size: 13px; color: #52525b; line-height: 1.6; }
     .footer { margin-top: 32px; text-align: center; font-size: 12px; color: #a1a1aa; }
@@ -74,11 +83,14 @@
         m: [
           'Word \u00f6ffnen. Im Men\u00fc: <strong>Einf\u00fcgen</strong> \u2192 <strong>Add-Ins abrufen</strong> (oder <strong>Meine Add-Ins</strong>) \u2192 <strong>Eigenes Add-In hochladen</strong>',
           'Die heruntergeladene Datei <strong>OpenCaseLaw.xml</strong> ausw\u00e4hlen und best\u00e4tigen',
-          'Das OpenCaseLaw-Panel erscheint rechts \u2014 eine Referenz eingeben, z.\u202fB. <strong>BGE 133 III 121</strong>',
-          '<em>Dauerhaft installieren?</em> <strong>Terminal</strong> \u00f6ffnen (Programme \u2192 Dienstprogramme) und diesen Befehl einf\u00fcgen:'
+          'Fertig! Das OpenCaseLaw-Panel erscheint rechts. Eine Referenz eingeben, z.\u202fB. <strong>BGE 133 III 121</strong> oder <strong>Art. 41 OR</strong>'
         ],
+        mreload: 'Das Add-in bleibt aktiv, solange Word ge\u00f6ffnet ist. Nach einem Neustart von Word einfach Schritt 1 wiederholen (dauert 10 Sekunden).',
+        mperm_title: 'Dauerhaft installieren (optional)',
+        mperm_finder: '<strong>Mit dem Finder:</strong> Im Finder-Men\u00fc <strong>Gehe zu</strong> anklicken, dabei die <strong>Option-Taste (\u2325)</strong> gedr\u00fcckt halten \u2014 es erscheint <strong>Library</strong>. Dort navigieren zu: Library \u2192 Containers \u2192 com.microsoft.Word \u2192 Data \u2192 Documents. Einen Ordner <strong>wef</strong> erstellen (falls nicht vorhanden) und die Datei <strong>OpenCaseLaw.xml</strong> hineinkopieren. Word neu starten.',
+        mperm_term: '<strong>Mit dem Terminal:</strong> Das Programm <strong>Terminal</strong> \u00f6ffnen (Programme \u2192 Dienstprogramme) und diesen Befehl einf\u00fcgen:',
         mcode: 'mkdir -p ~/Library/Containers/com.microsoft.Word/Data/Documents/wef && curl -sL -o ~/Library/Containers/com.microsoft.Word/Data/Documents/wef/OpenCaseLaw.xml https://word.opencaselaw.ch/OpenCaseLaw.xml',
-        mhint: 'Danach Word neu starten. Das Add-in erscheint dann automatisch bei jedem Start.',
+        mperm_after: 'Danach Word neu starten. Das Add-in erscheint dann automatisch bei jedem Start.',
         w: [
           'Die heruntergeladene Datei <strong>OpenCaseLaw.xml</strong> bereithalten',
           'Datei-Explorer \u00f6ffnen. Diesen Pfad in die Adressleiste einf\u00fcgen:',
@@ -103,11 +115,14 @@
         m: [
           'Ouvrir Word. Dans le menu\u00a0: <strong>Insertion</strong> \u2192 <strong>Obtenir des compl\u00e9ments</strong> (ou <strong>Mes compl\u00e9ments</strong>) \u2192 <strong>Charger mon compl\u00e9ment</strong>',
           'S\u00e9lectionner le fichier <strong>OpenCaseLaw.xml</strong> t\u00e9l\u00e9charg\u00e9 et confirmer',
-          'Le panneau OpenCaseLaw appara\u00eet \u00e0 droite \u2014 entrer une r\u00e9f\u00e9rence, p.\u202fex. <strong>ATF 133 III 121</strong>',
-          '<em>Installation permanente\u00a0?</em> Ouvrir le <strong>Terminal</strong> (Applications \u2192 Utilitaires) et coller cette commande\u00a0:'
+          'Termin\u00e9\u00a0! Le panneau OpenCaseLaw appara\u00eet \u00e0 droite. Entrer une r\u00e9f\u00e9rence, p.\u202fex. <strong>ATF 133 III 121</strong> ou <strong>Art. 41 CO</strong>'
         ],
+        mreload: 'Le compl\u00e9ment reste actif tant que Word est ouvert. Apr\u00e8s un red\u00e9marrage de Word, r\u00e9p\u00e9ter l\u2019\u00e9tape 1 (10 secondes).',
+        mperm_title: 'Installation permanente (facultatif)',
+        mperm_finder: '<strong>Via le Finder\u00a0:</strong> Dans le menu Finder, cliquer sur <strong>Aller</strong> en maintenant la <strong>touche Option (\u2325)</strong> \u2014 <strong>Biblioth\u00e8que</strong> appara\u00eet. Naviguer vers\u00a0: Biblioth\u00e8que \u2192 Containers \u2192 com.microsoft.Word \u2192 Data \u2192 Documents. Cr\u00e9er un dossier <strong>wef</strong> (si inexistant) et y copier <strong>OpenCaseLaw.xml</strong>. Red\u00e9marrer Word.',
+        mperm_term: '<strong>Via le Terminal\u00a0:</strong> Ouvrir le <strong>Terminal</strong> (Applications \u2192 Utilitaires) et coller cette commande\u00a0:',
         mcode: 'mkdir -p ~/Library/Containers/com.microsoft.Word/Data/Documents/wef && curl -sL -o ~/Library/Containers/com.microsoft.Word/Data/Documents/wef/OpenCaseLaw.xml https://word.opencaselaw.ch/OpenCaseLaw.xml',
-        mhint: 'Puis red\u00e9marrer Word. Le compl\u00e9ment appara\u00eet ensuite automatiquement \u00e0 chaque d\u00e9marrage.',
+        mperm_after: 'Puis red\u00e9marrer Word. Le compl\u00e9ment appara\u00eet ensuite automatiquement \u00e0 chaque d\u00e9marrage.',
         w: [
           'Pr\u00e9parer le fichier <strong>OpenCaseLaw.xml</strong> t\u00e9l\u00e9charg\u00e9',
           'Ouvrir l\u2019Explorateur de fichiers. Coller ce chemin dans la barre d\u2019adresse\u00a0:',
@@ -132,11 +147,14 @@
         m: [
           'Aprire Word. Nel menu: <strong>Inserisci</strong> \u2192 <strong>Ottieni componenti aggiuntivi</strong> (o <strong>Componenti aggiuntivi personali</strong>) \u2192 <strong>Carica componente aggiuntivo</strong>',
           'Selezionare il file <strong>OpenCaseLaw.xml</strong> scaricato e confermare',
-          'Il pannello OpenCaseLaw appare a destra \u2014 inserire un riferimento, es. <strong>DTF 133 III 121</strong>',
-          '<em>Installazione permanente?</em> Aprire il <strong>Terminale</strong> (Applicazioni \u2192 Utility) e incollare questo comando:'
+          'Fatto! Il pannello OpenCaseLaw appare a destra. Inserire un riferimento, es. <strong>DTF 133 III 121</strong> o <strong>Art. 41 CO</strong>'
         ],
+        mreload: 'Il componente aggiuntivo resta attivo finch\u00e9 Word \u00e8 aperto. Dopo un riavvio di Word, ripetere il passaggio 1 (10 secondi).',
+        mperm_title: 'Installazione permanente (facoltativo)',
+        mperm_finder: '<strong>Con il Finder:</strong> Nel menu Finder, cliccare su <strong>Vai</strong> tenendo premuto il <strong>tasto Opzione (\u2325)</strong> \u2014 appare <strong>Libreria</strong>. Navigare in: Libreria \u2192 Containers \u2192 com.microsoft.Word \u2192 Data \u2192 Documents. Creare una cartella <strong>wef</strong> (se non esiste) e copiarci <strong>OpenCaseLaw.xml</strong>. Riavviare Word.',
+        mperm_term: '<strong>Con il Terminale:</strong> Aprire il <strong>Terminale</strong> (Applicazioni \u2192 Utility) e incollare questo comando:',
         mcode: 'mkdir -p ~/Library/Containers/com.microsoft.Word/Data/Documents/wef && curl -sL -o ~/Library/Containers/com.microsoft.Word/Data/Documents/wef/OpenCaseLaw.xml https://word.opencaselaw.ch/OpenCaseLaw.xml',
-        mhint: 'Poi riavviare Word. Il componente aggiuntivo appare automaticamente a ogni avvio.',
+        mperm_after: 'Poi riavviare Word. Il componente aggiuntivo appare automaticamente a ogni avvio.',
         w: [
           'Preparare il file <strong>OpenCaseLaw.xml</strong> scaricato',
           'Aprire Esplora file. Incollare questo percorso nella barra degli indirizzi:',
@@ -161,11 +179,14 @@
         m: [
           'Open Word. In the menu: <strong>Insert</strong> \u2192 <strong>Get Add-ins</strong> (or <strong>My Add-ins</strong>) \u2192 <strong>Upload My Add-in</strong>',
           'Select the downloaded <strong>OpenCaseLaw.xml</strong> file and confirm',
-          'The OpenCaseLaw panel appears on the right \u2014 enter a reference, e.g. <strong>BGE 133 III 121</strong>',
-          '<em>Permanent install?</em> Open <strong>Terminal</strong> (Applications \u2192 Utilities) and paste this command:'
+          'Done! The OpenCaseLaw panel appears on the right. Enter a reference, e.g. <strong>BGE 133 III 121</strong> or <strong>Art. 41 OR</strong>'
         ],
+        mreload: 'The add-in stays active while Word is open. After restarting Word, just repeat step 1 (takes 10 seconds).',
+        mperm_title: 'Permanent install (optional)',
+        mperm_finder: '<strong>Using Finder:</strong> In the Finder menu bar, click <strong>Go</strong> while holding the <strong>Option key (\u2325)</strong> \u2014 <strong>Library</strong> appears. Navigate to: Library \u2192 Containers \u2192 com.microsoft.Word \u2192 Data \u2192 Documents. Create a folder called <strong>wef</strong> (if it doesn\u2019t exist) and copy <strong>OpenCaseLaw.xml</strong> into it. Restart Word.',
+        mperm_term: '<strong>Using Terminal:</strong> Open <strong>Terminal</strong> (Applications \u2192 Utilities) and paste this command:',
         mcode: 'mkdir -p ~/Library/Containers/com.microsoft.Word/Data/Documents/wef && curl -sL -o ~/Library/Containers/com.microsoft.Word/Data/Documents/wef/OpenCaseLaw.xml https://word.opencaselaw.ch/OpenCaseLaw.xml',
-        mhint: 'Then restart Word. The add-in will appear automatically on every launch.',
+        mperm_after: 'Then restart Word. The add-in will appear automatically on every launch.',
         w: [
           'Have the downloaded <strong>OpenCaseLaw.xml</strong> file ready',
           'Open File Explorer. Paste this path into the address bar:',
@@ -193,7 +214,16 @@
         '<button class="tab'+(tab==='online'?' active':'')+'" onclick="setTab(\'online\')">'+t.t3+'</button>'+
         '</div>';
       if(tab==='online') h+=S(1,t.o[0])+S(2,t.o[1])+S(3,t.o[2])+S(4,t.o[3])+'<div class="hint">'+t.oh+'</div>';
-      if(tab==='mac') h+=S(1,t.m[0])+S(2,t.m[1])+S(3,t.m[2])+S(4,t.m[3]+'<br><code id="mac-cmd" style="cursor:pointer;position:relative" title="Click to copy" onclick="navigator.clipboard.writeText(this.textContent.trim());var b=this;b.style.background=\'#d1fae5\';setTimeout(function(){b.style.background=\'#f4f4f5\'},800)">'+t.mcode+'</code><div class="hint">'+t.mhint+'</div>');
+      if(tab==='mac') {
+        h+=S(1,t.m[0])+S(2,t.m[1])+S(3,t.m[2]);
+        h+='<div class="hint">'+t.mreload+'</div>';
+        h+='<div class="perm-box"><button class="perm-toggle" onclick="var b=this.nextElementSibling;b.classList.toggle(\'open\');this.querySelector(\'.arrow\').textContent=b.classList.contains(\'open\')?\'\u25B2\':\'\u25BC\'">'+t.mperm_title+' <span class="arrow">\u25BC</span></button>';
+        h+='<div class="perm-body">';
+        h+='<div class="perm-option"><div class="perm-label">Option A</div>'+t.mperm_finder+'</div>';
+        h+='<div class="perm-option"><div class="perm-label">Option B</div>'+t.mperm_term+'<br><code style="cursor:pointer" title="Click to copy" onclick="navigator.clipboard.writeText(this.textContent.trim());var b=this;b.style.background=\'#d1fae5\';setTimeout(function(){b.style.background=\'#f4f4f5\'},800)">'+t.mcode+'</code></div>';
+        h+='<div class="hint">'+t.mperm_after+'</div>';
+        h+='</div></div>';
+      }
       if(tab==='win') h+=S(1,t.w[0])+S(2,t.w[1]+'<br><code>%APPDATA%\\Microsoft\\Word\\STARTUP\\wef</code>')+S(3,t.w[2])+S(4,t.w[3]);
       h+='<div class="note">'+t.note+'</div>';
       document.getElementById('content').innerHTML=h; // eslint-disable-line -- all hardcoded strings
