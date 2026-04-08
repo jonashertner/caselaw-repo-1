@@ -97,7 +97,8 @@ def _save_state(today: str, dockets: set[str]):
 
 
 def _trigger_scraper():
-    """Run the BGer scraper."""
+    """Run the BGer scraper, then quick-publish new decisions into FTS5."""
+    # Step 1: Scrape
     cmd = [sys.executable, str(REPO_DIR / "run_scraper.py"), "bger"]
     logger.info("Triggering BGer scraper: %s", " ".join(cmd))
     result = subprocess.run(
@@ -108,7 +109,6 @@ def _trigger_scraper():
         timeout=3600,
     )
     if result.returncode == 0:
-        # Count new decisions from output
         new_count = 0
         for line in result.stdout.splitlines():
             if "Done. New:" in line:
@@ -118,6 +118,26 @@ def _trigger_scraper():
         logger.info("BGer scraper completed: %d new decisions", new_count)
     else:
         logger.error("BGer scraper failed (exit %d): %s", result.returncode, result.stderr[-500:])
+        return
+
+    # Step 2: Quick-publish into FTS5 DB (so decisions are searchable immediately)
+    quick_pub = REPO_DIR / "scripts" / "quick_publish.py"
+    if quick_pub.exists():
+        cmd = [sys.executable, str(quick_pub), "--courts", "bger"]
+        logger.info("Quick-publishing: %s", " ".join(cmd))
+        result = subprocess.run(
+            cmd,
+            cwd=str(REPO_DIR),
+            capture_output=True,
+            text=True,
+            timeout=600,
+        )
+        if result.returncode == 0:
+            for line in result.stdout.splitlines():
+                if "Inserted" in line or "new decisions" in line:
+                    logger.info("Quick-publish: %s", line.split("INFO")[-1].strip() if "INFO" in line else line)
+        else:
+            logger.error("Quick-publish failed (exit %d): %s", result.returncode, result.stderr[-300:])
 
 
 def main():
