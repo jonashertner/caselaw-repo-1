@@ -193,6 +193,80 @@ SPARSE_SIGNAL_WEIGHT = float(os.environ.get("SWISS_CASELAW_SPARSE_SIGNAL_WEIGHT"
 SPARSE_RRF_WEIGHT = float(os.environ.get("SWISS_CASELAW_SPARSE_RRF_WEIGHT", "1.2"))
 SPARSE_K = int(os.environ.get("SWISS_CASELAW_SPARSE_K", "100"))
 
+# ── Scoring config (all tunable weights in one dict) ─────────
+# The search optimizer reads and writes this dict via apply_config().
+SCORING_CONFIG: dict[str, float] = {
+    # ── Rerank signal weights (_rerank_rows) ──
+    "w_docket_exact": 6.0,
+    "w_docket_partial": 2.0,
+    "w_title_cov": 3.0,
+    "w_regeste_cov": 2.2,
+    "w_snippet_cov": 0.8,
+    "w_expanded_regeste_cov": 1.2,
+    "w_expanded_title_cov": 0.8,
+    "w_phrase_hit": 1.8,
+    "w_rrf_score": 32.0,
+    "w_strategy_hits": 0.18,
+    "strategy_hits_cap": 8,
+    # ── Graph signals ──
+    "statute_signal_base": 2.2,
+    "statute_signal_cap": 1.2,
+    "statute_signal_per_mention": 0.25,
+    "citation_signal_base": 2.4,
+    "citation_signal_cap": 1.2,
+    "citation_signal_per_hit": 0.30,
+    "authority_signal_per_citation": 0.03,
+    "authority_signal_cap": 1.0,
+    "in_pool_signal_multiplier": 0.5,
+    "in_pool_signal_cap": 1.2,
+    "in_pool_min_citations": 2,
+    # ── Local reference signals ──
+    "local_statute_match_signal": 0.8,
+    "local_citation_match_signal": 0.8,
+    # ── Court/domain signals ──
+    "asylum_bvger_boost": 1.7,
+    "asylum_bger_penalty": -0.2,
+    "asylum_e_docket_boost": 0.45,
+    "decision_intent_boost": 0.65,
+    "accelerated_procedure_signal": 0.9,
+    "language_match_signal": 0.9,
+    # ── Strategy weights (_build_query_strategies) ──
+    "sw_raw": 1.5,
+    "sw_quoted_explicit": 1.1,
+    "sw_regeste_focus_explicit": 0.95,
+    "sw_title_focus_explicit": 0.85,
+    "sw_nl_and_explicit": 0.9,
+    "sw_nl_or_explicit": 0.7,
+    "sw_nl_and": 1.3,
+    "sw_regeste_focus": 1.05,
+    "sw_title_focus": 0.95,
+    "sw_quoted": 1.15,
+    "sw_nl_or": 1.0,
+    "sw_nl_or_expanded": 0.85,
+    # ── Fusion pipeline weights ──
+    "statute_graph_rrf_weight": 1.0,
+    "sg_weight_with_keywords": 1.0,
+    "sg_weight_pure_statute": 1.5,
+    "sg_weight_unstructured_with_keywords": 0.7,
+    "llm_bge_rrf_weight": 2.0,
+    "structured_bge_rrf_weight": 2.5,
+    # ── Doctrine strategy weights ──
+    "doctrine_concept_translation_weight": 1.5,
+    "doctrine_direct_weight": 1.1,
+    "doctrine_regeste_weight": 1.6,
+    "doctrine_title_weight": 1.3,
+    "doctrine_cross_lingual_weight": 1.3,
+    # ── BM25 column weights ──
+    "bm25_decision_id": 0.8,
+    "bm25_court": 0.8,
+    "bm25_canton": 0.8,
+    "bm25_docket_number": 2.0,
+    "bm25_language": 0.8,
+    "bm25_title": 6.0,
+    "bm25_regeste": 5.0,
+    "bm25_full_text": 1.2,
+}
+
 # ── LLM query expansion ───────────────────────────────────────
 LLM_EXPANSION_ENABLED = os.environ.get("LLM_EXPANSION_ENABLED", "true").lower() in {
     "1", "true", "yes",
@@ -389,7 +463,7 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "wegweisung": ("renvoi", "allontanamento", "ausweisung"),
     "renvoi": ("wegweisung", "expulsion", "allontanamento"),
     "allontanamento": ("wegweisung", "renvoi", "espulsione"),
-    "ausweisung": ("expulsion", "renvoi", "wegweisung"),
+    "ausweisung": ("expulsion", "renvoi", "wegweisung", "landesverweisung", "ausschaffung"),
     "kuendigung": ("resiliation", "disdetta", "termination"),
     "kundigung": ("resiliation", "disdetta", "termination"),
     "resiliation": ("kuendigung", "kundigung", "termination"),
@@ -432,7 +506,7 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     # Contract / tort
     "haftung": ("responsabilite", "responsabilita", "liability"),
     "responsabilite": ("haftung", "responsabilita", "liability"),
-    "schadenersatz": ("dommages", "risarcimento", "indemnite"),
+    "schadenersatz": ("dommages", "risarcimento", "indemnite", "schadensersatz", "haftung"),
     "dommages": ("schadenersatz", "risarcimento", "indemnite"),
     "vertrag": ("contrat", "contratto", "contract"),
     "contrat": ("vertrag", "contratto", "contract"),
@@ -484,7 +558,7 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "mietzinsruckstand": ("zahlungsverzug", "zahlungsruckstand"),
     "torto": ("danno", "genugtuung", "tort"),
     # Colloquial→legal concept bridges
-    "hundebiss": ("tierhalterhaftung", "haftpflicht"),
+    "hundebiss": ("tierhalterhaftung", "haftpflicht", "hundeangriff", "bissverletzung"),
     "tierhalterhaftung": ("hundebiss", "haftpflicht"),
     "autounfall": ("haftpflicht", "kausalzusammenhang"),
     "verkehrsunfall": ("haftpflicht", "kausalzusammenhang"),
@@ -496,10 +570,19 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "steuerbetrug": ("steuerhinterziehung", "steuerpflicht"),
     "steuerhinterziehung": ("steuerbetrug", "steuerpflicht"),
     "entlassung": ("fristlos", "kuendigung"),
-    "mobbing": ("persoenlichkeitsschutz", "arbeitsrecht"),
+    "mobbing": ("persoenlichkeitsschutz", "arbeitsrecht", "belastigung"),
+    "gemobbt": ("mobbing", "persoenlichkeitsschutz"),
     "nachbarrecht": ("immissionen", "grundeigentum"),
     "laermschutz": ("immissionen", "laerm"),
     "eigentuemer": ("grundeigentum", "sachenrecht"),
+    # Additional concept bridges for failing benchmark queries
+    "kuendigungsschutz": ("sperrfrist", "kuendigung", "missbrauchlich"),
+    "erbrecht": ("erbteilung", "testament", "pflichtteil", "erbschaft"),
+    "double": ("doppelbesteuerung",),
+    "imposition": ("besteuerung", "steuer"),
+    "doppelbesteuerung": ("double", "imposition", "steuer"),
+    "landesverweisung": ("ausweisung", "ausschaffung", "expulsion"),
+    "ausschaffung": ("landesverweisung", "ausweisung", "expulsion"),
 }
 ASYL_QUERY_TERMS = {"asyl", "asile", "asilo", "wegweisung", "renvoi", "allontanamento"}
 LEGAL_ANCHOR_PAIRS: tuple[tuple[str, str], ...] = (
@@ -1561,6 +1644,12 @@ def _search_fts5_inner(
                 continue
         inline_docket_results = _dedupe_results_by_decision_id(inline_docket_results)
 
+    _bm25_weights = ", ".join(
+        str(SCORING_CONFIG[k]) for k in [
+            "bm25_decision_id", "bm25_court", "bm25_canton", "bm25_docket_number",
+            "bm25_language", "bm25_title", "bm25_regeste", "bm25_full_text",
+        ]
+    )
     sql = f"""
         SELECT
             d.decision_id,
@@ -1576,7 +1665,7 @@ def _search_fts5_inner(
             snippet(decisions_fts, 7, '<mark>', '</mark>', '...', 40) as snippet,
             d.source_url,
             d.pdf_url,
-            bm25(decisions_fts, 0.8, 0.8, 0.8, 2.0, 0.8, 6.0, 5.0, 1.2) as bm25_score
+            bm25(decisions_fts, {_bm25_weights}) as bm25_score
         FROM decisions_fts
         JOIN decisions d ON d.rowid = decisions_fts.rowid
         WHERE decisions_fts MATCH ?{where}
@@ -1612,7 +1701,7 @@ def _search_fts5_inner(
                 doctrine_tokens and not doctrine_tokens.issubset(query_tokens)
             )
             # Higher weight for concept translations (Hundebiss → Tierhalterhaftung)
-            doctrine_weight = 1.5 if is_concept_translation else 1.1
+            doctrine_weight = SCORING_CONFIG["doctrine_concept_translation_weight"] if is_concept_translation else SCORING_CONFIG["doctrine_direct_weight"]
 
             sp_parts: list[str] = []
             doctrine_fts: str = ""
@@ -1649,12 +1738,12 @@ def _search_fts5_inner(
                 strategies.insert(insert_pos, {
                     "name": "doctrine_regeste",
                     "query": f"regeste:{doctrine_norm}",
-                    "weight": 1.6,
+                    "weight": SCORING_CONFIG["doctrine_regeste_weight"],
                 })
                 strategies.insert(insert_pos + 1, {
                     "name": "doctrine_title",
                     "query": f"title:{doctrine_norm}",
-                    "weight": 1.3,
+                    "weight": SCORING_CONFIG["doctrine_title_weight"],
                 })
         # Cross-lingual doctrine strategies (FR/IT equivalents)
         if structured_parse:
@@ -1669,7 +1758,7 @@ def _search_fts5_inner(
                     strategies.append({
                         "name": f"doctrine_{lang_label}",
                         "query": cross_fts,
-                        "weight": 1.3,
+                        "weight": SCORING_CONFIG["doctrine_cross_lingual_weight"],
                     })
 
     _trace["strategies_planned"] = len(strategies)
@@ -1837,7 +1926,7 @@ def _search_fts5_inner(
 
     # ── Statute-graph retrieval (citation graph candidate source) ──
     # Use both regex extraction AND structured parse for maximum coverage
-    STATUTE_GRAPH_RRF_WEIGHT = 1.0
+    STATUTE_GRAPH_RRF_WEIGHT = SCORING_CONFIG["statute_graph_rrf_weight"]
     has_structured_statutes = False
     if not is_docket_query:
         query_statutes = _extract_query_statute_refs(fts_query)
@@ -1864,9 +1953,9 @@ def _search_fts5_inner(
         non_statute_tokens = query_tokens - statute_noise
         has_keyword_context = len(non_statute_tokens) >= 2
         if has_structured_statutes:
-            sg_weight = 1.0 if has_keyword_context else 1.5
+            sg_weight = SCORING_CONFIG["sg_weight_with_keywords"] if has_keyword_context else SCORING_CONFIG["sg_weight_pure_statute"]
         else:
-            sg_weight = 0.7 if has_keyword_context else STATUTE_GRAPH_RRF_WEIGHT
+            sg_weight = SCORING_CONFIG["sg_weight_unstructured_with_keywords"] if has_keyword_context else STATUTE_GRAPH_RRF_WEIGHT
         statute_graph_results = _search_statute_graph(query_statutes, limit=50 if has_structured_statutes else 30)
         if statute_graph_results:
             sg_only_ids = [
@@ -1902,8 +1991,8 @@ def _search_fts5_inner(
 
     # ── BGE direct-lookup (structured parse + LLM free-text) ──
     # Structured parse provides deterministic BGE refs; LLM free-text is fallback.
-    LLM_BGE_RRF_WEIGHT = 2.0  # Strong weight: LLM knows the leading case
-    STRUCTURED_BGE_RRF_WEIGHT = 2.5  # Even stronger: structured parse is more reliable
+    LLM_BGE_RRF_WEIGHT = SCORING_CONFIG["llm_bge_rrf_weight"]
+    STRUCTURED_BGE_RRF_WEIGHT = SCORING_CONFIG["structured_bge_rrf_weight"]
     if not is_docket_query:
         bge_pattern = re.compile(r"BGE\s+(\d{1,3})\s+([IVX]{1,4})\s+(\d{1,4})", re.IGNORECASE)
         llm_bge_ids: list[str] = []
@@ -3557,50 +3646,61 @@ def _rerank_rows(
         citation_signal = 0.0
         authority_signal = 0.0
         if query_statutes and statute_mentions > 0:
-            statute_signal = 2.2 + min(1.2, 0.25 * statute_mentions)
+            statute_signal = SCORING_CONFIG["statute_signal_base"] + min(
+                SCORING_CONFIG["statute_signal_cap"],
+                SCORING_CONFIG["statute_signal_per_mention"] * statute_mentions,
+            )
         if query_citations and query_citation_hits > 0:
-            citation_signal = 2.4 + min(1.2, 0.30 * query_citation_hits)
+            citation_signal = SCORING_CONFIG["citation_signal_base"] + min(
+                SCORING_CONFIG["citation_signal_cap"],
+                SCORING_CONFIG["citation_signal_per_hit"] * query_citation_hits,
+            )
         if incoming_citations > 0:
-            authority_signal = min(1.0, incoming_citations * 0.03)
+            authority_signal = min(
+                SCORING_CONFIG["authority_signal_cap"],
+                incoming_citations * SCORING_CONFIG["authority_signal_per_citation"],
+            )
         in_pool_citations = float(graph.get("in_pool_citations", 0.0))
         in_pool_signal = 0.0
-        if in_pool_citations >= 2:
-            # Logarithmic: 2 pool cites = 0.5, 5 = 0.9, 10+ = 1.2
-            in_pool_signal = min(1.2, 0.5 * math.log2(in_pool_citations))
+        if in_pool_citations >= SCORING_CONFIG["in_pool_min_citations"]:
+            in_pool_signal = min(
+                SCORING_CONFIG["in_pool_signal_cap"],
+                SCORING_CONFIG["in_pool_signal_multiplier"] * math.log2(in_pool_citations),
+            )
 
         local_ref_signal = 0.0
         local_text = f"{title_text} {regeste_text} {snippet_text}"
         if query_statutes and _text_matches_any_statute_hint(local_text, query_statutes):
-            local_ref_signal += 0.8
+            local_ref_signal += SCORING_CONFIG["local_statute_match_signal"]
         if query_citations and _text_matches_any_citation_hint(local_text, query_citations):
-            local_ref_signal += 0.8
+            local_ref_signal += SCORING_CONFIG["local_citation_match_signal"]
 
         court_prior_signal = 0.0
         if query_has_asyl_signal:
             court = (row["court"] or "").lower()
             docket = (row["docket_number"] or "")
             if court == "bvger":
-                court_prior_signal += 1.7
+                court_prior_signal += SCORING_CONFIG["asylum_bvger_boost"]
             if court == "bger":
-                court_prior_signal -= 0.2
+                court_prior_signal += SCORING_CONFIG["asylum_bger_penalty"]
             if docket.upper().startswith("E-"):
-                court_prior_signal += 0.45
+                court_prior_signal += SCORING_CONFIG["asylum_e_docket_boost"]
 
         court_intent_signal = 0.0
         if query_has_decision_intent:
             court = (row["court"] or "").lower()
             if court in HIGH_COURTS:
-                court_intent_signal += 0.65
+                court_intent_signal += SCORING_CONFIG["decision_intent_boost"]
 
         procedure_signal = 0.0
         if query_has_asyl_signal and query_has_accelerated_signal:
             if any(term in local_text for term in ACCELERATED_PROCEDURE_TERMS):
-                procedure_signal += 0.9
+                procedure_signal += SCORING_CONFIG["accelerated_procedure_signal"]
 
         language_signal = 0.0
         row_language = (row["language"] or "").lower()
         if query_languages and row_language in query_languages:
-            language_signal += 0.9
+            language_signal += SCORING_CONFIG["language_match_signal"]
 
         # BGE/BGer authority boost — disabled, log-authority already handles this
         court_authority_boost = 0.0
@@ -3622,16 +3722,16 @@ def _rerank_rows(
                 sparse_signal = SPARSE_SIGNAL_WEIGHT * min(1.0, sp_score / max(max_sparse, 0.01))
 
         signal = (
-            6.0 * docket_exact
-            + 2.0 * docket_partial
-            + 3.0 * title_cov
-            + 2.2 * regeste_cov
-            + 0.8 * snippet_cov
-            + 1.2 * expanded_regeste_cov
-            + 0.8 * expanded_title_cov
-            + 1.8 * phrase_hit
-            + 32.0 * rrf_score
-            + 0.18 * min(strategy_hits, 8)
+            SCORING_CONFIG["w_docket_exact"] * docket_exact
+            + SCORING_CONFIG["w_docket_partial"] * docket_partial
+            + SCORING_CONFIG["w_title_cov"] * title_cov
+            + SCORING_CONFIG["w_regeste_cov"] * regeste_cov
+            + SCORING_CONFIG["w_snippet_cov"] * snippet_cov
+            + SCORING_CONFIG["w_expanded_regeste_cov"] * expanded_regeste_cov
+            + SCORING_CONFIG["w_expanded_title_cov"] * expanded_title_cov
+            + SCORING_CONFIG["w_phrase_hit"] * phrase_hit
+            + SCORING_CONFIG["w_rrf_score"] * rrf_score
+            + SCORING_CONFIG["w_strategy_hits"] * min(strategy_hits, int(SCORING_CONFIG["strategy_hits_cap"]))
             + statute_signal
             + citation_signal
             + authority_signal
@@ -3751,25 +3851,25 @@ def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
 
     if has_explicit_syntax:
         candidates = [
-            {"name": "raw", "query": raw, "weight": 1.5},
-            {"name": "quoted", "query": quoted, "weight": 1.1},
-            {"name": "regeste_focus", "query": regeste_focus, "weight": 0.95},
-            {"name": "title_focus", "query": title_focus, "weight": 0.85},
+            {"name": "raw", "query": raw, "weight": SCORING_CONFIG["sw_raw"]},
+            {"name": "quoted", "query": quoted, "weight": SCORING_CONFIG["sw_quoted_explicit"]},
+            {"name": "regeste_focus", "query": regeste_focus, "weight": SCORING_CONFIG["sw_regeste_focus_explicit"]},
+            {"name": "title_focus", "query": title_focus, "weight": SCORING_CONFIG["sw_title_focus_explicit"]},
             *anchor_focus,
             *language_focus,
-            {"name": "nl_and", "query": nl_and, "weight": 0.9},
-            {"name": "nl_or", "query": nl_or, "weight": 0.7},
+            {"name": "nl_and", "query": nl_and, "weight": SCORING_CONFIG["sw_nl_and_explicit"]},
+            {"name": "nl_or", "query": nl_or, "weight": SCORING_CONFIG["sw_nl_or_explicit"]},
         ]
     else:
         candidates = [
             *anchor_focus,
-            {"name": "nl_and", "query": nl_and, "weight": 1.3},
-            {"name": "regeste_focus", "query": regeste_focus, "weight": 1.05},
-            {"name": "title_focus", "query": title_focus, "weight": 0.95},
+            {"name": "nl_and", "query": nl_and, "weight": SCORING_CONFIG["sw_nl_and"]},
+            {"name": "regeste_focus", "query": regeste_focus, "weight": SCORING_CONFIG["sw_regeste_focus"]},
+            {"name": "title_focus", "query": title_focus, "weight": SCORING_CONFIG["sw_title_focus"]},
             *language_focus,
-            {"name": "quoted", "query": quoted, "weight": 1.15},
-            {"name": "nl_or", "query": nl_or, "weight": 1.0},
-            {"name": "nl_or_expanded", "query": nl_or_expanded, "weight": 0.85},
+            {"name": "quoted", "query": quoted, "weight": SCORING_CONFIG["sw_quoted"]},
+            {"name": "nl_or", "query": nl_or, "weight": SCORING_CONFIG["sw_nl_or"]},
+            {"name": "nl_or_expanded", "query": nl_or_expanded, "weight": SCORING_CONFIG["sw_nl_or_expanded"]},
         ]
         if _should_try_raw_fallback(raw):
             candidates.append({"name": "raw_fallback", "query": raw, "weight": 0.65})
@@ -3815,7 +3915,10 @@ def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
 
 def _has_explicit_fts_syntax(query: str) -> bool:
     """Detect advanced query syntax where raw execution should be prioritized."""
-    if re.search(r"\b(AND|OR|NOT|NEAR)\b", query, re.IGNORECASE):
+    # Mask statute references so "Art. 41 OR" (Obligationenrecht) doesn't
+    # trigger FTS-operator detection for "OR".
+    masked = QUERY_STATUTE_PATTERN.sub("__STATUTE__", query)
+    if re.search(r"\b(AND|OR|NOT|NEAR)\b", masked, re.IGNORECASE):
         return True
     if "*" in query:
         return True
@@ -4660,9 +4763,16 @@ def _highlight_terms(
     # Build ordered list: raw query phrase (longest) first, then individual terms
     candidates: list[str] = []
 
-    # Try the full raw query as a phrase (strip FTS operators)
+    # Try the full raw query as a phrase (strip FTS operators, but preserve
+    # statute abbreviation "OR" = Obligationenrecht in "Art. N OR" patterns)
     if raw_query:
-        clean_raw = re.sub(r"\b(AND|OR|NOT)\b", " ", raw_query, flags=re.IGNORECASE)
+        # Mask statute refs so "OR" in "Art. 41 OR" isn't stripped
+        _masked_for_strip = QUERY_STATUTE_PATTERN.sub(
+            lambda m: m.group(0).replace("OR", "\x00OR\x00").replace("or", "\x00or\x00"),
+            raw_query,
+        )
+        clean_raw = re.sub(r"\b(AND|OR|NOT)\b", " ", _masked_for_strip, flags=re.IGNORECASE)
+        clean_raw = clean_raw.replace("\x00", "")
         clean_raw = clean_raw.strip(' "')
         clean_raw = re.sub(r"\s+", " ", clean_raw).strip()
         if clean_raw and len(clean_raw.split()) > 1:

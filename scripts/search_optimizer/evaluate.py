@@ -136,7 +136,15 @@ def evaluate(
         hit1 = 1.0 if topk_ids and topk_ids[0] in rel_grades else 0.0
         recall = len(matched_ranks) / len(rel_grades)
 
-        graded = [rel_grades[rid] for rid, _ in sorted(matched_ranks.items(), key=lambda x: x[1])]
+        # Build position-aware grade vector so rank gaps are reflected in DCG
+        graded = []
+        for pos in range(1, k + 1):
+            grade = 0
+            for rid, rank in matched_ranks.items():
+                if rank == pos:
+                    grade = rel_grades[rid]
+                    break
+            graded.append(grade)
         dcg = _dcg(graded)
         ideal = sorted(rel_grades.values(), reverse=True)[:k]
         idcg = _dcg(ideal)
@@ -188,6 +196,19 @@ def evaluate(
     evaluated_queries = [q for q in per_query if q.get("status") == "ok"]
     failed = sorted(evaluated_queries, key=lambda q: q.get("rr", 0))[:trace_limit]
 
+    # Per-tag MRR breakdown
+    tag_metrics: dict[str, list[float]] = {}
+    for q in per_query:
+        if q.get("status") != "ok":
+            continue
+        for tag in q.get("tags", []):
+            tag_metrics.setdefault(tag, []).append(q.get("rr", 0.0))
+    per_tag_mrr = {
+        tag: round(sum(scores) / len(scores), 4)
+        for tag, scores in sorted(tag_metrics.items())
+        if scores
+    }
+
     return {
         "mrr": round(mrr, 4),
         "hit1": round(hit1, 4),
@@ -197,6 +218,7 @@ def evaluate(
         "total_queries": len(queries),
         "per_query": per_query,
         "failed_traces": failed,
+        "per_tag_mrr": per_tag_mrr,
         "config": config,
     }
 
@@ -215,6 +237,11 @@ if __name__ == "__main__":
     result = evaluate(DEFAULT_CONFIG, args.db, args.golden, k=args.k)
     print("MRR@{}: {:.4f}  Hit@1: {:.4f}  Recall: {:.4f}  nDCG: {:.4f}  (n={})".format(
         args.k, result["mrr"], result["hit1"], result["recall"], result["ndcg"], result["evaluated"]))
+
+    if result.get("per_tag_mrr"):
+        print("\nPer-tag MRR:")
+        for tag, mrr_val in sorted(result["per_tag_mrr"].items(), key=lambda x: x[1]):
+            print("  {:25s} {:.4f}".format(tag, mrr_val))
 
     if args.output:
         with open(args.output, "w") as f:

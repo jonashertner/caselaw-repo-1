@@ -42,13 +42,82 @@ DEFAULT_CONFIG = {
     "compound_decomposition_enabled": True,
     "umlaut_bridge_enabled": True,
 
-    # Result scoring weights (applied in _score_and_rank)
-    # These are relative — the scoring function combines:
-    # - BM25 from FTS5 (base signal)
-    # - Metadata match bonus (court, date proximity)
-    # - Citation count bonus (log-scaled)
-    # - Leading case bonus
-    # - BGE authority bonus
+    # ── Rerank signal weights ──
+    "w_docket_exact": 6.0,
+    "w_docket_partial": 2.0,
+    "w_title_cov": 3.0,
+    "w_regeste_cov": 2.2,
+    "w_snippet_cov": 0.8,
+    "w_expanded_regeste_cov": 1.2,
+    "w_expanded_title_cov": 0.8,
+    "w_phrase_hit": 1.8,
+    "w_rrf_score": 32.0,
+    "w_strategy_hits": 0.18,
+    "strategy_hits_cap": 8,
+
+    # ── Graph signals ──
+    "statute_signal_base": 2.2,
+    "statute_signal_cap": 1.2,
+    "statute_signal_per_mention": 0.25,
+    "citation_signal_base": 2.4,
+    "citation_signal_cap": 1.2,
+    "citation_signal_per_hit": 0.30,
+    "authority_signal_per_citation": 0.03,
+    "authority_signal_cap": 1.0,
+    "in_pool_signal_multiplier": 0.5,
+    "in_pool_signal_cap": 1.2,
+    "in_pool_min_citations": 2,
+
+    # ── Local reference signals ──
+    "local_statute_match_signal": 0.8,
+    "local_citation_match_signal": 0.8,
+
+    # ── Court/domain signals ──
+    "asylum_bvger_boost": 1.7,
+    "asylum_bger_penalty": -0.2,
+    "asylum_e_docket_boost": 0.45,
+    "decision_intent_boost": 0.65,
+    "accelerated_procedure_signal": 0.9,
+    "language_match_signal": 0.9,
+
+    # ── Strategy weights ──
+    "sw_raw": 1.5,
+    "sw_quoted_explicit": 1.1,
+    "sw_regeste_focus_explicit": 0.95,
+    "sw_title_focus_explicit": 0.85,
+    "sw_nl_and_explicit": 0.9,
+    "sw_nl_or_explicit": 0.7,
+    "sw_nl_and": 1.3,
+    "sw_regeste_focus": 1.05,
+    "sw_title_focus": 0.95,
+    "sw_quoted": 1.15,
+    "sw_nl_or": 1.0,
+    "sw_nl_or_expanded": 0.85,
+
+    # ── Fusion pipeline weights ──
+    "statute_graph_rrf_weight": 1.0,
+    "sg_weight_with_keywords": 1.0,
+    "sg_weight_pure_statute": 1.5,
+    "sg_weight_unstructured_with_keywords": 0.7,
+    "llm_bge_rrf_weight": 2.0,
+    "structured_bge_rrf_weight": 2.5,
+
+    # ── Doctrine strategy weights ──
+    "doctrine_concept_translation_weight": 1.5,
+    "doctrine_direct_weight": 1.1,
+    "doctrine_regeste_weight": 1.6,
+    "doctrine_title_weight": 1.3,
+    "doctrine_cross_lingual_weight": 1.3,
+
+    # ── BM25 column weights ──
+    "bm25_decision_id": 0.8,
+    "bm25_court": 0.8,
+    "bm25_canton": 0.8,
+    "bm25_docket_number": 2.0,
+    "bm25_language": 0.8,
+    "bm25_title": 6.0,
+    "bm25_regeste": 5.0,
+    "bm25_full_text": 1.2,
 }
 
 
@@ -73,3 +142,11 @@ def apply_config(config: dict):
     mcp_server.SPARSE_SIGNAL_WEIGHT = config.get("sparse_signal_weight", 2.5)
     mcp_server.SPARSE_RRF_WEIGHT = config.get("sparse_rrf_weight", 1.2)
     mcp_server.SPARSE_K = config.get("sparse_k", 100)
+
+    # LLM query parse — was dead code, now wired up
+    mcp_server.LLM_EXPANSION_ENABLED = config.get("llm_query_parse_enabled", False)
+
+    # Patch SCORING_CONFIG dict (all rerank/strategy/fusion/BM25 weights)
+    for key in mcp_server.SCORING_CONFIG:
+        if key in config:
+            mcp_server.SCORING_CONFIG[key] = config[key]

@@ -42,24 +42,39 @@ RESULTS_DIR = REPO_ROOT / "scripts" / "search_optimizer" / "results"
 PROPOSER_SYSTEM = """You are an expert search engineer optimizing a Swiss legal case law retrieval system.
 
 The system searches 965,000+ court decisions using:
-- FTS5 full-text search with BM25 ranking
-- Reciprocal Rank Fusion (RRF) to merge multiple retrieval strategies
-- Citation graph signals (citation count, leading case status)
-- Optional LLM reranking (disabled in this offline optimization)
+- FTS5 full-text search with BM25 ranking (column weights: bm25_title, bm25_regeste, bm25_full_text, etc.)
+- Reciprocal Rank Fusion (RRF) to merge multiple retrieval strategies (each with its own weight: sw_*)
+- Reranking signals: term coverage (w_title_cov, w_regeste_cov, w_snippet_cov), phrase hits, docket matching
+- Citation graph signals (statute_signal_*, citation_signal_*, authority_signal_*, in_pool_signal_*)
+- Court/domain priors (asylum_bvger_boost, decision_intent_boost, language_match_signal)
+- Statute graph retrieval (statute_graph_rrf_weight, sg_weight_*)
+- Doctrine strategies from LLM parse (doctrine_*_weight)
+- Optional LLM reranking
+
+TUNABLE PARAMETER GROUPS:
+1. **Scoring weights (w_*)**: importance of each match signal in final ranking formula
+2. **Graph signals (*_signal_*)**: citation/statute graph contribution (base + cap + rate)
+3. **Strategy weights (sw_*)**: RRF fusion weight per retrieval strategy (nl_and, regeste_focus, quoted, etc.)
+4. **Fusion pipeline (sg_weight_*, *_bge_rrf_weight)**: statute-graph and BGE injection strength
+5. **BM25 column weights (bm25_*)**: FTS5 column importance (title=6.0 is highest, full_text=1.2 is lowest)
+6. **Doctrine weights (doctrine_*)**: LLM-derived concept translation and cross-lingual strategy strength
 
 Your job: analyze execution traces from failed queries and propose config changes that improve MRR@10.
 
 IMPORTANT CONSTRAINTS:
 - Only modify numeric parameters (weights, thresholds, constants)
 - Do not add new features or change the pipeline architecture
-- LLM features are disabled (offline optimization) — don't enable them
 - Vector search is disabled (no vectors.db) — don't enable it
 - Small incremental changes are better than large jumps
-- Always explain your reasoning based on the trace data"""
+- Always explain your reasoning based on the trace data
+- Pay attention to the per-tag breakdown — target the weakest categories"""
 
 PROPOSER_PROMPT = """## Current Performance
 MRR@10: {mrr:.4f} | Hit@1: {hit1:.4f} | Recall@10: {recall:.4f} | nDCG@10: {ndcg:.4f}
 Evaluated: {evaluated} queries
+
+## Per-Tag MRR Breakdown
+{per_tag_breakdown}
 
 ## Best So Far
 MRR@10: {best_mrr:.4f} (iteration {best_iter})
@@ -68,6 +83,9 @@ MRR@10: {best_mrr:.4f} (iteration {best_iter})
 ```json
 {config}
 ```
+
+## Top 5 Successful Queries (for reference — what works)
+{successes}
 
 ## Failed Query Traces (worst {n_traces} by MRR)
 
@@ -78,14 +96,13 @@ MRR@10: {best_mrr:.4f} (iteration {best_iter})
 
 ## Your Task
 
-Analyze the failed query traces. For each failed query, explain:
-1. What the query was looking for
-2. What was returned instead (look at topk results)
-3. Why the relevant decision was missed or ranked too low
+1. Look at the per-tag breakdown to identify which query categories are weakest.
+2. Analyze the failed query traces — what was expected vs. what was returned.
+3. Compare with successful queries to understand what signals work.
+4. Propose weight changes that address the failures WITHOUT degrading successes.
 
-Then propose a MODIFIED CONFIG (JSON) that addresses the failures.
-Output ONLY the JSON config dict, wrapped in ```json ... ``` markers.
-Keep your analysis concise (under 300 words)."""
+Output a MODIFIED CONFIG (JSON) wrapped in ```json ... ``` markers.
+Keep analysis concise (under 300 words)."""
 
 
 def _format_traces(traces: list[dict], limit: int = 15) -> str:
@@ -174,6 +191,7 @@ def optimize(
     k: int = 10,
     trace_limit: int = 15,
     dry_run: bool = False,
+    initial_config: dict | None = None,
 ) -> dict:
     """Main optimization loop."""
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -181,7 +199,7 @@ def optimize(
     run_dir = RESULTS_DIR / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    config = copy.deepcopy(DEFAULT_CONFIG)
+    config = copy.deepcopy(initial_config or DEFAULT_CONFIG)
     best_config = copy.deepcopy(config)
     best_mrr = 0.0
     best_iter = 0
@@ -247,6 +265,25 @@ def optimize(
         traces_text = _format_traces(result["failed_traces"], limit=trace_limit)
         history_text = _format_history(history)
 
+        # Per-tag MRR breakdown
+        per_tag = result.get("per_tag_mrr", {})
+        if per_tag:
+            tag_lines = ["{:25s} {:.4f}".format(tag, val)
+                         for tag, val in sorted(per_tag.items(), key=lambda x: x[1])]
+            per_tag_text = "\n".join(tag_lines)
+        else:
+            per_tag_text = "(not available)"
+
+        # Top 5 successful queries
+        ok_queries = [q for q in result.get("per_query", [])
+                      if q.get("status") == "ok" and q.get("rr", 0) >= 1.0]
+        ok_queries.sort(key=lambda q: -q.get("ndcg", 0))
+        success_lines = []
+        for sq in ok_queries[:5]:
+            success_lines.append('  "{}" [{}] — RR=1.0'.format(
+                sq.get("query", ""), ", ".join(sq.get("tags", []))))
+        successes_text = "\n".join(success_lines) if success_lines else "(none)"
+
         prompt = PROPOSER_PROMPT.format(
             mrr=mrr, hit1=hit1, recall=recall, ndcg=ndcg,
             evaluated=result["evaluated"],
@@ -255,6 +292,8 @@ def optimize(
             n_traces=min(trace_limit, len(result["failed_traces"])),
             traces=traces_text,
             history=history_text,
+            per_tag_breakdown=per_tag_text,
+            successes=successes_text,
         )
 
         # Save prompt
@@ -331,6 +370,12 @@ def main():
     parser.add_argument("-k", type=int, default=10)
     parser.add_argument("--dry-run", action="store_true",
                         help="Run one evaluation only, no proposer")
+    parser.add_argument("--with-rerank", action="store_true",
+                        help="Enable LLM reranking during optimization")
+    parser.add_argument("--with-llm-parse", action="store_true",
+                        help="Enable LLM query parsing (requires ANTHROPIC_API_KEY)")
+    parser.add_argument("--parse-cache", type=Path, default=None,
+                        help="Path to pre-cached LLM parse results JSON")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -339,12 +384,35 @@ def main():
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
 
+    # Override config defaults from CLI flags
+    config_overrides = {}
+    if args.with_rerank:
+        config_overrides["llm_rerank_enabled"] = True
+    if args.with_llm_parse:
+        config_overrides["llm_query_parse_enabled"] = True
+
+    # Load pre-cached LLM parses if provided
+    if args.parse_cache and args.parse_cache.exists():
+        import mcp_server
+        cache_data = json.load(open(args.parse_cache))
+        for query_key, parsed in cache_data.get("structured_parses", {}).items():
+            mcp_server._STRUCTURED_PARSE_CACHE[query_key] = parsed
+        for query_key, terms in cache_data.get("expansions", {}).items():
+            mcp_server._LLM_EXPANSION_CACHE[query_key] = terms
+        logger.info("Loaded %d cached parses, %d cached expansions",
+                     len(cache_data.get("structured_parses", {})),
+                     len(cache_data.get("expansions", {})))
+
+    # Apply overrides to DEFAULT_CONFIG for this run
+    run_config = {**DEFAULT_CONFIG, **config_overrides}
+
     summary = optimize(
         db_path=args.db.resolve(),
         golden_path=args.golden.resolve(),
         max_iterations=args.iterations,
         k=args.k,
         dry_run=args.dry_run,
+        initial_config=run_config,
     )
     print("\nBest MRR@{}: {:.4f}".format(args.k, summary["best_mrr"]))
 
