@@ -130,13 +130,21 @@
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 /* overflow-x: clip (not hidden) is critical — hidden creates a scroll
-   container that breaks position: sticky on all descendants. */
-html { overflow-x: clip; scroll-behavior: smooth; }
+   container that breaks position: sticky on all descendants. The
+   `hidden` fallback handles Safari 15 and earlier where `clip` is
+   unsupported; those users lose sticky positioning but keep overflow
+   protection. */
+html {
+  overflow-x: hidden;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+}
 body {
   font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.55;
   background: var(--bg); color: var(--tx);
   -webkit-font-smoothing: antialiased;
   transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  overflow-x: hidden;
   overflow-x: clip;
 }
 .w { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
@@ -1032,6 +1040,13 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   color: var(--tx);
   border-color: var(--tx3);
   text-decoration: none;
+}
+.page-toc a.active,
+.page-toc a[aria-current="true"] {
+  color: var(--tx);
+  border-color: var(--tx);
+  background: var(--surf);
+  font-weight: 600;
 }
 @media (max-width: 560px) {
   .page-toc { padding: 10px 0 18px; }
@@ -2416,6 +2431,17 @@ if (hamburgerBtn && mobileMenu) {
     sectionIds.forEach(id => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
+    });
+
+    // Fallback: default the FIRST link in each nav group to active so the
+    // navigation always shows a visible state at scrollY=0 (where no section
+    // may yet be intersecting the observation band). The observer updates
+    // this naturally once the user scrolls.
+    ['.anchor-nav', '.page-toc'].forEach(sel => {
+      const group = document.querySelectorAll(sel + ' a[href^="#"]');
+      if (group.length > 0 && !Array.from(group).some(a => a.classList.contains('active'))) {
+        group[0].classList.add('active');
+      }
     });
   }
 }
