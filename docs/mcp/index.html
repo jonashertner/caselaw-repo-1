@@ -129,13 +129,15 @@
   --spark: #60a5fa;
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { overflow-x: hidden; scroll-behavior: smooth; }
+/* overflow-x: clip (not hidden) is critical — hidden creates a scroll
+   container that breaks position: sticky on all descendants. */
+html { overflow-x: clip; scroll-behavior: smooth; }
 body {
   font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.55;
   background: var(--bg); color: var(--tx);
   -webkit-font-smoothing: antialiased;
   transition: background 0.3s var(--ease), color 0.3s var(--ease);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 .w { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
 a { color: var(--ac); text-decoration: none; }
@@ -199,7 +201,11 @@ a:hover { text-decoration: underline; }
   transition: color 0.15s var(--ease), background 0.15s var(--ease);
 }
 .url-nav a:hover { color: var(--tx); background: var(--bg2); text-decoration: none; }
-.url-nav a.active { color: var(--tx); font-weight: 600; }
+.url-nav a.active, .url-nav a[aria-current="page"] {
+  color: var(--tx);
+  font-weight: 600;
+  background: var(--bg2);
+}
 /* Legacy alias so old callsites keep compiling */
 .section-nav { display: flex; gap: 2px; align-items: center; }
 .section-nav a { font-size: 13px; font-weight: 500; color: var(--tx2); padding: 8px 14px; text-decoration: none; border-radius: 6px; transition: color 0.15s var(--ease), background 0.15s var(--ease); }
@@ -404,7 +410,9 @@ header[style*="text-align: left"] .sub {
   text-decoration: none; letter-spacing: -0.01em;
   transition: color 0.15s var(--ease);
 }
-.mobile-menu a:hover, .mobile-menu a.active { color: var(--tx); text-decoration: none; }
+.mobile-menu a:hover, .mobile-menu a.active, .mobile-menu a[aria-current="page"] {
+  color: var(--tx); text-decoration: none; font-weight: 700;
+}
 .section-nav a.active { color: var(--tx); font-weight: 600; }
 
 /* ── Charts ── */
@@ -948,6 +956,111 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
+/* ── Anchor nav (sticky in-page section nav, used on the dashboard) ── */
+.anchor-nav {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 4px;
+  margin: 0 0 32px;
+  position: sticky;
+  top: 52px;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(14px) saturate(1.6);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  border-bottom: 1px solid var(--brd2);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.anchor-nav::-webkit-scrollbar { display: none; }
+.anchor-nav a {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--tx3);
+  padding: 7px 13px;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+  white-space: nowrap;
+  scroll-margin-top: 104px;
+}
+.anchor-nav a:hover { color: var(--tx2); background: var(--bg2); text-decoration: none; }
+.anchor-nav a.active {
+  color: var(--tx);
+  background: var(--bg2);
+  font-weight: 600;
+}
+/* All anchor-targeted sections should scroll into view *below* the sticky headers */
+[id] { scroll-margin-top: 120px; }
+
+/* ── Compact inline page-toc (used on sub-pages to preview sections) ── */
+.page-toc {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: -8px 0 clamp(36px, 6vw, 64px);
+  padding: 14px 0 22px;
+  border-bottom: 1px solid var(--brd2);
+}
+.page-toc-label {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--tx3);
+  padding: 6px 10px 6px 0;
+  font-weight: 500;
+  margin-right: 4px;
+}
+.page-toc a {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--tx2);
+  padding: 6px 12px;
+  text-decoration: none;
+  background: var(--bg2);
+  border: 1px solid var(--brd2);
+  border-radius: 100px;
+  transition: color 0.15s var(--ease), border-color 0.15s var(--ease), background 0.15s var(--ease);
+  white-space: nowrap;
+}
+.page-toc a:hover {
+  color: var(--tx);
+  border-color: var(--tx3);
+  text-decoration: none;
+}
+@media (max-width: 560px) {
+  .page-toc { padding: 10px 0 18px; }
+  .page-toc-label { display: none; }
+}
+
+/* Skip-to-content link — hidden until keyboard focus */
+.skip-link {
+  position: fixed;
+  top: -48px;
+  left: 16px;
+  z-index: 1000;
+  background: var(--tx);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  text-decoration: none;
+  border-radius: 0 0 8px 8px;
+  transition: top 0.18s var(--ease);
+}
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  text-decoration: none;
+}
+#main:focus { outline: none; }
+
 /* ── Live from the corpus (landing demo) ── */
 .live-demo { margin: 0 0 clamp(56px, 8vw, 96px); }
 .demo-tagline {
@@ -1242,6 +1355,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 </head>
 <body>
 
+<a class="skip-link" href="#main" data-t="skip_link">Skip to content</a>
+
 <nav class="toolbar"><div class="w toolbar-inner">
   <a href="/" class="toolbar-brand" aria-label="opencaselaw.ch — home">
     <span class="brand-mark">+</span>
@@ -1285,7 +1400,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   </div>
 </div>
 
-<div class="w">
+<main id="main" class="w">
 <header style="margin-top:56px; margin-bottom:48px; text-align:left">
     <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
       <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
@@ -1298,8 +1413,16 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </p>
   </header>
 
+  <nav class="page-toc" aria-label="On this page">
+    <span class="page-toc-label" data-t="page_toc">On this page</span>
+    <a href="#mcp-modes">Betriebsmodi</a>
+    <a href="#mcp-setup">Einrichtung</a>
+    <a href="#mcp-tools">Tools</a>
+    <a href="#mcp-tech">Technisches</a>
+  </nav>
+
   <!-- Remote vs Local -->
-  <section class="section-card" open style="margin-bottom:24px">
+  <section id="mcp-modes" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
       <h2 style="margin:0 0 16px; font-size:22px">Zwei Betriebsmodi</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px">
@@ -1328,7 +1451,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   </section>
 
   <!-- Setup per client -->
-  <section class="section-card" open style="margin-bottom:24px">
+  <section id="mcp-setup" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
       <h2 style="margin:0 0 16px; font-size:22px">Einrichtung nach Client</h2>
 
@@ -1366,7 +1489,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   </section>
 
   <!-- Tool list -->
-  <section class="section-card" open style="margin-bottom:24px">
+  <section id="mcp-tools" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
       <h2 style="margin:0 0 12px; font-size:22px">21 Tools im Überblick</h2>
       <p style="font-size:14px; color:var(--tx2); margin:0 0 20px; max-width:68ch">
@@ -1416,7 +1539,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   </section>
 
   <!-- Technical details -->
-  <section class="section-card" open style="margin-bottom:48px">
+  <section id="mcp-tech" class="section-card" open style="margin-bottom:48px">
     <div class="section-body" style="padding:28px 32px">
       <h2 style="margin:0 0 12px; font-size:22px">Technisches</h2>
       <ul style="font-size:14px; line-height:1.7; color:var(--tx2); margin:0; padding-left:20px; max-width:68ch">
@@ -1429,46 +1552,48 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
   </section>
 
-  <footer class="footer-v2">
+</main>
+
+<footer class="footer-v2">
+  <div class="w">
     <div class="footer-cols">
       <div class="footer-col">
         <div class="footer-col-head" data-t="footer_col_data">Data</div>
-        <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">HuggingFace</a>
+        <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener" target="_blank">HuggingFace</a>
         <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
         <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
         <span class="footer-badge">CC0 1.0</span>
       </div>
       <div class="footer-col">
         <div class="footer-col-head" data-t="footer_col_code">Code</div>
-        <a href="https://github.com/jonashertner/caselaw-repo-1">GitHub</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/issues" data-t="footer_report">Report issue</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CHANGELOG.md" data-t="footer_changelog">Changelog</a>
+        <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">GitHub</a>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank" data-t="footer_report">Report issue</a>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CHANGELOG.md" rel="noopener" target="_blank" data-t="footer_changelog">Changelog</a>
         <span class="footer-badge">MIT License</span>
       </div>
       <div class="footer-col">
         <div class="footer-col-head" data-t="footer_col_connect">Connect</div>
         <a href="/mcp/">MCP Server</a>
-        <a href="https://word.opencaselaw.ch/install.html">Word Add-in</a>
-        <a href="https://mcp.opencaselaw.ch/health" data-t="footer_status">API Status</a>
+        <a href="https://word.opencaselaw.ch/install.html" rel="noopener" target="_blank">Word Add-in</a>
+        <a href="https://mcp.opencaselaw.ch/health" rel="noopener" target="_blank" data-t="footer_status">API Status</a>
       </div>
       <div class="footer-col">
         <div class="footer-col-head" data-t="footer_col_about">About</div>
         <a href="/ueber/" data-t="footer_about">About OpenCaseLaw</a>
         <a href="mailto:team@jonashertner.com" data-t="footer_contact">Contact</a>
-        <a href="https://jonashertner.com">Jonas Hertner</a>
+        <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>
       </div>
     </div>
     <div class="footer-meta">
       <div id="ts"></div>
       <div>
-        <span data-t="made">Built with &#9829; by <a href="https://jonashertner.com" rel="author">Jonas Hertner</a></span>
+        <span data-t="made">Built with &#9829; by <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a></span>
         <span class="sep">&middot;</span>
         <span data-t="footer_tagline_mid">Open source (MIT) &middot; Data CC0 &middot; 114 Swiss courts</span>
       </div>
     </div>
-  </footer>
-
-</div>
+  </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
@@ -1535,6 +1660,7 @@ const I18N = {
     footer_report:'Issue melden', footer_changelog:'Changelog', footer_status:'API-Status',
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
+    skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat-Oberfl\u00e4che \u2014 Fragen stellen, Entscheide erhalten',
     quick_download:'Download', quick_download_desc:'Kompletter Datensatz zum Download auf HuggingFace',
@@ -1651,6 +1777,7 @@ const I18N = {
     footer_report:'Signaler un probl\u00e8me', footer_changelog:'Changelog', footer_status:'\u00c9tat API',
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
+    skip_link:'Aller au contenu', page_toc:'Sur cette page',
     search_placeholder:'Rechercher...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interface de chat \u2014 posez des questions, obtenez des d\u00e9cisions',
     quick_download:'Télécharger', quick_download_desc:'Dataset complet à télécharger sur HuggingFace',
@@ -1767,6 +1894,7 @@ const I18N = {
     footer_report:'Segnala problema', footer_changelog:'Changelog', footer_status:'Stato API',
     footer_about:'Chi siamo', footer_contact:'Contatto',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
+    skip_link:'Vai al contenuto', page_toc:'In questa pagina',
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfaccia chat \u2014 fai domande, ottieni decisioni',
     quick_download:'Download', quick_download_desc:'Dataset completo da scaricare su HuggingFace',
@@ -1883,6 +2011,7 @@ const I18N = {
     footer_report:'Annunziar problem', footer_changelog:'Changelog', footer_status:'Status API',
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
+    skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfatscha da chat \u2014 far dumondas, obtegnir decisiuns',
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain per telechargiar sin HuggingFace',
@@ -1999,6 +2128,7 @@ const I18N = {
     footer_report:'Report issue', footer_changelog:'Changelog', footer_status:'API status',
     footer_about:'About OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
+    skip_link:'Skip to content', page_toc:'On this page',
     search_placeholder:'Search courts...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat interface \u2014 ask questions, get cited decisions',
     quick_download:'Download', quick_download_desc:'Full dataset for download on HuggingFace',
@@ -2106,20 +2236,82 @@ if (hamburgerBtn && mobileMenu) {
   const toggleMenu = (open) => {
     const isOpen = open !== undefined ? open : !mobileMenu.classList.contains('open');
     mobileMenu.classList.toggle('open', isOpen);
+    hamburgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     if (icoMenu) icoMenu.style.display = isOpen ? 'none' : '';
     if (icoClose) icoClose.style.display = isOpen ? '' : 'none';
     document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen) {
+      // Focus the first link when the menu opens so keyboard users land in it.
+      const first = mobileMenu.querySelector('a');
+      if (first) setTimeout(() => first.focus(), 50);
+    }
   };
+  hamburgerBtn.setAttribute('aria-expanded', 'false');
+  hamburgerBtn.setAttribute('aria-controls', 'mobile-menu');
   hamburgerBtn.addEventListener('click', () => toggleMenu());
   mobileMenu.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => toggleMenu(false));
   });
+  // Close on Escape so users aren't trapped in the overlay.
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+      toggleMenu(false);
+      hamburgerBtn.focus();
+    }
+  });
 }
 
-/* ── Scroll-spy (only active if the page has in-page anchor links in the nav) ── */
+/* ── Landing demo tab keyboard navigation (ArrowLeft/Right, Home, End) ── */
 {
-  // URL nav uses external paths; in-page anchor nav is only present on sub-pages that opt in.
-  const anchorNav = document.querySelectorAll('#url-nav a[href^="#"], #mobile-menu a[href^="#"]');
+  const tabs = Array.from(document.querySelectorAll('.demo-tab'));
+  if (tabs.length > 0) {
+    tabs.forEach((btn, i) => {
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('tabindex', i === 0 ? '0' : '-1');
+      btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      btn.addEventListener('keydown', (e) => {
+        let nextIdx = null;
+        if (e.key === 'ArrowRight') nextIdx = (i + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') nextIdx = (i - 1 + tabs.length) % tabs.length;
+        else if (e.key === 'Home') nextIdx = 0;
+        else if (e.key === 'End') nextIdx = tabs.length - 1;
+        if (nextIdx !== null) {
+          e.preventDefault();
+          tabs[nextIdx].click();
+          tabs[nextIdx].focus();
+        }
+      });
+      btn.addEventListener('click', () => {
+        tabs.forEach((b, j) => {
+          b.setAttribute('tabindex', b.classList.contains('active') ? '0' : '-1');
+          b.setAttribute('aria-selected', b.classList.contains('active') ? 'true' : 'false');
+        });
+      });
+    });
+  }
+}
+
+/* ── Mark the current-page nav link as active ── */
+{
+  // Normalize both the current path and each href so that `/gesetze` and
+  // `/gesetze/` and `/gesetze/index.html` all compare equal.
+  const norm = p => (p || '/').replace(/\/index\.html$/, '/').replace(/\/$/, '') || '/';
+  const current = norm(window.location.pathname);
+  document.querySelectorAll('.url-nav a, #mobile-menu a').forEach(a => {
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || /^https?:\/\//.test(href)) return;
+    if (norm(href) === current) {
+      a.classList.add('active');
+      a.setAttribute('aria-current', 'page');
+    }
+  });
+}
+
+/* ── Scroll-spy (only active if the page has in-page anchor links) ── */
+{
+  // Watches any `.anchor-nav` (dashboard sub-nav, sub-page TOC) or mobile-menu
+  // anchor links and toggles `.active` as sections scroll into view.
+  const anchorNav = document.querySelectorAll('.anchor-nav a[href^="#"], .page-toc a[href^="#"], #mobile-menu a[href^="#"]');
   if (anchorNav.length > 0) {
     const sectionIds = [...new Set([...anchorNav].map(a => a.getAttribute('href').slice(1)))];
     const observer = new IntersectionObserver(entries => {
