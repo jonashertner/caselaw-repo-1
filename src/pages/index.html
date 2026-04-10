@@ -1,74 +1,102 @@
-<!-- title: OpenCaseLaw.ch — Swiss Case Law & Legislation for AI Agents -->
-<!-- description: Der grösste offene Datensatz von Schweizer Gerichtsentscheiden (965'000+) und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar via HuggingFace, MCP und REST. -->
+<!-- title: OpenCaseLaw.ch — The Complete Open Dataset of Swiss Case Law -->
+<!-- description: 965'000+ published Swiss court decisions, 80 federal laws, 33'000+ cantonal acts. Searchable by humans, readable by AI. Open source, CC0, updated daily. -->
 
-  <header style="padding:96px 0 32px; text-align:left; max-width:720px">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:28px; font-family:var(--f-mono); font-size:13px; color:var(--tx3); letter-spacing:0.02em">
-      <span style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border:1px solid var(--brd); border-radius:4px; color:var(--tx2); font-weight:600">+</span>
-      <span>opencaselaw.ch</span>
+  <header class="hero-v2">
+    <p class="hero-kicker" data-t="hero_kicker">An open corpus of Swiss law</p>
+    <div class="hero-stat">
+      <span class="hero-stat-num" id="hero-decisions">965,135</span>
+      <span class="hero-stat-label" data-t="hero_stat_label">published court decisions</span>
     </div>
-    <h1 style="font-size:clamp(32px, 5vw, 48px); line-height:1.1; letter-spacing:-0.02em; margin:0 0 20px; font-weight:600" data-t="landing_title">
-      Swiss case law &amp; legislation,<br>built for AI agents.
-    </h1>
-    <p class="sub" style="font-size:17px; line-height:1.55; max-width:60ch; margin:0" data-t="landing_sub">
-      Ein offener, vollständiger Datensatz aller publizierten Schweizer Gerichtsentscheide (965'000+) und die erste
-      LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar &mdash; per MCP-Server,
-      HuggingFace-Download oder REST-API.
-    </p>
+    <h1 class="hero-headline" data-t="hero_headline">The complete open dataset of Swiss case law.</h1>
+    <p class="hero-tagline" data-t="hero_tagline">Searchable by you, readable by your AI. Every published decision from every federal court and 26 cantons, plus 80 federal laws and 33,000+ cantonal acts.</p>
+    <div class="hero-ctas">
+      <a href="/entscheide/" class="btn btn-primary">
+        <span data-t="hero_cta_explore">Explore corpus</span>
+      </a>
+      <a href="/mcp/" class="btn btn-secondary">
+        <span data-t="hero_cta_connect">Connect your AI</span>
+      </a>
+      <a href="https://word.opencaselaw.ch/install.html" class="btn btn-tertiary">
+        <span data-t="hero_cta_word">Word Add-in</span>
+        <span class="beta">BETA</span>
+      </a>
+    </div>
+    <div class="hero-meta">
+      <span data-t="hero_meta_updated">updated daily</span>
+      <span class="sep">·</span>
+      <span><strong id="hero-courts">114</strong> <span data-t="hero_meta_courts">courts</span></span>
+      <span class="sep">·</span>
+      <span><strong>8.77M</strong> <span data-t="hero_meta_citations">citations</span></span>
+      <span class="sep">·</span>
+      <span><strong>80</strong> <span data-t="hero_meta_laws">laws</span></span>
+      <span class="sep">·</span>
+      <span>CC0</span>
+    </div>
   </header>
 
-  <!-- 4 capability cards -->
-  <section style="margin:48px 0 64px">
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px">
+  <!-- Capability cards — 4 ways in -->
+  <section style="margin:0 0 clamp(56px, 8vw, 96px)">
+    <h2 class="section-heading" data-t="capabilities_heading">Four ways in</h2>
+    <div class="capabilities">
 
-      <a href="/entscheide/" class="landing-card">
-        <div class="landing-card-head">
-          <span class="landing-card-num">01</span>
-          <h3 data-t="landing_card_entscheide_title">Entscheide</h3>
+      <a href="/entscheide/" class="cap-card">
+        <div class="cap-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v18M8 21h8"/>
+            <path d="M6 6h12"/>
+            <path d="M5 6l-3 7a4 4 0 0 0 8 0z"/>
+            <path d="M19 6l-3 7a4 4 0 0 0 8 0z"/>
+          </svg>
         </div>
-        <p data-t="landing_card_entscheide_desc">965'000+ Gerichtsentscheide aller Bundesgerichte und 26 Kantone, täglich aktualisiert. Volltextsuche, Zitationsgraph (8,77 Mio Kanten), mehrsprachig (DE/FR/IT).</p>
-        <div class="landing-card-foot">
-          <span data-t="landing_card_entscheide_cta">Datensatz erkunden →</span>
-        </div>
+        <h3 data-t="nav_entscheide">Decisions</h3>
+        <p data-t="cap_entscheide_desc">Every published Swiss court decision. Full-text search, citation graph, multilingual (DE/FR/IT). Updated daily.</p>
+        <div class="cap-card-cta" data-t="cap_cta_entscheide">Dataset →</div>
       </a>
 
-      <a href="/gesetze/" class="landing-card">
-        <div class="landing-card-head">
-          <span class="landing-card-num">02</span>
-          <h3 data-t="landing_card_gesetze_title">Gesetze</h3>
+      <a href="/gesetze/" class="cap-card">
+        <div class="cap-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/>
+            <path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/>
+          </svg>
         </div>
-        <p data-t="landing_card_gesetze_desc">80 Bundesgesetze (39'000 Artikel in DE/FR/IT) als lokaler Fedlex-Spiegel und 33'000+ kantonale Erlasse via LexFind. Authoritativer Text statt halluzinierter Zitate.</p>
-        <div class="landing-card-foot">
-          <span data-t="landing_card_gesetze_cta">Legislation →</span>
-        </div>
+        <h3 data-t="nav_gesetze">Legislation</h3>
+        <p data-t="cap_gesetze_desc">80 federal laws as a local Fedlex mirror plus 33,000+ cantonal acts via LexFind. Authoritative text instead of hallucinated citations.</p>
+        <div class="cap-card-cta" data-t="cap_cta_gesetze">Legislation →</div>
       </a>
 
-      <a href="/mcp/" class="landing-card">
-        <div class="landing-card-head">
-          <span class="landing-card-num">03</span>
-          <h3 data-t="landing_card_mcp_title">Verbinden</h3>
+      <a href="/mcp/" class="cap-card">
+        <div class="cap-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 2v6"/>
+            <path d="M15 2v6"/>
+            <path d="M7 8h10v4a5 5 0 0 1-10 0z"/>
+            <path d="M12 17v5"/>
+          </svg>
         </div>
-        <p data-t="landing_card_mcp_desc">21 MCP-Tools für Claude, ChatGPT, Cursor und Gemini. Remote-Server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) oder lokal. Einrichtung in 30 Sekunden.</p>
-        <div class="landing-card-foot">
-          <span data-t="landing_card_mcp_cta">MCP-Setup →</span>
-        </div>
+        <h3 data-t="nav_mcp">Connect</h3>
+        <p data-t="cap_mcp_desc">21 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote or local. 30-second setup.</p>
+        <div class="cap-card-cta" data-t="cap_cta_mcp">MCP setup →</div>
       </a>
 
-      <a href="/studium/" class="landing-card">
-        <div class="landing-card-head">
-          <span class="landing-card-num">04</span>
-          <h3 data-t="landing_card_studium_title">Studium</h3>
+      <a href="/studium/" class="cap-card">
+        <div class="cap-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6"/>
+            <path d="M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/>
+          </svg>
         </div>
-        <p data-t="landing_card_studium_desc">Case-Briefs, doktrinelle Timelines, echte BGE-Sachverhalte als Prüfungsfragen und Kommentar-Exzerpte &mdash; alles über die MCP-Tools.</p>
-        <div class="landing-card-foot">
-          <span data-t="landing_card_studium_cta">Lernwerkzeuge →</span>
-        </div>
+        <h3 data-t="nav_studium">Study</h3>
+        <p data-t="cap_studium_desc">Case briefs, doctrinal timelines, real BGE fact patterns as exam questions and commentary excerpts.</p>
+        <div class="cap-card-cta" data-t="cap_cta_studium">Study tools →</div>
       </a>
 
     </div>
   </section>
 
   <!-- Featured integration: Word Add-in -->
-  <section class="leg-banner" style="display:flex; align-items:center; gap:28px; flex-wrap:wrap; margin:40px 0 64px">
+  <section class="leg-banner" style="display:flex; align-items:center; gap:28px; flex-wrap:wrap; margin:0 0 clamp(56px, 8vw, 96px)">
     <div style="flex:1 1 320px; min-width:260px">
       <div class="leg-banner-head">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--tx2)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -79,89 +107,22 @@
         Schweizer Rechtsprechung direkt in Ihrem Word-Dokument. Suchen, zitieren und einfügen ohne Copy-Paste aus dem Browser — mit automatischer Quellenangabe.
       </p>
     </div>
-    <a href="https://word.opencaselaw.ch/install.html" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border:1px solid var(--brd); border-radius:6px; background:var(--surf); color:var(--tx); font-size:14px; font-weight:500; text-decoration:none; transition:all 0.15s var(--ease); flex-shrink:0" onmouseover="this.style.borderColor='var(--tx3)'; this.style.background='var(--ac-bg)'" onmouseout="this.style.borderColor='var(--brd)'; this.style.background='var(--surf)'">
+    <a href="https://word.opencaselaw.ch/install.html" class="btn btn-secondary" style="flex-shrink:0">
       <span data-t="word_cta">Installation →</span>
     </a>
   </section>
 
   <!-- What is this? -->
-  <section style="margin:64px 0 48px; max-width:68ch">
-    <h2 style="font-size:22px; font-weight:600; letter-spacing:-0.01em; margin:0 0 12px" data-t="landing_what_title">Was ist OpenCaseLaw?</h2>
-    <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px" data-t="landing_what_1">
+  <section class="landing-prose">
+    <h2 data-t="what_heading">What is OpenCaseLaw?</h2>
+    <p data-t="landing_what_1">
       OpenCaseLaw sammelt, dedupliziert und publiziert <strong>jeden veröffentlichten Schweizer Gerichtsentscheid</strong> sowie den
       aktuellen Text aller einschlägigen Bundesgesetze und der 33'000+ kantonalen Erlasse. Der Datensatz wird täglich aktualisiert und
       steht unter CC0 (Daten) und MIT (Code) zur freien Verfügung.
     </p>
-    <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0" data-t="landing_what_2">
+    <p data-t="landing_what_2">
       Die gleiche Infrastruktur treibt einen öffentlichen MCP-Server an, der Sprachmodellen 21 spezialisierte Tools für Schweizer
-      Rechtsrecherche bereitstellt &mdash; von der Volltextsuche über die Zitationsanalyse bis zum Abruf von Gesetzesartikeln.
+      Rechtsrecherche bereitstellt — von der Volltextsuche über die Zitationsanalyse bis zum Abruf von Gesetzesartikeln.
       Keine Anmeldung, keine API-Keys, keine Paywall.
     </p>
   </section>
-
-  <!-- Status line -->
-  <section style="margin:48px 0; padding:18px 0; border-top:1px solid var(--brd2); border-bottom:1px solid var(--brd2); font-family:var(--f-mono); font-size:13px; color:var(--tx3)">
-    <div style="display:flex; flex-wrap:wrap; gap:24px 32px; align-items:baseline">
-      <span><span style="color:var(--tx2); font-weight:600">965,141</span> <span data-t="landing_stat_decisions">decisions</span></span>
-      <span><span style="color:var(--tx2); font-weight:600">104</span> <span data-t="landing_stat_courts">courts</span></span>
-      <span><span style="color:var(--tx2); font-weight:600">80</span> <span data-t="landing_stat_laws">federal laws</span></span>
-      <span><span style="color:var(--tx2); font-weight:600">33,000+</span> <span data-t="landing_stat_cantonal">cantonal acts</span></span>
-      <span><span style="color:var(--tx2); font-weight:600">8.77M</span> <span data-t="landing_stat_citations">citation edges</span></span>
-      <span style="margin-left:auto"><span data-t="landing_stat_updated">Updated daily</span> · <a href="https://mcp.opencaselaw.ch/health" style="color:var(--tx3); text-decoration:none">mcp.opencaselaw.ch</a></span>
-    </div>
-  </section>
-
-  <style>
-    .landing-card {
-      display: flex; flex-direction: column;
-      padding: 22px 24px;
-      background: var(--surf);
-      border: 1px solid var(--brd2);
-      border-radius: 8px;
-      color: var(--tx);
-      text-decoration: none;
-      transition: border-color 0.15s var(--ease), transform 0.15s var(--ease), background 0.15s var(--ease);
-    }
-    .landing-card:hover {
-      border-color: var(--tx3);
-      background: var(--ac-bg);
-      text-decoration: none;
-      transform: translateY(-1px);
-    }
-    .landing-card-head {
-      display: flex; align-items: baseline; gap: 12px;
-      margin-bottom: 10px;
-    }
-    .landing-card-num {
-      font-family: var(--f-mono);
-      font-size: 11px;
-      color: var(--tx3);
-      letter-spacing: 0.05em;
-    }
-    .landing-card h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-    .landing-card p {
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--tx2);
-      margin: 0 0 18px;
-      flex: 1;
-    }
-    .landing-card-foot {
-      font-size: 13px;
-      color: var(--tx3);
-      font-weight: 500;
-    }
-    .landing-card:hover .landing-card-foot { color: var(--tx); }
-    .landing-card code {
-      font-family: var(--f-mono);
-      background: var(--bg2);
-      padding: 1px 5px;
-      border-radius: 3px;
-    }
-  </style>
-
