@@ -10,9 +10,9 @@ jh@jonashertner.com
 
 ## Abstract
 
-Switzerland publishes court decisions across a fragmented infrastructure of 26 cantonal portals, multiple federal court websites, and regulatory agencies. No unified open resource exists. We release *OpenCaseLaw*, a large-scale open corpus of published Swiss court decisions together with a resolved citation and statute-reference graph. The April 10, 2026 snapshot contains 965,141 full-text decisions from 104 courts and regulatory bodies across all 26 cantons and the period 1875--2026, in German (46.6%), French (45.1%), and Italian (8.3%). The accompanying reference graph contains 6.53 million resolved decision-to-decision citation links and 11.34 million decision-to-statute references. To our knowledge, this is the first open dataset to couple comprehensive cantonal and federal coverage with a resolved citation graph for Swiss case law.
+Switzerland publishes court decisions across a fragmented infrastructure of 26 cantonal portals, multiple federal court websites, and regulatory agencies. No unified open resource exists. We release *OpenCaseLaw*, a large-scale open corpus of published Swiss court decisions together with a resolved citation and statute-reference graph. The April 10, 2026 snapshot contains 965,141 full-text decisions from 104 courts and regulatory bodies across all 26 cantons and the period 1875--2026, in German (46.6%), French (45.1%), and Italian (8.3%). The accompanying reference graph contains 6.53 million resolved decision-to-decision citation links and 11.34 million decision-to-statute references, with both endpoints navigable: 80 federal laws (39,000 articles) are mirrored locally from Fedlex and approximately 33,000 additional federal and cantonal texts are queryable through a cached integration with LexFind.ch. To our knowledge, this is the first open dataset to couple comprehensive cantonal and federal coverage with a resolved citation graph and dereferenceable statute references for Swiss case law.
 
-We report one empirical finding: cross-language citations from French- and Italian-speaking courts are dominated by references to the official collection (*Bundesgerichtsentscheide* / BGE), which is published primarily in German. Once BGE citations are removed, French-language courts cite French-language sources 4.6 times more often than German-language ones, and Italian-language courts cite Italian and German sources at roughly similar rates. The apparent "German dominance" of Swiss jurisprudence is therefore largely a BGE effect, not a general cross-language asymmetry.
+We report one empirical finding: a naive reading of the raw cross-language citation matrix appears to show strong German dominance of French and Italian jurisprudence, but this is an artefact of how the *Bundesgerichtsentscheide* (BGE) leading-case collection is distributed by language. 71.6% of BGE records in the corpus are in German, because BGE records inherit the language of the underlying Federal Supreme Court proceedings, which in turn mirrors the Swiss population mix. Once this confound is controlled for --- either by excluding BGE targets, or by normalising BGE citations against the BGE language base rate --- each language group exhibits a clear preference for its own-language sources. French courts cite French non-BGE sources 4.6 times more often than German non-BGE sources, and within BGE targets, French courts over-cite French BGEs by 13.5 percentage points relative to the base rate --- the largest own-language preference in the matrix.
 
 The dataset is released as Parquet on Hugging Face under CC0-1.0; all code is MIT-licensed. A reproducible snapshot, a 100-query multilingual retrieval benchmark, and the reference-graph database are pinned to a specific commit for the version accompanying this paper.
 
@@ -28,7 +28,7 @@ This paper describes *OpenCaseLaw*, an open corpus of published Swiss court deci
 
 1. **A large-scale open corpus** of 965,141 published decisions from 104 courts and regulatory bodies, with full text in German, French, and Italian. To our knowledge, this is the largest open collection of published Swiss court decisions and the only one that combines comprehensive cantonal and federal coverage with trilingual full text.
 
-2. **A resolved citation and statute-reference graph.** We extract and resolve 8.87 million citation references (73.6% resolved to in-corpus targets) and 11.34 million decision-to-statute links across 284,145 distinct provisions. We release the graph as a SQLite database alongside the corpus.
+2. **A resolved citation and statute-reference graph, plus a legislation access layer.** We extract and resolve 8.87 million citation references (73.6% resolved to in-corpus targets) and 11.34 million decision-to-statute links across 284,145 distinct provisions. We release the graph as a SQLite database alongside the corpus. Critically, the statute-reference endpoints on each citation are navigable: 80 Swiss federal laws (39,000 articles) are mirrored locally from Fedlex (the official Swiss federal legislation portal) and served via a fast lookup interface, and approximately 33,000 additional federal, cantonal, and intercantonal legislative texts are queryable through a cached integration with LexFind.ch. This bridges a practical gap for LLM-based legal research, where the Fedlex SPARQL endpoint and the LexFind multi-step search API are difficult to access directly; LLMs asked about Swiss statutes without this layer typically hallucinate article text rather than retrieve the authoritative current version.
 
 3. **A reproducible retrieval baseline.** We release a 100-query multilingual benchmark with graded relevance judgments and report results for a BM25 + citation-graph pipeline. All artifacts are pinned to specific commit hashes for reproducibility.
 
@@ -217,11 +217,9 @@ The 900 decisions cited more than 1,000 times correspond to the core of Swiss le
 
 ### 4.3 Cross-Language Citation Patterns
 
-Swiss courts write in the official language of their canton or in the language of the underlying proceedings; the Federal Supreme Court produces each decision in one language only. Citations that cross language boundaries are therefore observable and can be used to ask whether legal authority flows asymmetrically between linguistic communities.
+Swiss courts write in the official language of their canton or in the language of the underlying proceedings; the Federal Supreme Court produces each decision in one language only. Citations that cross language boundaries are therefore observable in the corpus, and a naive reading of the raw citation matrix would suggest a strong asymmetry --- German sources appear to be cited disproportionately by French- and Italian-speaking courts. We show in this section that this naive reading is wrong, and that the apparent asymmetry is almost entirely an artefact of how the *Bundesgerichtsentscheide* (BGE) leading-case collection is distributed across languages.
 
-We report two views of the cross-language citation matrix. Table 9a counts every resolved citation; Table 9b counts only citations whose target is *not* a BGE leading case, which removes the effect of BGE citations being predominantly German.
-
-**Table 9a.** Cross-language citation matrix (all 6,533,534 resolved links). Rows = citing-court language; columns = cited-decision language.
+**Table 9a.** Raw cross-language citation matrix (all 6,533,534 resolved links). Rows = citing-court language; columns = cited-decision language.
 
 | Citing language | Cited: DE | Cited: FR | Cited: IT | Total |
 |:----------------|----------:|----------:|----------:|------:|
@@ -229,7 +227,13 @@ We report two views of the cross-language citation matrix. Table 9a counts every
 | **French** | 1,642,206 | 1,964,785 | 51,766 | 3,658,757 |
 | **Italian** | 239,843 | 116,939 | 60,227 | 417,009 |
 
-**Table 9b.** Cross-language citation matrix, **BGE targets excluded** (2,328,745 resolved links, = 6,533,534 total − 4,204,789 BGE-target).
+On its face, Table 9a suggests that French-speaking courts cite German-language sources 1,642,206 times versus French-language sources 1,964,785 times --- an 84% ratio. But this is misleading for two reasons.
+
+**The BGE base-rate confound.** The Swiss Federal Court publishes each BGE leading case in only one language, corresponding to the language of the underlying proceedings. The distribution of BGE records in our corpus is 71.6% German (25,637 records), 24.4% French (8,723), and 4.1% Italian (1,455), approximately mirroring the Swiss population distribution of Federal Court cases. When any court cites a BGE, the language of the target is determined by the language of the original proceeding, not by the citing court's preference. Because 72% of BGE records are German by construction, BGE citations will always be predominantly German targets regardless of which court is citing them.
+
+Table 9b removes this confound by excluding citations whose target is a BGE record.
+
+**Table 9b.** Cross-language citation matrix with **BGE targets excluded** (2,328,745 links, = 6,533,534 total − 4,204,789 BGE targets).
 
 | Citing language | Cited: DE | Cited: FR | Cited: IT | Total |
 |:----------------|----------:|----------:|----------:|------:|
@@ -237,15 +241,30 @@ We report two views of the cross-language citation matrix. Table 9a counts every
 | **French** | 234,136 | 1,082,541 | 12,209 | 1,328,886 |
 | **Italian** | 54,065 | 40,681 | 48,852 | 143,598 |
 
-Three observations follow.
+Once BGE targets are removed, the apparent asymmetry reverses. French-language courts cite French-language sources **4.6 times** more often than German-language sources (1,082,541 vs 234,136). Italian-language courts cite German and Italian sources at near-parity (54,065 vs 48,852). German-language courts cite German sources almost exclusively (760,264 vs 89,846 to French). In other words, once the Federal Court's BGE language mix is controlled for, each language group exhibits a clear home-language preference.
 
-**Observation 1: French courts cite German sources heavily, but mostly via BGE.** French-language decisions make 1,642,206 citations to German-language sources. Of these, 1,408,070 (86%) are citations to BGE leading cases, which are published predominantly in German. When BGE targets are removed, French-language courts cite French-language sources 4.6 times more often than German-language ones (1,082,541 vs 234,136). The headline "German dominance" of French jurisprudence is therefore largely a BGE effect, not a general cross-language asymmetry.
+**Language preference within BGE citations.** A sharper test of whether courts prefer their own language asks: among BGE citations, do courts over-select BGE records in their own language relative to the base rate? Table 9c reports each citing language group's BGE-target distribution, compared with the 71.6% / 24.4% / 4.1% base rate.
 
-**Observation 2: Italian courts use cross-language citation more evenly.** Italian-language decisions cite German sources 239,843 times and Italian sources only 60,227 times overall. Once BGE targets are excluded, the counts become 54,065 (to German) and 48,852 (to Italian), which is close to parity. Italian courts appear to operate in a more genuinely multilingual citation environment than French courts, possibly because the Italian-speaking Swiss corpus is smaller and Italian practitioners more routinely consult German and French sources.
+**Table 9c.** BGE-target language distribution per citing-language group, compared with the corpus-wide BGE language base rate. Positive deviations mean the group over-cites BGEs in that language relative to what would be expected if citations were selected uniformly from the BGE collection.
 
-**Observation 3: The apparent directional asymmetry is confounded.** The raw matrix suggests that legal authority flows from German to French and Italian but not the reverse. This is at least partly explained by the BGE publication mix and by differences in court size and output per language region. We do not attempt a causal interpretation. A full analysis would need to control for publication volume, court type, and the BGE share of the citing court's authority base.
+| Citing group | BGE-DE cited | BGE-FR cited | BGE-IT cited | Own-language deviation |
+|:-------------|-------------:|-------------:|-------------:|----------------------:|
+| German courts | 82.0% (+10.4pp) | 16.8% (−7.6pp) | 1.1% (−3.0pp) | +10.4pp toward DE |
+| French courts | 60.4% (−11.2pp) | 37.9% (**+13.5pp**) | 1.7% (−2.4pp) | +13.5pp toward FR |
+| Italian courts | 67.9% (−3.7pp) | 27.9% (+3.5pp) | 4.2% (+0.1pp) | +0.1pp (at base rate) |
+| Base rate (BGE corpus) | 71.6% | 24.4% | 4.1% | --- |
 
-These observations describe what the citation matrix shows; they should not be read as claims about the functional authority of courts in different language regions. We invite researchers interested in legal harmonisation to use the raw graph for more rigorous analyses.
+French courts over-cite French BGEs by 13.5 percentage points relative to the base rate --- the *largest* own-language preference in the matrix, stronger even than the German courts' 10.4 percentage-point preference for German BGEs. Italian courts show essentially no preference: their BGE citations match the base rate, reflecting that the Italian-language BGE corpus is small and Italian courts must cite across languages by necessity.
+
+**Summary.** The three views together reverse the naive interpretation:
+
+1. The raw matrix (9a) shows apparent German dominance, but this is confounded by the BGE language base rate.
+2. Excluding BGE targets (9b) reveals that French courts cite French sources 4.6× more than German, and Italian courts cite IT and DE at near parity.
+3. Within BGE targets (9c), French courts over-cite French BGEs at the *highest* rate of any group, not lowest.
+
+The corpus-level asymmetry in Swiss citation patterns is therefore best described as a Federal Court language-mix effect, not as a cross-language dominance pattern. Each language group strongly prefers its own-language sources when they exist, and is forced to cite across languages only when own-language material is unavailable (which happens most often for Italian courts, because the Italian-language corpus is smallest).
+
+These observations are descriptive and corpus-level; they do not control for court type, publication volume per court, or temporal effects. We release the graph as a SQLite database so that researchers can perform controlled analyses of legal harmonisation and cross-language authority flow using the methodology of their choice.
 
 ### 4.4 Citation Temporal Decay
 
@@ -287,6 +306,18 @@ The 11.34 million decision-to-statute links connect the case law corpus to the s
 The dominance of procedural provisions (Federal Court Act, Civil Procedure Code, Criminal Procedure Code) at the top of the list reflects that every Federal Supreme Court decision must address jurisdictional and procedural questions before reaching the merits. The raw surface-form top 10 (before merging) is dominated by aliases of the Federal Court Act, as expected: `ART.100.ABS.1.LTF` (181,294 mentions), `ART.113.LTF` (111,512), `ART.42.LTF` (90,546), `ART.42.BGG` (68,295), and `ART.66.ABS.1.BGG` (58,926). Counting surface forms separately would double-count the same provision and inflate rank positions; the dataset release includes the alias map as a JSON file so that downstream analyses can canonicalise consistently.
 
 The 284,145 distinct provision identifiers (before alias canonicalisation) span federal statutes, cantonal laws, and international treaties.
+
+### 4.6 Resolved Legislation Access
+
+The statute references in Section 4.5 are navigable: for each reference, the current text of the cited provision can be retrieved directly. This is accomplished through a two-tier access layer.
+
+**Federal legislation — local Fedlex mirror.** We download the 80 most-cited Swiss federal laws from Fedlex (`fedlex.data.admin.ch`), the official Swiss federal publication portal, via its SPARQL endpoint in Akoma Ntoso XML format. The laws are parsed and indexed into a local SQLite database (`statutes.db`) containing 39,000 articles in all three official languages (approximately 13,000 articles per language), with 228,559 amendment-reference records for traceability. Included are the core federal codes and procedural acts (`OR`, `ZGB`, `StGB`, `StPO`, `ZPO`, `BV`, `SchKG`, `BGG/LTF`, `DBG`, `IPRG`, `AIG`, `BVG`, `KVG`, `AsylG`, and 66 others) at their respective consolidation dates, ranging from 2010-04-01 to 2026-02-01. Lookup by `(statute abbreviation, article number, language)` returns the current article text in ~1 millisecond.
+
+**Cantonal and specialised legislation — LexFind integration.** Cantonal laws and federal regulations outside the top 80 are accessed via an on-demand integration with the LexFind.ch legislative search portal, which covers approximately 33,000 federal, cantonal (all 26 cantons), and intercantonal legislative texts. Because the LexFind API is rate-limited and requires a multi-step session protocol (create a search, then paginate), responses are cached locally with tiered TTLs (24 hours for search responses, 30 days for systematic-number resolutions, 7 days for full-text fetches). The current cache contains 696 entries. Cantonal law lookups that are not yet cached typically return within 1--7 seconds.
+
+**Practical value for LLM-based legal research.** Both Fedlex and LexFind are challenging to access directly from a language model or agent. Fedlex exposes only a SPARQL endpoint and XML downloads; there is no simple HTTP API for "give me the current text of Art. 41 OR in German." LexFind requires JavaScript-state management and a search-then-fetch workflow. As a result, language models asked about Swiss statutes without a retrieval layer typically fall back on outdated training data or hallucinate article text outright. The OpenCaseLaw legislation layer resolves this: each statute reference in the corpus graph can be dereferenced to authoritative current text, and the same interface is exposed as a set of tools callable from LLM agents over the Model Context Protocol. A decision's citation to "Art. 12 BGFA" can therefore be expanded on demand to the full German, French, and Italian text of the article as consolidated on the referenced date, without the LLM needing to navigate Fedlex.
+
+The legislation layer is a companion contribution: it is primarily infrastructure enabling the citation/statute graph to be useful, rather than a standalone research resource. Its construction, caching policy, and known limitations are documented in the source repository.
 
 ## 5. Data Quality and Validation
 
@@ -362,6 +393,8 @@ The corpus is updated daily and the main repository advances continuously. To su
 | Code commit | (pinned at publication) |
 | Benchmark file | `benchmarks/search_relevance_golden.json` |
 | Reference graph | `output/reference_graph.db` (re-buildable from corpus + code) |
+| Federal legislation mirror | `output/statutes.db` (80 laws, 39,000 articles; re-buildable from Fedlex SPARQL) |
+| LexFind cache | `output/lexfind_cache.db` (tiered TTL; regenerates on demand) |
 | Statute alias map | `output/statute_aliases.json` (derived from Fedlex) |
 
 Users who need the exact numbers in this paper should check out the pinned code commit and use the pinned Hugging Face commit. The live dataset continues to grow; a direct comparison of future snapshot statistics with the numbers in this paper requires rebuilding against the pinned snapshot.
