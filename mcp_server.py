@@ -8110,7 +8110,10 @@ def _lexfind_request(
         logger.warning("requests library not available for LexFind API")
         return None
 
-    url = f"{LEXFIND_BASE_URL}/{language}/{path}"
+    # Strip any leading slash from path — LEXFIND_BASE_URL already has the
+    # scheme/host/prefix, so a leading slash would produce a double slash
+    # like /api/fe/de//fulltext-search and trigger a 400 on LexFind.
+    url = f"{LEXFIND_BASE_URL}/{language}/{path.lstrip('/')}"
     timeout = timeout or LEXFIND_LOOKUP_TIMEOUT
     try:
         if method.upper() == "POST":
