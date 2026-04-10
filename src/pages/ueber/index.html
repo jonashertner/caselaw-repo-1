@@ -1,0 +1,120 @@
+<!-- title: Über OpenCaseLaw — Mission, Methodik, Lizenz · OpenCaseLaw.ch -->
+<!-- description: OpenCaseLaw ist der grösste offene Datensatz Schweizer Gerichtsentscheide. Hintergrund, Methodik, Lizenz, Kontakt und Zitationsvorlage. -->
+
+  <header style="margin-top:56px; margin-bottom:48px">
+    <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
+      <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
+    </div>
+    <h1 style="letter-spacing:-0.02em; line-height:1.1">Über OpenCaseLaw</h1>
+    <p class="sub" style="max-width:64ch">
+      OpenCaseLaw ist der grösste offene Datensatz Schweizer Gerichtsentscheide und die erste LLM-taugliche Schnittstelle
+      zu Bundes- und kantonalen Gesetzen. Frei nutzbar, täglich aktualisiert, unabhängig finanziert.
+    </p>
+  </header>
+
+  <!-- Mission -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Mission</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
+        Schweizer Rechtsrecherche ist heute fragmentiert, grösstenteils hinter Paywalls und für Sprachmodelle
+        nur schwer zugänglich. Das Ergebnis: Jus-Studierende, die sich Zugang zu teuren kommerziellen
+        Datenbanken leisten müssen, und LLMs, die Artikeltexte halluzinieren, weil sie keine autoritative
+        Quelle haben.
+      </p>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch">
+        OpenCaseLaw macht alle öffentlich publizierten Schweizer Gerichtsentscheide und den aktuellen Text
+        aller einschlägigen Gesetze in einem durchsuchbaren, zitationsverknüpften und maschinenlesbaren
+        Format frei verfügbar — für Forschung, Lehre, Praxis und AI-Agenten.
+      </p>
+    </div>
+  </section>
+
+  <!-- Methodology -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Methodik</h2>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
+        <li><strong>Quellen:</strong> 58 Scraper für Bundesgerichte, Bundesverwaltungsgericht, Bundesstrafgericht,
+          regulatorische Entscheide (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) und alle 26 Kantone. Entscheide aus entscheidsuche.ch
+          als Fallback.</li>
+        <li><strong>Deduplication:</strong> Docket-Normalisierung, Textähnlichkeit (MinHash), Regeste-Priorität.
+          Verhindert Duplikate, aber nie auf Kosten der Vollständigkeit.</li>
+        <li><strong>Indexierung:</strong> SQLite FTS5 mit BM25-Ranking. Täglich voller Rebuild, atomarer Swap,
+          kein Downtime für MCP-Worker.</li>
+        <li><strong>Zitationsgraph:</strong> 8,77 Millionen Kanten zwischen Entscheiden, 11,2 Mio Verweise auf Gesetzesartikel.
+          Bidirektional, mit Appeal-Chain-Auflösung.</li>
+        <li><strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking.
+          MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).</li>
+        <li><strong>Gesetze:</strong> 80 Bundesgesetze via Fedlex-SPARQL-Endpunkt, lokal als SQLite gespiegelt.
+          Kantonale Erlasse via LexFind.ch mit 24h-Cache.</li>
+      </ul>
+      <p style="font-size:14px; color:var(--tx3); margin:0">
+        Vollständige technische Dokumentation im <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Zahlen</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:16px; font-family:var(--f-mono); font-size:13px">
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">965,141</div>
+          <div style="color:var(--tx3); margin-top:4px">Entscheide</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">104</div>
+          <div style="color:var(--tx3); margin-top:4px">Gerichte</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">80</div>
+          <div style="color:var(--tx3); margin-top:4px">Bundesgesetze</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">33,000+</div>
+          <div style="color:var(--tx3); margin-top:4px">kantonale Erlasse</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">8.77M</div>
+          <div style="color:var(--tx3); margin-top:4px">Zitationen</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">21</div>
+          <div style="color:var(--tx3); margin-top:4px">MCP-Tools</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- License -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Lizenz &amp; Zitationshinweis</h2>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
+        <li><strong>Daten:</strong> CC0 1.0 Public Domain — Schweizer Gerichtsentscheide sind öffentliche Dokumente</li>
+        <li><strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>)</li>
+        <li><strong>Kommentare:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch)</li>
+      </ul>
+      <p style="font-size:14px; color:var(--tx3); margin:0; max-width:68ch">
+        Nutzung ohne Attribution erlaubt, aber geschätzt: „Source: OpenCaseLaw.ch".
+        Bei akademischer Verwendung bitte das begleitende Paper zitieren (siehe Zenodo-Eintrag, bald verfügbar).
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section-card" open style="margin-bottom:48px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Kontakt</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 8px; max-width:68ch">
+        Gebaut und betrieben von <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>,
+        unabhängig und ohne kommerzielles Interesse. Feedback, Bug-Reports und Mitarbeit willkommen.
+      </p>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0">
+        E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>
+        GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>
+      </p>
+    </div>
+  </section>

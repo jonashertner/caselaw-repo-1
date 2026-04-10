@@ -1,0 +1,105 @@
+<!-- title: Studium — Schweizer Recht lernen mit AI · OpenCaseLaw.ch -->
+<!-- description: Lernwerkzeuge für Jus-Studierende: Case-Briefs, doktrinelle Timelines, echte BGE-Sachverhalte als Prüfungsfragen und Kommentar-Exzerpte. Alles über den MCP-Server. -->
+
+  <header style="margin-top:56px; margin-bottom:48px">
+    <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
+      <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
+    </div>
+    <h1 style="letter-spacing:-0.02em; line-height:1.1">Schweizer Recht lernen mit AI</h1>
+    <p class="sub" style="max-width:64ch">
+      Die MCP-Tools sind nicht nur für Praktiker — sie sind auch ein leistungsfähiges Lernwerkzeug für Jus-Studierende.
+      Case-Briefs, doktrinelle Timelines, echte BGE-Sachverhalte als Prüfungsfragen und Kommentar-Exzerpte.
+      Alles über denselben Server, den ChatGPT, Claude und andere Modelle bereits nutzen.
+    </p>
+  </header>
+
+  <!-- Case briefs -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
+        <h2 style="margin:0; font-size:22px">Case-Briefs</h2>
+        <span class="leg-badge">get_case_brief</span>
+      </div>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
+        Strukturierter Überblick über einen Entscheid: Regeste, Sachverhalt, zentrale Erwägungen, Dispositiv,
+        zitierte Normen, Autorität (wie oft zitiert) und verwandte Fälle. Ideal für die Vorbereitung auf mündliche
+        Prüfungen und Case-Analysen.
+      </p>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Beispielaufruf</div>
+        <code style="font-family:var(--f-mono); font-size:14px">get_case_brief(docket="4A_123/2023")</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Doctrine timeline -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
+        <h2 style="margin:0; font-size:22px">Doktrinelle Timeline</h2>
+        <span class="leg-badge">get_doctrine</span>
+      </div>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
+        Für jede Norm: aktueller Gesetzestext, autoritätsgeranktes BGE-Register und chronologische
+        Entwicklung der Rechtsprechung. Seit Kurzem mit automatisch eingebetteten Kommentar-Exzerpten
+        aus OnlineKommentar.ch und OpenLegalCommentary.ch.
+      </p>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Beispielaufruf</div>
+        <code style="font-family:var(--f-mono); font-size:14px">get_doctrine("Art. 41 OR")</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Exam questions -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
+        <h2 style="margin:0; font-size:22px">Prüfungsfragen aus echten Fällen</h2>
+        <span class="leg-badge">generate_exam_question</span>
+      </div>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
+        Ein echter BGE-Sachverhalt wird als Fallbearbeitung aufbereitet — mit versteckter Lösung und
+        Bewertungsschema. Lernen an der Quelle, nicht an synthetischen Fällen.
+      </p>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Beispielaufruf</div>
+        <code style="font-family:var(--f-mono); font-size:14px">generate_exam_question(topic="Schadenersatz")</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Commentary -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
+        <h2 style="margin:0; font-size:22px">Wissenschaftliche Kommentare</h2>
+        <span class="leg-badge">1'058 Kommentare</span>
+      </div>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
+        Integration mit OnlineKommentar.ch (CC-BY-4.0, 362 Kommentare zu 19 Bundesgesetzen) und
+        OpenLegalCommentary.ch (CC BY-SA 4.0, 696 BV-Kommentare in DE/FR/IT). Direkter Volltextzugriff
+        oder gezielte Suche.
+      </p>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px; margin-bottom:10px">
+        <code style="font-family:var(--f-mono); font-size:14px">get_commentary(abbreviation="BV", article="8")</code>
+      </div>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
+        <code style="font-family:var(--f-mono); font-size:14px">search_commentaries(query="Meinungsfreiheit")</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tips -->
+  <section class="section-card" open style="margin-bottom:48px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Tipps für Studierende</h2>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; padding-left:20px; max-width:68ch">
+        <li>Claude Desktop + OpenCaseLaw MCP = kostenloser Rechercheassistent für Hausarbeiten und Vorträge</li>
+        <li>Für Dogmatikfragen: immer zuerst <code>get_doctrine</code> aufrufen — liefert Norm + Leading Cases + Kommentar in einem Zug</li>
+        <li>Case-Briefs eignen sich hervorragend für Karteikarten (Anki, Quizlet) — die strukturierten Felder lassen sich direkt übernehmen</li>
+        <li>Beim Lernen: zuerst Fragen selbst beantworten, dann mit <code>get_case_brief</code> oder <code>get_doctrine</code> prüfen</li>
+        <li>Auf Zitate im Modell nie blind vertrauen — immer mit dem MCP-Server verifizieren, der nie halluziniert</li>
+      </ul>
+    </div>
+  </section>

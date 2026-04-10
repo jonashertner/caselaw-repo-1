@@ -1,0 +1,145 @@
+<!-- title: MCP-Server verbinden — Claude, ChatGPT, Cursor, Gemini · OpenCaseLaw.ch -->
+<!-- description: OpenCaseLaw bietet einen öffentlichen MCP-Server mit 21 Tools für Schweizer Rechtsrecherche. Anleitung für Claude Desktop, Claude Code, ChatGPT, Cursor und Gemini. Keine API-Keys. -->
+
+  <header style="margin-top:56px; margin-bottom:48px">
+    <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
+      <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
+    </div>
+    <h1 style="letter-spacing:-0.02em; line-height:1.1">AI-Agenten verbinden</h1>
+    <p class="sub" style="max-width:64ch">
+      Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 965'000+ Schweizer
+      Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 21 spezialisierte Tools,
+      keine Anmeldung, keine API-Keys.
+    </p>
+  </header>
+
+  <!-- Remote vs Local -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 16px; font-size:22px">Zwei Betriebsmodi</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px">
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:18px 20px">
+          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
+            <strong>Remote</strong>
+            <span class="leg-badge">empfohlen</span>
+          </div>
+          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0 0 10px">
+            Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:
+          </p>
+          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
+        </div>
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:18px 20px">
+          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
+            <strong>Lokal</strong>
+            <span class="leg-badge">offline</span>
+          </div>
+          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0">
+            Volle Kontrolle, funktioniert offline. ~65 GB Speicher, einmalige Einrichtung ca. 30–60 Minuten.
+            Siehe <a href="https://github.com/jonashertner/caselaw-repo-1#local-setup" style="color:var(--ac)">README</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Setup per client -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 16px; font-size:22px">Einrichtung nach Client</h2>
+
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px; margin:0 0 8px">Claude Desktop</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px">Settings → Connectors → Add → URL eintragen:</p>
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
+          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px; margin:0 0 8px">Claude Code</h3>
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
+          <code style="font-family:var(--f-mono); font-size:13px">claude mcp add --transport sse swiss-caselaw https://mcp.opencaselaw.ch</code>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px; margin:0 0 8px">ChatGPT (Custom GPT / Actions)</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0">
+          Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:12px">readOnlyHint</code> Annotations.
+          Kompatibel mit GPT-5.3 (Anleitung im README).
+        </p>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px; margin:0 0 8px">Cursor / Gemini / andere</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0">
+          Funktioniert mit jedem MCP-fähigen Client über Standard SSE-Transport.
+          Endpunkt: <code style="font-size:13px">https://mcp.opencaselaw.ch</code>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tool list -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">21 Tools im Überblick</h2>
+      <p style="font-size:14px; color:var(--tx2); margin:0 0 20px; max-width:68ch">
+        Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll abrufbar.
+      </p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px 24px; font-size:13px">
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Entscheide suchen &amp; abrufen</div>
+          <div style="font-family:var(--f-mono); line-height:1.9">
+            search_decisions<br>
+            get_decision<br>
+            get_case_brief<br>
+            list_courts · get_statistics
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Zitationsgraph</div>
+          <div style="font-family:var(--f-mono); line-height:1.9">
+            find_citations<br>
+            find_appeal_chain<br>
+            find_leading_cases<br>
+            analyze_legal_trend
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Gesetzestext</div>
+          <div style="font-family:var(--f-mono); line-height:1.9">
+            get_law · search_laws<br>
+            get_legislation<br>
+            search_legislation<br>
+            browse_legislation_changes
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Doktrin &amp; Studium</div>
+          <div style="font-family:var(--f-mono); line-height:1.9">
+            get_doctrine<br>
+            get_commentary<br>
+            search_commentaries<br>
+            generate_exam_question<br>
+            draft_mock_decision
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technical details -->
+  <section class="section-card" open style="margin-bottom:48px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Technisches</h2>
+      <ul style="font-size:14px; line-height:1.7; color:var(--tx2); margin:0; padding-left:20px; max-width:68ch">
+        <li>Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients</li>
+        <li>TLS via Let's Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a></li>
+        <li>4× uvicorn-Worker hinter Load-Balancer, automatisches Failover</li>
+        <li>Backend: 965'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,77 Mio Zitationskanten</li>
+        <li>Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert</li>
+      </ul>
+    </div>
+  </section>

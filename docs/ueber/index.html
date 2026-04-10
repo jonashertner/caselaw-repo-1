@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<title>Gesetze — Bundes- und kantonale Gesetzgebung · OpenCaseLaw.ch</title>
-<meta name="description" content="Direkter Zugriff auf 80 Schweizer Bundesgesetze (39'000 Artikel in DE/FR/IT) und 33'000+ kantonale Erlasse über MCP. Fedlex-Spiegel und LexFind-Integration.">
+<title>Über OpenCaseLaw — Mission, Methodik, Lizenz · OpenCaseLaw.ch</title>
+<meta name="description" content="OpenCaseLaw ist der grösste offene Datensatz Schweizer Gerichtsentscheide. Hintergrund, Methodik, Lizenz, Kontakt und Zitationsvorlage.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -806,108 +806,119 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
       <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
     </div>
-    <h1 style="letter-spacing:-0.02em; line-height:1.1">Schweizer Bundes- und kantonale Gesetzgebung</h1>
+    <h1 style="letter-spacing:-0.02em; line-height:1.1">Über OpenCaseLaw</h1>
     <p class="sub" style="max-width:64ch">
-      Direkter Zugriff auf den aktuellen Text von 80 Schweizer Bundesgesetzen (39'000 Artikel in Deutsch, Französisch und Italienisch)
-      sowie auf 33'000+ kantonale und interkantonale Erlasse. Alle Inhalte sind über das Model Context Protocol (MCP)
-      für LLM-Agenten wie Claude, ChatGPT, Cursor und Gemini erreichbar.
+      OpenCaseLaw ist der grösste offene Datensatz Schweizer Gerichtsentscheide und die erste LLM-taugliche Schnittstelle
+      zu Bundes- und kantonalen Gesetzen. Frei nutzbar, täglich aktualisiert, unabhängig finanziert.
     </p>
   </header>
 
-  <!-- Federal laws section -->
+  <!-- Mission -->
   <section class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
-        <h2 style="margin:0; font-size:22px">Bundesgesetze</h2>
-        <span class="leg-badge">Lokaler Fedlex-Spiegel</span>
-      </div>
-      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
-        80 zentrale Bundesgesetze werden täglich vom offiziellen Fedlex-SPARQL-Endpunkt bezogen und lokal in einer
-        SQLite-Datenbank indexiert. Die Abfrage per Abkürzung und Artikelnummer erfolgt in unter einer Millisekunde,
-        wahlweise auf Deutsch, Französisch oder Italienisch. Enthalten sind unter anderem:
-      </p>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:8px 12px; margin-bottom:24px; font-family:var(--f-mono); font-size:13px">
-        <span>OR</span><span>ZGB</span><span>StGB</span><span>StPO</span><span>ZPO</span><span>BV</span>
-        <span>SchKG</span><span>BGG</span><span>DBG</span><span>IPRG</span><span>AIG</span><span>BVG</span>
-        <span>KVG</span><span>AsylG</span><span>BGFA</span><span>ATSG</span><span>DSG</span><span>UVG</span>
-        <span>AHVG</span><span>IVG</span><span>AVIG</span><span>StHG</span><span>MWSTG</span><span>GSchG</span>
-      </div>
-      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px">... und 56 weitere Gesetze. Die vollständige Liste ist per MCP abrufbar.</p>
-
-      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">MCP-Aufruf</div>
-        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_law(abbreviation="OR", article="41")</code>
-        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
-          Liefert den vollständigen Text von Art. 41 OR (ausservertragliche Haftung) auf Deutsch,
-          inklusive Absätze und Querverweise. Für Französisch: <code style="font-size:13px">language="fr"</code>.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Cantonal legislation section -->
-  <section class="section-card" open style="margin-bottom:24px">
-    <div class="section-body" style="padding:28px 32px">
-      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
-        <h2 style="margin:0; font-size:22px">Kantonale und interkantonale Erlasse</h2>
-        <span class="leg-badge">LexFind-Integration</span>
-      </div>
-      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
-        Gesetze, Verordnungen und Reglemente aller 26 Kantone sowie interkantonale Konkordate werden
-        über das LexFind-Portal (<a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a>) abgefragt.
-        Antworten werden lokal gecacht (24 Stunden für Suchanfragen, 30 Tage für SR-Auflösungen).
-        Insgesamt sind rund 33'000 Rechtstexte erreichbar.
-      </p>
-
-      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px; margin-bottom:12px">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Suche</div>
-        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">search_legislation(query="Mietrecht", canton="ZH")</code>
-      </div>
-
-      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Gezielter Abruf per SR-Nummer</div>
-        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_legislation(systematic_number="170.11", canton="VD")</code>
-        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
-          Liefert Metadaten und Versionsgeschichte der Waadtländer Kantonsverfassung inklusive Link zur offiziellen Quelle.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Recent changes section -->
-  <section class="section-card" open style="margin-bottom:24px">
-    <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 8px; font-size:22px">Aktuelle Änderungen</h2>
-      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
-        Für jede Jurisdiktion können die zuletzt erfolgten Gesetzesänderungen abgefragt werden &mdash;
-        neue Erlasse, Revisionen und Aufhebungen mit Datum, Typ und Link zur offiziellen Publikation.
-      </p>
-      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
-        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">browse_legislation_changes(canton="CH")</code>
-      </div>
-    </div>
-  </section>
-
-  <!-- Why this matters section -->
-  <section class="section-card" open style="margin-bottom:48px">
-    <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Warum eine eigene Legislationsschicht?</h2>
+      <h2 style="margin:0 0 12px; font-size:22px">Mission</h2>
       <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
-        Sowohl Fedlex als auch LexFind sind für Sprachmodelle schwer zugänglich. Fedlex bietet nur einen
-        SPARQL-Endpunkt und XML-Downloads; es gibt keine einfache HTTP-API für &quot;Liefere den aktuellen Text
-        von Art. 41 OR auf Deutsch&quot;. LexFind erfordert eine JavaScript-gesteuerte Sitzung und einen
-        Such-dann-Abruf-Ablauf. Sprachmodelle, die ohne Retrieval-Layer nach Schweizer Gesetzesartikeln gefragt werden,
-        greifen deshalb typischerweise auf veraltete Trainingsdaten zurück oder halluzinieren Artikeltexte.
+        Schweizer Rechtsrecherche ist heute fragmentiert, grösstenteils hinter Paywalls und für Sprachmodelle
+        nur schwer zugänglich. Das Ergebnis: Jus-Studierende, die sich Zugang zu teuren kommerziellen
+        Datenbanken leisten müssen, und LLMs, die Artikeltexte halluzinieren, weil sie keine autoritative
+        Quelle haben.
       </p>
       <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch">
-        OpenCaseLaw löst dieses Problem: jede Gesetzesreferenz im Korpus-Zitationsgraph kann dereferenziert werden
-        auf den autoritativen aktuellen Text, und dieselbe Schnittstelle wird als Werkzeugsatz für LLM-Agenten über MCP
-        zur Verfügung gestellt. Eine Entscheidung, die Art. 12 BGFA zitiert, kann auf Nachfrage in den vollständigen
-        Text des Artikels aufgelöst werden &mdash; in Deutsch, Französisch und Italienisch, auf dem aktuellen Konsolidierungsstand.
+        OpenCaseLaw macht alle öffentlich publizierten Schweizer Gerichtsentscheide und den aktuellen Text
+        aller einschlägigen Gesetze in einem durchsuchbaren, zitationsverknüpften und maschinenlesbaren
+        Format frei verfügbar — für Forschung, Lehre, Praxis und AI-Agenten.
       </p>
     </div>
   </section>
 
+  <!-- Methodology -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Methodik</h2>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
+        <li><strong>Quellen:</strong> 58 Scraper für Bundesgerichte, Bundesverwaltungsgericht, Bundesstrafgericht,
+          regulatorische Entscheide (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) und alle 26 Kantone. Entscheide aus entscheidsuche.ch
+          als Fallback.</li>
+        <li><strong>Deduplication:</strong> Docket-Normalisierung, Textähnlichkeit (MinHash), Regeste-Priorität.
+          Verhindert Duplikate, aber nie auf Kosten der Vollständigkeit.</li>
+        <li><strong>Indexierung:</strong> SQLite FTS5 mit BM25-Ranking. Täglich voller Rebuild, atomarer Swap,
+          kein Downtime für MCP-Worker.</li>
+        <li><strong>Zitationsgraph:</strong> 8,77 Millionen Kanten zwischen Entscheiden, 11,2 Mio Verweise auf Gesetzesartikel.
+          Bidirektional, mit Appeal-Chain-Auflösung.</li>
+        <li><strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking.
+          MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).</li>
+        <li><strong>Gesetze:</strong> 80 Bundesgesetze via Fedlex-SPARQL-Endpunkt, lokal als SQLite gespiegelt.
+          Kantonale Erlasse via LexFind.ch mit 24h-Cache.</li>
+      </ul>
+      <p style="font-size:14px; color:var(--tx3); margin:0">
+        Vollständige technische Dokumentation im <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Zahlen</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:16px; font-family:var(--f-mono); font-size:13px">
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">965,141</div>
+          <div style="color:var(--tx3); margin-top:4px">Entscheide</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">104</div>
+          <div style="color:var(--tx3); margin-top:4px">Gerichte</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">80</div>
+          <div style="color:var(--tx3); margin-top:4px">Bundesgesetze</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">33,000+</div>
+          <div style="color:var(--tx3); margin-top:4px">kantonale Erlasse</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">8.77M</div>
+          <div style="color:var(--tx3); margin-top:4px">Zitationen</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">21</div>
+          <div style="color:var(--tx3); margin-top:4px">MCP-Tools</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- License -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Lizenz &amp; Zitationshinweis</h2>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
+        <li><strong>Daten:</strong> CC0 1.0 Public Domain — Schweizer Gerichtsentscheide sind öffentliche Dokumente</li>
+        <li><strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>)</li>
+        <li><strong>Kommentare:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch)</li>
+      </ul>
+      <p style="font-size:14px; color:var(--tx3); margin:0; max-width:68ch">
+        Nutzung ohne Attribution erlaubt, aber geschätzt: „Source: OpenCaseLaw.ch".
+        Bei akademischer Verwendung bitte das begleitende Paper zitieren (siehe Zenodo-Eintrag, bald verfügbar).
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="section-card" open style="margin-bottom:48px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Kontakt</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 8px; max-width:68ch">
+        Gebaut und betrieben von <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>,
+        unabhängig und ohne kommerzielles Interesse. Feedback, Bug-Reports und Mitarbeit willkommen.
+      </p>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0">
+        E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>
+        GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>
+      </p>
+    </div>
+  </section>
   <footer>
     <div class="foot-links">
       <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">HuggingFace</a>
