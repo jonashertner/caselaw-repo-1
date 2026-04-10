@@ -95,6 +95,120 @@
     </div>
   </section>
 
+  <!-- Live from the corpus — tabbed demo -->
+  <section class="live-demo">
+    <h2 class="section-heading" data-t="demo_heading">Live from the corpus</h2>
+    <p class="demo-tagline" data-t="demo_tagline">Concrete examples of what your AI agent sees when it hits the MCP server.</p>
+
+    <div class="demo-tabs" role="tablist">
+      <button class="demo-tab active" data-tab="search" data-t="demo_tab_search">Search</button>
+      <button class="demo-tab" data-tab="statute" data-t="demo_tab_statute">Statute</button>
+      <button class="demo-tab" data-tab="leading" data-t="demo_tab_leading">Leading cases</button>
+      <button class="demo-tab" data-tab="doctrine" data-t="demo_tab_doctrine">Doctrine</button>
+    </div>
+
+    <div class="demo-panels">
+
+      <div class="demo-panel active" id="demo-search">
+        <div class="demo-grid">
+          <div class="demo-code">
+            <div class="demo-label" data-t="demo_label_call">Tool call</div>
+            <pre><code><span class="kw">search_decisions</span>(
+  query=<span class="str">"Mietrecht K&uuml;ndigung Form"</span>,
+  canton=<span class="str">"ZH"</span>,
+  limit=<span class="str">3</span>
+)</code></pre>
+          </div>
+          <div class="demo-result">
+            <div class="demo-label" data-t="demo_label_response">Response</div>
+            <div class="demo-case">
+              <div class="demo-case-id">4A_347/2023 &middot; Bundesgericht &middot; 2023</div>
+              <div class="demo-case-regeste">Ausserordentliche K&uuml;ndigung nach Art. 266g OR; die Formvorschriften von Art. 266l Abs. 2 OR gelten auch bei &hellip;</div>
+            </div>
+            <div class="demo-case">
+              <div class="demo-case-id">4A_532/2022 &middot; Bundesgericht &middot; 2022</div>
+              <div class="demo-case-regeste">Zahlungsverzug des Mieters; das Vorgehen nach Art. 257d OR und die Zul&auml;ssigkeit einer vorzeitigen K&uuml;ndigung&hellip;</div>
+            </div>
+            <div class="demo-case">
+              <div class="demo-case-id">9C_89/2023 &middot; Bundesgericht &middot; 2023</div>
+              <div class="demo-case-regeste">K&uuml;ndigungsschutz bei Familienwohnungen nach Art. 266m OR; Zustimmungserfordernis des Ehegatten&hellip;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-panel" id="demo-statute">
+        <div class="demo-grid">
+          <div class="demo-code">
+            <div class="demo-label" data-t="demo_label_call">Tool call</div>
+            <pre><code><span class="kw">get_law</span>(
+  abbreviation=<span class="str">"OR"</span>,
+  article=<span class="str">"41"</span>,
+  language=<span class="str">"de"</span>
+)</code></pre>
+          </div>
+          <div class="demo-result">
+            <div class="demo-label" data-t="demo_label_response">Response</div>
+            <div class="demo-prose">
+              <p><strong>Art. 41 OR &mdash; Haftung im Allgemeinen</strong></p>
+              <p><strong>1</strong>&nbsp;&nbsp;Wer einem andern widerrechtlich Schaden zuf&uuml;gt, sei es mit Absicht, sei es aus Fahrl&auml;ssigkeit, wird ihm zum Ersatze verpflichtet.</p>
+              <p><strong>2</strong>&nbsp;&nbsp;Ebenso ist zum Ersatze verpflichtet, wer einem andern in einer gegen die guten Sitten verstossenden Weise absichtlich Schaden zuf&uuml;gt.</p>
+              <span class="src">Source: Fedlex &middot; synced daily</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-panel" id="demo-leading">
+        <div class="demo-grid">
+          <div class="demo-code">
+            <div class="demo-label" data-t="demo_label_call">Tool call</div>
+            <pre><code><span class="kw">find_leading_cases</span>(
+  law_code=<span class="str">"OR"</span>,
+  article=<span class="str">"41"</span>
+)</code></pre>
+          </div>
+          <div class="demo-result">
+            <div class="demo-label" data-t="demo_label_response">Response</div>
+            <div class="demo-case">
+              <div class="demo-case-id">BGE 123 III 110 &middot; 24 citations</div>
+              <div class="demo-case-regeste">Haftung der Aufsichtsperson; Kausalit&auml;t zwischen Aufsichtspflicht und eingetretenem Schaden&hellip;</div>
+            </div>
+            <div class="demo-case">
+              <div class="demo-case-id">BGE 132 III 359 &middot; 18 citations</div>
+              <div class="demo-case-regeste">Widerrechtlichkeit bei reinen Verm&ouml;genssch&auml;den; Unterscheidung zum absoluten Schutzbereich&hellip;</div>
+            </div>
+            <div class="demo-case">
+              <div class="demo-case-id">BGE 126 III 113 &middot; 15 citations</div>
+              <div class="demo-case-regeste">Genugtuungsanspruch; immaterielle Sch&auml;den und die Bemessung bei schwerer K&ouml;rperverletzung&hellip;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-panel" id="demo-doctrine">
+        <div class="demo-grid">
+          <div class="demo-code">
+            <div class="demo-label" data-t="demo_label_call">Tool call</div>
+            <pre><code><span class="kw">get_doctrine</span>(
+  query=<span class="str">"Art. 41 OR"</span>
+)</code></pre>
+          </div>
+          <div class="demo-result">
+            <div class="demo-label" data-t="demo_label_response">Response</div>
+            <div class="demo-prose">
+              <p><strong>Art. 41 OR &mdash; Ausservertragliche Haftung</strong></p>
+              <p>Statute text (DE/FR/IT) plus 12 authority-ranked BGEs spanning 1957&ndash;2024 and a doctrinal timeline.</p>
+              <p><em>Commentary excerpt:</em><br>&bdquo;Die Tatbestandsvoraussetzungen der ausservertraglichen Haftung umfassen Schaden, Kausalit&auml;t, Widerrechtlichkeit und Verschulden&hellip;&ldquo;</p>
+              <span class="src">Source: OnlineKommentar.ch &middot; CC-BY-4.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- Featured integration: Word Add-in -->
   <section class="leg-banner" style="display:flex; align-items:center; gap:28px; flex-wrap:wrap; margin:0 0 clamp(56px, 8vw, 96px)">
     <div style="flex:1 1 320px; min-width:260px">
