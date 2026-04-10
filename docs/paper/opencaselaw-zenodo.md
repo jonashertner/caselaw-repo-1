@@ -39,16 +39,18 @@ Several open datasets have been released for Swiss legal NLP, but all are limite
 
 **Table 1.** Comparison of Swiss case law resources.
 
-| Resource | Decisions | Courts | Cantons | Citation graph | Full text | Access | Updated |
-|:---------|----------:|-------:|--------:|:--------------:|:---------:|:------:|:-------:|
-| OpenCaseLaw (this work) | 965,038 | 104 | 26 | 6.53M links | 100% | Open (CC0) | Daily |
-| Swiss-Judgment-Prediction (Niklaus et al., 2021) | 85,000 | 1 | -- | No | Partial | Open | No |
-| SCD (Geering & Merane, 2024) | 122,000 | 1 | -- | No | Yes | Open | No |
-| SCALE (Rasiah et al., 2023) | -- | 1 | -- | No | Partial | Open | No |
-| MultiLegalPile (Niklaus et al., 2023) | Swiss subset | Mixed | Partial | No | Yes | Open | No |
-| Swisslex (commercial) | ~500,000+ | Many | 26 | No | Yes | Paid | Yes |
-| Weblaw/Lawsearch (commercial) | ~735,000+ | Many | 26 | No | Yes | Paid | Yes |
-| entscheidsuche.ch | ~700,000+ | Many | 26 | No | Yes | Free search | Yes |
+| Resource | Decisions | Courts | Graph | Full text | Access | Updated |
+|:---------|----------:|-------:|:-----:|:---------:|:------:|:-------:|
+| OpenCaseLaw (this work) | 965,038 | 104 | 6.53M | 100% | CC0 | Daily |
+| Swiss-Judgment-Prediction | 85,000 | 1 | No | Partial | Open | No |
+| SCD | 122,000 | 1 | No | Yes | Open | No |
+| SCALE | --- | 1 | No | Partial | Open | No |
+| MultiLegalPile | Swiss subset | Mixed | No | Yes | Open | No |
+| Swisslex (comm.) | ~500k+ | Many | No | Yes | Paid | Yes |
+| Weblaw (comm.) | ~735k+ | Many | No | Yes | Paid | Yes |
+| entscheidsuche.ch | ~700k+ | Many | No | Yes | Free | Yes |
+
+Citations for the open datasets: Swiss-Judgment-Prediction (Niklaus et al., 2021), SCD (Geering & Merane, 2024), SCALE (Rasiah et al., 2023), MultiLegalPile (Niklaus et al., 2023). Commercial resource counts are estimates. "Graph" = citation graph provided at release; "---" = not applicable.
 
 *Swiss-Judgment-Prediction* (Niklaus et al., 2021) provides 85,000 Federal Supreme Court decisions labeled with binary outcome for judgment prediction. *SCD* (Geering & Merane, 2024) extends this to 122,000 decisions with 31 structured variables. Both are limited to a single court and lack citation structure. *SCALE* (Rasiah et al., 2023) defines benchmark tasks---citation extraction, court view generation, summarization---on Swiss legal text but does not release a general-purpose corpus. *MultiLegalPile* (Niklaus et al., 2023) assembles 689 GB of multilingual legal text for language model pretraining; its Swiss subset lacks per-court metadata and citation links.
 
@@ -352,7 +354,7 @@ The dataset is updated daily. Versioned snapshots can be reconstructed from the 
 
 - Geering, F. and Merane, J. (2024). Swiss Federal Supreme Court Dataset. Zenodo. doi:10.5281/zenodo.11092977.
 
-- Kano, Y., Soh, J., Yoshioka, M., Rabelo, J., and Kim, M.-Y. (2024). COLIEE 2024: Competition on Legal Information Extraction/Entailment. *Proceedings of JSAI 2024*.
+- Kano, Y., Soh, J., Yoshioka, M., Rabelo, J., and Kim, M.-Y. (2024). COLIEE 2024: Competition on Legal Information Extraction and Entailment. *Proceedings of JSAI 2024*.
 
 - Lee, Y., Nair, R., Zhang, Q., Lee, K., Khattab, O., and Finn, C. (2026). Meta-Harness: End-to-End Optimization of Model Harnesses. *arXiv:2603.28052*.
 
