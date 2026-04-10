@@ -1542,7 +1542,7 @@ const COURT_DISPLAY = {
   ag_departement_vi:          {de:'Departement Volkswirtschaft & Inneres',fr:'D\u00e9partement \u00c9conomie & Int\u00e9rieur',en:'Dept. Economy & Interior'},
   ag_departement_gs:          {de:'Departement Gesundheit & Soziales',fr:'D\u00e9partement Sant\u00e9 & Social',     en:'Dept. Health & Social Affairs'},
   ag_departement_bks:         {de:'Departement BKS',           fr:'D\u00e9partement BKS',                       en:'Dept. Education & Culture'},
-  ag_anwaltskommission:       {de:'Anwaltskommission',         fr:'Commission des avocats',                en:'Bar Commission'},
+  ag_anwaltskommission:       {de:'Anwaltskommission \u2014 Disziplinarentscheide',fr:'Commission des avocats \u2014 D\u00e9cisions disciplinaires',en:'Bar Commission \u2014 Disciplinary Decisions'},
   ag_aufsichtskommission:     {de:'Aufsichtskommission',       fr:'Commission de surveillance',            en:'Supervisory Commission'},
   ag_baugesetzgebung:         {de:'Baugesetzgebung',            fr:'L\u00e9gislation de la construction',       en:'Building Legislation'},
   ag_justizgericht:           {de:'Justizgericht',             fr:'Tribunal de la justice',                en:'Court of Justice'},
@@ -1845,7 +1845,36 @@ function renderAll(data) {
     updEl.classList.remove('hid');
   }
 
-  const all = data.by_court || [];
+  const rawAll = data.by_court || [];
+  // Aggregate collection courts (sav_kantone, sav_international) whose decisions
+  // retain originating cantons — merge into single federal-level rows
+  const COLLECTION_COURTS = new Set(['sav_kantone', 'sav_international']);
+  const collectionMap = new Map();
+  const nonCollection = [];
+  for (const c of rawAll) {
+    if (COLLECTION_COURTS.has(c.court)) {
+      if (!collectionMap.has(c.court)) {
+        collectionMap.set(c.court, {
+          court: c.court, canton: 'CH', count: 0,
+          earliest: c.earliest, latest: c.latest,
+          last_scraped: c.last_scraped,
+          languages: new Set(c.languages || []),
+        });
+      }
+      const agg = collectionMap.get(c.court);
+      agg.count += c.count;
+      if (c.earliest && (!agg.earliest || c.earliest < agg.earliest)) agg.earliest = c.earliest;
+      if (c.latest && (!agg.latest || c.latest > agg.latest)) agg.latest = c.latest;
+      if (c.last_scraped && (!agg.last_scraped || c.last_scraped > agg.last_scraped)) agg.last_scraped = c.last_scraped;
+      for (const lang of (c.languages || [])) agg.languages.add(lang);
+    } else {
+      nonCollection.push(c);
+    }
+  }
+  const all = [...nonCollection];
+  for (const agg of collectionMap.values()) {
+    all.push({ ...agg, languages: Array.from(agg.languages) });
+  }
   const fed = all.filter(c => c.canton === 'CH' || FED.has(c.court));
   const can = all.filter(c => c.canton !== 'CH' && !FED.has(c.court));
 
