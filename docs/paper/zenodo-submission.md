@@ -11,13 +11,13 @@ Note: Zenodo supports both. If submitting as a dataset paper, use "Publication >
 OpenCaseLaw: A Complete Open Corpus and Citation Graph of Swiss Court Decisions
 
 ### Authors
-1. **Jonas Hertner** — Independent Researcher, Zurich, Switzerland — ORCID: (add if available)
+1. **Jonas Hertner** — Independent Researcher, Zurich, Switzerland — jh@jonashertner.com — ORCID: (add if available)
 
 ### Description (abstract)
-We present OpenCaseLaw, the first open-access corpus to provide nationwide coverage of Swiss case law with an integrated citation graph. The April 2026 release contains 965,038 full-text court decisions from 104 courts spanning all 26 cantons and the period 1875–2026, in German (46.6%), French (45.1%), and Italian (8.3%). Alongside the corpus, we release a citation graph of 8.87 million extracted references with 6.53 million resolved in-corpus links (73.6% resolution rate) and 11.34 million decision-to-statute links across 284,145 distinct provisions. Analysis of cross-language citation patterns reveals a striking asymmetry: French-language courts cite German-language decisions 1.64 million times—84% as often as they cite French-language decisions—quantifying the dominance of German-language Bundesgerichtsentscheide (BGE) jurisprudence across Switzerland's language boundaries. Peak citation age is 11–20 years, indicating long institutional memory in Swiss law. We provide a 100-query multilingual retrieval benchmark (MRR@10 = 0.60 offline, 0.65 with LLM reranking) and release the corpus as Parquet on Hugging Face under CC0-1.0. The dataset is updated daily and all code is MIT-licensed.
+We present OpenCaseLaw, the first open-access corpus to provide nationwide coverage of Swiss case law with an integrated citation graph. The April 2026 release contains 965,038 full-text court decisions from 104 courts spanning all 26 cantons and the period 1875–2026, in German (46.6%), French (45.1%), and Italian (8.3%). Alongside the corpus, we release a citation graph of 8.87 million extracted references with 6.53 million resolved in-corpus links (73.6% resolution rate) and 11.34 million decision-to-statute links across 284,145 distinct provisions. Analysis of cross-language citation patterns reveals a striking asymmetry: French-language courts cite German-language decisions 1.64 million times—84% as often as they cite French-language decisions—quantifying the dominance of German-language Bundesgerichtsentscheide (BGE) jurisprudence across Switzerland's language boundaries. Peak citation age is 11–20 years, indicating long institutional memory in Swiss law. We provide a 100-query multilingual retrieval benchmark (MRR@10 = 0.63 offline with automated Meta-Harness weight tuning, 0.68 with confidence-gated LLM reranking) and release the corpus as Parquet on Hugging Face under CC0-1.0. The dataset is updated daily and all code is MIT-licensed.
 
 ### Publication date
-2026-04-09
+2026-04-10
 
 ### Publisher
 Zenodo

@@ -2,7 +2,7 @@
 
 **Jonas Hertner**
 Independent Researcher, Zurich, Switzerland
-jonas@opencaselaw.ch
+jh@jonashertner.com
 
 **April 2026**
 
