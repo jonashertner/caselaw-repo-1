@@ -230,6 +230,50 @@ header .sub {
   margin-top: 12px; margin-bottom: 40px; font-family: var(--f-mono);
 }
 
+/* ── Legislation banner ── */
+.leg-banner {
+  background: linear-gradient(135deg, var(--surf) 0%, var(--bg2) 100%);
+  border: 1px solid var(--brd2); border-left: 3px solid var(--accent);
+  border-radius: var(--r);
+  padding: 22px 26px; margin-bottom: 28px;
+}
+.leg-banner-head {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.leg-banner-head h3 {
+  font-size: var(--fs-lg); font-weight: 600; margin: 0; color: var(--tx);
+}
+.leg-badge {
+  font-family: var(--f-mono); font-size: var(--fs-2xs); font-weight: 500;
+  color: var(--tx3); background: var(--bg); border: 1px solid var(--brd2);
+  border-radius: 100px; padding: 2px 10px;
+}
+.leg-banner p {
+  font-size: var(--fs-sm); color: var(--tx2); line-height: 1.55;
+  margin: 6px 0 16px; max-width: 68ch;
+}
+.leg-examples {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.leg-ex {
+  background: var(--bg); border: 1px solid var(--brd2); border-radius: 6px;
+  padding: 10px 12px;
+}
+.leg-ex-label {
+  display: block; font-size: var(--fs-2xs); color: var(--tx3);
+  text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px;
+  font-weight: 500;
+}
+.leg-ex code {
+  font-family: var(--f-mono); font-size: var(--fs-xs); color: var(--tx);
+  background: none; padding: 0; word-break: break-word;
+}
+@media (max-width: 600px) {
+  .leg-banner { padding: 18px 20px; }
+  .leg-examples { grid-template-columns: 1fr; }
+}
+
 /* ── Health card (collapsible) ── */
 .health-card {
   background: var(--surf); border: 1px solid var(--brd2); border-radius: var(--r);
@@ -795,6 +839,29 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Last Updated -->
   <div class="updated-line hid" id="last-updated"></div>
 
+  <!-- Legislation banner -->
+  <div class="leg-banner">
+    <div class="leg-banner-head">
+      <h3 data-t="leg_title">Federal &amp; Cantonal Legislation</h3>
+      <span class="leg-badge" data-t="leg_badge">via MCP</span>
+    </div>
+    <p data-t="leg_desc">Retrieve the current text of 80 Swiss federal laws (39,000 articles in DE/FR/IT) mirrored from Fedlex, and search 33,000+ cantonal and intercantonal legislative texts via LexFind. Authoritative content for LLMs — use before paraphrasing from training data.</p>
+    <div class="leg-examples">
+      <div class="leg-ex">
+        <span class="leg-ex-label" data-t="leg_ex_label_law">Federal law (local)</span>
+        <code>get_law("OR", article="41")</code>
+      </div>
+      <div class="leg-ex">
+        <span class="leg-ex-label" data-t="leg_ex_label_cantonal">Cantonal (LexFind)</span>
+        <code>search_legislation("Mietrecht", canton="ZH")</code>
+      </div>
+      <div class="leg-ex">
+        <span class="leg-ex-label" data-t="leg_ex_label_browse">Recent amendments</span>
+        <code>browse_legislation_changes(canton="CH")</code>
+      </div>
+    </div>
+  </div>
+
   <!-- Access the Data -->
   <details class="section-card" id="sec-access" open>
     <summary class="section-summary">
@@ -857,6 +924,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
           <ul class="prompt-list">
             <li data-t="cap_search">Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept</li>
             <li data-t="cap_lookup">Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten</li>
+            <li data-t="cap_laws">Aktuellen Text von 80 Bundesgesetzen (39'000 Artikel, DE/FR/IT) direkt abrufen — und 33'000+ kantonale Erlasse durchsuchen</li>
             <li data-t="cap_stats">Statistiken und Abdeckung aller Bundes- und Kantonsgerichte einsehen</li>
             <li data-t="cap_leading">Leitentscheide zu jedem Gesetz oder Rechtsgebiet finden, nach Zitationshäufigkeit geordnet</li>
             <li data-t="cap_citations">Zitationsnetzwerke nachverfolgen — sehen, was ein Entscheid zitiert und was ihn zitiert</li>
@@ -1096,7 +1164,7 @@ cd caselaw-repo-1
 const I18N = {
   de: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
+    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone \u2014 plus direkter Zugriff auf 80 Bundesgesetze und 33\u2019000+ kantonale Erlasse. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
     federal:'Bund', cantonal:'Kantone', cantons:'Kantone', access:'Datenzugang',
     th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_updated:'Neue Daten', th_languages:'Sprachen',
@@ -1130,6 +1198,13 @@ const I18N = {
     examples_heading:'Was nach der Verbindung möglich ist:',
     cap_search:'Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept',
     cap_lookup:'Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten',
+    cap_laws:'Aktuellen Text von 80 Bundesgesetzen (39\u2019000 Artikel, DE/FR/IT) direkt abrufen — und 33\u2019000+ kantonale Erlasse durchsuchen',
+    leg_title:'Bundes- und kantonale Gesetze',
+    leg_badge:'per MCP',
+    leg_desc:'Aktuellen Text von 80 Bundesgesetzen (39\u2019000 Artikel in DE/FR/IT) direkt aus dem lokalen Fedlex-Spiegel abrufen \u2014 sowie 33\u2019000+ kantonale und interkantonale Erlasse via LexFind durchsuchen. Autoritative Quelle f\u00fcr LLMs: nutzen, bevor aus Trainingsdaten paraphrasiert wird.',
+    leg_ex_label_law:'Bundesgesetz (lokal)',
+    leg_ex_label_cantonal:'Kantonal (LexFind)',
+    leg_ex_label_browse:'Aktuelle \u00c4nderungen',
     cap_stats:'Statistiken und Abdeckung aller Bundes- und Kantonsgerichte einsehen',
     cap_leading:'Leitentscheide zu jedem Gesetz oder Rechtsgebiet finden, nach Zitationshäufigkeit geordnet',
     cap_citations:'Zitationsnetzwerke nachverfolgen — sehen, was ein Entscheid zitiert und was ihn zitiert',
@@ -1158,7 +1233,7 @@ const I18N = {
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
+    subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons \u2014 plus l\u2019acc\u00e8s direct \u00e0 80 lois f\u00e9d\u00e9rales et 33\u2019000+ actes cantonaux. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
     loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
     federal:'F\u00e9d\u00e9ral', cantonal:'Cantons', cantons:'Cantons', access:'Acc\u00e8s aux donn\u00e9es',
     th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_updated:'Nouvelles donn\u00e9es', th_languages:'Langues',
@@ -1192,6 +1267,13 @@ const I18N = {
     examples_heading:'Ce qui est possible après connexion :',
     cap_search:'Rechercher des décisions en langage naturel — par mot-clé, sujet, article de loi ou concept juridique',
     cap_lookup:'Consulter toute décision par numéro de dossier — avec texte intégral et métadonnées',
+    cap_laws:'Consulter le texte actuel de 80 lois fédérales (39 000 articles, DE/FR/IT) — et rechercher 33 000+ textes cantonaux',
+    leg_title:'L\u00e9gislation f\u00e9d\u00e9rale et cantonale',
+    leg_badge:'via MCP',
+    leg_desc:'Consultez le texte actuel de 80 lois f\u00e9d\u00e9rales suisses (39 000 articles en DE/FR/IT) directement via un miroir local de Fedlex, et recherchez parmi 33 000+ textes cantonaux et intercantonaux via LexFind. Source autoritative pour les LLMs \u2014 \u00e0 utiliser avant toute paraphrase depuis les donn\u00e9es d\u2019entra\u00eenement.',
+    leg_ex_label_law:'Loi f\u00e9d\u00e9rale (local)',
+    leg_ex_label_cantonal:'Cantonal (LexFind)',
+    leg_ex_label_browse:'Modifications r\u00e9centes',
     cap_stats:'Consulter les statistiques et la couverture de tous les tribunaux fédéraux et cantonaux',
     cap_leading:'Trouver les arrêts de référence pour toute loi ou domaine juridique, classés par nombre de citations',
     cap_citations:'Suivre les réseaux de citations — voir ce qu\'une décision cite et ce qui la cite',
@@ -1220,7 +1302,7 @@ const I18N = {
   },
   it: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
+    subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni \u2014 pi\u00f9 l\u2019accesso diretto a 80 leggi federali e 33\u2019000+ atti cantonali. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
     loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
     federal:'Federale', cantonal:'Cantoni', cantons:'Cantoni', access:'Accesso ai dati',
     th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_updated:'Nuovi dati', th_languages:'Lingue',
@@ -1254,6 +1336,13 @@ const I18N = {
     examples_heading:'Cosa è possibile dopo la connessione:',
     cap_search:'Cercare decisioni in linguaggio naturale — per parola chiave, tema, articolo di legge o concetto giuridico',
     cap_lookup:'Consultare qualsiasi decisione per numero di dossier — con testo integrale e metadati',
+    cap_laws:'Consultare il testo attuale di 80 leggi federali (39\u2019000 articoli, DE/FR/IT) — e cercare 33\u2019000+ atti cantonali',
+    leg_title:'Legislazione federale e cantonale',
+    leg_badge:'tramite MCP',
+    leg_desc:'Consulta il testo attuale di 80 leggi federali svizzere (39\u2019000 articoli in DE/FR/IT) direttamente tramite un mirror locale di Fedlex, e cerca fra 33\u2019000+ atti cantonali e intercantonali tramite LexFind. Fonte autorevole per gli LLM \u2014 da usare prima di parafrasare dai dati di addestramento.',
+    leg_ex_label_law:'Legge federale (locale)',
+    leg_ex_label_cantonal:'Cantonale (LexFind)',
+    leg_ex_label_browse:'Modifiche recenti',
     cap_stats:'Consultare statistiche e copertura di tutti i tribunali federali e cantonali',
     cap_leading:'Trovare le decisioni guida per ogni legge o area giuridica, ordinate per numero di citazioni',
     cap_citations:'Tracciare le reti di citazioni — vedere cosa cita una decisione e cosa la cita',
@@ -1315,6 +1404,13 @@ const I18N = {
     access_local_setup:'Guida d\'installaziun cumplaina →',
     examples_heading:'Tge ch\'è pussaivel suenter la connexiun:',
     cap_search:'Tschertgar decisiuns en lingua natirala — tenor plaid-clav, tema, artitgel da lescha u concept giuridic',
+    cap_laws:'Consultar il text actual da 80 leschas federalas (39\u2019000 artitgels, DE/FR/IT) — e tschertgar 33\u2019000+ actas chantunalas',
+    leg_title:'Leschas federalas e chantunalas',
+    leg_badge:'via MCP',
+    leg_desc:'Consultar il text actual da 80 leschas federalas svizras (39\u2019000 artitgels en DE/FR/IT) directamain dal spieghel local da Fedlex \u2014 e tschertgar entaifer 33\u2019000+ actas chantunalas ed interchantunalas via LexFind. Funtauna autoritativa per LLMs \u2014 d\u2019utilisar avant ch\u2019ins parafraseschia da las datas d\u2019instrucziun.',
+    leg_ex_label_law:'Lescha federala (local)',
+    leg_ex_label_cantonal:'Chantunal (LexFind)',
+    leg_ex_label_browse:'Midadas recentas',
     cap_lookup:'Retscherchar mintga decisiun per numer da dossier — cun text cumplain e metadatas',
     cap_stats:'Consultar statisticas e cuvretga da tut las dretgiras federalas e chantunals',
     cap_leading:'Chattar decisiuns directivas per mintga lescha u champ giuridic, ordinadas tenor dumber da citaziuns',
@@ -1344,7 +1440,7 @@ const I18N = {
   },
   en: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Search instantly with AI or download the full dataset.',
+    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons \u2014 plus direct access to 80 federal laws and 33,000+ cantonal enactments. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
     federal:'Federal', cantonal:'Cantonal', cantons:'Cantons', access:'Access the Data',
     th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_updated:'New Data', th_languages:'Languages',
@@ -1378,6 +1474,13 @@ const I18N = {
     examples_heading:'What you can do after connecting:',
     cap_search:'Search decisions in natural language — by keyword, topic, statute, or legal concept',
     cap_lookup:'Look up any decision by docket number — with full text and metadata',
+    cap_laws:'Retrieve the current text of 80 federal laws (39,000 articles, DE/FR/IT) — and search 33,000+ cantonal enactments',
+    leg_title:'Federal & Cantonal Legislation',
+    leg_badge:'via MCP',
+    leg_desc:'Retrieve the current text of 80 Swiss federal laws (39,000 articles in DE/FR/IT) from a local Fedlex mirror, and search 33,000+ cantonal and intercantonal legislative texts via LexFind. Authoritative source for LLMs \u2014 use before paraphrasing from training data.',
+    leg_ex_label_law:'Federal law (local)',
+    leg_ex_label_cantonal:'Cantonal (LexFind)',
+    leg_ex_label_browse:'Recent amendments',
     cap_stats:'View statistics and coverage across all federal and cantonal courts',
     cap_leading:'Find leading cases for any law or legal area, ranked by citation count',
     cap_citations:'Trace citation networks — see what a decision cites and what cites it',
