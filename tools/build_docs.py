@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -32,11 +33,45 @@ OUTPUT_DIR = REPO / "docs"
 PLACEHOLDER = "{{ CONTENT }}"
 
 
+TITLE_DIRECTIVE_RE = re.compile(r"^<!--\s*title:\s*(.+?)\s*-->\s*\n?")
+DESCRIPTION_DIRECTIVE_RE = re.compile(r"^<!--\s*description:\s*(.+?)\s*-->\s*\n?", re.MULTILINE)
+TITLE_TAG_RE = re.compile(r"<title>[^<]*</title>")
+DESCRIPTION_META_RE = re.compile(
+    r'<meta name="description" content="[^"]*">'
+)
+
+
 def render_page(layout: str, content: str) -> str:
-    """Substitute the {{ CONTENT }} placeholder in the layout with the page content."""
+    """Substitute the {{ CONTENT }} placeholder in the layout with the page content.
+
+    Supports per-page title and description overrides via leading HTML comments:
+      <!-- title: Gesetze — OpenCaseLaw.ch -->
+      <!-- description: Direkter Zugriff auf ... -->
+    These comments are stripped from the output.
+    """
     if PLACEHOLDER not in layout:
         raise ValueError(f"Layout is missing placeholder {PLACEHOLDER!r}")
-    return layout.replace(PLACEHOLDER, content)
+
+    out_layout = layout
+    body = content
+
+    # Extract and strip title directive
+    m = TITLE_DIRECTIVE_RE.match(body)
+    if m:
+        title = m.group(1)
+        body = body[m.end():]
+        out_layout = TITLE_TAG_RE.sub(f"<title>{title}</title>", out_layout, count=1)
+
+    # Extract and strip description directive (anywhere near the top)
+    m = DESCRIPTION_DIRECTIVE_RE.match(body)
+    if m:
+        desc = m.group(1)
+        body = body[m.end():]
+        out_layout = DESCRIPTION_META_RE.sub(
+            f'<meta name="description" content="{desc}">', out_layout, count=1
+        )
+
+    return out_layout.replace(PLACEHOLDER, body)
 
 
 def iter_pages() -> list[Path]:

@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<title>Swiss Case Law Open Dataset — 962,724 Court Decisions | OpenCaseLaw.ch</title>
-<meta name="description" content="OpenCaseLaw publishes 962,724 Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.76 million extracted case-citation references. Updated daily.">
+<title>Gesetze — Bundes- und kantonale Gesetzgebung · OpenCaseLaw.ch</title>
+<meta name="description" content="Direkter Zugriff auf 80 Schweizer Bundesgesetze (39'000 Artikel in DE/FR/IT) und 33'000+ kantonale Erlasse über MCP. Fedlex-Spiegel und LexFind-Integration.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -808,344 +808,121 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 </div>
 
 <div class="w">
-
-  <header>
-    <h1><span class="ch">+</span> <span data-t="title">Swiss Case Law Open Dataset</span></h1>
-    <p class="sub" data-t="subtitle">The largest open dataset of Swiss court decisions from all federal courts and 26 cantons. Download and search locally with AI tools.</p>
-    <div class="hero-links">
-      <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        HuggingFace Dataset
-      </a>
-      <a href="https://github.com/jonashertner/caselaw-repo-1">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        GitHub
-      </a>
-      <a href="#sec-access">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <span data-t="hero_mcp">Search with AI</span>
-      </a>
-      <a href="https://word.opencaselaw.ch/install.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Word Add-in <span style="font-size:9px;background:#18181b;color:#fff;padding:1px 5px;border-radius:3px;margin-left:4px;">BETA</span>
-      </a>
+<header style="margin-top:56px; margin-bottom:48px">
+    <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
+      <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
     </div>
+    <h1 style="letter-spacing:-0.02em; line-height:1.1">Schweizer Bundes- und kantonale Gesetzgebung</h1>
+    <p class="sub" style="max-width:64ch">
+      Direkter Zugriff auf den aktuellen Text von 80 Schweizer Bundesgesetzen (39'000 Artikel in Deutsch, Französisch und Italienisch)
+      sowie auf 33'000+ kantonale und interkantonale Erlasse. Alle Inhalte sind über das Model Context Protocol (MCP)
+      für LLM-Agenten wie Claude, ChatGPT, Cursor und Gemini erreichbar.
+    </p>
   </header>
 
-  <div class="kpis" id="kpis">
-    <div class="ld" style="grid-column:1/-1"><span class="sp"></span> <span data-t="loading">Loading</span></div>
-  </div>
+  <!-- Federal laws section -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
+        <h2 style="margin:0; font-size:22px">Bundesgesetze</h2>
+        <span class="leg-badge">Lokaler Fedlex-Spiegel</span>
+      </div>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
+        80 zentrale Bundesgesetze werden täglich vom offiziellen Fedlex-SPARQL-Endpunkt bezogen und lokal in einer
+        SQLite-Datenbank indexiert. Die Abfrage per Abkürzung und Artikelnummer erfolgt in unter einer Millisekunde,
+        wahlweise auf Deutsch, Französisch oder Italienisch. Enthalten sind unter anderem:
+      </p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:8px 12px; margin-bottom:24px; font-family:var(--f-mono); font-size:13px">
+        <span>OR</span><span>ZGB</span><span>StGB</span><span>StPO</span><span>ZPO</span><span>BV</span>
+        <span>SchKG</span><span>BGG</span><span>DBG</span><span>IPRG</span><span>AIG</span><span>BVG</span>
+        <span>KVG</span><span>AsylG</span><span>BGFA</span><span>ATSG</span><span>DSG</span><span>UVG</span>
+        <span>AHVG</span><span>IVG</span><span>AVIG</span><span>StHG</span><span>MWSTG</span><span>GSchG</span>
+      </div>
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px">... und 56 weitere Gesetze. Die vollständige Liste ist per MCP abrufbar.</p>
 
-  <!-- Last Updated -->
-  <div class="updated-line hid" id="last-updated"></div>
-
-  <!-- Legislation banner -->
-  <div class="leg-banner">
-    <div class="leg-banner-head">
-      <h3 data-t="leg_title">Federal &amp; Cantonal Legislation</h3>
-      <span class="leg-badge" data-t="leg_badge">via MCP</span>
-    </div>
-    <p data-t="leg_desc">Retrieve the current text of 80 Swiss federal laws (39,000 articles in DE/FR/IT) mirrored from Fedlex, and search 33,000+ cantonal and intercantonal legislative texts via LexFind. Authoritative content for LLMs — use before paraphrasing from training data.</p>
-    <div class="leg-examples">
-      <div class="leg-ex">
-        <span class="leg-ex-label" data-t="leg_ex_label_law">Federal law (local)</span>
-        <code>get_law("OR", article="41")</code>
-      </div>
-      <div class="leg-ex">
-        <span class="leg-ex-label" data-t="leg_ex_label_cantonal">Cantonal (LexFind)</span>
-        <code>search_legislation("Mietrecht", canton="ZH")</code>
-      </div>
-      <div class="leg-ex">
-        <span class="leg-ex-label" data-t="leg_ex_label_browse">Recent amendments</span>
-        <code>browse_legislation_changes(canton="CH")</code>
-      </div>
-    </div>
-  </div>
-
-  <!-- Access the Data -->
-  <details class="section-card" id="sec-access" open>
-    <summary class="section-summary">
-      <h2 data-t="access">Access the Data</h2>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="section-body">
-      <!-- Featured: Search with AI -->
-      <div class="access-featured">
-        <h3>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M8 8l1.5 1.5M14.5 8l-1 1" stroke-linecap="round"/></svg>
-          <span data-t="access_featured_title">Search with AI</span>
-        </h3>
-        <p data-t="access_featured_desc">Über 960'000 Schweizer Gerichtsentscheide in natürlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.</p>
-        <div class="setup-paths">
-          <div class="setup-path">
-            <div class="setup-path-label"><span class="rec" data-t="access_remote_label">Remote (recommended)</span></div>
-            <div class="setup-steps"><span data-t="access_remote_desc">Instant, always current. No download needed.</span></div>
-            <div class="setup-steps" style="margin-top:10px">
-              <strong data-t="access_setup_desktop">Claude Desktop</strong><br>
-              <span style="color:var(--tx2);font-size:var(--fs-xs)">Settings → Connectors → Add →</span><br>
-              <code>https://mcp.opencaselaw.ch</code>
-            </div>
-            <div class="setup-steps" style="margin-top:10px">
-              <strong data-t="access_setup_code">Claude Code</strong>
-              <code>claude mcp add swiss-caselaw \
-  --transport sse \
-  https://mcp.opencaselaw.ch</code>
-            </div>
-            <div class="setup-steps" style="margin-top:10px">
-              <strong>ChatGPT</strong> <span style="color:var(--tx2);font-size:var(--fs-xs)">(Pro/Team/Enterprise)</span><br>
-              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_chatgpt_steps">Settings → Apps → Advanced settings → enable Developer mode → Create app → name "Swiss Caselaw", paste URL below, auth: None. In chat: + → Developer mode → select app. Recommended with GPT-5.3 (GPT-5.4 does not currently support MCP tool invocation).</span><br>
-              <code>https://mcp.opencaselaw.ch/sse</code>
-            </div>
-            <div class="setup-steps" style="margin-top:10px">
-              <strong>Gemini CLI</strong>
-              <code>// ~/.gemini/settings.json
-{ "mcpServers": {
-    "swiss-caselaw": {
-      "url": "https://mcp.opencaselaw.ch"
-    }
-}}</code>
-            </div>
-            <div class="plan-note" data-t="access_plan_note">Claude: Pro, Max, Team, or Enterprise (Desktop) / any plan (Code). ChatGPT: Plus, Pro, Team, Enterprise, or Edu. Gemini CLI: free.</div>
-          </div>
-          <div class="setup-path">
-            <div class="setup-path-label" data-t="access_local_label">Local (offline)</div>
-            <div class="setup-steps"><span data-t="access_local_desc">Full control, works offline. ~65 GB disk, 30&ndash;60 min setup.</span></div>
-            <div class="setup-steps" style="margin-top:10px">
-              <span style="color:var(--tx2);font-size:var(--fs-xs)" data-t="access_local_clone">Clone → install → register with any MCP client</span><br>
-              <a href="https://github.com/jonashertner/caselaw-repo-1#option-b-local-server-offline-access" style="font-size:var(--fs-xs)" data-t="access_local_setup">Full setup guide →</a>
-            </div>
-            <div class="setup-steps" style="margin-top:10px;font-size:var(--fs-xs);color:var(--tx3)" data-t="access_local_note">
-              Works with any MCP client. Local mode includes database update tools.
-            </div>
-          </div>
-        </div>
-        <div class="example-prompts">
-          <h5 data-t="examples_heading">Was nach der Verbindung möglich ist:</h5>
-          <ul class="prompt-list">
-            <li data-t="cap_search">Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept</li>
-            <li data-t="cap_lookup">Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten</li>
-            <li data-t="cap_laws">Aktuellen Text von 80 Bundesgesetzen (39'000 Artikel, DE/FR/IT) direkt abrufen — und 33'000+ kantonale Erlasse durchsuchen</li>
-            <li data-t="cap_stats">Statistiken und Abdeckung aller Bundes- und Kantonsgerichte einsehen</li>
-            <li data-t="cap_leading">Leitentscheide zu jedem Gesetz oder Rechtsgebiet finden, nach Zitationshäufigkeit geordnet</li>
-            <li data-t="cap_citations">Zitationsnetzwerke nachverfolgen — sehen, was ein Entscheid zitiert und was ihn zitiert</li>
-            <li data-t="cap_trends">Analysieren, wie sich die Rechtsprechung zu einem Thema über die Jahre entwickelt hat</li>
-            <li data-t="cap_research">Recherche-Notizen aus Sachverhalt erstellen — mit passender Rechtsprechung und Gesetzesartikeln</li>
-            <li data-t="cap_study">Leitentscheide interaktiv studieren mit geführten Übungen und Urteilsbesprechungen</li>
-          </ul>
-        </div>
-      </div>
-      <!-- Standard cards: 3-col -->
-      <div class="access-grid">
-        <div class="access-card">
-          <h3>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-            <span data-t="quick_download">Download</span>
-          </h3>
-          <p data-t="access_hf_desc">Download the full dataset as Parquet files</p>
-          <code>from datasets import load_dataset
-ds = load_dataset("voilaj/swiss-caselaw")</code>
-        </div>
-        <div class="access-card">
-          <h3>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            REST API
-          </h3>
-          <p data-t="access_api_desc">Query via HuggingFace Datasets Server API</p>
-          <code>GET /rows?dataset=voilaj/swiss-caselaw
-  &config=default&split=train
-  &offset=0&length=10</code>
-        </div>
-        <div class="access-card">
-          <h3>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Web UI
-          </h3>
-          <p data-t="access_webui_desc">Local chat interface — ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).</p>
-          <code>git clone github.com/jonashertner/caselaw-repo-1
-cd caselaw-repo-1
-./scripts/run_web_local.sh</code>
-        </div>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">MCP-Aufruf</div>
+        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_law(abbreviation="OR", article="41")</code>
+        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
+          Liefert den vollständigen Text von Art. 41 OR (ausservertragliche Haftung) auf Deutsch,
+          inklusive Absätze und Querverweise. Für Französisch: <code style="font-size:13px">language="fr"</code>.
+        </p>
       </div>
     </div>
-  </details>
+  </section>
 
-  <!-- Coverage (charts) -->
-  <details class="section-card" id="sec-coverage" open>
-    <summary class="section-summary">
-      <h2 data-t="nav_coverage">Coverage</h2>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="section-body">
-      <div class="chart-row" id="charts">
-        <div class="chart-card">
-          <h3 data-t="chart_timeline">Decisions per Year</h3>
-          <div class="chart-canvas"><canvas id="c-timeline" height="220"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <h3 data-t="chart_languages">Language Distribution</h3>
-          <div class="lang-chart-wrap">
-            <div class="chart-canvas" style="max-width:180px"><canvas id="c-lang" height="180"></canvas></div>
-            <div class="lang-legend" id="lang-legend"></div>
-          </div>
-        </div>
+  <!-- Cantonal legislation section -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
+        <h2 style="margin:0; font-size:22px">Kantonale und interkantonale Erlasse</h2>
+        <span class="leg-badge">LexFind-Integration</span>
       </div>
-    </div>
-  </details>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
+        Gesetze, Verordnungen und Reglemente aller 26 Kantone sowie interkantonale Konkordate werden
+        über das LexFind-Portal (<a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a>) abgefragt.
+        Antworten werden lokal gecacht (24 Stunden für Suchanfragen, 30 Tage für SR-Auflösungen).
+        Insgesamt sind rund 33'000 Rechtstexte erreichbar.
+      </p>
 
-  <!-- Federal courts -->
-  <details class="section-card hid" id="sec-fed">
-    <summary class="section-summary">
-      <h2 data-t="federal">Federal Courts</h2>
-      <span class="badge" id="fed-n"></span>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="section-body">
-      <div class="tw">
-        <table class="ct" id="t-fed"><thead><tr>
-          <th data-k="name" data-t="th_court">Court</th>
-          <th data-k="count" data-t="th_decisions">Decisions</th>
-          <th data-k="last_scraped" class="hide-m" data-t="th_updated">New Data</th>
-          <th data-k="languages" data-t="th_languages">Languages</th>
-        </tr></thead><tbody></tbody></table>
-      </div>
-    </div>
-  </details>
-
-  <!-- Cantonal courts -->
-  <details class="section-card hid" id="sec-can">
-    <summary class="section-summary">
-      <h2 data-t="cantonal">Cantonal Courts</h2>
-      <span class="badge" id="can-n"></span>
-      <button class="csv-btn" id="csv-can" data-t="csv_export">CSV</button>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="section-body">
-    <div class="table-search" id="can-search-wrap">
-      <input type="text" id="can-search" data-t-placeholder="search_placeholder" placeholder="Search courts...">
-      <span class="count" id="can-search-count"></span>
-    </div>
-    <div class="tw">
-      <table class="ct" id="t-can"><thead><tr>
-        <th data-k="name" data-t="th_court">Court</th>
-        <th data-k="canton" data-t="th_canton">Canton</th>
-        <th data-k="count" data-t="th_decisions">Decisions</th>
-        <th data-k="last_scraped" class="hide-m" data-t="th_updated">New Data</th>
-      </tr></thead><tbody></tbody></table>
-    </div>
-    </div>
-  </details>
-
-  <!-- Canton grid -->
-  <details class="section-card hid" id="sec-cantons">
-    <summary class="section-summary">
-      <h2 data-t="cantons">Cantons</h2>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="section-body">
-      <div class="cg" id="canton-grid"></div>
-    </div>
-  </details>
-
-  <!-- Tree browser -->
-  <details class="section-card hid" id="sec-tree">
-    <summary class="section-summary">
-      <h2 data-t="browse">Browse</h2>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="section-body">
-      <div class="tree" id="tree-browser"></div>
-    </div>
-  </details>
-
-  <!-- Study Guide -->
-  <details class="section-card" id="sec-study">
-    <summary class="section-summary">
-      <h2 data-t="study_title">Study Swiss Law</h2>
-      <span class="badge">100 BGE</span>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="section-body">
-    <div class="study-card">
-      <h3>
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        <span data-t="study_heading">Leitentscheide verstehen. Doktrin erschliessen. Subsumtion &uuml;ben.</span>
-      </h3>
-      <p data-t="study_intro">Drei gezielte Werkzeuge f&uuml;r das Jurastudium: strukturierte Urteilsanalyse jedes BGE, Doktrin-&Uuml;berblick zu Norm oder Rechtsbegriff, und Fallbearbeitungs&uuml;bungen mit echten BGE-Sachverhalten.</p>
-
-      <div class="study-steps">
-        <div class="study-step">
-          <div class="study-step-num">1</div>
-          <div class="study-step-content">
-            <div class="study-step-title" data-t="study_s1_title">Urteil erschliessen</div>
-            <div class="study-step-desc" data-t="study_s1_desc">Frage: <code>Erkl&auml;re mir BGE 133 III 121</code>. Du erh&auml;ltst Regeste, Sachverhalt, nummerierte Erw&auml;gungen, Dispositiv, zitierte Gesetzesartikel und die Autorität des Entscheids (Anzahl Zitate).</div>
-          </div>
-        </div>
-        <div class="study-step">
-          <div class="study-step-num">2</div>
-          <div class="study-step-content">
-            <div class="study-step-title" data-t="study_s2_title">Doktrin verstehen</div>
-            <div class="study-step-desc" data-t="study_s2_desc">Frage: <code>Leitentscheide zu Art. 41 OR</code>. Du erh&auml;ltst die nach Zitaten gerankte Kasuistik und eine chronologische Doctrine Timeline &mdash; wie sich Rechts&auml;tze entwickelt haben.</div>
-          </div>
-        </div>
-        <div class="study-step">
-          <div class="study-step-num">3</div>
-          <div class="study-step-content">
-            <div class="study-step-title" data-t="study_s3_title">Subsumtion &uuml;ben</div>
-            <div class="study-step-desc" data-t="study_s3_desc">Frage: <code>Fallbearbeitung zu Haftpflichtrecht</code>. Du erh&auml;ltst einen echten BGE-Sachverhalt &mdash; schreibe deine Subsumtion, dann l&auml;sst du dir die versteckte Analyse zeigen und bekommst Feedback.</div>
-          </div>
-        </div>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px; margin-bottom:12px">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Suche</div>
+        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">search_legislation(query="Mietrecht", canton="ZH")</code>
       </div>
 
-      <div class="study-prompts">
-        <h5 data-t="study_prompts_heading">Example prompts</h5>
-        <ul>
-          <li data-t="study_p1">Erkl&auml;re mir BGE 133 III 121</li>
-          <li data-t="study_p2">Leitentscheide zu Art. 41 OR &mdash; Doktrin-&Uuml;berblick</li>
-          <li data-t="study_p3">Fallbearbeitung zu Haftpflichtrecht</li>
-          <li data-t="study_p4">Wie hat sich die culpa in contrahendo-Doktrin entwickelt?</li>
-          <li data-t="study_p5">Zeig mir die Erw&auml;gungen von BGE 144 III 93</li>
-          <li data-t="study_p6">Pr&uuml;f meine Subsumtion: [meine Antwort]</li>
-        </ul>
-      </div>
-
-      <div class="study-areas">
-        <span class="study-area-tag">Vertragsrecht</span>
-        <span class="study-area-tag">Haftpflicht</span>
-        <span class="study-area-tag">Sachenrecht</span>
-        <span class="study-area-tag">Grundrechte</span>
-        <span class="study-area-tag">Strafrecht AT</span>
-        <span class="study-area-tag">Mietrecht</span>
-        <span class="study-area-tag">Arbeitsrecht</span>
-        <span class="study-area-tag">Familienrecht</span>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Gezielter Abruf per SR-Nummer</div>
+        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_legislation(systematic_number="170.11", canton="VD")</code>
+        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
+          Liefert Metadaten und Versionsgeschichte der Waadtländer Kantonsverfassung inklusive Link zur offiziellen Quelle.
+        </p>
       </div>
     </div>
-    </div>
-  </details>
+  </section>
 
-  <!-- Scraper Health (collapsible) -->
-  <details class="health-card hid" id="sec-health">
-    <summary class="health-summary">
-      <h3 data-t="health_title">Scraper Health</h3>
-      <span class="health-status" id="health-summary-status"></span>
-      <svg class="chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </summary>
-    <div class="health-body">
-      <div class="health-meta hid" id="health-meta"></div>
-      <div class="disk-bar hid" id="disk-bar"></div>
-      <div class="tw">
-        <table class="ct" id="t-health"><thead><tr>
-          <th data-k="name" data-t="th_court">Court</th>
-          <th data-k="status" data-t="th_status">Status</th>
-          <th data-k="new_count" data-t="th_new">New</th>
-          <th data-k="duration_s" data-t="th_duration">Duration</th>
-          <th data-k="state_count" class="hide-m" data-t="th_state">Total Known</th>
-          <th data-k="jsonl_size_mb" class="hide-m" data-t="th_jsonl_size">JSONL</th>
-          <th data-k="jsonl_mtime" class="hide-m" data-t="th_last_data">Last Data</th>
-        </tr></thead><tbody></tbody></table>
+  <!-- Recent changes section -->
+  <section class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 8px; font-size:22px">Aktuelle Änderungen</h2>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
+        Für jede Jurisdiktion können die zuletzt erfolgten Gesetzesänderungen abgefragt werden &mdash;
+        neue Erlasse, Revisionen und Aufhebungen mit Datum, Typ und Link zur offiziellen Publikation.
+      </p>
+      <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
+        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">browse_legislation_changes(canton="CH")</code>
       </div>
     </div>
-  </details>
+  </section>
 
+  <!-- Why this matters section -->
+  <section class="section-card" open style="margin-bottom:48px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px">Warum eine eigene Legislationsschicht?</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
+        Sowohl Fedlex als auch LexFind sind für Sprachmodelle schwer zugänglich. Fedlex bietet nur einen
+        SPARQL-Endpunkt und XML-Downloads; es gibt keine einfache HTTP-API für &quot;Liefere den aktuellen Text
+        von Art. 41 OR auf Deutsch&quot;. LexFind erfordert eine JavaScript-gesteuerte Sitzung und einen
+        Such-dann-Abruf-Ablauf. Sprachmodelle, die ohne Retrieval-Layer nach Schweizer Gesetzesartikeln gefragt werden,
+        greifen deshalb typischerweise auf veraltete Trainingsdaten zurück oder halluzinieren Artikeltexte.
+      </p>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch">
+        OpenCaseLaw löst dieses Problem: jede Gesetzesreferenz im Korpus-Zitationsgraph kann dereferenziert werden
+        auf den autoritativen aktuellen Text, und dieselbe Schnittstelle wird als Werkzeugsatz für LLM-Agenten über MCP
+        zur Verfügung gestellt. Eine Entscheidung, die Art. 12 BGFA zitiert, kann auf Nachfrage in den vollständigen
+        Text des Artikels aufgelöst werden &mdash; in Deutsch, Französisch und Italienisch, auf dem aktuellen Konsolidierungsstand.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-links">
+      <a href="/">opencaselaw.ch</a>
+      <a href="https://github.com/jonashertner/caselaw-repo-1">GitHub</a>
+      <a href="https://mcp.opencaselaw.ch/health">API Status</a>
+    </div>
+    <div style="margin-top:4px">Built with &#9829; by <a href="https://jonashertner.com" rel="author">Jonas Hertner</a></div>
+    <div style="margin-top:4px">Questions or feedback? <a href="mailto:team@jonashertner.com">team@jonashertner.com</a></div>
+  </footer>
   <footer>
     <div class="foot-links">
       <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">HuggingFace</a>

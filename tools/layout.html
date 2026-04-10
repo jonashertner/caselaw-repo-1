@@ -1593,6 +1593,8 @@ function exportCSV(data, filename) {
 function deltaTag(n) { return n > 0 ? `<span class="delta">+${fmt(n)}</span>` : ''; }
 
 function renderAll(data) {
+  // Sub-pages without a dashboard DOM (no #kpis element) skip rendering entirely.
+  if (!document.getElementById('kpis')) return;
   const range = data.date_range || {};
 
   // KPIs — two hero numbers
