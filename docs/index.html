@@ -917,10 +917,10 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .hero-v2 .hero-lang-bar-fill {
   height: 100%;
   background: var(--tx);
-  /* Matches the (now shorter) counter animation so bars and numbers
+  /* Matches the counter animation total duration so bars and numbers
      settle together. Curve is front-loaded so the bar is essentially
      full during the counter's slow odometer phase. */
-  transition: width 2.1s cubic-bezier(0.16, 0.84, 0.28, 1);
+  transition: width 2.3s cubic-bezier(0.22, 0.75, 0.36, 1);
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-v2 .hero-lang-bar-fill { transition: none; }
@@ -3751,23 +3751,22 @@ function renderHero(data) {
     return String(n);
   };
 
-  // Counter animation: asymmetric piecewise curve.
-  //   Phase 1 (25 % of time): 0 → (target − tail), easeOutQuart
-  //     — snappy, front-loaded climb; visibly decelerating already.
-  //   Phase 2 (75 % of time): (target − tail) → target, linear
-  //     — the odometer settle. With `tail` sized so the slow phase
-  //       ticks through at roughly 1 unit per frame, the viewer
-  //       literally watches each final digit resolve.
+  // Counter animation: piecewise curve — visible climb, then odometer settle.
+  //   Phase 1 (~900 ms): 0 → (target − tail), easeOutCubic
+  //     — long enough to watch the counter visibly climb through each
+  //       digit position, not so long it feels sluggish.
+  //   Phase 2 (~1800 ms): (target − tail) → target, linear
+  //     — the odometer phase. With `tail` sized so the slow phase ticks
+  //       through at ~1 unit per frame (60 fps × 1800 ms × 1/110 ≈ 1),
+  //       the viewer literally watches each of the last ~110 digits
+  //       resolve one by one.
   // Respects prefers-reduced-motion.
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const animateCount = (id, target, totalDuration, tail) => {
     const el = document.getElementById(id);
     if (!el || target == null) return;
     if (prefersReduced) { el.textContent = fmt(target); return; }
-    // Pick a tail so the slow-phase velocity is ~1 unit per frame
-    // (at 60 fps that's ~60 units per second, and the slow phase here
-    //  is ~1.8 s, so a tail of ~108 units lands on 1/frame for 6-digit
-    //  numbers). For smaller totals we scale down proportionally.
+    // Tail size tuned so the slow-phase velocity is ~1 unit per frame.
     if (tail == null) {
       if (target >= 100000)      tail = 110;
       else if (target >= 10000)  tail = 60;
@@ -3775,20 +3774,22 @@ function renderHero(data) {
       else                       tail = Math.max(5, Math.floor(target * 0.1));
     }
     const transitionValue = Math.max(0, target - tail);
-    const fastDuration = totalDuration * 0.25;
-    const slowDuration = totalDuration * 0.75;
+    // 33 / 67 split: the climb is visible (not a blink-and-miss blur)
+    // while the majority of runtime is the slow odometer settle.
+    const fastDuration = totalDuration * 0.33;
+    const slowDuration = totalDuration * 0.67;
     const start = performance.now();
     const step = (now) => {
       const elapsed = now - start;
       let current;
       if (elapsed < fastDuration) {
-        // Phase 1: 0 → transitionValue, easeOutQuart (steep early,
-        // already decelerating by ~60 % of the phase).
+        // Phase 1: 0 → transitionValue, easeOutCubic (soft decelerating
+        // climb that the eye can actually follow).
         const p = elapsed / fastDuration;
-        const eased = 1 - Math.pow(1 - p, 4);
+        const eased = 1 - Math.pow(1 - p, 3);
         current = Math.floor(transitionValue * eased);
       } else if (elapsed < totalDuration) {
-        // Phase 2: transitionValue → target, linear (slow odometer settle)
+        // Phase 2: transitionValue → target, linear (odometer settle)
         const p = (elapsed - fastDuration) / slowDuration;
         current = Math.floor(transitionValue + (target - transitionValue) * p);
       } else {
@@ -3806,11 +3807,11 @@ function renderHero(data) {
   const shouldAnimate = !window._heroAnimated;
   window._heroAnimated = true;
 
-  // Main hero number — 2400 ms total: 600 ms snappy climb + 1800 ms
-  // slow odometer settle. Feels quicker overall, more deliberate at
-  // the end where the viewer actually reads the digits.
+  // Main hero number — 2700 ms total: ~900 ms visible climb + ~1800 ms
+  // odometer settle. Quicker overall than the 3000 ms original, with a
+  // longer relative slow tail so the final digits resolve deliberately.
   if (data.total) {
-    if (shouldAnimate) animateCount('hero-decisions', data.total, 2400);
+    if (shouldAnimate) animateCount('hero-decisions', data.total, 2700);
     else setText('hero-decisions', fmt(data.total));
   }
   // Courts
@@ -3819,7 +3820,7 @@ function renderHero(data) {
   }
 
   // Language distribution — numbers animate slightly shorter than the
-  // main counter so they arrive ~200 ms before the big one settles.
+  // main counter so they arrive ~300 ms before the big one settles.
   if (data.by_language && data.total) {
     const total = data.total;
     for (const lang of ['de', 'fr', 'it']) {
@@ -3827,7 +3828,7 @@ function renderHero(data) {
       if (n == null) continue;
       const pct = (n / total) * 100;
       if (shouldAnimate) {
-        animateCount(`hero-lang-${lang}-num`, n, 2200);
+        animateCount(`hero-lang-${lang}-num`, n, 2400);
       } else {
         setText(`hero-lang-${lang}-num`, fmt(n));
       }
