@@ -281,13 +281,13 @@ Available on both remote and local unless noted.
 | `get_case_brief` | Structured brief for any case — regeste, key Erwägungen, cited statutes, and citation authority |
 | `get_doctrine` | Statute article or legal concept → ranked leading cases + doctrine timeline |
 | `generate_exam_question` | Legal topic → real BGE fact pattern with hidden analysis for Fallbearbeitung practice |
-| `get_law` | Look up a Swiss federal law by SR number or abbreviation, with full article text |
-| `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
-| `get_commentary` | Look up scholarly commentary for a specific law article from OnlineKommentar.ch (CC-BY-4.0) |
-| `search_commentaries` | Full-text search across 362 legal commentaries covering 19 Swiss federal laws |
-| `search_legislation` | Search 30,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
-| `get_legislation` | Get details for a specific law by LexFind ID or SR number, with version history and source URLs |
-| `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
+| `get_law` | Look up a federal or cantonal Swiss law by SR number / abbreviation + optional canton. Returns full article text from the local mirror (Fedlex for federal, LexFind for cantonal) |
+| `search_laws` | Unified federal + cantonal FTS5 search with BM25 rank interleaving. Filter by `canton=` for a specific jurisdiction, or `jurisdiction='federal'` / `'cantonal'` |
+| `get_commentary` | Scholarly commentary for a specific law article — OnlineKommentar.ch (CC-BY-4.0) or OpenLegalCommentary.ch (CC BY-SA 4.0) |
+| `search_commentaries` | Full-text search across 1,058 legal commentaries from OnlineKommentar.ch + OpenLegalCommentary.ch |
+| `search_legislation` | LexFind-backed discovery search across federal + cantonal legislation. `fetch_top_n_texts=N` enriches the top N results with full article text in a single call |
+| `get_legislation` | Full metadata + article text for any federal or cantonal law. Local-first (statutes.db → cantonal_laws.db → LexFind API fallback) |
+| `browse_legislation_changes` | Recent-changes feed per canton or federal level (live LexFind API, no local mirror) |
 | `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database *(local only)* |
 | `check_update_status` | Check progress of a running database update *(local only)* |
 
@@ -391,11 +391,14 @@ Year     Count  Bar
 
 Parameters: `query` (optional text), `law_code` + `article` (optional statute), `court`, `date_from`, `date_to`. At least one of `query` or `law_code` is required.
 
-### Statute lookup tools
+### Statute lookup tools (local, federal + cantonal)
 
-Two tools provide direct access to **Swiss federal law text** from the Classified Compilation (SR/RS), powered by a Fedlex statute database with 40+ laws and 25,000+ articles in three languages.
+Two tools provide direct access to **Swiss law text** from the local mirror, covering both federal and cantonal jurisdictions with article-level FTS5 indexing and sub-millisecond lookup:
 
-**`get_law`** — Look up a law by SR number or abbreviation, optionally fetching a specific article with full text.
+- **Federal:** ~5,000 laws / 125,000+ articles from the [Fedlex](https://www.fedlex.admin.ch) SPARQL endpoint, mirrored monthly into `statutes.db`. Covers every consolidated federal act in German, French, and Italian.
+- **Cantonal:** ~30,000 active cantonal and intercantonal acts from [LexFind.ch](https://www.lexfind.ch), mirrored monthly into `cantonal_laws.db`. PDFs are extracted with PyMuPDF and segmented into articles. Covers all 26 cantons plus bilingual secondary-language passes for BE / FR / VS / GR.
+
+**`get_law`** — Look up any Swiss law (federal or cantonal) by SR number or abbreviation, optionally fetching a specific article with full text.
 
 ```
 > Show me Art. 8 BV
@@ -406,42 +409,41 @@ Two tools provide direct access to **Swiss federal law text** from the Classifie
 ### Art. 8 — Rechtsgleichheit
 1 Alle Menschen sind vor dem Gesetz gleich.
 2 Niemand darf diskriminiert werden, namentlich nicht wegen der Herkunft, ...
+
+> Show me Art. 1 of the Zurich Hundegesetz
+
+get_law(canton="ZH", sr_number="554.5", article="1")
 ```
 
-Parameters: `sr_number` or `abbreviation` (at least one required), `article` (optional — omit to see the full article list), `language` (de/fr/it, default de).
+Parameters: `sr_number` or `abbreviation` (at least one required), `article` (optional — omit to see the full article list), `language` (de/fr/it, default de), `canton` (default `CH`; set to `ZH`, `BE`, etc. for cantonal lookup).
 
-**`search_laws`** — Full-text search across all statute articles. Finds which law articles deal with a specific legal topic.
+**`search_laws`** — Unified FTS5 search across every Swiss statute article, federal and cantonal. BM25-ranked per corpus, merged by rank interleaving so each response surfaces both jurisdictions.
 
 ```
 > Search for statute provisions about Verjährung
 
-1. Art. 130 OR (SR 220): Die Verjährung beginnt mit der Fälligkeit der Forderung...
-2. Art. 132 OR (SR 220): Bei der Berechnung der Frist ist der Tag...
-3. Art. 790 ZGB (SR 210): Die Grundlast ist keiner Verjährung unterworfen...
+1. [CH]  Art. 130 OR (SR 220): Die Verjährung beginnt mit der Fälligkeit der Forderung...
+2. [ZH]  § 19 Kirchgemeindenreglement (SR 182.60): ... Verjährungsbestimmungen ...
+3. [CH]  Art. 132 OR (SR 220): Bei der Berechnung der Frist ist der Tag...
 ```
 
-Parameters: `query` (required, FTS5 syntax), `sr_number` (optional — restrict to one law), `language` (de/fr/it), `limit` (1–50).
+Parameters: `query` (required, FTS5 syntax), `sr_number` (optional — one specific federal law, implies federal-only), `canton` (optional — restrict to one canton, or `CH` for federal-only), `jurisdiction` (`all` / `federal` / `cantonal`, default `all`), `language` (de/fr/it), `limit` (1–50).
 
-The statute database covers the top 40 most-cited Swiss federal laws, including OR, ZGB, StGB, BV, BGG, StPO, ZPO, SchKG, and more. Data is sourced from [Fedlex](https://www.fedlex.admin.ch) (Akoma Ntoso XML).
+### Legislation discovery tools (LexFind-backed)
 
-### Legislation tools
+Three additional tools layer the **live LexFind API** on top of the local mirror for cases where the mirror isn't enough — newly published versions between refresh cycles, full version history, recent-changes feeds. These are the broader discovery surface; for plain "give me the current text" queries `get_law` / `search_laws` are faster and more reliable.
 
-Three tools provide access to **Swiss legislation** across all levels of government — federal, cantonal, and intercantonal — via the [LexFind.ch](https://www.lexfind.ch) API. This covers 30,000+ legislative texts including laws, ordinances, regulations, and international treaties.
-
-> **Legislation vs. statute tools:** Both tool families are now locally mirrored with full article text. `get_law` / `search_laws` serve federal (Fedlex mirror, 5,000+ laws) and cantonal (LexFind mirror, 30,000+ laws) with article-level FTS5 and <1 ms lookup. `search_legislation` / `get_legislation` / `browse_legislation_changes` layer the live LexFind API on top for edge cases (newly published laws, version history, recent-changes feed).
-
-**`search_legislation`** — Full-text search across all Swiss legislative texts. Filter by canton, active/abrogated status, and whether to search titles only or full content.
+**`search_legislation`** — Broader discovery search across Swiss legislation, with optional single-call full-text enrichment. Useful when you don't know whether the law is federal or cantonal, or when you need a one-shot natural-language workflow.
 
 ```
-> Search for cantonal data protection laws
+> Search for the Bernese dog act with full text
 
-1. Gesetz über die Information und den Datenschutz (SR 170.4, ZH)
-   URL: https://www.zh.ch/...
-2. Loi sur l'information du public, la protection des données... (SR 170.4, VD)
-   URL: https://prestations.vd.ch/...
+search_legislation(query="Hundegesetz", canton="BE", fetch_top_n_texts=2)
+→ returns top 2 matches with full_text_preview + sample_articles inline,
+  no follow-up get_legislation call needed.
 ```
 
-Parameters: `query` (required), `canton` (optional — CH, ZH, BE, etc.), `active_only` (default true), `search_in_content` (default false — searches titles/keywords; set true to search law text), `language` (de/fr/it), `limit` (1–60, default 20).
+Parameters: `query` (required), `canton` (optional — CH, ZH, BE, etc.), `active_only` (default true), `search_in_content` (default false — searches titles/keywords; set true to search law text), `language` (de/fr/it), `limit` (1–60, default 20), `fetch_top_n_texts` (0–10, default 0 — set to N to enrich top N results with parsed full article text).
 
 **`get_legislation`** — Get details for a specific law including metadata, version history, and links to official sources (Fedlex, cantonal portals).
 
