@@ -7919,11 +7919,12 @@ def _get_law_cantonal(
         result = {
             "sr_number": law["sr_number"] or "",
             "title": law["title"],
-            "abbreviation": law["title"][:30],  # cantonal laws often lack a separate abbr
+            "abbreviation": "",  # cantonal laws rarely have canonical abbreviations
             "canton": canton_u,
             "level": "cantonal",
             "language": language,
             "category": law["category"] or "",
+            "lexfind_id": law["lexfind_id"],
         }
 
         articles_rows = conn.execute(
@@ -8267,10 +8268,15 @@ def _format_get_law_response(result: dict) -> str:
 
     abbr = result.get("abbreviation") or ""
     sr = result.get("sr_number") or ""
-    header_bits = [b for b in (abbr, f"SR {sr}" if sr else "") if b]
-    header = " — ".join(header_bits) if header_bits else "Law"
+    if level == "cantonal":
+        sr_label = f"{canton} {sr}" if sr else canton
+    else:
+        sr_label = f"SR {sr}" if sr else ""
+    header_bits = [b for b in (abbr, sr_label) if b]
+    header = " — ".join(header_bits) if header_bits else result.get("title", "Law")
     text = f"# {header}\n"
-    text += f"**{result['title']}**\n"
+    if result.get("title") and result["title"] not in header:
+        text += f"**{result['title']}**\n"
     text += f"Jurisdiction: {label}\n"
     if result.get("consolidation_date"):
         text += f"Consolidation date: {result['consolidation_date']}\n"
