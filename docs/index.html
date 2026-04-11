@@ -778,18 +778,18 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   font-size: clamp(22px, 3.2vw, 34px);
   font-weight: 500;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 1.2;
   color: var(--tx);
-  margin: 0 auto clamp(10px, 1.6vw, 16px);
+  margin: 0 auto clamp(6px, 1vw, 10px);
   max-width: 22ch;
   text-wrap: balance;
 }
 .hero-v2 .hero-tagline {
-  font-size: clamp(14px, 1.6vw, 17px);
-  line-height: 1.6;
+  font-size: clamp(14px, 1.5vw, 16px);
+  line-height: 1.5;
   color: var(--tx2);
-  margin: 0 auto clamp(32px, 5vw, 48px);
-  max-width: 52ch;
+  margin: 0 auto clamp(20px, 3vw, 32px);
+  max-width: 46ch;
   text-wrap: balance;
 }
 .hero-v2 .hero-ctas {
@@ -798,7 +798,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: clamp(32px, 5vw, 56px);
+  margin-bottom: clamp(20px, 3.5vw, 36px);
 }
 .hero-v2 .hero-meta {
   display: flex;
@@ -851,11 +851,10 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .hero-v2 .hero-lang-bar-fill {
   height: 100%;
   background: var(--tx);
-  /* Matches the counter animation total duration so bars and numbers
-     settle together. easeOutCubic curve mirrors the fast phase of the
-     piecewise counter; the linear tail of the counter just means the
-     bar is already at 100 % during the number's slow odometer phase. */
-  transition: width 2.6s cubic-bezier(0.22, 0.75, 0.36, 1);
+  /* Matches the (now shorter) counter animation so bars and numbers
+     settle together. Curve is front-loaded so the bar is essentially
+     full during the counter's slow odometer phase. */
+  transition: width 2.1s cubic-bezier(0.16, 0.84, 0.28, 1);
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-v2 .hero-lang-bar-fill { transition: none; }
@@ -887,11 +886,11 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 /* Date + delta stamp — sits directly under the hero number. One line,
    monospace, restrained — the single "when + what changed" signal. */
 .hero-v2 .hero-stamp {
-  margin: 4px auto clamp(28px, 4vw, 40px);
+  margin: 4px auto clamp(18px, 2.5vw, 28px);
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border: 1px solid var(--brd);
   border-radius: 999px;
   font-family: var(--f-mono);
@@ -1733,7 +1732,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <span data-t="hero_stamp_since">since yesterday</span>
     </p>
     <h1 class="hero-headline" data-t="hero_headline">The complete open dataset of Swiss case law.</h1>
-    <p class="hero-tagline" data-t="hero_tagline">Searchable by you, readable by your AI. Published decisions from every federal court and all 26 cantons, plus 80 key federal laws and 33,000+ cantonal acts.</p>
+    <p class="hero-tagline" data-t="hero_tagline">Searchable by you, readable by your AI.</p>
     <div class="hero-ctas">
       <a href="/entscheide/" class="btn btn-primary">
         <span data-t="hero_cta_explore">Explore corpus</span>
@@ -2157,7 +2156,7 @@ const I18N = {
     hero_kicker:'Ein offenes Korpus des Schweizer Rechts',
     hero_stat_label:'publizierte Gerichtsentscheide',
     hero_headline:'Der vollst\u00e4ndige, offene Datensatz Schweizer Rechtsprechung.',
-    hero_tagline:'Durchsuchbar f\u00fcr Sie, lesbar f\u00fcr Ihr KI-Modell. Publizierte Entscheide aller Bundesgerichte und 26 Kantone, dazu 80 zentrale Bundesgesetze und 33\u2019000+ kantonale Erlasse.',
+    hero_tagline:'Durchsuchbar f\u00fcr Sie, lesbar f\u00fcr Ihr KI-Modell.',
     hero_cta_explore:'Korpus erkunden',
     hero_cta_connect:'KI verbinden',
     hero_cta_word:'Word Add-in',
@@ -2286,7 +2285,7 @@ const I18N = {
     hero_kicker:'Un corpus ouvert du droit suisse',
     hero_stat_label:'d\u00e9cisions judiciaires publi\u00e9es',
     hero_headline:'Le dataset ouvert et complet de la jurisprudence suisse.',
-    hero_tagline:'Interrogeable par vous, lisible par votre mod\u00e8le d\'IA. Les d\u00e9cisions publi\u00e9es des tribunaux f\u00e9d\u00e9raux et des 26 cantons, plus 80 lois f\u00e9d\u00e9rales centrales et 33\u2019000+ textes cantonaux.',
+    hero_tagline:'Interrogeable par vous, lisible par votre mod\u00e8le d\'IA.',
     hero_cta_explore:'Explorer le corpus',
     hero_cta_connect:'Connecter l\'IA',
     hero_cta_word:'Word Add-in',
@@ -2415,7 +2414,7 @@ const I18N = {
     hero_kicker:'Un corpus aperto del diritto svizzero',
     hero_stat_label:'decisioni giudiziarie pubblicate',
     hero_headline:'Il dataset aperto e completo della giurisprudenza svizzera.',
-    hero_tagline:'Interrogabile da voi, leggibile dal vostro modello IA. Le decisioni pubblicate dei tribunali federali e dei 26 cantoni, pi\u00f9 80 leggi federali centrali e 33\u2019000+ testi cantonali.',
+    hero_tagline:'Interrogabile da voi, leggibile dal vostro modello IA.',
     hero_cta_explore:'Esplora il corpus',
     hero_cta_connect:'Connetti IA',
     hero_cta_word:'Word Add-in',
@@ -2544,7 +2543,7 @@ const I18N = {
     hero_kicker:'In corpus avert dal dretg svizzer',
     hero_stat_label:'decisiuns giudizialas publitgadas',
     hero_headline:'Il dataset avert e cumplet da la giurisprudenza svizra.',
-    hero_tagline:'Interrogabel per Vus, legibel per Voss model AI. Las decisiuns publitgadas da las dretgiras federalas e dals 26 chantuns, plus 80 leschas federalas centralas e 33\u2019000+ texts chantunals.',
+    hero_tagline:'Interrogabel per Vus, legibel per Voss model AI.',
     hero_cta_explore:'Explorar il corpus',
     hero_cta_connect:'Connectar AI',
     hero_cta_word:'Word Add-in',
@@ -2673,7 +2672,7 @@ const I18N = {
     hero_kicker:'An open corpus of Swiss law',
     hero_stat_label:'published court decisions',
     hero_headline:'The complete open dataset of Swiss case law.',
-    hero_tagline:'Searchable by you, readable by your AI. Published decisions from every federal court and all 26 cantons, plus 80 key federal laws and 33,000+ cantonal acts.',
+    hero_tagline:'Searchable by you, readable by your AI.',
     hero_cta_explore:'Explore corpus',
     hero_cta_connect:'Connect your AI',
     hero_cta_word:'Word Add-in',
@@ -3550,38 +3549,41 @@ function renderHero(data) {
     return String(n);
   };
 
-  // Counter animation: piecewise curve so the tens/ones positions
-  // visibly settle at the end instead of snapping.
-  //   Phase 1 (40 % of time): 0 → (target − tail), easeOutCubic
-  //   Phase 2 (60 % of time): (target − tail) → target, linear
-  // where `tail` defaults to 100 — so the last 100 units (the readable
-  // hundreds → ones span) tick through in the slow phase at roughly
-  // 1 unit per frame, producing an odometer-like final settling.
+  // Counter animation: asymmetric piecewise curve.
+  //   Phase 1 (25 % of time): 0 → (target − tail), easeOutQuart
+  //     — snappy, front-loaded climb; visibly decelerating already.
+  //   Phase 2 (75 % of time): (target − tail) → target, linear
+  //     — the odometer settle. With `tail` sized so the slow phase
+  //       ticks through at roughly 1 unit per frame, the viewer
+  //       literally watches each final digit resolve.
   // Respects prefers-reduced-motion.
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const animateCount = (id, target, totalDuration, tail) => {
     const el = document.getElementById(id);
     if (!el || target == null) return;
     if (prefersReduced) { el.textContent = fmt(target); return; }
-    // Pick a sensible tail: last 100 units for 6-digit+ numbers, scaled
-    // down for smaller totals so the slow phase stays under ~2 seconds.
+    // Pick a tail so the slow-phase velocity is ~1 unit per frame
+    // (at 60 fps that's ~60 units per second, and the slow phase here
+    //  is ~1.8 s, so a tail of ~108 units lands on 1/frame for 6-digit
+    //  numbers). For smaller totals we scale down proportionally.
     if (tail == null) {
-      if (target >= 100000)      tail = 100;
-      else if (target >= 10000)  tail = 50;
-      else if (target >= 1000)   tail = 20;
+      if (target >= 100000)      tail = 110;
+      else if (target >= 10000)  tail = 60;
+      else if (target >= 1000)   tail = 25;
       else                       tail = Math.max(5, Math.floor(target * 0.1));
     }
     const transitionValue = Math.max(0, target - tail);
-    const fastDuration = totalDuration * 0.4;
-    const slowDuration = totalDuration * 0.6;
+    const fastDuration = totalDuration * 0.25;
+    const slowDuration = totalDuration * 0.75;
     const start = performance.now();
     const step = (now) => {
       const elapsed = now - start;
       let current;
       if (elapsed < fastDuration) {
-        // Phase 1: 0 → transitionValue, easeOutCubic (fast, dramatic climb)
+        // Phase 1: 0 → transitionValue, easeOutQuart (steep early,
+        // already decelerating by ~60 % of the phase).
         const p = elapsed / fastDuration;
-        const eased = 1 - Math.pow(1 - p, 3);
+        const eased = 1 - Math.pow(1 - p, 4);
         current = Math.floor(transitionValue * eased);
       } else if (elapsed < totalDuration) {
         // Phase 2: transitionValue → target, linear (slow odometer settle)
@@ -3602,9 +3604,11 @@ function renderHero(data) {
   const shouldAnimate = !window._heroAnimated;
   window._heroAnimated = true;
 
-  // Main hero number — 3000ms (1.2 s fast climb + 1.8 s slow settle)
+  // Main hero number — 2400 ms total: 600 ms snappy climb + 1800 ms
+  // slow odometer settle. Feels quicker overall, more deliberate at
+  // the end where the viewer actually reads the digits.
   if (data.total) {
-    if (shouldAnimate) animateCount('hero-decisions', data.total, 3000);
+    if (shouldAnimate) animateCount('hero-decisions', data.total, 2400);
     else setText('hero-decisions', fmt(data.total));
   }
   // Courts
@@ -3612,8 +3616,8 @@ function renderHero(data) {
     setText('hero-courts', data.court_count);
   }
 
-  // Language distribution — animate numbers in sync with main counter
-  // (1500ms — slightly shorter so they arrive just before the big one).
+  // Language distribution — numbers animate slightly shorter than the
+  // main counter so they arrive ~200 ms before the big one settles.
   if (data.by_language && data.total) {
     const total = data.total;
     for (const lang of ['de', 'fr', 'it']) {
@@ -3621,7 +3625,7 @@ function renderHero(data) {
       if (n == null) continue;
       const pct = (n / total) * 100;
       if (shouldAnimate) {
-        animateCount(`hero-lang-${lang}-num`, n, 2700);
+        animateCount(`hero-lang-${lang}-num`, n, 2200);
       } else {
         setText(`hero-lang-${lang}-num`, fmt(n));
       }

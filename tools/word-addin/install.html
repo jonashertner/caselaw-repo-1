@@ -8,7 +8,12 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #f7f7f8; color: #18181b; min-height: 100vh; display: flex; justify-content: center; padding: 40px 20px; -webkit-font-smoothing: antialiased; }
     .page { max-width: 560px; width: 100%; }
-    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; flex-wrap: wrap; }
+    .header-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+    .header-brand:hover .brand { text-decoration: underline; }
+    .back-home { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 12px; font-weight: 500; color: #52525b; text-decoration: none; border: 1px solid #e4e4e7; border-radius: 6px; background: #fff; transition: all 0.15s; }
+    .back-home:hover { color: #18181b; border-color: #18181b; }
+    .back-home .arrow-l { font-size: 14px; line-height: 1; }
     .logo { width: 32px; height: 32px; border-radius: 8px; background: #b91c24; color: #fff; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
     .brand { font-size: 18px; font-weight: 700; }
     .badge { display: inline-flex; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; background: #fef2f2; color: #b91c24; border: 1px solid #fecaca; margin-left: 8px; }
@@ -52,9 +57,15 @@
 <body>
   <div class="page">
     <div class="header">
-      <div class="logo">O</div>
-      <span class="brand">OpenCaseLaw</span>
+      <a class="header-brand" href="https://opencaselaw.ch" aria-label="OpenCaseLaw homepage">
+        <div class="logo">O</div>
+        <span class="brand">OpenCaseLaw</span>
+      </a>
       <span class="badge">Beta</span>
+      <a class="back-home" href="https://opencaselaw.ch" id="back-home-link">
+        <span class="arrow-l">&larr;</span>
+        <span id="back-home-text">opencaselaw.ch</span>
+      </a>
     </div>
     <div class="lang-bar" id="lang-bar"></div>
     <div id="content"></div>
