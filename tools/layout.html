@@ -851,9 +851,11 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .hero-v2 .hero-lang-bar-fill {
   height: 100%;
   background: var(--tx);
-  /* Matches the counter animation duration so bars and numbers settle
-     together. Uses a cubic-bezier that mirrors easeOutExpo. */
-  transition: width 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Matches the counter animation total duration so bars and numbers
+     settle together. easeOutCubic curve mirrors the fast phase of the
+     piecewise counter; the linear tail of the counter just means the
+     bar is already at 100 % during the number's slow odometer phase. */
+  transition: width 2.6s cubic-bezier(0.22, 0.75, 0.36, 1);
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-v2 .hero-lang-bar-fill { transition: none; }
@@ -2906,22 +2908,48 @@ function renderHero(data) {
     return String(n);
   };
 
-  // Counter animation: eases a numeric element from 0 → target using
-  // easeOutExpo over `duration` ms. Respects prefers-reduced-motion.
+  // Counter animation: piecewise curve so the tens/ones positions
+  // visibly settle at the end instead of snapping.
+  //   Phase 1 (40 % of time): 0 → (target − tail), easeOutCubic
+  //   Phase 2 (60 % of time): (target − tail) → target, linear
+  // where `tail` defaults to 100 — so the last 100 units (the readable
+  // hundreds → ones span) tick through in the slow phase at roughly
+  // 1 unit per frame, producing an odometer-like final settling.
+  // Respects prefers-reduced-motion.
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const animateCount = (id, target, duration) => {
+  const animateCount = (id, target, totalDuration, tail) => {
     const el = document.getElementById(id);
     if (!el || target == null) return;
     if (prefersReduced) { el.textContent = fmt(target); return; }
+    // Pick a sensible tail: last 100 units for 6-digit+ numbers, scaled
+    // down for smaller totals so the slow phase stays under ~2 seconds.
+    if (tail == null) {
+      if (target >= 100000)      tail = 100;
+      else if (target >= 10000)  tail = 50;
+      else if (target >= 1000)   tail = 20;
+      else                       tail = Math.max(5, Math.floor(target * 0.1));
+    }
+    const transitionValue = Math.max(0, target - tail);
+    const fastDuration = totalDuration * 0.4;
+    const slowDuration = totalDuration * 0.6;
     const start = performance.now();
     const step = (now) => {
       const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      // easeOutExpo — fast start, slow settle
-      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      const current = Math.floor(target * eased);
+      let current;
+      if (elapsed < fastDuration) {
+        // Phase 1: 0 → transitionValue, easeOutCubic (fast, dramatic climb)
+        const p = elapsed / fastDuration;
+        const eased = 1 - Math.pow(1 - p, 3);
+        current = Math.floor(transitionValue * eased);
+      } else if (elapsed < totalDuration) {
+        // Phase 2: transitionValue → target, linear (slow odometer settle)
+        const p = (elapsed - fastDuration) / slowDuration;
+        current = Math.floor(transitionValue + (target - transitionValue) * p);
+      } else {
+        current = target;
+      }
       el.textContent = fmt(current);
-      if (progress < 1) requestAnimationFrame(step);
+      if (elapsed < totalDuration) requestAnimationFrame(step);
       else el.textContent = fmt(target);
     };
     requestAnimationFrame(step);
@@ -2932,9 +2960,9 @@ function renderHero(data) {
   const shouldAnimate = !window._heroAnimated;
   window._heroAnimated = true;
 
-  // Main hero number — 1800ms
+  // Main hero number — 3000ms (1.2 s fast climb + 1.8 s slow settle)
   if (data.total) {
-    if (shouldAnimate) animateCount('hero-decisions', data.total, 1800);
+    if (shouldAnimate) animateCount('hero-decisions', data.total, 3000);
     else setText('hero-decisions', fmt(data.total));
   }
   // Courts
@@ -2951,7 +2979,7 @@ function renderHero(data) {
       if (n == null) continue;
       const pct = (n / total) * 100;
       if (shouldAnimate) {
-        animateCount(`hero-lang-${lang}-num`, n, 1500);
+        animateCount(`hero-lang-${lang}-num`, n, 2700);
       } else {
         setText(`hero-lang-${lang}-num`, fmt(n));
       }
