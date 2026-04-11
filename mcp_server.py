@@ -10893,10 +10893,13 @@ render();setInterval(render,60000);
         limit: int = Query(20, ge=1, le=60, description="Max results"),
         active_only: bool = Query(True, description="Only show laws currently in force"),
         search_in_content: bool = Query(False, description="Also search in law text content"),
+        fetch_top_n_texts: int = Query(0, ge=0, le=10,
+            description="If > 0, enrich top N results with parsed full text (max 10)"),
     ):
         return await asyncio.to_thread(
             _search_legislation, query=query, canton=canton, language=language,
             limit=limit, active_only=active_only, search_in_content=search_in_content,
+            fetch_top_n_texts=fetch_top_n_texts,
         )
 
     @rest_api.get("/legislation/changes", tags=["Legislation"],
