@@ -1,0 +1,39 @@
+# /etc/logrotate.d/ocl-tier1
+#
+# Tier 1 (access log with IPs + UAs) — strictly 72-hour retention.
+# Rotated hourly, shredded after 72 rotations (= 3 days).
+#
+# This file exists only so we can respond to DDoS / abuse incidents; it is
+# never read for analytics. Rotating hourly keeps the hot file small and
+# makes the shred cheap.
+#
+# Install:
+#   sudo cp ops/logrotate/ocl-tier1 /etc/logrotate.d/
+#   sudo logrotate -d /etc/logrotate.d/ocl-tier1   # dry run
+#
+/var/log/nginx/tier1.log {
+    hourly
+    rotate 72
+    maxage 3
+    missingok
+    notifempty
+    compress
+    delaycompress
+    dateext
+    dateformat -%Y%m%d-%H
+    create 0640 www-data adm
+    sharedscripts
+    postrotate
+        # Signal nginx to reopen log files
+        if [ -f /run/nginx.pid ]; then
+            kill -USR1 `cat /run/nginx.pid`
+        fi
+    endscript
+    lastaction
+        # Cryptographic shred on every rotated file older than 3 days.
+        # We don't trust plain deletion because journaling filesystems can
+        # leave residual blocks accessible for recovery.
+        find /var/log/nginx -maxdepth 1 -name 'tier1.log-*' -mtime +3 -print0 \
+            2>/dev/null | xargs -0 -r shred -u -n 1 2>/dev/null || true
+    endscript
+}

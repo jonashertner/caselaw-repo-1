@@ -778,8 +778,24 @@ function renderSettings() {
   }
   html += '</div>';
 
+  // Privacy / telemetry section — opt-out toggle for the install cohort header
+  var optedOut = localStorage.getItem('ocl_usage_signal_optout') === '1';
+  html += '<div class="section-card" style="margin-top:12px;">' +
+    '<div class="section-label">' + escHtml(t('priv_signal_title', lang)) + '</div>' +
+    '<label class="pro-consent-label" style="align-items:flex-start; gap:8px;">' +
+    '<input type="checkbox" class="pro-consent-check" id="priv-signal-toggle"' +
+    (optedOut ? '' : ' checked') + '> ' +
+    '<span>' + escHtml(t('priv_signal_body', lang)) + '</span>' +
+    '</label>' +
+    '<div style="font-size:11px; color:var(--text-secondary); margin-top:8px; line-height:1.5;">' +
+    escHtml(t('priv_signal_note', lang)) + ' ' +
+    '<a href="https://opencaselaw.ch/datenschutz/" target="_blank" style="color:var(--blue);">' + escHtml(t('priv_signal_more', lang)) + '</a>' +
+    '</div>' +
+    '</div>';
+
   html += '<div class="settings-footer">' +
     '<a href="https://opencaselaw.ch" target="_blank" style="color:var(--blue);">opencaselaw.ch</a> \u00B7 ' +
+    '<a href="https://opencaselaw.ch/datenschutz/" target="_blank" style="color:var(--blue);">' + escHtml(t('priv_signal_privacy_link', lang)) + '</a> \u00B7 ' +
     '<a href="https://github.com/jonashertner/caselaw-repo-1" target="_blank" style="color:var(--blue);">GitHub</a><br>' +
     'Code: MIT \u00B7 Daten: CC0 1.0</div>';
 
@@ -848,6 +864,18 @@ function bindEvents() {
   if (proCheck && proBtn) {
     proCheck.addEventListener('change', function () {
       proBtn.disabled = !proCheck.checked;
+    });
+  }
+
+  // Privacy / usage signal toggle — persist opt-out state in localStorage
+  var privToggle = document.getElementById('priv-signal-toggle');
+  if (privToggle) {
+    privToggle.addEventListener('change', function () {
+      if (privToggle.checked) {
+        localStorage.removeItem('ocl_usage_signal_optout');
+      } else {
+        localStorage.setItem('ocl_usage_signal_optout', '1');
+      }
     });
   }
 }

@@ -1,0 +1,27 @@
+[Unit]
+Description=OpenCaseLaw nightly privacy-respecting traffic rollup
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Roll up yesterday's Tier-2 nginx log (class-level, no PII) into
+# analytics.db. Writes aggregates with K-anonymity floor + Laplace
+# DP noise. See scripts/rollup_analytics.py for the privacy contract.
+Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/rollup_analytics.py
+TimeoutStartSec=600
+StandardOutput=append:/opt/caselaw/repo/logs/analytics_rollup.log
+StandardError=append:/opt/caselaw/repo/logs/analytics_rollup.log
+
+# Hardening: this service only needs read access to /var/log/nginx
+# and write access to /opt/caselaw/repo/output.
+ProtectSystem=strict
+ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs
+ReadOnlyPaths=/var/log/nginx
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -4,94 +4,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<title>MCP-Server verbinden — Claude, ChatGPT, Cursor, Gemini · OpenCaseLaw.ch</title>
-<meta name="description" content="OpenCaseLaw bietet einen öffentlichen MCP-Server mit 21 Tools für Schweizer Rechtsrecherche. Anleitung für Claude Desktop, Claude Code, ChatGPT, Cursor und Gemini. Keine API-Keys.">
+<title>Datenschutz — wie OpenCaseLaw Daten behandelt · OpenCaseLaw.ch</title>
+<meta name="description" content="OpenCaseLaw erhebt keine persönlichen Daten. Keine Cookies, kein Tracking, keine Analyse pro Nutzer. Alle Kennzahlen sind aggregiert, k-anonym und mit Laplace-Rauschen (ε=1,0) veröffentlicht.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
-<link rel="canonical" href="https://opencaselaw.ch/">
-<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/">
-<link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/">
-<link rel="alternate" hreflang="it" href="https://opencaselaw.ch/">
-<link rel="alternate" hreflang="rm" href="https://opencaselaw.ch/">
-<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/">
-<link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://opencaselaw.ch/">
-<meta property="og:title" content="Swiss Case Law Open Dataset — 965,000+ Court Decisions">
-<meta property="og:description" content="OpenCaseLaw publishes 965,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.8 million extracted case-citation references.">
+<link rel="canonical" href="https://opencaselaw.ch/datenschutz/">
+<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/datenschutz/">
+<link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/datenschutz/">
+<link rel="alternate" hreflang="it" href="https://opencaselaw.ch/datenschutz/">
+<link rel="alternate" hreflang="rm" href="https://opencaselaw.ch/datenschutz/">
+<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/datenschutz/">
+<link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/datenschutz/">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://opencaselaw.ch/datenschutz/">
+<meta property="og:title" content="OpenCaseLaw — Datenschutz / Privacy">
+<meta property="og:description" content="No cookies, no tracking, no per-user analytics. All published numbers are k-anonymous (k=10) and differentially private (ε=1.0).">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <meta property="og:site_name" content="OpenCaseLaw.ch">
-<meta property="og:locale" content="en_CH">
-<meta property="og:locale:alternate" content="de_CH">
-<meta property="og:locale:alternate" content="fr_CH">
-<meta property="og:locale:alternate" content="it_CH">
+<meta property="og:locale" content="de_CH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Swiss Case Law Open Dataset — 965,000+ Court Decisions">
-<meta name="twitter:description" content="965,000+ Swiss federal, cantonal, and regulatory decisions with full text and 8.8 million extracted case-citation references.">
+<meta name="twitter:title" content="OpenCaseLaw — Datenschutz / Privacy">
+<meta name="twitter:description" content="No cookies, no tracking, no per-user analytics. All published numbers are k-anonymous (k=10) and differentially private (ε=1.0).">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
-<meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
-[
-  {
-    "@context": "https://schema.org",
-    "@type": "Dataset",
-    "name": "Swiss Case Law Open Dataset",
-    "alternateName": "OpenCaseLaw",
-    "description": "OpenCaseLaw publishes 965,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.8 million extracted case-citation references. Updated daily. Searchable via MCP.",
-    "url": "https://opencaselaw.ch/",
-    "license": "https://creativecommons.org/publicdomain/zero/1.0/",
-    "isAccessibleForFree": true,
-    "creator": {
-      "@type": "Person",
-      "name": "Jonas Hertner",
-      "url": "https://jonashertner.com",
-      "sameAs": [
-        "https://github.com/jonashertner",
-        "https://huggingface.co/voilaj"
-      ]
-    },
-    "distribution": [
-      {
-        "@type": "DataDownload",
-        "encodingFormat": "application/x-parquet",
-        "contentUrl": "https://huggingface.co/datasets/voilaj/swiss-caselaw"
-      }
-    ],
-    "spatialCoverage": {
-      "@type": "Place",
-      "name": "Switzerland",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 46.8182,
-        "longitude": 8.2275
-      }
-    },
-    "temporalCoverage": "1875/..",
-    "inLanguage": ["de", "fr", "it"],
-    "keywords": ["Swiss law", "court decisions", "Bundesgericht", "Tribunal federal", "jurisprudence", "open data", "legal dataset", "citation graph", "Rechtsprechung", "Schweizer Recht"],
-    "measurementTechnique": "Web scraping with full-text extraction from PDF court decisions",
-    "variableMeasured": "Court decision full text, metadata, and citation links"
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "OpenCaseLaw.ch",
-    "url": "https://opencaselaw.ch/",
-    "description": "The largest open dataset of Swiss court decisions",
-    "inLanguage": ["de", "fr", "it", "rm", "en"],
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://opencaselaw.ch/?q={search_term_string}"
-      },
-      "query-input": "required name=search_term_string"
-    }
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "OpenCaseLaw — Privacy Policy",
+  "url": "https://opencaselaw.ch/datenschutz/",
+  "inLanguage": ["de", "fr", "it", "rm", "en"],
+  "description": "OpenCaseLaw privacy policy: no cookies, no tracking, no per-user analytics. All published numbers are k-anonymous and differentially private.",
+  "publisher": {
+    "@type": "Person",
+    "name": "Jonas Hertner",
+    "url": "https://jonashertner.com"
   }
-]
+}
 </script>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1499,148 +1447,192 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
       <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
     </div>
-    <h1 style="letter-spacing:-0.02em; line-height:1.1" data-t="mcp_h1">KI-Agenten verbinden</h1>
-    <p class="sub" style="max-width:64ch" data-t="mcp_sub">
-      Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 965'000+ Schweizer
-      Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 21 spezialisierte Tools,
-      keine Anmeldung, keine API-Keys.
+    <h1 style="letter-spacing:-0.02em; line-height:1.1" data-t="priv_h1">Datenschutz</h1>
+    <p class="sub" style="max-width:64ch" data-t="priv_sub">
+      OpenCaseLaw erhebt keine persönlichen Daten. Keine Cookies, kein Tracking, keine Analyse pro Nutzer.
+      Alle veröffentlichten Kennzahlen sind aggregiert, k-anonym und differentiell privat.
     </p>
   </header>
 
   <nav class="page-toc" aria-label="On this page">
     <span class="page-toc-label" data-t="page_toc">On this page</span>
-    <a href="#mcp-modes">Betriebsmodi</a>
-    <a href="#mcp-setup">Einrichtung</a>
-    <a href="#mcp-tools">Tools</a>
-    <a href="#mcp-tech">Technisches</a>
+    <a href="#priv-summary" data-t="priv_toc_summary">Summary</a>
+    <a href="#priv-logs" data-t="priv_toc_logs">Logs &amp; retention</a>
+    <a href="#priv-rollup" data-t="priv_toc_rollup">Aggregation &amp; DP</a>
+    <a href="#priv-wordaddin" data-t="priv_toc_wordaddin">Word add-in</a>
+    <a href="#priv-rights" data-t="priv_toc_rights">Your rights</a>
+    <a href="#priv-contact" data-t="priv_toc_contact">Contact</a>
   </nav>
 
-  <!-- Remote vs Local -->
-  <section id="mcp-modes" class="section-card" open style="margin-bottom:24px">
+  <!-- Summary -->
+  <section id="priv-summary" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 16px; font-size:22px">Zwei Betriebsmodi</h2>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px">
-        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:18px 20px">
-          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
-            <strong>Remote</strong>
-            <span class="leg-badge">empfohlen</span>
-          </div>
-          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0 0 10px" data-t="mcp_remote_desc">
-            Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:
-          </p>
-          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
-        </div>
-        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:18px 20px">
-          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
-            <strong>Lokal</strong>
-            <span class="leg-badge">offline</span>
-          </div>
-          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0">
-            Volle Kontrolle, funktioniert offline. ~65 GB Speicher, einmalige Einrichtung ca. 30–60 Minuten.
-            Siehe <a href="https://github.com/jonashertner/caselaw-repo-1#local-setup" style="color:var(--ac)">README</a>.
-          </p>
-        </div>
-      </div>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="priv_summary_heading">Die Kurzfassung</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="priv_summary_1">
+        OpenCaseLaw ist ein öffentliches Forschungsprojekt. Die gesamte Infrastruktur ist so gebaut,
+        dass <strong>es schlicht keine personenbezogenen Daten gibt, die man analysieren, herausgeben
+        oder verlieren könnte</strong>. Das ist kein Marketingversprechen, sondern eine technische
+        Eigenschaft des Systems.
+      </p>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 8px; padding-left:20px; max-width:68ch">
+        <li data-t="priv_summary_bullet_cookies"><strong>Keine Cookies.</strong> Die Website setzt keinerlei Cookies, weder notwendige noch optionale.</li>
+        <li data-t="priv_summary_bullet_fp"><strong>Kein Fingerprinting.</strong> Kein Canvas-, Font-, Audio- oder WebGL-Fingerprinting. Keine Drittanbieter-Analyse.</li>
+        <li data-t="priv_summary_bullet_google"><strong>Kein Google Analytics, kein Plausible Cloud, kein Sentry.</strong> Jede Auswertung läuft auf unserem eigenen Server in Deutschland.</li>
+        <li data-t="priv_summary_bullet_queries"><strong>Suchanfragen werden niemals gespeichert.</strong> Weder zentral noch verteilt, weder kurz- noch langfristig.</li>
+        <li data-t="priv_summary_bullet_ids"><strong>Keine Nutzer-IDs.</strong> Wir können dieselbe Person nicht über zwei Besuche hinweg wiedererkennen — kryptographisch nicht, nicht nur als Richtlinie.</li>
+        <li data-t="priv_summary_bullet_dp"><strong>Alle publizierten Zahlen sind differentiell privat</strong> (ε = 1,0) und unterliegen einer k-Anonymitätsschwelle von k = 10.</li>
+      </ul>
     </div>
   </section>
 
-  <!-- Setup per client -->
-  <section id="mcp-setup" class="section-card" open style="margin-bottom:24px">
+  <!-- Logs & retention -->
+  <section id="priv-logs" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 16px; font-size:22px">Einrichtung nach Client</h2>
-
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Claude Desktop</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_claude_desktop_step">Settings → Connectors → Add → URL eintragen:</p>
-        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
-          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
-        </div>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Claude Code</h3>
-        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
-          <code style="font-family:var(--f-mono); font-size:13px">claude mcp add --transport sse swiss-caselaw https://mcp.opencaselaw.ch</code>
-        </div>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">ChatGPT (Custom GPT / Actions)</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0" data-t="mcp_chatgpt_note">
-          Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:12px">readOnlyHint</code>-Annotations. Kompatibel mit GPT-5.3 (Anleitung im README).
-        </p>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Cursor / Gemini / andere</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0" data-t="mcp_other_note">
-          Funktioniert mit jedem MCP-fähigen Client über Standard-SSE-Transport. Endpunkt: <code style="font-size:13px">https://mcp.opencaselaw.ch</code>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Tool list -->
-  <section id="mcp-tools" class="section-card" open style="margin-bottom:24px">
-    <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tools_heading">21 Tools im Überblick</h2>
-      <p style="font-size:14px; color:var(--tx2); margin:0 0 20px; max-width:68ch" data-t="mcp_tools_desc">
-        Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code> abrufbar.
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="priv_logs_heading">Server-Logs in drei Stufen</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="priv_logs_intro">
+        Jeder Webserver protokolliert Anfragen — das ist technisch unvermeidbar. Unsere Logs sind jedoch
+        so strukturiert, dass sie innerhalb weniger Tage in harmlose Aggregate zerfallen.
       </p>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px 24px; font-size:13px">
-        <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Entscheide suchen &amp; abrufen</div>
-          <div style="font-family:var(--f-mono); line-height:1.9">
-            search_decisions<br>
-            get_decision<br>
-            get_case_brief<br>
-            list_courts · get_statistics
-          </div>
-        </div>
-        <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Zitationsgraph</div>
-          <div style="font-family:var(--f-mono); line-height:1.9">
-            find_citations<br>
-            find_appeal_chain<br>
-            find_leading_cases<br>
-            analyze_legal_trend
-          </div>
-        </div>
-        <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Gesetzestext</div>
-          <div style="font-family:var(--f-mono); line-height:1.9">
-            get_law · search_laws<br>
-            get_legislation<br>
-            search_legislation<br>
-            browse_legislation_changes
-          </div>
-        </div>
-        <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Doktrin &amp; Studium</div>
-          <div style="font-family:var(--f-mono); line-height:1.9">
-            get_doctrine<br>
-            get_commentary<br>
-            search_commentaries<br>
-            generate_exam_question<br>
-            draft_mock_decision
-          </div>
-        </div>
+      <div style="border-left:3px solid var(--ac); padding:8px 16px; margin:16px 0; background:var(--bg2)">
+        <div style="font-weight:600; font-size:14px; color:var(--tx); margin-bottom:4px" data-t="priv_logs_tier1_title">Stufe 1 — access.log (72 Stunden)</div>
+        <p style="font-size:14px; line-height:1.6; color:var(--tx2); margin:0" data-t="priv_logs_tier1_body">
+          Enthält IP-Adresse und User-Agent. Rechtsgrundlage: berechtigtes Interesse an Abwehr von
+          DDoS- und Missbrauchsangriffen. Retention: strikt 72 Stunden, danach kryptographisch
+          geschreddert (<code>shred -u</code>). Wird nie für Analyse oder Statistik verwendet.
+        </p>
       </div>
+
+      <div style="border-left:3px solid var(--ac); padding:8px 16px; margin:16px 0; background:var(--bg2)">
+        <div style="font-weight:600; font-size:14px; color:var(--tx); margin-bottom:4px" data-t="priv_logs_tier2_title">Stufe 2 — tier2.log (14 Tage, keine persönlichen Daten)</div>
+        <p style="font-size:14px; line-height:1.6; color:var(--tx2); margin:0" data-t="priv_logs_tier2_body">
+          Enthält ausschliesslich Klassenetiketten: Client-Klasse (z. B. „cursor",
+          „claude_hosted", „word_addin"), Endpoint-Klasse (z. B. „rest_search_decisions"),
+          HTTP-Status, Antwortzeit und Response-Grösse. <strong>Keine IP-Adressen. Keine
+          User-Agents. Keine Query-Strings. Kein Referer.</strong> Diese Datei ist strukturell
+          nicht in der Lage, eine Person zu identifizieren. Retention: 14 Tage zur
+          Sicherheit (falls eine Aggregation wiederholt werden muss), danach gelöscht.
+        </p>
+      </div>
+
+      <div style="border-left:3px solid var(--ac); padding:8px 16px; margin:16px 0; background:var(--bg2)">
+        <div style="font-weight:600; font-size:14px; color:var(--tx); margin-bottom:4px" data-t="priv_logs_tier3_title">Stufe 3 — analytics.db (unbefristet, aggregiert &amp; privat)</div>
+        <p style="font-size:14px; line-height:1.6; color:var(--tx2); margin:0" data-t="priv_logs_tier3_body">
+          Tagesaggregate pro (Client-Klasse, Endpoint-Klasse). Keine Zeilen pro Nutzer, keine
+          Zeitachsen feiner als Tagesauflösung. Cells mit n &lt; 10 sind in der öffentlichen
+          Spalte unterdrückt. Veröffentlichte Zahlen tragen Laplace-Rauschen mit ε = 1,0
+          (formale (ε, 0)-differentielle Privatheit). Diese Datei darf und wird öffentlich
+          gemacht — weil sie mathematisch bewiesen nichts über einzelne Personen preisgibt.
+        </p>
+      </div>
+
+      <p style="font-size:14px; color:var(--tx3); margin:16px 0 0; max-width:68ch" data-t="priv_logs_audit">
+        Der Rollup-Code ist Open Source und prüfbar:
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/rollup_analytics.py" style="color:var(--ac)">scripts/rollup_analytics.py</a>. Die nginx-Konfiguration für
+        die dreistufige Logstruktur liegt unter
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ops/nginx/ocl-logging.conf" style="color:var(--ac)">ops/nginx/ocl-logging.conf</a>.
+      </p>
     </div>
   </section>
 
-  <!-- Technical details -->
-  <section id="mcp-tech" class="section-card" open style="margin-bottom:48px">
+  <!-- Aggregation & DP -->
+  <section id="priv-rollup" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tech_heading">Technisches</h2>
-      <ul style="font-size:14px; line-height:1.7; color:var(--tx2); margin:0; padding-left:20px; max-width:68ch">
-        <li data-t="mcp_tech_transport">Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients</li>
-        <li data-t="mcp_tech_tls">TLS via Let's Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a></li>
-        <li data-t="mcp_tech_workers">4× uvicorn-Worker hinter Load-Balancer, automatisches Failover</li>
-        <li data-t="mcp_tech_backend">Backend: 965'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,8 Mio Zitationskanten</li>
-        <li data-t="mcp_tech_data">Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert</li>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="priv_rollup_heading">Was wir messen, und wie</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="priv_rollup_1">
+        Wir messen nur, was für Betriebsentscheidungen notwendig ist — und wir messen es auf
+        Aggregatebene, nie pro Nutzer. Die folgenden Kennzahlen werden täglich berechnet
+        und auf <a href="/stats" style="color:var(--ac)">opencaselaw.ch/stats</a> veröffentlicht:
+      </p>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
+        <li data-t="priv_rollup_bullet_calls"><strong>Tool-Aufrufe pro Tag</strong>, aufgeschlüsselt nach Client-Klasse und Endpoint.</li>
+        <li data-t="priv_rollup_bullet_latency"><strong>p50 und p95 Antwortzeit</strong> pro Endpoint.</li>
+        <li data-t="priv_rollup_bullet_errors"><strong>Fehlerrate</strong> pro Endpoint (4xx, 5xx, 429).</li>
+        <li data-t="priv_rollup_bullet_reach"><strong>Ungefähre Anzahl aktiver Installationen</strong> pro Client-Klasse (via HyperLogLog-Skizze, pro Monat rotierend).</li>
+        <li data-t="priv_rollup_bullet_status"><strong>HTTP-Statusverteilung</strong> über alle Anfragen.</li>
       </ul>
+      <h3 style="font-size:15px; color:var(--tx); margin:16px 0 8px" data-t="priv_rollup_never_heading">Was wir ausdrücklich niemals sammeln</h3>
+      <ul style="font-size:14px; line-height:1.7; color:var(--tx2); margin:0; padding-left:20px; max-width:68ch">
+        <li data-t="priv_rollup_never_queries"><strong>Inhalt der Suchanfragen</strong> — verrät rechtliche Interessen und erzeugt Abschreckungseffekte.</li>
+        <li data-t="priv_rollup_never_docs">Welche Entscheide oder Gesetze eine bestimmte Person aufruft.</li>
+        <li data-t="priv_rollup_never_ip">Rohe IP-Adressen in Aggregaten oder Stufe-3-Daten.</li>
+        <li data-t="priv_rollup_never_ua">Vollständige User-Agent-Strings über 72 Stunden hinaus (nur Klasse, z. B. „cursor").</li>
+        <li data-t="priv_rollup_never_referer"><strong>Referer-Header</strong> — würden preisgeben, aus welchem Chat oder Dokument ein Tool aufgerufen wurde.</li>
+        <li data-t="priv_rollup_never_fp">Fingerprinting (Canvas, Fonts, WebGL, Audio) — nie, unter keinen Umständen.</li>
+        <li data-t="priv_rollup_never_billing">Verknüpfung von Stripe-Kundendaten (Word-Add-in Pro) mit Nutzungsdaten.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Word add-in -->
+  <section id="priv-wordaddin" class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="priv_wordaddin_heading">Word-Add-in — ein Sonderfall</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="priv_wordaddin_1">
+        Das Word-Add-in ist der einzige Teil von OpenCaseLaw, der optional einen Installations-Kohorten-Hash
+        mitsendet, damit wir die ungefähre Anzahl aktiver Installationen pro Monat schätzen können.
+        Der Mechanismus ist bewusst so konstruiert, dass eine Verfolgung über Monate hinweg
+        <em>kryptographisch unmöglich</em> ist:
+      </p>
+      <ol style="font-size:14px; line-height:1.7; color:var(--tx2); margin:0 0 12px; padding-left:20px; max-width:68ch">
+        <li data-t="priv_wordaddin_step_1">Beim ersten Start erzeugt das Add-in eine zufällige UUID und speichert sie lokal in <code>localStorage</code>.</li>
+        <li data-t="priv_wordaddin_step_2">Bei jeder API-Anfrage berechnet es <code>SHA-256(uuid + "YYYY-MM")</code> und sendet davon die ersten 8 Hex-Zeichen als <code>X-Install-Cohort</code>-Header.</li>
+        <li data-t="priv_wordaddin_step_3">Der Monats-Salt ändert sich jeden Monat. Die Hashes von April und Mai sind kryptographisch nicht verknüpfbar — selbst wenn wir alle Hashes für immer aufbewahren würden (was wir nicht tun).</li>
+        <li data-t="priv_wordaddin_step_4">Wir verwenden diese Hashes ausschliesslich, um eine HyperLogLog-Skizze pro Tag und Client-Klasse zu füllen. Die Skizze gibt eine geschätzte Anzahl — die Eingabewerte sind aus ihr nicht rekonstruierbar.</li>
+      </ol>
+      <p style="font-size:14px; line-height:1.7; color:var(--tx2); margin:0 0 8px; max-width:68ch" data-t="priv_wordaddin_optout">
+        <strong>Opt-out:</strong> Im Add-in-Menü unter „Einstellungen → Anonyme Nutzungsstatistik" können
+        Sie diesen Header jederzeit deaktivieren. Das Add-in funktioniert ohne ihn unverändert.
+      </p>
+      <p style="font-size:14px; color:var(--tx3); margin:0; max-width:68ch" data-t="priv_wordaddin_stripe">
+        Pro-Abonnements werden über Stripe abgewickelt. Stripe speichert die zur Zahlungsabwicklung
+        nötigen Daten; OpenCaseLaw sieht nur den Lizenzschlüssel und gleicht diesen bei Pro-Anfragen
+        ab. Es gibt keine Verknüpfung zwischen Stripe-Kundendaten und Nutzungsstatistiken.
+      </p>
+    </div>
+  </section>
+
+  <!-- Your rights -->
+  <section id="priv-rights" class="section-card" open style="margin-bottom:24px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="priv_rights_heading">Ihre Rechte (nFADP / DSGVO)</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="priv_rights_1">
+        Das revidierte Schweizer Datenschutzgesetz (nFADP, in Kraft seit September 2023) und die
+        europäische DSGVO gewähren Ihnen Auskunfts-, Berichtigungs- und Löschungsrechte. Weil
+        OpenCaseLaw über Sie keine personenbezogenen Daten speichert, sind diese Rechte
+        <em>strukturell erfüllt</em>:
+      </p>
+      <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
+        <li data-t="priv_rights_access"><strong>Auskunftsrecht:</strong> Es gibt nichts zurückzugeben — wir speichern keine Datensätze, die auf Sie verweisen.</li>
+        <li data-t="priv_rights_delete"><strong>Löschungsrecht:</strong> Es gibt nichts zu löschen, ausser Sie haben das Word-Add-in installiert. Dann entfernt das Deinstallieren den lokalen Installations-UUID.</li>
+        <li data-t="priv_rights_portability"><strong>Datenübertragbarkeit:</strong> Nicht anwendbar — es gibt keine personenbezogenen Daten zum Übertragen.</li>
+        <li data-t="priv_rights_objection"><strong>Widerspruch:</strong> Gegen die 72-Stunden-Stufe-1-Logs können Sie widersprechen, indem Sie die Dienste nicht nutzen. Eine Ausnahme ist technisch nicht möglich, da Web-Server Anfragen protokollieren müssen, um Missbrauch abwehren zu können.</li>
+      </ul>
+      <p style="font-size:14px; color:var(--tx3); margin:0; max-width:68ch" data-t="priv_rights_controller">
+        Datenverantwortlicher im Sinne des nFADP: Jonas Hertner, E-Mail
+        <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a>.
+        Die Server werden von Hetzner Online GmbH in Deutschland betrieben.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="priv-contact" class="section-card" open style="margin-bottom:48px">
+    <div class="section-body" style="padding:28px 32px">
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="priv_contact_heading">Fragen, Bedenken, Audits</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 8px; max-width:68ch" data-t="priv_contact_1">
+        Alle hier beschriebenen Mechanismen sind Open Source und prüfbar im
+        <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>.
+        Wenn Sie eine Diskrepanz zwischen dieser Seite und dem tatsächlichen Verhalten des Systems
+        feststellen, betrachten Sie das als Bug — melden Sie es uns und wir beheben es.
+      </p>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0" data-t="priv_contact_2">
+        E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>
+        Fragen zum Datenschutz werden innerhalb weniger Tage beantwortet.
+      </p>
+      <p style="font-size:12px; color:var(--tx3); margin:16px 0 0; font-family:var(--f-mono)" data-t="priv_contact_version">
+        Letzte Aktualisierung: 2026-04-11 · Versioniert in Git, Änderungen öffentlich einsehbar.
+      </p>
     </div>
   </section>
 
@@ -1745,7 +1737,7 @@ const I18N = {
     demo_label_call:'Tool-Aufruf', demo_label_response:'Antwort',
     footer_col_data:'Daten', footer_col_code:'Code', footer_col_connect:'Verbinden', footer_col_about:'\u00dcber',
     footer_report:'Issue melden', footer_commits:'Commits', footer_status:'API-Status',
-    footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt', footer_privacy:'Datenschutz',
+    footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
     gesetze_h1:'Schweizer Bundes- und kantonale Gesetzgebung',
@@ -1808,21 +1800,37 @@ const I18N = {
     hero_mcp:'Mit KI durchsuchen',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   
-    mcp_remote_desc: 'Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:',
-    mcp_chatgpt_note: 'Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:11px">readOnlyHint</code>-Annotations. Kompatibel mit <strong>GPT-5.3</strong>; bei GPT-5.4 siehe Workaround oben.',
-    mcp_other_note: 'Funktioniert mit jedem MCP-fähigen Client über Standard-SSE-Transport. Endpunkt: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: '21 Tools im Überblick',
-    mcp_tools_desc: 'Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code>, hier gruppiert nach Funktion.',
-    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients (Claude Desktop, ChatGPT, Cursor, Gemini).',
-    mcp_arch_data: '<strong>Daten:</strong> Aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert.',
-  
-    mcp_claude_desktop_step: 'Settings → Connectors → Add → URL eintragen:',
-    mcp_tech_heading: 'Technisches',
-    mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients',
-    mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
-    mcp_tech_workers: '4× uvicorn-Worker hinter Load-Balancer, automatisches Failover',
-    mcp_tech_backend: 'Backend: 965\'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph-DB mit 8,8 Mio Zitationskanten',
-    mcp_tech_data: 'Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert',
+    ueber_toc_mission: 'Mission',
+    ueber_toc_methodology: 'Methodik',
+    ueber_toc_stats: 'Zahlen',
+    ueber_toc_license: 'Lizenz',
+    ueber_toc_contact: 'Kontakt',
+    ueber_mission_heading: 'Mission',
+    ueber_mission_1: 'Schweizer Rechtsrecherche ist heute fragmentiert, grösstenteils hinter Paywalls und für Sprachmodelle nur schwer zugänglich. Das Ergebnis: Jus-Studierende, die sich Zugang zu teuren kommerziellen Datenbanken leisten müssen, und LLMs, die Artikeltexte halluzinieren, weil sie keine autoritative Quelle haben.',
+    ueber_mission_2: 'OpenCaseLaw macht alle öffentlich publizierten Schweizer Gerichtsentscheide und den aktuellen Text aller einschlägigen Gesetze in einem durchsuchbaren, zitationsverknüpften und maschinenlesbaren Format frei verfügbar — für Forschung, Lehre, Praxis und KI-Agenten.',
+    ueber_method_heading: 'Methodik',
+    ueber_method_sources: '<strong>Quellen:</strong> 58 Scraper für Bundesgerichte, Bundesverwaltungsgericht, Bundesstrafgericht, regulatorische Entscheide (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) und alle 26 Kantone. Entscheide aus entscheidsuche.ch als Fallback.',
+    ueber_method_dedup: '<strong>Deduplizierung:</strong> Docket-Normalisierung, Textähnlichkeit (MinHash), Regeste-Priorität. Verhindert Duplikate, aber nie auf Kosten der Vollständigkeit.',
+    ueber_method_index: '<strong>Indexierung:</strong> SQLite FTS5 mit BM25-Ranking. Täglich voller Rebuild, atomarer Swap, keine Downtime für MCP-Worker.',
+    ueber_method_graph: '<strong>Zitationsgraph:</strong> 8,8 Mio Kanten zwischen Entscheiden, 11,3 Mio Verweise auf Gesetzesartikel. Bidirektional, mit Appeal-Chain-Auflösung.',
+    ueber_method_search: '<strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking. MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).',
+    ueber_method_laws: '<strong>Gesetze:</strong> ~5\'000 Bundesgesetze aus dem Fedlex-SPARQL-Endpunkt (125\'000+ Artikel in DE/FR/IT), monatlich lokal gespiegelt und per SQLite FTS5 indexiert. Kantonale und interkantonale Erlasse via LexFind JSON-API — lokal gespiegelt für alle 26 Kantone.',
+    ueber_method_docs: 'Vollständige technische Dokumentation im <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>.',
+    ueber_stats_heading: 'Zahlen',
+    ueber_stat_decisions: 'Entscheide',
+    ueber_stat_courts: 'Gerichte',
+    ueber_stat_federal_laws: 'Bundesgesetze',
+    ueber_stat_cantonal_laws: 'kantonale Erlasse',
+    ueber_stat_citations: 'Zitationen',
+    ueber_stat_mcp_tools: 'MCP-Tools',
+    ueber_license_heading: 'Lizenz &amp; Zitationshinweis',
+    ueber_license_data: '<strong>Daten:</strong> CC0 1.0 Public Domain — Schweizer Gerichtsentscheide sind öffentliche Dokumente.',
+    ueber_license_code: '<strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Kommentare:</strong> CC-BY-4.0 (OnlineKommentar.ch).',
+    ueber_license_attribution: 'Nutzung ohne Attribution erlaubt, aber geschätzt: „Source: OpenCaseLaw.ch". Bei akademischer Verwendung bitte das begleitende Paper zitieren (Zenodo-Eintrag folgt).',
+    ueber_contact_heading: 'Kontakt',
+    ueber_contact_1: 'Gebaut und betrieben von <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, unabhängig und ohne kommerzielles Interesse. Feedback, Bug-Reports und Mitarbeit willkommen.',
+    ueber_contact_2: 'E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   
     copy: 'Kopieren',
     copied: 'Kopiert!',
@@ -1834,6 +1842,64 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> durchsucht den lokalen Spiegel sowohl bundes- als auch kantonalseitig und interleaved die Treffer. Ohne <code style="font-size:13px">canton</code>-Filter werden Bundes- und Kantonstreffer alternierend zurückgegeben; mit Filter wird auf den jeweiligen Rechtskreis beschränkt.',
     gesetze_cantonal_get: 'Liefert Art. 1 des Zürcher Hundegesetzes aus <code style="font-size:13px">cantonal_laws.db</code>. Die <code style="font-size:13px">canton</code>-Parameter akzeptieren alle 26 Kantons-Codes (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Mit <code style="font-size:13px">fetch_top_n_texts=N</code> werden die Top-N-Treffer direkt mit Volltext und segmentierten Artikeln angereichert — LLMs können Fragen wie „Was sagt das Berner Hundegesetz zum Haltungsverbot?“ in einem einzigen Tool-Call beantworten.',
+
+    // ─── Privacy page ────────────────────────────────────────────────
+    nav_datenschutz: 'Datenschutz',
+    footer_privacy: 'Datenschutz',
+    priv_h1: 'Datenschutz',
+    priv_sub: 'OpenCaseLaw erhebt keine pers\u00f6nlichen Daten. Keine Cookies, kein Tracking, keine Analyse pro Nutzer. Alle ver\u00f6ffentlichten Kennzahlen sind aggregiert, k-anonym und differentiell privat.',
+    priv_toc_summary: 'Kurzfassung', priv_toc_logs: 'Logs & Aufbewahrung', priv_toc_rollup: 'Aggregation & DP', priv_toc_wordaddin: 'Word-Add-in', priv_toc_rights: 'Ihre Rechte', priv_toc_contact: 'Kontakt',
+    priv_summary_heading: 'Die Kurzfassung',
+    priv_summary_1: 'OpenCaseLaw ist ein \u00f6ffentliches Forschungsprojekt. Die gesamte Infrastruktur ist so gebaut, dass <strong>es schlicht keine personenbezogenen Daten gibt, die man analysieren, herausgeben oder verlieren k\u00f6nnte</strong>. Das ist kein Marketingversprechen, sondern eine technische Eigenschaft des Systems.',
+    priv_summary_bullet_cookies: '<strong>Keine Cookies.</strong> Die Website setzt keinerlei Cookies, weder notwendige noch optionale.',
+    priv_summary_bullet_fp: '<strong>Kein Fingerprinting.</strong> Kein Canvas-, Font-, Audio- oder WebGL-Fingerprinting. Keine Drittanbieter-Analyse.',
+    priv_summary_bullet_google: '<strong>Kein Google Analytics, kein Plausible Cloud, kein Sentry.</strong> Jede Auswertung l\u00e4uft auf unserem eigenen Server in Deutschland.',
+    priv_summary_bullet_queries: '<strong>Suchanfragen werden niemals gespeichert.</strong> Weder zentral noch verteilt, weder kurz- noch langfristig.',
+    priv_summary_bullet_ids: '<strong>Keine Nutzer-IDs.</strong> Wir k\u00f6nnen dieselbe Person nicht \u00fcber zwei Besuche hinweg wiedererkennen \u2014 kryptographisch nicht, nicht nur als Richtlinie.',
+    priv_summary_bullet_dp: '<strong>Alle publizierten Zahlen sind differentiell privat</strong> (\u03b5 = 1,0) und unterliegen einer k-Anonymit\u00e4tsschwelle von k = 10.',
+    priv_logs_heading: 'Server-Logs in drei Stufen',
+    priv_logs_intro: 'Jeder Webserver protokolliert Anfragen \u2014 das ist technisch unvermeidbar. Unsere Logs sind jedoch so strukturiert, dass sie innerhalb weniger Tage in harmlose Aggregate zerfallen.',
+    priv_logs_tier1_title: 'Stufe 1 \u2014 access.log (72 Stunden)',
+    priv_logs_tier1_body: 'Enth\u00e4lt IP-Adresse und User-Agent. Rechtsgrundlage: berechtigtes Interesse an Abwehr von DDoS- und Missbrauchsangriffen. Retention: strikt 72 Stunden, danach kryptographisch geschreddert (<code>shred -u</code>). Wird nie f\u00fcr Analyse oder Statistik verwendet.',
+    priv_logs_tier2_title: 'Stufe 2 \u2014 tier2.log (14 Tage, keine pers\u00f6nlichen Daten)',
+    priv_logs_tier2_body: 'Enth\u00e4lt ausschliesslich Klassenetiketten: Client-Klasse (z.\u202fB. \u201ecursor\u201c, \u201eclaude_hosted\u201c, \u201eword_addin\u201c), Endpoint-Klasse (z.\u202fB. \u201erest_search_decisions\u201c), HTTP-Status, Antwortzeit und Response-Gr\u00f6sse. <strong>Keine IP-Adressen. Keine User-Agents. Keine Query-Strings. Kein Referer.</strong> Diese Datei ist strukturell nicht in der Lage, eine Person zu identifizieren. Retention: 14 Tage zur Sicherheit, danach gel\u00f6scht.',
+    priv_logs_tier3_title: 'Stufe 3 \u2014 analytics.db (unbefristet, aggregiert & privat)',
+    priv_logs_tier3_body: 'Tagesaggregate pro (Client-Klasse, Endpoint-Klasse). Keine Zeilen pro Nutzer, keine Zeitachsen feiner als Tagesaufl\u00f6sung. Cells mit n\u202f<\u202f10 sind in der \u00f6ffentlichen Spalte unterdr\u00fcckt. Ver\u00f6ffentlichte Zahlen tragen Laplace-Rauschen mit \u03b5\u202f=\u202f1,0 (formale (\u03b5, 0)-differentielle Privatheit). Diese Datei darf und wird \u00f6ffentlich gemacht \u2014 weil sie mathematisch bewiesen nichts \u00fcber einzelne Personen preisgibt.',
+    priv_logs_audit: 'Der Rollup-Code ist Open Source und pr\u00fcfbar: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/rollup_analytics.py" style="color:var(--ac)">scripts/rollup_analytics.py</a>. Die nginx-Konfiguration f\u00fcr die dreistufige Logstruktur liegt unter <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ops/nginx/ocl-logging.conf" style="color:var(--ac)">ops/nginx/ocl-logging.conf</a>.',
+    priv_rollup_heading: 'Was wir messen, und wie',
+    priv_rollup_1: 'Wir messen nur, was f\u00fcr Betriebsentscheidungen notwendig ist \u2014 und wir messen es auf Aggregatebene, nie pro Nutzer. Die folgenden Kennzahlen werden t\u00e4glich berechnet und auf <a href="/stats" style="color:var(--ac)">opencaselaw.ch/stats</a> ver\u00f6ffentlicht:',
+    priv_rollup_bullet_calls: '<strong>Tool-Aufrufe pro Tag</strong>, aufgeschl\u00fcsselt nach Client-Klasse und Endpoint.',
+    priv_rollup_bullet_latency: '<strong>p50 und p95 Antwortzeit</strong> pro Endpoint.',
+    priv_rollup_bullet_errors: '<strong>Fehlerrate</strong> pro Endpoint (4xx, 5xx, 429).',
+    priv_rollup_bullet_reach: '<strong>Ungef\u00e4hre Anzahl aktiver Installationen</strong> pro Client-Klasse (via HyperLogLog-Skizze, pro Monat rotierend).',
+    priv_rollup_bullet_status: '<strong>HTTP-Statusverteilung</strong> \u00fcber alle Anfragen.',
+    priv_rollup_never_heading: 'Was wir ausdr\u00fccklich niemals sammeln',
+    priv_rollup_never_queries: '<strong>Inhalt der Suchanfragen</strong> \u2014 verr\u00e4t rechtliche Interessen und erzeugt Abschreckungseffekte.',
+    priv_rollup_never_docs: 'Welche Entscheide oder Gesetze eine bestimmte Person aufruft.',
+    priv_rollup_never_ip: 'Rohe IP-Adressen in Aggregaten oder Stufe-3-Daten.',
+    priv_rollup_never_ua: 'Vollst\u00e4ndige User-Agent-Strings \u00fcber 72 Stunden hinaus (nur Klasse, z.\u202fB. \u201ecursor\u201c).',
+    priv_rollup_never_referer: '<strong>Referer-Header</strong> \u2014 w\u00fcrden preisgeben, aus welchem Chat oder Dokument ein Tool aufgerufen wurde.',
+    priv_rollup_never_fp: 'Fingerprinting (Canvas, Fonts, WebGL, Audio) \u2014 nie, unter keinen Umst\u00e4nden.',
+    priv_rollup_never_billing: 'Verkn\u00fcpfung von Stripe-Kundendaten (Word-Add-in Pro) mit Nutzungsdaten.',
+    priv_wordaddin_heading: 'Word-Add-in \u2014 ein Sonderfall',
+    priv_wordaddin_1: 'Das Word-Add-in ist der einzige Teil von OpenCaseLaw, der optional einen Installations-Kohorten-Hash mitsendet, damit wir die ungef\u00e4hre Anzahl aktiver Installationen pro Monat sch\u00e4tzen k\u00f6nnen. Der Mechanismus ist bewusst so konstruiert, dass eine Verfolgung \u00fcber Monate hinweg <em>kryptographisch unm\u00f6glich</em> ist:',
+    priv_wordaddin_step_1: 'Beim ersten Start erzeugt das Add-in eine zuf\u00e4llige UUID und speichert sie lokal in <code>localStorage</code>.',
+    priv_wordaddin_step_2: 'Bei jeder API-Anfrage berechnet es <code>SHA-256(uuid + "YYYY-MM")</code> und sendet davon die ersten 8 Hex-Zeichen als <code>X-Install-Cohort</code>-Header.',
+    priv_wordaddin_step_3: 'Der Monats-Salt \u00e4ndert sich jeden Monat. Die Hashes von April und Mai sind kryptographisch nicht verkn\u00fcpfbar \u2014 selbst wenn wir alle Hashes f\u00fcr immer aufbewahren w\u00fcrden (was wir nicht tun).',
+    priv_wordaddin_step_4: 'Wir verwenden diese Hashes ausschliesslich, um eine HyperLogLog-Skizze pro Tag und Client-Klasse zu f\u00fcllen. Die Skizze gibt eine gesch\u00e4tzte Anzahl \u2014 die Eingabewerte sind aus ihr nicht rekonstruierbar.',
+    priv_wordaddin_optout: '<strong>Opt-out:</strong> Im Add-in-Men\u00fc unter \u201eEinstellungen \u2192 Anonyme Nutzungsstatistik\u201c k\u00f6nnen Sie diesen Header jederzeit deaktivieren. Das Add-in funktioniert ohne ihn unver\u00e4ndert.',
+    priv_wordaddin_stripe: 'Pro-Abonnements werden \u00fcber Stripe abgewickelt. Stripe speichert die zur Zahlungsabwicklung n\u00f6tigen Daten; OpenCaseLaw sieht nur den Lizenzschl\u00fcssel und gleicht diesen bei Pro-Anfragen ab. Es gibt keine Verkn\u00fcpfung zwischen Stripe-Kundendaten und Nutzungsstatistiken.',
+    priv_rights_heading: 'Ihre Rechte (nFADP / DSGVO)',
+    priv_rights_1: 'Das revidierte Schweizer Datenschutzgesetz (nFADP, in Kraft seit September 2023) und die europ\u00e4ische DSGVO gew\u00e4hren Ihnen Auskunfts-, Berichtigungs- und L\u00f6schungsrechte. Weil OpenCaseLaw \u00fcber Sie keine personenbezogenen Daten speichert, sind diese Rechte <em>strukturell erf\u00fcllt</em>:',
+    priv_rights_access: '<strong>Auskunftsrecht:</strong> Es gibt nichts zur\u00fcckzugeben \u2014 wir speichern keine Datens\u00e4tze, die auf Sie verweisen.',
+    priv_rights_delete: '<strong>L\u00f6schungsrecht:</strong> Es gibt nichts zu l\u00f6schen, ausser Sie haben das Word-Add-in installiert. Dann entfernt das Deinstallieren den lokalen Installations-UUID.',
+    priv_rights_portability: '<strong>Daten\u00fcbertragbarkeit:</strong> Nicht anwendbar \u2014 es gibt keine personenbezogenen Daten zum \u00dcbertragen.',
+    priv_rights_objection: '<strong>Widerspruch:</strong> Gegen die 72-Stunden-Stufe-1-Logs k\u00f6nnen Sie widersprechen, indem Sie die Dienste nicht nutzen. Eine Ausnahme ist technisch nicht m\u00f6glich, da Web-Server Anfragen protokollieren m\u00fcssen, um Missbrauch abwehren zu k\u00f6nnen.',
+    priv_rights_controller: 'Datenverantwortlicher im Sinne des nFADP: Jonas Hertner, E-Mail <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a>. Die Server werden von Hetzner Online GmbH in Deutschland betrieben.',
+    priv_contact_heading: 'Fragen, Bedenken, Audits',
+    priv_contact_1: 'Alle hier beschriebenen Mechanismen sind Open Source und pr\u00fcfbar im <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>. Wenn Sie eine Diskrepanz zwischen dieser Seite und dem tats\u00e4chlichen Verhalten des Systems feststellen, betrachten Sie das als Bug \u2014 melden Sie es uns und wir beheben es.',
+    priv_contact_2: 'E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>Fragen zum Datenschutz werden innerhalb weniger Tage beantwortet.',
+    priv_contact_version: 'Letzte Aktualisierung: 2026-04-11 \u00b7 Versioniert in Git, \u00c4nderungen \u00f6ffentlich einsehbar.',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -1889,7 +1955,7 @@ const I18N = {
     demo_label_call:'Appel d\'outil', demo_label_response:'R\u00e9ponse',
     footer_col_data:'Donn\u00e9es', footer_col_code:'Code', footer_col_connect:'Connexion', footer_col_about:'\u00c0 propos',
     footer_report:'Signaler un probl\u00e8me', footer_commits:'Commits', footer_status:'\u00c9tat API',
-    footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Confidentialit\u00e9',
+    footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
     gesetze_h1:'L\u00e9gislation f\u00e9d\u00e9rale et cantonale suisse',
@@ -1952,21 +2018,37 @@ const I18N = {
     hero_mcp:'Recherche avec IA',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
   
-    mcp_remote_desc: 'Immédiatement disponible, toujours à jour. Aucun téléchargement requis. Endpoint serveur :',
-    mcp_chatgpt_note: 'Pris en charge via Streamable HTTP + CORS. Utilise les annotations <code style="font-size:11px">readOnlyHint</code>. Compatible avec <strong>GPT-5.3</strong> ; pour GPT-5.4, voir la solution de contournement ci-dessus.',
-    mcp_other_note: 'Fonctionne avec tout client compatible MCP via le transport SSE standard. Endpoint : <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: 'Aperçu des 21 outils',
-    mcp_tools_desc: 'Chaque outil est optimisé pour un cas d\'usage de recherche spécifique. Schémas complets via <code>tools/list</code> du protocole MCP, regroupés ici par fonction.',
-    mcp_arch_transport: '<strong>Transport :</strong> Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants (Claude Desktop, ChatGPT, Cursor, Gemini).',
-    mcp_arch_data: '<strong>Données :</strong> sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement.',
-  
-    mcp_claude_desktop_step: 'Settings → Connectors → Add → saisir l\'URL :',
-    mcp_tech_heading: 'Détails techniques',
-    mcp_tech_transport: 'Transport : Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants',
-    mcp_tech_tls: 'TLS via Let\'s Encrypt, rate-limiting nginx, endpoint de santé : <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
-    mcp_tech_workers: '4× workers uvicorn derrière un load balancer, failover automatique',
-    mcp_tech_backend: 'Backend : 965 000+ décisions dans SQLite FTS5 avec ranking BM25+RRF, graphe de citations de 8,8 M d\'arêtes',
-    mcp_tech_data: 'Données issues de sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement',
+    ueber_toc_mission: 'Mission',
+    ueber_toc_methodology: 'Méthodologie',
+    ueber_toc_stats: 'Chiffres',
+    ueber_toc_license: 'Licence',
+    ueber_toc_contact: 'Contact',
+    ueber_mission_heading: 'Mission',
+    ueber_mission_1: 'La recherche juridique suisse est aujourd\'hui fragmentée, majoritairement derrière des paywalls et difficilement accessible aux modèles de langue. Résultat : des étudiants en droit contraints de payer l\'accès à des bases commerciales coûteuses, et des LLM qui hallucinent le texte d\'articles de loi faute de source autoritative.',
+    ueber_mission_2: 'OpenCaseLaw met gratuitement à disposition toutes les décisions judiciaires suisses publiées et le texte à jour de toutes les lois pertinentes, dans un format recherchable, interconnecté par citations et lisible par machine — pour la recherche, l\'enseignement, la pratique et les agents d\'IA.',
+    ueber_method_heading: 'Méthodologie',
+    ueber_method_sources: '<strong>Sources :</strong> 58 scrapers couvrant le Tribunal fédéral, le Tribunal administratif fédéral, le Tribunal pénal fédéral, les décisions réglementaires (FINMA, COMCO, PFPDT, AIEP, ElCom, etc.) et les 26 cantons. Décisions d\'entscheidsuche.ch en solution de repli.',
+    ueber_method_dedup: '<strong>Déduplication :</strong> normalisation des numéros de dossier, similarité textuelle (MinHash), priorité au regeste. Évite les doublons sans jamais sacrifier la complétude.',
+    ueber_method_index: '<strong>Indexation :</strong> SQLite FTS5 avec ranking BM25. Rebuild complet quotidien, bascule atomique, aucune interruption de service pour les workers MCP.',
+    ueber_method_graph: '<strong>Graphe de citations :</strong> 8,8 millions d\'arêtes entre décisions, 11,3 millions de références à des articles de loi. Bidirectionnel, avec résolution des chaînes de recours.',
+    ueber_method_search: '<strong>Recherche :</strong> BM25 + Reciprocal Rank Fusion + tuning par meta-harness + reranking Haiku. MRR@10 = 0,647 sur un benchmark doré de 100 requêtes (en ligne, mars 2026).',
+    ueber_method_laws: '<strong>Législation :</strong> ~5 000 lois fédérales depuis l\'endpoint SPARQL de Fedlex (125 000+ articles en DE/FR/IT), miroir local quotidien indexé via SQLite FTS5. Actes cantonaux et intercantonaux via l\'API JSON LexFind — miroir local pour les 26 cantons.',
+    ueber_method_docs: 'Documentation technique complète dans le <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">dépôt GitHub</a>.',
+    ueber_stats_heading: 'Chiffres',
+    ueber_stat_decisions: 'décisions',
+    ueber_stat_courts: 'juridictions',
+    ueber_stat_federal_laws: 'lois fédérales',
+    ueber_stat_cantonal_laws: 'actes cantonaux',
+    ueber_stat_citations: 'citations',
+    ueber_stat_mcp_tools: 'outils MCP',
+    ueber_license_heading: 'Licence &amp; citation',
+    ueber_license_data: '<strong>Données :</strong> CC0 1.0 domaine public — les décisions judiciaires suisses sont des documents publics.',
+    ueber_license_code: '<strong>Code :</strong> licence MIT (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commentaires :</strong> CC-BY-4.0 (OnlineKommentar.ch).',
+    ueber_license_attribution: 'Utilisation sans attribution autorisée, mais appréciée : « Source : OpenCaseLaw.ch ». Pour un usage académique, merci de citer l\'article associé (entrée Zenodo à venir).',
+    ueber_contact_heading: 'Contact',
+    ueber_contact_1: 'Construit et opéré par <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, de façon indépendante et sans intérêt commercial. Retours, bug-reports et contributions bienvenus.',
+    ueber_contact_2: 'E-mail : <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub : <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   
     copy: 'Copier',
     copied: 'Copié !',
@@ -1978,6 +2060,64 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> interroge le miroir local tant au niveau fédéral que cantonal et entrelace les résultats. Sans filtre <code style="font-size:13px">canton</code>, les hits fédéraux et cantonaux sont renvoyés en alternance ; avec filtre, la recherche est limitée au périmètre choisi.',
     gesetze_cantonal_get: 'Renvoie l\'art. 1 de la loi zurichoise sur les chiens depuis <code style="font-size:13px">cantonal_laws.db</code>. Le paramètre <code style="font-size:13px">canton</code> accepte les 26 codes cantonaux (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Avec <code style="font-size:13px">fetch_top_n_texts=N</code>, les N premiers résultats sont directement enrichis avec le texte intégral et les articles segmentés — les LLM peuvent répondre à des questions comme « que dit la loi bernoise sur les chiens concernant l\'interdiction de détention ?» en un seul appel d\'outil.',
+
+    // ─── Privacy page ────────────────────────────────────────────────
+    nav_datenschutz: 'Confidentialit\u00e9',
+    footer_privacy: 'Confidentialit\u00e9',
+    priv_h1: 'Confidentialit\u00e9',
+    priv_sub: 'OpenCaseLaw ne collecte aucune donn\u00e9e personnelle. Pas de cookies, pas de suivi, aucune analyse individuelle. Toutes les m\u00e9triques publi\u00e9es sont agr\u00e9g\u00e9es, k-anonymes et diff\u00e9rentiellement priv\u00e9es.',
+    priv_toc_summary: 'R\u00e9sum\u00e9', priv_toc_logs: 'Logs & r\u00e9tention', priv_toc_rollup: 'Agr\u00e9gation & DP', priv_toc_wordaddin: 'Add-in Word', priv_toc_rights: 'Vos droits', priv_toc_contact: 'Contact',
+    priv_summary_heading: 'Le r\u00e9sum\u00e9',
+    priv_summary_1: 'OpenCaseLaw est un projet de recherche public. Toute l\u2019infrastructure est con\u00e7ue de mani\u00e8re \u00e0 ce qu\u2019<strong>il n\u2019existe tout simplement aucune donn\u00e9e personnelle que l\u2019on pourrait analyser, divulguer ou perdre</strong>. Ce n\u2019est pas une promesse marketing, c\u2019est une propri\u00e9t\u00e9 technique du syst\u00e8me.',
+    priv_summary_bullet_cookies: '<strong>Aucun cookie.</strong> Le site n\u2019installe aucun cookie, ni n\u00e9cessaire ni facultatif.',
+    priv_summary_bullet_fp: '<strong>Aucun fingerprinting.</strong> Ni canvas, ni polices, ni audio, ni WebGL. Aucune analyse tierce.',
+    priv_summary_bullet_google: '<strong>Pas de Google Analytics, pas de Plausible Cloud, pas de Sentry.</strong> Toute analyse s\u2019ex\u00e9cute sur notre propre serveur en Allemagne.',
+    priv_summary_bullet_queries: '<strong>Les requ\u00eates de recherche ne sont jamais stock\u00e9es.</strong> Ni centralis\u00e9es ni distribu\u00e9es, ni \u00e0 court ni \u00e0 long terme.',
+    priv_summary_bullet_ids: '<strong>Pas d\u2019identifiants utilisateur.</strong> Nous ne pouvons pas reconna\u00eetre la m\u00eame personne entre deux visites \u2014 cryptographiquement, pas seulement par politique.',
+    priv_summary_bullet_dp: '<strong>Tous les chiffres publi\u00e9s sont diff\u00e9rentiellement priv\u00e9s</strong> (\u03b5 = 1,0) et soumis \u00e0 un seuil d\u2019anonymat k = 10.',
+    priv_logs_heading: 'Logs serveur en trois niveaux',
+    priv_logs_intro: 'Tout serveur web journalise les requ\u00eates \u2014 c\u2019est techniquement in\u00e9vitable. Nos logs sont cependant structur\u00e9s de telle sorte qu\u2019ils se d\u00e9sint\u00e8grent en agr\u00e9gats inoffensifs en quelques jours.',
+    priv_logs_tier1_title: 'Niveau 1 \u2014 access.log (72 heures)',
+    priv_logs_tier1_body: 'Contient l\u2019adresse IP et le User-Agent. Base l\u00e9gale\u00a0: int\u00e9r\u00eat l\u00e9gitime pour la r\u00e9ponse aux attaques DDoS et aux abus. R\u00e9tention\u00a0: strictement 72 heures, puis d\u00e9chiquetage cryptographique (<code>shred -u</code>). Jamais utilis\u00e9 pour les statistiques.',
+    priv_logs_tier2_title: 'Niveau 2 \u2014 tier2.log (14 jours, aucune donn\u00e9e personnelle)',
+    priv_logs_tier2_body: 'Contient exclusivement des \u00e9tiquettes de classe\u00a0: classe client (p.\u202fex. \u00abcursor\u00bb, \u00abclaude_hosted\u00bb, \u00abword_addin\u00bb), classe de point d\u2019acc\u00e8s (p.\u202fex. \u00abrest_search_decisions\u00bb), code HTTP, temps de r\u00e9ponse, taille de r\u00e9ponse. <strong>Aucune IP. Aucun User-Agent. Aucune cha\u00eene de requ\u00eate. Aucun referer.</strong> Ce fichier est structurellement incapable d\u2019identifier une personne. R\u00e9tention\u00a0: 14 jours par pr\u00e9caution, puis supprim\u00e9.',
+    priv_logs_tier3_title: 'Niveau 3 \u2014 analytics.db (illimit\u00e9, agr\u00e9g\u00e9 & priv\u00e9)',
+    priv_logs_tier3_body: 'Agr\u00e9gats journaliers par (classe client, classe de point d\u2019acc\u00e8s). Aucune ligne par utilisateur, aucune granularit\u00e9 plus fine que le jour. Les cellules avec n\u202f<\u202f10 sont supprim\u00e9es dans la colonne publique. Les chiffres publi\u00e9s portent un bruit de Laplace avec \u03b5\u202f=\u202f1,0 (confidentialit\u00e9 diff\u00e9rentielle formelle). Ce fichier peut et sera rendu public \u2014 parce qu\u2019il est math\u00e9matiquement prouv\u00e9 qu\u2019il ne r\u00e9v\u00e8le rien sur des individus.',
+    priv_logs_audit: 'Le code d\u2019agr\u00e9gation est open source et v\u00e9rifiable\u00a0: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/rollup_analytics.py" style="color:var(--ac)">scripts/rollup_analytics.py</a>. La configuration nginx se trouve dans <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ops/nginx/ocl-logging.conf" style="color:var(--ac)">ops/nginx/ocl-logging.conf</a>.',
+    priv_rollup_heading: 'Ce que nous mesurons, et comment',
+    priv_rollup_1: 'Nous ne mesurons que ce qui est n\u00e9cessaire aux d\u00e9cisions op\u00e9rationnelles \u2014 et au niveau agr\u00e9g\u00e9, jamais par utilisateur. Les m\u00e9triques suivantes sont calcul\u00e9es quotidiennement et publi\u00e9es sur <a href="/stats" style="color:var(--ac)">opencaselaw.ch/stats</a>\u00a0:',
+    priv_rollup_bullet_calls: '<strong>Appels d\u2019outil par jour</strong>, ventil\u00e9s par classe client et point d\u2019acc\u00e8s.',
+    priv_rollup_bullet_latency: '<strong>Temps de r\u00e9ponse p50 et p95</strong> par point d\u2019acc\u00e8s.',
+    priv_rollup_bullet_errors: '<strong>Taux d\u2019erreur</strong> par point d\u2019acc\u00e8s (4xx, 5xx, 429).',
+    priv_rollup_bullet_reach: '<strong>Nombre approximatif d\u2019installations actives</strong> par classe client (via une esquisse HyperLogLog, \u00e0 rotation mensuelle).',
+    priv_rollup_bullet_status: '<strong>Distribution des codes HTTP</strong> sur toutes les requ\u00eates.',
+    priv_rollup_never_heading: 'Ce que nous ne collectons jamais',
+    priv_rollup_never_queries: '<strong>Le contenu des requ\u00eates</strong> \u2014 r\u00e9v\u00e8le les int\u00e9r\u00eats juridiques et produit un effet dissuasif.',
+    priv_rollup_never_docs: 'Quelles d\u00e9cisions ou lois une personne donn\u00e9e consulte.',
+    priv_rollup_never_ip: 'Adresses IP brutes dans les agr\u00e9gats ou les donn\u00e9es de niveau 3.',
+    priv_rollup_never_ua: 'Cha\u00eenes User-Agent compl\u00e8tes au-del\u00e0 de 72 heures (seulement la classe).',
+    priv_rollup_never_referer: '<strong>En-t\u00eate Referer</strong> \u2014 r\u00e9v\u00e9lerait depuis quel chat ou document un outil a \u00e9t\u00e9 appel\u00e9.',
+    priv_rollup_never_fp: 'Fingerprinting (canvas, polices, WebGL, audio) \u2014 jamais, en aucune circonstance.',
+    priv_rollup_never_billing: 'Association des donn\u00e9es client Stripe (Word Add-in Pro) avec l\u2019utilisation.',
+    priv_wordaddin_heading: 'Add-in Word \u2014 un cas particulier',
+    priv_wordaddin_1: 'L\u2019add-in Word est la seule partie d\u2019OpenCaseLaw qui envoie, de mani\u00e8re optionnelle, un hash de cohorte d\u2019installation pour que nous puissions estimer le nombre approximatif d\u2019installations actives par mois. Le m\u00e9canisme est d\u00e9lib\u00e9r\u00e9ment con\u00e7u pour qu\u2019un suivi d\u2019un mois \u00e0 l\u2019autre soit <em>cryptographiquement impossible</em>\u00a0:',
+    priv_wordaddin_step_1: 'Au premier lancement, l\u2019add-in g\u00e9n\u00e8re un UUID al\u00e9atoire et le stocke localement dans <code>localStorage</code>.',
+    priv_wordaddin_step_2: '\u00c0 chaque requ\u00eate API, il calcule <code>SHA-256(uuid + "AAAA-MM")</code> et envoie les 8 premiers caract\u00e8res hexa comme en-t\u00eate <code>X-Install-Cohort</code>.',
+    priv_wordaddin_step_3: 'Le sel mensuel change chaque mois. Les hashes d\u2019avril et de mai sont cryptographiquement non li\u00e9s \u2014 m\u00eame si nous conservions tous les hashes pour toujours (ce qui n\u2019est pas le cas).',
+    priv_wordaddin_step_4: 'Nous utilisons ces hashes exclusivement pour remplir une esquisse HyperLogLog par jour et par classe client. L\u2019esquisse fournit une estimation \u2014 les valeurs d\u2019entr\u00e9e ne peuvent pas en \u00eatre reconstruites.',
+    priv_wordaddin_optout: '<strong>D\u00e9sactivation\u00a0:</strong> dans le menu de l\u2019add-in sous \u00abPr\u00e9f\u00e9rences \u2192 Statistiques anonymes d\u2019utilisation\u00bb, vous pouvez d\u00e9sactiver cet en-t\u00eate \u00e0 tout moment.',
+    priv_wordaddin_stripe: 'Les abonnements Pro sont g\u00e9r\u00e9s par Stripe. OpenCaseLaw ne voit que la cl\u00e9 de licence et la compare lors des requ\u00eates Pro. Il n\u2019existe aucun lien entre les donn\u00e9es client Stripe et les statistiques d\u2019utilisation.',
+    priv_rights_heading: 'Vos droits (nFADP / RGPD)',
+    priv_rights_1: 'La loi suisse r\u00e9vis\u00e9e sur la protection des donn\u00e9es (nFADP, en vigueur depuis septembre 2023) et le RGPD europ\u00e9en vous accordent des droits d\u2019acc\u00e8s, de rectification et de suppression. Comme OpenCaseLaw ne stocke aucune donn\u00e9e personnelle vous concernant, ces droits sont <em>structurellement satisfaits</em>\u00a0:',
+    priv_rights_access: '<strong>Droit d\u2019acc\u00e8s\u00a0:</strong> il n\u2019y a rien \u00e0 retourner \u2014 nous ne stockons aucun enregistrement qui vous d\u00e9signe.',
+    priv_rights_delete: '<strong>Droit de suppression\u00a0:</strong> il n\u2019y a rien \u00e0 supprimer, sauf si vous avez install\u00e9 l\u2019add-in Word. La d\u00e9sinstallation efface alors l\u2019UUID d\u2019installation local.',
+    priv_rights_portability: '<strong>Portabilit\u00e9\u00a0:</strong> non applicable \u2014 il n\u2019y a pas de donn\u00e9es personnelles \u00e0 transf\u00e9rer.',
+    priv_rights_objection: '<strong>Opposition\u00a0:</strong> vous pouvez vous opposer aux logs de niveau 1 de 72 heures en n\u2019utilisant pas les services. Une exception est techniquement impossible, car les serveurs web doivent journaliser les requ\u00eates pour pouvoir r\u00e9pondre aux abus.',
+    priv_rights_controller: 'Responsable du traitement au sens de la nFADP\u00a0: Jonas Hertner, e-mail <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a>. Les serveurs sont op\u00e9r\u00e9s par Hetzner Online GmbH en Allemagne.',
+    priv_contact_heading: 'Questions, pr\u00e9occupations, audits',
+    priv_contact_1: 'Tous les m\u00e9canismes d\u00e9crits ici sont open source et v\u00e9rifiables dans le <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">d\u00e9p\u00f4t GitHub</a>. Si vous constatez un \u00e9cart entre cette page et le comportement r\u00e9el du syst\u00e8me, consid\u00e9rez cela comme un bug \u2014 signalez-le et nous le corrigerons.',
+    priv_contact_2: 'E-mail\u00a0: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>Les questions de confidentialit\u00e9 re\u00e7oivent une r\u00e9ponse en quelques jours.',
+    priv_contact_version: 'Derni\u00e8re mise \u00e0 jour\u00a0: 2026-04-11 \u00b7 Versionn\u00e9 dans Git, modifications publiquement consultables.',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -2033,7 +2173,7 @@ const I18N = {
     demo_label_call:'Chiamata', demo_label_response:'Risposta',
     footer_col_data:'Dati', footer_col_code:'Codice', footer_col_connect:'Connessione', footer_col_about:'Chi siamo',
     footer_report:'Segnala problema', footer_commits:'Commit', footer_status:'Stato API',
-    footer_about:'Chi siamo', footer_contact:'Contatto', footer_privacy:'Privacy',
+    footer_about:'Chi siamo', footer_contact:'Contatto',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
     gesetze_h1:'Legislazione federale e cantonale svizzera',
@@ -2096,21 +2236,37 @@ const I18N = {
     hero_mcp:'Ricerca con IA',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
   
-    mcp_remote_desc: 'Immediatamente disponibile, sempre aggiornato. Nessun download richiesto. Endpoint server:',
-    mcp_chatgpt_note: 'Supportato tramite Streamable HTTP + CORS. Usa le annotazioni <code style="font-size:11px">readOnlyHint</code>. Compatibile con <strong>GPT-5.3</strong>; per GPT-5.4 vedi il workaround sopra.',
-    mcp_other_note: 'Funziona con ogni client compatibile MCP tramite il trasporto SSE standard. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: '21 strumenti in sintesi',
-    mcp_tools_desc: 'Ogni strumento è ottimizzato per uno specifico caso d\'uso di ricerca. Schemi completi via <code>tools/list</code> del protocollo MCP, qui raggruppati per funzione.',
-    mcp_arch_transport: '<strong>Trasporto:</strong> Server-Sent Events (SSE) + Streamable HTTP, compatibile con tutti i client MCP comuni (Claude Desktop, ChatGPT, Cursor, Gemini).',
-    mcp_arch_data: '<strong>Dati:</strong> da fonti pubbliche (tribunali federali, tribunali cantonali, Fedlex, LexFind), aggiornati quotidianamente.',
-  
-    mcp_claude_desktop_step: 'Settings → Connectors → Add → inserire URL:',
-    mcp_tech_heading: 'Dettagli tecnici',
-    mcp_tech_transport: 'Trasporto: Server-Sent Events (SSE) + Streamable HTTP, compatibile con tutti i client MCP comuni',
-    mcp_tech_tls: 'TLS tramite Let\'s Encrypt, rate limiting nginx, endpoint di health: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
-    mcp_tech_workers: '4× worker uvicorn dietro load balancer, failover automatico',
-    mcp_tech_backend: 'Backend: 965\'000+ decisioni in SQLite FTS5 con ranking BM25+RRF, grafo di citazioni di 8,8 M di archi',
-    mcp_tech_data: 'Dati da fonti pubbliche (tribunali federali, tribunali cantonali, Fedlex, LexFind), aggiornati quotidianamente',
+    ueber_toc_mission: 'Missione',
+    ueber_toc_methodology: 'Metodologia',
+    ueber_toc_stats: 'Numeri',
+    ueber_toc_license: 'Licenza',
+    ueber_toc_contact: 'Contatto',
+    ueber_mission_heading: 'Missione',
+    ueber_mission_1: 'La ricerca giuridica svizzera oggi è frammentata, per lo più dietro paywall e difficilmente accessibile ai modelli linguistici. Il risultato: studenti di diritto costretti a pagare l\'accesso a costose banche dati commerciali, e LLM che allucinano il testo degli articoli di legge perché privi di una fonte autorevole.',
+    ueber_mission_2: 'OpenCaseLaw rende liberamente disponibili tutte le decisioni giudiziarie svizzere pubblicate e il testo aggiornato di tutte le leggi rilevanti, in un formato ricercabile, collegato per citazioni e leggibile dalle macchine — per ricerca, insegnamento, pratica e agenti IA.',
+    ueber_method_heading: 'Metodologia',
+    ueber_method_sources: '<strong>Fonti:</strong> 58 scraper per il Tribunale federale, il Tribunale amministrativo federale, il Tribunale penale federale, le decisioni regolatorie (FINMA, COMCO, IFPDT, AIRR, ElCom, ecc.) e tutti i 26 cantoni. Decisioni da entscheidsuche.ch come fallback.',
+    ueber_method_dedup: '<strong>Deduplicazione:</strong> normalizzazione dei numeri di dossier, similarità testuale (MinHash), priorità al regesto. Evita duplicati senza mai compromettere la completezza.',
+    ueber_method_index: '<strong>Indicizzazione:</strong> SQLite FTS5 con ranking BM25. Rebuild completo quotidiano, swap atomico, nessun downtime per i worker MCP.',
+    ueber_method_graph: '<strong>Grafo di citazioni:</strong> 8,8 milioni di archi tra decisioni, 11,3 milioni di riferimenti ad articoli di legge. Bidirezionale, con risoluzione della catena di ricorsi.',
+    ueber_method_search: '<strong>Ricerca:</strong> BM25 + Reciprocal Rank Fusion + tuning del meta-harness + reranking Haiku. MRR@10 = 0,647 su un gold set di 100 query (online, marzo 2026).',
+    ueber_method_laws: '<strong>Legislazione:</strong> ~5\'000 leggi federali dall\'endpoint SPARQL Fedlex (125\'000+ articoli in DE/FR/IT), mirror locale giornaliero indicizzato con SQLite FTS5. Atti cantonali e intercantonali via API JSON LexFind — mirror locale per tutti i 26 cantoni.',
+    ueber_method_docs: 'Documentazione tecnica completa nel <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">repository GitHub</a>.',
+    ueber_stats_heading: 'Numeri',
+    ueber_stat_decisions: 'decisioni',
+    ueber_stat_courts: 'tribunali',
+    ueber_stat_federal_laws: 'leggi federali',
+    ueber_stat_cantonal_laws: 'atti cantonali',
+    ueber_stat_citations: 'citazioni',
+    ueber_stat_mcp_tools: 'strumenti MCP',
+    ueber_license_heading: 'Licenza &amp; citazione',
+    ueber_license_data: '<strong>Dati:</strong> CC0 1.0 Pubblico Dominio — le decisioni giudiziarie svizzere sono documenti pubblici.',
+    ueber_license_code: '<strong>Codice:</strong> licenza MIT (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commenti:</strong> CC-BY-4.0 (OnlineKommentar.ch).',
+    ueber_license_attribution: 'L\'uso senza attribuzione è consentito ma apprezzato: « Source: OpenCaseLaw.ch ». Per l\'uso accademico si prega di citare il paper associato (voce Zenodo in arrivo).',
+    ueber_contact_heading: 'Contatto',
+    ueber_contact_1: 'Costruito e gestito da <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, in modo indipendente e senza interesse commerciale. Feedback, segnalazioni di bug e contributi benvenuti.',
+    ueber_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   
     copy: 'Copia',
     copied: 'Copiato!',
@@ -2122,6 +2278,64 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> interroga il mirror locale sia a livello federale che cantonale e alterna i risultati. Senza filtro <code style="font-size:13px">canton</code>, i match federali e cantonali sono restituiti in modo alternato; con filtro, la ricerca è limitata al perimetro scelto.',
     gesetze_cantonal_get: 'Restituisce l\'art. 1 della legge zurighese sui cani da <code style="font-size:13px">cantonal_laws.db</code>. Il parametro <code style="font-size:13px">canton</code> accetta tutti i 26 codici cantonali (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Con <code style="font-size:13px">fetch_top_n_texts=N</code>, i primi N risultati vengono arricchiti direttamente con testo completo e articoli segmentati — gli LLM possono rispondere a domande come «Cosa dice la legge bernese sui cani riguardo al divieto di detenzione?» in una sola chiamata.',
+
+    // ─── Privacy page ────────────────────────────────────────────────
+    nav_datenschutz: 'Privacy',
+    footer_privacy: 'Privacy',
+    priv_h1: 'Privacy',
+    priv_sub: 'OpenCaseLaw non raccoglie dati personali. Niente cookie, niente tracciamento, nessuna analisi per singolo utente. Tutte le metriche pubblicate sono aggregate, k-anonime e differenzialmente private.',
+    priv_toc_summary: 'Sintesi', priv_toc_logs: 'Log & conservazione', priv_toc_rollup: 'Aggregazione & DP', priv_toc_wordaddin: 'Add-in Word', priv_toc_rights: 'I vostri diritti', priv_toc_contact: 'Contatto',
+    priv_summary_heading: 'La sintesi',
+    priv_summary_1: 'OpenCaseLaw \u00e8 un progetto di ricerca pubblico. L\u2019intera infrastruttura \u00e8 costruita in modo tale che <strong>semplicemente non esistono dati personali da analizzare, divulgare o perdere</strong>. Non \u00e8 una promessa di marketing, \u00e8 una propriet\u00e0 tecnica del sistema.',
+    priv_summary_bullet_cookies: '<strong>Nessun cookie.</strong> Il sito non installa alcun cookie, n\u00e9 necessario n\u00e9 facoltativo.',
+    priv_summary_bullet_fp: '<strong>Nessun fingerprinting.</strong> N\u00e9 canvas, n\u00e9 font, n\u00e9 audio, n\u00e9 WebGL. Nessuna analisi di terze parti.',
+    priv_summary_bullet_google: '<strong>Niente Google Analytics, niente Plausible Cloud, niente Sentry.</strong> Ogni analisi \u00e8 eseguita sul nostro server in Germania.',
+    priv_summary_bullet_queries: '<strong>Le query di ricerca non vengono mai memorizzate.</strong> N\u00e9 centralizzate n\u00e9 distribuite, n\u00e9 a breve n\u00e9 a lungo termine.',
+    priv_summary_bullet_ids: '<strong>Nessun identificativo utente.</strong> Non possiamo riconoscere la stessa persona tra due visite \u2014 crittograficamente, non solo come politica.',
+    priv_summary_bullet_dp: '<strong>Tutti i numeri pubblicati sono differenzialmente privati</strong> (\u03b5 = 1,0) e soggetti a una soglia di k-anonimit\u00e0 k = 10.',
+    priv_logs_heading: 'Log del server a tre livelli',
+    priv_logs_intro: 'Ogni server web registra le richieste \u2014 \u00e8 tecnicamente inevitabile. I nostri log sono per\u00f2 strutturati in modo tale da decomporsi in aggregati innocui nel giro di pochi giorni.',
+    priv_logs_tier1_title: 'Livello 1 \u2014 access.log (72 ore)',
+    priv_logs_tier1_body: 'Contiene indirizzo IP e User-Agent. Base legale: interesse legittimo alla difesa da DDoS e abusi. Conservazione: rigorosamente 72 ore, poi triturato crittograficamente (<code>shred -u</code>). Mai usato per le statistiche.',
+    priv_logs_tier2_title: 'Livello 2 \u2014 tier2.log (14 giorni, nessun dato personale)',
+    priv_logs_tier2_body: 'Contiene esclusivamente etichette di classe: classe client (p.\u202fes. \u00abcursor\u00bb, \u00abclaude_hosted\u00bb, \u00abword_addin\u00bb), classe di endpoint (p.\u202fes. \u00abrest_search_decisions\u00bb), codice HTTP, tempo di risposta, dimensione della risposta. <strong>Nessun IP. Nessun User-Agent. Nessuna query string. Nessun referer.</strong> Questo file \u00e8 strutturalmente incapace di identificare una persona. Conservazione: 14 giorni per sicurezza, poi eliminato.',
+    priv_logs_tier3_title: 'Livello 3 \u2014 analytics.db (illimitato, aggregato & privato)',
+    priv_logs_tier3_body: 'Aggregati giornalieri per (classe client, classe di endpoint). Nessuna riga per utente, nessuna granularit\u00e0 pi\u00f9 fine del giorno. Le celle con n\u202f<\u202f10 sono soppresse nella colonna pubblica. I numeri pubblicati portano rumore di Laplace con \u03b5\u202f=\u202f1,0 (privacy differenziale formale). Questo file pu\u00f2 ed \u00e8 reso pubblico \u2014 perch\u00e9 \u00e8 matematicamente provato che non rivela nulla sugli individui.',
+    priv_logs_audit: 'Il codice di aggregazione \u00e8 open source e verificabile: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/rollup_analytics.py" style="color:var(--ac)">scripts/rollup_analytics.py</a>. La configurazione nginx si trova in <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ops/nginx/ocl-logging.conf" style="color:var(--ac)">ops/nginx/ocl-logging.conf</a>.',
+    priv_rollup_heading: 'Cosa misuriamo, e come',
+    priv_rollup_1: 'Misuriamo solo ci\u00f2 che serve per le decisioni operative \u2014 e lo facciamo a livello aggregato, mai per utente. Le seguenti metriche sono calcolate quotidianamente e pubblicate su <a href="/stats" style="color:var(--ac)">opencaselaw.ch/stats</a>:',
+    priv_rollup_bullet_calls: '<strong>Chiamate agli strumenti al giorno</strong>, suddivise per classe client ed endpoint.',
+    priv_rollup_bullet_latency: '<strong>Tempi di risposta p50 e p95</strong> per endpoint.',
+    priv_rollup_bullet_errors: '<strong>Tasso di errore</strong> per endpoint (4xx, 5xx, 429).',
+    priv_rollup_bullet_reach: '<strong>Numero approssimativo di installazioni attive</strong> per classe client (tramite sketch HyperLogLog, a rotazione mensile).',
+    priv_rollup_bullet_status: '<strong>Distribuzione dei codici HTTP</strong> su tutte le richieste.',
+    priv_rollup_never_heading: 'Cosa non raccogliamo mai',
+    priv_rollup_never_queries: '<strong>Il contenuto delle query</strong> \u2014 rivela interessi giuridici e produce effetti dissuasivi.',
+    priv_rollup_never_docs: 'Quali decisioni o leggi una determinata persona consulta.',
+    priv_rollup_never_ip: 'Indirizzi IP grezzi negli aggregati o nei dati di livello 3.',
+    priv_rollup_never_ua: 'Stringhe User-Agent complete oltre le 72 ore (solo la classe).',
+    priv_rollup_never_referer: '<strong>Header Referer</strong> \u2014 rivelerebbe da quale chat o documento \u00e8 stato chiamato uno strumento.',
+    priv_rollup_never_fp: 'Fingerprinting (canvas, font, WebGL, audio) \u2014 mai, in nessuna circostanza.',
+    priv_rollup_never_billing: 'Collegamento dei dati cliente Stripe (Word Add-in Pro) con l\u2019utilizzo.',
+    priv_wordaddin_heading: 'Add-in Word \u2014 un caso speciale',
+    priv_wordaddin_1: 'L\u2019add-in Word \u00e8 l\u2019unica parte di OpenCaseLaw che invia, in modo facoltativo, un hash di coorte di installazione per permetterci di stimare il numero approssimativo di installazioni attive al mese. Il meccanismo \u00e8 deliberatamente costruito per rendere il tracciamento tra un mese e l\u2019altro <em>crittograficamente impossibile</em>:',
+    priv_wordaddin_step_1: 'Al primo avvio, l\u2019add-in genera un UUID casuale e lo memorizza localmente in <code>localStorage</code>.',
+    priv_wordaddin_step_2: 'A ogni richiesta API, calcola <code>SHA-256(uuid + "AAAA-MM")</code> e invia i primi 8 caratteri hex come header <code>X-Install-Cohort</code>.',
+    priv_wordaddin_step_3: 'Il sale mensile cambia ogni mese. Gli hash di aprile e maggio sono crittograficamente non correlati \u2014 anche se conservassimo tutti gli hash per sempre (cosa che non facciamo).',
+    priv_wordaddin_step_4: 'Usiamo questi hash esclusivamente per riempire uno sketch HyperLogLog al giorno per classe client. Lo sketch fornisce una stima \u2014 i valori di input non possono essere ricostruiti.',
+    priv_wordaddin_optout: '<strong>Opt-out:</strong> nel menu dell\u2019add-in sotto \u00abImpostazioni \u2192 Statistiche anonime di utilizzo\u00bb potete disattivare questo header in qualsiasi momento.',
+    priv_wordaddin_stripe: 'Gli abbonamenti Pro sono gestiti tramite Stripe. OpenCaseLaw vede solo la chiave di licenza e la confronta durante le richieste Pro. Non esiste alcun collegamento tra i dati cliente Stripe e le statistiche di utilizzo.',
+    priv_rights_heading: 'I vostri diritti (nLPD / RGPD)',
+    priv_rights_1: 'La legge svizzera rivista sulla protezione dei dati (nLPD, in vigore da settembre 2023) e il RGPD europeo vi garantiscono diritti di accesso, rettifica e cancellazione. Poich\u00e9 OpenCaseLaw non memorizza alcun dato personale su di voi, questi diritti sono <em>strutturalmente soddisfatti</em>:',
+    priv_rights_access: '<strong>Diritto di accesso:</strong> non c\u2019\u00e8 nulla da restituire \u2014 non memorizziamo alcun record che vi identifichi.',
+    priv_rights_delete: '<strong>Diritto alla cancellazione:</strong> non c\u2019\u00e8 nulla da cancellare, a meno che non abbiate installato l\u2019add-in Word. La disinstallazione rimuove allora l\u2019UUID locale.',
+    priv_rights_portability: '<strong>Portabilit\u00e0:</strong> non applicabile \u2014 non ci sono dati personali da trasferire.',
+    priv_rights_objection: '<strong>Opposizione:</strong> potete opporvi ai log di livello 1 di 72 ore non utilizzando i servizi. Un\u2019eccezione non \u00e8 tecnicamente possibile, poich\u00e9 i server web devono registrare le richieste per poter rispondere agli abusi.',
+    priv_rights_controller: 'Responsabile del trattamento ai sensi della nLPD: Jonas Hertner, e-mail <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a>. I server sono gestiti da Hetzner Online GmbH in Germania.',
+    priv_contact_heading: 'Domande, preoccupazioni, audit',
+    priv_contact_1: 'Tutti i meccanismi qui descritti sono open source e verificabili nel <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">repository GitHub</a>. Se notate una discrepanza tra questa pagina e il comportamento effettivo del sistema, consideratela un bug \u2014 segnalatecela e la correggeremo.',
+    priv_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>Le domande sulla privacy ricevono risposta in pochi giorni.',
+    priv_contact_version: 'Ultimo aggiornamento: 2026-04-11 \u00b7 Versionato in Git, modifiche pubblicamente consultabili.',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2177,7 +2391,7 @@ const I18N = {
     demo_label_call:'Chalenda', demo_label_response:'Resposta',
     footer_col_data:'Datas', footer_col_code:'Code', footer_col_connect:'Connectar', footer_col_about:'Davart',
     footer_report:'Annunziar problem', footer_commits:'Commits', footer_status:'Status API',
-    footer_about:'Davart OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Protecziun da datas',
+    footer_about:'Davart OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
     gesetze_h1:'Legislaziun federala e chantunala svizra',
@@ -2240,21 +2454,37 @@ const I18N = {
     hero_mcp:'Tschertgar cun AI',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   
-    mcp_remote_desc: 'Immediat disponibel, adina actual. Nagin download necessari. Endpoint dal server:',
-    mcp_chatgpt_note: 'Sustegnì via Streamable HTTP + CORS. Utilisescha annotaziuns <code style="font-size:11px">readOnlyHint</code>. Cumpatibel cun <strong>GPT-5.3</strong>; per GPT-5.4 guarda il workaround survart.',
-    mcp_other_note: 'Funcziuna cun mintga client cumpatibel MCP via il transport SSE standard. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: '21 utensils en survista',
-    mcp_tools_desc: 'Mintga utensil è optimà per in cas spezific da retschertga. Schemas cumplets via <code>tools/list</code> dal protocol MCP, qua gruppads tenor funcziun.',
-    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads (Claude Desktop, ChatGPT, Cursor, Gemini).',
-    mcp_arch_data: '<strong>Datas:</strong> da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di.',
-  
-    mcp_claude_desktop_step: 'Settings → Connectors → Add → endatar l\'URL:',
-    mcp_tech_heading: 'Detagls tecnics',
-    mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads',
-    mcp_tech_tls: 'TLS via Let\'s Encrypt, rate-limiting nginx, endpoint da sanadad: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
-    mcp_tech_workers: '4× workers uvicorn davos load-balancer, failover automatic',
-    mcp_tech_backend: 'Backend: 965\'000+ decisiuns en SQLite FTS5 cun ranking BM25+RRF, graf da citaziuns cun 8,8 mio. charnieras',
-    mcp_tech_data: 'Datas da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di',
+    ueber_toc_mission: 'Missiun',
+    ueber_toc_methodology: 'Metodologia',
+    ueber_toc_stats: 'Numers',
+    ueber_toc_license: 'Licenza',
+    ueber_toc_contact: 'Contact',
+    ueber_mission_heading: 'Missiun',
+    ueber_mission_1: 'La retschertga giuridica svizra è oz fragmentada, per gronda part davos paywalls e mal accessibla per models da linguatg. Il resultat: students da dretg che ston pajar l\'access a basas da datas commerzialas custaivlas, e LLMs che allucineschan il text dals artitgels da lescha perquai ch\'els n\'han nagina funtauna autoritativa.',
+    ueber_mission_2: 'OpenCaseLaw metta a disposiziun liber tut las decisiuns giudicialas publitgadas da la Svizra ed il text actual da tut las leschas relevantas en ina furma tschertgabla, collegada tras citaziuns e legibla per maschinas — per retschertga, lecziun, pratica ed agents d\'IA.',
+    ueber_method_heading: 'Metodologia',
+    ueber_method_sources: '<strong>Funtaunas:</strong> 58 scrapers per il Tribunal federal, il Tribunal administrativ federal, il Tribunal penal federal, decisiuns regulatoricas (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) e tut ils 26 chantuns. Decisiuns d\'entscheidsuche.ch sco fallback.',
+    ueber_method_dedup: '<strong>Deduplicaziun:</strong> normalisaziun dals numers da docket, sumeglientscha da text (MinHash), prioritad dal regest. Evitescha duplicats, ma mai a custs da la cumplettezza.',
+    ueber_method_index: '<strong>Indexaziun:</strong> SQLite FTS5 cun ranking BM25. Rebuild cumplet minchadi, swap atomar, nagin downtime per ils workers MCP.',
+    ueber_method_graph: '<strong>Graf da citaziuns:</strong> 8,8 mio. charnieras tranter decisiuns, 11,3 mio. referenzas ad artitgels legals. Bidirecziunal, cun schliaziun da chadainas da recurs.',
+    ueber_method_search: '<strong>Tschertga:</strong> BM25 + Reciprocal Rank Fusion + tuning dal meta-harness + reranking Haiku. MRR@10 = 0,647 sin in set d\'aur da 100 dumondas (online, mars 2026).',
+    ueber_method_laws: '<strong>Leschas:</strong> ~5\'000 leschas federalas da l\'endpoint SPARQL da Fedlex (125\'000+ artitgels en DE/FR/IT), spievel local mintga di indexà cun SQLite FTS5. Acts chantunals ed interchantunals via l\'API JSON da LexFind — spievel local per tut ils 26 chantuns.',
+    ueber_method_docs: 'Documentaziun tecnica cumpletta en il <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">repository GitHub</a>.',
+    ueber_stats_heading: 'Numers',
+    ueber_stat_decisions: 'decisiuns',
+    ueber_stat_courts: 'dretgiras',
+    ueber_stat_federal_laws: 'leschas federalas',
+    ueber_stat_cantonal_laws: 'acts chantunals',
+    ueber_stat_citations: 'citaziuns',
+    ueber_stat_mcp_tools: 'utensils MCP',
+    ueber_license_heading: 'Licenza &amp; citaziun',
+    ueber_license_data: '<strong>Datas:</strong> CC0 1.0 domena publica — las decisiuns giudicialas svizras èn documents publics.',
+    ueber_license_code: '<strong>Code:</strong> licenza MIT (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commentaris:</strong> CC-BY-4.0 (OnlineKommentar.ch).',
+    ueber_license_attribution: 'Utilisaziun senza attribuziun è permissa, ma appreziada: « Source: OpenCaseLaw.ch ». Per l\'utilisaziun academica datti p. pl. il paper accumpagnant (entrada Zenodo arriva).',
+    ueber_contact_heading: 'Contact',
+    ueber_contact_1: 'Construì ed operà da <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, independentamain e senza interess commerzial. Feedback, annunzis da bugs e contribuziuns èn bainvegnids.',
+    ueber_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   
     copy: 'Copiar',
     copied: 'Copià!',
@@ -2266,6 +2496,64 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> dumonda il spievel local sin nivel federal sco era chantunal ed alternescha ils resultats. Senza filter <code style="font-size:13px">canton</code>, ils treffers federals e chantunals vegnan dads en alternativ; cun filter, la tschertga vegn restrenschida a l\'aura tschernida.',
     gesetze_cantonal_get: 'Returna l\'art. 1 da la lescha turitgaisa davart chauns dad <code style="font-size:13px">cantonal_laws.db</code>. Il parameter <code style="font-size:13px">canton</code> accepta tut ils 26 codes chantunals (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Cun <code style="font-size:13px">fetch_top_n_texts=N</code> vegnan ils top-N treffers arichids directamain cun il text cumplet ed artitgels segmentòs — LLMs pon respúnder a dumondas sco «Tge di la lescha bernaisa davart chauns areguard l\'obligaziun d\'interdicziun?» en ina sulettta clomada d\'utensil.',
+
+    // ─── Privacy page ────────────────────────────────────────────────
+    nav_datenschutz: 'Protecziun da datas',
+    footer_privacy: 'Protecziun da datas',
+    priv_h1: 'Protecziun da datas',
+    priv_sub: 'OpenCaseLaw na raccogla naginas datas persunalas. Nagins cookies, nagin tracking, nagina analisa per utilisader. Tut las cifras publitgadas \u00e8n aggregadas, k-anonimas ed a privezza differenziala.',
+    priv_toc_summary: 'Sumari', priv_toc_logs: 'Logs & retenziun', priv_toc_rollup: 'Aggregaziun & DP', priv_toc_wordaddin: 'Add-in Word', priv_toc_rights: 'Vossas dretgiras', priv_toc_contact: 'Contact',
+    priv_summary_heading: 'Il sumari',
+    priv_summary_1: 'OpenCaseLaw \u00e8 in project da retschertga public. L\u2019infrastructura entira \u00e8 construida uschia ch\u2019<strong>i na dat simplamain naginas datas persunalas che pudessan esser analisadas, d\u00e0das vi u pers\u00fcas</strong>. Quai n\u2019\u00e8 betg ina empermischun da marketing, mabain ina proprietad tecnica dal sistem.',
+    priv_summary_bullet_cookies: '<strong>Nagin cookie.</strong> Il sit na metta nagin cookie \u2014 n\u00e8 necessari n\u00e8 facultativ.',
+    priv_summary_bullet_fp: '<strong>Nagin fingerprinting.</strong> N\u00e8 canvas, n\u00e8 fonts, n\u00e8 audio, n\u00e8 WebGL. Nagina analisa da terzs.',
+    priv_summary_bullet_google: '<strong>Nagin Google Analytics, nagin Plausible Cloud, nagin Sentry.</strong> Tut las analisas van en noss agen server en Germania.',
+    priv_summary_bullet_queries: '<strong>Las dumondas da tschertga na vegnan mai memorisadas.</strong> N\u00e8 centralmain n\u00e8 distribuidamain, n\u00e8 curt n\u00e8 lung.',
+    priv_summary_bullet_ids: '<strong>Naginas IDs d\u2019utilisader.</strong> Nus na pudain betg reconuscher la medema persuna tranter duas visitas \u2014 cryptograficamain, betg mo sco reglament.',
+    priv_summary_bullet_dp: '<strong>Tut las cifras publitgadas \u00e8n a privezza differenziala</strong> (\u03b5 = 1,0) e suttastan ad ina saida da k-anonimitad k = 10.',
+    priv_logs_heading: 'Logs dal server en trais nivels',
+    priv_logs_intro: 'Mintga server da web protocolleschia las dumondas \u2014 quai \u00e8 tecnicamain inevitabel. Noss logs \u00e8n per\u00f2 structurads uschia ch\u2019els sa dissolvan en aggregats nunnuschaivels en pauc pli paucs dis.',
+    priv_logs_tier1_title: 'Nivel 1 \u2014 access.log (72 uras)',
+    priv_logs_tier1_body: 'Cuntegna l\u2019adressa IP ed il User-Agent. Basa legala: interess legitim per la defensiun cunter DDoS e malduvrada. Retenziun: stretgamain 72 uras, lura shred\u00e0 cryptograficamain (<code>shred -u</code>). Mai duvr\u00e0 per statisticas.',
+    priv_logs_tier2_title: 'Nivel 2 \u2014 tier2.log (14 dis, naginas datas persunalas)',
+    priv_logs_tier2_body: 'Cuntegna exclusivamain etichettas da classa: classa client, classa d\u2019endpoint, code HTTP, temp da resposta, grondezza da la resposta. <strong>Nagina IP. Nagin User-Agent. Nagina query string. Nagin referer.</strong> Questa datoteca \u00e8 structuralmain betg en cas d\u2019identifitgar ina persuna. Retenziun: 14 dis per segirtad, lura stizz\u00e0.',
+    priv_logs_tier3_title: 'Nivel 3 \u2014 analytics.db (senza temp, aggreg\u00e0 & priv\u00e0)',
+    priv_logs_tier3_body: 'Aggregats dal di per (classa client, classa d\u2019endpoint). Naginas lingias per utilisader, nagina granularitad pli fina ch\u2019il di. Cellas cun n\u202f<\u202f10 \u00e8n suttast\u00e0s en la colonna publica. Las cifras publitgadas portan rumur da Laplace cun \u03b5\u202f=\u202f1,0 (privezza differenziala formala). Questa datoteca po e sa vegnir publitgada \u2014 perquai ch\u2019ella \u00e8 matematicamain demussada da betg revelar nagut davart singulas persunas.',
+    priv_logs_audit: 'Il code da l\u2019aggregaziun \u00e8 open source e verifitgabel: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/rollup_analytics.py" style="color:var(--ac)">scripts/rollup_analytics.py</a>.',
+    priv_rollup_heading: 'Quai che nus mesirain, e co',
+    priv_rollup_1: 'Nus mesirain mo quai ch\u2019\u00e8 necessari per decisiuns operativas \u2014 ed al nivel aggreg\u00e0, mai per utilisader. Las suandantas cifras vegnan calculadas mintgadi e publitgadas sin <a href="/stats" style="color:var(--ac)">opencaselaw.ch/stats</a>:',
+    priv_rollup_bullet_calls: '<strong>Clamadas ad utensils per di</strong>, spartidas per classa client ed endpoint.',
+    priv_rollup_bullet_latency: '<strong>Temp da resposta p50 e p95</strong> per endpoint.',
+    priv_rollup_bullet_errors: '<strong>Quota da sbagls</strong> per endpoint (4xx, 5xx, 429).',
+    priv_rollup_bullet_reach: '<strong>Dumber approximativ d\u2019installaziuns activas</strong> per classa client (via HyperLogLog, rotaziun mensila).',
+    priv_rollup_bullet_status: '<strong>Distribuziun dals codes HTTP</strong> surtut las dumondas.',
+    priv_rollup_never_heading: 'Quai che nus na recoltain mai',
+    priv_rollup_never_queries: '<strong>Il cuntegn da las dumondas</strong> \u2014 revelass interess giuridics ed avess effects da dissuasiun.',
+    priv_rollup_never_docs: 'Tge decisiuns u leschas ina persuna specifica consulta.',
+    priv_rollup_never_ip: 'Adressas IP grezzas en aggregats u en datas dal nivel 3.',
+    priv_rollup_never_ua: 'Cordas User-Agent cumplainas sur 72 uras (mo la classa).',
+    priv_rollup_never_referer: '<strong>Referer</strong> \u2014 revelass da tge chat u document in utensil \u00e8 vegn\u00ec clam\u00e0.',
+    priv_rollup_never_fp: 'Fingerprinting \u2014 mai, en nagina circumstanza.',
+    priv_rollup_never_billing: 'Colliaziun da datas cliente Stripe (Word Add-in Pro) cun datas d\u2019utilisaziun.',
+    priv_wordaddin_heading: 'Add-in Word \u2014 in cas spezial',
+    priv_wordaddin_1: 'L\u2019add-in Word \u00e8 l\u2019unica part d\u2019OpenCaseLaw che tramet, facultativamain, in hash da cohorta d\u2019installaziun per permetter d\u2019estimar il dumber approximativ d\u2019installaziuns activas per mais. Il mecanissem \u00e8 intenziunalmain construi uschia ch\u2019in tracking da mais a mais \u00e8 <em>cryptograficamain impussibel</em>:',
+    priv_wordaddin_step_1: 'Tar la emprima start, l\u2019add-in creescha in UUID casual e l memorisescha en <code>localStorage</code>.',
+    priv_wordaddin_step_2: 'Per mintga dumonda API, el calculescha <code>SHA-256(uuid + "AAAA-MM")</code> e tramet las emprimas 8 zeichens hex sco header <code>X-Install-Cohort</code>.',
+    priv_wordaddin_step_3: 'Il sel mensil sa chang\u00e0 mintga mais. Ils hashes d\u2019avrigl ed ils da matg \u00e8n cryptograficamain betg culligads.',
+    priv_wordaddin_step_4: 'Nus duvrain quels hashes exclusivamain per emplenir in sketch HyperLogLog per di e per classa client. Ils valurs d\u2019input n\u2019\u00e8n betg reconstruibels ord il sketch.',
+    priv_wordaddin_optout: '<strong>Opt-out:</strong> en il men\u00fc da l\u2019add-in sut \u00abImpostaziuns \u2192 Statisticas anonimas d\u2019utilisaziun\u00bb pudais vus deactivar quest header en mintg\u2019ura.',
+    priv_wordaddin_stripe: 'Ils abunaments Pro vegnan administrads via Stripe. OpenCaseLaw vesa mo la clav da licenza ed la compara tar dumondas Pro. I na dat nagina colliaziun tranter las datas cliente Stripe ed las statisticas d\u2019utilisaziun.',
+    priv_rights_heading: 'Vossas dretgiras (nLPD / DSGVO)',
+    priv_rights_1: 'La lescha svizra reviseda davart la protecziun da datas (nLPD, en vigur dapi settember 2023) e la DSGVO europeica vus garanteschan dretgiras d\u2019infurmaziun, rectificaziun e stizzada. Sco OpenCaseLaw na memorisescha naginas datas persunalas davart Vus, questas dretgiras \u00e8n <em>structuralmain ademplidas</em>:',
+    priv_rights_access: '<strong>Dretgira d\u2019infurmaziun:</strong> i na dat nagut da restituir.',
+    priv_rights_delete: '<strong>Dretgira da stizzada:</strong> i na dat nagut da stizzar, nun che vus avais l\u2019add-in Word install\u00e0.',
+    priv_rights_portability: '<strong>Portabilitad:</strong> betg applitgabla.',
+    priv_rights_objection: '<strong>Opposiziun:</strong> pudais vus s\u2019opponer als logs dal nivel 1 da 72 uras betg duvrond ils servetschs.',
+    priv_rights_controller: 'Responsabel dal tractament: Jonas Hertner, e-mail <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a>. Ils servers vegnan gestids da Hetzner Online GmbH en Germania.',
+    priv_contact_heading: 'Dumondas, preoccupaziuns, audits',
+    priv_contact_1: 'Tut ils mecanissems qua descrits \u00e8n open source e verifitgabels en il <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">repositori GitHub</a>.',
+    priv_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>Dumondas davart la protecziun da datas survegnan resposta en pauc dis.',
+    priv_contact_version: 'Davosa actualisaziun: 2026-04-11 \u00b7 Versiun\u00e0 en Git.',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2321,7 +2609,7 @@ const I18N = {
     demo_label_call:'Tool call', demo_label_response:'Response',
     footer_col_data:'Data', footer_col_code:'Code', footer_col_connect:'Connect', footer_col_about:'About',
     footer_report:'Report issue', footer_commits:'Commits', footer_status:'API status',
-    footer_about:'About OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Privacy',
+    footer_about:'About OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
     gesetze_h1:'Swiss federal and cantonal legislation',
@@ -2384,21 +2672,37 @@ const I18N = {
     hero_mcp:'Search with AI',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   
-    mcp_remote_desc: 'Immediately available, always up to date. No download required. Server endpoint:',
-    mcp_chatgpt_note: 'Supported via Streamable HTTP + CORS. Uses <code style="font-size:11px">readOnlyHint</code> annotations. Compatible with <strong>GPT-5.3</strong>; for GPT-5.4 see the workaround above.',
-    mcp_other_note: 'Works with any MCP-capable client via standard SSE transport. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: '21 tools at a glance',
-    mcp_tools_desc: 'Each tool is optimised for a specific research use case. Full schemas via the MCP protocol <code>tools/list</code>, grouped here by function.',
-    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client (Claude Desktop, ChatGPT, Cursor, Gemini).',
-    mcp_arch_data: '<strong>Data:</strong> from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily.',
-  
-    mcp_claude_desktop_step: 'Settings → Connectors → Add → enter URL:',
-    mcp_tech_heading: 'Technical details',
-    mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client',
-    mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx rate limiting, health endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
-    mcp_tech_workers: '4× uvicorn workers behind a load balancer, automatic failover',
-    mcp_tech_backend: 'Backend: 965,000+ decisions in SQLite FTS5 with BM25+RRF ranking, citation graph of 8.8M edges',
-    mcp_tech_data: 'Data from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily',
+    ueber_toc_mission: 'Mission',
+    ueber_toc_methodology: 'Methodology',
+    ueber_toc_stats: 'Numbers',
+    ueber_toc_license: 'License',
+    ueber_toc_contact: 'Contact',
+    ueber_mission_heading: 'Mission',
+    ueber_mission_1: 'Swiss legal research today is fragmented, mostly behind paywalls, and hard to reach for language models. The result: law students paying for expensive commercial databases, and LLMs hallucinating article text because they have no authoritative source.',
+    ueber_mission_2: 'OpenCaseLaw makes every publicly published Swiss court decision and the current text of every relevant statute freely available in a searchable, citation-linked, machine-readable format — for research, teaching, practice, and AI agents.',
+    ueber_method_heading: 'Methodology',
+    ueber_method_sources: '<strong>Sources:</strong> 58 scrapers covering the Federal Supreme Court, Federal Administrative Court, Federal Criminal Court, regulatory decisions (FINMA, ComCo, FDPIC, IndepBC, ElCom, etc.) and all 26 cantons. entscheidsuche.ch as a fallback source.',
+    ueber_method_dedup: '<strong>Deduplication:</strong> docket normalisation, text similarity (MinHash), regeste priority. Prevents duplicates without ever sacrificing completeness.',
+    ueber_method_index: '<strong>Indexing:</strong> SQLite FTS5 with BM25 ranking. Full daily rebuild, atomic swap, zero downtime for MCP workers.',
+    ueber_method_graph: '<strong>Citation graph:</strong> 8.8M edges between decisions, 11.3M references to statute articles. Bidirectional, with appeal-chain resolution.',
+    ueber_method_search: '<strong>Search:</strong> BM25 + Reciprocal Rank Fusion + meta-harness tuning + Haiku reranking. MRR@10 = 0.647 on a 100-query golden set (online, March 2026).',
+    ueber_method_laws: '<strong>Legislation:</strong> ~5,000 federal laws from the Fedlex SPARQL endpoint (125,000+ articles in DE/FR/IT), mirrored locally daily and indexed with SQLite FTS5. Cantonal and intercantonal acts via the LexFind JSON API — mirrored locally for all 26 cantons.',
+    ueber_method_docs: 'Full technical documentation in the <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub repository</a>.',
+    ueber_stats_heading: 'Numbers',
+    ueber_stat_decisions: 'decisions',
+    ueber_stat_courts: 'courts',
+    ueber_stat_federal_laws: 'federal laws',
+    ueber_stat_cantonal_laws: 'cantonal acts',
+    ueber_stat_citations: 'citations',
+    ueber_stat_mcp_tools: 'MCP tools',
+    ueber_license_heading: 'License &amp; citation',
+    ueber_license_data: '<strong>Data:</strong> CC0 1.0 Public Domain — Swiss court decisions are public documents.',
+    ueber_license_code: '<strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commentaries:</strong> CC-BY-4.0 (OnlineKommentar.ch).',
+    ueber_license_attribution: 'Use without attribution is allowed, but appreciated: "Source: OpenCaseLaw.ch". For academic use, please cite the accompanying paper (Zenodo entry coming).',
+    ueber_contact_heading: 'Contact',
+    ueber_contact_1: 'Built and operated by <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, independently and with no commercial interest. Feedback, bug reports, and contributions welcome.',
+    ueber_contact_2: 'Email: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   
     copy: 'Copy',
     copied: 'Copied!',
@@ -2410,6 +2714,64 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> queries the local mirror at both the federal and cantonal level and interleaves the hits. Without a <code style="font-size:13px">canton</code> filter, federal and cantonal matches are returned in alternation; with a filter, the search is restricted to that scope.',
     gesetze_cantonal_get: 'Returns Art. 1 of the Zurich dog act from <code style="font-size:13px">cantonal_laws.db</code>. The <code style="font-size:13px">canton</code> parameter accepts all 26 canton codes (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'With <code style="font-size:13px">fetch_top_n_texts=N</code>, the top N results are enriched inline with full text and segmented articles — LLMs can answer questions like "What does the Bernese dog act say about keeping bans?" in a single tool call.',
+
+    // ─── Privacy page ────────────────────────────────────────────────
+    nav_datenschutz: 'Privacy',
+    footer_privacy: 'Privacy',
+    priv_h1: 'Privacy',
+    priv_sub: 'OpenCaseLaw collects no personal data. No cookies, no tracking, no per-user analytics. Every published number is aggregated, k-anonymous, and differentially private.',
+    priv_toc_summary: 'Summary', priv_toc_logs: 'Logs & retention', priv_toc_rollup: 'Aggregation & DP', priv_toc_wordaddin: 'Word add-in', priv_toc_rights: 'Your rights', priv_toc_contact: 'Contact',
+    priv_summary_heading: 'The short version',
+    priv_summary_1: 'OpenCaseLaw is a public research project. The entire infrastructure is built so that <strong>there simply is no personal data to analyse, disclose, or lose</strong>. That is not a marketing promise, it is a technical property of the system.',
+    priv_summary_bullet_cookies: '<strong>No cookies.</strong> The site sets no cookies at all, neither necessary nor optional.',
+    priv_summary_bullet_fp: '<strong>No fingerprinting.</strong> No canvas, font, audio, or WebGL fingerprinting. No third-party analytics.',
+    priv_summary_bullet_google: '<strong>No Google Analytics, no Plausible Cloud, no Sentry.</strong> All analysis runs on our own server in Germany.',
+    priv_summary_bullet_queries: '<strong>Search queries are never stored.</strong> Not centrally, not distributed, neither short- nor long-term.',
+    priv_summary_bullet_ids: '<strong>No user IDs.</strong> We cannot recognise the same person across two visits \u2014 cryptographically, not just as a policy.',
+    priv_summary_bullet_dp: '<strong>All published numbers are differentially private</strong> (\u03b5 = 1.0) and subject to a k-anonymity threshold of k = 10.',
+    priv_logs_heading: 'Server logs in three tiers',
+    priv_logs_intro: 'Every web server logs requests \u2014 that is technically unavoidable. Our logs are structured so that they decay into harmless aggregates within days.',
+    priv_logs_tier1_title: 'Tier 1 \u2014 access.log (72 hours)',
+    priv_logs_tier1_body: 'Contains IP address and User-Agent. Legal basis: legitimate interest in defending against DDoS and abuse. Retention: strictly 72 hours, then cryptographically shredded (<code>shred -u</code>). Never used for analytics.',
+    priv_logs_tier2_title: 'Tier 2 \u2014 tier2.log (14 days, no personal data)',
+    priv_logs_tier2_body: 'Contains only class labels: client class (e.g. \u201ccursor\u201d, \u201cclaude_hosted\u201d, \u201cword_addin\u201d), endpoint class (e.g. \u201crest_search_decisions\u201d), HTTP status, response time, response size. <strong>No IPs. No User-Agents. No query strings. No referer.</strong> This file is structurally incapable of identifying a person. Retention: 14 days as a safety net, then deleted.',
+    priv_logs_tier3_title: 'Tier 3 \u2014 analytics.db (forever, aggregated & private)',
+    priv_logs_tier3_body: 'Daily aggregates per (client class, endpoint class). No per-user rows, no finer-than-daily granularity. Cells with n\u202f<\u202f10 are suppressed in the public column. Published numbers carry Laplace noise at \u03b5\u202f=\u202f1.0 (formal (\u03b5, 0)-differential privacy). This file may be and will be published publicly \u2014 because it is mathematically proven to reveal nothing about individuals.',
+    priv_logs_audit: 'The rollup code is open source and auditable: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/rollup_analytics.py" style="color:var(--ac)">scripts/rollup_analytics.py</a>. The nginx three-tier logging config is at <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ops/nginx/ocl-logging.conf" style="color:var(--ac)">ops/nginx/ocl-logging.conf</a>.',
+    priv_rollup_heading: 'What we measure, and how',
+    priv_rollup_1: 'We measure only what is necessary for operational decisions \u2014 and we measure it at aggregate level, never per user. The following metrics are computed nightly and published at <a href="/stats" style="color:var(--ac)">opencaselaw.ch/stats</a>:',
+    priv_rollup_bullet_calls: '<strong>Tool calls per day</strong>, broken down by client class and endpoint.',
+    priv_rollup_bullet_latency: '<strong>p50 and p95 response time</strong> per endpoint.',
+    priv_rollup_bullet_errors: '<strong>Error rate</strong> per endpoint (4xx, 5xx, 429).',
+    priv_rollup_bullet_reach: '<strong>Approximate active installations</strong> per client class (via a HyperLogLog sketch that rotates monthly).',
+    priv_rollup_bullet_status: '<strong>HTTP status distribution</strong> across all requests.',
+    priv_rollup_never_heading: 'What we never collect',
+    priv_rollup_never_queries: '<strong>Query content</strong> \u2014 reveals legal interests and produces chilling effects.',
+    priv_rollup_never_docs: 'Which decisions or laws a specific person looks up.',
+    priv_rollup_never_ip: 'Raw IP addresses in aggregates or Tier-3 data.',
+    priv_rollup_never_ua: 'Full User-Agent strings beyond 72 hours (only the class).',
+    priv_rollup_never_referer: '<strong>Referer header</strong> \u2014 would reveal which chat or document a tool was called from.',
+    priv_rollup_never_fp: 'Fingerprinting (canvas, fonts, WebGL, audio) \u2014 never, under any circumstances.',
+    priv_rollup_never_billing: 'Linking Stripe customer data (Word add-in Pro) to usage data.',
+    priv_wordaddin_heading: 'Word add-in \u2014 a special case',
+    priv_wordaddin_1: 'The Word add-in is the only part of OpenCaseLaw that optionally sends an install cohort hash so we can estimate the approximate number of active installations per month. The mechanism is deliberately built so that cross-month tracking is <em>cryptographically impossible</em>:',
+    priv_wordaddin_step_1: 'On first run, the add-in generates a random UUID and stores it locally in <code>localStorage</code>.',
+    priv_wordaddin_step_2: 'On every API request it computes <code>SHA-256(uuid + "YYYY-MM")</code> and sends the first 8 hex chars as an <code>X-Install-Cohort</code> header.',
+    priv_wordaddin_step_3: 'The monthly salt changes each month. April and May hashes are cryptographically unlinkable \u2014 even if we kept all hashes forever (which we don\u2019t).',
+    priv_wordaddin_step_4: 'We use these hashes only to fill a daily HyperLogLog sketch per client class. The sketch yields an estimated count \u2014 the input values are not recoverable from it.',
+    priv_wordaddin_optout: '<strong>Opt-out:</strong> in the add-in menu under \u201cSettings \u2192 Anonymous usage signal\u201d you can disable this header at any time. The add-in works identically without it.',
+    priv_wordaddin_stripe: 'Pro subscriptions are handled by Stripe. OpenCaseLaw sees only the license key and matches it during Pro requests. There is no link between Stripe customer data and usage statistics.',
+    priv_rights_heading: 'Your rights (nFADP / GDPR)',
+    priv_rights_1: 'The revised Swiss Federal Act on Data Protection (nFADP, in force since September 2023) and the European GDPR grant you rights of access, rectification, and deletion. Because OpenCaseLaw stores no personal data about you, these rights are <em>structurally satisfied</em>:',
+    priv_rights_access: '<strong>Right of access:</strong> there is nothing to return \u2014 we keep no record that points to you.',
+    priv_rights_delete: '<strong>Right to deletion:</strong> nothing to delete unless you installed the Word add-in, in which case uninstalling removes the local install UUID.',
+    priv_rights_portability: '<strong>Portability:</strong> not applicable \u2014 there are no personal records to transfer.',
+    priv_rights_objection: '<strong>Objection:</strong> you can object to the 72-hour Tier-1 logs by not using the services. An exception is technically impossible, because web servers must log requests in order to respond to abuse.',
+    priv_rights_controller: 'Data controller under the nFADP: Jonas Hertner, email <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a>. Servers are operated by Hetzner Online GmbH in Germany.',
+    priv_contact_heading: 'Questions, concerns, audits',
+    priv_contact_1: 'Every mechanism described here is open source and auditable in the <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub repository</a>. If you spot a discrepancy between this page and the system\u2019s actual behaviour, treat it as a bug \u2014 report it and we will fix it.',
+    priv_contact_2: 'Email: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>Privacy questions get a reply within a few days.',
+    priv_contact_version: 'Last updated: 2026-04-11 \u00b7 Versioned in Git, changes publicly visible.',
   },
 };
 

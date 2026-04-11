@@ -618,6 +618,38 @@ var UI_STRINGS = {
     en: 'Settings',
   },
 
+  // Privacy / anonymous usage signal (see docs/datenschutz/)
+  priv_signal_title: {
+    de: 'Anonyme Nutzungsstatistik',
+    fr: 'Statistiques d\u2019utilisation anonymes',
+    it: 'Statistiche di utilizzo anonime',
+    en: 'Anonymous usage signal',
+  },
+  priv_signal_body: {
+    de: 'Sendet einen monatlich rotierenden Installations-Hash (8 Hex-Zeichen, SHA-256 mit Monats-Salt) mit jeder Anfrage. Erlaubt uns, aktive Installationen pro Monat zu z\u00e4hlen \u2014 ohne Sie wiedererkennen zu k\u00f6nnen.',
+    fr: 'Envoie un hash d\u2019installation \u00e0 rotation mensuelle (8 caract\u00e8res hex, SHA-256 avec sel mensuel) \u00e0 chaque requ\u00eate. Nous permet de compter les installations actives par mois \u2014 sans pouvoir vous reconna\u00eetre.',
+    it: 'Invia un hash di installazione a rotazione mensile (8 caratteri hex, SHA-256 con sale mensile) a ogni richiesta. Ci permette di contare le installazioni attive al mese \u2014 senza poterla riconoscere.',
+    en: 'Sends a monthly-rotating install hash (8 hex chars, SHA-256 with monthly salt) on every request. Lets us count active installs per month \u2014 without being able to recognise you.',
+  },
+  priv_signal_note: {
+    de: 'Deaktivieren Sie das H\u00e4kchen, um den Header vollst\u00e4ndig abzuschalten. Das Add-in funktioniert danach unver\u00e4ndert.',
+    fr: 'D\u00e9cochez la case pour d\u00e9sactiver compl\u00e8tement cet en-t\u00eate. L\u2019add-in continue \u00e0 fonctionner normalement.',
+    it: 'Deselezionate la casella per disattivare completamente l\u2019header. L\u2019add-in continua a funzionare normalmente.',
+    en: 'Uncheck the box to disable the header completely. The add-in keeps working unchanged.',
+  },
+  priv_signal_more: {
+    de: 'Mehr zum Datenschutz',
+    fr: 'Plus sur la confidentialit\u00e9',
+    it: 'Maggiori informazioni sulla privacy',
+    en: 'More on privacy',
+  },
+  priv_signal_privacy_link: {
+    de: 'Datenschutz',
+    fr: 'Confidentialit\u00e9',
+    it: 'Privacy',
+    en: 'Privacy',
+  },
+
   // Pro / Billing
   pro_section_title: {
     de: 'OpenCaseLaw Pro',

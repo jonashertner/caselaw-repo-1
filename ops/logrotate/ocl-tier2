@@ -1,0 +1,32 @@
+# /etc/logrotate.d/ocl-tier2
+#
+# Tier 2 (class-level log, no PII) — 14-day retention.
+#
+# This log contains only class labels (client_class, endpoint_class),
+# response status, response time, body bytes, and an optional 8-hex
+# install cohort hash. It is structurally incapable of identifying a
+# person and is consumed nightly by scripts/rollup_analytics.py.
+#
+# Retention is 14 days purely for safety — if a rollup fails we can
+# re-run it against the previous window.
+#
+# Install:
+#   sudo cp ops/logrotate/ocl-tier2 /etc/logrotate.d/
+#
+/var/log/nginx/tier2.log {
+    daily
+    rotate 14
+    maxage 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    dateext
+    create 0644 www-data adm
+    sharedscripts
+    postrotate
+        if [ -f /run/nginx.pid ]; then
+            kill -USR1 `cat /run/nginx.pid`
+        fi
+    endscript
+}

@@ -352,6 +352,174 @@ def collect_corpus_snapshot(repo_dir: Path) -> dict:
     return out
 
 
+def collect_traffic(repo_dir: Path, days: int = 30) -> dict | None:
+    """Read ``output/analytics.db`` and build a public traffic block.
+
+    All published counts are the DP-noised ``n_public`` column (never
+    ``n_exact``), and cells below K-anon (stored as NULL) are skipped.
+    If the analytics DB does not yet exist, returns None.
+
+    Returns a dict shaped like::
+
+        {
+          "window_days": 30,
+          "generated_at": "...",
+          "total_calls": 12345,           # DP-noised, real traffic only
+          "by_client":  [{"class": "cursor", "n": 4321}, ...],
+          "top_endpoints": [{"class": "rest_search_decisions", "n": 999}, ...],
+          "latency_ms":  {"rest_search_decisions": {"p50": 140, "p95": 410}, ...},
+          "error_rate":  {"rest_search_decisions": 0.012, ...},
+          "reach": [{"class": "word_addin", "n_installs": 87}, ...],
+          "status_hist": {"2xx": 11000, "404": 50, "5xx": 20}
+        }
+    """
+    db_path = repo_dir / "output" / "analytics.db"
+    if not db_path.exists():
+        return None
+    try:
+        conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+    except sqlite3.Error:
+        return None
+
+    out: dict = {"window_days": days}
+    try:
+        # Window bounds
+        row = conn.execute(
+            "SELECT MAX(day) AS d FROM daily_tool_calls"
+        ).fetchone()
+        if not row or not row["d"]:
+            return None
+        window_end = row["d"]
+        out["window_end"] = window_end
+
+        # Total calls (DP-noised, last N days, real traffic only)
+        row = conn.execute(
+            """SELECT COALESCE(SUM(n_public), 0) AS n
+               FROM daily_tool_calls
+               WHERE day >= date(?, ?)
+                 AND n_public IS NOT NULL""",
+            (window_end, f"-{days - 1} days"),
+        ).fetchone()
+        out["total_calls"] = int(row["n"] or 0)
+
+        # By client class (DP-noised, sum across window)
+        rows = conn.execute(
+            """SELECT client_class, COALESCE(SUM(n_public), 0) AS n
+               FROM daily_tool_calls
+               WHERE day >= date(?, ?)
+                 AND n_public IS NOT NULL
+               GROUP BY client_class
+               ORDER BY n DESC""",
+            (window_end, f"-{days - 1} days"),
+        ).fetchall()
+        out["by_client"] = [
+            {"class": r["client_class"], "n": int(r["n"])}
+            for r in rows
+            if r["n"]
+        ]
+
+        # Top endpoints (DP-noised)
+        rows = conn.execute(
+            """SELECT endpoint_class, COALESCE(SUM(n_public), 0) AS n
+               FROM daily_tool_calls
+               WHERE day >= date(?, ?)
+                 AND n_public IS NOT NULL
+               GROUP BY endpoint_class
+               ORDER BY n DESC
+               LIMIT 15""",
+            (window_end, f"-{days - 1} days"),
+        ).fetchall()
+        out["top_endpoints"] = [
+            {"class": r["endpoint_class"], "n": int(r["n"])}
+            for r in rows
+            if r["n"]
+        ]
+
+        # Latency + error rate per endpoint (median of daily p50/p95,
+        # error rate as 4xx+5xx over total exact count — aggregates are
+        # not PII even when they use the exact column).
+        rows = conn.execute(
+            """SELECT endpoint_class,
+                      AVG(p50_ms) AS p50,
+                      AVG(p95_ms) AS p95,
+                      SUM(n_exact) AS n_exact_sum,
+                      SUM(err_4xx) AS e4,
+                      SUM(err_5xx) AS e5
+               FROM daily_tool_calls
+               WHERE day >= date(?, ?)
+                 AND p50_ms IS NOT NULL
+               GROUP BY endpoint_class
+               HAVING n_exact_sum >= 20""",  # small-n suppression
+            (window_end, f"-{days - 1} days"),
+        ).fetchall()
+        latency: dict = {}
+        err_rate: dict = {}
+        for r in rows:
+            latency[r["endpoint_class"]] = {
+                "p50": int(round(r["p50"] or 0)),
+                "p95": int(round(r["p95"] or 0)),
+            }
+            n = r["n_exact_sum"] or 0
+            if n > 0:
+                err_rate[r["endpoint_class"]] = round(
+                    ((r["e4"] or 0) + (r["e5"] or 0)) / n, 4
+                )
+        out["latency_ms"] = latency
+        out["error_rate"] = err_rate
+
+        # Distinct installs per client class (HLL estimate, DP-noised)
+        rows = conn.execute(
+            """SELECT client_class, MAX(n_cohorts_public) AS n
+               FROM daily_reach
+               WHERE day >= date(?, ?)
+                 AND n_cohorts_public IS NOT NULL
+               GROUP BY client_class
+               ORDER BY n DESC""",
+            (window_end, f"-{days - 1} days"),
+        ).fetchall()
+        out["reach"] = [
+            {"class": r["client_class"], "n_installs": int(r["n"])}
+            for r in rows
+            if r["n"]
+        ]
+
+        # Status histogram
+        rows = conn.execute(
+            """SELECT status_bucket, COALESCE(SUM(n_public), 0) AS n
+               FROM daily_status
+               WHERE day >= date(?, ?)
+                 AND n_public IS NOT NULL
+               GROUP BY status_bucket""",
+            (window_end, f"-{days - 1} days"),
+        ).fetchall()
+        out["status_hist"] = {
+            r["status_bucket"]: int(r["n"]) for r in rows if r["n"]
+        }
+
+        # Privacy metadata — so anyone reading stats.json can verify
+        # the guarantees.
+        meta = conn.execute(
+            """SELECT k_anon, dp_epsilon
+               FROM run_metadata
+               ORDER BY day DESC LIMIT 1"""
+        ).fetchone()
+        if meta:
+            out["privacy"] = {
+                "k_anon": int(meta["k_anon"]),
+                "dp_epsilon": float(meta["dp_epsilon"]),
+                "note": (
+                    "Counts are differentially private with epsilon=1.0; "
+                    "cells below k=10 are suppressed. No per-user data is "
+                    "stored, published, or recoverable."
+                ),
+            }
+    finally:
+        conn.close()
+
+    return out
+
+
 def _read_health_file(path: Path) -> dict | None:
     """Read a single scraper_health*.json file, swallowing any read errors."""
     if not path.exists():
@@ -476,6 +644,11 @@ def main():
     corpus = collect_corpus_snapshot(repo_dir)
     if corpus:
         stats["corpus"] = corpus
+
+    # ── Traffic snapshot: DP-noised, k-anon aggregates from analytics.db ──
+    traffic = collect_traffic(repo_dir, days=30)
+    if traffic:
+        stats["traffic"] = traffic
 
     # ── Compute deltas vs previous stats.json ──
     prev = {}

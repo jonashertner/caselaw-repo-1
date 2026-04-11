@@ -1,0 +1,13 @@
+[Unit]
+Description=Nightly privacy-respecting analytics rollup (04:30 UTC)
+
+[Timer]
+# 04:30 UTC — after the daily publish completes (finishes around 03:00-04:00)
+# and well before the next day's scrape at 05:00. The rollup window is
+# "yesterday UTC".
+OnCalendar=*-*-* 04:30:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

@@ -1,9 +1,72 @@
 /**
  * REST API client for mcp.opencaselaw.ch.
  * Handles fetch, error states, retry, rate limiting.
+ *
+ * Privacy: optionally sends X-Install-Cohort, an 8-hex-char monthly hash
+ * SHA-256(install_id + YYYY-MM)[:8]. See buildClientHeaders() below.
+ * See docs/datenschutz/ for the full privacy contract.
  */
 
 const API_BASE = 'https://mcp.opencaselaw.ch/api';
+
+// ─── Install cohort (privacy-respecting usage signal) ────────────────
+// One random UUID per install is stored locally. Every request derives
+// a fresh hash per month, so cross-month tracking is cryptographically
+// infeasible. The user can disable it in settings at any time via the
+// 'ocl_usage_signal_optout' localStorage key.
+
+function oclGetInstallId() {
+  try {
+    var id = localStorage.getItem('ocl_install_id');
+    if (!id) {
+      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        id = crypto.randomUUID();
+      } else {
+        // Fallback: 16 random bytes as hex
+        var buf = new Uint8Array(16);
+        crypto.getRandomValues(buf);
+        id = Array.from(buf, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+      }
+      localStorage.setItem('ocl_install_id', id);
+    }
+    return id;
+  } catch (e) {
+    return null;  // localStorage unavailable — skip the header entirely
+  }
+}
+
+async function oclComputeCohort() {
+  // Opt-out check
+  try {
+    if (localStorage.getItem('ocl_usage_signal_optout') === '1') return null;
+  } catch (e) { return null; }
+
+  var id = oclGetInstallId();
+  if (!id) return null;
+  var now = new Date();
+  var month = now.getUTCFullYear() + '-' + String(now.getUTCMonth() + 1).padStart(2, '0');
+  var input = id + '|' + month;
+  try {
+    var buf = new TextEncoder().encode(input);
+    var hashBuf = await crypto.subtle.digest('SHA-256', buf);
+    var hex = Array.from(new Uint8Array(hashBuf), function (b) {
+      return b.toString(16).padStart(2, '0');
+    }).join('');
+    return hex.slice(0, 8);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function oclBuildHeaders(extra) {
+  var headers = { 'X-Client': 'word-addin' };
+  var cohort = await oclComputeCohort();
+  if (cohort) headers['X-Install-Cohort'] = cohort;
+  if (extra) {
+    Object.keys(extra).forEach(function (k) { headers[k] = extra[k]; });
+  }
+  return headers;
+}
 
 async function apiFetch(path, params) {
   params = params || {};
@@ -13,7 +76,8 @@ async function apiFetch(path, params) {
     if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
   });
 
-  var resp = await fetch(url.toString(), { headers: { 'X-Client': 'word-addin' } });
+  var headers = await oclBuildHeaders();
+  var resp = await fetch(url.toString(), { headers: headers });
 
   if (resp.status === 429) {
     var retryAfter = parseInt(resp.headers.get('Retry-After') || '30', 10);
@@ -102,7 +166,8 @@ async function verifyReferencePro(licenseKey, selectedText, caseRef, lang) {
 
 async function apiPost(path, body) {
   var url = API_BASE + path;
-  var opts = { method: 'POST', headers: { 'X-Client': 'word-addin' } };
+  var headers = await oclBuildHeaders();
+  var opts = { method: 'POST', headers: headers };
   if (body) {
     opts.headers['Content-Type'] = 'application/json';
     opts.body = JSON.stringify(body);
