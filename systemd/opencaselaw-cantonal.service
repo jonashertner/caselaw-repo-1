@@ -1,0 +1,19 @@
+[Unit]
+Description=OpenCaseLaw monthly cantonal law mirror (LexFind → cantonal_laws.db)
+After=network.target opencaselaw-fedlex.service
+Wants=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Scrape all 26 cantons (primary + bilingual secondary languages) then
+# rebuild cantonal_laws.db atomically. ~4h at --delay 0.35. Each JSONL
+# is written atomically per canton so a mid-run failure loses only the
+# canton in flight; previously-scraped cantons stay on disk.
+ExecStart=/bin/bash -c '/usr/bin/python3 -m scrapers.lexfind_cantonal --delay 0.35 --include-secondary && /usr/bin/python3 -m search_stack.build_cantonal_laws_db'
+TimeoutStartSec=28800
+StandardOutput=append:/opt/caselaw/repo/logs/lexfind_cantonal_sync.log
+StandardError=append:/opt/caselaw/repo/logs/lexfind_cantonal_sync.log
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenCaseLaw weekly Fedlex resync (full SR crawl + statutes.db rebuild)
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/bin/bash -c '/usr/bin/python3 -m scrapers.fedlex --delay 0.4 && /usr/bin/python3 -m search_stack.build_statutes_db'
+TimeoutStartSec=28800
+StandardOutput=append:/opt/caselaw/repo/logs/fedlex_sync.log
+StandardError=append:/opt/caselaw/repo/logs/fedlex_sync.log

@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenCaseLaw monthly scholarly commentaries resync
+After=network.target
+Wants=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Re-scrape OnlineKommentar.ch (CC-BY-4.0) and OpenLegalCommentary.ch
+# (CC BY-SA 4.0), then rebuild ok_commentaries.db atomically. Small job
+# (~15 min) — scholarly content is stable, monthly is plenty.
+ExecStart=/bin/bash -c '/usr/bin/python3 -m scrapers.onlinekommentar && /usr/bin/python3 -m scrapers.openlegalcommentary && /usr/bin/python3 -m search_stack.build_ok_commentaries_db'
+TimeoutStartSec=3600
+StandardOutput=append:/opt/caselaw/repo/logs/commentaries_sync.log
+StandardError=append:/opt/caselaw/repo/logs/commentaries_sync.log
+
+[Install]
+WantedBy=multi-user.target

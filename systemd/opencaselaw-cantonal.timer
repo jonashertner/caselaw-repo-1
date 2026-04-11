@@ -1,0 +1,13 @@
+[Unit]
+Description=Monthly cantonal law resync (2nd of the month, after Fedlex)
+
+[Timer]
+# Runs at 07:00 UTC on the 2nd — 3 hours after the Fedlex timer fires,
+# so the federal job has comfortably finished and there's no contention
+# for network or CPU during the ~4h cantonal crawl.
+OnCalendar=*-*-02 07:00:00 UTC
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

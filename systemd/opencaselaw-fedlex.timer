@@ -1,0 +1,14 @@
+[Unit]
+Description=Monthly Fedlex resync (2nd of the month — day after laws enter into force)
+
+[Timer]
+# Most Swiss federal laws enter into force on the 1st of a month
+# (with huge clusters on 1 Jan / 1 Apr / 1 Jul / 1 Oct). Running on the
+# 2nd at 04:00 UTC means every new consolidation is captured the very
+# next morning after it becomes legally effective.
+OnCalendar=*-*-02 04:00:00 UTC
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

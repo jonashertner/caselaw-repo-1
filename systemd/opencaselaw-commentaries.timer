@@ -1,0 +1,12 @@
+[Unit]
+Description=Monthly scholarly commentaries resync (2nd of the month, after laws)
+
+[Timer]
+# Runs at 13:00 UTC on the 2nd — well after the cantonal crawl's ~4h
+# window (07:00-11:00 UTC) so nothing competes for bandwidth.
+OnCalendar=*-*-02 13:00:00 UTC
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
