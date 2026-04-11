@@ -8179,16 +8179,27 @@ def _search_legislation(
     search_in_content: bool = False,
     language: str = "de",
     limit: int = 20,
+    fetch_top_n_texts: int = 0,
 ) -> dict:
-    """Full-text search across Swiss legislation via LexFind API."""
+    """Full-text search across Swiss legislation via LexFind API.
+
+    When `fetch_top_n_texts > 0`, the top N results are enriched inline
+    with the actual law text (downloaded + parsed from LexFind PDFs) so
+    an LLM can get an answer in a single tool call instead of running
+    search_legislation → get_legislation as a two-step dance.
+    """
     if not LEXFIND_ENABLED:
         return {"error": "Legislation search is disabled (LEXFIND_ENABLED=false)."}
     if not query or not query.strip():
         return {"error": "Search query is required."}
 
     limit = max(1, min(60, limit))
+    fetch_top_n_texts = max(0, min(10, fetch_top_n_texts))
     language = language if language in ("de", "fr", "it") else "de"
-    cache_key = f"search:{language}:{query}:{canton}:{active_only}:{search_in_content}:{limit}"
+    cache_key = (
+        f"search:{language}:{query}:{canton}:{active_only}:"
+        f"{search_in_content}:{limit}:t{fetch_top_n_texts}"
+    )
     cached = _lexfind_cache_get(cache_key)
     if cached is not None:
         return cached
@@ -8270,6 +8281,24 @@ def _search_legislation(
 
     # Total count from results summary
     total = sum(r.get("number_of_results", 0) for r in results_resp.get("results", []))
+
+    # Optional single-call enrichment: download the top-N full texts so the
+    # caller can answer natural-language questions without a second round-trip.
+    if fetch_top_n_texts > 0 and laws:
+        for law in laws[:fetch_top_n_texts]:
+            lf_id = law.get("lexfind_id")
+            if not lf_id:
+                continue
+            text = _fetch_lexfind_law_text(lf_id, language)
+            if not text:
+                continue
+            full = text.get("full_text") or ""
+            arts = text.get("articles") or []
+            law["full_text_preview"] = full[:3000]
+            law["text_length"] = len(full)
+            law["article_count"] = len(arts)
+            law["sample_articles"] = arts[:5]
+            law["text_source"] = text.get("text_source", "lexfind_pdf")
 
     result = {"query": query, "total": total, "laws": laws, "language": language}
     _lexfind_cache_set(cache_key, result)
@@ -8730,6 +8759,26 @@ def _format_search_legislation_response(result: dict) -> str:
             text += f"   URL: {law['original_url']}\n"
         if law.get("lexfind_id"):
             text += f"   LexFind ID: {law['lexfind_id']}\n"
+        # Enriched fields from fetch_top_n_texts
+        if law.get("article_count"):
+            text += f"   Articles parsed: {law['article_count']}"
+            if law.get("text_length"):
+                text += f" ({law['text_length']:,} chars)"
+            text += "\n"
+        if law.get("full_text_preview"):
+            preview = law["full_text_preview"]
+            text += f"\n   --- Full text preview ---\n"
+            for line in preview.splitlines()[:40]:
+                text += f"   {line}\n"
+            if len(preview) >= 3000:
+                text += f"   [… truncated, fetch full law via get_legislation(lexfind_id={law.get('lexfind_id')})]\n"
+        if law.get("sample_articles"):
+            text += f"\n   --- First articles ---\n"
+            for a in law["sample_articles"]:
+                num = a.get("article_num", "?")
+                heading = f" — {a['heading']}" if a.get("heading") else ""
+                body = (a.get("text") or "")[:400].replace("\n", " ")
+                text += f"   **Art. {num}**{heading}: {body}\n"
         text += "\n"
 
     return text
@@ -8805,6 +8854,26 @@ def _format_get_legislation_response(result: dict) -> str:
             text += line + "\n"
         if len(versions) > 20:
             text += f"  ... and {len(versions) - 20} more versions\n"
+
+    # Full article text (from LexFind PDF extraction for cantonal laws)
+    articles = result.get("articles") or []
+    if articles:
+        text += (
+            f"\n## Articles ({len(articles)}) "
+            f"— source: {result.get('text_source', 'lexfind_pdf')}\n"
+        )
+        # Cantonal laws can have 300+ articles; cap output
+        cap = 60
+        for a in articles[:cap]:
+            num = a.get("article_num", "?")
+            heading = f" — {a['heading']}" if a.get("heading") else ""
+            body = a.get("text") or ""
+            text += f"\n### Art. {num}{heading}\n{body}\n"
+        if len(articles) > cap:
+            text += (
+                f"\n_… {len(articles) - cap} more articles not shown. "
+                f"Total text length: {result.get('text_length', 0):,} chars._\n"
+            )
 
     return text
 
@@ -9453,14 +9522,22 @@ def _list_tools() -> list[Tool]:
                 annotations=_READ_ONLY,
                 name="search_legislation",
                 description=(
-                    "Search Swiss legislation across all 26 cantons and the federal level "
-                    "via LexFind.ch. Covers 33,000+ legislative texts including federal laws/"
-                    "ordinances, cantonal laws, and intercantonal agreements. Use this for "
-                    "CANTONAL legislation (which is not in get_law), for federal ordinances "
-                    "outside the 80-law Fedlex mirror, and to discover laws by topic. "
-                    "Returns titles, SR/systematic numbers, jurisdiction, and links to "
-                    "official sources. For the FULL ARTICLE TEXT of a core federal law, "
-                    "use get_law (much faster and includes all language variants)."
+                    "NATURAL-LANGUAGE SEARCH across all Swiss legislation — 33,000+ "
+                    "federal and cantonal legislative texts from LexFind.ch, covering "
+                    "all 26 cantons (ZH, BE, LU, UR, SZ, OW, NW, GL, ZG, FR, SO, BS, "
+                    "BL, SH, AR, AI, SG, GR, AG, TG, TI, VD, VS, NE, GE, JU) and the "
+                    "federal level, in German/French/Italian. Use this as the ENTRY "
+                    "POINT whenever the user asks about cantonal laws, municipal "
+                    "regulations, or federal ordinances outside the core Fedlex mirror "
+                    "(e.g., 'Hundegesetz im Kanton Bern', 'loi sur les épidémies "
+                    "Vaud', 'Baugesetz Zürich'). "
+                    "SINGLE-CALL MODE: set fetch_top_n_texts=1..3 and the top results "
+                    "are returned with the parsed full text + article list of the law "
+                    "itself — no follow-up get_legislation call needed. Ideal for "
+                    "'what does cantonal law X say about Y' questions. "
+                    "For core federal codes (OR, ZGB, StGB, BV, StPO, ZPO, SchKG, BGG, "
+                    "DBG, IPRG, AIG, BVG, KVG etc.), prefer get_law / search_laws — "
+                    "they are instant and cover all three languages."
                 ),
                 inputSchema={
                     "type": "object",
@@ -9468,15 +9545,18 @@ def _list_tools() -> list[Tool]:
                         "query": {
                             "type": "string",
                             "description": (
-                                "Search query. Examples: 'Mietrecht', "
-                                "'Obligationenrecht', 'Baugesetz'"
+                                "Search query in natural language or keywords. "
+                                "Examples: 'Hundegesetz', 'loi sur l'énergie', "
+                                "'Mietrecht Kanton Zürich', 'Baugesetz'."
                             ),
                         },
                         "canton": {
                             "type": "string",
                             "description": (
-                                "Filter by canton (CH for federal, ZH, BE, GE, etc.). "
-                                "Omit to search all jurisdictions."
+                                "Two-letter canton code (ZH, BE, LU, UR, SZ, OW, NW, "
+                                "GL, ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG, "
+                                "TI, VD, VS, NE, GE, JU) or 'CH' for federal. "
+                                "Omit to search all 26 cantons + federal at once."
                             ),
                         },
                         "active_only": {
@@ -9486,12 +9566,16 @@ def _list_tools() -> list[Tool]:
                         },
                         "search_in_content": {
                             "type": "boolean",
-                            "description": "Also search in law text content, not just titles (default false, slower).",
+                            "description": "Also search inside the law text, not just titles and keywords (slower).",
                             "default": False,
                         },
                         "language": {
                             "type": "string",
-                            "description": "Result language: de, fr, it.",
+                            "description": (
+                                "Result language: de, fr, it. Pick the language the "
+                                "canton publishes in: fr for FR/GE/JU/NE/VD, it for "
+                                "TI, de for the remaining cantons + federal."
+                            ),
                             "enum": ["de", "fr", "it"],
                             "default": "de",
                         },
@@ -9499,6 +9583,17 @@ def _list_tools() -> list[Tool]:
                             "type": "integer",
                             "description": "Max results (1-60, default 20).",
                             "default": 20,
+                        },
+                        "fetch_top_n_texts": {
+                            "type": "integer",
+                            "description": (
+                                "If > 0, download + parse the full text of the top N "
+                                "results (max 10) and return each with "
+                                "full_text_preview, article_count, and sample_articles. "
+                                "Use 1-3 for natural-language questions so you can "
+                                "answer in a single tool call."
+                            ),
+                            "default": 0,
                         },
                     },
                     "required": ["query"],
@@ -9508,12 +9603,16 @@ def _list_tools() -> list[Tool]:
                 annotations=_READ_ONLY,
                 name="get_legislation",
                 description=(
-                    "Get details for a specific Swiss law by LexFind ID or SR/systematic "
-                    "number. Returns metadata, current version, version history (optional), "
-                    "and links to official Fedlex or cantonal sources. Local-first: federal "
-                    "laws in the Fedlex mirror are returned instantly; cantonal and "
-                    "out-of-mirror laws are fetched from LexFind and cached. "
-                    "Use search_legislation to discover the right law first."
+                    "Retrieve the FULL TEXT and article list of a specific Swiss law, "
+                    "federal or cantonal, by LexFind ID or SR/systematic number. "
+                    "For federal laws in the Fedlex mirror this is instant (local "
+                    "SQLite). For cantonal laws, the law is downloaded from LexFind "
+                    "as PDF, parsed with PyMuPDF, and segmented into articles "
+                    "(cached 30 days). Returns: title, entity, articles (article_num, "
+                    "heading, text), full_text, article_count. Use "
+                    "search_legislation first to find the right lexfind_id or "
+                    "systematic_number; then pass it here. For the core federal "
+                    "codes, get_law is still the fastest path."
                 ),
                 inputSchema={
                     "type": "object",
@@ -9931,6 +10030,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 search_in_content=arguments.get("search_in_content", False),
                 language=arguments.get("language", "de"),
                 limit=int(arguments.get("limit", 20)),
+                fetch_top_n_texts=int(arguments.get("fetch_top_n_texts", 0)),
             )
             return [TextContent(type="text", text=_format_search_legislation_response(result))]
 
