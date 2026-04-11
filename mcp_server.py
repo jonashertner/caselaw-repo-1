@@ -8507,21 +8507,139 @@ def _get_legislation(
     if not current_version and versions_list:
         current_version = versions_list[0]
 
+    # Fetch actual law text — LexFind serves PDFs at /tol/{id}/{lang};
+    # download once, extract via fitz (pymupdf), cache under law_text:{...}
+    # key so subsequent requests are instant.
+    law_text = _fetch_lexfind_law_text(lexfind_id, language)
+
+    title = None
+    if current_version and current_version.get("title"):
+        title = current_version["title"]
+
     result = {
         "lexfind_id": data.get("id"),
         "systematic_number": data.get("systematic_number", ""),
         "is_active": data.get("is_active", False),
         "entity": entity.get("abbreviation", ""),
         "entity_name": entity.get("name", ""),
+        "title": title,
         "current_version": current_version,
         "urls": urls,
         "language": language,
+        "source": "lexfind",
     }
+    if law_text is not None:
+        result["articles"] = law_text.get("articles", [])
+        result["article_count"] = len(law_text.get("articles", []))
+        result["full_text"] = law_text.get("full_text", "")
+        result["text_length"] = len(law_text.get("full_text", ""))
+        result["text_source"] = law_text.get("text_source", "lexfind_pdf")
     if include_versions:
         result["versions"] = versions_list
 
     _lexfind_cache_set(cache_key, result)
     return result
+
+
+def _fetch_lexfind_law_text(lexfind_id: int, language: str = "de") -> dict | None:
+    """Download a cantonal law PDF via LexFind and extract structured text.
+
+    Returns a dict with:
+      - full_text: complete extracted text (str)
+      - articles:  list of {article_num, heading, text} parsed from Art. markers
+      - text_source: "lexfind_pdf"
+
+    Results are cached in lexfind_cache.db with a 30-day TTL. On any
+    download/parse failure, returns None — the caller should degrade
+    gracefully to metadata-only.
+    """
+    text_cache_key = f"law_text:v2:{language}:{lexfind_id}"
+    cached = _lexfind_cache_get(text_cache_key)
+    if cached is not None:
+        return cached
+
+    try:
+        import requests
+        pdf_url = f"https://www.lexfind.ch/tol/{lexfind_id}/{language}"
+        resp = requests.get(pdf_url, timeout=30, allow_redirects=True)
+        if resp.status_code != 200 or not resp.content:
+            logger.warning("LexFind PDF download %s returned %s", pdf_url, resp.status_code)
+            return None
+        content_type = resp.headers.get("Content-Type", "").lower()
+        if "pdf" not in content_type and not resp.content.startswith(b"%PDF"):
+            # Some laws ship as HTML; skip for now
+            logger.info("LexFind non-PDF response for id=%s (%s)", lexfind_id, content_type)
+            return None
+    except Exception as e:
+        logger.warning("LexFind PDF fetch failed for id=%s: %s", lexfind_id, e)
+        return None
+
+    try:
+        import fitz  # pymupdf
+        doc = fitz.open(stream=resp.content, filetype="pdf")
+        pages = []
+        for page in doc:
+            pages.append(page.get_text())
+        doc.close()
+        full_text = "\n".join(pages)
+    except Exception as e:
+        logger.warning("LexFind PDF parse failed for id=%s: %s", lexfind_id, e)
+        return None
+
+    articles = _segment_articles_from_pdf_text(full_text)
+    result = {
+        "full_text": full_text,
+        "articles": articles,
+        "text_source": "lexfind_pdf",
+    }
+    _lexfind_cache_set(text_cache_key, result)
+    return result
+
+
+def _segment_articles_from_pdf_text(text: str) -> list[dict]:
+    """Split extracted PDF text at Art.-N boundaries into structured articles.
+
+    Conservative approach: we match `Art. N[a-z]?` at word boundaries,
+    chunk the text at those positions, then extract (number, heading,
+    body) from each chunk. Non-breaking spaces between 'Art.' and the
+    number are normalised.
+    """
+    if not text or not text.strip():
+        return []
+    normalized = text.replace("\u00a0", " ")
+    # Match "Art. N" / "Art. Na" / "Art. Nbis" etc. as article boundaries.
+    pattern = re.compile(
+        r"(?<![A-Za-z])Art\.\s*(\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies)?)\s*",
+        re.MULTILINE,
+    )
+    matches = list(pattern.finditer(normalized))
+    if not matches:
+        return []
+
+    articles = []
+    for i, m in enumerate(matches):
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(normalized)
+        body = normalized[start:end].strip()
+        num = m.group(1)
+        # First non-empty line is usually a marginal heading
+        heading = None
+        lines = [l.strip() for l in body.split("\n") if l.strip()]
+        if lines:
+            candidate = lines[0]
+            # Heuristic: headings are short and don't end with a full sentence
+            if len(candidate) <= 120 and not candidate.endswith((".", ":", ";", ",")):
+                heading = candidate
+                body = "\n".join(lines[1:]).strip()
+            else:
+                body = "\n".join(lines).strip()
+        if body or heading:
+            articles.append({
+                "article_num": num,
+                "heading": heading,
+                "text": body,
+            })
+    return articles
 
 
 def _browse_legislation_changes(
