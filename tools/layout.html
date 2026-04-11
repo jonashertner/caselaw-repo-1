@@ -755,14 +755,17 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .hero-v2 .hero-stat-num {
   display: block;
-  font-size: clamp(72px, 14vw, 168px);
-  font-weight: 600;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
+  /* Smaller than v1's clamp(72px,14vw,168px) — ~62 % of previous. A lighter
+     weight at this size reads as more refined; tabular-nums keeps the digits
+     from shifting horizontally during the counter animation. */
+  font-size: clamp(56px, 9vw, 104px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
   color: var(--tx);
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  margin-bottom: clamp(8px, 1.5vw, 16px);
+  margin-bottom: clamp(8px, 1.5vw, 14px);
 }
 .hero-v2 .hero-stat-label {
   display: block;
@@ -848,7 +851,12 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .hero-v2 .hero-lang-bar-fill {
   height: 100%;
   background: var(--tx);
-  transition: width 0.35s var(--ease);
+  /* Matches the counter animation duration so bars and numbers settle
+     together. Uses a cubic-bezier that mirrors easeOutExpo. */
+  transition: width 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-v2 .hero-lang-bar-fill { transition: none; }
 }
 .hero-v2 .hero-lang-label {
   font-family: var(--f-mono);
@@ -1565,7 +1573,7 @@ const I18N = {
     hero_kicker:'Ein offenes Korpus des Schweizer Rechts',
     hero_stat_label:'publizierte Gerichtsentscheide',
     hero_headline:'Der vollst\u00e4ndige, offene Datensatz Schweizer Rechtsprechung.',
-    hero_tagline:'Durchsuchbar f\u00fcr Sie, lesbar f\u00fcr Ihr KI-Modell. Jeder publizierte Entscheid aus allen Bundesgerichten und 26 Kantonen, plus 80 Bundesgesetze und 33\u2019000+ kantonale Erlasse.',
+    hero_tagline:'Durchsuchbar f\u00fcr Sie, lesbar f\u00fcr Ihr KI-Modell. Publizierte Entscheide aller Bundesgerichte und 26 Kantone, dazu 80 zentrale Bundesgesetze und 33\u2019000+ kantonale Erlasse.',
     hero_cta_explore:'Korpus erkunden',
     hero_cta_connect:'KI verbinden',
     hero_cta_word:'Word Add-in',
@@ -1682,7 +1690,7 @@ const I18N = {
     hero_kicker:'Un corpus ouvert du droit suisse',
     hero_stat_label:'d\u00e9cisions judiciaires publi\u00e9es',
     hero_headline:'Le dataset ouvert et complet de la jurisprudence suisse.',
-    hero_tagline:'Interrogeable par vous, lisible par votre mod\u00e8le d\'IA. Chaque d\u00e9cision publi\u00e9e des tribunaux f\u00e9d\u00e9raux et des 26 cantons, plus 80 lois f\u00e9d\u00e9rales et 33\u2019000+ textes cantonaux.',
+    hero_tagline:'Interrogeable par vous, lisible par votre mod\u00e8le d\'IA. Les d\u00e9cisions publi\u00e9es des tribunaux f\u00e9d\u00e9raux et des 26 cantons, plus 80 lois f\u00e9d\u00e9rales centrales et 33\u2019000+ textes cantonaux.',
     hero_cta_explore:'Explorer le corpus',
     hero_cta_connect:'Connecter l\'IA',
     hero_cta_word:'Word Add-in',
@@ -1799,7 +1807,7 @@ const I18N = {
     hero_kicker:'Un corpus aperto del diritto svizzero',
     hero_stat_label:'decisioni giudiziarie pubblicate',
     hero_headline:'Il dataset aperto e completo della giurisprudenza svizzera.',
-    hero_tagline:'Interrogabile da voi, leggibile dal vostro modello IA. Ogni decisione pubblicata dei tribunali federali e dei 26 cantoni, pi\u00f9 80 leggi federali e 33\u2019000+ testi cantonali.',
+    hero_tagline:'Interrogabile da voi, leggibile dal vostro modello IA. Le decisioni pubblicate dei tribunali federali e dei 26 cantoni, pi\u00f9 80 leggi federali centrali e 33\u2019000+ testi cantonali.',
     hero_cta_explore:'Esplora il corpus',
     hero_cta_connect:'Connetti IA',
     hero_cta_word:'Word Add-in',
@@ -1916,7 +1924,7 @@ const I18N = {
     hero_kicker:'In corpus avert dal dretg svizzer',
     hero_stat_label:'decisiuns giudizialas publitgadas',
     hero_headline:'Il dataset avert e cumplet da la giurisprudenza svizra.',
-    hero_tagline:'Interrogabel per Vus, legibel per Voss model AI. Mintga decisiun publitgada da las dretgiras federalas e dals 26 chantuns, plus 80 leschas federalas e 33\u2019000+ texts chantunals.',
+    hero_tagline:'Interrogabel per Vus, legibel per Voss model AI. Las decisiuns publitgadas da las dretgiras federalas e dals 26 chantuns, plus 80 leschas federalas centralas e 33\u2019000+ texts chantunals.',
     hero_cta_explore:'Explorar il corpus',
     hero_cta_connect:'Connectar AI',
     hero_cta_word:'Word Add-in',
@@ -2033,7 +2041,7 @@ const I18N = {
     hero_kicker:'An open corpus of Swiss law',
     hero_stat_label:'published court decisions',
     hero_headline:'The complete open dataset of Swiss case law.',
-    hero_tagline:'Searchable by you, readable by your AI. Every published decision from every federal court and 26 cantons, plus 80 federal laws and 33,000+ cantonal acts.',
+    hero_tagline:'Searchable by you, readable by your AI. Published decisions from every federal court and all 26 cantons, plus 80 key federal laws and 33,000+ cantonal acts.',
     hero_cta_explore:'Explore corpus',
     hero_cta_connect:'Connect your AI',
     hero_cta_word:'Word Add-in',
@@ -2898,24 +2906,57 @@ function renderHero(data) {
     return String(n);
   };
 
-  // Main hero number
+  // Counter animation: eases a numeric element from 0 → target using
+  // easeOutExpo over `duration` ms. Respects prefers-reduced-motion.
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const animateCount = (id, target, duration) => {
+    const el = document.getElementById(id);
+    if (!el || target == null) return;
+    if (prefersReduced) { el.textContent = fmt(target); return; }
+    const start = performance.now();
+    const step = (now) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutExpo — fast start, slow settle
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const current = Math.floor(target * eased);
+      el.textContent = fmt(current);
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = fmt(target);
+    };
+    requestAnimationFrame(step);
+  };
+
+  // Only animate on the first renderHero() invocation per page load —
+  // so language switches / theme toggles don't re-run the counter.
+  const shouldAnimate = !window._heroAnimated;
+  window._heroAnimated = true;
+
+  // Main hero number — 1800ms
   if (data.total) {
-    setText('hero-decisions', fmt(data.total));
+    if (shouldAnimate) animateCount('hero-decisions', data.total, 1800);
+    else setText('hero-decisions', fmt(data.total));
   }
   // Courts
   if (data.court_count) {
     setText('hero-courts', data.court_count);
   }
 
-  // Language distribution
+  // Language distribution — animate numbers in sync with main counter
+  // (1500ms — slightly shorter so they arrive just before the big one).
   if (data.by_language && data.total) {
     const total = data.total;
     for (const lang of ['de', 'fr', 'it']) {
       const n = data.by_language[lang];
       if (n == null) continue;
       const pct = (n / total) * 100;
-      setText(`hero-lang-${lang}-num`, fmt(n));
+      if (shouldAnimate) {
+        animateCount(`hero-lang-${lang}-num`, n, 1500);
+      } else {
+        setText(`hero-lang-${lang}-num`, fmt(n));
+      }
       setText(`hero-lang-${lang}-pct`, Math.round(pct));
+      // Bar widths animate via CSS transition on .hero-lang-bar-fill
       setWidth(`hero-lang-${lang}-bar`, pct);
     }
   }
