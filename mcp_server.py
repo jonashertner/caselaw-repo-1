@@ -8374,19 +8374,37 @@ def _search_cantonal_local(
             params.append(language)
         where_sql = " AND ".join(where)
 
-        # Rank by BM25, group by law so we return one row per matching law
+        # FTS5 bm25() can't be wrapped in MIN(), so we over-fetch and
+        # dedupe per law in Python — best rank wins.
         sql = f"""
             SELECT f.lexfind_id, f.canton, f.language,
-                   MIN(bm25(articles_fts)) AS rank,
-                   MAX(snippet(articles_fts, 3, '<b>', '</b>', '…', 20)) AS snippet
+                   bm25(articles_fts) AS rank,
+                   snippet(articles_fts, 3, '<b>', '</b>', '…', 20) AS snippet
             FROM articles_fts f
             WHERE {where_sql}
-            GROUP BY f.lexfind_id, f.language
             ORDER BY rank
             LIMIT ?
         """
-        params.append(limit)
-        rows = conn.execute(sql, params).fetchall()
+        params.append(limit * 6)  # over-fetch for per-law dedupe
+        raw = conn.execute(sql, params).fetchall()
+        if not raw:
+            return None
+
+        # Dedupe per (lexfind_id, language), keep best (lowest rank / first snippet)
+        seen: dict[tuple, dict] = {}
+        for r in raw:
+            key = (r["lexfind_id"], r["language"])
+            if key in seen:
+                continue
+            seen[key] = {
+                "lexfind_id": r["lexfind_id"],
+                "canton": r["canton"],
+                "language": r["language"],
+                "snippet": r["snippet"],
+            }
+            if len(seen) >= limit:
+                break
+        rows = list(seen.values())
         if not rows:
             return None
 
