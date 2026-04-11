@@ -2171,7 +2171,7 @@
     "2026-03": 1442,
     "2026-04": 23
   },
-  "generated_at": "2026-04-11T11:38:29.520188+00:00",
+  "generated_at": "2026-04-11T17:04:33.277655+00:00",
   "scraper_health": {
     "run_at": "2026-04-11T03:43:05.781303+00:00",
     "run_duration_s": 9783.7,
@@ -2997,10 +2997,35 @@
   "corpus": {
     "federal_laws": 5097,
     "federal_law_articles": 125378,
-    "cantonal_laws": 10,
-    "cantonal_law_articles": 449,
+    "cantonal_laws": 26043,
+    "cantonal_law_articles": 1106870,
     "cantonal_laws_by_canton": {
-      "ZH": 10
+      "AG": 972,
+      "AI": 567,
+      "AR": 457,
+      "BE": 1120,
+      "BL": 1174,
+      "BS": 1366,
+      "FR": 1594,
+      "GE": 1307,
+      "GL": 772,
+      "GR": 680,
+      "JU": 1164,
+      "LU": 1053,
+      "NE": 1695,
+      "NW": 763,
+      "OW": 896,
+      "SG": 1409,
+      "SH": 630,
+      "SO": 1194,
+      "SZ": 587,
+      "TG": 620,
+      "TI": 1017,
+      "UR": 489,
+      "VD": 1305,
+      "VS": 935,
+      "ZG": 903,
+      "ZH": 1374
     },
     "commentaries": 362,
     "citation_edges": 8843206,
@@ -3013,9 +3038,9 @@
     },
     "by_canton": {},
     "corpus": {
-      "citation_edges": 3188,
-      "statute_edges": 2705
+      "cantonal_laws": 26033,
+      "cantonal_law_articles": 1106421
     },
-    "previous_generated_at": "2026-04-11T10:28:38.474112+00:00"
+    "previous_generated_at": "2026-04-11T11:38:29.520188+00:00"
   }
 }
