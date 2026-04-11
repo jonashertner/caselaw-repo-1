@@ -64,7 +64,7 @@ LATENCY_CAP_MS = 60_000    # clamp absurd values (SSE long-poll timeouts)
 # the log but we don't publish numbers about them.
 BOT_CLASSES = {
     "bot_google", "bot_bing", "bot_duckduck", "bot_yandex",
-    "bot_apple", "bot_petal", "bot_scanner", "bot_other",
+    "bot_apple", "bot_petal", "bot_scanner", "bot_seo", "bot_other",
 }
 
 # Status bucket mapping.
