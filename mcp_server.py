@@ -171,6 +171,7 @@ CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT"
 
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
+CANTONAL_LAWS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANTONAL_DB", str(DATA_DIR / "cantonal_laws.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
 LEXFIND_CACHE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_LEXFIND_CACHE", str(DATA_DIR / "lexfind_cache.db")))
 ANWALTSRECHT_TAGS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_ANWALTSRECHT_DB", str(DATA_DIR / "anwaltsrecht_tags.db")))
@@ -2566,6 +2567,7 @@ def _normalize_docket_ref(value: str) -> str:
 _graph_warned = False
 _vec_warned = False
 _statutes_warned = False
+_cantonal_warned = False
 _ok_warned = False
 
 
@@ -2651,6 +2653,27 @@ def _get_statutes_conn() -> sqlite3.Connection | None:
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open statutes DB: %s", e)
+        return None
+
+
+def _get_cantonal_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the cantonal laws DB, or None if unavailable."""
+    global _cantonal_warned
+    if not CANTONAL_LAWS_DB_PATH.exists():
+        if not _cantonal_warned:
+            logger.info(
+                "Cantonal laws DB not found at %s — falling back to LexFind API",
+                CANTONAL_LAWS_DB_PATH,
+            )
+            _cantonal_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(str(CANTONAL_LAWS_DB_PATH), timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only = ON")
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open cantonal laws DB: %s", e)
         return None
 
 
@@ -8196,6 +8219,18 @@ def _search_legislation(
     limit = max(1, min(60, limit))
     fetch_top_n_texts = max(0, min(10, fetch_top_n_texts))
     language = language if language in ("de", "fr", "it") else "de"
+
+    # Local-first for cantonal queries: when a canton filter is set and
+    # the local mirror has content, serve from cantonal_laws.db FTS5 —
+    # instant, offline, BM25-ranked.
+    if canton and canton.upper() != "CH":
+        local = _search_cantonal_local(
+            query=query, canton=canton, language=language,
+            limit=limit, fetch_top_n_texts=fetch_top_n_texts,
+        )
+        if local and local.get("laws"):
+            return local
+
     cache_key = (
         f"search:{language}:{query}:{canton}:{active_only}:"
         f"{search_in_content}:{limit}:t{fetch_top_n_texts}"
@@ -8305,6 +8340,187 @@ def _search_legislation(
     return result
 
 
+def _search_cantonal_local(
+    *,
+    query: str,
+    canton: str | None,
+    language: str,
+    limit: int,
+    fetch_top_n_texts: int,
+) -> dict | None:
+    """Search cantonal_laws.db via FTS5. Returns None if DB unavailable.
+
+    Serves the same shape as _search_legislation's LexFind path so the
+    caller can drop it in transparently.
+    """
+    conn = _get_cantonal_conn()
+    if conn is None:
+        return None
+    try:
+        # Escape FTS5-special chars; split into tokens and OR them for
+        # the broadest recall. The caller can refine with quoted phrases.
+        tokens = [t for t in re.findall(r"\w+", query, flags=re.UNICODE) if len(t) > 1]
+        if not tokens:
+            return None
+        fts_query = " OR ".join(f'"{t}"' for t in tokens)
+
+        params: list = [fts_query]
+        where = ["articles_fts MATCH ?"]
+        if canton:
+            where.append("f.canton = ?")
+            params.append(canton.upper())
+        if language:
+            where.append("f.language = ?")
+            params.append(language)
+        where_sql = " AND ".join(where)
+
+        # Rank by BM25, group by law so we return one row per matching law
+        sql = f"""
+            SELECT f.lexfind_id, f.canton, f.language,
+                   MIN(bm25(articles_fts)) AS rank,
+                   MAX(snippet(articles_fts, 3, '<b>', '</b>', '…', 20)) AS snippet
+            FROM articles_fts f
+            WHERE {where_sql}
+            GROUP BY f.lexfind_id, f.language
+            ORDER BY rank
+            LIMIT ?
+        """
+        params.append(limit)
+        rows = conn.execute(sql, params).fetchall()
+        if not rows:
+            return None
+
+        laws = []
+        for row in rows:
+            meta = conn.execute(
+                """SELECT * FROM laws WHERE lexfind_id = ? AND language = ?""",
+                (row["lexfind_id"], row["language"]),
+            ).fetchone()
+            if not meta:
+                continue
+            law_entry = {
+                "lexfind_id": meta["lexfind_id"],
+                "title": meta["title"],
+                "systematic_number": meta["sr_number"] or "",
+                "entity": meta["canton"],
+                "entity_name": meta["canton"],
+                "is_active": bool(meta["is_active"]),
+                "category": meta["category"] or "",
+                "keywords": "",
+                "snippet": (row["snippet"] or "").replace("\n", " "),
+                "original_url": meta["original_url"],
+                "version_active_since": meta["version_active_since"],
+                "source": "cantonal_local",
+            }
+            laws.append(law_entry)
+
+        # Enrichment — straight from the DB, no PDF download
+        if fetch_top_n_texts > 0:
+            for law in laws[:fetch_top_n_texts]:
+                meta = conn.execute(
+                    """SELECT full_text, article_count, text_length
+                    FROM laws WHERE lexfind_id = ? AND language = ?""",
+                    (law["lexfind_id"], language),
+                ).fetchone()
+                if not meta:
+                    continue
+                full = meta["full_text"] or ""
+                arts = conn.execute(
+                    """SELECT article_num, heading, text FROM articles
+                    WHERE lexfind_id = ? AND language = ?
+                    ORDER BY seq LIMIT 5""",
+                    (law["lexfind_id"], language),
+                ).fetchall()
+                law["full_text_preview"] = full[:3000]
+                law["text_length"] = meta["text_length"] or len(full)
+                law["article_count"] = meta["article_count"] or 0
+                law["sample_articles"] = [
+                    {"article_num": a["article_num"], "heading": a["heading"],
+                     "text": a["text"]}
+                    for a in arts
+                ]
+                law["text_source"] = "cantonal_local"
+
+        return {
+            "query": query,
+            "total": len(laws),
+            "laws": laws,
+            "language": language,
+            "source": "cantonal_local",
+        }
+    except sqlite3.Error as e:
+        logger.warning("Cantonal local search failed: %s", e)
+        return None
+    finally:
+        conn.close()
+
+
+def _get_cantonal_local(
+    *, lexfind_id: int | None, systematic_number: str | None,
+    canton: str | None, language: str,
+) -> dict | None:
+    """Fetch a specific cantonal law from cantonal_laws.db.
+
+    Returns the same shape as _get_legislation's LexFind path when found.
+    """
+    conn = _get_cantonal_conn()
+    if conn is None:
+        return None
+    try:
+        if lexfind_id is not None:
+            row = conn.execute(
+                """SELECT * FROM laws WHERE lexfind_id = ? AND language = ?""",
+                (lexfind_id, language),
+            ).fetchone()
+        elif systematic_number and canton:
+            row = conn.execute(
+                """SELECT * FROM laws
+                WHERE sr_number = ? AND canton = ? AND language = ?""",
+                (systematic_number.strip(), canton.upper(), language),
+            ).fetchone()
+        else:
+            return None
+        if not row:
+            return None
+
+        articles = conn.execute(
+            """SELECT article_num, heading, text FROM articles
+            WHERE lexfind_id = ? AND language = ? ORDER BY seq""",
+            (row["lexfind_id"], row["language"]),
+        ).fetchall()
+
+        return {
+            "lexfind_id": row["lexfind_id"],
+            "systematic_number": row["sr_number"] or "",
+            "is_active": bool(row["is_active"]),
+            "entity": row["canton"],
+            "entity_name": row["canton"],
+            "title": row["title"],
+            "current_version": {
+                "title": row["title"],
+                "active_since": row["version_active_since"],
+                "category": row["category"],
+            },
+            "urls": {row["language"]: {"original_url": row["original_url"]}},
+            "language": row["language"],
+            "source": "cantonal_local",
+            "articles": [
+                {"article_num": a["article_num"], "heading": a["heading"],
+                 "text": a["text"]}
+                for a in articles
+            ],
+            "article_count": len(articles),
+            "full_text": row["full_text"] or "",
+            "text_length": row["text_length"] or 0,
+            "text_source": "cantonal_local",
+        }
+    except sqlite3.Error as e:
+        logger.warning("Cantonal local lookup failed: %s", e)
+        return None
+    finally:
+        conn.close()
+
+
 def _get_legislation_local(
     systematic_number: str, language: str = "de"
 ) -> dict | None:
@@ -8373,6 +8589,20 @@ def _get_legislation(
         local = _get_legislation_local(systematic_number, language)
         if local is not None:
             return local
+
+    # Local-first: serve cantonal laws from cantonal_laws.db when available
+    if not include_versions and (
+        lexfind_id is not None
+        or (systematic_number and canton and canton.upper() != "CH")
+    ):
+        cantonal = _get_cantonal_local(
+            lexfind_id=lexfind_id,
+            systematic_number=systematic_number,
+            canton=canton,
+            language=language,
+        )
+        if cantonal is not None:
+            return cantonal
 
     if not LEXFIND_ENABLED:
         # Still check local for federal laws even when LexFind is off
