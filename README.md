@@ -1,8 +1,8 @@
 # Swiss Case Law Open Dataset
 
-**962,724 published decisions from Swiss federal, cantonal, and regulatory bodies.**
+**965,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
 
-Full text, structured metadata, and daily updates. The March 20, 2026 snapshot contains German, French, and Italian decisions; the export schema also reserves `rm` for Romansh.
+Full text, structured metadata, and daily updates across German, French, and Italian; the export schema also reserves `rm` for Romansh. Plus a local mirror of every federal and cantonal Swiss law, refreshed monthly.
 
 [![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
@@ -24,13 +24,13 @@ There are seven ways to use it, depending on what you need:
 |--------|----------|-------------|
 | [**Search with AI**](#1-search-with-ai) | Lawyers, researchers | Natural-language search in Claude, ChatGPT, or Gemini — instant access, no download |
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, appeal chains, jurisprudence trends |
-| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 40+ federal laws (OR, ZGB, StGB, BV, ...) |
-| [**Legislation Search**](#legislation-tools) | Legal professionals | Search 33,000+ federal and cantonal legislative texts via LexFind.ch |
-| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 962K+ decisions |
+| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,000+ federal laws and 30,000+ cantonal acts (OR, ZGB, StGB, BV, ...) |
+| [**Legislation Search**](#legislation-tools) | Legal professionals | Search 30,000+ cantonal and federal legislative texts via LexFind.ch |
+| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 965K+ decisions |
 | [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
 | [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 962K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 965K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
 
 ---
 
@@ -53,7 +53,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose ex
 
 ### Option A: Remote server (recommended)
 
-Connect directly to the hosted MCP server — no data download, no local database, instant access to 962K+ decisions.
+Connect directly to the hosted MCP server — no data download, no local database, instant access to 965K+ decisions.
 
 **Claude.ai / Claude Desktop** (easiest):
 
@@ -241,7 +241,7 @@ All data stays on your machine. No API calls are made during search — the MCP 
 
 - **`decisions`** — the main table with one row per decision. Holds 24 columns, including the search-facing fields plus `json_data` (full record blob) and `canonical_key` for dedup-aware lookup. Indexed on `court`, `canton`, `decision_date`, `language`, `docket_number`, `chamber`, and `decision_type` for fast filtered queries.
 
-- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 962K+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
+- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 965K+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
 
 **Why ~58 GB.** The full text of 962K+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
 
@@ -285,7 +285,7 @@ Available on both remote and local unless noted.
 | `search_laws` | Full-text search across Swiss federal law articles (Fedlex statute database) |
 | `get_commentary` | Look up scholarly commentary for a specific law article from OnlineKommentar.ch (CC-BY-4.0) |
 | `search_commentaries` | Full-text search across 362 legal commentaries covering 19 Swiss federal laws |
-| `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
+| `search_legislation` | Search 30,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
 | `get_legislation` | Get details for a specific law by LexFind ID or SR number, with version history and source URLs |
 | `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
 | `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database *(local only)* |
@@ -426,9 +426,9 @@ The statute database covers the top 40 most-cited Swiss federal laws, including 
 
 ### Legislation tools
 
-Three tools provide access to **Swiss legislation** across all levels of government — federal, cantonal, and intercantonal — via the [LexFind.ch](https://www.lexfind.ch) API. This covers 33,000+ legislative texts including laws, ordinances, regulations, and international treaties.
+Three tools provide access to **Swiss legislation** across all levels of government — federal, cantonal, and intercantonal — via the [LexFind.ch](https://www.lexfind.ch) API. This covers 30,000+ legislative texts including laws, ordinances, regulations, and international treaties.
 
-> **Legislation vs. statute tools:** The statute tools (`get_law`, `search_laws`) provide article-level text from 40+ federal laws via a local Fedlex database. The legislation tools (`search_legislation`, `get_legislation`, `browse_legislation_changes`) cover a broader scope — all 26 cantons plus federal — but link to official sources rather than returning inline article text.
+> **Legislation vs. statute tools:** Both tool families are now locally mirrored with full article text. `get_law` / `search_laws` serve federal (Fedlex mirror, 5,000+ laws) and cantonal (LexFind mirror, 30,000+ laws) with article-level FTS5 and <1 ms lookup. `search_legislation` / `get_legislation` / `browse_legislation_changes` layer the live LexFind API on top for edge cases (newly published laws, version history, recent-changes feed).
 
 **`search_legislation`** — Full-text search across all Swiss legislative texts. Filter by canton, active/abrogated status, and whether to search titles only or full content.
 

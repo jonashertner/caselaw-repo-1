@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
 <title>Gesetze — Bundes- und kantonale Gesetzgebung · OpenCaseLaw.ch</title>
-<meta name="description" content="Direkter Zugriff auf 80 Schweizer Bundesgesetze (39'000 Artikel in DE/FR/IT) und 33'000+ kantonale Erlasse über MCP. Fedlex-Spiegel und LexFind-Integration.">
+<meta name="description" content="Direkter Zugriff auf ~5'000 Schweizer Bundesgesetze (125'000+ Artikel in DE/FR/IT) und 30'000+ kantonale Erlasse über MCP. Fedlex-Spiegel und LexFind-Integration.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -71,7 +71,7 @@
     },
     "temporalCoverage": "1875/..",
     "inLanguage": ["de", "fr", "it"],
-    "keywords": ["Swiss law", "court decisions", "case law", "Bundesgericht", "Tribunal federal", "jurisprudence", "open data", "legal dataset", "citation graph", "Rechtsprechung", "Schweizer Recht"],
+    "keywords": ["Swiss law", "court decisions", "Bundesgericht", "Tribunal federal", "jurisprudence", "open data", "legal dataset", "citation graph", "Rechtsprechung", "Schweizer Recht"],
     "measurementTechnique": "Web scraping with full-text extraction from PDF court decisions",
     "variableMeasured": "Court decision full text, metadata, and citation links"
   },
@@ -1501,8 +1501,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
     <h1 style="letter-spacing:-0.02em; line-height:1.1" data-t="gesetze_h1">Schweizer Bundes- und kantonale Gesetzgebung</h1>
     <p class="sub" style="max-width:64ch" data-t="gesetze_sub">
-      Direkter Zugriff auf den aktuellen Text von 80 Schweizer Bundesgesetzen (39'000 Artikel in Deutsch, Französisch und Italienisch)
-      sowie auf 33'000+ kantonale und interkantonale Erlasse. Alle Inhalte sind über das Model Context Protocol (MCP)
+      Direkter Zugriff auf den aktuellen Text von ~5'000 Schweizer Bundesgesetzen (125'000+ Artikel in Deutsch, Französisch und Italienisch)
+      sowie auf 30'000+ kantonale und interkantonale Erlasse. Alle Inhalte sind über das Model Context Protocol (MCP)
       für LLM-Agenten wie Claude, ChatGPT, Cursor und Gemini erreichbar.
     </p>
   </header>
@@ -1525,9 +1525,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         Der Fedlex-SPARQL-Endpunkt (<a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">fedlex.data.admin.ch/sparqlendpoint</a>) wird täglich gegen die Fedlex-Consolidations-URIs abgefragt. Artikeltexte, Absätze, Querverweise und Amtssprachen werden in eine lokale SQLite-Datenbank geschrieben und per FTS5 indexiert.
       </p>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px 20px; margin:16px 0 20px; font-size:13px; color:var(--tx2)">
-        <div><strong style="color:var(--tx)">39'000</strong> <span style="color:var(--tx3)">Artikel</span></div>
+        <div><strong style="color:var(--tx)">125'000+</strong> <span style="color:var(--tx3)">Artikel</span></div>
         <div><strong style="color:var(--tx)">3</strong> <span style="color:var(--tx3)">Amtssprachen (DE/FR/IT)</span></div>
-        <div><strong style="color:var(--tx)">228'559</strong> <span style="color:var(--tx3)">Änderungs-Referenzen</span></div>
+        <div><strong style="color:var(--tx)">voll</strong> <span style="color:var(--tx3)">Änderungshistorie</span></div>
         <div><strong style="color:var(--tx)">&lt;1 ms</strong> <span style="color:var(--tx3)">Artikel-Lookup</span></div>
       </div>
       <p style="font-size:13px; color:var(--tx3); margin:0 0 10px" data-t="gesetze_abbr_label">Abgedeckte Abkürzungen (Auszug):</p>
@@ -1557,7 +1557,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       </div>
       <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
         <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> aggregiert die amtlichen
-        Gesetzessammlungen aller 26 Kantone sowie interkantonale Konkordate (rund 33'000 Erlasse). Abfragen gehen
+        Gesetzessammlungen aller 26 Kantone sowie interkantonale Konkordate (rund 30'000 Erlasse). Abfragen gehen
         gegen die JSON-API (<code style="font-size:13px">/api/fe/{lang}/…</code>); Antworten werden in einer
         persistenten SQLite-Cache-Schicht mit abgestuften TTLs gehalten:
       </p>
@@ -1664,7 +1664,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 const I18N = {
   de: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone \u2014 plus direkter Zugriff auf 80 Bundesgesetze und 33\u2019000+ kantonale Erlasse. Sofort mit KI durchsuchen oder den gesamten Datensatz herunterladen.',
+    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone \u2014 plus direkter Zugriff auf ~5'000 Bundesgesetze und 33\u2019000+ kantonale Erlasse. Sofort mit KI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
     federal:'Bund', cantonal:'Kantone', cantons:'Kantone', access:'Datenzugang',
     th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_updated:'Neue Daten', th_languages:'Sprachen',
@@ -1679,7 +1679,7 @@ const I18N = {
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_browse:'Durchsuchen', nav_access:'Zugang',
     nav_entscheide:'Entscheide', nav_gesetze:'Gesetze', nav_mcp:'Verbinden', nav_ueber:'\u00dcber',
     landing_title:'Schweizer Rechtsprechung &amp; Gesetze,<br>gebaut f\u00fcr KI-Agenten.',
-    landing_sub:'Ein offener, vollst\u00e4ndiger Datensatz aller publizierten Schweizer Gerichtsentscheide (965\u2019000+) und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar \u2014 per MCP-Server, HuggingFace-Download oder REST-API.',
+    landing_sub:'Ein offener Datensatz der publizierten Schweizer Gerichtsentscheide (965\u2019000+) und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar \u2014 per MCP-Server, HuggingFace-Download oder REST-API.',
     landing_card_entscheide_title:'Entscheide',
     landing_card_entscheide_desc:'965\u2019000+ Gerichtsentscheide aller Bundesgerichte und 26 Kantone, t\u00e4glich aktualisiert. Volltextsuche, Zitationsgraph (8,77 Mio Kanten), mehrsprachig (DE/FR/IT).',
     landing_card_entscheide_cta:'Datensatz erkunden \u2192',
@@ -1687,15 +1687,15 @@ const I18N = {
     landing_card_mcp_desc:'21 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote-Server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) oder lokal. Einrichtung in 30 Sekunden.',
     landing_card_mcp_cta:'MCP-Setup \u2192',
     landing_what_title:'Was ist OpenCaseLaw?',
-    landing_what_1:'OpenCaseLaw sammelt, dedupliziert und publiziert <strong>jeden ver\u00f6ffentlichten Schweizer Gerichtsentscheid</strong> sowie den aktuellen Text aller einschl\u00e4gigen Bundesgesetze und der 33\u2019000+ kantonalen Erlasse. Der Datensatz wird t\u00e4glich aktualisiert und steht unter CC0 (Daten) und MIT (Code) zur freien Verf\u00fcgung.',
+    landing_what_1:'OpenCaseLaw sammelt, dedupliziert und publiziert <strong>jeden ver\u00f6ffentlichten Schweizer Gerichtsentscheid</strong> sowie den aktuellen Text aller einschl\u00e4gigen Bundesgesetze und der 30'000+ kantonalen Erlasse. Der Datensatz wird t\u00e4glich aktualisiert und steht unter CC0 (Daten) und MIT (Code) zur freien Verf\u00fcgung.',
     landing_what_2:'Die gleiche Infrastruktur treibt einen \u00f6ffentlichen MCP-Server an, der Sprachmodellen 21 spezialisierte Tools f\u00fcr Schweizer Rechtsrecherche bereitstellt \u2014 von der Volltextsuche \u00fcber die Zitationsanalyse bis zum Abruf von Gesetzesartikeln. Keine Anmeldung, keine API-Keys, keine Paywall.',
     landing_stat_decisions:'Entscheide', landing_stat_courts:'Gerichte', landing_stat_laws:'Bundesgesetze', landing_stat_cantonal:'kantonale Erlasse', landing_stat_citations:'Zitationsgraph', landing_stat_updated:'T\u00e4glich aktualisiert',
     word_desc:'Schweizer Rechtsprechung direkt in Ihrem Word-Dokument. Suchen, zitieren und einf\u00fcgen ohne Copy-Paste aus dem Browser \u2014 mit automatischer Quellenangabe.',
     word_cta:'Installation \u2192',
     hero_kicker:'Ein offenes Korpus des Schweizer Rechts',
     hero_stat_label:'publizierte Gerichtsentscheide',
-    hero_headline:'Der vollst\u00e4ndige, offene Datensatz Schweizer Rechtsprechung.',
-    hero_tagline:'Durchsuchbar f\u00fcr Sie, lesbar f\u00fcr Ihr KI-Modell. Publizierte Entscheide aller Bundesgerichte und 26 Kantone, dazu 80 zentrale Bundesgesetze und 33\u2019000+ kantonale Erlasse.',
+    hero_headline:'Der offene Datensatz Schweizer Gerichtsentscheide.',
+    hero_tagline:'Durchsuchbar f\u00fcr Sie, lesbar f\u00fcr Ihr KI-Modell. Publizierte Entscheide aller Bundesgerichte und 26 Kantone, dazu ~5'000 Bundesgesetze und 33\u2019000+ kantonale Erlasse.',
     hero_cta_explore:'Korpus erkunden',
     hero_cta_connect:'KI verbinden',
     hero_cta_word:'Word Add-in',
@@ -1705,7 +1705,7 @@ const I18N = {
     hero_meta_laws:'Gesetze',
     hero_fact_span:'Zeitraum', hero_fact_federal:'Bund', hero_fact_cantonal:'Kantone', hero_fact_cantons:'Kantone', hero_fact_new:'neu seit gestern',
     cap_entscheide_desc:'Jeder publizierte Schweizer Gerichtsentscheid. Volltextsuche, Zitationsgraph, mehrsprachig (DE/FR/IT). T\u00e4glich aktualisiert.',
-    cap_gesetze_desc:'Lokaler Fedlex-SPARQL-Spiegel: 80 Bundesgesetze, 39\u2019000 Artikel in DE/FR/IT, t\u00e4glich synchronisiert. LexFind-Aggregator f\u00fcr 33\u2019000+ kantonale Erlasse. FTS5-Volltextsuche, Artikel-Lookup <1 ms.',
+    cap_gesetze_desc:'Lokaler Fedlex-SPARQL-Spiegel: ~5'000 Bundesgesetze, 39\u2019000 Artikel in DE/FR/IT, t\u00e4glich synchronisiert. LexFind-Aggregator f\u00fcr 33\u2019000+ kantonale Erlasse. FTS5-Volltextsuche, Artikel-Lookup <1 ms.',
     cap_mcp_desc:'21 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote oder lokal. Einrichtung in 30 Sekunden.',
     cap_cta_entscheide:'Datensatz \u2192', cap_cta_gesetze:'Gesetze \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Drei Wege hinein',
@@ -1720,7 +1720,7 @@ const I18N = {
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
     gesetze_h1:'Schweizer Bundes- und kantonale Gesetzgebung',
-    gesetze_sub:'80 Schweizer Bundesgesetze (39\u2019000 Artikel in drei Amtssprachen, 228\u2019559 \u00c4nderungs-Referenzen) aus dem Fedlex-SPARQL-Endpunkt, t\u00e4glich lokal gespiegelt. 33\u2019000+ kantonale und interkantonale Erlasse via LexFind-Aggregator. Stateless MCP-Calls f\u00fcr Artikel-Lookup, Volltextsuche, Versionsgeschichte und \u00c4nderungsverlauf.',
+    gesetze_sub:'~5'000 Schweizer Bundesgesetze (39\u2019000 Artikel in drei Amtssprachen, 228\u2019559 \u00c4nderungs-Referenzen) aus dem Fedlex-SPARQL-Endpunkt, t\u00e4glich lokal gespiegelt. 33\u2019000+ kantonale und interkantonale Erlasse via LexFind-Aggregator. Stateless MCP-Calls f\u00fcr Artikel-Lookup, Volltextsuche, Versionsgeschichte und \u00c4nderungsverlauf.',
     mcp_h1:'KI-Agenten verbinden',
     mcp_sub:'Der \u00f6ffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 965\u2019000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 21 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
     ueber_h1:'\u00dcber OpenCaseLaw',
@@ -1746,10 +1746,10 @@ const I18N = {
     examples_heading:'Was nach der Verbindung möglich ist:',
     cap_search:'Entscheide in natürlicher Sprache suchen — nach Stichwort, Thema, Gesetzesartikel oder Rechtskonzept',
     cap_lookup:'Jeden Entscheid per Dossiernummer abrufen — mit Volltext und Metadaten',
-    cap_laws:'Aktuellen Text von 80 Bundesgesetzen (39\u2019000 Artikel, DE/FR/IT) direkt abrufen — und 33\u2019000+ kantonale Erlasse durchsuchen',
+    cap_laws:'Aktuellen Text von ~5'000 Bundesgesetzen (39\u2019000 Artikel, DE/FR/IT) direkt abrufen — und 33\u2019000+ kantonale Erlasse durchsuchen',
     leg_title:'Bundes- und kantonale Gesetze',
     leg_badge:'per MCP',
-    leg_desc:'Fedlex-SPARQL-Endpunkt t\u00e4glich gespiegelt und in SQLite (FTS5) indexiert: 80 Bundesgesetze, 39\u2019000 Artikel in DE/FR/IT, 228\u2019559 \u00c4nderungs-Referenzen. Kantonale Gesetzgebung via LexFind-Aggregator mit gestaffeltem Cache (Suche 24 h, SR-Aufl\u00f6sung 30 Tage). Artikel-Lookup in <1 ms.',
+    leg_desc:'Fedlex-SPARQL-Endpunkt t\u00e4glich gespiegelt und in SQLite (FTS5) indexiert: ~5'000 Bundesgesetze, 39\u2019000 Artikel in DE/FR/IT, 228\u2019559 \u00c4nderungs-Referenzen. Kantonale Gesetzgebung via LexFind-Aggregator mit gestaffeltem Cache (Suche 24 h, SR-Aufl\u00f6sung 30 Tage). Artikel-Lookup in <1 ms.',
     leg_ex_label_law:'Bundesgesetz (lokal)',
     leg_ex_label_cantonal:'Kantonal (LexFind)',
     leg_ex_label_browse:'Aktuelle \u00c4nderungen',
@@ -1795,7 +1795,7 @@ const I18N = {
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons \u2014 plus l\u2019acc\u00e8s direct \u00e0 80 lois f\u00e9d\u00e9rales et 33\u2019000+ actes cantonaux. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
+    subtitle:'Le plus grand jeu de donn\u00e9es ouvert de d\u00e9cisions judiciaires suisses de tous les tribunaux f\u00e9d\u00e9raux et 26 cantons \u2014 plus l\u2019acc\u00e8s direct \u00e0 ~5 000 lois f\u00e9d\u00e9rales et 33\u2019000+ actes cantonaux. Recherchez instantan\u00e9ment avec l\u2019IA ou t\u00e9l\u00e9chargez le jeu de donn\u00e9es complet.',
     loading:'Chargement', kpi_decisions:'D\u00e9cisions', kpi_courts:'Tribunaux', kpi_cantons:'Cantons', kpi_languages:'Langues', kpi_coverage:'P\u00e9riode',
     federal:'F\u00e9d\u00e9ral', cantonal:'Cantons', cantons:'Cantons', access:'Acc\u00e8s aux donn\u00e9es',
     th_court:'Tribunal', th_canton:'Canton', th_decisions:'D\u00e9cisions', th_updated:'Nouvelles donn\u00e9es', th_languages:'Langues',
@@ -1810,7 +1810,7 @@ const I18N = {
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Parcourir', nav_access:'Acc\u00e8s',
     nav_entscheide:'D\u00e9cisions', nav_gesetze:'L\u00e9gislation', nav_mcp:'Connexion', nav_ueber:'\u00c0 propos',
     landing_title:'Jurisprudence et l\u00e9gislation suisses,<br>con\u00e7ues pour les agents IA.',
-    landing_sub:'Un jeu de donn\u00e9es ouvert et complet de toutes les d\u00e9cisions judiciaires suisses publi\u00e9es (965\u2019000+) et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'acc\u00e8s \u2014 via serveur MCP, t\u00e9l\u00e9chargement HuggingFace ou API REST.',
+    landing_sub:'Un corpus ouvert des d\u00e9cisions judiciaires suisses publi\u00e9es (965\u2019000+) et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'acc\u00e8s \u2014 via serveur MCP, t\u00e9l\u00e9chargement HuggingFace ou API REST.',
     landing_card_entscheide_title:'D\u00e9cisions',
     landing_card_entscheide_desc:'Plus de 965\u2019000 d\u00e9cisions judiciaires de tous les tribunaux f\u00e9d\u00e9raux et des 26 cantons, mises \u00e0 jour quotidiennement. Recherche plein texte, graphe de citations (8,77 M arr\u00eates), multilingue (DE/FR/IT).',
     landing_card_entscheide_cta:'Explorer le dataset \u2192',
@@ -1818,15 +1818,15 @@ const I18N = {
     landing_card_mcp_desc:'21 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Serveur distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) ou local. Configuration en 30 secondes.',
     landing_card_mcp_cta:'Configuration MCP \u2192',
     landing_what_title:'Qu\'est-ce qu\'OpenCaseLaw?',
-    landing_what_1:'OpenCaseLaw collecte, d\u00e9duplique et publie <strong>chaque d\u00e9cision judiciaire suisse publi\u00e9e</strong> ainsi que le texte actuel de toutes les lois f\u00e9d\u00e9rales pertinentes et des 33\u2019000+ textes cantonaux. Le dataset est mis \u00e0 jour quotidiennement et disponible gratuitement sous CC0 (donn\u00e9es) et MIT (code).',
+    landing_what_1:'OpenCaseLaw collecte, d\u00e9duplique et publie <strong>chaque d\u00e9cision judiciaire suisse publi\u00e9e</strong> ainsi que le texte actuel de toutes les lois f\u00e9d\u00e9rales pertinentes et des 30'000+ textes cantonaux. Le dataset est mis \u00e0 jour quotidiennement et disponible gratuitement sous CC0 (donn\u00e9es) et MIT (code).',
     landing_what_2:'La m\u00eame infrastructure alimente un serveur MCP public qui fournit aux mod\u00e8les de langage 21 outils sp\u00e9cialis\u00e9s pour la recherche juridique suisse \u2014 de la recherche plein texte \u00e0 l\'analyse des citations jusqu\'\u00e0 l\'acc\u00e8s aux articles de loi. Aucune inscription, aucune cl\u00e9 API, aucun paywall.',
     landing_stat_decisions:'d\u00e9cisions', landing_stat_courts:'tribunaux', landing_stat_laws:'lois f\u00e9d\u00e9rales', landing_stat_cantonal:'textes cantonaux', landing_stat_citations:'liens de citation', landing_stat_updated:'Mise \u00e0 jour quotidienne',
     word_desc:'Jurisprudence suisse directement dans votre document Word. Rechercher, citer et ins\u00e9rer sans copier-coller depuis le navigateur \u2014 avec attribution automatique.',
     word_cta:'Installation \u2192',
     hero_kicker:'Un corpus ouvert du droit suisse',
     hero_stat_label:'d\u00e9cisions judiciaires publi\u00e9es',
-    hero_headline:'Le dataset ouvert et complet de la jurisprudence suisse.',
-    hero_tagline:'Interrogeable par vous, lisible par votre mod\u00e8le d\'IA. Les d\u00e9cisions publi\u00e9es des tribunaux f\u00e9d\u00e9raux et des 26 cantons, plus 80 lois f\u00e9d\u00e9rales centrales et 33\u2019000+ textes cantonaux.',
+    hero_headline:'Le corpus ouvert des d\u00e9cisions judiciaires suisses.',
+    hero_tagline:'Interrogeable par vous, lisible par votre mod\u00e8le d\'IA.',
     hero_cta_explore:'Explorer le corpus',
     hero_cta_connect:'Connecter l\'IA',
     hero_cta_word:'Word Add-in',
@@ -1836,7 +1836,7 @@ const I18N = {
     hero_meta_laws:'lois',
     hero_fact_span:'p\u00e9riode', hero_fact_federal:'f\u00e9d\u00e9ral', hero_fact_cantonal:'cantonal', hero_fact_cantons:'cantons', hero_fact_new:'nouveaux hier',
     cap_entscheide_desc:'Chaque d\u00e9cision judiciaire suisse publi\u00e9e. Recherche plein texte, graphe de citations, multilingue (DE/FR/IT). Mise \u00e0 jour quotidienne.',
-    cap_gesetze_desc:'Miroir SPARQL local de Fedlex : 80 lois f\u00e9d\u00e9rales, 39\u2019000 articles en DE/FR/IT, synchronis\u00e9s quotidiennement. Agr\u00e9gateur LexFind pour 33\u2019000+ textes cantonaux. Recherche plein texte FTS5, consultation d\'article en <1 ms.',
+    cap_gesetze_desc:'Miroir SPARQL local de Fedlex : ~5 000 lois f\u00e9d\u00e9rales, 39\u2019000 articles en DE/FR/IT, synchronis\u00e9s quotidiennement. Agr\u00e9gateur LexFind pour 33\u2019000+ textes cantonaux. Recherche plein texte FTS5, consultation d\'article en <1 ms.',
     cap_mcp_desc:'21 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Distant ou local. Configuration en 30 secondes.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'L\u00e9gislation \u2192', cap_cta_mcp:'Configuration MCP \u2192',
     capabilities_heading:'Trois points d\'entr\u00e9e',
@@ -1851,7 +1851,7 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
     gesetze_h1:'L\u00e9gislation f\u00e9d\u00e9rale et cantonale suisse',
-    gesetze_sub:'80 lois f\u00e9d\u00e9rales suisses (39 000 articles en trois langues officielles, 228 559 r\u00e9f\u00e9rences d\'amendement) depuis l\'endpoint SPARQL Fedlex, mises en miroir localement chaque jour. Plus de 33 000 actes cantonaux et intercantonaux via l\'agr\u00e9gateur LexFind. Appels MCP stateless pour la consultation d\'article, la recherche plein texte, l\'historique et les modifications.',
+    gesetze_sub:'~5 000 lois f\u00e9d\u00e9rales suisses (125 000+ articles en trois langues officielles, historique complet des amendements) depuis l\'endpoint SPARQL Fedlex, mises en miroir localement chaque mois. Plus de 30 000+ actes cantonaux et intercantonaux via l\'agr\u00e9gateur LexFind. Appels MCP stateless pour la consultation d\'article, la recherche plein texte, l\'historique et les modifications.',
     mcp_h1:'Connecter des agents IA',
     mcp_sub:'Le serveur MCP public d\'OpenCaseLaw donne aux mod\u00e8les de langage un acc\u00e8s direct \u00e0 plus de 965\u2019000 d\u00e9cisions judiciaires suisses, au graphe de citations, aux lois f\u00e9d\u00e9rales et aux actes cantonaux. 21 outils sp\u00e9cialis\u00e9s, aucune inscription, aucune cl\u00e9 API.',
     ueber_h1:'\u00c0 propos d\'OpenCaseLaw',
@@ -1877,10 +1877,10 @@ const I18N = {
     examples_heading:'Ce qui est possible après connexion :',
     cap_search:'Rechercher des décisions en langage naturel — par mot-clé, sujet, article de loi ou concept juridique',
     cap_lookup:'Consulter toute décision par numéro de dossier — avec texte intégral et métadonnées',
-    cap_laws:'Consulter le texte actuel de 80 lois fédérales (39 000 articles, DE/FR/IT) — et rechercher 33 000+ textes cantonaux',
+    cap_laws:'Consulter le texte actuel de ~5 000 lois fédérales (125 000+ articles, DE/FR/IT) — et rechercher 30 000+ textes cantonaux',
     leg_title:'L\u00e9gislation f\u00e9d\u00e9rale et cantonale',
     leg_badge:'via MCP',
-    leg_desc:'Endpoint SPARQL Fedlex mis en miroir quotidiennement et index\u00e9 en SQLite (FTS5) : 80 lois f\u00e9d\u00e9rales, 39 000 articles en DE/FR/IT, 228 559 r\u00e9f\u00e9rences d\'amendement. L\u00e9gislation cantonale via l\'agr\u00e9gateur LexFind avec cache hi\u00e9rarchique (recherche 24 h, r\u00e9solution RS 30 jours). Consultation d\'article en <1 ms.',
+    leg_desc:'Endpoint SPARQL Fedlex mis en miroir chaque mois et index\u00e9 en SQLite (FTS5) : ~5 000 lois f\u00e9d\u00e9rales, 125 000+ articles en DE/FR/IT, historique complet des amendements. L\u00e9gislation cantonale via l\'agr\u00e9gateur LexFind avec cache hi\u00e9rarchique (recherche 24 h, r\u00e9solution RS 30 jours). Consultation d\'article en <1 ms.',
     leg_ex_label_law:'Loi f\u00e9d\u00e9rale (local)',
     leg_ex_label_cantonal:'Cantonal (LexFind)',
     leg_ex_label_browse:'Modifications r\u00e9centes',
@@ -1926,7 +1926,7 @@ const I18N = {
   },
   it: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni \u2014 pi\u00f9 l\u2019accesso diretto a 80 leggi federali e 33\u2019000+ atti cantonali. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
+    subtitle:'Il pi\u00f9 grande dataset aperto di decisioni giudiziarie svizzere di tutti i tribunali federali e 26 cantoni \u2014 pi\u00f9 l\u2019accesso diretto a ~5'000 leggi federali e 33\u2019000+ atti cantonali. Cerca istantaneamente con l\u2019IA o scarica il dataset completo.',
     loading:'Caricamento', kpi_decisions:'Decisioni', kpi_courts:'Tribunali', kpi_cantons:'Cantoni', kpi_languages:'Lingue', kpi_coverage:'Periodo',
     federal:'Federale', cantonal:'Cantoni', cantons:'Cantoni', access:'Accesso ai dati',
     th_court:'Tribunale', th_canton:'Cantone', th_decisions:'Decisioni', th_updated:'Nuovi dati', th_languages:'Lingue',
@@ -1941,7 +1941,7 @@ const I18N = {
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_browse:'Sfoglia', nav_access:'Accesso',
     nav_entscheide:'Decisioni', nav_gesetze:'Legislazione', nav_mcp:'Connessione', nav_ueber:'Chi siamo',
     landing_title:'Giurisprudenza e legislazione svizzera,<br>per agenti IA.',
-    landing_sub:'Un dataset aperto e completo di tutte le decisioni giudiziarie svizzere pubblicate (965\u2019000+) e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero accesso \u2014 tramite server MCP, download HuggingFace o API REST.',
+    landing_sub:'Un corpus aperto delle decisioni giudiziarie svizzere pubblicate (965\u2019000+) e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero accesso \u2014 tramite server MCP, download HuggingFace o API REST.',
     landing_card_entscheide_title:'Decisioni',
     landing_card_entscheide_desc:'Oltre 965\u2019000 decisioni giudiziarie di tutti i tribunali federali e dei 26 cantoni, aggiornate quotidianamente. Ricerca full-text, grafo delle citazioni (8,77 mln), multilingue (DE/FR/IT).',
     landing_card_entscheide_cta:'Esplora il dataset \u2192',
@@ -1949,15 +1949,15 @@ const I18N = {
     landing_card_mcp_desc:'21 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Server remoto (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) o locale. Configurazione in 30 secondi.',
     landing_card_mcp_cta:'Configurazione MCP \u2192',
     landing_what_title:'Cos\'\u00e8 OpenCaseLaw?',
-    landing_what_1:'OpenCaseLaw raccoglie, deduplica e pubblica <strong>ogni decisione giudiziaria svizzera pubblicata</strong> nonch\u00e9 il testo attuale di tutte le leggi federali rilevanti e dei 33\u2019000+ testi cantonali. Il dataset viene aggiornato quotidianamente ed \u00e8 liberamente disponibile sotto CC0 (dati) e MIT (codice).',
+    landing_what_1:'OpenCaseLaw raccoglie, deduplica e pubblica <strong>ogni decisione giudiziaria svizzera pubblicata</strong> nonch\u00e9 il testo attuale di tutte le leggi federali rilevanti e dei 30'000+ testi cantonali. Il dataset viene aggiornato quotidianamente ed \u00e8 liberamente disponibile sotto CC0 (dati) e MIT (codice).',
     landing_what_2:'La stessa infrastruttura alimenta un server MCP pubblico che fornisce ai modelli linguistici 21 strumenti specializzati per la ricerca giuridica svizzera \u2014 dalla ricerca full-text all\'analisi delle citazioni fino al recupero degli articoli di legge. Nessuna registrazione, nessuna chiave API, nessun paywall.',
     landing_stat_decisions:'decisioni', landing_stat_courts:'tribunali', landing_stat_laws:'leggi federali', landing_stat_cantonal:'testi cantonali', landing_stat_citations:'link di citazione', landing_stat_updated:'Aggiornato quotidianamente',
     word_desc:'Giurisprudenza svizzera direttamente nel vostro documento Word. Cercare, citare e inserire senza copia-incolla dal browser \u2014 con attribuzione automatica.',
     word_cta:'Installazione \u2192',
     hero_kicker:'Un corpus aperto del diritto svizzero',
     hero_stat_label:'decisioni giudiziarie pubblicate',
-    hero_headline:'Il dataset aperto e completo della giurisprudenza svizzera.',
-    hero_tagline:'Interrogabile da voi, leggibile dal vostro modello IA. Le decisioni pubblicate dei tribunali federali e dei 26 cantoni, pi\u00f9 80 leggi federali centrali e 33\u2019000+ testi cantonali.',
+    hero_headline:'Il corpus aperto delle decisioni giudiziarie svizzere.',
+    hero_tagline:'Interrogabile da voi, leggibile dal vostro modello IA. Le decisioni pubblicate dei tribunali federali e dei 26 cantoni, pi\u00f9 ~5'000 leggi federali centrali e 33\u2019000+ testi cantonali.',
     hero_cta_explore:'Esplora il corpus',
     hero_cta_connect:'Connetti IA',
     hero_cta_word:'Word Add-in',
@@ -1967,7 +1967,7 @@ const I18N = {
     hero_meta_laws:'leggi',
     hero_fact_span:'periodo', hero_fact_federal:'federale', hero_fact_cantonal:'cantonale', hero_fact_cantons:'cantoni', hero_fact_new:'nuove da ieri',
     cap_entscheide_desc:'Ogni decisione giudiziaria svizzera pubblicata. Ricerca full-text, grafo delle citazioni, multilingue (DE/FR/IT). Aggiornato quotidianamente.',
-    cap_gesetze_desc:'Mirror SPARQL locale di Fedlex: 80 leggi federali, 39\u2019000 articoli in DE/FR/IT, sincronizzati quotidianamente. Aggregatore LexFind per 33\u2019000+ testi cantonali. Ricerca full-text FTS5, lookup di articolo in <1 ms.',
+    cap_gesetze_desc:'Mirror SPARQL locale di Fedlex: ~5'000 leggi federali, 39\u2019000 articoli in DE/FR/IT, sincronizzati ogni mese. Aggregatore LexFind per 33\u2019000+ testi cantonali. Ricerca full-text FTS5, lookup di articolo in <1 ms.',
     cap_mcp_desc:'21 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Remoto o locale. Configurazione in 30 secondi.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislazione \u2192', cap_cta_mcp:'Configurazione MCP \u2192',
     capabilities_heading:'Tre punti d\'ingresso',
@@ -1982,7 +1982,7 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
     gesetze_h1:'Legislazione federale e cantonale svizzera',
-    gesetze_sub:'80 leggi federali svizzere (39\u2019000 articoli in tre lingue ufficiali, 228\u2019559 riferimenti di modifica) dall\'endpoint SPARQL Fedlex, rispecchiate localmente ogni giorno. Oltre 33\u2019000 atti cantonali e intercantonali tramite l\'aggregatore LexFind. Chiamate MCP stateless per lookup di articolo, ricerca full-text, storia delle versioni e modifiche.',
+    gesetze_sub:'~5'000 leggi federali svizzere (39\u2019000 articoli in tre lingue ufficiali, 228\u2019559 riferimenti di modifica) dall\'endpoint SPARQL Fedlex, rispecchiate localmente ogni mese. Oltre 33\u2019000 atti cantonali e intercantonali tramite l\'aggregatore LexFind. Chiamate MCP stateless per lookup di articolo, ricerca full-text, storia delle versioni e modifiche.',
     mcp_h1:'Collegare agenti IA',
     mcp_sub:'Il server MCP pubblico di OpenCaseLaw d\u00e0 ai modelli linguistici accesso diretto a oltre 965\u2019000 decisioni giudiziarie svizzere, al grafo delle citazioni, alle leggi federali e agli atti cantonali. 21 strumenti specializzati, nessuna registrazione, nessuna chiave API.',
     ueber_h1:'Chi siamo',
@@ -2008,10 +2008,10 @@ const I18N = {
     examples_heading:'Cosa è possibile dopo la connessione:',
     cap_search:'Cercare decisioni in linguaggio naturale — per parola chiave, tema, articolo di legge o concetto giuridico',
     cap_lookup:'Consultare qualsiasi decisione per numero di dossier — con testo integrale e metadati',
-    cap_laws:'Consultare il testo attuale di 80 leggi federali (39\u2019000 articoli, DE/FR/IT) — e cercare 33\u2019000+ atti cantonali',
+    cap_laws:'Consultare il testo attuale di ~5'000 leggi federali (39\u2019000 articoli, DE/FR/IT) — e cercare 33\u2019000+ atti cantonali',
     leg_title:'Legislazione federale e cantonale',
     leg_badge:'tramite MCP',
-    leg_desc:'Endpoint SPARQL Fedlex specchiato quotidianamente e indicizzato in SQLite (FTS5): 80 leggi federali, 39\u2019000 articoli in DE/FR/IT, 228\u2019559 riferimenti di modifica. Legislazione cantonale tramite aggregatore LexFind con cache a livelli (ricerca 24 h, risoluzione RS 30 giorni). Lookup di articolo in <1 ms.',
+    leg_desc:'Endpoint SPARQL Fedlex specchiato ogni mese e indicizzato in SQLite (FTS5): ~5'000 leggi federali, 39\u2019000 articoli in DE/FR/IT, 228\u2019559 riferimenti di modifica. Legislazione cantonale tramite aggregatore LexFind con cache a livelli (ricerca 24 h, risoluzione RS 30 giorni). Lookup di articolo in <1 ms.',
     leg_ex_label_law:'Legge federale (locale)',
     leg_ex_label_cantonal:'Cantonale (LexFind)',
     leg_ex_label_browse:'Modifiche recenti',
@@ -2072,7 +2072,7 @@ const I18N = {
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_browse:'Navigar', nav_access:'Access',
     nav_entscheide:'Decisiuns', nav_gesetze:'Leschas', nav_mcp:'Connectar', nav_ueber:'Davart',
     landing_title:'Giurisprudenza svizra &amp; leschas,<br>per agents AI.',
-    landing_sub:'Ina collecziun averta e cumpletta da tut las decisiuns giudizialas svizras publitgadas (965\u2019000+) e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber access \u2014 via server MCP, telechargiada HuggingFace u API REST.',
+    landing_sub:'In corpus avert da las decisiuns giudizialas svizras publitgadas (965\u2019000+) e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber access \u2014 via server MCP, telechargiada HuggingFace u API REST.',
     landing_card_entscheide_title:'Decisiuns',
     landing_card_entscheide_desc:'965\u2019000+ decisiuns giudizialas da tut las dretgiras federalas e dals 26 chantuns, actualisadas mintga di. Tschertga full-text, grafic da citaziuns (8,77 mio), plurilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explorar il dataset \u2192',
@@ -2080,15 +2080,15 @@ const I18N = {
     landing_card_mcp_desc:'21 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Server distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) u local. Setup en 30 secundas.',
     landing_card_mcp_cta:'MCP-Setup \u2192',
     landing_what_title:'Tge \u00e8 OpenCaseLaw?',
-    landing_what_1:'OpenCaseLaw collecziunescha, deduplichescha e publitgescha <strong>mintga decisiun giudiziala svizra publitgada</strong> sco era il text actual da tut las leschas federalas relevantas e dals 33\u2019000+ texts chantunals. Il dataset vegn actualisch\u00e0 mintga di e \u00e8 a disposiziun libra sut CC0 (datas) e MIT (code).',
+    landing_what_1:'OpenCaseLaw collecziunescha, deduplichescha e publitgescha <strong>mintga decisiun giudiziala svizra publitgada</strong> sco era il text actual da tut las leschas federalas relevantas e dals 30'000+ texts chantunals. Il dataset vegn actualisch\u00e0 mintga di e \u00e8 a disposiziun libra sut CC0 (datas) e MIT (code).',
     landing_what_2:'La medema infrastructura operescha in server MCP public che porscha als models linguistics 21 utensils spezialis\u00e0s per la retschertga giuridica svizra \u2014 da la tschertga full-text sur l\'analisa da las citaziuns fin al recup\u00e4rar d\'artitgels da lescha. Nagina registraziun, nagins API keys, nagin paywall.',
     landing_stat_decisions:'decisiuns', landing_stat_courts:'dretgiras', landing_stat_laws:'leschas federalas', landing_stat_cantonal:'texts chantunals', landing_stat_citations:'links da citaziun', landing_stat_updated:'Actualis\u00e0 mintga di',
     word_desc:'Giurisprudenza svizra directamain en Voss document da Word. Tschertgar, citar ed inserir senza copi-incolla dal navigatur \u2014 cun attribuziun automatica.',
     word_cta:'Installaziun \u2192',
     hero_kicker:'In corpus avert dal dretg svizzer',
     hero_stat_label:'decisiuns giudizialas publitgadas',
-    hero_headline:'Il dataset avert e cumplet da la giurisprudenza svizra.',
-    hero_tagline:'Interrogabel per Vus, legibel per Voss model AI. Las decisiuns publitgadas da las dretgiras federalas e dals 26 chantuns, plus 80 leschas federalas centralas e 33\u2019000+ texts chantunals.',
+    hero_headline:'Il corpus avert da las decisiuns giudicialas svizras.',
+    hero_tagline:'Interrogabel per Vus, legibel per Voss model AI. Las decisiuns publitgadas da las dretgiras federalas e dals 26 chantuns, plus ~5'000 leschas federalas centralas e 33\u2019000+ texts chantunals.',
     hero_cta_explore:'Explorar il corpus',
     hero_cta_connect:'Connectar AI',
     hero_cta_word:'Word Add-in',
@@ -2098,7 +2098,7 @@ const I18N = {
     hero_meta_laws:'leschas',
     hero_fact_span:'perioda', hero_fact_federal:'federal', hero_fact_cantonal:'chantunal', hero_fact_cantons:'chantuns', hero_fact_new:'novas dapi ier',
     cap_entscheide_desc:'Mintga decisiun giudiziala svizra publitgada. Tschertga full-text, grafic da citaziuns, plurilingual (DE/FR/IT). Actualis\u00e0 mintga di.',
-    cap_gesetze_desc:'Spievel SPARQL local da Fedlex: 80 leschas federalas, 39\u2019000 artitgels en DE/FR/IT, sincronis\u00e0 mintga di. Aggregatur LexFind per 33\u2019000+ texts chantunals. Tschertga full-text FTS5, lookup d\'artitgels en <1 ms.',
+    cap_gesetze_desc:'Spievel SPARQL local da Fedlex: ~5'000 leschas federalas, 39\u2019000 artitgels en DE/FR/IT, sincronis\u00e0 mintga di. Aggregatur LexFind per 33\u2019000+ texts chantunals. Tschertga full-text FTS5, lookup d\'artitgels en <1 ms.',
     cap_mcp_desc:'21 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Distant u local. Setup en 30 secundas.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Leschas \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Trais entradas',
@@ -2113,7 +2113,7 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
     gesetze_h1:'Legislaziun federala e chantunala svizra',
-    gesetze_sub:'80 leschas federalas svizras (39\u2019000 artitgels en trais linguas uffizialas, 228\u2019559 referenzas da midadas) da l\'endpoint SPARQL Fedlex, spiegladas local mintga di. Passa 33\u2019000 acts chantunals ed interchantunals via l\'aggregatur LexFind. MCP-Calls stateless per lookup d\'artitgels, tschertga full-text, cronologia e midadas.',
+    gesetze_sub:'~5'000 leschas federalas svizras (39\u2019000 artitgels en trais linguas uffizialas, 228\u2019559 referenzas da midadas) da l\'endpoint SPARQL Fedlex, spiegladas local mintga mais. Passa 33\u2019000 acts chantunals ed interchantunals via l\'aggregatur LexFind. MCP-Calls stateless per lookup d\'artitgels, tschertga full-text, cronologia e midadas.',
     mcp_h1:'Connectar agents AI',
     mcp_sub:'Il server MCP public da OpenCaseLaw d\u00e0 als models linguistics access direct a passa 965\u2019000 decisiuns giudizialas svizras, al grafic da citaziuns, a las leschas federalas ed als acts chantunals. 21 utensils specialis\u00e0s, nagina registraziun, nagins API keys.',
     ueber_h1:'Davart OpenCaseLaw',
@@ -2138,10 +2138,10 @@ const I18N = {
     access_local_setup:'Guida d\'installaziun cumplaina →',
     examples_heading:'Tge ch\'è pussaivel suenter la connexiun:',
     cap_search:'Tschertgar decisiuns en lingua natirala — tenor plaid-clav, tema, artitgel da lescha u concept giuridic',
-    cap_laws:'Consultar il text actual da 80 leschas federalas (39\u2019000 artitgels, DE/FR/IT) — e tschertgar 33\u2019000+ actas chantunalas',
+    cap_laws:'Consultar il text actual da ~5'000 leschas federalas (39\u2019000 artitgels, DE/FR/IT) — e tschertgar 33\u2019000+ actas chantunalas',
     leg_title:'Leschas federalas e chantunalas',
     leg_badge:'via MCP',
-    leg_desc:'Endpoint SPARQL da Fedlex spiegl\u00e0 mintga di ed index\u00e0 en SQLite (FTS5): 80 leschas federalas, 39\u2019000 artitgels en DE/FR/IT, 228\u2019559 referenzas da midadas. Legislaziun chantunala via l\'aggregatur LexFind cun cache stratifitg\u00e0 (tschertga 24 h, resoluziun SR 30 dis). Lookup d\'artitgels en <1 ms.',
+    leg_desc:'Endpoint SPARQL da Fedlex spiegl\u00e0 mintga di ed index\u00e0 en SQLite (FTS5): ~5'000 leschas federalas, 39\u2019000 artitgels en DE/FR/IT, 228\u2019559 referenzas da midadas. Legislaziun chantunala via l\'aggregatur LexFind cun cache stratifitg\u00e0 (tschertga 24 h, resoluziun SR 30 dis). Lookup d\'artitgels en <1 ms.',
     leg_ex_label_law:'Lescha federala (local)',
     leg_ex_label_cantonal:'Chantunal (LexFind)',
     leg_ex_label_browse:'Midadas recentas',
@@ -2188,7 +2188,7 @@ const I18N = {
   },
   en: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons \u2014 plus direct access to 80 federal laws and 33,000+ cantonal enactments. Search instantly with AI or download the full dataset.',
+    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons \u2014 plus direct access to 5,000+ federal laws and 30,000+ cantonal enactments. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
     federal:'Federal', cantonal:'Cantonal', cantons:'Cantons', access:'Access the Data',
     th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_updated:'New Data', th_languages:'Languages',
@@ -2203,7 +2203,7 @@ const I18N = {
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
     nav_entscheide:'Decisions', nav_gesetze:'Legislation', nav_mcp:'Connect', nav_ueber:'About',
     landing_title:'Swiss case law &amp; legislation,<br>built for AI agents.',
-    landing_sub:'An open, complete dataset of every published Swiss court decision (965,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
+    landing_sub:'An open dataset of published Swiss court decisions (965,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
     landing_card_entscheide_title:'Decisions',
     landing_card_entscheide_desc:'965,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (8.77M edges), multilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explore the dataset \u2192',
@@ -2211,15 +2211,15 @@ const I18N = {
     landing_card_mcp_desc:'21 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. 30-second setup.',
     landing_card_mcp_cta:'MCP setup \u2192',
     landing_what_title:'What is OpenCaseLaw?',
-    landing_what_1:'OpenCaseLaw collects, deduplicates and publishes <strong>every published Swiss court decision</strong> alongside the current text of all relevant federal laws and 33,000+ cantonal acts. The dataset is updated daily and freely available under CC0 (data) and MIT (code).',
+    landing_what_1:'OpenCaseLaw collects, deduplicates and publishes <strong>every published Swiss court decision</strong> alongside the current text of all relevant federal laws and 30,000+ cantonal acts. The dataset is updated daily and freely available under CC0 (data) and MIT (code).',
     landing_what_2:'The same infrastructure powers a public MCP server that gives language models 21 specialised tools for Swiss legal research \u2014 from full-text search and citation analysis to statute retrieval. No sign-up, no API keys, no paywall.',
     landing_stat_decisions:'decisions', landing_stat_courts:'courts', landing_stat_laws:'federal laws', landing_stat_cantonal:'cantonal acts', landing_stat_citations:'citation edges', landing_stat_updated:'Updated daily',
     word_desc:'Swiss case law directly in your Word document. Search, cite and insert without copy-paste from the browser \u2014 with automatic attribution.',
     word_cta:'Install \u2192',
     hero_kicker:'An open corpus of Swiss law',
     hero_stat_label:'published court decisions',
-    hero_headline:'The complete open dataset of Swiss case law.',
-    hero_tagline:'Searchable by you, readable by your AI. Published decisions from every federal court and all 26 cantons, plus 80 key federal laws and 33,000+ cantonal acts.',
+    hero_headline:'The open dataset of Swiss court decisions.',
+    hero_tagline:'Searchable by you, readable by your AI.',
     hero_cta_explore:'Explore corpus',
     hero_cta_connect:'Connect your AI',
     hero_cta_word:'Word Add-in',
@@ -2229,7 +2229,7 @@ const I18N = {
     hero_meta_laws:'laws',
     hero_fact_span:'span', hero_fact_federal:'federal', hero_fact_cantonal:'cantonal', hero_fact_cantons:'cantons', hero_fact_new:'new since yesterday',
     cap_entscheide_desc:'Every published Swiss court decision. Full-text search, citation graph, multilingual (DE/FR/IT). Updated daily.',
-    cap_gesetze_desc:'Local Fedlex SPARQL mirror: 80 federal laws, 39,000 articles in DE/FR/IT, synced daily. LexFind aggregator for 33,000+ cantonal acts. FTS5 full-text search, article lookup in <1 ms.',
+    cap_gesetze_desc:'Local Fedlex SPARQL mirror: 5,000+ federal laws, 125,000+ articles in DE/FR/IT, synced monthly. LexFind aggregator for 30,000+ cantonal acts. FTS5 full-text search, article lookup in <1 ms.',
     cap_mcp_desc:'21 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote or local. 30-second setup.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislation \u2192', cap_cta_mcp:'MCP setup \u2192',
     capabilities_heading:'Three ways in',
@@ -2244,7 +2244,7 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
     gesetze_h1:'Swiss federal and cantonal legislation',
-    gesetze_sub:'80 Swiss federal laws (39,000 articles in three official languages, 228,559 amendment references) from the Fedlex SPARQL endpoint, mirrored locally each day. 33,000+ cantonal and intercantonal acts via the LexFind aggregator. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
+    gesetze_sub:'5,000+ Swiss federal laws (125,000+ articles in three official languages, full amendment history) from the Fedlex SPARQL endpoint, mirrored locally each month. 30,000+ cantonal and intercantonal acts via the LexFind aggregator. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
     mcp_h1:'Connect AI agents',
     mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 965,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 21 specialized tools, no sign-up, no API keys.',
     ueber_h1:'About OpenCaseLaw',
@@ -2270,10 +2270,10 @@ const I18N = {
     examples_heading:'What you can do after connecting:',
     cap_search:'Search decisions in natural language — by keyword, topic, statute, or legal concept',
     cap_lookup:'Look up any decision by docket number — with full text and metadata',
-    cap_laws:'Retrieve the current text of 80 federal laws (39,000 articles, DE/FR/IT) — and search 33,000+ cantonal enactments',
+    cap_laws:'Retrieve the current text of 5,000+ federal laws (125,000+ articles, DE/FR/IT) — and search 30,000+ cantonal enactments',
     leg_title:'Federal & Cantonal Legislation',
     leg_badge:'via MCP',
-    leg_desc:'Fedlex SPARQL endpoint mirrored daily and indexed in SQLite (FTS5): 80 federal laws, 39,000 articles in DE/FR/IT, 228,559 amendment references. Cantonal legislation via the LexFind aggregator with tiered caching (search 24 h, SR resolution 30 days). Article lookup in <1 ms.',
+    leg_desc:'Fedlex SPARQL endpoint mirrored monthly and indexed in SQLite (FTS5): 5,000+ federal laws, 125,000+ articles in DE/FR/IT, full amendment history. Cantonal legislation via the LexFind aggregator with tiered caching (search 24 h, SR resolution 30 days). Article lookup in <1 ms.',
     leg_ex_label_law:'Federal law (local)',
     leg_ex_label_cantonal:'Cantonal (LexFind)',
     leg_ex_label_browse:'Recent amendments',
