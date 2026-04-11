@@ -8582,7 +8582,7 @@ def _fetch_lexfind_law_text(lexfind_id: int, language: str = "de") -> dict | Non
     download/parse failure, returns None — the caller should degrade
     gracefully to metadata-only.
     """
-    text_cache_key = f"law_text:v2:{language}:{lexfind_id}"
+    text_cache_key = f"law_text:v3:{language}:{lexfind_id}"
     cached = _lexfind_cache_get(text_cache_key)
     if cached is not None:
         return cached
@@ -8626,24 +8626,43 @@ def _fetch_lexfind_law_text(lexfind_id: int, language: str = "de") -> dict | Non
 
 
 def _segment_articles_from_pdf_text(text: str) -> list[dict]:
-    """Split extracted PDF text at Art.-N boundaries into structured articles.
+    """Split extracted PDF text at article boundaries into structured articles.
 
-    Conservative approach: we match `Art. N[a-z]?` at word boundaries,
-    chunk the text at those positions, then extract (number, heading,
-    body) from each chunk. Non-breaking spaces between 'Art.' and the
-    number are normalised.
+    Handles two article-marker conventions found in Swiss law PDFs:
+      - Federal + most cantons:  `Art. N[a-z]?(bis|ter|...)?`
+      - ZH, SH, AI + a few others: `§ N[a-z]?(bis|ter|...)?`
+
+    Headings can appear before OR after the marker depending on the
+    PDF's typographic layout (marginal notes vs. inline). We look in
+    both directions and keep the first plausible short-line candidate.
+    Non-breaking spaces and the NO-BREAK HYPHEN are normalised.
     """
     if not text or not text.strip():
         return []
-    normalized = text.replace("\u00a0", " ")
-    # Match "Art. N" / "Art. Na" / "Art. Nbis" etc. as article boundaries.
+    normalized = text.replace("\u00a0", " ").replace("\u2011", "-")
+
+    # Match either "Art. N..." or "§ N..." as article boundaries.
+    # Require a non-letter lookbehind so we don't catch mid-word "Art".
     pattern = re.compile(
-        r"(?<![A-Za-z])Art\.\s*(\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies)?)\s*",
+        r"(?<![A-Za-z])"
+        r"(?:Art\.|§)"
+        r"\s*"
+        r"(\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies)?)"
+        r"\.?\s*",
         re.MULTILINE,
     )
     matches = list(pattern.finditer(normalized))
     if not matches:
         return []
+
+    def _is_heading(line: str) -> bool:
+        if not line or len(line) > 120:
+            return False
+        if line.endswith((".", ":", ";", ",")):
+            return False
+        # Likely heading: starts with uppercase letter
+        first = line[0]
+        return first.isupper() or first in "ÄÖÜÉÈÀ"
 
     articles = []
     for i, m in enumerate(matches):
@@ -8651,17 +8670,32 @@ def _segment_articles_from_pdf_text(text: str) -> list[dict]:
         end = matches[i + 1].start() if i + 1 < len(matches) else len(normalized)
         body = normalized[start:end].strip()
         num = m.group(1)
-        # First non-empty line is usually a marginal heading
+
         heading = None
+        # Try heading AFTER marker (federal/Art. convention)
         lines = [l.strip() for l in body.split("\n") if l.strip()]
-        if lines:
-            candidate = lines[0]
-            # Heuristic: headings are short and don't end with a full sentence
-            if len(candidate) <= 120 and not candidate.endswith((".", ":", ";", ",")):
-                heading = candidate
-                body = "\n".join(lines[1:]).strip()
-            else:
-                body = "\n".join(lines).strip()
+        if lines and _is_heading(lines[0]):
+            heading = lines[0]
+            body = "\n".join(lines[1:]).strip()
+        else:
+            body = "\n".join(lines).strip()
+
+        # Try heading BEFORE marker (ZH § convention — marginal note)
+        if not heading:
+            prev_start = matches[i - 1].end() if i > 0 else 0
+            preceding = normalized[prev_start:m.start()].strip()
+            prev_lines = [l.strip() for l in preceding.split("\n") if l.strip()]
+            # Last 1-2 short lines before the marker may be the heading.
+            if prev_lines:
+                tail = prev_lines[-1]
+                if _is_heading(tail):
+                    heading = tail
+                    # Remove heading from previous article's body if present
+                    if articles and articles[-1]["text"].rstrip().endswith(tail):
+                        articles[-1]["text"] = (
+                            articles[-1]["text"].rstrip()[: -len(tail)].rstrip()
+                        )
+
         if body or heading:
             articles.append({
                 "article_num": num,
