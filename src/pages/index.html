@@ -21,16 +21,40 @@
         <span class="beta">BETA</span>
       </a>
     </div>
-    <div class="hero-meta">
-      <span data-t="hero_meta_updated">updated daily</span>
-      <span class="sep">·</span>
-      <span><strong id="hero-courts">114</strong> <span data-t="hero_meta_courts">courts</span></span>
-      <span class="sep">·</span>
-      <span><strong>8.8M</strong> <span data-t="hero_meta_citations">citations</span></span>
-      <span class="sep">·</span>
-      <span><strong>80</strong> <span data-t="hero_meta_laws">laws</span></span>
-      <span class="sep">·</span>
-      <span>CC0</span>
+    <div class="hero-breakdown">
+      <!-- Language distribution: 3 mini cards with bar + count + percentage -->
+      <div class="hero-langs">
+        <div class="hero-lang">
+          <div class="hero-lang-num"><span id="hero-lang-de-num">449'775</span></div>
+          <div class="hero-lang-bar"><div class="hero-lang-bar-fill" id="hero-lang-de-bar" style="width:46.6%"></div></div>
+          <div class="hero-lang-label">Deutsch · <span id="hero-lang-de-pct">47</span>%</div>
+        </div>
+        <div class="hero-lang">
+          <div class="hero-lang-num"><span id="hero-lang-fr-num">435'610</span></div>
+          <div class="hero-lang-bar"><div class="hero-lang-bar-fill" id="hero-lang-fr-bar" style="width:45.1%"></div></div>
+          <div class="hero-lang-label">Français · <span id="hero-lang-fr-pct">45</span>%</div>
+        </div>
+        <div class="hero-lang">
+          <div class="hero-lang-num"><span id="hero-lang-it-num">79'750</span></div>
+          <div class="hero-lang-bar"><div class="hero-lang-bar-fill" id="hero-lang-it-bar" style="width:8.3%"></div></div>
+          <div class="hero-lang-label">Italiano · <span id="hero-lang-it-pct">8</span>%</div>
+        </div>
+      </div>
+
+      <!-- Facts row: richer mono strip -->
+      <div class="hero-facts">
+        <span><strong><span id="hero-earliest">1875</span>–<span id="hero-latest">2026</span></strong> <span data-t="hero_fact_span">Zeitraum</span></span>
+        <span class="sep">·</span>
+        <span><strong id="hero-fed">345k</strong> <span data-t="hero_fact_federal">Bund</span> / <strong id="hero-can">620k</strong> <span data-t="hero_fact_cantonal">Kantone</span></span>
+        <span class="sep">·</span>
+        <span><strong id="hero-courts">114</strong> <span data-t="hero_meta_courts">courts</span> · <strong>26</strong> <span data-t="hero_fact_cantons">Kantone</span></span>
+        <span class="sep">·</span>
+        <span><strong>+<span id="hero-delta">199</span></strong> <span data-t="hero_fact_new">neu</span></span>
+        <span class="sep">·</span>
+        <span><strong>8.8M</strong> <span data-t="hero_meta_citations">citations</span></span>
+        <span class="sep">·</span>
+        <span>CC0 · MIT</span>
+      </div>
     </div>
   </header>
 
@@ -61,7 +85,7 @@
           </svg>
         </div>
         <h3 data-t="nav_gesetze">Legislation</h3>
-        <p data-t="cap_gesetze_desc">80 federal laws as a local Fedlex mirror plus 33,000+ cantonal acts via LexFind. Authoritative text instead of hallucinated citations.</p>
+        <p data-t="cap_gesetze_desc">Local Fedlex SPARQL mirror: 80 federal laws, 39,000 articles in DE/FR/IT, synced daily. LexFind aggregator for 33,000+ cantonal acts. FTS5 full-text search, article lookup in &lt;1 ms.</p>
         <div class="cap-card-cta" data-t="cap_cta_gesetze">Legislation →</div>
       </a>
 

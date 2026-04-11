@@ -55,8 +55,10 @@
           Bidirektional, mit Appeal-Chain-Auflösung.</li>
         <li><strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking.
           MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).</li>
-        <li><strong>Gesetze:</strong> 80 Bundesgesetze via Fedlex-SPARQL-Endpunkt, lokal als SQLite gespiegelt.
-          Kantonale Erlasse via LexFind.ch mit 24h-Cache.</li>
+        <li><strong>Gesetze:</strong> 80 kuratierte Bundesgesetze aus dem Fedlex-SPARQL-Endpunkt
+          (39'000 Artikel in DE/FR/IT, 228'559 Änderungs-Referenzen), täglich lokal gespiegelt und per SQLite FTS5
+          indexiert. Kantonale und interkantonale Erlasse via LexFind JSON-API, gestaffelte SQLite-Cache-TTLs
+          (Suche 24 h, SR-Auflösung 30 d, Volltexte 7 d, Änderungen 24 h).</li>
       </ul>
       <p style="font-size:14px; color:var(--tx3); margin:0">
         Vollständige technische Dokumentation im <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>.

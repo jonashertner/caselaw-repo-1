@@ -25,28 +25,36 @@
   <section id="gesetze-federal" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
       <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
-        <h2 style="margin:0; font-size:22px">Bundesgesetze</h2>
-        <span class="leg-badge">Lokaler Fedlex-Spiegel</span>
+        <h2 style="margin:0; font-size:22px">Bundesgesetze — Fedlex-SPARQL-Spiegel</h2>
       </div>
-      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
-        80 zentrale Bundesgesetze werden täglich vom offiziellen Fedlex-SPARQL-Endpunkt bezogen und lokal in einer
-        SQLite-Datenbank indexiert. Die Abfrage per Abkürzung und Artikelnummer erfolgt in unter einer Millisekunde,
-        wahlweise auf Deutsch, Französisch oder Italienisch. Enthalten sind unter anderem:
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
+        Der Fedlex-SPARQL-Endpunkt
+        (<a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">fedlex.data.admin.ch/sparqlendpoint</a>)
+        wird täglich gegen eine kuratierte Liste von 80 Bundesgesetzen abgefragt. Artikeltexte, Absätze, Querverweise
+        und Amtssprachen werden in eine lokale SQLite-Datenbank geschrieben und per FTS5 indexiert.
       </p>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:8px 12px; margin-bottom:24px; font-family:var(--f-mono); font-size:13px">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px 20px; margin:16px 0 20px; font-size:13px; color:var(--tx2)">
+        <div><strong style="color:var(--tx)">39'000</strong> <span style="color:var(--tx3)">Artikel</span></div>
+        <div><strong style="color:var(--tx)">3</strong> <span style="color:var(--tx3)">Amtssprachen (DE/FR/IT)</span></div>
+        <div><strong style="color:var(--tx)">228'559</strong> <span style="color:var(--tx3)">Änderungs-Referenzen</span></div>
+        <div><strong style="color:var(--tx)">&lt;1 ms</strong> <span style="color:var(--tx3)">Artikel-Lookup</span></div>
+      </div>
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 10px">Abgedeckte Abkürzungen (Auszug):</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:8px 12px; margin-bottom:20px; font-family:var(--f-mono); font-size:13px">
         <span>OR</span><span>ZGB</span><span>StGB</span><span>StPO</span><span>ZPO</span><span>BV</span>
         <span>SchKG</span><span>BGG</span><span>DBG</span><span>IPRG</span><span>AIG</span><span>BVG</span>
         <span>KVG</span><span>AsylG</span><span>BGFA</span><span>ATSG</span><span>DSG</span><span>UVG</span>
         <span>AHVG</span><span>IVG</span><span>AVIG</span><span>StHG</span><span>MWSTG</span><span>GSchG</span>
       </div>
-      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px">... und 56 weitere Gesetze. Die vollständige Liste ist per MCP abrufbar.</p>
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px">Vollständige Liste über <code>search_laws</code> abrufbar.</p>
 
       <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">MCP-Aufruf</div>
-        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_law(abbreviation="OR", article="41")</code>
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Artikel-Lookup</div>
+        <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_law(abbreviation="OR", article="41", language="de")</code>
         <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
-          Liefert den vollständigen Text von Art. 41 OR (ausservertragliche Haftung) auf Deutsch,
-          inklusive Absätze und Querverweise. Für Französisch: <code style="font-size:13px">language="fr"</code>.
+          Liefert Art. 41 OR (ausservertragliche Haftung) mit Absätzen, Querverweisen und Metadaten aus dem lokalen
+          FTS5-Index. Parameter <code style="font-size:13px">language</code> akzeptiert <code style="font-size:13px">de</code>,
+          <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.
         </p>
       </div>
     </div>
@@ -56,26 +64,37 @@
   <section id="gesetze-cantonal" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
       <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
-        <h2 style="margin:0; font-size:22px">Kantonale und interkantonale Erlasse</h2>
-        <span class="leg-badge">LexFind-Integration</span>
+        <h2 style="margin:0; font-size:22px">Kantonale Erlasse — LexFind-Aggregator</h2>
       </div>
-      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
-        Gesetze, Verordnungen und Reglemente aller 26 Kantone sowie interkantonale Konkordate werden
-        über das LexFind-Portal (<a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a>) abgefragt.
-        Antworten werden lokal gecacht (24 Stunden für Suchanfragen, 30 Tage für SR-Auflösungen).
-        Insgesamt sind rund 33'000 Rechtstexte erreichbar.
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
+        <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> aggregiert die amtlichen
+        Gesetzessammlungen aller 26 Kantone sowie interkantonale Konkordate (rund 33'000 Erlasse). Abfragen gehen
+        gegen die JSON-API (<code style="font-size:13px">/api/fe/{lang}/…</code>); Antworten werden in einer
+        persistenten SQLite-Cache-Schicht mit abgestuften TTLs gehalten:
+      </p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:8px 20px; margin:14px 0 20px; font-size:13px; color:var(--tx2); font-family:var(--f-mono)">
+        <div><strong style="color:var(--tx)">24 h</strong> <span style="color:var(--tx3)">— Suchanfragen</span></div>
+        <div><strong style="color:var(--tx)">30 d</strong> <span style="color:var(--tx3)">— SR-Nummer-Auflösung</span></div>
+        <div><strong style="color:var(--tx)">7 d</strong> <span style="color:var(--tx3)">— Volltexte</span></div>
+        <div><strong style="color:var(--tx)">24 h</strong> <span style="color:var(--tx3)">— Änderungsverlauf</span></div>
+      </div>
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px; max-width:68ch">
+        Bundesgesetze werden ausserdem lokal aus dem Fedlex-Spiegel bedient (siehe oben) — die LexFind-API wird nur
+        für kantonale und unbekannte SR-Nummern angefragt.
       </p>
 
       <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px; margin-bottom:12px">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Suche</div>
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Volltextsuche</div>
         <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">search_legislation(query="Mietrecht", canton="ZH")</code>
       </div>
 
       <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
-        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Gezielter Abruf per SR-Nummer</div>
+        <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Abruf per systematische Nummer</div>
         <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_legislation(systematic_number="170.11", canton="VD")</code>
         <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
-          Liefert Metadaten und Versionsgeschichte der Waadtländer Kantonsverfassung inklusive Link zur offiziellen Quelle.
+          Liefert Metadaten und Versionsgeschichte der Waadtländer Kantonsverfassung samt Link zur offiziellen
+          Quelle. <code style="font-size:13px">include_versions=True</code> forciert bei Bedarf einen direkten
+          LexFind-Aufruf.
         </p>
       </div>
     </div>
@@ -98,19 +117,23 @@
   <!-- Why this matters section -->
   <section id="gesetze-why" class="section-card" open style="margin-bottom:48px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Warum eine eigene Legislationsschicht?</h2>
+      <h2 style="margin:0 0 12px; font-size:22px">Technischer Hintergrund</h2>
       <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
-        Sowohl Fedlex als auch LexFind sind für Sprachmodelle schwer zugänglich. Fedlex bietet nur einen
-        SPARQL-Endpunkt und XML-Downloads; es gibt keine einfache HTTP-API für &quot;Liefere den aktuellen Text
-        von Art. 41 OR auf Deutsch&quot;. LexFind erfordert eine JavaScript-gesteuerte Sitzung und einen
-        Such-dann-Abruf-Ablauf. Sprachmodelle, die ohne Retrieval-Layer nach Schweizer Gesetzesartikeln gefragt werden,
-        greifen deshalb typischerweise auf veraltete Trainingsdaten zurück oder halluzinieren Artikeltexte.
+        Fedlex exponiert zwei maschinenlesbare Schnittstellen: einen SPARQL-Endpunkt (RDF, ELI-URIs) und
+        XML-Downloads einzelner Erlasse. Beide setzen erhebliche Vorarbeit voraus, bevor ein Abruf wie
+        „Art. 41 OR auf Deutsch&ldquo; möglich ist. Der lokale Spiegel materialisiert diese Abfrage in einer
+        FTS5-Tabelle über (Gesetz, Artikel, Sprache), was Artikel-Lookups auf Submillisekunden-Latenz bringt.
+      </p>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
+        LexFind stellt eine JSON-API bereit, die einen Such-dann-Abruf-Ablauf verlangt: zuerst Kanton oder
+        Suchbegriff, dann eine Dokument-ID, dann der Text. Direkte Aufrufe sind ratenlimitiert und der Cache ist
+        nicht-persistent. Die hier bereitgestellte Schicht bündelt Such- und Abrufcalls hinter einem stateless
+        MCP-Tool und verwaltet eine persistente, SQLite-basierte Cache-Ebene mit abgestuften TTLs.
       </p>
       <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch">
-        OpenCaseLaw löst dieses Problem: jede Gesetzesreferenz im Korpus-Zitationsgraph kann dereferenziert werden
-        auf den autoritativen aktuellen Text, und dieselbe Schnittstelle wird als Werkzeugsatz für LLM-Agenten über MCP
-        zur Verfügung gestellt. Eine Entscheidung, die Art. 12 BGFA zitiert, kann auf Nachfrage in den vollständigen
-        Text des Artikels aufgelöst werden &mdash; in Deutsch, Französisch und Italienisch, auf dem aktuellen Konsolidierungsstand.
+        Im Zitationsgraph sind 11,3 Mio Verweise auf Gesetzesartikel gespeichert; jede Referenz lässt sich gegen
+        den aktuellen konsolidierten Text auflösen. Ein Entscheid, der Art. 12 BGFA zitiert, führt per
+        <code>get_law("BGFA", article="12")</code> direkt zum Artikel in allen drei Amtssprachen.
       </p>
     </div>
   </section>
