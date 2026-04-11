@@ -457,7 +457,7 @@ Returns a real BGE fact pattern adapted as a Fallbearbeitung scenario. The appli
 | `generate_exam_question` | Real BGE fact pattern as Fallbearbeitung exercise with hidden analysis |
 | `get_law` | Look up a Swiss federal law by SR number or abbreviation |
 | `search_laws` | Full-text search across Swiss federal law articles |
-| `search_legislation` | Search 33,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
+| `search_legislation` | Search 30,000+ Swiss legislative texts (federal + all 26 cantons) via LexFind.ch |
 | `get_legislation` | Get details for a specific law by LexFind ID or SR number |
 | `browse_legislation_changes` | Browse recent legislation changes for a canton or federal level |
 | `update_database` | Download the latest data from HuggingFace *(local only)* |
