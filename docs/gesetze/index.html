@@ -1792,6 +1792,10 @@ const I18N = {
     gesetze_bg_graph: 'Im Zitationsgraph sind 11,3 Mio Verweise auf Gesetzesartikel gespeichert; jede Referenz lässt sich gegen den aktuellen konsolidierten Text auflösen. Ein Entscheid, der Art. 12 BGFA zitiert, führt per <code>get_law("BGFA", article="12")</code> direkt zum Artikel in allen drei Amtssprachen.',
   
     gesetze_federal_heading: 'Bundesgesetze — Fedlex-SPARQL-Spiegel',
+  
+    copy: 'Kopieren',
+    copied: 'Kopiert!',
+    stats_not_loaded: 'Statistiken konnten nicht geladen werden.',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -1923,6 +1927,10 @@ const I18N = {
     gesetze_bg_graph: 'Le graphe de citations contient 11,3 millions de références à des articles de loi ; chaque référence peut être résolue contre le texte consolidé actuel. Une décision qui cite l\'art. 12 LLCA conduit via <code>get_law("BGFA", article="12")</code> directement à l\'article dans les trois langues officielles.',
   
     gesetze_federal_heading: 'Lois fédérales — miroir SPARQL Fedlex',
+  
+    copy: 'Copier',
+    copied: 'Copié !',
+    stats_not_loaded: 'Impossible de charger les statistiques.',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -2054,6 +2062,10 @@ const I18N = {
     gesetze_bg_graph: 'Il grafo di citazioni contiene 11,3 milioni di riferimenti ad articoli di legge; ogni riferimento può essere risolto rispetto al testo consolidato attuale. Una decisione che cita l\'art. 12 LLCA porta tramite <code>get_law("BGFA", article="12")</code> direttamente all\'articolo nelle tre lingue ufficiali.',
   
     gesetze_federal_heading: 'Leggi federali — mirror SPARQL Fedlex',
+  
+    copy: 'Copia',
+    copied: 'Copiato!',
+    stats_not_loaded: 'Impossibile caricare le statistiche.',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2185,6 +2197,10 @@ const I18N = {
     gesetze_bg_graph: 'Il graf da citaziuns cuntegna 11,3 mio. referenzas ad artitgels legals; mintga referenza po vegnir schliada cunter il text consolidà actual. Ina decisiun che citescha l\'art. 12 BGFA maina via <code>get_law("BGFA", article="12")</code> directamain a l\'artitgel en tut las trais linguas uffizialas.',
   
     gesetze_federal_heading: 'Leschas federalas — spievel SPARQL Fedlex',
+  
+    copy: 'Copiar',
+    copied: 'Copià!',
+    stats_not_loaded: 'Impussibel da chargiar las statisticas.',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2316,6 +2332,10 @@ const I18N = {
     gesetze_bg_graph: 'The citation graph stores 11.3M references to statute articles; every reference can be resolved against the current consolidated text. A decision that cites Art. 12 LSLaw leads via <code>get_law("BGFA", article="12")</code> directly to the article in all three official languages.',
   
     gesetze_federal_heading: 'Federal laws — Fedlex SPARQL mirror',
+  
+    copy: 'Copy',
+    copied: 'Copied!',
+    stats_not_loaded: 'Could not load statistics.',
   },
 };
 
@@ -2331,7 +2351,11 @@ function applyI18n() {
   document.querySelectorAll('[data-t-placeholder]').forEach(el => {
     el.placeholder = t(el.dataset.tPlaceholder || el.getAttribute('data-t-placeholder'));
   });
-  if (window._statsData) renderAll(window._statsData);
+  if (window._statsData) {
+    renderAll(window._statsData);
+    if (typeof renderHero === 'function') renderHero(window._statsData);
+    if (typeof renderCorpusSnapshot === 'function') renderCorpusSnapshot(window._statsData);
+  }
 }
 
 document.querySelectorAll('.lang-sw button').forEach(btn => {
@@ -3213,7 +3237,15 @@ async function init() {
     renderCharts(data);
   } catch {
     const kpis = document.getElementById('kpis');
-    if (kpis) kpis.innerHTML = '<p class="ld" style="grid-column:1/-1">stats.json not found</p>';
+    if (kpis) {
+      kpis.textContent = '';
+      const p = document.createElement('p');
+      p.className = 'ld';
+      p.style.gridColumn = '1/-1';
+      p.dataset.t = 'stats_not_loaded';
+      p.textContent = t('stats_not_loaded');
+      kpis.appendChild(p);
+    }
   }
 
   // Copy buttons on code blocks (runs regardless of stats.json)
@@ -3224,11 +3256,12 @@ async function init() {
     wrap.appendChild(code);
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
-    btn.textContent = 'Copy';
+    btn.setAttribute('data-t', 'copy');
+    btn.textContent = t('copy');
     btn.addEventListener('click', () => {
       navigator.clipboard.writeText(code.textContent.trim());
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 1500);
+      btn.textContent = t('copied');
+      setTimeout(() => btn.textContent = t('copy'), 1500);
     });
     wrap.appendChild(btn);
   });

@@ -1943,6 +1943,10 @@ const I18N = {
     study_p6:'Prüf meine Subsumtion: [meine Antwort]',
     hero_mcp:'Mit KI durchsuchen',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
+  
+    copy: 'Kopieren',
+    copied: 'Kopiert!',
+    stats_not_loaded: 'Statistiken konnten nicht geladen werden.',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -2060,6 +2064,10 @@ const I18N = {
     study_p6:'Évalue ma subsomption: [ma réponse]',
     hero_mcp:'Recherche avec IA',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
+  
+    copy: 'Copier',
+    copied: 'Copié !',
+    stats_not_loaded: 'Impossible de charger les statistiques.',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -2177,6 +2185,10 @@ const I18N = {
     study_p6:'Valuta la mia sussunzione: [la mia risposta]',
     hero_mcp:'Ricerca con IA',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
+  
+    copy: 'Copia',
+    copied: 'Copiato!',
+    stats_not_loaded: 'Impossibile caricare le statistiche.',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2294,6 +2306,10 @@ const I18N = {
     study_p6:'Valitescha mia subsumziun: [mia resposta]',
     hero_mcp:'Tschertgar cun AI',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
+  
+    copy: 'Copiar',
+    copied: 'Copià!',
+    stats_not_loaded: 'Impussibel da chargiar las statisticas.',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2411,6 +2427,10 @@ const I18N = {
     study_p6:'Check my Subsumtion: [my answer]',
     hero_mcp:'Search with AI',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
+  
+    copy: 'Copy',
+    copied: 'Copied!',
+    stats_not_loaded: 'Could not load statistics.',
   },
 };
 
@@ -2426,7 +2446,11 @@ function applyI18n() {
   document.querySelectorAll('[data-t-placeholder]').forEach(el => {
     el.placeholder = t(el.dataset.tPlaceholder || el.getAttribute('data-t-placeholder'));
   });
-  if (window._statsData) renderAll(window._statsData);
+  if (window._statsData) {
+    renderAll(window._statsData);
+    if (typeof renderHero === 'function') renderHero(window._statsData);
+    if (typeof renderCorpusSnapshot === 'function') renderCorpusSnapshot(window._statsData);
+  }
 }
 
 document.querySelectorAll('.lang-sw button').forEach(btn => {
@@ -3308,7 +3332,15 @@ async function init() {
     renderCharts(data);
   } catch {
     const kpis = document.getElementById('kpis');
-    if (kpis) kpis.innerHTML = '<p class="ld" style="grid-column:1/-1">stats.json not found</p>';
+    if (kpis) {
+      kpis.textContent = '';
+      const p = document.createElement('p');
+      p.className = 'ld';
+      p.style.gridColumn = '1/-1';
+      p.dataset.t = 'stats_not_loaded';
+      p.textContent = t('stats_not_loaded');
+      kpis.appendChild(p);
+    }
   }
 
   // Copy buttons on code blocks (runs regardless of stats.json)
@@ -3319,11 +3351,12 @@ async function init() {
     wrap.appendChild(code);
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
-    btn.textContent = 'Copy';
+    btn.setAttribute('data-t', 'copy');
+    btn.textContent = t('copy');
     btn.addEventListener('click', () => {
       navigator.clipboard.writeText(code.textContent.trim());
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 1500);
+      btn.textContent = t('copied');
+      setTimeout(() => btn.textContent = t('copy'), 1500);
     });
     wrap.appendChild(btn);
   });

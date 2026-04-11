@@ -1822,6 +1822,10 @@ const I18N = {
     mcp_tech_workers: '4× uvicorn-Worker hinter Load-Balancer, automatisches Failover',
     mcp_tech_backend: 'Backend: 965\'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph-DB mit 8,8 Mio Zitationskanten',
     mcp_tech_data: 'Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert',
+  
+    copy: 'Kopieren',
+    copied: 'Kopiert!',
+    stats_not_loaded: 'Statistiken konnten nicht geladen werden.',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -1955,6 +1959,10 @@ const I18N = {
     mcp_tech_workers: '4× workers uvicorn derrière un load balancer, failover automatique',
     mcp_tech_backend: 'Backend : 965 000+ décisions dans SQLite FTS5 avec ranking BM25+RRF, graphe de citations de 8,8 M d\'arêtes',
     mcp_tech_data: 'Données issues de sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement',
+  
+    copy: 'Copier',
+    copied: 'Copié !',
+    stats_not_loaded: 'Impossible de charger les statistiques.',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -2088,6 +2096,10 @@ const I18N = {
     mcp_tech_workers: '4× worker uvicorn dietro load balancer, failover automatico',
     mcp_tech_backend: 'Backend: 965\'000+ decisioni in SQLite FTS5 con ranking BM25+RRF, grafo di citazioni di 8,8 M di archi',
     mcp_tech_data: 'Dati da fonti pubbliche (tribunali federali, tribunali cantonali, Fedlex, LexFind), aggiornati quotidianamente',
+  
+    copy: 'Copia',
+    copied: 'Copiato!',
+    stats_not_loaded: 'Impossibile caricare le statistiche.',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2221,6 +2233,10 @@ const I18N = {
     mcp_tech_workers: '4× workers uvicorn davos load-balancer, failover automatic',
     mcp_tech_backend: 'Backend: 965\'000+ decisiuns en SQLite FTS5 cun ranking BM25+RRF, graf da citaziuns cun 8,8 mio. charnieras',
     mcp_tech_data: 'Datas da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di',
+  
+    copy: 'Copiar',
+    copied: 'Copià!',
+    stats_not_loaded: 'Impussibel da chargiar las statisticas.',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2354,6 +2370,10 @@ const I18N = {
     mcp_tech_workers: '4× uvicorn workers behind a load balancer, automatic failover',
     mcp_tech_backend: 'Backend: 965,000+ decisions in SQLite FTS5 with BM25+RRF ranking, citation graph of 8.8M edges',
     mcp_tech_data: 'Data from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily',
+  
+    copy: 'Copy',
+    copied: 'Copied!',
+    stats_not_loaded: 'Could not load statistics.',
   },
 };
 
@@ -2369,7 +2389,11 @@ function applyI18n() {
   document.querySelectorAll('[data-t-placeholder]').forEach(el => {
     el.placeholder = t(el.dataset.tPlaceholder || el.getAttribute('data-t-placeholder'));
   });
-  if (window._statsData) renderAll(window._statsData);
+  if (window._statsData) {
+    renderAll(window._statsData);
+    if (typeof renderHero === 'function') renderHero(window._statsData);
+    if (typeof renderCorpusSnapshot === 'function') renderCorpusSnapshot(window._statsData);
+  }
 }
 
 document.querySelectorAll('.lang-sw button').forEach(btn => {
@@ -3251,7 +3275,15 @@ async function init() {
     renderCharts(data);
   } catch {
     const kpis = document.getElementById('kpis');
-    if (kpis) kpis.innerHTML = '<p class="ld" style="grid-column:1/-1">stats.json not found</p>';
+    if (kpis) {
+      kpis.textContent = '';
+      const p = document.createElement('p');
+      p.className = 'ld';
+      p.style.gridColumn = '1/-1';
+      p.dataset.t = 'stats_not_loaded';
+      p.textContent = t('stats_not_loaded');
+      kpis.appendChild(p);
+    }
   }
 
   // Copy buttons on code blocks (runs regardless of stats.json)
@@ -3262,11 +3294,12 @@ async function init() {
     wrap.appendChild(code);
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
-    btn.textContent = 'Copy';
+    btn.setAttribute('data-t', 'copy');
+    btn.textContent = t('copy');
     btn.addEventListener('click', () => {
       navigator.clipboard.writeText(code.textContent.trim());
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 1500);
+      btn.textContent = t('copied');
+      setTimeout(() => btn.textContent = t('copy'), 1500);
     });
     wrap.appendChild(btn);
   });

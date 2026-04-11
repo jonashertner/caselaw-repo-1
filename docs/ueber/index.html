@@ -1806,6 +1806,10 @@ const I18N = {
     ueber_contact_heading: 'Kontakt',
     ueber_contact_1: 'Gebaut und betrieben von <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, unabhängig und ohne kommerzielles Interesse. Feedback, Bug-Reports und Mitarbeit willkommen.',
     ueber_contact_2: 'E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
+  
+    copy: 'Kopieren',
+    copied: 'Kopiert!',
+    stats_not_loaded: 'Statistiken konnten nicht geladen werden.',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -1955,6 +1959,10 @@ const I18N = {
     ueber_contact_heading: 'Contact',
     ueber_contact_1: 'Construit et opéré par <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, de façon indépendante et sans intérêt commercial. Retours, bug-reports et contributions bienvenus.',
     ueber_contact_2: 'E-mail : <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub : <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
+  
+    copy: 'Copier',
+    copied: 'Copié !',
+    stats_not_loaded: 'Impossible de charger les statistiques.',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -2104,6 +2112,10 @@ const I18N = {
     ueber_contact_heading: 'Contatto',
     ueber_contact_1: 'Costruito e gestito da <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, in modo indipendente e senza interesse commerciale. Feedback, segnalazioni di bug e contributi benvenuti.',
     ueber_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
+  
+    copy: 'Copia',
+    copied: 'Copiato!',
+    stats_not_loaded: 'Impossibile caricare le statistiche.',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2253,6 +2265,10 @@ const I18N = {
     ueber_contact_heading: 'Contact',
     ueber_contact_1: 'Construì ed operà da <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, independentamain e senza interess commerzial. Feedback, annunzis da bugs e contribuziuns èn bainvegnids.',
     ueber_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
+  
+    copy: 'Copiar',
+    copied: 'Copià!',
+    stats_not_loaded: 'Impussibel da chargiar las statisticas.',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2402,6 +2418,10 @@ const I18N = {
     ueber_contact_heading: 'Contact',
     ueber_contact_1: 'Built and operated by <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, independently and with no commercial interest. Feedback, bug reports, and contributions welcome.',
     ueber_contact_2: 'Email: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
+  
+    copy: 'Copy',
+    copied: 'Copied!',
+    stats_not_loaded: 'Could not load statistics.',
   },
 };
 
@@ -2417,7 +2437,11 @@ function applyI18n() {
   document.querySelectorAll('[data-t-placeholder]').forEach(el => {
     el.placeholder = t(el.dataset.tPlaceholder || el.getAttribute('data-t-placeholder'));
   });
-  if (window._statsData) renderAll(window._statsData);
+  if (window._statsData) {
+    renderAll(window._statsData);
+    if (typeof renderHero === 'function') renderHero(window._statsData);
+    if (typeof renderCorpusSnapshot === 'function') renderCorpusSnapshot(window._statsData);
+  }
 }
 
 document.querySelectorAll('.lang-sw button').forEach(btn => {
@@ -3299,7 +3323,15 @@ async function init() {
     renderCharts(data);
   } catch {
     const kpis = document.getElementById('kpis');
-    if (kpis) kpis.innerHTML = '<p class="ld" style="grid-column:1/-1">stats.json not found</p>';
+    if (kpis) {
+      kpis.textContent = '';
+      const p = document.createElement('p');
+      p.className = 'ld';
+      p.style.gridColumn = '1/-1';
+      p.dataset.t = 'stats_not_loaded';
+      p.textContent = t('stats_not_loaded');
+      kpis.appendChild(p);
+    }
   }
 
   // Copy buttons on code blocks (runs regardless of stats.json)
@@ -3310,11 +3342,12 @@ async function init() {
     wrap.appendChild(code);
     const btn = document.createElement('button');
     btn.className = 'copy-btn';
-    btn.textContent = 'Copy';
+    btn.setAttribute('data-t', 'copy');
+    btn.textContent = t('copy');
     btn.addEventListener('click', () => {
       navigator.clipboard.writeText(code.textContent.trim());
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy', 1500);
+      btn.textContent = t('copied');
+      setTimeout(() => btn.textContent = t('copy'), 1500);
     });
     wrap.appendChild(btn);
   });
