@@ -283,8 +283,8 @@ Available on both remote and local unless noted.
 | `generate_exam_question` | Legal topic → real BGE fact pattern with hidden analysis for Fallbearbeitung practice |
 | `get_law` | Look up a federal or cantonal Swiss law by SR number / abbreviation + optional canton. Returns full article text from the local mirror (Fedlex for federal, LexFind for cantonal) |
 | `search_laws` | Unified federal + cantonal FTS5 search with BM25 rank interleaving. Filter by `canton=` for a specific jurisdiction, or `jurisdiction='federal'` / `'cantonal'` |
-| `get_commentary` | Scholarly commentary for a specific law article — OnlineKommentar.ch (CC-BY-4.0) or OpenLegalCommentary.ch (CC BY-SA 4.0) |
-| `search_commentaries` | Full-text search across 1,058 legal commentaries from OnlineKommentar.ch + OpenLegalCommentary.ch |
+| `get_commentary` | Scholarly commentary for a specific federal law article from OnlineKommentar.ch (CC-BY-4.0) |
+| `search_commentaries` | Full-text search across 362 legal commentaries from OnlineKommentar.ch across 19 federal laws |
 | `search_legislation` | LexFind-backed discovery search across federal + cantonal legislation. `fetch_top_n_texts=N` enriches the top N results with full article text in a single call |
 | `get_legislation` | Full metadata + article text for any federal or cantonal law. Local-first (statutes.db → cantonal_laws.db → LexFind API fallback) |
 | `browse_legislation_changes` | Recent-changes feed per canton or federal level (live LexFind API, no local mirror) |
