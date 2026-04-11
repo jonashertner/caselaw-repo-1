@@ -7865,13 +7865,121 @@ def _get_curriculum_cases_for_topic(topic: str) -> list[dict]:
 # ── Statute tools ──────────────────────────────────────────────
 
 
+def _get_law_cantonal(
+    sr_number: str | None,
+    abbreviation: str | None,
+    article: str | None,
+    language: str,
+    canton: str,
+) -> dict:
+    """Look up a specific law or article from cantonal_laws.db."""
+    conn = _get_cantonal_conn()
+    if conn is None:
+        return {"error": (
+            "Cantonal laws DB not available yet. The first full crawl may "
+            "still be running — use search_legislation or get_legislation "
+            "as a LexFind-backed fallback in the meantime."
+        )}
+
+    try:
+        canton_u = canton.upper()
+        # Resolve by abbreviation OR sr_number. Cantonal abbreviations are
+        # stored in laws.title or (for future) a dedicated column — for now
+        # we fall back to title-prefix matching.
+        if not sr_number and abbreviation:
+            row = conn.execute(
+                """SELECT sr_number FROM laws
+                WHERE canton = ? AND language = ?
+                  AND (title LIKE ? OR title LIKE ?) LIMIT 1""",
+                (canton_u, language, f"%({abbreviation})%", f"{abbreviation}%"),
+            ).fetchone()
+            if row:
+                sr_number = row["sr_number"]
+            else:
+                return {"error": (
+                    f"No cantonal law found for {canton_u} with abbreviation "
+                    f"'{abbreviation}'. Try search_laws or search_legislation."
+                )}
+
+        if not sr_number:
+            return {"error": "Provide sr_number, abbreviation, or use search_laws."}
+
+        law = conn.execute(
+            """SELECT * FROM laws WHERE canton = ? AND sr_number = ? AND language = ?""",
+            (canton_u, sr_number, language),
+        ).fetchone()
+        if not law:
+            return {
+                "error": (
+                    f"No law found for canton={canton_u} SR {sr_number} "
+                    f"({language}). Use search_laws to discover the right law."
+                )
+            }
+
+        result = {
+            "sr_number": law["sr_number"] or "",
+            "title": law["title"],
+            "abbreviation": law["title"][:30],  # cantonal laws often lack a separate abbr
+            "canton": canton_u,
+            "level": "cantonal",
+            "language": language,
+            "category": law["category"] or "",
+        }
+
+        articles_rows = conn.execute(
+            """SELECT article_num, heading, text FROM articles
+            WHERE lexfind_id = ? AND language = ? ORDER BY seq""",
+            (law["lexfind_id"], language),
+        ).fetchall()
+
+        if article:
+            article_norm = article.strip().lstrip("§").lstrip("Art.").strip()
+            matches = [
+                a for a in articles_rows
+                if (a["article_num"] or "") == article_norm
+                or (a["article_num"] or "").lstrip("0") == article_norm.lstrip("0")
+            ]
+            if not matches:
+                matches = [
+                    a for a in articles_rows
+                    if (a["article_num"] or "").startswith(article_norm)
+                ]
+            result["articles"] = [
+                {"article_num": a["article_num"], "heading": a["heading"], "text": a["text"]}
+                for a in matches
+            ]
+        else:
+            result["article_count"] = len(articles_rows)
+            result["articles"] = [
+                {"article_num": a["article_num"], "heading": a["heading"]}
+                for a in articles_rows
+            ]
+        return result
+    except sqlite3.Error as e:
+        logger.error("Cantonal law lookup error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
 def get_law(
     sr_number: str | None = None,
     abbreviation: str | None = None,
     article: str | None = None,
     language: str = "de",
+    canton: str = "CH",
 ) -> dict:
-    """Look up a law or specific article from the Fedlex statute database."""
+    """Look up a law or specific article from the unified Swiss statute mirror.
+
+    Federal laws (canton='CH') are served from statutes.db (Fedlex mirror).
+    Cantonal laws are served from cantonal_laws.db (LexFind mirror). Both
+    are local, fast, and returned in the same shape so callers can work
+    uniformly across jurisdictions.
+    """
+    canton_u = (canton or "CH").upper()
+    if canton_u != "CH":
+        return _get_law_cantonal(sr_number, abbreviation, article, language, canton_u)
+
     conn = _get_statutes_conn()
     if conn is None:
         return {"error": "Statutes database not available. Deploy statutes.db to enable statute lookup."}
@@ -7906,6 +8014,9 @@ def get_law(
             "title": law[f"title_{language}"] or law["title_de"],
             "abbreviation": law[f"abbr_{language}"] or law["abbr_de"],
             "consolidation_date": law["consolidation_date"],
+            "canton": "CH",
+            "level": "federal",
+            "language": language,
         }
 
         if article:
@@ -7946,30 +8057,20 @@ def get_law(
         conn.close()
 
 
-def search_laws(
-    query: str,
-    sr_number: str | None = None,
-    language: str = "de",
-    limit: int = 10,
-) -> dict:
-    """Full-text search across statute articles."""
+def _search_laws_federal(
+    query: str, sr_number: str | None, language: str, limit: int,
+) -> list[dict]:
+    """Federal-only FTS5 search against statutes.db. Returns a ranked list."""
     conn = _get_statutes_conn()
     if conn is None:
-        return {"error": "Statutes database not available. Deploy statutes.db to enable statute search."}
-
-    limit = min(max(1, limit), 50)
-
+        return []
     try:
-        # Sanitize query for FTS5
-        query = _sanitize_fts5(query)
-        if not query:
-            return {"query": query, "count": 0, "results": []}
-        # Build FTS5 query
         if sr_number:
             rows = conn.execute(
                 """SELECT a.sr_number, a.article_num, a.heading,
                           snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
-                          l.abbr_de, l.abbr_fr, l.abbr_it
+                          l.abbr_de, l.abbr_fr, l.abbr_it,
+                          l.title_de, l.title_fr, l.title_it
                    FROM articles_fts f
                    JOIN articles a ON a.id = f.rowid
                    LEFT JOIN laws l ON a.sr_number = l.sr_number
@@ -7982,7 +8083,8 @@ def search_laws(
             rows = conn.execute(
                 """SELECT a.sr_number, a.article_num, a.heading,
                           snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
-                          l.abbr_de, l.abbr_fr, l.abbr_it
+                          l.abbr_de, l.abbr_fr, l.abbr_it,
+                          l.title_de, l.title_fr, l.title_it
                    FROM articles_fts f
                    JOIN articles a ON a.id = f.rowid
                    LEFT JOIN laws l ON a.sr_number = l.sr_number
@@ -7991,33 +8093,190 @@ def search_laws(
                    LIMIT ?""",
                 (query, language, limit),
             ).fetchall()
-
         results = []
         for r in rows:
             abbr = r[f"abbr_{language}"] or r["abbr_de"] or "?"
+            title = r[f"title_{language}"] or r["title_de"] or ""
             results.append({
+                "level": "federal",
+                "canton": "CH",
                 "sr_number": r["sr_number"],
                 "abbreviation": abbr,
+                "title": title,
                 "article_num": r["article_num"],
                 "heading": r["heading"],
                 "snippet": r["snippet"],
             })
-
-        return {"query": query, "count": len(results), "results": results}
+        return results
     except sqlite3.Error as e:
-        logger.error("Statute search error: %s", e)
-        return {"error": f"Database error: {e}"}
+        logger.error("Federal statute search error: %s", e)
+        return []
     finally:
         conn.close()
+
+
+def _search_laws_cantonal(
+    query: str, canton: str | None, language: str, limit: int,
+) -> list[dict]:
+    """Cantonal FTS5 search against cantonal_laws.db. Returns a ranked list."""
+    conn = _get_cantonal_conn()
+    if conn is None:
+        return []
+    try:
+        params: list = [query]
+        where = ["articles_fts MATCH ?"]
+        if canton:
+            where.append("f.canton = ?")
+            params.append(canton.upper())
+        if language:
+            where.append("f.language = ?")
+            params.append(language)
+        where_sql = " AND ".join(where)
+        # Over-fetch so the per-law dedupe can still fill `limit` results.
+        sql = f"""
+            SELECT f.lexfind_id, f.canton, f.language, f.article_num,
+                   bm25(articles_fts) AS rank,
+                   snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet
+            FROM articles_fts f
+            WHERE {where_sql}
+            ORDER BY rank
+            LIMIT ?
+        """
+        params.append(limit * 6)
+        raw = conn.execute(sql, params).fetchall()
+        if not raw:
+            return []
+
+        # Per-law dedupe: keep best-ranked article per (lexfind_id, language)
+        seen: set = set()
+        best: list[dict] = []
+        for r in raw:
+            key = (r["lexfind_id"], r["language"])
+            if key in seen:
+                continue
+            seen.add(key)
+            best.append(dict(r))
+            if len(best) >= limit:
+                break
+
+        # Join with law metadata
+        results = []
+        for r in best:
+            meta = conn.execute(
+                """SELECT sr_number, title, canton FROM laws
+                WHERE lexfind_id = ? AND language = ?""",
+                (r["lexfind_id"], r["language"]),
+            ).fetchone()
+            if not meta:
+                continue
+            results.append({
+                "level": "cantonal",
+                "canton": meta["canton"],
+                "sr_number": meta["sr_number"] or "",
+                "abbreviation": "",  # cantonal lacks standard abbreviations
+                "title": meta["title"],
+                "article_num": r["article_num"],
+                "heading": None,
+                "snippet": r["snippet"],
+                "lexfind_id": r["lexfind_id"],
+            })
+        return results
+    except sqlite3.Error as e:
+        logger.warning("Cantonal statute search error: %s", e)
+        return []
+    finally:
+        conn.close()
+
+
+def search_laws(
+    query: str,
+    sr_number: str | None = None,
+    canton: str | None = None,
+    language: str = "de",
+    limit: int = 10,
+    jurisdiction: str = "all",
+) -> dict:
+    """Unified federal + cantonal statute article FTS5 search.
+
+    Args:
+        query: natural-language or FTS5 query string.
+        sr_number: restrict to a single federal SR number (federal-only).
+        canton: two-letter canton code (cantonal-only). 'CH' → federal-only.
+        language: de / fr / it.
+        limit: max results (1-50).
+        jurisdiction: 'all' (default) / 'federal' / 'cantonal' — override for
+            callers who want explicit scoping without using sr_number/canton.
+    """
+    limit = min(max(1, limit), 50)
+    query = _sanitize_fts5(query)
+    if not query:
+        return {"query": query, "count": 0, "results": []}
+
+    # Determine which corpora to hit
+    canton_u = (canton or "").upper()
+    j = (jurisdiction or "all").lower()
+    hit_federal = (
+        j != "cantonal"
+        and not canton_u  # an explicit canton filter implies cantonal only
+        or canton_u == "CH"
+    )
+    hit_cantonal = (
+        j != "federal"
+        and not sr_number  # SR numbers are federal-scoped in statutes.db
+        and canton_u != "CH"
+    )
+
+    federal_results: list[dict] = []
+    cantonal_results: list[dict] = []
+    if hit_federal:
+        federal_results = _search_laws_federal(query, sr_number, language, limit)
+    if hit_cantonal:
+        cantonal_results = _search_laws_cantonal(
+            query, canton_u or None, language, limit,
+        )
+
+    # Interleave by rank position: federal #1, cantonal #1, federal #2, ...
+    merged: list[dict] = []
+    fi = ci = 0
+    while (fi < len(federal_results) or ci < len(cantonal_results)) and len(merged) < limit:
+        if fi < len(federal_results):
+            merged.append(federal_results[fi])
+            fi += 1
+            if len(merged) >= limit:
+                break
+        if ci < len(cantonal_results):
+            merged.append(cantonal_results[ci])
+            ci += 1
+
+    return {
+        "query": query,
+        "count": len(merged),
+        "results": merged,
+        "federal_hits": len(federal_results),
+        "cantonal_hits": len(cantonal_results),
+    }
 
 
 def _format_get_law_response(result: dict) -> str:
     if result.get("error"):
         return result["error"]
 
-    text = f"# {result['abbreviation']} — SR {result['sr_number']}\n"
+    level = result.get("level", "federal")
+    canton = result.get("canton", "CH")
+    label = f"Canton {canton}" if level == "cantonal" else "Bund (federal)"
+
+    abbr = result.get("abbreviation") or ""
+    sr = result.get("sr_number") or ""
+    header_bits = [b for b in (abbr, f"SR {sr}" if sr else "") if b]
+    header = " — ".join(header_bits) if header_bits else "Law"
+    text = f"# {header}\n"
     text += f"**{result['title']}**\n"
-    text += f"Consolidation date: {result['consolidation_date']}\n\n"
+    text += f"Jurisdiction: {label}\n"
+    if result.get("consolidation_date"):
+        text += f"Consolidation date: {result['consolidation_date']}\n"
+    if result.get("category"):
+        text += f"Category: {result['category']}\n"
+    text += "\n"
 
     articles = result.get("articles", [])
     if not articles:
@@ -8028,8 +8287,9 @@ def _format_get_law_response(result: dict) -> str:
     if articles and "text" in articles[0]:
         for art in articles:
             heading = f" — {art['heading']}" if art.get("heading") else ""
-            text += f"### Art. {art['article_num']}{heading}\n\n"
-            text += art["text"] + "\n\n"
+            marker = "§" if level == "cantonal" and canton in {"ZH", "SH", "AI", "AR", "AG", "BS", "BL"} else "Art."
+            text += f"### {marker} {art['article_num']}{heading}\n\n"
+            text += (art.get("text") or "") + "\n\n"
     else:
         # Just article list
         text += f"**{result.get('article_count', len(articles))} articles**\n\n"
@@ -8046,11 +8306,29 @@ def _format_search_laws_response(result: dict) -> str:
 
     results = result.get("results", [])
     text = f"# Statute Search: \"{result['query']}\"\n"
-    text += f"Found {result['count']} matching articles.\n\n"
+    fed = result.get("federal_hits", 0)
+    can = result.get("cantonal_hits", 0)
+    if fed or can:
+        text += f"Found {result['count']} articles ({fed} federal + {can} cantonal, interleaved).\n\n"
+    else:
+        text += f"Found {result['count']} articles.\n\n"
 
     for i, r in enumerate(results, 1):
+        level = r.get("level", "federal")
+        canton = r.get("canton", "CH")
         heading = f" — {r['heading']}" if r.get("heading") else ""
-        text += f"**{i}. Art. {r['article_num']} {r['abbreviation']}** (SR {r['sr_number']}){heading}\n"
+        if level == "cantonal":
+            marker = "§" if canton in {"ZH", "SH", "AI", "AR", "AG", "BS", "BL"} else "Art."
+            sr = r.get("sr_number") or ""
+            title = (r.get("title") or "")[:80]
+            text += f"**{i}. [{canton}] {marker} {r['article_num']}** — {title}"
+            if sr:
+                text += f" (SR {sr})"
+            text += f"{heading}\n"
+        else:
+            abbr = r.get("abbreviation") or "?"
+            sr = r.get("sr_number") or "?"
+            text += f"**{i}. [CH] Art. {r['article_num']} {abbr}** (SR {sr}){heading}\n"
         text += f"   {r['snippet']}\n\n"
 
     return text
@@ -9664,37 +9942,71 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="get_law",
             description=(
-                "AUTHORITATIVE LOOKUP for the current text of Swiss federal law articles. "
-                "Covers 80 federal laws (39,000 articles) mirrored from Fedlex, the official "
-                "Swiss federal publication portal, in all three official languages (DE/FR/IT). "
-                "Includes the core codes (OR, ZGB, StGB, StPO, ZPO, BV, SchKG, BGG/LTF, DBG, "
-                "IPRG, AIG, BVG, KVG, AsylG, BGFA and 65 others). Returns the consolidated "
-                "article text as of the law's current consolidation date. Use this BEFORE "
-                "relying on training-data recall — Swiss statute text changes frequently and "
-                "LLMs routinely hallucinate article content. "
-                "Examples: get_law(abbreviation='BV', article='8') for Art. 8 of the Federal "
-                "Constitution, get_law(sr_number='220', article='41') for Art. 41 OR."
+                "AUTHORITATIVE LOOKUP for the current text of any Swiss law article — "
+                "federal OR cantonal. Served from two local mirrors:\n"
+                "  • Federal (canton='CH', default): Fedlex mirror — core codes "
+                "(OR, ZGB, StGB, StPO, ZPO, BV, SchKG, BGG/LTF, DBG, IPRG, AIG, "
+                "BVG, KVG, AsylG, BGFA and dozens more), all three official "
+                "languages (DE/FR/IT).\n"
+                "  • Cantonal: LexFind mirror — every cantonal statute and "
+                "ordinance from all 26 cantons (ZH, BE, LU, UR, SZ, OW, NW, GL, "
+                "ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG, TI, VD, VS, NE, "
+                "GE, JU), in each canton's publication language.\n"
+                "Both jurisdictions return the same shape (title, articles with "
+                "heading + text, article_count, canton, level). Use this BEFORE "
+                "relying on training-data recall — Swiss statute text changes "
+                "frequently and LLMs routinely hallucinate article content. "
+                "Examples: get_law(abbreviation='BV', article='8'); "
+                "get_law(sr_number='220', article='41'); "
+                "get_law(canton='ZH', sr_number='554.5', article='1') for Art. 1 "
+                "of the Zurich Hundegesetz."
             ),
             inputSchema={
                 "type": "object",
                 "properties": {
                     "sr_number": {
                         "type": "string",
-                        "description": "SR number of the law (e.g., '210' for ZGB, '220' for OR, '101' for BV).",
+                        "description": (
+                            "SR number (federal: '210'=ZGB, '220'=OR, '101'=BV; "
+                            "cantonal: as published by the canton, e.g. '554.5' "
+                            "for ZH Hundegesetz)."
+                        ),
                     },
                     "abbreviation": {
                         "type": "string",
-                        "description": "Law abbreviation (e.g., 'BV', 'OR', 'ZGB', 'StGB', 'BGG'). Used to resolve SR number if sr_number not provided.",
+                        "description": (
+                            "Law abbreviation (federal only for now: 'BV', 'OR', "
+                            "'ZGB', 'StGB', 'BGG', etc.). Cantonal laws rarely "
+                            "have canonical abbreviations — use sr_number or "
+                            "discover via search_laws first."
+                        ),
                     },
                     "article": {
                         "type": "string",
-                        "description": "Article number to retrieve (e.g., '8', '41a'). If omitted, returns the full article list.",
+                        "description": (
+                            "Article number to retrieve (e.g., '8', '41a', '1bis'). "
+                            "For cantonal § laws (ZH, SH, AI, AR, BS, BL, AG), "
+                            "pass the § number without the § sign. If omitted, "
+                            "returns the full article list."
+                        ),
                     },
                     "language": {
                         "type": "string",
-                        "description": "Language for article text: de (German), fr (French), it (Italian).",
+                        "description": (
+                            "Language for article text: de, fr, it. For cantonal "
+                            "laws, must match the canton's publication language "
+                            "(fr for FR/GE/JU/NE/VD, it for TI, de otherwise)."
+                        ),
                         "enum": ["de", "fr", "it"],
                         "default": "de",
+                    },
+                    "canton": {
+                        "type": "string",
+                        "description": (
+                            "Two-letter canton code (ZH, BE, LU, …) or 'CH' for "
+                            "federal. Default 'CH' preserves backward compat."
+                        ),
+                        "default": "CH",
                     },
                 },
             },
@@ -9703,23 +10015,57 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_laws",
             description=(
-                "Full-text search across 39,000 articles of 80 Swiss federal laws "
-                "(Fedlex mirror). Searches article text, marginal headings, and article numbers "
-                "with BM25 ranking. Returns ranked snippets showing the match context. "
-                "Use when you know the topic but not the law/article; use get_law when you know "
-                "the specific article to retrieve. "
-                "Example: search_laws(query='Verjährung') to find statute-of-limitations provisions."
+                "UNIFIED full-text search across every Swiss statute article "
+                "indexed locally — federal (Fedlex mirror) AND cantonal (LexFind "
+                "mirror across all 26 cantons). BM25-ranked per corpus, merged "
+                "by interleaving so each response surfaces both jurisdictions. "
+                "Returns ranked snippets with article number, heading, law title, "
+                "canton, and level ('federal' | 'cantonal'). "
+                "Use this as the DEFAULT entry point when the user asks about "
+                "any Swiss legal topic and you don't know which law or which "
+                "jurisdiction applies. Filter with canton='ZH' (etc.) for "
+                "cantonal-only, or jurisdiction='federal'/'cantonal' for "
+                "explicit scoping. "
+                "Examples: search_laws(query='Verjährung') — find statute-of-"
+                "limitations provisions in federal + cantonal laws; "
+                "search_laws(query='Hundehaltung', canton='ZH') — ZH dog-keeping "
+                "rules; search_laws(query='Mietrecht', jurisdiction='federal') "
+                "— federal-only tenancy law."
             ),
             inputSchema={
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Search query (supports FTS5 syntax: quotes for phrases, OR for alternatives).",
+                        "description": (
+                            "Search query (supports FTS5 syntax: quotes for "
+                            "phrases, OR/AND for boolean, wildcards with *)."
+                        ),
                     },
                     "sr_number": {
                         "type": "string",
-                        "description": "Restrict search to a specific law by SR number.",
+                        "description": (
+                            "Restrict search to a specific federal law by SR "
+                            "number. Implies jurisdiction='federal'."
+                        ),
+                    },
+                    "canton": {
+                        "type": "string",
+                        "description": (
+                            "Two-letter canton code (ZH, BE, …) to restrict to "
+                            "one canton's statute corpus. 'CH' → federal only. "
+                            "Omit to search every jurisdiction."
+                        ),
+                    },
+                    "jurisdiction": {
+                        "type": "string",
+                        "description": (
+                            "Explicit scope override: 'all' (default), 'federal', "
+                            "or 'cantonal'. Most callers should omit this and let "
+                            "sr_number/canton drive the scope."
+                        ),
+                        "enum": ["all", "federal", "cantonal"],
+                        "default": "all",
                     },
                     "language": {
                         "type": "string",
@@ -9729,7 +10075,7 @@ def _list_tools() -> list[Tool]:
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum results (1-50).",
+                        "description": "Maximum merged results (1-50).",
                         "default": 10,
                     },
                 },
@@ -10272,6 +10618,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 abbreviation=arguments.get("abbreviation"),
                 article=arguments.get("article"),
                 language=arguments.get("language", "de"),
+                canton=arguments.get("canton", "CH"),
             )
             return [TextContent(type="text", text=_format_get_law_response(result))]
 
@@ -10280,8 +10627,10 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 search_laws,
                 query=arguments["query"],
                 sr_number=arguments.get("sr_number"),
+                canton=arguments.get("canton"),
                 language=arguments.get("language", "de"),
                 limit=int(arguments.get("limit", 10)),
+                jurisdiction=arguments.get("jurisdiction", "all"),
             )
             return [TextContent(type="text", text=_format_search_laws_response(result))]
 
@@ -11081,31 +11430,37 @@ render();setInterval(render,60000);
     # ── Statute endpoints ──────────────────────────────────────
 
     @rest_api.get("/laws/search", tags=["Statutes"],
-                  summary="Search federal law articles",
-                  description="Full-text search across Swiss federal law articles.")
+                  summary="Search Swiss statute articles (federal + cantonal)",
+                  description="Unified FTS5 search across statutes.db (federal) "
+                              "and cantonal_laws.db (all 26 cantons).")
     async def api_search_laws(
         query: str = Query(..., description="Search query"),
-        sr_number: str = Query(None, description="Restrict to specific law by SR number"),
+        sr_number: str = Query(None, description="Restrict to specific federal law by SR"),
+        canton: str = Query(None, description="Restrict to canton (ZH, BE, …, CH=federal)"),
+        jurisdiction: str = Query("all", description="all | federal | cantonal"),
         language: str = Query("de", description="Language: de, fr, it"),
         limit: int = Query(10, ge=1, le=50, description="Max results"),
     ):
         return await asyncio.to_thread(
-            search_laws, query=query, sr_number=sr_number, language=language, limit=limit,
+            search_laws, query=query, sr_number=sr_number, canton=canton,
+            jurisdiction=jurisdiction, language=language, limit=limit,
         )
 
     @rest_api.get("/laws/{abbreviation}", tags=["Statutes"],
-                  summary="Look up a federal law",
-                  description="Look up a Swiss federal law by abbreviation or SR number. "
-                              "Returns article list or specific article text.")
+                  summary="Look up a Swiss law (federal + cantonal)",
+                  description="Look up a federal law by abbreviation/SR or a "
+                              "cantonal law by SR + canton.")
     async def api_get_law(
-        abbreviation: str = PathParam(description="Law abbreviation (e.g., BV, OR, ZGB, StGB)"),
+        abbreviation: str = PathParam(description="Law abbreviation (e.g., BV, OR, ZGB, StGB) — or '_' for cantonal lookup by SR"),
         sr_number: str = Query(None, description="SR number (e.g., 210 for ZGB)"),
         article: str = Query(None, description="Article number to retrieve (e.g., 8, 41a)"),
         language: str = Query("de", description="Language: de, fr, it"),
+        canton: str = Query("CH", description="Canton code (CH=federal, ZH, BE, …)"),
     ):
+        abbr = None if abbreviation == "_" else abbreviation
         return await asyncio.to_thread(
-            get_law, sr_number=sr_number, abbreviation=abbreviation,
-            article=article, language=language,
+            get_law, sr_number=sr_number, abbreviation=abbr,
+            article=article, language=language, canton=canton,
         )
 
     @rest_api.get("/amendment-ref", tags=["Statutes"],
