@@ -5,8 +5,8 @@
     <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
       <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
     </div>
-    <h1 style="letter-spacing:-0.02em; line-height:1.1">Über OpenCaseLaw</h1>
-    <p class="sub" style="max-width:64ch">
+    <h1 style="letter-spacing:-0.02em; line-height:1.1" data-t="ueber_h1">Über OpenCaseLaw</h1>
+    <p class="sub" style="max-width:64ch" data-t="ueber_sub">
       OpenCaseLaw ist der grösste offene Datensatz Schweizer Gerichtsentscheide und die erste LLM-taugliche Schnittstelle
       zu Bundes- und kantonalen Gesetzen. Frei nutzbar, täglich aktualisiert, unabhängig finanziert.
     </p>
@@ -51,7 +51,7 @@
           Verhindert Duplikate, aber nie auf Kosten der Vollständigkeit.</li>
         <li><strong>Indexierung:</strong> SQLite FTS5 mit BM25-Ranking. Täglich voller Rebuild, atomarer Swap,
           kein Downtime für MCP-Worker.</li>
-        <li><strong>Zitationsgraph:</strong> 8,77 Millionen Kanten zwischen Entscheiden, 11,2 Mio Verweise auf Gesetzesartikel.
+        <li><strong>Zitationsgraph:</strong> 8,8 Millionen Kanten zwischen Entscheiden, 11,3 Mio Verweise auf Gesetzesartikel.
           Bidirektional, mit Appeal-Chain-Auflösung.</li>
         <li><strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking.
           MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).</li>
@@ -70,11 +70,11 @@
       <h2 style="margin:0 0 12px; font-size:22px">Zahlen</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:16px; font-family:var(--f-mono); font-size:13px">
         <div>
-          <div style="font-size:22px; font-weight:600; color:var(--tx)">965,141</div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">965'000+</div>
           <div style="color:var(--tx3); margin-top:4px">Entscheide</div>
         </div>
         <div>
-          <div style="font-size:22px; font-weight:600; color:var(--tx)">104</div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">114</div>
           <div style="color:var(--tx3); margin-top:4px">Gerichte</div>
         </div>
         <div>
@@ -86,7 +86,7 @@
           <div style="color:var(--tx3); margin-top:4px">kantonale Erlasse</div>
         </div>
         <div>
-          <div style="font-size:22px; font-weight:600; color:var(--tx)">8.77M</div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">8.8M</div>
           <div style="color:var(--tx3); margin-top:4px">Zitationen</div>
         </div>
         <div>

@@ -5,8 +5,8 @@
     <div style="font-size:11px; letter-spacing:0.8px; color:var(--tx3); text-transform:uppercase; margin-bottom:12px">
       <a href="/" style="color:var(--tx3); text-decoration:none">← opencaselaw.ch</a>
     </div>
-    <h1 style="letter-spacing:-0.02em; line-height:1.1">AI-Agenten verbinden</h1>
-    <p class="sub" style="max-width:64ch">
+    <h1 style="letter-spacing:-0.02em; line-height:1.1" data-t="mcp_h1">KI-Agenten verbinden</h1>
+    <p class="sub" style="max-width:64ch" data-t="mcp_sub">
       Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 965'000+ Schweizer
       Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 21 spezialisierte Tools,
       keine Anmeldung, keine API-Keys.
@@ -146,7 +146,7 @@
         <li>Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients</li>
         <li>TLS via Let's Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a></li>
         <li>4× uvicorn-Worker hinter Load-Balancer, automatisches Failover</li>
-        <li>Backend: 965'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,77 Mio Zitationskanten</li>
+        <li>Backend: 965'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,8 Mio Zitationskanten</li>
         <li>Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert</li>
       </ul>
     </div>

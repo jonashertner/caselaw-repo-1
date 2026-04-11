@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<title>Swiss Case Law Open Dataset — 962,724 Court Decisions | OpenCaseLaw.ch</title>
-<meta name="description" content="OpenCaseLaw publishes 962,724 Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.76 million extracted case-citation references. Updated daily.">
+<title>Swiss Case Law Open Dataset — 965,000+ Court Decisions | OpenCaseLaw.ch</title>
+<meta name="description" content="OpenCaseLaw publishes 965,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.8 million extracted case-citation references. Updated daily.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -17,8 +17,8 @@
 <link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
-<meta property="og:title" content="Swiss Case Law Open Dataset — 962,724 Court Decisions">
-<meta property="og:description" content="OpenCaseLaw publishes 962,724 Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.76 million extracted case-citation references.">
+<meta property="og:title" content="Swiss Case Law Open Dataset — 965,000+ Court Decisions">
+<meta property="og:description" content="OpenCaseLaw publishes 965,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.8 million extracted case-citation references.">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,8 +29,8 @@
 <meta property="og:locale:alternate" content="fr_CH">
 <meta property="og:locale:alternate" content="it_CH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Swiss Case Law Open Dataset — 962,724 Court Decisions">
-<meta name="twitter:description" content="962,724 Swiss federal, cantonal, and regulatory decisions with full text and 8.76 million extracted case-citation references.">
+<meta name="twitter:title" content="Swiss Case Law Open Dataset — 965,000+ Court Decisions">
+<meta name="twitter:description" content="965,000+ Swiss federal, cantonal, and regulatory decisions with full text and 8.8 million extracted case-citation references.">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
@@ -40,7 +40,7 @@
     "@type": "Dataset",
     "name": "Swiss Case Law Open Dataset",
     "alternateName": "OpenCaseLaw",
-    "description": "OpenCaseLaw publishes 962,724 Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.76 million extracted case-citation references. Updated daily. Searchable via MCP.",
+    "description": "OpenCaseLaw publishes 965,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.8 million extracted case-citation references. Updated daily. Searchable via MCP.",
     "url": "https://opencaselaw.ch/",
     "license": "https://creativecommons.org/publicdomain/zero/1.0/",
     "isAccessibleForFree": true,
@@ -1463,7 +1463,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 const I18N = {
   de: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone \u2014 plus direkter Zugriff auf 80 Bundesgesetze und 33\u2019000+ kantonale Erlasse. Sofort mit AI durchsuchen oder den gesamten Datensatz herunterladen.',
+    subtitle:'Der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide aller Bundesgerichte und 26 Kantone \u2014 plus direkter Zugriff auf 80 Bundesgesetze und 33\u2019000+ kantonale Erlasse. Sofort mit KI durchsuchen oder den gesamten Datensatz herunterladen.',
     loading:'Laden', kpi_decisions:'Entscheide', kpi_courts:'Gerichte', kpi_cantons:'Kantone', kpi_languages:'Sprachen', kpi_coverage:'Zeitraum',
     federal:'Bund', cantonal:'Kantone', cantons:'Kantone', access:'Datenzugang',
     th_court:'Gericht', th_canton:'Kanton', th_decisions:'Entscheide', th_updated:'Neue Daten', th_languages:'Sprachen',
@@ -1508,7 +1508,7 @@ const I18N = {
     cap_entscheide_desc:'Jeder publizierte Schweizer Gerichtsentscheid. Volltextsuche, Zitationsgraph, mehrsprachig (DE/FR/IT). T\u00e4glich aktualisiert.',
     cap_gesetze_desc:'80 Bundesgesetze als lokaler Fedlex-Spiegel plus 33\u2019000+ kantonale Erlasse via LexFind. Authoritativer Text statt halluzinierter Zitate.',
     cap_mcp_desc:'21 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote oder lokal. Einrichtung in 30 Sekunden.',
-    cap_cta_entscheide:'Datensatz \u2192', cap_cta_gesetze:'Legislation \u2192', cap_cta_mcp:'MCP-Setup \u2192',
+    cap_cta_entscheide:'Datensatz \u2192', cap_cta_gesetze:'Gesetze \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Drei Wege hinein',
     what_heading:'Was ist OpenCaseLaw?',
     demo_heading:'Live aus dem Korpus',
@@ -1520,14 +1520,20 @@ const I18N = {
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
+    gesetze_h1:'Schweizer Bundes- und kantonale Gesetzgebung',
+    gesetze_sub:'Direkter Zugriff auf den aktuellen Text von 80 Schweizer Bundesgesetzen (39\u2019000 Artikel in Deutsch, Franz\u00f6sisch und Italienisch) sowie auf 33\u2019000+ kantonale und interkantonale Erlasse. Alle Inhalte sind \u00fcber das Model Context Protocol (MCP) f\u00fcr LLM-Agenten wie Claude, ChatGPT, Cursor und Gemini erreichbar.',
+    mcp_h1:'KI-Agenten verbinden',
+    mcp_sub:'Der \u00f6ffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 965\u2019000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 21 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
+    ueber_h1:'\u00dcber OpenCaseLaw',
+    ueber_sub:'OpenCaseLaw ist der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar, t\u00e4glich aktualisiert, unabh\u00e4ngig finanziert.',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat-Oberfl\u00e4che \u2014 Fragen stellen, Entscheide erhalten',
     quick_download:'Download', quick_download_desc:'Kompletter Datensatz zum Download auf HuggingFace',
-    quick_search:'Mit AI durchsuchen', quick_search_desc:'Fragen in natürlicher Sprache stellen — Einrichtung in 30 Sekunden',
+    quick_search:'Mit KI durchsuchen', quick_search_desc:'Fragen in natürlicher Sprache stellen — Einrichtung in 30 Sekunden',
     quick_api:'API', quick_api_desc:'Den Datensatz programmatisch via REST API abfragen',
     access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI, Gemini oder lokalen Modellen via Ollama (kein API-Schl\u00fcssel n\u00f6tig).',
-    access_featured_title:'Mit AI durchsuchen',
-    access_featured_desc:'\u00dcber 956\u2019000 Schweizer Gerichtsentscheide in nat\u00fcrlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.',
+    access_featured_title:'Mit KI durchsuchen',
+    access_featured_desc:'\u00dcber 965\u2019000+ Schweizer Gerichtsentscheide in nat\u00fcrlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (empfohlen)', access_local_label:'Lokal (offline)',
@@ -1571,7 +1577,7 @@ const I18N = {
     study_p4:'Wie hat sich die culpa in contrahendo-Doktrin entwickelt?',
     study_p5:'Zeig mir die Erwägungen von BGE 144 III 93',
     study_p6:'Prüf meine Subsumtion: [meine Antwort]',
-    hero_mcp:'Mit AI durchsuchen',
+    hero_mcp:'Mit KI durchsuchen',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   },
   fr: {
@@ -1633,6 +1639,12 @@ const I18N = {
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
+    gesetze_h1:'L\u00e9gislation f\u00e9d\u00e9rale et cantonale suisse',
+    gesetze_sub:'Acc\u00e8s direct au texte actuel de 80 lois f\u00e9d\u00e9rales suisses (39\u2019000 articles en allemand, fran\u00e7ais et italien) ainsi qu\'\u00e0 plus de 33\u2019000 actes cantonaux et intercantonaux. Tous les contenus sont accessibles via le Model Context Protocol (MCP) pour les agents IA comme Claude, ChatGPT, Cursor et Gemini.',
+    mcp_h1:'Connecter des agents IA',
+    mcp_sub:'Le serveur MCP public d\'OpenCaseLaw donne aux mod\u00e8les de langage un acc\u00e8s direct \u00e0 plus de 965\u2019000 d\u00e9cisions judiciaires suisses, au graphe de citations, aux lois f\u00e9d\u00e9rales et aux actes cantonaux. 21 outils sp\u00e9cialis\u00e9s, aucune inscription, aucune cl\u00e9 API.',
+    ueber_h1:'\u00c0 propos d\'OpenCaseLaw',
+    ueber_sub:'OpenCaseLaw est le plus grand jeu de donn\u00e9es ouvert de la jurisprudence suisse et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'utilisation, mis \u00e0 jour quotidiennement, financ\u00e9 ind\u00e9pendamment.',
     search_placeholder:'Rechercher...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interface de chat \u2014 posez des questions, obtenez des d\u00e9cisions',
     quick_download:'Télécharger', quick_download_desc:'Dataset complet à télécharger sur HuggingFace',
@@ -1640,7 +1652,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Interroger le dataset par programmation via l\'API REST',
     access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI, Gemini ou des mod\u00e8les locaux via Ollama (sans cl\u00e9 API).',
     access_featured_title:'Recherche avec IA',
-    access_featured_desc:'Recherchez plus de 956 000 décisions judiciaires suisses en langage naturel. Trouvez les arrêts pertinents, tracez les citations entre décisions, analysez les tendances jurisprudentielles et rédigez des notes de recherche.',
+    access_featured_desc:'Recherchez plus de 965 000 décisions judiciaires suisses en langage naturel. Trouvez les arrêts pertinents, tracez les citations entre décisions, analysez les tendances jurisprudentielles et rédigez des notes de recherche.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Distant (recommand\u00e9)', access_local_label:'Local (hors ligne)',
@@ -1746,6 +1758,12 @@ const I18N = {
     footer_about:'Chi siamo', footer_contact:'Contatto',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
+    gesetze_h1:'Legislazione federale e cantonale svizzera',
+    gesetze_sub:'Accesso diretto al testo attuale di 80 leggi federali svizzere (39\u2019000 articoli in tedesco, francese e italiano) nonch\u00e9 a pi\u00f9 di 33\u2019000 atti cantonali e intercantonali. Tutti i contenuti sono accessibili tramite il Model Context Protocol (MCP) per agenti IA come Claude, ChatGPT, Cursor e Gemini.',
+    mcp_h1:'Collegare agenti IA',
+    mcp_sub:'Il server MCP pubblico di OpenCaseLaw d\u00e0 ai modelli linguistici accesso diretto a oltre 965\u2019000 decisioni giudiziarie svizzere, al grafo delle citazioni, alle leggi federali e agli atti cantonali. 21 strumenti specializzati, nessuna registrazione, nessuna chiave API.',
+    ueber_h1:'Chi siamo',
+    ueber_sub:'OpenCaseLaw \u00e8 il pi\u00f9 grande dataset aperto della giurisprudenza svizzera e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero utilizzo, aggiornato quotidianamente, finanziato in modo indipendente.',
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfaccia chat \u2014 fai domande, ottieni decisioni',
     quick_download:'Download', quick_download_desc:'Dataset completo da scaricare su HuggingFace',
@@ -1753,7 +1771,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Interroga il dataset via API REST',
     access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI, Gemini o modelli locali via Ollama (senza chiave API).',
     access_featured_title:'Ricerca con IA',
-    access_featured_desc:'Cerca oltre 956\u2019000 decisioni giudiziarie svizzere in linguaggio naturale. Trova sentenze pertinenti, traccia le citazioni tra decisioni, analizza le tendenze giurisprudenziali e redigi note di ricerca.',
+    access_featured_desc:'Cerca oltre 965\u2019000+ decisioni giudiziarie svizzere in linguaggio naturale. Trova sentenze pertinenti, traccia le citazioni tra decisioni, analizza le tendenze giurisprudenziali e redigi note di ricerca.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remoto (consigliato)', access_local_label:'Locale (offline)',
@@ -1802,7 +1820,7 @@ const I18N = {
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Tschertgar directamain cun IA u telechargiar il set da datas cumplain.',
+    subtitle:'Il pli grond set da datas avert da decisiuns giudizialas svizras da tut las dretgiras federalas e 26 chantuns. Tschertgar directamain cun AI u telechargiar il set da datas cumplain.',
     loading:'Chargiar', kpi_decisions:'Decisiuns', kpi_courts:'Dretgiras', kpi_cantons:'Chantuns', kpi_languages:'Linguas', kpi_coverage:'Perioda',
     federal:'Federal', cantonal:'Chantuns', cantons:'Chantuns', access:'Access a las datas',
     th_court:'Dretgira', th_canton:'Chantun', th_decisions:'Decisiuns', th_updated:'Datas novas', th_languages:'Linguas',
@@ -1847,7 +1865,7 @@ const I18N = {
     cap_entscheide_desc:'Mintga decisiun giudiziala svizra publitgada. Tschertga full-text, grafic da citaziuns, plurilingual (DE/FR/IT). Actualis\u00e0 mintga di.',
     cap_gesetze_desc:'80 leschas federalas sco spievel Fedlex local plus 33\u2019000+ texts chantunals via LexFind. Text autoritativ enstagl citaziuns incorrectas.',
     cap_mcp_desc:'21 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Distant u local. Setup en 30 secundas.',
-    cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislaziun \u2192', cap_cta_mcp:'MCP-Setup \u2192',
+    cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Leschas \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Trais entradas',
     what_heading:'Tge \u00e8 OpenCaseLaw?',
     demo_heading:'En viv dal corpus',
@@ -1859,14 +1877,20 @@ const I18N = {
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
+    gesetze_h1:'Legislaziun federala e chantunala svizra',
+    gesetze_sub:'Access direct al text actual da 80 leschas federalas svizras (39\u2019000 artitgels en tudestg, franz\u00f6s ed italian) sco era a passa 33\u2019000 acts chantunals ed interchantunals. Tut ils cuntegns \u00e8n cc\u00e8ssibels tras il Model Context Protocol (MCP) per agents AI sco Claude, ChatGPT, Cursor e Gemini.',
+    mcp_h1:'Connectar agents AI',
+    mcp_sub:'Il server MCP public da OpenCaseLaw d\u00e0 als models linguistics access direct a passa 965\u2019000 decisiuns giudizialas svizras, al grafic da citaziuns, a las leschas federalas ed als acts chantunals. 21 utensils specialis\u00e0s, nagina registraziun, nagins API keys.',
+    ueber_h1:'Davart OpenCaseLaw',
+    ueber_sub:'OpenCaseLaw \u00e8 la pli gronda collecziun averta da giurisprudenza svizra e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber d\'utilisar, actualis\u00e0 mintga di, finanzi\u00e0 independentamain.',
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfatscha da chat \u2014 far dumondas, obtegnir decisiuns',
     quick_download:'Telechargiar', quick_download_desc:'Set da datas cumplain per telechargiar sin HuggingFace',
-    quick_search:'Tschertgar cun IA', quick_search_desc:'Far dumondas en lingua natirala — configuraziun en 30 secundas',
+    quick_search:'Tschertgar cun AI', quick_search_desc:'Far dumondas en lingua natirala — configuraziun en 30 secundas',
     quick_api:'API', quick_api_desc:'Dumandar il set da datas programmaticamain via API REST',
     access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI, Gemini u models locals via Ollama (senza clav API).',
-    access_featured_title:'Tschertgar cun IA',
-    access_featured_desc:'Tschertgar sur 956\u2019000 decisiuns giudizialas svizras en lingua natirala. Chattar sentenziuns relevantas, persequitar citaziuns tranter decisiuns, analisar tendenzas giurisprudenzialas e rediger notizias da perscrutaziun.',
+    access_featured_title:'Tschertgar cun AI',
+    access_featured_desc:'Tschertgar sur 965\u2019000+ decisiuns giudizialas svizras en lingua natirala. Chattar sentenziuns relevantas, persequitar citaziuns tranter decisiuns, analisar tendenzas giurisprudenzialas e rediger notizias da perscrutaziun.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (recumandà)', access_local_label:'Local (offline)',
@@ -1910,7 +1934,7 @@ const I18N = {
     study_p4:'Co sa ha la doctrina da culpa in contrahendo sviluppà?',
     study_p5:'Mussar ils considerands da la DTF 144 III 93',
     study_p6:'Valitescha mia subsumziun: [mia resposta]',
-    hero_mcp:'Tschertgar cun IA',
+    hero_mcp:'Tschertgar cun AI',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
   },
   en: {
@@ -1972,6 +1996,12 @@ const I18N = {
     footer_about:'About OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
+    gesetze_h1:'Swiss federal and cantonal legislation',
+    gesetze_sub:'Direct access to the current text of 80 Swiss federal laws (39,000 articles in German, French and Italian) plus 33,000+ cantonal and intercantonal acts. All content is reachable via the Model Context Protocol (MCP) for AI agents like Claude, ChatGPT, Cursor and Gemini.',
+    mcp_h1:'Connect AI agents',
+    mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 965,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 21 specialized tools, no sign-up, no API keys.',
+    ueber_h1:'About OpenCaseLaw',
+    ueber_sub:'OpenCaseLaw is the largest open dataset of Swiss case law and the first LLM-ready interface to federal and cantonal legislation. Free to use, updated daily, independently funded.',
     search_placeholder:'Search courts...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat interface \u2014 ask questions, get cited decisions',
     quick_download:'Download', quick_download_desc:'Full dataset for download on HuggingFace',
@@ -1979,7 +2009,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Query the dataset programmatically via REST API',
     access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).',
     access_featured_title:'Search with AI',
-    access_featured_desc:'Search over 956,000 Swiss court decisions in natural language. Find relevant cases, trace citations between decisions, analyze legal trends, and draft research memos.',
+    access_featured_desc:'Search over 965,000 Swiss court decisions in natural language. Find relevant cases, trace citations between decisions, analyze legal trends, and draft research memos.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (recommended)', access_local_label:'Local (offline)',
