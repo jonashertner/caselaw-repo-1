@@ -52,10 +52,19 @@ session.headers["Accept"] = "application/sparql-results+json"
 
 
 def sparql_query(query: str, timeout: int = 120) -> list[dict]:
-    """Execute a SPARQL query and return results as list of dicts."""
-    resp = session.get(
+    """Execute a SPARQL query and return results as list of dicts.
+
+    Uses POST with form-encoded body to avoid URL-length limits — the
+    Fedlex endpoint returns HTTP 400 for GETs longer than ~4-6 kB, and
+    the full-SR crawl has batches with many long consolidation URIs.
+    """
+    resp = session.post(
         SPARQL_ENDPOINT,
-        params={"query": query, "format": "application/sparql-results+json"},
+        data={"query": query},
+        headers={
+            "Accept": "application/sparql-results+json",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
         timeout=timeout,
     )
     resp.raise_for_status()
@@ -132,9 +141,10 @@ def get_law_metadata(work_uris: list[str]) -> dict[str, dict]:
     metadata = {}
 
     for lang, lang_uri in LANG_URIS.items():
-        # Batch in groups of 80 to avoid URL length limits on SPARQL GET
-        for i in range(0, len(work_uris), 80):
-            batch = work_uris[i : i + 80]
+        # Batch in groups of 40 — keeps the POST body well under Fedlex's
+        # ~4-6 kB query length limit even with long ELI work URIs.
+        for i in range(0, len(work_uris), 40):
+            batch = work_uris[i : i + 40]
             values = " ".join(f"<{uri}>" for uri in batch)
             query = f"""
             PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
@@ -167,11 +177,15 @@ def get_law_metadata(work_uris: list[str]) -> dict[str, dict]:
 
 def get_xml_urls(consolidation_uris: list[str]) -> dict[str, dict[str, str]]:
     """Get XML download URLs for consolidations, keyed by consolidation URI and language."""
-    log.info("Resolving XML download URLs via SPARQL...")
+    log.info("Resolving XML download URLs via SPARQL (%d consolidations)...", len(consolidation_uris))
     url_map = {}  # consolidation_uri -> {lang: url}
 
-    for i in range(0, len(consolidation_uris), 100):
-        batch = consolidation_uris[i : i + 100]
+    # Smaller batches (was 100) to keep the POST body under ~4 kB even with
+    # long ELI URIs. 40 consolidations × ~90 chars each ≈ 3.6 kB body.
+    batch_size = 40
+    total_batches = (len(consolidation_uris) + batch_size - 1) // batch_size
+    for bi, i in enumerate(range(0, len(consolidation_uris), batch_size), 1):
+        batch = consolidation_uris[i : i + batch_size]
         values = " ".join(f"<{uri}>" for uri in batch)
         query = f"""
         PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
@@ -185,7 +199,12 @@ def get_xml_urls(consolidation_uris: list[str]) -> dict[str, dict[str, str]]:
           ?manif jolux:isExemplifiedBy ?url .
         }}
         """
-        rows = sparql_query(query, timeout=120)
+        try:
+            rows = sparql_query(query, timeout=120)
+        except Exception as e:
+            log.warning("XML URL query failed (batch %d/%d): %s", bi, total_batches, e)
+            time.sleep(REQUEST_DELAY * 3)
+            continue
         for row in rows:
             cons = row["consolidation"]
             lang_uri = row["lang"]
@@ -195,8 +214,11 @@ def get_xml_urls(consolidation_uris: list[str]) -> dict[str, dict[str, str]]:
             )
             if lang:
                 url_map.setdefault(cons, {})[lang] = url
+        if bi % 20 == 0:
+            log.info("XML URL progress: %d/%d batches, %d mapped", bi, total_batches, len(url_map))
         time.sleep(REQUEST_DELAY)
 
+    log.info("Resolved XML URLs for %d consolidations", len(url_map))
     return url_map
 
 
