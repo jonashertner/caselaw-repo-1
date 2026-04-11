@@ -99,14 +99,70 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
+  /* ── Fonts ───────────────────────────────────────────────── */
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
-  --fs-2xs: 0.75rem; --fs-xs: 0.75rem; --fs-sm: 0.8125rem;
-  --fs-base: 0.875rem; --fs-md: 0.9375rem; --fs-lg: 1rem;
-  --fs-xl: 1.125rem; --fs-2xl: 1.5rem; --fs-3xl: 2.5rem; --fs-4xl: 3.5rem;
-  --r: 8px; --r-sm: 6px; --r-xs: 3px;
-  --max-w: 1280px;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Type scale (modular, data-density tuned) ────────────── */
+  --fs-2xs: 0.6875rem; /* 11px — small labels, kickers      */
+  --fs-xs:  0.75rem;   /* 12px — mono data, hero-facts      */
+  --fs-sm:  0.8125rem; /* 13px — secondary body             */
+  --fs-base:0.875rem;  /* 14px — default body               */
+  --fs-md:  0.9375rem; /* 15px — dense prose                */
+  --fs-lg:  1rem;      /* 16px — base body, paragraphs      */
+  --fs-xl:  1.125rem;  /* 18px — subheadings, capability h3 */
+  --fs-2xl: 1.375rem;  /* 22px — section h2, card h3        */
+  --fs-3xl: 1.75rem;   /* 28px — page h1 on sub-pages       */
+  --fs-4xl: 2.25rem;   /* 36px — landing prose h2           */
+  --fs-5xl: 3rem;      /* 48px — reserved, not yet used     */
+
+  /* Line heights & letter spacing by role */
+  --lh-tight:   1.15;
+  --lh-snug:    1.3;
+  --lh-base:    1.55;
+  --lh-relaxed: 1.7;
+  --ls-tight:  -0.02em;
+  --ls-snug:   -0.01em;
+  --ls-base:   0;
+  --ls-wide:    0.04em;
+  --ls-kicker:  0.12em;
+
+  /* ── 8-pt spacing scale ──────────────────────────────────── */
+  --s-1:  4px;   --s-2:  8px;  --s-3: 12px;  --s-4: 16px;
+  --s-5: 20px;   --s-6: 24px;  --s-7: 32px;  --s-8: 40px;
+  --s-9: 48px;   --s-10: 64px; --s-11: 80px; --s-12: 96px;
+  --s-13: 128px;
+
+  /* Section rhythm — responsive bottom gaps used on every top-level
+     section on the landing page. Single source of truth so the
+     whole page scans as one continuous vertical scale. */
+  --gap-section:    clamp(56px, 8vw, 96px);
+  --gap-section-sm: clamp(36px, 5vw, 64px);
+  --gap-component:  clamp(20px, 3vw, 32px);
+  --gap-inline:     clamp(10px, 1.5vw, 16px);
+
+  /* ── Radius ──────────────────────────────────────────────── */
+  --r-xs:  3px;
+  --r-sm:  6px;
+  --r:     8px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-pill: 999px;
+
+  /* ── Layout widths ───────────────────────────────────────── */
+  --max-w:        1240px;
+  --max-w-prose:  68ch;
+  --max-w-narrow: 640px;
+  --gutter-x:     clamp(16px, 3vw, 28px);
+
+  /* ── Motion ──────────────────────────────────────────────── */
+  --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out:  cubic-bezier(0.16, 0.84, 0.28, 1);
+  --dur-fast:  120ms;
+  --dur:       180ms;
+  --dur-slow:  260ms;
+
+  /* ── Color (light) ───────────────────────────────────────── */
   --bg: #ffffff; --bg2: #f7f7f8; --surf: #ffffff;
   --brd: #d4d4d4; --brd2: #e8e8ec;
   --tx: #0a0a0a; --tx2: #525252; --tx3: #a3a3a3;
@@ -140,16 +196,29 @@ html {
   scroll-behavior: smooth;
 }
 body {
-  font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.55;
-  background: var(--bg); color: var(--tx);
+  font-family: var(--f-sans);
+  font-size: var(--fs-md);
+  line-height: var(--lh-base);
+  background: var(--bg);
+  color: var(--tx);
   -webkit-font-smoothing: antialiased;
-  transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern", "ss01", "cv05";
+  text-rendering: optimizeLegibility;
+  transition: background var(--dur-slow) var(--ease), color var(--dur-slow) var(--ease);
   overflow-x: hidden;
   overflow-x: clip;
 }
-.w { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+.w { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--gutter-x); }
 a { color: var(--ac); text-decoration: none; }
 a:hover { text-decoration: underline; }
+
+/* Section rhythm utility — single source of truth for the vertical
+   gaps between top-level landing sections. Any top-level element on
+   the landing page that wants the canonical section gap gets this
+   class instead of an ad-hoc clamp(). */
+.section { margin: 0 0 var(--gap-section); }
+.section-sm { margin: 0 0 var(--gap-section-sm); }
 
 /* ── Toolbar ── */
 .toolbar {
@@ -163,22 +232,34 @@ a:hover { text-decoration: underline; }
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 24px;
-  height: 52px;
+  gap: var(--s-6);
+  height: 56px;
 }
 .toolbar-brand {
-  display: inline-flex; align-items: center; gap: 8px;
-  color: var(--tx); text-decoration: none;
-  font-family: var(--f-mono); font-size: 13px; letter-spacing: -0.01em;
-  transition: color 0.15s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--tx);
+  text-decoration: none;
+  font-family: var(--f-mono);
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-snug);
+  transition: color var(--dur) var(--ease);
 }
 .toolbar-brand:hover { color: var(--tx); text-decoration: none; }
 .toolbar-brand .brand-mark {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px;
-  border: 1px solid var(--brd); border-radius: 4px;
-  color: var(--tx2); font-weight: 600;
-  transition: border-color 0.15s var(--ease), color 0.15s var(--ease);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-xs);
+  color: var(--tx2);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 .toolbar-brand:hover .brand-mark { border-color: var(--tx3); color: var(--tx); }
 .toolbar-brand .brand-wordmark { font-weight: 500; color: var(--tx); }
@@ -738,47 +819,46 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .hero-v2 {
   max-width: 880px;
   margin: 0 auto;
-  padding: clamp(64px, 10vw, 132px) 0 clamp(48px, 6vw, 80px);
+  padding: clamp(56px, 9vw, 120px) 0 clamp(40px, 5vw, 64px);
   text-align: center;
 }
 .hero-v2 .hero-kicker {
   font-family: var(--f-mono);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--ls-kicker);
   text-transform: uppercase;
   color: var(--tx3);
-  margin: 0 0 clamp(32px, 5vw, 56px);
+  margin: 0 0 clamp(28px, 4.5vw, 48px);
 }
 .hero-v2 .hero-stat {
-  margin: 0 0 clamp(32px, 5vw, 52px);
+  margin: 0 0 clamp(24px, 3.5vw, 40px);
 }
 .hero-v2 .hero-stat-num {
   display: block;
-  /* Smaller than v1's clamp(72px,14vw,168px) — ~62 % of previous. A lighter
-     weight at this size reads as more refined; tabular-nums keeps the digits
-     from shifting horizontally during the counter animation. */
-  font-size: clamp(56px, 9vw, 104px);
+  /* Floor at 44px for 320-375px screens so the number never crowds
+     the viewport edges. Ceiling at 104px on wide viewports. */
+  font-size: clamp(44px, 9vw, 104px);
   font-weight: 500;
   letter-spacing: -0.035em;
   line-height: 0.95;
   color: var(--tx);
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
-  margin-bottom: clamp(8px, 1.5vw, 14px);
+  margin-bottom: clamp(8px, 1.2vw, 12px);
 }
 .hero-v2 .hero-stat-label {
   display: block;
-  font-size: clamp(16px, 2.2vw, 22px);
+  font-size: clamp(15px, 2vw, 20px);
   font-weight: 400;
   color: var(--tx2);
-  letter-spacing: -0.005em;
+  letter-spacing: var(--ls-snug);
 }
 .hero-v2 .hero-headline {
-  font-size: clamp(22px, 3.2vw, 34px);
+  font-size: clamp(22px, 3vw, 32px);
   font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: var(--ls-tight);
+  line-height: var(--lh-snug);
   color: var(--tx);
   margin: 0 auto clamp(6px, 1vw, 10px);
   max-width: 22ch;
@@ -786,7 +866,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .hero-v2 .hero-tagline {
   font-size: clamp(14px, 1.5vw, 16px);
-  line-height: 1.5;
+  line-height: var(--lh-base);
   color: var(--tx2);
   margin: 0 auto clamp(20px, 3vw, 32px);
   max-width: 46ch;
@@ -796,28 +876,14 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-2);
   flex-wrap: wrap;
   margin-bottom: clamp(20px, 3.5vw, 36px);
 }
-.hero-v2 .hero-meta {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px 18px;
-  flex-wrap: wrap;
-  font-family: var(--f-mono);
-  font-size: 12px;
-  color: var(--tx3);
-  letter-spacing: 0.01em;
-}
-.hero-v2 .hero-meta .sep { color: var(--brd); }
-.hero-v2 .hero-meta strong { color: var(--tx2); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* Expanded hero breakdown: language split + fact row. Replaces the old
-   single-line .hero-meta. */
+/* Expanded hero breakdown: language split + fact row. */
 .hero-v2 .hero-breakdown {
-  margin-top: clamp(24px, 4vw, 40px);
+  margin-top: clamp(20px, 3.5vw, 36px);
 }
 .hero-v2 .hero-langs {
   display: grid;
@@ -922,15 +988,15 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
 /* ── Corpus snapshot band ────────────────────────────────────
    A data-first panel directly below the hero. Three cards side by
-   side: Decisions, Legislation, Scholarship & graph. Each shows the
+   side: Decisions, Legislation, Graph & doctrine. Each shows the
    current count, the 24-hour delta, and a compact composition
    fingerprint. Restrained mono aesthetic — no charts, no colour
    flourish, every pixel earns its place. */
 .corpus-snapshot {
-  margin: clamp(40px, 6vw, 72px) 0 clamp(56px, 8vw, 96px);
-  padding: clamp(24px, 3vw, 32px);
-  border: 1px solid var(--brd);
-  border-radius: 12px;
+  margin: 0 0 var(--gap-section);
+  padding: clamp(22px, 3vw, 32px) clamp(22px, 3vw, 36px);
+  border: 1px solid var(--brd2);
+  border-radius: var(--r-lg);
   background: var(--bg2);
 }
 .corpus-snapshot .snapshot-header {
@@ -938,72 +1004,79 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px 16px;
-  margin-bottom: clamp(16px, 2vw, 24px);
+  gap: var(--s-2) var(--s-4);
+  margin-bottom: clamp(18px, 2.5vw, 26px);
   padding-bottom: clamp(14px, 2vw, 20px);
-  border-bottom: 1px solid var(--brd);
+  border-bottom: 1px solid var(--brd2);
 }
 .corpus-snapshot .snapshot-header h2 {
   margin: 0;
-  font-size: clamp(14px, 1.5vw, 16px);
+  font-family: var(--f-mono);
+  font-size: var(--fs-2xs);
   font-weight: 600;
   color: var(--tx);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--ls-kicker);
 }
 .corpus-snapshot .snapshot-stamp {
   margin: 0;
   font-family: var(--f-mono);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--tx3);
   letter-spacing: 0.01em;
+  line-height: 1.5;
 }
 .corpus-snapshot .snapshot-stamp time {
   color: var(--tx2);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
-.corpus-snapshot .snapshot-stamp .sep { color: var(--brd); margin: 0 8px; }
+.corpus-snapshot .snapshot-stamp .sep { color: var(--brd); margin: 0 var(--s-2); }
 .corpus-snapshot .snapshot-stamp strong {
   color: var(--tx);
   font-variant-numeric: tabular-nums;
+  font-weight: 700;
 }
 
 .corpus-snapshot .snapshot-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(18px, 2vw, 28px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.5vw, 32px);
+  align-items: stretch;
 }
 .corpus-snapshot .snapshot-card {
   min-width: 0;
-  padding: 0;
-  border-left: 1px solid var(--brd);
-  padding-left: clamp(16px, 2vw, 24px);
+  padding: 0 0 0 clamp(16px, 2vw, 24px);
+  border-left: 1px solid var(--brd2);
+  display: flex;
+  flex-direction: column;
 }
 .corpus-snapshot .snapshot-card:first-child {
   border-left: 0;
   padding-left: 0;
 }
-.corpus-snapshot .snapshot-card header {
+.corpus-snapshot .snapshot-card > header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
 }
 .corpus-snapshot .snapshot-card h3 {
   margin: 0;
-  font-size: 11px;
+  font-family: var(--f-mono);
+  font-size: var(--fs-2xs);
   font-weight: 700;
   color: var(--tx3);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--ls-kicker);
 }
 .corpus-snapshot .snapshot-card-delta {
   font-family: var(--f-mono);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--tx3);
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
 }
 .corpus-snapshot .snapshot-card-delta strong {
   color: var(--tx);
@@ -1011,44 +1084,48 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .corpus-snapshot .snapshot-big {
   font-family: var(--f-mono);
-  font-size: clamp(26px, 3.2vw, 36px);
+  font-size: clamp(28px, 3.4vw, 40px);
   font-weight: 700;
   color: var(--tx);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
-  line-height: 1.05;
-  margin-bottom: 6px;
+  line-height: 1;
+  margin-bottom: var(--s-2);
 }
 .corpus-snapshot .snapshot-big-sub {
   font-family: var(--f-mono);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--tx3);
   letter-spacing: 0.02em;
-  margin-bottom: 14px;
+  margin-bottom: var(--s-4);
+  line-height: 1.45;
 }
 .corpus-snapshot .snapshot-rows {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--s-2);
   font-family: var(--f-mono);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--tx2);
-  margin-top: 4px;
+  margin-top: 0;
+  flex: 1;
 }
 .corpus-snapshot .snapshot-rows > div {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 10px;
-  border-bottom: 1px dotted var(--brd);
-  padding-bottom: 4px;
+  gap: var(--s-3);
+  border-bottom: 1px dotted var(--brd2);
+  padding-bottom: var(--s-1);
+  line-height: 1.4;
 }
-.corpus-snapshot .snapshot-rows > div:last-child { border-bottom: 0; }
+.corpus-snapshot .snapshot-rows > div:last-child { border-bottom: 0; padding-bottom: 0; }
 .corpus-snapshot .snapshot-row-label {
   color: var(--tx3);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 .corpus-snapshot .snapshot-rows strong {
   color: var(--tx);
@@ -1056,18 +1133,20 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   font-variant-numeric: tabular-nums;
   text-align: right;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 .corpus-snapshot .snapshot-meta {
   list-style: none;
   padding: 0;
-  margin: 10px 0 0;
+  margin: var(--s-3) 0 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--s-1);
   font-family: var(--f-mono);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--tx3);
   letter-spacing: 0.01em;
+  line-height: 1.5;
 }
 .corpus-snapshot .snapshot-meta strong {
   color: var(--tx2);
@@ -1076,27 +1155,29 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 
 .corpus-snapshot .snapshot-movers {
-  margin-top: clamp(18px, 2vw, 24px);
-  padding-top: clamp(14px, 2vw, 18px);
-  border-top: 1px solid var(--brd);
+  margin-top: clamp(20px, 2.5vw, 28px);
+  padding-top: clamp(14px, 2vw, 20px);
+  border-top: 1px solid var(--brd2);
   font-family: var(--f-mono);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--tx3);
   letter-spacing: 0.01em;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 .corpus-snapshot .snapshot-movers-label {
   color: var(--tx3);
   text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-kicker);
   font-weight: 600;
-  margin-right: 10px;
+  margin-right: var(--s-3);
+  display: inline-block;
 }
 .corpus-snapshot .snapshot-mover {
   display: inline-block;
-  margin-right: 14px;
+  margin-right: var(--s-4);
   color: var(--tx2);
+  white-space: nowrap;
 }
 .corpus-snapshot .snapshot-mover strong {
   color: var(--tx);
@@ -1105,34 +1186,59 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 
 @media (max-width: 900px) {
-  .corpus-snapshot .snapshot-grid { grid-template-columns: 1fr; gap: 24px; }
+  .corpus-snapshot .snapshot-grid {
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
   .corpus-snapshot .snapshot-card {
-    border-left: 0; padding-left: 0;
-    border-top: 1px dotted var(--brd); padding-top: 20px;
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px dotted var(--brd2);
+    padding-top: var(--s-6);
   }
   .corpus-snapshot .snapshot-card:first-child {
-    border-top: 0; padding-top: 0;
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+@media (max-width: 560px) {
+  .corpus-snapshot {
+    padding: var(--s-5) var(--s-4);
+  }
+  .corpus-snapshot .snapshot-big {
+    font-size: 30px;
   }
 }
 
-/* Buttons */
+/* ── Buttons ────────────────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 11px 20px;
-  font-size: 14px;
+  gap: var(--s-2);
+  padding: 11px 22px;
+  font-family: var(--f-sans);
+  font-size: var(--fs-base);
   font-weight: 500;
+  letter-spacing: 0.005em;
   line-height: 1;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.15s var(--ease);
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
   min-height: 42px;
   white-space: nowrap;
 }
 .btn:hover { text-decoration: none; transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:focus-visible {
+  outline: 2px solid var(--tx);
+  outline-offset: 3px;
+}
 .btn-primary {
   background: var(--tx);
   color: var(--bg);
@@ -1154,52 +1260,58 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .btn .beta {
   display: inline-flex;
   align-items: center;
+  font-family: var(--f-mono);
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--ls-wide);
   padding: 2px 6px;
   background: var(--bg2);
   color: var(--tx3);
-  border-radius: 3px;
-  margin-left: 4px;
+  border-radius: var(--r-xs);
+  margin-left: var(--s-1);
 }
 .btn-primary .beta { background: rgba(255,255,255,0.18); color: var(--bg); }
 
-/* Section heading pattern used on landing sub-sections */
+/* ── Unified section heading — used on every landing-page section.
+   Thin uppercase mono label with a hairline underneath. The same
+   pattern as the corpus-snapshot header, so every band on the page
+   reads with the same typographic voice. */
 .section-heading {
   font-family: var(--f-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-kicker);
   text-transform: uppercase;
   color: var(--tx3);
-  margin: 0 0 24px;
-  padding-bottom: 12px;
+  margin: 0 0 var(--s-6);
+  padding-bottom: var(--s-3);
   border-bottom: 1px solid var(--brd2);
 }
 
-/* Capability cards (landing v2) */
+/* ── Capability cards ────────────────────────────────────── */
 .capabilities {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin: 0 0 clamp(56px, 8vw, 96px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
 }
 .cap-card {
   display: flex;
   flex-direction: column;
-  padding: 28px 24px 24px;
+  padding: var(--s-7) var(--s-6) var(--s-6);
   background: var(--surf);
   border: 1px solid var(--brd2);
-  border-radius: 10px;
+  border-radius: var(--r-md);
   color: var(--tx);
   text-decoration: none;
-  transition: border-color 0.15s var(--ease), transform 0.15s var(--ease), background 0.15s var(--ease);
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease),
+    background var(--dur) var(--ease);
   min-height: 220px;
 }
 .cap-card:hover {
   border-color: var(--tx3);
-  background: var(--ac-bg);
+  background: var(--surf);
   text-decoration: none;
   transform: translateY(-2px);
 }
@@ -1207,56 +1319,60 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px; height: 40px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r);
   background: var(--bg2);
   border: 1px solid var(--brd2);
   color: var(--tx2);
-  margin-bottom: 18px;
-  transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  margin-bottom: var(--s-5);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.cap-icon svg { width: 20px; height: 20px; }
+.cap-icon svg { width: 22px; height: 22px; }
 .cap-card:hover .cap-icon { color: var(--tx); border-color: var(--brd); }
 .cap-card h3 {
-  margin: 0 0 8px;
-  font-size: 17px;
+  margin: 0 0 var(--s-2);
+  font-size: var(--fs-xl);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: var(--ls-snug);
   color: var(--tx);
 }
 .cap-card p {
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
   color: var(--tx2);
   margin: 0 0 auto;
-  padding-bottom: 18px;
+  padding-bottom: var(--s-5);
 }
 .cap-card-cta {
-  font-size: 12px;
+  font-family: var(--f-mono);
+  font-size: var(--fs-xs);
   color: var(--tx3);
   font-weight: 500;
-  font-family: var(--f-mono);
   letter-spacing: 0.02em;
+  transition: color var(--dur) var(--ease);
 }
 .cap-card:hover .cap-card-cta { color: var(--tx); }
 
-/* Landing "what" prose */
+/* ── Landing "what" prose ─────────────────────────────────── */
 .landing-prose {
-  max-width: 68ch;
-  margin: clamp(40px, 6vw, 72px) auto clamp(56px, 8vw, 96px);
+  max-width: var(--max-w-prose);
+  margin: 0 auto var(--gap-section);
 }
 .landing-prose h2 {
-  font-size: clamp(22px, 3vw, 28px);
+  font-size: clamp(24px, 3vw, 32px);
   font-weight: 600;
-  letter-spacing: -0.015em;
-  margin: 0 0 18px;
+  letter-spacing: var(--ls-tight);
+  line-height: var(--lh-snug);
+  margin: 0 0 var(--s-5);
   color: var(--tx);
+  text-wrap: balance;
 }
 .landing-prose p {
-  font-size: 15px;
-  line-height: 1.75;
+  font-size: var(--fs-md);
+  line-height: var(--lh-relaxed);
   color: var(--tx2);
-  margin: 0 0 14px;
+  margin: 0 0 var(--s-3);
 }
 .landing-prose p:last-child { margin-bottom: 0; }
 .landing-prose strong { color: var(--tx); font-weight: 600; }
@@ -1275,9 +1391,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   overflow-x: auto;
   overflow-y: hidden;
   padding: 8px 4px;
-  margin: 0 0 32px;
+  margin: 0 0 var(--s-7);
   position: sticky;
-  top: 52px;
+  top: 56px;
   z-index: 50;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(14px) saturate(1.6);
@@ -1380,33 +1496,72 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 #main:focus { outline: none; }
 
-/* ── Live from the corpus (landing demo) ── */
-.live-demo { margin: 0 0 clamp(56px, 8vw, 96px); }
-.demo-tagline {
-  font-size: 14px;
+/* ── Word add-in banner ─────────────────────────────────── */
+.word-banner {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 3vw, 36px);
+  flex-wrap: wrap;
+  padding: clamp(24px, 3vw, 32px);
+  background: var(--surf);
+  border: 1px solid var(--brd2);
+  border-radius: var(--r-md);
+}
+.word-banner-body {
+  flex: 1 1 340px;
+  min-width: 260px;
+}
+.word-banner-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+.word-banner-head svg { color: var(--tx2); flex-shrink: 0; }
+.word-banner-head h3 {
+  margin: 0;
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: var(--ls-snug);
+  color: var(--tx);
+}
+.word-banner p {
+  margin: 0;
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
   color: var(--tx2);
-  margin: -12px 0 22px;
-  max-width: 68ch;
+  max-width: 62ch;
+}
+.word-banner-cta { flex-shrink: 0; }
+
+/* ── Live from the corpus (landing demo) ── */
+.live-demo { }  /* section rhythm now comes from .section utility */
+.demo-tagline {
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--tx2);
+  margin: calc(var(--s-3) * -1) 0 var(--s-6);
+  max-width: var(--max-w-prose);
 }
 .demo-tabs {
   display: flex;
   gap: 2px;
   border-bottom: 1px solid var(--brd2);
-  margin-bottom: 24px;
+  margin-bottom: var(--s-6);
   flex-wrap: wrap;
 }
 .demo-tab {
   background: transparent;
   border: 0;
-  padding: 12px 16px;
+  padding: var(--s-3) var(--s-4);
   font-family: var(--f-sans);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--tx3);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -1px;
-  transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .demo-tab:hover { color: var(--tx2); }
 .demo-tab.active { color: var(--tx); border-bottom-color: var(--tx); }
@@ -1415,30 +1570,30 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .demo-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--s-4);
   align-items: stretch;
 }
 .demo-code, .demo-result {
   background: var(--bg2);
   border: 1px solid var(--brd2);
-  border-radius: 10px;
-  padding: 20px 22px;
+  border-radius: var(--r-md);
+  padding: var(--s-5) var(--s-6);
   min-height: 180px;
 }
 .demo-label {
   font-family: var(--f-mono);
-  font-size: 10px;
+  font-size: var(--fs-2xs);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--ls-kicker);
   color: var(--tx3);
-  margin-bottom: 12px;
-  font-weight: 500;
+  margin-bottom: var(--s-3);
+  font-weight: 600;
 }
 .demo-code pre {
   margin: 0;
   font-family: var(--f-mono);
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
   color: var(--tx);
   white-space: pre-wrap;
   word-break: break-word;
@@ -1450,40 +1605,41 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   font-size: inherit;
   color: inherit;
 }
-.demo-code .kw { color: var(--tx); font-weight: 500; }
+.demo-code .kw { color: var(--tx); font-weight: 600; }
 .demo-code .str { color: var(--tx2); }
 .demo-code .cmt { color: var(--tx3); font-style: italic; }
 .demo-case {
-  padding: 12px 0;
+  padding: var(--s-3) 0;
   border-bottom: 1px solid var(--brd2);
 }
 .demo-case:first-child { padding-top: 0; }
 .demo-case:last-child { border-bottom: none; padding-bottom: 0; }
 .demo-case-id {
   font-family: var(--f-mono);
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--tx);
-  margin-bottom: 4px;
-  font-weight: 500;
+  margin-bottom: var(--s-1);
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 .demo-case-regeste {
   font-size: 12.5px;
-  line-height: 1.55;
+  line-height: var(--lh-base);
   color: var(--tx2);
 }
 .demo-prose {
-  font-size: 13px;
-  line-height: 1.65;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
   color: var(--tx2);
 }
 .demo-prose strong { color: var(--tx); font-weight: 600; }
-.demo-prose p { margin: 0 0 10px; }
+.demo-prose p { margin: 0 0 var(--s-3); }
 .demo-prose p:last-child { margin-bottom: 0; }
 .demo-prose .src {
   font-family: var(--f-mono);
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   color: var(--tx3);
-  margin-top: 10px;
+  margin-top: var(--s-3);
   display: block;
 }
 @media (max-width: 760px) {
@@ -1492,133 +1648,179 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .demo-tab { padding: 10px 12px; font-size: 12px; }
 }
 
-/* ── Footer v2 (4-column grid with about info) ── */
+/* ── Footer ─────────────────────────────────────────────── */
 .footer-v2 {
-  padding: clamp(40px, 6vw, 64px) 0 28px;
+  padding: clamp(48px, 6vw, 80px) 0 var(--s-7);
   border-top: 1px solid var(--brd2);
-  margin-top: clamp(48px, 8vw, 96px);
+  margin-top: var(--gap-section);
 }
 .footer-cols {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(24px, 4vw, 56px);
   margin-bottom: clamp(32px, 5vw, 48px);
 }
 .footer-col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--s-3);
   min-width: 0;
 }
 .footer-col-head {
-  font-size: 11px;
   font-family: var(--f-mono);
+  font-size: var(--fs-2xs);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--ls-kicker);
   color: var(--tx3);
-  margin: 0 0 6px;
-  font-weight: 500;
+  margin: 0 0 var(--s-2);
+  font-weight: 600;
 }
 .footer-col a {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--tx2);
   text-decoration: none;
-  transition: color 0.15s var(--ease);
-  line-height: 1.4;
+  transition: color var(--dur) var(--ease);
+  line-height: 1.5;
 }
 .footer-col a:hover { color: var(--tx); text-decoration: none; }
 .footer-badge {
   font-family: var(--f-mono);
   font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--ls-wide);
   color: var(--tx3);
   background: var(--bg2);
   border: 1px solid var(--brd2);
-  border-radius: 4px;
+  border-radius: var(--r-xs);
   padding: 3px 8px;
   align-self: flex-start;
-  margin-top: 4px;
+  margin-top: var(--s-1);
+  font-weight: 600;
 }
 .footer-meta {
   text-align: center;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: var(--tx3);
-  padding-top: 24px;
+  padding-top: var(--s-6);
   border-top: 1px solid var(--brd2);
   line-height: 1.6;
 }
 .footer-meta #ts {
   font-family: var(--f-mono);
-  font-size: 11px;
-  margin-bottom: 6px;
+  font-size: var(--fs-2xs);
+  margin-bottom: var(--s-1);
   color: var(--tx3);
+  letter-spacing: 0.01em;
 }
 .footer-meta a {
   color: var(--tx3);
   text-decoration: none;
   border-bottom: 1px solid transparent;
-  transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 .footer-meta a:hover { color: var(--tx2); border-bottom-color: var(--brd2); }
-.footer-meta .sep { color: var(--brd); margin: 0 10px; }
-@media (max-width: 760px) {
-  .footer-cols { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+.footer-meta .sep { color: var(--brd); margin: 0 var(--s-3); }
+/* ══════════════════════════════════════════════════════════════
+   Responsive tiers — single source of truth for landing-page
+   breakpoints. Use a coherent 4-step cascade:
+     • ≤ 1100 px — drop capability cards to 2 col earlier
+     • ≤ 900 px  — hamburger nav, corpus cards stack, cap cards → 2 col
+     • ≤ 640 px  — one-column everywhere, hero tightens
+     • ≤ 420 px  — tiny-screen special case (hero facts wrap)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── ≤ 1100 px ── */
+@media (max-width: 1100px) {
+  .capabilities { gap: var(--s-3); }
 }
+
+/* ── ≤ 900 px ── */
+@media (max-width: 900px) {
+  .capabilities {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-3);
+  }
+  .cap-card {
+    min-height: auto;
+    padding: var(--s-6) var(--s-5) var(--s-5);
+  }
+}
+
+/* ── ≤ 760 px ── */
+@media (max-width: 760px) {
+  .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-7); }
+}
+
+/* ── ≤ 640 px ── */
+@media (max-width: 640px) {
+  .capabilities { grid-template-columns: 1fr; gap: var(--s-3); }
+  .hero-v2 .hero-ctas .btn { width: 100%; justify-content: center; }
+  .hero-v2 .hero-facts { font-size: 11px; gap: var(--s-1) var(--s-3); line-height: 1.7; }
+  .hero-v2 .hero-stamp { font-size: 11px; padding: 5px 11px; }
+  .section-heading { margin-bottom: var(--s-5); padding-bottom: var(--s-2); }
+}
+
+/* ── ≤ 480 px ── */
 @media (max-width: 480px) {
-  .footer-cols { grid-template-columns: 1fr; gap: 24px; }
+  .footer-cols { grid-template-columns: 1fr; gap: var(--s-6); }
   .footer-meta .sep { display: none; }
   .footer-meta > span { display: block; }
 }
 
-/* ── Responsive hero (mobile-first overrides) ── */
-@media (max-width: 900px) {
-  .capabilities { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-  .cap-card { min-height: auto; padding: 24px 22px 22px; }
-}
-@media (max-width: 560px) {
-  .capabilities { grid-template-columns: 1fr; gap: 12px; }
-  .hero-v2 .hero-ctas .btn { width: 100%; justify-content: center; }
-  .hero-v2 .hero-meta { font-size: 11px; gap: 6px 12px; }
+/* ── ≤ 420 px ── */
+@media (max-width: 420px) {
+  /* Hide the separator pips inside the facts strip on tiny screens —
+     wrap the items onto their own lines so nothing overflows. */
+  .hero-v2 .hero-facts .sep { display: none; }
+  .hero-v2 .hero-facts { flex-direction: column; gap: 4px; }
+  .hero-v2 .hero-kicker { margin-bottom: var(--s-7); }
 }
 
-/* ── Responsive ── */
+/* ── Legacy dashboard responsive (sub-pages) ───────────────
+   KPIs, tables, tree, access cards, health, study — these are used
+   on /entscheide/, /gesetze/, /mcp/, /ueber/. Same breakpoint cascade
+   as the landing page but applied to sub-page components. */
+
+/* ≤ 900 px — hamburger + hide desktop nav */
 @media (max-width: 900px) {
   .hamburger { display: flex; }
   .url-nav { display: none; }
   .toolbar-inner { grid-template-columns: auto 1fr; }
   .toolbar-center { display: none; }
 }
+
+/* ≤ 768 px — sub-page two-col → one-col */
 @media (max-width: 768px) {
   .chart-row { grid-template-columns: 1fr; }
   .access-grid { grid-template-columns: 1fr; }
   .access-featured .setup-paths { grid-template-columns: 1fr; }
-  .access-featured { padding: 24px 18px; }
+  .access-featured { padding: var(--s-6) var(--s-5); }
   .access-featured .prompt-list { grid-template-columns: 1fr; }
   .access-featured .prompt-list li:nth-child(-n+2) { border-top: 1px solid var(--brd2); }
   .access-featured .prompt-list li:first-child { border-top: none; }
-  .section-summary { padding: 16px 18px; }
-  .section-body { padding: 16px 18px 20px; }
-  .health-card .health-summary { padding: 16px 18px; }
-  .health-body { padding: 16px 18px 20px; }
+  .section-summary { padding: var(--s-4) var(--s-5); }
+  .section-body { padding: var(--s-4) var(--s-5) var(--s-5); }
+  .health-card .health-summary { padding: var(--s-4) var(--s-5); }
+  .health-body { padding: var(--s-4) var(--s-5) var(--s-5); }
   .study-prompts ul { grid-template-columns: 1fr; }
-  .study-card { padding: 24px 18px; }
-  .kpis { gap: 40px; }
+  .study-card { padding: var(--s-6) var(--s-5); }
+  .kpis { gap: var(--s-8); }
 }
+
+/* ≤ 640 px — sub-page mobile */
 @media (max-width: 640px) {
-  .w { padding: 0 16px; }
-  header { padding: 48px 0 12px; }
+  header { padding: var(--s-9) 0 var(--s-3); }
   header h1 { font-size: 1.75rem; }
   header::before { width: 100%; }
   .section-nav { display: none; }
   .brand-wordmark { display: none; }
   .lang-sw button { padding: 6px 4px; font-size: 10px; }
   .lang-sw { margin-right: 0; }
-  .kpis { gap: 36px; margin: 28px 0 4px; }
+  .kpis { gap: var(--s-7); margin: var(--s-7) 0 var(--s-1); }
   .kpi-v { font-size: 1.75rem; }
-  .cg { grid-template-columns: repeat(auto-fill, minmax(80px,1fr)); }
-  .tw { margin: 0 -16px; border-radius: 0; border-left: none; border-right: none; box-shadow: none; }
-  .ct th, .ct td { padding: 8px 10px; }
+  .cg { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+  .tw { margin: 0 calc(var(--gutter-x) * -1); border-radius: 0; border-left: none; border-right: none; }
+  .ct th, .ct td { padding: var(--s-2) var(--s-3); }
   .ct .hide-m { display: none; }
   .ct td:first-child { max-width: 200px; }
   .cn { display: inline-block; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
@@ -1626,35 +1828,35 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .lang-chart-wrap { flex-direction: column; }
   .table-search input { width: 100%; }
   .access-card code { font-size: var(--fs-2xs); }
-  .access-featured { padding: 20px 16px; }
-  .access-featured .setup-paths { gap: 20px; }
-  .study-card { padding: 20px 16px; }
-  .tree-court { padding-left: 24px; }
+  .access-featured { padding: var(--s-5) var(--s-4); }
+  .access-featured .setup-paths { gap: var(--s-5); }
+  .study-card { padding: var(--s-5) var(--s-4); }
+  .tree-court { padding-left: var(--s-6); }
 }
+
+/* ≤ 380 px — tiny screens */
 @media (max-width: 380px) {
-  .w { padding: 0 12px; }
   .kpi-v { font-size: 1.5rem; }
-  .kpis { gap: 20px; flex-wrap: wrap; }
-  .cg { grid-template-columns: repeat(3,1fr); gap: 6px; }
-  .cc2 { padding: 10px 4px 8px; }
+  .kpis { gap: var(--s-5); flex-wrap: wrap; }
+  .cg { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .cc2 { padding: var(--s-3) 4px 8px; }
   .cc2 .k { font-size: var(--fs-md); }
   .cc2 .nm { font-size: var(--fs-2xs); }
   .cc2 .cv { font-size: var(--fs-xs); }
   .cn { max-width: 120px; }
   .ct th, .ct td { padding: 6px 8px; font-size: var(--fs-xs); }
-  .tw { margin: 0 -12px; }
-  .toolbar-inner { height: 40px; }
+  .toolbar-inner { height: 48px; }
   .lang-sw button { padding: 2px 5px; font-size: var(--fs-2xs); min-height: 40px; }
   .hero-links { gap: 6px; }
   .hero-links a { padding: 5px 8px; font-size: var(--fs-2xs); }
   header h1 { font-size: 1.4rem; }
-  .access-featured { padding: 16px 12px; }
-  .access-featured .setup-paths { gap: 12px; }
-  .study-card { padding: 16px 12px; }
-  .section-summary { padding: 14px 12px; }
-  .section-body { padding: 14px 12px 16px; }
-  .tree-hd { padding: 6px 10px; }
-  .tree-court { padding: 5px 10px 5px 20px; }
+  .access-featured { padding: var(--s-4) var(--s-3); }
+  .access-featured .setup-paths { gap: var(--s-3); }
+  .study-card { padding: var(--s-4) var(--s-3); }
+  .section-summary { padding: var(--s-3) var(--s-3); }
+  .section-body { padding: var(--s-3) var(--s-3) var(--s-4); }
+  .tree-hd { padding: 6px var(--s-3); }
+  .tree-court { padding: 5px var(--s-3) 5px var(--s-5); }
 }
 
 /* ── Copy buttons ── */
@@ -1883,8 +2085,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
   </section>
 
-  <!-- Capability cards — 4 ways in -->
-  <section style="margin:0 0 clamp(56px, 8vw, 96px)">
+  <!-- Capability cards — three ways in -->
+  <section class="section">
     <h2 class="section-heading" data-t="capabilities_heading">Three ways in</h2>
     <div class="capabilities">
 
@@ -1932,7 +2134,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   </section>
 
   <!-- Live from the corpus — tabbed demo -->
-  <section class="live-demo">
+  <section class="live-demo section">
     <h2 class="section-heading" data-t="demo_heading">Live from the corpus</h2>
     <p class="demo-tagline" data-t="demo_tagline">Concrete examples of what your AI agent sees when it hits the MCP server.</p>
 
@@ -2046,18 +2248,18 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   </section>
 
   <!-- Featured integration: Word Add-in -->
-  <section class="leg-banner" style="display:flex; align-items:center; gap:28px; flex-wrap:wrap; margin:0 0 clamp(56px, 8vw, 96px)">
-    <div style="flex:1 1 320px; min-width:260px">
-      <div class="leg-banner-head">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--tx2)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <h3 style="margin:0">Word Add-in</h3>
+  <section class="word-banner section">
+    <div class="word-banner-body">
+      <div class="word-banner-head">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <h3>Word Add-in</h3>
         <span class="leg-badge">BETA</span>
       </div>
-      <p style="margin:6px 0 0; font-size:14px; line-height:1.55; color:var(--tx2); max-width:62ch" data-t="word_desc">
+      <p data-t="word_desc">
         Schweizer Rechtsprechung direkt in Ihrem Word-Dokument. Suchen, zitieren und einfügen ohne Copy-Paste aus dem Browser — mit automatischer Quellenangabe.
       </p>
     </div>
-    <a href="https://word.opencaselaw.ch/install.html" class="btn btn-secondary" style="flex-shrink:0">
+    <a href="https://word.opencaselaw.ch/install.html" class="btn btn-secondary word-banner-cta">
       <span data-t="word_cta">Installation →</span>
     </a>
   </section>
