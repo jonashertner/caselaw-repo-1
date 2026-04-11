@@ -2171,7 +2171,7 @@
     "2026-03": 1442,
     "2026-04": 23
   },
-  "generated_at": "2026-04-11T10:28:38.474112+00:00",
+  "generated_at": "2026-04-11T11:38:29.520188+00:00",
   "scraper_health": {
     "run_at": "2026-04-11T03:43:05.781303+00:00",
     "run_duration_s": 9783.7,
@@ -3003,52 +3003,19 @@
       "ZH": 10
     },
     "commentaries": 362,
-    "citation_edges": 8840018,
-    "statute_edges": 11342270
+    "citation_edges": 8843206,
+    "statute_edges": 11344975
   },
   "delta": {
-    "total": 200,
+    "total": 0,
     "by_court": {
-      "bger": 9,
-      "ge_gerichte": 115,
-      "bvger": 1,
-      "vd_gerichte": 11,
-      "zh_sozialversicherungsgericht": 8,
-      "bl_gerichte": 18,
-      "gr_gerichte": 3,
-      "fr_gerichte": 1,
-      "bstger": 1,
-      "so_gerichte": 3,
-      "bs_appellationsgericht": 5,
-      "sg_versicherungsgericht": 1,
-      "bs_sozialversicherungsgericht": 1,
-      "ag_strafgericht": 4,
-      "ag_versicherungsgericht": 2,
-      "edoeb": 1,
-      "ag_verwaltungsgericht": 6,
-      "ag_zivilgericht": 4,
-      "gl_gerichte": 1,
-      "zg_verwaltungsgericht": 2,
-      "ur_gerichte": 2,
-      "ag_handelsgericht": 1,
       "sav_kantone": 1
     },
-    "by_canton": {
-      "GE": 115,
-      "VD": 11,
-      "ZH": 8,
-      "BL": 18,
-      "SG": 1,
-      "GR": 3,
-      "FR": 1,
-      "AG": 17,
-      "BS": 6,
-      "SO": 3,
-      "ZG": 2,
-      "GL": 1,
-      "UR": 2
+    "by_canton": {},
+    "corpus": {
+      "citation_edges": 3188,
+      "statute_edges": 2705
     },
-    "corpus": {},
-    "previous_generated_at": "2026-04-10T08:56:34.869380+00:00"
+    "previous_generated_at": "2026-04-11T10:28:38.474112+00:00"
   }
 }
