@@ -1508,24 +1508,24 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
   <nav class="page-toc" aria-label="On this page">
     <span class="page-toc-label" data-t="page_toc">On this page</span>
-    <a href="#ueber-mission">Mission</a>
-    <a href="#ueber-methodology">Methodik</a>
-    <a href="#ueber-stats">Zahlen</a>
-    <a href="#ueber-license">Lizenz</a>
-    <a href="#ueber-contact">Kontakt</a>
+    <a href="#ueber-mission" data-t="ueber_toc_mission">Mission</a>
+    <a href="#ueber-methodology" data-t="ueber_toc_methodology">Methodology</a>
+    <a href="#ueber-stats" data-t="ueber_toc_stats">Numbers</a>
+    <a href="#ueber-license" data-t="ueber_toc_license">License</a>
+    <a href="#ueber-contact" data-t="ueber_toc_contact">Contact</a>
   </nav>
 
   <!-- Mission -->
   <section id="ueber-mission" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Mission</h2>
-      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="ueber_mission_heading">Mission</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="ueber_mission_1">
         Schweizer Rechtsrecherche ist heute fragmentiert, grösstenteils hinter Paywalls und für Sprachmodelle
         nur schwer zugänglich. Das Ergebnis: Jus-Studierende, die sich Zugang zu teuren kommerziellen
         Datenbanken leisten müssen, und LLMs, die Artikeltexte halluzinieren, weil sie keine autoritative
         Quelle haben.
       </p>
-      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch">
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch" data-t="ueber_mission_2">
         OpenCaseLaw macht alle öffentlich publizierten Schweizer Gerichtsentscheide und den aktuellen Text
         aller einschlägigen Gesetze in einem durchsuchbaren, zitationsverknüpften und maschinenlesbaren
         Format frei verfügbar — für Forschung, Lehre, Praxis und AI-Agenten.
@@ -1536,25 +1536,16 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Methodology -->
   <section id="ueber-methodology" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Methodik</h2>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="ueber_method_heading">Methodology</h2>
       <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
-        <li><strong>Quellen:</strong> 58 Scraper für Bundesgerichte, Bundesverwaltungsgericht, Bundesstrafgericht,
-          regulatorische Entscheide (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) und alle 26 Kantone. Entscheide aus entscheidsuche.ch
-          als Fallback.</li>
-        <li><strong>Deduplication:</strong> Docket-Normalisierung, Textähnlichkeit (MinHash), Regeste-Priorität.
-          Verhindert Duplikate, aber nie auf Kosten der Vollständigkeit.</li>
-        <li><strong>Indexierung:</strong> SQLite FTS5 mit BM25-Ranking. Täglich voller Rebuild, atomarer Swap,
-          kein Downtime für MCP-Worker.</li>
-        <li><strong>Zitationsgraph:</strong> 8,8 Millionen Kanten zwischen Entscheiden, 11,3 Mio Verweise auf Gesetzesartikel.
-          Bidirektional, mit Appeal-Chain-Auflösung.</li>
-        <li><strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking.
-          MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).</li>
-        <li><strong>Gesetze:</strong> 80 kuratierte Bundesgesetze aus dem Fedlex-SPARQL-Endpunkt
-          (39'000 Artikel in DE/FR/IT, 228'559 Änderungs-Referenzen), täglich lokal gespiegelt und per SQLite FTS5
-          indexiert. Kantonale und interkantonale Erlasse via LexFind JSON-API, gestaffelte SQLite-Cache-TTLs
-          (Suche 24 h, SR-Auflösung 30 d, Volltexte 7 d, Änderungen 24 h).</li>
+        <li data-t="ueber_method_sources"><strong>Quellen:</strong> 58 Scraper für Bundesgerichte, Bundesverwaltungsgericht, Bundesstrafgericht, regulatorische Entscheide (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) und alle 26 Kantone. Entscheide aus entscheidsuche.ch als Fallback.</li>
+        <li data-t="ueber_method_dedup"><strong>Deduplication:</strong> Docket-Normalisierung, Textähnlichkeit (MinHash), Regeste-Priorität. Verhindert Duplikate, aber nie auf Kosten der Vollständigkeit.</li>
+        <li data-t="ueber_method_index"><strong>Indexierung:</strong> SQLite FTS5 mit BM25-Ranking. Täglich voller Rebuild, atomarer Swap, kein Downtime für MCP-Worker.</li>
+        <li data-t="ueber_method_graph"><strong>Zitationsgraph:</strong> 8,8 Millionen Kanten zwischen Entscheiden, 11,3 Mio Verweise auf Gesetzesartikel. Bidirektional, mit Appeal-Chain-Auflösung.</li>
+        <li data-t="ueber_method_search"><strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking. MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).</li>
+        <li data-t="ueber_method_laws"><strong>Gesetze:</strong> ~5'000 Bundesgesetze aus dem Fedlex-SPARQL-Endpunkt (125'000+ Artikel in DE/FR/IT), täglich lokal gespiegelt und per SQLite FTS5 indexiert. Kantonale und interkantonale Erlasse via LexFind JSON-API — lokal gespiegelt für alle 26 Kantone.</li>
       </ul>
-      <p style="font-size:14px; color:var(--tx3); margin:0">
+      <p style="font-size:14px; color:var(--tx3); margin:0" data-t="ueber_method_docs">
         Vollständige technische Dokumentation im <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>.
       </p>
     </div>
@@ -1563,31 +1554,31 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Stats -->
   <section id="ueber-stats" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Zahlen</h2>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="ueber_stats_heading">Numbers</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:16px; font-family:var(--f-mono); font-size:13px">
         <div>
           <div style="font-size:22px; font-weight:600; color:var(--tx)">965'000+</div>
-          <div style="color:var(--tx3); margin-top:4px">Entscheide</div>
+          <div style="color:var(--tx3); margin-top:4px" data-t="ueber_stat_decisions">decisions</div>
         </div>
         <div>
           <div style="font-size:22px; font-weight:600; color:var(--tx)">114</div>
-          <div style="color:var(--tx3); margin-top:4px">Gerichte</div>
+          <div style="color:var(--tx3); margin-top:4px" data-t="ueber_stat_courts">courts</div>
         </div>
         <div>
-          <div style="font-size:22px; font-weight:600; color:var(--tx)">80</div>
-          <div style="color:var(--tx3); margin-top:4px">Bundesgesetze</div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">5'000+</div>
+          <div style="color:var(--tx3); margin-top:4px" data-t="ueber_stat_federal_laws">federal laws</div>
         </div>
         <div>
-          <div style="font-size:22px; font-weight:600; color:var(--tx)">33,000+</div>
-          <div style="color:var(--tx3); margin-top:4px">kantonale Erlasse</div>
+          <div style="font-size:22px; font-weight:600; color:var(--tx)">30'000+</div>
+          <div style="color:var(--tx3); margin-top:4px" data-t="ueber_stat_cantonal_laws">cantonal acts</div>
         </div>
         <div>
           <div style="font-size:22px; font-weight:600; color:var(--tx)">8.8M</div>
-          <div style="color:var(--tx3); margin-top:4px">Zitationen</div>
+          <div style="color:var(--tx3); margin-top:4px" data-t="ueber_stat_citations">citations</div>
         </div>
         <div>
           <div style="font-size:22px; font-weight:600; color:var(--tx)">21</div>
-          <div style="color:var(--tx3); margin-top:4px">MCP-Tools</div>
+          <div style="color:var(--tx3); margin-top:4px" data-t="ueber_stat_mcp_tools">MCP tools</div>
         </div>
       </div>
     </div>
@@ -1596,15 +1587,14 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- License -->
   <section id="ueber-license" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Lizenz &amp; Zitationshinweis</h2>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="ueber_license_heading">License &amp; citation</h2>
       <ul style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 16px; padding-left:20px; max-width:68ch">
-        <li><strong>Daten:</strong> CC0 1.0 Public Domain — Schweizer Gerichtsentscheide sind öffentliche Dokumente</li>
-        <li><strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>)</li>
-        <li><strong>Kommentare:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch)</li>
+        <li data-t="ueber_license_data"><strong>Daten:</strong> CC0 1.0 Public Domain — Schweizer Gerichtsentscheide sind öffentliche Dokumente.</li>
+        <li data-t="ueber_license_code"><strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).</li>
+        <li data-t="ueber_license_commentaries"><strong>Kommentare:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch).</li>
       </ul>
-      <p style="font-size:14px; color:var(--tx3); margin:0; max-width:68ch">
-        Nutzung ohne Attribution erlaubt, aber geschätzt: „Source: OpenCaseLaw.ch".
-        Bei akademischer Verwendung bitte das begleitende Paper zitieren (siehe Zenodo-Eintrag, bald verfügbar).
+      <p style="font-size:14px; color:var(--tx3); margin:0; max-width:68ch" data-t="ueber_license_attribution">
+        Nutzung ohne Attribution erlaubt, aber geschätzt: „Source: OpenCaseLaw.ch". Bei akademischer Verwendung bitte das begleitende Paper zitieren (siehe Zenodo-Eintrag, bald verfügbar).
       </p>
     </div>
   </section>
@@ -1612,14 +1602,12 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Contact -->
   <section id="ueber-contact" class="section-card" open style="margin-bottom:48px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Kontakt</h2>
-      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 8px; max-width:68ch">
-        Gebaut und betrieben von <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>,
-        unabhängig und ohne kommerzielles Interesse. Feedback, Bug-Reports und Mitarbeit willkommen.
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="ueber_contact_heading">Contact</h2>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 8px; max-width:68ch" data-t="ueber_contact_1">
+        Gebaut und betrieben von <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, unabhängig und ohne kommerzielles Interesse. Feedback, Bug-Reports und Mitarbeit willkommen.
       </p>
-      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0">
-        E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>
-        GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0" data-t="ueber_contact_2">
+        E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>
       </p>
     </div>
   </section>
@@ -1640,7 +1628,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <div class="footer-col-head" data-t="footer_col_code">Code</div>
         <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">GitHub</a>
         <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank" data-t="footer_report">Report issue</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CHANGELOG.md" rel="noopener" target="_blank" data-t="footer_changelog">Changelog</a>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/commits/main" rel="noopener" target="_blank" data-t="footer_commits">Commit history</a>
         <span class="footer-badge">MIT License</span>
       </div>
       <div class="footer-col">
@@ -1723,7 +1711,7 @@ const I18N = {
     demo_tab_search:'Suche', demo_tab_statute:'Gesetz', demo_tab_leading:'Leading Cases', demo_tab_doctrine:'Doktrin',
     demo_label_call:'Tool-Aufruf', demo_label_response:'Antwort',
     footer_col_data:'Daten', footer_col_code:'Code', footer_col_connect:'Verbinden', footer_col_about:'\u00dcber',
-    footer_report:'Issue melden', footer_changelog:'Changelog', footer_status:'API-Status',
+    footer_report:'Issue melden', footer_commits:'Commits', footer_status:'API-Status',
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
@@ -1786,6 +1774,38 @@ const I18N = {
     study_p6:'Prüf meine Subsumtion: [meine Antwort]',
     hero_mcp:'Mit KI durchsuchen',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
+  
+    ueber_toc_mission: 'Mission',
+    ueber_toc_methodology: 'Methodik',
+    ueber_toc_stats: 'Zahlen',
+    ueber_toc_license: 'Lizenz',
+    ueber_toc_contact: 'Kontakt',
+    ueber_mission_heading: 'Mission',
+    ueber_mission_1: 'Schweizer Rechtsrecherche ist heute fragmentiert, grösstenteils hinter Paywalls und für Sprachmodelle nur schwer zugänglich. Das Ergebnis: Jus-Studierende, die sich Zugang zu teuren kommerziellen Datenbanken leisten müssen, und LLMs, die Artikeltexte halluzinieren, weil sie keine autoritative Quelle haben.',
+    ueber_mission_2: 'OpenCaseLaw macht alle öffentlich publizierten Schweizer Gerichtsentscheide und den aktuellen Text aller einschlägigen Gesetze in einem durchsuchbaren, zitationsverknüpften und maschinenlesbaren Format frei verfügbar — für Forschung, Lehre, Praxis und KI-Agenten.',
+    ueber_method_heading: 'Methodik',
+    ueber_method_sources: '<strong>Quellen:</strong> 58 Scraper für Bundesgerichte, Bundesverwaltungsgericht, Bundesstrafgericht, regulatorische Entscheide (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) und alle 26 Kantone. Entscheide aus entscheidsuche.ch als Fallback.',
+    ueber_method_dedup: '<strong>Deduplizierung:</strong> Docket-Normalisierung, Textähnlichkeit (MinHash), Regeste-Priorität. Verhindert Duplikate, aber nie auf Kosten der Vollständigkeit.',
+    ueber_method_index: '<strong>Indexierung:</strong> SQLite FTS5 mit BM25-Ranking. Täglich voller Rebuild, atomarer Swap, keine Downtime für MCP-Worker.',
+    ueber_method_graph: '<strong>Zitationsgraph:</strong> 8,8 Mio Kanten zwischen Entscheiden, 11,3 Mio Verweise auf Gesetzesartikel. Bidirektional, mit Appeal-Chain-Auflösung.',
+    ueber_method_search: '<strong>Suche:</strong> BM25 + Reciprocal Rank Fusion + Meta-Harness-Tuning + Haiku-Reranking. MRR@10 = 0,647 auf einem 100-Query-Goldsatz (online, März 2026).',
+    ueber_method_laws: '<strong>Gesetze:</strong> ~5\'000 Bundesgesetze aus dem Fedlex-SPARQL-Endpunkt (125\'000+ Artikel in DE/FR/IT), täglich lokal gespiegelt und per SQLite FTS5 indexiert. Kantonale und interkantonale Erlasse via LexFind JSON-API — lokal gespiegelt für alle 26 Kantone.',
+    ueber_method_docs: 'Vollständige technische Dokumentation im <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub-Repository</a>.',
+    ueber_stats_heading: 'Zahlen',
+    ueber_stat_decisions: 'Entscheide',
+    ueber_stat_courts: 'Gerichte',
+    ueber_stat_federal_laws: 'Bundesgesetze',
+    ueber_stat_cantonal_laws: 'kantonale Erlasse',
+    ueber_stat_citations: 'Zitationen',
+    ueber_stat_mcp_tools: 'MCP-Tools',
+    ueber_license_heading: 'Lizenz &amp; Zitationshinweis',
+    ueber_license_data: '<strong>Daten:</strong> CC0 1.0 Public Domain — Schweizer Gerichtsentscheide sind öffentliche Dokumente.',
+    ueber_license_code: '<strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Kommentare:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch).',
+    ueber_license_attribution: 'Nutzung ohne Attribution erlaubt, aber geschätzt: „Source: OpenCaseLaw.ch". Bei akademischer Verwendung bitte das begleitende Paper zitieren (Zenodo-Eintrag folgt).',
+    ueber_contact_heading: 'Kontakt',
+    ueber_contact_1: 'Gebaut und betrieben von <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, unabhängig und ohne kommerzielles Interesse. Feedback, Bug-Reports und Mitarbeit willkommen.',
+    ueber_contact_2: 'E-Mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -1840,7 +1860,7 @@ const I18N = {
     demo_tab_search:'Recherche', demo_tab_statute:'Loi', demo_tab_leading:'Arr\u00eats de principe', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Appel d\'outil', demo_label_response:'R\u00e9ponse',
     footer_col_data:'Donn\u00e9es', footer_col_code:'Code', footer_col_connect:'Connexion', footer_col_about:'\u00c0 propos',
-    footer_report:'Signaler un probl\u00e8me', footer_changelog:'Changelog', footer_status:'\u00c9tat API',
+    footer_report:'Signaler un probl\u00e8me', footer_commits:'Commits', footer_status:'\u00c9tat API',
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
@@ -1903,6 +1923,38 @@ const I18N = {
     study_p6:'Évalue ma subsomption: [ma réponse]',
     hero_mcp:'Recherche avec IA',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
+  
+    ueber_toc_mission: 'Mission',
+    ueber_toc_methodology: 'Méthodologie',
+    ueber_toc_stats: 'Chiffres',
+    ueber_toc_license: 'Licence',
+    ueber_toc_contact: 'Contact',
+    ueber_mission_heading: 'Mission',
+    ueber_mission_1: 'La recherche juridique suisse est aujourd\'hui fragmentée, majoritairement derrière des paywalls et difficilement accessible aux modèles de langue. Résultat : des étudiants en droit contraints de payer l\'accès à des bases commerciales coûteuses, et des LLM qui hallucinent le texte d\'articles de loi faute de source autoritative.',
+    ueber_mission_2: 'OpenCaseLaw met gratuitement à disposition toutes les décisions judiciaires suisses publiées et le texte à jour de toutes les lois pertinentes, dans un format recherchable, interconnecté par citations et lisible par machine — pour la recherche, l\'enseignement, la pratique et les agents d\'IA.',
+    ueber_method_heading: 'Méthodologie',
+    ueber_method_sources: '<strong>Sources :</strong> 58 scrapers couvrant le Tribunal fédéral, le Tribunal administratif fédéral, le Tribunal pénal fédéral, les décisions réglementaires (FINMA, COMCO, PFPDT, AIEP, ElCom, etc.) et les 26 cantons. Décisions d\'entscheidsuche.ch en solution de repli.',
+    ueber_method_dedup: '<strong>Déduplication :</strong> normalisation des numéros de dossier, similarité textuelle (MinHash), priorité au regeste. Évite les doublons sans jamais sacrifier la complétude.',
+    ueber_method_index: '<strong>Indexation :</strong> SQLite FTS5 avec ranking BM25. Rebuild complet quotidien, bascule atomique, aucune interruption de service pour les workers MCP.',
+    ueber_method_graph: '<strong>Graphe de citations :</strong> 8,8 millions d\'arêtes entre décisions, 11,3 millions de références à des articles de loi. Bidirectionnel, avec résolution des chaînes de recours.',
+    ueber_method_search: '<strong>Recherche :</strong> BM25 + Reciprocal Rank Fusion + tuning par meta-harness + reranking Haiku. MRR@10 = 0,647 sur un benchmark doré de 100 requêtes (en ligne, mars 2026).',
+    ueber_method_laws: '<strong>Législation :</strong> ~5 000 lois fédérales depuis l\'endpoint SPARQL de Fedlex (125 000+ articles en DE/FR/IT), miroir local quotidien indexé via SQLite FTS5. Actes cantonaux et intercantonaux via l\'API JSON LexFind — miroir local pour les 26 cantons.',
+    ueber_method_docs: 'Documentation technique complète dans le <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">dépôt GitHub</a>.',
+    ueber_stats_heading: 'Chiffres',
+    ueber_stat_decisions: 'décisions',
+    ueber_stat_courts: 'juridictions',
+    ueber_stat_federal_laws: 'lois fédérales',
+    ueber_stat_cantonal_laws: 'actes cantonaux',
+    ueber_stat_citations: 'citations',
+    ueber_stat_mcp_tools: 'outils MCP',
+    ueber_license_heading: 'Licence &amp; citation',
+    ueber_license_data: '<strong>Données :</strong> CC0 1.0 domaine public — les décisions judiciaires suisses sont des documents publics.',
+    ueber_license_code: '<strong>Code :</strong> licence MIT (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commentaires :</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch).',
+    ueber_license_attribution: 'Utilisation sans attribution autorisée, mais appréciée : « Source : OpenCaseLaw.ch ». Pour un usage académique, merci de citer l\'article associé (entrée Zenodo à venir).',
+    ueber_contact_heading: 'Contact',
+    ueber_contact_1: 'Construit et opéré par <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, de façon indépendante et sans intérêt commercial. Retours, bug-reports et contributions bienvenus.',
+    ueber_contact_2: 'E-mail : <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub : <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -1957,7 +2009,7 @@ const I18N = {
     demo_tab_search:'Ricerca', demo_tab_statute:'Legge', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Dottrina',
     demo_label_call:'Chiamata', demo_label_response:'Risposta',
     footer_col_data:'Dati', footer_col_code:'Codice', footer_col_connect:'Connessione', footer_col_about:'Chi siamo',
-    footer_report:'Segnala problema', footer_changelog:'Changelog', footer_status:'Stato API',
+    footer_report:'Segnala problema', footer_commits:'Commit', footer_status:'Stato API',
     footer_about:'Chi siamo', footer_contact:'Contatto',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
@@ -2020,6 +2072,38 @@ const I18N = {
     study_p6:'Valuta la mia sussunzione: [la mia risposta]',
     hero_mcp:'Ricerca con IA',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
+  
+    ueber_toc_mission: 'Missione',
+    ueber_toc_methodology: 'Metodologia',
+    ueber_toc_stats: 'Numeri',
+    ueber_toc_license: 'Licenza',
+    ueber_toc_contact: 'Contatto',
+    ueber_mission_heading: 'Missione',
+    ueber_mission_1: 'La ricerca giuridica svizzera oggi è frammentata, per lo più dietro paywall e difficilmente accessibile ai modelli linguistici. Il risultato: studenti di diritto costretti a pagare l\'accesso a costose banche dati commerciali, e LLM che allucinano il testo degli articoli di legge perché privi di una fonte autorevole.',
+    ueber_mission_2: 'OpenCaseLaw rende liberamente disponibili tutte le decisioni giudiziarie svizzere pubblicate e il testo aggiornato di tutte le leggi rilevanti, in un formato ricercabile, collegato per citazioni e leggibile dalle macchine — per ricerca, insegnamento, pratica e agenti IA.',
+    ueber_method_heading: 'Metodologia',
+    ueber_method_sources: '<strong>Fonti:</strong> 58 scraper per il Tribunale federale, il Tribunale amministrativo federale, il Tribunale penale federale, le decisioni regolatorie (FINMA, COMCO, IFPDT, AIRR, ElCom, ecc.) e tutti i 26 cantoni. Decisioni da entscheidsuche.ch come fallback.',
+    ueber_method_dedup: '<strong>Deduplicazione:</strong> normalizzazione dei numeri di dossier, similarità testuale (MinHash), priorità al regesto. Evita duplicati senza mai compromettere la completezza.',
+    ueber_method_index: '<strong>Indicizzazione:</strong> SQLite FTS5 con ranking BM25. Rebuild completo quotidiano, swap atomico, nessun downtime per i worker MCP.',
+    ueber_method_graph: '<strong>Grafo di citazioni:</strong> 8,8 milioni di archi tra decisioni, 11,3 milioni di riferimenti ad articoli di legge. Bidirezionale, con risoluzione della catena di ricorsi.',
+    ueber_method_search: '<strong>Ricerca:</strong> BM25 + Reciprocal Rank Fusion + tuning del meta-harness + reranking Haiku. MRR@10 = 0,647 su un gold set di 100 query (online, marzo 2026).',
+    ueber_method_laws: '<strong>Legislazione:</strong> ~5\'000 leggi federali dall\'endpoint SPARQL Fedlex (125\'000+ articoli in DE/FR/IT), mirror locale giornaliero indicizzato con SQLite FTS5. Atti cantonali e intercantonali via API JSON LexFind — mirror locale per tutti i 26 cantoni.',
+    ueber_method_docs: 'Documentazione tecnica completa nel <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">repository GitHub</a>.',
+    ueber_stats_heading: 'Numeri',
+    ueber_stat_decisions: 'decisioni',
+    ueber_stat_courts: 'tribunali',
+    ueber_stat_federal_laws: 'leggi federali',
+    ueber_stat_cantonal_laws: 'atti cantonali',
+    ueber_stat_citations: 'citazioni',
+    ueber_stat_mcp_tools: 'strumenti MCP',
+    ueber_license_heading: 'Licenza &amp; citazione',
+    ueber_license_data: '<strong>Dati:</strong> CC0 1.0 Pubblico Dominio — le decisioni giudiziarie svizzere sono documenti pubblici.',
+    ueber_license_code: '<strong>Codice:</strong> licenza MIT (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commenti:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch).',
+    ueber_license_attribution: 'L\'uso senza attribuzione è consentito ma apprezzato: « Source: OpenCaseLaw.ch ». Per l\'uso accademico si prega di citare il paper associato (voce Zenodo in arrivo).',
+    ueber_contact_heading: 'Contatto',
+    ueber_contact_1: 'Costruito e gestito da <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, in modo indipendente e senza interesse commerciale. Feedback, segnalazioni di bug e contributi benvenuti.',
+    ueber_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2074,7 +2158,7 @@ const I18N = {
     demo_tab_search:'Tschertga', demo_tab_statute:'Lescha', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrina',
     demo_label_call:'Chalenda', demo_label_response:'Resposta',
     footer_col_data:'Datas', footer_col_code:'Code', footer_col_connect:'Connectar', footer_col_about:'Davart',
-    footer_report:'Annunziar problem', footer_changelog:'Changelog', footer_status:'Status API',
+    footer_report:'Annunziar problem', footer_commits:'Commits', footer_status:'Status API',
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
@@ -2137,6 +2221,38 @@ const I18N = {
     study_p6:'Valitescha mia subsumziun: [mia resposta]',
     hero_mcp:'Tschertgar cun AI',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
+  
+    ueber_toc_mission: 'Missiun',
+    ueber_toc_methodology: 'Metodologia',
+    ueber_toc_stats: 'Numers',
+    ueber_toc_license: 'Licenza',
+    ueber_toc_contact: 'Contact',
+    ueber_mission_heading: 'Missiun',
+    ueber_mission_1: 'La retschertga giuridica svizra è oz fragmentada, per gronda part davos paywalls e mal accessibla per models da linguatg. Il resultat: students da dretg che ston pajar l\'access a basas da datas commerzialas custaivlas, e LLMs che allucineschan il text dals artitgels da lescha perquai ch\'els n\'han nagina funtauna autoritativa.',
+    ueber_mission_2: 'OpenCaseLaw metta a disposiziun liber tut las decisiuns giudicialas publitgadas da la Svizra ed il text actual da tut las leschas relevantas en ina furma tschertgabla, collegada tras citaziuns e legibla per maschinas — per retschertga, lecziun, pratica ed agents d\'IA.',
+    ueber_method_heading: 'Metodologia',
+    ueber_method_sources: '<strong>Funtaunas:</strong> 58 scrapers per il Tribunal federal, il Tribunal administrativ federal, il Tribunal penal federal, decisiuns regulatoricas (FINMA, WEKO, EDÖB, UBI, ElCom, etc.) e tut ils 26 chantuns. Decisiuns d\'entscheidsuche.ch sco fallback.',
+    ueber_method_dedup: '<strong>Deduplicaziun:</strong> normalisaziun dals numers da docket, sumeglientscha da text (MinHash), prioritad dal regest. Evitescha duplicats, ma mai a custs da la cumplettezza.',
+    ueber_method_index: '<strong>Indexaziun:</strong> SQLite FTS5 cun ranking BM25. Rebuild cumplet minchadi, swap atomar, nagin downtime per ils workers MCP.',
+    ueber_method_graph: '<strong>Graf da citaziuns:</strong> 8,8 mio. charnieras tranter decisiuns, 11,3 mio. referenzas ad artitgels legals. Bidirecziunal, cun schliaziun da chadainas da recurs.',
+    ueber_method_search: '<strong>Tschertga:</strong> BM25 + Reciprocal Rank Fusion + tuning dal meta-harness + reranking Haiku. MRR@10 = 0,647 sin in set d\'aur da 100 dumondas (online, mars 2026).',
+    ueber_method_laws: '<strong>Leschas:</strong> ~5\'000 leschas federalas da l\'endpoint SPARQL da Fedlex (125\'000+ artitgels en DE/FR/IT), spievel local mintga di indexà cun SQLite FTS5. Acts chantunals ed interchantunals via l\'API JSON da LexFind — spievel local per tut ils 26 chantuns.',
+    ueber_method_docs: 'Documentaziun tecnica cumpletta en il <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">repository GitHub</a>.',
+    ueber_stats_heading: 'Numers',
+    ueber_stat_decisions: 'decisiuns',
+    ueber_stat_courts: 'dretgiras',
+    ueber_stat_federal_laws: 'leschas federalas',
+    ueber_stat_cantonal_laws: 'acts chantunals',
+    ueber_stat_citations: 'citaziuns',
+    ueber_stat_mcp_tools: 'utensils MCP',
+    ueber_license_heading: 'Licenza &amp; citaziun',
+    ueber_license_data: '<strong>Datas:</strong> CC0 1.0 domena publica — las decisiuns giudicialas svizras èn documents publics.',
+    ueber_license_code: '<strong>Code:</strong> licenza MIT (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commentaris:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch).',
+    ueber_license_attribution: 'Utilisaziun senza attribuziun è permissa, ma appreziada: « Source: OpenCaseLaw.ch ». Per l\'utilisaziun academica datti p. pl. il paper accumpagnant (entrada Zenodo arriva).',
+    ueber_contact_heading: 'Contact',
+    ueber_contact_1: 'Construì ed operà da <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, independentamain e senza interess commerzial. Feedback, annunzis da bugs e contribuziuns èn bainvegnids.',
+    ueber_contact_2: 'E-mail: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2191,7 +2307,7 @@ const I18N = {
     demo_tab_search:'Search', demo_tab_statute:'Statute', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Tool call', demo_label_response:'Response',
     footer_col_data:'Data', footer_col_code:'Code', footer_col_connect:'Connect', footer_col_about:'About',
-    footer_report:'Report issue', footer_changelog:'Changelog', footer_status:'API status',
+    footer_report:'Report issue', footer_commits:'Commits', footer_status:'API status',
     footer_about:'About OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
@@ -2254,6 +2370,38 @@ const I18N = {
     study_p6:'Check my Subsumtion: [my answer]',
     hero_mcp:'Search with AI',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
+  
+    ueber_toc_mission: 'Mission',
+    ueber_toc_methodology: 'Methodology',
+    ueber_toc_stats: 'Numbers',
+    ueber_toc_license: 'License',
+    ueber_toc_contact: 'Contact',
+    ueber_mission_heading: 'Mission',
+    ueber_mission_1: 'Swiss legal research today is fragmented, mostly behind paywalls, and hard to reach for language models. The result: law students paying for expensive commercial databases, and LLMs hallucinating article text because they have no authoritative source.',
+    ueber_mission_2: 'OpenCaseLaw makes every publicly published Swiss court decision and the current text of every relevant statute freely available in a searchable, citation-linked, machine-readable format — for research, teaching, practice, and AI agents.',
+    ueber_method_heading: 'Methodology',
+    ueber_method_sources: '<strong>Sources:</strong> 58 scrapers covering the Federal Supreme Court, Federal Administrative Court, Federal Criminal Court, regulatory decisions (FINMA, ComCo, FDPIC, IndepBC, ElCom, etc.) and all 26 cantons. entscheidsuche.ch as a fallback source.',
+    ueber_method_dedup: '<strong>Deduplication:</strong> docket normalisation, text similarity (MinHash), regeste priority. Prevents duplicates without ever sacrificing completeness.',
+    ueber_method_index: '<strong>Indexing:</strong> SQLite FTS5 with BM25 ranking. Full daily rebuild, atomic swap, zero downtime for MCP workers.',
+    ueber_method_graph: '<strong>Citation graph:</strong> 8.8M edges between decisions, 11.3M references to statute articles. Bidirectional, with appeal-chain resolution.',
+    ueber_method_search: '<strong>Search:</strong> BM25 + Reciprocal Rank Fusion + meta-harness tuning + Haiku reranking. MRR@10 = 0.647 on a 100-query golden set (online, March 2026).',
+    ueber_method_laws: '<strong>Legislation:</strong> ~5,000 federal laws from the Fedlex SPARQL endpoint (125,000+ articles in DE/FR/IT), mirrored locally daily and indexed with SQLite FTS5. Cantonal and intercantonal acts via the LexFind JSON API — mirrored locally for all 26 cantons.',
+    ueber_method_docs: 'Full technical documentation in the <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">GitHub repository</a>.',
+    ueber_stats_heading: 'Numbers',
+    ueber_stat_decisions: 'decisions',
+    ueber_stat_courts: 'courts',
+    ueber_stat_federal_laws: 'federal laws',
+    ueber_stat_cantonal_laws: 'cantonal acts',
+    ueber_stat_citations: 'citations',
+    ueber_stat_mcp_tools: 'MCP tools',
+    ueber_license_heading: 'License &amp; citation',
+    ueber_license_data: '<strong>Data:</strong> CC0 1.0 Public Domain — Swiss court decisions are public documents.',
+    ueber_license_code: '<strong>Code:</strong> MIT License (<a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>).',
+    ueber_license_commentaries: '<strong>Commentaries:</strong> CC-BY-4.0 (OnlineKommentar.ch), CC BY-SA 4.0 (OpenLegalCommentary.ch).',
+    ueber_license_attribution: 'Use without attribution is allowed, but appreciated: "Source: OpenCaseLaw.ch". For academic use, please cite the accompanying paper (Zenodo entry coming).',
+    ueber_contact_heading: 'Contact',
+    ueber_contact_1: 'Built and operated by <a href="https://jonashertner.com" style="color:var(--ac)">Jonas Hertner</a>, independently and with no commercial interest. Feedback, bug reports, and contributions welcome.',
+    ueber_contact_2: 'Email: <a href="mailto:team@jonashertner.com" style="color:var(--ac)">team@jonashertner.com</a><br>GitHub: <a href="https://github.com/jonashertner/caselaw-repo-1" style="color:var(--ac)">github.com/jonashertner/caselaw-repo-1</a>',
   },
 };
 

@@ -1933,7 +1933,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <strong>+<span id="hero-stamp-delta">0</span></strong>
       <span data-t="hero_stamp_since">since yesterday</span>
     </p>
-    <h1 class="hero-headline" data-t="hero_headline">The complete open dataset of Swiss case law.</h1>
+    <h1 class="hero-headline" data-t="hero_headline">The open dataset of Swiss court decisions.</h1>
     <p class="hero-tagline" data-t="hero_tagline">Searchable by you, readable by your AI.</p>
     <div class="hero-ctas">
       <a href="/entscheide/" class="btn btn-primary">
@@ -2295,7 +2295,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <div class="footer-col-head" data-t="footer_col_code">Code</div>
         <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">GitHub</a>
         <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank" data-t="footer_report">Report issue</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CHANGELOG.md" rel="noopener" target="_blank" data-t="footer_changelog">Changelog</a>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/commits/main" rel="noopener" target="_blank" data-t="footer_commits">Commit history</a>
         <span class="footer-badge">MIT License</span>
       </div>
       <div class="footer-col">
@@ -2357,7 +2357,7 @@ const I18N = {
     word_cta:'Installation \u2192',
     hero_kicker:'Ein offenes Korpus des Schweizer Rechts',
     hero_stat_label:'publizierte Gerichtsentscheide',
-    hero_headline:'Der vollst\u00e4ndige, offene Datensatz Schweizer Rechtsprechung.',
+    hero_headline:'Der offene Datensatz Schweizer Gerichtsentscheide.',
     hero_tagline:'Durchsuchbar f\u00fcr Sie, lesbar f\u00fcr Ihr KI-Modell.',
     hero_cta_explore:'Korpus erkunden',
     hero_cta_connect:'KI verbinden',
@@ -2390,7 +2390,7 @@ const I18N = {
     demo_tab_search:'Suche', demo_tab_statute:'Gesetz', demo_tab_leading:'Leading Cases', demo_tab_doctrine:'Doktrin',
     demo_label_call:'Tool-Aufruf', demo_label_response:'Antwort',
     footer_col_data:'Daten', footer_col_code:'Code', footer_col_connect:'Verbinden', footer_col_about:'\u00dcber',
-    footer_report:'Issue melden', footer_changelog:'Changelog', footer_status:'API-Status',
+    footer_report:'Issue melden', footer_commits:'Commits', footer_status:'API-Status',
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
@@ -2486,7 +2486,7 @@ const I18N = {
     word_cta:'Installation \u2192',
     hero_kicker:'Un corpus ouvert du droit suisse',
     hero_stat_label:'d\u00e9cisions judiciaires publi\u00e9es',
-    hero_headline:'Le dataset ouvert et complet de la jurisprudence suisse.',
+    hero_headline:'Le corpus ouvert des d\u00e9cisions judiciaires suisses.',
     hero_tagline:'Interrogeable par vous, lisible par votre mod\u00e8le d\'IA.',
     hero_cta_explore:'Explorer le corpus',
     hero_cta_connect:'Connecter l\'IA',
@@ -2519,7 +2519,7 @@ const I18N = {
     demo_tab_search:'Recherche', demo_tab_statute:'Loi', demo_tab_leading:'Arr\u00eats de principe', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Appel d\'outil', demo_label_response:'R\u00e9ponse',
     footer_col_data:'Donn\u00e9es', footer_col_code:'Code', footer_col_connect:'Connexion', footer_col_about:'\u00c0 propos',
-    footer_report:'Signaler un probl\u00e8me', footer_changelog:'Changelog', footer_status:'\u00c9tat API',
+    footer_report:'Signaler un probl\u00e8me', footer_commits:'Commits', footer_status:'\u00c9tat API',
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
@@ -2615,7 +2615,7 @@ const I18N = {
     word_cta:'Installazione \u2192',
     hero_kicker:'Un corpus aperto del diritto svizzero',
     hero_stat_label:'decisioni giudiziarie pubblicate',
-    hero_headline:'Il dataset aperto e completo della giurisprudenza svizzera.',
+    hero_headline:'Il corpus aperto delle decisioni giudiziarie svizzere.',
     hero_tagline:'Interrogabile da voi, leggibile dal vostro modello IA.',
     hero_cta_explore:'Esplora il corpus',
     hero_cta_connect:'Connetti IA',
@@ -2648,7 +2648,7 @@ const I18N = {
     demo_tab_search:'Ricerca', demo_tab_statute:'Legge', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Dottrina',
     demo_label_call:'Chiamata', demo_label_response:'Risposta',
     footer_col_data:'Dati', footer_col_code:'Codice', footer_col_connect:'Connessione', footer_col_about:'Chi siamo',
-    footer_report:'Segnala problema', footer_changelog:'Changelog', footer_status:'Stato API',
+    footer_report:'Segnala problema', footer_commits:'Commit', footer_status:'Stato API',
     footer_about:'Chi siamo', footer_contact:'Contatto',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
@@ -2744,7 +2744,7 @@ const I18N = {
     word_cta:'Installaziun \u2192',
     hero_kicker:'In corpus avert dal dretg svizzer',
     hero_stat_label:'decisiuns giudizialas publitgadas',
-    hero_headline:'Il dataset avert e cumplet da la giurisprudenza svizra.',
+    hero_headline:'Il corpus avert da las decisiuns giudicialas svizras.',
     hero_tagline:'Interrogabel per Vus, legibel per Voss model AI.',
     hero_cta_explore:'Explorar il corpus',
     hero_cta_connect:'Connectar AI',
@@ -2777,7 +2777,7 @@ const I18N = {
     demo_tab_search:'Tschertga', demo_tab_statute:'Lescha', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrina',
     demo_label_call:'Chalenda', demo_label_response:'Resposta',
     footer_col_data:'Datas', footer_col_code:'Code', footer_col_connect:'Connectar', footer_col_about:'Davart',
-    footer_report:'Annunziar problem', footer_changelog:'Changelog', footer_status:'Status API',
+    footer_report:'Annunziar problem', footer_commits:'Commits', footer_status:'Status API',
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
@@ -2873,7 +2873,7 @@ const I18N = {
     word_cta:'Install \u2192',
     hero_kicker:'An open corpus of Swiss law',
     hero_stat_label:'published court decisions',
-    hero_headline:'The complete open dataset of Swiss case law.',
+    hero_headline:'The open dataset of Swiss court decisions.',
     hero_tagline:'Searchable by you, readable by your AI.',
     hero_cta_explore:'Explore corpus',
     hero_cta_connect:'Connect your AI',
@@ -2906,7 +2906,7 @@ const I18N = {
     demo_tab_search:'Search', demo_tab_statute:'Statute', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Tool call', demo_label_response:'Response',
     footer_col_data:'Data', footer_col_code:'Code', footer_col_connect:'Connect', footer_col_about:'About',
-    footer_report:'Report issue', footer_changelog:'Changelog', footer_status:'API status',
+    footer_report:'Report issue', footer_commits:'Commits', footer_status:'API status',
     footer_about:'About OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',

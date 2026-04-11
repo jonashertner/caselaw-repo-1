@@ -1519,13 +1519,10 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <section id="gesetze-federal" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
       <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:8px">
-        <h2 style="margin:0; font-size:22px">Bundesgesetze — Fedlex-SPARQL-Spiegel</h2>
+        <h2 style="margin:0; font-size:22px" data-t="gesetze_federal_heading">Bundesgesetze — Fedlex-SPARQL-Spiegel</h2>
       </div>
-      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch">
-        Der Fedlex-SPARQL-Endpunkt
-        (<a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">fedlex.data.admin.ch/sparqlendpoint</a>)
-        wird täglich gegen eine kuratierte Liste von 80 Bundesgesetzen abgefragt. Artikeltexte, Absätze, Querverweise
-        und Amtssprachen werden in eine lokale SQLite-Datenbank geschrieben und per FTS5 indexiert.
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 16px; max-width:68ch" data-t="gesetze_fedlex_intro">
+        Der Fedlex-SPARQL-Endpunkt (<a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">fedlex.data.admin.ch/sparqlendpoint</a>) wird täglich gegen die Fedlex-Consolidations-URIs abgefragt. Artikeltexte, Absätze, Querverweise und Amtssprachen werden in eine lokale SQLite-Datenbank geschrieben und per FTS5 indexiert.
       </p>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px 20px; margin:16px 0 20px; font-size:13px; color:var(--tx2)">
         <div><strong style="color:var(--tx)">39'000</strong> <span style="color:var(--tx3)">Artikel</span></div>
@@ -1533,22 +1530,20 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <div><strong style="color:var(--tx)">228'559</strong> <span style="color:var(--tx3)">Änderungs-Referenzen</span></div>
         <div><strong style="color:var(--tx)">&lt;1 ms</strong> <span style="color:var(--tx3)">Artikel-Lookup</span></div>
       </div>
-      <p style="font-size:13px; color:var(--tx3); margin:0 0 10px">Abgedeckte Abkürzungen (Auszug):</p>
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 10px" data-t="gesetze_abbr_label">Abgedeckte Abkürzungen (Auszug):</p>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(90px, 1fr)); gap:8px 12px; margin-bottom:20px; font-family:var(--f-mono); font-size:13px">
         <span>OR</span><span>ZGB</span><span>StGB</span><span>StPO</span><span>ZPO</span><span>BV</span>
         <span>SchKG</span><span>BGG</span><span>DBG</span><span>IPRG</span><span>AIG</span><span>BVG</span>
         <span>KVG</span><span>AsylG</span><span>BGFA</span><span>ATSG</span><span>DSG</span><span>UVG</span>
         <span>AHVG</span><span>IVG</span><span>AVIG</span><span>StHG</span><span>MWSTG</span><span>GSchG</span>
       </div>
-      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px">Vollständige Liste über <code>search_laws</code> abrufbar.</p>
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px" data-t="gesetze_abbr_full">Vollständige Liste über <code>search_laws</code> abrufbar.</p>
 
       <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
         <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Artikel-Lookup</div>
         <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_law(abbreviation="OR", article="41", language="de")</code>
-        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
-          Liefert Art. 41 OR (ausservertragliche Haftung) mit Absätzen, Querverweisen und Metadaten aus dem lokalen
-          FTS5-Index. Parameter <code style="font-size:13px">language</code> akzeptiert <code style="font-size:13px">de</code>,
-          <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.
+        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0" data-t="gesetze_lookup_desc">
+          Liefert Art. 41 OR (ausservertragliche Haftung) mit Absätzen, Querverweisen und Metadaten aus dem lokalen FTS5-Index. Parameter <code style="font-size:13px">language</code> akzeptiert <code style="font-size:13px">de</code>, <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.
         </p>
       </div>
     </div>
@@ -1572,9 +1567,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <div><strong style="color:var(--tx)">7 d</strong> <span style="color:var(--tx3)">— Volltexte</span></div>
         <div><strong style="color:var(--tx)">24 h</strong> <span style="color:var(--tx3)">— Änderungsverlauf</span></div>
       </div>
-      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px; max-width:68ch">
-        Bundesgesetze werden ausserdem lokal aus dem Fedlex-Spiegel bedient (siehe oben) — die LexFind-API wird nur
-        für kantonale und unbekannte SR-Nummern angefragt.
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 16px; max-width:68ch" data-t="gesetze_lexfind_note">
+        Bundesgesetze werden ausserdem lokal aus dem Fedlex-Spiegel bedient (siehe oben) — die LexFind-API wird nur für kantonale und unbekannte SR-Nummern angefragt.
       </p>
 
       <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px; margin-bottom:12px">
@@ -1585,10 +1579,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
         <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Abruf per systematische Nummer</div>
         <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">get_legislation(systematic_number="170.11", canton="VD")</code>
-        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0">
-          Liefert Metadaten und Versionsgeschichte der Waadtländer Kantonsverfassung samt Link zur offiziellen
-          Quelle. <code style="font-size:13px">include_versions=True</code> forciert bei Bedarf einen direkten
-          LexFind-Aufruf.
+        <p style="font-size:13px; color:var(--tx2); margin:10px 0 0" data-t="gesetze_sysnum_desc">
+          Liefert Metadaten und Versionsgeschichte der Waadtländer Kantonsverfassung samt Link zur offiziellen Quelle. <code style="font-size:13px">include_versions=True</code> forciert bei Bedarf einen direkten LexFind-Aufruf.
         </p>
       </div>
     </div>
@@ -1597,10 +1589,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Recent changes section -->
   <section id="gesetze-changes" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 8px; font-size:22px">Aktuelle Änderungen</h2>
-      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch">
-        Für jede Jurisdiktion können die zuletzt erfolgten Gesetzesänderungen abgefragt werden &mdash;
-        neue Erlasse, Revisionen und Aufhebungen mit Datum, Typ und Link zur offiziellen Publikation.
+      <h2 style="margin:0 0 8px; font-size:22px" data-t="gesetze_changes_heading">Aktuelle Änderungen</h2>
+      <p style="font-size:15px; line-height:1.6; color:var(--tx2); margin:8px 0 20px; max-width:68ch" data-t="gesetze_changes_desc">
+        Für jede Jurisdiktion können die zuletzt erfolgten Gesetzesänderungen abgefragt werden &mdash; neue Erlasse, Revisionen und Aufhebungen mit Datum, Typ und Link zur offiziellen Publikation.
       </p>
       <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:14px 18px">
         <code style="font-family:var(--f-mono); font-size:14px; color:var(--tx)">browse_legislation_changes(canton="CH")</code>
@@ -1612,22 +1603,14 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <section id="gesetze-why" class="section-card" open style="margin-bottom:48px">
     <div class="section-body" style="padding:28px 32px">
       <h2 style="margin:0 0 12px; font-size:22px">Technischer Hintergrund</h2>
-      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
-        Fedlex exponiert zwei maschinenlesbare Schnittstellen: einen SPARQL-Endpunkt (RDF, ELI-URIs) und
-        XML-Downloads einzelner Erlasse. Beide setzen erhebliche Vorarbeit voraus, bevor ein Abruf wie
-        „Art. 41 OR auf Deutsch&ldquo; möglich ist. Der lokale Spiegel materialisiert diese Abfrage in einer
-        FTS5-Tabelle über (Gesetz, Artikel, Sprache), was Artikel-Lookups auf Submillisekunden-Latenz bringt.
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="gesetze_bg_fedlex">
+        Fedlex exponiert zwei maschinenlesbare Schnittstellen: einen SPARQL-Endpunkt (RDF, ELI-URIs) und XML-Downloads einzelner Erlasse. Beide setzen erhebliche Vorarbeit voraus, bevor ein Abruf wie „Art. 41 OR auf Deutsch&ldquo; möglich ist. Der lokale Spiegel materialisiert diese Abfrage in einer FTS5-Tabelle über (Gesetz, Artikel, Sprache), was Artikel-Lookups auf Submillisekunden-Latenz bringt.
       </p>
-      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch">
-        LexFind stellt eine JSON-API bereit, die einen Such-dann-Abruf-Ablauf verlangt: zuerst Kanton oder
-        Suchbegriff, dann eine Dokument-ID, dann der Text. Direkte Aufrufe sind ratenlimitiert und der Cache ist
-        nicht-persistent. Die hier bereitgestellte Schicht bündelt Such- und Abrufcalls hinter einem stateless
-        MCP-Tool und verwaltet eine persistente, SQLite-basierte Cache-Ebene mit abgestuften TTLs.
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0 0 12px; max-width:68ch" data-t="gesetze_bg_lexfind">
+        LexFind stellt eine JSON-API bereit, die einen Such-dann-Abruf-Ablauf verlangt: zuerst Kanton oder Suchbegriff, dann eine Dokument-ID, dann der Text. Direkte Aufrufe sind ratenlimitiert und der Cache ist nicht-persistent. Die hier bereitgestellte Schicht bündelt Such- und Abrufcalls hinter einem stateless MCP-Tool und verwaltet eine persistente, SQLite-basierte Cache-Ebene mit abgestuften TTLs.
       </p>
-      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch">
-        Im Zitationsgraph sind 11,3 Mio Verweise auf Gesetzesartikel gespeichert; jede Referenz lässt sich gegen
-        den aktuellen konsolidierten Text auflösen. Ein Entscheid, der Art. 12 BGFA zitiert, führt per
-        <code>get_law("BGFA", article="12")</code> direkt zum Artikel in allen drei Amtssprachen.
+      <p style="font-size:15px; line-height:1.7; color:var(--tx2); margin:0; max-width:68ch" data-t="gesetze_bg_graph">
+        Im Zitationsgraph sind 11,3 Mio Verweise auf Gesetzesartikel gespeichert; jede Referenz lässt sich gegen den aktuellen konsolidierten Text auflösen. Ein Entscheid, der Art. 12 BGFA zitiert, führt per <code>get_law("BGFA", article="12")</code> direkt zum Artikel in allen drei Amtssprachen.
       </p>
     </div>
   </section>
@@ -1649,7 +1632,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <div class="footer-col-head" data-t="footer_col_code">Code</div>
         <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">GitHub</a>
         <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank" data-t="footer_report">Report issue</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CHANGELOG.md" rel="noopener" target="_blank" data-t="footer_changelog">Changelog</a>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/commits/main" rel="noopener" target="_blank" data-t="footer_commits">Commit history</a>
         <span class="footer-badge">MIT License</span>
       </div>
       <div class="footer-col">
@@ -1732,7 +1715,7 @@ const I18N = {
     demo_tab_search:'Suche', demo_tab_statute:'Gesetz', demo_tab_leading:'Leading Cases', demo_tab_doctrine:'Doktrin',
     demo_label_call:'Tool-Aufruf', demo_label_response:'Antwort',
     footer_col_data:'Daten', footer_col_code:'Code', footer_col_connect:'Verbinden', footer_col_about:'\u00dcber',
-    footer_report:'Issue melden', footer_changelog:'Changelog', footer_status:'API-Status',
+    footer_report:'Issue melden', footer_commits:'Commits', footer_status:'API-Status',
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
@@ -1795,6 +1778,20 @@ const I18N = {
     study_p6:'Prüf meine Subsumtion: [meine Antwort]',
     hero_mcp:'Mit KI durchsuchen',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
+  
+    gesetze_fedlex_intro: 'Der <a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">Fedlex-SPARQL-Endpunkt</a> (<code style="font-size:13px">fedlex.data.admin.ch/sparqlendpoint</code>) wird täglich abgefragt und die wichtigsten Bundesgesetze werden als SQLite FTS5-Index lokal gespiegelt. Artikel-Lookups laufen unter 1 ms, Volltextsuche mit BM25-Ranking.',
+    gesetze_abbr_label: 'Abgedeckte Abkürzungen (Auszug):',
+    gesetze_abbr_full: 'Vollständige Liste über <code>search_laws</code> abrufbar.',
+    gesetze_lookup_desc: 'Liefert Art. 41 OR (ausservertragliche Haftung) mit Absätzen, Querverweisen und Metadaten aus dem lokalen FTS5-Index. Parameter <code style="font-size:13px">language</code> akzeptiert <code style="font-size:13px">de</code>, <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.',
+    gesetze_lexfind_note: 'Bundesgesetze werden ausserdem lokal aus dem Fedlex-Spiegel bedient (siehe oben) — die LexFind-API wird nur für kantonale und unbekannte SR-Nummern angefragt.',
+    gesetze_sysnum_desc: 'Liefert Metadaten und Versionsgeschichte der Waadtländer Kantonsverfassung samt Link zur offiziellen Quelle. <code style="font-size:13px">include_versions=True</code> forciert bei Bedarf einen direkten LexFind-Aufruf.',
+    gesetze_changes_heading: 'Aktuelle Änderungen',
+    gesetze_changes_desc: 'Für jede Jurisdiktion können die zuletzt erfolgten Gesetzesänderungen abgefragt werden — neue Erlasse, Revisionen und Aufhebungen mit Datum, Typ und Link zur offiziellen Publikation.',
+    gesetze_bg_fedlex: 'Fedlex exponiert zwei maschinenlesbare Schnittstellen: einen SPARQL-Endpunkt (RDF, ELI-URIs) und XML-Downloads einzelner Erlasse. Beide setzen erhebliche Vorarbeit voraus, bevor ein Abruf wie „Art. 41 OR auf Deutsch" möglich ist. Der lokale Spiegel materialisiert diese Abfrage in einer FTS5-Tabelle über (Gesetz, Artikel, Sprache), was Artikel-Lookups auf Submillisekunden-Latenz bringt.',
+    gesetze_bg_lexfind: 'LexFind stellt eine JSON-API bereit, die einen Such-dann-Abruf-Ablauf verlangt: zuerst Kanton oder Suchbegriff, dann eine Dokument-ID, dann der Text. Direkte Aufrufe sind ratenlimitiert und der Cache ist nicht-persistent. Die hier bereitgestellte Schicht bündelt Such- und Abrufcalls hinter einem stateless MCP-Tool und verwaltet eine persistente, SQLite-basierte Cache-Ebene mit abgestuften TTLs.',
+    gesetze_bg_graph: 'Im Zitationsgraph sind 11,3 Mio Verweise auf Gesetzesartikel gespeichert; jede Referenz lässt sich gegen den aktuellen konsolidierten Text auflösen. Ein Entscheid, der Art. 12 BGFA zitiert, führt per <code>get_law("BGFA", article="12")</code> direkt zum Artikel in allen drei Amtssprachen.',
+  
+    gesetze_federal_heading: 'Bundesgesetze — Fedlex-SPARQL-Spiegel',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -1849,7 +1846,7 @@ const I18N = {
     demo_tab_search:'Recherche', demo_tab_statute:'Loi', demo_tab_leading:'Arr\u00eats de principe', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Appel d\'outil', demo_label_response:'R\u00e9ponse',
     footer_col_data:'Donn\u00e9es', footer_col_code:'Code', footer_col_connect:'Connexion', footer_col_about:'\u00c0 propos',
-    footer_report:'Signaler un probl\u00e8me', footer_changelog:'Changelog', footer_status:'\u00c9tat API',
+    footer_report:'Signaler un probl\u00e8me', footer_commits:'Commits', footer_status:'\u00c9tat API',
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
@@ -1912,6 +1909,20 @@ const I18N = {
     study_p6:'Évalue ma subsomption: [ma réponse]',
     hero_mcp:'Recherche avec IA',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
+  
+    gesetze_fedlex_intro: 'L\'<a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">endpoint SPARQL de Fedlex</a> (<code style="font-size:13px">fedlex.data.admin.ch/sparqlendpoint</code>) est interrogé quotidiennement et les lois fédérales principales sont mises en miroir localement dans un index SQLite FTS5. Les lookups d\'articles s\'exécutent en moins de 1 ms, la recherche plein texte utilise le ranking BM25.',
+    gesetze_abbr_label: 'Abréviations couvertes (extrait) :',
+    gesetze_abbr_full: 'Liste complète disponible via <code>search_laws</code>.',
+    gesetze_lookup_desc: 'Renvoie l\'art. 41 CO (responsabilité extracontractuelle) avec alinéas, renvois et métadonnées depuis l\'index FTS5 local. Le paramètre <code style="font-size:13px">language</code> accepte <code style="font-size:13px">de</code>, <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.',
+    gesetze_lexfind_note: 'Les lois fédérales sont par ailleurs servies localement depuis le miroir Fedlex (voir ci-dessus) — l\'API LexFind n\'est interrogée que pour les numéros SR cantonaux et inconnus.',
+    gesetze_sysnum_desc: 'Renvoie les métadonnées et l\'historique des versions de la Constitution vaudoise, avec lien vers la source officielle. <code style="font-size:13px">include_versions=True</code> force au besoin un appel direct à LexFind.',
+    gesetze_changes_heading: 'Modifications récentes',
+    gesetze_changes_desc: 'Pour chaque juridiction, on peut obtenir les modifications législatives les plus récentes — nouveaux actes, révisions et abrogations, avec date, type et lien vers la publication officielle.',
+    gesetze_bg_fedlex: 'Fedlex expose deux interfaces lisibles par machine : un endpoint SPARQL (RDF, ELI-URIs) et des téléchargements XML d\'actes individuels. Les deux demandent un travail préparatoire considérable avant qu\'une requête comme « Art. 41 CO en allemand » soit possible. Le miroir local matérialise cette requête dans une table FTS5 sur (loi, article, langue), amenant les lookups d\'articles en sous-milliseconde.',
+    gesetze_bg_lexfind: 'LexFind fournit une API JSON qui exige un flux recherche-puis-récupération : d\'abord le canton ou le mot-clé, puis un identifiant de document, puis le texte. Les appels directs sont rate-limités et le cache n\'est pas persistant. La couche fournie ici regroupe les appels de recherche et de récupération derrière un outil MCP stateless et gère un cache SQLite persistant avec des TTL étagés.',
+    gesetze_bg_graph: 'Le graphe de citations contient 11,3 millions de références à des articles de loi ; chaque référence peut être résolue contre le texte consolidé actuel. Une décision qui cite l\'art. 12 LLCA conduit via <code>get_law("BGFA", article="12")</code> directement à l\'article dans les trois langues officielles.',
+  
+    gesetze_federal_heading: 'Lois fédérales — miroir SPARQL Fedlex',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -1966,7 +1977,7 @@ const I18N = {
     demo_tab_search:'Ricerca', demo_tab_statute:'Legge', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Dottrina',
     demo_label_call:'Chiamata', demo_label_response:'Risposta',
     footer_col_data:'Dati', footer_col_code:'Codice', footer_col_connect:'Connessione', footer_col_about:'Chi siamo',
-    footer_report:'Segnala problema', footer_changelog:'Changelog', footer_status:'Stato API',
+    footer_report:'Segnala problema', footer_commits:'Commit', footer_status:'Stato API',
     footer_about:'Chi siamo', footer_contact:'Contatto',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
@@ -2029,6 +2040,20 @@ const I18N = {
     study_p6:'Valuta la mia sussunzione: [la mia risposta]',
     hero_mcp:'Ricerca con IA',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
+  
+    gesetze_fedlex_intro: 'L\'<a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">endpoint SPARQL di Fedlex</a> (<code style="font-size:13px">fedlex.data.admin.ch/sparqlendpoint</code>) viene interrogato quotidianamente e le principali leggi federali sono replicate localmente come indice SQLite FTS5. I lookup degli articoli sono eseguiti in meno di 1 ms, la ricerca full-text usa il ranking BM25.',
+    gesetze_abbr_label: 'Abbreviazioni coperte (estratto):',
+    gesetze_abbr_full: 'Elenco completo disponibile tramite <code>search_laws</code>.',
+    gesetze_lookup_desc: 'Restituisce l\'art. 41 CO (responsabilità extracontrattuale) con commi, rimandi e metadati dall\'indice FTS5 locale. Il parametro <code style="font-size:13px">language</code> accetta <code style="font-size:13px">de</code>, <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.',
+    gesetze_lexfind_note: 'Le leggi federali sono inoltre servite localmente dal mirror Fedlex (v. sopra) — l\'API LexFind viene interrogata solo per numeri SR cantonali e sconosciuti.',
+    gesetze_sysnum_desc: 'Restituisce metadati e cronologia delle versioni della Costituzione vodese con link alla fonte ufficiale. <code style="font-size:13px">include_versions=True</code> forza, all\'occorrenza, una chiamata diretta a LexFind.',
+    gesetze_changes_heading: 'Modifiche recenti',
+    gesetze_changes_desc: 'Per ogni giurisdizione è possibile ottenere le modifiche legislative più recenti — nuovi atti, revisioni e abrogazioni con data, tipo e link alla pubblicazione ufficiale.',
+    gesetze_bg_fedlex: 'Fedlex espone due interfacce leggibili dalle macchine: un endpoint SPARQL (RDF, ELI-URI) e download XML di singoli atti. Entrambi richiedono un lavoro preparatorio notevole prima che una query come « Art. 41 CO in tedesco » sia possibile. Il mirror locale materializza questa query in una tabella FTS5 su (legge, articolo, lingua), portando i lookup di articoli sotto il millisecondo.',
+    gesetze_bg_lexfind: 'LexFind fornisce un\'API JSON che richiede un flusso ricerca-poi-recupero: prima cantone o termine di ricerca, poi un ID documento, poi il testo. Le chiamate dirette sono soggette a rate-limit e la cache non è persistente. Lo strato qui fornito raggruppa le chiamate di ricerca e recupero dietro uno strumento MCP stateless e gestisce una cache SQLite persistente con TTL graduate.',
+    gesetze_bg_graph: 'Il grafo di citazioni contiene 11,3 milioni di riferimenti ad articoli di legge; ogni riferimento può essere risolto rispetto al testo consolidato attuale. Una decisione che cita l\'art. 12 LLCA porta tramite <code>get_law("BGFA", article="12")</code> direttamente all\'articolo nelle tre lingue ufficiali.',
+  
+    gesetze_federal_heading: 'Leggi federali — mirror SPARQL Fedlex',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2083,7 +2108,7 @@ const I18N = {
     demo_tab_search:'Tschertga', demo_tab_statute:'Lescha', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrina',
     demo_label_call:'Chalenda', demo_label_response:'Resposta',
     footer_col_data:'Datas', footer_col_code:'Code', footer_col_connect:'Connectar', footer_col_about:'Davart',
-    footer_report:'Annunziar problem', footer_changelog:'Changelog', footer_status:'Status API',
+    footer_report:'Annunziar problem', footer_commits:'Commits', footer_status:'Status API',
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
@@ -2146,6 +2171,20 @@ const I18N = {
     study_p6:'Valitescha mia subsumziun: [mia resposta]',
     hero_mcp:'Tschertgar cun AI',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
+  
+    gesetze_fedlex_intro: 'L\'<a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">endpoint SPARQL da Fedlex</a> (<code style="font-size:13px">fedlex.data.admin.ch/sparqlendpoint</code>) vegn dumandà mintga di e las leschas federalas pli impurtantas vegnan spivladas localmain sco index SQLite FTS5. Lookups d\'artitgels cuorran sut 1 ms, tschertga full-text cun ranking BM25.',
+    gesetze_abbr_label: 'Abbreviaziuns cuvridas (extract):',
+    gesetze_abbr_full: 'Glista cumpletta disponibla via <code>search_laws</code>.',
+    gesetze_lookup_desc: 'Returna l\'art. 41 CO (responsabladad extracontractuala) cun alineas, referenzas e metadata da l\'index FTS5 local. Il parameter <code style="font-size:13px">language</code> accepta <code style="font-size:13px">de</code>, <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.',
+    gesetze_lexfind_note: 'Las leschas federalas vegnan spinladas localmain dal spievel Fedlex (guarda sura) — l\'API LexFind vegn mo dumandada per numers SR chantunals ed enconuschents.',
+    gesetze_sysnum_desc: 'Returna metadata e versiunshistoria da la constituziun chantunala vodesa cun il link a la funtauna uffiziala. <code style="font-size:13px">include_versions=True</code> sfurza sche necessari ina clomada directa da LexFind.',
+    gesetze_changes_heading: 'Midadas actualas',
+    gesetze_changes_desc: 'Per mintga giurisdicziun pon las midadas legislativas las pli recentas vegnir dumandadas — acts novs, revisiuns ed aboliziuns cun datas, tips e links a la publicaziun uffiziala.',
+    gesetze_bg_fedlex: 'Fedlex exponescha duas interfacias legiblas per maschinas: in endpoint SPARQL (RDF, ELI-URIs) e downloads XML d\'acts singuls. Omaduas dovran lavur preparatorica avant che ina dumonda sco « Art. 41 CO per tudestg » saja pussaivla. Il spievel local materialisescha questa dumonda en ina tabella FTS5 sur (lescha, artitgel, linguatg), adducend ils lookups d\'artitgels sut la millisecunda.',
+    gesetze_bg_lexfind: 'LexFind furneschin in\'API JSON che dovra in flux tschertga-lura-chatschar: l\'emprim chantun u term da tschertga, lura in ID da document, lura il text. Clomadas directas èn rate-limitadas ed il cache n\'è betg persistent. Il stresch qua furnì gruppescha las clomadas da tschertga e chatschar davos in utensil MCP stateless e maina in cache SQLite persistent cun TTLs graduadas.',
+    gesetze_bg_graph: 'Il graf da citaziuns cuntegna 11,3 mio. referenzas ad artitgels legals; mintga referenza po vegnir schliada cunter il text consolidà actual. Ina decisiun che citescha l\'art. 12 BGFA maina via <code>get_law("BGFA", article="12")</code> directamain a l\'artitgel en tut las trais linguas uffizialas.',
+  
+    gesetze_federal_heading: 'Leschas federalas — spievel SPARQL Fedlex',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2200,7 +2239,7 @@ const I18N = {
     demo_tab_search:'Search', demo_tab_statute:'Statute', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Tool call', demo_label_response:'Response',
     footer_col_data:'Data', footer_col_code:'Code', footer_col_connect:'Connect', footer_col_about:'About',
-    footer_report:'Report issue', footer_changelog:'Changelog', footer_status:'API status',
+    footer_report:'Report issue', footer_commits:'Commits', footer_status:'API status',
     footer_about:'About OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
@@ -2263,6 +2302,20 @@ const I18N = {
     study_p6:'Check my Subsumtion: [my answer]',
     hero_mcp:'Search with AI',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
+  
+    gesetze_fedlex_intro: 'The <a href="https://fedlex.data.admin.ch/sparqlendpoint" style="color:var(--ac)">Fedlex SPARQL endpoint</a> (<code style="font-size:13px">fedlex.data.admin.ch/sparqlendpoint</code>) is queried daily and the main federal laws are mirrored locally as a SQLite FTS5 index. Article lookups run in under 1 ms, full-text search uses BM25 ranking.',
+    gesetze_abbr_label: 'Covered abbreviations (excerpt):',
+    gesetze_abbr_full: 'Full list available via <code>search_laws</code>.',
+    gesetze_lookup_desc: 'Returns Art. 41 CO (non-contractual liability) with paragraphs, cross-references and metadata from the local FTS5 index. The <code style="font-size:13px">language</code> parameter accepts <code style="font-size:13px">de</code>, <code style="font-size:13px">fr</code>, <code style="font-size:13px">it</code>.',
+    gesetze_lexfind_note: 'Federal laws are additionally served locally from the Fedlex mirror (see above) — the LexFind API is only queried for cantonal and unknown SR numbers.',
+    gesetze_sysnum_desc: 'Returns metadata and version history of the Vaud cantonal constitution with a link to the official source. <code style="font-size:13px">include_versions=True</code> forces a direct LexFind call when needed.',
+    gesetze_changes_heading: 'Recent changes',
+    gesetze_changes_desc: 'For each jurisdiction, the most recent legislative changes can be queried — new acts, revisions and repeals with date, type and link to the official publication.',
+    gesetze_bg_fedlex: 'Fedlex exposes two machine-readable interfaces: a SPARQL endpoint (RDF, ELI URIs) and XML downloads of individual acts. Both require substantial preparation before a query like "Art. 41 CO in German" becomes possible. The local mirror materialises this query in an FTS5 table over (law, article, language), bringing article lookups down to sub-millisecond latency.',
+    gesetze_bg_lexfind: 'LexFind provides a JSON API that requires a search-then-fetch flow: first canton or keyword, then a document ID, then the text. Direct calls are rate-limited and the cache is non-persistent. The layer provided here bundles search and fetch calls behind a stateless MCP tool and maintains a persistent SQLite cache with tiered TTLs.',
+    gesetze_bg_graph: 'The citation graph stores 11.3M references to statute articles; every reference can be resolved against the current consolidated text. A decision that cites Art. 12 LSLaw leads via <code>get_law("BGFA", article="12")</code> directly to the article in all three official languages.',
+  
+    gesetze_federal_heading: 'Federal laws — Fedlex SPARQL mirror',
   },
 };
 

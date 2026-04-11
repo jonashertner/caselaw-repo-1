@@ -1525,7 +1525,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
             <strong>Remote</strong>
             <span class="leg-badge">empfohlen</span>
           </div>
-          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0 0 10px">
+          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0 0 10px" data-t="mcp_remote_desc">
             Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:
           </p>
           <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
@@ -1551,7 +1551,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
       <div style="margin-bottom:20px">
         <h3 style="font-size:15px; margin:0 0 8px">Claude Desktop</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px">Settings → Connectors → Add → URL eintragen:</p>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_claude_desktop_step">Settings → Connectors → Add → URL eintragen:</p>
         <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
           <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
         </div>
@@ -1566,17 +1566,15 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
       <div style="margin-bottom:20px">
         <h3 style="font-size:15px; margin:0 0 8px">ChatGPT (Custom GPT / Actions)</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0">
-          Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:12px">readOnlyHint</code> Annotations.
-          Kompatibel mit GPT-5.3 (Anleitung im README).
+        <p style="font-size:14px; color:var(--tx2); margin:0" data-t="mcp_chatgpt_note">
+          Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:12px">readOnlyHint</code>-Annotations. Kompatibel mit GPT-5.3 (Anleitung im README).
         </p>
       </div>
 
       <div style="margin-bottom:20px">
         <h3 style="font-size:15px; margin:0 0 8px">Cursor / Gemini / andere</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0">
-          Funktioniert mit jedem MCP-fähigen Client über Standard SSE-Transport.
-          Endpunkt: <code style="font-size:13px">https://mcp.opencaselaw.ch</code>
+        <p style="font-size:14px; color:var(--tx2); margin:0" data-t="mcp_other_note">
+          Funktioniert mit jedem MCP-fähigen Client über Standard-SSE-Transport. Endpunkt: <code style="font-size:13px">https://mcp.opencaselaw.ch</code>
         </p>
       </div>
     </div>
@@ -1585,9 +1583,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Tool list -->
   <section id="mcp-tools" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">21 Tools im Überblick</h2>
-      <p style="font-size:14px; color:var(--tx2); margin:0 0 20px; max-width:68ch">
-        Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll abrufbar.
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tools_heading">21 Tools im Überblick</h2>
+      <p style="font-size:14px; color:var(--tx2); margin:0 0 20px; max-width:68ch" data-t="mcp_tools_desc">
+        Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code> abrufbar.
       </p>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px 24px; font-size:13px">
@@ -1635,13 +1633,13 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   <!-- Technical details -->
   <section id="mcp-tech" class="section-card" open style="margin-bottom:48px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px">Technisches</h2>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tech_heading">Technisches</h2>
       <ul style="font-size:14px; line-height:1.7; color:var(--tx2); margin:0; padding-left:20px; max-width:68ch">
-        <li>Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients</li>
-        <li>TLS via Let's Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a></li>
-        <li>4× uvicorn-Worker hinter Load-Balancer, automatisches Failover</li>
-        <li>Backend: 965'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,8 Mio Zitationskanten</li>
-        <li>Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert</li>
+        <li data-t="mcp_tech_transport">Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients</li>
+        <li data-t="mcp_tech_tls">TLS via Let's Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a></li>
+        <li data-t="mcp_tech_workers">4× uvicorn-Worker hinter Load-Balancer, automatisches Failover</li>
+        <li data-t="mcp_tech_backend">Backend: 965'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,8 Mio Zitationskanten</li>
+        <li data-t="mcp_tech_data">Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert</li>
       </ul>
     </div>
   </section>
@@ -1662,7 +1660,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <div class="footer-col-head" data-t="footer_col_code">Code</div>
         <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">GitHub</a>
         <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank" data-t="footer_report">Report issue</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CHANGELOG.md" rel="noopener" target="_blank" data-t="footer_changelog">Changelog</a>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/commits/main" rel="noopener" target="_blank" data-t="footer_commits">Commit history</a>
         <span class="footer-badge">MIT License</span>
       </div>
       <div class="footer-col">
@@ -1745,7 +1743,7 @@ const I18N = {
     demo_tab_search:'Suche', demo_tab_statute:'Gesetz', demo_tab_leading:'Leading Cases', demo_tab_doctrine:'Doktrin',
     demo_label_call:'Tool-Aufruf', demo_label_response:'Antwort',
     footer_col_data:'Daten', footer_col_code:'Code', footer_col_connect:'Verbinden', footer_col_about:'\u00dcber',
-    footer_report:'Issue melden', footer_changelog:'Changelog', footer_status:'API-Status',
+    footer_report:'Issue melden', footer_commits:'Commits', footer_status:'API-Status',
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
@@ -1808,6 +1806,22 @@ const I18N = {
     study_p6:'Prüf meine Subsumtion: [meine Antwort]',
     hero_mcp:'Mit KI durchsuchen',
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
+  
+    mcp_remote_desc: 'Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:',
+    mcp_chatgpt_note: 'Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:11px">readOnlyHint</code>-Annotations. Kompatibel mit <strong>GPT-5.3</strong>; bei GPT-5.4 siehe Workaround oben.',
+    mcp_other_note: 'Funktioniert mit jedem MCP-fähigen Client über Standard-SSE-Transport. Endpunkt: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
+    mcp_tools_heading: '21 Tools im Überblick',
+    mcp_tools_desc: 'Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code>, hier gruppiert nach Funktion.',
+    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients (Claude Desktop, ChatGPT, Cursor, Gemini).',
+    mcp_arch_data: '<strong>Daten:</strong> Aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert.',
+  
+    mcp_claude_desktop_step: 'Settings → Connectors → Add → URL eintragen:',
+    mcp_tech_heading: 'Technisches',
+    mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients',
+    mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
+    mcp_tech_workers: '4× uvicorn-Worker hinter Load-Balancer, automatisches Failover',
+    mcp_tech_backend: 'Backend: 965\'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph-DB mit 8,8 Mio Zitationskanten',
+    mcp_tech_data: 'Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -1862,7 +1876,7 @@ const I18N = {
     demo_tab_search:'Recherche', demo_tab_statute:'Loi', demo_tab_leading:'Arr\u00eats de principe', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Appel d\'outil', demo_label_response:'R\u00e9ponse',
     footer_col_data:'Donn\u00e9es', footer_col_code:'Code', footer_col_connect:'Connexion', footer_col_about:'\u00c0 propos',
-    footer_report:'Signaler un probl\u00e8me', footer_changelog:'Changelog', footer_status:'\u00c9tat API',
+    footer_report:'Signaler un probl\u00e8me', footer_commits:'Commits', footer_status:'\u00c9tat API',
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
@@ -1925,6 +1939,22 @@ const I18N = {
     study_p6:'Évalue ma subsomption: [ma réponse]',
     hero_mcp:'Recherche avec IA',
     nav_health:'Sant\u00e9', health_title:'Sant\u00e9 des scrapers', th_status:'Statut', th_new:'Nouveaux', th_duration:'Dur\u00e9e', th_state:'Total connu', th_jsonl_size:'JSONL', th_last_data:'Derni\u00e8res donn\u00e9es', health_run_at:'Dernier passage', health_ok:'OK', health_fail:'\u00c9chec', health_investigating:'En cours', health_running:'En cours', health_stale:'P\u00e9rim\u00e9', health_errors:'erreurs', health_unavail:'ignor\u00e9s', health_unavail_tip:'D\u00e9cisions list\u00e9es dans l\u2019index du portail mais contenu non t\u00e9l\u00e9chargeable (page vide ou PDF manquant)', health_disk:'Stockage', health_disk_free:'libre',
+  
+    mcp_remote_desc: 'Immédiatement disponible, toujours à jour. Aucun téléchargement requis. Endpoint serveur :',
+    mcp_chatgpt_note: 'Pris en charge via Streamable HTTP + CORS. Utilise les annotations <code style="font-size:11px">readOnlyHint</code>. Compatible avec <strong>GPT-5.3</strong> ; pour GPT-5.4, voir la solution de contournement ci-dessus.',
+    mcp_other_note: 'Fonctionne avec tout client compatible MCP via le transport SSE standard. Endpoint : <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
+    mcp_tools_heading: 'Aperçu des 21 outils',
+    mcp_tools_desc: 'Chaque outil est optimisé pour un cas d\'usage de recherche spécifique. Schémas complets via <code>tools/list</code> du protocole MCP, regroupés ici par fonction.',
+    mcp_arch_transport: '<strong>Transport :</strong> Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants (Claude Desktop, ChatGPT, Cursor, Gemini).',
+    mcp_arch_data: '<strong>Données :</strong> sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement.',
+  
+    mcp_claude_desktop_step: 'Settings → Connectors → Add → saisir l\'URL :',
+    mcp_tech_heading: 'Détails techniques',
+    mcp_tech_transport: 'Transport : Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants',
+    mcp_tech_tls: 'TLS via Let\'s Encrypt, rate-limiting nginx, endpoint de santé : <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
+    mcp_tech_workers: '4× workers uvicorn derrière un load balancer, failover automatique',
+    mcp_tech_backend: 'Backend : 965 000+ décisions dans SQLite FTS5 avec ranking BM25+RRF, graphe de citations de 8,8 M d\'arêtes',
+    mcp_tech_data: 'Données issues de sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -1979,7 +2009,7 @@ const I18N = {
     demo_tab_search:'Ricerca', demo_tab_statute:'Legge', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Dottrina',
     demo_label_call:'Chiamata', demo_label_response:'Risposta',
     footer_col_data:'Dati', footer_col_code:'Codice', footer_col_connect:'Connessione', footer_col_about:'Chi siamo',
-    footer_report:'Segnala problema', footer_changelog:'Changelog', footer_status:'Stato API',
+    footer_report:'Segnala problema', footer_commits:'Commit', footer_status:'Stato API',
     footer_about:'Chi siamo', footer_contact:'Contatto',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
@@ -2042,6 +2072,22 @@ const I18N = {
     study_p6:'Valuta la mia sussunzione: [la mia risposta]',
     hero_mcp:'Ricerca con IA',
     nav_health:'Salute', health_title:'Stato dei scraper', th_status:'Stato', th_new:'Nuovi', th_duration:'Durata', th_state:'Totale noto', th_jsonl_size:'JSONL', th_last_data:'Ultimi dati', health_run_at:'Ultima esecuzione', health_ok:'OK', health_fail:'Errore', health_investigating:'In esame', health_running:'In esecuzione', health_stale:'Obsoleto', health_errors:'errori', health_unavail:'saltati', health_unavail_tip:'Decisioni elencate nell\u2019indice del portale ma contenuto non scaricabile (pagina vuota o PDF mancante)', health_disk:'Archiviazione', health_disk_free:'libero',
+  
+    mcp_remote_desc: 'Immediatamente disponibile, sempre aggiornato. Nessun download richiesto. Endpoint server:',
+    mcp_chatgpt_note: 'Supportato tramite Streamable HTTP + CORS. Usa le annotazioni <code style="font-size:11px">readOnlyHint</code>. Compatibile con <strong>GPT-5.3</strong>; per GPT-5.4 vedi il workaround sopra.',
+    mcp_other_note: 'Funziona con ogni client compatibile MCP tramite il trasporto SSE standard. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
+    mcp_tools_heading: '21 strumenti in sintesi',
+    mcp_tools_desc: 'Ogni strumento è ottimizzato per uno specifico caso d\'uso di ricerca. Schemi completi via <code>tools/list</code> del protocollo MCP, qui raggruppati per funzione.',
+    mcp_arch_transport: '<strong>Trasporto:</strong> Server-Sent Events (SSE) + Streamable HTTP, compatibile con tutti i client MCP comuni (Claude Desktop, ChatGPT, Cursor, Gemini).',
+    mcp_arch_data: '<strong>Dati:</strong> da fonti pubbliche (tribunali federali, tribunali cantonali, Fedlex, LexFind), aggiornati quotidianamente.',
+  
+    mcp_claude_desktop_step: 'Settings → Connectors → Add → inserire URL:',
+    mcp_tech_heading: 'Dettagli tecnici',
+    mcp_tech_transport: 'Trasporto: Server-Sent Events (SSE) + Streamable HTTP, compatibile con tutti i client MCP comuni',
+    mcp_tech_tls: 'TLS tramite Let\'s Encrypt, rate limiting nginx, endpoint di health: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
+    mcp_tech_workers: '4× worker uvicorn dietro load balancer, failover automatico',
+    mcp_tech_backend: 'Backend: 965\'000+ decisioni in SQLite FTS5 con ranking BM25+RRF, grafo di citazioni di 8,8 M di archi',
+    mcp_tech_data: 'Dati da fonti pubbliche (tribunali federali, tribunali cantonali, Fedlex, LexFind), aggiornati quotidianamente',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2096,7 +2142,7 @@ const I18N = {
     demo_tab_search:'Tschertga', demo_tab_statute:'Lescha', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrina',
     demo_label_call:'Chalenda', demo_label_response:'Resposta',
     footer_col_data:'Datas', footer_col_code:'Code', footer_col_connect:'Connectar', footer_col_about:'Davart',
-    footer_report:'Annunziar problem', footer_changelog:'Changelog', footer_status:'Status API',
+    footer_report:'Annunziar problem', footer_commits:'Commits', footer_status:'Status API',
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
@@ -2159,6 +2205,22 @@ const I18N = {
     study_p6:'Valitescha mia subsumziun: [mia resposta]',
     hero_mcp:'Tschertgar cun AI',
     nav_health:'Sanadad', health_title:'Status dals scrapers', th_status:'Status', th_new:'Novs', th_duration:'Durada', th_state:'Total enconuschent', th_jsonl_size:'JSONL', th_last_data:'Ultimas datas', health_run_at:'Ultima execuziun', health_ok:'OK', health_fail:'Errur', health_investigating:'En examinaziun', health_running:'Anc en funcziun', health_stale:'Vegl', health_errors:'errurs', health_unavail:'sursiglids', health_unavail_tip:'Decisiuns menziunadas en l\u2019index dal portal ma cuntegn betg telechargabel (pagina vida u PDF che manca)', health_disk:'Memoria', health_disk_free:'liber',
+  
+    mcp_remote_desc: 'Immediat disponibel, adina actual. Nagin download necessari. Endpoint dal server:',
+    mcp_chatgpt_note: 'Sustegnì via Streamable HTTP + CORS. Utilisescha annotaziuns <code style="font-size:11px">readOnlyHint</code>. Cumpatibel cun <strong>GPT-5.3</strong>; per GPT-5.4 guarda il workaround survart.',
+    mcp_other_note: 'Funcziuna cun mintga client cumpatibel MCP via il transport SSE standard. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
+    mcp_tools_heading: '21 utensils en survista',
+    mcp_tools_desc: 'Mintga utensil è optimà per in cas spezific da retschertga. Schemas cumplets via <code>tools/list</code> dal protocol MCP, qua gruppads tenor funcziun.',
+    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads (Claude Desktop, ChatGPT, Cursor, Gemini).',
+    mcp_arch_data: '<strong>Datas:</strong> da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di.',
+  
+    mcp_claude_desktop_step: 'Settings → Connectors → Add → endatar l\'URL:',
+    mcp_tech_heading: 'Detagls tecnics',
+    mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads',
+    mcp_tech_tls: 'TLS via Let\'s Encrypt, rate-limiting nginx, endpoint da sanadad: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
+    mcp_tech_workers: '4× workers uvicorn davos load-balancer, failover automatic',
+    mcp_tech_backend: 'Backend: 965\'000+ decisiuns en SQLite FTS5 cun ranking BM25+RRF, graf da citaziuns cun 8,8 mio. charnieras',
+    mcp_tech_data: 'Datas da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -2213,7 +2275,7 @@ const I18N = {
     demo_tab_search:'Search', demo_tab_statute:'Statute', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrine',
     demo_label_call:'Tool call', demo_label_response:'Response',
     footer_col_data:'Data', footer_col_code:'Code', footer_col_connect:'Connect', footer_col_about:'About',
-    footer_report:'Report issue', footer_changelog:'Changelog', footer_status:'API status',
+    footer_report:'Report issue', footer_commits:'Commits', footer_status:'API status',
     footer_about:'About OpenCaseLaw', footer_contact:'Contact',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
@@ -2276,6 +2338,22 @@ const I18N = {
     study_p6:'Check my Subsumtion: [my answer]',
     hero_mcp:'Search with AI',
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
+  
+    mcp_remote_desc: 'Immediately available, always up to date. No download required. Server endpoint:',
+    mcp_chatgpt_note: 'Supported via Streamable HTTP + CORS. Uses <code style="font-size:11px">readOnlyHint</code> annotations. Compatible with <strong>GPT-5.3</strong>; for GPT-5.4 see the workaround above.',
+    mcp_other_note: 'Works with any MCP-capable client via standard SSE transport. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
+    mcp_tools_heading: '21 tools at a glance',
+    mcp_tools_desc: 'Each tool is optimised for a specific research use case. Full schemas via the MCP protocol <code>tools/list</code>, grouped here by function.',
+    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client (Claude Desktop, ChatGPT, Cursor, Gemini).',
+    mcp_arch_data: '<strong>Data:</strong> from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily.',
+  
+    mcp_claude_desktop_step: 'Settings → Connectors → Add → enter URL:',
+    mcp_tech_heading: 'Technical details',
+    mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client',
+    mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx rate limiting, health endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
+    mcp_tech_workers: '4× uvicorn workers behind a load balancer, automatic failover',
+    mcp_tech_backend: 'Backend: 965,000+ decisions in SQLite FTS5 with BM25+RRF ranking, citation graph of 8.8M edges',
+    mcp_tech_data: 'Data from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily',
   },
 };
 
