@@ -244,6 +244,114 @@ def generate_stats(db_path: Path) -> dict:
     return stats
 
 
+def collect_corpus_snapshot(repo_dir: Path) -> dict:
+    """Count federal laws, cantonal laws, commentaries, citation graph size.
+
+    Each sub-key is optional: if a DB file is missing or corrupt, we skip
+    that field rather than failing the whole snapshot. This lets us ship
+    the corpus panel ahead of scrapers that are still backfilling.
+    """
+    out: dict = {}
+
+    def _open_ro(path: Path):
+        if not path.exists():
+            return None
+        try:
+            c = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+            c.row_factory = sqlite3.Row
+            return c
+        except sqlite3.Error:
+            return None
+
+    def _count(conn, sql: str) -> int | None:
+        try:
+            return conn.execute(sql).fetchone()[0]
+        except sqlite3.Error:
+            return None
+
+    # Federal laws — statutes.db (Fedlex mirror)
+    statutes_path = repo_dir / "output" / "statutes.db"
+    conn = _open_ro(statutes_path)
+    if conn is not None:
+        try:
+            n_laws = _count(conn, "SELECT COUNT(*) FROM laws")
+            n_articles = _count(
+                conn, "SELECT COUNT(*) FROM articles WHERE lang='de'"
+            )
+            if n_laws is not None:
+                out["federal_laws"] = n_laws
+            if n_articles is not None:
+                out["federal_law_articles"] = n_articles
+        finally:
+            conn.close()
+
+    # Cantonal laws — cantonal_laws.db (LexFind mirror)
+    cantonal_path = repo_dir / "output" / "cantonal_laws.db"
+    conn = _open_ro(cantonal_path)
+    if conn is not None:
+        try:
+            n_laws = _count(conn, "SELECT COUNT(DISTINCT lexfind_id) FROM laws")
+            n_articles = _count(conn, "SELECT COUNT(*) FROM articles")
+            if n_laws is not None:
+                out["cantonal_laws"] = n_laws
+            if n_articles is not None:
+                out["cantonal_law_articles"] = n_articles
+            # Per-canton counts
+            try:
+                by_canton = {
+                    r[0]: r[1]
+                    for r in conn.execute(
+                        "SELECT canton, COUNT(DISTINCT lexfind_id) FROM laws "
+                        "GROUP BY canton ORDER BY canton"
+                    )
+                }
+                if by_canton:
+                    out["cantonal_laws_by_canton"] = by_canton
+            except sqlite3.Error:
+                pass
+        finally:
+            conn.close()
+
+    # Commentaries — ok_commentaries.db (OnlineKommentar + OpenLegalCommentary)
+    ok_path = repo_dir / "output" / "ok_commentaries.db"
+    conn = _open_ro(ok_path)
+    if conn is not None:
+        try:
+            n = _count(conn, "SELECT COUNT(*) FROM commentaries")
+            if n is not None:
+                out["commentaries"] = n
+        finally:
+            conn.close()
+
+    # Citation graph — reference_graph.db
+    graph_path = repo_dir / "output" / "reference_graph.db"
+    conn = _open_ro(graph_path)
+    if conn is not None:
+        try:
+            # Try known table names (schema has evolved a bit over time).
+            for sql in (
+                "SELECT COUNT(*) FROM decision_citations",
+                "SELECT COUNT(*) FROM citation_targets",
+            ):
+                n = _count(conn, sql)
+                if n is not None:
+                    out["citation_edges"] = n
+                    break
+            for sql in (
+                "SELECT COUNT(*) FROM decision_statutes",
+                "SELECT COUNT(*) FROM statute_links",
+                "SELECT COUNT(*) FROM statute_refs",
+            ):
+                n = _count(conn, sql)
+                if n is not None:
+                    out["statute_edges"] = n
+                    break
+        finally:
+            conn.close()
+
+    return out
+
+
 def _read_health_file(path: Path) -> dict | None:
     """Read a single scraper_health*.json file, swallowing any read errors."""
     if not path.exists():
@@ -364,6 +472,11 @@ def main():
     if scraper_health:
         stats["scraper_health"] = scraper_health
 
+    # ── Corpus snapshot: laws, commentaries, citation graph ──
+    corpus = collect_corpus_snapshot(repo_dir)
+    if corpus:
+        stats["corpus"] = corpus
+
     # ── Compute deltas vs previous stats.json ──
     prev = {}
     if output_path.exists():
@@ -398,14 +511,32 @@ def main():
             if d > 0:
                 delta_by_canton[c["canton"]] = d
 
+        # Corpus delta (federal laws, cantonal laws, commentaries, citations)
+        prev_corpus = prev.get("corpus", {}) or {}
+        now_corpus = stats.get("corpus", {}) or {}
+        delta_corpus = {}
+        for key in (
+            "federal_laws", "federal_law_articles",
+            "cantonal_laws", "cantonal_law_articles",
+            "commentaries", "citation_edges", "statute_edges",
+        ):
+            if key in now_corpus and key in prev_corpus:
+                d = now_corpus[key] - prev_corpus[key]
+                if d != 0:
+                    delta_corpus[key] = d
+
         stats["delta"] = {
             "total": delta_total,
             "by_court": delta_by_court,
             "by_canton": delta_by_canton,
+            "corpus": delta_corpus,
             "previous_generated_at": prev.get("generated_at"),
         }
     else:
-        stats["delta"] = {"total": 0, "by_court": {}, "by_canton": {}, "previous_generated_at": None}
+        stats["delta"] = {
+            "total": 0, "by_court": {}, "by_canton": {},
+            "corpus": {}, "previous_generated_at": None,
+        }
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(stats, f, indent=2, ensure_ascii=False)

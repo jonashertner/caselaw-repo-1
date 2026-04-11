@@ -883,6 +883,34 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .hero-v2 .hero-facts .sep { color: var(--brd); }
 .hero-v2 .hero-facts strong { color: var(--tx2); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Date + delta stamp — sits directly under the hero number. One line,
+   monospace, restrained — the single "when + what changed" signal. */
+.hero-v2 .hero-stamp {
+  margin: 4px auto clamp(28px, 4vw, 40px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border: 1px solid var(--brd);
+  border-radius: 999px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--tx3);
+  letter-spacing: 0.01em;
+}
+.hero-v2 .hero-stamp time {
+  color: var(--tx2);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.hero-v2 .hero-stamp .sep { color: var(--brd); }
+.hero-v2 .hero-stamp strong {
+  color: var(--tx);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 640px) {
   .hero-v2 .hero-langs {
     grid-template-columns: 1fr;
@@ -890,6 +918,202 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     max-width: 320px;
   }
   .hero-v2 .hero-facts { font-size: 11px; gap: 8px 12px; }
+  .hero-v2 .hero-stamp { font-size: 11px; padding: 5px 12px; }
+}
+
+/* ── Corpus snapshot band ────────────────────────────────────
+   A data-first panel directly below the hero. Three cards side by
+   side: Decisions, Legislation, Scholarship & graph. Each shows the
+   current count, the 24-hour delta, and a compact composition
+   fingerprint. Restrained mono aesthetic — no charts, no colour
+   flourish, every pixel earns its place. */
+.corpus-snapshot {
+  margin: clamp(40px, 6vw, 72px) 0 clamp(56px, 8vw, 96px);
+  padding: clamp(24px, 3vw, 32px);
+  border: 1px solid var(--brd);
+  border-radius: 12px;
+  background: var(--bg2);
+}
+.corpus-snapshot .snapshot-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: clamp(16px, 2vw, 24px);
+  padding-bottom: clamp(14px, 2vw, 20px);
+  border-bottom: 1px solid var(--brd);
+}
+.corpus-snapshot .snapshot-header h2 {
+  margin: 0;
+  font-size: clamp(14px, 1.5vw, 16px);
+  font-weight: 600;
+  color: var(--tx);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.corpus-snapshot .snapshot-stamp {
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--tx3);
+  letter-spacing: 0.01em;
+}
+.corpus-snapshot .snapshot-stamp time {
+  color: var(--tx2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.corpus-snapshot .snapshot-stamp .sep { color: var(--brd); margin: 0 8px; }
+.corpus-snapshot .snapshot-stamp strong {
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+
+.corpus-snapshot .snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(18px, 2vw, 28px);
+}
+.corpus-snapshot .snapshot-card {
+  min-width: 0;
+  padding: 0;
+  border-left: 1px solid var(--brd);
+  padding-left: clamp(16px, 2vw, 24px);
+}
+.corpus-snapshot .snapshot-card:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+.corpus-snapshot .snapshot-card header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.corpus-snapshot .snapshot-card h3 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.corpus-snapshot .snapshot-card-delta {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--tx3);
+  font-variant-numeric: tabular-nums;
+}
+.corpus-snapshot .snapshot-card-delta strong {
+  color: var(--tx);
+  font-weight: 700;
+}
+.corpus-snapshot .snapshot-big {
+  font-family: var(--f-mono);
+  font-size: clamp(26px, 3.2vw, 36px);
+  font-weight: 700;
+  color: var(--tx);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+  margin-bottom: 6px;
+}
+.corpus-snapshot .snapshot-big-sub {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--tx3);
+  letter-spacing: 0.02em;
+  margin-bottom: 14px;
+}
+.corpus-snapshot .snapshot-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--tx2);
+  margin-top: 4px;
+}
+.corpus-snapshot .snapshot-rows > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: 1px dotted var(--brd);
+  padding-bottom: 4px;
+}
+.corpus-snapshot .snapshot-rows > div:last-child { border-bottom: 0; }
+.corpus-snapshot .snapshot-row-label {
+  color: var(--tx3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.corpus-snapshot .snapshot-rows strong {
+  color: var(--tx);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  flex-shrink: 0;
+}
+.corpus-snapshot .snapshot-meta {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--tx3);
+  letter-spacing: 0.01em;
+}
+.corpus-snapshot .snapshot-meta strong {
+  color: var(--tx2);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.corpus-snapshot .snapshot-movers {
+  margin-top: clamp(18px, 2vw, 24px);
+  padding-top: clamp(14px, 2vw, 18px);
+  border-top: 1px solid var(--brd);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--tx3);
+  letter-spacing: 0.01em;
+  line-height: 1.6;
+}
+.corpus-snapshot .snapshot-movers-label {
+  color: var(--tx3);
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-right: 10px;
+}
+.corpus-snapshot .snapshot-mover {
+  display: inline-block;
+  margin-right: 14px;
+  color: var(--tx2);
+}
+.corpus-snapshot .snapshot-mover strong {
+  color: var(--tx);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .corpus-snapshot .snapshot-grid { grid-template-columns: 1fr; gap: 24px; }
+  .corpus-snapshot .snapshot-card {
+    border-left: 0; padding-left: 0;
+    border-top: 1px dotted var(--brd); padding-top: 20px;
+  }
+  .corpus-snapshot .snapshot-card:first-child {
+    border-top: 0; padding-top: 0;
+  }
 }
 
 /* Buttons */
@@ -1501,6 +1725,13 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <span class="hero-stat-num" id="hero-decisions">965,135</span>
       <span class="hero-stat-label" data-t="hero_stat_label">published court decisions</span>
     </div>
+    <p class="hero-stamp" aria-label="Dataset timestamp and daily delta">
+      <span data-t="hero_stamp_asof">As of</span>
+      <time id="hero-stamp-date">—</time>
+      <span class="sep">·</span>
+      <strong>+<span id="hero-stamp-delta">0</span></strong>
+      <span data-t="hero_stamp_since">since yesterday</span>
+    </p>
     <h1 class="hero-headline" data-t="hero_headline">The complete open dataset of Swiss case law.</h1>
     <p class="hero-tagline" data-t="hero_tagline">Searchable by you, readable by your AI. Published decisions from every federal court and all 26 cantons, plus 80 key federal laws and 33,000+ cantonal acts.</p>
     <div class="hero-ctas">
@@ -1543,14 +1774,115 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <span class="sep">·</span>
         <span><strong id="hero-courts">114</strong> <span data-t="hero_meta_courts">courts</span> · <strong>26</strong> <span data-t="hero_fact_cantons">Kantone</span></span>
         <span class="sep">·</span>
-        <span><strong>+<span id="hero-delta">199</span></strong> <span data-t="hero_fact_new">neu</span></span>
-        <span class="sep">·</span>
         <span><strong>8.8M</strong> <span data-t="hero_meta_citations">citations</span></span>
         <span class="sep">·</span>
         <span>CC0 · MIT</span>
       </div>
     </div>
   </header>
+
+  <!-- ── Corpus snapshot — data-driven composition + 24h delta ── -->
+  <section class="corpus-snapshot" aria-labelledby="snapshot-heading">
+    <div class="snapshot-header">
+      <h2 id="snapshot-heading" data-t="snapshot_heading">Corpus snapshot</h2>
+      <p class="snapshot-stamp">
+        <span data-t="snapshot_asof">As of</span>
+        <time id="snapshot-date">—</time>
+        <span class="sep">·</span>
+        <strong>+<span id="snapshot-delta-total">0</span></strong>
+        <span data-t="snapshot_since">since yesterday</span>
+      </p>
+    </div>
+
+    <div class="snapshot-grid">
+      <!-- Decisions card -->
+      <article class="snapshot-card" aria-labelledby="sn-d-heading">
+        <header>
+          <h3 id="sn-d-heading" data-t="snapshot_decisions">Decisions</h3>
+          <span class="snapshot-card-delta">+<strong id="sn-d-delta">0</strong> 24h</span>
+        </header>
+        <div class="snapshot-big" id="sn-d-total">—</div>
+        <div class="snapshot-big-sub" data-t="snapshot_decisions_sub">published Swiss court decisions</div>
+        <div class="snapshot-rows">
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_federal_decisions">Federal courts</span>
+            <strong id="sn-d-federal">—</strong>
+          </div>
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_cantonal_decisions">Cantonal courts</span>
+            <strong id="sn-d-cantonal">—</strong>
+          </div>
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_span_label">Date span</span>
+            <strong id="sn-d-span">—</strong>
+          </div>
+        </div>
+        <ul class="snapshot-meta">
+          <li><strong id="sn-d-courts">—</strong> <span data-t="snapshot_courts">courts</span> · <strong id="sn-d-cantons">—</strong> <span data-t="snapshot_cantons">cantons</span> · DE/FR/IT</li>
+        </ul>
+      </article>
+
+      <!-- Legislation card -->
+      <article class="snapshot-card" aria-labelledby="sn-l-heading">
+        <header>
+          <h3 id="sn-l-heading" data-t="snapshot_legislation">Legislation</h3>
+          <span class="snapshot-card-delta">+<strong id="sn-l-delta">0</strong> 24h</span>
+        </header>
+        <div class="snapshot-big" id="sn-l-total">—</div>
+        <div class="snapshot-big-sub" data-t="snapshot_legislation_sub">laws locally indexed</div>
+        <div class="snapshot-rows">
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_federal_laws">Federal (Fedlex mirror)</span>
+            <strong id="sn-l-fed">—</strong>
+          </div>
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_cantonal_laws">Cantonal (LexFind, 26 cantons)</span>
+            <strong id="sn-l-can">—</strong>
+          </div>
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_articles">Articles indexed</span>
+            <strong id="sn-l-arts">—</strong>
+          </div>
+        </div>
+        <ul class="snapshot-meta">
+          <li data-t="snapshot_laws_meta">Fedlex SPARQL · LexFind API · FTS5 local</li>
+        </ul>
+      </article>
+
+      <!-- Scholarship & graph card -->
+      <article class="snapshot-card" aria-labelledby="sn-s-heading">
+        <header>
+          <h3 id="sn-s-heading" data-t="snapshot_graph">Graph &amp; doctrine</h3>
+          <span class="snapshot-card-delta" id="sn-s-delta-wrap">+<strong id="sn-s-delta">0</strong> 24h</span>
+        </header>
+        <div class="snapshot-big" id="sn-s-cits">—</div>
+        <div class="snapshot-big-sub" data-t="snapshot_citations_sub">resolved case-citation edges</div>
+        <div class="snapshot-rows">
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_statutes_links">Statute links</span>
+            <strong id="sn-s-stats">—</strong>
+          </div>
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_commentaries_row">Scholarly commentaries</span>
+            <strong id="sn-s-comm">—</strong>
+          </div>
+          <div>
+            <span class="snapshot-row-label" data-t="snapshot_languages">Languages</span>
+            <strong>DE · FR · IT</strong>
+          </div>
+        </div>
+        <ul class="snapshot-meta">
+          <li data-t="snapshot_graph_meta">OpenKommentar.ch · OpenLegalCommentary.ch</li>
+        </ul>
+      </article>
+    </div>
+
+    <!-- Top movers strip — top 5 courts by 24h delta -->
+    <div class="snapshot-movers" id="snapshot-movers-wrap">
+      <span class="snapshot-movers-label" data-t="snapshot_movers">New since yesterday</span>
+      <span id="snapshot-movers-list">—</span>
+    </div>
+  </section>
 
   <!-- Capability cards — 4 ways in -->
   <section style="margin:0 0 clamp(56px, 8vw, 96px)">
@@ -1834,6 +2166,18 @@ const I18N = {
     hero_meta_citations:'Zitationen',
     hero_meta_laws:'Gesetze',
     hero_fact_span:'Zeitraum', hero_fact_federal:'Bund', hero_fact_cantonal:'Kantone', hero_fact_cantons:'Kantone', hero_fact_new:'neu seit gestern',
+    hero_stamp_asof:'Stand', hero_stamp_since:'seit gestern',
+    snapshot_heading:'Datensatz heute', snapshot_asof:'Stand', snapshot_since:'seit gestern',
+    snapshot_decisions:'Entscheide', snapshot_decisions_sub:'publizierte Schweizer Gerichtsentscheide',
+    snapshot_legislation:'Gesetzgebung', snapshot_legislation_sub:'Gesetze lokal indexiert',
+    snapshot_graph:'Graph & Doktrin', snapshot_citations_sub:'aufgel\u00f6ste Zitationskanten',
+    snapshot_federal_decisions:'Bundesgerichte', snapshot_cantonal_decisions:'Kantonsgerichte',
+    snapshot_federal_laws:'Bund (Fedlex-Spiegel)', snapshot_cantonal_laws:'Kantone (LexFind, 26 Kantone)',
+    snapshot_articles:'Indizierte Artikel', snapshot_laws_meta:'Fedlex SPARQL \u00b7 LexFind API \u00b7 FTS5 lokal',
+    snapshot_statutes_links:'Gesetzesverweise', snapshot_commentaries_row:'Wissenschaftliche Kommentare',
+    snapshot_languages:'Sprachen', snapshot_graph_meta:'OpenKommentar.ch \u00b7 OpenLegalCommentary.ch',
+    snapshot_span_label:'Zeitraum', snapshot_courts:'Gerichte', snapshot_cantons:'Kantone',
+    snapshot_movers:'Neu seit gestern',
     cap_entscheide_desc:'Jeder publizierte Schweizer Gerichtsentscheid. Volltextsuche, Zitationsgraph, mehrsprachig (DE/FR/IT). T\u00e4glich aktualisiert.',
     cap_gesetze_desc:'Lokaler Fedlex-SPARQL-Spiegel: 80 Bundesgesetze, 39\u2019000 Artikel in DE/FR/IT, t\u00e4glich synchronisiert. LexFind-Aggregator f\u00fcr 33\u2019000+ kantonale Erlasse. FTS5-Volltextsuche, Artikel-Lookup <1 ms.',
     cap_mcp_desc:'21 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote oder lokal. Einrichtung in 30 Sekunden.',
@@ -1951,6 +2295,18 @@ const I18N = {
     hero_meta_citations:'citations',
     hero_meta_laws:'lois',
     hero_fact_span:'p\u00e9riode', hero_fact_federal:'f\u00e9d\u00e9ral', hero_fact_cantonal:'cantonal', hero_fact_cantons:'cantons', hero_fact_new:'nouveaux hier',
+    hero_stamp_asof:'\u00c9tat au', hero_stamp_since:'depuis hier',
+    snapshot_heading:'Aper\u00e7u du corpus', snapshot_asof:'\u00c9tat au', snapshot_since:'depuis hier',
+    snapshot_decisions:'D\u00e9cisions', snapshot_decisions_sub:'d\u00e9cisions judiciaires suisses publi\u00e9es',
+    snapshot_legislation:'L\u00e9gislation', snapshot_legislation_sub:'lois index\u00e9es localement',
+    snapshot_graph:'Graphe & doctrine', snapshot_citations_sub:'liens de citation r\u00e9solus',
+    snapshot_federal_decisions:'Juridictions f\u00e9d\u00e9rales', snapshot_cantonal_decisions:'Juridictions cantonales',
+    snapshot_federal_laws:'F\u00e9d\u00e9ral (miroir Fedlex)', snapshot_cantonal_laws:'Cantonal (LexFind, 26 cantons)',
+    snapshot_articles:'Articles index\u00e9s', snapshot_laws_meta:'Fedlex SPARQL \u00b7 LexFind API \u00b7 FTS5 local',
+    snapshot_statutes_links:'R\u00e9f\u00e9rences l\u00e9gales', snapshot_commentaries_row:'Commentaires doctrinaux',
+    snapshot_languages:'Langues', snapshot_graph_meta:'OpenKommentar.ch \u00b7 OpenLegalCommentary.ch',
+    snapshot_span_label:'P\u00e9riode', snapshot_courts:'juridictions', snapshot_cantons:'cantons',
+    snapshot_movers:'Nouveaux depuis hier',
     cap_entscheide_desc:'Chaque d\u00e9cision judiciaire suisse publi\u00e9e. Recherche plein texte, graphe de citations, multilingue (DE/FR/IT). Mise \u00e0 jour quotidienne.',
     cap_gesetze_desc:'Miroir SPARQL local de Fedlex : 80 lois f\u00e9d\u00e9rales, 39\u2019000 articles en DE/FR/IT, synchronis\u00e9s quotidiennement. Agr\u00e9gateur LexFind pour 33\u2019000+ textes cantonaux. Recherche plein texte FTS5, consultation d\'article en <1 ms.',
     cap_mcp_desc:'21 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Distant ou local. Configuration en 30 secondes.',
@@ -2068,6 +2424,18 @@ const I18N = {
     hero_meta_citations:'citazioni',
     hero_meta_laws:'leggi',
     hero_fact_span:'periodo', hero_fact_federal:'federale', hero_fact_cantonal:'cantonale', hero_fact_cantons:'cantoni', hero_fact_new:'nuove da ieri',
+    hero_stamp_asof:'Stato al', hero_stamp_since:'da ieri',
+    snapshot_heading:'Istantanea del corpus', snapshot_asof:'Stato al', snapshot_since:'da ieri',
+    snapshot_decisions:'Decisioni', snapshot_decisions_sub:'decisioni giudiziarie svizzere pubblicate',
+    snapshot_legislation:'Legislazione', snapshot_legislation_sub:'leggi indicizzate localmente',
+    snapshot_graph:'Grafo & dottrina', snapshot_citations_sub:'archi di citazione risolti',
+    snapshot_federal_decisions:'Corti federali', snapshot_cantonal_decisions:'Corti cantonali',
+    snapshot_federal_laws:'Federale (mirror Fedlex)', snapshot_cantonal_laws:'Cantonale (LexFind, 26 cantoni)',
+    snapshot_articles:'Articoli indicizzati', snapshot_laws_meta:'Fedlex SPARQL \u00b7 LexFind API \u00b7 FTS5 locale',
+    snapshot_statutes_links:'Riferimenti normativi', snapshot_commentaries_row:'Commentari dottrinali',
+    snapshot_languages:'Lingue', snapshot_graph_meta:'OpenKommentar.ch \u00b7 OpenLegalCommentary.ch',
+    snapshot_span_label:'Periodo', snapshot_courts:'tribunali', snapshot_cantons:'cantoni',
+    snapshot_movers:'Nuovi da ieri',
     cap_entscheide_desc:'Ogni decisione giudiziaria svizzera pubblicata. Ricerca full-text, grafo delle citazioni, multilingue (DE/FR/IT). Aggiornato quotidianamente.',
     cap_gesetze_desc:'Mirror SPARQL locale di Fedlex: 80 leggi federali, 39\u2019000 articoli in DE/FR/IT, sincronizzati quotidianamente. Aggregatore LexFind per 33\u2019000+ testi cantonali. Ricerca full-text FTS5, lookup di articolo in <1 ms.',
     cap_mcp_desc:'21 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Remoto o locale. Configurazione in 30 secondi.',
@@ -2185,6 +2553,18 @@ const I18N = {
     hero_meta_citations:'citaziuns',
     hero_meta_laws:'leschas',
     hero_fact_span:'perioda', hero_fact_federal:'federal', hero_fact_cantonal:'chantunal', hero_fact_cantons:'chantuns', hero_fact_new:'novas dapi ier',
+    hero_stamp_asof:'Stadi', hero_stamp_since:'dapi ier',
+    snapshot_heading:'Aspect dal corpus', snapshot_asof:'Stadi', snapshot_since:'dapi ier',
+    snapshot_decisions:'Decisiuns', snapshot_decisions_sub:'decisiuns giudicialas svizras publitgadas',
+    snapshot_legislation:'Legislaziun', snapshot_legislation_sub:'leschas indexadas localmain',
+    snapshot_graph:'Graf & duttrina', snapshot_citations_sub:'charnieras da citaziun resolvidas',
+    snapshot_federal_decisions:'Dretgiras federalas', snapshot_cantonal_decisions:'Dretgiras chantunalas',
+    snapshot_federal_laws:'Federal (spievel Fedlex)', snapshot_cantonal_laws:'Chantunal (LexFind, 26 chantuns)',
+    snapshot_articles:'Artitgels indexads', snapshot_laws_meta:'Fedlex SPARQL \u00b7 LexFind API \u00b7 FTS5 local',
+    snapshot_statutes_links:'Referenzas legalas', snapshot_commentaries_row:'Commentaris duttrinals',
+    snapshot_languages:'Linguas', snapshot_graph_meta:'OpenKommentar.ch \u00b7 OpenLegalCommentary.ch',
+    snapshot_span_label:'Perioda', snapshot_courts:'dretgiras', snapshot_cantons:'chantuns',
+    snapshot_movers:'Novas dapi ier',
     cap_entscheide_desc:'Mintga decisiun giudiziala svizra publitgada. Tschertga full-text, grafic da citaziuns, plurilingual (DE/FR/IT). Actualis\u00e0 mintga di.',
     cap_gesetze_desc:'Spievel SPARQL local da Fedlex: 80 leschas federalas, 39\u2019000 artitgels en DE/FR/IT, sincronis\u00e0 mintga di. Aggregatur LexFind per 33\u2019000+ texts chantunals. Tschertga full-text FTS5, lookup d\'artitgels en <1 ms.',
     cap_mcp_desc:'21 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Distant u local. Setup en 30 secundas.',
@@ -2302,6 +2682,18 @@ const I18N = {
     hero_meta_citations:'citations',
     hero_meta_laws:'laws',
     hero_fact_span:'span', hero_fact_federal:'federal', hero_fact_cantonal:'cantonal', hero_fact_cantons:'cantons', hero_fact_new:'new since yesterday',
+    hero_stamp_asof:'As of', hero_stamp_since:'since yesterday',
+    snapshot_heading:'Corpus snapshot', snapshot_asof:'As of', snapshot_since:'since yesterday',
+    snapshot_decisions:'Decisions', snapshot_decisions_sub:'published Swiss court decisions',
+    snapshot_legislation:'Legislation', snapshot_legislation_sub:'laws locally indexed',
+    snapshot_graph:'Graph & doctrine', snapshot_citations_sub:'resolved case-citation edges',
+    snapshot_federal_decisions:'Federal courts', snapshot_cantonal_decisions:'Cantonal courts',
+    snapshot_federal_laws:'Federal (Fedlex mirror)', snapshot_cantonal_laws:'Cantonal (LexFind, 26 cantons)',
+    snapshot_articles:'Articles indexed', snapshot_laws_meta:'Fedlex SPARQL \u00b7 LexFind API \u00b7 FTS5 local',
+    snapshot_statutes_links:'Statute links', snapshot_commentaries_row:'Scholarly commentaries',
+    snapshot_languages:'Languages', snapshot_graph_meta:'OpenKommentar.ch \u00b7 OpenLegalCommentary.ch',
+    snapshot_span_label:'Date span', snapshot_courts:'courts', snapshot_cantons:'cantons',
+    snapshot_movers:'New since yesterday',
     cap_entscheide_desc:'Every published Swiss court decision. Full-text search, citation graph, multilingual (DE/FR/IT). Updated daily.',
     cap_gesetze_desc:'Local Fedlex SPARQL mirror: 80 federal laws, 39,000 articles in DE/FR/IT, synced daily. LexFind aggregator for 33,000+ cantonal acts. FTS5 full-text search, article lookup in <1 ms.',
     cap_mcp_desc:'21 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote or local. 30-second setup.',
@@ -3255,9 +3647,132 @@ function renderHero(data) {
     if (can != null) setText('hero-can', compact(can));
   }
 
-  // Daily delta
+  // Daily delta (hero stamp pill directly below the big number)
   if (data.delta && data.delta.total != null) {
-    setText('hero-delta', data.delta.total);
+    setText('hero-stamp-delta', fmt(data.delta.total));
+  }
+  if (data.generated_at) {
+    const d = new Date(data.generated_at);
+    const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', rm:'de-CH', en:'en-GB' }[curLang] || 'de-CH';
+    const dstr = d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric' });
+    const el = document.getElementById('hero-stamp-date');
+    if (el) { el.setAttribute('datetime', data.generated_at); el.textContent = dstr; }
+  }
+
+  // ── Corpus snapshot section ──
+  renderCorpusSnapshot(data);
+}
+
+function renderCorpusSnapshot(data) {
+  if (!data) return;
+  const setText = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val != null) el.textContent = val;
+  };
+  const locale = (curLang === 'en') ? 'en-GB' : 'de-CH';
+  const fmt = (n) => (n == null ? '—' : Number(n).toLocaleString(locale));
+  const compact = (n) => {
+    if (n == null) return '—';
+    if (n >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+    if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e4 ? 0 : 1).replace(/\.0$/,'') + 'k';
+    return String(n);
+  };
+  const signed = (n) => {
+    if (n == null || n === 0) return '0';
+    return (n > 0 ? '+' : '') + fmt(n);
+  };
+
+  // Header: timestamp + total delta
+  if (data.generated_at) {
+    const d = new Date(data.generated_at);
+    const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', rm:'de-CH', en:'en-GB' }[curLang] || 'de-CH';
+    const dstr = d.toLocaleDateString(loc, {
+      day:'numeric', month:'long', year:'numeric',
+    }) + ' · ' + d.toLocaleTimeString(loc, {
+      hour:'2-digit', minute:'2-digit', timeZone:'UTC', timeZoneName:'short',
+    });
+    const el = document.getElementById('snapshot-date');
+    if (el) { el.setAttribute('datetime', data.generated_at); el.textContent = dstr; }
+  }
+  if (data.delta && data.delta.total != null) {
+    setText('snapshot-delta-total', fmt(data.delta.total));
+  }
+
+  // Card 1: Decisions
+  if (data.total) setText('sn-d-total', fmt(data.total));
+  if (data.delta && data.delta.total != null) {
+    setText('sn-d-delta', fmt(data.delta.total));
+  }
+  if (data.federal_vs_cantonal) {
+    setText('sn-d-federal', fmt(data.federal_vs_cantonal.federal));
+    setText('sn-d-cantonal', fmt(data.federal_vs_cantonal.cantonal));
+  }
+  if (data.date_range) {
+    const e = (data.date_range.earliest || '').slice(0, 4);
+    const l = (data.date_range.latest || '').slice(0, 4);
+    if (e && l) setText('sn-d-span', `${e}–${l}`);
+  }
+  if (data.court_count) setText('sn-d-courts', fmt(data.court_count));
+  if (data.by_canton) setText('sn-d-cantons', fmt(data.by_canton.length));
+
+  // Card 2: Legislation
+  const c = data.corpus || {};
+  const fedLaws = c.federal_laws || 0;
+  const canLaws = c.cantonal_laws || 0;
+  const totalLaws = fedLaws + canLaws;
+  setText('sn-l-total', fmt(totalLaws));
+  setText('sn-l-fed', fedLaws ? fmt(fedLaws) : '—');
+  setText('sn-l-can', canLaws ? fmt(canLaws) : '—');
+  const totalLawArts = (c.federal_law_articles || 0) + (c.cantonal_law_articles || 0);
+  setText('sn-l-arts', totalLawArts ? fmt(totalLawArts) : '—');
+  // Law delta = sum of federal + cantonal law deltas
+  if (data.delta && data.delta.corpus) {
+    const dc = data.delta.corpus;
+    const lawDelta = (dc.federal_laws || 0) + (dc.cantonal_laws || 0);
+    setText('sn-l-delta', signed(lawDelta).replace(/^\+/, ''));
+  }
+
+  // Card 3: Graph & doctrine
+  if (c.citation_edges) setText('sn-s-cits', compact(c.citation_edges));
+  if (c.statute_edges) setText('sn-s-stats', compact(c.statute_edges));
+  if (c.commentaries) setText('sn-s-comm', fmt(c.commentaries));
+  if (data.delta && data.delta.corpus) {
+    const dc = data.delta.corpus;
+    const graphDelta = (dc.citation_edges || 0) + (dc.statute_edges || 0) + (dc.commentaries || 0);
+    setText('sn-s-delta', compact(Math.abs(graphDelta)) || '0');
+    // Hide the "+X 24h" wrapper entirely if delta is zero — avoid noise
+    const w = document.getElementById('sn-s-delta-wrap');
+    if (w && graphDelta === 0) w.style.display = 'none';
+  }
+
+  // Top movers — top 5 courts by 24h delta
+  if (data.delta && data.delta.by_court) {
+    const COURT_SHORT = {
+      bger: 'BGer', bvger: 'BVGer', bstger: 'BStGer', bpatger: 'BPatGer',
+      bge: 'BGE', bge_historical: 'BGE hist.', bge_egmr: 'EGMR',
+    };
+    const entries = Object.entries(data.delta.by_court)
+      .filter(([, n]) => n > 0)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6);
+    const list = document.getElementById('snapshot-movers-list');
+    const wrap = document.getElementById('snapshot-movers-wrap');
+    if (list && entries.length) {
+      list.innerHTML = entries.map(([court, n]) => {
+        // Shorter display name: known federal shorthand, else canton code
+        let label = COURT_SHORT[court];
+        if (!label) {
+          // Fall back to raw court code — upper-case short form
+          label = court.replace(/_/g, ' ').replace(
+            /\b\w/g, ch => ch.toUpperCase()
+          );
+        }
+        return `<span class="snapshot-mover">${label} <strong>+${fmt(n)}</strong></span>`;
+      }).join('');
+      if (wrap) wrap.style.display = '';
+    } else if (wrap) {
+      wrap.style.display = 'none';
+    }
   }
 }
 
