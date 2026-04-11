@@ -244,19 +244,43 @@ def generate_stats(db_path: Path) -> dict:
     return stats
 
 
-def collect_scraper_health(repo_dir: Path) -> dict | None:
-    """Read scraper health JSON, enrich with state counts and JSONL file info."""
-    health_path = repo_dir / "logs" / "scraper_health.json"
-    if not health_path.exists():
-        logger.info("No scraper_health.json found, skipping health data")
+def _read_health_file(path: Path) -> dict | None:
+    """Read a single scraper_health*.json file, swallowing any read errors."""
+    if not path.exists():
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        logger.warning(f"Could not read {path.name}: {e}")
         return None
 
-    try:
-        with open(health_path, "r", encoding="utf-8") as f:
-            health = json.load(f)
-    except Exception as e:
-        logger.warning(f"Could not read scraper_health.json: {e}")
+
+def collect_scraper_health(repo_dir: Path) -> dict | None:
+    """Read scraper health JSON, merging the daily full-scrape file with
+    the hourly federal poller file when both exist. The daily file is the
+    base; per-court entries from the federal file override the daily ones
+    (federal data is always fresher for the courts it polls).
+    """
+    logs_dir = repo_dir / "logs"
+    daily = _read_health_file(logs_dir / "scraper_health.json")
+    federal = _read_health_file(logs_dir / "scraper_health_federal.json")
+
+    if not daily and not federal:
+        logger.info("No scraper_health*.json found, skipping health data")
         return None
+
+    # Start with whichever base has the most scrapers — usually daily.
+    if daily and federal:
+        health = dict(daily)
+        merged_scrapers = dict(daily.get("scrapers", {}))
+        merged_scrapers.update(federal.get("scrapers", {}))
+        health["scrapers"] = merged_scrapers
+        # Record both run timestamps so the dashboard can show freshness.
+        health["run_at_daily"] = daily.get("run_at")
+        health["run_at_federal"] = federal.get("run_at")
+    else:
+        health = daily or federal
 
     scrapers = health.get("scrapers", {})
     state_dir = repo_dir / "state"

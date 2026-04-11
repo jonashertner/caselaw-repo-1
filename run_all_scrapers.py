@@ -276,9 +276,11 @@ def main():
     )
     parser.add_argument("--dry-run", action="store_true", help="Show what would run")
     parser.add_argument(
-        "--source", type=str, default="cron", choices=["cron", "manual"],
+        "--source", type=str, default="cron", choices=["cron", "manual", "federal"],
         help="Run source: 'cron' writes to scraper_health.json, "
-             "'manual' writes to scraper_health_manual.json",
+             "'manual' writes to scraper_health_manual.json, "
+             "'federal' writes to scraper_health_federal.json (used by the "
+             "hourly federal poller so it doesn't clobber the daily file).",
     )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
@@ -426,8 +428,11 @@ def main():
 
     if args.source == "manual":
         health_filename = "scraper_health_manual.json"
+    elif args.source == "federal":
+        health_filename = "scraper_health_federal.json"
     else:
         health_filename = "scraper_health.json"
+    health["run_source"] = args.source
     health_path = REPO_DIR / "logs" / health_filename
     health_path.write_text(json.dumps(health, indent=2))
     logger.info(f"Health data written to {health_path}")
