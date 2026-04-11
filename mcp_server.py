@@ -8582,7 +8582,7 @@ def _fetch_lexfind_law_text(lexfind_id: int, language: str = "de") -> dict | Non
     download/parse failure, returns None — the caller should degrade
     gracefully to metadata-only.
     """
-    text_cache_key = f"law_text:v3:{language}:{lexfind_id}"
+    text_cache_key = f"law_text:v4:{language}:{lexfind_id}"
     cached = _lexfind_cache_get(text_cache_key)
     if cached is not None:
         return cached
@@ -8642,13 +8642,15 @@ def _segment_articles_from_pdf_text(text: str) -> list[dict]:
     normalized = text.replace("\u00a0", " ").replace("\u2011", "-")
 
     # Match either "Art. N..." or "§ N..." as article boundaries.
-    # Require a non-letter lookbehind so we don't catch mid-word "Art".
+    # Require the marker to sit at the start of a line (possibly after
+    # whitespace) — this filters out inline citations like "§§ 42–47"
+    # or "gestützt auf Art. 12 BV" that appear mid-sentence.
     pattern = re.compile(
-        r"(?<![A-Za-z])"
+        r"^\s*"
         r"(?:Art\.|§)"
         r"\s*"
         r"(\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies)?)"
-        r"\.?\s*",
+        r"\b\.?\s*",
         re.MULTILINE,
     )
     matches = list(pattern.finditer(normalized))
