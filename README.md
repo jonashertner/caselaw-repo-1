@@ -1,14 +1,75 @@
 # Swiss Case Law Open Dataset
 
-**965,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
+**The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
-Full text, structured metadata, and daily updates across German, French, and Italian; the export schema also reserves `rm` for Romansh. Plus a local mirror of every federal and cantonal Swiss law, refreshed monthly.
+**965,000+ court decisions · ~5,000 federal laws · ~30,000 cantonal acts · 8.8 M citation links · 11.3 M statute references**
+
+Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors the full Fedlex and LexFind legislation corpora, ships with a **resolved citation graph** and **21 MCP tools** usable from Claude, ChatGPT, Cursor, Gemini, or any MCP client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
 [![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-dataset-blue)](https://huggingface.co/datasets/voilaj/swiss-caselaw)
 [![Data License: CC0--1.0](https://img.shields.io/badge/Data_License-CC0--1.0-blue.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](LICENSE)
+
+---
+
+## Why this exists
+
+Swiss legal research today is **fragmented across paywalls, inaccessible to language models, and prohibitively expensive** for the people who need it most — law students, independent researchers, and anyone outside the major firms. Commercial databases (Weblaw, Swisslex, Legalis) charge hundreds of francs per month and still don't expose a clean API. LLMs hallucinate statute text because they have no authoritative source. Small cantons publish decisions in PDF archives nobody indexes.
+
+OpenCaseLaw fixes this. **Every published Swiss court decision, every federal and cantonal law, the resolved citation graph between them, and 21 MCP tools that let any modern LLM act as a Swiss legal research assistant — all free, all open, all refreshed automatically.**
+
+## What you get
+
+**Case law** — 965,000+ decisions from 1875 to today, full text + structured metadata, covering:
+- All 7 federal courts (BGer, BVGer, BStGer, BPatGer, BGE, BGE historical, BGE-EGMR)
+- All 26 cantonal court systems (first, second, and third instance)
+- Regulatory decisions (FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom)
+- Three official languages (DE / FR / IT); schema reserves `rm` for Romansh
+- Deduplicated via docket normalisation + MinHash similarity
+- Updated daily; BGer decisions available within ~15 minutes of court publication
+
+**Legislation** — every Swiss law, federal and cantonal, locally mirrored with article-level indexing:
+- ~5,000 federal laws / 125,000+ articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
+- ~30,000 cantonal and intercantonal acts from LexFind across all 26 cantons
+- Unified SQLite FTS5 search federates both corpora; sub-millisecond article lookup
+- Monthly refresh on the 2nd of each month (the day after laws enter into force)
+- 11.3 M resolved links from decisions to individual statute articles
+
+**Citation graph** — the **only public large-scale citation graph of the Swiss legal system**:
+- 8.84 M resolved decision-to-decision citation edges with confidence scores
+- 11.34 M decision-to-statute links resolved against the current consolidated text
+- Bidirectional lookup, appeal-chain resolution (Instanzenzug), leading-case ranking by citation authority
+- Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend`
+
+**21 MCP tools** — specialised research tools that run in your LLM of choice:
+- Natural-language decision search (BM25 + LLM query expansion + Haiku reranking, **MRR@10 = 0.647** on a 100-query golden set)
+- Leading-case discovery, citation networks, appeal chains, jurisprudence evolution
+- Federal + cantonal law article lookup, full-text search across both
+- Doctrine overviews (statute + authority-ranked BGEs + timeline)
+- Scholarly commentary lookup from OnlineKommentar.ch
+- **Fallbearbeitung exam questions** generated from real BGE fact patterns, with hidden analysis for practice
+- Draft mock decisions from fact patterns (research-only tool for grounding LLM outputs)
+- Structured case briefs (regeste, Sachverhalt, Erwägungen, Dispositiv, cited statutes, authority)
+
+**Multiple access paths** — same data, many interfaces:
+- Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client
+- Local MCP server — full offline capability, 21 tools, ~65 GB disk
+- 32-route REST API for programmatic row-level access
+- Bulk Parquet download via the [HuggingFace dataset](https://huggingface.co/datasets/voilaj/swiss-caselaw) (~7 GB)
+- [Word add-in](https://word.opencaselaw.ch/install.html) for in-document lookup + citation insertion
+- Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
+
+**Performance you can defend in a paper**:
+
+| Metric | Value |
+|---|---|
+| Decision search quality | MRR@10 = 0.647 (online) / 0.470 (offline reproducible) · **+102 %** over baseline |
+| Article lookup latency | < 1 ms (local FTS5) |
+| BGer publication → searchable | ~15 min (was 24 h pre-poller) |
+| Daily full-text rebuild | ~5 h, zero downtime (atomic swap) |
+| Citation-to-decision resolution rate | 73.8 % (8.77 M / 11.89 M raw refs) |
 
 ---
 
