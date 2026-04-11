@@ -319,6 +319,12 @@ def collect_scraper_health(repo_dir: Path) -> dict | None:
         "run_duration_s": health.get("run_duration_s"),
         "scrapers": scrapers,
     }
+    # Preserve merged run-timestamps from the daily/federal split when present
+    # so the dashboard can show freshness for both runs.
+    if "run_at_daily" in health:
+        result["run_at_daily"] = health["run_at_daily"]
+    if "run_at_federal" in health:
+        result["run_at_federal"] = health["run_at_federal"]
     if "disk" in health:
         result["disk"] = health["disk"]
     return result
