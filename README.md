@@ -32,7 +32,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 
 **Legislation** — every Swiss law, federal and cantonal, locally mirrored with article-level indexing:
 - ~5,000 federal laws / 125,000+ articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
-- ~30,000 cantonal and intercantonal acts from LexFind across all 26 cantons
+- ~26,000 cantonal and intercantonal acts from LexFind across all 26 cantons
 - Unified SQLite FTS5 search federates both corpora; sub-millisecond article lookup
 - Monthly refresh on the 2nd of each month (the day after laws enter into force)
 - 11.3 M resolved links from decisions to individual statute articles
@@ -89,7 +89,7 @@ There are eight ways to use it, depending on what you need:
 |--------|----------|-------------|
 | [**Search with AI**](#1-search-with-ai) | Everyone | Natural-language search in Claude, ChatGPT, Cursor, or Gemini — instant access, no download, full 21-tool surface |
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars, researchers | Leading cases, citation networks, appeal chains, jurisprudence trends over time |
-| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,000+ federal laws and 30,000+ cantonal acts, federated FTS5, sub-millisecond lookup |
+| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,000+ federal laws and 26,000+ cantonal acts, federated FTS5, sub-millisecond lookup |
 | [**Legislation Search**](#legislation-tools) | Legal professionals | LexFind-backed discovery search with `fetch_top_n_texts` for single-call natural-language workflows |
 | [**Education tools**](#education-tools) | Law students, instructors | Structured case briefs, doctrine timelines, real-BGE exam questions with hidden analysis |
 | [**Word Add-in**](https://word.opencaselaw.ch/install.html) | Legal practitioners writing briefs | Insert formatted Swiss citations into Word · click Erwägung / § to insert with correct sub-reference · Pro: verify quotes against case text, find support, scan documents (curated ~8-tool subset) |
@@ -462,7 +462,7 @@ Parameters: `query` (optional text), `law_code` + `article` (optional statute), 
 Two tools provide direct access to **Swiss law text** from the local mirror, covering both federal and cantonal jurisdictions with article-level FTS5 indexing and sub-millisecond lookup:
 
 - **Federal:** ~5,000 laws / 125,000+ articles from the [Fedlex](https://www.fedlex.admin.ch) SPARQL endpoint, mirrored monthly into `statutes.db`. Covers every consolidated federal act in German, French, and Italian.
-- **Cantonal:** ~30,000 active cantonal and intercantonal acts from [LexFind.ch](https://www.lexfind.ch), mirrored monthly into `cantonal_laws.db`. PDFs are extracted with PyMuPDF and segmented into articles. Covers all 26 cantons plus bilingual secondary-language passes for BE / FR / VS / GR.
+- **Cantonal:** ~26,000 active cantonal and intercantonal acts from [LexFind.ch](https://www.lexfind.ch), mirrored monthly into `cantonal_laws.db`. PDFs are extracted with PyMuPDF and segmented into articles. Covers all 26 cantons plus bilingual secondary-language passes for BE / FR / VS / GR.
 
 **`get_law`** — Look up any Swiss law (federal or cantonal) by SR number or abbreviation, optionally fetching a specific article with full text.
 
