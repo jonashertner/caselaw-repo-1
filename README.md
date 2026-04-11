@@ -53,13 +53,17 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Draft mock decisions from fact patterns (research-only tool for grounding LLM outputs)
 - Structured case briefs (regeste, Sachverhalt, Erwägungen, Dispositiv, cited statutes, authority)
 
-**Multiple access paths** — same data, many interfaces:
-- Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client
+**Multiple access paths** — same data, two distinct audiences:
+
+*For LLM users, researchers and developers — full 21-tool surface:*
+- Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client (Claude, ChatGPT, Cursor, Gemini)
 - Local MCP server — full offline capability, 21 tools, ~65 GB disk
 - 32-route REST API for programmatic row-level access
 - Bulk Parquet download via the [HuggingFace dataset](https://huggingface.co/datasets/voilaj/swiss-caselaw) (~7 GB)
-- [Word add-in](https://word.opencaselaw.ch/install.html) for in-document lookup + citation insertion
 - Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
+
+*For legal practitioners drafting documents — curated practitioner surface:*
+- [**Word add-in**](https://word.opencaselaw.ch/install.html) — Search decisions and insert **correctly-formatted Swiss legal citations** directly in Word (no copy-paste). Click an Erwägung to insert it with the correct sub-citation; click a law § to insert that alinea. **Pro tier** (Stripe-billed) adds LLM-backed features: verify a quoted passage against the actual decision text, find cases that support or contradict a given statement, and auto-scan an entire document for legal references. Exposes ~8 of the 21 MCP tools through the REST API, tuned for the write-your-brief workflow.
 
 **Performance you can defend in a paper**:
 
@@ -79,17 +83,18 @@ A structured, searchable archive of Swiss court decisions — from the Federal S
 
 The dataset is built by direct scraping of official court websites and cantonal court portals. New decisions are scraped, deduplicated, and published every night.
 
-There are seven ways to use it, depending on what you need:
+There are eight ways to use it, depending on what you need:
 
 | Method | For whom | What you get |
 |--------|----------|-------------|
-| [**Search with AI**](#1-search-with-ai) | Lawyers, researchers | Natural-language search in Claude, ChatGPT, or Gemini — instant access, no download |
-| [**Citation Analysis**](#citation-graph-tools) | Legal scholars | Leading cases, citation networks, appeal chains, jurisprudence trends |
-| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,000+ federal laws and 30,000+ cantonal acts (OR, ZGB, StGB, BV, ...) |
-| [**Legislation Search**](#legislation-tools) | Legal professionals | Search 30,000+ cantonal and federal legislative texts via LexFind.ch |
-| [**Download**](#2-download-the-dataset) | Data scientists, NLP researchers | Bulk Parquet files with all 965K+ decisions |
-| [**REST API**](#3-rest-api) | Developers | Programmatic row-level access, no setup |
-| [**Web UI**](#4-web-ui) | Everyone | Chat interface — ask questions, get answers with cited decisions |
+| [**Search with AI**](#1-search-with-ai) | Everyone | Natural-language search in Claude, ChatGPT, Cursor, or Gemini — instant access, no download, full 21-tool surface |
+| [**Citation Analysis**](#citation-graph-tools) | Legal scholars, researchers | Leading cases, citation networks, appeal chains, jurisprudence trends over time |
+| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,000+ federal laws and 30,000+ cantonal acts, federated FTS5, sub-millisecond lookup |
+| [**Legislation Search**](#legislation-tools) | Legal professionals | LexFind-backed discovery search with `fetch_top_n_texts` for single-call natural-language workflows |
+| [**Education tools**](#education-tools) | Law students, instructors | Structured case briefs, doctrine timelines, real-BGE exam questions with hidden analysis |
+| [**Word Add-in**](https://word.opencaselaw.ch/install.html) | Legal practitioners writing briefs | Insert formatted Swiss citations into Word · click Erwägung / § to insert with correct sub-reference · Pro: verify quotes against case text, find support, scan documents (curated ~8-tool subset) |
+| [**REST API / Download**](#2-download-the-dataset) | Developers, data scientists, NLP researchers | 32-route REST API, bulk Parquet download via HuggingFace (~7 GB) |
+| [**Web UI**](https://opencaselaw.ch) | Everyone | Live dashboard with corpus stats, daily delta, top movers, multilingual browsing |
 
 > **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 965K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
 
