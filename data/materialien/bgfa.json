@@ -1,0 +1,2654 @@
+{
+  "law": "BGFA",
+  "sr_number": "935.61",
+  "generated": "2026-04-12T11:19:57Z",
+  "articles": {
+    "1": {
+      "provisions_discussed": [
+        "Art. 1"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6030",
+            "6031"
+          ],
+          "legislative_intent": "Festlegung des Gegenstands und Zwecks des Anwaltsgesetzes: Gewährleistung der interkantonalen Freizügigkeit für im kantonalen Anwaltsregister eingetragene Anwältinnen und Anwälte sowie Regelung der Modalitäten für die Vertretung von Parteien durch EU-Anwältinnen und Anwälte.",
+          "key_arguments": [
+            "Die interkantonale Freizügigkeit wird bisher durch Art. 5 UeB BV und das Binnenmarktgesetz gewährleistet, aber unvollständig geregelt",
+            "Der Abschluss der sektoriellen Abkommen mit der EG macht eine Umsetzung des relevanten Gemeinschaftsrechts (Richtlinien 77/249/EWG, 89/48/EWG, 98/5/EG) notwendig",
+            "Das Gesetz will kantonale Anwaltsgesetzgebungen nicht vollständig ersetzen, sondern gewisse Punkte vereinheitlichen"
+          ],
+          "design_choices": [
+            "Zweistufiger Aufbau: Abs. 1 regelt interkantonale Freizügigkeit, Abs. 2 regelt Zugang für EU-Anwältinnen und Anwälte",
+            "Freizügigkeit wird an Registereintrag geknüpft, nicht an Berufsausübungsbewilligung",
+            "Umsetzung des Gemeinschaftsrechts im Wesentlichen auf Bundesebene"
+          ],
+          "rejected_alternatives": [
+            "Vollständige Ersetzung der kantonalen Anwaltsgesetzgebungen durch Bundesrecht"
+          ],
+          "general_context": "Art. 1 bildet die Grundnorm des Gesetzes und definiert seinen Gegenstand; er verbindet die interkantonale Freizügigkeit mit der internationalen Dimension (EU-Recht)."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "2": {
+      "provisions_discussed": [
+        "Art. 2"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6031",
+            "6032"
+          ],
+          "legislative_intent": "Bestimmung des persönlichen Geltungsbereichs: Das Gesetz gilt nur für Anwältinnen und Anwälte mit kantonalem Patent, die unabhängig tätig sind und im Rahmen des kantonalen Monopols tatsächlich Parteien vor Gerichtsbehörden vertreten.",
+          "key_arguments": [
+            "Anwältinnen und Anwälte, die als Richter, Gerichtsschreiber, Verwaltungsangestellte oder in Banken tätig sind, brauchen sich nicht einzutragen und unterstehen nicht der Aufsichtsbehörde",
+            "Wer nur rechtsberatend tätig ist, ohne Parteien vor Gericht zu vertreten, fällt nicht unter das Gesetz",
+            "Ausländische Staatsangehörigkeit schliesst die Anwendbarkeit des Gesetzes nicht aus, da kantonale Patente auch Ausländern erteilt werden können",
+            "Das Gesetz gilt auch für EU-Anwältinnen und Anwälte, die auf Grund des Gesetzes zugelassen werden"
+          ],
+          "design_choices": [
+            "Anknüpfung an das kantonale Anwaltsmonopol zur Abgrenzung des Geltungsbereichs",
+            "Kompetenz der Kantone für die Definition des Monopolbereichs bleibt erhalten",
+            "Angestellte Anwältinnen und Anwälte, die in bestimmten Kantonen zur Parteienvertretung zugelassen sind, werden ebenfalls erfasst",
+            "Aufgabe des Schweizer Bürgerrechtserfordernisses entsprechend BGE 119 Ia 35"
+          ],
+          "rejected_alternatives": [
+            "Erstreckung des Geltungsbereichs auf alle Personen mit Anwaltspatent unabhängig von ihrer Tätigkeit"
+          ],
+          "general_context": "Art. 2 grenzt den persönlichen Geltungsbereich ab und verknüpft ihn mit der unabhängigen Berufsausübung und dem Anwaltsmonopol."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "3": {
+      "provisions_discussed": [
+        "Art. 3"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6032",
+            "6033"
+          ],
+          "legislative_intent": "Verankerung des Grundsatzes der interkantonalen Freizügigkeit: Im kantonalen Register eingetragene Anwältinnen und Anwälte können in der ganzen Schweiz ohne weitere Bewilligung Parteien vor Gerichtsbehörden vertreten.",
+          "key_arguments": [
+            "Abschaffung der kantonalen Berufsausübungsbewilligungsverfahren, die als bürokratisch kritisiert wurden",
+            "Kantone dürfen von bereits eingetragenen Anwältinnen und Anwälten keine weiteren fachlichen oder persönlichen Voraussetzungen verlangen",
+            "Kantone sind berechtigt, nicht registrierten Anwältinnen und Anwälten die Vertretung zu verweigern",
+            "Gerichtsbehörden können im Zweifelsfall das Register des Herkunftskantons konsultieren"
+          ],
+          "design_choices": [
+            "Freizügigkeit wird durch Registereintrag und nicht durch interkantonale Bewilligung verwirklicht",
+            "Voraussetzungen werden einmalig bei Registereintrag geprüft",
+            "Kein formeller Nachweis des Registereintrags bei erstmaligem Auftreten vor Gericht vorgesehen",
+            "Kein eidgenössisches Bundesregister, sondern Ausbau der kantonalen Register"
+          ],
+          "rejected_alternatives": [
+            "Verpflichtung zum Nachweis des Registereintrags beim ersten Auftreten vor Gericht (von zwei Vernehmlassern vorgeschlagen, aber abgelehnt)"
+          ],
+          "general_context": "Art. 3 ist das Herzstück der interkantonalen Freizügigkeitsregelung und ersetzt das bisherige Bewilligungssystem durch das Registersystem."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "4": {
+      "provisions_discussed": [
+        "Art. 4"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6033",
+            "6034"
+          ],
+          "legislative_intent": "Einführung einheitlicher kantonaler Anwaltsregister als Ersatz für die kantonalen Berufsausübungsbewilligungsverfahren, mit harmonisiertem Inhalt für den gesamtschweizerischen Informationsaustausch.",
+          "key_arguments": [
+            "Durch Aufhebung der Bewilligungsverfahren verfügen Kantone nicht mehr über Unterlagen zu Anwältinnen und Anwälten aus anderen Kantonen",
+            "Schnelle Überprüfung, ob Voraussetzungen erfüllt sind, muss weiterhin möglich sein",
+            "Einheitlicher Registeraufbau in allen Kantonen notwendig",
+            "Führung durch dieselbe Behörde wie die Disziplinaraufsicht zweckmässig"
+          ],
+          "design_choices": [
+            "Register umfasst: persönliche Daten, Kopie des Anwaltspatents, Nachweise der persönlichen Voraussetzungen, Geschäftsadressen und Angabe des Anwaltsbüros, nicht gelöschte Disziplinarmassnahmen",
+            "Register wird von der Aufsichtsbehörde geführt",
+            "Anwältinnen und Anwälte ohne feste Geschäftsadresse im Kanton müssen sich nicht eintragen",
+            "Auf ein eidgenössisches Bundesregister wird verzichtet"
+          ],
+          "rejected_alternatives": [
+            "Schaffung eines zentralen Anwaltsregisters auf Bundesebene (geprüft und verworfen, weil Doppelführung, höhere Kosten und in Europa einmalig)"
+          ],
+          "general_context": "Art. 4 ist die organisatorische Grundlage des Registersystems und bestimmt Inhalt und Führung der kantonalen Register."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "5": {
+      "provisions_discussed": [
+        "Art. 5"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6033",
+            "6034",
+            "6035"
+          ],
+          "legislative_intent": "Regelung der Eintragungspflicht in das kantonale Anwaltsregister: Anwältinnen und Anwälte, die Parteien vor Gerichtsbehörden vertreten wollen, müssen sich im Kanton ihrer Geschäftsadresse eintragen lassen.",
+          "key_arguments": [
+            "Registereintrag ist Voraussetzung für die Nutzung der interkantonalen Freizügigkeit",
+            "Anwältinnen und Anwälte, die sich nicht eintragen lassen, strafen sich selbst durch Ausschluss von der Parteienvertretung in anderen Kantonen",
+            "Kriterium der Geschäftsadresse statt des Herkunftsortes des Patents"
+          ],
+          "design_choices": [
+            "Eintragungspflicht im Kanton der Hauptgeschäftsadresse (nicht mehr in allen Kantonen mit Geschäftsadresse wie im Vernehmlassungsentwurf)",
+            "Aufsichtsbehörde prüft fachliche und persönliche Voraussetzungen",
+            "Verweigerung des Eintrags ergeht als beschwerdefähige Verfügung",
+            "Keine ausdrückliche Strafe für Nicht-Eintragung vorgesehen",
+            "Bestehende Kantone können auf erneute Anforderung von Bescheinigungen bei bereits eingetragenen Anwältinnen und Anwälten verzichten"
+          ],
+          "rejected_alternatives": [
+            "Eintragungspflicht in allen Kantonen, in denen eine Geschäftsadresse besteht (Vernehmlassungsentwurf; aufgegeben wegen Vereinheitlichung der Berufsregeln auf Bundesebene und gesamtschweizerischer Geltung des Berufsausübungsverbots)"
+          ],
+          "general_context": "Art. 5 konkretisiert, wer sich in welchem Kanton eintragen lassen muss, und ist das prozessuale Bindeglied zwischen Freizügigkeitsgrundsatz und Registerführung."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "6": {
+      "provisions_discussed": [
+        "Art. 6"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6035",
+            "6036",
+            "6037"
+          ],
+          "legislative_intent": "Festlegung der fachlichen Mindestvoraussetzungen, die ein kantonales Anwaltspatent erfüllen muss, damit es in anderen Kantonen anerkannt wird.",
+          "key_arguments": [
+            "Bundesgericht hat in BGE 111 Ia 108 das Examen als Standard festgelegt, ohne Mindestdauer von Studium und Praktikum zu präzisieren",
+            "Das Gesetz legt nur Mindestanforderungen für die interkantonale Anerkennung fest; Kantone können für das eigene Patent strengere Anforderungen stellen",
+            "Voraussetzung von mindestens drei Jahren Hochschulstudium entspricht Anforderungen der Richtlinie 89/48/EWG"
+          ],
+          "design_choices": [
+            "Mindestens dreijähriges juristisches Hochschulstudium mit Abschlussdiplom (Bst. a)",
+            "Mindestens einjähriges Praktikum in der Schweiz, abgeschlossen mit Examen über theoretische und praktische Rechtskenntnisse (Bst. b)",
+            "Keine spezielle Ausnahme mehr für Kantone mit Italienisch als Amtssprache (ursprünglich vorgesehen, dann auf Grund des Personenfreizügigkeitsabkommens gestrichen)"
+          ],
+          "rejected_alternatives": [
+            "Längere Mindestpraktikumsdauer (von welschen Kantonen und Tessin gewünscht, aber abgelehnt, da bereits heute Patente mit einjährigem Praktikum akzeptiert werden)",
+            "Längere Mindestausbildungsdauer (von deutschschweizerischen Kantonen gewünscht, ebenfalls abgelehnt)",
+            "Spezielle Ausnahmeregelung für Kantone mit Italienisch als Amtssprache für gleichwertige italienische Diplome (im Vernehmlassungsentwurf vorgesehen, später gestrichen)"
+          ],
+          "general_context": "Art. 6 bildet zusammen mit Art. 7 das Kernstück der Freizügigkeitsvoraussetzungen und legt den gemeinsamen schweizerischen Standard fest."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "7": {
+      "provisions_discussed": [
+        "Art. 7"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6037",
+            "6038",
+            "6039"
+          ],
+          "legislative_intent": "Festlegung der persönlichen Voraussetzungen, die für den Registereintrag und damit für die interkantonale Freizügigkeit massgebend sind.",
+          "key_arguments": [
+            "Persönliche Voraussetzungen entsprechen weitgehend den heute von Kantonen verlangten Anforderungen",
+            "Vertrauensverhältnis zwischen Anwalt und Klientschaft setzt Seriosität und Ehrenhaftigkeit voraus",
+            "Zahlungsfähigkeit schützt Klientschaft, der Vermögen anvertraut wird",
+            "Art. 26 Abs. 1 SchKG sieht ausdrücklich öffentlich-rechtliche Folgen von Verlustscheinen und Konkurseröffnung vor"
+          ],
+          "design_choices": [
+            "Handlungsfähigkeit (Bst. a) – wird vermutet, muss nicht bewiesen werden",
+            "Keine strafrechtliche Verurteilung wegen mit dem Anwaltsberuf unvereinbarer Handlungen (Bst. b); gelöschte Einträge dürfen nicht entgegengehalten werden",
+            "Keine Verlustscheine (weder provisorische noch definitive) (Bst. c)",
+            "Kein persönlicher Konkurs in den letzten zehn Jahren (Bst. d)",
+            "Unabhängigkeit (Bst. e) – wird bereits im Zeitpunkt des Registereintrags geprüft",
+            "Verzicht auf das Erfordernis des 'guten Leumunds' (im Vernehmlassungsentwurf noch enthalten)"
+          ],
+          "rejected_alternatives": [
+            "Voraussetzung des 'guten Leumunds' (als veraltet kritisiert und gestrichen, da gewisse Kantone keine Leumundszeugnisse mehr ausstellen)",
+            "Schweizer Bürgerrecht als Voraussetzung (verfassungswidrig nach BGE 119 Ia 35)"
+          ],
+          "general_context": "Art. 7 ergänzt Art. 6 um die persönlichen Voraussetzungen für den Registereintrag und harmonisiert diese schweizweit."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "8": {
+      "provisions_discussed": [
+        "Art. 8"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6039"
+          ],
+          "legislative_intent": "Regelung der Löschung des Registereintrags von Amtes wegen, wenn die Voraussetzungen für den Registereintrag nicht mehr erfüllt sind.",
+          "key_arguments": [
+            "Kontinuierliche Gewährleistung der Voraussetzungen für den Registereintrag während der gesamten Berufsausübung",
+            "Löschung auf Grund von Bundesrecht ermöglicht Verwaltungsgerichtsbeschwerde ans Bundesgericht"
+          ],
+          "design_choices": [
+            "Löschung von Amtes wegen durch die Aufsichtsbehörde",
+            "Löschung ergeht als Verfügung, gegen die auf kantonaler Ebene Gerichtsbeschwerde eingereicht werden kann",
+            "Verwaltungsgerichtsbeschwerde ans Bundesgericht steht offen"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 8 stellt die dynamische Komponente des Registersystems sicher und verknüpft es mit dem Rechtsschutz."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "9": {
+      "provisions_discussed": [
+        "Art. 9"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6039",
+            "6040"
+          ],
+          "legislative_intent": "Regelung der Einsicht in das Anwaltsregister zum Schutz der Personendaten bei gleichzeitiger Gewährleistung des Informationsaustauschs zwischen Behörden.",
+          "key_arguments": [
+            "Registerinhalt ist nicht öffentlich, aber bestimmten Behörden zugänglich",
+            "Klientschaft muss sich vergewissern können, ob eine Anwältin oder ein Anwalt zur Berufsausübung befähigt ist",
+            "Datenschutzrecht ist zu beachten; in Kantonen ohne eigene Datenschutzgesetze gilt das Bundesgesetz"
+          ],
+          "design_choices": [
+            "Einsichtsberechtigt: eidgenössische und kantonale Behörden, EU-Behörden (nur wenn Anwältin/Anwalt vor ihnen auftritt), kantonale Aufsichtsbehörden uneingeschränkt",
+            "Anwältinnen und Anwälte haben Einsichtsrecht bezüglich ihres eigenen Eintrags",
+            "Aufsichtsbehörde kann (muss aber nicht) Liste der eingetragenen Anwältinnen und Anwälte veröffentlichen",
+            "Jedermann kann anfragen, ob eine Anwältin oder ein Anwalt eingetragen ist und ob ein Berufsausübungsverbot besteht"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 9 balanciert den Informationsbedarf von Behörden und Klientschaft mit dem Datenschutz der eingetragenen Anwältinnen und Anwälte."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "10": {
+      "provisions_discussed": [
+        "Art. 10"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6040",
+            "6041"
+          ],
+          "legislative_intent": "Regelung der Berufsbezeichnung: Im Register eingetragene Anwältinnen und Anwälte dürfen die Berufsbezeichnung des Kantons verwenden, in dessen Register sie eingetragen sind, und müssen ihren Registereintrag im Geschäftsverkehr angeben.",
+          "key_arguments": [
+            "Unterschiedliche Berufsbezeichnungen in der deutschen Schweiz ('Rechtsanwalt', 'Fürsprecher', 'Fürsprech', 'Advokat') sollen gegenseitig verwendbar sein",
+            "Angabe des Registereintrags macht erkennbar, dass die Anwältin oder der Anwalt den Berufsregeln und der Aufsicht untersteht",
+            "Schutz durch das UWG (Art. 3 Bst. c und 23) für den Hinweis auf den Registereintrag"
+          ],
+          "design_choices": [
+            "Recht zur Verwendung der Berufsbezeichnung eines Kantons ist an den Registereintrag in diesem Kanton geknüpft",
+            "Pflicht zur Angabe des Registereintrags im Geschäftsverkehr",
+            "In welschen Kantonen darf alternativ die Zugehörigkeit zu einem 'barreau' erwähnt werden",
+            "Berufsbezeichnung für EU-Anwältinnen und Anwälte wird in Art. 22 und 31 geregelt"
+          ],
+          "rejected_alternatives": [
+            "Verbot des Führens des Anwaltstitels für nicht registrierte Anwältinnen und Anwälte (Bundesgericht hatte alten Art. 5 des Genfer Anwaltsgesetzes als unverhältnismässig erklärt)"
+          ],
+          "general_context": "Art. 10 verbindet das Registersystem mit dem Titelschutz und dient der Transparenz für die Öffentlichkeit."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "11": {
+      "provisions_discussed": [
+        "Art. 11"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6041",
+            "6042",
+            "6043",
+            "6044",
+            "6045",
+            "6046"
+          ],
+          "legislative_intent": "Abschliessende Vereinheitlichung der Berufsregeln für Anwältinnen und Anwälte auf Bundesebene als Begleitmassnahme zur Freizügigkeit.",
+          "key_arguments": [
+            "Doppeltes System von eidgenössischen und kantonalen Berufsregeln wurde im Vernehmlassungsverfahren kritisiert, da es zu zwei Beschwerdeinstanzen führen würde",
+            "26 verschiedene kantonale Regelungen sind mit europaweiter Freizügigkeit nicht mehr vereinbar",
+            "Vereinheitlichung fördert Mobilität und schafft transparentere Praxis der Aufsichtsbehörden",
+            "Anwaltsberuf in allen Nachbarstaaten auf nationaler Ebene geregelt",
+            "Kartellgesetz hat Fragwürdigkeit von Standesregeln verstärkt sichtbar gemacht"
+          ],
+          "design_choices": [
+            "Abschliessende (nicht minimale) Regelung der Berufsregeln auf Bundesebene",
+            "Generalklausel über Sorgfalt und Gewissenhaftigkeit (Bst. a)",
+            "Unabhängigkeit als Berufsregel (Bst. b) – kein allgemeiner Ausschluss angestellter Anwältinnen und Anwälte",
+            "Berufsgeheimnis mit Pflicht zur Wahrung auch durch Hilfspersonen (Bst. c)",
+            "Sachlich objektive Werbung erlaubt (Bst. d) – Verzicht auf Bezug zur 'Berufswürde'",
+            "Verbot des pactum de quota litis (Bst. e)",
+            "Pflicht zur Berufshaftpflichtversicherung (Bst. f) – formell neu",
+            "Pflichtverteidigung und unentgeltliche Rechtsvertretung nur im Kanton des Registereintrags (Bst. g)",
+            "Trennung anvertrauter Gelder vom Eigenvermögen (Bst. h)",
+            "Periodische Information der Klientschaft über Honorare (Bst. i)",
+            "Meldepflicht gegenüber der Aufsichtsbehörde über Registeränderungen (Bst. j)"
+          ],
+          "rejected_alternatives": [
+            "Minimalregelung auf Bundesebene mit kantonalen Ergänzungsmöglichkeiten (im Vernehmlassungsentwurf vorgesehen, nach Vernehmlassung verworfen)",
+            "Generelles Werbeverbot (als nicht mehr gerechtfertigt erklärt)"
+          ],
+          "general_context": "Art. 11 ist die zentrale materiell-rechtliche Norm des Gesetzes und legt den schweizerischen Standard für die anwaltliche Berufsausübung abschliessend fest."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "12": {
+      "provisions_discussed": [
+        "Art. 12"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6046",
+            "6047"
+          ],
+          "legislative_intent": "Schaffung einer kantonalen Aufsichtsbehörde für die Disziplinaraufsicht über Anwältinnen und Anwälte und zur Durchsetzung der Berufsregeln.",
+          "key_arguments": [
+            "Beachtung der Berufsregeln muss durch Disziplinarbehörden sichergestellt werden",
+            "Da Berufsregeln und Disziplinarmassnahmen bundesrechtlich geregelt sind, ist Verwaltungsgerichtsbeschwerde ans Bundesgericht möglich",
+            "Befristeter Entzug der Bewilligung zur Ausübung eines freien Berufs ist zivilrechtliche Streitigkeit im Sinne von Art. 6 EMRK und muss einem Gericht unterbreitet werden können",
+            "Aufsicht erstreckt sich über die gesamte Anwaltstätigkeit, nicht nur über die Monopoltätigkeit"
+          ],
+          "design_choices": [
+            "Kantone sind frei in Zusammensetzung und Organisation der Aufsichtsbehörde sowie Verfahrensregelung",
+            "Disziplinaraufsicht kann auch einem Anwaltsverband übertragen werden",
+            "Wenn Aufsichtsbehörde keine gerichtliche Instanz ist, müssen Kantone eine richterliche Rekursbehörde vorsehen (Art. 98a OG)"
+          ],
+          "rejected_alternatives": [
+            "Bundeseinheitliche Zusammensetzung der Aufsichtsbehörde (abgelehnt zugunsten kantonaler Gestaltungsfreiheit)"
+          ],
+          "general_context": "Art. 12 sichert die Durchsetzung der bundesrechtlichen Berufsregeln durch kantonale Aufsichtsbehörden unter Wahrung des Rechtsschutzes."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "13": {
+      "provisions_discussed": [
+        "Art. 13"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6047"
+          ],
+          "legislative_intent": "Einführung einer Meldepflicht für kantonale und eidgenössische Gerichts- und Verwaltungsbehörden bei möglichen Verletzungen der Berufsregeln.",
+          "key_arguments": [
+            "Effektive Disziplinaraufsicht setzt voraus, dass Vorfälle den zuständigen Behörden gemeldet werden",
+            "Möglichkeit für Klientschaft, sich an die Aufsichtsbehörde zu wenden, versteht sich von selbst"
+          ],
+          "design_choices": [
+            "Kantonale Behörden melden an die Aufsichtsbehörde ihres Kantons (nicht an diejenige des Registerkantons)",
+            "Eidgenössische Behörden melden an die Aufsichtsbehörde des Kantons, in dem die Anwältin oder der Anwalt eingetragen ist"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 13 schafft den Informationsfluss zur kantonalen Aufsichtsbehörde als Grundlage für eine wirksame Disziplinaraufsicht."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "14": {
+      "provisions_discussed": [
+        "Art. 14"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6047",
+            "6048"
+          ],
+          "legislative_intent": "Regelung der Zusammenarbeit zwischen kantonalen Aufsichtsbehörden bei Disziplinarverfahren gegen Anwältinnen und Anwälte, die nicht im betreffenden Kanton eingetragen sind.",
+          "key_arguments": [
+            "Aufsichtsbehörden erstrecken ihre Zuständigkeit auf alle Anwältinnen und Anwälte, die auf ihrem Kantonsgebiet tätig sind",
+            "Die 'zur Hauptsache' zuständige Aufsichtsbehörde soll über Verfahren in anderen Kantonen informiert sein",
+            "Zusammenarbeit soll einheitliche Disziplinarpraxis fördern"
+          ],
+          "design_choices": [
+            "Aufsichtsbehörde des Tatortkantons muss die Aufsichtsbehörde des Registerkantons über Verfahrenseröffnung informieren",
+            "Aufsichtsbehörde des Registerkantons hat Recht auf Stellungnahme vor Ausfällung einer Disziplinarmassnahme (kann zu Gunsten oder zu Ungunsten der betroffenen Anwältin/des betroffenen Anwalts auswirken)",
+            "Ergebnis des Verfahrens ist der Aufsichtsbehörde des Registerkantons mitzuteilen",
+            "In Kraft getretene Disziplinarmassnahmen werden ins Register eingetragen (Abs. 3)"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 14 koordiniert die Disziplinaraufsicht über kantonsgrenzen hinweg und sichert die Aktualität des Registereintrags."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "15": {
+      "provisions_discussed": [
+        "Art. 15"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6048"
+          ],
+          "legislative_intent": "Vereinheitlichung der Disziplinarmassnahmen auf Bundesebene parallel zur Vereinheitlichung der Berufsregeln.",
+          "key_arguments": [
+            "Harmonisierung der Praxis im Disziplinarrecht notwendig",
+            "Verwarnung muss als Disziplinarmassnahme anerkannt werden, damit Anwältinnen und Anwälte Beschwerdemöglichkeit haben (BGE 103 Ia 428)",
+            "Dauerndes Berufsausübungsverbot setzt Gesamtbewertung der bisherigen Berufstätigkeit voraus (BGE 106 Ia 100)"
+          ],
+          "design_choices": [
+            "Stufenweise Massnahmen: Verwarnung, Verweis, Busse, befristetes und dauerndes Berufsausübungsverbot",
+            "Busse kann zusätzlich zu einem Berufsausübungsverbot angeordnet werden (Abs. 2)",
+            "Möglichkeit des vorsorglichen Berufsausübungsverbots bei schwerwiegenden Gründen (Abs. 3)"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 15 schafft einen einheitlichen Sanktionskatalog und sichert die Verhältnismässigkeit der Disziplinarmassnahmen."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "16": {
+      "provisions_discussed": [
+        "Art. 16"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6048",
+            "6049"
+          ],
+          "legislative_intent": "Ausdehnung der Wirkung des Berufsausübungsverbots auf das gesamte Gebiet der Schweiz und Sicherstellung der Information aller kantonalen Aufsichtsbehörden.",
+          "key_arguments": [
+            "Infolge der Vereinheitlichung der Berufsregeln und Disziplinarmassnahmen auf Bundesebene kann das Verbot gesamtschweizerisch gelten",
+            "Berufsausübungsverbot muss wirksam sein, d.h. auch ausserhalb des Kantons des Registereintrags gelten",
+            "Einheitliche Verwaltungsgerichtsbeschwerde verhindert zu grosse Unterschiede in der kantonalen Praxis",
+            "Anwältinnen und Anwälte können trotz Verbot weiterhin rechtsberatend tätig sein"
+          ],
+          "design_choices": [
+            "Gesamtschweizerische Geltung des befristeten oder dauernden Berufsausübungsverbots",
+            "Pflicht zur Mitteilung an die Aufsichtsbehörden der übrigen Kantone (Abs. 2)",
+            "Dauerndes Berufsausübungsverbot nur bei Versagen anderer Sanktionen zur Verhaltenskorrektur"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 16 ist eine notwendige Folge der gesamtschweizerischen Freizügigkeit: Das Berufsausübungsverbot muss überall gelten, wo die Anwältin oder der Anwalt tätig sein dürfte."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "17": {
+      "provisions_discussed": [
+        "Art. 17"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6049"
+          ],
+          "legislative_intent": "Vereinheitlichung der Verjährungsfristen für die disziplinarische Verfolgung auf Bundesebene.",
+          "key_arguments": [
+            "Unterschiede bei Verjährungsfristen sind nach Vereinheitlichung der Berufsregeln und Disziplinarmassnahmen nicht mehr gerechtfertigt",
+            "Disziplinarmassnahme setzt Registereintrag voraus; Streichung aus dem Register entzieht sich der Disziplinaraufsicht"
+          ],
+          "design_choices": [
+            "Einheitliche Verjährungsfristen auf Bundesebene",
+            "Strafrechtliche und zivilrechtliche Verfolgungen bleiben vorbehalten"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 17 rundet die Harmonisierung des Disziplinarrechts durch einheitliche Verjährungsfristen ab."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "18": {
+      "provisions_discussed": [
+        "Art. 18"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6049"
+          ],
+          "legislative_intent": "Vereinheitlichung der Fristen für die Löschung von Disziplinarmassnahmen aus dem Register.",
+          "key_arguments": [
+            "Einheitliche Löschungsfristen entsprechen der Systematik der vereinheitlichten Disziplinarmassnahmen",
+            "Unterschiedlicher Schweregrad der Massnahmen rechtfertigt unterschiedliche Löschungsfristen"
+          ],
+          "design_choices": [
+            "Unterschiedliche Fristen für Verwarnung/Verweis/Busse einerseits und befristetes Berufsausübungsverbot andererseits",
+            "Dauerndes Berufsausübungsverbot wird nicht gelöscht"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 18 vervollständigt das einheitliche Disziplinarregime durch harmonisierte Löschungsfristen."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "19": {
+      "provisions_discussed": [
+        "Art. 19"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6050",
+            "6051"
+          ],
+          "legislative_intent": "Umsetzung der Richtlinie 77/249/EWG: Zulassung von Anwältinnen und Anwälten aus EU-Mitgliedstaaten zur Erbringung von Dienstleistungen (Parteienvertretung vor Gerichtsbehörden) in der Schweiz.",
+          "key_arguments": [
+            "Das Personenfreizügigkeitsabkommen Schweiz-EG macht Umsetzung der Richtlinie 77/249/EWG erforderlich",
+            "Da Rechtsberatung in der Schweiz nicht reglementiert ist, beschränkt sich Art. 19 auf die Parteienvertretung vor Gericht",
+            "Dienstleistungserbringung ist vorübergehend (max. 90 Tage pro Jahr) und steht im Gegensatz zur ständigen Ausübung"
+          ],
+          "design_choices": [
+            "Anknüpfung an Berufsbezeichnungen gemäss Anhang des Gesetzes (entsprechend Art. 1 Abs. 2 der Richtlinie)",
+            "Keine Eintragung in kantonale Anwaltsregister für Dienstleistungserbringende",
+            "Maximaldauer von 90 Tagen pro Jahr gemäss Art. 5 des Personenfreizügigkeitsabkommens"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 19 eröffnet den vierten Abschnitt über EU-Anwältinnen und Anwälte im freien Dienstleistungsverkehr und setzt die erste der drei EU-Richtlinien um."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "20": {
+      "provisions_discussed": [
+        "Art. 20"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6051"
+          ],
+          "legislative_intent": "Regelung der Möglichkeit für Gerichtsbehörden und Aufsichtsbehörden, von dienstleistungserbringenden EU-Anwältinnen und Anwälten den Nachweis ihrer Anwaltsqualifikation zu verlangen.",
+          "key_arguments": [
+            "Art. 7 Abs. 1 der Richtlinie 77/249/EWG ermöglicht dem Aufnahmestaat, den Nachweis der Anwaltsqualifikation zu verlangen",
+            "Da EU-Anwältinnen und Anwälte den Berufsregeln des Gesetzes unterstehen, müssen auch kantonale Aufsichtsbehörden den Nachweis anfordern können"
+          ],
+          "design_choices": [
+            "Nachweis kann von eidgenössischen und kantonalen Gerichtsbehörden sowie kantonalen Aufsichtsbehörden verlangt werden",
+            "Nachweis: Anwaltspatent oder Bescheinigung über Zulassung im Herkunftsstaat"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 20 sichert die Identifizierung dienstleistungserbringender EU-Anwältinnen und Anwälte und die Durchsetzung der Berufsregeln ihnen gegenüber."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "21": {
+      "provisions_discussed": [
+        "Art. 21"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6051",
+            "6052"
+          ],
+          "legislative_intent": "Regelung der Verpflichtung von dienstleistungserbringenden EU-Anwältinnen und Anwälten, bei Anwaltszwang im Einvernehmen mit einer im Anwaltsregister eingetragenen Anwältin oder einem eingetragenen Anwalt zu handeln.",
+          "key_arguments": [
+            "Art. 5 der Richtlinie 77/249/EWG ermöglicht als Kannvorschrift eine solche Verpflichtung",
+            "Praktikabilitätsgründe rechtfertigen, dass Gerichtsbehörden eine eingetragene Anwältin oder einen eingetragenen Anwalt als Ansprechperson haben",
+            "EuGH-Urteil vom 25. Februar 1988 präzisiert: Verpflichtung besteht nur bei prozessrechtlichem Anwaltszwang"
+          ],
+          "design_choices": [
+            "Verpflichtung zur Einvernehmlichkeit nur bei Anwaltszwang",
+            "Einvernehmen bedeutet nicht, dass der eingetragene Anwalt Bevollmächtigter sein oder bei Verhandlungen anwesend sein muss",
+            "Schweizer Recht macht von der Kannvorschrift Gebrauch"
+          ],
+          "rejected_alternatives": [
+            "Vollständiger Verzicht auf die Einvernehmlichkeitsverpflichtung (als Kannvorschrift möglich, aber aus Praktikabilitätsgründen nicht gewählt)"
+          ],
+          "general_context": "Art. 21 ist eine verfahrenstechnische Begleitmassnahme für den Dienstleistungsverkehr und gilt auch für die ständige Ausübung unter ursprünglicher Berufsbezeichnung (Art. 25 Abs. 2)."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "22": {
+      "provisions_discussed": [
+        "Art. 22"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6052"
+          ],
+          "legislative_intent": "Regelung der Berufsbezeichnung für dienstleistungserbringende EU-Anwältinnen und Anwälte gemäss Art. 3 der Richtlinie 77/249/EWG.",
+          "key_arguments": [
+            "Klare Unterscheidung von in kantonalen Anwaltsregistern eingetragenen Anwältinnen und Anwälten erforderlich",
+            "Verwendung der Berufsbezeichnung des Herkunftsstaats in dessen Amtssprache"
+          ],
+          "design_choices": [
+            "Pflicht zur Verwendung der ursprünglichen Berufsbezeichnung in der Amtssprache des Herkunftsstaats",
+            "Angabe der Berufsorganisation oder des zugelassenen Gerichts des Herkunftsstaats",
+            "Gilt auch für ständige Ausübung unter ursprünglicher Berufsbezeichnung (Art. 25 Abs. 2)"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 22 sichert die Transparenz über den Status von EU-Anwältinnen und Anwälten gegenüber Gerichten und Klientschaft."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "23": {
+      "provisions_discussed": [
+        "Art. 23"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6052",
+            "6053"
+          ],
+          "legislative_intent": "Festlegung, welche Berufsregeln des Anwaltsgesetzes für dienstleistungserbringende EU-Anwältinnen und Anwälte gelten.",
+          "key_arguments": [
+            "Art. 4 der Richtlinie 77/249/EWG verlangt Unterstellung unter die Berufsregeln des Aufnahmestaats",
+            "Parteienvertretung soll unter denselben Bedingungen erfolgen wie für eingetragene Anwältinnen und Anwälte"
+          ],
+          "design_choices": [
+            "Grundsätzliche Anwendung der Berufsregeln des Art. 11",
+            "Ausnahme: amtliche Pflichtverteidigung und unentgeltliche Rechtsvertretung (Art. 11 Bst. g) – unzweckmässig für nur gelegentlich tätige ausländische Anwältinnen und Anwälte",
+            "Ausnahme: Registereintragsmeldepflicht (Art. 11 Bst. j) – entfällt, da keine Eintragung ins Register"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 23 sorgt für Gleichbehandlung bei den Berufsregeln unter Berücksichtigung der besonderen Stellung dienstleistungserbringender Anwältinnen und Anwälte."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "24": {
+      "provisions_discussed": [
+        "Art. 24"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6053"
+          ],
+          "legislative_intent": "Regelung der Information der Herkunftsstaatsbehörden über Disziplinarmassnahmen gegen dienstleistungserbringende EU-Anwältinnen und Anwälte gemäss Art. 7 der Richtlinie 77/249/EWG.",
+          "key_arguments": [
+            "Art. 7 der Richtlinie 77/249/EWG verpflichtet zur Unterrichtung der zuständigen Stelle des Herkunftsstaats",
+            "Berufsausübungsverbot gilt auf dem gesamten Gebiet der Schweiz (vgl. Art. 16)"
+          ],
+          "design_choices": [
+            "Pflicht zur Information der zuständigen Stelle des Herkunftsstaats bei Disziplinarmassnahme",
+            "Berufsausübungsverbot wird den Aufsichtsbehörden aller Kantone mitgeteilt"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 24 sichert den grenzüberschreitenden Informationsaustausch im Disziplinarbereich und schliesst den vierten Abschnitt ab."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "25": {
+      "provisions_discussed": [
+        "Art. 25"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6053",
+            "6054"
+          ],
+          "legislative_intent": "Umsetzung der Richtlinie 98/5/EG: Regelung der ständigen Ausübung des Anwaltsberufs durch EU-Anwältinnen und Anwälte in der Schweiz unter ihrer ursprünglichen Berufsbezeichnung.",
+          "key_arguments": [
+            "Richtlinie 98/5/EG erweitert die Niederlassungsmöglichkeiten für EU-Anwältinnen und Anwälte",
+            "Ständige Ausübung unter ursprünglicher Berufsbezeichnung ist Vorstufe zur vollständigen Integration ins Schweizer Anwaltsrecht",
+            "Anwaltszwang und Berufsregeln gelten analog zur Dienstleistungserbringung"
+          ],
+          "design_choices": [
+            "Möglichkeit zur Ausübung derselben Tätigkeiten wie eingetragene Anwältinnen und Anwälte",
+            "Keine Eintragung ins kantonale Anwaltsregister, sondern in eine separate Liste (Art. 26)",
+            "Verweis auf Art. 21 (Einvernehmlichkeit bei Anwaltszwang) und Art. 23 (Berufsregeln mit Ausnahmen)",
+            "Pflicht zur Verwendung der ursprünglichen Berufsbezeichnung (Verweis auf Art. 22)"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 25 eröffnet den fünften Abschnitt und schafft einen besonderen Status für EU-Anwältinnen und Anwälte zwischen vorübergehender Dienstleistungserbringung und vollständiger Integration."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "26": {
+      "provisions_discussed": [
+        "Art. 26"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6054"
+          ],
+          "legislative_intent": "Regelung der Eintragungspflicht von EU-Anwältinnen und Anwälten, die unter ihrer ursprünglichen Berufsbezeichnung ständig in der Schweiz tätig sein wollen, bei der kantonalen Aufsichtsbehörde.",
+          "key_arguments": [
+            "Art. 3 der Richtlinie 98/5/EG verpflichtet zur Registrierung bei der zuständigen Stelle des Aufnahmestaats",
+            "Nur Bescheinigung über Eintragung im Herkunftsstaat erforderlich",
+            "Die Liste ist vom Anwaltsregister zu unterscheiden"
+          ],
+          "design_choices": [
+            "Eintragung in Liste bei Aufsichtsbehörde des Kantons der Geschäftsadresse",
+            "Einzige Voraussetzung: Bescheinigung über Eintragung bei zuständiger Behörde im Herkunftsstaat",
+            "Aufsichtsbehörde informiert zuständige Behörde des Herkunftsstaats über Eintragung",
+            "Getrennte Liste, nicht das kantonale Anwaltsregister"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 26 schafft den administrativen Rahmen für die ständige Ausübung unter ursprünglicher Berufsbezeichnung."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "27": {
+      "provisions_discussed": [
+        "Art. 27"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6055"
+          ],
+          "legislative_intent": "Regelung der Zusammenarbeit zwischen schweizerischen Aufsichtsbehörden und den zuständigen Stellen des Herkunftsstaats bei Disziplinarverfahren gegen EU-Anwältinnen und Anwälte, die ständig unter ihrer ursprünglichen Berufsbezeichnung praktizieren.",
+          "key_arguments": [
+            "Art. 7 Abs. 2 der Richtlinie 98/5/EG verpflichtet zur Information des Herkunftsstaats vor Einleitung eines Disziplinarverfahrens",
+            "Doppelte Unterstellung unter Berufsregeln des Herkunfts- und des Aufnahmestaats macht Koordination notwendig",
+            "Entscheidungsbefugnis liegt allein bei den Schweizer Behörden"
+          ],
+          "design_choices": [
+            "Pflicht zur Information (formell, ohne Verzögerungswirkung auf Verfahrenseröffnung)",
+            "Berufsausübungsverbot gilt nur in der Schweiz",
+            "Herkunftsstaat kann eigene Schlüsse aus Schweizer Disziplinarentscheidung ziehen"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 27 regelt die internationale Disziplinarzusammenarbeit und schliesst den fünften Abschnitt ab."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "28": {
+      "provisions_discussed": [
+        "Art. 28"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6055",
+            "6056"
+          ],
+          "legislative_intent": "Regelung der vollständigen Integration von EU-Anwältinnen und Anwälten in den Schweizer Anwaltsberuf durch Eintragung in ein kantonales Anwaltsregister.",
+          "key_arguments": [
+            "Vollständige Integration hebt formelle und materielle Unterschiede zu Schweizer Anwältinnen und Anwälten auf",
+            "Zwei Wege zur Eintragung: Eignungsprüfung (nach Richtlinie 89/48/EWG) oder dreijährige Berufsausübung unter ursprünglicher Berufsbezeichnung (nach Richtlinie 98/5/EG)",
+            "Effektive Tätigkeit bedeutet persönliche, eigenverantwortliche Ausübung; regelmässige Tätigkeit bedeutet nur durch alltägliche Ereignisse unterbrochene Ausübung"
+          ],
+          "design_choices": [
+            "Zwei Wege zur Eintragung: Eignungsprüfung (Art. 29) oder Gespräch nach dreijähriger Praxis (Art. 30)",
+            "Anwaltsprüfungskommission entscheidet über Eignungsprüfung und Gespräch",
+            "Aufsichtsbehörde prüft persönliche Voraussetzungen (Art. 7)",
+            "Bei dreijähriger Praxis im Schweizer Recht: direkte Eintragung oder Gespräch je nach Umfang der Tätigkeit im Schweizer Recht"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 28 eröffnet den sechsten Abschnitt und schafft die Grundlage für die vollständige Gleichstellung von EU-Anwältinnen und Anwälten."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "29": {
+      "provisions_discussed": [
+        "Art. 29"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6056",
+            "6057"
+          ],
+          "legislative_intent": "Regelung der Eignungsprüfung für EU-Anwältinnen und Anwälte, die sich in ein kantonales Anwaltsregister eintragen lassen wollen, gemäss Richtlinie 89/48/EWG.",
+          "key_arguments": [
+            "Art. 3 und 4 der Richtlinie 89/48/EWG ermöglichen dem Aufnahmestaat eine Eignungsprüfung bei wesentlichen Unterschieden zwischen Ausbildung/Beruf",
+            "Alle EU-Mitgliedstaaten ausser Dänemark haben sich für Eignungsprüfung entschieden"
+          ],
+          "design_choices": [
+            "Eignungsprüfung statt Anpassungslehrgang (Schweiz folgt der Mehrheit der EU-Staaten)",
+            "Organisation obliegt den Kantonen (kantonale Anwaltsprüfungskommission)",
+            "Sachgebiete von Fall zu Fall festgelegt, nur diejenigen, die nicht durch Ausbildung der EU-Anwältin/des EU-Anwalts abgedeckt sind und wesentlich für die Schweizer Anwaltstätigkeit sind",
+            "Berufserfahrung ist zu berücksichtigen"
+          ],
+          "rejected_alternatives": [
+            "Anpassungslehrgang (mögliche Alternative nach Richtlinie 89/48/EWG, aber von Schweiz wie von fast allen EU-Staaten nicht gewählt)"
+          ],
+          "general_context": "Art. 29 schafft den ersten Weg zur vollständigen Integration von EU-Anwältinnen und Anwälten ins Schweizer Anwaltssystem."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "30": {
+      "provisions_discussed": [
+        "Art. 30"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6057"
+          ],
+          "legislative_intent": "Regelung des Gesprächs zur Prüfung der beruflichen Fähigkeiten für EU-Anwältinnen und Anwälte, die nach mindestens dreijähriger ständiger Praxis in der Schweiz unter ursprünglicher Berufsbezeichnung die Eintragung ins kantonale Anwaltsregister beantragen.",
+          "key_arguments": [
+            "EU-Anwältinnen und Anwälte, die nicht oder nicht ausreichend im Schweizer Recht tätig waren, sollen ihre Befähigung nachweisen",
+            "Das Gespräch darf nicht zu einer verkappten Eignungsprüfung werden",
+            "Beurteilung der bisherigen Tätigkeit, insbesondere der Erfahrung in der Parteienvertretung"
+          ],
+          "design_choices": [
+            "Gespräch statt Prüfung bei dreijähriger Praxis unter ursprünglicher Berufsbezeichnung mit unzureichender Tätigkeit im Schweizer Recht",
+            "Kantonale Anwaltsprüfungskommission bewertet vorgelegte Unterlagen (Dossiers, Seminare)",
+            "Klare Abgrenzung von der Eignungsprüfung nach Art. 29"
+          ],
+          "rejected_alternatives": [
+            "Vollständiger Verzicht auf das Gespräch (von zwei Kantonsgerichten vorgeschlagen, aber abgelehnt)"
+          ],
+          "general_context": "Art. 30 schafft den zweiten (erleichterten) Weg zur Integration und honoriert die bereits geleistete Berufsausübung in der Schweiz."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "31": {
+      "provisions_discussed": [
+        "Art. 31"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6057"
+          ],
+          "legislative_intent": "Regelung der Berufsbezeichnung für EU-Anwältinnen und Anwälte nach vollständiger Integration in ein kantonales Anwaltsregister.",
+          "key_arguments": [
+            "Nach vollständiger Integration besteht kein formeller Unterschied mehr zu Schweizer Anwältinnen und Anwälten",
+            "Art. 10 Abs. 6 der Richtlinie 98/5/EG erlaubt weiterhin die Verwendung der ursprünglichen Berufsbezeichnung"
+          ],
+          "design_choices": [
+            "Recht zur Verwendung der Berufsbezeichnung des Kantons der Eintragung",
+            "Weiterhin Möglichkeit zur zusätzlichen Verwendung der ursprünglichen Berufsbezeichnung in der Amtssprache des Herkunftsstaats",
+            "Pflicht zur Angabe des Registereintrags (Art. 10)"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 31 schliesse die vollständige Gleichstellung von EU-Anwältinnen und Anwälten ab und sichert deren Wahlrecht bei der Berufsbezeichnung."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "32": {
+      "provisions_discussed": [
+        "Art. 32"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6058"
+          ],
+          "legislative_intent": "Anpassung von Art. 29 Abs. 2 und 3 OG, um die Vertretung vor Bundesgericht durch EU-Anwältinnen und Anwälte gemäss dem Personenfreizügigkeitsabkommen und dem Anwaltsgesetz zu ermöglichen.",
+          "key_arguments": [
+            "Bisherige Regelung, die nur Anwältinnen und Anwälte mit kantonalem Patent zulässt, ist mit dem sektoriellen Abkommen und dem Anwaltsgesetz unvereinbar",
+            "Vorbehalt des Gegenrechts in Art. 29 Abs. 3 OG ist nach GATS nicht mehr zulässig",
+            "Vertragslösung günstiger als autonome Anerkennung wegen bedingter Meistbegünstigungspflicht nach Art. VII GATS"
+          ],
+          "design_choices": [
+            "Neuer Art. 29 Abs. 2 OG: Zulassung aller nach Anwaltsgesetz oder Staatsvertrag berechtigten Anwältinnen und Anwälte",
+            "Beibehaltung der Zulassung von Rechtslehrerinnen und Rechtslehrern ohne Anwaltspatent (Art. 29 Abs. 2 Bst. b OG)",
+            "Streichung von Art. 29 Abs. 3 OG (Gegenrechtsregelung)"
+          ],
+          "rejected_alternatives": [
+            "Beibehaltung der Gegenrechtsklausel (wegen GATS-Unvereinbarkeit abgelehnt)"
+          ],
+          "general_context": "Art. 32 passt das OG an und stellt die Konsistenz zwischen dem Anwaltsgesetz und dem Bundesgerichtszugang sicher."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "33": {
+      "provisions_discussed": [
+        "Art. 33"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6058",
+            "6059"
+          ],
+          "legislative_intent": "Übergangsregelung für Anwältinnen und Anwälte, die ihr Patent nach bisherigem kantonalem Recht erworben haben und nicht alle Voraussetzungen des neuen Gesetzes erfüllen.",
+          "key_arguments": [
+            "Anwältinnen und Anwälte sollen nicht durch Inkrafttreten des Gesetzes bestraft werden, wenn sie bisher in anderen Kantonen Parteien vertreten konnten",
+            "Übergangsrecht gilt nur für Patente, die vor Anpassung des kantonalen Rechts erworben wurden",
+            "Kantone, die nach Inkrafttreten weiterhin nicht konforme Patente erteilen, riskieren deren Nichtanerkennung durch andere Kantone"
+          ],
+          "design_choices": [
+            "Schutz bestehender Patente unter der Bedingung, dass nach bisherigem Recht eine Berufsausübungsbewilligung hätte erteilt werden können (Art. 5 UeB BV)",
+            "Keine Begünstigung von Patenten, die nach Anpassung des kantonalen Rechts noch nach altem Standard erteilt werden"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 33 sichert den Besitzstand von Anwältinnen und Anwälten mit altrechtlichen Patenten und schafft einen gleitenden Übergang zum neuen Recht."
+        },
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6058",
+            "6059"
+          ],
+          "legislative_intent": "Sicherstellung, dass Anwältinnen und Anwälte, die auf Grund bisherigen kantonalen Rechts ein Anwaltspatent erworben haben, von den Vorteilen des Anwaltsgesetzes profitieren können, auch wenn sie nicht alle neuen Voraussetzungen für den Registereintrag erfüllen, soweit sie bisher auf Grund von Art. 5 UeB BV eine Berufsausübungsbewilligung hätten erhalten können.",
+          "key_arguments": [
+            "Personen, die ihr Anwaltspatent nach altem kantonalem Recht erworben haben (z.B. mit nur sechsmonatigem Praktikum), sollen durch das Inkrafttreten des Anwaltsgesetzes nicht benachteiligt werden, wenn sie bisher in anderen Kantonen Parteien vertreten konnten.",
+            "Die Übergangsregelung gilt nur für Personen, die ihr Anwaltspatent vor Anpassung des kantonalen Rechts an das Anwaltsgesetz erworben haben.",
+            "Kantone, die nach Inkrafttreten des Anwaltsgesetzes weiterhin Anwaltspatente erteilen, die den neuen Anforderungen nicht genügen, riskieren, dass andere Kantone die Anerkennung dieser Patente verweigern."
+          ],
+          "design_choices": [
+            "Schutz wohlerworbener Rechte für Inhaber alter kantonaler Anwaltspatente.",
+            "Beschränkung der Übergangsregelung auf Patente, die vor Anpassung des kantonalen Rechts erworben wurden.",
+            "Anknüpfung an die frühere Möglichkeit, gestützt auf Art. 5 UeB BV eine Berufsausübungsbewilligung zu erhalten, als Massstab für die Übergangsregelung."
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Artikel 33 bildet das Übergangsrecht und stellt sicher, dass bestehende Anwaltspatente nicht entwertet werden, während gleichzeitig für neue Patente die harmonisierten Anforderungen gelten."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "34": {
+      "provisions_discussed": [
+        "Art. 34"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6059"
+          ],
+          "legislative_intent": "Regelung des Referendums und des Inkrafttretens des Anwaltsgesetzes, insbesondere der Koppelung der EU-Bestimmungen an das Personenfreizügigkeitsabkommen.",
+          "key_arguments": [
+            "Inkraftsetzung der EU-Bestimmungen soll zeitgleich mit den sektoriellen Abkommen Schweiz-EG erfolgen (voraussichtlich Anfang 2001)",
+            "Kernbereich des Gesetzes (interkantonale Freizügigkeit) soll auch ohne Inkrafttreten des Personenfreizügigkeitsabkommens in Kraft gesetzt werden können"
+          ],
+          "design_choices": [
+            "Unterstellung unter das fakultative Referendum (Art. 89 Abs. 2 BV)",
+            "Ermächtigung des Bundesrats zur Festsetzung des Inkrafttretensdatums",
+            "Zweiteilung: Kernbereich unabhängig, EU-Bestimmungen abhängig vom Personenfreizügigkeitsabkommen (Abs. 2)"
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Art. 34 sichert die flexible Inkraftsetzung und entkoppelt den nationalen Kern des Gesetzes von den bilateralen Verpflichtungen."
+        },
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [
+            "6059"
+          ],
+          "legislative_intent": "Regelung des Referendums und des Inkrafttretens des Anwaltsgesetzes; Ermächtigung des Bundesrats, das Datum für das Inkrafttreten festzusetzen, wobei die Inkraftsetzung mit den sektoriellen Abkommen zwischen der Schweiz und der EG koordiniert werden soll.",
+          "key_arguments": [
+            "Das Anwaltsgesetz untersteht als Bundesgesetz dem fakultativen Referendum nach Artikel 89 Absatz 2 BV (Art. 141 Abs. 1 nBV).",
+            "Wegen der Verpflichtung der Schweiz aus dem sektoriellen Abkommen über den freien Personenverkehr, das relevante Gemeinschaftsrecht umzusetzen, muss die Inkraftsetzung des Anwaltsgesetzes gleichzeitig mit den sektoriellen Abkommen erfolgen (voraussichtlich anfangs 2001).",
+            "Das Anwaltsgesetz dient primär der interkantonalen Freizügigkeit (Art. 33 Abs. 2 BV) und sollte auch dann in Kraft gesetzt werden können, wenn das Personenfreizügigkeitsabkommen nicht in Kraft tritt.",
+            "Absatz 2 sieht vor, dass die Teile des Gesetzes, welche die Umsetzung des Gemeinschaftsrechts betreffen, von der Inkraftsetzung des Personenfreizügigkeitsabkommens abhängig sind."
+          ],
+          "design_choices": [
+            "Ermächtigung des Bundesrats zur Festsetzung des Inkrafttretungsdatums (kein fixes Datum im Gesetz selbst).",
+            "Koordination des Inkrafttretens mit den sektoriellen Abkommen Schweiz-EG (voraussichtlich anfangs 2001).",
+            "Gespaltenes Inkrafttreten: Kernteile des Gesetzes (interkantonale Freizügigkeit) können unabhängig vom Personenfreizügigkeitsabkommen in Kraft treten; der EU-Teil ist vom Abkommen abhängig.",
+            "Unterstellung unter das fakultative Referendum."
+          ],
+          "rejected_alternatives": [],
+          "general_context": "Artikel 34 regelt die Schlussbestimmungen über Referendum und Inkrafttreten. Er stellt sicher, dass das Gesetz mit den bilateralen Verträgen koordiniert wird, aber auch eigenständig für die interkantonale Freizügigkeit in Kraft gesetzt werden kann."
+        }
+      ],
+      "parliamentary_modifications": [
+        {
+          "council": "Nationalrat",
+          "date": "1999-09-01",
+          "text": "Beschluss abweichend vom Entwurf"
+        },
+        {
+          "council": "Ständerat",
+          "date": "1999-12-20",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-03-07",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-03-16",
+          "text": "Rückweisung an die Kommission"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-05",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-14",
+          "text": "Abweichung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-20",
+          "text": "Zustimmung"
+        },
+        {
+          "council": "Nationalrat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        },
+        {
+          "council": "Ständerat",
+          "date": "2000-06-23",
+          "text": "Annahme in der Schlussabstimmung"
+        }
+      ]
+    },
+    "10a": {
+      "provisions_discussed": [
+        "Art. 10a"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [],
+          "legislative_intent": "Artikel 10a ist im vorliegenden Botschaftstext nicht explizit erwähnt. Der Text behandelt Artikel 10 (Berufsbezeichnung), nicht Artikel 10a.",
+          "key_arguments": [],
+          "design_choices": [],
+          "rejected_alternatives": [],
+          "general_context": "Artikel 10a wird im vorliegenden Botschaftstext nicht diskutiert."
+        }
+      ],
+      "parliamentary_modifications": []
+    },
+    "35": {
+      "provisions_discussed": [
+        "Art. 35"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [],
+          "legislative_intent": "Artikel 35 ist im vorliegenden Botschaftstext nicht explizit als eigenständiger Artikel behandelt. Der Botschaftstext behandelt Artikel 33 (Übergangsrecht) und Artikel 34 (Referendum und Inkrafttreten) als Schlussbestimmungen.",
+          "key_arguments": [],
+          "design_choices": [],
+          "rejected_alternatives": [],
+          "general_context": "Artikel 35 wird im vorliegenden Botschaftstext nicht gesondert diskutiert."
+        }
+      ],
+      "parliamentary_modifications": []
+    },
+    "36": {
+      "provisions_discussed": [
+        "Art. 36"
+      ],
+      "sources": [
+        {
+          "bbl_ref": "BBl 1999 6013",
+          "bbl_page_refs": [],
+          "legislative_intent": "Artikel 36 wird im vorliegenden Botschaftstext nicht explizit als eigenständiger Artikel behandelt.",
+          "key_arguments": [],
+          "design_choices": [],
+          "rejected_alternatives": [],
+          "general_context": "Artikel 36 wird im vorliegenden Botschaftstext nicht gesondert diskutiert."
+        }
+      ],
+      "parliamentary_modifications": []
+    }
+  }
+}
