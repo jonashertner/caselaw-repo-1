@@ -8719,7 +8719,7 @@ def _fetch_historical_law_version(
             'SELECT ?snapshot ?date WHERE {\n'
             f'  ?snapshot jolux:isMemberOf <{work_uri}> .\n'
             '  ?snapshot jolux:dateApplicability ?date .\n'
-            f'  FILTER(?date <= "{as_of}"^^xsd:date)\n'
+            f'  FILTER(str(?date) <= "{as_of}")\n'
             '} ORDER BY DESC(?date) LIMIT 1'
         )
         resp = _req.post(_FEDLEX_SPARQL, data={"query": snap_query},
