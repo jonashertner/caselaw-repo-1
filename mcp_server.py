@@ -2922,13 +2922,6 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
                 (law,),
             ).fetchall()
 
-        if not rows:
-            return {
-                "error": f"No Materialien found for {law}"
-                         + (f" Art. {article}" if article else "")
-                         + ". Available laws: check get_statistics."
-            }
-
         sources = []
         for r in rows:
             sources.append({
@@ -2953,20 +2946,43 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
             for m in mods
         ]
 
-        # Also fetch Fedlex amendment references (AS/BBl from statute footnotes)
+        # Fedlex amendment references (AS/BBl from statute footnotes).
+        # The amendment_refs table uses sr_number, not law_code — resolve
+        # via the abbreviation lookup in statutes.db or the known SR map.
         amendment_refs = []
         try:
-            sr_param = sources[0]["bbl_ref"].split()[0] if sources else None
-            # Try to find the SR number for this law
-            sr_number = None
-            for s in sources:
-                # The materialien table has sr_number
-                pass  # Sources come from the materialien table, not amendment_refs
-
-            # Query amendment_refs by law_code → sr_number mapping
-            # The amendment_refs table uses sr_number, not law_code
-            from search_stack.build_materialien_db import SR_NUMBERS as _SR
-            sr = _SR.get(law, "")
+            # Try the SR_NUMBERS map first (covers major laws), then
+            # query the materialien table for sr_number if a digest exists.
+            sr = ""
+            try:
+                from search_stack.build_materialien_db import SR_NUMBERS as _SR
+                sr = _SR.get(law, "")
+            except ImportError:
+                pass
+            if not sr and sources:
+                # Fallback: get sr_number from a digest row
+                r0 = conn.execute(
+                    "SELECT sr_number FROM materialien WHERE law_code = ? LIMIT 1",
+                    (law,),
+                ).fetchone()
+                if r0:
+                    sr = r0["sr_number"]
+            if not sr:
+                # Last resort: look up in statutes.db via abbreviation
+                try:
+                    st_conn = sqlite3.connect(
+                        f"file:{STATUTES_DB_PATH}?mode=ro", uri=True, timeout=0.5,
+                    )
+                    st_conn.row_factory = sqlite3.Row
+                    r0 = st_conn.execute(
+                        "SELECT sr_number FROM laws WHERE abbr_de = ? LIMIT 1",
+                        (law,),
+                    ).fetchone()
+                    if r0:
+                        sr = r0["sr_number"]
+                    st_conn.close()
+                except Exception:
+                    pass
             if sr:
                 ref_sql = "SELECT * FROM amendment_refs WHERE sr_number = ?"
                 ref_params: list = [sr]
@@ -2988,6 +3004,13 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
                     pass  # amendment_refs table may not exist in older DBs
         except Exception:
             pass
+
+        if not sources and not amendment_refs:
+            return {
+                "error": f"No Materialien found for {law}"
+                         + (f" Art. {article}" if article else "")
+                         + ". Try a different law or check get_statistics."
+            }
 
         return {
             "law_code": law,
