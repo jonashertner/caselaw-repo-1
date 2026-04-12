@@ -8686,6 +8686,17 @@ def get_law(
                     (sr_number, language, article, f"{article}%"),
                 ).fetchall()
             result["articles"] = [dict(a) for a in articles]
+
+            # Enrich with Materialien (legislative history) when fetching
+            # a specific article — gives the LLM the "why" alongside the "what".
+            abbr = result.get("abbreviation") or abbreviation or ""
+            if abbr:
+                try:
+                    mat = _get_materialien_for_doctrine(abbr, article)
+                    if mat:
+                        result["materialien"] = mat
+                except Exception:
+                    pass
         else:
             # Return article list (no text to keep response compact)
             articles = conn.execute(
