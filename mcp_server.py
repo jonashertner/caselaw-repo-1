@@ -7646,10 +7646,11 @@ def _handle_get_doctrine(*, query: str) -> dict:
             "rule_summary": first_sentence[:150],
         })
 
-    # Sort by incoming_citations desc, boosted by 2× if the regeste
-    # actually mentions the target article.  Without this boost, a
-    # high-citation BGE that merely cites the article in passing can
-    # outrank a lower-citation BGE whose regeste is about this article.
+    # Sort by incoming_citations, but cases whose regeste actually
+    # mentions the target article always rank above those that don't.
+    # Without this, a 12K-citation BGE that merely cites Art. 28 ZGB
+    # in passing can outrank a 1K-citation BGE whose entire regeste
+    # is about personality protection.
     if article and law_code:
         _article_pat = re.compile(
             rf"\bArt\.?\s*{re.escape(article)}\b.*?\b{re.escape(law_code)}\b"
@@ -7657,8 +7658,9 @@ def _handle_get_doctrine(*, query: str) -> dict:
             re.I,
         )
         leading_cases.sort(
-            key=lambda c: c["incoming_citations"] * (
-                2.0 if _article_pat.search(c.get("regeste", "")) else 1.0
+            key=lambda c: (
+                1 if _article_pat.search(c.get("regeste", "")) else 0,
+                c["incoming_citations"],
             ),
             reverse=True,
         )
