@@ -8790,6 +8790,52 @@ def _fetch_historical_law_version(
         return None
 
 
+def _fetch_pending_changes(sr_number: str) -> list[dict]:
+    """Query Fedlex for future consolidation snapshots of a law.
+
+    If a law has a snapshot with dateApplicability > today, it means
+    a pending amendment will enter into force on that date.  Returns
+    a list of {date, snapshot_uri} for upcoming changes.  Cached 24h.
+    """
+    cache_key = f"pending:v1:{sr_number}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    try:
+        import requests as _req
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+        # Step 1: work URI
+        r = _req.post(_FEDLEX_SPARQL, data={"query": (
+            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+            'SELECT ?work WHERE {\n'
+            '  ?work a jolux:ConsolidationAbstract .\n'
+            f'  ?work jolux:historicalLegalId "{sr_number}" .\n'
+            '} LIMIT 1'
+        )}, headers={"Accept": "application/sparql-results+json"}, timeout=10)
+        bindings = r.json().get("results", {}).get("bindings", [])
+        if not bindings:
+            return []
+        work = bindings[0]["work"]["value"]
+
+        # Step 2: future snapshots
+        r = _req.post(_FEDLEX_SPARQL, data={"query": (
+            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+            'SELECT ?date WHERE {\n'
+            f'  ?snap jolux:isMemberOf <{work}> .\n'
+            '  ?snap jolux:dateApplicability ?date .\n'
+            f'  FILTER(str(?date) > "{today}")\n'
+            '} ORDER BY ?date LIMIT 5'
+        )}, headers={"Accept": "application/sparql-results+json"}, timeout=10)
+        bindings = r.json().get("results", {}).get("bindings", [])
+        result = [{"date": b["date"]["value"]} for b in bindings]
+        _lexfind_cache_set(cache_key, result)
+        return result
+    except Exception:
+        return []
+
+
 def get_law(
     sr_number: str | None = None,
     abbreviation: str | None = None,
@@ -8902,6 +8948,14 @@ def get_law(
                         result["materialien"] = mat
                 except Exception:
                     pass
+
+            # Check for pending changes (future Fedlex snapshots)
+            try:
+                pending = _fetch_pending_changes(sr_number)
+                if pending:
+                    result["pending_changes"] = pending
+            except Exception:
+                pass
         else:
             # Return article list (no text to keep response compact)
             articles = conn.execute(
