@@ -8324,6 +8324,7 @@ def _expand_law_query(sanitized_query: str) -> str:
         return sanitized_query
 
     parts: list[str] = []
+    has_or_group = False
     for tok in tokens:
         norm = _normalize_token_for_fts(tok)
         if not norm or len(norm) < 2:
@@ -8354,10 +8355,15 @@ def _expand_law_query(sanitized_query: str) -> str:
             # Build OR group: (original OR exp1 OR exp2 ...)
             group = " OR ".join([tok] + sorted(expansions))
             parts.append(f"({group})")
+            has_or_group = True
         else:
             parts.append(tok)
 
-    return " ".join(parts)
+    # FTS5 does NOT support implicit AND after parenthesized OR groups:
+    # "(a OR b) c" is a syntax error; "(a OR b) AND c" is required.
+    # Use explicit AND when any term was expanded.
+    joiner = " AND " if has_or_group else " "
+    return joiner.join(parts)
 
 
 def search_laws(
