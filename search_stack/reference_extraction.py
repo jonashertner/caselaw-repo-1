@@ -232,8 +232,34 @@ _PAREN_DOCKET_RE = re.compile(
 )
 
 
+_SACHVERHALT_RE = re.compile(
+    r"\b(?:Sachverhalt|Faits|Fatti)\s*:?",
+    re.IGNORECASE,
+)
+_ERWAEGUNGEN_RE = re.compile(
+    r"\b(?:Erw[aä]gung(?:en)?|Consid[eé]rant|Considerando|In\s+Erw[aä]gung)"
+    r"\s*:?",
+    re.IGNORECASE,
+)
+
+# Narrative prior-instance pattern in Sachverhalt body:
+# "mit Urteil/Entscheid vom ... wies das Obergericht/Kantonsgericht ..."
+# "par arrêt du ... la Cour/le Tribunal ..."
+# "con sentenza del ... il Tribunale ..."
+# Captures a docket in trailing parentheses (if present).
+_NARRATIVE_PRIOR_RE = re.compile(
+    r"(?:mit\s+(?:Urteil|Entscheid|Beschluss)"
+    r"|par\s+(?:arr[eê]t|d[eé]cision|jugement)"
+    r"|con\s+(?:sentenza|decisione|decreto))"
+    r"\s+(?:vom|du|del)\s+"
+    r"[^(]{5,300}?"
+    r"\(([^)]{3,100})\)",
+    re.IGNORECASE | re.DOTALL,
+)
+
+
 def extract_prior_instance(text: str | None) -> list[str]:
-    """Extract prior instance docket number(s) from a decision's header.
+    """Extract prior instance docket number(s) from a decision's text.
 
     Swiss court decisions (especially BGer) include a formulaic header identifying
     the prior instance, e.g.:
@@ -241,21 +267,51 @@ def extract_prior_instance(text: str | None) -> list[str]:
         recours contre l'arrêt de la Cour de justice du 6 août 2024 (ATA/917/2024).
         ricorso contro la sentenza del Tribunale del 31 marzo 2025 (35.2024.77).
 
+    Also checks the Sachverhalt body for narrative prior-instance mentions:
+        mit Urteil vom 14. Juli 2005 wies das Appellationsgericht ... ab (No. 123/2005).
+        par arrêt du 6 août 2024, la Cour d'appel ... (A/1168/2024).
+
     Returns normalized docket references of the prior instance(s).
     """
     if not text:
         return []
 
-    header = _extract_header_section(text)
-
     dockets: list[str] = []
     seen: set[str] = set()
-    for match in _PRIOR_INSTANCE_RE.finditer(header):
-        paren_content = match.group(1).strip()
+
+    def _add(paren_content: str) -> None:
         for docket in _extract_dockets_from_paren(paren_content):
             if docket and docket not in seen:
                 seen.add(docket)
                 dockets.append(docket)
+
+    # Pass 1: formulaic header (Gegenstand → Sachverhalt region)
+    header = _extract_header_section(text)
+    for match in _PRIOR_INSTANCE_RE.finditer(header):
+        _add(match.group(1).strip())
+
+    # Pass 2: narrative patterns in the Sachverhalt body
+    # Extract the Sachverhalt section (between Sachverhalt: and Erwägungen:)
+    if not dockets:
+        sv_start = _SACHVERHALT_RE.search(text)
+        if sv_start:
+            ew = _ERWAEGUNGEN_RE.search(text, pos=sv_start.end())
+            sv_end = ew.start() if ew else min(sv_start.end() + 5000, len(text))
+            sachverhalt = text[sv_start.end():sv_end]
+            for match in _NARRATIVE_PRIOR_RE.finditer(sachverhalt):
+                _add(match.group(1).strip())
+
+    # Pass 3: also try the formulaic pattern in the Sachverhalt body
+    # (some decisions have "Beschwerde gegen ..." buried in the Sachverhalt)
+    if not dockets:
+        sv_start = _SACHVERHALT_RE.search(text)
+        if sv_start:
+            ew = _ERWAEGUNGEN_RE.search(text, pos=sv_start.end())
+            sv_end = ew.start() if ew else min(sv_start.end() + 5000, len(text))
+            sachverhalt = text[sv_start.end():sv_end]
+            for match in _PRIOR_INSTANCE_RE.finditer(sachverhalt):
+                _add(match.group(1).strip())
+
     return dockets
 
 

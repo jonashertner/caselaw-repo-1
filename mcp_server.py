@@ -695,6 +695,62 @@ LAW_SEARCH_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "covid": ("epidemie", "pandemie", "ubertragbar"),
     "maskenpflicht": ("maske", "epidemie", "gesundheitsschutz"),
     "zertifikat": ("covid", "zertifikat", "gesundheitsschutz"),
+    # ── Cross-language bridges for cantonal law search ───────────
+    # These let a German-speaking user find laws in French-speaking
+    # cantons (GE, VD, NE, JU) and Italian-speaking cantons (TI)
+    # without manually translating the query.  Each entry maps a
+    # term in one language to its equivalents in the other two.
+    # ── Animal / environment (cross-lang) ──
+    "hund": ("hund", "hundehalter", "chien", "detenteur", "cane", "detentore"),
+    "chien": ("chien", "detenteur", "hund", "hundehalter", "cane"),
+    "cane": ("cane", "detentore", "hund", "chien"),
+    "leinenpflicht": ("leine", "hund", "laisse", "chien", "guinzaglio", "cane"),
+    "tierschutz": ("tierschutz", "protection animaux", "protezione animali"),
+    "umweltschutz": ("umweltschutz", "protection environnement", "protezione ambiente"),
+    "laermschutz": ("larmschutz", "immissionen", "protection bruit", "protezione rumore"),
+    # ── Tenancy (cross-lang) ──
+    "mieter": ("mieter", "locataire", "inquilino", "conduttore"),
+    "vermieter": ("vermieter", "bailleur", "locatore", "proprietaire"),
+    "mietzins": ("mietzins", "loyer", "pigione"),
+    "mietrecht": ("mietrecht", "bail", "locazione", "droit bail"),
+    # ── Employment (cross-lang) ──
+    "arbeitnehmer": ("arbeitnehmer", "travailleur", "salarie", "lavoratore"),
+    "arbeitgeber": ("arbeitgeber", "employeur", "datore lavoro"),
+    "kuendigung": ("kundigung", "resiliation", "licenciement", "disdetta"),
+    "arbeitsvertrag": ("arbeitsvertrag", "contrat travail", "contratto lavoro"),
+    "arbeitszeit": ("arbeitszeit", "temps travail", "orario lavoro"),
+    # ── Tax (cross-lang) ──
+    "steuer": ("steuer", "impot", "imposta", "tassa"),
+    "einkommen": ("einkommen", "revenu", "reddito"),
+    "steuerpflicht": ("steuerpflicht", "assujettissement", "obbligo fiscale"),
+    # ── Family (cross-lang) ──
+    "ehe": ("ehe", "mariage", "matrimonio"),
+    "unterhaltsbeitrag": ("unterhaltsbeitrag", "contribution entretien", "contributo mantenimento"),
+    "besuchsrecht": ("besuchsrecht", "droit visite", "diritto visita"),
+    "kindesschutz": ("kindesschutz", "protection enfant", "protezione minore"),
+    # ── Citizenship / foreigners (cross-lang) ──
+    "aufenthalt": ("aufenthalt", "sejour", "soggiorno", "domicile"),
+    "niederlassung": ("niederlassung", "etablissement", "domicilio"),
+    "burgerrecht": ("burgerrecht", "droit cite", "cittadinanza"),
+    # ── Construction / planning (cross-lang) ──
+    "baugesuch": ("baugesuch", "demande permis", "domanda costruzione"),
+    "raumplanung": ("raumplanung", "amenagement", "pianificazione"),
+    "zonenplan": ("zonenplan", "plan zones", "piano zone"),
+    # ── Criminal (cross-lang) ──
+    "straftat": ("straftat", "infraction", "reato"),
+    "freiheitsstrafe": ("freiheitsstrafe", "peine privative", "pena detentiva"),
+    "busse": ("busse", "amende", "multa"),
+    # ── General legal (cross-lang) ──
+    "gesetz": ("gesetz", "loi", "legge"),
+    "verordnung": ("verordnung", "ordonnance", "ordinanza", "regolamento"),
+    "reglement": ("reglement", "reglement", "regolamento"),
+    "gemeinde": ("gemeinde", "commune", "comune", "municipalite"),
+    "kanton": ("kanton", "canton", "cantone"),
+    "gericht": ("gericht", "tribunal", "tribunale"),
+    "polizei": ("polizei", "police", "polizia"),
+    "schule": ("schule", "ecole", "scuola"),
+    "spital": ("spital", "hopital", "ospedale"),
+    "sozialhilfe": ("sozialhilfe", "aide sociale", "assistenza sociale"),
 }
 
 # Build FTS-normalized reverse lookup for LAW_SEARCH_EXPANSIONS
@@ -3539,6 +3595,39 @@ def _find_appeal_chain(
         # Walk DOWN: find prior instances (what this decision appealed)
         _walk_chain(conn, decision_id, "down", result["chain"], min_confidence, visited=visited_down)
 
+        # For BGE decisions: the prior-instance info is usually on the
+        # corresponding bger record (the non-BGE version of the same case,
+        # which has the formulaic "Beschwerde gegen ..." header).  Look up
+        # the bger record by matching the BGE's docket_number_2 field
+        # (e.g. "4C_215/2005") to a bger decision's docket_number.
+        if (src and (src["court"] or "").startswith("bge") and
+                not result["chain"]):
+            # Try to find the bger counterpart via docket_number_2
+            fts_conn = get_db()
+            try:
+                bge_row = fts_conn.execute(
+                    "SELECT docket_number_2 FROM decisions WHERE decision_id = ?",
+                    (decision_id,),
+                ).fetchone()
+                bger_docket = None
+                if bge_row:
+                    try:
+                        bger_docket = bge_row["docket_number_2"]
+                    except (KeyError, IndexError):
+                        pass
+                if bger_docket:
+                    bger_row = fts_conn.execute(
+                        "SELECT decision_id FROM decisions WHERE court = 'bger' AND docket_number = ? LIMIT 1",
+                        (bger_docket,),
+                    ).fetchone()
+                    if bger_row:
+                        bger_id = bger_row["decision_id"]
+                        _walk_chain(conn, bger_id, "down", result["chain"], min_confidence, visited=visited_down)
+            except sqlite3.Error:
+                pass
+            finally:
+                fts_conn.close()
+
         # Walk UP: find subsequent instances (decisions that appealed this one)
         _walk_chain(conn, decision_id, "up", result["chain"], min_confidence, visited=visited_up)
 
@@ -3942,10 +4031,7 @@ def _rerank_rows(
             "language": row["language"],
             "title": row["title"],
             "regeste": _truncate(
-                _extract_regeste_for_language(
-                    row["regeste"],
-                    next(iter(query_languages), "de"),
-                ),
+                _pick_regeste(row, next(iter(query_languages), "de")),
                 MAX_SNIPPET_LEN,
             ),
             "snippet": best_snippet,
@@ -6705,6 +6791,27 @@ def _extract_regeste_for_language(
     return regeste  # fallback: return full text
 
 
+def _pick_regeste(row, language: str) -> str | None:
+    """Pick the best regeste for the given language.
+
+    Priority:
+      1. ``abstract_{lang}`` column (per-language, populated from JSONL).
+         Available after the first full rebuild with the extended schema.
+      2. ``_extract_regeste_for_language(regeste, lang)`` — splits a
+         concatenated multilingual regeste on language-block markers.
+      3. The raw ``regeste`` field unchanged (last resort).
+    """
+    lang = (language or "de").lower()[:2]
+    col = f"abstract_{lang}"
+    try:
+        val = row[col]
+        if val:
+            return val
+    except (KeyError, IndexError):
+        pass
+    return _extract_regeste_for_language(row["regeste"], lang)
+
+
 # ── Data management ───────────────────────────────────────────
 
 REQUIRED_SPACE_GB = 65
@@ -8478,11 +8585,16 @@ def _expand_law_query(sanitized_query: str) -> str:
                 if w_norm and w_norm != norm and len(w_norm) >= 2:
                     expansions.add(w_norm)
 
-        # 2. LEGAL_QUERY_EXPANSIONS (cross-language, secondary, cap at 2)
-        legal_exps = _get_query_expansions(norm)
-        for exp in legal_exps[:2]:
-            if exp != norm:
-                expansions.add(exp)
+        # 2. LEGAL_QUERY_EXPANSIONS (cross-language, secondary — allow more
+        #    than the default MAX_EXPANSIONS_PER_TERM since law search needs
+        #    trilingual bridges)
+        legal_exps = LEGAL_QUERY_EXPANSIONS.get(norm, ())
+        if not legal_exps:
+            legal_exps = _FTS_NORMALIZED_EXPANSIONS.get(norm, ())
+        for exp in legal_exps[:4]:
+            e = _normalize_token_for_fts(exp)
+            if e and e != norm:
+                expansions.add(e)
 
         if expansions:
             # Build OR group: (original OR exp1 OR exp2 ...)
