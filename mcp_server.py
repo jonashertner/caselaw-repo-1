@@ -3941,7 +3941,13 @@ def _rerank_rows(
             "decision_date": row["decision_date"],
             "language": row["language"],
             "title": row["title"],
-            "regeste": _truncate(row["regeste"], MAX_SNIPPET_LEN) if row["regeste"] else None,
+            "regeste": _truncate(
+                _extract_regeste_for_language(
+                    row["regeste"],
+                    next(iter(query_languages), "de"),
+                ),
+                MAX_SNIPPET_LEN,
+            ),
             "snippet": best_snippet,
             "source_url": row["source_url"],
             "pdf_url": row["pdf_url"],
@@ -5003,6 +5009,34 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     result = dict(row)
     # Remove json_data blob from response (redundant)
     result.pop("json_data", None)
+
+    # Enrich with the same metadata that search_decisions provides,
+    # so callers who fetch a decision by ID get the same fields as
+    # those who find it via search.
+    court = result.get("court") or ""
+    did = result.get("decision_id") or ""
+    result["court_name"] = _get_court_display_name(court)
+    result["court_level"] = _get_court_level(court)
+
+    statutes_map = _batch_fetch_statutes([did], limit_per=8)
+    statutes = statutes_map.get(did, [])
+    if statutes:
+        result["statutes"] = statutes
+        legal_area = _derive_legal_area(statutes, court)
+        if legal_area:
+            result["legal_area"] = legal_area
+
+    incoming, outgoing = _count_citations(did)
+    if incoming > 0:
+        result["citation_count"] = incoming
+        threshold = (
+            LEADING_CASE_THRESHOLD_FEDERAL
+            if _get_court_level(court).startswith("federal")
+            else LEADING_CASE_THRESHOLD_CANTONAL
+        )
+        if incoming >= threshold:
+            result["is_leading_case"] = True
+
     return result
 
 
@@ -6602,6 +6636,75 @@ def _truncate(text: str | None, max_len: int) -> str | None:
     return text[:max_len] + "..."
 
 
+# ── Multilingual regeste extraction ──────────────────────────
+
+# BGE regestes are stored as a single concatenated field with language
+# blocks separated by "Regeste\n" (DE/FR) and "Regesto\n" (IT) headers.
+# Example: "Regeste\n Mobbing; ...\nRegeste\n Résiliation abusive; ...\nRegesto\n ..."
+_REGESTE_SPLIT_RE = re.compile(
+    r"\n(?=Regeste(?:\s*[a-z])?\s*\n)"  # FR/DE: "Regeste\n" or "Regeste a\n"
+    r"|\n(?=Regesto\s*\n)",             # IT: "Regesto\n"
+    re.I,
+)
+_REGESTE_LANG_HINTS = {
+    "de": ("Regeste",),
+    "fr": ("Regeste",),  # FR also uses "Regeste" header — detected by content
+    "it": ("Regesto",),
+}
+_FR_CONTENT_MARKERS = (
+    "résiliation", "recours", "droit", "tribunal", "loi", "art.",
+    "fédéral", "cantonal", "arrêt", "contrat", "responsabilité",
+)
+_IT_CONTENT_MARKERS = (
+    "ricorso", "diritto", "tribunale", "legge", "contratto",
+    "federale", "cantonale", "sentenza", "responsabilità",
+)
+
+
+def _extract_regeste_for_language(
+    regeste: str | None, language: str
+) -> str | None:
+    """Extract the language-specific block from a multilingual BGE regeste.
+
+    Returns the block matching ``language``, or the original text if only
+    one block exists or if the requested language cannot be identified.
+    """
+    if not regeste:
+        return regeste
+    language = (language or "de").lower()
+
+    # Split into blocks
+    blocks = _REGESTE_SPLIT_RE.split(regeste)
+    if len(blocks) <= 1:
+        return regeste  # not multilingual
+
+    # For DE: always the first block (BGE regeste order is DE → FR → IT)
+    if language == "de":
+        return blocks[0].strip()
+
+    # For FR: find the block that starts with "Regeste" AND has French content
+    if language == "fr":
+        for block in blocks[1:]:
+            lower = block[:500].lower()
+            if any(m in lower for m in _FR_CONTENT_MARKERS):
+                return block.strip()
+        # Fallback: second block is typically FR
+        if len(blocks) >= 2:
+            return blocks[1].strip()
+
+    # For IT: find the block that starts with "Regesto" or has Italian content
+    if language == "it":
+        for block in blocks:
+            lower = block[:500].lower()
+            if "regesto" in lower[:30] or any(m in lower for m in _IT_CONTENT_MARKERS):
+                return block.strip()
+        # Fallback: third block is typically IT
+        if len(blocks) >= 3:
+            return blocks[2].strip()
+
+    return regeste  # fallback: return full text
+
+
 # ── Data management ───────────────────────────────────────────
 
 REQUIRED_SPACE_GB = 65
@@ -7543,8 +7646,24 @@ def _handle_get_doctrine(*, query: str) -> dict:
             "rule_summary": first_sentence[:150],
         })
 
-    # Sort by incoming_citations desc
-    leading_cases.sort(key=lambda c: c["incoming_citations"], reverse=True)
+    # Sort by incoming_citations desc, boosted by 2× if the regeste
+    # actually mentions the target article.  Without this boost, a
+    # high-citation BGE that merely cites the article in passing can
+    # outrank a lower-citation BGE whose regeste is about this article.
+    if article and law_code:
+        _article_pat = re.compile(
+            rf"\bArt\.?\s*{re.escape(article)}\b.*?\b{re.escape(law_code)}\b"
+            rf"|\b{re.escape(law_code)}\b.*?\bArt\.?\s*{re.escape(article)}\b",
+            re.I,
+        )
+        leading_cases.sort(
+            key=lambda c: c["incoming_citations"] * (
+                2.0 if _article_pat.search(c.get("regeste", "")) else 1.0
+            ),
+            reverse=True,
+        )
+    else:
+        leading_cases.sort(key=lambda c: c["incoming_citations"], reverse=True)
 
     # Doctrine timeline: same cases sorted chronologically
     timeline = sorted(
@@ -8005,15 +8124,27 @@ def _get_law_cantonal(
         # stored in laws.title or (for future) a dedicated column — for now
         # we fall back to title-prefix matching.
         if not sr_number and abbreviation:
-            row = conn.execute(
-                """SELECT sr_number FROM laws
-                WHERE canton = ? AND language = ?
-                  AND (title LIKE ? OR title LIKE ?) LIMIT 1""",
-                (canton_u, language, f"%({abbreviation})%", f"{abbreviation}%"),
-            ).fetchone()
-            if row:
-                sr_number = row["sr_number"]
-            else:
+            # If the abbreviation looks like an SR number (digits/dots/slashes),
+            # try it as sr_number first — callers often pass the SR number via
+            # the REST path /api/laws/{sr_number}?canton=ZH when they don't know
+            # the abbreviation.
+            if re.match(r"^[\d./]+$", abbreviation):
+                sr_check = conn.execute(
+                    "SELECT sr_number FROM laws WHERE canton = ? AND sr_number = ? AND language = ? LIMIT 1",
+                    (canton_u, abbreviation, language),
+                ).fetchone()
+                if sr_check:
+                    sr_number = sr_check["sr_number"]
+            if not sr_number:
+                row = conn.execute(
+                    """SELECT sr_number FROM laws
+                    WHERE canton = ? AND language = ?
+                      AND (title LIKE ? OR title LIKE ?) LIMIT 1""",
+                    (canton_u, language, f"%({abbreviation})%", f"{abbreviation}%"),
+                ).fetchone()
+                if row:
+                    sr_number = row["sr_number"]
+            if not sr_number:
                 return {"error": (
                     f"No cantonal law found for {canton_u} with abbreviation "
                     f"'{abbreviation}'. Try search_laws or search_legislation."
