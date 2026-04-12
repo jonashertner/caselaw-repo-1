@@ -32,9 +32,9 @@ configs:
 
 # Swiss Case Law Dataset
 
-**962,724 published decisions from Swiss federal, cantonal, and regulatory bodies.**
+**965,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
 
-Full text, structured metadata, extracted case-citation references, and daily updates. The March 20, 2026 snapshot contains German, French, and Italian decisions; the export schema also reserves `rm` for Romansh.
+Full text, structured metadata, extracted case-citation references, and daily updates. The dataset contains German, French, and Italian decisions; the export schema also reserves `rm` for Romansh.
 
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
 [![GitHub](https://img.shields.io/badge/GitHub-source-black)](https://github.com/jonashertner/caselaw-repo-1)
@@ -44,17 +44,19 @@ Full text, structured metadata, extracted case-citation references, and daily up
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions: 962,724 decisions from 102 federal, cantonal, and regulatory courts or public bodies, scraped from official publication channels. New decisions are added every night.
+The largest open collection of Swiss court decisions: 965,000+ decisions from 100+ federal, cantonal, and regulatory courts, scraped from official publication channels. New decisions are added every night.
 
-- **20 federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, Sports Tribunal, and more
-- **82 cantonal courts** across all 26 cantons
-- **Current decision languages**: German (448,461; 46.6%), French (434,663; 45.1%), Italian (79,600; 8.3%); the export schema also reserves `rm`
+- **20+ federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, Sports Tribunal, and more
+- **80+ cantonal courts** across all 26 cantons
+- **Current decision languages**: German (~450K; 47%), French (~436K; 45%), Italian (~80K; 8%); the export schema also reserves `rm`
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
-- **8.76 million extracted case-citation references**
-- **6.42 million resolved decision-to-decision links** (with confidence scores)
-- **11.23 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
-- **80 federal laws indexed** with 39,000 articles in 3 languages
-- **34 structured fields** per decision in Parquet; 24 in the FTS5 search index
+- **8.85 million extracted case-citation references**
+- **8.85 million resolved decision-to-decision links** (with confidence scores)
+- **11.34 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
+- **5,097 federal laws indexed** with 125,378 articles in 3 languages (from Fedlex SPARQL)
+- **26,043 cantonal legislative texts** with 1.1 million articles (from LexFind)
+- **Legislative history (Materialien)** for 2,500 federal laws: Botschaft references for 33,000 statute articles, structured Botschaft digests for BV and BGFA, parliamentary debate transcripts (Amtliches Bulletin) for the BV
+- **34 structured fields** per decision in Parquet; 27 in the FTS5 search index
 
 ## Quick Start
 
@@ -112,7 +114,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, or Gemini for natural-language search over all 962,724 decisions. The MCP surface is deployment-dependent: local deployments can expose up to 21 tools, remote mode omits local update tools, and legislation tools depend on LexFind-backed configuration.
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 965,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 23 tools; remote mode omits 2 local-only update tools.
 
 **Remote (no download needed):**
 
@@ -149,18 +151,20 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 
 | Metric | Value |
 |--------|-------|
-| Total decisions | 962,724 |
-| Courts | 101 |
+| Total decisions | 965,000+ |
+| Courts | 100+ |
 | Temporal range | 1875–present |
 | Average decision length | ~22,000 characters |
 | Full text coverage | 100% |
 | Regeste (headnote) coverage | ~54% |
-| Extracted case-citation references | 8.76 million |
-| Resolved decision links | 6.42 million |
-| Statute-decision links | 11.23 million |
-| Federal laws indexed | 80 (39,000 articles) |
+| Case-citation references | 8.85 million |
+| Statute-decision links | 11.34 million |
+| Federal laws indexed | 5,097 (125,378 articles in DE/FR/IT) |
+| Cantonal laws indexed | 26,043 (1.1M articles) |
+| Laws with Botschaft refs | 2,500 (33,000 articles) |
 | Legislation texts searchable | 33,000+ |
-| MCP tools | Deployment-dependent (up to 21) |
+| Scholarly commentaries | 362 (OnlineKommentar.ch) |
+| MCP tools | 23 |
 
 **Language distribution:**
 
@@ -170,7 +174,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | French (fr) | 434,470 | 45.15% |
 | Italian (it) | 79,587 | 8.27% |
 
-**Reference graph:** 8.76 million extracted case-citation references, 6.42 million resolved decision-to-decision links, and 11.23 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 54,000 incoming citations.
+**Reference graph:** 8.85 million resolved decision-to-decision citation edges and 11.34 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 54,000+ incoming citations.
 
 **Search benchmark (frozen offline baseline):** `benchmarks/search_benchmark_2026-03-19_offline_full.json` records a 100-query run against a 1,078,177-row local `decisions.db`, with MRR@10 = 0.4697, Recall@10 = 0.4958, nDCG@10 = 0.5250, and Hit@1 = 0.33. This is a reproducible offline baseline, not a fully provisioned hosted-system score.
 
@@ -300,14 +304,15 @@ See the governance policy for source withdrawals, re-anonymization, and verified
 
 ```bibtex
 @dataset{swiss_caselaw_2026,
-  title={Swiss Case Law Dataset: 962,724 Court Decisions with Reference Graph},
+  title={Swiss Case Law Dataset: 965,000+ Court Decisions with Reference Graph},
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={962,724 Swiss federal, cantonal, and regulatory decisions with full text,
-        structured metadata, 8.76M extracted case-citation references,
-        6.42M resolved decision links, and 11.23M statute links.
-        Searchable via MCP (Claude, ChatGPT, Gemini). Updated daily.}
+  note={965,000+ Swiss federal, cantonal, and regulatory decisions with full text,
+        structured metadata, 8.85M citation edges, 11.34M statute links,
+        5,097 federal laws, 26,043 cantonal legislative texts,
+        and legislative history for 2,500 laws.
+        Searchable via 23 MCP tools (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
 }
 ```
 

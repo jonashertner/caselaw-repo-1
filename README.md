@@ -95,7 +95,7 @@ There are eight ways to use it, depending on what you need:
 | [**Legislation Search**](#legislation-tools) | Legal professionals | LexFind-backed discovery search with `fetch_top_n_texts` for single-call natural-language workflows |
 | [**Education tools**](#education-tools) | Law students, instructors | Structured case briefs, doctrine timelines, real-BGE exam questions with hidden analysis |
 | [**Word Add-in**](https://word.opencaselaw.ch/install.html) | Legal practitioners writing briefs | Insert formatted Swiss citations into Word · click Erwägung / § to insert with correct sub-reference · Pro: verify quotes against case text, find support, scan documents (curated ~8-tool subset) |
-| [**REST API / Download**](#2-download-the-dataset) | Developers, data scientists, NLP researchers | 32-route REST API, bulk Parquet download via HuggingFace (~7 GB) |
+| [**REST API / Download**](#2-download-the-dataset) | Developers, data scientists, NLP researchers | 30-route REST API, bulk Parquet download via HuggingFace (~7 GB) |
 | [**Web UI**](https://opencaselaw.ch) | Everyone | Live dashboard with corpus stats, daily delta, top movers, multilingual browsing |
 
 > **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 965K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
@@ -112,7 +112,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose ex
 |---|---|---|
 | **Setup** | 30 seconds | 30–60 minutes |
 | **Disk** | None | ~65 GB |
-| **Tools** | Deployment-dependent; no local update tools | Up to 21, including `update_database` and `check_update_status` |
+| **Tools** | Deployment-dependent; no local update tools | Up to 23, including `update_database` and `check_update_status` |
 | **Freshness** | Nightly (automatic) | Manual |
 | **Offline** | No | Yes |
 | **Requires** | Claude, ChatGPT, or Gemini CLI (see plans below) | Any MCP client |
@@ -403,7 +403,7 @@ The AI calls the MCP tools automatically — you see the search results inline a
 
 ### Citation graph tools
 
-Four tools expose the **reference graph**: 8.76 million extracted case-citation references, 6.42 million resolved decision-to-decision links, and 11.23 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+Four tools expose the **reference graph**: 8.85 million resolved decision-to-decision citation edges and 11.34 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
 
 **`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
 
