@@ -1,18 +1,25 @@
-"""Build materialien.db from openlegalcommentary's preparatory-materials JSON.
+"""Build materialien.db — legislative history for Swiss federal law.
 
-Reads per-law digest files (bv.json, bgfa.json, ...) produced by the
-openlegalcommentary project and builds a SQLite FTS5 database that the
-MCP server can query via get_materialien / search_materialien.
+Two data sources, merged into one DB:
 
-Input:  JSON files following the openlegalcommentary schema:
-        { "law": "BV", "sr_number": "101", "articles": { "1": {...}, ... } }
+1. **Fedlex statute footnotes** (automatic, covers 2,357 laws):
+   Parse amendment references (AS/BBl) from existing statute article text
+   in statutes.db.  Every article that was added or amended has footnotes
+   like "( AS 2020 4525 ; BBl 2019 4747)" embedded in the text.  This
+   gives instant coverage for 509 laws (6,554 articles with BBl refs,
+   21,663 with AS refs) — no API calls needed.
+
+2. **openlegalcommentary digests** (enriched, currently 1 law):
+   Per-article structured JSON with legislative_intent, key_arguments,
+   design_choices, rejected_alternatives.  Higher quality but requires
+   LLM processing in the sister project.
 
 Output: output/materialien.db (atomic swap via .db.tmp)
 
 Usage:
     python3 -m search_stack.build_materialien_db
-    python3 -m search_stack.build_materialien_db --input-dir ../openlegalcommentary/scripts/preparatory_materials
     python3 -m search_stack.build_materialien_db --input-dir data/materialien
+    python3 -m search_stack.build_materialien_db --skip-fedlex  # digests only
 """
 from __future__ import annotations
 
@@ -20,6 +27,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import sqlite3
 import sys
 from datetime import datetime, timezone
@@ -106,6 +114,26 @@ CREATE TRIGGER IF NOT EXISTS materialien_ad AFTER DELETE ON materialien BEGIN
         old.rejected_alternatives, old.general_context
     );
 END;
+
+-- Amendment references extracted from Fedlex statute footnotes.
+-- One row per (law, article, reference) — an article amended by
+-- AS 2020 4525 with Botschaft BBl 2019 4747 produces two rows.
+CREATE TABLE IF NOT EXISTS amendment_refs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sr_number TEXT NOT NULL,
+    law_abbr TEXT,
+    article TEXT NOT NULL,
+    ref_type TEXT NOT NULL,     -- 'AS', 'BBl', 'FF', 'RO', 'RU'
+    year INTEGER NOT NULL,
+    page INTEGER NOT NULL,
+    context TEXT,               -- surrounding text snippet (max 200 chars)
+    fedlex_url TEXT             -- link to the Fedlex page for this reference
+);
+
+CREATE INDEX IF NOT EXISTS idx_amendment_refs_law_art
+    ON amendment_refs(sr_number, article);
+CREATE INDEX IF NOT EXISTS idx_amendment_refs_bbl
+    ON amendment_refs(ref_type, year, page);
 """
 
 # Laws we know about (SR number mapping)
@@ -114,6 +142,86 @@ SR_NUMBERS: dict[str, str] = {
     "StGB": "311.0", "StPO": "312.0", "SchKG": "281.1",
     "VwVG": "172.021", "BGFA": "935.61",
 }
+
+
+# Regex for AS/BBl/FF/RO/RU references in statute footnotes
+_REF_RE = re.compile(
+    r"\b(AS|BBl|FF|RO|RU)\s+(\d{4})\s+(\d+)"
+)
+
+# Fedlex URL templates for each reference type
+_FEDLEX_URL_TEMPLATES = {
+    "AS": "https://www.fedlex.admin.ch/eli/oc/{year}/{page}",
+    "RO": "https://www.fedlex.admin.ch/eli/oc/{year}/{page}",
+    "RU": "https://www.fedlex.admin.ch/eli/oc/{year}/{page}",
+    "BBl": "https://www.fedlex.admin.ch/eli/fga/{year}/{page}",
+    "FF": "https://www.fedlex.admin.ch/eli/fga/{year}/{page}",
+}
+
+
+def extract_amendment_refs_from_statutes(
+    conn: sqlite3.Connection, statutes_db_path: Path,
+) -> int:
+    """Extract AS/BBl references from statute article text and insert into amendment_refs.
+
+    Parses the footnotes embedded in Fedlex statute articles. For example,
+    StGB Art. 111 contains "( AS 2006 3459 ; BBl 1999 1979)" which yields
+    two rows: one for AS 2006 3459 and one for BBl 1999 1979.
+
+    Returns the number of rows inserted.
+    """
+    if not statutes_db_path.exists():
+        logger.warning("statutes.db not found at %s — skipping Fedlex extraction", statutes_db_path)
+        return 0
+
+    try:
+        src = sqlite3.connect(f"file:{statutes_db_path}?mode=ro", uri=True)
+        src.row_factory = sqlite3.Row
+    except sqlite3.Error as e:
+        logger.warning("Failed to open statutes.db: %s", e)
+        return 0
+
+    try:
+        # Build abbreviation lookup: sr_number → abbreviation
+        abbr_map: dict[str, str] = {}
+        try:
+            for r in src.execute("SELECT sr_number, abbr_de FROM laws WHERE abbr_de IS NOT NULL AND abbr_de != ''"):
+                abbr_map[r["sr_number"]] = r["abbr_de"]
+        except sqlite3.Error:
+            pass
+
+        count = 0
+        for row in src.execute("SELECT sr_number, article_num, text FROM articles WHERE lang = 'de'"):
+            text = row["text"] or ""
+            sr = row["sr_number"]
+            article = row["article_num"]
+            abbr = abbr_map.get(sr, "")
+
+            for match in _REF_RE.finditer(text):
+                ref_type = match.group(1)
+                year = int(match.group(2))
+                page = int(match.group(3))
+
+                # Extract surrounding context (max 200 chars around the match)
+                start = max(0, match.start() - 80)
+                end = min(len(text), match.end() + 80)
+                context = text[start:end].replace("\n", " ").strip()
+
+                # Build Fedlex URL
+                template = _FEDLEX_URL_TEMPLATES.get(ref_type)
+                fedlex_url = template.format(year=year, page=page) if template else None
+
+                conn.execute(
+                    """INSERT INTO amendment_refs
+                       (sr_number, law_abbr, article, ref_type, year, page, context, fedlex_url)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (sr, abbr, article, ref_type, year, page, context, fedlex_url),
+                )
+                count += 1
+
+        return count
+    finally:
+        src.close()
 
 
 def _list_join(items: list) -> str:
@@ -177,20 +285,10 @@ def ingest_law(conn: sqlite3.Connection, path: Path) -> int:
     return count
 
 
-def build_db(input_dir: Path, output_path: Path) -> None:
-    """Build materialien.db from all JSON files in input_dir."""
-    # Find all law digest JSON files (exclude registry.json)
-    json_files = sorted(
-        p for p in input_dir.glob("*.json")
-        if p.name != "registry.json" and p.stat().st_size > 100
-    )
-
-    if not json_files:
-        logger.error("No digest JSON files found in %s", input_dir)
-        sys.exit(1)
-
-    logger.info("Found %d digest files in %s", len(json_files), input_dir)
-
+def build_db(
+    input_dir: Path, output_path: Path, *, skip_fedlex: bool = False,
+) -> None:
+    """Build materialien.db from Fedlex footnotes + openlegalcommentary digests."""
     # Build to a .tmp file, then atomic swap
     tmp_path = output_path.with_suffix(".db.tmp")
     if tmp_path.exists():
@@ -201,29 +299,77 @@ def build_db(input_dir: Path, output_path: Path) -> None:
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA_SQL)
 
-    total = 0
-    for path in json_files:
-        law_name = path.stem.upper()
-        n = ingest_law(conn, path)
-        logger.info("  %s: %d article-source rows", law_name, n)
-        total += n
+    # ── Layer 1: Fedlex statute footnotes (AS/BBl refs) ──────────
+    fedlex_count = 0
+    if not skip_fedlex:
+        statutes_db = Path(
+            os.environ.get("SWISS_CASELAW_DIR", "output")
+        ) / "statutes.db"
+        logger.info("Extracting amendment refs from %s ...", statutes_db)
+        fedlex_count = extract_amendment_refs_from_statutes(conn, statutes_db)
+        logger.info("  Fedlex: %d amendment references extracted", fedlex_count)
+        conn.commit()
 
-    # Write metadata
+    # ── Layer 2: openlegalcommentary digests ──────────────────────
+    json_files = []
+    if input_dir and input_dir.exists():
+        json_files = sorted(
+            p for p in input_dir.glob("*.json")
+            if p.name != "registry.json" and p.stat().st_size > 100
+        )
+
+    digest_total = 0
+    if json_files:
+        logger.info("Found %d digest files in %s", len(json_files), input_dir)
+        for path in json_files:
+            law_name = path.stem.upper()
+            n = ingest_law(conn, path)
+            logger.info("  %s: %d article-source rows", law_name, n)
+            digest_total += n
+
+    if fedlex_count == 0 and digest_total == 0:
+        logger.error("No data found — provide digest JSON or ensure statutes.db exists")
+        conn.close()
+        tmp_path.unlink(missing_ok=True)
+        sys.exit(1)
+
+    # ── Metadata ─────────────────────────────────────────────────
     conn.execute(
         "INSERT OR REPLACE INTO meta (key, value) VALUES ('built_at', ?)",
         (datetime.now(timezone.utc).isoformat(),),
     )
     conn.execute(
-        "INSERT OR REPLACE INTO meta (key, value) VALUES ('total_rows', ?)",
-        (str(total),),
+        "INSERT OR REPLACE INTO meta (key, value) VALUES ('fedlex_refs', ?)",
+        (str(fedlex_count),),
     )
     conn.execute(
-        "INSERT OR REPLACE INTO meta (key, value) VALUES ('laws', ?)",
-        (json.dumps([p.stem.upper() for p in json_files]),),
+        "INSERT OR REPLACE INTO meta (key, value) VALUES ('digest_rows', ?)",
+        (str(digest_total),),
+    )
+    if json_files:
+        conn.execute(
+            "INSERT OR REPLACE INTO meta (key, value) VALUES ('digest_laws', ?)",
+            (json.dumps([p.stem.upper() for p in json_files]),),
+        )
+
+    # Count distinct laws + articles from both sources
+    n_laws_fedlex = conn.execute(
+        "SELECT COUNT(DISTINCT sr_number) FROM amendment_refs"
+    ).fetchone()[0]
+    n_arts_fedlex = conn.execute(
+        "SELECT COUNT(DISTINCT sr_number || '/' || article) FROM amendment_refs"
+    ).fetchone()[0]
+    n_bbl = conn.execute(
+        "SELECT COUNT(DISTINCT year || '/' || page) FROM amendment_refs WHERE ref_type IN ('BBl', 'FF')"
+    ).fetchone()[0]
+    logger.info(
+        "Summary: %d Fedlex refs across %d laws / %d articles, %d distinct BBl, %d digest rows",
+        fedlex_count, n_laws_fedlex, n_arts_fedlex, n_bbl, digest_total,
     )
 
-    # Optimize FTS5
-    conn.execute("INSERT INTO materialien_fts(materialien_fts) VALUES ('optimize')")
+    # Optimize FTS5 (only if digest rows exist)
+    if digest_total > 0:
+        conn.execute("INSERT INTO materialien_fts(materialien_fts) VALUES ('optimize')")
     conn.commit()
 
     # Switch to DELETE journal mode for immutable=1 compatibility
@@ -237,9 +383,6 @@ def build_db(input_dir: Path, output_path: Path) -> None:
         tmp_path.rename(real_tmp)
     os.replace(str(real_tmp), str(real_path))
 
-    logger.info("Built %s: %d total rows from %d laws", output_path, total, len(json_files))
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -251,6 +394,10 @@ def main() -> None:
         "--output", type=Path,
         default=Path(os.environ.get("SWISS_CASELAW_DIR", "output")) / "materialien.db",
         help="Output SQLite DB path",
+    )
+    parser.add_argument(
+        "--skip-fedlex", action="store_true",
+        help="Skip Fedlex amendment-ref extraction (digest files only)",
     )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
@@ -275,7 +422,7 @@ def main() -> None:
         sys.exit(1)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    build_db(input_dir, args.output)
+    build_db(input_dir, args.output, skip_fedlex=args.skip_fedlex)
 
 
 if __name__ == "__main__":

@@ -2953,10 +2953,47 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
             for m in mods
         ]
 
+        # Also fetch Fedlex amendment references (AS/BBl from statute footnotes)
+        amendment_refs = []
+        try:
+            sr_param = sources[0]["bbl_ref"].split()[0] if sources else None
+            # Try to find the SR number for this law
+            sr_number = None
+            for s in sources:
+                # The materialien table has sr_number
+                pass  # Sources come from the materialien table, not amendment_refs
+
+            # Query amendment_refs by law_code → sr_number mapping
+            # The amendment_refs table uses sr_number, not law_code
+            from search_stack.build_materialien_db import SR_NUMBERS as _SR
+            sr = _SR.get(law, "")
+            if sr:
+                ref_sql = "SELECT * FROM amendment_refs WHERE sr_number = ?"
+                ref_params: list = [sr]
+                if article:
+                    ref_sql += " AND article = ?"
+                    ref_params.append(article)
+                ref_sql += " ORDER BY year DESC, page DESC LIMIT 50"
+                try:
+                    for r in conn.execute(ref_sql, ref_params):
+                        amendment_refs.append({
+                            "ref_type": r["ref_type"],
+                            "year": r["year"],
+                            "page": r["page"],
+                            "citation": f"{r['ref_type']} {r['year']} {r['page']}",
+                            "fedlex_url": r["fedlex_url"],
+                            "context": r["context"],
+                        })
+                except sqlite3.OperationalError:
+                    pass  # amendment_refs table may not exist in older DBs
+        except Exception:
+            pass
+
         return {
             "law_code": law,
             "article": article,
             "sources": sources,
+            "amendment_refs": amendment_refs,
             "parliamentary_modifications": modifications,
         }
     except sqlite3.Error as e:
@@ -3025,11 +3062,16 @@ def search_materialien(
 
 
 def _get_materialien_for_doctrine(law_code: str, article: str) -> dict | None:
-    """Fetch a compact Materialien excerpt for get_doctrine enrichment."""
+    """Fetch a compact Materialien excerpt for get_doctrine enrichment.
+
+    Tries the openlegalcommentary digest first (richer), falls back to
+    Fedlex amendment refs (sparser but universal).
+    """
     conn = _get_materialien_conn()
     if conn is None:
         return None
     try:
+        # Try openlegalcommentary digest first
         row = conn.execute(
             """SELECT legislative_intent, key_arguments, bbl_ref
                FROM materialien
@@ -3037,14 +3079,40 @@ def _get_materialien_for_doctrine(law_code: str, article: str) -> dict | None:
                ORDER BY bbl_ref LIMIT 1""",
             (law_code.upper(), article),
         ).fetchone()
-        if not row:
+        if row:
+            return {
+                "bbl_ref": row["bbl_ref"],
+                "legislative_intent": (row["legislative_intent"] or "")[:500],
+                "key_arguments": (row["key_arguments"] or "")[:500],
+                "source": "openlegalcommentary.ch (CC BY-SA 4.0)",
+            }
+
+        # Fall back to Fedlex amendment refs
+        from search_stack.build_materialien_db import SR_NUMBERS as _SR
+        sr = _SR.get(law_code.upper(), "")
+        if not sr:
             return None
-        return {
-            "bbl_ref": row["bbl_ref"],
-            "legislative_intent": (row["legislative_intent"] or "")[:500],
-            "key_arguments": (row["key_arguments"] or "")[:500],
-            "source": "openlegalcommentary.ch (CC BY-SA 4.0)",
-        }
+        try:
+            refs = conn.execute(
+                """SELECT ref_type, year, page, fedlex_url, context
+                   FROM amendment_refs
+                   WHERE sr_number = ? AND article = ?
+                     AND ref_type IN ('BBl', 'FF')
+                   ORDER BY year DESC LIMIT 3""",
+                (sr, article),
+            ).fetchall()
+            if not refs:
+                return None
+            bbl_citations = [f"{r['ref_type']} {r['year']} {r['page']}" for r in refs]
+            return {
+                "bbl_ref": bbl_citations[0],
+                "bbl_citations": bbl_citations,
+                "fedlex_urls": [r["fedlex_url"] for r in refs if r["fedlex_url"]],
+                "context": (refs[0]["context"] or "")[:300],
+                "source": "Fedlex (automatic extraction from statute footnotes)",
+            }
+        except sqlite3.OperationalError:
+            return None  # amendment_refs table may not exist yet
     except sqlite3.Error:
         return None
     finally:
