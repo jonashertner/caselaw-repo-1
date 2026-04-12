@@ -134,6 +134,33 @@ CREATE INDEX IF NOT EXISTS idx_amendment_refs_law_art
     ON amendment_refs(sr_number, article);
 CREATE INDEX IF NOT EXISTS idx_amendment_refs_bbl
     ON amendment_refs(ref_type, year, page);
+
+-- Parliamentary debate transcripts (Amtliches Bulletin).
+-- Page-level chunks from OCR'd debate proceedings.
+CREATE TABLE IF NOT EXISTS debate_pages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    law_code TEXT NOT NULL,
+    council TEXT NOT NULL,     -- 'nationalrat' or 'staenderat'
+    page_num INTEGER NOT NULL,
+    text TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_debate_law_council
+    ON debate_pages(law_code, council);
+
+CREATE VIRTUAL TABLE IF NOT EXISTS debate_fts USING fts5(
+    law_code,
+    council,
+    text,
+    content=debate_pages,
+    content_rowid=id,
+    tokenize='unicode61 remove_diacritics 2'
+);
+
+CREATE TRIGGER IF NOT EXISTS debate_ai AFTER INSERT ON debate_pages BEGIN
+    INSERT INTO debate_fts(rowid, law_code, council, text)
+    VALUES (new.id, new.law_code, new.council, new.text);
+END;
 """
 
 # Laws we know about (SR number mapping)
@@ -233,6 +260,59 @@ def extract_amendment_refs_from_statutes(
         return count
     finally:
         src.close()
+
+
+def ingest_debate_transcripts(
+    conn: sqlite3.Connection, input_dir: Path,
+) -> int:
+    """Ingest Amtliches Bulletin debate transcripts into debate_pages.
+
+    Looks for files named ``{law}-ab-{council}.txt`` (e.g.,
+    ``bv-ab-nationalrat.txt``) in the input directory.  Splits on
+    ``[Page N]`` markers and stores each page as a searchable chunk.
+
+    Returns total pages inserted.
+    """
+    count = 0
+    for path in sorted(input_dir.glob("*-ab-*.txt")):
+        # Parse filename: bv-ab-nationalrat.txt → law=BV, council=nationalrat
+        parts = path.stem.split("-ab-")
+        if len(parts) != 2:
+            continue
+        law_code = parts[0].upper()
+        council = parts[1].lower()
+
+        logger.info("  Ingesting %s %s debate transcript: %s", law_code, council, path.name)
+        text = path.read_text(errors="replace")
+
+        # Split by [Page N] markers
+        page_chunks = re.split(r"\[Page\s+(\d+)\]", text)
+        # page_chunks alternates: [pre_text, page_num, page_text, page_num, page_text, ...]
+        if len(page_chunks) < 3:
+            # No page markers found — store as single page
+            conn.execute(
+                "INSERT INTO debate_pages (law_code, council, page_num, text) VALUES (?,?,?,?)",
+                (law_code, council, 1, text[:50000]),
+            )
+            count += 1
+            continue
+
+        for i in range(1, len(page_chunks) - 1, 2):
+            try:
+                page_num = int(page_chunks[i])
+            except ValueError:
+                continue
+            page_text = page_chunks[i + 1].strip()
+            if not page_text or len(page_text) < 20:
+                continue
+            # Cap per-page text to avoid bloat on malformed pages
+            conn.execute(
+                "INSERT INTO debate_pages (law_code, council, page_num, text) VALUES (?,?,?,?)",
+                (law_code, council, page_num, page_text[:20000]),
+            )
+            count += 1
+
+    return count
 
 
 def _list_join(items: list) -> str:
@@ -338,7 +418,15 @@ def build_db(
             logger.info("  %s: %d article-source rows", law_name, n)
             digest_total += n
 
-    if fedlex_count == 0 and digest_total == 0:
+    # ── Layer 3: Parliamentary debate transcripts (AB) ─────────
+    debate_count = 0
+    if input_dir and input_dir.exists():
+        debate_count = ingest_debate_transcripts(conn, input_dir)
+        if debate_count:
+            logger.info("  Debate transcripts: %d pages ingested", debate_count)
+            conn.commit()
+
+    if fedlex_count == 0 and digest_total == 0 and debate_count == 0:
         logger.error("No data found — provide digest JSON or ensure statutes.db exists")
         conn.close()
         tmp_path.unlink(missing_ok=True)

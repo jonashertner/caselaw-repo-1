@@ -3078,10 +3078,35 @@ def search_materialien(
             for r in rows
         ]
 
+        # Also search debate transcripts (Amtliches Bulletin)
+        debate_results = []
+        try:
+            debate_rows = conn.execute(
+                """SELECT d.law_code, d.council, d.page_num,
+                          snippet(debate_fts, 2, '>>>', '<<<', '...', 40) AS snippet
+                   FROM debate_fts f
+                   JOIN debate_pages d ON d.id = f.rowid
+                   WHERE debate_fts MATCH ?
+                   ORDER BY f.rank
+                   LIMIT 5""",
+                (query,),
+            ).fetchall()
+            for r in debate_rows:
+                debate_results.append({
+                    "law_code": r["law_code"],
+                    "council": r["council"],
+                    "page": r["page_num"],
+                    "snippet": r["snippet"],
+                    "source": "Amtliches Bulletin",
+                })
+        except sqlite3.OperationalError:
+            pass  # debate_fts may not exist in older DBs
+
         return {
             "query": query,
             "count": len(results),
             "results": results,
+            "debate_results": debate_results,
         }
     except sqlite3.Error as e:
         return {"error": f"Materialien search failed: {e}"}
