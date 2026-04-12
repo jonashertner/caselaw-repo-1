@@ -8785,7 +8785,8 @@ def _fetch_historical_law_version(
         _lexfind_cache_set(cache_key, result, ttl_days=30)
         return result
     except Exception as e:
-        logger.warning("Historical law fetch failed for %s as_of %s: %s", sr_number, as_of, e)
+        import traceback
+        logger.warning("Historical law fetch failed for %s as_of %s: %s\n%s", sr_number, as_of, e, traceback.format_exc())
         return None
 
 
