@@ -586,6 +586,124 @@ LEGAL_QUERY_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "ausschaffung": ("landesverweisung", "ausweisung", "expulsion"),
 }
 ASYL_QUERY_TERMS = {"asyl", "asile", "asilo", "wegweisung", "renvoi", "allontanamento"}
+
+# ── Colloquial→statute-text expansion for law/legislation search ─────────
+# Maps terms users actually type to words that appear in Swiss statute text.
+# Complements LEGAL_QUERY_EXPANSIONS (which targets case-law search) with
+# phrase-level mappings that bridge the gap between everyday language and
+# the formal diction of Swiss legislation.
+#
+# Keys are FTS-normalized (lowercase, NFKD-stripped). Values are raw
+# statute-text words that pass through `unicode61 remove_diacritics 2`
+# tokenization at query time.  Multi-word values are OR'd at the term
+# level (not as a phrase) because FTS5 phrase matching is too strict for
+# statute article text where word order varies.
+LAW_SEARCH_EXPANSIONS: dict[str, tuple[str, ...]] = {
+    # ── Employment / leave ──
+    "vaterschaftsurlaub": ("urlaub", "elternteils", "vaterschaft", "geburt"),
+    "paternite": ("conge", "parent", "naissance"),
+    "mutterschaftsurlaub": ("niederkunft", "schwangerschaft", "mutterschaft"),
+    "maternite": ("accouchement", "grossesse", "maternite"),
+    "elternzeit": ("urlaub", "elternteils", "niederkunft", "mutterschaftsurlaub"),
+    "conge parental": ("conge", "parent", "naissance", "maternite"),
+    "homeoffice": ("heimarbeit", "telearbeit", "arbeitsort", "arbeitsplatz"),
+    "teletravail": ("domicile", "travail", "employeur"),
+    "ueberstunden": ("mehrarbeit", "uberstunden", "arbeitszeit", "uberzeit"),
+    "ferien": ("ferienanspruch", "urlaub", "erholungsurlaub"),
+    "lohn": ("lohnfortzahlung", "arbeitsentgelt", "entschadigung"),
+    "mindestlohn": ("lohn", "mindest", "arbeitsentgelt"),
+    "probezeit": ("probezeit", "kundigungsfrist"),
+    # ── Tenancy ──
+    "miete": ("mietzins", "mietvertrag", "vermieter", "mieter"),
+    "loyer": ("bail", "loyer", "locataire", "bailleur"),
+    "affitto": ("locazione", "pigione", "locatario", "locatore"),
+    "mietkaution": ("sicherheitsleistung", "mietkaution", "hinterlegung"),
+    "mieterhohung": ("mietzinserhohung", "mietzinsanpassung"),
+    "nebenkosten": ("nebenkosten", "heizkosten", "betriebskosten"),
+    "eigenbedarfskuendigung": ("eigenbedarf", "kundigung", "mieter"),
+    "airbnb": ("kurzzeitvermietung", "beherbergung", "zweckentfremdung"),
+    # ── Family ──
+    "scheidung": ("ehescheidung", "scheidung", "trennung", "nebenfolgen"),
+    "divorce": ("dissolution", "mariage", "divorce", "separation"),
+    "divorzio": ("scioglimento", "matrimonio", "divorzio", "separazione"),
+    "sorgerecht": ("elterliche sorge", "obhut", "besuchsrecht"),
+    "garde": ("autorite parentale", "garde", "droit visite"),
+    "custodia": ("autorita parentale", "custodia", "diritto visita"),
+    "alimente": ("unterhaltsbeitrag", "kindesunterhalt", "unterhalt"),
+    "pension alimentaire": ("contribution", "entretien", "pension"),
+    "kindesschutz": ("kindesschutzmassnahme", "gefahrdung", "beistandschaft"),
+    # ── Succession ──
+    "erbe": ("erbrecht", "erbschaft", "nachlass", "erbteilung"),
+    "testament": ("letztwillige verfugung", "testament", "erbvertrag"),
+    "pflichtteil": ("pflichtteil", "pflichtteilsanspruch", "herabsetzung"),
+    # ── Criminal ──
+    "notwehr": ("notwehr", "notwehrexzess", "angriff"),
+    "selbstverteidigung": ("notwehr", "notwehrexzess"),
+    "droge": ("betaubungsmittel", "cannabis", "hanf"),
+    "cannabis": ("betaubungsmittel", "cannabis", "hanf"),
+    "geschwindigkeitsuberschreitung": ("geschwindigkeit", "hochstgeschwindigkeit", "uberschreitung"),
+    "trunkenheit": ("angetrunken", "fahrunfahigkeit", "blutalkohol"),
+    # ── Citizenship / foreigners ──
+    "einbuergerung": ("burgerrecht", "einburgerung", "staatsburgerschaft"),
+    "naturalisation": ("nationalite", "naturalisation", "droit cite"),
+    "aufenthaltsbewilligung": ("aufenthaltsbewilligung", "niederlassungsbewilligung", "aufenthalt"),
+    "permis sejour": ("autorisation", "sejour", "etablissement"),
+    "asylbewerber": ("asylsuchend", "asylverfahren", "fluchtling"),
+    # ── Animals / environment ──
+    "hund": ("hund", "hundehalter", "tierhaltung", "tierschutz"),
+    "chien": ("chien", "detenteur", "animaux"),
+    "cane": ("cane", "detentore", "animali"),
+    "hundebiss": ("tierhalterhaftung", "hund", "bissverletzung"),
+    "umwelt": ("umweltschutz", "umweltvertraglichkeit", "emission"),
+    "laerm": ("larm", "immissionen", "larmschutz"),
+    "bruit": ("bruit", "nuisances", "immissions"),
+    # ── Data protection / internet ──
+    "datenschutz": ("personendaten", "datenbearbeitung", "datenschutz"),
+    "recht auf vergessenwerden": ("personendaten", "loschung", "berichtigung"),
+    "droit oubli": ("donnees personnelles", "effacement", "rectification"),
+    # ── Consumer / commerce ──
+    "garantie": ("gewahrleistung", "sachgewahrleistung", "mangel"),
+    "widerruf": ("widerruf", "rucktritt", "ruckgaberecht"),
+    "agb": ("allgemeine geschaftsbedingungen", "standardvertrag"),
+    "konsumentenschutz": ("konsument", "verbraucher", "schutz"),
+    "wettbewerb": ("wettbewerb", "kartell", "marktbeherrschung"),
+    # ── Construction / planning ──
+    "baubewilligung": ("baubewilligung", "baugesuch", "baugenehmigung"),
+    "stockwerkeigentum": ("stockwerkeigentum", "miteigentum", "sonderrecht"),
+    # ── Tax ──
+    "steuern": ("einkommenssteuer", "steuerpflicht", "veranlagung"),
+    "einkommenssteuer": ("einkommen", "steuerpflichtig", "veranlagung"),
+    "steuererklarung": ("steuererklarung", "veranlagung", "deklaration"),
+    "mehrwertsteuer": ("mehrwertsteuer", "vorsteuer", "umsatzsteuer"),
+    "impot revenu": ("revenu", "imposition", "contribuable"),
+    # ── Insurance / social security ──
+    "iv": ("invalidenversicherung", "invaliditat", "rente"),
+    "ahv": ("altersversicherung", "rente", "beitrag"),
+    "pensionierung": ("pension", "altersrente", "ruhestand"),
+    "arbeitslosigkeit": ("arbeitslosenversicherung", "taggeld", "stellensuche"),
+    "krankenkasse": ("krankenversicherung", "pramie", "versicherungspflicht"),
+    # ── Weapons / security ──
+    "waffe": ("waffe", "schusswaffe", "waffenerwerb", "waffentragen"),
+    "waffenschein": ("waffentragbewilligung", "waffenerwerb"),
+    # ── Transport ──
+    "velo": ("fahrrad", "velo", "radfahrer"),
+    "fahrrad": ("fahrrad", "velo", "radfahrer"),
+    "fuehrerausweis": ("fuhrerausweis", "fuhrerschein", "fahrerlaubnis"),
+    "parkbusse": ("parkieren", "busse", "ordnungsbusse"),
+    # ── COVID-specific ──
+    "impfpflicht": ("impfung", "gesundheitsschutz", "epidemie"),
+    "covid": ("epidemie", "pandemie", "ubertragbar"),
+    "maskenpflicht": ("maske", "epidemie", "gesundheitsschutz"),
+    "zertifikat": ("covid", "zertifikat", "gesundheitsschutz"),
+}
+
+# Build FTS-normalized reverse lookup for LAW_SEARCH_EXPANSIONS
+_LAW_FTS_NORMALIZED_EXPANSIONS: dict[str, tuple[str, ...]] = {}
+for _key, _vals in LAW_SEARCH_EXPANSIONS.items():
+    # Also add under umlaut-collapsed form
+    _collapsed = _key.replace("ae", "a").replace("oe", "o").replace("ue", "u")
+    if _collapsed != _key:
+        _LAW_FTS_NORMALIZED_EXPANSIONS.setdefault(_collapsed, _vals)
 LEGAL_ANCHOR_PAIRS: tuple[tuple[str, str], ...] = (
     ("asyl", "wegweisung"),
     ("asile", "renvoi"),
@@ -8189,6 +8307,59 @@ def _search_laws_cantonal(
         conn.close()
 
 
+def _expand_law_query(sanitized_query: str) -> str:
+    """Expand a sanitized query with colloquial→statute-text synonyms.
+
+    Transforms e.g. ``"Vaterschaftsurlaub Dauer"`` into
+    ``(Vaterschaftsurlaub OR urlaub OR elternteils OR vaterschaft OR geburt) Dauer``
+    so that FTS5 can match articles whose text uses formal legal diction
+    rather than the colloquial term the user typed.
+
+    Uses both LAW_SEARCH_EXPANSIONS (statute-text specific) and
+    LEGAL_QUERY_EXPANSIONS (cross-language synonyms from case-law search).
+    Zero-latency: no LLM call, purely dictionary-driven.
+    """
+    tokens = re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", sanitized_query.lower())
+    if not tokens:
+        return sanitized_query
+
+    parts: list[str] = []
+    for tok in tokens:
+        norm = _normalize_token_for_fts(tok)
+        if not norm or len(norm) < 2:
+            parts.append(tok)
+            continue
+
+        # Gather expansions from both dictionaries
+        expansions: set[str] = set()
+
+        # 1. LAW_SEARCH_EXPANSIONS (colloquial→statute text, primary)
+        law_exps = LAW_SEARCH_EXPANSIONS.get(norm, ())
+        if not law_exps:
+            law_exps = _LAW_FTS_NORMALIZED_EXPANSIONS.get(norm, ())
+        for exp in law_exps:
+            # Multi-word expansions: split and add each word (OR semantics)
+            for w in exp.split():
+                w_norm = _normalize_token_for_fts(w)
+                if w_norm and w_norm != norm and len(w_norm) >= 2:
+                    expansions.add(w_norm)
+
+        # 2. LEGAL_QUERY_EXPANSIONS (cross-language, secondary, cap at 2)
+        legal_exps = _get_query_expansions(norm)
+        for exp in legal_exps[:2]:
+            if exp != norm:
+                expansions.add(exp)
+
+        if expansions:
+            # Build OR group: (original OR exp1 OR exp2 ...)
+            group = " OR ".join([tok] + sorted(expansions))
+            parts.append(f"({group})")
+        else:
+            parts.append(tok)
+
+    return " ".join(parts)
+
+
 def search_laws(
     query: str,
     sr_number: str | None = None,
@@ -8212,6 +8383,7 @@ def search_laws(
     query = _sanitize_fts5(query)
     if not query:
         return {"query": query, "count": 0, "results": []}
+    query = _expand_law_query(query)
 
     # Determine which corpora to hit
     canton_u = (canton or "").upper()
