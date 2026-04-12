@@ -174,6 +174,7 @@ STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR
 CANTONAL_LAWS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANTONAL_DB", str(DATA_DIR / "cantonal_laws.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
 LEXFIND_CACHE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_LEXFIND_CACHE", str(DATA_DIR / "lexfind_cache.db")))
+MATERIALIEN_DB_PATH = Path(os.environ.get("SWISS_CASELAW_MATERIALIEN_DB", str(DATA_DIR / "materialien.db")))
 ANWALTSRECHT_TAGS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_ANWALTSRECHT_DB", str(DATA_DIR / "anwaltsrecht_tags.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
@@ -2867,6 +2868,187 @@ def _get_ok_conn() -> sqlite3.Connection | None:
     except sqlite3.Error as e:
         logger.warning("Failed to open OK commentaries DB: %s", e)
         return None
+
+
+_materialien_warned = False
+
+
+def _get_materialien_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the Materialien DB, or None if unavailable."""
+    global _materialien_warned
+    if not MATERIALIEN_DB_PATH.exists():
+        if not _materialien_warned:
+            logger.info("Materialien DB not found at %s — materialien tools disabled", MATERIALIEN_DB_PATH)
+            _materialien_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(str(MATERIALIEN_DB_PATH), timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only = ON")
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open materialien DB: %s", e)
+        return None
+
+
+def get_materialien(law_code: str, article: str | None = None) -> dict:
+    """Fetch preparatory materials (Botschaften, parliamentary data) for a law article.
+
+    Returns legislative intent, key arguments, design choices, rejected
+    alternatives, and parliamentary modifications from the Federal Council's
+    Botschaft and subsequent parliamentary debates.
+    """
+    conn = _get_materialien_conn()
+    if conn is None:
+        return {"error": "Materialien database not available."}
+
+    try:
+        law = (law_code or "").upper()
+        if not law:
+            return {"error": "Provide law_code (e.g., BV, OR, StGB, BGFA)."}
+
+        if article:
+            rows = conn.execute(
+                """SELECT * FROM materialien
+                   WHERE law_code = ? AND article = ?
+                   ORDER BY bbl_ref""",
+                (law, article),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """SELECT * FROM materialien
+                   WHERE law_code = ?
+                   ORDER BY CAST(article AS INTEGER), article, bbl_ref""",
+                (law,),
+            ).fetchall()
+
+        if not rows:
+            return {
+                "error": f"No Materialien found for {law}"
+                         + (f" Art. {article}" if article else "")
+                         + ". Available laws: check get_statistics."
+            }
+
+        sources = []
+        for r in rows:
+            sources.append({
+                "law_code": r["law_code"],
+                "article": r["article"],
+                "bbl_ref": r["bbl_ref"],
+                "bbl_page_refs": json.loads(r["bbl_page_refs"]) if r["bbl_page_refs"] else [],
+                "legislative_intent": r["legislative_intent"],
+                "key_arguments": r["key_arguments"],
+                "design_choices": r["design_choices"],
+                "rejected_alternatives": r["rejected_alternatives"],
+                "general_context": r["general_context"],
+            })
+
+        # Parliamentary modifications (law-level)
+        mods = conn.execute(
+            "SELECT * FROM parliamentary_modifications WHERE law_code = ? ORDER BY date",
+            (law,),
+        ).fetchall()
+        modifications = [
+            {"council": m["council"], "date": m["date"], "text": m["text"]}
+            for m in mods
+        ]
+
+        return {
+            "law_code": law,
+            "article": article,
+            "sources": sources,
+            "parliamentary_modifications": modifications,
+        }
+    except sqlite3.Error as e:
+        return {"error": f"Materialien lookup failed: {e}"}
+    finally:
+        conn.close()
+
+
+def search_materialien(
+    query: str, law_code: str | None = None, limit: int = 10,
+) -> dict:
+    """Full-text search across all preparatory materials.
+
+    Searches legislative intent, key arguments, design choices, and
+    general context of Federal Council Botschaften.
+    """
+    conn = _get_materialien_conn()
+    if conn is None:
+        return {"error": "Materialien database not available."}
+
+    try:
+        query = _sanitize_fts5(query)
+        if not query:
+            return {"error": "Provide a search query."}
+        limit = min(max(1, limit), 50)
+
+        params: list = [query]
+        where = ["materialien_fts MATCH ?"]
+        if law_code:
+            where.append("m.law_code = ?")
+            params.append(law_code.upper())
+        where_sql = " AND ".join(where)
+        params.append(limit)
+
+        rows = conn.execute(
+            f"""SELECT m.law_code, m.article, m.bbl_ref, m.legislative_intent,
+                       snippet(materialien_fts, 3, '>>>', '<<<', '...', 40) AS snippet
+                FROM materialien_fts f
+                JOIN materialien m ON m.id = f.rowid
+                WHERE {where_sql}
+                ORDER BY f.rank
+                LIMIT ?""",
+            params,
+        ).fetchall()
+
+        results = [
+            {
+                "law_code": r["law_code"],
+                "article": r["article"],
+                "bbl_ref": r["bbl_ref"],
+                "legislative_intent": (r["legislative_intent"] or "")[:300],
+                "snippet": r["snippet"],
+            }
+            for r in rows
+        ]
+
+        return {
+            "query": query,
+            "count": len(results),
+            "results": results,
+        }
+    except sqlite3.Error as e:
+        return {"error": f"Materialien search failed: {e}"}
+    finally:
+        conn.close()
+
+
+def _get_materialien_for_doctrine(law_code: str, article: str) -> dict | None:
+    """Fetch a compact Materialien excerpt for get_doctrine enrichment."""
+    conn = _get_materialien_conn()
+    if conn is None:
+        return None
+    try:
+        row = conn.execute(
+            """SELECT legislative_intent, key_arguments, bbl_ref
+               FROM materialien
+               WHERE law_code = ? AND article = ?
+               ORDER BY bbl_ref LIMIT 1""",
+            (law_code.upper(), article),
+        ).fetchone()
+        if not row:
+            return None
+        return {
+            "bbl_ref": row["bbl_ref"],
+            "legislative_intent": (row["legislative_intent"] or "")[:500],
+            "key_arguments": (row["key_arguments"] or "")[:500],
+            "source": "openlegalcommentary.ch (CC BY-SA 4.0)",
+        }
+    except sqlite3.Error:
+        return None
+    finally:
+        conn.close()
 
 
 def _get_vector_model():
@@ -7823,6 +8005,14 @@ def _handle_get_doctrine(*, query: str) -> dict:
         except Exception as e:
             logger.debug("OK commentary lookup failed: %s", e)
 
+    # Enrich with Materialien (Botschaft legislative intent) if available
+    materialien_info = None
+    if statute_refs and article and law_code:
+        try:
+            materialien_info = _get_materialien_for_doctrine(law_code, article)
+        except Exception as e:
+            logger.debug("Materialien lookup failed: %s", e)
+
     # Build structured doctrine summary from leading cases
     doctrine_summary = _build_doctrine_summary(leading_cases, law_code if statute_refs else "")
 
@@ -7833,6 +8023,7 @@ def _handle_get_doctrine(*, query: str) -> dict:
         "leading_cases": leading_cases,
         "doctrine_timeline": timeline,
         "commentary": commentary_info,
+        "materialien": materialien_info,
     }
 
 
@@ -10597,6 +10788,61 @@ def _list_tools() -> list[Tool]:
                 "required": ["query"],
             },
         ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="get_materialien",
+            description=(
+                "Look up the preparatory materials (Materialien) behind a Swiss federal law "
+                "article: the Federal Council's Botschaft, its legislative intent, key arguments, "
+                "design choices, rejected alternatives, and parliamentary modifications. "
+                "Essential for understanding WHY a provision was drafted the way it was. "
+                "Currently covers: BGFA (Anwaltsgesetz). BV, OR, StGB, ZGB coming soon. "
+                "Data sourced from openlegalcommentary.ch (CC BY-SA 4.0)."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "law_code": {
+                        "type": "string",
+                        "description": "Law abbreviation (e.g., 'BV', 'BGFA', 'OR', 'StGB').",
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": "Article number (e.g., '1', '8', '10a'). Omit to get all articles.",
+                    },
+                },
+                "required": ["law_code"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="search_materialien",
+            description=(
+                "Full-text search across all preparatory materials (Botschaften, parliamentary "
+                "data) for Swiss federal laws. Searches legislative intent, key arguments, "
+                "design choices, and general context. Use this to find the legislative history "
+                "behind any provision. Currently covers: BGFA. BV, OR, StGB, ZGB coming soon."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query (natural language or FTS5 syntax).",
+                    },
+                    "law_code": {
+                        "type": "string",
+                        "description": "Filter by law abbreviation (e.g., 'BGFA').",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results (1-50, default 10).",
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
         *([] if not LEXFIND_ENABLED else [
             Tool(
                 annotations=_READ_ONLY,
@@ -11103,6 +11349,23 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=int(arguments.get("limit", 10)),
             )
             return [TextContent(type="text", text=_format_search_commentaries_response(result))]
+
+        elif name == "get_materialien":
+            result = await asyncio.to_thread(
+                get_materialien,
+                law_code=arguments.get("law_code", ""),
+                article=arguments.get("article"),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "search_materialien":
+            result = await asyncio.to_thread(
+                search_materialien,
+                query=arguments.get("query", ""),
+                law_code=arguments.get("law_code"),
+                limit=int(arguments.get("limit", 10)),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
         elif name == "search_legislation":
             result = await asyncio.to_thread(
@@ -11967,6 +12230,33 @@ render();setInterval(render,60000);
         return await asyncio.to_thread(
             get_commentary, abbreviation=abbreviation, sr_number=sr_number,
             article=article, language=language,
+        )
+
+    # ── Materialien endpoints ─────────────────────────────────
+
+    @rest_api.get("/materialien/{law_code}", tags=["Materialien"],
+                  summary="Get preparatory materials for a law article",
+                  description="Returns the Federal Council Botschaft data: legislative intent, "
+                              "key arguments, design choices, rejected alternatives, and "
+                              "parliamentary modifications.")
+    async def api_get_materialien(
+        law_code: str = PathParam(description="Law abbreviation (e.g., BGFA, BV)"),
+        article: str = Query(None, description="Article number (e.g., '1', '8')"),
+    ):
+        return await asyncio.to_thread(
+            get_materialien, law_code=law_code, article=article,
+        )
+
+    @rest_api.get("/materialien", tags=["Materialien"],
+                  summary="Search preparatory materials",
+                  description="Full-text search across all Botschaft data.")
+    async def api_search_materialien(
+        query: str = Query(..., description="Search query"),
+        law_code: str = Query(None, description="Filter by law code"),
+        limit: int = Query(10, ge=1, le=50, description="Max results"),
+    ):
+        return await asyncio.to_thread(
+            search_materialien, query=query, law_code=law_code, limit=limit,
         )
 
     # ── Legislation endpoints ──────────────────────────────────
