@@ -8782,7 +8782,7 @@ def _fetch_historical_law_version(
             "articles": articles_parsed,
         }
         # Cache for 30 days (historical versions never change)
-        _lexfind_cache_set(cache_key, result, ttl_days=30)
+        _lexfind_cache_set(cache_key, result)
         return result
     except Exception as e:
         import traceback
