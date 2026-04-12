@@ -8474,6 +8474,18 @@ def _search_laws_federal(
         conn.close()
 
 
+# Primary official language per canton — used to adjust the language
+# filter when a user searches cantons that speak a different language.
+_CANTON_PRIMARY_LANG: dict[str, str] = {
+    "AG": "de", "AI": "de", "AR": "de", "BE": "de", "BL": "de",
+    "BS": "de", "FR": "fr", "GE": "fr", "GL": "de", "GR": "de",
+    "JU": "fr", "LU": "de", "NE": "fr", "NW": "de", "OW": "de",
+    "SG": "de", "SH": "de", "SO": "de", "SZ": "de", "TG": "de",
+    "TI": "it", "UR": "de", "VD": "fr", "VS": "de", "ZG": "de",
+    "ZH": "de",
+}
+
+
 def _search_laws_cantonal(
     query: str, canton: str | None, language: str, limit: int,
 ) -> list[dict]:
@@ -8487,9 +8499,18 @@ def _search_laws_cantonal(
         if canton:
             where.append("f.canton = ?")
             params.append(canton.upper())
-        if language:
+        # When searching a specific canton, use that canton's primary
+        # language instead of the query language — otherwise a German
+        # query (language="de") against GE/VD/NE/JU/TI returns 0 hits
+        # because all articles are stored in fr/it.
+        effective_lang = language
+        if canton and canton.upper() in _CANTON_PRIMARY_LANG:
+            canton_lang = _CANTON_PRIMARY_LANG[canton.upper()]
+            if canton_lang != language:
+                effective_lang = canton_lang
+        if effective_lang:
             where.append("f.language = ?")
-            params.append(language)
+            params.append(effective_lang)
         where_sql = " AND ".join(where)
         # Over-fetch so the per-law dedupe can still fill `limit` results.
         sql = f"""
