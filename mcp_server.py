@@ -2954,11 +2954,16 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
             # Try the SR_NUMBERS map first (covers major laws), then
             # query the materialien table for sr_number if a digest exists.
             sr = ""
-            try:
-                from search_stack.build_materialien_db import SR_NUMBERS as _SR
-                sr = _SR.get(law, "")
-            except ImportError:
-                pass
+            _SR_MAP = {
+                "BV": "101", "ZGB": "210", "OR": "220", "ZPO": "272",
+                "STGB": "311.0", "STPO": "312.0", "SCHKG": "281.1",
+                "VWVG": "172.021", "BGFA": "935.61", "BGG": "173.110",
+                "AVIG": "837.0", "IVG": "831.20", "AHVG": "831.10",
+                "KVG": "832.10", "UVG": "832.20", "DSG": "235.1",
+                "SVG": "741.01", "ATSG": "830.1", "EOG": "834.1",
+                "ARBG": "822.11", "MWSTG": "641.20", "DBG": "642.11",
+            }
+            sr = _SR_MAP.get(law, "")
             if not sr and sources:
                 # Fallback: get sr_number from a digest row
                 r0 = conn.execute(
@@ -2975,7 +2980,7 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
                     )
                     st_conn.row_factory = sqlite3.Row
                     r0 = st_conn.execute(
-                        "SELECT sr_number FROM laws WHERE abbr_de = ? LIMIT 1",
+                        "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = ? LIMIT 1",
                         (law,),
                     ).fetchone()
                     if r0:
@@ -3111,8 +3116,13 @@ def _get_materialien_for_doctrine(law_code: str, article: str) -> dict | None:
             }
 
         # Fall back to Fedlex amendment refs
-        from search_stack.build_materialien_db import SR_NUMBERS as _SR
-        sr = _SR.get(law_code.upper(), "")
+        _SR_MAP = {
+            "BV": "101", "ZGB": "210", "OR": "220", "ZPO": "272",
+            "STGB": "311.0", "STPO": "312.0", "SCHKG": "281.1",
+            "VWVG": "172.021", "BGFA": "935.61", "BGG": "173.110",
+            "DSG": "235.1", "SVG": "741.01", "ATSG": "830.1",
+        }
+        sr = _SR_MAP.get(law_code.upper(), "")
         if not sr:
             return None
         try:
