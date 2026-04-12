@@ -2413,8 +2413,9 @@ document.querySelectorAll('.lang-sw button').forEach(btn => {
   btn.classList.toggle('on', btn.dataset.l === curLang);
 });
 
-let themePref = localStorage.getItem('theme') ||
-  (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+const _mq = matchMedia('(prefers-color-scheme: dark)');
+let _userOverride = localStorage.getItem('theme');
+let themePref = _userOverride || (_mq.matches ? 'dark' : 'light');
 function applyTheme() {
   const isDark = themePref === 'dark';
   document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
@@ -2423,8 +2424,13 @@ function applyTheme() {
   if (window._statsData) { destroyCharts(); renderCharts(window._statsData); }
 }
 applyTheme();
+// Live-switch when OS theme changes (unless user manually toggled)
+_mq.addEventListener('change', (e) => {
+  if (!_userOverride) { themePref = e.matches ? 'dark' : 'light'; applyTheme(); }
+});
 document.getElementById('theme-btn').addEventListener('click', () => {
   themePref = themePref === 'dark' ? 'light' : 'dark';
+  _userOverride = themePref;
   localStorage.setItem('theme', themePref);
   applyTheme();
 });
