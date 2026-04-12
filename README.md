@@ -60,7 +60,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client (Claude, ChatGPT, Cursor, Gemini, Windsurf)
 - [OpenAI-compatible tool definitions](docs/openai-tools.json) for Grok/xAI and any function-calling LLM API
 - Local MCP server — full offline capability, 23 tools, ~65 GB disk
-- 32-route REST API for programmatic row-level access
+- 30-route REST API with [interactive documentation](https://mcp.opencaselaw.ch/api/docs) (Swagger UI + OpenAPI spec)
 - Bulk Parquet download via the [HuggingFace dataset](https://huggingface.co/datasets/voilaj/swiss-caselaw) (~7 GB)
 - Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
 

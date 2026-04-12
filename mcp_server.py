@@ -8668,12 +8668,134 @@ def _get_law_cantonal(
         conn.close()
 
 
+_FEDLEX_SPARQL = "https://fedlex.data.admin.ch/sparqlendpoint"
+_FEDLEX_LANG_URIS = {
+    "de": "http://publications.europa.eu/resource/authority/language/DEU",
+    "fr": "http://publications.europa.eu/resource/authority/language/FRA",
+    "it": "http://publications.europa.eu/resource/authority/language/ITA",
+}
+
+
+def _fetch_historical_law_version(
+    sr_number: str, article: str | None, language: str, as_of: str,
+) -> dict | None:
+    """Fetch a historical version of a federal law article from Fedlex.
+
+    Uses SPARQL to find the dated consolidation snapshot applicable on
+    ``as_of`` (ISO date), downloads the Akoma Ntoso XML, and parses it
+    with the same parser used for the current version.
+
+    Results are cached in the LexFind cache with a long TTL (historical
+    versions don't change).  Returns None on any failure.
+    """
+    cache_key = f"hist_law:v1:{sr_number}:{article or 'all'}:{language}:{as_of}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    try:
+        import requests as _req
+        import xml.etree.ElementTree as ET
+        from search_stack.build_statutes_db import parse_article, AKN_NS
+
+        # Step 1: find the work URI for this SR number
+        work_query = (
+            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+            'SELECT ?work WHERE {\n'
+            '  ?work a jolux:ConsolidationAbstract .\n'
+            f'  ?work jolux:historicalLegalId "{sr_number}" .\n'
+            '} LIMIT 1'
+        )
+        resp = _req.post(_FEDLEX_SPARQL, data={"query": work_query},
+                         headers={"Accept": "application/sparql-results+json"}, timeout=15)
+        bindings = resp.json().get("results", {}).get("bindings", [])
+        if not bindings:
+            return None
+        work_uri = bindings[0]["work"]["value"]
+
+        # Step 2: find the closest snapshot <= as_of
+        snap_query = (
+            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+            'SELECT ?snapshot ?date WHERE {\n'
+            f'  ?snapshot jolux:isMemberOf <{work_uri}> .\n'
+            '  ?snapshot jolux:dateApplicability ?date .\n'
+            f'  FILTER(?date <= "{as_of}"^^xsd:date)\n'
+            '} ORDER BY DESC(?date) LIMIT 1'
+        )
+        resp = _req.post(_FEDLEX_SPARQL, data={"query": snap_query},
+                         headers={"Accept": "application/sparql-results+json"}, timeout=15)
+        bindings = resp.json().get("results", {}).get("bindings", [])
+        if not bindings:
+            return None
+        snapshot_uri = bindings[0]["snapshot"]["value"]
+        snapshot_date = bindings[0]["date"]["value"]
+
+        # Step 3: get the XML download URL
+        lang_uri = _FEDLEX_LANG_URIS.get(language, _FEDLEX_LANG_URIS["de"])
+        xml_query = (
+            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+            'SELECT ?url WHERE {\n'
+            f'  <{snapshot_uri}> jolux:isRealizedBy ?expr .\n'
+            f'  ?expr jolux:language <{lang_uri}> .\n'
+            '  ?expr jolux:isEmbodiedBy ?manif .\n'
+            '  ?manif jolux:userFormat <https://fedlex.data.admin.ch/vocabulary/user-format/xml> .\n'
+            '  ?manif jolux:isExemplifiedBy ?url .\n'
+            '} LIMIT 1'
+        )
+        resp = _req.post(_FEDLEX_SPARQL, data={"query": xml_query},
+                         headers={"Accept": "application/sparql-results+json"}, timeout=15)
+        bindings = resp.json().get("results", {}).get("bindings", [])
+        if not bindings:
+            return {"error": f"No XML available for {sr_number} as of {as_of}. "
+                             f"XML versions are available from ~2021 onward. "
+                             f"Closest snapshot: {snapshot_date}."}
+        xml_url = bindings[0]["url"]["value"]
+
+        # Step 4: download + parse the XML
+        xml_resp = _req.get(xml_url, timeout=30)
+        if xml_resp.status_code != 200:
+            return None
+        root = ET.fromstring(xml_resp.content)
+
+        # Parse all articles from the XML
+        article_elems = root.findall(f".//{{{AKN_NS}}}article")
+        articles_parsed = []
+        for art_elem in article_elems:
+            art_num, heading, text, footnote = parse_article(art_elem)
+            if not art_num or not text:
+                continue
+            if article and art_num != article:
+                continue
+            articles_parsed.append({
+                "article_num": art_num,
+                "heading": heading,
+                "text": text,
+            })
+
+        result = {
+            "sr_number": sr_number,
+            "as_of": as_of,
+            "snapshot_date": snapshot_date,
+            "language": language,
+            "level": "federal",
+            "version": "historical",
+            "articles": articles_parsed,
+        }
+        # Cache for 30 days (historical versions never change)
+        _lexfind_cache_set(cache_key, result, ttl_days=30)
+        return result
+    except Exception as e:
+        logger.warning("Historical law fetch failed for %s as_of %s: %s", sr_number, as_of, e)
+        return None
+
+
 def get_law(
     sr_number: str | None = None,
     abbreviation: str | None = None,
     article: str | None = None,
     language: str = "de",
     canton: str = "CH",
+    as_of: str | None = None,
 ) -> dict:
     """Look up a law or specific article from the unified Swiss statute mirror.
 
@@ -8681,10 +8803,37 @@ def get_law(
     Cantonal laws are served from cantonal_laws.db (LexFind mirror). Both
     are local, fast, and returned in the same shape so callers can work
     uniformly across jurisdictions.
+
+    Set ``as_of`` to an ISO date (e.g. '2020-01-01') to retrieve a
+    historical version of the law from Fedlex (available from ~2021).
     """
     canton_u = (canton or "CH").upper()
     if canton_u != "CH":
         return _get_law_cantonal(sr_number, abbreviation, article, language, canton_u)
+
+    # Historical version: on-demand fetch from Fedlex SPARQL
+    if as_of:
+        # Resolve SR number from abbreviation
+        if not sr_number and abbreviation:
+            conn = _get_statutes_conn()
+            if conn:
+                try:
+                    row = conn.execute(
+                        "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = ? OR UPPER(abbr_fr) = ? LIMIT 1",
+                        (abbreviation.upper(), abbreviation.upper()),
+                    ).fetchone()
+                    if row:
+                        sr_number = row["sr_number"]
+                finally:
+                    conn.close()
+        if not sr_number:
+            return {"error": f"Cannot resolve SR number for '{abbreviation}'."}
+        result = _fetch_historical_law_version(sr_number, article, language, as_of)
+        if result and "error" not in result:
+            return result
+        if result and "error" in result:
+            return result
+        return {"error": f"Historical version not available for SR {sr_number} as of {as_of}."}
 
     conn = _get_statutes_conn()
     if conn is None:
@@ -10817,6 +10966,16 @@ def _list_tools() -> list[Tool]:
                         ),
                         "default": "CH",
                     },
+                    "as_of": {
+                        "type": "string",
+                        "description": (
+                            "ISO date (e.g. '2020-01-01') to retrieve a HISTORICAL "
+                            "version of the law from Fedlex. Use this to see what a "
+                            "provision said before it was amended. XML versions "
+                            "available from ~2021; older versions may only have PDF. "
+                            "Federal laws only."
+                        ),
+                    },
                 },
             },
         ),
@@ -11483,6 +11642,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 article=arguments.get("article"),
                 language=arguments.get("language", "de"),
                 canton=arguments.get("canton", "CH"),
+                as_of=arguments.get("as_of"),
             )
             return [TextContent(type="text", text=_format_get_law_response(result))]
 
@@ -12337,11 +12497,13 @@ render();setInterval(render,60000);
         article: str = Query(None, description="Article number to retrieve (e.g., 8, 41a)"),
         language: str = Query("de", description="Language: de, fr, it"),
         canton: str = Query("CH", description="Canton code (CH=federal, ZH, BE, …)"),
+        as_of: str = Query(None, description="ISO date (e.g., 2020-01-01) for a historical version from Fedlex"),
     ):
         abbr = None if abbreviation == "_" else abbreviation
         return await asyncio.to_thread(
             get_law, sr_number=sr_number, abbreviation=abbr,
             article=article, language=language, canton=canton,
+            as_of=as_of,
         )
 
     @rest_api.get("/amendment-ref", tags=["Statutes"],
