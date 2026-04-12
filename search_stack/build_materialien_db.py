@@ -191,8 +191,19 @@ def extract_amendment_refs_from_statutes(
             pass
 
         count = 0
-        for row in src.execute("SELECT sr_number, article_num, text FROM articles WHERE lang = 'de'"):
-            text = row["text"] or ""
+        for row in src.execute("SELECT sr_number, article_num, text, footnote FROM articles WHERE lang = 'de'"):
+            # Scan both body text AND footnote for AS/BBl references.
+            # Body text catches amendments to existing paragraphs;
+            # footnote catches INSERTED articles (footnote is on heading).
+            combined = (row["text"] or "")
+            footnote_text = ""
+            try:
+                footnote_text = row["footnote"] or ""
+            except (IndexError, KeyError):
+                pass  # footnote column may not exist in older DBs
+            if footnote_text:
+                combined += "\n" + footnote_text
+            text = combined
             sr = row["sr_number"]
             article = row["article_num"]
             abbr = abbr_map.get(sr, "")

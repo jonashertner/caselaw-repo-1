@@ -62,6 +62,7 @@ def create_schema(conn: sqlite3.Connection):
             sr_number TEXT NOT NULL,
             article_num TEXT NOT NULL,
             heading TEXT,
+            footnote TEXT,
             text TEXT NOT NULL,
             lang TEXT NOT NULL,
             FOREIGN KEY (sr_number) REFERENCES laws(sr_number)
@@ -115,13 +116,44 @@ def extract_text(element, skip_tags: set[str] | None = None) -> str:
     return " ".join(p for p in parts if p)
 
 
-def parse_article(article_elem) -> tuple[str, str | None, str]:
-    """Parse an article element, return (article_num, heading, full_text)."""
+def parse_article(article_elem) -> tuple[str, str | None, str, str | None]:
+    """Parse an article element, return (article_num, heading, full_text, footnote).
+
+    The footnote field captures `<authorialNote>` elements from the article's
+    `<num>` and `<heading>` — these contain amendment references like
+    "Eingefügt durch... ( AS 2020 4525 ; BBl 2019 4747)" for inserted articles.
+    """
     # Extract article number (skip authorialNote footnotes embedded in <num>)
     num_elem = article_elem.find("akn:num", NS)
     if num_elem is None:
         num_elem = article_elem.find(f"{{{AKN_NS}}}num")
     article_num = extract_text(num_elem, skip_tags={"authorialNote"}) if num_elem is not None else ""
+
+    # Extract authorialNote footnotes from <num> and <heading> elements.
+    # These contain the amendment references for INSERTED articles.
+    footnote_parts: list[str] = []
+    for parent in [num_elem, article_elem.find("akn:heading", NS),
+                    article_elem.find(f"{{{AKN_NS}}}heading")]:
+        if parent is None:
+            continue
+        for note in parent.findall("akn:authorialNote", NS):
+            note_text = extract_text(note)
+            if note_text:
+                footnote_parts.append(note_text)
+        for note in parent.findall(f"{{{AKN_NS}}}authorialNote"):
+            note_text = extract_text(note)
+            if note_text and note_text not in footnote_parts:
+                footnote_parts.append(note_text)
+    # Also check direct children of the article element
+    for note in article_elem.findall("akn:authorialNote", NS):
+        note_text = extract_text(note)
+        if note_text and note_text not in footnote_parts:
+            footnote_parts.append(note_text)
+    for note in article_elem.findall(f"{{{AKN_NS}}}authorialNote"):
+        note_text = extract_text(note)
+        if note_text and note_text not in footnote_parts:
+            footnote_parts.append(note_text)
+    footnote = " ".join(footnote_parts).strip() if footnote_parts else None
     # Clean article number: "Art. 41" -> "41", "Art. 41a" -> "41a"
     article_num = re.sub(r"^Art\.?\s*", "", article_num).strip()
     # Strip any remaining footnote text after the article number
@@ -179,7 +211,7 @@ def parse_article(article_elem) -> tuple[str, str | None, str]:
             paragraphs.append(text)
 
     full_text = "\n".join(paragraphs)
-    return article_num, heading, full_text
+    return article_num, heading, full_text, footnote
 
 
 def parse_xml(xml_path: Path) -> list[dict]:
@@ -199,7 +231,7 @@ def parse_xml(xml_path: Path) -> list[dict]:
         article_elems = root.findall(".//article")
 
     for art_elem in article_elems:
-        article_num, heading, text = parse_article(art_elem)
+        article_num, heading, text, footnote = parse_article(art_elem)
         if not article_num or not text:
             continue
 
@@ -207,6 +239,7 @@ def parse_xml(xml_path: Path) -> list[dict]:
             "article_num": article_num,
             "heading": heading,
             "text": text,
+            "footnote": footnote,
         })
 
     return articles
@@ -283,9 +316,9 @@ def build_db():
             articles = parse_xml(xml_path)
             for art in articles:
                 conn.execute(
-                    """INSERT INTO articles (sr_number, article_num, heading, text, lang)
-                       VALUES (?, ?, ?, ?, ?)""",
-                    (sr_number, art["article_num"], art["heading"], art["text"], lang),
+                    """INSERT INTO articles (sr_number, article_num, heading, footnote, text, lang)
+                       VALUES (?, ?, ?, ?, ?, ?)""",
+                    (sr_number, art["article_num"], art["heading"], art.get("footnote"), art["text"], lang),
                 )
                 law_article_count += 1
 
