@@ -296,10 +296,10 @@ var UI_STRINGS = {
     de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', en: 'Coverage',
   },
   guide_coverage_desc: {
-    de: 'BGer, BVGer, BStGer, BPatGer, FINMA, WEKO, ED\u00D6B, alle 26 Kantone. 963\u2009000+ Entscheide von 1875 bis heute. T\u00E4glich aktualisiert.',
-    fr: 'TF, TAF, TPF, TFB, FINMA, COMCO, PFPDT, 26 cantons. 963\u2009000+ d\u00E9cisions de 1875 \u00E0 aujourd\'hui. Mis \u00E0 jour quotidiennement.',
-    it: 'TF, TAF, TPF, TFB, FINMA, COMCO, IFPDT, 26 cantoni. 963\u2009000+ decisioni dal 1875 ad oggi. Aggiornato quotidianamente.',
-    en: 'BGer, BVGer, BStGer, BPatGer, FINMA, ComCo, FDPIC, all 26 cantons. 963,000+ decisions from 1875 to today. Updated daily.',
+    de: 'BGer, BVGer, BStGer, BPatGer, FINMA, WEKO, ED\u00D6B, alle 26 Kantone. 965\u2009000+ Entscheide von 1875 bis heute. T\u00E4glich aktualisiert.',
+    fr: 'TF, TAF, TPF, TFB, FINMA, COMCO, PFPDT, 26 cantons. 965\u2009000+ d\u00E9cisions de 1875 \u00E0 aujourd\'hui. Mis \u00E0 jour quotidiennement.',
+    it: 'TF, TAF, TPF, TFB, FINMA, COMCO, IFPDT, 26 cantoni. 965\u2009000+ decisioni dal 1875 ad oggi. Aggiornato quotidianamente.',
+    en: 'BGer, BVGer, BStGer, BPatGer, FINMA, ComCo, FDPIC, all 26 cantons. 965,000+ decisions from 1875 to today. Updated daily.',
   },
   guide_start: {
     de: 'Jetzt loslegen', fr: 'Commencer', it: 'Inizia ora', en: 'Get started',
