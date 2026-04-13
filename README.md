@@ -2,7 +2,7 @@
 
 **The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
-**965,000+ court decisions · ~5,000 federal laws · ~26,000 cantonal acts · 8.8 M citation links · 11.3 M statute references · 1,100+ Botschaften (legislative history)**
+**965,000+ court decisions · ~5,500 federal laws · ~26,000 cantonal acts · 8.8 M citation links · 11.3 M statute references · 1,100+ Botschaften (legislative history)**
 
 Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors the full Fedlex and LexFind legislation corpora, includes the **legislative history** (Botschaft references and parliamentary debate transcripts) for 2,500+ federal laws, and ships with a **resolved citation graph** and **23 MCP tools** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
@@ -31,7 +31,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Updated daily; BGer decisions available within ~15 minutes of court publication
 
 **Legislation** — every Swiss law, federal and cantonal, locally mirrored with article-level indexing:
-- ~5,000 federal laws / 125,000+ articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
+- ~5,500 federal laws / 132,000+ articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
 - ~26,000 cantonal and intercantonal acts from LexFind across all 26 cantons
 - Unified SQLite FTS5 search federates both corpora; sub-millisecond article lookup
 - Monthly refresh on the 2nd of each month (the day after laws enter into force)
@@ -463,7 +463,7 @@ Parameters: `query` (optional text), `law_code` + `article` (optional statute), 
 
 Two tools provide direct access to **Swiss law text** from the local mirror, covering both federal and cantonal jurisdictions with article-level FTS5 indexing and sub-millisecond lookup:
 
-- **Federal:** ~5,000 laws / 125,000+ articles from the [Fedlex](https://www.fedlex.admin.ch) SPARQL endpoint, mirrored monthly into `statutes.db`. Covers every consolidated federal act in German, French, and Italian.
+- **Federal:** ~5,000 laws / 132,000+ articles from the [Fedlex](https://www.fedlex.admin.ch) SPARQL endpoint, mirrored monthly into `statutes.db`. Covers every consolidated federal act in German, French, and Italian.
 - **Cantonal:** ~26,000 active cantonal and intercantonal acts from [LexFind.ch](https://www.lexfind.ch), mirrored monthly into `cantonal_laws.db`. PDFs are extracted with PyMuPDF and segmented into articles. Covers all 26 cantons plus bilingual secondary-language passes for BE / FR / VS / GR.
 
 **`get_law`** — Look up any Swiss law (federal or cantonal) by SR number or abbreviation, optionally fetching a specific article with full text.

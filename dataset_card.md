@@ -53,7 +53,7 @@ The largest open collection of Swiss court decisions: 965,000+ decisions from 10
 - **8.85 million extracted case-citation references**
 - **8.85 million resolved decision-to-decision links** (with confidence scores)
 - **11.34 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
-- **5,097 federal laws indexed** with 125,378 articles in 3 languages (from Fedlex SPARQL)
+- **5,500+ federal laws indexed** with 132,000+ articles in 3 languages (from Fedlex SPARQL)
 - **26,043 cantonal legislative texts** with 1.1 million articles (from LexFind)
 - **Legislative history (Materialien)** for 2,500 federal laws: Botschaft references for 33,000 statute articles, structured Botschaft digests for BV and BGFA, parliamentary debate transcripts (Amtliches Bulletin) for the BV
 - **34 structured fields** per decision in Parquet; 27 in the FTS5 search index
@@ -159,7 +159,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | Regeste (headnote) coverage | ~54% |
 | Case-citation references | 8.85 million |
 | Statute-decision links | 11.34 million |
-| Federal laws indexed | 5,097 (125,378 articles in DE/FR/IT) |
+| Federal laws indexed | 5,500+ (132,000+ articles in DE/FR/IT) |
 | Cantonal laws indexed | 26,043 (1.1M articles) |
 | Laws with Botschaft refs | 2,500 (33,000 articles) |
 | Legislation texts searchable | 33,000+ |
@@ -310,7 +310,7 @@ See the governance policy for source withdrawals, re-anonymization, and verified
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
   note={965,000+ Swiss federal, cantonal, and regulatory decisions with full text,
         structured metadata, 8.85M citation edges, 11.34M statute links,
-        5,097 federal laws, 26,043 cantonal legislative texts,
+        5,500+ federal laws, 26,043 cantonal legislative texts,
         and legislative history for 2,500 laws.
         Searchable via 23 MCP tools (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
 }
