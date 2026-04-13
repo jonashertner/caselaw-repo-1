@@ -1,0 +1,205 @@
+================================================================
+TEXTBOX NOTES (paste into the "Notes for certification" textbox)
+================================================================
+
+OpenCaseLaw is a free legal research tool for Swiss court decisions
+and legislation. Core features (search, citation insert, law lookup)
+require NO account and NO purchase.
+
+Optional Pro features (AI reference verification, argument search,
+document scan) are available via Stripe subscription at CHF 5/month.
+This is disclosed in the add-in description and settings panel.
+
+Pro features can be tested with this license key:
+
+  ocl_pro_274cd226c34bcffe612997ce448d40b69c857f79
+
+To activate: open the add-in → gear icon (settings) → scroll to
+"Pro" section → enter the key above → click "Aktivieren".
+
+QUICK TEST (3 minutes):
+1. Open add-in → welcome screen with search bar
+2. Search "BGE 133 III 121" → click result → full detail view
+3. Click "Zitierung einfügen" → citation inserted at cursor
+4. Search "Art. 41 OR" → law article card appears with text
+5. Switch language to FR → entire UI switches to French
+6. Enter Pro key (above) → select text in document → click
+   "Referenz prüfen" → AI verification result appears
+
+External services: mcp.opencaselaw.ch (our API, no auth),
+Stripe (payments, user-initiated only), Anthropic (AI, Pro only).
+No cookies, no tracking, no user data stored.
+
+Provider Name: Jonas Hertner (matches manifest and listing).
+
+================================================================
+PDF CONTENT (for "Additional certification info" PDF upload)
+================================================================
+
+OPENCASELAW WORD ADD-IN — CERTIFICATION TESTING GUIDE
+
+1. OVERVIEW
+
+OpenCaseLaw provides instant access to 965,000+ Swiss court decisions,
+5,500 federal laws, and 26,000 cantonal legislative texts directly
+inside Microsoft Word. Users can search, read, and insert correctly
+formatted legal citations.
+
+The add-in has two tiers:
+- FREE (no account needed): search, citation insert, law lookup,
+  language switching, full decision text
+- PRO (CHF 5/month via Stripe, cancelable anytime): AI reference
+  verification, AI-assisted argument search, document scan
+
+The Pro subscription is clearly disclosed in:
+- The manifest description (all 4 languages)
+- The AppSource listing description
+- The add-in settings panel
+- The terms of use page
+
+All court decision data is public domain (CC0 1.0). Swiss court
+decisions are public records under Swiss law.
+
+2. TEST CREDENTIALS
+
+No account is required for free features (search, citation, law lookup).
+
+For Pro features, use this permanent test license key:
+
+  ocl_pro_274cd226c34bcffe612997ce448d40b69c857f79
+
+To activate:
+  a) Open the add-in panel
+  b) Click the gear icon (top right) to open Settings
+  c) Scroll to the "Pro" section
+  d) Paste the key above into the license key field
+  e) Click "Aktivieren" (or "Activate" in English)
+  f) The Pro badge appears and AI features unlock
+
+3. STEP-BY-STEP TESTING
+
+--- Free features (no key needed) ---
+
+Test 1: Search by case reference
+  - Type "BGE 133 III 121" in the search bar, press Enter
+  - Expected: Detail view with headnote (Regeste), considerations
+    (Erwägungen), and full text
+  - Click "Zitierung einfügen" (Insert citation)
+  - Expected: "(BGE 133 III 121)" inserted at cursor in document
+
+Test 2: Search by topic
+  - Type "Mietrecht Kündigung" (tenancy law termination)
+  - Expected: Ranked list of relevant decisions within 2-5 seconds
+
+Test 3: Law article lookup
+  - Type "Art. 41 OR" (Art. 41 of the Code of Obligations)
+  - Expected: Card with full article text, paragraph numbers.
+    Decision results appear below.
+
+Test 4: Language switching
+  - Click "FR" button at the top
+  - Expected: All UI labels switch to French. Court names change
+    (e.g., "Bundesgericht" → "Tribunal fédéral"). Citation format
+    changes (BGE → ATF).
+  - Also test "IT" (Italian) and "EN" (English)
+
+Test 5: Citation insertion
+  - Search any decision, open detail view
+  - Click "Zitierung einfügen" button
+  - Expected: Formatted citation inserted at cursor position
+  - The citation format matches the selected language
+
+--- Pro features (use test key above) ---
+
+Test 6: Verify reference
+  - Type a sentence in the Word document, e.g.:
+    "Gemäss BGE 133 III 121 ist der Vermieter zur Kündigung berechtigt."
+  - Select the sentence
+  - Click "Prüfen PRO" (Verify reference) in the add-in panel
+  - Expected: AI analysis showing whether BGE 133 III 121 actually
+    supports the claim, with relevant consideration quoted
+
+Test 7: Find supporting decision
+  - Type a legal statement in the document, e.g.:
+    "Der Mieter hat das Recht, Mängel der Mietsache zu rügen."
+  - Select the statement
+  - Click "Begründung PRO" (Find support)
+  - Expected: AI searches for decisions that support or contradict
+    the statement
+
+Test 8: Document scan
+  - With a document containing legal references open
+  - Click "Scan PRO"
+  - Expected: AI scans the document for legal references
+
+4. EXTERNAL SERVICES
+
+mcp.opencaselaw.ch (our API server)
+  - Purpose: All search queries, decision retrieval, law lookup
+  - Auth: None required for free features
+  - Data: No user data stored, no cookies
+  - Hosting: Hetzner, Germany
+  - Protocol: HTTPS only
+
+checkout.stripe.com / api.stripe.com
+  - Purpose: Payment processing for Pro subscription (CHF 5/month)
+  - Triggered: ONLY when user clicks "Upgrade to Pro" in settings
+  - Data: Stripe handles all payment data; we never see card details
+  - We store: Stripe customer ID and subscription ID only
+
+api.anthropic.com
+  - Purpose: AI inference for Pro features (verify, find-support, scan)
+  - Triggered: ONLY when Pro subscriber explicitly clicks a Pro button
+  - Data sent: Selected text from document + search context
+  - No automatic transmission of document content
+
+5. PERMISSIONS
+
+ReadWriteDocument
+  - Required to insert citations at cursor position
+  - The add-in ONLY writes when user clicks "Insert citation"
+  - The add-in ONLY reads selected text when user clicks a Pro
+    feature button (verify/find-support/scan)
+  - No background reading or writing of document content
+
+6. PRIVACY
+
+- No user accounts required for core functionality
+- No cookies set
+- No tracking pixels or analytics scripts
+- No document content transmitted without explicit user action
+- Search queries are not logged or associated with users
+- Optional anonymous install-cohort signal (opt-out in settings)
+- Privacy policy: https://word.opencaselaw.ch/privacy.html
+- Full privacy policy: https://opencaselaw.ch/datenschutz/
+- Terms of use: https://word.opencaselaw.ch/terms.html
+
+7. CHARGES AND SUBSCRIPTIONS
+
+- Core features (search, citation, law lookup): FREE, no account needed
+- Pro subscription: CHF 5/month via Stripe
+- Payment is handled entirely by Stripe (checkout.stripe.com)
+- Subscription is cancelable anytime via the Settings panel
+- No automatic charges — user must explicitly initiate checkout
+- Pro pricing is disclosed in the add-in description, settings panel,
+  and terms of use
+
+8. SUPPORTED PLATFORMS
+
+- Word on Windows (desktop): Office 2016+, Microsoft 365
+- Word on Mac (desktop): Office 2016+, Microsoft 365
+- Word Online: All supported browsers
+- Minimum requirement: WordApi 1.1
+
+9. LANGUAGES
+
+German (default), French, Italian, English.
+All UI elements, error messages, button labels, court names, and
+citation formats are fully localized in all four languages.
+
+10. PROVIDER
+
+Jonas Hertner
+Email: team@jonashertner.com
+Website: https://opencaselaw.ch
+GitHub: https://github.com/jonashertner/caselaw-repo-1
