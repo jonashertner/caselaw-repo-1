@@ -161,6 +161,7 @@ class SZGerichteScraper(BaseScraper):
                 if m:
                     total = int(m.group())
                     known = self.state.count()
+                    self.portal_count = total
                     logger.info(f"[{self.court_code}] Portal: {total}, Known: {known}")
                     if total <= known:
                         logger.info(

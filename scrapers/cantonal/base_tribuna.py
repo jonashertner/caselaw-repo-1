@@ -401,6 +401,7 @@ class TribunaBaseScraper(BaseScraper):
 
             if total is None:
                 total = page_total
+                self.portal_count = (self.portal_count or 0) + total
                 logger.info(f"[{self.court_code}] Total results for '{court_filter}': {total}")
 
             if not decisions:

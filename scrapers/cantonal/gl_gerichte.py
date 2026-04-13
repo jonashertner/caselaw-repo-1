@@ -159,6 +159,7 @@ class GLGerichteScraper(BaseScraper):
             logger.info("GL: no results found")
             return
 
+        self.portal_count = total_hits
         logger.info(f"GL: {total_hits} total decisions")
 
         session_key = self._extract_session_key(html)

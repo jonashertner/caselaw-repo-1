@@ -225,6 +225,8 @@ class BaseScraper(ABC):
         self._last_request_time: float = 0
         self.last_run_errors: int = 0
         self.last_run_skips: int = 0
+        # Set by discover_new() if the portal reports a total decision count.
+        self.portal_count: int | None = None
 
     def _build_session(self) -> requests.Session:
         """Build an HTTP session with retry logic and proper headers."""

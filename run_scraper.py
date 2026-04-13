@@ -549,10 +549,20 @@ def run_with_persistence(
     if jsonl_path.exists():
         jsonl_path.touch()
 
+    our_count = len(written_ids)
+    portal_count = getattr(scraper, "portal_count", None)
+    gap = portal_count - our_count if portal_count is not None else None
+
+    coverage = f"{our_count}"
+    if portal_count is not None:
+        coverage = f"{our_count}/{portal_count}"
+        if gap and gap > 0:
+            coverage += f" (gap {gap})"
+
     logger.info(
-        f"[{scraper_key}] Done. New: {new_count}, Skips: {skips}, "
-        f"NoneReturns: {none_count}, Errors: {errors}, "
-        f"Total written: {len(written_ids)}, Time: {elapsed / 60:.1f} min, "
+        f"[{scraper_key}] Done. +{new_count} new, {coverage}, "
+        f"Errors: {errors}, NoneReturns: {none_count}, "
+        f"Time: {elapsed / 60:.1f} min, "
         f"File: {jsonl_path} ({file_size:.1f} MB)"
     )
 

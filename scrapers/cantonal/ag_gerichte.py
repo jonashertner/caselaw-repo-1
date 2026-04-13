@@ -251,6 +251,8 @@ class AGGerichteScraper(BaseScraper):
         )
         data = response.json()
         count = data.get("count", "?")
+        if isinstance(count, int):
+            self.portal_count = count
         logger.info(f"AG chronology: {count} total decisions")
         return data
 

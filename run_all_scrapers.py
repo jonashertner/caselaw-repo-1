@@ -152,22 +152,40 @@ def run_single_scraper(court: str, timeout: int) -> dict:
         duration = time.time() - start
 
         # Parse only this run's appended log region:
-        # [court] Done. New: 42, Skips: 5, Errors: 3, ...
+        # [court] Done. +42 new, 1074/1102 (gap 28), Errors: 3, ...
         new_count = 0
         skip_count = 0
         error_count = 0
         none_count = 0
+        our_count = None
+        portal_count = None
         error_tail: deque[str] = deque(maxlen=6)
         if log_path.exists():
             with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                 if log_start > 0:
                     f.seek(log_start)
                 for line in f:
-                    if "Done. New:" in line:
-                        try:
-                            new_count = int(line.split("New:")[1].split(",")[0].strip())
-                        except (ValueError, IndexError):
-                            pass
+                    if "Done. +" in line or "Done. New:" in line:
+                        # New format: +N new, OUR/PORTAL (gap G), ...
+                        # Old format: New: N, Skips: S, ...
+                        import re as _re
+                        m = _re.search(r'\+(\d+) new', line)
+                        if m:
+                            new_count = int(m.group(1))
+                        elif "New:" in line:
+                            try:
+                                new_count = int(line.split("New:")[1].split(",")[0].strip())
+                            except (ValueError, IndexError):
+                                pass
+                        # Parse coverage: "OUR/PORTAL" or just "OUR"
+                        m = _re.search(r'new, (\d+)/(\d+)', line)
+                        if m:
+                            our_count = int(m.group(1))
+                            portal_count = int(m.group(2))
+                        else:
+                            m = _re.search(r'new, (\d+),', line)
+                            if m:
+                                our_count = int(m.group(1))
                         if "Skips:" in line:
                             try:
                                 skip_count = int(line.split("Skips:")[1].split(",")[0].strip())
@@ -206,6 +224,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             else:
                 note = f"{none_count} listed on portal but content not downloadable (empty page or missing PDF)"
 
+        gap = portal_count - our_count if portal_count is not None and our_count is not None else None
         return {
             "court": court,
             "success": not failed,
@@ -213,6 +232,9 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "skip_count": skip_count,
             "error_count": max(0, error_count - none_count),  # real errors only
             "none_count": none_count,
+            "our_count": our_count,
+            "portal_count": portal_count,
+            "gap": gap,
             "duration": duration,
             "error": error,
             "note": note,
@@ -354,9 +376,17 @@ def main():
                     status = "OK"
                 else:
                     status = "FAILED"
+                coverage = ""
+                if result.get("portal_count") is not None and result.get("our_count") is not None:
+                    coverage = f" ({result['our_count']}/{result['portal_count']}"
+                    if result.get("gap") and result["gap"] > 0:
+                        coverage += f", gap {result['gap']}"
+                    coverage += ")"
+                elif result.get("our_count") is not None:
+                    coverage = f" ({result['our_count']})"
                 logger.info(
                     f"  [{status}] {result['court']}: "
-                    f"+{result['new_count']} new, "
+                    f"+{result['new_count']} new{coverage}, "
                     f"{result['duration']:.0f}s"
                     f"{' — ' + result['error'] if result['error'] else ''}"
                 )
@@ -411,6 +441,9 @@ def main():
                 "skip_count": r["skip_count"],
                 "error_count": r["error_count"],
                 "none_count": r.get("none_count", 0),
+                "our_count": r.get("our_count"),
+                "portal_count": r.get("portal_count"),
+                "gap": r.get("gap"),
                 "duration_s": round(r["duration"], 1),
                 "error": r["error"],
                 "note": r.get("note"),

@@ -188,6 +188,7 @@ class NEGerichteScraper(BaseScraper):
             logger.warning("NE: could not determine total hits")
             return
 
+        self.portal_count = total_hits
         logger.info(f"NE: {total_hits} total decisions, {(total_hits + RESULTS_PER_PAGE - 1) // RESULTS_PER_PAGE} pages")
 
         session_key = self._extract_session_key(html)

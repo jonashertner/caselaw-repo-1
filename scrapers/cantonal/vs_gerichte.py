@@ -77,6 +77,7 @@ class VSGerichteScraper(BaseScraper):
                 break
 
             if offset == 0:
+                self.portal_count = total
                 logger.info(f"VS: {total} total decisions")
 
             for item in results:
