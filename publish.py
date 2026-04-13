@@ -359,6 +359,29 @@ def step_4_upload_hf(dry_run: bool = False) -> bool:
         return False
 
 
+def step_2f_build_materialien(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2f: Rebuild materialien.db (Botschaft refs + digests + debates)."""
+    logger.info("Step 2f: Build materialien.db")
+
+    script = REPO_DIR / "search_stack" / "build_materialien_db.py"
+    if not script.exists():
+        logger.info("  build_materialien_db.py not found, skipping")
+        return True
+
+    materialien_dir = REPO_DIR / "data" / "materialien"
+    if not materialien_dir.exists():
+        logger.info("  data/materialien/ not found, skipping")
+        return True
+
+    return run_cmd(
+        [sys.executable, "-m", "search_stack.build_materialien_db",
+         "--input-dir", str(materialien_dir)],
+        "Build materialien.db",
+        dry_run,
+        timeout=600,
+    )
+
+
 def step_5_generate_stats(dry_run: bool = False) -> bool:
     """Step 5: Generate stats.json from database."""
     logger.info("Step 5: Generate stats.json")
@@ -427,17 +450,35 @@ def step_6_git_push(dry_run: bool = False) -> bool:
 # Execution order intentionally differs from the step IDs to preserve the
 # existing CLI surface (`--step 2b`, `--step 2c`, `--step 2d`) while ensuring
 # weekly enrichment happens before quality gating and graph construction.
+# Two-tier pipeline:
+# - FAST tier (Steps 1→2→5→6): runs daily, completes in ~3.5h.
+#   After FTS5 build + atomic swap, immediately regenerate stats.json
+#   and push to GitHub so the site shows today's date.
+# - SLOW tier (Steps 2d→2e→2b→2c→3→4→5→6): enrichment, graph,
+#   Parquet export, HuggingFace upload, final stats refresh + push.
+#   Runs after the fast tier. Can be skipped on --fast-only.
+#
+# The key insight: stats.json + git push happen TWICE — once after
+# FTS5 (fast, site-visible) and again after everything else finishes
+# (includes updated graph counts, quality report, etc.).
+
 STEPS = [
     (1, "Ingest", step_1_ingest),
     (2, "Build FTS5", step_2_build_fts5),
+    # ── Fast publish: site shows today's date immediately ──
+    ("5a", "Generate Stats (early)", step_5_generate_stats),
+    ("6a", "Git Push (early)", step_6_git_push),
+    # ── Slow tier: enrichment, graph, materialien, export ──
     ("2d", "Quality Enrichment", step_2d_enrich_quality),
     ("2e", "Anwaltsrecht Tags", step_2e_build_anwaltsrecht_tags),
     ("2b", "Quality Report", step_2b_quality_report),
     ("2c", "Reference Graph", step_2c_build_reference_graph),
+    ("2f", "Materialien", step_2f_build_materialien),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
-    (5, "Generate Stats", step_5_generate_stats),
-    (6, "Git Push", step_6_git_push),
+    # ── Final stats refresh (includes graph counts) ──
+    (5, "Generate Stats (final)", step_5_generate_stats),
+    (6, "Git Push (final)", step_6_git_push),
 ]
 
 
@@ -455,6 +496,11 @@ def main():
     parser.add_argument(
         "--ingest", action="store_true",
         help="Run entscheidsuche ingest (step 1); skipped by default"
+    )
+    parser.add_argument(
+        "--fast-only", action="store_true",
+        help="Stop after FTS5 build + early stats push (skip graph, Parquet, HF upload). "
+             "The site shows today's date in ~3.5h instead of ~6h."
     )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
@@ -482,10 +528,12 @@ def main():
     start = time.time()
     manual_step_mode = args.step is not None
 
-    # Steps 4 (HF upload) and 6 (git push) must not run if critical steps failed,
+    # Steps 4 (HF upload) and 6/6a (git push) must not run if critical steps failed,
     # because step 4 prunes remote parquet based on local state.
     CRITICAL_STEPS = {2, 3}
     GUARDED_STEPS = {4, 6}
+    # Steps after the fast tier — skipped with --fast-only
+    SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", 3, 4, 5, 6}
 
     # Resume from checkpoint if prior run crashed
     checkpoint = _load_checkpoint() if not manual_step_mode else None
@@ -511,6 +559,11 @@ def main():
             logger.info(f"  Step {num} ({name}): SKIPPED (use --ingest to enable)")
             results[num] = True
             continue
+        # --fast-only: stop after the early stats push (5a + 6a)
+        if args.fast_only and num in SLOW_STEPS:
+            logger.info(f"  Step {num} ({name}): SKIPPED (--fast-only)")
+            results[num] = True
+            continue
         # Skip guarded steps if a critical step failed (unless running single step)
         if not manual_step_mode and num in GUARDED_STEPS:
             critical_failed = any(
@@ -526,12 +579,13 @@ def main():
         try:
             if num == 2:
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
-            elif num in ("2b", "2c", "2d", "2e"):
+            elif num in ("2b", "2c", "2d", "2e", "2f"):
                 ok = func(
                     dry_run=args.dry_run,
                     full_rebuild=(args.full_rebuild or manual_step_mode),
                 )
             else:
+                # Steps 5, 5a, 6, 6a and all others take only dry_run
                 ok = func(dry_run=args.dry_run)
             results[num] = ok
             elapsed = time.time() - step_start
