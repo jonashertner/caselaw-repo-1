@@ -2755,9 +2755,8 @@ def _get_graph_conn() -> sqlite3.Connection | None:
             _graph_warned = True
         return None
     try:
-        conn = sqlite3.connect(str(GRAPH_DB_PATH), timeout=0.5)
+        conn = sqlite3.connect(f"file:{GRAPH_DB_PATH}?immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open graph DB: %s", e)
@@ -2775,9 +2774,8 @@ def _get_anwaltsrecht_conn() -> sqlite3.Connection | None:
             _anwaltsrecht_warned = True
         return None
     try:
-        conn = sqlite3.connect(str(ANWALTSRECHT_TAGS_DB_PATH), timeout=0.5)
+        conn = sqlite3.connect(f"file:{ANWALTSRECHT_TAGS_DB_PATH}?immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open Anwaltsrecht tags DB: %s", e)
@@ -2822,9 +2820,8 @@ def _get_statutes_conn() -> sqlite3.Connection | None:
             _statutes_warned = True
         return None
     try:
-        conn = sqlite3.connect(str(STATUTES_DB_PATH), timeout=0.5)
+        conn = sqlite3.connect(f"file:{STATUTES_DB_PATH}?immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open statutes DB: %s", e)
@@ -2843,9 +2840,8 @@ def _get_cantonal_conn() -> sqlite3.Connection | None:
             _cantonal_warned = True
         return None
     try:
-        conn = sqlite3.connect(str(CANTONAL_LAWS_DB_PATH), timeout=0.5)
+        conn = sqlite3.connect(f"file:{CANTONAL_LAWS_DB_PATH}?immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open cantonal laws DB: %s", e)
@@ -2861,9 +2857,8 @@ def _get_ok_conn() -> sqlite3.Connection | None:
             _ok_warned = True
         return None
     try:
-        conn = sqlite3.connect(str(OK_COMMENTARIES_DB_PATH), timeout=0.5)
+        conn = sqlite3.connect(f"file:{OK_COMMENTARIES_DB_PATH}?immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open OK commentaries DB: %s", e)
@@ -2882,9 +2877,8 @@ def _get_materialien_conn() -> sqlite3.Connection | None:
             _materialien_warned = True
         return None
     try:
-        conn = sqlite3.connect(str(MATERIALIEN_DB_PATH), timeout=0.5)
+        conn = sqlite3.connect(f"file:{MATERIALIEN_DB_PATH}?immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open materialien DB: %s", e)

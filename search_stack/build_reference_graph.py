@@ -587,6 +587,7 @@ def build_graph(
             tmp_path.unlink()
         raise
     else:
+        conn.execute("PRAGMA journal_mode=DELETE")
         conn.close()
         os.replace(tmp_path, db_path)
 

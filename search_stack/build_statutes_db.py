@@ -364,6 +364,8 @@ def build_db():
     for sr, abbr, cnt in top:
         log.info("  SR %s (%s): %d articles", sr, abbr or "?", cnt)
 
+    # Switch to DELETE journal mode for immutable=1 compatibility with MCP workers
+    conn.execute("PRAGMA journal_mode=DELETE")
     conn.close()
 
     # Atomic swap

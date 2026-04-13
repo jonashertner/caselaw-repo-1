@@ -176,6 +176,7 @@ def build_db():
     """).fetchall()
     log.info("Languages: %s", ", ".join(f"{lang}={cnt}" for lang, cnt in langs))
 
+    conn.execute("PRAGMA journal_mode=DELETE")
     conn.close()
 
     # Atomic rename

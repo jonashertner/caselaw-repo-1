@@ -190,6 +190,7 @@ def build(input_dir: Path, output_db: Path) -> None:
     log.info("Optimising FTS5 index...")
     conn.execute("INSERT INTO articles_fts(articles_fts) VALUES ('optimize')")
     conn.commit()
+    conn.execute("PRAGMA journal_mode=DELETE")
     conn.close()
 
     log.info("Atomic swap: %s → %s", tmp_path, output_db)
