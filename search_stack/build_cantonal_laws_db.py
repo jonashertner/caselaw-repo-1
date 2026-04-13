@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Build cantonal laws SQLite database from LexFind cantonal JSONL dumps.
+Build cantonal laws SQLite database from cantonal JSONL dumps.
 
-Reads output/lexfind_cantonal/{canton}.jsonl (one law per line), writes
-output/cantonal_laws.db with FTS5 over titles + article text.
+Reads from two sources (direct takes priority over LexFind):
+    1. output/cantonal_laws_direct/{canton}.jsonl  (direct from official portals)
+    2. output/lexfind_cantonal/{canton}.jsonl       (LexFind PDF fallback)
+
+For cantons with both, direct-source data wins (better text quality).
 
 Schema:
     laws             — one row per (lexfind_id, language) pair
@@ -12,7 +15,7 @@ Schema:
 
 Usage:
     python -m search_stack.build_cantonal_laws_db
-    python -m search_stack.build_cantonal_laws_db --input output/lexfind_cantonal
+    python -m search_stack.build_cantonal_laws_db --input-direct output/cantonal_laws_direct
 """
 
 from __future__ import annotations
@@ -32,8 +35,15 @@ logging.basicConfig(
 )
 log = logging.getLogger("build_cantonal_laws")
 
-INPUT_DIR = Path(os.environ.get("LEXFIND_CANTONAL_OUTPUT", "output/lexfind_cantonal"))
+DIRECT_DIR = Path(os.environ.get("CANTONAL_LAWS_DIRECT", "output/cantonal_laws_direct"))
+LEXFIND_DIR = Path(os.environ.get("LEXFIND_CANTONAL_OUTPUT", "output/lexfind_cantonal"))
 OUTPUT_DB = Path(os.environ.get("CANTONAL_LAWS_DB", "output/cantonal_laws.db"))
+
+
+def _synthetic_id(canton: str, sr_number: str) -> int:
+    """Generate a stable integer ID for non-LexFind laws."""
+    key = f"{canton}_{sr_number}"
+    return hash(key) & 0x7FFFFFFF  # positive 31-bit int
 
 
 SCHEMA = """
@@ -89,11 +99,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS articles_fts USING fts5(
 """
 
 
-def build(input_dir: Path, output_db: Path) -> None:
-    if not input_dir.exists():
-        log.error("Input directory not found: %s", input_dir)
-        raise SystemExit(1)
-
+def build(direct_dir: Path, lexfind_dir: Path, output_db: Path) -> None:
     # Resolve symlinks so the tmp file lives on the same filesystem for os.replace
     output_db = Path(os.path.realpath(output_db))
     output_db.parent.mkdir(parents=True, exist_ok=True)
@@ -101,14 +107,33 @@ def build(input_dir: Path, output_db: Path) -> None:
     if tmp_path.exists():
         tmp_path.unlink()
 
-    log.info("Building %s from %s", output_db, input_dir)
+    # Collect JSONL files: direct takes priority over LexFind per canton
+    canton_files: dict[str, Path] = {}
+
+    # LexFind first (will be overridden by direct)
+    if lexfind_dir.exists():
+        for f in sorted(lexfind_dir.glob("*.jsonl")):
+            canton_files[f.stem.upper()] = f
+
+    # Direct sources override LexFind
+    if direct_dir.exists():
+        for f in sorted(direct_dir.glob("*.jsonl")):
+            if f.stat().st_size > 0:  # Only override if non-empty
+                canton_files[f.stem.upper()] = f
+
+    if not canton_files:
+        log.error("No JSONL files found in %s or %s", direct_dir, lexfind_dir)
+        raise SystemExit(1)
+
+    log.info("Building %s from %d cantons (direct: %s, lexfind: %s)",
+             output_db, len(canton_files), direct_dir, lexfind_dir)
     conn = sqlite3.connect(tmp_path)
     conn.executescript(SCHEMA)
     conn.execute("PRAGMA journal_mode = MEMORY")
     conn.execute("PRAGMA synchronous = OFF")
 
-    jsonl_files = sorted(input_dir.glob("*.jsonl"))
-    log.info("Found %d canton JSONL files", len(jsonl_files))
+    jsonl_files = [canton_files[c] for c in sorted(canton_files)]
+    log.info("Processing %d canton JSONL files", len(jsonl_files))
 
     now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     total_laws = 0
@@ -132,7 +157,13 @@ def build(input_dir: Path, output_db: Path) -> None:
                 articles = row.get("articles") or []
                 lexfind_id = row.get("lexfind_id")
                 if lexfind_id is None:
-                    continue
+                    # Generate synthetic ID for direct-source laws
+                    sr = row.get("sr_number")
+                    if not sr:
+                        continue
+                    lexfind_id = _synthetic_id(
+                        row.get("canton") or canton, sr
+                    )
                 language = row.get("language") or "de"
 
                 conn.execute(
@@ -204,10 +235,13 @@ def build(input_dir: Path, output_db: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default=str(INPUT_DIR))
+    parser.add_argument("--input-direct", default=str(DIRECT_DIR),
+                        help="Direct-source JSONL directory (priority)")
+    parser.add_argument("--input-lexfind", default=str(LEXFIND_DIR),
+                        help="LexFind JSONL directory (fallback)")
     parser.add_argument("--output", default=str(OUTPUT_DB))
     args = parser.parse_args()
-    build(Path(args.input), Path(args.output))
+    build(Path(args.input_direct), Path(args.input_lexfind), Path(args.output))
 
 
 if __name__ == "__main__":
