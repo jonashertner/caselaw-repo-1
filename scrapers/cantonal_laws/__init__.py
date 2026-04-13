@@ -3,10 +3,14 @@ from __future__ import annotations
 
 # Registry: canton code → (module, class_name)
 CANTONAL_LAW_SCRAPERS: dict[str, tuple[str, str]] = {
-    # LexWork cantons (17) — all use the same API
+    # SIL cantons (2) — server-rendered HTML
+    "NE": ("scrapers.cantonal_laws.sil", "SILScraper"),
+    "GE": ("scrapers.cantonal_laws.sil", "SILScraper"),
+    # LexWork cantons (18) — all use the same API
     "AG": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "AI": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "AR": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
+    "BE": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "BL": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "BS": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "FR": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
@@ -28,6 +32,7 @@ LEXWORK_HOSTS: dict[str, str] = {
     "AG": "gesetzessammlungen.ag.ch",
     "AI": "ai.clex.ch",
     "AR": "ar.clex.ch",
+    "BE": "www.belex.sites.be.ch",
     "BL": "bl.clex.ch",
     "BS": "www.gesetzessammlung.bs.ch",
     "FR": "fr.clex.ch",

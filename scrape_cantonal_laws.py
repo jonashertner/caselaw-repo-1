@@ -62,7 +62,8 @@ def scrape_canton(
                 skipped += 1
                 continue
 
-            if not stub.get("structured_document_id"):
+            # LexWork: skip laws without structured content (concordats etc.)
+            if "structured_document_id" in stub and not stub["structured_document_id"]:
                 skipped += 1
                 continue
 
