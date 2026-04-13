@@ -4,7 +4,7 @@
            xsi:type="TaskPaneApp">
   <Id>c0a83f2e-4d5b-4e9a-b1c7-000000000001</Id>
   <Version>1.1.0.0</Version>
-  <ProviderName>OpenCaseLaw</ProviderName>
+  <ProviderName>Jonas Hertner</ProviderName>
   <DefaultLocale>de-DE</DefaultLocale>
 
   <DisplayName DefaultValue="OpenCaseLaw - Schweizer Rechtsprechung">
@@ -13,10 +13,10 @@
     <Override Locale="en-US" Value="OpenCaseLaw - Swiss Case Law"/>
   </DisplayName>
 
-  <Description DefaultValue="Durchsuchen und zitieren Sie 963'000+ Schweizer Gerichtsentscheide direkt in Word. Bundesgericht, BVGer, BStGer, alle 26 Kantone. Referenzpruefung mit KI.">
-    <Override Locale="fr-FR" Value="Recherchez et citez 963'000+ decisions de justice suisses dans Word. TF, TAF, TPF, 26 cantons. Verification des references par IA."/>
-    <Override Locale="it-IT" Value="Cerca e cita 963'000+ decisioni giudiziarie svizzere in Word. TF, TAF, TPF, 26 cantoni. Verifica dei riferimenti con IA."/>
-    <Override Locale="en-US" Value="Search and cite 963,000+ Swiss court decisions directly in Word. Federal Supreme Court, all 26 cantons. AI-powered reference verification."/>
+  <Description DefaultValue="Durchsuchen und zitieren Sie 965'000+ Schweizer Gerichtsentscheide direkt in Word. Bundesgericht, BVGer, BStGer, alle 26 Kantone. Kostenlose Grundfunktionen: Suche, Zitate, Gesetzesartikel. Optionales Pro-Abonnement (via Stripe) fuer KI-gestuetzte Referenzpruefung, Argumentationssuche und Dokumentscan.">
+    <Override Locale="fr-FR" Value="Recherchez et citez 965'000+ decisions de justice suisses dans Word. TF, TAF, TPF, 26 cantons. Fonctions de base gratuites: recherche, citations, articles de loi. Abonnement Pro optionnel (via Stripe) pour verification des references par IA, recherche d'arguments et scan de documents."/>
+    <Override Locale="it-IT" Value="Cerca e cita 965'000+ decisioni giudiziarie svizzere in Word. TF, TAF, TPF, 26 cantoni. Funzioni base gratuite: ricerca, citazioni, articoli di legge. Abbonamento Pro opzionale (via Stripe) per verifica dei riferimenti con IA, ricerca argomenti e scansione documenti."/>
+    <Override Locale="en-US" Value="Search and cite 965,000+ Swiss court decisions directly in Word. Federal Supreme Court, all 26 cantons. Free core features: search, citations, statute lookup. Optional Pro subscription (via Stripe) for AI-powered reference verification, argument search, and document scanning."/>
   </Description>
 
   <IconUrl DefaultValue="https://word.opencaselaw.ch/assets/icon-32.png"/>
