@@ -79,22 +79,40 @@ def sparql_query(query: str, timeout: int = 120) -> list[dict]:
 
 
 def discover_laws() -> list[dict]:
-    """Get all laws in the Classified Compilation with SR numbers and latest consolidation dates."""
+    """Get all laws in the Classified Compilation with SR numbers and latest consolidation dates.
+
+    Two discovery paths merged:
+      1. jolux:historicalLegalId — the standard SR number property (covers ~4,500 laws)
+      2. skos:notation on classifiedByTaxonomyEntry — fallback for totally revised laws
+         that Fedlex forgot to tag with historicalLegalId (738+ laws since 2020,
+         including the revDSG at SR 235.1)
+
+    The UNION ensures both old and new versions of revised laws are found.
+    When both exist for the same SR number, the one with the latest consolidation
+    date wins (i.e., the current version).
+    """
     log.info("Discovering laws via SPARQL...")
     query = """
     PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
+    PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
     SELECT ?work ?srNumber (MAX(?date) AS ?latestDate) WHERE {
       ?work a jolux:ConsolidationAbstract .
-      ?work jolux:historicalLegalId ?srNumber .
       ?consolidation jolux:isMemberOf ?work .
       ?consolidation jolux:dateApplicability ?date .
       FILTER(?date <= NOW())
+      {
+        ?work jolux:historicalLegalId ?srNumber .
+      } UNION {
+        ?work jolux:classifiedByTaxonomyEntry ?tax .
+        ?tax skos:notation ?srNumber .
+        FILTER NOT EXISTS { ?work jolux:historicalLegalId ?any . }
+      }
     }
     GROUP BY ?work ?srNumber
     ORDER BY ?srNumber
     """
-    rows = sparql_query(query, timeout=300)
+    rows = sparql_query(query, timeout=600)
     log.info("Found %d law entries with SR numbers", len(rows))
     return rows
 
