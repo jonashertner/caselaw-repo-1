@@ -650,13 +650,59 @@ def main():
     if traffic:
         stats["traffic"] = traffic
 
-    # ── Compute deltas vs previous stats.json ──
+    # ── Compute deltas vs a stats snapshot from a previous day ──
+    # Using the file currently on disk breaks intra-day re-runs (second run
+    # compares to the first run of the same day and shows delta=0). Instead,
+    # pick the most recent git-tracked revision of stats.json whose
+    # generated_at is on an earlier calendar day.
     prev = {}
-    if output_path.exists():
+    today_iso = datetime.now(timezone.utc).date().isoformat()
+
+    # Try git history first — walk commits and pick the first one from an
+    # earlier day.
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["git", "-C", str(repo_dir), "log", "--pretty=%H",
+             "--", str(output_path.relative_to(repo_dir))],
+            capture_output=True, text=True, timeout=15,
+        )
+        if result.returncode == 0:
+            for commit_hash in result.stdout.strip().split("\n"):
+                if not commit_hash:
+                    continue
+                show = subprocess.run(
+                    ["git", "-C", str(repo_dir), "show",
+                     f"{commit_hash}:{output_path.relative_to(repo_dir)}"],
+                    capture_output=True, text=True, timeout=15,
+                )
+                if show.returncode != 0:
+                    continue
+                try:
+                    candidate = json.loads(show.stdout)
+                except json.JSONDecodeError:
+                    continue
+                cand_ts = candidate.get("generated_at", "")
+                cand_date = cand_ts[:10] if cand_ts else ""
+                if cand_date and cand_date < today_iso:
+                    prev = candidate
+                    logger.info(
+                        f"Loaded stats.json from commit {commit_hash[:8]} "
+                        f"(generated {cand_ts}) for delta computation"
+                    )
+                    break
+    except Exception as e:
+        logger.warning(f"Git history lookup failed: {e}")
+
+    # Fallback: current file on disk — but only if its date is earlier.
+    if not prev and output_path.exists():
         try:
             with open(output_path, "r", encoding="utf-8") as f:
-                prev = json.load(f)
-            logger.info("Loaded previous stats.json for delta computation")
+                candidate = json.load(f)
+            cand_date = candidate.get("generated_at", "")[:10]
+            if cand_date and cand_date < today_iso:
+                prev = candidate
+                logger.info("Using current stats.json on disk (earlier date) for delta")
         except Exception as e:
             logger.warning(f"Could not load previous stats.json: {e}")
 
