@@ -3,9 +3,10 @@ from __future__ import annotations
 
 # Registry: canton code → (module, class_name)
 CANTONAL_LAW_SCRAPERS: dict[str, tuple[str, str]] = {
-    # SIL cantons (2) — server-rendered HTML
+    # ZH — custom AEM CMS + PDF from notes.zh.ch
+    "ZH": ("scrapers.cantonal_laws.zh", "ZHScraper"),
+    # SIL cantons — server-rendered HTML
     "NE": ("scrapers.cantonal_laws.sil", "SILScraper"),
-    "GE": ("scrapers.cantonal_laws.sil", "SILScraper"),
     # LexWork cantons (18) — all use the same API
     "AG": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "AI": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
