@@ -125,9 +125,21 @@ class ZHScraper:
 
         pdf_url = html.unescape(pdf_match.group(1))
 
-        # Download PDF
+        # Download PDF — notes.zh.ch returns a JS redirect, follow it
         try:
             pdf_resp = self._get(pdf_url)
+            # Check for JS redirect: window.location="..."
+            if len(pdf_resp.content) < 500 and b"window.location" in pdf_resp.content:
+                redirect_match = re.search(
+                    r'window\.location="([^"]+)"', pdf_resp.text
+                )
+                if redirect_match:
+                    redirect_path = redirect_match.group(1)
+                    if redirect_path.startswith("/"):
+                        redirect_url = f"https://www.notes.zh.ch{redirect_path}"
+                    else:
+                        redirect_url = redirect_path
+                    pdf_resp = self._get(redirect_url)
         except Exception as e:
             logger.error(f"ZH {stub['sr_number']}: PDF download failed: {e}")
             return None

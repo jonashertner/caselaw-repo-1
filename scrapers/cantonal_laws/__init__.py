@@ -5,7 +5,8 @@ from __future__ import annotations
 CANTONAL_LAW_SCRAPERS: dict[str, tuple[str, str]] = {
     # ZH — custom AEM CMS + PDF from notes.zh.ch
     "ZH": ("scrapers.cantonal_laws.zh", "ZHScraper"),
-    # SIL cantons — server-rendered HTML
+    # SIL cantons — server-rendered HTML (Word-generated)
+    "GE": ("scrapers.cantonal_laws.sil", "SILScraper"),
     "NE": ("scrapers.cantonal_laws.sil", "SILScraper"),
     # LexWork cantons (18) — all use the same API
     "AG": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),

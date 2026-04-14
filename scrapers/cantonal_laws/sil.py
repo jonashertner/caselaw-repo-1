@@ -30,12 +30,12 @@ USER_AGENT = (
 SIL_CONFIG = {
     "NE": {
         "host": "rsn.ne.ch",
-        "book": "rsne",
+        "base_path": "/DATA/program/books/rsne",
         "language": "fr",
     },
     "GE": {
         "host": "silgeneve.ch",
-        "book": "rsg",
+        "base_path": "/legis/program/books/rsg",
         "language": "fr",
     },
 }
@@ -52,10 +52,9 @@ class SILScraper:
         self.canton = canton
         cfg = SIL_CONFIG[canton]
         self.host = cfg["host"]
-        self.book = cfg["book"]
         self.lang = cfg["language"]
         self.base_url = f"https://{self.host}"
-        self.data_base = f"{self.base_url}/DATA/program/books/{self.book}"
+        self.data_base = f"{self.base_url}{cfg['base_path']}"
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": USER_AGENT})
         self._last_request: float = 0
