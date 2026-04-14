@@ -143,27 +143,20 @@ class TIScraper:
 
     def _parse_law_html(self, html_text: str) -> tuple[list[dict], str]:
         """Parse TI law HTML into articles and full text."""
-        # Find the main content area
-        body_match = re.search(
-            r'<div[^>]*class="[^"]*contenuto[^"]*"[^>]*>(.*?)</div>\s*(?:</div>|<div[^>]*class="[^"]*footer)',
-            html_text, re.DOTALL | re.IGNORECASE
-        )
-        if not body_match:
-            body_match = re.search(r'<body[^>]*>(.*)</body>', html_text, re.DOTALL | re.IGNORECASE)
+        body_match = re.search(r'<body[^>]*>(.*)</body>', html_text, re.DOTALL | re.IGNORECASE)
         if not body_match:
             return [], ""
 
         body = body_match.group(1)
 
-        # Remove scripts and styles
+        # Remove scripts, styles, navigation
         body = re.sub(r'<script[^>]*>.*?</script>', '', body, flags=re.DOTALL | re.IGNORECASE)
         body = re.sub(r'<style[^>]*>.*?</style>', '', body, flags=re.DOTALL | re.IGNORECASE)
-        # Remove navigation/menu elements
         body = re.sub(r'<nav[^>]*>.*?</nav>', '', body, flags=re.DOTALL | re.IGNORECASE)
 
-        # Convert to text
+        # Convert to text — TI uses span-based styling, so </span> needs newlines too
         body = re.sub(r'<br\s*/?>', '\n', body)
-        body = re.sub(r'</(?:p|div|h[1-6]|li|tr)>', '\n', body, flags=re.IGNORECASE)
+        body = re.sub(r'</(?:p|div|h[1-6]|li|tr|span)>', '\n', body, flags=re.IGNORECASE)
         body = re.sub(r'<(?:p|div|h[1-6]|li|tr)[^>]*>', '\n', body, flags=re.IGNORECASE)
         text = re.sub(r'<[^>]+>', '', body)
         text = html_mod.unescape(text)
