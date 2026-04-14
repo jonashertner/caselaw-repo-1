@@ -3,6 +3,8 @@ from __future__ import annotations
 
 # Registry: canton code → (module, class_name)
 CANTONAL_LAW_SCRAPERS: dict[str, tuple[str, str]] = {
+    # TI — PHP portal at www3.ti.ch/CAN/RLeggi
+    "TI": ("scrapers.cantonal_laws.ti", "TIScraper"),
     # ZH — custom AEM CMS + PDF from notes.zh.ch
     "ZH": ("scrapers.cantonal_laws.zh", "ZHScraper"),
     # SIL cantons — server-rendered HTML (Word-generated)
