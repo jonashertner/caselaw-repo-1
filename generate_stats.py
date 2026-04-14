@@ -662,9 +662,16 @@ def main():
     # earlier day.
     try:
         import subprocess
+        # Resolve the output path relative to the repo (handle abs paths or
+        # paths that don't sit inside repo_dir cleanly).
+        try:
+            rel_path = output_path.resolve().relative_to(repo_dir.resolve())
+        except ValueError:
+            # Fall back to a sensible default path inside the repo.
+            rel_path = Path("docs/stats.json")
         result = subprocess.run(
             ["git", "-C", str(repo_dir), "log", "--pretty=%H",
-             "--", str(output_path.relative_to(repo_dir))],
+             "-n", "14", "--", str(rel_path)],
             capture_output=True, text=True, timeout=15,
         )
         if result.returncode == 0:
@@ -673,7 +680,7 @@ def main():
                     continue
                 show = subprocess.run(
                     ["git", "-C", str(repo_dir), "show",
-                     f"{commit_hash}:{output_path.relative_to(repo_dir)}"],
+                     f"{commit_hash}:{rel_path}"],
                     capture_output=True, text=True, timeout=15,
                 )
                 if show.returncode != 0:
