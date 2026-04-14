@@ -12028,16 +12028,23 @@ def main_remote(host: str, port: int):
                         )
                 else:
                     # Browser/bot — serve HTML landing page with verification tag
+                    try:
+                        _conn = get_db()
+                        _count = _conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+                        _conn.close()
+                    except Exception:
+                        _count = 0
+                    _count_k = f"{_count:,}"
                     resp = Response(
                         '<!DOCTYPE html><html lang="de"><head>'
                         '<meta charset="UTF-8">'
                         '<meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">'
                         '<title>OpenCaseLaw MCP Server</title>'
-                        '<meta name="description" content="MCP server for Swiss court decisions. 962,272 published decisions searchable via Claude, ChatGPT, and Gemini.">'
+                        f'<meta name="description" content="MCP server for Swiss court decisions. {_count_k} published decisions searchable via Claude, ChatGPT, and Gemini.">'
                         '</head><body>'
                         '<h1>OpenCaseLaw MCP Server</h1>'
                         '<p>This is the MCP (Model Context Protocol) server for <a href="https://opencaselaw.ch">OpenCaseLaw.ch</a>.</p>'
-                        '<p>962,272 Swiss decisions from 101 federal, cantonal, and regulatory sources, searchable via AI.</p>'
+                        f'<p>{_count_k} Swiss decisions from 100+ federal, cantonal, and regulatory courts, searchable via AI.</p>'
                         '<ul>'
                         '<li><a href="/api/docs">REST API Documentation</a></li>'
                         '<li><a href="/sitemap.xml">Sitemap</a></li>'
