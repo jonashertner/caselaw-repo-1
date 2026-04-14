@@ -11582,10 +11582,10 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             text += "-" * 83 + "\n"
             for c in courts:
                 text += (
-                    f"{c['court']:<25} {c['canton']:<8} "
+                    f"{c['court']:<25} {(c['canton'] or ''):8s} "
                     f"{c['decision_count']:>10,}  "
                     f"{c['languages']:>4}  "
-                    f"{c['earliest']:>12} {c['latest']:>12}\n"
+                    f"{(c['earliest'] or 'n/a'):>12} {(c['latest'] or 'n/a'):>12}\n"
                 )
             return [TextContent(type="text", text=text)]
 
