@@ -2169,7 +2169,7 @@
     "2026-03": 1521,
     "2026-04": 31
   },
-  "generated_at": "2026-04-14T14:07:32.866001+00:00",
+  "generated_at": "2026-04-14T21:34:35.234315+00:00",
   "scraper_health": {
     "run_at": "2026-04-14T02:29:08.908602+00:00",
     "run_duration_s": 5331.6,
@@ -3460,17 +3460,48 @@
     }
   },
   "delta": {
-    "total": 0,
+    "total": 136,
     "by_court": {
+      "ge_gerichte": 38,
+      "ti_gerichte": 2,
+      "vd_gerichte": 6,
+      "zh_sozialversicherungsgericht": 3,
+      "bl_gerichte": 4,
+      "gr_gerichte": 18,
+      "fr_gerichte": 16,
+      "be_verwaltungsgericht": 4,
+      "ne_gerichte": 10,
+      "sg_versicherungsgericht": 2,
+      "ag_strafgericht": 3,
+      "ag_verwaltungsgericht": 2,
+      "ag_zivilgericht": 2,
+      "zg_obergericht": 2,
+      "ju_gerichte": 22,
+      "zh_bezirksgericht_zuerich": 1,
+      "ag_handelsgericht": 1,
       "sav_kantone": 1
     },
-    "by_canton": {},
+    "by_canton": {
+      "GE": 38,
+      "VD": 6,
+      "ZH": 4,
+      "TI": 2,
+      "BE": 4,
+      "BL": 4,
+      "SG": 2,
+      "GR": 18,
+      "FR": 16,
+      "AG": 8,
+      "NE": 10,
+      "ZG": 2,
+      "JU": 22
+    },
     "corpus": {
-      "cantonal_laws": 3545,
-      "cantonal_law_articles": 65945,
+      "cantonal_laws": -10321,
+      "cantonal_law_articles": -753406,
       "citation_edges": 1955,
       "statute_edges": 2056
     },
-    "previous_generated_at": "2026-04-14T11:20:24.069114+00:00"
+    "previous_generated_at": "2026-04-13T14:35:23.135592+00:00"
   }
 }
