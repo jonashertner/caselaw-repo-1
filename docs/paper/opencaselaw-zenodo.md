@@ -4,13 +4,13 @@
 Independent Researcher, Zurich, Switzerland
 jh@jonashertner.com
 
-**April 2026** — snapshot version 2026-04-10
+**April 2026** — snapshot version 2026-04-14
 
 ---
 
 ## Abstract
 
-Switzerland publishes court decisions across a fragmented infrastructure of 26 cantonal portals, multiple federal court websites, and regulatory agencies. No unified open resource exists. We release *OpenCaseLaw*, a large-scale open corpus of published Swiss court decisions together with a resolved citation and statute-reference graph. The April 10, 2026 snapshot contains 965,141 full-text decisions from 104 courts and regulatory bodies across all 26 cantons and the period 1875--2026, in German (46.6%), French (45.1%), and Italian (8.3%). The accompanying reference graph contains 6.53 million resolved decision-to-decision citation links and 11.34 million decision-to-statute references, with both endpoints navigable: 80 federal laws (39,000 articles) are mirrored locally from Fedlex and approximately 33,000 additional federal and cantonal texts are queryable through a cached integration with LexFind.ch. To our knowledge, this is the first open dataset to couple comprehensive cantonal and federal coverage with a resolved citation graph and dereferenceable statute references for Swiss case law.
+Switzerland publishes court decisions across a fragmented infrastructure of 26 cantonal portals, multiple federal court websites, and regulatory agencies. No unified open resource exists. We release *OpenCaseLaw*, a large-scale open corpus of published Swiss court decisions together with a resolved citation and statute-reference graph. The April 14, 2026 snapshot contains 965,342 full-text decisions from 104 courts and regulatory bodies across all 26 cantons and the period 1875--2026, in German (46.6%), French (45.1%), and Italian (8.3%). The accompanying reference graph contains 6.54 million resolved decision-to-decision citation links and 11.35 million decision-to-statute references, with both endpoints navigable: 5,510 federal laws (398,397 articles, three languages) are mirrored locally from Fedlex, and 15,722 cantonal laws (353,464 articles) across all 26 cantons are scraped directly from each canton's official publication portal---22 cantons via structured JSON APIs, 4 via LexFind PDF fallback. To our knowledge, this is the first open dataset to couple comprehensive cantonal and federal coverage with a resolved citation graph and dereferenceable statute references for Swiss case law.
 
 We report one empirical finding: a naive reading of the raw cross-language citation matrix appears to show strong German dominance of French and Italian jurisprudence, but this is an artefact of how the *Bundesgerichtsentscheide* (BGE) leading-case collection is distributed by language. 71.6% of BGE records in the corpus are in German, because BGE records inherit the language of the underlying Federal Supreme Court proceedings, which in turn mirrors the Swiss population mix. Once this confound is controlled for --- either by excluding BGE targets, or by normalising BGE citations against the BGE language base rate --- each language group exhibits a clear preference for its own-language sources. French courts cite French non-BGE sources 4.6 times more often than German non-BGE sources, and within BGE targets, French courts over-cite French BGEs by 13.5 percentage points relative to the base rate --- the largest own-language preference in the matrix.
 
@@ -26,9 +26,9 @@ Switzerland publishes court decisions through a fragmented infrastructure: 26 ca
 
 This paper describes *OpenCaseLaw*, an open corpus of published Swiss court decisions with a resolved citation graph. We make three concrete contributions:
 
-1. **A large-scale open corpus** of 965,141 published decisions from 104 courts and regulatory bodies, with full text in German, French, and Italian. To our knowledge, this is the largest open collection of published Swiss court decisions and the only one that combines comprehensive cantonal and federal coverage with trilingual full text.
+1. **A large-scale open corpus** of 965,342 published decisions from 104 courts and regulatory bodies, with full text in German, French, and Italian. To our knowledge, this is the largest open collection of published Swiss court decisions and the only one that combines comprehensive cantonal and federal coverage with trilingual full text.
 
-2. **A resolved citation and statute-reference graph, plus a legislation access layer.** We extract and resolve 8.87 million citation references (73.6% resolved to in-corpus targets) and 11.34 million decision-to-statute links across 284,145 distinct provisions. We release the graph as a SQLite database alongside the corpus. Critically, the statute-reference endpoints on each citation are navigable: 80 Swiss federal laws (39,000 articles) are mirrored locally from Fedlex (the official Swiss federal legislation portal) and served via a fast lookup interface, and approximately 33,000 additional federal, cantonal, and intercantonal legislative texts are queryable through a cached integration with LexFind.ch. This bridges a practical gap for LLM-based legal research, where the Fedlex SPARQL endpoint and the LexFind multi-step search API are difficult to access directly; LLMs asked about Swiss statutes without this layer typically hallucinate article text rather than retrieve the authoritative current version.
+2. **A resolved citation and statute-reference graph, plus a comprehensive legislation access layer.** We extract and resolve 8.86 million citation references (73.8% resolved to in-corpus targets) and 11.35 million decision-to-statute links across 284,219 distinct provisions. We release the graph as a SQLite database alongside the corpus. Critically, the statute-reference endpoints on each citation are navigable: 5,510 Swiss federal laws (398,397 articles in three languages) are mirrored locally from Fedlex, and 15,722 cantonal laws (353,464 articles) across all 26 cantons are scraped directly from each canton's official publication portal. For 22 cantons, law text is obtained from structured JSON APIs (LexWork, 18 cantons) or parsed HTML (SIL, TI, ZH), yielding clean article-level text with preserved paragraph numbering and sub-item structure. For the remaining 4 cantons, PDF text from LexFind.ch serves as fallback. This bridges a practical gap for LLM-based legal research, where LLMs asked about Swiss statutes without this layer typically hallucinate article text rather than retrieve the authoritative current version.
 
 3. **A reproducible retrieval baseline.** We release a 100-query multilingual benchmark with graded relevance judgments and report results for a BM25 + citation-graph pipeline. All artifacts are pinned to specific commit hashes for reproducibility.
 
@@ -46,7 +46,7 @@ Several open datasets have been released for Swiss legal NLP, but all are limite
 
 | Resource | Decisions | Courts | Graph | Full text | Access | Updated |
 |:---------|----------:|-------:|:-----:|:---------:|:------:|:-------:|
-| OpenCaseLaw (this work) | 965,141 | 104 | 6.53M | 100% | CC0 | Daily |
+| OpenCaseLaw (this work) | 965,342 | 104 | 6.54M | 100% | CC0 | Daily |
 | Swiss-Judgment-Prediction | 85,000 | 1 | No | Partial | Open | No |
 | SCD | 122,000 | 1 | No | Yes | Open | No |
 | SCALE | --- | 1 | No | Partial | Open | No |
@@ -71,7 +71,7 @@ BM25 (Robertson & Zaragoza, 2009) and Reciprocal Rank Fusion (Cormack et al., 20
 
 ### 3.1 Collection and Processing
 
-OpenCaseLaw is assembled by 58 court-specific scrapers that download decisions from each court's publication portal and normalise them into a unified schema. Scrapers run daily via systemd timers on a dedicated server. Each decision is stored as a structured record with 34 fields including court identifier, docket number, decision date, language, legal area, headnote (*Regeste*/*Résumé*), full text, chamber, and source URL.
+OpenCaseLaw is assembled by 57 court-specific scrapers that download decisions from each court's publication portal and normalise them into a unified schema. Scrapers run daily via systemd timers on a dedicated server. Each decision is stored as a structured record with 34 fields including court identifier, docket number, decision date, language, legal area, headnote (*Regeste*/*Résumé*), full text, chamber, and source URL.
 
 Deduplication uses a canonical key derived from normalised court code, docket number, and decision date. Within-court deduplication retains the version with the richest content. Cross-court deduplication operates only within hand-maintained overlap groups (e.g., between a *Bundesgerichtsentscheide* (BGE) leading case and its underlying Federal Supreme Court ruling). BGE leading cases are retained as distinct records because they differ from the underlying BGer ruling in court code, docket number, editorial scope, and regeste; Section 4.1 discusses how this affects graph analysis.
 
@@ -79,16 +79,16 @@ The corpus is exported as 104 Parquet files (one per court, ~7 GB total) and upl
 
 ### 3.2 Corpus Statistics
 
-**Table 2.** Corpus summary (April 10, 2026 snapshot).
+**Table 2.** Corpus summary (April 14, 2026 snapshot).
 
 | Metric | Value |
 |:-------|------:|
-| Total decisions | 965,141 |
+| Total decisions | 965,342 |
 | Courts and public bodies | 104 |
 | Cantons represented | 26 of 26 |
 | Temporal range | 1875--2026 |
-| German decisions | 449,780 (46.6%) |
-| French decisions | 435,611 (45.1%) |
+| German decisions | 449,853 (46.6%) |
+| French decisions | 435,739 (45.1%) |
 | Italian decisions | 79,750 (8.3%) |
 
 Romansh-language decisions are not represented because the four courts operating in Romansh (in Graubünden) do not publish electronically in Romansh.
@@ -174,11 +174,11 @@ Each extracted decision-to-decision citation is resolved against the corpus usin
 
 | Metric | Value |
 |:-------|------:|
-| Extracted decision citation references | 8,870,000 |
-| Resolved in-corpus links | 6,533,534 |
-| Resolution rate | 73.7% |
-| Decision-to-statute links | 11,340,907 |
-| Distinct statute provisions cited | 284,145 |
+| Extracted decision citation references | 8,855,029 |
+| Resolved in-corpus links | 6,537,933 |
+| Resolution rate | 73.8% |
+| Decision-to-statute links | 11,345,063 |
+| Distinct statute provisions cited | 284,219 |
 | Unique citing decisions (source ends) | 680,421 |
 | Unique cited decisions (target ends) | 207,938 |
 
@@ -311,9 +311,9 @@ The 284,145 distinct provision identifiers (before alias canonicalisation) span 
 
 The statute references in Section 4.5 are navigable: for each reference, the current text of the cited provision can be retrieved directly. This is accomplished through a two-tier access layer.
 
-**Federal legislation — local Fedlex mirror.** We download the 80 most-cited Swiss federal laws from Fedlex (`fedlex.data.admin.ch`), the official Swiss federal publication portal, via its SPARQL endpoint in Akoma Ntoso XML format. The laws are parsed and indexed into a local SQLite database (`statutes.db`) containing 39,000 articles in all three official languages (approximately 13,000 articles per language), with 228,559 amendment-reference records for traceability. Included are the core federal codes and procedural acts (`OR`, `ZGB`, `StGB`, `StPO`, `ZPO`, `BV`, `SchKG`, `BGG/LTF`, `DBG`, `IPRG`, `AIG`, `BVG`, `KVG`, `AsylG`, and 66 others) at their respective consolidation dates, ranging from 2010-04-01 to 2026-02-01. Lookup by `(statute abbreviation, article number, language)` returns the current article text in ~1 millisecond.
+**Federal legislation — local Fedlex mirror.** We download 5,510 Swiss federal laws from Fedlex (`fedlex.data.admin.ch`), the official Swiss federal publication portal, via its SPARQL endpoint in Akoma Ntoso XML format. The laws are parsed and indexed into a local SQLite database (`statutes.db`) containing 398,397 articles in all three official languages, with amendment-reference records for traceability. The full systematic collection (SR) is covered, from the Federal Constitution to specialised ordinances. Lookup by `(statute abbreviation, article number, language)` returns the current article text in ~1 millisecond.
 
-**Cantonal and specialised legislation — LexFind integration.** Cantonal laws and federal regulations outside the top 80 are accessed via an on-demand integration with the LexFind.ch legislative search portal, which covers approximately 33,000 federal, cantonal (all 26 cantons), and intercantonal legislative texts. Because the LexFind API is rate-limited and requires a multi-step session protocol (create a search, then paginate), responses are cached locally with tiered TTLs (24 hours for search responses, 30 days for systematic-number resolutions, 7 days for full-text fetches). The current cache contains 696 entries. Cantonal law lookups that are not yet cached typically return within 1--7 seconds.
+**Cantonal legislation — direct scraping from official portals.** Since April 2026, cantonal laws are scraped directly from each canton's official publication portal rather than via LexFind PDF extraction, which is lossy. The cantonal legislation database (`cantonal_laws.db`) contains 15,722 laws with 353,464 articles across all 26 cantons. For 18 cantons, we use the LexWork platform's structured JSON API, which returns article text with preserved paragraph numbering, sub-item structure, and section headings. Two cantons (NE, GE) use the SIL platform (server-rendered Word HTML). One canton (TI) uses a custom PHP portal. One canton (ZH) provides PDF-only access via a Lotus Notes backend. For the remaining 4 cantons (JU, SZ, UR, VD), whose portals are inaccessible from our infrastructure (Cloudflare blocking, complex SPAs, or IP restrictions), law text is obtained via LexFind.ch PDF fallback. Cantonal law lookups return in ~3 milliseconds from the local database.
 
 **Practical value for LLM-based legal research.** Both Fedlex and LexFind are challenging to access directly from a language model or agent. Fedlex exposes only a SPARQL endpoint and XML downloads; there is no simple HTTP API for "give me the current text of Art. 41 OR in German." LexFind requires JavaScript-state management and a search-then-fetch workflow. As a result, language models asked about Swiss statutes without a retrieval layer typically fall back on outdated training data or hallucinate article text outright. The OpenCaseLaw legislation layer resolves this: each statute reference in the corpus graph can be dereferenced to authoritative current text, and the same interface is exposed as a set of tools callable from LLM agents over the Model Context Protocol. A decision's citation to "Art. 12 BGFA" can therefore be expanded on demand to the full German, French, and Italian text of the article as consolidated on the referenced date, without the LLM needing to navigate Fedlex.
 
@@ -393,7 +393,8 @@ The corpus is updated daily and the main repository advances continuously. To su
 | Code commit | (pinned at publication) |
 | Benchmark file | `benchmarks/search_relevance_golden.json` |
 | Reference graph | `output/reference_graph.db` (re-buildable from corpus + code) |
-| Federal legislation mirror | `output/statutes.db` (80 laws, 39,000 articles; re-buildable from Fedlex SPARQL) |
+| Federal legislation mirror | `output/statutes.db` (5,510 laws, 398,397 articles; re-buildable from Fedlex SPARQL) |
+| Cantonal legislation mirror | `output/cantonal_laws.db` (15,722 laws, 353,464 articles; 22 cantons direct, 4 LexFind fallback) |
 | LexFind cache | `output/lexfind_cache.db` (tiered TTL; regenerates on demand) |
 | Statute alias map | `output/statute_aliases.json` (derived from Fedlex) |
 
