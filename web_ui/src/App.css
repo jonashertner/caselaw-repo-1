@@ -953,6 +953,47 @@ body {
   text-decoration-color: var(--accent-text);
 }
 
+/* ── Decision action row (source link + copy button) ───── */
+.decision-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2);
+}
+.decision-copy-btn {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: var(--fs-xs);
+  font-family: inherit;
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 120ms var(--ease);
+}
+.decision-copy-btn:hover {
+  border-color: var(--accent-border);
+  color: var(--accent-text);
+  background: var(--accent-subtle);
+}
+.decision-copy-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.decision-copy-btn.copied {
+  border-color: var(--accent-border);
+  background: var(--accent-subtle);
+  color: var(--accent-text);
+}
+
+/* ── Card keyboard-focus affordance ────────────────────── */
+.decision-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 /* ── Decision Full Text ────────────────────────────────── */
 .decision-fulltext {
   margin-top: var(--space-3);
