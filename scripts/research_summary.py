@@ -9,7 +9,6 @@ Output: benchmarks/research_summary_YYYY-MM-DD.json
 import collections
 import glob
 import json
-import math
 import os
 import sys
 from datetime import datetime, timezone

@@ -17,10 +17,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures as cf
-import json
-import statistics
 import time
-import urllib.parse
 from collections import defaultdict
 from dataclasses import dataclass, field
 

@@ -16,7 +16,6 @@ Requires: tesseract-ocr, tesseract-ocr-deu, tesseract-ocr-fra, tesseract-ocr-ita
 from __future__ import annotations
 
 import argparse
-import io
 import json
 import logging
 import os

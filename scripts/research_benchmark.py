@@ -16,7 +16,6 @@ Output: benchmarks/ablation_history.jsonl (one JSON line per run)
 import json
 import math
 import os
-import sqlite3
 import sys
 import time
 from datetime import datetime, timezone
@@ -64,7 +63,7 @@ def run_config(golden, config_name, env_overrides):
 
     # Re-import search to pick up env changes
     # Simpler: just call the search function directly with flags
-    from mcp_server import search_fts5, _parse_query_structured
+    from mcp_server import search_fts5
 
     hits_at_1 = 0
     hits_at_5 = 0

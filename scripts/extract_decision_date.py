@@ -23,9 +23,9 @@ import logging
 import os
 import re
 import sys
-from collections import Counter, defaultdict
-from dataclasses import dataclass, field, asdict
-from datetime import date, timedelta
+from collections import Counter
+from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 
 logging.basicConfig(

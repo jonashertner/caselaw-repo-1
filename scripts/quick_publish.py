@@ -32,7 +32,6 @@ import shutil
 import sqlite3
 import sys
 import time
-from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parents[1]
@@ -40,7 +39,6 @@ if str(REPO_DIR) not in sys.path:
     sys.path.insert(0, str(REPO_DIR))
 
 from build_fts5 import insert_decision
-from db_schema import SCHEMA_SQL
 
 logger = logging.getLogger("quick_publish")
 
