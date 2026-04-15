@@ -1,5 +1,4 @@
 """Tests for Anwaltsrecht tagging pipeline."""
-import re
 import sys
 sys.path.insert(0, ".")
 

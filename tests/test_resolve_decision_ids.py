@@ -1,8 +1,7 @@
 # tests/test_resolve_decision_ids.py
 """Tests for the BGE ref → decision_id resolver."""
 import json
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from study.resolve_decision_ids import parse_bge_ref, build_fts_query, resolve_all
 
 

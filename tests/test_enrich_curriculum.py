@@ -2,7 +2,6 @@
 """Tests for the Anthropic-API-based curriculum enrichment script."""
 import json
 import pytest
-from unittest.mock import patch, MagicMock
 from study.enrich_curriculum import (
     build_enrichment_prompt,
     parse_enrichment_response,

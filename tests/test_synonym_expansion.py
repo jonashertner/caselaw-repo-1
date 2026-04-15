@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from mcp_server import LEGAL_QUERY_EXPANSIONS, _get_query_expansions
+from mcp_server import _get_query_expansions
 
 
 def test_hundebiss_expands_to_tierhalterhaftung():

@@ -1,6 +1,5 @@
 # tests/test_curriculum_100.py
 """Validation tests for the BGE-100 canonical curriculum."""
-import pytest
 from study.curriculum_engine import load_curriculum
 
 EXPECTED_AREAS = {

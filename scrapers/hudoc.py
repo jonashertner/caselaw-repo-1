@@ -19,10 +19,8 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 from datetime import date, datetime, timezone
 from typing import Iterator
-from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 
