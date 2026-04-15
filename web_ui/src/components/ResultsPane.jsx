@@ -107,7 +107,11 @@ export default function ResultsPane({ decisions, highlightId, onHighlightClear }
                 />
               )}
               {isExpanded && (
-                <div className="decision-details">
+                <div
+                  className="decision-details"
+                  onClick={e => e.stopPropagation()}
+                  onMouseDown={e => e.stopPropagation()}
+                >
                   {d.regeste && (
                     <div
                       className="decision-regeste"
