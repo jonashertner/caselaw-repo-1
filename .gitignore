@@ -22,6 +22,15 @@ benchmarks/latest_search_benchmark.json
 docs/GOAL_*.md
 scrapers/probe_*
 scrapers/scrape_*
+# Ad-hoc probe / debug scripts — keep locally but don't clutter git
+scripts/probe_*
+scripts/debug_zh.py
+scripts/debug_search_laws.py
+scripts/check_nulls.py
+scripts/paper_stats.py
+scripts/user_scenario_test.py
+scripts/full_function_test.py
+scripts/test_be_*.py
 web_ui/node_modules/
 .venv/
 *.png

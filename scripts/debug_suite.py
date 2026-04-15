@@ -96,14 +96,14 @@ def check_lint(rep: Report):
 
 # ── 3. Local: tests ─────────────────────────────────────────
 def check_tests(rep: Report):
-    print("→ Running tests...")
+    print("→ Running tests (full suite — allow a few minutes)...")
+    # Don't set --timeout: a few tests legitimately take 10-30s. Don't set -x
+    # either — we want to see all failures, not stop at first.
     r = run([sys.executable, "-m", "pytest", "--tb=no", "-q",
-             "--ignore=web_ui",
-             "-x", "--timeout=30",
-             "-m", "not live and not manual"],
-            cwd=str(REPO), timeout=300)
+             "--ignore=web_ui"],
+            cwd=str(REPO), timeout=600)
     output = r.stdout[-2000:] if len(r.stdout) > 2000 else r.stdout
-    rep.section("Tests (pytest, excluding live/manual)", output or r.stderr[-800:])
+    rep.section("Tests (pytest)", output or r.stderr[-800:])
     if r.returncode != 0 and "no tests" not in r.stdout.lower():
         lines = [l for l in r.stdout.split("\n") if "FAILED" in l][:5]
         rep.add(Finding("HIGH", "tests", f"pytest returned {r.returncode}",
@@ -229,7 +229,9 @@ def check_disk_mem(rep: Report):
 
 # ── 9. Server: DB integrity ──────────────────────────────────
 def check_db(rep: Report):
-    print("→ Server DB integrity...")
+    print("→ Server DB integrity (cheap checks only — quick_check is O(n) on 62GB DB)...")
+    # Skip PRAGMA quick_check on the big decisions.db (62 GB, >60s to run).
+    # Open the DB, run one SELECT to confirm readability + a simple stat.
     script = r"""
 python3 -c "
 import sqlite3, os
@@ -244,18 +246,17 @@ for name, path in DBS.items():
     try:
         size_mb = os.path.getsize(path) / 1024 / 1024
         conn = sqlite3.connect(f'file:{path}?immutable=1', uri=True, timeout=3)
-        check = conn.execute('PRAGMA quick_check').fetchone()[0]
         tbls = conn.execute(\"SELECT name FROM sqlite_master WHERE type='table'\").fetchall()
         conn.close()
-        print(f'{name}: {size_mb:.0f}MB, {len(tbls)} tables, integrity={check}')
+        print(f'{name}: {size_mb:.0f}MB, {len(tbls)} tables, readable=ok')
     except Exception as e:
         print(f'{name}: ERROR {e}')
 "
 """
-    r = ssh_run(script)
+    r = ssh_run(script, timeout=30)
     rep.section("DB integrity", r.stdout.strip())
     for line in r.stdout.splitlines():
-        if "ERROR" in line or ("integrity=" in line and "ok" not in line):
+        if "ERROR" in line:
             rep.add(Finding("HIGH", "db", line))
 
 

@@ -15,7 +15,7 @@ Coverage: ~500 decisions, all in French (the ECHR's working language).
 from __future__ import annotations
 
 import logging
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
 
