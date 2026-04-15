@@ -37,3 +37,5 @@ web_ui/node_modules/
 *.jpeg
 .playwright-mcp/
 desktop_extension/
+search_stack/finetune_embeddings.py
+test_publish_order.py
