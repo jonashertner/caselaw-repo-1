@@ -32,7 +32,12 @@ DB_PATH = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / ".swiss-cas
 
 def load_golden():
     with open(GOLDEN_SET) as f:
-        return json.load(f)
+        data = json.load(f)
+    # v2 schema wraps queries under "queries". Older callers assumed a list
+    # at the top level — unwrap to stay compatible.
+    if isinstance(data, dict) and "queries" in data:
+        return data["queries"]
+    return data
 
 
 def dcg(relevances, k=10):
@@ -70,7 +75,12 @@ def run_config(golden, config_name, env_overrides):
 
     for entry in golden:
         query = entry["query"]
-        expected_ids = set(entry.get("expected_ids", []))
+        # v2 schema stores judgments under "relevant" with per-result grades;
+        # v1 used a flat list under "expected_ids". Support both.
+        rel = entry.get("relevant") or []
+        expected_ids = set(entry.get("expected_ids")
+                            or (r.get("decision_id") for r in rel
+                                 if isinstance(r, dict) and r.get("grade", 0) > 0))
         if not expected_ids:
             continue
 

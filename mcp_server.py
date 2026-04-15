@@ -8021,6 +8021,10 @@ def _handle_get_doctrine(*, query: str) -> dict:
     statute_refs = _extract_query_statute_refs(q)
     statute_info: dict = {}
     leading_cases: list[dict] = []
+    # Initialise outside the branch so the later regeste-relevance sort
+    # (which checks `if article and law_code:`) works in the concept path too.
+    article = ""
+    law_code = ""
 
     if statute_refs:
         # Statute path: pick the first parsed ref (prefer non-ABS variants)
@@ -8033,9 +8037,6 @@ def _handle_get_doctrine(*, query: str) -> dict:
         if len(parts) >= 3:
             article = parts[1]
             law_code = parts[-1]  # always last: "OR", "BV", etc.
-        else:
-            article = ""
-            law_code = ""
 
         # Fetch statute text from statutes.db
         if article and law_code:

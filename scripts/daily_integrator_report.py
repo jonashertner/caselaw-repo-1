@@ -75,8 +75,13 @@ def parse_logs(log_files: list[Path], since: datetime | None = None) -> list[dic
                         ts = datetime.strptime(d["time"], "%d/%b/%Y:%H:%M:%S %z")
                     except ValueError:
                         continue
-                    if since and ts.replace(tzinfo=None) < since:
-                        continue
+                    # Ensure tz-aware comparison: since is tz-aware (UTC), ts is tz-aware
+                    # from "%z". Previously we stripped tz from ts but compared against
+                    # a tz-aware since — crashed on every .gz file.
+                    if since is not None:
+                        since_tz = since if since.tzinfo else since.replace(tzinfo=timezone.utc)
+                        if ts < since_tz:
+                            continue
                     d["timestamp"] = ts
                     d["status"] = int(d["status"])
                     d["size"] = int(d["size"])
@@ -268,6 +273,9 @@ def main():
 
     # Print summary
     if args.print_report:
+        if "error" in report or "summary" not in report:
+            print(f"\n[integrator_report] No data: {report.get('error', 'summary missing')}")
+            return
         s = report["summary"]
         print(f"\n{'='*60}")
         print(f"Period: {report['period']['first']} → {report['period']['last']}")

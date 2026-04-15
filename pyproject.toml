@@ -42,6 +42,10 @@ swiss-caselaw-gap-report = "coverage_report:main"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 addopts = "-m \"not live and not manual\""
+# scripts/ holds ad-hoc diagnostic scripts (some named *_test.py or test_*.py)
+# that aren't pytest tests. Real tests live in tests/.
+testpaths = ["tests"]
+norecursedirs = ["scripts", "web_ui", "artifacts", "benchmarks", ".claude", ".superpowers"]
 markers = [
     "live: requires live network/system interaction; excluded from default pytest runs",
     "manual: diagnostic/manual test; excluded from default pytest runs",

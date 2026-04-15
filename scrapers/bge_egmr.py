@@ -217,7 +217,10 @@ class BGEEGMRScraper(BaseScraper):
                 logger.warning(f"No text content for EGMR {docket}")
                 return None
 
-            decision_date = parse_date(stub.get("decision_date", "")) or date.today()
+            # Keep None when the portal provides no parsable date — fabricating
+            # date.today() as fallback poisons the corpus with fake dates and
+            # inflates "today's new decisions" in downstream stats.
+            decision_date = parse_date(stub.get("decision_date", ""))
             lang = detect_language(full_text)
 
             return Decision(
