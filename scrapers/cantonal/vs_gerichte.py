@@ -56,6 +56,7 @@ class VSGerichteScraper(BaseScraper):
 
         total_yielded = 0
         offset = 0
+        api_failures = 0
 
         while True:
             try:
@@ -67,7 +68,15 @@ class VSGerichteScraper(BaseScraper):
                 r = self.get(SEARCH_URL, params=params)
                 data = r.json()
             except Exception as e:
+                api_failures += 1
                 logger.error(f"VS: search failed at offset {offset}: {e}")
+                # On the very first request, an API failure is a portal
+                # outage — surface as a real error so the daily run flags it
+                # instead of silently reporting "0 new".
+                if offset == 0:
+                    raise RuntimeError(
+                        f"VS justsearche API down (offset=0): {e}"
+                    ) from e
                 break
 
             results = data.get("results", [])
