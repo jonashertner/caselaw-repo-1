@@ -960,6 +960,13 @@ class BgerScraper(BaseScraper):
             )
             return None
 
+        # BGer returns an error page when the document service is down
+        if "Document Dienstes ist fehlgeschlagen" in full_text:
+            logger.warning(
+                f"BGer document service error for {stub['docket_number']} — skipping"
+            )
+            return None
+
         # ── Page metadata ──
         meta = self._extract_metadata(soup, full_text)
 
