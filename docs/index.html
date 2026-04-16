@@ -1185,6 +1185,92 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Latest block: 3 cards, recent decisions + upcoming amendments ── */
+.latest-block { margin-top: var(--s-8); }
+.latest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-6);
+}
+.latest-card {
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  padding: var(--s-5);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+.latest-card > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px dotted var(--brd2);
+}
+.latest-card h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--tx);
+  margin: 0;
+}
+.latest-more {
+  font-size: 0.8rem;
+  color: var(--tx3);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.latest-more:hover { color: var(--tx); text-decoration: underline; }
+.latest-list { list-style: none; padding: 0; margin: 0; }
+.latest-list li {
+  padding: var(--s-3) 0;
+  border-bottom: 1px dotted var(--brd2);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.latest-list li:last-child { border-bottom: 0; }
+.latest-list .latest-meta {
+  display: flex;
+  gap: var(--s-2);
+  align-items: baseline;
+  color: var(--tx3);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 2px;
+}
+.latest-list .latest-meta .latest-docket {
+  color: var(--tx2);
+  font-weight: 600;
+}
+.latest-list .latest-meta .latest-badge {
+  background: var(--ac-bg);
+  color: var(--ac);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.latest-list a.latest-link {
+  color: var(--tx);
+  text-decoration: none;
+}
+.latest-list a.latest-link:hover { color: var(--ac); }
+.latest-list .latest-summary {
+  color: var(--tx2);
+  display: block;
+  margin-top: 2px;
+}
+.latest-list .latest-empty {
+  color: var(--tx3);
+  font-style: italic;
+  padding: var(--s-4) 0;
+}
+@media (max-width: 960px) {
+  .latest-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 900px) {
   .corpus-snapshot .snapshot-grid {
     grid-template-columns: 1fr;
@@ -2133,6 +2219,34 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
   </section>
 
+  <!-- Latest: recent decisions + upcoming statute revisions -->
+  <section class="section latest-block" aria-labelledby="latest-heading">
+    <h2 class="section-heading" id="latest-heading" data-t="latest_heading">Latest</h2>
+    <div class="latest-grid">
+      <div class="latest-card" id="latest-bge-card">
+        <header>
+          <h3 data-t="latest_bge_title">Recent Federal Supreme Court decisions</h3>
+          <a class="latest-more" href="/entscheide/?court=bger" data-t="latest_view_all">View all →</a>
+        </header>
+        <ul class="latest-list" id="latest-bge-list"></ul>
+      </div>
+      <div class="latest-card" id="latest-cantonal-card">
+        <header>
+          <h3 data-t="latest_cantonal_title">Recent cantonal decisions</h3>
+          <a class="latest-more" href="/entscheide/" data-t="latest_view_all">View all →</a>
+        </header>
+        <ul class="latest-list" id="latest-cantonal-list"></ul>
+      </div>
+      <div class="latest-card" id="latest-upcoming-card">
+        <header>
+          <h3 data-t="latest_upcoming_title">Upcoming federal statute revisions</h3>
+          <a class="latest-more" href="https://www.fedlex.admin.ch/" target="_blank" rel="noopener" data-t="latest_view_all">View all →</a>
+        </header>
+        <ul class="latest-list" id="latest-upcoming-list"></ul>
+      </div>
+    </div>
+  </section>
+
   <!-- Live from the corpus — tabbed demo -->
   <section class="live-demo section">
     <h2 class="section-heading" data-t="demo_heading">Live from the corpus</h2>
@@ -2465,6 +2579,12 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> durchsucht den lokalen Spiegel sowohl bundes- als auch kantonalseitig und interleaved die Treffer. Ohne <code style="font-size:13px">canton</code>-Filter werden Bundes- und Kantonstreffer alternierend zurückgegeben; mit Filter wird auf den jeweiligen Rechtskreis beschränkt.',
     gesetze_cantonal_get: 'Liefert Art. 1 des Zürcher Hundegesetzes aus <code style="font-size:13px">cantonal_laws.db</code>. Die <code style="font-size:13px">canton</code>-Parameter akzeptieren alle 26 Kantons-Codes (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Mit <code style="font-size:13px">fetch_top_n_texts=N</code> werden die Top-N-Treffer direkt mit Volltext und segmentierten Artikeln angereichert — LLMs können Fragen wie „Was sagt das Berner Hundegesetz zum Haltungsverbot?“ in einem einzigen Tool-Call beantworten.',
+    latest_heading: 'Neueste Einträge',
+    latest_bge_title: 'Neueste Bundesgerichtsentscheide',
+    latest_cantonal_title: 'Neueste kantonale Entscheide',
+    latest_upcoming_title: 'Bevorstehende Bundesgesetz-Änderungen',
+    latest_view_all: 'Alle ansehen →',
+    latest_empty: 'Keine Daten verfügbar',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -2605,6 +2725,12 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> interroge le miroir local tant au niveau fédéral que cantonal et entrelace les résultats. Sans filtre <code style="font-size:13px">canton</code>, les hits fédéraux et cantonaux sont renvoyés en alternance ; avec filtre, la recherche est limitée au périmètre choisi.',
     gesetze_cantonal_get: 'Renvoie l\'art. 1 de la loi zurichoise sur les chiens depuis <code style="font-size:13px">cantonal_laws.db</code>. Le paramètre <code style="font-size:13px">canton</code> accepte les 26 codes cantonaux (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Avec <code style="font-size:13px">fetch_top_n_texts=N</code>, les N premiers résultats sont directement enrichis avec le texte intégral et les articles segmentés — les LLM peuvent répondre à des questions comme « que dit la loi bernoise sur les chiens concernant l\'interdiction de détention ?» en un seul appel d\'outil.',
+    latest_heading: 'Derniers ajouts',
+    latest_bge_title: 'Arrêts récents du Tribunal fédéral',
+    latest_cantonal_title: 'Décisions cantonales récentes',
+    latest_upcoming_title: 'Révisions de lois fédérales à venir',
+    latest_view_all: 'Voir tout →',
+    latest_empty: 'Aucune donnée',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -2745,6 +2871,12 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> interroga il mirror locale sia a livello federale che cantonale e alterna i risultati. Senza filtro <code style="font-size:13px">canton</code>, i match federali e cantonali sono restituiti in modo alternato; con filtro, la ricerca è limitata al perimetro scelto.',
     gesetze_cantonal_get: 'Restituisce l\'art. 1 della legge zurighese sui cani da <code style="font-size:13px">cantonal_laws.db</code>. Il parametro <code style="font-size:13px">canton</code> accetta tutti i 26 codici cantonali (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Con <code style="font-size:13px">fetch_top_n_texts=N</code>, i primi N risultati vengono arricchiti direttamente con testo completo e articoli segmentati — gli LLM possono rispondere a domande come «Cosa dice la legge bernese sui cani riguardo al divieto di detenzione?» in una sola chiamata.',
+    latest_heading: 'Ultimi aggiornamenti',
+    latest_bge_title: 'Ultime sentenze del Tribunale federale',
+    latest_cantonal_title: 'Decisioni cantonali recenti',
+    latest_upcoming_title: 'Prossime revisioni di leggi federali',
+    latest_view_all: 'Vedi tutto →',
+    latest_empty: 'Nessun dato disponibile',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -2885,6 +3017,12 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> dumonda il spievel local sin nivel federal sco era chantunal ed alternescha ils resultats. Senza filter <code style="font-size:13px">canton</code>, ils treffers federals e chantunals vegnan dads en alternativ; cun filter, la tschertga vegn restrenschida a l\'aura tschernida.',
     gesetze_cantonal_get: 'Returna l\'art. 1 da la lescha turitgaisa davart chauns dad <code style="font-size:13px">cantonal_laws.db</code>. Il parameter <code style="font-size:13px">canton</code> accepta tut ils 26 codes chantunals (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'Cun <code style="font-size:13px">fetch_top_n_texts=N</code> vegnan ils top-N treffers arichids directamain cun il text cumplet ed artitgels segmentòs — LLMs pon respúnder a dumondas sco «Tge di la lescha bernaisa davart chauns areguard l\'obligaziun d\'interdicziun?» en ina sulettta clomada d\'utensil.',
+    latest_heading: 'Davosas entradas',
+    latest_bge_title: 'Ultimas sentenzas dal Tribunal federal',
+    latest_cantonal_title: 'Ultimas decisiuns chantunalas',
+    latest_upcoming_title: 'Proximas revisiuns da leschas federalas',
+    latest_view_all: 'Mussar tut →',
+    latest_empty: 'Naginas datas disponiblas',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -3025,6 +3163,12 @@ const I18N = {
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> queries the local mirror at both the federal and cantonal level and interleaves the hits. Without a <code style="font-size:13px">canton</code> filter, federal and cantonal matches are returned in alternation; with a filter, the search is restricted to that scope.',
     gesetze_cantonal_get: 'Returns Art. 1 of the Zurich dog act from <code style="font-size:13px">cantonal_laws.db</code>. The <code style="font-size:13px">canton</code> parameter accepts all 26 canton codes (ZH, BE, LU, …, GE, JU).',
     gesetze_cantonal_nl: 'With <code style="font-size:13px">fetch_top_n_texts=N</code>, the top N results are enriched inline with full text and segmented articles — LLMs can answer questions like "What does the Bernese dog act say about keeping bans?" in a single tool call.',
+    latest_heading: 'Latest additions',
+    latest_bge_title: 'Recent Federal Supreme Court decisions',
+    latest_cantonal_title: 'Recent cantonal decisions',
+    latest_upcoming_title: 'Upcoming federal statute revisions',
+    latest_view_all: 'View all →',
+    latest_empty: 'No data available',
   },
 };
 
@@ -3044,6 +3188,7 @@ function applyI18n() {
     renderAll(window._statsData);
     if (typeof renderHero === 'function') renderHero(window._statsData);
     if (typeof renderCorpusSnapshot === 'function') renderCorpusSnapshot(window._statsData);
+    if (typeof renderLatest === 'function') renderLatest(window._statsData);
   }
 }
 
@@ -3934,6 +4079,94 @@ function renderHero(data) {
 
   // ── Corpus snapshot section ──
   renderCorpusSnapshot(data);
+  renderLatest(data);
+}
+
+function renderLatest(data) {
+  if (!data) return;
+  const locale = { de:'de-CH', fr:'fr-CH', it:'it-CH', rm:'de-CH', en:'en-GB' }[curLang] || 'de-CH';
+  const fmtDate = (iso) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString(locale, { day:'numeric', month:'short', year:'numeric' });
+  };
+  const courtLabel = (court) => ({
+    bger:'BGer', bge:'BGE', bvger:'BVGer', bstger:'BStGer', bpatger:'BPatGer',
+  }[court] || court);
+
+  const mkEl = (tag, cls, text) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  };
+  const mkLi = (item, { badgeText, href, external }) => {
+    const li = document.createElement('li');
+    const meta = mkEl('div', 'latest-meta');
+    if (badgeText) meta.appendChild(mkEl('span', 'latest-badge', badgeText));
+    if (item.docket) meta.appendChild(mkEl('span', 'latest-docket', item.docket));
+    if (item.docket) meta.appendChild(mkEl('span', null, '·'));
+    const time = mkEl('time', null, fmtDate(item.date || item.in_force_date));
+    time.setAttribute('datetime', item.date || item.in_force_date || '');
+    meta.appendChild(time);
+    li.appendChild(meta);
+    const link = mkEl('a', 'latest-link');
+    link.href = href;
+    if (external) { link.target = '_blank'; link.rel = 'noopener'; }
+    link.appendChild(mkEl('span', 'latest-summary', item.summary || ''));
+    li.appendChild(link);
+    return li;
+  };
+  const renderEmpty = (el) => {
+    el.textContent = '';
+    el.appendChild(mkEl('li', 'latest-empty', t('latest_empty')));
+  };
+
+  const bgeEl = document.getElementById('latest-bge-list');
+  if (bgeEl) {
+    bgeEl.textContent = '';
+    const items = (data.recent && data.recent.bge) || [];
+    if (!items.length) renderEmpty(bgeEl);
+    else items.forEach((it) => bgeEl.appendChild(mkLi(it, {
+      badgeText: courtLabel(it.court),
+      href: '/entscheid/' + encodeURIComponent(it.decision_id),
+    })));
+  }
+
+  const canEl = document.getElementById('latest-cantonal-list');
+  if (canEl) {
+    canEl.textContent = '';
+    const items = (data.recent && data.recent.cantonal) || [];
+    if (!items.length) renderEmpty(canEl);
+    else items.forEach((it) => canEl.appendChild(mkLi(it, {
+      badgeText: it.canton || '',
+      href: '/entscheid/' + encodeURIComponent(it.decision_id),
+    })));
+  }
+
+  const upEl = document.getElementById('latest-upcoming-list');
+  if (upEl) {
+    upEl.textContent = '';
+    const up = data.upcoming_amendments || [];
+    if (!up.length) renderEmpty(upEl);
+    else {
+      const titleKey = { de:'title_de', fr:'title_fr', it:'title_it' }[curLang] || 'title_de';
+      up.slice(0, 10).forEach((it) => {
+        const title = it[titleKey] || it.title_de || it.title_fr || it.title_it || ('SR ' + it.sr_number);
+        const shaped = {
+          summary: title,
+          in_force_date: it.in_force_date,
+          docket: '',
+        };
+        upEl.appendChild(mkLi(shaped, {
+          badgeText: 'SR ' + it.sr_number,
+          href: 'https://www.fedlex.admin.ch/eli/cc/' + encodeURIComponent(it.sr_number),
+          external: true,
+        }));
+      });
+    }
+  }
 }
 
 function renderCorpusSnapshot(data) {
