@@ -2170,7 +2170,7 @@
     "2026-03": 1664,
     "2026-04": 62
   },
-  "generated_at": "2026-04-16T07:40:10.801677+00:00",
+  "generated_at": "2026-04-16T10:24:51.975342+00:00",
   "scraper_health": {
     "run_at": "2026-04-16T02:37:04.028635+00:00",
     "run_duration_s": 5822.0,
@@ -2309,7 +2309,7 @@
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-16T01:08:17.224544+00:00"
+        "jsonl_mtime": "2026-04-16T09:07:33.808385+00:00"
       },
       "bstger": {
         "success": true,
@@ -2321,12 +2321,12 @@
         "our_count": 10835,
         "portal_count": null,
         "gap": null,
-        "duration_s": 11.4,
+        "duration_s": 85.0,
         "error": null,
         "note": null,
         "state_count": 10870,
         "jsonl_size_mb": 303.5,
-        "jsonl_mtime": "2026-04-16T01:09:41.022792+00:00"
+        "jsonl_mtime": "2026-04-16T09:01:24.921335+00:00"
       },
       "bs_gerichte": {
         "success": true,
@@ -2427,8 +2427,8 @@
         "error": null,
         "note": null,
         "state_count": 91999,
-        "jsonl_size_mb": 1372.9,
-        "jsonl_mtime": "2026-04-16T01:24:13.566431+00:00"
+        "jsonl_size_mb": 1374.5,
+        "jsonl_mtime": "2026-04-16T10:16:47.752969+00:00"
       },
       "finma": {
         "success": true,
@@ -2457,12 +2457,12 @@
         "our_count": 21238,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1112.9,
+        "duration_s": 1112.3,
         "error": null,
         "note": null,
         "state_count": 21238,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-16T01:24:27.090472+00:00"
+        "jsonl_mtime": "2026-04-16T09:18:31.470627+00:00"
       },
       "fr_anwaltsaufsicht": {
         "success": true,
@@ -2522,15 +2522,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 91904,
+        "our_count": 91947,
         "portal_count": null,
         "gap": null,
-        "duration_s": 571.8,
+        "duration_s": 572.9,
         "error": null,
         "note": null,
         "state_count": 91947,
         "jsonl_size_mb": 2648.6,
-        "jsonl_mtime": "2026-04-16T01:27:00.937943+00:00"
+        "jsonl_mtime": "2026-04-16T09:09:32.617002+00:00"
       },
       "bge_historical": {
         "success": true,
@@ -3146,7 +3146,7 @@
       }
     },
     "run_at_daily": "2026-04-16T02:37:04.028635+00:00",
-    "run_at_federal": "2026-04-15T09:18:33.220994+00:00",
+    "run_at_federal": "2026-04-16T09:18:32.662279+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3198,8 +3198,8 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 8858235,
-    "statute_edges": 11348143
+    "citation_edges": 8861364,
+    "statute_edges": 11351713
   },
   "traffic": {
     "window_days": 30,
@@ -3463,84 +3463,84 @@
   "recent": {
     "bge": [
       {
-        "decision_id": "bger_5A_42_2026",
-        "docket": "5A_42/2026",
-        "date": "2026-04-02",
+        "decision_id": "bger_7B_96_2026",
+        "docket": "7B_96/2026",
+        "date": "2026-03-30",
         "court": "bger",
-        "language": "de",
-        "summary": "Eröffnung einer öffentlichen letztwilligen Verfügung"
+        "language": "it",
+        "summary": "Decreto di non luogo a procedere (anticipo delle spese),"
       },
       {
-        "decision_id": "bger_5A_41_2026",
-        "docket": "5A_41/2026",
-        "date": "2026-04-02",
+        "decision_id": "bger_7B_186_2026",
+        "docket": "7B_186/2026",
+        "date": "2026-03-30",
         "court": "bger",
         "language": "de",
-        "summary": "Vollstreckung"
+        "summary": "Rechtsverweigerung; Nichteintreten,"
       },
       {
-        "decision_id": "bger_5A_289_2026",
-        "docket": "5A_289/2026",
-        "date": "2026-04-02",
+        "decision_id": "bger_4A_440_2024",
+        "docket": "4A_440/2024",
+        "date": "2026-03-30",
         "court": "bger",
         "language": "de",
-        "summary": "Beistandschaft"
+        "summary": "Provisorische Rechtsöffnung,"
       },
       {
-        "decision_id": "bger_5A_258_2026",
-        "docket": "5A_258/2026",
-        "date": "2026-04-02",
+        "decision_id": "bger_5A_142_2026",
+        "docket": "5A_142/2026",
+        "date": "2026-03-27",
         "court": "bger",
         "language": "de",
-        "summary": "annullamento dell'aggiudicazione"
+        "summary": "Aufschiebende Wirkung (Konkurseröffnung),"
       },
       {
-        "decision_id": "bger_8C_222_2026",
-        "docket": "8C_222/2026",
-        "date": "2026-04-01",
+        "decision_id": "bger_8C_601_2025",
+        "docket": "8C_601/2025",
+        "date": "2026-03-26",
         "court": "bger",
         "language": "de",
-        "summary": "Assurance-accidents (condition de recevabilité)"
+        "summary": "Invalidenversicherung (Invalidenrente; Restarbeitsfähigkeit),"
       },
       {
-        "decision_id": "bger_7B_199_2026",
-        "docket": "7B_199/2026",
-        "date": "2026-04-01",
+        "decision_id": "bger_8C_210_2026",
+        "docket": "8C_210/2026",
+        "date": "2026-03-26",
         "court": "bger",
-        "language": "de",
-        "summary": "Ordonnance de non-entrée en matière; irrecevabilité du recours en matière pénale (défaut de paiement de l'avance de frais)"
+        "language": "it",
+        "summary": "Assicurazione contro la disoccupazione (presupposto processuale),"
       },
       {
-        "decision_id": "bger_5D_45_2025",
-        "docket": "5D_45/2025",
-        "date": "2026-04-01",
+        "decision_id": "bger_4D_44_2026",
+        "docket": "4D_44/2026",
+        "date": "2026-03-26",
         "court": "bger",
         "language": "de",
-        "summary": "contestation de l'état de collocation"
+        "summary": "Aufsichtsbeschwerdeverfahren,"
       },
       {
-        "decision_id": "bger_5A_170_2026",
-        "docket": "5A_170/2026",
-        "date": "2026-04-01",
+        "decision_id": "bger_4D_19_2026",
+        "docket": "4D_19/2026",
+        "date": "2026-03-26",
         "court": "bger",
         "language": "de",
-        "summary": "Aufsichtsrechtliche Anzeige"
+        "summary": "Definitive Rechtsöffnung,"
       },
       {
-        "decision_id": "bger_5A_161_2026",
-        "docket": "5A_161/2026",
-        "date": "2026-04-01",
+        "decision_id": "bger_4A_141_2026",
+        "docket": "4A_141/2026",
+        "date": "2026-03-26",
         "court": "bger",
         "language": "de",
-        "summary": "effet suspensif (mesures provisionnelles, déplacement du lieu de résidence de l'enfant)"
+        "summary": "unentgeltliche Rechtspflege,"
       },
       {
-        "decision_id": "bger_5A_144_2026",
-        "docket": "5A_144/2026",
-        "date": "2026-04-01",
+        "decision_id": "bger_4A_105_2026",
+        "docket": "4A_105/2026",
+        "date": "2026-03-26",
         "court": "bger",
         "language": "de",
-        "summary": "avance de frais (action en annulation ou suspension de la poursuite)"
+        "summary": "Werkvertrag;"
       }
     ],
     "cantonal": [
@@ -3642,105 +3642,120 @@
       "in_force_date": "2026-05-01",
       "title_de": "Verordnung des EDI vom 4. September 2013 über die Kontrolle des Verkehrs mit Tieren und Pflanzen geschützter Arten (CITES-Kontrollverordnung)",
       "title_fr": "Ordonnance du DFI du 4 septembre 2013 sur le contrôle de la circulation des espèces de faune et de flore protégées (Ordonnance sur les contrôles CITES)",
-      "title_it": "Ordinanza del DFI del 4 settembre 2013 sui controlli della circolazione delle specie di fauna e di flora protette (Ordinanza sui controlli CITES)"
+      "title_it": "Ordinanza del DFI del 4 settembre 2013 sui controlli della circolazione delle specie di fauna e di flora protette (Ordinanza sui controlli CITES)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2013/602"
     },
     {
       "sr_number": "916.01",
       "in_force_date": "2026-05-01",
       "title_de": "Verordnung vom 26. Oktober 2011 über die Einfuhr von landwirtschaftlichen Erzeugnissen (Agrareinfuhrverordnung, AEV)",
       "title_fr": "Ordonnance du 26 octobre 2011 sur l'importation de produits agricoles (Ordonnance sur les importations agricoles, OIAgr)",
-      "title_it": "Ordinanza del 26 ottobre 2011 concernente l'importazione di prodotti agricoli (Ordinanza sulle importazioni agricole, OIAgr)"
+      "title_it": "Ordinanza del 26 ottobre 2011 concernente l'importazione di prodotti agricoli (Ordinanza sulle importazioni agricole, OIAgr)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2011/770"
     },
     {
       "sr_number": "780.117",
       "in_force_date": "2026-06-01",
       "title_de": "Verordnung des EJPD vom 15. November 2017 über die Durchführung der Überwachung des Post- und Fernmeldeverkehrs (VD-ÜPF) ",
       "title_fr": "Ordonnance du DFJP du 15 novembre 2017 sur la mise en uvre de la surveillance de la correspondance par poste et télécommunication (OME-SCPT) ",
-      "title_it": "Ordinanza del DFGP del 15 novembre 2017 sull'esecuzione della sorveglianza della corrispondenza postale e del traffico delle telecomunicazioni (OE-SCPT) "
+      "title_it": "Ordinanza del DFGP del 15 novembre 2017 sull'esecuzione della sorveglianza della corrispondenza postale e del traffico delle telecomunicazioni (OE-SCPT) ",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2018/35"
     },
     {
       "sr_number": "221.215.311",
       "in_force_date": "2026-06-01",
       "title_de": "Bundesgesetz vom 28. September 1956 über die Allgemeinverbindlicherklärung von Gesamtarbeitsverträgen (AVEG)",
       "title_fr": "Loi fédérale du 28 septembre 1956 permettant d'étendre le champ d'application de la convention collective de travail (LECCT)",
-      "title_it": "Legge federale del 28 settembre 1956 concernente il conferimento del carattere obbligatorio generale al contratto collettivo di lavoro (LOCCL)"
+      "title_it": "Legge federale del 28 settembre 1956 concernente il conferimento del carattere obbligatorio generale al contratto collettivo di lavoro (LOCCL)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/1956/1543_1645_1658"
     },
     {
       "sr_number": "700",
       "in_force_date": "2026-07-01",
       "title_de": "Bundesgesetz vom 22. Juni 1979 über die Raumplanung (Raumplanungsgesetz, RPG)",
       "title_fr": "Loi fédérale du 22 juin 1979 sur l'aménagement du territoire (Loi sur l'aménagement du territoire, LAT)",
-      "title_it": "Legge federale del 22 giugno 1979 sulla pianificazione del territorio (Legge sulla pianificazione del territorio, LPT)"
+      "title_it": "Legge federale del 22 giugno 1979 sulla pianificazione del territorio (Legge sulla pianificazione del territorio, LPT)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/1979/1573_1573_1573"
     },
     {
       "sr_number": "510.51",
       "in_force_date": "2026-07-01",
       "title_de": "Verordnung vom 13. Dezember 1999 über das Plangenehmigungsverfahren für militärische Bauten und Anlagen (Militärische Plangenehmigungsverordnung, MPV)",
       "title_fr": "Ordonnance du 13 décembre 1999 concernant la procédure d'approbation des plans de constructions militaires (Ordonnance concernant l'approbation des plans de constructions militaires, OAPCM)",
-      "title_it": "Ordinanza del 13 dicembre 1999 concernente la procedura di approvazione dei piani per costruzioni e impianti militari (Ordinanza concernente l'approvazione dei piani di costruzioni militari, OAPCM)"
+      "title_it": "Ordinanza del 13 dicembre 1999 concernente la procedura di approvazione dei piani per costruzioni e impianti militari (Ordinanza concernente l'approvazione dei piani di costruzioni militari, OAPCM)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2000/15"
     },
     {
       "sr_number": "746.11",
       "in_force_date": "2026-07-01",
       "title_de": "Verordnung vom 26. Juni 2019 über Rohrleitungsanlagen zur Beförderung flüssiger oder gasförmiger Brenn- oder Treibstoffe (Rohrleitungsverordnung, RLV)",
       "title_fr": "Ordonnance du 26 juin 2019 sur les installations de transport par conduites de combustibles ou de carburants liquides ou gazeux (Ordonnance sur les installations de transport par conduites, OITC)",
-      "title_it": "Ordinanza del 26 giugno 2019 sugli impianti di trasporto in condotta di combustibili o carburanti liquidi o gassosi (Ordinanza sugli impianti di trasporto in condotta, OITC)"
+      "title_it": "Ordinanza del 26 giugno 2019 sugli impianti di trasporto in condotta di combustibili o carburanti liquidi o gassosi (Ordinanza sugli impianti di trasporto in condotta, OITC)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2019/413"
     },
     {
       "sr_number": "700.1",
       "in_force_date": "2026-07-01",
       "title_de": "Raumplanungsverordnung vom 28. Juni 2000 (RPV)",
       "title_fr": "Ordonnance du 28 juin 2000 sur l'aménagement du territoire (OAT)",
-      "title_it": "Ordinanza del 28 giugno 2000 sulla pianificazione del territorio (OPT)"
+      "title_it": "Ordinanza del 28 giugno 2000 sulla pianificazione del territorio (OPT)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2000/310"
     },
     {
       "sr_number": "732.11",
       "in_force_date": "2026-07-01",
       "title_de": "Kernenergieverordnung vom 10. Dezember 2004 (KEV)",
       "title_fr": "Ordonnance du 10 décembre 2004 sur l'énergie nucléaire (OENu)",
-      "title_it": "Ordinanza del 10 dicembre 2004 sull'energia nucleare (OENu)"
+      "title_it": "Ordinanza del 10 dicembre 2004 sull'energia nucleare (OENu)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2005/68"
     },
     {
       "sr_number": "748.131.1",
       "in_force_date": "2026-07-01",
       "title_de": "Verordnung vom 23. November 1994 über die Infrastruktur der Luftfahrt (VIL)",
       "title_fr": "Ordonnance du 23 novembre 1994 sur l'infrastructure aéronautique (OSIA)",
-      "title_it": "Ordinanza del 23 novembre 1994 sull'infrastruttura aeronautica (OSIA)"
+      "title_it": "Ordinanza del 23 novembre 1994 sull'infrastruttura aeronautica (OSIA)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/1994/3050_3050_3050"
     },
     {
       "sr_number": "725.111",
       "in_force_date": "2026-07-01",
       "title_de": "Nationalstrassenverordnung vom 7. November 2007 (NSV)",
       "title_fr": "Ordonnance du 7 novembre 2007 sur les routes nationales (ORN)",
-      "title_it": "Ordinanza del 7 novembre 2007 sulle strade nazionali (OSN)"
+      "title_it": "Ordinanza del 7 novembre 2007 sulle strade nazionali (OSN)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2007/796"
     },
     {
       "sr_number": "832.112.31",
       "in_force_date": "2026-07-01",
       "title_de": "Verordnung des EDI vom 29. September 1995 über Leistungen in der obligatorischen Krankenpflegeversicherung (Krankenpflege-Leistungsverordnung, KLV) ",
       "title_fr": "Ordonnance du DFI du 29 septembre 1995 sur les prestations dans l'assurance obligatoire des soins en cas de maladie (Ordonnance sur les prestations de l'assurance des soins, OPAS) ",
-      "title_it": "Ordinanza del DFI del 29 settembre 1995 sulle prestazioni dell'assicurazione obbligatoria delle cure medico-sanitarie (Ordinanza sulle prestazioni, OPre) "
+      "title_it": "Ordinanza del DFI del 29 settembre 1995 sulle prestazioni dell'assicurazione obbligatoria delle cure medico-sanitarie (Ordinanza sulle prestazioni, OPre) ",
+      "url": "https://www.fedlex.admin.ch/eli/cc/1995/4964_4964_4964"
     },
     {
       "sr_number": "743.011",
       "in_force_date": "2026-07-01",
       "title_de": "Verordnung vom 21. Dezember 2006 über Seilbahnen zur Personenbeförderung (Seilbahnverordnung, SebV)",
       "title_fr": "Ordonnance du 21 décembre 2006 sur les installations à câbles transportant des personnes (Ordonnance sur les installations à câbles, OICa)",
-      "title_it": "Ordinanza del 21 dicembre 2006 sugli impianti a fune adibiti al trasporto di persone (Ordinanza sugli impianti a fune; OIFT)"
+      "title_it": "Ordinanza del 21 dicembre 2006 sugli impianti a fune adibiti al trasporto di persone (Ordinanza sugli impianti a fune; OIFT)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2007/14"
     },
     {
       "sr_number": "734.25",
       "in_force_date": "2026-07-01",
       "title_de": "Verordnung vom 2. Februar 2000 über das Plangenehmigungsverfahren für elektrische Anlagen (VPeA)",
       "title_fr": "Ordonnance du 2 février 2000 sur la procédure d'approbation des plans d'installations électriques (OPIE)",
-      "title_it": "Ordinanza del 2 febbraio 2000 sulla procedura d'approvazione dei piani di impianti elettrici (OPIE)"
+      "title_it": "Ordinanza del 2 febbraio 2000 sulla procedura d'approvazione dei piani di impianti elettrici (OPIE)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2000/123"
     },
     {
       "sr_number": "721.801",
       "in_force_date": "2026-07-01",
       "title_de": "Verordnung vom 2. Februar 2000 über die Nutzbarmachung der Wasserkräfte (Wasserrechtsverordnung, WRV)",
       "title_fr": "Ordonnance du 2 février 2000 sur l'utilisation des forces hydrauliques (OFH)",
-      "title_it": "Ordinanza del 2 febbraio 2000 sull'utilizzazione delle forze idriche (OUFI)"
+      "title_it": "Ordinanza del 2 febbraio 2000 sull'utilizzazione delle forze idriche (OUFI)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2000/122"
     }
   ],
   "delta": {
@@ -3784,7 +3799,10 @@
       "VS": 1,
       "SH": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 3129,
+      "statute_edges": 3570
+    },
     "previous_generated_at": "2026-04-15T10:21:38.689129+00:00"
   }
 }
