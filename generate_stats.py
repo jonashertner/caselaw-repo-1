@@ -280,6 +280,8 @@ def collect_recent_decisions(db_path: Path, per_group: int = 10) -> dict:
               AND decision_date IS NOT NULL
               AND decision_date != ''
               AND decision_date <= ?
+              AND length(full_text) > 500
+              AND full_text NOT LIKE '%Document Dienstes ist fehlgeschlagen%'
             ORDER BY decision_date DESC, decision_id DESC
             LIMIT ?
             """,
@@ -299,6 +301,7 @@ def collect_recent_decisions(db_path: Path, per_group: int = 10) -> dict:
               AND decision_date <= ?
               AND regeste IS NOT NULL
               AND length(regeste) > 20
+              AND length(full_text) > 500
             ORDER BY decision_date DESC, decision_id DESC
             LIMIT ?
             """,
