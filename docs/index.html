@@ -4159,9 +4159,10 @@ function renderLatest(data) {
           in_force_date: it.in_force_date,
           docket: '',
         };
+        const fedUrl = it.url || ('https://www.fedlex.admin.ch/de/cc?sr=' + encodeURIComponent(it.sr_number));
         upEl.appendChild(mkLi(shaped, {
           badgeText: 'SR ' + it.sr_number,
-          href: 'https://www.fedlex.admin.ch/eli/cc/' + encodeURIComponent(it.sr_number),
+          href: fedUrl,
           external: true,
         }));
       });

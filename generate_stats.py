@@ -383,12 +383,17 @@ def collect_upcoming_amendments(limit: int = 20, timeout: int = 60) -> list[dict
         if key in seen:
             continue
         seen.add(key)
+        fedlex_url = work.replace(
+            "https://fedlex.data.admin.ch/eli/",
+            "https://www.fedlex.admin.ch/eli/",
+        ) if work.startswith("https://fedlex.data.admin.ch/eli/") else ""
         entry = {
             "sr_number": sr,
             "in_force_date": date,
             "title_de": "",
             "title_fr": "",
             "title_it": "",
+            "url": fedlex_url,
         }
         out.append(entry)
         if work:
