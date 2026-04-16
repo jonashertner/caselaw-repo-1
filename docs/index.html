@@ -2226,7 +2226,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <div class="latest-card" id="latest-bge-card">
         <header>
           <h3 data-t="latest_bge_title">Recent Federal Supreme Court decisions</h3>
-          <a class="latest-more" href="/entscheide/?court=bger" data-t="latest_view_all">View all →</a>
+          <a class="latest-more" href="/entscheide/" data-t="latest_view_all">View all →</a>
         </header>
         <ul class="latest-list" id="latest-bge-list"></ul>
       </div>
@@ -4130,7 +4130,8 @@ function renderLatest(data) {
     if (!items.length) renderEmpty(bgeEl);
     else items.forEach((it) => bgeEl.appendChild(mkLi(it, {
       badgeText: courtLabel(it.court),
-      href: '/entscheid/' + encodeURIComponent(it.decision_id),
+      href: 'https://mcp.opencaselaw.ch/entscheid/' + encodeURIComponent(it.decision_id),
+      external: true,
     })));
   }
 
@@ -4141,7 +4142,8 @@ function renderLatest(data) {
     if (!items.length) renderEmpty(canEl);
     else items.forEach((it) => canEl.appendChild(mkLi(it, {
       badgeText: it.canton || '',
-      href: '/entscheid/' + encodeURIComponent(it.decision_id),
+      href: 'https://mcp.opencaselaw.ch/entscheid/' + encodeURIComponent(it.decision_id),
+      external: true,
     })));
   }
 
