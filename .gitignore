@@ -19,6 +19,7 @@ logs/
 benchmarks/latest_search_benchmark.json
 !docs/
 !docs/**
+docs/**/.DS_Store
 docs/GOAL_*.md
 scrapers/probe_*
 scrapers/scrape_*
