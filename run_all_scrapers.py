@@ -160,6 +160,12 @@ def run_single_scraper(court: str, timeout: int) -> dict:
         our_count = None
         portal_count = None
         error_tail: deque[str] = deque(maxlen=6)
+        # Discovery-phase connection failures. The "Done." summary's
+        # "Errors: N" field only covers per-decision fetch errors; a scraper
+        # whose search/index pages all time out reports Errors: 0 because
+        # no fetch was ever attempted. Count connection/timeout errors
+        # separately to detect silent total failures.
+        discovery_errors = 0
         if log_path.exists():
             with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                 if log_start > 0:
@@ -202,6 +208,13 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                             pass
                     if " ERROR " in line or "Traceback" in line:
                         error_tail.append(line.strip())
+                    if (
+                        "ConnectTimeoutError" in line
+                        or "ConnectionError" in line
+                        or "Max retries exceeded" in line
+                        or ("Search page" in line and "failed" in line)
+                    ):
+                        discovery_errors += 1
 
         error = None
         note = None
@@ -214,6 +227,17 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             error = f"{real_errors} scraping errors"
             if real_errors > 20 and real_errors > new_count:
                 failed = True
+
+        # Silent total failure: discovery pages all failed and no new decisions
+        # were found. Caught JU when its proxy was missing and every request
+        # to jurisprudence.jura.ch timed out — the old logic reported
+        # success=True because the "Done." summary said Errors: 0.
+        if discovery_errors >= 3 and new_count == 0:
+            failed = True
+            error = (
+                f"{discovery_errors} discovery-phase connection failures "
+                f"(portal unreachable)"
+            )
 
         # NoneReturns are expected for portals with a few broken entries.
         # Only flag as a note, not an error, unless excessive.
@@ -232,6 +256,7 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "skip_count": skip_count,
             "error_count": max(0, error_count - none_count),  # real errors only
             "none_count": none_count,
+            "discovery_errors": discovery_errors,
             "our_count": our_count,
             "portal_count": portal_count,
             "gap": gap,
