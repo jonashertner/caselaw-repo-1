@@ -532,6 +532,10 @@ def main():
     # because step 4 prunes remote parquet based on local state.
     CRITICAL_STEPS = {2, 3}
     GUARDED_STEPS = {4, 6}
+    # Non-fatal steps: still logged as FAILED in summary, but don't trigger
+    # systemd exit-code=1. These depend on flaky external sources (e.g. sav-fsa.ch
+    # PDFs) and their failure doesn't degrade the published dataset.
+    NON_FATAL_STEPS = {"2e"}
     # Steps after the fast tier — skipped with --fast-only
     SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", 3, 4, 5, 6}
 
@@ -600,25 +604,33 @@ def main():
     # Summary
     total_elapsed = time.time() - start
     failed_steps = []
+    non_fatal_failures = []
     logger.info("=== Summary ===")
     for num, name, _ in STEPS:
         if num in results:
             status = "OK" if results[num] else "FAILED"
             logger.info(f"  Step {num} ({name}): {status}")
             if not results[num]:
-                failed_steps.append(f"{num} ({name})")
+                if num in NON_FATAL_STEPS:
+                    non_fatal_failures.append(f"{num} ({name})")
+                else:
+                    failed_steps.append(f"{num} ({name})")
     logger.info(f"  Total time: {total_elapsed:.1f}s")
 
     # Notify on completion
     if failed_steps:
-        _notify(
-            "Publish FAILED",
-            f"Failed steps: {', '.join(failed_steps)}\nTotal: {total_elapsed/60:.0f} min",
-            priority="high",
-        )
+        msg = f"Failed steps: {', '.join(failed_steps)}"
+        if non_fatal_failures:
+            msg += f"\nNon-fatal: {', '.join(non_fatal_failures)}"
+        msg += f"\nTotal: {total_elapsed/60:.0f} min"
+        _notify("Publish FAILED", msg, priority="high")
         sys.exit(1)
     else:
         _clear_checkpoint()
+        if non_fatal_failures:
+            logger.warning(
+                f"Publish OK (non-fatal failures: {', '.join(non_fatal_failures)})"
+            )
         # Count decisions from stats if available
         try:
             stats = json.loads((DOCS_DIR / "stats.json").read_text())

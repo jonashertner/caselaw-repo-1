@@ -154,6 +154,20 @@ def _infer_decision_year(
     return None
 
 
+def _ensure_trailing_newline(jsonl_path: Path) -> None:
+    """If the file exists and its last byte is not '\\n', append one.
+
+    Prevents fused-line corruption when a previous run crashed mid-write and
+    the next run opens the file in append mode.
+    """
+    if not jsonl_path.exists() or jsonl_path.stat().st_size == 0:
+        return
+    with open(jsonl_path, "rb+") as f:
+        f.seek(-1, 2)
+        if f.read(1) != b"\n":
+            f.write(b"\n")
+
+
 def _load_written_ids_and_years(jsonl_path: Path) -> tuple[set[str], dict[int, set[str]]]:
     """Load already-written decision IDs and year buckets from a JSONL file."""
     written_ids: set[str] = set()
@@ -422,6 +436,7 @@ def run_with_persistence(
 
     # Load already-written decision IDs from output JSONL (for dedup on restart)
     written_ids, written_ids_by_year = _load_written_ids_and_years(jsonl_path)
+    _ensure_trailing_newline(jsonl_path)
     if jsonl_path.exists():
         logger.info(f"Loaded {len(written_ids)} already-written decisions from {jsonl_path}")
 
