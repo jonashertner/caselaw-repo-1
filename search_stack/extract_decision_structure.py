@@ -1,0 +1,361 @@
+#!/usr/bin/env python3
+"""Extract Sachverhalt / Erwägungen / Dispositiv from Swiss court decisions.
+
+Federal-first v1: tuned for BGer/BVGer/BStGer/BGE-style structure. Cantonal
+courts vary widely — adding court-specific patterns is a follow-up project.
+
+The extracted structure is persisted as a sidecar SQLite (decision_structure.db)
+keyed by decision_id, queryable in O(1) and joined to the main FTS5 DB at
+query time. Schema is intentionally additive — no changes to the main
+Decision model or to bl_gerichte.jsonl-style ingest shards.
+
+This addresses the "Reasoning Error" failure mode (Westlaw 61% per Magesh
+et al. 2025) by giving downstream LLMs the operative ruling (Dispositiv)
+as a separately queryable field, eliminating holding/dicta confusion.
+
+Usage:
+    # Extract for one decision (CLI test)
+    python3 extract_decision_structure.py --decision-id bger_5A_42_2026
+
+    # Build full sidecar DB from all federal court JSONL shards
+    python3 extract_decision_structure.py --build \\
+        --shards bger,bvger,bstger,bge,bpatger,bge_egmr,bge_historical \\
+        --output output/decision_structure.db
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import re
+import sqlite3
+import sys
+import time
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Iterator
+
+logger = logging.getLogger("extract_decision_structure")
+
+
+# ---------------------------------------------------------------------------
+# Marker patterns — federal-court tuned (BGer/BVGer/BStGer/BGE)
+# ---------------------------------------------------------------------------
+DISPOSITIV_PATTERNS = {
+    "de": [
+        (r"Demnach\s+erkennt\s+das\s+Bundesgericht\s*:?", "ranked_de_BGer"),
+        (r"Demnach\s+erkennt\s+(?:das|die)\s+(?:Bundesgericht|Beschwerdekammer|Strafkammer|Anklagekammer|Berufungskammer|I+\.\s+Kammer|Abteilung)[^:\n]*:?", "ranked_de_court"),
+        (r"Demnach\s+erkennt\s+(?:der|die)\s+(?:Präsident|Präsidentin|Instruktionsrichter|Einzelrichter|Vizepräsident)[^:\n]*:?", "ranked_de_judge"),
+        (r"Demnach\s+(?:verfügt|beschliesst|verfügen|beschliessen)\s+(?:das|der|die)\s+[^:\n]*:?", "ranked_de_verfuegt"),
+        (r"Demnach\s+wird\s+(?:erkannt|verfügt|beschlossen)\s*:?", "ranked_de_passive"),
+        (r"Aus\s+diesen\s+(?:Gründen|Erwägungen)\s+(?:erkennt|beschliesst|verfügt)\b", "fallback_de_aus_gruenden"),
+        (r"Demgemäss\s+(?:erkennt|beschliesst|verfügt)\b", "fallback_de_demgemaess"),
+    ],
+    "fr": [
+        (r"Par\s+ces\s+motifs,?\s+le\s+Tribunal\s+(?:fédéral|administratif\s+fédéral|pénal\s+fédéral)\s+(?:prononce|ordonne|arrête)\s*:?", "ranked_fr_TF"),
+        (r"Par\s+ces\s+motifs,?\s+(?:la\s+Cour|le\s+Président|la\s+Présidente|le\s+Juge\s+instructeur|le\s+Vice-président)[^:\n]*(?:prononce|ordonne|arrête)\s*:?", "ranked_fr_judge"),
+        (r"Par\s+ces\s+motifs,?\s+(?:la\s+Cour|le\s+Tribunal|le\s+Président|la\s+Présidente)\b", "fallback_fr_par_ces_motifs"),
+        (r"Par\s+ces\s+motifs\s*:?\s*$", "fallback_fr_bare"),
+    ],
+    "it": [
+        (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+pronuncia\s*:?", "ranked_it_TF"),
+        (r"Per\s+questi\s+motivi,?\s+il\s+(?:Presidente|Giudice\s+istruttore)[^:\n]*pronuncia\s*:?", "ranked_it_judge"),
+        (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+federale\b", "fallback_it_TF_loose"),
+        (r"Per\s+questi\s+motivi\s*:?\s*$", "fallback_it_bare"),
+    ],
+}
+
+ERWAEGUNGEN_PATTERNS = {
+    "de": [
+        (r"Das\s+Bundesgericht\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht"),
+        (r"in\s+Erwägung,?\s+dass\b", "ranked_de_in_erwaegung"),
+        (r"^\s*Erwägungen\s*:?\s*$", "ranked_de_header"),
+        (r"^\s*Erwägung\s*:?\s*$", "ranked_de_singular"),
+    ],
+    "fr": [
+        (r"Le\s+Tribunal\s+(?:fédéral|administratif\s+fédéral|pénal\s+fédéral)\s+considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere"),
+        (r"\bConsidérant\s+(?:en\s+(?:droit|fait)|que)\b", "ranked_fr_considerant"),
+        (r"^\s*Considérants?\s*:?\s*$", "ranked_fr_header"),
+    ],
+    "it": [
+        (r"Il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera"),
+        (r"\bConsiderando\s+(?:in\s+(?:diritto|fatto)|che)\b", "ranked_it_considerando"),
+        (r"^\s*Considerando\s+in\s+diritto\s*:?\s*$", "ranked_it_header"),
+    ],
+}
+
+SACHVERHALT_PATTERNS = {
+    "de": [
+        (r"^\s*Sachverhalt\s*:?\s*$", "ranked_de_header"),
+        (r"\bSachverhalt\s*:?\s*\n", "ranked_de_inline"),
+        (r"^A\.\s*-\s*", "fallback_de_alphabetic"),
+    ],
+    "fr": [
+        (r"^\s*Faits\s*:?\s*$", "ranked_fr_header"),
+        (r"\bFaits\s*:?\s*\n", "ranked_fr_inline"),
+        (r"^A\.\s*-\s*", "fallback_fr_alphabetic"),
+    ],
+    "it": [
+        (r"^\s*Fatti\s*:?\s*$", "ranked_it_header"),
+        (r"\bFatti\s*:?\s*\n", "ranked_it_inline"),
+        (r"^A\.\s*-\s*", "fallback_it_alphabetic"),
+    ],
+}
+
+# Fallback dispositiv: enumerated orders followed by court communication
+DISPOSITIV_FALLBACK_RE = re.compile(
+    r"(?:^|\n)\s*1\.\s+.{20,800}?(?:^|\n)\s*\d+\.\s+.{10,800}?(?:Lausanne|Bellinzona|Berne|Bern|"
+    r"St\.\s*Gallen|Dieses\s+Urteil\s+wird|Le\s+présent\s+(?:arrêt|jugement)|"
+    r"La\s+presente\s+(?:sentenza|decisione)|Mitteilung)",
+    re.DOTALL | re.MULTILINE,
+)
+
+
+@dataclass
+class DecisionStructure:
+    decision_id: str = ""
+    language: str = ""
+    sachverhalt: str | None = None
+    sachverhalt_method: str | None = None
+    erwaegungen: str | None = None
+    erwaegungen_method: str | None = None
+    dispositiv: str | None = None
+    dispositiv_method: str | None = None
+    dispositiv_orders: list[str] = field(default_factory=list)
+
+
+def _find(text: str, patterns: dict, lang: str) -> tuple[int | None, int | None, str | None]:
+    for pat, label in patterns.get(lang, []):
+        m = re.search(pat, text, flags=re.MULTILINE | re.IGNORECASE)
+        if m:
+            return m.start(), m.end(), label
+    return None, None, None
+
+
+def _split_dispositiv_orders(disp_text: str) -> list[str]:
+    items = []
+    matches = list(re.finditer(r"(?:^|\n)\s*(\d+)\.\s+", disp_text))
+    if not matches:
+        return [disp_text.strip()] if disp_text.strip() else []
+    for i, m in enumerate(matches):
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(disp_text)
+        body = disp_text[start:end].strip()
+        if i == len(matches) - 1:
+            cut_re = re.search(
+                r"\n\s*(Lausanne|Bellinzona|Berne|Bern|St\.\s*Gallen|"
+                r"Im\s+Namen|Au\s+nom|In\s+nome|Dieses\s+Urteil\s+wird|"
+                r"La\s+greffière|Le\s+greffier|Le\s+Président|Der\s+Präsident|Il\s+Presidente)",
+                body,
+            )
+            if cut_re:
+                body = body[: cut_re.start()].strip()
+        if body:
+            items.append(body)
+    return items
+
+
+def extract(full_text: str, language: str = "de", decision_id: str = "") -> DecisionStructure:
+    out = DecisionStructure(decision_id=decision_id, language=language)
+    lang = (language or "de").lower()
+    if lang not in DISPOSITIV_PATTERNS:
+        lang = "de"
+    text = full_text or ""
+    if not text:
+        return out
+
+    disp_start, disp_end, disp_method = _find(text, DISPOSITIV_PATTERNS, lang)
+    if disp_start is not None:
+        body = text[disp_end:].strip()
+        out.dispositiv = body
+        out.dispositiv_method = disp_method
+        out.dispositiv_orders = _split_dispositiv_orders(body)
+    else:
+        m = DISPOSITIV_FALLBACK_RE.search(text)
+        if m:
+            disp_start = m.start()
+            disp_end = m.start()
+            out.dispositiv = text[disp_start:].strip()
+            out.dispositiv_method = "fallback_enum_near_end"
+            out.dispositiv_orders = _split_dispositiv_orders(out.dispositiv)
+
+    erw_start, erw_end, erw_method = _find(text, ERWAEGUNGEN_PATTERNS, lang)
+    if erw_start is not None:
+        end_idx = disp_start if disp_start is not None and disp_start > erw_end else len(text)
+        out.erwaegungen = text[erw_end:end_idx].strip()
+        out.erwaegungen_method = erw_method
+
+    sav_start, sav_end, sav_method = _find(text, SACHVERHALT_PATTERNS, lang)
+    if sav_start is not None:
+        end_idx = erw_start if erw_start is not None and erw_start > sav_end else (
+            disp_start if disp_start is not None and disp_start > sav_end else len(text)
+        )
+        out.sachverhalt = text[sav_end:end_idx].strip()
+        out.sachverhalt_method = sav_method
+
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Sidecar DB builder
+# ---------------------------------------------------------------------------
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS structure (
+    decision_id          TEXT PRIMARY KEY,
+    court                TEXT,
+    canton               TEXT,
+    language             TEXT,
+    decision_date        TEXT,
+    sachverhalt          TEXT,
+    sachverhalt_method   TEXT,
+    erwaegungen          TEXT,
+    erwaegungen_method   TEXT,
+    dispositiv           TEXT,
+    dispositiv_method    TEXT,
+    dispositiv_orders    TEXT,  -- JSON array
+    extracted_at         TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_court ON structure(court);
+CREATE INDEX IF NOT EXISTS idx_method ON structure(dispositiv_method);
+"""
+
+
+def iter_jsonl(path: Path) -> Iterator[dict]:
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                yield json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+
+def build_db(shard_paths: list[Path], out_db: Path) -> dict:
+    """Run extractor over each JSONL shard, persist to SQLite. Atomic swap."""
+    tmp_db = out_db.with_suffix(".db.tmp")
+    if tmp_db.exists():
+        tmp_db.unlink()
+
+    conn = sqlite3.connect(str(tmp_db))
+    conn.executescript(SCHEMA)
+    cur = conn.cursor()
+
+    stats = {"shards": {}, "total": 0, "with_disp": 0, "with_erw": 0, "with_sav": 0, "all_three": 0}
+    started = time.time()
+
+    for shard in shard_paths:
+        if not shard.exists():
+            logger.warning(f"shard not found: {shard}")
+            continue
+        court_label = shard.stem
+        n = 0
+        sd = se = ss = sa = 0
+        rows = []
+        for entry in iter_jsonl(shard):
+            ft = entry.get("full_text") or ""
+            if len(ft) < 500:
+                continue
+            n += 1
+            s = extract(ft, entry.get("language", "de"), entry.get("decision_id", ""))
+            if s.dispositiv: sd += 1
+            if s.erwaegungen: se += 1
+            if s.sachverhalt: ss += 1
+            if s.dispositiv and s.erwaegungen and s.sachverhalt: sa += 1
+            rows.append((
+                s.decision_id,
+                entry.get("court"),
+                entry.get("canton"),
+                s.language,
+                entry.get("decision_date"),
+                s.sachverhalt,
+                s.sachverhalt_method,
+                s.erwaegungen,
+                s.erwaegungen_method,
+                s.dispositiv,
+                s.dispositiv_method,
+                json.dumps(s.dispositiv_orders, ensure_ascii=False) if s.dispositiv_orders else None,
+                time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            ))
+            if len(rows) >= 5000:
+                cur.executemany(
+                    "INSERT OR REPLACE INTO structure VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    rows,
+                )
+                conn.commit()
+                rows = []
+        if rows:
+            cur.executemany(
+                "INSERT OR REPLACE INTO structure VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                rows,
+            )
+            conn.commit()
+
+        stats["shards"][court_label] = {
+            "n": n,
+            "disp_pct": round(sd / n * 100, 1) if n else 0,
+            "erw_pct": round(se / n * 100, 1) if n else 0,
+            "sav_pct": round(ss / n * 100, 1) if n else 0,
+            "all_three_pct": round(sa / n * 100, 1) if n else 0,
+        }
+        stats["total"] += n
+        stats["with_disp"] += sd
+        stats["with_erw"] += se
+        stats["with_sav"] += ss
+        stats["all_three"] += sa
+        logger.info(f"{court_label}: n={n}, disp={sd}({sd/n*100:.0f}%), erw={se}({se/n*100:.0f}%), sav={ss}({ss/n*100:.0f}%) — {time.time()-started:.0f}s elapsed")
+
+    conn.close()
+    tmp_db.replace(out_db)
+    stats["duration_s"] = round(time.time() - started, 1)
+    return stats
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--build", action="store_true", help="Build the full sidecar DB")
+    p.add_argument("--shards", default="bger,bvger,bstger,bge,bpatger,bge_egmr,bge_historical",
+                   help="Comma-separated shard names (without .jsonl)")
+    p.add_argument("--decisions-dir", default="output/decisions")
+    p.add_argument("--output", default="output/decision_structure.db")
+    p.add_argument("--decision-id", help="Test extraction on one decision_id (any shard)")
+    p.add_argument("-v", "--verbose", action="store_true")
+    args = p.parse_args()
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+
+    if args.decision_id:
+        for shard_name in args.shards.split(","):
+            path = Path(args.decisions_dir) / f"{shard_name}.jsonl"
+            if not path.exists():
+                continue
+            for e in iter_jsonl(path):
+                if e.get("decision_id") == args.decision_id:
+                    s = extract(e.get("full_text", ""), e.get("language", "de"), args.decision_id)
+                    print(json.dumps({
+                        "decision_id": s.decision_id,
+                        "language": s.language,
+                        "sachverhalt_len": len(s.sachverhalt or ""),
+                        "sachverhalt_method": s.sachverhalt_method,
+                        "erwaegungen_len": len(s.erwaegungen or ""),
+                        "erwaegungen_method": s.erwaegungen_method,
+                        "dispositiv_len": len(s.dispositiv or ""),
+                        "dispositiv_method": s.dispositiv_method,
+                        "dispositiv_orders": s.dispositiv_orders,
+                    }, indent=2, ensure_ascii=False))
+                    return
+        print(f"Not found: {args.decision_id}")
+        sys.exit(1)
+
+    if args.build:
+        shards = [Path(args.decisions_dir) / f"{s}.jsonl" for s in args.shards.split(",")]
+        stats = build_db(shards, Path(args.output))
+        print(json.dumps(stats, indent=2, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()
