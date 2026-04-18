@@ -119,9 +119,83 @@ class DecisionStructure:
     sachverhalt_method: str | None = None
     erwaegungen: str | None = None
     erwaegungen_method: str | None = None
+    erwaegungen_paragraphs: list[dict] = field(default_factory=list)
     dispositiv: str | None = None
     dispositiv_method: str | None = None
     dispositiv_orders: list[str] = field(default_factory=list)
+
+
+# Erwägungs-paragraph-parser. The Schweizer numbered hierarchy
+#   1.       — top-level Erwägung
+#   1.1      — sub-Erwägung
+#   1.2.3    — sub-sub
+# is the actual citable unit ("BGE 140 III 86 E. 2.3"). Splitting it out
+# is the Schweizer equivalent of "extract the holding" — what the court
+# actually said on a specific point.
+ERW_PARA_RE = re.compile(
+    r"(?m)^[ \t]*(\d+(?:\.\d+){0,3})\.\s*[\-\u2013\u2014]?[ \t]*(?:$|[\n\r])"
+)
+ERW_PARA_RE_INLINE = re.compile(
+    r"(?m)^[ \t]*(\d+(?:\.\d+){0,3})\.\s*[\-\u2013\u2014]?[ \t]+(?=\S)"
+)
+
+
+def _erw_candidates(text: str) -> list[tuple[int, int, str]]:
+    seen = {}
+    for pat in (ERW_PARA_RE, ERW_PARA_RE_INLINE):
+        for m in pat.finditer(text):
+            seen.setdefault(m.start(), (m.end(), m.group(1)))
+    return sorted([(s, e, n) for s, (e, n) in seen.items()])
+
+
+def _validate_erw_sequence(markers: list[tuple[int, int, str]]) -> list[tuple[int, int, str]]:
+    """Drop spurious matches (e.g. '140' from a 'BGE 140 III 86' citation)."""
+    if not markers:
+        return []
+    out = []
+    seen_paths = set()
+    last_top = 0
+    for start, end, e_num in markers:
+        depth = e_num.count(".") + 1
+        first_n = int(e_num.split(".")[0])
+        if depth == 1:
+            if first_n > 50: continue
+            if first_n < last_top: continue
+            if first_n > last_top + 5 and last_top > 0: continue
+            out.append((start, end, e_num))
+            seen_paths.add(e_num)
+            last_top = first_n
+        else:
+            parent = ".".join(e_num.split(".")[:-1])
+            if parent in seen_paths:
+                last_subnum = int(e_num.split(".")[-1])
+                if last_subnum > 30: continue
+                out.append((start, end, e_num))
+                seen_paths.add(e_num)
+    return out
+
+
+def parse_erwaegungen_paragraphs(erw_text: str) -> list[dict]:
+    """Parse Erwägungen into list of {e_number, depth, parent, text}."""
+    if not erw_text:
+        return []
+    valid = _validate_erw_sequence(_erw_candidates(erw_text))
+    if not valid:
+        # Fallback: whole text as single anonymous paragraph
+        return [{"e_number": "0", "depth": 0, "parent": None, "text": erw_text.strip()}]
+    paragraphs = []
+    for i, (m_start, m_end, e_num) in enumerate(valid):
+        next_start = valid[i + 1][0] if i + 1 < len(valid) else len(erw_text)
+        body = erw_text[m_end:next_start].strip()
+        if not body:
+            continue
+        paragraphs.append({
+            "e_number": e_num,
+            "depth": e_num.count(".") + 1,
+            "parent": ".".join(e_num.split(".")[:-1]) if e_num.count(".") else None,
+            "text": body,
+        })
+    return paragraphs
 
 
 def _find(text: str, patterns: dict, lang: str) -> tuple[int | None, int | None, str | None]:
@@ -193,6 +267,10 @@ def extract(full_text: str, language: str = "de", decision_id: str = "") -> Deci
         out.sachverhalt = text[sav_end:end_idx].strip()
         out.sachverhalt_method = sav_method
 
+    # Sub-parse Erwägungen into numbered paragraphs (the actual citable units)
+    if out.erwaegungen:
+        out.erwaegungen_paragraphs = parse_erwaegungen_paragraphs(out.erwaegungen)
+
     return out
 
 
@@ -206,10 +284,12 @@ CREATE TABLE IF NOT EXISTS structure (
     canton               TEXT,
     language             TEXT,
     decision_date        TEXT,
+    regeste              TEXT,                      -- official BGer-formulated rule (BGE only)
     sachverhalt          TEXT,
     sachverhalt_method   TEXT,
     erwaegungen          TEXT,
     erwaegungen_method   TEXT,
+    erwaegungen_paragraph_count INTEGER,
     dispositiv           TEXT,
     dispositiv_method    TEXT,
     dispositiv_orders    TEXT,  -- JSON array
@@ -217,6 +297,18 @@ CREATE TABLE IF NOT EXISTS structure (
 );
 CREATE INDEX IF NOT EXISTS idx_court ON structure(court);
 CREATE INDEX IF NOT EXISTS idx_method ON structure(dispositiv_method);
+
+-- Each numbered Erwägung as its own row, queryable in O(1)
+CREATE TABLE IF NOT EXISTS erwaegungen_paragraph (
+    decision_id   TEXT,
+    e_number      TEXT,    -- "1", "1.1", "2.3.1"
+    depth         INTEGER,
+    parent        TEXT,    -- "1" for "1.1", "2" for "2.3" (null for top-level)
+    text          TEXT,
+    PRIMARY KEY (decision_id, e_number)
+);
+CREATE INDEX IF NOT EXISTS idx_erw_decision ON erwaegungen_paragraph(decision_id);
+CREATE INDEX IF NOT EXISTS idx_erw_depth ON erwaegungen_paragraph(depth);
 """
 
 
@@ -242,7 +334,9 @@ def build_db(shard_paths: list[Path], out_db: Path) -> dict:
     conn.executescript(SCHEMA)
     cur = conn.cursor()
 
-    stats = {"shards": {}, "total": 0, "with_disp": 0, "with_erw": 0, "with_sav": 0, "all_three": 0}
+    stats = {"shards": {}, "total": 0, "with_disp": 0, "with_erw": 0, "with_sav": 0,
+             "with_regeste": 0, "with_subnumbered_erw": 0, "all_three": 0,
+             "total_paragraphs": 0}
     started = time.time()
 
     for shard in shard_paths:
@@ -251,8 +345,10 @@ def build_db(shard_paths: list[Path], out_db: Path) -> dict:
             continue
         court_label = shard.stem
         n = 0
-        sd = se = ss = sa = 0
+        sd = se = ss = sa = sreg = ssub = 0
+        n_paragraphs = 0
         rows = []
+        para_rows = []
         for entry in iter_jsonl(shard):
             ft = entry.get("full_text") or ""
             if len(ft) < 500:
@@ -263,48 +359,79 @@ def build_db(shard_paths: list[Path], out_db: Path) -> dict:
             if s.erwaegungen: se += 1
             if s.sachverhalt: ss += 1
             if s.dispositiv and s.erwaegungen and s.sachverhalt: sa += 1
+            regeste = entry.get("regeste") or None
+            if regeste and len(str(regeste)) > 20: sreg += 1
+            if any(p["depth"] >= 2 for p in s.erwaegungen_paragraphs): ssub += 1
+            n_paragraphs += len(s.erwaegungen_paragraphs)
             rows.append((
                 s.decision_id,
                 entry.get("court"),
                 entry.get("canton"),
                 s.language,
                 entry.get("decision_date"),
+                regeste,
                 s.sachverhalt,
                 s.sachverhalt_method,
                 s.erwaegungen,
                 s.erwaegungen_method,
+                len(s.erwaegungen_paragraphs),
                 s.dispositiv,
                 s.dispositiv_method,
                 json.dumps(s.dispositiv_orders, ensure_ascii=False) if s.dispositiv_orders else None,
                 time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             ))
+            for p in s.erwaegungen_paragraphs:
+                if p["depth"] == 0:
+                    continue  # skip the synthetic "no markers found" fallback
+                para_rows.append((
+                    s.decision_id, p["e_number"], p["depth"], p["parent"], p["text"]
+                ))
             if len(rows) >= 5000:
                 cur.executemany(
-                    "INSERT OR REPLACE INTO structure VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    "INSERT OR REPLACE INTO structure VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     rows,
                 )
+                cur.executemany(
+                    "INSERT OR REPLACE INTO erwaegungen_paragraph VALUES (?,?,?,?,?)",
+                    para_rows,
+                )
                 conn.commit()
-                rows = []
+                rows = []; para_rows = []
         if rows:
             cur.executemany(
-                "INSERT OR REPLACE INTO structure VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT OR REPLACE INTO structure VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 rows,
             )
-            conn.commit()
+        if para_rows:
+            cur.executemany(
+                "INSERT OR REPLACE INTO erwaegungen_paragraph VALUES (?,?,?,?,?)",
+                para_rows,
+            )
+        conn.commit()
 
         stats["shards"][court_label] = {
             "n": n,
             "disp_pct": round(sd / n * 100, 1) if n else 0,
             "erw_pct": round(se / n * 100, 1) if n else 0,
             "sav_pct": round(ss / n * 100, 1) if n else 0,
+            "regeste_pct": round(sreg / n * 100, 1) if n else 0,
+            "subnumbered_erw_pct": round(ssub / n * 100, 1) if n else 0,
+            "avg_paragraphs_per_decision": round(n_paragraphs / n, 1) if n else 0,
             "all_three_pct": round(sa / n * 100, 1) if n else 0,
         }
         stats["total"] += n
         stats["with_disp"] += sd
         stats["with_erw"] += se
         stats["with_sav"] += ss
+        stats["with_regeste"] += sreg
+        stats["with_subnumbered_erw"] += ssub
         stats["all_three"] += sa
-        logger.info(f"{court_label}: n={n}, disp={sd}({sd/n*100:.0f}%), erw={se}({se/n*100:.0f}%), sav={ss}({ss/n*100:.0f}%) — {time.time()-started:.0f}s elapsed")
+        stats["total_paragraphs"] += n_paragraphs
+        logger.info(
+            f"{court_label}: n={n}, disp={sd}({sd/n*100:.0f}%), erw={se}({se/n*100:.0f}%), "
+            f"sav={ss}({ss/n*100:.0f}%), regeste={sreg}({sreg/n*100:.0f}%), "
+            f"subnum={ssub}({ssub/n*100:.0f}%), paragraphs={n_paragraphs} — {time.time()-started:.0f}s"
+        )
 
     conn.close()
     tmp_db.replace(out_db)
