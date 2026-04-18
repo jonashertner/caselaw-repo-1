@@ -126,17 +126,22 @@ class DecisionStructure:
 
 
 # Erwägungs-paragraph-parser. The Schweizer numbered hierarchy
-#   1.       — top-level Erwägung
-#   1.1      — sub-Erwägung
+#   1.       — top-level Erwägung (always with trailing dot)
+#   1.1      — sub-Erwägung (BGE-style: NO trailing dot)
+#   1.1.     — sub-Erwägung (some courts: WITH trailing dot)
 #   1.2.3    — sub-sub
 # is the actual citable unit ("BGE 140 III 86 E. 2.3"). Splitting it out
-# is the Schweizer equivalent of "extract the holding" — what the court
-# actually said on a specific point.
+# is the Schweizer equivalent of "extract the holding".
+#
+# Trailing dot is OPTIONAL: BGEs write "6.1" without it; BGer writes "6.1."
+# with it. Both must match. The regex captures everything up to the
+# numeric part; the trailing "." (if present) is consumed by the optional
+# `\.?` after the capture group.
 ERW_PARA_RE = re.compile(
-    r"(?m)^[ \t]*(\d+(?:\.\d+){0,3})\.\s*[\-\u2013\u2014]?[ \t]*(?:$|[\n\r])"
+    r"(?m)^[ \t]*(\d+(?:\.\d+){0,3})\.?[ \t]*[\-\u2013\u2014]?[ \t]*(?:$|[\n\r])"
 )
 ERW_PARA_RE_INLINE = re.compile(
-    r"(?m)^[ \t]*(\d+(?:\.\d+){0,3})\.\s*[\-\u2013\u2014]?[ \t]+(?=\S)"
+    r"(?m)^[ \t]*(\d+(?:\.\d+){0,3})\.?[ \t]*[\-\u2013\u2014]?[ \t]+(?=\S)"
 )
 
 
