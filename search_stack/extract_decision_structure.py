@@ -79,16 +79,37 @@ ERWAEGUNGEN_PATTERNS = {
         (r"^\s*Erwägung\s*:?\s*$", "ranked_de_singular"),
     ],
     "fr": [
+        # BGE-FR canonical opener — covers 99% of BGE-FR decisions
+        (r"Extrait\s+des\s+considérants\s*:?", "ranked_fr_BGE_extrait"),
+        # Court-specific "considère"
         (r"Le\s+Tribunal\s+(?:fédéral|administratif\s+fédéral|pénal\s+fédéral)\s+considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere_TF"),
         (r"(?:La\s+Cour|le\s+Tribunal|la\s+Chambre)[^.\n]*considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere_court"),
+        # Looser "considère en (fait et en) droit/fait" — BVGer/BStGer common
+        (r"considère\s+en\s+(?:fait\s+et\s+en\s+)?(?:droit|fait)\s*:?", "ranked_fr_considere_loose"),
+        # "Considérant en (fait et en) droit/fait" — frequent BGer variant
+        (r"Considérant\s+en\s+(?:fait\s+et\s+en\s+)?(?:droit|fait)\s*:?", "ranked_fr_considerant_endroit"),
+        # Generic considérant que (older formats)
         (r"\bConsidérant\s+(?:en\s+(?:droit|fait)|que)\b", "ranked_fr_considerant"),
+        # Bare headers (covers BGer "Considérant:" alone)
+        (r"^\s*Considérant\s*:\s*$", "ranked_fr_bare_header"),
         (r"^\s*Considérants?\s*:?\s*$", "ranked_fr_header"),
+        (r"^\s*EN\s+DROIT\s*:?\s*$", "ranked_fr_uppercase"),
     ],
     "it": [
+        # BGE-IT
+        (r"Estratto\s+dei\s+considerandi\s*:?", "ranked_it_BGE_estratto"),
+        # Court-specific "considera"
         (r"Il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera_TF"),
         (r"(?:La\s+Corte(?:\s+dei\s+reclami\s+penali)?|Il\s+Tribunale|Il\s+Giudice)[^.\n]*considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera_court"),
+        # Looser "considera in (fatto e[d] in) diritto/fatto"
+        (r"considera\s+in\s+(?:fatto\s+ed?\s+in\s+)?(?:diritto|fatto)\s*:?", "ranked_it_considera_loose"),
+        # Generic "Considerando in diritto/fatto/che"
         (r"\bConsiderando\s+(?:in\s+(?:diritto|fatto)|che)\b", "ranked_it_considerando"),
+        # Headers
         (r"^\s*Considerando\s+in\s+diritto\s*:?\s*$", "ranked_it_header"),
+        # Standalone "Diritto:" header (BStGer 247x, BVGer 26x)
+        (r"^\s*Diritto\s*:\s*$", "ranked_it_diritto_header"),
+        (r"^\s*IN\s+DIRITTO\s*:?\s*$", "ranked_it_uppercase"),
     ],
 }
 

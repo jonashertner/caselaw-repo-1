@@ -302,29 +302,57 @@ _LLM_EXPANSION_CACHE: dict[str, list[str]] = {}
 # Returns deterministic JSON instead of free-text terms.
 # Drives statute-graph retrieval and BGE direct-lookup reliably.
 STRUCTURED_PARSE_PROMPT = (
-    "You are a Swiss legal search assistant. Parse the user's query and return "
-    "a JSON object with these fields:\n"
+    "You are a Swiss legal search assistant. Switzerland is multilingual: "
+    "decisions are published in DE/FR/IT and the same legal concept has different "
+    "canonical names per language. A user query in any language must be expanded "
+    "into all three to retrieve relevant decisions across the corpus.\n"
+    "\n"
+    "Parse the user's query and return a JSON object with these fields:\n"
     '  "statutes": list of statute references as "ABBREV ART" (e.g. ["OR 41", "ZGB 28"]). '
     "ALWAYS infer relevant statutes even when no article is explicitly mentioned — "
     "use the legal topic to identify the governing provisions.\n"
-    '  "doctrine": the precise German legal doctrine name (Rechtsbegriff), e.g. "Tierhalterhaftung"\n'
+    '  "doctrine": the precise GERMAN legal doctrine name (Rechtsbegriff), e.g. "Tierhalterhaftung". '
+    'ALWAYS provide this in German, regardless of input language.\n'
+    '  "doctrine_fr": the precise FRENCH legal doctrine name, e.g. '
+    '"responsabilité du détenteur d\'animaux". REQUIRED — never empty.\n'
+    '  "doctrine_it": the precise ITALIAN legal doctrine name, e.g. '
+    '"responsabilità del detentore di animali". REQUIRED — never empty.\n'
     '  "leading_bge": list of leading BGE references you are CERTAIN about, as "BGE VOL DIV PAGE" '
     '(e.g. ["BGE 131 III 115"]). Only include if you are confident.\n'
-    '  "synonyms": 2-4 alternative German/French/Italian legal terms\n'
+    '  "synonyms": 2-4 alternative legal terms across DE/FR/IT (broader than doctrine names — '
+    'related concepts, sub-doctrines, common variants)\n'
     '  "domain": one of "civil", "criminal", "public", "social-insurance", "administrative"\n'
     "Rules:\n"
-    "- ALWAYS translate colloquial language to the legal doctrine name\n"
-    "- For statutes, use standard abbreviations: OR, ZGB, StGB, StPO, ZPO, SchKG, BV, AIG, "
-    "IRSG, AsylG, BGG, VwVG, EMRK, SVG, UVG, KVG, AHVG, IVG, etc.\n"
-    "- Even for semantic queries without 'Art.', infer the most relevant statute provisions\n"
-    "- If unsure about a BGE, omit it from leading_bge rather than guessing\n"
-    "- Output ONLY valid JSON, no markdown fences, no explanation\n"
+    "- The query may arrive in DE, FR, IT, or even colloquial mixed language. "
+    "ALWAYS produce all three doctrine variants regardless of input.\n"
+    "- ALWAYS translate colloquial language to the precise legal doctrine.\n"
+    "- For statutes, use standard abbreviations: OR (CO/CO), ZGB (CC/CC), StGB (CP/CP), "
+    "StPO, ZPO, SchKG, BV, AIG, IRSG, AsylG, BGG, VwVG, EMRK (CEDH), SVG, UVG, KVG, AHVG, IVG, etc.\n"
+    "- Even for semantic queries without 'Art.', infer the most relevant statute provisions.\n"
+    "- If unsure about a BGE, omit it from leading_bge rather than guessing.\n"
+    "- Output ONLY valid JSON, no markdown fences, no explanation.\n"
     "Examples:\n"
-    '  "Hundebiss" -> {"statutes":["OR 56"],"doctrine":"Tierhalterhaftung","leading_bge":["BGE 131 III 115"],"synonyms":["responsabilité du détenteur d\'animaux","Haftpflicht"],"domain":"civil"}\n'
-    '  "Notwehr Strafrecht" -> {"statutes":["StGB 15","StGB 16"],"doctrine":"Notwehr","leading_bge":["BGE 107 IV 12"],"synonyms":["légitime défense","legittima difesa","Notwehrexzess"],"domain":"criminal"}\n'
-    '  "Pflichtteil Enterbung" -> {"statutes":["ZGB 470","ZGB 471","ZGB 477"],"doctrine":"Pflichtteilsrecht","leading_bge":["BGE 132 III 677"],"synonyms":["réserve héréditaire","Enterbung","riserva ereditaria"],"domain":"civil"}\n'
-    '  "Auslieferung an Rumänien" -> {"statutes":["IRSG 25","IRSG 55"],"doctrine":"Auslieferung","leading_bge":[],"synonyms":["extradition","estradizione","entraide judiciaire"],"domain":"criminal"}\n'
-    '  "danno morale responsabilità civile" -> {"statutes":["OR 49","OR 47"],"doctrine":"Genugtuung","leading_bge":[],"synonyms":["tort moral","Genugtuung","Persönlichkeitsverletzung","immaterielle Unbill"],"domain":"civil"}\n'
+    '  "Hundebiss" -> {"statutes":["OR 56"],"doctrine":"Tierhalterhaftung",'
+    '"doctrine_fr":"responsabilité du détenteur d\'animaux",'
+    '"doctrine_it":"responsabilità del detentore di animali",'
+    '"leading_bge":["BGE 131 III 115"],"synonyms":["Tierhalter","Haftpflicht","danno da animali"],'
+    '"domain":"civil"}\n'
+    '  "résiliation bail abusive" -> {"statutes":["OR 271","OR 271a"],"doctrine":"missbräuchliche Kündigung",'
+    '"doctrine_fr":"résiliation abusive du bail","doctrine_it":"disdetta abusiva della locazione",'
+    '"leading_bge":["BGE 138 III 59"],"synonyms":["Mietrecht","Kündigungsschutz","disdetta locazione"],'
+    '"domain":"civil"}\n'
+    '  "danno morale responsabilità civile" -> {"statutes":["OR 49","OR 47"],"doctrine":"Genugtuung",'
+    '"doctrine_fr":"tort moral","doctrine_it":"riparazione morale",'
+    '"leading_bge":[],"synonyms":["Persönlichkeitsverletzung","tort moral","immaterielle Unbill"],'
+    '"domain":"civil"}\n'
+    '  "Notwehr Strafrecht" -> {"statutes":["StGB 15","StGB 16"],"doctrine":"Notwehr",'
+    '"doctrine_fr":"légitime défense","doctrine_it":"legittima difesa",'
+    '"leading_bge":["BGE 107 IV 12"],"synonyms":["Notwehrexzess","excès de légitime défense","stato di necessità"],'
+    '"domain":"criminal"}\n'
+    '  "Pflichtteil Enterbung" -> {"statutes":["ZGB 470","ZGB 471","ZGB 477"],"doctrine":"Pflichtteilsrecht",'
+    '"doctrine_fr":"réserve héréditaire","doctrine_it":"riserva ereditaria",'
+    '"leading_bge":["BGE 132 III 677"],"synonyms":["Enterbung","exhérédation","diseredazione"],'
+    '"domain":"civil"}\n'
 )
 
 _STRUCTURED_PARSE_CACHE: dict[str, dict] = {}
@@ -5091,12 +5119,28 @@ def _normalize_score_list(scores) -> list[float]:
 
 
 LLM_RERANK_PROMPT = (
-    "You are a Swiss legal search relevance judge. Given a search query and a list of "
-    "court decision candidates, rank them by relevance to the query.\n"
-    "Consider: (1) legal doctrine match, (2) applicable statute provisions, "
-    "(3) factual pattern similarity, (4) court authority level.\n"
-    "Return ONLY a JSON array of decision_id strings in order from most to least relevant. "
-    "Include ALL candidates in the array. Example: [\"bge_BGE_131_III_115\",\"bge_BGE_110_II_136\"]\n"
+    "You are a Swiss legal search relevance judge for a multilingual corpus "
+    "(German, French, Italian). Given a search query and a list of court "
+    "decision candidates whose Regesten may be in any of the three languages, "
+    "rank them by RELEVANCE TO THE QUERY regardless of decision language.\n"
+    "\n"
+    "Critical multilingual rules:\n"
+    "- A French decision may be the most relevant answer to a German query, "
+    "and vice versa. Cross-language equivalence is the norm in Swiss law.\n"
+    "- Map terms across languages: Mietrecht ≡ droit du bail ≡ diritto della "
+    "locazione; Tierhalterhaftung ≡ responsabilité du détenteur d'animaux ≡ "
+    "responsabilità del detentore di animali; etc.\n"
+    "- Do NOT downrank a decision because its Regeste is in a different "
+    "language from the query. The legal substance is what matters.\n"
+    "\n"
+    "Consider: (1) legal doctrine match (across languages), (2) applicable "
+    "statute provisions (same SR-number across languages: OR=CO, ZGB=CC, "
+    "StGB=CP), (3) factual pattern similarity, (4) court authority level "
+    "(BGer/BGE > BVGer/BStGer > kantonal).\n"
+    "\n"
+    "Return ONLY a JSON array of decision_id strings in order from most to "
+    "least relevant. Include ALL candidates in the array. "
+    "Example: [\"bge_BGE_131_III_115\",\"bge_BGE_110_II_136\"]\n"
     "Output ONLY the JSON array, nothing else."
 )
 
