@@ -11838,7 +11838,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
     _call_ua = _ctx_client_ua.get("")
     _call_sid = _ctx_session_id.get("")
     _is_commercial = bool(_call_ua) and not _KNOWN_FREE_CLIENTS.search(_call_ua)
-    _log_args = {k: v for k, v in arguments.items() if k in ("query", "decision_id", "case", "topic", "law_code", "abbreviation", "sr_number", "article", "court", "language", "date_from", "date_to", "canton", "chamber", "limit", "offset", "sort")}
+    _log_args = {k: v for k, v in arguments.items() if k in ("query", "decision_id", "case", "topic", "law_code", "abbreviation", "sr_number", "article", "court", "language", "date_from", "date_to", "canton", "chamber", "limit", "offset", "sort", "e_number")}
     logger.info("tool_call: %s %s [ip=%s ua=%s sid=%s commercial=%s]", name,
                 json.dumps(_log_args, ensure_ascii=False) if _log_args else "{}",
                 _call_ip or "-", _call_ua[:80] if _call_ua else "-", _call_sid[:12] if _call_sid else "-",
