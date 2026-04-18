@@ -44,11 +44,13 @@ logger = logging.getLogger("extract_decision_structure")
 DISPOSITIV_PATTERNS = {
     "de": [
         (r"Demnach\s+erkennt\s+das\s+Bundesgericht\s*:?", "ranked_de_BGer"),
-        (r"Demnach\s+erkennt\s+(?:das|die)\s+(?:Bundesgericht|Beschwerdekammer|Strafkammer|Anklagekammer|Berufungskammer|I+\.\s+Kammer|Abteilung)[^:\n]*:?", "ranked_de_court"),
+        (r"Demnach\s+erkennt\s+das\s+Bundesverwaltungsgericht\s*:?", "ranked_de_BVGer"),
+        (r"Demnach\s+erkennt\s+das\s+Bundesstrafgericht\s*:?", "ranked_de_BStGer"),
+        (r"Demnach\s+erkennt\s+(?:das|die)\s+(?:Bundesgericht|Bundesverwaltungsgericht|Bundesstrafgericht|Bundespatentgericht|Beschwerdekammer|Strafkammer|Anklagekammer|Berufungskammer|I+\.\s+Kammer|Abteilung)[^:\n]*:?", "ranked_de_court"),
         (r"Demnach\s+erkennt\s+(?:der|die)\s+(?:Präsident|Präsidentin|Instruktionsrichter|Einzelrichter|Vizepräsident)[^:\n]*:?", "ranked_de_judge"),
         (r"Demnach\s+(?:verfügt|beschliesst|verfügen|beschliessen)\s+(?:das|der|die)\s+[^:\n]*:?", "ranked_de_verfuegt"),
         (r"Demnach\s+wird\s+(?:erkannt|verfügt|beschlossen)\s*:?", "ranked_de_passive"),
-        (r"Aus\s+diesen\s+(?:Gründen|Erwägungen)\s+(?:erkennt|beschliesst|verfügt)\b", "fallback_de_aus_gruenden"),
+        (r"Aus\s+diesen\s+(?:Gründen|Erwägungen)\s+(?:erkennt|beschliesst|verfügt|ergibt|ist|kann)\b", "fallback_de_aus_gruenden"),
         (r"Demgemäss\s+(?:erkennt|beschliesst|verfügt)\b", "fallback_de_demgemaess"),
     ],
     "fr": [
@@ -56,10 +58,11 @@ DISPOSITIV_PATTERNS = {
         (r"Par\s+ces\s+motifs,?\s+(?:la\s+Cour|le\s+Président|la\s+Présidente|le\s+Juge\s+instructeur|le\s+Vice-président)[^:\n]*(?:prononce|ordonne|arrête)\s*:?", "ranked_fr_judge"),
         (r"Par\s+ces\s+motifs,?\s+(?:la\s+Cour|le\s+Tribunal|le\s+Président|la\s+Présidente)\b", "fallback_fr_par_ces_motifs"),
         (r"Par\s+ces\s+motifs\s*:?\s*$", "fallback_fr_bare"),
+        (r"par\s+ces\s+motifs,?\s+prononce\s*:?", "fallback_fr_lc_prononce"),
     ],
     "it": [
         (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+pronuncia\s*:?", "ranked_it_TF"),
-        (r"Per\s+questi\s+motivi,?\s+il\s+(?:Presidente|Giudice\s+istruttore)[^:\n]*pronuncia\s*:?", "ranked_it_judge"),
+        (r"Per\s+questi\s+motivi,?\s+(?:il\s+)?(?:Presidente|Giudice\s+istruttore|la\s+Corte(?:\s+dei\s+reclami\s+penali)?)[^:\n]*pronuncia\s*:?", "ranked_it_court"),
         (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+federale\b", "fallback_it_TF_loose"),
         (r"Per\s+questi\s+motivi\s*:?\s*$", "fallback_it_bare"),
     ],
@@ -67,18 +70,23 @@ DISPOSITIV_PATTERNS = {
 
 ERWAEGUNGEN_PATTERNS = {
     "de": [
-        (r"Das\s+Bundesgericht\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht"),
+        (r"Das\s+Bundesgericht\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_BGer"),
+        (r"Das\s+Bundesverwaltungsgericht\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_BVGer"),
+        (r"Das\s+Bundesstrafgericht\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_BStGer"),
+        (r"(?:Das|Die)\s+(?:Beschwerdekammer|Strafkammer|Berufungskammer|Anklagekammer|Abteilung)\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_chamber"),
         (r"in\s+Erwägung,?\s+dass\b", "ranked_de_in_erwaegung"),
         (r"^\s*Erwägungen\s*:?\s*$", "ranked_de_header"),
         (r"^\s*Erwägung\s*:?\s*$", "ranked_de_singular"),
     ],
     "fr": [
-        (r"Le\s+Tribunal\s+(?:fédéral|administratif\s+fédéral|pénal\s+fédéral)\s+considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere"),
+        (r"Le\s+Tribunal\s+(?:fédéral|administratif\s+fédéral|pénal\s+fédéral)\s+considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere_TF"),
+        (r"(?:La\s+Cour|le\s+Tribunal|la\s+Chambre)[^.\n]*considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere_court"),
         (r"\bConsidérant\s+(?:en\s+(?:droit|fait)|que)\b", "ranked_fr_considerant"),
         (r"^\s*Considérants?\s*:?\s*$", "ranked_fr_header"),
     ],
     "it": [
-        (r"Il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera"),
+        (r"Il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera_TF"),
+        (r"(?:La\s+Corte(?:\s+dei\s+reclami\s+penali)?|Il\s+Tribunale|Il\s+Giudice)[^.\n]*considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera_court"),
         (r"\bConsiderando\s+(?:in\s+(?:diritto|fatto)|che)\b", "ranked_it_considerando"),
         (r"^\s*Considerando\s+in\s+diritto\s*:?\s*$", "ranked_it_header"),
     ],

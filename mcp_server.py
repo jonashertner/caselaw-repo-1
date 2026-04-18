@@ -176,6 +176,7 @@ OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DI
 LEXFIND_CACHE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_LEXFIND_CACHE", str(DATA_DIR / "lexfind_cache.db")))
 MATERIALIEN_DB_PATH = Path(os.environ.get("SWISS_CASELAW_MATERIALIEN_DB", str(DATA_DIR / "materialien.db")))
 ANWALTSRECHT_TAGS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_ANWALTSRECHT_DB", str(DATA_DIR / "anwaltsrecht_tags.db")))
+DECISION_STRUCTURE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STRUCTURE_DB", str(DATA_DIR / "decision_structure.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -2779,6 +2780,33 @@ def _get_anwaltsrecht_conn() -> sqlite3.Connection | None:
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open Anwaltsrecht tags DB: %s", e)
+        return None
+
+
+_structure_warned = False
+
+
+def _get_structure_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the decision-structure sidecar DB.
+
+    Sidecar produced by `search_stack/extract_decision_structure.py` —
+    stores per-decision Sachverhalt / Erwägungen-paragraphs / Dispositiv,
+    keyed by decision_id. Used by get_decision_structure / get_erwaegung /
+    get_regeste tools and to enrich get_case_brief responses.
+    """
+    global _structure_warned
+    if not DECISION_STRUCTURE_DB_PATH.exists():
+        if not _structure_warned:
+            logger.info("Decision structure DB not found at %s — structure tools degraded",
+                        DECISION_STRUCTURE_DB_PATH)
+            _structure_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(f"file:{DECISION_STRUCTURE_DB_PATH}?immutable=1", uri=True, timeout=1.0)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open decision structure DB: %s", e)
         return None
 
 
@@ -7474,6 +7502,204 @@ server = Server(
 
 
 
+# ── decision-structure helpers (Sachverhalt / Erwägungen / Dispositiv / Regeste) ────────
+
+
+def _fetch_structure_row(decision_id: str) -> dict | None:
+    """Look up the structure-DB row for a decision_id, with id-variant fallback."""
+    conn = _get_structure_conn()
+    if not conn:
+        return None
+    try:
+        for did_variant in _decision_id_variants(decision_id) or [decision_id]:
+            row = conn.execute(
+                "SELECT * FROM structure WHERE decision_id = ?",
+                (did_variant,),
+            ).fetchone()
+            if row:
+                return dict(row)
+        return None
+    finally:
+        conn.close()
+
+
+def _fetch_structure_paragraphs(decision_id: str) -> list[dict]:
+    """Return ordered Erwägungen-paragraphs for a decision_id."""
+    conn = _get_structure_conn()
+    if not conn:
+        return []
+    try:
+        for did_variant in _decision_id_variants(decision_id) or [decision_id]:
+            rows = conn.execute(
+                "SELECT e_number, depth, parent, text FROM erwaegungen_paragraph "
+                "WHERE decision_id = ? ORDER BY depth, e_number",
+                (did_variant,),
+            ).fetchall()
+            if rows:
+                return [dict(r) for r in rows]
+        return []
+    finally:
+        conn.close()
+
+
+def _e_number_sort_key(e_number: str) -> tuple:
+    """Sort '1.10' after '1.9' (numeric, not lexicographic)."""
+    parts = e_number.split(".")
+    out = []
+    for p in parts:
+        try:
+            out.append(int(p))
+        except ValueError:
+            out.append(p)
+    return tuple(out)
+
+
+def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars: int = 250) -> dict:
+    """Return structured fields (Sachverhalt / Erwägungen-paragraphs / Dispositiv / Regeste)."""
+    if not decision_id or not decision_id.strip():
+        return {"error": "Provide a decision_id."}
+    resolved = _resolve_decision_id(decision_id.strip())
+    row = _fetch_structure_row(resolved)
+    if not row:
+        return {
+            "error": f"Decision not in structure DB: {decision_id!r}",
+            "hint": (
+                "Structured extraction is currently available for federal decisions "
+                "(BGer / BVGer / BStGer / BGE / BPatGer / EGMR-CH / BGE-historical). "
+                "Cantonal decisions: use get_decision instead."
+            ),
+        }
+    paragraphs = _fetch_structure_paragraphs(resolved)
+    paragraphs.sort(key=lambda p: _e_number_sort_key(p["e_number"]))
+    out_paragraphs = []
+    for p in paragraphs:
+        text = p["text"] or ""
+        out_paragraphs.append({
+            "e_number": p["e_number"],
+            "depth": p["depth"],
+            "parent": p["parent"],
+            "text_chars": len(text),
+            "text_excerpt": text[:paragraph_excerpt_chars] + ("…" if len(text) > paragraph_excerpt_chars else ""),
+        })
+    sachverhalt = row.get("sachverhalt") or ""
+    dispositiv_orders = []
+    if row.get("dispositiv_orders"):
+        try:
+            dispositiv_orders = json.loads(row["dispositiv_orders"])
+        except json.JSONDecodeError:
+            dispositiv_orders = []
+    return {
+        "decision_id": row["decision_id"],
+        "court": row["court"],
+        "language": row["language"],
+        "decision_date": row["decision_date"],
+        "regeste": row.get("regeste"),
+        "sachverhalt_chars": len(sachverhalt),
+        "sachverhalt_excerpt": sachverhalt[:1000] + ("…" if len(sachverhalt) > 1000 else ""),
+        "erwaegungen_paragraph_count": row.get("erwaegungen_paragraph_count") or len(paragraphs),
+        "erwaegungen_paragraphs": out_paragraphs,
+        "dispositiv": row.get("dispositiv"),
+        "dispositiv_orders": dispositiv_orders,
+        "extraction_methods": {
+            "sachverhalt": row.get("sachverhalt_method"),
+            "erwaegungen": row.get("erwaegungen_method"),
+            "dispositiv": row.get("dispositiv_method"),
+        },
+        "_note": (
+            "Erwägungen-paragraphs are returned as excerpts; call get_erwaegung("
+            "decision_id, e_number) for the verbatim full text of a specific paragraph."
+        ),
+    }
+
+
+def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
+    """Return verbatim text of a specific Erwägung paragraph."""
+    if not decision_id or not e_number:
+        return {"error": "Provide both decision_id and e_number (e.g. '2.3')."}
+    resolved = _resolve_decision_id(decision_id.strip())
+    e_clean = e_number.strip().lstrip("E.").strip()
+    paragraphs = _fetch_structure_paragraphs(resolved)
+    if not paragraphs:
+        return {"error": f"No structured Erwägungen found for {decision_id!r}."}
+    para_map = {p["e_number"]: p for p in paragraphs}
+    target = para_map.get(e_clean)
+    if not target:
+        # Sort siblings by numeric key for a useful error message
+        all_nums = sorted(para_map.keys(), key=_e_number_sort_key)
+        return {
+            "error": f"E. {e_clean!r} not found in {decision_id!r}.",
+            "available_e_numbers": all_nums,
+        }
+    # Find siblings (same parent)
+    parent = target["parent"]
+    siblings = sorted(
+        [p["e_number"] for p in paragraphs if p["parent"] == parent],
+        key=_e_number_sort_key,
+    )
+    row = _fetch_structure_row(resolved)
+    return {
+        "decision_id": row["decision_id"] if row else resolved,
+        "e_number": target["e_number"],
+        "depth": target["depth"],
+        "parent_e_number": target["parent"],
+        "siblings": siblings,
+        "court": row.get("court") if row else None,
+        "language": row.get("language") if row else None,
+        "regeste": row.get("regeste") if row else None,
+        "text": target["text"],
+        "_citation_format": (
+            f"{row['court'].upper()} {row.get('decision_date','')[:10]}, E. {target['e_number']}"
+            if row and row.get("court") else None
+        ),
+    }
+
+
+def _handle_get_regeste(*, decision_id: str) -> dict:
+    """Return the official BGer-/BVGer-/BStGer-formulated Regeste (head-note)."""
+    if not decision_id:
+        return {"error": "Provide a decision_id."}
+    resolved = _resolve_decision_id(decision_id.strip())
+    row = _fetch_structure_row(resolved)
+    if not row:
+        # Fallback: read from main decisions DB
+        decision = get_decision_by_id(resolved)
+        if not decision:
+            return {"error": f"Decision not found: {decision_id!r}"}
+        regeste = decision.get("regeste")
+        if not regeste:
+            return {
+                "decision_id": resolved,
+                "regeste": None,
+                "_note": "No Regeste field for this decision.",
+            }
+        return {
+            "decision_id": decision.get("decision_id"),
+            "court": decision.get("court"),
+            "decision_date": decision.get("decision_date"),
+            "language": decision.get("language"),
+            "regeste": regeste,
+            "_note": (
+                "Regeste from main decisions DB. The Regeste is the official "
+                "court-formulated summary of the legal rule and the canonical "
+                "citation target. References like '(E. 5.2.1)' inside the Regeste "
+                "point to specific Erwägungen — use get_erwaegung to retrieve them."
+            ),
+        }
+    return {
+        "decision_id": row["decision_id"],
+        "court": row["court"],
+        "decision_date": row["decision_date"],
+        "language": row["language"],
+        "regeste": row.get("regeste"),
+        "_note": (
+            "The Regeste is the official court-formulated summary of the legal "
+            "rule. References like '(E. 5.2.1)' inside the Regeste point to "
+            "specific Erwägungen — use get_erwaegung(decision_id, e_number) "
+            "to retrieve their verbatim text."
+        ),
+    }
+
+
 # ── get_case_brief and helpers ─────────────────────────────────
 
 
@@ -7497,25 +7723,55 @@ def _handle_get_case_brief(*, case: str) -> dict:
     full_text = decision.get("full_text") or ""
     regeste = decision.get("regeste") or ""
 
-    # Extract Sachverhalt (facts section)
-    sachverhalt = _extract_section(
-        full_text,
-        start_patterns=[r"^Sachverhalt\s*:", r"^A\.\s*[-–]", r"^Faits\s*:"],
-        end_patterns=[r"^Erwägungen\s*:?$", r"^Considérant\s*", r"^Das Bundesgericht"],
-        fallback_chars=800,
-    )
+    # Prefer the structured-extraction sidecar (much higher quality than the
+    # inline regex extractors). Fall back to inline if not available.
+    structure_row = _fetch_structure_row(decision_id)
+    structure_paragraphs = _fetch_structure_paragraphs(decision_id) if structure_row else []
+    used_structure = bool(structure_row)
 
-    # Extract key Erwägungen (numbered reasoning sections)
-    key_erwaegungen = _extract_erwaegungen(full_text)
-
-    # Extract Dispositiv (holding)
-    dispositiv = _extract_section(
-        full_text,
-        start_patterns=[r"^Dispositiv\s*:", r"^Aus diesen Gründen", r"^Par ces motifs"],
-        end_patterns=[],
-        fallback_chars=0,
-        from_end=True,
-    )
+    if structure_row:
+        sachverhalt = structure_row.get("sachverhalt") or _extract_section(
+            full_text,
+            start_patterns=[r"^Sachverhalt\s*:", r"^A\.\s*[-–]", r"^Faits\s*:"],
+            end_patterns=[r"^Erwägungen\s*:?$", r"^Considérant\s*", r"^Das Bundesgericht"],
+            fallback_chars=800,
+        )
+        if structure_paragraphs:
+            structure_paragraphs.sort(key=lambda p: _e_number_sort_key(p["e_number"]))
+            key_erwaegungen = [
+                {
+                    "e_number": p["e_number"],
+                    "depth": p["depth"],
+                    "text": (p["text"] or "")[:1200] + ("…" if len(p["text"] or "") > 1200 else ""),
+                }
+                for p in structure_paragraphs[:12]
+            ]
+        else:
+            key_erwaegungen = _extract_erwaegungen(full_text)
+        dispositiv = structure_row.get("dispositiv") or _extract_section(
+            full_text,
+            start_patterns=[r"^Dispositiv\s*:", r"^Aus diesen Gründen", r"^Par ces motifs"],
+            end_patterns=[],
+            fallback_chars=0,
+            from_end=True,
+        )
+        if not regeste and structure_row.get("regeste"):
+            regeste = structure_row["regeste"]
+    else:
+        sachverhalt = _extract_section(
+            full_text,
+            start_patterns=[r"^Sachverhalt\s*:", r"^A\.\s*[-–]", r"^Faits\s*:"],
+            end_patterns=[r"^Erwägungen\s*:?$", r"^Considérant\s*", r"^Das Bundesgericht"],
+            fallback_chars=800,
+        )
+        key_erwaegungen = _extract_erwaegungen(full_text)
+        dispositiv = _extract_section(
+            full_text,
+            start_patterns=[r"^Dispositiv\s*:", r"^Aus diesen Gründen", r"^Par ces motifs"],
+            end_patterns=[],
+            fallback_chars=0,
+            from_end=True,
+        )
 
     # Statutes from reference graph
     statutes = _get_decision_statutes(decision_id, limit=5)
@@ -7542,6 +7798,17 @@ def _handle_get_case_brief(*, case: str) -> dict:
             "outgoing_citations": outgoing,
         },
         "related": related,
+        "_extraction_quality": (
+            "structured (high)"
+            if used_structure
+            else "regex-fallback (lower)"
+        ),
+        "_hint": (
+            "For verbatim text of a specific Erwägung, call "
+            "get_erwaegung(decision_id, e_number)."
+            if used_structure
+            else None
+        ),
     }
 
 
@@ -10893,6 +11160,86 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            name="get_decision_structure",
+            description=(
+                "Get the structured fields of a Swiss court decision: Sachverhalt (facts), "
+                "Erwägungen split into individually-citable numbered paragraphs ('1', '1.1', '2.3', "
+                "etc.), Dispositiv (operative ruling), and Regeste (official rule summary, BGE only). "
+                "Available for federal decisions (BGer/BVGer/BStGer/BGE/BPatGer/EGMR-CH); cantonal "
+                "courts: use get_decision instead. "
+                "USE THIS — not full_text — when the user asks 'what did the court rule', 'what is "
+                "the holding', or 'cite Erwägung X'. The structured fields are extracted "
+                "deterministically from the decision text, eliminating the holding/dicta confusion "
+                "that plagues raw-text reasoning. Returns paragraphs as excerpts; for verbatim full "
+                "text of a single Erwägung, follow up with get_erwaegung."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": (
+                            "decision_id ('bger_5A_42_2026', 'bge_140 III 86'), "
+                            "BGE reference, or docket number."
+                        ),
+                    },
+                },
+                "required": ["decision_id"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="get_erwaegung",
+            description=(
+                "Get the verbatim full text of a SINGLE numbered Erwägung from a Swiss court "
+                "decision. This is the actual citable unit in Swiss legal practice — lawyers cite "
+                "'BGE 140 III 86 E. 2.3' to point at one specific paragraph of reasoning. "
+                "Use this when the user wants to quote, analyze, or verify a specific Erwägung "
+                "rather than the whole decision. Returns text + sibling Erwägung numbers for "
+                "navigation. e_number can be top-level ('1', '2') or sub-level ('1.1', '2.3.1')."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": "decision_id, BGE reference, or docket number.",
+                    },
+                    "e_number": {
+                        "type": "string",
+                        "description": (
+                            "Erwägung number to retrieve (e.g. '2', '2.3', '5.2.1'). "
+                            "Leading 'E.' is stripped if present."
+                        ),
+                    },
+                },
+                "required": ["decision_id", "e_number"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="get_regeste",
+            description=(
+                "Get the official Regeste (head-note) of a Swiss court decision. The Regeste is "
+                "the court's own formulation of the legal rule established — for BGEs especially, "
+                "this is the canonical citation target. Often references specific Erwägungen via "
+                "'(E. 5.2.1)' which can then be retrieved verbatim with get_erwaegung. "
+                "USE THIS when the user asks 'what does this case stand for' or 'what is the rule "
+                "from this decision'. Available for ~54% of federal decisions (100% of BGE)."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": "decision_id, BGE reference, or docket number.",
+                    },
+                },
+                "required": ["decision_id"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="get_doctrine",
             description=(
                 "Get statute text + leading cases + doctrinal timeline + Federal Council Botschaft "
@@ -11670,6 +12017,28 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             result = await asyncio.to_thread(
                 _handle_get_case_brief,
                 case=arguments.get("case", ""),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "get_decision_structure":
+            result = await asyncio.to_thread(
+                _handle_get_decision_structure,
+                decision_id=arguments.get("decision_id", ""),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "get_erwaegung":
+            result = await asyncio.to_thread(
+                _handle_get_erwaegung,
+                decision_id=arguments.get("decision_id", ""),
+                e_number=arguments.get("e_number", ""),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "get_regeste":
+            result = await asyncio.to_thread(
+                _handle_get_regeste,
+                decision_id=arguments.get("decision_id", ""),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 

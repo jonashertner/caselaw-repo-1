@@ -53,6 +53,57 @@ def _get_db():
     return conn
 
 
+def _get_structure_db():
+    """Open the decision-structure sidecar DB if available, else None."""
+    db_path = Path(os.environ.get(
+        "SWISS_CASELAW_STRUCTURE_DB", str(DATA_DIR / "decision_structure.db")
+    ))
+    if not db_path.exists():
+        return None
+    try:
+        conn = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error:
+        return None
+
+
+def _e_number_sort_key(e_number: str) -> tuple:
+    parts = e_number.split(".")
+    out = []
+    for p in parts:
+        try:
+            out.append(int(p))
+        except ValueError:
+            out.append(p)
+    return tuple(out)
+
+
+def _fetch_structure(decision_id: str) -> dict | None:
+    """Return {'row': structure_row, 'paragraphs': [..]} or None."""
+    sconn = _get_structure_db()
+    if sconn is None:
+        return None
+    try:
+        row = sconn.execute(
+            "SELECT * FROM structure WHERE decision_id = ?", (decision_id,)
+        ).fetchone()
+        if not row:
+            return None
+        paragraphs = sconn.execute(
+            "SELECT e_number, depth, parent, text FROM erwaegungen_paragraph "
+            "WHERE decision_id = ? ORDER BY depth, e_number",
+            (decision_id,),
+        ).fetchall()
+        paragraphs = sorted(
+            [dict(p) for p in paragraphs],
+            key=lambda p: _e_number_sort_key(p["e_number"]),
+        )
+        return {"row": dict(row), "paragraphs": paragraphs}
+    finally:
+        sconn.close()
+
+
 def _esc(text: str | None) -> str:
     return html.escape(text or "", quote=True)
 
@@ -159,12 +210,62 @@ def _render_decision(row: sqlite3.Row) -> str:
             if para:
                 regeste_html += f"<p>{_esc(para)}</p>\n"
 
-    # Full decision text
+    # Structured fields (Sachverhalt / Erwägungen / Dispositiv) from sidecar DB
+    structure = _fetch_structure(did)
+    structured_html = ""
+    if structure and structure["row"]:
+        srow = structure["row"]
+        sachverhalt = srow.get("sachverhalt") or ""
+        dispositiv = srow.get("dispositiv") or ""
+        paragraphs = structure["paragraphs"]
+        try:
+            import json as _json
+            disp_orders = _json.loads(srow["dispositiv_orders"]) if srow.get("dispositiv_orders") else []
+        except Exception:
+            disp_orders = []
+
+        parts = ['<section class="structured">']
+
+        if sachverhalt:
+            parts.append('<details><summary><strong>Sachverhalt</strong></summary>')
+            parts.append(f'<div class="section-body">{_esc(sachverhalt)}</div></details>')
+
+        if paragraphs:
+            parts.append('<details open><summary><strong>Erwägungen</strong> '
+                         f'<span class="count">({len(paragraphs)} Absätze)</span></summary>')
+            parts.append('<div class="erwaegungen">')
+            for p in paragraphs:
+                indent_px = (p["depth"] - 1) * 16
+                e_label = f"E. {p['e_number']}"
+                anchor = f"e-{p['e_number'].replace('.', '-')}"
+                parts.append(
+                    f'<div class="erw" id="{anchor}" style="margin-left:{indent_px}px">'
+                    f'<a class="e-num" href="#{anchor}">{_esc(e_label)}</a> '
+                    f'<span class="e-text">{_esc(p["text"])}</span></div>'
+                )
+            parts.append('</div></details>')
+
+        if dispositiv:
+            parts.append('<details open><summary><strong>Dispositiv</strong></summary>')
+            if disp_orders:
+                parts.append('<ol class="dispositiv-orders">')
+                for order in disp_orders:
+                    parts.append(f'<li>{_esc(order)}</li>')
+                parts.append('</ol>')
+            else:
+                parts.append(f'<div class="section-body">{_esc(dispositiv)}</div>')
+            parts.append('</details>')
+
+        parts.append('</section>')
+        structured_html = "\n".join(parts)
+
+    # Full decision text — collapsed by default when structured view is available
     text_excerpt = ""
     if full_text:
+        is_open = "" if structure else " open"
         text_excerpt = f"""
-        <details open>
-            <summary>Volltext</summary>
+        <details{is_open}>
+            <summary>Volltext (verifizierbarer Originaltext)</summary>
             <div class="fulltext">{_esc(full_text)}</div>
         </details>"""
 
@@ -201,6 +302,20 @@ def _render_decision(row: sqlite3.Row) -> str:
                  max-height: 600px; overflow-y: auto; padding: 1rem;
                  background: #fafafa; border: 1px solid #eee; }}
     details summary {{ cursor: pointer; color: #0066cc; margin: 1rem 0; }}
+    .structured {{ margin: 1rem 0; }}
+    .structured .section-body {{ white-space: pre-wrap; padding: 0.75rem 1rem;
+                                   background: #fafafa; border-left: 2px solid #ddd;
+                                   margin: 0.5rem 0; font-size: 0.9rem; }}
+    .erwaegungen .erw {{ padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;
+                         font-size: 0.9rem; }}
+    .erwaegungen .e-num {{ color: #c00; font-weight: 600; text-decoration: none;
+                           margin-right: 0.5rem; }}
+    .erwaegungen .e-text {{ white-space: pre-wrap; }}
+    .dispositiv-orders {{ background: #fff8e6; border-left: 3px solid #d80;
+                          padding: 0.75rem 1rem 0.75rem 2.5rem;
+                          margin: 0.5rem 0; }}
+    .dispositiv-orders li {{ margin: 0.4rem 0; }}
+    .count {{ color: #888; font-weight: normal; font-size: 0.85em; }}
     nav {{ font-size: 0.85rem; margin-bottom: 1rem; }}
     nav a {{ color: #0066cc; text-decoration: none; }}
     footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #eee;
@@ -221,8 +336,9 @@ def _render_decision(row: sqlite3.Row) -> str:
 <div class="links">
     {f'<a href="{_esc(source_url)}" rel="noopener">Originalquelle</a>' if source_url else ''}
     {f'<a href="{_esc(pdf_url)}" rel="noopener">PDF</a>' if pdf_url else ''}
-    <a href="https://opencaselaw.ch">Alle {962000}+ Entscheide durchsuchen</a>
+    <a href="https://opencaselaw.ch">Alle 966'000+ Entscheide durchsuchen</a>
 </div>
+{structured_html}
 {text_excerpt}
 <footer>
     <p>OpenCaseLaw.ch — Offener Datensatz Schweizer Rechtsprechung.
