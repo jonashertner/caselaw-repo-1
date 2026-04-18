@@ -285,6 +285,32 @@ def step_2e_build_anwaltsrecht_tags(dry_run: bool = False, full_rebuild: bool = 
     )
 
 
+def step_2g_build_decision_structure(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2g: Rebuild decision_structure.db sidecar (Sachverhalt / Erwägungen-Paragraphs / Dispositiv / Regeste).
+
+    Federal courts only (BGer/BVGer/BStGer/BGE/BPatGer/EGMR-CH/BGE-historical).
+    Cantonal courts: separate iteration. Reads JSONL shards, writes sidecar
+    SQLite with atomic swap. Used by get_decision_structure / get_erwaegung /
+    get_regeste MCP tools and to enrich get_case_brief responses.
+    """
+    logger.info("Step 2g: Build decision_structure sidecar")
+
+    script = REPO_DIR / "search_stack" / "extract_decision_structure.py"
+    if not script.exists():
+        logger.info("  extract_decision_structure.py not found, skipping")
+        return True
+
+    return run_cmd(
+        [sys.executable, str(script), "--build",
+         "--shards", "bger,bvger,bstger,bge,bpatger,bge_egmr,bge_historical",
+         "--decisions-dir", str(OUTPUT_DIR / "decisions"),
+         "--output", str(OUTPUT_DIR / "decision_structure.db")],
+        "Build decision_structure sidecar",
+        dry_run,
+        timeout=1800,  # ~6min typical, generous bound
+    )
+
+
 def step_3_export_parquet(dry_run: bool = False) -> bool:
     """Step 3: Export SQLite/JSONL corpus to Parquet."""
     logger.info("Step 3: Export Parquet")
@@ -474,6 +500,7 @@ STEPS = [
     ("2b", "Quality Report", step_2b_quality_report),
     ("2c", "Reference Graph", step_2c_build_reference_graph),
     ("2f", "Materialien", step_2f_build_materialien),
+    ("2g", "Decision Structure", step_2g_build_decision_structure),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
     # ── Final stats refresh (includes graph counts) ──
@@ -537,7 +564,7 @@ def main():
     # PDFs) and their failure doesn't degrade the published dataset.
     NON_FATAL_STEPS = {"2e"}
     # Steps after the fast tier — skipped with --fast-only
-    SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", 3, 4, 5, 6}
+    SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", "2g", 3, 4, 5, 6}
 
     # Resume from checkpoint if prior run crashed
     checkpoint = _load_checkpoint() if not manual_step_mode else None
@@ -583,7 +610,7 @@ def main():
         try:
             if num == 2:
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
-            elif num in ("2b", "2c", "2d", "2e", "2f"):
+            elif num in ("2b", "2c", "2d", "2e", "2f", "2g"):
                 ok = func(
                     dry_run=args.dry_run,
                     full_rebuild=(args.full_rebuild or manual_step_mode),
