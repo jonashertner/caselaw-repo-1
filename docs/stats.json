@@ -2170,7 +2170,7 @@
     "2026-03": 1819,
     "2026-04": 127
   },
-  "generated_at": "2026-04-18T07:44:22.845481+00:00",
+  "generated_at": "2026-04-18T10:39:50.339520+00:00",
   "scraper_health": {
     "run_at": "2026-04-18T02:58:48.003900+00:00",
     "run_duration_s": 7127.4,
@@ -2318,15 +2318,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 10835,
+        "our_count": 10836,
         "portal_count": null,
         "gap": null,
-        "duration_s": 85.1,
+        "duration_s": 82.2,
         "error": null,
         "note": null,
         "state_count": 10871,
         "jsonl_size_mb": 303.5,
-        "jsonl_mtime": "2026-04-18T01:07:48.364429+00:00"
+        "jsonl_mtime": "2026-04-18T09:01:21.819747+00:00"
       },
       "bpatger": {
         "success": true,
@@ -2338,12 +2338,12 @@
         "our_count": 174,
         "portal_count": null,
         "gap": null,
-        "duration_s": 453.7,
+        "duration_s": 453.8,
         "error": null,
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-18T01:09:03.387645+00:00"
+        "jsonl_mtime": "2026-04-18T09:07:33.836835+00:00"
       },
       "ch_bundesrat": {
         "success": true,
@@ -2518,19 +2518,19 @@
       "bge": {
         "success": true,
         "timed_out": false,
-        "new_count": 1,
+        "new_count": 0,
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
         "our_count": 21239,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1125.2,
+        "duration_s": 1110.9,
         "error": null,
         "note": null,
         "state_count": 21239,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-18T01:19:25.586415+00:00"
+        "jsonl_mtime": "2026-04-18T09:18:30.402670+00:00"
       },
       "gl_gerichte": {
         "success": true,
@@ -2641,15 +2641,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 91963,
+        "our_count": 91977,
         "portal_count": null,
         "gap": null,
-        "duration_s": 803.1,
+        "duration_s": 774.7,
         "error": null,
         "note": null,
         "state_count": 91977,
         "jsonl_size_mb": 2649.5,
-        "jsonl_mtime": "2026-04-18T01:40:52.989038+00:00"
+        "jsonl_mtime": "2026-04-18T09:12:54.382739+00:00"
       },
       "postcom": {
         "success": true,
@@ -3146,7 +3146,7 @@
       }
     },
     "run_at_daily": "2026-04-18T02:58:48.003900+00:00",
-    "run_at_federal": "2026-04-17T09:18:45.787045+00:00",
+    "run_at_federal": "2026-04-18T09:18:31.321094+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3198,8 +3198,8 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 8865575,
-    "statute_edges": 11355243
+    "citation_edges": 8867705,
+    "statute_edges": 11357835
   },
   "traffic": {
     "window_days": 30,
@@ -3799,7 +3799,10 @@
       "JU": 5,
       "NW": 25
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 2130,
+      "statute_edges": 2592
+    },
     "previous_generated_at": "2026-04-17T11:08:23.053629+00:00"
   }
 }
