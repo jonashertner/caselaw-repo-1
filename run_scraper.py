@@ -52,6 +52,8 @@ SCRAPERS = {
     "elcom": ("scrapers.elcom", "ElComScraper"),
     "postcom": ("scrapers.postcom", "PostComScraper"),
     "comcom": ("scrapers.comcom", "ComComScraper"),
+    # Federal — military
+    "mkg": ("scrapers.militaerkassationsgericht", "MilitaerkassationsgerichtScraper"),
     # Cantonal — implemented
     "ag_gerichte": ("scrapers.cantonal.ag_gerichte", "AGGerichteScraper"),
     "ai_gerichte": ("scrapers.cantonal.ai_gerichte", "AIGerichteScraper"),
