@@ -376,8 +376,14 @@ def _split_band_bundle_pages(pages: list[str], band: int) -> list[dict]:
     similar back-matter markers appear.
     """
     end_marker_re = re.compile(
+        # Modern bundles
         r"Entscheidungsliste|Liste des arr[eê]ts\s+selon|Lista delle sentenze|"
-        r"Sach-\s*und\s*Gesetzes|Abk[üu]rzungen\s+\u2013",
+        r"Sach-\s*und\s*Gesetzes|Abk[üu]rzungen\s+\u2013|"
+        # Old Bände back-matter (DE / FR / IT alphabetical registers)
+        r"\bSachregister\b|\bAlphabetisches\s+Register\b|"
+        r"\bIndex\s+alphab[eé]tique\b|\bTable\s+(?:des\s+)?mati[eè]res\b|"
+        r"\bIndice\s+(?:analitico|alfabetico)\b|"
+        r"\bGesetzesregister\b|\bRegister\s+der\s+Gesetzes",
         re.I,
     )
 
