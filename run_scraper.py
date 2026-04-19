@@ -272,7 +272,13 @@ class _RunEventWriter:
 
             db_path = self.output_dir / "decisions.db"
             db_path.parent.mkdir(parents=True, exist_ok=True)
-            conn = sqlite3.connect(str(db_path))
+            # 30s busy timeout — coverage tables share the live 62GB FTS5 DB
+            # with concurrent scrapers; default 5s timeout was too short and
+            # caused commit() to raise OperationalError under parallel load,
+            # which propagated unhandled and crashed the scraper subprocess
+            # with exit 1 even when scraping itself succeeded.
+            conn = sqlite3.connect(str(db_path), timeout=30.0)
+            conn.execute("PRAGMA busy_timeout = 30000")
             ensure_coverage_tables(conn)
             self._conn = conn
             self._enabled = True
@@ -294,8 +300,14 @@ class _RunEventWriter:
         try:
             if self._pending:
                 self._conn.commit()
+        except sqlite3.OperationalError as e:
+            # Don't crash the scraper if the coverage DB was locked at commit time
+            logger.warning(f"[{self.source_key}] Event commit failed (non-fatal): {e}")
         finally:
-            self._conn.close()
+            try:
+                self._conn.close()
+            except Exception:
+                pass
             self._conn = None
             self._enabled = False
 
@@ -640,14 +652,21 @@ def main():
     for noisy in ("pdfminer", "pdfplumber", "urllib3", "chardet", "charset_normalizer"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    exit_code = run_with_persistence(
-        scraper_key=args.scraper,
-        since_date=args.since,
-        max_decisions=args.max,
-        output_dir=Path(args.output),
-        state_dir=Path(args.state),
-        auto_coverage_snapshot=not args.no_coverage_snapshot,
-    )
+    try:
+        exit_code = run_with_persistence(
+            scraper_key=args.scraper,
+            since_date=args.since,
+            max_decisions=args.max,
+            output_dir=Path(args.output),
+            state_dir=Path(args.state),
+            auto_coverage_snapshot=not args.no_coverage_snapshot,
+        )
+    except Exception:
+        # Capture the traceback in the per-scraper log file (orchestrator
+        # subprocess.run() with stderr=DEVNULL hides bare tracebacks otherwise,
+        # making post-mortem diagnosis impossible).
+        logger.exception(f"[{args.scraper}] Unhandled exception")
+        sys.exit(1)
 
     if exit_code:
         sys.exit(1)

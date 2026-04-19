@@ -142,14 +142,28 @@ def run_single_scraper(court: str, timeout: int) -> dict:
     cmd = [sys.executable, str(REPO_DIR / "run_scraper.py"), court]
 
     try:
+        # Capture stderr so we can post-mortem any uncaught exception. Without
+        # this, scraper crashes show up as bare "Exit code 1" with no detail
+        # because run_scraper.py exceptions go to stderr, not the per-scraper
+        # log file.
         result = subprocess.run(
             cmd,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
             timeout=timeout,
             cwd=str(REPO_DIR),
         )
         duration = time.time() - start
+        # On failure, append captured stderr to the scraper's log so the
+        # diagnosis is preserved alongside its INFO/WARNING records.
+        if result.returncode != 0 and result.stderr:
+            try:
+                with open(log_path, "ab") as f:
+                    f.write(b"\n--- subprocess stderr ---\n")
+                    f.write(result.stderr)
+                    f.write(b"\n--- end stderr ---\n")
+            except OSError:
+                pass
 
         # Parse only this run's appended log region:
         # [court] Done. +42 new, 1074/1102 (gap 28), Errors: 3, ...
