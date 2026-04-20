@@ -1694,9 +1694,12 @@ def _sanitize_fts5(query: str) -> str:
     q = query.strip()
     # Replace apostrophes (French: l'obligation)
     q = q.replace("\u2019", " ").replace("'", " ")
-    # Remove bare periods/dots that aren't part of abbreviations (e.g. "Art." is fine, lone "." is not)
+    # Strip dots not followed by a word character. This covers "Art." + space
+    # (FTS5 query parser rejects bare trailing punctuation), end-of-sentence
+    # dots, and ellipses, while preserving in-token dots like "10.2" or
+    # "Art.172" that have word chars on both sides.
     import re
-    q = re.sub(r'(?<!\w)\.(?!\w)', ' ', q)
+    q = re.sub(r'\.(?!\w)', ' ', q)
     # Remove other FTS5 problematic characters
     q = q.replace("(", " ").replace(")", " ").replace("{", " ").replace("}", " ")
     q = q.replace("[", " ").replace("]", " ").replace("^", " ").replace("~", " ")
