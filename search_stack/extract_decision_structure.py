@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Extract Sachverhalt / Erwägungen / Dispositiv from Swiss court decisions.
 
-Federal-first v1: tuned for BGer/BVGer/BStGer/BGE-style structure. Cantonal
-courts vary widely — adding court-specific patterns is a follow-up project.
+Federal-first v1: tuned for BGer/BVGer/BStGer/BGE-style structure, with
+MKG (Militärkassationsgericht) support added 2026-04-20. Cantonal courts
+vary widely — adding court-specific patterns is a follow-up project.
 
 The extracted structure is persisted as a sidecar SQLite (decision_structure.db)
 keyed by decision_id, queryable in O(1) and joined to the main FTS5 DB at
@@ -47,6 +48,10 @@ DISPOSITIV_PATTERNS = {
         (r"Demnach\s+erkennt\s+das\s+Bundesverwaltungsgericht\s*:?", "ranked_de_BVGer"),
         (r"Demnach\s+erkennt\s+das\s+Bundesstrafgericht\s*:?", "ranked_de_BStGer"),
         (r"Demnach\s+erkennt\s+(?:das|die)\s+(?:Bundesgericht|Bundesverwaltungsgericht|Bundesstrafgericht|Bundespatentgericht|Beschwerdekammer|Strafkammer|Anklagekammer|Berufungskammer|I+\.\s+Kammer|Abteilung)[^:\n]*:?", "ranked_de_court"),
+        # MKG (Militärkassationsgericht) — separate pattern because its
+        # opener is "hat erkannt" (not "erkennt"), with a different verb
+        # construction than BGer.
+        (r"Das\s+Militärkassationsgericht\s+hat\s+erkannt\s*:?", "ranked_de_MKG"),
         (r"Demnach\s+erkennt\s+(?:der|die)\s+(?:Präsident|Präsidentin|Instruktionsrichter|Einzelrichter|Vizepräsident)[^:\n]*:?", "ranked_de_judge"),
         (r"Demnach\s+(?:verfügt|beschliesst|verfügen|beschliessen)\s+(?:das|der|die)\s+[^:\n]*:?", "ranked_de_verfuegt"),
         (r"Demnach\s+wird\s+(?:erkannt|verfügt|beschlossen)\s*:?", "ranked_de_passive"),
@@ -54,14 +59,18 @@ DISPOSITIV_PATTERNS = {
         (r"Demgemäss\s+(?:erkennt|beschliesst|verfügt)\b", "fallback_de_demgemaess"),
     ],
     "fr": [
-        (r"Par\s+ces\s+motifs,?\s+le\s+Tribunal\s+(?:fédéral|administratif\s+fédéral|pénal\s+fédéral)\s+(?:prononce|ordonne|arrête)\s*:?", "ranked_fr_TF"),
+        (r"Par\s+ces\s+motifs,?\s+le\s+Tribunal\s+(?:fédéral|militaire\s+de\s+cassation|administratif\s+fédéral|pénal\s+fédéral)\s+(?:prononce|ordonne|arrête)\s*:?", "ranked_fr_TF"),
+        # MKG FR bare opener — often the only Dispositiv marker in MKG FR.
+        (r"Le\s+Tribunal\s+militaire\s+de\s+cassation\s+prononce\s*:?", "ranked_fr_MKG"),
         (r"Par\s+ces\s+motifs,?\s+(?:la\s+Cour|le\s+Président|la\s+Présidente|le\s+Juge\s+instructeur|le\s+Vice-président)[^:\n]*(?:prononce|ordonne|arrête)\s*:?", "ranked_fr_judge"),
         (r"Par\s+ces\s+motifs,?\s+(?:la\s+Cour|le\s+Tribunal|le\s+Président|la\s+Présidente)\b", "fallback_fr_par_ces_motifs"),
         (r"Par\s+ces\s+motifs\s*:?\s*$", "fallback_fr_bare"),
         (r"par\s+ces\s+motifs,?\s+prononce\s*:?", "fallback_fr_lc_prononce"),
     ],
     "it": [
-        (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+pronuncia\s*:?", "ranked_it_TF"),
+        (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+(?:federale|militare\s+di\s+cassazione|amministrativo\s+federale|penale\s+federale)\s+pronuncia\s*:?", "ranked_it_TF"),
+        # MKG IT bare opener.
+        (r"Il\s+Tribunale\s+militare\s+di\s+cassazione\s+pronuncia\s*:?", "ranked_it_MKG"),
         (r"Per\s+questi\s+motivi,?\s+(?:il\s+)?(?:Presidente|Giudice\s+istruttore|la\s+Corte(?:\s+dei\s+reclami\s+penali)?)[^:\n]*pronuncia\s*:?", "ranked_it_court"),
         (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+federale\b", "fallback_it_TF_loose"),
         (r"Per\s+questi\s+motivi\s*:?\s*$", "fallback_it_bare"),
@@ -74,6 +83,8 @@ ERWAEGUNGEN_PATTERNS = {
         (r"Das\s+Bundesverwaltungsgericht\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_BVGer"),
         (r"Das\s+Bundesstrafgericht\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_BStGer"),
         (r"(?:Das|Die)\s+(?:Beschwerdekammer|Strafkammer|Berufungskammer|Anklagekammer|Abteilung)\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_chamber"),
+        # MKG uses "hat erwogen" (seen in older Bände) as a less-common opener.
+        (r"Das\s+Militärkassationsgericht\s+hat\s+erwogen\s*:?", "ranked_de_MKG_erwogen"),
         (r"in\s+Erwägung,?\s+dass\b", "ranked_de_in_erwaegung"),
         (r"^\s*Erwägungen\s*:?\s*$", "ranked_de_header"),
         (r"^\s*Erwägung\s*:?\s*$", "ranked_de_singular"),
@@ -117,16 +128,20 @@ SACHVERHALT_PATTERNS = {
     "de": [
         (r"^\s*Sachverhalt\s*:?\s*$", "ranked_de_header"),
         (r"\bSachverhalt\s*:?\s*\n", "ranked_de_inline"),
+        # MKG explicit opener (before A. B. C. narrative).
+        (r"Das\s+Militärkassationsgericht\s+hat\s+festgestellt\s*:?", "ranked_de_MKG"),
         (r"^A\.\s*-\s*", "fallback_de_alphabetic"),
     ],
     "fr": [
         (r"^\s*Faits\s*:?\s*$", "ranked_fr_header"),
         (r"\bFaits\s*:?\s*\n", "ranked_fr_inline"),
+        (r"Le\s+Tribunal\s+militaire\s+de\s+cassation\s+a\s+constat[éè]\s*:?", "ranked_fr_MKG"),
         (r"^A\.\s*-\s*", "fallback_fr_alphabetic"),
     ],
     "it": [
         (r"^\s*Fatti\s*:?\s*$", "ranked_it_header"),
         (r"\bFatti\s*:?\s*\n", "ranked_it_inline"),
+        (r"Il\s+Tribunale\s+militare\s+di\s+cassazione\s+ha\s+constatato\s*:?", "ranked_it_MKG"),
         (r"^A\.\s*-\s*", "fallback_it_alphabetic"),
     ],
 }
@@ -137,6 +152,18 @@ DISPOSITIV_FALLBACK_RE = re.compile(
     r"St\.\s*Gallen|Dieses\s+Urteil\s+wird|Le\s+présent\s+(?:arrêt|jugement)|"
     r"La\s+presente\s+(?:sentenza|decisione)|Mitteilung)",
     re.DOTALL | re.MULTILINE,
+)
+
+# MKG trailer fallback: MKG decisions (esp. FR/IT) often end with a parenthesised
+# trailer "(NNN, <date>, <parties>)" instead of a formal Dispositiv. When no
+# other Dispositiv marker fires, use this trailer as the Dispositiv end.
+MKG_TRAILER_RE = re.compile(
+    r"\(\s*(?:MKG|TMC|TMCa|ATMC|STMC|N(?:r\.?|°)|no\.?)?\s*"
+    r"\d{2,4}(?:\.\d+)?(?:\s*(?:/|et|und)\s*\d{2,4}(?:\.\d+)?)*\s*"
+    r"(?:,\s*(?:arr[eê]t\s+(?:du|rendu\s+le)\s+|urteil\s+vom\s+|sentenza\s+del\s+|del\s+)?"
+    r"|\s+(?:du|del|vom)\s+)"
+    r"\d{1,2}\.?\s*[A-Za-zÄÖÜäöüéèàùç]+\.?\s*\d{4}\s*,\s*[^()]{2,200}\)\s*$",
+    re.I | re.MULTILINE,
 )
 
 
@@ -275,6 +302,8 @@ def extract(full_text: str, language: str = "de", decision_id: str = "") -> Deci
     disp_start, disp_end, disp_method = _find(text, DISPOSITIV_PATTERNS, lang)
     if disp_start is not None:
         body = text[disp_end:].strip()
+        # Trim trailing MKG-style "(NNN, <date>, <parties>)" trailer if present.
+        body = MKG_TRAILER_RE.sub("", body).strip()
         out.dispositiv = body
         out.dispositiv_method = disp_method
         out.dispositiv_orders = _split_dispositiv_orders(body)
@@ -283,14 +312,20 @@ def extract(full_text: str, language: str = "de", decision_id: str = "") -> Deci
         if m:
             disp_start = m.start()
             disp_end = m.start()
-            out.dispositiv = text[disp_start:].strip()
+            body = text[disp_start:].strip()
+            body = MKG_TRAILER_RE.sub("", body).strip()
+            out.dispositiv = body
             out.dispositiv_method = "fallback_enum_near_end"
             out.dispositiv_orders = _split_dispositiv_orders(out.dispositiv)
 
     erw_start, erw_end, erw_method = _find(text, ERWAEGUNGEN_PATTERNS, lang)
     if erw_start is not None:
         end_idx = disp_start if disp_start is not None and disp_start > erw_end else len(text)
-        out.erwaegungen = text[erw_end:end_idx].strip()
+        # Strip a trailing MKG-style "(NNN, <date>, <parties>)" trailer if it
+        # sits at the tail (MKG decisions without formal Dispositiv).
+        raw = text[erw_end:end_idx]
+        raw = MKG_TRAILER_RE.sub("", raw).strip()
+        out.erwaegungen = raw
         out.erwaegungen_method = erw_method
 
     sav_start, sav_end, sav_method = _find(text, SACHVERHALT_PATTERNS, lang)
@@ -300,6 +335,18 @@ def extract(full_text: str, language: str = "de", decision_id: str = "") -> Deci
         )
         out.sachverhalt = text[sav_end:end_idx].strip()
         out.sachverhalt_method = sav_method
+
+    # Inferred Erwägungen: if Sachverhalt found but no explicit Erwägungen
+    # marker, the reasoning body is everything between Sachverhalt-end and
+    # Dispositiv-start (or text end, minus trailer). This is the MKG norm —
+    # numbered reasoning paragraphs without a "hat erwogen" opener.
+    if out.erwaegungen is None and sav_start is not None:
+        inferred_end = disp_start if disp_start is not None and disp_start > sav_end else len(text)
+        inferred_body = text[sav_end:inferred_end]
+        inferred_body = MKG_TRAILER_RE.sub("", inferred_body).strip()
+        if len(inferred_body) > 100:
+            out.erwaegungen = inferred_body
+            out.erwaegungen_method = "inferred_from_sachverhalt_dispositiv_bounds"
 
     # Sub-parse Erwägungen into numbered paragraphs (the actual citable units)
     if out.erwaegungen:
