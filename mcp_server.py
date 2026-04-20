@@ -1704,6 +1704,30 @@ def _sanitize_fts5(query: str) -> str:
     # "" (empty phrase) triggers FTS5 "syntax error near \"\"". Rare legit
     # use of "phrase" search is outweighed by reliability gain here.
     q = q.replace('"', ' ')
+    # Hyphens: FTS5 parses "X-Y" as column-filter (column=X, term=Y) →
+    # "no such column: X" errors. Real production trigger today (2026-04-20):
+    # German compound "öffentlich-rechtliche" broke search_commentaries.
+    # Replace with spaces; the FTS5 tokenizer also treats hyphen as a word
+    # boundary, so "X-Y" and "X Y" index the same way. Semantic loss: nil.
+    q = q.replace('-', ' ').replace('\u2013', ' ').replace('\u2014', ' ')
+    # Colons: same family of bug ("col:term" column-filter syntax). Preserve
+    # only when the prefix token is an actual FTS5 column name — that's the
+    # only legitimate use of ":" inside a user query.
+    _FTS5_COLUMN_NAMES = (
+        "full_text", "regeste", "title", "docket", "docket_number",
+        "abstract_de", "abstract_fr", "abstract_it", "chamber", "court",
+        "abbr", "article_num", "authors", "article", "sr_number", "snippet",
+    )
+    def _colon_replacer(m: "re.Match") -> str:
+        prefix = m.group(1)
+        if prefix.lower() in _FTS5_COLUMN_NAMES:
+            return f"{prefix}:"
+        return f"{prefix} "
+    q = re.sub(r"(\w+):", _colon_replacer, q)
+    # Strip any "orphan" colons (not preceded by a word char) — e.g. ":foo",
+    # " : bar", "::". Colons preceded by a word char are kept only if the
+    # preceding token was whitelisted above.
+    q = re.sub(r"(?<!\w):", " ", q)
     # Remove other FTS5 problematic characters
     q = q.replace("(", " ").replace(")", " ").replace("{", " ").replace("}", " ")
     q = q.replace("[", " ").replace("]", " ").replace("^", " ").replace("~", " ")
