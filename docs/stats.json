@@ -2182,7 +2182,7 @@
     "2026-03": 1828,
     "2026-04": 129
   },
-  "generated_at": "2026-04-20T07:20:43.116725+00:00",
+  "generated_at": "2026-04-20T10:23:07.901678+00:00",
   "scraper_health": {
     "run_at": "2026-04-20T02:15:03.055704+00:00",
     "run_duration_s": 4502.5,
@@ -2299,12 +2299,12 @@
         "our_count": 21239,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1112.5,
+        "duration_s": 1106.7,
         "error": null,
         "note": null,
         "state_count": 21239,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-19T09:18:32.065991+00:00"
+        "jsonl_mtime": "2026-04-20T09:18:26.891551+00:00"
       },
       "bge_historical": {
         "success": true,
@@ -2333,12 +2333,12 @@
         "our_count": 10836,
         "portal_count": null,
         "gap": null,
-        "duration_s": 83.1,
+        "duration_s": 82.2,
         "error": null,
         "note": null,
         "state_count": 10871,
         "jsonl_size_mb": 303.5,
-        "jsonl_mtime": "2026-04-20T01:05:47.479426+00:00"
+        "jsonl_mtime": "2026-04-20T09:01:22.160484+00:00"
       },
       "ar_gerichte": {
         "success": true,
@@ -2520,12 +2520,12 @@
         "our_count": 174,
         "portal_count": null,
         "gap": null,
-        "duration_s": 453.9,
+        "duration_s": 453.8,
         "error": null,
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-20T01:11:13.321084+00:00"
+        "jsonl_mtime": "2026-04-20T09:07:33.809869+00:00"
       },
       "gl_gerichte": {
         "success": true,
@@ -2554,12 +2554,12 @@
         "our_count": 91978,
         "portal_count": null,
         "gap": null,
-        "duration_s": 574.7,
+        "duration_s": 574.4,
         "error": null,
         "note": null,
         "state_count": 91978,
         "jsonl_size_mb": 2649.5,
-        "jsonl_mtime": "2026-04-20T01:15:16.859551+00:00"
+        "jsonl_mtime": "2026-04-20T09:09:34.157315+00:00"
       },
       "hudoc_ch": {
         "success": true,
@@ -2591,9 +2591,9 @@
         "duration_s": 1418.4,
         "error": null,
         "note": null,
-        "state_count": 92095,
-        "jsonl_size_mb": 1376.1,
-        "jsonl_mtime": "2026-04-20T01:24:09.234573+00:00"
+        "state_count": 92113,
+        "jsonl_size_mb": 1376.3,
+        "jsonl_mtime": "2026-04-20T10:16:32.019733+00:00"
       },
       "ge_gerichte": {
         "success": true,
@@ -3175,7 +3175,7 @@
       }
     },
     "run_at_daily": "2026-04-20T02:15:03.055704+00:00",
-    "run_at_federal": "2026-04-19T09:18:33.062657+00:00",
+    "run_at_federal": "2026-04-20T09:18:27.011846+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3227,8 +3227,8 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 8874640,
-    "statute_edges": 11365342
+    "citation_edges": 8875858,
+    "statute_edges": 11372021
   },
   "traffic": {
     "window_days": 30,
@@ -3795,7 +3795,10 @@
       "sav_kantone": 1
     },
     "by_canton": {},
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 1218,
+      "statute_edges": 6679
+    },
     "previous_generated_at": "2026-04-19T10:05:25.027692+00:00"
   }
 }
