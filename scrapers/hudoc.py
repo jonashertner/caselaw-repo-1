@@ -59,6 +59,9 @@ class HUDOCScraper(BaseScraper):
     REQUEST_DELAY = 2.0
     TIMEOUT = 60
     MAX_ERRORS = 30
+    # HUDOC sometimes 404s on individual case documents (missing HTML even
+    # though the metadata entry exists). Cache those for the weekly TTL.
+    CACHE_NONE_AS_GAP = True
 
     @property
     def court_code(self) -> str:

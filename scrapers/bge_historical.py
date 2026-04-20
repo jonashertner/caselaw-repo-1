@@ -85,6 +85,9 @@ class BGEHistoricalScraper(BaseScraper):
     TIMEOUT = 60  # PDFs can be large
     MAX_ERRORS = 200
     MAX_NONE_RETURNS = 2000  # Many old PDFs have poor OCR
+    # Some DFR pages return 404 or unparseable PDFs — cache those so they
+    # don't count as daily "None"s. Re-probed weekly (GAP_TTL_DAYS).
+    CACHE_NONE_AS_GAP = True
 
     @property
     def court_code(self) -> str:

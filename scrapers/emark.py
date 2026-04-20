@@ -71,6 +71,11 @@ class EMARKScraper(BaseScraper):
     REQUEST_DELAY = 1.0
     TIMEOUT = 30
     MAX_ERRORS = 50
+    # EMARK enumerates year×number ranges where ~all of the ~200 entries we
+    # ping daily return 404 (gaps in the numbering sequence). Cache them as
+    # known gaps so we don't re-hammer the portal with the same 404s every
+    # night; ScraperState.GAP_TTL_DAYS will re-probe after a week.
+    CACHE_NONE_AS_GAP = True
 
     @property
     def court_code(self) -> str:

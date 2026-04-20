@@ -29,7 +29,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from models import Decision
+from models import Decision, make_decision_id
 
 logger = logging.getLogger(__name__)
 
@@ -58,14 +58,29 @@ def _redact_proxy_url(proxy_url: str) -> str:
 
 class ScraperState:
     """
-    Tracks which decisions have already been scraped.
-    Uses a simple JSONL file (one decision_id per line).
-    Fast for membership checks (loaded into a set), append-only writes.
+    Tracks which decisions have already been scraped OR confirmed as gaps.
+
+    Two sets, persisted as two sibling JSONL files:
+      - state/<court>.jsonl       — decisions we successfully scraped
+      - state/<court>.gaps.jsonl  — decision_ids that came back 404 / empty
+                                     on a "prune numbered range" scraper;
+                                     retried weekly via the gap-TTL mechanism
+
+    is_known() returns True for both sets — so discover_new() skips both
+    successful and known-gap IDs, which keeps "prune numbered range" scrapers
+    like emark / bge_historical / hudoc_ch from hammering the portal every
+    day with the same 404s.
     """
+
+    # Re-probe a cached gap after this many days (in case the portal
+    # eventually publishes back-filled content at that ID).
+    GAP_TTL_DAYS = 7
 
     def __init__(self, state_file: Path):
         self.state_file = state_file
+        self.gaps_file = state_file.with_name(state_file.stem + ".gaps.jsonl")
         self._seen: set[str] = set()
+        self._gaps: dict[str, float] = {}  # decision_id -> unix-ts of first mark
         self._load()
 
     def _load(self) -> None:
@@ -75,16 +90,43 @@ class ScraperState:
                     line = line.strip()
                     if line:
                         self._seen.add(line)
-        logger.info(f"Loaded {len(self._seen)} known decision IDs from {self.state_file}")
+        if self.gaps_file.exists():
+            with open(self.gaps_file, "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    parts = line.split("\t", 1)
+                    did = parts[0]
+                    try:
+                        ts = float(parts[1]) if len(parts) > 1 else 0.0
+                    except ValueError:
+                        ts = 0.0
+                    # Drop gaps older than TTL so they get re-probed.
+                    if time.time() - ts < self.GAP_TTL_DAYS * 86400:
+                        self._gaps[did] = ts
+        logger.info(
+            f"Loaded {len(self._seen)} known decision IDs "
+            f"+ {len(self._gaps)} cached gaps from {self.state_file.parent}"
+        )
 
     def is_known(self, decision_id: str) -> bool:
-        return decision_id in self._seen
+        return decision_id in self._seen or decision_id in self._gaps
 
     def mark_scraped(self, decision_id: str) -> None:
         if decision_id not in self._seen:
             self._seen.add(decision_id)
             with open(self.state_file, "a") as f:
                 f.write(decision_id + "\n")
+
+    def mark_gap(self, decision_id: str) -> None:
+        """Remember a decision_id that returned 404/empty — skip for TTL days."""
+        if decision_id in self._seen or decision_id in self._gaps:
+            return
+        ts = time.time()
+        self._gaps[decision_id] = ts
+        with open(self.gaps_file, "a") as f:
+            f.write(f"{decision_id}\t{ts}\n")
 
     def count(self) -> int:
         return len(self._seen)
@@ -364,6 +406,19 @@ class BaseScraper(ABC):
                         f"[{self.court_code}] fetch_decision returned None for "
                         f"{stub.get('docket_number', '?')}"
                     )
+                    # For scrapers that prune numbered ranges (emark, bge_historical,
+                    # hudoc_ch) a None return is typically a 404 at that
+                    # sequence number — cache it as a known gap so we don't
+                    # re-probe it daily. Gap entries expire after GAP_TTL_DAYS.
+                    if getattr(self, "CACHE_NONE_AS_GAP", False):
+                        did = (
+                            stub.get("decision_id")
+                            or make_decision_id(
+                                self.court_code, stub.get("docket_number", "") or ""
+                            )
+                        )
+                        if did and "_" in did:
+                            self.state.mark_gap(did)
                     max_none = getattr(self, "MAX_NONE_RETURNS", 200)
                     if skipped >= max_none:
                         errors += 1
