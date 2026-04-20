@@ -1700,12 +1700,46 @@ def _sanitize_fts5(query: str) -> str:
     # "Art.172" that have word chars on both sides.
     import re
     q = re.sub(r'\.(?!\w)', ' ', q)
+    # Strip double quotes — LLM-generated queries use them sporadically and
+    # "" (empty phrase) triggers FTS5 "syntax error near \"\"". Rare legit
+    # use of "phrase" search is outweighed by reliability gain here.
+    q = q.replace('"', ' ')
     # Remove other FTS5 problematic characters
     q = q.replace("(", " ").replace(")", " ").replace("{", " ").replace("}", " ")
     q = q.replace("[", " ").replace("]", " ").replace("^", " ").replace("~", " ")
     # Collapse multiple spaces
     q = re.sub(r'\s+', ' ', q).strip()
-    return q
+    if not q:
+        return ""
+    # FTS5 treats uppercase AND / OR / NOT / NEAR as reserved operators, but
+    # "OR" is ALSO the Swiss statute abbreviation for Obligationenrecht and
+    # gets used as a literal far more often than as a boolean. So:
+    #   - "OR" is ALWAYS quoted (force literal match on the word "OR").
+    #   - AND / NOT / NEAR keep operator semantics when they have operands on
+    #     both sides; otherwise they're stripped so bare-operator queries
+    #     don't fault FTS5.
+    FTS5_RESERVED = {"AND", "NOT", "NEAR"}
+    tokens = q.split()
+    bare_content = [t for t in tokens if t.upper() not in (FTS5_RESERVED | {"OR"})]
+    if not bare_content:
+        return ""
+    out_tokens: list[str] = []
+    for i, t in enumerate(tokens):
+        tu = t.upper()
+        if tu == "OR":
+            out_tokens.append('"OR"')
+        elif tu in FTS5_RESERVED:
+            has_left = i > 0 and tokens[i - 1].upper() not in (FTS5_RESERVED | {"OR"})
+            has_right = any(
+                nt.upper() not in (FTS5_RESERVED | {"OR"})
+                for nt in tokens[i + 1:]
+            )
+            if has_left and has_right:
+                out_tokens.append(tu)       # keep as boolean operator
+            # else: drop bare operator
+        else:
+            out_tokens.append(t)
+    return " ".join(out_tokens)
 
 
 def search_fts5(
