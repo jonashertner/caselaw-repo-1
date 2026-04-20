@@ -592,8 +592,10 @@ def main() -> None:
     parser.add_argument(
         "--db",
         type=str,
-        default="output/decisions.db",
-        help="SQLite database path (default: output/decisions.db)",
+        default="state/coverage.db",
+        help="SQLite database path (default: state/coverage.db — the "
+             "dedicated coverage DB, isolated from output/decisions.db "
+             "since 2026-04-20 to avoid read/write contention with MCP)",
     )
     parser.add_argument("-v", "--verbose", action="store_true")
 
