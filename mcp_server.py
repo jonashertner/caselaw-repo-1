@@ -14164,20 +14164,14 @@ render();setInterval(render,60000);
         case: str = PathParam(description="Decision ID, docket number, or BGE reference"),
     ):
         result = await asyncio.to_thread(_handle_get_case_brief, case=case)
-        # Enrich the brief with canonical citation fields. The brief already
-        # carries `decision_id`, `court`, `date`, `bge_ref` — build the
-        # citation from a decision-shaped projection.
+        # Enrich the brief with canonical citation fields. The brief's own
+        # output lacks docket_number / collection, so fetch the underlying
+        # decision row to build a proper citation.
         if isinstance(result, dict) and result.get("decision_id"):
             try:
-                proxy = {
-                    "decision_id": result.get("decision_id"),
-                    "court": result.get("court"),
-                    "decision_date": result.get("date") or result.get("decision_date"),
-                    "docket_number": result.get("docket_number"),
-                    "collection": result.get("collection"),
-                    "bge_reference": result.get("bge_ref"),
-                    "regeste": result.get("regeste"),
-                }
+                row = await asyncio.to_thread(get_decision_by_id, result["decision_id"])
+                proxy = dict(row) if row else {}
+                proxy["regeste"] = proxy.get("regeste") or result.get("regeste")
                 _enrich_with_citation(proxy)
                 for k in ("citation_string_de", "citation_string_fr",
                           "citation_string_it", "canonical_url", "rule_statement"):
