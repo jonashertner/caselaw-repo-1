@@ -81,6 +81,21 @@ _READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorld
 from fastapi import FastAPI, Query, Path as PathParam, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+
+
+# ── REST request bodies (defined at module level so FastAPI's OpenAPI
+#    schema generation resolves them correctly; local-scope BaseModel
+#    definitions inside the setup function returned 422 + empty schemas).
+
+
+class _AttestBody(BaseModel):
+    draft_text: str
+
+
+class _VerifyClaimBody(BaseModel):
+    claim: str
+    decision_id: str
+    pinpoint: str | None = None
 from typing import Optional
 
 
@@ -14204,8 +14219,6 @@ render();setInterval(render,60000);
             _handle_cite, reference=reference, pinpoint=pinpoint, language=language or "de",
         )
 
-    class _AttestBody(BaseModel):
-        draft_text: str
     @rest_api.post("/attest", tags=["Citation Integrity"],
                    summary="Audit a draft for fabricated / invalid citations",
                    description="Parses all Swiss-case citations (BGE/BGer/BVGer/BStGer/BPatGer/MKGE/"
@@ -14218,10 +14231,6 @@ render();setInterval(render,60000);
     async def api_attest(body: _AttestBody):
         return await asyncio.to_thread(_handle_attest_response, draft_text=body.draft_text)
 
-    class _VerifyClaimBody(BaseModel):
-        claim: str
-        decision_id: str
-        pinpoint: str | None = None
     @rest_api.post("/verify-claim", tags=["Citation Integrity"],
                    summary="Verify that a decision supports a claim (Sonnet-4.6 judge)",
                    description="Given a legal claim + a decision (+ optional Erwägung pinpoint), "
