@@ -13781,13 +13781,33 @@ render();setInterval(render,60000);
                             if request.headers.get("x-client") == "word-addin":
                                 _record_tool_call("word-addin:" + tool, (time.monotonic() - t0) * 1000, error=err)
 
-    # Absolute servers[0].url is required for ChatGPT Custom GPT OpenAPI
-    # import — it rejects relative URLs. Override via SWISS_CASELAW_API_BASE_URL
-    # if this is ever re-hosted elsewhere.
-    _api_base_url = os.environ.get(
-        "SWISS_CASELAW_API_BASE_URL",
-        "https://mcp.opencaselaw.ch/api",
-    )
+    # OpenAPI `servers` policy (refined 2026-04-21 after integrator feedback):
+    #
+    #   ChatGPT Custom GPTs and many other OpenAPI consumers read
+    #   `servers[0]` as the canonical base URL — a relative first entry
+    #   breaks them. FastAPI's default when mounted sub-ASGI injects its
+    #   own relative "/api" entry regardless of what we pass to the
+    #   constructor, so we override `rest_api.openapi` below to set the
+    #   list to exactly what we want.
+    #
+    #   Default (env var unset): relative only — the right choice for
+    #   self-hosters and reverse-proxied deployments that don't know
+    #   their own public URL at build time.
+    #   With SWISS_CASELAW_API_BASE_URL set: absolute first, relative
+    #   second. Our VPS sets this via .env.mcp to surface
+    #   https://mcp.opencaselaw.ch/api as servers[0].
+    _api_base_url = os.environ.get("SWISS_CASELAW_API_BASE_URL", "").strip()
+
+    def _build_api_servers() -> list[dict]:
+        if _api_base_url:
+            return [
+                {"url": _api_base_url,
+                 "description": "OpenCaseLaw public REST API"},
+                {"url": "/api",
+                 "description": "Relative — for self-hosted or reverse-proxied deployments"},
+            ]
+        return [{"url": "/api"}]
+
     rest_api = FastAPI(
         title="OpenCaseLaw API",
         description=(
@@ -13797,8 +13817,27 @@ render();setInterval(render,60000);
         version="1.0.0",
         docs_url="/docs",
         redoc_url="/redoc",
-        servers=[{"url": _api_base_url, "description": "OpenCaseLaw public REST API"}],
     )
+
+    # Override the OpenAPI generator so our servers list is authoritative.
+    # FastAPI's default get_openapi() otherwise keeps injecting its own
+    # mount-path server entry ahead of anything we pass via servers=...
+    from fastapi.openapi.utils import get_openapi as _get_openapi
+
+    def _custom_openapi() -> dict:
+        if rest_api.openapi_schema:
+            return rest_api.openapi_schema
+        schema = _get_openapi(
+            title=rest_api.title,
+            version=rest_api.version,
+            description=rest_api.description,
+            routes=rest_api.routes,
+        )
+        schema["servers"] = _build_api_servers()
+        rest_api.openapi_schema = schema
+        return schema
+
+    rest_api.openapi = _custom_openapi
     rest_api.add_middleware(
         CORSMiddleware,
         # Public read-only corpus, public-domain data (CC0), no auth: `*` is
