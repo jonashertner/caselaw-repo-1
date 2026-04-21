@@ -1,0 +1,201 @@
+{
+  "endpoint": "https://mcp.opencaselaw.ch/",
+  "total": 24,
+  "passed": 22,
+  "failed": 0,
+  "skipped": 2,
+  "total_elapsed_s": 113.99,
+  "pass_rate": 1.0,
+  "results": [
+    {
+      "id": "A01",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_citation",
+      "elapsed": 7.405025005340576
+    },
+    {
+      "id": "A02",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_citation",
+      "elapsed": 7.627503156661987
+    },
+    {
+      "id": "A03",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_citation",
+      "elapsed": 5.885175704956055
+    },
+    {
+      "id": "A04",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_citation",
+      "elapsed": 27.033599853515625
+    },
+    {
+      "id": "A05",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_citation",
+      "elapsed": 8.199312925338745
+    },
+    {
+      "id": "A06",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_citation",
+      "elapsed": 10.930075883865356
+    },
+    {
+      "id": "A07",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_citation_close_variant",
+      "elapsed": 7.113874912261963
+    },
+    {
+      "id": "A08",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "valid_case_invalid_pinpoint",
+      "elapsed": 0.1410229206085205
+    },
+    {
+      "id": "A09",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "valid_case_invalid_pinpoint",
+      "elapsed": 0.16291403770446777
+    },
+    {
+      "id": "A10",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "mixed_draft",
+      "elapsed": 4.0161590576171875
+    },
+    {
+      "id": "A11",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "fabricated_pinpoint_only",
+      "elapsed": 0.14877700805664062
+    },
+    {
+      "id": "A12",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "all_valid_draft",
+      "elapsed": 0.15282297134399414
+    },
+    {
+      "id": "A13",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "no_citation",
+      "elapsed": 0.12646102905273438
+    },
+    {
+      "id": "A14",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "parent_pinpoint",
+      "elapsed": 0.1335458755493164
+    },
+    {
+      "id": "A15",
+      "tool": "attest_response",
+      "status": "PASS",
+      "detail": "",
+      "category": "empty_input",
+      "elapsed": 0.11607885360717773
+    },
+    {
+      "id": "B01",
+      "tool": "check_claim_support",
+      "status": "PASS",
+      "detail": "",
+      "category": "wrong_proposition",
+      "elapsed": 3.271613836288452
+    },
+    {
+      "id": "B02",
+      "tool": "check_claim_support",
+      "status": "PASS",
+      "detail": "",
+      "category": "wrong_proposition",
+      "elapsed": 3.2476022243499756
+    },
+    {
+      "id": "B03",
+      "tool": "check_claim_support",
+      "status": "PASS",
+      "detail": "",
+      "category": "on_topic_correct",
+      "elapsed": 3.9121410846710205
+    },
+    {
+      "id": "B04",
+      "tool": "check_claim_support",
+      "status": "PASS",
+      "detail": "",
+      "category": "nonexistent_decision_for_claim",
+      "elapsed": 3.8881189823150635
+    },
+    {
+      "id": "C01",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "edge_cantonal",
+      "elapsed": 0.13341689109802246
+    },
+    {
+      "id": "C02",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "edge_mkg",
+      "elapsed": 0.1317000389099121
+    },
+    {
+      "id": "C03",
+      "tool": "cite",
+      "status": "SKIP",
+      "detail": "no expect block — smoke test only",
+      "elapsed": 13.290647983551025
+    },
+    {
+      "id": "C04",
+      "tool": "cite",
+      "status": "SKIP",
+      "detail": "no expect block — smoke test only",
+      "elapsed": 6.799895763397217
+    },
+    {
+      "id": "C05",
+      "tool": "cite",
+      "status": "PASS",
+      "detail": "",
+      "category": "edge_empty_reference",
+      "elapsed": 0.12064218521118164
+    }
+  ]
+}

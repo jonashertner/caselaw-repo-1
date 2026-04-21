@@ -1,0 +1,217 @@
+{
+  "version": "1.0",
+  "created": "2026-04-21",
+  "description": "Probe set for measuring anti-hallucination tool behavior. Each probe specifies an input + the expected tool-level response. Run via benchmarks/run_hallucination_probe.py against a live MCP endpoint. Categories: A = fabricated-citation probes (should trip cite / attest_response to 'exists=false'); B = wrong-proposition probes (should trip check_claim_support to 'no|contradicts|unrelated'); C = edge cases (graceful behavior).",
+  "probes": [
+    {
+      "id": "A01",
+      "category": "fabricated_citation",
+      "tool": "cite",
+      "arguments": {"reference": "BGE 299 III 1"},
+      "expect": {"exists": false, "close_matches_nonempty": true},
+      "rationale": "Volume 299 doesn't exist (BGE ranges ~1-151). Tool must refuse and suggest."
+    },
+    {
+      "id": "A02",
+      "category": "fabricated_citation",
+      "tool": "cite",
+      "arguments": {"reference": "BGE 500 V 1"},
+      "expect": {"exists": false},
+      "rationale": "Impossibly high volume."
+    },
+    {
+      "id": "A03",
+      "category": "fabricated_citation",
+      "tool": "cite",
+      "arguments": {"reference": "9Z_9999/2099"},
+      "expect": {"exists": false},
+      "rationale": "BGer dockets don't use Z-chambers and aren't numbered 9999."
+    },
+    {
+      "id": "A04",
+      "category": "fabricated_citation",
+      "tool": "cite",
+      "arguments": {"reference": "BGer 1X_1/3000"},
+      "expect": {"exists": false},
+      "rationale": "Year 3000 is impossible; X is not a valid chamber letter."
+    },
+    {
+      "id": "A05",
+      "category": "fabricated_citation",
+      "tool": "cite",
+      "arguments": {"reference": "BVGer Q-9999/2099"},
+      "expect": {"exists": false},
+      "rationale": "BVGer uses A/B/C/D/E/F prefixes, not Q."
+    },
+    {
+      "id": "A06",
+      "category": "fabricated_citation",
+      "tool": "cite",
+      "arguments": {"reference": "MKGE 99 Nr. 99"},
+      "expect": {"exists": false},
+      "rationale": "MKG only has Bände 1-16 in corpus."
+    },
+    {
+      "id": "A07",
+      "category": "fabricated_citation_close_variant",
+      "tool": "cite",
+      "arguments": {"reference": "BGE 140 I 86"},
+      "expect": {"exists": false, "close_matches_includes_real": "bge_BGE_140_III_86"},
+      "rationale": "Wrong division — real case is 140 III 86. Suggests the correct one."
+    },
+    {
+      "id": "A08",
+      "category": "valid_case_invalid_pinpoint",
+      "tool": "attest_response",
+      "arguments": {"draft_text": "Per BGE 140 III 86 E. 99.99 ist die Rechtslage klar."},
+      "expect": {"ok": false, "issue_problem": "pinpoint_not_in_decision"},
+      "rationale": "Pinpoint 99.99 doesn't exist; attest must flag."
+    },
+    {
+      "id": "A09",
+      "category": "valid_case_invalid_pinpoint",
+      "tool": "attest_response",
+      "arguments": {"draft_text": "Nach BGer 4A_747/2012 vom 5. April 2013, E. 99 gilt."},
+      "expect": {"ok": false, "issue_problem": "pinpoint_not_in_decision"},
+      "rationale": "BGer 4A_747/2012 has pinpoints 1-6, not 99."
+    },
+    {
+      "id": "A10",
+      "category": "mixed_draft",
+      "tool": "attest_response",
+      "arguments": {"draft_text": "Nach BGE 140 III 86 E. 4 und BGE 299 III 1 gilt X."},
+      "expect": {"ok": false, "citations_found": 2, "issues_count_min": 1},
+      "rationale": "One valid (140 III 86), one fabricated (299 III 1)."
+    },
+    {
+      "id": "A11",
+      "category": "fabricated_pinpoint_only",
+      "tool": "attest_response",
+      "arguments": {"draft_text": "Das Bundesgericht hat in BGer 4A_747/2012 vom 5. April 2013, E. 2.999 entschieden."},
+      "expect": {"ok": false, "issue_problem": "pinpoint_not_in_decision"},
+      "rationale": "Pinpoint exists pattern-wise but is impossibly deep."
+    },
+    {
+      "id": "A12",
+      "category": "all_valid_draft",
+      "tool": "attest_response",
+      "arguments": {"draft_text": "Gemäss BGer 4A_747/2012 vom 5. April 2013, E. 2 gilt die Mietrechtsordnung."},
+      "expect": {"ok": true},
+      "rationale": "Control case — fully valid citation should pass."
+    },
+    {
+      "id": "A13",
+      "category": "no_citation",
+      "tool": "attest_response",
+      "arguments": {"draft_text": "Die Rechtslage ist in der Doktrin umstritten."},
+      "expect": {"ok": true, "citations_found": 0},
+      "rationale": "No citations → ok=true (nothing to verify)."
+    },
+    {
+      "id": "A14",
+      "category": "parent_pinpoint",
+      "tool": "attest_response",
+      "arguments": {"draft_text": "Siehe BGer 4A_747/2012 vom 5. April 2013, E. 3."},
+      "expect": {"ok": true},
+      "rationale": "Pinpoint E. 3 should pass because E. 3.1/3.2/3.3 exist (parent-match rule)."
+    },
+    {
+      "id": "A15",
+      "category": "empty_input",
+      "tool": "attest_response",
+      "arguments": {"draft_text": ""},
+      "expect": {"has_error": true},
+      "rationale": "Empty input must return an error, not silently succeed."
+    },
+
+    {
+      "id": "B01",
+      "category": "wrong_proposition",
+      "tool": "check_claim_support",
+      "arguments": {
+        "claim": "Der Vermieter haftet strikt für alle Schäden ohne Verschulden.",
+        "decision_id": "bge_BGE_140_III_86",
+        "pinpoint": "4"
+      },
+      "expect_supports_in": ["no", "contradicts", "unrelated", "partial"],
+      "rationale": "BGE 140 III 86 is about Vertreterauslegung, not strict landlord liability."
+    },
+    {
+      "id": "B02",
+      "category": "wrong_proposition",
+      "tool": "check_claim_support",
+      "arguments": {
+        "claim": "The death penalty is constitutional in Switzerland.",
+        "decision_id": "bge_BGE_140_III_86",
+        "pinpoint": "4"
+      },
+      "expect_supports_in": ["no", "contradicts", "unrelated"],
+      "rationale": "Totally off-topic claim; must return unrelated/contradicts."
+    },
+    {
+      "id": "B03",
+      "category": "on_topic_correct",
+      "tool": "check_claim_support",
+      "arguments": {
+        "claim": "Die Auslegung des Willens eines Vertreters wird dem Vertretenen zugerechnet.",
+        "decision_id": "bge_BGE_140_III_86",
+        "pinpoint": "4"
+      },
+      "expect_supports_in": ["yes", "partial"],
+      "rationale": "Control: true proposition from the actual Regeste."
+    },
+    {
+      "id": "B04",
+      "category": "nonexistent_decision_for_claim",
+      "tool": "check_claim_support",
+      "arguments": {
+        "claim": "X is true.",
+        "decision_id": "bge_BGE_299_III_1",
+        "pinpoint": "1"
+      },
+      "expect": {"has_error": true},
+      "rationale": "Decision doesn't exist; verifier should error out cleanly."
+    },
+
+    {
+      "id": "C01",
+      "category": "edge_cantonal",
+      "tool": "cite",
+      "arguments": {"reference": "zh_obergericht_LB180025"},
+      "expect": {"exists_any": true},
+      "rationale": "Cantonal decision — must still work even without structure sidecar. 'exists_any' accepts either true or false (we don't know if this specific ID is in the corpus, just that the tool handles cantonal shape)."
+    },
+    {
+      "id": "C02",
+      "category": "edge_mkg",
+      "tool": "cite",
+      "arguments": {"reference": "MKGE 16 Nr. 1", "language": "fr"},
+      "expect": {"exists": true, "citation_string_contains": "ATMC"},
+      "rationale": "MKG — French primary output."
+    },
+    {
+      "id": "C03",
+      "category": "edge_bge_old",
+      "tool": "cite",
+      "arguments": {"reference": "BGE 1 I 1"},
+      "expect": {},
+      "rationale": "Oldest published BGE — tool may or may not have it; just verify no crash."
+    },
+    {
+      "id": "C04",
+      "category": "edge_typo_near_real",
+      "tool": "cite",
+      "arguments": {"reference": "BGE 140 III 87"},
+      "expect": {},
+      "rationale": "Likely neighbor decision; verify response is structured."
+    },
+    {
+      "id": "C05",
+      "category": "edge_empty_reference",
+      "tool": "cite",
+      "arguments": {"reference": ""},
+      "expect": {"has_error": true},
+      "rationale": "Empty reference must error."
+    }
+  ]
+}
