@@ -13766,6 +13766,13 @@ render();setInterval(render,60000);
                             if request.headers.get("x-client") == "word-addin":
                                 _record_tool_call("word-addin:" + tool, (time.monotonic() - t0) * 1000, error=err)
 
+    # Absolute servers[0].url is required for ChatGPT Custom GPT OpenAPI
+    # import — it rejects relative URLs. Override via SWISS_CASELAW_API_BASE_URL
+    # if this is ever re-hosted elsewhere.
+    _api_base_url = os.environ.get(
+        "SWISS_CASELAW_API_BASE_URL",
+        "https://mcp.opencaselaw.ch/api",
+    )
     rest_api = FastAPI(
         title="OpenCaseLaw API",
         description=(
@@ -13775,12 +13782,18 @@ render();setInterval(render,60000);
         version="1.0.0",
         docs_url="/docs",
         redoc_url="/redoc",
+        servers=[{"url": _api_base_url, "description": "OpenCaseLaw public REST API"}],
     )
     rest_api.add_middleware(
         CORSMiddleware,
+        # Public read-only corpus, public-domain data (CC0), no auth: `*` is
+        # the correct CORS policy. Allows any site (e.g. peakprivacy.ch) to
+        # embed the API without a server-side proxy.
         allow_origins=CORS_ORIGINS if CORS_ORIGINS else ["*"],
-        allow_methods=["GET", "POST"],
+        allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["*"],
+        expose_headers=["*"],
+        max_age=600,
     )
     rest_api.add_middleware(_MetricsMiddleware)
 
