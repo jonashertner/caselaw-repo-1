@@ -8254,11 +8254,23 @@ def _handle_check_claim_support(
     if pinpoint:
         paras = _fetch_structure_paragraphs(resolved_id)
         pin_clean = pinpoint.strip().lstrip("E.").strip()
-        for p in paras:
-            if p["e_number"] == pin_clean:
-                pinpoint_text = p["text"]
-                text_source = f"Erwägung {pin_clean}"
-                break
+        # Accept exact match OR parent-match: "4" passes if "4.1"/"4.2" etc.
+        # exist (lawyers cite "E. 4" to mean the whole section).
+        direct = [p for p in paras if p["e_number"] == pin_clean]
+        children = [p for p in paras if p["e_number"].startswith(pin_clean + ".")]
+        if direct:
+            pinpoint_text = direct[0]["text"]
+            text_source = f"Erwägung {pin_clean}"
+        elif children:
+            # Concatenate all child Erwägungen in order (e.g. 4.1 + 4.2).
+            children_sorted = sorted(children, key=lambda p: _e_number_sort_key(p["e_number"]))
+            pinpoint_text = "\n\n".join(
+                f"[E. {p['e_number']}]\n{p['text']}" for p in children_sorted
+            )
+            text_source = (
+                f"Erwägung {pin_clean} (aggregated from sub-paragraphs: "
+                f"{', '.join(p['e_number'] for p in children_sorted)})"
+            )
         if not pinpoint_text:
             return {
                 "error": (
@@ -8512,7 +8524,12 @@ def _handle_attest_response(*, draft_text: str) -> dict:
         elif pinpoint:
             paras = _fetch_structure_paragraphs(resolved)
             valid_pinpoints = {p["e_number"] for p in paras}
-            if paras and pinpoint not in valid_pinpoints:
+            # Accept exact match OR a parent-pinpoint that has children
+            # (lawyers cite "E. 4" to mean the whole section even when the
+            # extractor only stored 4.1/4.2 as leaves).
+            exact = pinpoint in valid_pinpoints
+            has_children = any(vp.startswith(pinpoint + ".") for vp in valid_pinpoints)
+            if paras and not (exact or has_children):
                 status = "PINPOINT_INVALID"
                 detail["problem"] = "pinpoint_not_in_decision"
                 detail["valid_pinpoints"] = sorted(valid_pinpoints,
