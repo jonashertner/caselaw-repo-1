@@ -13799,11 +13799,37 @@ render();setInterval(render,60000);
 
     # ── Case Law endpoints ─────────────────────────────────────
 
+    def _enrich_with_citation(row: dict) -> dict:
+        """Add canonical citation_string_{de,fr,it}, canonical_url, and
+        rule_statement to a decision dict in place. Fail-safe: any exception
+        leaves the original fields untouched so existing callers never break.
+
+        Uses the same helpers as the MCP path (_build_citation_strings +
+        _rule_statement), keeping REST ↔ MCP at feature parity.
+        """
+        if not isinstance(row, dict) or not row.get("decision_id"):
+            return row
+        try:
+            c = _build_citation_strings(row)
+            row.setdefault("citation_string_de", c["citation_string_de"])
+            row.setdefault("citation_string_fr", c["citation_string_fr"])
+            row.setdefault("citation_string_it", c["citation_string_it"])
+            row.setdefault("canonical_url", c["canonical_url"])
+        except Exception:
+            pass
+        try:
+            if "rule_statement" not in row:
+                row["rule_statement"] = _rule_statement(row)
+        except Exception:
+            pass
+        return row
+
     @rest_api.get("/decisions", tags=["Case Law"],
                   summary="Search court decisions",
                   description="Full-text search across 956k Swiss court decisions. "
                               "Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), "
-                              "and prefix matching (word*).")
+                              "and prefix matching (word*). Each result carries citation_string_{de,fr,it} "
+                              "+ canonical_url + rule_statement for copy-ready use in LLM responses.")
     async def api_search_decisions(
         query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT)"),
         court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
@@ -13825,13 +13851,20 @@ render();setInterval(render,60000);
             limit=limit, offset=offset, sort=sort,
         )
         if fields == "compact":
-            compact_keys = ("decision_id", "docket_number", "court", "language", "decision_date")
+            compact_keys = ("decision_id", "docket_number", "court", "language", "decision_date",
+                            "citation_string_de", "canonical_url")
+            # Enrich first so compact can expose the citation fields too.
+            results = [_enrich_with_citation(r) for r in results]
             results = [{k: r[k] for k in compact_keys if k in r} for r in results]
+        else:
+            results = [_enrich_with_citation(r) for r in results]
         return {"total": total, "results": results, "limit": limit, "offset": offset}
 
     @rest_api.get("/decisions/{decision_id}", tags=["Case Law"],
                   summary="Get a single decision",
-                  description="Fetch a decision by decision_id or docket number. Returns full text and metadata.")
+                  description="Fetch a decision by decision_id or docket number. Returns full text, "
+                              "metadata, and citation_string_{de,fr,it} + canonical_url + rule_statement "
+                              "ready to embed verbatim in an LLM response.")
     async def api_get_decision(
         decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025) or docket number (e.g., 6B_1/2025)"),
         full_text: bool = Query(True, description="Include full text in response"),
@@ -13841,6 +13874,7 @@ render();setInterval(render,60000);
             raise HTTPException(status_code=404, detail=f"Decision not found: {decision_id}")
         if not full_text:
             result.pop("full_text", None)
+        _enrich_with_citation(result)
         return result
 
     @rest_api.get("/courts", tags=["Case Law"],
@@ -13887,7 +13921,9 @@ render();setInterval(render,60000);
 
     @rest_api.get("/leading-cases", tags=["Citation Graph"],
                   summary="Find leading cases",
-                  description="Find the most-cited decisions for a topic or statute. Authority ranking based on citation graph.")
+                  description="Find the most-cited decisions for a topic or statute. Authority ranking "
+                              "based on citation graph. Each result carries citation_string_{de,fr,it} "
+                              "+ canonical_url + rule_statement for copy-ready use.")
     async def api_find_leading_cases(
         query: str = Query(None, description="Text query to filter by topic"),
         law_code: str = Query(None, description="Law code (e.g., BV, OR, ZGB, StGB)"),
@@ -13897,10 +13933,18 @@ render();setInterval(render,60000);
         date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
         limit: int = Query(20, ge=1, le=100, description="Max results"),
     ):
-        return await asyncio.to_thread(
+        result = await asyncio.to_thread(
             _find_leading_cases, query=query, law_code=law_code, article=article,
             court=court, date_from=date_from, date_to=date_to, limit=limit,
         )
+        # Enrich each nested result with canonical citation fields.
+        if isinstance(result, dict):
+            for nested_key in ("results", "cases", "leading_cases"):
+                inner = result.get(nested_key)
+                if isinstance(inner, list):
+                    for item in inner:
+                        _enrich_with_citation(item)
+        return result
 
     # ── Analysis endpoints ─────────────────────────────────────
 
@@ -14113,11 +14157,136 @@ render();setInterval(render,60000);
 
     @rest_api.get("/case-brief/{case}", tags=["Research"],
                   summary="Get structured case brief",
-                  description="Structured case brief: facts, reasoning, statutes, authority, related cases.")
+                  description="Structured case brief: facts, reasoning, statutes, authority, related cases. "
+                              "Includes citation_string_{de,fr,it} + canonical_url + rule_statement at the "
+                              "top level for copy-ready citation.")
     async def api_get_case_brief(
         case: str = PathParam(description="Decision ID, docket number, or BGE reference"),
     ):
-        return await asyncio.to_thread(_handle_get_case_brief, case=case)
+        result = await asyncio.to_thread(_handle_get_case_brief, case=case)
+        # Enrich the brief with canonical citation fields. The brief already
+        # carries `decision_id`, `court`, `date`, `bge_ref` — build the
+        # citation from a decision-shaped projection.
+        if isinstance(result, dict) and result.get("decision_id"):
+            try:
+                proxy = {
+                    "decision_id": result.get("decision_id"),
+                    "court": result.get("court"),
+                    "decision_date": result.get("date") or result.get("decision_date"),
+                    "docket_number": result.get("docket_number"),
+                    "collection": result.get("collection"),
+                    "bge_reference": result.get("bge_ref"),
+                    "regeste": result.get("regeste"),
+                }
+                _enrich_with_citation(proxy)
+                for k in ("citation_string_de", "citation_string_fr",
+                          "citation_string_it", "canonical_url", "rule_statement"):
+                    if k in proxy:
+                        result.setdefault(k, proxy[k])
+            except Exception:
+                pass
+        return result
+
+    # ── Citation-integrity endpoints (REST parity with the MCP tools) ──
+    # These three form the anti-hallucination toolkit: `cite` builds correct
+    # citations, `attest` audits a draft, `verify-claim` judges whether a
+    # cited authority actually supports a proposition. Exposed as REST so
+    # Copilot Studio / Azure Function integrations get the same safety net
+    # that Claude-side MCP clients get.
+
+    @rest_api.get("/cite", tags=["Citation Integrity"],
+                  summary="Build a canonical Swiss citation",
+                  description="Given any Swiss case reference (decision_id, BGE ref, docket number), "
+                              "returns the canonical citation string in DE / FR / IT, the canonical URL "
+                              "with #e-N-M pinpoint anchor, and a verbatim rule_statement. When the "
+                              "reference doesn't resolve, returns exists=false + close_matches for "
+                              "typo-correction. Call this BEFORE writing any case citation.")
+    async def api_cite(
+        reference: str = Query(..., description="Case reference: 'BGE 140 III 86', '4A_747/2012', 'bger_4A_747_2012', 'MKGE 16 Nr. 1'."),
+        pinpoint: str = Query(None, description="Optional Erwägung/consid. number, e.g. '2.3'."),
+        language: str = Query("de", description="Primary language for the citation_string field (de/fr/it). All three variants always returned."),
+    ):
+        return await asyncio.to_thread(
+            _handle_cite, reference=reference, pinpoint=pinpoint, language=language or "de",
+        )
+
+    class _AttestBody(BaseModel):
+        draft_text: str
+    @rest_api.post("/attest", tags=["Citation Integrity"],
+                   summary="Audit a draft for fabricated / invalid citations",
+                   description="Parses all Swiss-case citations (BGE/BGer/BVGer/BStGer/BPatGer/MKGE/"
+                               "ATF/TF/TAF/TPF/TFB/ATMC/STMC) in a draft response, verifies each "
+                               "decision exists in the corpus, and verifies any pinpoint (E./consid.) "
+                               "actually exists in that decision's structured Erwägungen. Returns "
+                               "{ok, citations_found, citations_ok, issues_count, annotated_text, "
+                               "issues}. CALL THIS before finalizing any LLM response containing ≥1 "
+                               "case citation.")
+    async def api_attest(body: _AttestBody):
+        return await asyncio.to_thread(_handle_attest_response, draft_text=body.draft_text)
+
+    class _VerifyClaimBody(BaseModel):
+        claim: str
+        decision_id: str
+        pinpoint: str | None = None
+    @rest_api.post("/verify-claim", tags=["Citation Integrity"],
+                   summary="Verify that a decision supports a claim (Sonnet-4.6 judge)",
+                   description="Given a legal claim + a decision (+ optional Erwägung pinpoint), "
+                               "an independent Sonnet judge determines whether the decision's "
+                               "verbatim text supports the claim. Returns {supports: yes|partial|no|"
+                               "contradicts|unrelated, confidence, supporting_excerpt, "
+                               "qualifying_excerpt, reasoning}. Use when paraphrasing a decision or "
+                               "drawing a proposition from a complex Erwägung — prevents the Magesh-"
+                               "2025 'Reasoning Error' class of hallucination (cited authority exists "
+                               "but doesn't actually support the proposition).")
+    async def api_verify_claim(body: _VerifyClaimBody):
+        return await asyncio.to_thread(
+            _handle_check_claim_support,
+            claim=body.claim, decision_id=body.decision_id, pinpoint=body.pinpoint,
+        )
+
+    # ── Structure endpoints (verbatim Erwägung / Regeste / full structure) ──
+
+    @rest_api.get("/erwaegung/{decision_id}/{e_number}", tags=["Decision Structure"],
+                  summary="Get the verbatim text of one Erwägung",
+                  description="Returns the exact wording of a specific numbered paragraph (e.g. "
+                              "Erwägung 2.3). Use this before quoting from a decision — the `text` "
+                              "field is safe to embed verbatim in quotation marks. Available for "
+                              "~90% of federal decisions (BGer / BVGer / BStGer / BGE / BPatGer / "
+                              "EGMR-CH / MKG).")
+    async def api_get_erwaegung(
+        decision_id: str = PathParam(description="Decision ID"),
+        e_number: str = PathParam(description="Hierarchical Erwägung number, e.g. '1', '2.3', '4.1.2'"),
+    ):
+        return await asyncio.to_thread(
+            _handle_get_erwaegung, decision_id=decision_id, e_number=e_number,
+        )
+
+    @rest_api.get("/regeste/{decision_id}", tags=["Decision Structure"],
+                  summary="Get the official Regeste (head-note)",
+                  description="Returns the court's own formulation of the legal rule established "
+                              "by the decision — the canonical citation target for BGEs. "
+                              "References like '(E. 5.2.1)' inside the Regeste point to specific "
+                              "Erwägungen, retrievable with /erwaegung/.")
+    async def api_get_regeste(
+        decision_id: str = PathParam(description="Decision ID, BGE reference, or docket number"),
+    ):
+        return await asyncio.to_thread(_handle_get_regeste, decision_id=decision_id)
+
+    @rest_api.get("/structure/{decision_id}", tags=["Decision Structure"],
+                  summary="Get the full structured decision",
+                  description="Returns Sachverhalt + Erwägungen-paragraphs + Dispositiv + Regeste "
+                              "as separately addressable fields. Federal decisions only "
+                              "(232 k rows, 90.6% Erwägungen coverage).")
+    async def api_get_structure(
+        decision_id: str = PathParam(description="Decision ID"),
+        paragraph_excerpt_chars: int = Query(250, ge=50, le=5000,
+                                               description="Truncate each Erwägung excerpt to N chars (full text via /erwaegung/)."),
+    ):
+        return await asyncio.to_thread(
+            _handle_get_decision_structure,
+            decision_id=decision_id,
+            paragraph_excerpt_chars=paragraph_excerpt_chars,
+        )
 
     @rest_api.get("/exam-question", tags=["Research"],
                   summary="Generate exam question",
