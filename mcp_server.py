@@ -7659,6 +7659,219 @@ def _e_number_sort_key(e_number: str) -> tuple:
     return tuple(out)
 
 
+# ────────────────────────────────────────────────────────────────────
+# Canonical citation builders (anti-hallucination layer, 2026-04-21)
+#
+# Every decision-returning tool now returns pre-formatted, ready-to-embed
+# citation strings in DE/FR/IT plus a canonical URL and a verbatim
+# rule_statement. The LLM is instructed (at server level) to copy these
+# verbatim rather than construct its own — eliminating the vast majority
+# of fabricated citation patterns observed in the wild.
+# ────────────────────────────────────────────────────────────────────
+
+_CITATION_BASE_URL = os.environ.get(
+    "SWISS_CASELAW_CITATION_BASE_URL",
+    "https://mcp.opencaselaw.ch",
+)
+
+_MONTH_NAMES = {
+    "de": ["Januar", "Februar", "März", "April", "Mai", "Juni",
+           "Juli", "August", "September", "Oktober", "November", "Dezember"],
+    "fr": ["janvier", "février", "mars", "avril", "mai", "juin",
+           "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
+    "it": ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno",
+           "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"],
+}
+
+# Swiss statutory citation conventions, by court_code → (code_de, code_fr, code_it,
+# pinpoint_label_de, pinpoint_label_fr, pinpoint_label_it)
+_COURT_CITATION_CODES = {
+    "bger":         ("BGer",    "TF",     "TF",     "E.",     "consid.", "consid."),
+    "bvger":        ("BVGer",   "TAF",    "TAF",    "E.",     "consid.", "consid."),
+    "bstger":       ("BStGer",  "TPF",    "TPF",    "E.",     "consid.", "consid."),
+    "bpatger":      ("BPatGer", "TFB",    "TFB",    "E.",     "consid.", "consid."),
+    "bge_egmr":     ("EGMR",    "CourEDH","CorteEDU","§",     "§",       "§"),
+    "bge_historical":("BGer",   "TF",     "TF",     "E.",     "consid.", "consid."),
+    "mkg":          ("MKGE",    "ATMC",   "STMC",   "E.",     "consid.", "consid."),
+    "hudoc_ch":     ("EGMR",    "CourEDH","CorteEDU","§",     "§",       "§"),
+}
+
+
+def _format_date_localized(iso_date: str | None, lang: str) -> str:
+    """Render an ISO date as '5. April 2013' / '5 avril 2013' / '5 aprile 2013'."""
+    if not iso_date:
+        return ""
+    try:
+        y, m, d = iso_date[:10].split("-")
+        month = _MONTH_NAMES.get(lang, _MONTH_NAMES["de"])[int(m) - 1]
+        day = int(d)
+    except (ValueError, IndexError, KeyError):
+        return iso_date
+    if lang == "de":
+        return f"{day}. {month} {y}"
+    return f"{day} {month} {y}"  # fr / it
+
+
+def _pinpoint_anchor(pinpoint: str | None) -> str:
+    """Turn '2.3' into '#e-2-3' for SEO-page anchor links."""
+    if not pinpoint:
+        return ""
+    cleaned = pinpoint.strip().lstrip("E.").strip()
+    if not cleaned:
+        return ""
+    return "#e-" + cleaned.replace(".", "-")
+
+
+def _parse_bge_ref(decision: dict) -> dict | None:
+    """Extract BGE volume/division/page from decision_id or bge_reference."""
+    ref = (decision.get("bge_reference") or "").strip()
+    if not ref:
+        # Try docket_number: "BGE 140 III 86"
+        docket = (decision.get("docket_number") or "").strip()
+        if "BGE" in docket.upper() or re.search(r"\b\d+\s+[IVX]+\s+\d+", docket):
+            ref = docket
+        else:
+            # Try decision_id: "bge_BGE_140_III_86" or "bge_140_III_86"
+            did = decision.get("decision_id", "")
+            m = re.search(r"(\d+)[ _]+([IVX]+)[ _]+(\d+)", did)
+            if m:
+                return {"volume": int(m.group(1)), "division": m.group(2), "page": int(m.group(3))}
+            return None
+    m = re.search(r"(?:BGE|ATF|DTF)?\s*(\d+)\s+([IVX]+)\s+(\d+)", ref)
+    if m:
+        return {"volume": int(m.group(1)), "division": m.group(2), "page": int(m.group(3))}
+    return None
+
+
+def _parse_mkg_ref(decision: dict) -> dict | None:
+    """Extract MKG band/Nr from collection field (populated by the scraper)."""
+    coll = (decision.get("collection") or "").strip()
+    m = re.search(r"(?:MKGE|ATMC|STMC)\s+(\d+)\s+Nr\.?\s*(\d+)", coll, re.I)
+    if m:
+        return {"band": int(m.group(1)), "nr": int(m.group(2))}
+    # Fallback: parse from decision_id "mkg_MKGE_13_Nr_42"
+    did = decision.get("decision_id", "")
+    m = re.search(r"MKGE_(\d+)_Nr_(\d+)", did)
+    if m:
+        return {"band": int(m.group(1)), "nr": int(m.group(2))}
+    return None
+
+
+def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict:
+    """Return {citation_string_de/fr/it, canonical_url, pinpoint_anchor} for a decision.
+
+    Never hallucinates: for courts we don't have a convention for, falls back to
+    a safe "<court_upper> <docket>" form that is still valid Swiss legal shorthand.
+    """
+    court = (decision.get("court") or "").lower()
+    docket = (decision.get("docket_number") or "").strip()
+    decision_id = decision.get("decision_id", "")
+    decision_date = decision.get("decision_date") or ""
+    pin = (pinpoint or "").strip().lstrip("E.").strip()
+    anchor = _pinpoint_anchor(pin) if pin else ""
+    url = f"{_CITATION_BASE_URL}/entscheid/{decision_id}{anchor}"
+
+    def _pin_suffix(sep_de: str, sep_fr: str, sep_it: str) -> tuple:
+        if not pin:
+            return ("", "", "")
+        return (f", {sep_de} {pin}", f", {sep_fr} {pin}", f", {sep_it} {pin}")
+
+    # BGE — the officially published series has its own canonical form.
+    if court == "bge" or decision_id.startswith("bge_BGE"):
+        bge = _parse_bge_ref(decision)
+        if bge:
+            pde, pfr, pit = _pin_suffix("E.", "consid.", "consid.")
+            return {
+                "citation_string_de": f"BGE {bge['volume']} {bge['division']} {bge['page']}{pde}",
+                "citation_string_fr": f"ATF {bge['volume']} {bge['division']} {bge['page']}{pfr}",
+                "citation_string_it": f"DTF {bge['volume']} {bge['division']} {bge['page']}{pit}",
+                "canonical_url": url,
+            }
+
+    # MKG — collection-based citation (Bd. / Nr.)
+    if court == "mkg":
+        mkg = _parse_mkg_ref(decision)
+        if mkg:
+            pde, pfr, pit = _pin_suffix("E.", "consid.", "consid.")
+            return {
+                "citation_string_de": f"MKGE {mkg['band']} Nr. {mkg['nr']}{pde}",
+                "citation_string_fr": f"ATMC {mkg['band']} n° {mkg['nr']}{pfr}",
+                "citation_string_it": f"STMC {mkg['band']} n. {mkg['nr']}{pit}",
+                "canonical_url": url,
+            }
+
+    # Docketed federal courts (bger / bvger / bstger / bpatger / bge_historical / bge_egmr / hudoc_ch)
+    if court in _COURT_CITATION_CODES and docket:
+        code_de, code_fr, code_it, pl_de, pl_fr, pl_it = _COURT_CITATION_CODES[court]
+        date_de = _format_date_localized(decision_date, "de")
+        date_fr = _format_date_localized(decision_date, "fr")
+        date_it = _format_date_localized(decision_date, "it")
+        # German uses "vom", French "du", Italian "del"
+        vom_de = f" vom {date_de}" if date_de else ""
+        vom_fr = f" du {date_fr}" if date_fr else ""
+        vom_it = f" del {date_it}" if date_it else ""
+        pde, pfr, pit = _pin_suffix(pl_de, pl_fr, pl_it)
+        return {
+            "citation_string_de": f"{code_de} {docket}{vom_de}{pde}",
+            "citation_string_fr": f"{code_fr} {docket}{vom_fr}{pfr}",
+            "citation_string_it": f"{code_it} {docket}{vom_it}{pit}",
+            "canonical_url": url,
+        }
+
+    # Cantonal + regulatory + anything else: safe generic form.
+    court_label = (decision.get("court") or "court").upper()
+    date_de = _format_date_localized(decision_date, "de")
+    date_fr = _format_date_localized(decision_date, "fr")
+    date_it = _format_date_localized(decision_date, "it")
+    vom_de = f" vom {date_de}" if date_de else ""
+    vom_fr = f" du {date_fr}" if date_fr else ""
+    vom_it = f" del {date_it}" if date_it else ""
+    pde, pfr, pit = _pin_suffix("E.", "consid.", "consid.")
+    return {
+        "citation_string_de": f"{court_label} {docket}{vom_de}{pde}".strip(),
+        "citation_string_fr": f"{court_label} {docket}{vom_fr}{pfr}".strip(),
+        "citation_string_it": f"{court_label} {docket}{vom_it}{pit}".strip(),
+        "canonical_url": url,
+    }
+
+
+def _rule_statement(
+    decision: dict | None,
+    pinpoint_text: str | None = None,
+    *,
+    max_chars: int = 500,
+) -> str | None:
+    """Verbatim short text the LLM may quote as the decision's rule.
+
+    Priority: explicit pinpoint text (e.g. an Erwägung body) > Regeste >
+    first paragraph of full_text. Truncated at sentence boundary when
+    possible to preserve verbatim-ness.
+    """
+    candidates = [pinpoint_text]
+    if decision:
+        candidates.append(decision.get("regeste"))
+        ft = decision.get("full_text") or ""
+        if ft:
+            # First paragraph only — anything longer risks the LLM pulling a
+            # fragmented quote out of context.
+            candidates.append(ft.split("\n\n", 1)[0])
+    for c in candidates:
+        if not c:
+            continue
+        c = c.strip()
+        if not c:
+            continue
+        if len(c) <= max_chars:
+            return c
+        # Truncate at the last sentence boundary before max_chars.
+        cut = c[:max_chars]
+        last_stop = max(cut.rfind(". "), cut.rfind("! "), cut.rfind("? "))
+        if last_stop > max_chars * 0.5:
+            return cut[: last_stop + 1] + " […]"
+        return cut + " […]"
+    return None
+
+
 def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars: int = 250) -> dict:
     """Return structured fields (Sachverhalt / Erwägungen-paragraphs / Dispositiv / Regeste)."""
     if not decision_id or not decision_id.strip():
@@ -7742,6 +7955,20 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         key=_e_number_sort_key,
     )
     row = _fetch_structure_row(resolved)
+    # Build canonical citation + URL + rule statement for the LLM to embed
+    # verbatim. This is the anti-hallucination layer: we hand the LLM the
+    # EXACT citation string rather than letting it reconstruct.
+    main = get_decision_by_id(resolved) if row else None
+    decision_for_citation = {
+        "decision_id": row["decision_id"] if row else resolved,
+        "court": row.get("court") if row else None,
+        "decision_date": row.get("decision_date") if row else None,
+        "docket_number": (main or {}).get("docket_number"),
+        "collection": (main or {}).get("collection"),
+        "bge_reference": (main or {}).get("bge_reference"),
+        "regeste": row.get("regeste") if row else None,
+    }
+    citation = _build_citation_strings(decision_for_citation, pinpoint=target["e_number"])
     return {
         "decision_id": row["decision_id"] if row else resolved,
         "e_number": target["e_number"],
@@ -7752,10 +7979,13 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         "language": row.get("language") if row else None,
         "regeste": row.get("regeste") if row else None,
         "text": target["text"],
-        "_citation_format": (
-            f"{row['court'].upper()} {row.get('decision_date','')[:10]}, E. {target['e_number']}"
-            if row and row.get("court") else None
-        ),
+        # ── Canonical citation (copy these verbatim; do NOT reconstruct) ──
+        "citation_string_de": citation["citation_string_de"],
+        "citation_string_fr": citation["citation_string_fr"],
+        "citation_string_it": citation["citation_string_it"],
+        "canonical_url": citation["canonical_url"],
+        "rule_statement": _rule_statement(decision_for_citation, pinpoint_text=target["text"]),
+        "_citation_format": citation["citation_string_de"],  # kept for backwards compat
     }
 
 
@@ -7777,12 +8007,19 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
                 "regeste": None,
                 "_note": "No Regeste field for this decision.",
             }
+        citation = _build_citation_strings(decision)
         return {
             "decision_id": decision.get("decision_id"),
             "court": decision.get("court"),
             "decision_date": decision.get("decision_date"),
             "language": decision.get("language"),
             "regeste": regeste,
+            # ── Canonical citation (copy these verbatim; do NOT reconstruct) ──
+            "citation_string_de": citation["citation_string_de"],
+            "citation_string_fr": citation["citation_string_fr"],
+            "citation_string_it": citation["citation_string_it"],
+            "canonical_url": citation["canonical_url"],
+            "rule_statement": _rule_statement(decision),
             "_note": (
                 "Regeste from main decisions DB. The Regeste is the official "
                 "court-formulated summary of the legal rule and the canonical "
@@ -7790,12 +8027,32 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
                 "point to specific Erwägungen — use get_erwaegung to retrieve them."
             ),
         }
+    # Structured-sidecar path: enrich with the full decision record for
+    # citation construction (docket, collection, bge_reference live in the
+    # main DB, not the sidecar).
+    main_decision = get_decision_by_id(row["decision_id"]) or {}
+    decision_for_citation = {
+        "decision_id": row["decision_id"],
+        "court": row["court"],
+        "decision_date": row["decision_date"],
+        "docket_number": main_decision.get("docket_number"),
+        "collection": main_decision.get("collection"),
+        "bge_reference": main_decision.get("bge_reference"),
+        "regeste": row.get("regeste"),
+    }
+    citation = _build_citation_strings(decision_for_citation)
     return {
         "decision_id": row["decision_id"],
         "court": row["court"],
         "decision_date": row["decision_date"],
         "language": row["language"],
         "regeste": row.get("regeste"),
+        # ── Canonical citation (copy these verbatim; do NOT reconstruct) ──
+        "citation_string_de": citation["citation_string_de"],
+        "citation_string_fr": citation["citation_string_fr"],
+        "citation_string_it": citation["citation_string_it"],
+        "canonical_url": citation["canonical_url"],
+        "rule_statement": _rule_statement(decision_for_citation),
         "_note": (
             "The Regeste is the official court-formulated summary of the legal "
             "rule. References like '(E. 5.2.1)' inside the Regeste point to "
@@ -11995,15 +12252,24 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                     text=f"Decision not found: {arguments['decision_id']}",
                 )]
             include_full_text = arguments.get("full_text", True)
-            # Format full decision
+            # Build the canonical citation block FIRST — placed at the top of the
+            # response so the LLM encounters the copy-ready strings before anything
+            # else. The instruction block at the server level tells the LLM to
+            # embed these verbatim.
+            citation = _build_citation_strings(result)
             text = (
                 f"# {result['docket_number']}\n"
                 f"**Court:** {result['court']} | "
                 f"**Date:** {result['decision_date']} | "
-                f"**Language:** {result['language']}\n"
+                f"**Language:** {result['language']}\n\n"
+                f"## Citation — copy verbatim (do NOT reconstruct)\n"
+                f"- DE: `{citation['citation_string_de']}`\n"
+                f"- FR: `{citation['citation_string_fr']}`\n"
+                f"- IT: `{citation['citation_string_it']}`\n"
+                f"- URL: {citation['canonical_url']}\n"
             )
             if result.get("chamber"):
-                text += f"**Chamber:** {result['chamber']}\n"
+                text += f"\n**Chamber:** {result['chamber']}\n"
             if result.get("title"):
                 text += f"**Title:** {result['title']}\n"
             if result.get("regeste"):
