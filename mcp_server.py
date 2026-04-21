@@ -7574,6 +7574,27 @@ server = Server(
         "the reference, and offer to search via `search_decisions`.\n\n"
 
         "══════════════════════════════════════════════════════════════\n"
+        "TWO-LAYER VERIFICATION (use both when accuracy is critical)\n"
+        "══════════════════════════════════════════════════════════════\n"
+        "1. `check_claim_support(claim, decision_id, pinpoint)` — asks an "
+        "independent Sonnet judge whether the cited decision actually "
+        "supports the claim you are about to attach to it. Use this "
+        "whenever you're paraphrasing a decision or deriving a "
+        "proposition from a complex Erwägung. If supports=no or "
+        "contradicts, find a different authority or qualify your "
+        "statement — never push through with \"yes but…\".\n\n"
+
+        "2. `attest_response(draft_text)` — MANDATORY before sending a "
+        "final answer that contains ≥1 case citation. Parses every "
+        "BGE/BGer/BVGer/BStGer/BPatGer/MKGE reference in your draft, "
+        "verifies each exists in the corpus, and verifies any pinpoint "
+        "(E. X.Y / consid. X.Y) actually exists in that decision's "
+        "Erwägungen. Returns ok=true/false + annotated text + per-"
+        "citation issues list. If ok=false, fix each flagged citation "
+        "using the suggestions, then either re-attest or remove the "
+        "offending reference.\n\n"
+
+        "══════════════════════════════════════════════════════════════\n"
         "QUESTION → TOOL ROUTING\n"
         "══════════════════════════════════════════════════════════════\n"
         "• 'What does Art. X say?'                 → get_law\n"
@@ -8186,6 +8207,353 @@ def _handle_cite(
             "pass the e_number in the `pinpoint` argument. Use rule_statement as "
             "a ready-to-quote summary (it is a verbatim excerpt — do not paraphrase "
             "inside quotation marks)."
+        ),
+    }
+
+
+def _handle_check_claim_support(
+    *,
+    claim: str,
+    decision_id: str,
+    pinpoint: str | None = None,
+) -> dict:
+    """Ask Sonnet-4.6 whether a decision supports a claim (the Magesh-61%
+    Reasoning-Error counter).
+
+    Sonnet-as-judge is the independent verification layer. Different model
+    family than the Haiku that runs query parse + rerank, so errors in
+    retrieval are not re-introduced in verification. Cost per call ~$0.003.
+
+    Returns {supports, confidence, supporting_excerpt, qualifying_excerpt,
+             reasoning, checked_text_source}.
+    """
+    if not claim or not claim.strip():
+        return {"error": "Provide a claim to check."}
+    if not decision_id:
+        return {"error": "Provide a decision_id to check the claim against."}
+    if not ANTHROPIC_API_KEY:
+        return {
+            "error": (
+                "Verification requires an Anthropic API key. The server does "
+                "not have ANTHROPIC_API_KEY set; commercial clients can use "
+                "this tool, free clients should cite cautiously."
+            )
+        }
+
+    resolved_id = _resolve_decision_id(decision_id.strip())
+    decision = get_decision_by_id(resolved_id)
+    if not decision:
+        return {"error": f"Decision not found: {decision_id!r}"}
+
+    # Pick the text to verify against. Priority:
+    #   1. Specific Erwägung if pinpoint given and available
+    #   2. Regeste if present
+    #   3. First 4k chars of full_text (bounded; Sonnet input cost scales)
+    pinpoint_text: str | None = None
+    text_source = ""
+    if pinpoint:
+        paras = _fetch_structure_paragraphs(resolved_id)
+        pin_clean = pinpoint.strip().lstrip("E.").strip()
+        for p in paras:
+            if p["e_number"] == pin_clean:
+                pinpoint_text = p["text"]
+                text_source = f"Erwägung {pin_clean}"
+                break
+        if not pinpoint_text:
+            return {
+                "error": (
+                    f"Pinpoint E. {pinpoint!r} not found in {decision_id!r}. "
+                    "Either the pinpoint is wrong or the decision lacks "
+                    "structured Erwägungen (non-federal courts mostly)."
+                )
+            }
+        text_for_judge = pinpoint_text
+    elif decision.get("regeste"):
+        text_for_judge = decision["regeste"]
+        text_source = "Regeste"
+    else:
+        full = decision.get("full_text") or ""
+        text_for_judge = full[:4000]
+        text_source = "Full text (first 4k chars)"
+
+    if not text_for_judge or len(text_for_judge.strip()) < 30:
+        return {"error": "Decision text too short to verify against."}
+
+    # Build citation for context in the judge prompt.
+    citation = _build_citation_strings(decision, pinpoint=pinpoint)
+
+    system_prompt = (
+        "You are a Swiss legal-research verifier. Given a CLAIM and the "
+        "verbatim TEXT of a Swiss court decision (or a specific Erwägung "
+        "of one), determine whether the TEXT supports the CLAIM.\n\n"
+        "Rules:\n"
+        "  - Use ONLY the TEXT provided. Do not rely on external knowledge.\n"
+        "  - 'supports' = yes: TEXT clearly states or directly implies the CLAIM.\n"
+        "  - 'supports' = partial: TEXT is relevant and partially supports, "
+        "but with qualifications or context.\n"
+        "  - 'supports' = no: TEXT is on the topic but does NOT support the CLAIM.\n"
+        "  - 'supports' = contradicts: TEXT contradicts the CLAIM.\n"
+        "  - 'supports' = unrelated: TEXT is not on the topic of the CLAIM.\n\n"
+        "Respond with ONLY a JSON object, no markdown:\n"
+        "{\n"
+        '  "supports": "yes" | "partial" | "no" | "contradicts" | "unrelated",\n'
+        '  "confidence": 0.0-1.0,\n'
+        '  "supporting_excerpt": "verbatim sentence from TEXT that supports" | null,\n'
+        '  "qualifying_excerpt": "verbatim sentence from TEXT that qualifies/limits" | null,\n'
+        '  "reasoning": "one-sentence justification, ≤200 chars"\n'
+        "}\n"
+        "verbatim_excerpt fields MUST be exact substrings of TEXT or null."
+    )
+
+    user_prompt = (
+        f"CITATION (for context): {citation['citation_string_de']}\n\n"
+        f"CLAIM:\n{claim.strip()}\n\n"
+        f"TEXT ({text_source}):\n{text_for_judge}"
+    )
+
+    try:
+        import httpx
+        with httpx.Client(timeout=15.0) as client:
+            resp = client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-sonnet-4-6",
+                    "max_tokens": 400,
+                    "system": system_prompt,
+                    "messages": [{"role": "user", "content": user_prompt}],
+                },
+            )
+            resp.raise_for_status()
+            raw = resp.json()["content"][0]["text"].strip()
+            if raw.startswith("```"):
+                raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+            verdict = json.loads(raw)
+    except Exception as e:
+        return {"error": f"Verification failed: {type(e).__name__}: {e}"}
+
+    return {
+        "claim": claim.strip(),
+        "decision_id": resolved_id,
+        "citation_string_de": citation["citation_string_de"],
+        "citation_string_fr": citation["citation_string_fr"],
+        "citation_string_it": citation["citation_string_it"],
+        "canonical_url": citation["canonical_url"],
+        "checked_text_source": text_source,
+        "supports": verdict.get("supports", "unknown"),
+        "confidence": float(verdict.get("confidence", 0.0)),
+        "supporting_excerpt": verdict.get("supporting_excerpt"),
+        "qualifying_excerpt": verdict.get("qualifying_excerpt"),
+        "reasoning": verdict.get("reasoning", ""),
+        "_note": (
+            "Verified by an independent Sonnet judge against verbatim text. "
+            "If supports=no|contradicts|unrelated, DO NOT use this decision "
+            "to support this claim — either find a different authority or "
+            "qualify your statement."
+        ),
+    }
+
+
+# ── attest_response — mandatory closing audit ─────────────────────
+
+_CITATION_PATTERNS = [
+    # BGE / ATF / DTF: volume, division, page, optional pinpoint
+    (
+        "bge",
+        re.compile(
+            r"\b(?:BGE|ATF|DTF)\s+(\d{1,3})\s+([IVX]+[ab]?)\s+(\d{1,4})"
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            re.I,
+        ),
+    ),
+    # BGer / TF docket: "4A_747/2012" with optional pinpoint
+    (
+        "bger",
+        re.compile(
+            r"\b(?:BGer|TF)\s+(\d+[A-Z]+_\d+/\d{4})"
+            r"(?:\s+(?:vom|du|del)\s+[^,]+)?"
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            re.I,
+        ),
+    ),
+    # BVGer / BStGer / BPatGer / TAF / TPF / TFB docket
+    (
+        "federal_court",
+        re.compile(
+            r"\b(?:BVGer|BStGer|BPatGer|TAF|TPF|TFB)\s+([A-Z][A-Z.]*[-._]?[\d./_-]+)"
+            r"(?:\s+(?:vom|du|del)\s+[^,]+)?"
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            re.I,
+        ),
+    ),
+    # MKG / ATMC / STMC — collection-based
+    (
+        "mkg",
+        re.compile(
+            r"\b(?:MKGE|ATMC|STMC)\s+(\d+)\s+(?:Nr\.?|n°|n\.)\s*(\d+)"
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            re.I,
+        ),
+    ),
+]
+
+
+def _parse_citations_in_text(draft: str) -> list[dict]:
+    """Extract all Swiss-case citations from free-form text.
+
+    Each returned dict: {pattern, span, full_match, decision_id_guess,
+                         pinpoint, raw_groups}.
+    """
+    found: list[dict] = []
+    for label, pat in _CITATION_PATTERNS:
+        for m in pat.finditer(draft):
+            groups = m.groups()
+            if label == "bge":
+                volume, division, page, pinpoint = groups[0], groups[1], groups[2], groups[3]
+                decision_id_guess = f"bge_BGE_{volume}_{division}_{page}"
+            elif label == "bger":
+                docket, pinpoint = groups[0], groups[1]
+                decision_id_guess = "bger_" + docket.replace("/", "_")
+            elif label == "federal_court":
+                docket, pinpoint = groups[0], groups[1]
+                # Map TF → bger, TAF → bvger, TPF → bstger, TFB → bpatger
+                prefix_match = re.match(r"\b(BVGer|BStGer|BPatGer|TAF|TPF|TFB)",
+                                         m.group(0), re.I)
+                prefix = (prefix_match.group(1) if prefix_match else "").upper()
+                court_map = {
+                    "BVGER": "bvger", "TAF": "bvger",
+                    "BSTGER": "bstger", "TPF": "bstger",
+                    "BPATGER": "bpatger", "TFB": "bpatger",
+                }
+                court_code = court_map.get(prefix, "bvger")
+                decision_id_guess = f"{court_code}_" + re.sub(r"[/\s]", "_", docket)
+            elif label == "mkg":
+                band, nr, pinpoint = groups[0], groups[1], groups[2]
+                decision_id_guess = f"mkg_MKGE_{band}_Nr_{nr}"
+            else:
+                continue
+            # Normalise pinpoint: strip trailing period, whitespace ("2.1." → "2.1").
+            pinpoint_clean = (pinpoint or "").strip().rstrip(".")
+            found.append({
+                "pattern": label,
+                "span": (m.start(), m.end()),
+                "full_match": m.group(0),
+                "decision_id_guess": decision_id_guess,
+                "pinpoint": pinpoint_clean or None,
+            })
+    # Sort by position so issues appear in reading order
+    found.sort(key=lambda f: f["span"][0])
+    return found
+
+
+def _handle_attest_response(*, draft_text: str) -> dict:
+    """Post-draft audit: parse every Swiss-case citation in the LLM's
+    response and verify existence + pinpoint validity.
+
+    The LLM is instructed (at server level) to call this before finalizing
+    an answer containing any citation. Returns an annotated text with each
+    citation marked OK or ISSUE, plus a structured issues list.
+    """
+    if not draft_text or not draft_text.strip():
+        return {"error": "Provide draft_text to audit."}
+
+    citations = _parse_citations_in_text(draft_text)
+    if not citations:
+        return {
+            "ok": True,
+            "citations_found": 0,
+            "annotated_text": draft_text,
+            "issues": [],
+            "_note": (
+                "No Swiss-case citation patterns detected. If your response "
+                "makes legal claims without citing authority, consider "
+                "whether that's appropriate — Swiss legal writing expects "
+                "citations for normative propositions."
+            ),
+        }
+
+    issues: list[dict] = []
+    ok_count = 0
+    # Build annotated text by walking through citations in order
+    annotated_parts: list[str] = []
+    last_end = 0
+
+    for cit in citations:
+        start, end = cit["span"]
+        guess = cit["decision_id_guess"]
+        pinpoint = cit.get("pinpoint")
+        full = cit["full_match"]
+
+        # Append text since last citation
+        annotated_parts.append(draft_text[last_end:start])
+
+        resolved = _resolve_decision_id(guess)
+        decision = get_decision_by_id(resolved)
+
+        status = "OK"
+        detail: dict = {
+            "citation": full,
+            "position": start,
+            "guessed_decision_id": guess,
+        }
+
+        if not decision:
+            status = "NOT_FOUND"
+            detail["problem"] = "decision_not_in_corpus"
+            detail["suggestion"] = (
+                "This reference doesn't resolve to a known decision. "
+                "Call `cite` to find close matches or drop the citation."
+            )
+            issues.append(detail)
+        elif pinpoint:
+            paras = _fetch_structure_paragraphs(resolved)
+            valid_pinpoints = {p["e_number"] for p in paras}
+            if paras and pinpoint not in valid_pinpoints:
+                status = "PINPOINT_INVALID"
+                detail["problem"] = "pinpoint_not_in_decision"
+                detail["valid_pinpoints"] = sorted(valid_pinpoints,
+                                                   key=_e_number_sort_key)[:10]
+                detail["suggestion"] = (
+                    f"E. {pinpoint} does not exist in this decision. "
+                    "See valid_pinpoints above or drop the pinpoint."
+                )
+                issues.append(detail)
+            else:
+                ok_count += 1
+        else:
+            ok_count += 1
+
+        # Annotate the citation in the rendered output
+        if status == "OK":
+            annotated_parts.append(f"{full} ✓")
+        else:
+            annotated_parts.append(f"{full} ⚠️[{status}]")
+
+        last_end = end
+
+    # Append trailing text
+    annotated_parts.append(draft_text[last_end:])
+    annotated_text = "".join(annotated_parts)
+
+    return {
+        "ok": len(issues) == 0,
+        "citations_found": len(citations),
+        "citations_ok": ok_count,
+        "issues_count": len(issues),
+        "annotated_text": annotated_text,
+        "issues": issues,
+        "_note": (
+            "Citations marked ✓ passed existence and pinpoint checks. "
+            "Citations marked ⚠️ did NOT — fix them before sending your "
+            "final response. Possible fixes: (a) re-call cite() with the "
+            "suggestion, (b) pick a different decision, (c) remove the "
+            "pinpoint if the Erwägung doesn't exist, (d) drop the citation. "
+            "This audit only checks existence + pinpoint; for "
+            "supports-the-claim verification, use check_claim_support."
         ),
     }
 
@@ -11730,6 +12098,74 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            name="check_claim_support",
+            description=(
+                "Verify whether a Swiss court decision actually supports a "
+                "legal claim. Uses an independent Sonnet judge to compare "
+                "the claim against verbatim text from the decision (Erwägung "
+                "if pinpoint given, else Regeste, else first portion of full "
+                "text). Returns {supports: yes|partial|no|contradicts|unrelated, "
+                "confidence, supporting_excerpt, qualifying_excerpt, "
+                "reasoning}. CALL THIS for any claim where citing the wrong "
+                "authority would mislead the user — especially when "
+                "paraphrasing a decision or drawing a proposition from a "
+                "complex Erwägung. If supports=no or contradicts, do NOT "
+                "use the cited decision for that claim."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "claim": {
+                        "type": "string",
+                        "description": (
+                            "The legal proposition you want to verify "
+                            "(e.g., 'A landlord is liable for fire-police "
+                            "violations under Art. 256 OR.')."
+                        ),
+                    },
+                    "decision_id": {
+                        "type": "string",
+                        "description": "Decision you intend to cite as authority.",
+                    },
+                    "pinpoint": {
+                        "type": "string",
+                        "description": (
+                            "Optional Erwägung number ('2.3'). If given, only "
+                            "that paragraph is judged; more precise verdict."
+                        ),
+                    },
+                },
+                "required": ["claim", "decision_id"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="attest_response",
+            description=(
+                "MANDATORY FINAL-STEP AUDIT: parse a draft response for all "
+                "Swiss-case citations (BGE/BGer/BVGer/BStGer/BPatGer/MKGE/ATF/"
+                "TF/TAF/TPF/TFB/ATMC/STMC) and verify (a) the referenced "
+                "decision exists in the corpus and (b) any pinpoint (E. X.Y / "
+                "consid. X.Y) actually exists in that decision's structured "
+                "Erwägungen. Returns the draft annotated with ✓ or ⚠️ per "
+                "citation plus a structured `issues` list with suggestions. "
+                "CALL THIS BEFORE emitting your final answer whenever your "
+                "response contains ≥1 case citation. If ok=false, fix each "
+                "flagged citation before sending."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "draft_text": {
+                        "type": "string",
+                        "description": "Your draft response text.",
+                    },
+                },
+                "required": ["draft_text"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="cite",
             description=(
                 "Get the canonical Swiss citation string for a decision reference. "
@@ -12471,6 +12907,22 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 reference=arguments["reference"],
                 pinpoint=arguments.get("pinpoint"),
                 language=arguments.get("language", "de"),
+            )
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+
+        elif name == "check_claim_support":
+            result = await asyncio.to_thread(
+                _handle_check_claim_support,
+                claim=arguments["claim"],
+                decision_id=arguments["decision_id"],
+                pinpoint=arguments.get("pinpoint"),
+            )
+            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+
+        elif name == "attest_response":
+            result = await asyncio.to_thread(
+                _handle_attest_response,
+                draft_text=arguments["draft_text"],
             )
             return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
 
