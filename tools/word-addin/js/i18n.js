@@ -1113,10 +1113,10 @@ var UI_STRINGS = {
 
   // First-run hint
   hint_welcome: {
-    de: 'Willkommen — geben Sie ein Stichwort oder eine Referenz ein, oder öffnen Sie den Tab «Prüfen», um Ihr ganzes Dokument auf falsche Zitate zu prüfen.',
-    fr: 'Bienvenue — saisissez un mot-clé ou une référence, ou ouvrez l\'onglet «Vérifier» pour contrôler tout votre document.',
-    it: 'Benvenuto — inserisci una parola chiave o un riferimento, o apri la scheda «Verifica» per controllare tutto il documento.',
-    en: 'Welcome — type a keyword or reference, or open the «Verify» tab to check your whole document for invalid citations.',
+    de: 'Willkommen — Stichwort oder Referenz suchen. Mit dem Banner oben prüfen Sie das ganze Dokument in einem Klick.',
+    fr: 'Bienvenue — recherchez un mot-clé ou une référence. Le bandeau en haut vérifie tout le document en un clic.',
+    it: 'Benvenuto — cerca una parola chiave o un riferimento. Il banner in alto verifica tutto il documento con un clic.',
+    en: 'Welcome — search a keyword or reference. The banner above audits your whole document in one click.',
   },
   hint_dismiss: {
     de: 'Verstanden', fr: 'Compris', it: 'Capito', en: 'Got it',
@@ -1138,6 +1138,44 @@ var UI_STRINGS = {
   },
   audit_unlock_button: {
     de: 'Pro freischalten', fr: 'Débloquer Pro', it: 'Sblocca Pro', en: 'Unlock Pro',
+  },
+
+  // Audit status strip (persistent banner above the search view)
+  strip_idle: {
+    de: 'Dokument auf Zitate prüfen',
+    fr: 'Vérifier les citations du document',
+    it: 'Verifica citazioni del documento',
+    en: 'Check document citations',
+  },
+  strip_clean: {
+    de: 'Alle {n} Zitate gültig',
+    fr: '{n} citations valides',
+    it: '{n} citazioni valide',
+    en: 'All {n} citations valid',
+  },
+  strip_issues: {
+    de: '{n} Zitate prüfen',
+    fr: '{n} citations à revoir',
+    it: '{n} citazioni da rivedere',
+    en: '{n} citations to review',
+  },
+  strip_error: {
+    de: 'Audit fehlgeschlagen — erneut versuchen',
+    fr: 'Audit échoué — réessayer',
+    it: 'Audit fallito — riprova',
+    en: 'Audit failed — try again',
+  },
+  btn_audit_again: {
+    de: 'Erneut prüfen',
+    fr: 'Vérifier à nouveau',
+    it: 'Verifica nuovamente',
+    en: 'Audit again',
+  },
+  audit_comments_inserted: {
+    de: '{n} Kommentare ins Dokument eingefügt — im Dokument prüfen.',
+    fr: '{n} commentaires insérés dans le document — vérifier dans le document.',
+    it: '{n} commenti inseriti nel documento — controlla nel documento.',
+    en: '{n} comments inserted into your document — review in the document.',
   },
 };
 

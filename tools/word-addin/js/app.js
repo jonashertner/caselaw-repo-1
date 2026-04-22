@@ -30,6 +30,8 @@ var state = {
   recentLookups: [],
   scanResults: null,
   scanDocText: '',
+  auditRunning: false,
+  lastAuditAt: null,
 };
 
 // SVG icon library — single source of truth for chrome-free, line-icon glyphs.
@@ -129,6 +131,7 @@ if (typeof Office !== 'undefined' && Office.onReady) {
         var settings = Office.context.roamingSettings;
         state.lang = settings.get('ocl_lang') || 'de';
       } catch (e) {}
+      _restoreAuditState();
     }
     initApp();
   });
@@ -137,27 +140,73 @@ if (typeof Office !== 'undefined' && Office.onReady) {
   document.addEventListener('DOMContentLoaded', function () { initApp(); });
 }
 
-// Which tab should appear active for the current view? Sub-views (detail,
-// verify, support, related) inherit the tab they were launched from.
-function _activeTab() {
-  if (state.view === 'scan') return 'audit';
-  if (state.view === 'verify' || state.view === 'support' || state.view === 'related') {
-    return state.previousView === 'scan' ? 'audit' : 'search';
+// Persistent audit status strip — replaces the old two-tab nav.
+// States: idle (never audited) / running / clean / has-issues / error.
+// Clicking either runs the audit (idle), shows summary (completed), or
+// routes to settings (when Pro is locked).
+function renderAuditStrip() {
+  var lang = state.lang;
+  var hasPro = !!localStorage.getItem('ocl_pro_key');
+
+  if (state.auditRunning) {
+    return '<div class="audit-strip audit-strip-running" aria-busy="true">' +
+      '<div class="audit-strip-spinner"></div>' +
+      '<span class="audit-strip-label">' + escHtml(t('audit_running', lang)) + '</span>' +
+      '</div>';
   }
-  return 'search';
+
+  var r = state.scanResults;
+  if (r && r.total !== undefined) {
+    var bad = (r.issues || []).length;
+    var ago = _relativeTime(state.lastAuditAt, lang);
+    if (bad === 0) {
+      return '<button class="audit-strip audit-strip-clean" data-action="audit-open-summary">' +
+        '<span class="audit-strip-icon">' + ICONS.check + '</span>' +
+        '<span class="audit-strip-label">' + escHtml(t('strip_clean', lang, { n: r.total })) + '</span>' +
+        '<span class="audit-strip-meta">' + escHtml(ago) + '</span>' +
+        '</button>';
+    }
+    return '<button class="audit-strip audit-strip-issues" data-action="audit-open-summary">' +
+      '<span class="audit-strip-icon">\u26A0</span>' +
+      '<span class="audit-strip-label">' + escHtml(t('strip_issues', lang, { n: bad })) + '</span>' +
+      '<span class="audit-strip-meta">' + escHtml(ago) + '</span>' +
+      '</button>';
+  }
+
+  if (state.error && state.view === 'scan') {
+    return '<button class="audit-strip audit-strip-error" data-action="scan-doc">' +
+      '<span class="audit-strip-icon">\u2717</span>' +
+      '<span class="audit-strip-label">' + escHtml(t('strip_error', lang)) + '</span>' +
+      '</button>';
+  }
+
+  // Idle (never audited this session).
+  var action = hasPro ? 'scan-doc' : 'open-settings';
+  return '<button class="audit-strip audit-strip-idle" data-action="' + action + '">' +
+    '<span class="audit-strip-icon">' + ICONS.shieldCheck + '</span>' +
+    '<span class="audit-strip-label">' + escHtml(t('strip_idle', lang)) + '</span>' +
+    (hasPro ? '' : proLockSvg()) +
+    '<span class="audit-strip-cta">' + ICONS.chevron + '</span>' +
+    '</button>';
 }
 
-function renderTabBar() {
-  var lang = state.lang;
-  var active = _activeTab();
-  return '<div class="tab-bar">' +
-    '<button class="tab' + (active === 'search' ? ' tab-active' : '') + '" data-action="switch-tab" data-tab="search">' +
-    escHtml(t('tab_search', lang)) + '</button>' +
-    '<button class="tab' + (active === 'audit' ? ' tab-active' : '') + '" data-action="switch-tab" data-tab="audit">' +
-    escHtml(t('tab_audit', lang)) +
-    proLockSvg() +
-    '</button>' +
-    '</div>';
+// Format a past timestamp as "just now" / "N min ago" / "HH:mm" / date.
+function _relativeTime(iso, lang) {
+  if (!iso) return '';
+  var then = new Date(iso).getTime();
+  var now = Date.now();
+  var secs = Math.max(0, Math.floor((now - then) / 1000));
+  var LABELS = {
+    now:  { de: 'gerade eben',  fr: 'à l\'instant', it: 'adesso',    en: 'just now' },
+    min:  { de: 'vor {n} Min',  fr: 'il y a {n} min', it: '{n} min fa', en: '{n} min ago' },
+    hour: { de: 'vor {n} Std',  fr: 'il y a {n} h', it: '{n} h fa',  en: '{n} h ago' },
+    day:  { de: 'vor {n} T',    fr: 'il y a {n} j', it: '{n} g fa',  en: '{n} d ago' },
+  };
+  function pick(k, n) { var s = LABELS[k][lang] || LABELS[k].de; return n !== undefined ? s.replace('{n}', n) : s; }
+  if (secs < 30) return pick('now');
+  if (secs < 3600) return pick('min', Math.round(secs / 60));
+  if (secs < 86400) return pick('hour', Math.round(secs / 3600));
+  return pick('day', Math.round(secs / 86400));
 }
 
 // Rendering — all values passed through escHtml() for XSS safety
@@ -166,10 +215,11 @@ function render() {
   var app = document.getElementById('app');
   if (!state.consent) { app.innerHTML = renderConsent(); bindEvents(); return; }
 
-  // Tab bar mounts above the main view; sub-views (detail/verify/support/
-  // related) get a back-link instead, so we hide tabs there.
-  var showTabs = (state.view === 'search' || state.view === 'scan');
-  var html = showTabs ? renderTabBar() : '';
+  // Audit strip mounts above the primary surfaces (search + audit summary).
+  // Sub-views (detail/verify/support/related/settings/guide) get a back-link
+  // and use the full panel.
+  var showStrip = (state.view === 'search' || state.view === 'scan');
+  var html = showStrip ? renderAuditStrip() : '';
   var view = state.view;
   if (view === 'search') html += renderSearch();
   else if (view === 'detail') html += renderDetail();
@@ -1024,20 +1074,11 @@ async function handleAppClick(e) {
       case 'find-related':  await findRelated(); break;
       case 'find-support': await findSupport(); break;
       case 'scan-doc':     await scanDocument(); break;
-      case 'switch-tab': {
-        var tab = btn.dataset.tab;
-        // Switching tabs always returns to the tab's primary view.
-        if (tab === 'search') {
-          state.view = 'search';
-        } else if (tab === 'audit') {
-          state.view = 'scan';
-        }
-        state.detail = null;
-        state.caseBrief = null;
+      case 'audit-open-summary':
+        state.view = 'scan';
         state.error = null;
         render();
         break;
-      }
       case 'open-settings':
         state.view = 'settings';
         render();
@@ -1332,8 +1373,9 @@ async function insertCitation(decision, erwaegung, opts) {
   var text = formatCitation(decision, state.lang, erwaegung);
   var btn = _lastClickedBtn;
 
-  // Default insert mode persists per-user; flip with the link button.
-  var asLink = opts.asLink !== undefined ? opts.asLink : (localStorage.getItem('ocl_insert_as_link') === '1');
+  // Default insert mode = hyperlinked (clickable citation back to source).
+  // Power users can opt out by setting `ocl_insert_plain` = '1' in settings.
+  var asLink = opts.asLink !== undefined ? opts.asLink : (localStorage.getItem('ocl_insert_plain') !== '1');
   var url = decision.canonical_url || (decision.decision_id ? 'https://mcp.opencaselaw.ch/entscheid/' + encodeURIComponent(decision.decision_id) : null);
 
   try {
@@ -1577,6 +1619,10 @@ function addRecentLookup(query) {
 // Audit Document (Pro feature) — single /api/attest call validates every
 // citation in the document for existence + pinpoint correctness, returning
 // structured issues with positions for in-document jump + comment.
+//
+// On success: auto-inserts a Word comment on each issue (when the platform
+// supports comments + the user hasn't opted out via "ocl_no_auto_comment").
+// The lawyer reviews issues inline in their document, not in a sidebar list.
 async function scanDocument() {
   var lang = state.lang;
   var proKey = localStorage.getItem('ocl_pro_key');
@@ -1590,8 +1636,8 @@ async function scanDocument() {
     return;
   }
 
-  state.view = 'scan';
-  state.loading = true;
+  // Stay on whatever view the user is on; the strip shows progress.
+  state.auditRunning = true;
   state.scanResults = null;
   state.scanDocText = docText;
   state.error = null;
@@ -1599,8 +1645,6 @@ async function scanDocument() {
 
   try {
     var report = await attestDocument(docText, lang);
-    // Compute occurrence index per citation string so search-anchor lands
-    // on the right hit when the same citation appears multiple times.
     var seen = {};
     var issues = (report.issues || []).map(function (issue) {
       var cite = issue.citation || '';
@@ -1613,7 +1657,26 @@ async function scanDocument() {
       passed: report.citations_ok || 0,
       issues: issues,
       annotated: report.annotated_text || '',
+      autoCommentedCount: 0,
     };
+    state.lastAuditAt = new Date().toISOString();
+    _persistAuditState();
+
+    // Auto-insert Word comments for each issue unless the user opted out.
+    var autoComment = supportsComments() && localStorage.getItem('ocl_no_auto_comment') !== '1';
+    if (autoComment && issues.length > 0) {
+      var inserted = 0;
+      for (var i = 0; i < issues.length; i++) {
+        var iss = issues[i];
+        var msg = _formatIssueComment(iss, lang);
+        var ok = await commentOnSubstring(iss.citation, msg, iss._nth || 0);
+        if (ok) inserted += 1;
+      }
+      state.scanResults.autoCommentedCount = inserted;
+    }
+
+    // After success, surface the summary view.
+    state.view = 'scan';
   } catch (e) {
     if (e && e.type === 'invalid_license') {
       try { localStorage.removeItem('ocl_pro_key'); } catch (_e) {}
@@ -1621,9 +1684,39 @@ async function scanDocument() {
     } else {
       state.error = e;
     }
+    state.view = 'scan';
   }
-  state.loading = false;
+  state.auditRunning = false;
   render();
+}
+
+// Persist audit state per-document so it survives Word reopen.
+function _persistAuditState() {
+  if (!_insideWord || !Office.context || !Office.context.document || !Office.context.document.settings) return;
+  try {
+    var s = Office.context.document.settings;
+    s.set('ocl_audit_total', (state.scanResults && state.scanResults.total) || 0);
+    s.set('ocl_audit_issues', (state.scanResults && state.scanResults.issues && state.scanResults.issues.length) || 0);
+    s.set('ocl_audit_at', state.lastAuditAt || '');
+    s.saveAsync();
+  } catch (e) { /* settings unavailable on this host */ }
+}
+function _restoreAuditState() {
+  if (!_insideWord || !Office.context || !Office.context.document || !Office.context.document.settings) return;
+  try {
+    var s = Office.context.document.settings;
+    var at = s.get('ocl_audit_at');
+    var total = s.get('ocl_audit_total');
+    var issues = s.get('ocl_audit_issues');
+    if (at && total !== null) {
+      state.lastAuditAt = at;
+      // Restore a stub state so the strip shows "Last check: N min ago"
+      // without re-running. Full issue details are gone (we'd need to
+      // re-audit to rebuild them) — that's intentional, prevents stale
+      // jump-to-position pointers if the document changed.
+      state.scanResults = { total: total, passed: total - issues, issues: [], annotated: '', _restored: true };
+    }
+  } catch (e) { /* ignore */ }
 }
 
 // Insert a Word comment for every issue, anchored on the original citation text.
@@ -1682,61 +1775,35 @@ function _formatIssueComment(issue, lang) {
   return msg;
 }
 
-// Audit View — render the structured /api/attest report.
+// Audit View — summary + actions. The strip handles the headline; this view
+// is the expanded detail page.
 function renderScan() {
   var lang = state.lang;
-  var hasPro = !!localStorage.getItem('ocl_pro_key');
-  var html = '';
+  var html = '<button class="back-link" data-action="back">\u2190 ' + escHtml(t('back', lang)) + '</button>';
 
-  // Loading: just the spinner.
-  if (state.loading) {
-    html += '<div class="verify-loading"><div class="spinner"></div><span>' + escHtml(t('audit_running', lang)) + '</span></div>';
+  if (state.error && !state.scanResults) {
+    html += '<div class="audit-inline-error">' + escHtml(state.error.message || t('error_connection', lang)) + '</div>';
+    html += '<button class="btn btn-pro-primary btn-full" data-action="scan-doc">' + escHtml(t('audit_start_button', lang)) + '</button>';
     return html;
   }
-
-  // Entry state — no audit has been run yet on this view.
   if (!state.scanResults) {
-    // Inline error (e.g., no text selected for verify/support/related)
-    if (state.error) {
-      html += '<div class="audit-inline-error">' + escHtml(state.error.message || t('error_connection', lang)) + '</div>';
-    }
-    html += '<div class="audit-intro">' +
-      '<div class="audit-intro-icon">' + ICONS.shieldCheck + '</div>' +
-      '<div class="audit-intro-title">' + escHtml(t('audit_intro_title', lang)) + '</div>' +
-      '<div class="audit-intro-desc">' + escHtml(t('audit_intro_desc', lang)) + '</div>' +
-      '<div class="audit-intro-preview">' +
-      '<div class="audit-intro-preview-row"><span class="audit-pp-icon ok">' + ICONS.check + '</span> BGE 140 III 86 E. 2.3</div>' +
-      '<div class="audit-intro-preview-row warn"><span class="audit-pp-icon warn">!</span> BGE 140 III 86 E. 3.2 — ' + escHtml(t('audit_intro_preview_pinpoint', lang)) + '</div>' +
-      '</div>' +
-      (hasPro
-        ? '<button class="btn btn-pro-primary btn-full" data-action="scan-doc">' + escHtml(t('audit_start_button', lang)) + '</button>'
-        : '<button class="btn btn-pro-primary btn-full" data-action="open-settings">' + escHtml(t('audit_unlock_button', lang)) + ' \u2014 CHF\u00A05/Mt.</button>' +
-          '<div class="audit-pro-note">' + escHtml(t('audit_pro_required', lang)) + '</div>'
-      ) +
-      '</div>';
-
-    // Secondary tools — verify selection, find support, find related.
-    html += '<div class="audit-secondary">' +
-      '<div class="audit-secondary-title">' + escHtml(t('audit_secondary_title', lang)) + '</div>' +
-      '<button class="btn btn-detail audit-secondary-btn" data-action="verify-ref">' +
-      '<span class="audit-secondary-label">' + escHtml(t('btn_verify_pro', lang)) + '</span>' +
-      (hasPro ? '' : proLockSvg()) + '</button>' +
-      '<button class="btn btn-detail audit-secondary-btn" data-action="find-support">' +
-      '<span class="audit-secondary-label">' + escHtml(t('tool_support', lang)) + '</span>' +
-      (hasPro ? '' : proLockSvg()) + '</button>' +
-      '<button class="btn btn-detail audit-secondary-btn" data-action="find-related">' +
-      '<span class="audit-secondary-label">' + escHtml(t('btn_find_related', lang)) + '</span>' +
-      (hasPro ? '' : proLockSvg()) + '</button>' +
-      '</div>';
-
-    return html;
+    // Should not normally happen — strip's idle button calls scan-doc directly.
+    return html + '<button class="btn btn-pro-primary btn-full" data-action="scan-doc">' + escHtml(t('audit_start_button', lang)) + '</button>';
   }
 
-  // Results header — show "audit again" affordance + the action to clear.
+  // Re-run button (top-right of results)
   html += '<div class="audit-result-header">' +
-    '<button class="back-link" data-action="audit-reset">\u2190 ' + escHtml(t('back', lang)) + '</button>' +
-    '<button class="btn btn-detail audit-rerun" data-action="scan-doc">\u21BB ' + escHtml(t('audit_start_button', lang)) + '</button>' +
+    '<button class="btn btn-detail audit-rerun" data-action="scan-doc">\u21BB ' + escHtml(t('btn_audit_again', lang)) + '</button>' +
     '</div>';
+
+  // If issues were auto-commented in the document, surface that prominently.
+  var r0 = state.scanResults;
+  if (r0.autoCommentedCount > 0) {
+    html += '<div class="audit-comments-banner">' +
+      '<span class="audit-comments-icon">' + ICONS.check + '</span>' +
+      '<span>' + escHtml(t('audit_comments_inserted', lang, { n: r0.autoCommentedCount })) + '</span>' +
+      '</div>';
+  }
 
   var report = state.scanResults;
   var total = report.total || 0;
@@ -1758,9 +1825,10 @@ function renderScan() {
     '<span class="audit-summary-text">' + escHtml(summaryText) + '</span>' +
     '</div>';
 
-  // Bulk actions: comment-all (issues) + insert-bibliography (passed)
+  // Bulk actions: re-comment-all (only useful if user dismissed the auto
+  // comments) + insert-bibliography
   var bulkActions = '';
-  if (bad > 0 && supportsComments()) {
+  if (bad > 0 && supportsComments() && !r0.autoCommentedCount) {
     bulkActions += '<button class="btn btn-detail" data-action="audit-comment-all">' +
       escHtml(t('audit_comment_all', lang)) + '</button>';
   }
@@ -1793,6 +1861,17 @@ function renderScan() {
     }
     html += '</ul></details>';
   }
+
+  // Selection-based tools — reachable from the audit context. Subtle.
+  html += '<div class="audit-secondary">' +
+    '<div class="audit-secondary-title">' + escHtml(t('audit_secondary_title', lang)) + '</div>' +
+    '<button class="btn btn-detail audit-secondary-btn" data-action="verify-ref">' +
+    '<span class="audit-secondary-label">' + escHtml(t('btn_verify_pro', lang)) + '</span></button>' +
+    '<button class="btn btn-detail audit-secondary-btn" data-action="find-support">' +
+    '<span class="audit-secondary-label">' + escHtml(t('tool_support', lang)) + '</span></button>' +
+    '<button class="btn btn-detail audit-secondary-btn" data-action="find-related">' +
+    '<span class="audit-secondary-label">' + escHtml(t('btn_find_related', lang)) + '</span></button>' +
+    '</div>';
 
   return html;
 }
