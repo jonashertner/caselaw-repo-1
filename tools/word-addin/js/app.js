@@ -1710,7 +1710,7 @@ function renderScan() {
       '</div>' +
       (hasPro
         ? '<button class="btn btn-pro-primary btn-full" data-action="scan-doc">' + escHtml(t('audit_start_button', lang)) + '</button>'
-        : '<button class="btn btn-pro-primary btn-full" data-action="open-settings">' + escHtml(t('audit_unlock_button', lang)) + ' \u2014 CHF\u00A09/Mt.</button>' +
+        : '<button class="btn btn-pro-primary btn-full" data-action="open-settings">' + escHtml(t('audit_unlock_button', lang)) + ' \u2014 CHF\u00A05/Mt.</button>' +
           '<div class="audit-pro-note">' + escHtml(t('audit_pro_required', lang)) + '</div>'
       ) +
       '</div>';

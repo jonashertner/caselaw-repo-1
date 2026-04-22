@@ -1077,10 +1077,10 @@ var UI_STRINGS = {
     en: 'Your entire document, in one click, checked for fabricated decisions and wrong pinpoints.',
   },
   btn_upgrade_price: {
-    de: 'Pro freischalten — CHF 9 / Monat',
-    fr: 'Débloquer Pro — CHF 9 / mois',
-    it: 'Sblocca Pro — CHF 9 / mese',
-    en: 'Unlock Pro — CHF 9 / month',
+    de: 'Pro freischalten — CHF 5 / Monat',
+    fr: 'Débloquer Pro — CHF 5 / mois',
+    it: 'Sblocca Pro — CHF 5 / mese',
+    en: 'Unlock Pro — CHF 5 / month',
   },
   pro_cancel_note: {
     de: 'Monatlich kündbar · Stripe-Abrechnung · MwSt. inkl.',
@@ -1131,10 +1131,10 @@ var UI_STRINGS = {
     en: 'More tools',
   },
   audit_pro_required: {
-    de: 'Audit ist Teil des Pro-Abonnements (CHF 9/Monat).',
-    fr: 'L\'audit fait partie de l\'abonnement Pro (CHF 9/mois).',
-    it: 'L\'audit è parte dell\'abbonamento Pro (CHF 9/mese).',
-    en: 'Audit is part of the Pro subscription (CHF 9/month).',
+    de: 'Audit ist Teil des Pro-Abonnements (CHF 5/Monat).',
+    fr: 'L\'audit fait partie de l\'abonnement Pro (CHF 5/mois).',
+    it: 'L\'audit è parte dell\'abbonamento Pro (CHF 5/mese).',
+    en: 'Audit is part of the Pro subscription (CHF 5/month).',
   },
   audit_unlock_button: {
     de: 'Pro freischalten', fr: 'Débloquer Pro', it: 'Sblocca Pro', en: 'Unlock Pro',
