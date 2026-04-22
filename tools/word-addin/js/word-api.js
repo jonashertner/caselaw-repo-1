@@ -35,6 +35,28 @@ async function insertTextAtCursor(text) {
   });
 }
 
+/** Insert text at cursor as a hyperlink to the given URL. Falls back to
+ *  plain insert if Word.insertHtml or the link API is unavailable. */
+async function insertHyperlinkAtCursor(text, url) {
+  if (!url) return insertTextAtCursor(text);
+  if (!_wordAvailable()) return insertTextAtCursor(text);
+  // Build the HTML server-side to make XSS impossible. text + url are
+  // already trusted (they come from our own API), but we still escape.
+  var safeText = String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  var safeUrl = String(url).replace(/"/g, '%22').replace(/</g, '%3C').replace(/>/g, '%3E');
+  var html = '<a href="' + safeUrl + '">' + safeText + '</a>';
+  return Word.run(async function (context) {
+    var sel = context.document.getSelection();
+    if (typeof sel.insertHtml === 'function') {
+      sel.insertHtml(html, 'After');
+    } else {
+      sel.insertText(text, 'After');
+    }
+    sel.select('End');
+    await context.sync();
+  }).catch(function () { return insertTextAtCursor(text); });
+}
+
 /** Get the currently selected text from the Word document. */
 async function getSelectedText() {
   if (!_wordAvailable()) {
@@ -69,4 +91,71 @@ function supportsComments() {
   } catch (e) {
     return false;
   }
+}
+
+/** Read the entire document body as plain text. Returns '' outside Word. */
+async function getDocumentText() {
+  if (!_wordAvailable()) return '';
+  return Word.run(async function (context) {
+    var body = context.document.body;
+    body.load('text');
+    await context.sync();
+    return body.text;
+  });
+}
+
+/** Locate a literal substring in the document, scroll to it, and select it.
+ *  Returns true on hit, false otherwise. Uses Word.search with matchCase=true
+ *  for stable disambiguation. The optional nth picks the Nth occurrence (0-based). */
+async function selectInDocument(needle, nth) {
+  if (!_wordAvailable() || !needle) return false;
+  nth = nth || 0;
+  return Word.run(async function (context) {
+    var hits = context.document.body.search(needle, { matchCase: true, matchWholeWord: false });
+    hits.load('items');
+    await context.sync();
+    if (!hits.items || hits.items.length === 0) return false;
+    var idx = Math.min(nth, hits.items.length - 1);
+    var range = hits.items[idx];
+    range.select();
+    range.scrollIntoView();
+    await context.sync();
+    return true;
+  }).catch(function () { return false; });
+}
+
+/** Replace the Nth occurrence of a literal substring with a new string.
+ *  Returns true on success. Used to apply audit fix suggestions in place. */
+async function replaceInDocument(needle, replacement, nth) {
+  if (!_wordAvailable() || !needle) return false;
+  nth = nth || 0;
+  return Word.run(async function (context) {
+    var hits = context.document.body.search(needle, { matchCase: true, matchWholeWord: false });
+    hits.load('items');
+    await context.sync();
+    if (!hits.items || hits.items.length === 0) return false;
+    var range = hits.items[Math.min(nth, hits.items.length - 1)];
+    range.insertText(replacement, 'Replace');
+    range.scrollIntoView();
+    await context.sync();
+    return true;
+  }).catch(function () { return false; });
+}
+
+/** Insert a Word comment anchored on a literal substring (Nth occurrence).
+ *  Falls back to inserting plain bracketed text at cursor if anchoring fails. */
+async function commentOnSubstring(needle, commentText, nth) {
+  if (!_wordAvailable() || !needle) return false;
+  nth = nth || 0;
+  return Word.run(async function (context) {
+    var hits = context.document.body.search(needle, { matchCase: true, matchWholeWord: false });
+    hits.load('items');
+    await context.sync();
+    if (!hits.items || hits.items.length === 0) return false;
+    var range = hits.items[Math.min(nth, hits.items.length - 1)];
+    if (typeof range.insertComment !== 'function') return false;
+    range.insertComment(commentText);
+    await context.sync();
+    return true;
+  }).catch(function () { return false; });
 }

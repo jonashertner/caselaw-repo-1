@@ -339,6 +339,52 @@ test('Deep sub-section E. 3.2.1', function() {
 });
 
 // ============================================================
+// API canonical citation strings — verbatim, not reconstructed
+// ============================================================
+
+console.log('\nAPI-canonical citations (citation_string_{lang} fields):');
+
+test('API canonical DE — used verbatim', function() {
+  var dec = { citation_string_de: 'BGE 140 III 86', citation_string_fr: 'ATF 140 III 86', citation_string_it: 'DTF 140 III 86' };
+  assert.strictEqual(formatCitation(dec, 'de'), '(BGE 140 III 86)');
+});
+
+test('API canonical FR — uses citation_string_fr', function() {
+  var dec = { citation_string_de: 'BGE 140 III 86', citation_string_fr: 'ATF 140 III 86', citation_string_it: 'DTF 140 III 86' };
+  assert.strictEqual(formatCitation(dec, 'fr'), '(ATF 140 III 86)');
+});
+
+test('API canonical EN falls back to DE', function() {
+  var dec = { citation_string_de: 'BGE 140 III 86', citation_string_fr: 'ATF 140 III 86' };
+  assert.strictEqual(formatCitation(dec, 'en'), '(BGE 140 III 86)');
+});
+
+test('API canonical with Erwägung suffix — DE', function() {
+  var dec = { citation_string_de: 'BGE 140 III 86' };
+  assert.strictEqual(formatCitation(dec, 'de', '3.2'), '(BGE 140 III 86, E. 3.2)');
+});
+
+test('API canonical with Erwägung suffix — FR', function() {
+  var dec = { citation_string_fr: 'ATF 140 III 86', citation_string_de: 'BGE 140 III 86' };
+  assert.strictEqual(formatCitation(dec, 'fr', '3.2'), '(ATF 140 III 86, consid. 3.2)');
+});
+
+test('API canonical takes precedence over local reconstruction', function() {
+  // Even with local fields available, the API string wins.
+  var dec = {
+    citation_string_de: 'BGer 4A_747/2012 vom 5. April 2013',
+    docket: 'WRONG_LOCAL', date: '2099-01-01', court_id: 'bger',
+  };
+  assert.strictEqual(formatCitation(dec, 'de'), '(BGer 4A_747/2012 vom 5. April 2013)');
+});
+
+test('No API field — local reconstruction still works', function() {
+  // Backward compatible: when API fields are absent, falls back to old logic.
+  var dec = { docket: 'BGE 125 III 231', court_id: 'bge' };
+  assert.strictEqual(formatCitation(dec, 'de'), '(BGE 125 III 231)');
+});
+
+// ============================================================
 // Court name mapping
 // ============================================================
 

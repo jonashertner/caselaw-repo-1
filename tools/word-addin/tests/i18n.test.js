@@ -126,19 +126,19 @@ test('default language is de', function() {
 console.log('\nt() translations:');
 
 test('search_placeholder DE', function() {
-  assert.strictEqual(t('search_placeholder', 'de'), 'BGE 133 III 121, Art. 41 OR, 4A_747/2012...');
+  assert.strictEqual(t('search_placeholder', 'de'), 'Stichwort, BGE-Nr., Aktenzeichen, Art. 41 OR ...');
 });
 
 test('search_placeholder FR', function() {
-  assert.strictEqual(t('search_placeholder', 'fr'), 'ATF 133 III 121, Art. 41 CO, 4A_747/2012...');
+  assert.strictEqual(t('search_placeholder', 'fr'), 'Mot-clé, n° ATF, n° de dossier, Art. 41 CO ...');
 });
 
 test('search_placeholder IT', function() {
-  assert.strictEqual(t('search_placeholder', 'it'), 'DTF 133 III 121, Art. 41 CO, 4A_747/2012...');
+  assert.strictEqual(t('search_placeholder', 'it'), 'Parola chiave, n. DTF, n. di fascicolo, Art. 41 CO ...');
 });
 
 test('search_placeholder EN', function() {
-  assert.strictEqual(t('search_placeholder', 'en'), 'BGE 133 III 121, Art. 41 OR, 4A_747/2012...');
+  assert.strictEqual(t('search_placeholder', 'en'), 'Keyword, BGE no., docket no., Art. 41 OR ...');
 });
 
 test('btn_insert all languages', function() {

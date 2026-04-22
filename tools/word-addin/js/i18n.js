@@ -206,10 +206,10 @@ var UI_STRINGS = {
 
   // Search
   search_placeholder: {
-    de: 'BGE 133 III 121, Art. 41 OR, 4A_747/2012...',
-    fr: 'ATF 133 III 121, Art. 41 CO, 4A_747/2012...',
-    it: 'DTF 133 III 121, Art. 41 CO, 4A_747/2012...',
-    en: 'BGE 133 III 121, Art. 41 OR, 4A_747/2012...',
+    de: 'Stichwort, BGE-Nr., Aktenzeichen, Art. 41 OR ...',
+    fr: 'Mot-clé, n° ATF, n° de dossier, Art. 41 CO ...',
+    it: 'Parola chiave, n. DTF, n. di fascicolo, Art. 41 CO ...',
+    en: 'Keyword, BGE no., docket no., Art. 41 OR ...',
   },
   welcome_count: {
     de: '{n} Entscheide',
@@ -254,10 +254,10 @@ var UI_STRINGS = {
     de: 'Beispiele:', fr: 'Exemples :', it: 'Esempi:', en: 'Try:',
   },
   quick_examples: {
-    de: 'BGE 133 III 121|Art. 41 OR|4A_747/2012|Art. 8 BV|Art. 261 StGB',
-    fr: 'ATF 133 III 121|Art. 41 CO|4A_747/2012|Art. 8 Cst.|Art. 261 CP',
-    it: 'DTF 133 III 121|Art. 41 CO|4A_747/2012|Art. 8 Cost.|Art. 261 CP',
-    en: 'BGE 133 III 121|Art. 41 OR|4A_747/2012|Art. 8 BV|Art. 261 StGB',
+    de: 'Mietkündigung|BGE 133 III 121|Art. 41 OR|Notwehr|4A_747/2012',
+    fr: 'résiliation bail|ATF 133 III 121|Art. 41 CO|légitime défense|4A_747/2012',
+    it: 'disdetta locazione|DTF 133 III 121|Art. 41 CO|legittima difesa|4A_747/2012',
+    en: 'lease termination|BGE 133 III 121|Art. 41 OR|self-defence|4A_747/2012',
   },
   how_it_works: {
     de: 'So funktioniert es \u2192', fr: 'Comment \u00E7a marche \u2192', it: 'Come funziona \u2192', en: 'How it works \u2192',
@@ -909,6 +909,235 @@ var UI_STRINGS = {
     fr: 'Impossible de lire le document. Veuillez utiliser dans Word.',
     it: 'Impossibile leggere il documento. Utilizzare in Word.',
     en: 'Could not read document. Please use within Word.',
+  },
+
+  // Audit (Pro) — full-document citation check via /api/attest
+  tool_audit: {
+    de: 'Dokument prüfen', fr: 'Vérifier le document', it: 'Verifica documento', en: 'Audit document',
+  },
+  audit_summary_ok: {
+    de: '{n} Zitate · alle gültig',
+    fr: '{n} citations · toutes valides',
+    it: '{n} citazioni · tutte valide',
+    en: '{n} citations · all valid',
+  },
+  audit_summary_mixed: {
+    de: '{n} Zitate · {ok} ok · {bad} Probleme',
+    fr: '{n} citations · {ok} ok · {bad} problèmes',
+    it: '{n} citazioni · {ok} ok · {bad} problemi',
+    en: '{n} citations · {ok} ok · {bad} issues',
+  },
+  audit_summary_none: {
+    de: 'Keine Schweizer Entscheid-Zitate im Dokument gefunden.',
+    fr: 'Aucune citation de décision suisse trouvée dans le document.',
+    it: 'Nessuna citazione di decisione svizzera trovata nel documento.',
+    en: 'No Swiss decision citations found in the document.',
+  },
+  audit_running: {
+    de: 'Dokument wird geprüft...', fr: 'Vérification en cours...', it: 'Verifica in corso...', en: 'Auditing document...',
+  },
+  audit_issue_not_found: {
+    de: 'Entscheid nicht in der Datenbank',
+    fr: 'Décision absente de la base',
+    it: 'Decisione non nel database',
+    en: 'Decision not in database',
+  },
+  audit_issue_pinpoint: {
+    de: 'Erwägung existiert nicht',
+    fr: 'Considérant inexistant',
+    it: 'Considerando inesistente',
+    en: 'Pinpoint not found',
+  },
+  audit_issue_unknown: {
+    de: 'Problem mit Zitat',
+    fr: 'Problème de citation',
+    it: 'Problema con citazione',
+    en: 'Citation issue',
+  },
+  audit_valid_pinpoints: {
+    de: 'Gültige Erwägungen:', fr: 'Considérants valides :', it: 'Considerandi validi:', en: 'Valid pinpoints:',
+  },
+  audit_jump_to: {
+    de: 'Im Dokument zeigen', fr: 'Afficher dans le document', it: 'Mostra nel documento', en: 'Show in document',
+  },
+  audit_insert_comment: {
+    de: 'Kommentar einfügen', fr: 'Insérer commentaire', it: 'Inserisci commento', en: 'Insert comment',
+  },
+  audit_comment_all: {
+    de: 'Alle Probleme als Kommentare einfügen',
+    fr: 'Insérer tous les problèmes en commentaires',
+    it: 'Inserisci tutti i problemi come commenti',
+    en: 'Insert all issues as comments',
+  },
+  audit_deep_check: {
+    de: 'Tiefenprüfung: Stützt das Zitat die Aussage?',
+    fr: 'Vérification approfondie : la citation soutient-elle l\'affirmation ?',
+    it: 'Verifica approfondita: la citazione sostiene l\'affermazione?',
+    en: 'Deep check: does the citation support the claim?',
+  },
+  audit_replace_canonical: {
+    de: 'Auf kanonische Form ersetzen',
+    fr: 'Remplacer par la forme canonique',
+    it: 'Sostituisci con forma canonica',
+    en: 'Replace with canonical form',
+  },
+  audit_no_word: {
+    de: 'Diese Funktion ist nur in Word verfügbar.',
+    fr: 'Cette fonction n\'est disponible que dans Word.',
+    it: 'Questa funzione è disponibile solo in Word.',
+    en: 'This feature is only available inside Word.',
+  },
+  audit_done: {
+    de: 'Geprüft', fr: 'Vérifié', it: 'Verificato', en: 'Checked',
+  },
+  audit_jumped: {
+    de: 'Im Dokument markiert', fr: 'Sélectionné dans le document', it: 'Selezionato nel documento', en: 'Selected in document',
+  },
+
+  // Tab bar
+  tab_search: {
+    de: 'Suchen', fr: 'Rechercher', it: 'Cerca', en: 'Search',
+  },
+  tab_audit: {
+    de: 'Prüfen', fr: 'Vérifier', it: 'Verifica', en: 'Verify',
+  },
+
+  // Welcome cards (replace chip wall)
+  welcome_card_search_title: {
+    de: 'Nachschlagen & zitieren',
+    fr: 'Consulter & citer',
+    it: 'Consultare & citare',
+    en: 'Look up & cite',
+  },
+  welcome_card_search_desc: {
+    de: 'Stichwort oder Referenz eingeben — der korrekt formatierte Zitierstring ist ein Klick entfernt.',
+    fr: 'Mot-clé ou référence — la citation correctement formatée est à un clic.',
+    it: 'Parola chiave o riferimento — la citazione formattata correttamente è a un clic.',
+    en: 'Type a keyword or reference — the correctly formatted citation is one click away.',
+  },
+  welcome_card_audit_title: {
+    de: 'Dokument-Audit',
+    fr: 'Audit du document',
+    it: 'Audit del documento',
+    en: 'Document audit',
+  },
+  welcome_card_audit_desc: {
+    de: 'Lassen Sie das ganze Dokument auf falsche Zitate und ungültige Erwägungs-Verweise prüfen.',
+    fr: 'Faites vérifier tout le document : citations erronées, considérants inexistants.',
+    it: 'Fa verificare tutto il documento: citazioni errate, considerandi inesistenti.',
+    en: 'Audit the whole document for invalid citations and missing pinpoints.',
+  },
+  welcome_card_audit_open: {
+    de: 'Audit öffnen →', fr: 'Ouvrir l\'audit →', it: 'Apri audit →', en: 'Open audit →',
+  },
+
+  // Audit tab entry state (no audit run yet)
+  audit_intro_title: {
+    de: 'Dokument-Audit',
+    fr: 'Audit du document',
+    it: 'Audit del documento',
+    en: 'Document audit',
+  },
+  audit_intro_desc: {
+    de: 'Jedes Zitat im Dokument wird gegen die Datenbank geprüft. Erfundene Entscheide und falsche Erwägungs-Nummern markieren wir samt Korrektur-Vorschlag.',
+    fr: 'Chaque citation du document est vérifiée. Décisions inventées et numéros de considérants erronés sont signalés avec une suggestion de correction.',
+    it: 'Ogni citazione viene verificata. Decisioni inventate e numeri di considerando errati vengono segnalati con un suggerimento di correzione.',
+    en: 'Every citation in your document is checked against the database. Made-up decisions and wrong pinpoints are flagged with a fix suggestion.',
+  },
+  audit_intro_preview_pinpoint: {
+    de: 'Erwägung existiert nicht (gültig: 2, 4.1, 4.2)',
+    fr: 'Considérant inexistant (valides : 2, 4.1, 4.2)',
+    it: 'Considerando inesistente (validi: 2, 4.1, 4.2)',
+    en: 'Pinpoint not found (valid: 2, 4.1, 4.2)',
+  },
+  audit_passed_label: {
+    de: '{n} gültige Zitate',
+    fr: '{n} citations valides',
+    it: '{n} citazioni valide',
+    en: '{n} valid citations',
+  },
+  btn_insert_link: {
+    de: 'Mit Hyperlink einfügen',
+    fr: 'Insérer avec lien',
+    it: 'Inserisci con collegamento',
+    en: 'Insert with hyperlink',
+  },
+
+  // Pro hero (settings page)
+  pro_hero_title: {
+    de: 'Halluzinations-freie Schweizer Zitate',
+    fr: 'Citations suisses sans hallucination',
+    it: 'Citazioni svizzere senza allucinazioni',
+    en: 'Hallucination-free Swiss citations',
+  },
+  pro_hero_sub: {
+    de: 'Das ganze Dokument in einem Klick auf erfundene Entscheide und falsche Erwägungen geprüft.',
+    fr: 'Tout votre document, en un clic, vérifié contre les décisions inventées et considérants erronés.',
+    it: 'Tutto il documento, con un clic, verificato contro decisioni inventate e considerandi errati.',
+    en: 'Your entire document, in one click, checked for fabricated decisions and wrong pinpoints.',
+  },
+  btn_upgrade_price: {
+    de: 'Pro freischalten — CHF 9 / Monat',
+    fr: 'Débloquer Pro — CHF 9 / mois',
+    it: 'Sblocca Pro — CHF 9 / mese',
+    en: 'Unlock Pro — CHF 9 / month',
+  },
+  pro_cancel_note: {
+    de: 'Monatlich kündbar · Stripe-Abrechnung · MwSt. inkl.',
+    fr: 'Résiliable chaque mois · Facturation Stripe · TVA incl.',
+    it: 'Disdicibile ogni mese · Fatturazione Stripe · IVA incl.',
+    en: 'Cancel anytime · Stripe billing · VAT incl.',
+  },
+
+  // Statute verbatim insert
+  btn_insert_verbatim: {
+    de: 'Wortlaut einfügen',
+    fr: 'Insérer le texte',
+    it: 'Inserisci il testo',
+    en: 'Insert verbatim text',
+  },
+
+  // Bibliography insert
+  audit_insert_bibliography: {
+    de: 'Quellenverzeichnis einfügen',
+    fr: 'Insérer la liste des sources',
+    it: 'Inserisci elenco delle fonti',
+    en: 'Insert bibliography',
+  },
+  bibliography_heading: {
+    de: 'Zitierte Entscheide',
+    fr: 'Décisions citées',
+    it: 'Decisioni citate',
+    en: 'Cited decisions',
+  },
+
+  // First-run hint
+  hint_welcome: {
+    de: 'Willkommen — geben Sie ein Stichwort oder eine Referenz ein, oder öffnen Sie den Tab «Prüfen», um Ihr ganzes Dokument auf falsche Zitate zu prüfen.',
+    fr: 'Bienvenue — saisissez un mot-clé ou une référence, ou ouvrez l\'onglet «Vérifier» pour contrôler tout votre document.',
+    it: 'Benvenuto — inserisci una parola chiave o un riferimento, o apri la scheda «Verifica» per controllare tutto il documento.',
+    en: 'Welcome — type a keyword or reference, or open the «Verify» tab to check your whole document for invalid citations.',
+  },
+  hint_dismiss: {
+    de: 'Verstanden', fr: 'Compris', it: 'Capito', en: 'Got it',
+  },
+  audit_start_button: {
+    de: 'Dokument jetzt prüfen', fr: 'Vérifier le document', it: 'Verifica documento', en: 'Audit document now',
+  },
+  audit_secondary_title: {
+    de: 'Weitere Werkzeuge',
+    fr: 'Autres outils',
+    it: 'Altri strumenti',
+    en: 'More tools',
+  },
+  audit_pro_required: {
+    de: 'Audit ist Teil des Pro-Abonnements (CHF 9/Monat).',
+    fr: 'L\'audit fait partie de l\'abonnement Pro (CHF 9/mois).',
+    it: 'L\'audit è parte dell\'abbonamento Pro (CHF 9/mese).',
+    en: 'Audit is part of the Pro subscription (CHF 9/month).',
+  },
+  audit_unlock_button: {
+    de: 'Pro freischalten', fr: 'Débloquer Pro', it: 'Sblocca Pro', en: 'Unlock Pro',
   },
 };
 

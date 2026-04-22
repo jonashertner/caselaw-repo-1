@@ -80,6 +80,10 @@ function extractBgeRef(docket) {
 /**
  * Format a citation for a Swiss court decision.
  *
+ * Prefers the API-provided citation_string_{lang} if present (verbatim,
+ * authoritative — built server-side with full canonical knowledge).
+ * Falls back to local reconstruction only when the API field is missing.
+ *
  * @param {Object} decision - Decision object with at least: docket, date, court_id
  * @param {string} lang - Language code: 'de', 'fr', 'it', 'en'
  * @param {string} [erwaegung] - Optional Erwägung number (e.g. "3" or "2.1")
@@ -87,6 +91,16 @@ function extractBgeRef(docket) {
  */
 function formatCitation(decision, lang, erwaegung) {
   lang = lang || 'de';
+
+  // Prefer canonical citation string from API (anti-hallucination contract).
+  // EN falls back to DE since the API only emits de/fr/it.
+  var apiKey = lang === 'en' ? 'citation_string_de' : 'citation_string_' + lang;
+  var canonical = decision[apiKey] || decision.citation_string_de;
+  if (canonical) {
+    if (erwaegung) canonical += ', ' + ERWAEGUNG_LABEL[lang] + ' ' + erwaegung;
+    return '(' + canonical + ')';
+  }
+
   var parts = [];
 
   // Normalize field names (API uses docket_number/decision_date/court, module uses docket/date/court_id)

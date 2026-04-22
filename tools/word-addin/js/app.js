@@ -32,6 +32,18 @@ var state = {
   scanDocText: '',
 };
 
+// SVG icon library — single source of truth for chrome-free, line-icon glyphs.
+// Each function returns a string (escape-safe; no user input concatenated).
+var ICONS = {
+  lock: '<svg class="icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  shieldCheck: '<svg class="icon icon-lg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+  link: '<svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg>',
+  insert: '<svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
+  chevron: '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+  check: '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+};
+function proLockSvg() { return localStorage.getItem('ocl_pro_key') ? '' : '<span class="pro-lock" title="Pro" aria-label="Pro">' + ICONS.lock + '</span>'; }
+
 // Pattern to detect law article queries like "Art. 41 OR", "Art. 8 BV", "OR 41", "ZGB 8"
 var LAW_ABBREVS = 'OR|ZGB|StGB|BV|StPO|ZPO|SchKG|AHVG|AIG|AHVV|KVV|BGG|VwVG|ATSG|UVG|BVG|UWG|KG|MSchG|URG|PatG|DSG|FINMAG|GwG|BankG|FusG|IPRG|Lug\u00DC|KKG|CO|CC|CP|Cst\\.?|Cost\\.?|CPP|CPC|LP|LTF|LCD|LEtr|LDIP|LFus|LCart|LDA|LPM|LBI|LPD|LAJ|LAI|LATF|LPA|LPGA|LAA|LPP';
 // Matches: "Art. 41 OR", "Art 8 BV", "OR 41", "BV 8", "StGB 261bis", "art. 41 CO", "Cst. 8", "art. 2 al. 1 CC"
@@ -50,6 +62,18 @@ var LAW_ALIAS = {
 
 // Track whether we're running inside Word or standalone browser
 var _insideWord = false;
+// Debounce timer for live search-as-you-type.
+var _liveSearchTimer = null;
+
+// True for inputs that should require Enter (reference / law / docket lookups).
+function _isReferencePattern(s) {
+  if (LAW_PATTERN.test(s)) return true;
+  if (LAW_PATTERN_REVERSE.test(s.trim())) return true;
+  if (/^(BGE|ATF|DTF)\s+\d/i.test(s)) return true;
+  if (/^\d[A-Z]_\d+\/\d{4}$/.test(s)) return true;
+  if (/^[A-Z]-\d+\/\d{4}$/.test(s)) return true;
+  return false;
+}
 
 // Initialize — works both inside Word (Office.onReady) and in plain browser
 function initApp() {
@@ -113,33 +137,63 @@ if (typeof Office !== 'undefined' && Office.onReady) {
   document.addEventListener('DOMContentLoaded', function () { initApp(); });
 }
 
+// Which tab should appear active for the current view? Sub-views (detail,
+// verify, support, related) inherit the tab they were launched from.
+function _activeTab() {
+  if (state.view === 'scan') return 'audit';
+  if (state.view === 'verify' || state.view === 'support' || state.view === 'related') {
+    return state.previousView === 'scan' ? 'audit' : 'search';
+  }
+  return 'search';
+}
+
+function renderTabBar() {
+  var lang = state.lang;
+  var active = _activeTab();
+  return '<div class="tab-bar">' +
+    '<button class="tab' + (active === 'search' ? ' tab-active' : '') + '" data-action="switch-tab" data-tab="search">' +
+    escHtml(t('tab_search', lang)) + '</button>' +
+    '<button class="tab' + (active === 'audit' ? ' tab-active' : '') + '" data-action="switch-tab" data-tab="audit">' +
+    escHtml(t('tab_audit', lang)) +
+    proLockSvg() +
+    '</button>' +
+    '</div>';
+}
+
 // Rendering — all values passed through escHtml() for XSS safety
 // Safe: all dynamic content is escaped via escHtml before concatenation
 function render() {
   var app = document.getElementById('app');
-  var html;
   if (!state.consent) { app.innerHTML = renderConsent(); bindEvents(); return; }
-  switch (state.view) {
-    case 'search':   html = renderSearch(); break;
-    case 'detail':   html = renderDetail(); break;
-    case 'verify':   html = renderVerify(); break;
-    case 'support':  html = renderSupport(); break;
-    case 'related':  html = renderRelated(); break;
-    case 'scan':     html = renderScan(); break;
-    case 'guide':    html = renderGuide(); break;
-    case 'settings': html = renderSettings(); break;
-    default:         html = ''; break;
-  }
+
+  // Tab bar mounts above the main view; sub-views (detail/verify/support/
+  // related) get a back-link instead, so we hide tabs there.
+  var showTabs = (state.view === 'search' || state.view === 'scan');
+  var html = showTabs ? renderTabBar() : '';
+  var view = state.view;
+  if (view === 'search') html += renderSearch();
+  else if (view === 'detail') html += renderDetail();
+  else if (view === 'verify') html += renderVerify();
+  else if (view === 'support') html += renderSupport();
+  else if (view === 'related') html += renderRelated();
+  else if (view === 'scan') html += renderScan();
+  else if (view === 'guide') html += renderGuide();
+  else if (view === 'settings') html += renderSettings();
+
   app.innerHTML = html; // eslint-disable-line no-unsanitized/property -- all values pre-escaped via escHtml()
   bindEvents();
   if (state.lawResult) resolveAmendmentRefs();
 }
 
-// Format law article text into styled paragraphs with superscript numbers
+// Format law article text into styled paragraphs with superscript numbers.
+// Each paragraph carries TWO insert affordances:
+//   - the small superscript number → inserts the reference only
+//   - a hover-revealed "Wortlaut" button → inserts verbatim paragraph + ref
 function formatLawParagraphs(text, artNum, abbrev) {
   if (!text) return '';
   var lines = text.split('\n');
   var html = '';
+  var lang = state.lang;
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].trim();
     if (!line) continue;
@@ -147,9 +201,13 @@ function formatLawParagraphs(text, artNum, abbrev) {
     if (m) {
       var paraRef = 'Art. ' + artNum + ' Abs. ' + m[1] + ' ' + abbrev;
       var paraBody = formatLawFootnotes(m[2]);
+      // Strip footnote markers from the verbatim text we insert (no inline HTML).
+      var verbatim = m[2].replace(/\s*(Fassung gemäss|Eingef\u00fcgt durch|Aufgehoben durch|Berichtigung der|Bereinigt gemäss|Strafdrohungen?\s+gem\u00e4ss|SR\s+\d+[\.\d]*).*$/i, '').trim();
       html += '<div class="law-para">' +
-        '<span class="law-para-num" data-action="insert-law-para" data-ref="' + escHtml(paraRef) + '" title="' + escHtml(paraRef) + '">' + escHtml(m[1]) + '</span> ' +
-        paraBody + '</div>';
+        '<span class="law-para-num" data-action="insert-law-para" data-ref="' + escHtml(paraRef) + '" title="' + escHtml(t('btn_insert_ref', lang)) + ': ' + escHtml(paraRef) + '">' + escHtml(m[1]) + '</span> ' +
+        paraBody +
+        ' <button class="law-para-verbatim" data-action="insert-law-verbatim" data-ref="' + escHtml(paraRef) + '" data-text="' + escHtml(verbatim) + '" title="' + escHtml(t('btn_insert_verbatim', lang)) + '" aria-label="' + escHtml(t('btn_insert_verbatim', lang)) + '">' + ICONS.insert + '</button>' +
+        '</div>';
     } else {
       // Check if entire line is a footnote/amendment note
       if (/^(Fassung|Eingef|Aufgehoben|Strafdrohung|Berichtigung|Version|Introdotto|Abrogato|Nuovo|Introd)/i.test(line)) {
@@ -228,12 +286,6 @@ function renderSearch() {
     'placeholder="' + escHtml(t('search_placeholder', lang)) + '" ' +
     'value="' + escHtml(state.query) + '">' +
     (state.query ? '<button class="search-clear" data-action="clear-search" aria-label="Clear">\u00D7</button>' : '') +
-    '</div>' +
-    '<div class="pro-tools-row">' +
-    '<button class="pro-pill" data-action="find-related">' + escHtml(t('btn_find_related', lang)) + (!localStorage.getItem('ocl_pro_key') ? '<span class="pro-pip">PRO</span>' : '') + '</button>' +
-    '<button class="pro-pill" data-action="verify-ref">' + escHtml(t('btn_verify_pro', lang)) + (!localStorage.getItem('ocl_pro_key') ? '<span class="pro-pip">PRO</span>' : '') + '</button>' +
-    '<button class="pro-pill" data-action="find-support">' + escHtml(t('tool_support', lang)) + (!localStorage.getItem('ocl_pro_key') ? '<span class="pro-pip">PRO</span>' : '') + '</button>' +
-    '<button class="pro-pill" data-action="scan-doc">' + escHtml(t('tool_scan', lang)) + (!localStorage.getItem('ocl_pro_key') ? '<span class="pro-pip">PRO</span>' : '') + '</button>' +
     '</div>';
 
   // Show law article card if a law result exists
@@ -283,9 +335,19 @@ function renderSearch() {
 function renderWelcome(lang) {
   var html = '<div class="welcome">';
 
-  html += '<div class="welcome-subtitle">' + escHtml(t('welcome_hint', lang)) + '</div>';
+  // First-run hint — single dismissible banner the very first time a user
+  // sees the welcome screen. Dismissed forever via localStorage flag.
+  var tourSeen = false;
+  try { tourSeen = localStorage.getItem('ocl_hint_seen') === '1'; } catch (e) {}
+  if (!tourSeen && state.recentLookups.length === 0) {
+    html += '<div class="welcome-hint">' +
+      '<div class="welcome-hint-text">' + escHtml(t('hint_welcome', lang)) + '</div>' +
+      '<button class="btn btn-detail welcome-hint-dismiss" data-action="dismiss-hint">' +
+      escHtml(t('hint_dismiss', lang)) + '</button>' +
+      '</div>';
+  }
 
-  // Recent lookups
+  // Recent lookups (when user has history) — surfaces the user's own context first.
   if (state.recentLookups.length > 0) {
     html += '<div class="quick-label">' + escHtml(t('recent_label', lang)) + '</div>';
     html += '<div class="quick-chips">';
@@ -304,12 +366,11 @@ function renderWelcome(lang) {
   }
   html += '</div>';
 
-  // How it works link
+  // Footer — coverage stats + how-it-works link, kept whisper-quiet.
   html += '<div class="welcome-footer">' +
     '<a class="welcome-link" data-action="show-guide">' + escHtml(t('how_it_works', lang)) + '</a>' +
+    '<span class="welcome-count-small">' + escHtml(t('welcome_count', lang, { n: '967\u2009000+' })) + '</span>' +
     '</div>';
-
-  html += '<div class="welcome-count-small">' + escHtml(t('welcome_count', lang, { n: '963\u2009000+' })) + '</div>';
 
   html += '</div>';
   return html;
@@ -322,21 +383,36 @@ function renderResultCard(r, idx) {
   if (r.citation_count > 0) badges += '<span class="badge badge-citations">' + escHtml(t('badge_citations', lang, { n: r.citation_count })) + '</span> ';
   if (r.legal_area) badges += '<span class="badge badge-area">' + escHtml(r.legal_area) + '</span>';
 
+  // Sentence-aware truncation: prefer cutting at ". " over mid-word.
   var regeste = r.regeste || stripHtml(r.snippet) || r.title || '';
-  if (regeste.length > 200) regeste = regeste.substring(0, 200) + '\u2026';
+  regeste = _truncateSentence(regeste, 200);
   var courtName = r.court ? getCourtName(r.court, lang) : (r.court_name || '');
   var date = r.decision_date || r.date || '';
+  var docket = r.citation_string_de || r.docket_number || r.decision_id;
 
-  return '<div class="result-card">' +
+  return '<div class="result-card" data-action="detail" data-idx="' + idx + '" tabindex="0" role="button">' +
     '<div class="result-header"><div>' +
-    '<div class="result-docket">' + escHtml(r.docket_number || r.decision_id) + '</div>' +
+    '<div class="result-docket">' + escHtml(docket) + '</div>' +
     '<div class="result-meta">' + escHtml(date) + ' \u00B7 ' + escHtml(courtName) + '</div>' +
     '</div><div>' + badges + '</div></div>' +
-    '<div class="result-regeste">' + escHtml(regeste) + '</div>' +
+    (regeste ? '<div class="result-regeste">' + escHtml(regeste) + '</div>' : '') +
     '<div class="result-actions">' +
-    '<button class="btn btn-insert" data-action="insert" data-idx="' + idx + '">' + escHtml(t('btn_insert', lang)) + '</button>' +
-    '<button class="btn btn-detail" data-action="detail" data-idx="' + idx + '">' + escHtml(t('btn_fulltext', lang)) + '</button>' +
+    '<button class="btn btn-insert btn-insert-card" data-action="insert" data-idx="' + idx + '" title="' + escHtml(t('btn_insert', lang)) + '">' +
+    ICONS.insert + ' ' + escHtml(t('btn_insert', lang)) + '</button>' +
     '</div></div>';
+}
+
+// Truncate at the last sentence boundary within `max` chars; fall back to
+// last word boundary; only resort to mid-word cut if no whitespace at all.
+function _truncateSentence(s, max) {
+  s = String(s || '').replace(/\s+/g, ' ').trim();
+  if (s.length <= max) return s;
+  var window = s.substring(0, max);
+  var lastSentence = Math.max(window.lastIndexOf('. '), window.lastIndexOf('? '), window.lastIndexOf('! '));
+  if (lastSentence > max * 0.5) return s.substring(0, lastSentence + 1).trim();
+  var lastSpace = window.lastIndexOf(' ');
+  if (lastSpace > max * 0.6) return s.substring(0, lastSpace).trim() + '\u2026';
+  return window + '\u2026';
 }
 
 /**
@@ -383,12 +459,16 @@ function renderDetail() {
 
   var html = '<a class="back-link" data-action="back">\u2190 ' + escHtml(t('back', lang)) + '</a>';
 
-  // Sticky insert bar
+  // Sticky insert bar — primary "Insert" + secondary "Insert with link"
   var citationText = formatCitation(d, lang);
   html += '<div class="sticky-insert">' +
     '<span class="sticky-citation">' + escHtml(citationText) + '</span>' +
-    '<button class="btn btn-insert" data-action="insert-main">' + escHtml(t('btn_insert', lang)) + '</button>' +
-    '</div>';
+    '<div class="sticky-insert-actions">' +
+    '<button class="btn btn-insert" data-action="insert-main" title="' + escHtml(t('btn_insert', lang)) + '">' +
+    ICONS.insert + escHtml(t('btn_insert', lang)) + '</button>' +
+    '<button class="btn btn-insert btn-icon-only" data-action="insert-main-link" title="' + escHtml(t('btn_insert_link', lang)) + '" aria-label="' + escHtml(t('btn_insert_link', lang)) + '">' +
+    ICONS.link + '</button>' +
+    '</div></div>';
 
   html += '<h2 class="detail-title">' + escHtml(d.docket_number || d.decision_id) + '</h2>';
   if (d.title) html += '<div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">' + escHtml(d.title) + '</div>';
@@ -752,14 +832,18 @@ function renderSettings() {
       '<button class="btn btn-detail" data-action="remove-pro" style="color:var(--red);">' + escHtml(t('btn_remove_license', lang)) + '</button>' +
       '</div>';
   } else {
-    // Upgrade CTA
-    html += '<div class="section-label">' + escHtml(t('pro_section_title', lang)) + '</div>' +
-      '<div class="pro-features">' +
-      '<div class="pro-feature">\u2014 ' + escHtml(t('pro_feature_related', lang)) + '</div>' +
-      '<div class="pro-feature">\u2014 ' + escHtml(t('pro_feature_verify_new', lang)) + '</div>' +
-      '<div class="pro-feature">\u2014 ' + escHtml(t('pro_feature_support', lang)) + '</div>' +
-      '<div class="pro-feature">\u2014 ' + escHtml(t('pro_feature_limit', lang)) + '</div>' +
+    // Upgrade CTA — hero pitch on top, features as support, pricing on the button.
+    html += '<div class="pro-hero">' +
+      '<div class="pro-hero-icon">' + ICONS.shieldCheck + '</div>' +
+      '<div class="pro-hero-title">' + escHtml(t('pro_hero_title', lang)) + '</div>' +
+      '<div class="pro-hero-sub">' + escHtml(t('pro_hero_sub', lang)) + '</div>' +
       '</div>' +
+      '<ul class="pro-features">' +
+      '<li class="pro-feature"><span class="pro-feature-check">' + ICONS.check + '</span>' + escHtml(t('pro_feature_verify_new', lang)) + '</li>' +
+      '<li class="pro-feature"><span class="pro-feature-check">' + ICONS.check + '</span>' + escHtml(t('pro_feature_support', lang)) + '</li>' +
+      '<li class="pro-feature"><span class="pro-feature-check">' + ICONS.check + '</span>' + escHtml(t('pro_feature_related', lang)) + '</li>' +
+      '<li class="pro-feature"><span class="pro-feature-check">' + ICONS.check + '</span>' + escHtml(t('pro_feature_limit', lang)) + '</li>' +
+      '</ul>' +
       '<div class="pro-consent">' +
       '<label class="pro-consent-label"><input type="checkbox" id="pro-consent-check" class="pro-consent-check"> ' +
       escHtml(t('pro_consent_text', lang)) + ' ' +
@@ -767,13 +851,15 @@ function renderSettings() {
       escHtml(t('pro_consent_and', lang)) + ' ' +
       '<a href="https://word.opencaselaw.ch/privacy.html" target="_blank">' + escHtml(t('consent_privacy', lang)) + '</a>.' +
       '</label></div>' +
-      '<button class="btn btn-pro" data-action="upgrade-pro" id="btn-upgrade-pro" disabled>' + escHtml(t('btn_upgrade', lang)) + '</button>' +
+      '<button class="btn btn-pro" data-action="upgrade-pro" id="btn-upgrade-pro" disabled>' +
+      escHtml(t('btn_upgrade_price', lang)) + '</button>' +
+      '<div class="pro-cancel-note">' + escHtml(t('pro_cancel_note', lang)) + '</div>' +
       '<div class="pro-divider"><span>' + escHtml(t('pro_or_key', lang)) + '</span></div>' +
       '<div class="settings-field"><label class="settings-label">' + escHtml(t('pro_license_key', lang)) + '</label>' +
       '<input type="text" class="settings-input" id="pro-key-input" value="" placeholder="ocl_pro_...">' +
       '</div>' +
       '<div class="settings-actions">' +
-      '<button class="btn btn-insert" data-action="activate-pro">' + escHtml(t('btn_activate', lang)) + '</button>' +
+      '<button class="btn btn-detail" data-action="activate-pro">' + escHtml(t('btn_activate', lang)) + '</button>' +
       '</div>';
   }
   html += '</div>';
@@ -852,9 +938,22 @@ function bindEvents() {
         if (e.shiftKey) {
           doQuickInsert(searchInput.value);
         } else {
+          // Cancel any pending live-search and run immediately.
+          if (_liveSearchTimer) clearTimeout(_liveSearchTimer);
           doSearch(searchInput.value);
         }
       }
+    });
+    // Debounced live search — 350ms after the last keystroke. Skips empty,
+    // skips reference patterns (those need Enter to confirm intent and
+    // jump to detail). Min 3 chars to avoid scanning the whole corpus.
+    searchInput.addEventListener('input', function (e) {
+      var value = e.target.value;
+      if (_liveSearchTimer) clearTimeout(_liveSearchTimer);
+      var trimmed = (value || '').trim();
+      if (trimmed.length < 3) return;
+      if (_isReferencePattern(trimmed)) return;
+      _liveSearchTimer = setTimeout(function () { doSearch(value); }, 350);
     });
     searchInput.focus();
   }
@@ -892,10 +991,13 @@ async function handleAppClick(e) {
       case 'insert':       await insertCitation(state.results[idx]); break;
       case 'detail':       await showDetail(state.results[idx]); break;
       case 'insert-main':  await insertCitation(state.detail); break;
+      case 'insert-main-link': await insertCitation(state.detail, null, { asLink: true }); break;
       case 'insert-ew':    await insertCitation(state.detail, btn.dataset.ew); break;
-      case 'back':
-        if (state.view === 'detail' && state.previousView) {
-          // Return to the view that opened the detail
+      case 'back': {
+        // Sub-views (detail/verify/support/related/guide) return to the tab
+        // they were launched from. Falls back to the search tab.
+        var subViews = { detail: 1, verify: 1, support: 1, related: 1, guide: 1 };
+        if (subViews[state.view] && state.previousView) {
           state.view = state.previousView;
           state.detail = null;
           state.caseBrief = null;
@@ -909,12 +1011,11 @@ async function handleAppClick(e) {
           state.supportText = '';
           state.relatedResult = null;
           state.relatedRef = '';
-          state.scanResults = null;
-          state.scanDocText = '';
           state.error = null;
         }
         render();
         break;
+      }
       case 'retry':
         state.error = null;
         if (state.view === 'search') doSearch(state.query);
@@ -923,7 +1024,75 @@ async function handleAppClick(e) {
       case 'find-related':  await findRelated(); break;
       case 'find-support': await findSupport(); break;
       case 'scan-doc':     await scanDocument(); break;
-      case 'verify-all':   await verifyAllScanned(); break;
+      case 'switch-tab': {
+        var tab = btn.dataset.tab;
+        // Switching tabs always returns to the tab's primary view.
+        if (tab === 'search') {
+          state.view = 'search';
+        } else if (tab === 'audit') {
+          state.view = 'scan';
+        }
+        state.detail = null;
+        state.caseBrief = null;
+        state.error = null;
+        render();
+        break;
+      }
+      case 'open-settings':
+        state.view = 'settings';
+        render();
+        break;
+      case 'audit-reset':
+        state.scanResults = null;
+        state.scanDocText = '';
+        state.error = null;
+        render();
+        break;
+      case 'audit-comment-all': await commentAllAuditIssues(); break;
+      case 'audit-insert-bibliography': await insertBibliographyAtCursor(); break;
+      case 'dismiss-hint':
+        try { localStorage.setItem('ocl_hint_seen', '1'); } catch (_e) {}
+        render();
+        break;
+      case 'audit-jump': {
+        var jIss = state.scanResults && state.scanResults.issues && state.scanResults.issues[idx];
+        if (jIss) {
+          var jOk = await selectInDocument(jIss.citation, jIss._nth || 0);
+          if (jOk && btn) {
+            var jOrig = btn.textContent; btn.textContent = '\u2713';
+            setTimeout(function () { btn.textContent = jOrig; }, 800);
+          }
+        }
+        break;
+      }
+      case 'audit-comment': {
+        var cIss = state.scanResults && state.scanResults.issues && state.scanResults.issues[idx];
+        if (cIss) {
+          var cText = _formatIssueComment(cIss, state.lang);
+          var cOk = await commentOnSubstring(cIss.citation, cText, cIss._nth || 0);
+          if (btn) {
+            btn.textContent = cOk ? '\u2713' : '\u2717';
+            setTimeout(function () { render(); }, 1000);
+          }
+        }
+        break;
+      }
+      case 'audit-fix-pinpoint': {
+        var fIss = state.scanResults && state.scanResults.issues && state.scanResults.issues[idx];
+        var newPp = btn.dataset.pp;
+        if (fIss && newPp) {
+          // Strip old E./consid. suffix and re-attach the suggested one in document language.
+          var stripped = fIss.citation.replace(/\s*(?:E\.|consid\.|para\.|cons\.)\s*[\d.]+\s*$/i, '').trim();
+          var ewLabel = (state.lang === 'fr' || state.lang === 'it') ? 'consid.' : 'E.';
+          var fixed = stripped + ' ' + ewLabel + ' ' + newPp;
+          var fOk = await replaceInDocument(fIss.citation, fixed, fIss._nth || 0);
+          if (btn) {
+            btn.textContent = fOk ? '\u2713' : '\u2717';
+            setTimeout(function () { render(); }, 1000);
+          }
+        }
+        break;
+      }
       case 'insert-support':
         if (state.supportResult && state.supportResult.results) {
           await insertCitation(state.supportResult.results[idx]);
@@ -938,6 +1107,16 @@ async function handleAppClick(e) {
         await insertTextAtCursor(btn.dataset.ref || '');
         if (btn) { var _o = btn.textContent; btn.textContent = '\u2713'; setTimeout(function () { btn.textContent = _o; }, 600); }
         break;
+      case 'insert-law-verbatim': {
+        var lvText = btn.dataset.text || '';
+        var lvRef = btn.dataset.ref || '';
+        if (lvText && lvRef) {
+          // German guillemets for quote; legal style is «...» (Art. X Abs. N AB)
+          await insertTextAtCursor('\u00AB' + lvText + '\u00BB (' + lvRef + ')');
+          if (btn) { btn.classList.add('btn-success'); setTimeout(function () { btn.classList.remove('btn-success'); }, 900); }
+        }
+        break;
+      }
       case 'insert-law-ref':
         if (state.lawResult && state.lawResult.articles && state.lawResult.articles.length > 0) {
           var la = state.lawResult.articles[0];
@@ -1093,8 +1272,16 @@ async function doSearch(query) {
     }
   }
 
-  // 3. Not a recognized reference — point to opencaselaw.ch for full search
-  state.error = { type: 'use_search', message: t('lookup_use_search', state.lang) };
+  // 3. Keyword search — full-text search across the corpus, all languages.
+  // Result objects already include citation_string_{de,fr,it} + canonical_url.
+  try {
+    var data = await searchDecisions(query, { limit: 20 });
+    state.results = (data && data.results) || [];
+    state.total = (data && data.total) || 0;
+    if (state.results.length > 0) addRecentLookup(query);
+  } catch (e) {
+    state.error = e && e.type ? e : { type: 'http_error' };
+  }
   state.loading = false;
   render();
 }
@@ -1139,20 +1326,32 @@ async function showDetail(decision) {
 }
 
 var _lastClickedBtn = null;
-async function insertCitation(decision, erwaegung) {
+async function insertCitation(decision, erwaegung, opts) {
   if (!decision) return;
+  opts = opts || {};
   var text = formatCitation(decision, state.lang, erwaegung);
   var btn = _lastClickedBtn;
+
+  // Default insert mode persists per-user; flip with the link button.
+  var asLink = opts.asLink !== undefined ? opts.asLink : (localStorage.getItem('ocl_insert_as_link') === '1');
+  var url = decision.canonical_url || (decision.decision_id ? 'https://mcp.opencaselaw.ch/entscheid/' + encodeURIComponent(decision.decision_id) : null);
+
   try {
-    await insertTextAtCursor(text);
-    // Visual feedback: checkmark
+    if (asLink && url) {
+      await insertHyperlinkAtCursor(text, url);
+    } else {
+      await insertTextAtCursor(text);
+    }
     if (btn) {
-      var orig = btn.textContent;
-      btn.textContent = '\u2713';
-      setTimeout(function () { btn.textContent = orig; }, 800);
+      var orig = btn.innerHTML;
+      btn.innerHTML = ICONS.check;
+      btn.classList.add('btn-success');
+      setTimeout(function () {
+        btn.innerHTML = orig;
+        btn.classList.remove('btn-success');
+      }, 900);
     }
   } catch (e) {
-    // Show error on button so user sees something
     if (btn) {
       btn.textContent = '\u2717';
       btn.style.background = 'var(--red)';
@@ -1171,6 +1370,7 @@ async function startVerify() {
     render();
     return;
   }
+  state.previousView = state.view;
   try {
     var selected = await getSelectedText();
     if (!selected || selected.trim().length < 10) {
@@ -1205,6 +1405,7 @@ async function findSupport() {
   var lang = state.lang;
   var proKey = localStorage.getItem('ocl_pro_key');
   if (!proKey) { state.view = 'settings'; render(); return; }
+  state.previousView = state.view;
   try {
     var selected = await getSelectedText();
     if (!selected || selected.trim().length < 15) {
@@ -1259,18 +1460,17 @@ async function findRelated() {
   var lang = state.lang;
   var proKey = localStorage.getItem('ocl_pro_key');
   if (!proKey) { state.view = 'settings'; render(); return; }
+  state.previousView = state.view;
   try {
     var selected = await getSelectedText();
     if (!selected || selected.trim().length < 3) {
       state.error = { type: 'no_selection', message: t('no_selection_related', lang) };
-      state.view = 'search';
       render();
       return;
     }
     var refs = extractCitations(selected);
     if (refs.length === 0) {
       state.error = { type: 'no_citation', message: t('no_selection_related', lang) };
-      state.view = 'search';
       render();
       return;
     }
@@ -1374,24 +1574,17 @@ function addRecentLookup(query) {
   try { localStorage.setItem('ocl_recent', JSON.stringify(state.recentLookups)); } catch (e) {}
 }
 
-// Scan Document (Pro feature)
+// Audit Document (Pro feature) — single /api/attest call validates every
+// citation in the document for existence + pinpoint correctness, returning
+// structured issues with positions for in-document jump + comment.
 async function scanDocument() {
   var lang = state.lang;
   var proKey = localStorage.getItem('ocl_pro_key');
   if (!proKey) { state.view = 'settings'; render(); return; }
 
-  // Get entire document text
-  var docText = '';
-  if (_wordAvailable()) {
-    docText = await Word.run(async function (context) {
-      var body = context.document.body;
-      body.load('text');
-      await context.sync();
-      return body.text;
-    });
-  }
+  var docText = await getDocumentText();
   if (!docText) {
-    state.error = { type: 'no_selection', message: t('scan_no_doc', lang) };
+    state.error = { type: 'no_selection', message: t('audit_no_word', lang) };
     state.view = 'scan';
     render();
     return;
@@ -1401,170 +1594,271 @@ async function scanDocument() {
   state.loading = true;
   state.scanResults = null;
   state.scanDocText = docText;
+  state.error = null;
   render();
 
-  // Extract all citations from document text
-  var allRefs = extractCitations(docText);
-  // Also find BGE references with different pattern
-  var bgeRefs = docText.match(/(BGE|ATF|DTF)\s+\d+\s+[IVX]+\s+\d+/g) || [];
-  var docketRefs = docText.match(/\d[A-Z]_\d+\/\d{4}/g) || [];
-
-  // Deduplicate
-  var seen = {};
-  var refs = [];
-  var allFound = allRefs.concat(bgeRefs).concat(docketRefs);
-  for (var i = 0; i < allFound.length; i++) {
-    var r = allFound[i].trim();
-    if (!seen[r]) { seen[r] = true; refs.push(r); }
-  }
-
-  // Look up each citation — verify actual content exists
-  function docketMatch(decision, ref) {
-    if (!decision) return false;
-    var dn = (decision.docket_number || '').trim();
-    var r = ref.trim();
-    return dn === r || dn.replace(/\s+/g, ' ') === r.replace(/\s+/g, ' ');
-  }
-  var results = await Promise.all(refs.map(function (ref) {
-    return getDecision(ref).then(function (d) {
-      if (!d || !docketMatch(d, ref)) return { ref: ref, found: false, hasText: false, decision: null };
-      var hasText = d.regeste || d.full_text || d.title;
-      return { ref: ref, found: true, hasText: !!hasText, decision: d };
-    }).catch(function () {
-      return searchDecisions(ref, { limit: 1 }).then(function (data) {
-        if (data.results && data.results.length > 0 && docketMatch(data.results[0], ref)) {
-          var d = data.results[0];
-          var hasText = d.regeste || d.full_text || d.title;
-          return { ref: ref, found: true, hasText: !!hasText, decision: d };
-        }
-        return { ref: ref, found: false, hasText: false, decision: null };
-      }).catch(function () {
-        return { ref: ref, found: false, hasText: false, decision: null };
-      });
+  try {
+    var report = await attestDocument(docText, lang);
+    // Compute occurrence index per citation string so search-anchor lands
+    // on the right hit when the same citation appears multiple times.
+    var seen = {};
+    var issues = (report.issues || []).map(function (issue) {
+      var cite = issue.citation || '';
+      var n = seen[cite] || 0; seen[cite] = n + 1;
+      return Object.assign({}, issue, { _nth: n });
     });
-  }));
-
-  state.scanResults = results;
+    state.scanResults = {
+      ok: !!report.ok,
+      total: report.citations_found || 0,
+      passed: report.citations_ok || 0,
+      issues: issues,
+      annotated: report.annotated_text || '',
+    };
+  } catch (e) {
+    if (e && e.type === 'invalid_license') {
+      try { localStorage.removeItem('ocl_pro_key'); } catch (_e) {}
+      state.error = { type: 'no_selection', message: t('pro_key_invalid', lang) };
+    } else {
+      state.error = e;
+    }
+  }
   state.loading = false;
   render();
 }
 
-// Scan View
-async function verifyAllScanned() {
-  var proKey = localStorage.getItem('ocl_pro_key');
-  if (!proKey || !state.scanResults) return;
+// Insert a Word comment for every issue, anchored on the original citation text.
+async function commentAllAuditIssues() {
   var lang = state.lang;
-  var docText = state.scanDocText || '';
-
-  for (var i = 0; i < state.scanResults.length; i++) {
-    var r = state.scanResults[i];
-    if (!r.found || !r.hasText || r.verdict) continue;
-
-    // Extract context: find the sentence(s) around this reference in the document
-    var refIdx = docText.indexOf(r.ref);
-    var context = '';
-    if (refIdx >= 0) {
-      var start = Math.max(0, refIdx - 200);
-      var end = Math.min(docText.length, refIdx + r.ref.length + 200);
-      context = docText.substring(start, end);
-    } else {
-      context = r.ref;
-    }
-
-    // Mark as verifying and re-render
-    r.verifying = true;
-    render();
-
-    try {
-      var result = await verifyReferencePro(proKey, context, r.ref, lang);
-      r.verdict = result.verdict || 'unknown';
-      r.explanation = result.explanation || '';
-    } catch (e) {
-      if (e.type === 'rate_limit' || (e.status && e.status === 429)) {
-        r.verifying = false;
-        r.verdict = 'limit';
-        r.explanation = t('scan_limit_reached', lang);
-        render();
-        break;
-      }
-      r.verdict = 'error';
-      r.explanation = '';
-    }
-    r.verifying = false;
-    render();
+  if (!state.scanResults || !state.scanResults.issues) return;
+  var inserted = 0;
+  for (var i = 0; i < state.scanResults.issues.length; i++) {
+    var iss = state.scanResults.issues[i];
+    var commentText = _formatIssueComment(iss, lang);
+    var ok = await commentOnSubstring(iss.citation, commentText, iss._nth || 0);
+    if (ok) inserted += 1;
+  }
+  if (_lastClickedBtn) {
+    _lastClickedBtn.textContent = '\u2713 ' + inserted;
+    setTimeout(function () { render(); }, 1200);
   }
 }
 
+// Build a deduped, alphabetically-sorted bibliography of validated citations
+// from the current audit report and insert it at the cursor as a heading + list.
+async function insertBibliographyAtCursor() {
+  var lang = state.lang;
+  if (!state.scanResults || !state.scanResults.annotated) return;
+  var cites = _extractPassedCitations(state.scanResults.annotated);
+  if (cites.length === 0) return;
+  // Sort: BGE-style refs first (by volume), then docket-style alphabetical.
+  cites.sort(function (a, b) { return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }); });
+  var heading = t('bibliography_heading', lang);
+  var body = '\n' + heading + '\n';
+  for (var i = 0; i < cites.length; i++) body += '\u2014 ' + cites[i] + '\n';
+  await insertTextAtCursor(body);
+  if (_lastClickedBtn) {
+    var orig = _lastClickedBtn.innerHTML;
+    _lastClickedBtn.innerHTML = ICONS.check + ' ' + cites.length;
+    _lastClickedBtn.classList.add('btn-success');
+    setTimeout(function () {
+      if (_lastClickedBtn) {
+        _lastClickedBtn.innerHTML = orig;
+        _lastClickedBtn.classList.remove('btn-success');
+      }
+    }, 1200);
+  }
+}
+
+function _formatIssueComment(issue, lang) {
+  var label;
+  if (issue.problem === 'decision_not_in_corpus') label = t('audit_issue_not_found', lang);
+  else if (issue.problem === 'pinpoint_not_in_decision') label = t('audit_issue_pinpoint', lang);
+  else label = t('audit_issue_unknown', lang);
+  var msg = '\u26a0 ' + label;
+  if (issue.suggestion) msg += ' \u2014 ' + issue.suggestion;
+  if (issue.valid_pinpoints && issue.valid_pinpoints.length) {
+    msg += ' (' + t('audit_valid_pinpoints', lang) + ' ' + issue.valid_pinpoints.slice(0, 8).join(', ') + ')';
+  }
+  return msg;
+}
+
+// Audit View — render the structured /api/attest report.
 function renderScan() {
   var lang = state.lang;
-  var html = '<a class="back-link" data-action="back">\u2190 ' + escHtml(t('back', lang)) + '</a>';
-  html += '<h3 class="verify-heading">' + escHtml(t('tool_scan', lang)) + '</h3>';
+  var hasPro = !!localStorage.getItem('ocl_pro_key');
+  var html = '';
 
+  // Loading: just the spinner.
   if (state.loading) {
-    html += '<div class="verify-loading"><div class="spinner"></div><span>' + escHtml(t('scan_scanning', lang)) + '</span></div>';
-  } else if (state.scanResults) {
-    var results = state.scanResults;
-    var found = results.filter(function (r) { return r.found; }).length;
-    var notFound = results.length - found;
+    html += '<div class="verify-loading"><div class="spinner"></div><span>' + escHtml(t('audit_running', lang)) + '</span></div>';
+    return html;
+  }
 
-    var verifiable = results.filter(function (r) { return r.found && r.hasText; }).length;
-    var verified = results.filter(function (r) { return r.verdict; }).length;
-
-    html += '<div class="scan-summary">' +
-      escHtml(t('scan_found', lang, { n: results.length })) +
-      (notFound > 0 ? ' \u00B7 <span style="color:var(--red);">' + notFound + ' ' + escHtml(t('scan_not_found', lang)) + '</span>' : '') +
+  // Entry state — no audit has been run yet on this view.
+  if (!state.scanResults) {
+    // Inline error (e.g., no text selected for verify/support/related)
+    if (state.error) {
+      html += '<div class="audit-inline-error">' + escHtml(state.error.message || t('error_connection', lang)) + '</div>';
+    }
+    html += '<div class="audit-intro">' +
+      '<div class="audit-intro-icon">' + ICONS.shieldCheck + '</div>' +
+      '<div class="audit-intro-title">' + escHtml(t('audit_intro_title', lang)) + '</div>' +
+      '<div class="audit-intro-desc">' + escHtml(t('audit_intro_desc', lang)) + '</div>' +
+      '<div class="audit-intro-preview">' +
+      '<div class="audit-intro-preview-row"><span class="audit-pp-icon ok">' + ICONS.check + '</span> BGE 140 III 86 E. 2.3</div>' +
+      '<div class="audit-intro-preview-row warn"><span class="audit-pp-icon warn">!</span> BGE 140 III 86 E. 3.2 — ' + escHtml(t('audit_intro_preview_pinpoint', lang)) + '</div>' +
+      '</div>' +
+      (hasPro
+        ? '<button class="btn btn-pro-primary btn-full" data-action="scan-doc">' + escHtml(t('audit_start_button', lang)) + '</button>'
+        : '<button class="btn btn-pro-primary btn-full" data-action="open-settings">' + escHtml(t('audit_unlock_button', lang)) + ' \u2014 CHF\u00A09/Mt.</button>' +
+          '<div class="audit-pro-note">' + escHtml(t('audit_pro_required', lang)) + '</div>'
+      ) +
       '</div>';
 
-    if (verifiable > 0 && verified < verifiable) {
-      html += '<button class="btn btn-full" data-action="verify-all" style="margin-top:0;margin-bottom:12px;">' +
-        escHtml(t('scan_verify_all', lang, { n: verifiable })) + '</button>';
-    }
+    // Secondary tools — verify selection, find support, find related.
+    html += '<div class="audit-secondary">' +
+      '<div class="audit-secondary-title">' + escHtml(t('audit_secondary_title', lang)) + '</div>' +
+      '<button class="btn btn-detail audit-secondary-btn" data-action="verify-ref">' +
+      '<span class="audit-secondary-label">' + escHtml(t('btn_verify_pro', lang)) + '</span>' +
+      (hasPro ? '' : proLockSvg()) + '</button>' +
+      '<button class="btn btn-detail audit-secondary-btn" data-action="find-support">' +
+      '<span class="audit-secondary-label">' + escHtml(t('tool_support', lang)) + '</span>' +
+      (hasPro ? '' : proLockSvg()) + '</button>' +
+      '<button class="btn btn-detail audit-secondary-btn" data-action="find-related">' +
+      '<span class="audit-secondary-label">' + escHtml(t('btn_find_related', lang)) + '</span>' +
+      (hasPro ? '' : proLockSvg()) + '</button>' +
+      '</div>';
 
-    // Store decisions in state.results so detail handler works
-    state.results = results.map(function (r) { return r.decision; }).filter(Boolean);
-
-    for (var i = 0; i < results.length; i++) {
-      var r = results[i];
-      var statusClass = r.found ? (r.hasText ? 'scan-ok' : 'scan-stub') : 'scan-missing';
-      var statusIcon = r.found ? (r.hasText ? '\u2713' : '\u2014') : '\u2717';
-
-      // Show verdict if verified
-      if (r.verdict) {
-        var vColors = { supports: 'var(--green)', partial: 'var(--yellow)', contradicts: 'var(--red)' };
-        var vIcons = { supports: '\u2713', partial: '\u26A0', contradicts: '\u2717' };
-        statusIcon = vIcons[r.verdict] || statusIcon;
-        statusClass = 'scan-verified';
-      }
-
-      // Find index in state.results for detail navigation
-      var resultIdx = r.decision ? state.results.indexOf(r.decision) : -1;
-
-      html += '<div class="scan-item ' + statusClass + '">' +
-        '<span class="scan-icon"' + (r.verdict ? ' style="color:' + (vColors[r.verdict] || '') + '"' : '') + '>' + statusIcon + '</span>' +
-        '<div class="scan-ref">';
-      if (r.found && resultIdx >= 0) {
-        html += '<div class="scan-ref-name"><a class="scan-link" data-action="detail" data-idx="' + resultIdx + '">' + escHtml(r.ref) + '</a></div>';
-      } else {
-        html += '<div class="scan-ref-name">' + escHtml(r.ref) + '</div>';
-      }
-      if (r.found && r.decision) {
-        var courtName = r.decision.court ? getCourtName(r.decision.court, lang) : '';
-        var date = r.decision.decision_date || r.decision.date || '';
-        html += '<div class="scan-ref-meta">' + escHtml(date) + (courtName ? ' \u00B7 ' + escHtml(courtName) : '') + '</div>';
-      }
-      if (r.verdict && r.explanation) {
-        html += '<div class="scan-verdict-text">' + escHtml(r.explanation) + '</div>';
-      }
-      if (r.verifying) {
-        html += '<div class="scan-ref-meta"><span class="spinner" style="width:12px;height:12px;border-width:1.5px;display:inline-block;vertical-align:middle;margin-right:4px;"></span>' + escHtml(t('verify_checking', lang)) + '</div>';
-      }
-      html += '</div></div>';
-    }
-
-    html += '<div class="verdict-footer">' + escHtml(t('verify_footer_pro', lang)) + '</div>';
-  } else if (state.error) {
-    html += renderError();
+    return html;
   }
+
+  // Results header — show "audit again" affordance + the action to clear.
+  html += '<div class="audit-result-header">' +
+    '<button class="back-link" data-action="audit-reset">\u2190 ' + escHtml(t('back', lang)) + '</button>' +
+    '<button class="btn btn-detail audit-rerun" data-action="scan-doc">\u21BB ' + escHtml(t('audit_start_button', lang)) + '</button>' +
+    '</div>';
+
+  var report = state.scanResults;
+  var total = report.total || 0;
+  var passed = report.passed || 0;
+  var bad = (report.issues && report.issues.length) || 0;
+
+  if (total === 0) {
+    html += '<div class="state-message">' + escHtml(t('audit_summary_none', lang)) + '</div>';
+    return html;
+  }
+
+  // Summary banner
+  var summaryClass = bad === 0 ? 'audit-summary-ok' : 'audit-summary-mixed';
+  var summaryText = bad === 0
+    ? t('audit_summary_ok', lang, { n: total })
+    : t('audit_summary_mixed', lang, { n: total, ok: passed, bad: bad });
+  html += '<div class="audit-summary ' + summaryClass + '">' +
+    '<span class="audit-summary-icon">' + (bad === 0 ? '\u2713' : '\u26a0') + '</span>' +
+    '<span class="audit-summary-text">' + escHtml(summaryText) + '</span>' +
+    '</div>';
+
+  // Bulk actions: comment-all (issues) + insert-bibliography (passed)
+  var bulkActions = '';
+  if (bad > 0 && supportsComments()) {
+    bulkActions += '<button class="btn btn-detail" data-action="audit-comment-all">' +
+      escHtml(t('audit_comment_all', lang)) + '</button>';
+  }
+  if (passed > 0) {
+    bulkActions += '<button class="btn btn-detail" data-action="audit-insert-bibliography">' +
+      escHtml(t('audit_insert_bibliography', lang)) + '</button>';
+  }
+  if (bulkActions) {
+    html += '<div class="audit-bulk-actions">' + bulkActions + '</div>';
+  }
+
+  // Issues list — each card shows what's wrong + suggested fix + jump-to + comment
+  for (var i = 0; i < (report.issues || []).length; i++) {
+    var iss = report.issues[i];
+    html += renderAuditIssueCard(iss, i, lang);
+  }
+
+  // Passed citations — collapsible reveal so users see exactly what was validated.
+  if (passed > 0) {
+    var passedCites = _extractPassedCitations(report.annotated || '');
+    html += '<details class="audit-passed">' +
+      '<summary class="audit-passed-summary">' +
+      '<span class="audit-pp-icon ok">' + ICONS.check + '</span>' +
+      '<span>' + escHtml(t('audit_passed_label', lang, { n: passed })) + '</span>' +
+      ICONS.chevron +
+      '</summary>' +
+      '<ul class="audit-passed-list">';
+    for (var p = 0; p < passedCites.length; p++) {
+      html += '<li>' + escHtml(passedCites[p]) + '</li>';
+    }
+    html += '</ul></details>';
+  }
+
+  return html;
+}
+
+// Walk the server-annotated text, pulling out citations marked with ✓.
+// The /api/attest contract appends ✓ to each validated citation in
+// document order; we capture the preceding token group as the citation.
+function _extractPassedCitations(annotated) {
+  if (!annotated) return [];
+  var re = /([A-Z][A-Za-zÀ-ÿ.\-_/\d\s]{2,80}?)\s\u2713/g;
+  var seen = {};
+  var out = [];
+  var match;
+  while ((match = re.exec(annotated)) !== null) {
+    var c = match[1].trim().replace(/\s+/g, ' ');
+    if (!c || seen[c]) continue;
+    seen[c] = true;
+    out.push(c);
+  }
+  return out;
+}
+
+function renderAuditIssueCard(iss, idx, lang) {
+  var problemLabel;
+  var problemClass;
+  if (iss.problem === 'decision_not_in_corpus') {
+    problemLabel = t('audit_issue_not_found', lang);
+    problemClass = 'audit-issue-missing';
+  } else if (iss.problem === 'pinpoint_not_in_decision') {
+    problemLabel = t('audit_issue_pinpoint', lang);
+    problemClass = 'audit-issue-pinpoint';
+  } else {
+    problemLabel = t('audit_issue_unknown', lang);
+    problemClass = 'audit-issue-other';
+  }
+
+  var html = '<div class="audit-issue ' + problemClass + '">' +
+    '<div class="audit-issue-header">' +
+    '<span class="audit-issue-icon">\u26a0</span>' +
+    '<span class="audit-issue-citation">' + escHtml(iss.citation || '') + '</span>' +
+    '</div>' +
+    '<div class="audit-issue-label">' + escHtml(problemLabel) + '</div>';
+
+  if (iss.suggestion) {
+    html += '<div class="audit-issue-suggestion">' + escHtml(iss.suggestion) + '</div>';
+  }
+
+  if (iss.valid_pinpoints && iss.valid_pinpoints.length) {
+    html += '<div class="audit-issue-pinpoints">' +
+      '<span class="audit-pinpoints-label">' + escHtml(t('audit_valid_pinpoints', lang)) + '</span> ';
+    for (var k = 0; k < Math.min(iss.valid_pinpoints.length, 8); k++) {
+      var pp = iss.valid_pinpoints[k];
+      html += '<button class="pill audit-pinpoint-pill" data-action="audit-fix-pinpoint" ' +
+        'data-idx="' + idx + '" data-pp="' + escHtml(pp) + '">E. ' + escHtml(pp) + '</button>';
+    }
+    html += '</div>';
+  }
+
+  html += '<div class="audit-issue-actions">';
+  html += '<button class="btn btn-detail" data-action="audit-jump" data-idx="' + idx + '">' +
+    escHtml(t('audit_jump_to', lang)) + '</button>';
+  if (supportsComments()) {
+    html += '<button class="btn btn-detail" data-action="audit-comment" data-idx="' + idx + '">' +
+      escHtml(t('audit_insert_comment', lang)) + '</button>';
+  }
+  html += '</div></div>';
   return html;
 }
 

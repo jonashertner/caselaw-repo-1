@@ -2,74 +2,121 @@
    OpenCaseLaw Word Add-in — Polished theme matching Word's UI
    ============================================================ */
 
-/* --- Custom Properties --- */
+/* --- Design tokens ----------------------------------------------------- */
+/* Type scale: only 4 sizes. Use them; don't invent new ones.              */
+/* Spacing scale: 4 / 8 / 12 / 16 / 24 (px). Five steps cover everything.  */
+/* Accent (brand red) is reserved for: logo + ONE primary CTA per view +   */
+/* critical-error markers. Don't sprinkle.                                 */
+
 :root {
-  --bg: #f7f7f8;
-  --card: #fff;
+  /* surfaces */
+  --bg: #fafafa;
+  --card: #ffffff;
+  --card-hover: #fafafa;
   --border: #e4e4e7;
-  --border-hover: #d1d1d6;
-  --accent: #b91c24;
-  --green: #15803d;
-  --green-light: #f0fdf4;
-  --yellow: #ca8a04;
-  --yellow-light: #fefce8;
-  --red: #b91c1c;
-  --red-light: #fef2f2;
-  --blue: #18181b;
-  --blue-light: #f4f4f5;
+  --border-strong: #d4d4d8;
+
+  /* text */
   --text: #18181b;
-  --text-secondary: #52525b;
-  --text-muted: #a1a1aa;
-  --link: #18181b;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --text-2: #52525b;
+  --text-3: #a1a1aa;
+
+  /* brand + status */
+  --accent: #b91c24;
+  --accent-soft: #fef2f2;
+  --green: #15803d;
+  --green-soft: #f0fdf4;
+  --yellow: #b45309;
+  --yellow-soft: #fefce8;
+  --red: #b91c1c;
+  --red-soft: #fef2f2;
+
+  /* legacy aliases — kept so older selectors don't break */
+  --green-light: var(--green-soft);
+  --yellow-light: var(--yellow-soft);
+  --red-light: var(--red-soft);
+  --blue: var(--text);
+  --blue-light: #f4f4f5;
+  --link: var(--text);
+  --text-secondary: var(--text-2);
+  --text-muted: var(--text-3);
+  --border-hover: var(--border-strong);
+
+  /* type scale (4 sizes) */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --text-xl: 18px;
+  --leading: 1.55;
+
+  /* spacing scale (5 steps) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+
+  /* radius */
   --radius: 8px;
   --radius-sm: 6px;
+  --radius-pill: 999px;
+
+  /* shadow scale (3 steps) */
+  --shadow-1: 0 1px 2px rgba(24, 24, 27, 0.04);
+  --shadow-2: 0 2px 6px rgba(24, 24, 27, 0.06), 0 1px 2px rgba(24, 24, 27, 0.04);
+  --shadow-3: 0 8px 24px rgba(24, 24, 27, 0.08), 0 2px 6px rgba(24, 24, 27, 0.04);
+
+  /* legacy shadow aliases */
+  --shadow-sm: var(--shadow-1);
+  --shadow: var(--shadow-2);
+  --shadow-md: var(--shadow-3);
+
   --font: -apple-system, 'Segoe UI', system-ui, sans-serif;
-  --transition: 0.15s ease;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --transition: 160ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-slow: 280ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* --- Dark Mode (system preference) --- */
+/* --- Dark Mode --- */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #18181b;
-    --card: #27272a;
-    --border: #3f3f46;
-    --border-hover: #52525b;
+    --bg: #0f0f10;
+    --card: #1c1c1f;
+    --card-hover: #232327;
+    --border: #2e2e34;
+    --border-strong: #44444c;
     --text: #fafafa;
-    --text-secondary: #a1a1aa;
-    --text-muted: #71717a;
-    --blue: #fafafa;
-    --blue-light: #27272a;
-    --link: #fafafa;
-    --green-light: #1a2e22;
-    --red-light: #2e1a1a;
-    --yellow-light: #2e2a1a;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --text-2: #c4c4c8;
+    --text-3: #8b8b92;
+    --accent-soft: #2c1014;
+    --green-soft: #102019;
+    --yellow-soft: #221c0a;
+    --red-soft: #2c1014;
+    --blue-light: #232327;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.5);
   }
 }
 
-/* --- Dark Mode (Office explicit class) --- */
 body.ms-theme-dark {
-  --bg: #18181b;
-  --card: #27272a;
-  --border: #3f3f46;
-  --border-hover: #52525b;
+  --bg: #0f0f10;
+  --card: #1c1c1f;
+  --card-hover: #232327;
+  --border: #2e2e34;
+  --border-strong: #44444c;
   --text: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
-  --blue: #fafafa;
-  --blue-light: #27272a;
-  --link: #fafafa;
-  --green-light: #1a2e22;
-  --red-light: #2e1a1a;
-  --yellow-light: #2e2a1a;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --text-2: #c4c4c8;
+  --text-3: #8b8b92;
+  --accent-soft: #2c1014;
+  --green-soft: #102019;
+  --yellow-soft: #221c0a;
+  --red-soft: #2c1014;
+  --blue-light: #232327;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 /* --- Reset & Base --- */
@@ -349,16 +396,27 @@ html, body {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  padding: 14px 16px;
-  margin-top: 12px;
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-1);
+  padding: var(--s-3) var(--s-4);
+  margin-top: var(--s-3);
+  transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+  cursor: pointer;
 }
 
 .result-card:hover {
-  box-shadow: var(--shadow);
-  border-color: var(--border-hover);
+  box-shadow: var(--shadow-2);
+  border-color: var(--border-strong);
   transform: translateY(-1px);
+}
+
+.result-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Inner action buttons should never trigger the card-level click feel */
+.result-card .btn-insert-card {
+  cursor: pointer;
 }
 
 .result-header {
@@ -397,8 +455,27 @@ html, body {
 
 .result-actions {
   display: flex;
-  gap: 6px;
-  margin-top: 10px;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  justify-content: flex-end;
+}
+
+/* Card-action button: subtle, doesn't fight the card for attention. */
+.btn-insert-card {
+  background: transparent !important;
+  color: var(--text-2) !important;
+  border: 1px solid var(--border) !important;
+  font-weight: 500;
+  font-size: var(--text-xs);
+  padding: 5px 10px;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+.btn-insert-card:hover {
+  background: var(--text) !important;
+  color: var(--card) !important;
+  border-color: var(--text) !important;
+  box-shadow: none;
+  opacity: 1;
 }
 
 /* --- Badges --- */
@@ -630,12 +707,20 @@ html, body {
 }
 
 .sticky-citation {
-  font-size: 12px;
-  font-style: italic;
-  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  color: var(--text-2);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+}
+
+.sticky-insert-actions {
+  display: flex;
+  gap: var(--s-1);
+  flex-shrink: 0;
 }
 
 /* --- Detail View --- */
@@ -1180,6 +1265,10 @@ html, body {
   cursor: pointer;
   margin-bottom: 12px;
   transition: color var(--transition);
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
 }
 
 .back-link:hover {
@@ -1349,6 +1438,37 @@ html, body {
   line-height: 1.6;
   color: var(--text);
   padding: 3px 0;
+  position: relative;
+}
+
+/* Per-paragraph "verbatim insert" button — appears on hover, never crowds */
+.law-para-verbatim {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--card);
+  color: var(--text-3);
+  cursor: pointer;
+  margin-left: var(--s-1);
+  vertical-align: middle;
+  opacity: 0;
+  transition: opacity var(--transition), background var(--transition), color var(--transition), border-color var(--transition);
+}
+.law-para:hover .law-para-verbatim,
+.law-para-verbatim:focus-visible {
+  opacity: 1;
+}
+.law-para-verbatim:hover {
+  background: var(--text);
+  color: var(--card);
+  border-color: var(--text);
+}
+.law-para-verbatim.btn-success {
+  opacity: 1 !important;
 }
 
 .law-para-num {
@@ -1600,8 +1720,568 @@ html, body {
   line-height: 1.5;
 }
 
+/* --- Inline SVG icons (chrome-free, currentColor-tinted) --- */
+.icon {
+  display: inline-block;
+  vertical-align: -2px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+}
+.icon-lg { width: 28px; height: 28px; vertical-align: middle; }
+
+/* Pro lock — discreet, color-muted, never shouts */
+.pro-lock {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  color: var(--text-3);
+  opacity: 0.75;
+}
+
+/* Visual feedback after a successful insert action */
+.btn-success {
+  background: var(--green-soft) !important;
+  color: var(--green) !important;
+  border-color: var(--green) !important;
+}
+
+/* Icon-only buttons (next to text-bearing siblings) */
+.btn.btn-icon-only {
+  padding: 6px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Tab Bar (Suchen / Prüfen) --- */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  padding: 0 16px;
+  margin: 0 -16px 14px -16px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px 8px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab-active {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+}
+
+.pro-lock,
+.pro-lock-inline {
+  display: inline-block;
+  font-size: 9px;
+  line-height: 1;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  margin-left: 4px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* --- Welcome card (single audit upsell) --- */
+.welcome-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-top: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.welcome-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.welcome-card-desc {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.welcome-card-btn {
+  width: 100%;
+  font-size: 12px;
+}
+
+.welcome-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.welcome-footer .welcome-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.welcome-footer .welcome-link:hover { color: var(--text); }
+
+.welcome-count-small {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* --- Audit tab entry state --- */
+.audit-intro {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s-5) var(--s-4);
+  text-align: center;
+  margin-bottom: var(--s-3);
+  box-shadow: var(--shadow-1);
+}
+
+.audit-intro-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin: 0 auto var(--s-3) auto;
+}
+
+.audit-intro-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--s-1);
+  letter-spacing: -0.2px;
+}
+
+.audit-intro-desc {
+  font-size: var(--text-sm);
+  line-height: var(--leading);
+  color: var(--text-2);
+  margin: 0 auto var(--s-3) auto;
+  max-width: 320px;
+}
+
+/* Mini preview rows showing what the audit output looks like */
+.audit-intro-preview {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--s-2) var(--s-3);
+  margin: 0 auto var(--s-4) auto;
+  max-width: 320px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.7;
+}
+.audit-intro-preview-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--text-2);
+}
+.audit-intro-preview-row.warn { color: var(--yellow); }
+.audit-pp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.audit-pp-icon.ok { background: var(--green-soft); color: var(--green); }
+.audit-pp-icon.warn { background: var(--yellow-soft); color: var(--yellow); }
+
+.audit-pro-note {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  margin-top: var(--s-2);
+}
+
+.btn-pro-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: var(--text-md);
+  padding: 11px 18px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: filter var(--transition), transform var(--transition);
+}
+.btn-pro-primary:hover { filter: brightness(0.92); }
+.btn-pro-primary:active { transform: translateY(1px); }
+.btn-pro-primary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.audit-secondary {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.audit-secondary-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 8px;
+}
+
+.audit-secondary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 4px;
+  font-size: 12.5px;
+  padding: 8px 10px;
+}
+
+.audit-secondary-btn:last-child { margin-bottom: 0; }
+
+.audit-secondary-label {
+  flex: 1;
+}
+
+.audit-inline-error {
+  background: var(--red-light);
+  color: var(--red);
+  border: 1px solid color-mix(in srgb, var(--red) 25%, transparent);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.audit-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+
+.audit-rerun {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+/* --- Audit Results (document-wide /api/attest) --- */
+.audit-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.audit-summary-ok {
+  background: var(--green-light);
+  color: var(--green);
+  border: 1px solid color-mix(in srgb, var(--green) 30%, transparent);
+}
+
+.audit-summary-mixed {
+  background: var(--yellow-light);
+  color: var(--yellow);
+  border: 1px solid color-mix(in srgb, var(--yellow) 30%, transparent);
+}
+
+.audit-summary-icon {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.audit-issue {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--yellow);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.audit-issue.audit-issue-missing {
+  border-left-color: var(--red);
+}
+
+.audit-issue-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.audit-issue-icon {
+  color: var(--yellow);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.audit-issue-missing .audit-issue-icon {
+  color: var(--red);
+}
+
+.audit-issue-citation {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.audit-issue-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.audit-issue-suggestion {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.audit-issue-pinpoints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.audit-pinpoints-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+.audit-pinpoint-pill {
+  cursor: pointer;
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  padding: 3px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: all var(--transition);
+}
+
+.audit-pinpoint-pill:hover {
+  background: var(--green-light);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.audit-issue-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.audit-issue-actions .btn {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Pro Hero (settings upgrade page) --- */
+.pro-hero {
+  text-align: center;
+  padding: var(--s-3) 0 var(--s-4) 0;
+}
+.pro-hero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto var(--s-3) auto;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.pro-hero-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: var(--s-1);
+  letter-spacing: -0.2px;
+}
+.pro-hero-sub {
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  line-height: var(--leading);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.pro-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--s-3) 0;
+}
+.pro-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-2) 0;
+  font-size: var(--text-sm);
+  color: var(--text);
+  line-height: var(--leading);
+  border-bottom: 1px solid var(--border);
+}
+.pro-feature:last-child { border-bottom: none; }
+.pro-feature-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.pro-cancel-note {
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  text-align: center;
+  margin-top: var(--s-2);
+}
+
+/* --- Audit bulk actions row (comment-all, insert-bibliography) --- */
+.audit-bulk-actions {
+  display: flex;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+  flex-wrap: wrap;
+}
+.audit-bulk-actions .btn {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- Welcome first-run hint banner --- */
+.welcome-hint {
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: var(--radius);
+  padding: var(--s-3);
+  margin-bottom: var(--s-3);
+}
+.welcome-hint-text {
+  font-size: var(--text-sm);
+  color: var(--text);
+  line-height: var(--leading);
+  margin-bottom: var(--s-2);
+}
+.welcome-hint-dismiss {
+  font-size: var(--text-xs);
+  padding: 4px 10px;
+}
+
+/* --- Audit passed-citations reveal --- */
+.audit-passed {
+  margin-top: var(--s-4);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+}
+.audit-passed-summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text);
+  user-select: none;
+}
+.audit-passed-summary::-webkit-details-marker { display: none; }
+.audit-passed-summary > .icon {
+  margin-left: auto;
+  color: var(--text-3);
+  transition: transform var(--transition);
+}
+.audit-passed[open] > .audit-passed-summary > .icon {
+  transform: rotate(180deg);
+}
+.audit-passed-list {
+  list-style: none;
+  padding: 0 var(--s-3) var(--s-3) var(--s-3);
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+.audit-passed-list li {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  padding: var(--s-1) 0;
+}
+
 /* --- Utilities --- */
-.mt-8 { margin-top: 8px; }
-.mt-12 { margin-top: 12px; }
+.mt-8 { margin-top: var(--s-2); }
+.mt-12 { margin-top: var(--s-3); }
 .text-center { text-align: center; }
 .hidden { display: none; }

@@ -144,6 +144,17 @@ async function getDoctrine(query) {
   return apiFetch('/doctrine', { query: query });
 }
 
+// Canonical citation lookup — returns citation_string_{de,fr,it} + canonical_url + close_matches.
+async function citeReference(reference, lang) {
+  return apiFetch('/cite', { reference: reference, lang: lang || 'de' });
+}
+
+// Document audit — single POST that finds every citation, validates existence
+// and pinpoints, and returns annotated_text + structured issues with positions.
+async function attestDocument(draftText, lang) {
+  return apiPost('/attest', { draft_text: draftText, lang: lang || 'de' });
+}
+
 // ── Billing / Pro ───────────────────────────────────────────
 
 async function createCheckout(successUrl, cancelUrl) {
