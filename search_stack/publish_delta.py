@@ -500,6 +500,18 @@ def publish_delta(
 
 # ── CLI ─────────────────────────────────────────────────────────────────
 
+def seed_snapshot(db_path: _Path, snapshot_path: _Path, date: str | None = None) -> int:
+    """Save the current FTS5 id-set to the snapshot file without uploading
+    anything. Used once before the pipeline goes live, so the first real
+    run emits a small genuine delta instead of re-publishing the whole
+    corpus. Safe to re-run (idempotent — overwrites snapshot)."""
+    date = date or _dt.date.today().isoformat()
+    ids = snapshot_all_ids(db_path)
+    save_snapshot_ids(snapshot_path, ids, date)
+    log.info("seed_snapshot: saved %d ids to %s", len(ids), snapshot_path)
+    return len(ids)
+
+
 def _cli() -> None:
     import argparse
     p = argparse.ArgumentParser(description="Daily delta publisher for voilaj/swiss-caselaw")
@@ -517,6 +529,10 @@ def _cli() -> None:
                    help="Path to local id-snapshot state file")
     p.add_argument("--dry-run", action="store_true",
                    help="Build locally; do NOT upload to HF, do NOT update snapshot")
+    p.add_argument("--seed", action="store_true",
+                   help="Save current FTS5 id-set as snapshot and exit — no delta build, no HF upload. "
+                        "Run this ONCE before enabling the pipeline so the first real delta is a "
+                        "real incremental set, not the entire corpus.")
     p.add_argument("--hf-repo", default=HF_REPO_ID)
     p.add_argument("-v", "--verbose", action="store_true")
     args = p.parse_args()
@@ -525,6 +541,11 @@ def _cli() -> None:
         level=_logging.DEBUG if args.verbose else _logging.INFO,
         format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
     )
+
+    if args.seed:
+        n = seed_snapshot(args.db, args.snapshot, args.date)
+        log.info("seed complete (%d ids). Next real run will diff against this.", n)
+        return
 
     info = build_delta(
         db_path=args.db,

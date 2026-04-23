@@ -426,6 +426,44 @@ def step_5_generate_stats(dry_run: bool = False) -> bool:
     )
 
 
+def step_7_publish_delta(dry_run: bool = False) -> bool:
+    """Step 7: Publish daily delta (SQLite + parquet + manifest) to HuggingFace.
+
+    Env-gated by `OCL_PUBLISH_DELTA=1` — off by default until the new
+    pipeline has been validated end-to-end. When OFF, the step logs
+    "skipped" and returns True (non-fatal).
+
+    Requires a seeded snapshot at state/hf_delta_snapshot.json. Seed once
+    with `python3 -m search_stack.publish_delta --seed` BEFORE enabling.
+    Without a seed, the first run would treat the entire corpus as "new".
+
+    Replaces the broken private-repo pipeline
+    (`jonashertner/caselaw-repo/daily_update.yml`) that's been publishing
+    federal-less deltas for 30+ days. Keep that workflow disabled while
+    this is on — two pipelines racing will corrupt artifacts/manifest.json.
+    """
+    if os.environ.get("OCL_PUBLISH_DELTA") != "1":
+        logger.info("Step 7: Publish Delta — DISABLED (set OCL_PUBLISH_DELTA=1 to enable)")
+        return True
+
+    logger.info("Step 7: Publish Delta to HuggingFace")
+    snapshot_path = REPO_DIR / "state" / "hf_delta_snapshot.json"
+    if not snapshot_path.exists():
+        logger.error("  state/hf_delta_snapshot.json missing — run with --seed first")
+        return False
+
+    return run_cmd(
+        [sys.executable, "-m", "search_stack.publish_delta",
+         "--db", str(DB_PATH),
+         "--snapshot", str(snapshot_path),
+         "--build-dir", "/tmp/caselaw_delta_build"]
+        + (["--dry-run"] if dry_run else []),
+        "Publish Delta",
+        dry_run,
+        timeout=1800,
+    )
+
+
 def step_6_git_push(dry_run: bool = False) -> bool:
     """Step 6: Git commit + push docs/stats.json."""
     logger.info("Step 6: Git commit + push stats.json")
@@ -503,6 +541,8 @@ STEPS = [
     ("2g", "Decision Structure", step_2g_build_decision_structure),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
+    # ── Delta publish (env-gated; empty no-op until OCL_PUBLISH_DELTA=1) ──
+    (7, "Publish Delta", step_7_publish_delta),
     # ── Final stats refresh (includes graph counts) ──
     (5, "Generate Stats (final)", step_5_generate_stats),
     (6, "Git Push (final)", step_6_git_push),
