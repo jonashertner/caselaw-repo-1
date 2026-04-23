@@ -1087,6 +1087,14 @@ Republication changes discoverability, so the project ships a governance policy 
 
 ---
 
+## Contributors
+
+Maintainer: [Jonas Hertner](https://jonashertner.com). A small group of first users, bug reporters, institutional partners, and consumer-side integrators have shaped the tool; see [CONTRIBUTORS.md](CONTRIBUTORS.md) for the full list and how to add yours.
+
+If you're using OpenCaseLaw in production — as a scraper contributor, dataset consumer, law-firm integrator, or research project — we'd like to know. Email **team@jonashertner.com** or open a [discussion](https://github.com/jonashertner/caselaw-repo-1/discussions).
+
+---
+
 ## License
 
 Code: MIT. See [LICENSE](LICENSE).
