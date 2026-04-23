@@ -17,20 +17,10 @@ adjacent public-good research.
 *Listed chronologically. See the "How to contribute" section below — we add
 names here when someone's work lands in the project.*
 
-- **Adrian König** — consumer integration (`apply_deltas.py`) against the
-  daily HF delta feed, and the report that surfaced the 30-day federal-data
-  gap in the delta pipeline (2026-04). Independent early validator of the
-  incremental-update path.
-
-- **peakprivacy.ch** — CORS compatibility feedback that drove the move to a
-  wildcard CORS policy + OPenAPI `servers[]` absolute-URL ordering, now
-  benefiting every browser-side integrator (2026-04).
-
-- **LALIVE** (Tom Buclin, Grégory Gaillard) — evaluation of the MCP / Copilot
-  Studio integration path for law-firm AI tooling, and a structured
-  checklist that informed the anti-hallucination feature set
-  (canonical citations, pinpoint validation, Sonnet-judge verifier)
-  (2026-04).
+- **[Adrian König](https://adriankoenig.ch)** — consumer integration
+  (`apply_deltas.py`) against the daily HF delta feed, and the report that
+  surfaced the 30-day federal-data gap in the delta pipeline (2026-04).
+  Independent early validator of the incremental-update path.
 
 ## Institutional acknowledgements
 
