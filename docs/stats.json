@@ -1,10 +1,10 @@
 {
-  "total": 967909,
+  "total": 967914,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175013,
+      "count": 175018,
       "earliest": "1986-10-06",
       "latest": "2026-04-13",
       "last_scraped": "2026-04-23T01:19:56.271686+00:00",
@@ -1637,8 +1637,8 @@
     }
   ],
   "by_language": {
-    "de": 451604,
-    "fr": 436468,
+    "de": 451608,
+    "fr": 436469,
     "it": 79837
   },
   "by_year": {
@@ -1774,8 +1774,8 @@
     "2004": 17112,
     "2005": 19292,
     "2006": 20205,
-    "2007": 26164,
-    "2008": 27353,
+    "2007": 26168,
+    "2008": 27354,
     "2009": 31566,
     "2010": 33614,
     "2011": 34631,
@@ -1827,7 +1827,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175013
+      "count": 175018
     },
     {
       "court": "ge_gerichte",
@@ -2029,7 +2029,7 @@
     "2026": -83.2
   },
   "federal_vs_cantonal": {
-    "federal": 346712,
+    "federal": 346717,
     "cantonal": 621197
   },
   "language_by_year": {
@@ -2044,12 +2044,12 @@
       "it": 3220
     },
     "2007": {
-      "de": 14541,
-      "fr": 8299,
+      "de": 14544,
+      "fr": 8300,
       "it": 3324
     },
     "2008": {
-      "de": 13785,
+      "de": 13786,
       "fr": 10427,
       "it": 3141
     },
@@ -2183,7 +2183,7 @@
     "2026-03": 2017,
     "2026-04": 257
   },
-  "generated_at": "2026-04-23T07:54:31.703732+00:00",
+  "generated_at": "2026-04-23T10:57:01.344613+00:00",
   "scraper_health": {
     "run_at": "2026-04-23T02:40:01.038712+00:00",
     "run_duration_s": 6000.4,
@@ -2334,12 +2334,12 @@
         "our_count": 10845,
         "portal_count": null,
         "gap": null,
-        "duration_s": 87.5,
+        "duration_s": 84.2,
         "error": null,
         "note": null,
         "state_count": 10880,
         "jsonl_size_mb": 304.1,
-        "jsonl_mtime": "2026-04-23T01:08:10.069072+00:00"
+        "jsonl_mtime": "2026-04-23T09:01:24.756445+00:00"
       },
       "bpatger": {
         "success": true,
@@ -2356,7 +2356,7 @@
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-23T01:09:06.274201+00:00"
+        "jsonl_mtime": "2026-04-23T09:07:34.052976+00:00"
       },
       "ch_bundesrat": {
         "success": true,
@@ -2436,12 +2436,12 @@
         "our_count": 21239,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1111.2,
+        "duration_s": 1112.4,
         "error": null,
         "note": null,
         "state_count": 21239,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-23T01:18:33.357515+00:00"
+        "jsonl_mtime": "2026-04-23T09:18:32.825552+00:00"
       },
       "elcom": {
         "success": true,
@@ -2501,15 +2501,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 92019,
+        "our_count": 92049,
         "portal_count": null,
         "gap": null,
-        "duration_s": 771.5,
+        "duration_s": 574.0,
         "error": null,
         "note": null,
         "state_count": 92049,
         "jsonl_size_mb": 2651.5,
-        "jsonl_mtime": "2026-04-23T01:21:37.210944+00:00"
+        "jsonl_mtime": "2026-04-23T09:09:34.525457+00:00"
       },
       "bger": {
         "success": true,
@@ -2526,7 +2526,7 @@
         "note": null,
         "state_count": 92160,
         "jsonl_size_mb": 1377.2,
-        "jsonl_mtime": "2026-04-23T01:21:12.700887+00:00"
+        "jsonl_mtime": "2026-04-23T10:16:15.499376+00:00"
       },
       "finma_versicherungsrecht": {
         "success": true,
@@ -3176,7 +3176,7 @@
       }
     },
     "run_at_daily": "2026-04-23T02:40:01.038712+00:00",
-    "run_at_federal": "2026-04-22T09:18:31.502046+00:00",
+    "run_at_federal": "2026-04-23T09:18:32.951450+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3228,8 +3228,8 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 8880787,
-    "statute_edges": 11376636
+    "citation_edges": 8883077,
+    "statute_edges": 11379717
   },
   "traffic": {
     "window_days": 30,
@@ -3809,9 +3809,9 @@
     }
   ],
   "delta": {
-    "total": 195,
+    "total": 200,
     "by_court": {
-      "bger": 26,
+      "bger": 31,
       "ge_gerichte": 29,
       "bvger": 30,
       "ti_gerichte": 1,
@@ -3852,7 +3852,10 @@
       "ZG": 1,
       "SH": 2
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 2290,
+      "statute_edges": 3081
+    },
     "previous_generated_at": "2026-04-22T10:24:06.385678+00:00"
   }
 }
