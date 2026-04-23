@@ -8020,8 +8020,14 @@ def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars:
             dispositiv_orders = json.loads(row["dispositiv_orders"])
         except json.JSONDecodeError:
             dispositiv_orders = []
+    # Use FTS5-canonical decision_id in responses (structure DB uses a
+    # legacy key format with spaces that breaks /entscheid/ URLs).
+    main_decision = get_decision_by_id(resolved) or {}
+    canonical_id = main_decision.get("decision_id") or resolved or row["decision_id"]
+    canonical_url = _canonical_decision_url(canonical_id)
     return {
-        "decision_id": row["decision_id"],
+        "decision_id": canonical_id,
+        "canonical_url": canonical_url,
         "court": row["court"],
         "language": row["language"],
         "decision_date": row["decision_date"],
@@ -8070,11 +8076,14 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     )
     row = _fetch_structure_row(resolved)
     # Build canonical citation + URL + rule statement for the LLM to embed
-    # verbatim. This is the anti-hallucination layer: we hand the LLM the
-    # EXACT citation string rather than letting it reconstruct.
+    # verbatim. IMPORTANT: the structure DB stores decision_id in a legacy
+    # format (e.g. "bge_140 III 86" with spaces); the FTS5 canonical form
+    # is "bge_BGE_140_III_86". Use `resolved` (the FTS5-canonical id from
+    # _resolve_decision_id) for the URL, not row["decision_id"].
     main = get_decision_by_id(resolved) if row else None
+    canonical_id = (main or {}).get("decision_id") or resolved
     decision_for_citation = {
-        "decision_id": row["decision_id"] if row else resolved,
+        "decision_id": canonical_id,
         "court": row.get("court") if row else None,
         "decision_date": row.get("decision_date") if row else None,
         "docket_number": (main or {}).get("docket_number"),
@@ -8085,7 +8094,7 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     citation = _build_citation_strings(decision_for_citation, pinpoint=target["e_number"])
     regeste_raw = row.get("regeste") if row else None
     return {
-        "decision_id": row["decision_id"] if row else resolved,
+        "decision_id": canonical_id,
         "e_number": target["e_number"],
         "depth": target["depth"],
         "parent_e_number": target["parent"],
@@ -8151,10 +8160,11 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
         }
     # Structured-sidecar path: enrich with the full decision record for
     # citation construction (docket, collection, bge_reference live in the
-    # main DB, not the sidecar).
-    main_decision = get_decision_by_id(row["decision_id"]) or {}
+    # main DB, not the sidecar). Use FTS5-canonical id for the URL.
+    main_decision = get_decision_by_id(resolved) or get_decision_by_id(row["decision_id"]) or {}
+    canonical_id = main_decision.get("decision_id") or resolved or row["decision_id"]
     decision_for_citation = {
-        "decision_id": row["decision_id"],
+        "decision_id": canonical_id,
         "court": row["court"],
         "decision_date": row["decision_date"],
         "docket_number": main_decision.get("docket_number"),
@@ -8164,7 +8174,7 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
     }
     citation = _build_citation_strings(decision_for_citation)
     return {
-        "decision_id": row["decision_id"],
+        "decision_id": canonical_id,
         "court": row["court"],
         "decision_date": row["decision_date"],
         "language": row["language"],
