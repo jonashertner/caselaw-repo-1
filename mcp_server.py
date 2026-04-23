@@ -6888,7 +6888,7 @@ def _format_leading_cases_response(result: dict) -> str:
             f"[{r['court']}] \u2014 **{r['citation_count']} citations**\n"
         )
         if r.get("regeste"):
-            text += f"   Regeste: {r['regeste']}\n"
+            text += f"   Regeste: {_auto_link_citations(r['regeste'])}\n"
         text += "\n"
 
     return text
@@ -7570,12 +7570,24 @@ server = Server(
         "`[<citation_string_*>](<canonical_url>)`. The tool responses "
         "wrap each decision in this exact form already — copy them "
         "verbatim. Never strip the URL, never write a bare citation "
-        "string, never replace the link with plain text. The user must "
-        "be able to click any cited decision and verify it on the source "
-        "page in one click; this is the product's anti-hallucination "
-        "contract made operational. If a tool returned `canonical_url`, "
-        "use it; if it didn't, use `https://mcp.opencaselaw.ch/entscheid/"
-        "<decision_id>`.\n\n"
+        "string, never replace the link with plain text. If a tool "
+        "returned `canonical_url`, use it; if it didn't, build from "
+        "decision_id: `https://mcp.opencaselaw.ch/entscheid/<decision_id>`.\n"
+        "   Example — DO:\n"
+        "     Das Bundesgericht hielt in "
+        "[BGE 140 III 86](https://mcp.opencaselaw.ch/entscheid/bge_BGE_140_III_86) "
+        "E. 2.3 fest, dass ...\n"
+        "   Example — DON'T:\n"
+        "     Das Bundesgericht hielt in BGE 140 III 86 E. 2.3 fest, dass ...\n"
+        "     (plain text — user can't click through to verify)\n\n"
+
+        "R7. After calling `attest_response` and receiving `ok=true`, "
+        "send the `linked_text` field to the user VERBATIM. It is your "
+        "draft with every validated citation already wrapped in a "
+        "Markdown link. Do NOT paraphrase it after attestation — "
+        "paraphrasing strips the links. If `ok=false`, fix the flagged "
+        "citations using the suggestions, call attest_response again, "
+        "then send the new `linked_text` verbatim.\n\n"
 
         "══════════════════════════════════════════════════════════════\n"
         "CITATION WORKFLOW — THE ONLY LEGITIMATE PATH\n"
@@ -7992,14 +8004,16 @@ def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars:
     out_paragraphs = []
     for p in paragraphs:
         text = p["text"] or ""
+        excerpt = text[:paragraph_excerpt_chars] + ("…" if len(text) > paragraph_excerpt_chars else "")
         out_paragraphs.append({
             "e_number": p["e_number"],
             "depth": p["depth"],
             "parent": p["parent"],
             "text_chars": len(text),
-            "text_excerpt": text[:paragraph_excerpt_chars] + ("…" if len(text) > paragraph_excerpt_chars else ""),
+            "text_excerpt": _auto_link_citations(excerpt),
         })
     sachverhalt = row.get("sachverhalt") or ""
+    sachverhalt_excerpt = sachverhalt[:1000] + ("…" if len(sachverhalt) > 1000 else "")
     dispositiv_orders = []
     if row.get("dispositiv_orders"):
         try:
@@ -8011,12 +8025,12 @@ def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars:
         "court": row["court"],
         "language": row["language"],
         "decision_date": row["decision_date"],
-        "regeste": row.get("regeste"),
+        "regeste": _auto_link_citations(row.get("regeste")),
         "sachverhalt_chars": len(sachverhalt),
-        "sachverhalt_excerpt": sachverhalt[:1000] + ("…" if len(sachverhalt) > 1000 else ""),
+        "sachverhalt_excerpt": _auto_link_citations(sachverhalt_excerpt),
         "erwaegungen_paragraph_count": row.get("erwaegungen_paragraph_count") or len(paragraphs),
         "erwaegungen_paragraphs": out_paragraphs,
-        "dispositiv": row.get("dispositiv"),
+        "dispositiv": _auto_link_citations(row.get("dispositiv")),
         "dispositiv_orders": dispositiv_orders,
         "extraction_methods": {
             "sachverhalt": row.get("sachverhalt_method"),
@@ -8069,6 +8083,7 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         "regeste": row.get("regeste") if row else None,
     }
     citation = _build_citation_strings(decision_for_citation, pinpoint=target["e_number"])
+    regeste_raw = row.get("regeste") if row else None
     return {
         "decision_id": row["decision_id"] if row else resolved,
         "e_number": target["e_number"],
@@ -8077,13 +8092,17 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         "siblings": siblings,
         "court": row.get("court") if row else None,
         "language": row.get("language") if row else None,
-        "regeste": row.get("regeste") if row else None,
-        "text": target["text"],
+        # Text fields are auto-linked: inner Swiss-case citations are
+        # wrapped as Markdown links to mcp.opencaselaw.ch. When the LLM
+        # quotes this text to the user, cross-references stay clickable.
+        "regeste": _auto_link_citations(regeste_raw) if regeste_raw else regeste_raw,
+        "text": _auto_link_citations(target["text"]),
         # ── Canonical citation (copy these verbatim; do NOT reconstruct) ──
         "citation_string_de": citation["citation_string_de"],
         "citation_string_fr": citation["citation_string_fr"],
         "citation_string_it": citation["citation_string_it"],
         "canonical_url": citation["canonical_url"],
+        "markdown_link": _md_link(citation["citation_string_de"], citation["canonical_url"]),
         "rule_statement": _rule_statement(decision_for_citation, pinpoint_text=target["text"]),
         "_citation_format": citation["citation_string_de"],  # kept for backwards compat
     }
@@ -8113,18 +8132,21 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
             "court": decision.get("court"),
             "decision_date": decision.get("decision_date"),
             "language": decision.get("language"),
-            "regeste": regeste,
+            "regeste": _auto_link_citations(regeste),
             # ── Canonical citation (copy these verbatim; do NOT reconstruct) ──
             "citation_string_de": citation["citation_string_de"],
             "citation_string_fr": citation["citation_string_fr"],
             "citation_string_it": citation["citation_string_it"],
             "canonical_url": citation["canonical_url"],
+            "markdown_link": _md_link(citation["citation_string_de"], citation["canonical_url"]),
             "rule_statement": _rule_statement(decision),
             "_note": (
                 "Regeste from main decisions DB. The Regeste is the official "
                 "court-formulated summary of the legal rule and the canonical "
                 "citation target. References like '(E. 5.2.1)' inside the Regeste "
-                "point to specific Erwägungen — use get_erwaegung to retrieve them."
+                "point to specific Erwägungen — use get_erwaegung to retrieve them. "
+                "The returned `regeste` has every inner Swiss-case reference "
+                "pre-wrapped as a Markdown link — quote it verbatim to the user."
             ),
         }
     # Structured-sidecar path: enrich with the full decision record for
@@ -8146,18 +8168,21 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
         "court": row["court"],
         "decision_date": row["decision_date"],
         "language": row["language"],
-        "regeste": row.get("regeste"),
+        "regeste": _auto_link_citations(row.get("regeste")),
         # ── Canonical citation (copy these verbatim; do NOT reconstruct) ──
         "citation_string_de": citation["citation_string_de"],
         "citation_string_fr": citation["citation_string_fr"],
         "citation_string_it": citation["citation_string_it"],
         "canonical_url": citation["canonical_url"],
+        "markdown_link": _md_link(citation["citation_string_de"], citation["canonical_url"]),
         "rule_statement": _rule_statement(decision_for_citation),
         "_note": (
             "The Regeste is the official court-formulated summary of the legal "
             "rule. References like '(E. 5.2.1)' inside the Regeste point to "
             "specific Erwägungen — use get_erwaegung(decision_id, e_number) "
-            "to retrieve their verbatim text."
+            "to retrieve their verbatim text. "
+            "The returned `regeste` has every inner Swiss-case reference pre-"
+            "wrapped as a Markdown link — quote it verbatim to the user."
         ),
     }
 
@@ -8465,6 +8490,56 @@ _CITATION_PATTERNS = [
 ]
 
 
+# ── Auto-link: wrap every resolvable Swiss-case citation in free-form
+# text with a clickable Markdown link to mcp.opencaselaw.ch. Applied to
+# regeste / Erwägung / Sachverhalt / Dispositiv / snippet text before we
+# hand it back to the LLM, so that when the LLM quotes the text the user
+# sees inline citations as links, not plain text.
+
+_EXISTING_MD_LINK_RE = re.compile(r"\[[^\]]*\]\([^)]*\)")
+
+
+def _auto_link_citations(text: str) -> str:
+    """Wrap resolvable Swiss-case references in `text` with Markdown links.
+
+    - References already inside [..](..) syntax are skipped (no double-wrap).
+    - References that don't resolve to a known decision_id are left as-is.
+    - Performance: one DB lookup per citation; regeste/erwägung typically
+      carry 0–5 citations, so negligible overhead on normal responses.
+    """
+    if not text:
+        return text
+    # Collect ranges of existing markdown links so we don't re-wrap inside them
+    excluded = [(m.start(), m.end()) for m in _EXISTING_MD_LINK_RE.finditer(text)]
+
+    def _in_excluded(pos: int) -> bool:
+        return any(s <= pos < e for s, e in excluded)
+
+    citations = _parse_citations_in_text(text)
+    if not citations:
+        return text
+
+    parts: list[str] = []
+    last_end = 0
+    for cit in citations:
+        start, end = cit["span"]
+        if _in_excluded(start):
+            continue
+        try:
+            resolved = _resolve_decision_id(cit["decision_id_guess"])
+        except Exception:
+            resolved = None
+        if not resolved:
+            continue
+        # Skip cheap existence probe for perf — _resolve already hit the index.
+        url = _canonical_decision_url(resolved, cit.get("pinpoint"))
+        parts.append(text[last_end:start])
+        parts.append(_md_link(cit["full_match"], url))
+        last_end = end
+    parts.append(text[last_end:])
+    return "".join(parts)
+
+
 def _parse_citations_in_text(draft: str) -> list[dict]:
     """Extract all Swiss-case citations from free-form text.
 
@@ -8541,8 +8616,11 @@ def _handle_attest_response(*, draft_text: str) -> dict:
 
     issues: list[dict] = []
     ok_count = 0
-    # Build annotated text by walking through citations in order
+    # Build annotated text (with ✓/⚠ markers, for LLM to see status) AND
+    # linked text (same content, every validated citation wrapped in a
+    # Markdown link — ready-to-ship to the user verbatim).
     annotated_parts: list[str] = []
+    linked_parts: list[str] = []
     last_end = 0
 
     for cit in citations:
@@ -8553,9 +8631,10 @@ def _handle_attest_response(*, draft_text: str) -> dict:
 
         # Append text since last citation
         annotated_parts.append(draft_text[last_end:start])
+        linked_parts.append(draft_text[last_end:start])
 
         resolved = _resolve_decision_id(guess)
-        decision = get_decision_by_id(resolved)
+        decision = get_decision_by_id(resolved) if resolved else None
 
         status = "OK"
         detail: dict = {
@@ -8575,9 +8654,6 @@ def _handle_attest_response(*, draft_text: str) -> dict:
         elif pinpoint:
             paras = _fetch_structure_paragraphs(resolved)
             valid_pinpoints = {p["e_number"] for p in paras}
-            # Accept exact match OR a parent-pinpoint that has children
-            # (lawyers cite "E. 4" to mean the whole section even when the
-            # extractor only stored 4.1/4.2 as leaves).
             exact = pinpoint in valid_pinpoints
             has_children = any(vp.startswith(pinpoint + ".") for vp in valid_pinpoints)
             if paras and not (exact or has_children):
@@ -8595,17 +8671,27 @@ def _handle_attest_response(*, draft_text: str) -> dict:
         else:
             ok_count += 1
 
-        # Annotate the citation in the rendered output
+        # Annotated text — gets the ✓/⚠ markers (for LLM to understand)
         if status == "OK":
             annotated_parts.append(f"{full} ✓")
         else:
             annotated_parts.append(f"{full} ⚠️[{status}]")
 
+        # Linked text — only OK citations get wrapped; broken citations stay
+        # raw so the LLM can see them and fix before re-attesting.
+        if status == "OK" and decision:
+            url = _canonical_decision_url(resolved, pinpoint)
+            linked_parts.append(_md_link(full, url))
+        else:
+            linked_parts.append(full)
+
         last_end = end
 
-    # Append trailing text
+    # Append trailing text to both rails
     annotated_parts.append(draft_text[last_end:])
+    linked_parts.append(draft_text[last_end:])
     annotated_text = "".join(annotated_parts)
+    linked_text = "".join(linked_parts)
 
     return {
         "ok": len(issues) == 0,
@@ -8613,6 +8699,7 @@ def _handle_attest_response(*, draft_text: str) -> dict:
         "citations_ok": ok_count,
         "issues_count": len(issues),
         "annotated_text": annotated_text,
+        "linked_text": linked_text,
         "issues": issues,
         "_note": (
             "Citations marked ✓ passed existence and pinpoint checks. "
@@ -8620,7 +8707,11 @@ def _handle_attest_response(*, draft_text: str) -> dict:
             "final response. Possible fixes: (a) re-call cite() with the "
             "suggestion, (b) pick a different decision, (c) remove the "
             "pinpoint if the Erwägung doesn't exist, (d) drop the citation. "
-            "This audit only checks existence + pinpoint; for "
+            "\n\nWHEN ok=true: send the `linked_text` field VERBATIM to "
+            "the user — it is your draft with every validated citation "
+            "wrapped in a clickable Markdown link to mcp.opencaselaw.ch. "
+            "Do NOT re-paraphrase after attestation; that strips the "
+            "links. \n\nThis audit only checks existence + pinpoint; for "
             "supports-the-claim verification, use check_claim_support."
         ),
     }
@@ -8709,6 +8800,13 @@ def _handle_get_case_brief(*, case: str) -> dict:
     related = _get_related_cases(decision_id, limit=3)
 
     canonical = _build_citation_strings(decision)
+    # Auto-link inner Swiss-case references in every quoted text field so
+    # when the LLM passes them verbatim to the user, cross-references
+    # ("vgl. BGE 121 III 350") stay clickable.
+    key_erwaegungen_linked = [
+        {**ew, "text": _auto_link_citations(ew.get("text") or "")}
+        for ew in key_erwaegungen
+    ]
     return {
         "decision_id": decision_id,
         "bge_ref": decision.get("docket_number", ""),
@@ -8720,10 +8818,10 @@ def _handle_get_case_brief(*, case: str) -> dict:
         "citation_string_it": canonical.get("citation_string_it"),
         "canonical_url": canonical.get("canonical_url"),
         "markdown_link": _md_link(canonical.get("citation_string_de") or decision.get("docket_number", ""), canonical.get("canonical_url", "")),
-        "regeste": regeste,
-        "sachverhalt": sachverhalt,
-        "key_erwaegungen": key_erwaegungen,
-        "dispositiv": dispositiv,
+        "regeste": _auto_link_citations(regeste),
+        "sachverhalt": _auto_link_citations(sachverhalt),
+        "key_erwaegungen": key_erwaegungen_linked,
+        "dispositiv": _auto_link_citations(dispositiv),
         "statutes": statutes,
         "authority": {
             "incoming_citations": incoming,
@@ -12919,9 +13017,10 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                         if r.get("title"):
                             text += f"   Title: {r['title']}\n"
                         if r.get("regeste"):
-                            text += f"   Regeste: {r['regeste']}\n"
+                            # Auto-link inner decision references so quoted snippets stay clickable.
+                            text += f"   Regeste: {_auto_link_citations(r['regeste'])}\n"
                         if r.get("snippet"):
-                            text += f"   ...{r['snippet']}...\n"
+                            text += f"   ...{_auto_link_citations(r['snippet'])}...\n"
                         text += "\n"
 
             return [TextContent(type="text", text=text)]
@@ -12960,13 +13059,20 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             if result.get("title"):
                 text += f"**Title:** {result['title']}\n"
             if result.get("regeste"):
-                text += f"\n## Regeste\n{result['regeste']}\n"
+                # Inline citations in the regeste text are auto-linked so
+                # if the LLM quotes the regeste to the user, the internal
+                # cross-references ("vgl. BGE 121 III 350 E. 4") are
+                # clickable rather than plain text.
+                text += f"\n## Regeste\n{_auto_link_citations(result['regeste'])}\n"
             if include_full_text and result.get("full_text"):
                 ft = result["full_text"]
+                # Full-text can be very long; auto-linking is quadratic-ish
+                # in excluded-range checks if there are many existing
+                # markdown links, but safe here (decisions don't embed md).
                 if len(ft) > 200000:
-                    text += f"\n## Full Text (first 200,000 of {len(ft)} chars)\n{ft[:200000]}\n..."
+                    text += f"\n## Full Text (first 200,000 of {len(ft)} chars)\n{_auto_link_citations(ft[:200000])}\n..."
                 else:
-                    text += f"\n## Full Text\n{ft}\n"
+                    text += f"\n## Full Text\n{_auto_link_citations(ft)}\n"
             if result.get("source_url"):
                 text += f"\n**Source:** {result['source_url']}\n"
             if result.get("pdf_url"):
