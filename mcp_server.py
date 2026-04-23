@@ -5804,14 +5804,18 @@ def _find_leading_cases(
     results = []
     for did, cite_count in candidates:
         row = rows_by_id.get(did, {})
+        url = _canonical_decision_url(did)
+        docket = row.get("docket_number", did)
         results.append({
             "decision_id": did,
-            "docket_number": row.get("docket_number", did),
+            "docket_number": docket,
             "decision_date": row.get("decision_date", ""),
             "court": row.get("court", ""),
             "citation_count": cite_count,
             "regeste": (row.get("regeste") or "")[:300],
             "source_url": row.get("source_url", ""),
+            "canonical_url": url,
+            "markdown_link": _md_link(docket, url),
         })
 
     return {
@@ -6738,12 +6742,15 @@ def _dedup_bge_citations(items: list[dict], id_key: str) -> list[dict]:
 
 
 def _format_citations_response(result: dict) -> str:
-    """Format find_citations result into markdown."""
+    """Format find_citations result into markdown.
+    Every cited/citing decision is rendered as a Markdown link so the
+    end-user (in ChatGPT/Claude/Copilot) can click through to verify."""
     if result.get("error"):
         return result["error"]
 
     did = result["decision_id"]
-    text = f"# Citations for {did}\n\n"
+    self_url = _canonical_decision_url(did)
+    text = f"# Citations for {_md_link(did, self_url)}\n\n"
 
     outgoing = result.get("outgoing", [])
     if outgoing is not None:
@@ -6760,10 +6767,8 @@ def _format_citations_response(result: dict) -> str:
                 conf = c.get("confidence_score")
                 mentions = c.get("mention_count") or 1
                 conf_str = f" conf={conf:.2f}" if conf is not None else ""
-                text += (
-                    f"{i}. **{docket}** ({date}) [{court}]{conf_str} mentions={mentions}\n"
-                    f"   ID: {target_did}\n"
-                )
+                link = _md_link(docket, _canonical_decision_url(target_did))
+                text += f"{i}. {link} ({date}) [{court}]{conf_str} mentions={mentions}\n"
             else:
                 ref = c.get("target_ref", "?")
                 ttype = c.get("target_type", "")
@@ -6785,10 +6790,8 @@ def _format_citations_response(result: dict) -> str:
             conf = c.get("confidence_score")
             mentions = c.get("mention_count") or 1
             conf_str = f" conf={conf:.2f}" if conf is not None else ""
-            text += (
-                f"{i}. **{docket}** ({date}) [{court}]{conf_str} mentions={mentions}\n"
-                f"   ID: {src_did}\n"
-            )
+            link = _md_link(docket, _canonical_decision_url(src_did))
+            text += f"{i}. {link} ({date}) [{court}]{conf_str} mentions={mentions}\n"
 
     return text
 
@@ -6804,19 +6807,19 @@ def _format_appeal_chain_response(result: dict) -> str:
     court = result.get("court", "?")
     date = result.get("decision_date", "?")
 
+    self_link = _md_link(docket, _canonical_decision_url(did))
     if not chain:
         return (
-            f"# Appeal chain for {docket}\n\n"
-            f"**{docket}** ({date}) [{court}] — ID: {did}\n\n"
+            f"# Appeal chain for {self_link}\n\n"
+            f"{self_link} ({date}) [{court}]\n\n"
             f"No prior or subsequent instances found in the database.\n"
             f"This may mean the decision is not an appeal, or the lower/upper court "
             f"decisions are not in the dataset."
         )
 
-    text = f"# Appeal chain for {docket}\n\n"
-    text += f"**Query decision:** {docket} ({date}) [{court}] — ID: {did}\n\n"
+    text = f"# Appeal chain for {self_link}\n\n"
+    text += f"**Query decision:** {self_link} ({date}) [{court}]\n\n"
 
-    # Prior instances (lower courts)
     prior = [c for c in chain if c.get("relation") == "prior_instance"]
     subsequent = [c for c in chain if c.get("relation") == "subsequent_instance"]
 
@@ -6825,11 +6828,8 @@ def _format_appeal_chain_response(result: dict) -> str:
         text += "Decisions that were appealed (lower courts):\n\n"
         for c in prior:
             conf = c.get("confidence", 0)
-            text += (
-                f"- **{c['docket_number']}** ({c.get('decision_date', '?')}) "
-                f"[{c['court']}] conf={conf:.2f}\n"
-                f"  ID: {c['decision_id']}\n"
-            )
+            link = _md_link(c["docket_number"], _canonical_decision_url(c["decision_id"]))
+            text += f"- {link} ({c.get('decision_date', '?')}) [{c['court']}] conf={conf:.2f}\n"
         text += "\n"
 
     if subsequent:
@@ -6837,20 +6837,19 @@ def _format_appeal_chain_response(result: dict) -> str:
         text += "Decisions that appealed this one (higher courts):\n\n"
         for c in subsequent:
             conf = c.get("confidence", 0)
-            text += (
-                f"- **{c['docket_number']}** ({c.get('decision_date', '?')}) "
-                f"[{c['court']}] conf={conf:.2f}\n"
-                f"  ID: {c['decision_id']}\n"
-            )
+            link = _md_link(c["docket_number"], _canonical_decision_url(c["decision_id"]))
+            text += f"- {link} ({c.get('decision_date', '?')}) [{c['court']}] conf={conf:.2f}\n"
         text += "\n"
 
-    # Visual chain — structural ordering: prior (sorted by date) → query → subsequent (sorted by date)
+    # Visual chain — each step is its own clickable link.
     prior_sorted = sorted(prior, key=lambda x: x.get("decision_date") or "")
     subsequent_sorted = sorted(subsequent, key=lambda x: x.get("decision_date") or "")
+    def _step(c):
+        return f"{_md_link(c['docket_number'], _canonical_decision_url(c['decision_id']))} [{c['court']}]"
     chain_labels = (
-        [f"{c['docket_number']} [{c['court']}]" for c in prior_sorted]
-        + [f"{docket} [{court}]"]
-        + [f"{c['docket_number']} [{c['court']}]" for c in subsequent_sorted]
+        [_step(c) for c in prior_sorted]
+        + [f"{self_link} [{court}]"]
+        + [_step(c) for c in subsequent_sorted]
     )
 
     text += "## Instanzenzug\n"
@@ -6883,15 +6882,14 @@ def _format_leading_cases_response(result: dict) -> str:
         return text
 
     for i, r in enumerate(items, 1):
+        link = _md_link(r['docket_number'], _canonical_decision_url(r['decision_id']))
         text += (
-            f"**{i}. {r['docket_number']}** ({r['decision_date']}) "
+            f"**{i}.** {link} ({r['decision_date']}) "
             f"[{r['court']}] \u2014 **{r['citation_count']} citations**\n"
         )
         if r.get("regeste"):
             text += f"   Regeste: {r['regeste']}\n"
-        if r.get("source_url"):
-            text += f"   URL: {r['source_url']}\n"
-        text += f"   ID: {r['decision_id']}\n\n"
+        text += "\n"
 
     return text
 
@@ -7567,6 +7565,18 @@ server = Server(
         "R5. If `get_law` returns a `pending_changes` field, ALWAYS "
         "surface it: \"Note: this provision will be amended on [date].\"\n\n"
 
+        "R6. EVERY decision reference you write MUST be a clickable "
+        "Markdown link to mcp.opencaselaw.ch. Format: "
+        "`[<citation_string_*>](<canonical_url>)`. The tool responses "
+        "wrap each decision in this exact form already — copy them "
+        "verbatim. Never strip the URL, never write a bare citation "
+        "string, never replace the link with plain text. The user must "
+        "be able to click any cited decision and verify it on the source "
+        "page in one click; this is the product's anti-hallucination "
+        "contract made operational. If a tool returned `canonical_url`, "
+        "use it; if it didn't, use `https://mcp.opencaselaw.ch/entscheid/"
+        "<decision_id>`.\n\n"
+
         "══════════════════════════════════════════════════════════════\n"
         "CITATION WORKFLOW — THE ONLY LEGITIMATE PATH\n"
         "══════════════════════════════════════════════════════════════\n"
@@ -7819,6 +7829,32 @@ def _parse_mkg_ref(decision: dict) -> dict | None:
     if m:
         return {"band": int(m.group(1)), "nr": int(m.group(2))}
     return None
+
+
+# ── Markdown-link helpers ────────────────────────────────────────────────
+# Every decision reference in a text-bearing MCP response MUST be rendered
+# with Markdown link syntax `[citation](url)`. Rationale: LLMs reliably
+# propagate Markdown links to the user-facing chat output (they strip bare
+# URLs that sit on separate lines). This is the only reliable path to
+# clickable citations in ChatGPT / Claude.ai / Copilot answers.
+
+def _canonical_decision_url(decision_id: str, pinpoint: str | None = None) -> str:
+    """Build the /entscheid/<id>[#e-N-M] URL for a given decision id."""
+    if not decision_id:
+        return ""
+    pin = (pinpoint or "").strip().lstrip("E.").strip()
+    anchor = _pinpoint_anchor(pin) if pin else ""
+    return f"{_CITATION_BASE_URL}/entscheid/{decision_id}{anchor}"
+
+
+def _md_link(label: str, url: str) -> str:
+    """Wrap a label in Markdown link syntax. Escapes `]` inside the label
+    so malformed labels (e.g. containing brackets) don't break the link."""
+    label = str(label or "").strip() or "?"
+    if not url:
+        return label
+    safe = label.replace("]", r"\]")
+    return f"[{safe}]({url})"
 
 
 def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict:
@@ -8672,12 +8708,18 @@ def _handle_get_case_brief(*, case: str) -> dict:
     # Related cases (cited_by and cites) — top 3 each
     related = _get_related_cases(decision_id, limit=3)
 
+    canonical = _build_citation_strings(decision)
     return {
         "decision_id": decision_id,
         "bge_ref": decision.get("docket_number", ""),
         "court": decision.get("court", ""),
         "date": decision.get("decision_date", ""),
         "language": decision.get("language", ""),
+        "citation_string_de": canonical.get("citation_string_de"),
+        "citation_string_fr": canonical.get("citation_string_fr"),
+        "citation_string_it": canonical.get("citation_string_it"),
+        "canonical_url": canonical.get("canonical_url"),
+        "markdown_link": _md_link(canonical.get("citation_string_de") or decision.get("docket_number", ""), canonical.get("canonical_url", "")),
         "regeste": regeste,
         "sachverhalt": sachverhalt,
         "key_erwaegungen": key_erwaegungen,
@@ -8969,10 +9011,13 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
                     dvariants,
                 ).fetchone()
                 if row:
+                    url = _canonical_decision_url(row["decision_id"])
                     cited_by.append({
                         "decision_id": row["decision_id"],
                         "bge_ref": row["docket_number"],
                         "regeste": (row["regeste"] or "")[:200],
+                        "canonical_url": url,
+                        "markdown_link": _md_link(row["docket_number"], url),
                     })
             for did in cites_ids:
                 dvariants = _decision_id_variants(did)
@@ -8982,10 +9027,13 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
                     dvariants,
                 ).fetchone()
                 if row:
+                    url = _canonical_decision_url(row["decision_id"])
                     cites.append({
                         "decision_id": row["decision_id"],
                         "bge_ref": row["docket_number"],
                         "regeste": (row["regeste"] or "")[:200],
+                        "canonical_url": url,
+                        "markdown_link": _md_link(row["docket_number"], url),
                     })
         finally:
             fts_conn.close()
@@ -12858,29 +12906,22 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 _record_query(arguments.get("query", ""))
                 text = f"Found {total_count} decisions (showing {req_offset + 1}\u2013{end}):\n\n"
 
+                # Each result is rendered as a Markdown link so the LLM
+                # propagates a clickable citation to the user-facing answer.
                 if fields_arg == "compact":
                     for i, r in enumerate(results, 1):
-                        text += (
-                            f"{i}. {r['docket_number']} ({r['decision_date']}) "
-                            f"[{r['court']}] [{r['language']}] "
-                            f"ID:{r['decision_id']}\n"
-                        )
+                        link = _md_link(r['docket_number'], _canonical_decision_url(r.get('decision_id', '')))
+                        text += f"{i}. {link} ({r['decision_date']}) [{r['court']}] [{r['language']}]\n"
                 else:
                     for i, r in enumerate(results, 1):
-                        text += (
-                            f"**{i}. {r['docket_number']}** ({r['decision_date']}) "
-                            f"[{r['court']}] [{r['language']}]\n"
-                        )
-                        if r.get("decision_id"):
-                            text += f"   ID: {r['decision_id']}\n"
+                        link = _md_link(r['docket_number'], _canonical_decision_url(r.get('decision_id', '')))
+                        text += f"**{i}.** {link} ({r['decision_date']}) [{r['court']}] [{r['language']}]\n"
                         if r.get("title"):
                             text += f"   Title: {r['title']}\n"
                         if r.get("regeste"):
                             text += f"   Regeste: {r['regeste']}\n"
                         if r.get("snippet"):
                             text += f"   ...{r['snippet']}...\n"
-                        if r.get("source_url"):
-                            text += f"   URL: {r['source_url']}\n"
                         text += "\n"
 
             return [TextContent(type="text", text=text)]
@@ -12898,8 +12939,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             # else. The instruction block at the server level tells the LLM to
             # embed these verbatim.
             citation = _build_citation_strings(result)
+            # H1 is itself a Markdown link so the LLM propagates a clickable
+            # citation when it cites this decision in its final answer.
+            h1 = _md_link(result['docket_number'], citation['canonical_url'])
             text = (
-                f"# {result['docket_number']}\n"
+                f"# {h1}\n"
                 f"**Court:** {result['court']} | "
                 f"**Date:** {result['decision_date']} | "
                 f"**Language:** {result['language']}\n\n"
@@ -12907,7 +12951,9 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 f"- DE: `{citation['citation_string_de']}`\n"
                 f"- FR: `{citation['citation_string_fr']}`\n"
                 f"- IT: `{citation['citation_string_it']}`\n"
-                f"- URL: {citation['canonical_url']}\n"
+                f"- URL: <{citation['canonical_url']}>\n"
+                f"- Markdown-link form (use this in your reply to the user): "
+                f"`[{citation['citation_string_de']}]({citation['canonical_url']})`\n"
             )
             if result.get("chamber"):
                 text += f"\n**Chamber:** {result['chamber']}\n"
