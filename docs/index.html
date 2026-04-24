@@ -1469,33 +1469,55 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   margin: var(--s-5) 0 var(--s-2);
   letter-spacing: var(--ls-tight);
 }
-.contrib-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 var(--s-4);
-  border-top: 1px solid var(--bd);
+/* "Behind the project" — maintainer (hero) + foundation + cta */
+.contrib-byline {
+  font-size: clamp(15px, 1.7vw, 17px);
+  line-height: var(--lh-relaxed);
+  color: var(--tx);
+  margin: 0 0 var(--s-4) !important;
+  text-wrap: pretty;
 }
-.contrib-list li {
-  padding: var(--s-3) 0;
-  border-bottom: 1px solid var(--bd);
-  font-size: var(--fs-md);
+.contrib-byline a,
+.contributors-list a {
+  color: var(--tx);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--tx3);
+  transition: text-decoration-color 0.15s;
+}
+.contrib-byline a:hover,
+.contributors-list a:hover { text-decoration-color: var(--tx); }
+.contrib-foundation {
+  font-size: var(--fs-sm);
   line-height: var(--lh-relaxed);
   color: var(--tx2);
-}
-.contrib-list code {
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  font-size: 0.9em;
-  padding: 1px 4px;
-  background: var(--bg-alt);
-  border-radius: 4px;
-  color: var(--tx);
+  margin: 0 0 var(--s-4) !important;
 }
 .contrib-cta {
   font-size: var(--fs-sm);
   color: var(--tx2);
-  margin-top: var(--s-4) !important;
+  margin: 0 !important;
   padding-top: var(--s-3);
   border-top: 1px solid var(--bd);
+}
+
+/* Contributors — dedicated section, minimal name list */
+.contributors-section {
+  margin-top: var(--s-5);
+}
+.contributors-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+}
+.contributors-list li {
+  font-size: clamp(15px, 1.7vw, 17px);
+  line-height: var(--lh-snug);
+  color: var(--tx);
 }
 
 /* Hide sr-only content visually but keep accessible */
@@ -2428,40 +2450,26 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </p>
   </section>
 
-  <!-- Contributors -->
-  <section class="landing-prose" id="contributors">
-    <h2 data-t="contrib_heading">Mitwirkende</h2>
-    <p data-t="contrib_intro">
-      OpenCaseLaw wird von einer kleinen offenen Community getragen. Der gesamte Datensatz und der Code sind unter CC0 bzw. MIT
-      frei nutzbar — kein Abo, keine API-Keys. Die folgenden Personen und Institutionen haben das Projekt substanziell geprägt.
+  <!-- Behind the project — maintainer + foundation + cta -->
+  <section class="landing-prose" id="behind">
+    <h2 data-t="contrib_heading">Hinter dem Projekt</h2>
+    <p class="contrib-byline" data-t="contrib_byline">
+      Entwickelt und betrieben von <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>.
     </p>
-
-    <h3 data-t="contrib_maintainer">Maintainer</h3>
-    <ul class="contrib-list">
-      <li><strong><a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a></strong> —
-        <span data-t="contrib_lead_desc">Projektleitung, Architektur, Scraper-Suite, Suchstack, Zitationsgraph, MCP-Server, Word-Add-in, Paper.</span></li>
-    </ul>
-
-    <h3 data-t="contrib_people">Early users, bug reporters, consumer integrators</h3>
-    <ul class="contrib-list">
-      <li><strong><a href="https://adriankoenig.ch" rel="noopener" target="_blank">Adrian König</a></strong> — <span data-t="contrib_adrian">Consumer-Integration (<code>apply_deltas.py</code>) gegen den täglichen HF-Delta-Feed; Report zur Federal-Data-Lücke im Delta (04/2026). Unabhängiger Validator des Inkrement-Pfads.</span></li>
-    </ul>
-
-    <h3 data-t="contrib_institutions">Institutionelle Grundlage</h3>
-    <ul class="contrib-list">
-      <li><strong>Bundesgericht · BGer</strong> &amp; <strong>entscheidsuche.ch</strong> — <span data-t="contrib_bger">öffentliche Infrastruktur, auf der dieser Datensatz aufbaut.</span></li>
-      <li><strong>Fedlex / Bundeskanzlei</strong> — <span data-t="contrib_fedlex">kanonischer SPARQL-Endpoint für Bundesgesetze und Materialien.</span></li>
-      <li><strong>LexFind.ch</strong> — <span data-t="contrib_lexfind">kantonale Gesetzes-Aggregation (26 Kantone).</span></li>
-      <li><strong>OnlineKommentar.ch</strong> &amp; <strong>OpenLegalCommentary.ch</strong> — <span data-t="contrib_kommentar">Open-Access-Kommentierungen unter CC-BY, die <code>get_commentary</code> möglich machen.</span></li>
-      <li><strong>Hugging Face</strong> — <span data-t="contrib_hf">Hosting des öffentlichen Datenmirrors unter CC0.</span></li>
-    </ul>
-
-    <p class="contrib-cta">
-      <span data-t="contrib_cta">Beitragen, einen Fehler melden oder als Nutzer*in genannt werden? Siehe</span>
-      <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a>
-      <span data-t="contrib_cta_or">oder</span>
-      <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.
+    <p class="contrib-foundation" data-t="contrib_foundation">
+      Der Datensatz baut auf der öffentlichen Infrastruktur des Bundesgerichts und entscheidsuche.ch auf, ergänzt durch Fedlex (Bundesgesetze und Materialien), LexFind (kantonale Gesetzgebung) sowie die Open-Access-Kommentare von OnlineKommentar.ch und OpenLegalCommentary.ch. Das öffentliche Mirror liegt bei Hugging Face unter CC0.
     </p>
+    <p class="contrib-cta" data-t="contrib_cta">
+      Beitragen oder als Nutzer*in genannt werden? Siehe <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> oder <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.
+    </p>
+  </section>
+
+  <!-- Contributors — dedicated minimal section -->
+  <section class="landing-prose contributors-section" id="contributors">
+    <h2 data-t="contributors_heading">Mitwirkende</h2>
+    <ul class="contributors-list">
+      <li><a href="https://adriankoenig.ch" rel="noopener" target="_blank">Adrian König</a></li>
+    </ul>
   </section>
 
 </main>
@@ -2520,7 +2528,7 @@ const I18N = {
     chart_timeline:'Entscheide pro Jahr', chart_languages:'Sprachverteilung',
     chart_top10:'Top 10 Gerichte', chart_lang_trends:'Sprachtrends (2005\u2013heute)',
     updated:'Aktualisiert am',
-    made:'Gebaut mit \u2665 von <a href="https://jonashertner.com">Jonas Hertner</a>',
+    made:'Gebaut mit \u2665 von <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a>',
     contact:'Fragen oder Feedback? <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>',
     access_hf_desc:'Gesamter Datensatz als Parquet-Dateien herunterladen',
     access_api_desc:'Abfragen via HuggingFace Datasets Server API',
@@ -2571,20 +2579,11 @@ const I18N = {
     cap_cta_entscheide:'Datensatz \u2192', cap_cta_gesetze:'Gesetze \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Drei Wege hinein',
     what_heading:'Was ist OpenCaseLaw?',
-    contrib_heading:'Mitwirkende',
-    contrib_intro:'OpenCaseLaw wird von einer kleinen offenen Community getragen. Der gesamte Datensatz und der Code sind unter CC0 bzw. MIT frei nutzbar — kein Abo, keine API-Keys. Die folgenden Personen und Institutionen haben das Projekt substanziell geprägt.',
-    contrib_maintainer:'Maintainer',
-    contrib_lead_desc:'Projektleitung, Architektur, Scraper-Suite, Suchstack, Zitationsgraph, MCP-Server, Word-Add-in, Paper.',
-    contrib_people:'Early Users, Bug-Reports, Consumer-Integration',
-    contrib_adrian:'Consumer-Integration (apply_deltas.py) gegen den täglichen HF-Delta-Feed; Report zur Federal-Data-Lücke im Delta (04/2026). Unabhängiger Validator des Inkrement-Pfads.',
-    contrib_institutions:'Institutionelle Grundlage',
-    contrib_bger:'öffentliche Infrastruktur, auf der dieser Datensatz aufbaut.',
-    contrib_fedlex:'kanonischer SPARQL-Endpoint für Bundesgesetze und Materialien.',
-    contrib_lexfind:'kantonale Gesetzes-Aggregation (26 Kantone).',
-    contrib_kommentar:'Open-Access-Kommentierungen unter CC-BY, die get_commentary möglich machen.',
-    contrib_hf:'Hosting des öffentlichen Datenmirrors unter CC0.',
-    contrib_cta:'Beitragen, einen Fehler melden oder als Nutzer*in genannt werden? Siehe',
-    contrib_cta_or:'oder',
+    contrib_heading:'Hinter dem Projekt',
+    contrib_byline:'Entwickelt und betrieben von <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>.',
+    contrib_foundation:'Der Datensatz baut auf der \u00f6ffentlichen Infrastruktur des Bundesgerichts und entscheidsuche.ch auf, erg\u00e4nzt durch Fedlex (Bundesgesetze und Materialien), LexFind (kantonale Gesetzgebung) sowie die Open-Access-Kommentare von OnlineKommentar.ch und OpenLegalCommentary.ch. Das \u00f6ffentliche Mirror liegt bei Hugging Face unter CC0.',
+    contrib_cta:'Beitragen oder als Nutzer*in genannt werden? Siehe <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> oder <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading:'Mitwirkende',
     demo_heading:'Live aus dem Korpus',
     demo_tagline:'Vier Rechercheabläufe, je ein MCP-Tool-Call: Volltextsuche nach Entscheiden, Abruf des aktuellen Gesetzestexts, Leading-Case-Ranking für einen Gesetzesartikel, Doktrinüberblick mit Zeitachse und Kommentar-Exzerpt.',
     demo_tab_search:'Suche', demo_tab_statute:'Gesetz', demo_tab_leading:'Leading Cases', demo_tab_doctrine:'Doktrin',
@@ -2680,7 +2679,7 @@ const I18N = {
     chart_timeline:'D\u00e9cisions par ann\u00e9e', chart_languages:'R\u00e9partition linguistique',
     chart_top10:'Top 10 Tribunaux', chart_lang_trends:'Tendances linguistiques (depuis 2005)',
     updated:'Mis \u00e0 jour le',
-    made:'Fait avec \u2665 par <a href="https://jonashertner.com">Jonas Hertner</a>',
+    made:'Fait avec \u2665 par <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a>',
     contact:'Questions ou commentaires ? <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>',
     access_hf_desc:'T\u00e9l\u00e9charger le jeu de donn\u00e9es complet en Parquet',
     access_api_desc:'Requ\u00eates via HuggingFace Datasets Server API',
@@ -2731,20 +2730,11 @@ const I18N = {
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'L\u00e9gislation \u2192', cap_cta_mcp:'Configuration MCP \u2192',
     capabilities_heading:'Trois points d\'entr\u00e9e',
     what_heading:'Qu\'est-ce qu\'OpenCaseLaw?',
-    contrib_heading:'Contributeurs',
-    contrib_intro:'OpenCaseLaw est porté par une petite communauté ouverte. L\'ensemble des données et du code est librement utilisable sous CC0 / MIT — ni abonnement, ni clé API. Les personnes et institutions suivantes ont contribué substantiellement.',
-    contrib_maintainer:'Responsable',
-    contrib_lead_desc:'Direction du projet, architecture, suite de scrapers, moteur de recherche, graphe de citations, serveur MCP, module Word, paper.',
-    contrib_people:'Premiers utilisateurs, rapporteurs de bugs, intégrations côté consommateur',
-    contrib_adrian:'Intégration côté consommateur (apply_deltas.py) avec le flux quotidien HF ; rapport sur la lacune des données fédérales dans le flux delta (04/2026). Validateur indépendant du chemin incrémental.',
-    contrib_institutions:'Fondement institutionnel',
-    contrib_bger:'infrastructure publique sur laquelle cet ensemble de données repose.',
-    contrib_fedlex:'endpoint SPARQL canonique pour les lois fédérales et les travaux préparatoires.',
-    contrib_lexfind:'agrégation législative cantonale (26 cantons).',
-    contrib_kommentar:'commentaires académiques en libre accès sous CC-BY qui rendent possible get_commentary.',
-    contrib_hf:'hébergement du miroir public de données sous CC0.',
-    contrib_cta:'Contribuer, signaler un bug ou être cité comme utilisateur·rice ? Voir',
-    contrib_cta_or:'ou',
+    contrib_heading:'Derri\u00e8re le projet',
+    contrib_byline:'D\u00e9velopp\u00e9 et maintenu par <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>.',
+    contrib_foundation:'L\u2019ensemble de donn\u00e9es repose sur l\u2019infrastructure publique du Tribunal f\u00e9d\u00e9ral et d\u2019entscheidsuche.ch, compl\u00e9t\u00e9e par Fedlex (lois f\u00e9d\u00e9rales et travaux pr\u00e9paratoires), LexFind (l\u00e9gislation cantonale), et les commentaires en libre acc\u00e8s d\u2019OnlineKommentar.ch et OpenLegalCommentary.ch. Le miroir public est h\u00e9berg\u00e9 sur Hugging Face sous CC0.',
+    contrib_cta:'Contribuer ou \u00eatre cit\u00e9\u00b7e comme utilisateur\u00b7rice ? Voir <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> ou <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading:'Contributeurs',
     demo_heading:'En direct du corpus',
     demo_tagline:'Quatre flux de recherche, un appel d\'outil MCP chacun : recherche plein texte de décisions, récupération du texte actuel d\'une loi, classement des arrêts de principe pour un article de loi, vue d\'ensemble doctrinale avec chronologie et extrait de commentaire.',
     demo_tab_search:'Recherche', demo_tab_statute:'Loi', demo_tab_leading:'Arr\u00eats de principe', demo_tab_doctrine:'Doctrine',
@@ -2840,7 +2830,7 @@ const I18N = {
     chart_timeline:'Decisioni per anno', chart_languages:'Distribuzione linguistica',
     chart_top10:'Top 10 Tribunali', chart_lang_trends:'Tendenze linguistiche (dal 2005)',
     updated:'Aggiornato il',
-    made:'Fatto con \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
+    made:'Fatto con \u2665 da <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a>',
     contact:'Domande o feedback? <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>',
     access_hf_desc:'Scarica il dataset completo in formato Parquet',
     access_api_desc:'Query via HuggingFace Datasets Server API',
@@ -2891,20 +2881,11 @@ const I18N = {
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislazione \u2192', cap_cta_mcp:'Configurazione MCP \u2192',
     capabilities_heading:'Tre punti d\'ingresso',
     what_heading:'Cos\'\u00e8 OpenCaseLaw?',
-    contrib_heading:'Collaboratori',
-    contrib_intro:'OpenCaseLaw è portato avanti da una piccola comunità aperta. L\'intero dataset e il codice sono liberamente utilizzabili sotto CC0 / MIT — nessun abbonamento, nessuna chiave API. Le persone e istituzioni seguenti hanno contribuito in modo sostanziale.',
-    contrib_maintainer:'Responsabile',
-    contrib_lead_desc:'Direzione del progetto, architettura, scraper, motore di ricerca, grafo delle citazioni, server MCP, componente aggiuntivo Word, paper.',
-    contrib_people:'Primi utenti, segnalazioni di bug, integrazioni lato consumatore',
-    contrib_adrian:'Integrazione lato consumatore (apply_deltas.py) con il feed HF giornaliero; segnalazione della lacuna dei dati federali nel flusso delta (04/2026). Validatore indipendente del percorso incrementale.',
-    contrib_institutions:'Fondamento istituzionale',
-    contrib_bger:'infrastruttura pubblica su cui questo dataset si basa.',
-    contrib_fedlex:'endpoint SPARQL canonico per le leggi federali e i messaggi.',
-    contrib_lexfind:'aggregazione legislativa cantonale (26 Cantoni).',
-    contrib_kommentar:'commenti accademici ad accesso aperto sotto CC-BY che rendono possibile get_commentary.',
-    contrib_hf:'hosting del mirror pubblico del dataset sotto CC0.',
-    contrib_cta:'Contribuire, segnalare un bug o essere citat* come utente? Vedi',
-    contrib_cta_or:'o',
+    contrib_heading:'Dietro al progetto',
+    contrib_byline:'Sviluppato e mantenuto da <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>.',
+    contrib_foundation:'Il dataset si basa sull\u2019infrastruttura pubblica del Tribunale federale e di entscheidsuche.ch, integrata con Fedlex (leggi federali e Materialien), LexFind (legislazione cantonale) e i commenti ad accesso aperto di OnlineKommentar.ch e OpenLegalCommentary.ch. Il mirror pubblico \u00e8 ospitato su Hugging Face sotto CC0.',
+    contrib_cta:'Contribuire o essere citat* come utente? Vedi <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> o <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading:'Collaboratori',
     demo_heading:'Dal vivo dal corpus',
     demo_tagline:'Quattro flussi di ricerca, una chiamata a strumento MCP ciascuno: ricerca full-text di decisioni, recupero del testo attuale di una legge, classifica dei casi guida per un articolo di legge, panoramica dottrinale con cronologia ed estratto di commentario.',
     demo_tab_search:'Ricerca', demo_tab_statute:'Legge', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Dottrina',
@@ -3000,7 +2981,7 @@ const I18N = {
     chart_timeline:'Decisiuns per onn', chart_languages:'Distribuziun linguistica',
     chart_top10:'Top 10 Dretgiras', chart_lang_trends:'Tendenzas linguisticas (dapi 2005)',
     updated:'Actualis\u00e0 ils',
-    made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com">Jonas Hertner</a>',
+    made:'Constru\u00ec cun \u2665 da <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a>',
     contact:'Dumondas u resun? <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>',
     access_hf_desc:'Telechargiar il set da datas cumplain sco datotecas Parquet',
     access_api_desc:'Dumondas via HuggingFace Datasets Server API',
@@ -3051,20 +3032,11 @@ const I18N = {
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Leschas \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Trais entradas',
     what_heading:'Tge \u00e8 OpenCaseLaw?',
-    contrib_heading:'Collaboratuers',
-    contrib_intro:'OpenCaseLaw è portà avant d\'ina pitschna communitad averta. L\'entir set da datas ed il code èn libramain disponibels sut CC0 / MIT — nagin abunament, naginas clavs API.',
-    contrib_maintainer:'Responsabel',
-    contrib_lead_desc:'Direcziun dal project, architectura, scrapers, fastizchadira, grafic da citaziuns, server MCP, add-in Word, paper.',
-    contrib_people:'Emprims utilisaders, rapports da bugs, integraziuns',
-    contrib_adrian:'Integraziun da consumaders (apply_deltas.py) cunter il feed HF dal di; rapport davart la lacuna da datas federalas en la flur da deltas (04/2026).',
-    contrib_institutions:'Fundament institucional',
-    contrib_bger:'infrastructura publica sin la quala quest set da datas sa basa.',
-    contrib_fedlex:'endpoint SPARQL canonic per las leschas federalas.',
-    contrib_lexfind:'agregaziun legislativa dals 26 chantuns.',
-    contrib_kommentar:'commentaris academics sut CC-BY che rendan pussaivel get_commentary.',
-    contrib_hf:'hosting dal mirror public dal set da datas sut CC0.',
-    contrib_cta:'Contribuir, annunziar in sbagl u esser numnà sco utilisader? Vesair',
-    contrib_cta_or:'u',
+    contrib_heading:'Davos il project',
+    contrib_byline:'Sviluppà e tegnì en moviment da <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>.',
+    contrib_foundation:'Il set da datas sa basa sin l\u2019infrastructura publica dal Tribunal federal e d\u2019entscheidsuche.ch, cumplettà tras Fedlex (leschas federalas e materialias), LexFind (legislaziun cantunala) e ils commentaris d\u2019access avert da OnlineKommentar.ch ed OpenLegalCommentary.ch. Il mirror public \u00e8 hostià sin Hugging Face sut CC0.',
+    contrib_cta:'Contribuir u esser numnà sco utilisader? Vesair <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> u <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading:'Collaboratuers',
     demo_heading:'En viv dal corpus',
     demo_tagline:'Quatter fluxs da retschertga, ina clomada d\'utensil MCP mintgin: tschertga full-text da decisiuns, retschatta dal text actual d\'ina lescha, rangaziun da cas lidaders per in artitgel legal, survista duttrinala cun cronologia ed extract da commentari.',
     demo_tab_search:'Tschertga', demo_tab_statute:'Lescha', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrina',
@@ -3160,7 +3132,7 @@ const I18N = {
     chart_timeline:'Decisions per Year', chart_languages:'Language Distribution',
     chart_top10:'Top 10 Courts', chart_lang_trends:'Language Trends (since 2005)',
     updated:'Updated',
-    made:'Built with \u2665 by <a href="https://jonashertner.com">Jonas Hertner</a>',
+    made:'Built with \u2665 by <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a>',
     contact:'Questions or feedback? <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>',
     access_hf_desc:'Download the full dataset as Parquet files',
     access_api_desc:'Query via HuggingFace Datasets Server API',
@@ -3211,20 +3183,11 @@ const I18N = {
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislation \u2192', cap_cta_mcp:'MCP setup \u2192',
     capabilities_heading:'Three ways in',
     what_heading:'What is OpenCaseLaw?',
-    contrib_heading:'Contributors',
-    contrib_intro:'OpenCaseLaw is carried by a small open community. The full dataset and code are freely usable under CC0 / MIT — no subscription, no API keys. The following people and institutions have shaped the project substantially.',
-    contrib_maintainer:'Maintainer',
-    contrib_lead_desc:'Project lead, architecture, scraper suite, search stack, citation graph, MCP server, Word add-in, paper.',
-    contrib_people:'Early users, bug reporters, consumer integrators',
-    contrib_adrian:'Consumer-side integration (apply_deltas.py) against the daily HF delta feed; the report that surfaced the federal-data gap in the delta pipeline (04/2026). Independent early validator of the incremental path.',
-    contrib_institutions:'Institutional foundation',
-    contrib_bger:'public infrastructure on which this dataset is built.',
-    contrib_fedlex:'canonical SPARQL endpoint for federal statutes and Materialien.',
-    contrib_lexfind:'cantonal legislation aggregation (26 cantons).',
-    contrib_kommentar:'open-access scholarly commentary under CC-BY that makes get_commentary possible.',
-    contrib_hf:'hosting the public dataset mirror under CC0.',
-    contrib_cta:'Contribute, report a bug, or be listed as a user? See',
-    contrib_cta_or:'or',
+    contrib_heading:'Behind the project',
+    contrib_byline:'Built and maintained by <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>.',
+    contrib_foundation:'The dataset is built on the public infrastructure of the Federal Tribunal and entscheidsuche.ch, complemented by Fedlex (federal statutes and Materialien), LexFind (cantonal legislation), and the open-access commentary of OnlineKommentar.ch and OpenLegalCommentary.ch. The public mirror is hosted on Hugging Face under CC0.',
+    contrib_cta:'Contribute or be listed as a user? See <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> or <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading:'Contributors',
     demo_heading:'Live from the corpus',
     demo_tagline:'Four research workflows, one MCP tool call each: full-text decision search, current statute text lookup, leading-case ranking for a statute article, and doctrine overview with timeline + commentary excerpt.',
     demo_tab_search:'Search', demo_tab_statute:'Statute', demo_tab_leading:'Leading cases', demo_tab_doctrine:'Doctrine',
