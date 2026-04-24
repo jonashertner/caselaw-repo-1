@@ -21,6 +21,7 @@ names here when someone's work lands in the project.*
   (`apply_deltas.py`) against the daily HF delta feed, and the report that
   surfaced the 30-day federal-data gap in the delta pipeline (2026-04).
   Independent early validator of the incremental-update path.
+- **Arne Holicki**
 
 ## Institutional acknowledgements
 
