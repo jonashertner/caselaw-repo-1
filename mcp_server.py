@@ -13984,7 +13984,81 @@ render();setInterval(render,60000);
     # Override the OpenAPI generator so our servers list is authoritative.
     # FastAPI's default get_openapi() otherwise keeps injecting its own
     # mount-path server entry ahead of anything we pass via servers=...
+    # Also: emit OpenAPI 3.0.3 rather than FastAPI's default 3.1.0 —
+    # Microsoft Copilot Studio's Custom Connector importer rejects 3.1.x
+    # with "An error has happened while trying to parse the Open API
+    # contract." (LALIVE integration, 2026-04-24). Downgrading is safe:
+    # none of our endpoints use 3.1-only schema features. ChatGPT / Claude /
+    # Azure Foundry all accept 3.0.3 fine. We also apply a small schema
+    # sanitisation pass to strip 3.1-only JSON-Schema fragments that
+    # FastAPI may still emit even at openapi_version="3.0.3".
     from fastapi.openapi.utils import get_openapi as _get_openapi
+
+    def _sanitize_for_3_0(schema: dict) -> None:
+        """Recursively convert JSON-Schema 2020-12 idioms (used by OpenAPI
+        3.1) into OpenAPI 3.0.3-compatible forms. Microsoft Copilot Studio
+        and many other OpenAPI 3.0-only tools reject 3.1 specs at parse
+        time with a generic error.
+
+        Conversions:
+          - `anyOf: [{...}, {type: "null"}]` → flatten to the non-null
+            schema with `nullable: true`. This is the FastAPI-Optional
+            pattern. Most-impactful fix for parser compatibility.
+          - `type: ["string", "null"]` → `type: "string", nullable: true`.
+          - `const: X` → `enum: [X]`.
+          - `examples: [...]` → `example: examples[0]` (3.0 allows one).
+          - `exclusiveMinimum`/`exclusiveMaximum` as boolean → drop.
+
+        Walks the entire schema tree in place.
+        """
+        def walk(node):
+            if isinstance(node, dict):
+                # anyOf/oneOf with null → nullable variant
+                # Pattern: anyOf: [{...real...}, {type: "null"}]
+                for combiner in ("anyOf", "oneOf"):
+                    branches = node.get(combiner)
+                    if isinstance(branches, list):
+                        null_branches = [b for b in branches if isinstance(b, dict) and b.get("type") == "null"]
+                        non_null = [b for b in branches if not (isinstance(b, dict) and b.get("type") == "null")]
+                        if null_branches and len(non_null) == 1:
+                            # Flatten: copy non_null up, mark nullable
+                            del node[combiner]
+                            for k, v in non_null[0].items():
+                                if k not in node:
+                                    node[k] = v
+                            node["nullable"] = True
+                        elif null_branches and len(non_null) > 1:
+                            # Keep the combiner but drop the null branch + add nullable
+                            node[combiner] = non_null
+                            node["nullable"] = True
+                # type arrays → 3.0 nullable
+                t = node.get("type")
+                if isinstance(t, list):
+                    non_null = [x for x in t if x != "null"]
+                    if len(non_null) == 1:
+                        node["type"] = non_null[0]
+                        if "null" in t:
+                            node["nullable"] = True
+                    elif not non_null:
+                        node.pop("type", None)
+                        node["nullable"] = True
+                # exclusiveMinimum/Maximum booleans — drop them
+                for k in ("exclusiveMinimum", "exclusiveMaximum"):
+                    if isinstance(node.get(k), bool):
+                        node.pop(k, None)
+                # const → enum
+                if "const" in node:
+                    node["enum"] = [node.pop("const")]
+                # examples → example (first only)
+                if isinstance(node.get("examples"), list) and node["examples"]:
+                    node.setdefault("example", node["examples"][0])
+                    node.pop("examples", None)
+                for v in node.values():
+                    walk(v)
+            elif isinstance(node, list):
+                for v in node:
+                    walk(v)
+        walk(schema)
 
     def _custom_openapi() -> dict:
         if rest_api.openapi_schema:
@@ -13994,8 +14068,11 @@ render();setInterval(render,60000);
             version=rest_api.version,
             description=rest_api.description,
             routes=rest_api.routes,
+            openapi_version="3.0.3",
         )
+        schema["openapi"] = "3.0.3"
         schema["servers"] = _build_api_servers()
+        _sanitize_for_3_0(schema)
         rest_api.openapi_schema = schema
         return schema
 
@@ -14039,6 +14116,13 @@ render();setInterval(render,60000);
         except Exception:
             pass
         return row
+
+    # Explicit OpenAPI 3.0.3 alias for Microsoft Copilot Studio. The
+    # default /api/openapi.json now also emits 3.0.3, but keeping a
+    # version-stamped path lets us advise integrators unambiguously.
+    @rest_api.get("/openapi-v3.json", include_in_schema=False)
+    async def api_openapi_v3():
+        return rest_api.openapi()
 
     @rest_api.get("/decisions", tags=["Case Law"],
                   summary="Search court decisions",
