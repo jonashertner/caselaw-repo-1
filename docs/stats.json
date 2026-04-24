@@ -2183,7 +2183,7 @@
     "2026-03": 2042,
     "2026-04": 306
   },
-  "generated_at": "2026-04-24T07:39:12.966618+00:00",
+  "generated_at": "2026-04-24T10:31:20.943263+00:00",
   "scraper_health": {
     "run_at": "2026-04-24T02:30:20.657650+00:00",
     "run_duration_s": 5420.3,
@@ -2331,15 +2331,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 10845,
+        "our_count": 10846,
         "portal_count": null,
         "gap": null,
-        "duration_s": 84.2,
+        "duration_s": 84.8,
         "error": null,
         "note": null,
         "state_count": 10881,
         "jsonl_size_mb": 304.2,
-        "jsonl_mtime": "2026-04-24T01:07:38.577010+00:00"
+        "jsonl_mtime": "2026-04-24T09:01:25.294262+00:00"
       },
       "bpatger": {
         "success": true,
@@ -2356,7 +2356,7 @@
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-24T01:09:05.749239+00:00"
+        "jsonl_mtime": "2026-04-24T09:07:34.044493+00:00"
       },
       "ch_bundesrat": {
         "success": true,
@@ -2436,12 +2436,12 @@
         "our_count": 21239,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1112.4,
+        "duration_s": 1111.8,
         "error": null,
         "note": null,
         "state_count": 21239,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-24T01:18:33.107718+00:00"
+        "jsonl_mtime": "2026-04-24T09:18:32.259721+00:00"
       },
       "elcom": {
         "success": true,
@@ -2518,15 +2518,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 92049,
+        "our_count": 92071,
         "portal_count": null,
         "gap": null,
-        "duration_s": 574.0,
+        "duration_s": 971.5,
         "error": null,
         "note": null,
         "state_count": 92071,
         "jsonl_size_mb": 2652.2,
-        "jsonl_mtime": "2026-04-24T01:25:26.157332+00:00"
+        "jsonl_mtime": "2026-04-24T09:16:12.064245+00:00"
       },
       "bger": {
         "success": true,
@@ -2541,9 +2541,9 @@
         "duration_s": 1576.8,
         "error": null,
         "note": null,
-        "state_count": 92189,
+        "state_count": 92191,
         "jsonl_size_mb": 1377.6,
-        "jsonl_mtime": "2026-04-24T01:26:34.523375+00:00"
+        "jsonl_mtime": "2026-04-24T10:17:18.630795+00:00"
       },
       "be_verwaltungsgericht": {
         "success": true,
@@ -3176,7 +3176,7 @@
       }
     },
     "run_at_daily": "2026-04-24T02:30:20.657650+00:00",
-    "run_at_federal": "2026-04-23T09:18:32.951450+00:00",
+    "run_at_federal": "2026-04-24T09:18:32.368691+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3228,8 +3228,8 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 8883077,
-    "statute_edges": 11379717
+    "citation_edges": 8884304,
+    "statute_edges": 11381181
   },
   "traffic": {
     "window_days": 30,
@@ -3845,7 +3845,10 @@
       "AG": 1,
       "SZ": 7
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 1227,
+      "statute_edges": 1464
+    },
     "previous_generated_at": "2026-04-23T10:57:01.344613+00:00"
   }
 }
