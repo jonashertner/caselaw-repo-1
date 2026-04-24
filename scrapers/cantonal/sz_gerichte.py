@@ -289,17 +289,32 @@ class SZGerichteScraper(BaseScraper):
             "enc_path": enc_path,
         }
 
+    # Below this HTML-length threshold the HTML rendering is almost
+    # certainly the cover sheet only (docket, parties, Stichwort) and the
+    # full reasoning is PDF-only. Trigger a PDF fetch and pick whichever
+    # source is richer. STK (Strafkammer) / GPR / BEK decisions are the
+    # canonical cover-only case — 925-char HTML vs 3.5k-char PDF for
+    # STK 2021 52 (KGer SZ, investigated 2026-04-24).
+    HTML_TRUST_MIN = 2000
+
     def fetch_decision(self, stub: dict) -> Decision | None:
-        """Fetch HTML content via getDocumentDetails, fall back to PDF."""
+        """Fetch HTML via getDocumentDetails; also try PDF when the HTML
+        looks cover-only. Pick whichever source has more content."""
         doc_id = stub.get("doc_id", "")
         docket = stub["docket_number"]
 
-        # Try HTML first
-        full_text = self._fetch_html(doc_id)
+        html_text = self._fetch_html(doc_id)
 
-        # Fall back to PDF if HTML empty
-        if not full_text or len(full_text) < 50:
-            full_text = self._fetch_pdf(stub)
+        pdf_text = ""
+        if (not html_text or len(html_text) < self.HTML_TRUST_MIN) and stub.get("enc_path"):
+            pdf_text = self._fetch_pdf(stub)
+
+        # Pick the richer source. PDF wins on ties when available because
+        # it's the authoritative form of the decision.
+        if len(pdf_text) > len(html_text):
+            full_text = pdf_text
+        else:
+            full_text = html_text
 
         if not full_text or len(full_text) < 50:
             logger.warning(f"[{self.court_code}] No text for {docket}")
