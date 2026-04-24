@@ -14073,6 +14073,24 @@ render();setInterval(render,60000);
         schema["openapi"] = "3.0.3"
         schema["servers"] = _build_api_servers()
         _sanitize_for_3_0(schema)
+        # Power Apps WADL (Swagger-2.0) compatibility: collapse constructs
+        # that are legal in 3.0 but rejected by the WADL converter used by
+        # Microsoft Copilot Studio / Power Platform. Only known site so
+        # far is FastAPI's auto-generated ValidationError:
+        #   - loc.items.anyOf:[string,integer] → items:{type:string}
+        #     (Swagger 2.0 disallows anyOf inside items)
+        #   - input has no type (Pydantic "any") → input.type:"object"
+        # Error message from Power Apps: "Required property 'loc' cannot
+        # have an ambiguous schema" (LALIVE integration, 2026-04-24).
+        ve = schema.get("components", {}).get("schemas", {}).get("ValidationError")
+        if isinstance(ve, dict):
+            props = ve.get("properties", {})
+            loc = props.get("loc")
+            if isinstance(loc, dict) and isinstance(loc.get("items"), dict) and "anyOf" in loc["items"]:
+                loc["items"] = {"type": "string"}
+            inp = props.get("input")
+            if isinstance(inp, dict) and "type" not in inp:
+                inp["type"] = "object"
         rest_api.openapi_schema = schema
         return schema
 
