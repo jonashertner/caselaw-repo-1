@@ -1,0 +1,15 @@
+[Unit]
+Description=Weekly ECtHR (HUDOC) incremental scrape
+
+[Timer]
+# Sunday 14:00 UTC — gap in the existing weekly schedule:
+#   Sun 09:30 research · Sun 22:00 entscheidsuche · Sat 01:00 scrape
+# First firing deferred 7 days (OnActiveSec) so the initial full
+# backfill (~2–5 days) has time to finish before the first top-off.
+OnCalendar=Sun *-*-* 14:00:00 UTC
+OnActiveSec=7d
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
