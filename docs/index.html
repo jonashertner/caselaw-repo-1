@@ -813,178 +813,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   border-radius: 100px; padding: 3px 10px; line-height: 1.4;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   Landing hero (v2) — centered, giant stat, responsive
-   ══════════════════════════════════════════════════════════════ */
-.hero-v2 {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: clamp(56px, 9vw, 120px) 0 clamp(40px, 5vw, 64px);
-  text-align: center;
-}
-.hero-v2 .hero-kicker {
-  font-family: var(--f-mono);
-  font-size: var(--fs-2xs);
-  font-weight: 500;
-  letter-spacing: var(--ls-kicker);
-  text-transform: uppercase;
-  color: var(--tx3);
-  margin: 0 0 clamp(28px, 4.5vw, 48px);
-}
-.hero-v2 .hero-stat {
-  margin: 0 0 clamp(24px, 3.5vw, 40px);
-}
-.hero-v2 .hero-stat-num {
-  display: block;
-  /* Floor at 44px for 320-375px screens so the number never crowds
-     the viewport edges. Ceiling at 104px on wide viewports. */
-  font-size: clamp(44px, 9vw, 104px);
-  font-weight: 500;
-  letter-spacing: -0.035em;
-  line-height: 0.95;
-  color: var(--tx);
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  margin-bottom: clamp(8px, 1.2vw, 12px);
-}
-.hero-v2 .hero-stat-label {
-  display: block;
-  font-size: clamp(15px, 2vw, 20px);
-  font-weight: 400;
-  color: var(--tx2);
-  letter-spacing: var(--ls-snug);
-}
-.hero-v2 .hero-headline {
-  font-size: clamp(22px, 3vw, 32px);
-  font-weight: 500;
-  letter-spacing: var(--ls-tight);
-  line-height: var(--lh-snug);
-  color: var(--tx);
-  margin: 0 auto clamp(6px, 1vw, 10px);
-  max-width: 22ch;
-  text-wrap: balance;
-}
-.hero-v2 .hero-tagline {
-  font-size: clamp(14px, 1.5vw, 16px);
-  line-height: var(--lh-base);
-  color: var(--tx2);
-  margin: 0 auto clamp(20px, 3vw, 32px);
-  max-width: 46ch;
-  text-wrap: balance;
-}
-.hero-v2 .hero-ctas {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--s-2);
-  flex-wrap: wrap;
-  margin-bottom: clamp(20px, 3.5vw, 36px);
-}
-
-/* Expanded hero breakdown: language split + fact row. */
-.hero-v2 .hero-breakdown {
-  margin-top: clamp(20px, 3.5vw, 36px);
-}
-.hero-v2 .hero-langs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(16px, 3vw, 32px);
-  max-width: 680px;
-  margin: 0 auto clamp(24px, 3vw, 32px);
-  text-align: left;
-}
-.hero-v2 .hero-lang {
-  min-width: 0;
-}
-.hero-v2 .hero-lang-num {
-  font-family: var(--f-mono);
-  font-size: clamp(17px, 2.2vw, 24px);
-  font-weight: 600;
-  color: var(--tx);
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-  margin-bottom: 8px;
-  line-height: 1;
-}
-.hero-v2 .hero-lang-bar {
-  width: 100%;
-  height: 3px;
-  background: var(--brd2);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-.hero-v2 .hero-lang-bar-fill {
-  height: 100%;
-  background: var(--tx);
-  /* Matches the counter animation total duration so bars and numbers
-     settle together. Curve is front-loaded so the bar is essentially
-     full during the counter's slow odometer phase. */
-  transition: width 2.3s cubic-bezier(0.22, 0.75, 0.36, 1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-v2 .hero-lang-bar-fill { transition: none; }
-}
-.hero-v2 .hero-lang-label {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  color: var(--tx3);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.hero-v2 .hero-facts {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px 16px;
-  flex-wrap: wrap;
-  font-family: var(--f-mono);
-  font-size: 12px;
-  color: var(--tx3);
-  letter-spacing: 0.01em;
-  line-height: 1.6;
-}
-.hero-v2 .hero-facts .sep { color: var(--brd); }
-.hero-v2 .hero-facts strong { color: var(--tx2); font-weight: 600; font-variant-numeric: tabular-nums; }
-
-/* Date + delta stamp — sits directly under the hero number. One line,
-   monospace, restrained — the single "when + what changed" signal. */
-.hero-v2 .hero-stamp {
-  margin: 4px auto clamp(18px, 2.5vw, 28px);
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 12px;
-  border: 1px solid var(--brd);
-  border-radius: 999px;
-  font-family: var(--f-mono);
-  font-size: 12px;
-  color: var(--tx3);
-  letter-spacing: 0.01em;
-}
-.hero-v2 .hero-stamp time {
-  color: var(--tx2);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.hero-v2 .hero-stamp .sep { color: var(--brd); }
-.hero-v2 .hero-stamp strong {
-  color: var(--tx);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-@media (max-width: 640px) {
-  .hero-v2 .hero-langs {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    max-width: 320px;
-  }
-  .hero-v2 .hero-facts { font-size: 11px; gap: 8px 12px; }
-  .hero-v2 .hero-stamp { font-size: 11px; padding: 5px 12px; }
-}
+/* (Legacy .hero-v2 / .cap-card / .word-banner CSS removed in the
+   2026-04-25 design refit. Hero is .hero-v3, cards use the unified
+   .card vocabulary, Word add-in is a single text-link in Connect.) */
 
 /* ── Corpus snapshot band ────────────────────────────────────
    A data-first panel directly below the hero. Three cards side by
@@ -1337,12 +1168,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   border-color: var(--brd);
 }
 .btn-secondary:hover { border-color: var(--tx3); background: var(--surf); color: var(--tx); }
-.btn-tertiary {
-  background: transparent;
-  color: var(--tx2);
-  border-color: var(--brd2);
-}
-.btn-tertiary:hover { border-color: var(--brd); color: var(--tx); background: var(--surf); }
 .btn .beta {
   display: inline-flex;
   align-items: center;
@@ -1374,71 +1199,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   border-bottom: 1px solid var(--brd2);
 }
 
-/* ── Capability cards ────────────────────────────────────── */
-.capabilities {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-4);
-}
-.cap-card {
-  display: flex;
-  flex-direction: column;
-  padding: var(--s-7) var(--s-6) var(--s-6);
-  background: var(--surf);
-  border: 1px solid var(--brd2);
-  border-radius: var(--r-md);
-  color: var(--tx);
-  text-decoration: none;
-  transition:
-    border-color var(--dur) var(--ease),
-    transform var(--dur) var(--ease),
-    background var(--dur) var(--ease);
-  min-height: 220px;
-}
-.cap-card:hover {
-  border-color: var(--tx3);
-  background: var(--surf);
-  text-decoration: none;
-  transform: translateY(-2px);
-}
-.cap-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r);
-  background: var(--bg2);
-  border: 1px solid var(--brd2);
-  color: var(--tx2);
-  margin-bottom: var(--s-5);
-  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
-}
-.cap-icon svg { width: 22px; height: 22px; }
-.cap-card:hover .cap-icon { color: var(--tx); border-color: var(--brd); }
-.cap-card h3 {
-  margin: 0 0 var(--s-2);
-  font-size: var(--fs-xl);
-  font-weight: 600;
-  letter-spacing: var(--ls-snug);
-  color: var(--tx);
-}
-.cap-card p {
-  font-size: var(--fs-sm);
-  line-height: var(--lh-base);
-  color: var(--tx2);
-  margin: 0 0 auto;
-  padding-bottom: var(--s-5);
-}
-.cap-card-cta {
-  font-family: var(--f-mono);
-  font-size: var(--fs-xs);
-  color: var(--tx3);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  transition: color var(--dur) var(--ease);
-}
-.cap-card:hover .cap-card-cta { color: var(--tx); }
+/* (Capability-cards CSS removed — markup was deleted in earlier refit.)
 
 /* ── Landing "what" prose ─────────────────────────────────── */
 .landing-prose {
@@ -1639,43 +1400,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 #main:focus { outline: none; }
 
-/* ── Word add-in banner ─────────────────────────────────── */
-.word-banner {
-  display: flex;
-  align-items: center;
-  gap: clamp(20px, 3vw, 36px);
-  flex-wrap: wrap;
-  padding: clamp(24px, 3vw, 32px);
-  background: var(--surf);
-  border: 1px solid var(--brd2);
-  border-radius: var(--r-md);
-}
-.word-banner-body {
-  flex: 1 1 340px;
-  min-width: 260px;
-}
-.word-banner-head {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  margin-bottom: var(--s-2);
-}
-.word-banner-head svg { color: var(--tx2); flex-shrink: 0; }
-.word-banner-head h3 {
-  margin: 0;
-  font-size: var(--fs-xl);
-  font-weight: 600;
-  letter-spacing: var(--ls-snug);
-  color: var(--tx);
-}
-.word-banner p {
-  margin: 0;
-  font-size: var(--fs-base);
-  line-height: var(--lh-base);
-  color: var(--tx2);
-  max-width: 62ch;
-}
-.word-banner-cta { flex-shrink: 0; }
+/* (Word add-in banner CSS removed — demoted to a single text-link
+   inside the Connect section's footer.) */
 
 /* ── Live from the corpus (landing demo) ── */
 .live-demo { }  /* section rhythm now comes from .section utility */
@@ -1872,23 +1598,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
      • ≤ 420 px  — tiny-screen special case (hero facts wrap)
    ══════════════════════════════════════════════════════════════ */
 
-/* ── ≤ 1100 px ── */
-@media (max-width: 1100px) {
-  .capabilities { gap: var(--s-3); }
-}
-
-/* ── ≤ 900 px ── */
-@media (max-width: 900px) {
-  .capabilities {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-3);
-  }
-  .cap-card {
-    min-height: auto;
-    padding: var(--s-6) var(--s-5) var(--s-5);
-  }
-}
-
 /* ── ≤ 760 px ── */
 @media (max-width: 760px) {
   .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-7); }
@@ -1896,10 +1605,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
 /* ── ≤ 640 px ── */
 @media (max-width: 640px) {
-  .capabilities { grid-template-columns: 1fr; gap: var(--s-3); }
-  .hero-v2 .hero-ctas .btn { width: 100%; justify-content: center; }
-  .hero-v2 .hero-facts { font-size: 11px; gap: var(--s-1) var(--s-3); line-height: 1.7; }
-  .hero-v2 .hero-stamp { font-size: 11px; padding: 5px 11px; }
   .section-heading { margin-bottom: var(--s-5); padding-bottom: var(--s-2); }
 }
 
@@ -1910,14 +1615,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .footer-meta > span { display: block; }
 }
 
-/* ── ≤ 420 px ── */
-@media (max-width: 420px) {
-  /* Hide the separator pips inside the facts strip on tiny screens —
-     wrap the items onto their own lines so nothing overflows. */
-  .hero-v2 .hero-facts .sep { display: none; }
-  .hero-v2 .hero-facts { flex-direction: column; gap: 4px; }
-  .hero-v2 .hero-kicker { margin-bottom: var(--s-7); }
-}
 
 /* ── Legacy dashboard responsive (sub-pages) ───────────────
    KPIs, tables, tree, access cards, health, study — these are used
@@ -2116,6 +1813,132 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   .hero-v3-ctas { gap: 24px; }
   .hero-v3-stamp { font-size: 11px; }
   .hero-v3-stamp .sep { margin: 0 6px; }
+}
+
+/* ===========================================================================
+   Unified card vocabulary (2026-04-25 refit).
+   Used by: International grid, Did you know grid, Latest cards.
+   Single class + section-specific grid wrappers.
+   =========================================================================== */
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: var(--surf);
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.card:hover { border-color: var(--brd2); background: var(--surf2); }
+.card h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  color: var(--tx);
+  line-height: 1.35;
+}
+.card p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--tx2);
+}
+
+/* International section ───────────────────────────────────────────────── */
+#international { padding: clamp(48px, 6vw, 72px) 16px; max-width: 880px; margin: 0 auto; }
+#international .section-heading {
+  font-weight: 100;
+  font-size: clamp(28px, 3.4vw, 44px);
+  letter-spacing: -0.025em;
+  margin: 0 0 24px;
+  text-align: center;
+  color: var(--tx);
+}
+.intl-lead {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--tx2);
+  margin: 0 auto 40px;
+  max-width: 640px;
+  text-align: center;
+  text-wrap: balance;
+}
+.intl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.intl-contact {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 300;
+  margin: 0;
+}
+.intl-contact a {
+  color: var(--tx);
+  text-decoration: none;
+  border-bottom: 1px solid var(--tx);
+  padding-bottom: 2px;
+  transition: opacity 0.18s var(--ease);
+}
+.intl-contact a:hover { opacity: 0.55; }
+@media (max-width: 640px) {
+  .intl-grid { grid-template-columns: 1fr; gap: 12px; }
+  .intl-lead { font-size: 15px; }
+}
+
+/* Did you know section ───────────────────────────────────────────────── */
+#didyou { padding: clamp(48px, 6vw, 72px) 16px; max-width: 1080px; margin: 0 auto; border-top: 1px solid var(--brd); }
+#didyou .section-heading {
+  font-weight: 100;
+  font-size: clamp(28px, 3.4vw, 44px);
+  letter-spacing: -0.025em;
+  margin: 0 0 12px;
+  text-align: center;
+  color: var(--tx);
+}
+.didyou-intro {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--tx3);
+  margin: 0 0 40px;
+}
+.didyou-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.didyou-fact {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--tx);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.didyou-fact strong {
+  font-weight: 500;
+  color: var(--tx);
+}
+.didyou-fact .didyou-meta {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--tx3);
+}
+.card[hidden] { display: none; }
+@media (max-width: 900px) {
+  .didyou-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .didyou-grid { grid-template-columns: 1fr; gap: 12px; }
 }
 
 /* ===========================================================================
@@ -2366,7 +2189,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <span>+<span id="hero-stamp-delta">0</span></span>
         <span data-t="hero_v3_since">since yesterday</span>
       </p>
-      <!-- Hidden compatibility IDs (legacy stats.json updater targets) -->
+      <!-- Hidden compatibility IDs (legacy stats.json updater targets).
+           Kept so renderHero / renderSnapshot in <script> never throw on
+           missing elements after the 2026-04-25 visual cleanup. -->
       <div aria-hidden="true" style="display:none">
         <span id="hero-courts"></span>
         <span id="hero-earliest"></span><span id="hero-latest"></span>
@@ -2374,6 +2199,12 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <span id="hero-lang-fr-num"></span><span id="hero-lang-fr-bar"></span><span id="hero-lang-fr-pct"></span>
         <span id="hero-lang-it-num"></span><span id="hero-lang-it-bar"></span><span id="hero-lang-it-pct"></span>
         <span id="hero-fed"></span><span id="hero-can"></span>
+        <!-- Decisions snapshot card was removed; updater still writes here. -->
+        <span id="sn-d-total"></span><span id="sn-d-delta"></span>
+        <span id="sn-d-federal"></span><span id="sn-d-cantonal"></span>
+        <span id="sn-d-courts"></span><span id="sn-d-cantons"></span><span id="sn-d-span"></span>
+        <!-- Recent cantonal Latest column was removed. -->
+        <ul id="latest-cantonal-list" hidden></ul>
       </div>
     </div>
   </header>
@@ -2391,34 +2222,12 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       </p>
     </div>
 
-    <div class="snapshot-grid">
-      <!-- Decisions card -->
-      <article class="snapshot-card" aria-labelledby="sn-d-heading">
-        <header>
-          <h3 id="sn-d-heading" data-t="snapshot_decisions">Decisions</h3>
-          <span class="snapshot-card-delta">+<strong id="sn-d-delta">0</strong> 24h</span>
-        </header>
-        <div class="snapshot-big" id="sn-d-total">—</div>
-        <div class="snapshot-big-sub" data-t="snapshot_decisions_sub">published Swiss court decisions</div>
-        <div class="snapshot-rows">
-          <div>
-            <span class="snapshot-row-label" data-t="snapshot_federal_decisions">Federal courts</span>
-            <strong id="sn-d-federal">—</strong>
-          </div>
-          <div>
-            <span class="snapshot-row-label" data-t="snapshot_cantonal_decisions">Cantonal courts</span>
-            <strong id="sn-d-cantonal">—</strong>
-          </div>
-          <div>
-            <span class="snapshot-row-label" data-t="snapshot_span_label">Date span</span>
-            <strong id="sn-d-span">—</strong>
-          </div>
-        </div>
-        <ul class="snapshot-meta">
-          <li><strong id="sn-d-courts">—</strong> <span data-t="snapshot_courts">courts</span> · <strong id="sn-d-cantons">—</strong> <span data-t="snapshot_cantons">cantons</span> · DE/FR/IT</li>
-        </ul>
-      </article>
-
+    <div class="snapshot-grid snapshot-grid--two">
+      <!-- (Decisions card removed in 2026-04-25 refit — its content moved
+           into the hero number + facts row. IDs preserved as hidden
+           compatibility shims in the hero block so the stats.json
+           updater (search for setText('sn-d-...) keeps writing without
+           throwing.) -->
       <!-- Legislation card -->
       <article class="snapshot-card" aria-labelledby="sn-l-heading">
         <header>
@@ -2610,7 +2419,34 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
       <a href="/mcp/" data-t="connect_footer_link">Full reference</a>
       <span class="sep">·</span>
       <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai" data-t="connect_footer_offline">Local install (offline, ~65 GB)</a>
+      <span class="sep">·</span>
+      <a href="https://word.opencaselaw.ch/install.html" data-t="connect_footer_word">Word add-in for legal practitioners (BETA) →</a>
     </p>
+  </section>
+
+  <!-- ── For international counsel — explicit positioning for non-Swiss firms ── -->
+  <section class="section" id="international" aria-labelledby="intl-heading">
+    <h2 class="section-heading" id="intl-heading" data-t="intl_heading">For international counsel</h2>
+    <p class="intl-lead" data-t="intl_lead">Swiss law touches every cross-border matter that involves a Swiss party, asset, employment relationship, or contract clause. OpenCaseLaw makes the published case-law of every Swiss federal and cantonal court available to the AI tools your team already uses — without procurement, without seat licences, without non-Swiss jurisdiction concerns.</p>
+    <div class="intl-grid">
+      <article class="card">
+        <h3 data-t="intl_card_lang_h">Multilingual coverage</h3>
+        <p data-t="intl_card_lang_p">Decisions in DE, FR and IT, with official Regeste head-notes. The leading case on a topic may be in any of the three languages — search returns all of them ranked by relevance, regardless of query language.</p>
+      </article>
+      <article class="card">
+        <h3 data-t="intl_card_scope_h">Comparable scope</h3>
+        <p data-t="intl_card_scope_p">968,373 decisions across 108 courts, 1875 to today. Comparable to the Swiss case-law coverage of Westlaw, Swisslex and Weblaw. Free, CC0 licensed.</p>
+      </article>
+      <article class="card">
+        <h3 data-t="intl_card_echr_h">Strasbourg jurisprudence</h3>
+        <p data-t="intl_card_echr_p">Swiss-respondent ECtHR judgments from HUDOC, plus general Grand Chamber, Chamber and Committee decisions. Indispensable for human-rights and Convention-grounded practice.</p>
+      </article>
+      <article class="card">
+        <h3 data-t="intl_card_intg_h">Procurement-free integration</h3>
+        <p data-t="intl_card_intg_p">MCP endpoint, OpenAPI 3.0.3 REST, or Hugging Face bulk download. Works with Claude, ChatGPT, Cursor, Gemini, Copilot Studio. No vendor onboarding, no per-seat licensing, no minimum commitment.</p>
+      </article>
+    </div>
+    <p class="intl-contact"><a href="mailto:team@jonashertner.com" data-t="intl_contact">Contact for institutional collaboration → team@jonashertner.com</a></p>
   </section>
 
   <!-- Latest: recent decisions + upcoming statute revisions -->
@@ -2624,13 +2460,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         </header>
         <ul class="latest-list" id="latest-bge-list"></ul>
       </div>
-      <div class="latest-card" id="latest-cantonal-card">
-        <header>
-          <h3 data-t="latest_cantonal_title">Recent cantonal decisions</h3>
-          <a class="latest-more" href="/entscheide/" data-t="latest_view_all">View all →</a>
-        </header>
-        <ul class="latest-list" id="latest-cantonal-list"></ul>
-      </div>
       <div class="latest-card" id="latest-upcoming-card">
         <header>
           <h3 data-t="latest_upcoming_title">Upcoming federal statute revisions</h3>
@@ -2641,6 +2470,38 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
   </section>
 
+  <!-- ── Did you know — corpus factoids, refreshed from stats.json ── -->
+  <section class="section" id="didyou" aria-labelledby="didyou-heading">
+    <h2 class="section-heading" id="didyou-heading" data-t="didyou_heading">Did you know</h2>
+    <p class="didyou-intro" data-t="didyou_intro">Six facts drawn from the live corpus. Refreshed daily.</p>
+    <div class="didyou-grid">
+      <article class="card" id="didyou-most-cited">
+        <h3 data-t="didyou_most_cited_label">Most-cited decision</h3>
+        <p class="didyou-fact" id="didyou-most-cited-text">—</p>
+      </article>
+      <article class="card" id="didyou-longest">
+        <h3 data-t="didyou_longest_label">Longest opinion this year</h3>
+        <p class="didyou-fact" id="didyou-longest-text">—</p>
+      </article>
+      <article class="card" id="didyou-active-court">
+        <h3 data-t="didyou_active_court_label">Most active court (last 30 days)</h3>
+        <p class="didyou-fact" id="didyou-active-court-text">—</p>
+      </article>
+      <article class="card" id="didyou-appeal-chain">
+        <h3 data-t="didyou_appeal_chain_label">Deepest recent appeal chain</h3>
+        <p class="didyou-fact" id="didyou-appeal-chain-text">—</p>
+      </article>
+      <article class="card" id="didyou-daily-intake">
+        <h3 data-t="didyou_daily_intake_label">Daily intake (last 90 days)</h3>
+        <p class="didyou-fact" id="didyou-daily-intake-text">—</p>
+      </article>
+      <article class="card" id="didyou-newest">
+        <h3 data-t="didyou_newest_label">Newest source</h3>
+        <p class="didyou-fact" id="didyou-newest-text">—</p>
+      </article>
+    </div>
+  </section>
+
   <!-- Live from the corpus — tabbed demo -->
   <section class="live-demo section">
     <h2 class="section-heading" data-t="demo_heading">Live from the corpus</h2>
@@ -2648,8 +2509,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
     <div class="demo-tabs" role="tablist">
       <button class="demo-tab active" data-tab="search" data-t="demo_tab_search">Search</button>
-      <button class="demo-tab" data-tab="statute" data-t="demo_tab_statute">Statute</button>
-      <button class="demo-tab" data-tab="leading" data-t="demo_tab_leading">Leading cases</button>
       <button class="demo-tab" data-tab="doctrine" data-t="demo_tab_doctrine">Doctrine</button>
     </div>
 
@@ -2683,55 +2542,6 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         </div>
       </div>
 
-      <div class="demo-panel" id="demo-statute">
-        <div class="demo-grid">
-          <div class="demo-code">
-            <div class="demo-label" data-t="demo_label_call">Tool call</div>
-            <pre><code><span class="kw">get_law</span>(
-  abbreviation=<span class="str">"OR"</span>,
-  article=<span class="str">"41"</span>,
-  language=<span class="str">"de"</span>
-)</code></pre>
-          </div>
-          <div class="demo-result">
-            <div class="demo-label" data-t="demo_label_response">Response</div>
-            <div class="demo-prose">
-              <p><strong>Art. 41 OR &mdash; Haftung im Allgemeinen</strong></p>
-              <p><strong>1</strong>&nbsp;&nbsp;Wer einem andern widerrechtlich Schaden zuf&uuml;gt, sei es mit Absicht, sei es aus Fahrl&auml;ssigkeit, wird ihm zum Ersatze verpflichtet.</p>
-              <p><strong>2</strong>&nbsp;&nbsp;Ebenso ist zum Ersatze verpflichtet, wer einem andern in einer gegen die guten Sitten verstossenden Weise absichtlich Schaden zuf&uuml;gt.</p>
-              <span class="src">Source: Fedlex &middot; synced monthly</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="demo-panel" id="demo-leading">
-        <div class="demo-grid">
-          <div class="demo-code">
-            <div class="demo-label" data-t="demo_label_call">Tool call</div>
-            <pre><code><span class="kw">find_leading_cases</span>(
-  law_code=<span class="str">"OR"</span>,
-  article=<span class="str">"41"</span>
-)</code></pre>
-          </div>
-          <div class="demo-result">
-            <div class="demo-label" data-t="demo_label_response">Response</div>
-            <div class="demo-case">
-              <div class="demo-case-id">BGE 123 III 110 &middot; 24 citations</div>
-              <div class="demo-case-regeste">Haftung der Aufsichtsperson; Kausalit&auml;t zwischen Aufsichtspflicht und eingetretenem Schaden&hellip;</div>
-            </div>
-            <div class="demo-case">
-              <div class="demo-case-id">BGE 132 III 359 &middot; 18 citations</div>
-              <div class="demo-case-regeste">Widerrechtlichkeit bei reinen Verm&ouml;genssch&auml;den; Unterscheidung zum absoluten Schutzbereich&hellip;</div>
-            </div>
-            <div class="demo-case">
-              <div class="demo-case-id">BGE 126 III 113 &middot; 15 citations</div>
-              <div class="demo-case-regeste">Genugtuungsanspruch; immaterielle Sch&auml;den und die Bemessung bei schwerer K&ouml;rperverletzung&hellip;</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="demo-panel" id="demo-doctrine">
         <div class="demo-grid">
           <div class="demo-code">
@@ -2755,55 +2565,17 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
   </section>
 
-  <!-- Featured integration: Word Add-in -->
-  <section class="word-banner section">
-    <div class="word-banner-body">
-      <div class="word-banner-head">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <h3>Word Add-in</h3>
-        <span class="leg-badge">BETA</span>
-      </div>
-      <p data-t="word_desc">
-        Schweizer Rechtsprechung direkt in Ihrem Word-Dokument. Suchen, zitieren und einfügen ohne Copy-Paste aus dem Browser — mit automatischer Quellenangabe.
-      </p>
-    </div>
-    <a href="https://word.opencaselaw.ch/install.html" class="btn btn-secondary word-banner-cta">
-      <span data-t="word_cta">Installation →</span>
-    </a>
+  <!-- ── About — merged "what is" + maintainer + contributors ── -->
+  <section class="landing-prose" id="about">
+    <h2 data-t="about_heading">About</h2>
+    <p data-t="about_p1">OpenCaseLaw collects, deduplicates and publishes every published Swiss court decision, the current text of every relevant federal statute, and the cantonal legislation of all 26 cantons. The dataset is refreshed daily and released under CC0 (data) and MIT (code).</p>
+    <p data-t="about_p2">The same infrastructure powers a public Model Context Protocol server that exposes 24 specialised tools for Swiss legal research — full-text search, citation graph, appeal-chain resolution, statute lookup, doctrinal timelines, scholarly commentary, legislative materials. Open access, no API keys.</p>
+    <p data-t="about_p3">Built and maintained by <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>, on the public infrastructure of the Federal Supreme Court, entscheidsuche.ch, Fedlex, LexFind, OnlineKommentar.ch and OpenLegalCommentary.ch. Contributors and institutional collaboration: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> · <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.</p>
   </section>
 
-  <!-- What is this? -->
-  <section class="landing-prose">
-    <h2 data-t="what_heading">What is OpenCaseLaw?</h2>
-    <p data-t="landing_what_1">
-      OpenCaseLaw sammelt, dedupliziert und publiziert <strong>jeden veröffentlichten Schweizer Gerichtsentscheid</strong> sowie den
-      aktuellen Text aller einschlägigen Bundesgesetze und der 30'000+ kantonalen Erlasse. Der Datensatz wird täglich aktualisiert und
-      steht unter CC0 (Daten) und MIT (Code) zur freien Verfügung.
-    </p>
-    <p data-t="landing_what_2">
-      Die gleiche Infrastruktur treibt einen öffentlichen MCP-Server an, der Sprachmodellen 24 spezialisierte Tools für Schweizer
-      Rechtsrecherche bereitstellt — von der Volltextsuche über die Zitationsanalyse bis zum Abruf von Gesetzesartikeln.
-      Keine Anmeldung, keine API-Keys, keine Paywall.
-    </p>
-  </section>
-
-  <!-- Behind the project — maintainer + foundation + cta -->
-  <section class="landing-prose" id="behind">
-    <h2 data-t="contrib_heading">Hinter dem Projekt</h2>
-    <p class="contrib-byline" data-t="contrib_byline">
-      Entwickelt und betrieben von <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>.
-    </p>
-    <p class="contrib-foundation" data-t="contrib_foundation">
-      Der Datensatz baut auf der öffentlichen Infrastruktur des Bundesgerichts und entscheidsuche.ch auf, ergänzt durch Fedlex (Bundesgesetze und Materialien), LexFind (kantonale Gesetzgebung) sowie die Open-Access-Kommentare von OnlineKommentar.ch und OpenLegalCommentary.ch. Das öffentliche Mirror liegt bei Hugging Face unter CC0.
-    </p>
-    <p class="contrib-cta" data-t="contrib_cta">
-      Beitragen oder als Nutzer*in genannt werden? Siehe <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> oder <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.
-    </p>
-  </section>
-
-  <!-- Contributors — dedicated minimal section -->
+  <!-- Contributors — minimal list, sits after #about -->
   <section class="landing-prose contributors-section" id="contributors">
-    <h2 data-t="contributors_heading">Mitwirkende</h2>
+    <h2 data-t="contributors_heading">Contributors</h2>
     <ul class="contributors-list">
       <li><a href="https://adriankoenig.ch" rel="noopener" target="_blank">Adrian König</a></li>
       <li>Arne Holicki</li>
@@ -3007,6 +2779,39 @@ const I18N = {
     latest_upcoming_title: 'Bevorstehende Bundesgesetz-Änderungen',
     latest_view_all: 'Alle ansehen →',
     latest_empty: 'Keine Daten verfügbar',
+    // ── 2026-04-25 refit: international, did-you-know, about, connect-footer-word ──
+    intl_heading: 'Für internationale Rechtsberatung',
+    intl_lead: 'Schweizer Recht berührt jedes grenzüberschreitende Mandat, das eine Schweizer Partei, einen Schweizer Vermögenswert, ein Arbeitsverhältnis oder eine Vertragsklausel betrifft. OpenCaseLaw stellt die publizierte Rechtsprechung sämtlicher Schweizer Bundes- und Kantonsgerichte in den KI-Tools zur Verfügung, die Ihr Team bereits nutzt — ohne Beschaffung, ohne Sitzlizenzen, ohne aussereuropäische Datenhosting-Fragen.',
+    intl_card_lang_h: 'Mehrsprachige Abdeckung',
+    intl_card_lang_p: 'Entscheide auf DE, FR und IT, mit offiziellen Regesten. Der Leitentscheid zu einem Thema kann in jeder der drei Sprachen ergehen — die Suche liefert alle drei nach Relevanz gerankt, unabhängig von der Anfragesprache.',
+    intl_card_scope_h: 'Vergleichbarer Umfang',
+    intl_card_scope_p: '968\u2019373 Entscheide aus 108 Gerichten, 1875 bis heute. Vergleichbar mit der Schweizer Abdeckung von Westlaw, Swisslex und Weblaw. Frei, CC0-lizenziert.',
+    intl_card_echr_h: 'Strassburger Rechtsprechung',
+    intl_card_echr_p: 'Schweizer EGMR-Urteile aus HUDOC sowie allgemeine Urteile der Grossen Kammer, Kammer und Ausschüsse. Unverzichtbar für Menschenrechts- und EMRK-gestützte Praxis.',
+    intl_card_intg_h: 'Beschaffungsfreie Integration',
+    intl_card_intg_p: 'MCP-Endpunkt, OpenAPI 3.0.3 REST oder Hugging-Face-Bulk-Download. Funktioniert mit Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Kein Vendor-Onboarding, keine Per-Sitz-Lizenzierung, keine Mindestabnahme.',
+    intl_contact: 'Für institutionelle Zusammenarbeit → team@jonashertner.com',
+    didyou_heading: 'Wussten Sie schon',
+    didyou_intro: 'Sechs Fakten aus dem laufenden Datensatz. Täglich aktualisiert.',
+    didyou_most_cited_label: 'Meistzitierter Entscheid',
+    didyou_longest_label: 'Längstes Urteil dieses Jahres',
+    didyou_active_court_label: 'Aktivstes Gericht (letzte 30 Tage)',
+    didyou_appeal_chain_label: 'Tiefste aktuelle Beschwerdekette',
+    didyou_daily_intake_label: 'Tageszuwachs (letzte 90 Tage)',
+    didyou_newest_label: 'Neueste Quelle',
+    didyou_unit_citations: 'Zitierungen',
+    didyou_unit_chars: 'Zeichen',
+    didyou_unit_decisions: 'Entscheide',
+    didyou_unit_instances: 'Instanzen',
+    didyou_unit_per_day: 'neue Entscheide pro Tag',
+    didyou_window_90d: 'über die letzten 90 Tage.',
+    didyou_added: 'Hinzugefügt',
+    about_heading: 'Über das Projekt',
+    about_p1: 'OpenCaseLaw sammelt, dedupliziert und publiziert jeden veröffentlichten Schweizer Gerichtsentscheid, den aktuellen Text aller relevanten Bundesgesetze sowie die kantonale Gesetzgebung aller 26 Kantone. Der Datensatz wird täglich aktualisiert und steht unter CC0 (Daten) und MIT (Code).',
+    about_p2: 'Dieselbe Infrastruktur betreibt einen öffentlichen Model-Context-Protocol-Server, der 24 spezialisierte Tools für Schweizer Rechtsrecherche bereitstellt — Volltextsuche, Zitationsgraph, Instanzenzug-Auflösung, Gesetzesabruf, Doktrintimelines, wissenschaftliche Kommentare, Materialien. Offener Zugang, keine API-Schlüssel.',
+    about_p3: 'Entwickelt und betrieben von <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a> auf der öffentlichen Infrastruktur des Bundesgerichts, von entscheidsuche.ch, Fedlex, LexFind, OnlineKommentar.ch und OpenLegalCommentary.ch. Mitwirkende und institutionelle Zusammenarbeit: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> · <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading: 'Mitwirkende',
+    connect_footer_word: 'Word-Add-in für Anwält:innen (BETA) →',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
     hero_v3_label: 'publizierte Schweizer Gerichtsentscheide',
     hero_v3_asof: 'Stand',
@@ -3211,6 +3016,39 @@ const I18N = {
     latest_upcoming_title: 'Révisions de lois fédérales à venir',
     latest_view_all: 'Voir tout →',
     latest_empty: 'Aucune donnée',
+    // ── 2026-04-25 refit ──
+    intl_heading: 'Pour les conseils internationaux',
+    intl_lead: 'Le droit suisse intervient dans tout dossier transfrontalier impliquant une partie suisse, un actif suisse, une relation de travail ou une clause contractuelle. OpenCaseLaw met la jurisprudence publiée de tous les tribunaux fédéraux et cantonaux à disposition des outils d\'IA que votre équipe utilise déjà — sans procédure d\'achat, sans licences par poste, sans préoccupations d\'hébergement hors UE.',
+    intl_card_lang_h: 'Couverture multilingue',
+    intl_card_lang_p: 'Décisions en DE, FR et IT, avec les Regeste officiels. L\'arrêt de principe sur un sujet peut être rendu dans n\'importe laquelle des trois langues — la recherche renvoie les trois classés par pertinence, indépendamment de la langue de la requête.',
+    intl_card_scope_h: 'Portée comparable',
+    intl_card_scope_p: '968\u2019373 décisions provenant de 108 tribunaux, de 1875 à aujourd\'hui. Comparable à la couverture suisse de Westlaw, Swisslex et Weblaw. Gratuit, sous licence CC0.',
+    intl_card_echr_h: 'Jurisprudence de Strasbourg',
+    intl_card_echr_p: 'Arrêts CEDH dont la Suisse est partie défenderesse via HUDOC, plus les arrêts généraux de la Grande Chambre, des Chambres et des Comités. Indispensable pour la pratique des droits humains.',
+    intl_card_intg_h: 'Intégration sans procurement',
+    intl_card_intg_p: 'Endpoint MCP, API REST OpenAPI 3.0.3 ou téléchargement complet via Hugging Face. Compatible avec Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Pas d\'onboarding fournisseur, pas de licence par poste, pas de minimum.',
+    intl_contact: 'Pour une collaboration institutionnelle → team@jonashertner.com',
+    didyou_heading: 'Le saviez-vous',
+    didyou_intro: 'Six faits tirés du corpus en direct. Actualisés quotidiennement.',
+    didyou_most_cited_label: 'Décision la plus citée',
+    didyou_longest_label: 'Arrêt le plus long de l\'année',
+    didyou_active_court_label: 'Tribunal le plus actif (30 derniers jours)',
+    didyou_appeal_chain_label: 'Chaîne de recours la plus profonde récemment',
+    didyou_daily_intake_label: 'Apport quotidien (90 derniers jours)',
+    didyou_newest_label: 'Source la plus récente',
+    didyou_unit_citations: 'citations',
+    didyou_unit_chars: 'caractères',
+    didyou_unit_decisions: 'décisions',
+    didyou_unit_instances: 'instances',
+    didyou_unit_per_day: 'nouvelles décisions par jour',
+    didyou_window_90d: 'sur les 90 derniers jours.',
+    didyou_added: 'Ajouté',
+    about_heading: 'À propos',
+    about_p1: 'OpenCaseLaw collecte, dédoublonne et publie chaque décision judiciaire suisse publiée, le texte actuel de toutes les lois fédérales pertinentes et la législation cantonale des 26 cantons. Le jeu de données est rafraîchi quotidiennement, sous CC0 (données) et MIT (code).',
+    about_p2: 'La même infrastructure alimente un serveur Model Context Protocol public qui expose 24 outils spécialisés pour la recherche juridique suisse — recherche plein texte, graphe de citations, résolution des chaînes de recours, consultation des lois, chronologies doctrinales, doctrine, travaux préparatoires. Accès libre, sans clé API.',
+    about_p3: 'Conçu et exploité par <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>, sur l\'infrastructure publique du Tribunal fédéral, d\'entscheidsuche.ch, de Fedlex, LexFind, OnlineKommentar.ch et OpenLegalCommentary.ch. Contributeurs et collaboration institutionnelle : <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> · <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading: 'Contributeurs',
+    connect_footer_word: 'Add-in Word pour les juristes (BETA) →',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
     hero_v3_label: 'décisions judiciaires suisses publiées',
     hero_v3_asof: 'Au',
@@ -3415,6 +3253,39 @@ const I18N = {
     latest_upcoming_title: 'Prossime revisioni di leggi federali',
     latest_view_all: 'Vedi tutto →',
     latest_empty: 'Nessun dato disponibile',
+    // ── 2026-04-25 refit ──
+    intl_heading: 'Per i consulenti internazionali',
+    intl_lead: 'Il diritto svizzero entra in ogni questione transfrontaliera che coinvolga una parte svizzera, un asset, un rapporto di lavoro o una clausola contrattuale. OpenCaseLaw mette la giurisprudenza pubblicata di tutti i tribunali federali e cantonali a disposizione degli strumenti IA che il vostro team già usa — senza procurement, senza licenze per posto, senza preoccupazioni di hosting al di fuori dell\'UE.',
+    intl_card_lang_h: 'Copertura multilingue',
+    intl_card_lang_p: 'Decisioni in DE, FR e IT, con i Regeste ufficiali. La sentenza guida su un tema può essere in una qualunque delle tre lingue — la ricerca restituisce tutte e tre per rilevanza, indipendentemente dalla lingua della query.',
+    intl_card_scope_h: 'Portata comparabile',
+    intl_card_scope_p: '968\u2019373 decisioni da 108 tribunali, dal 1875 a oggi. Comparabile alla copertura svizzera di Westlaw, Swisslex e Weblaw. Gratuito, licenza CC0.',
+    intl_card_echr_h: 'Giurisprudenza di Strasburgo',
+    intl_card_echr_p: 'Sentenze CEDU contro la Svizzera tramite HUDOC, più sentenze generali della Grande Camera, delle Camere e dei Comitati. Indispensabile per la pratica dei diritti umani.',
+    intl_card_intg_h: 'Integrazione senza procurement',
+    intl_card_intg_p: 'Endpoint MCP, API REST OpenAPI 3.0.3 o download completo via Hugging Face. Compatibile con Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Nessun onboarding fornitore, nessuna licenza per posto, nessun minimo.',
+    intl_contact: 'Per collaborazioni istituzionali → team@jonashertner.com',
+    didyou_heading: 'Lo sapevate',
+    didyou_intro: 'Sei fatti tratti dal corpus in tempo reale. Aggiornati ogni giorno.',
+    didyou_most_cited_label: 'Decisione più citata',
+    didyou_longest_label: 'Sentenza più lunga di quest\'anno',
+    didyou_active_court_label: 'Tribunale più attivo (ultimi 30 giorni)',
+    didyou_appeal_chain_label: 'Catena di ricorsi più profonda di recente',
+    didyou_daily_intake_label: 'Afflusso giornaliero (ultimi 90 giorni)',
+    didyou_newest_label: 'Fonte più recente',
+    didyou_unit_citations: 'citazioni',
+    didyou_unit_chars: 'caratteri',
+    didyou_unit_decisions: 'decisioni',
+    didyou_unit_instances: 'gradi',
+    didyou_unit_per_day: 'nuove decisioni al giorno',
+    didyou_window_90d: 'negli ultimi 90 giorni.',
+    didyou_added: 'Aggiunto',
+    about_heading: 'Informazioni',
+    about_p1: 'OpenCaseLaw raccoglie, deduplica e pubblica ogni decisione giudiziaria svizzera pubblicata, il testo attuale di tutte le leggi federali rilevanti e la legislazione cantonale di tutti i 26 cantoni. Il dataset viene aggiornato quotidianamente, con licenze CC0 (dati) e MIT (codice).',
+    about_p2: 'La stessa infrastruttura alimenta un server Model Context Protocol pubblico che espone 24 strumenti specializzati per la ricerca giuridica svizzera — ricerca full-text, grafo delle citazioni, risoluzione delle catene di ricorso, consultazione di legge, cronologie dottrinali, dottrina, materiali preparatori. Accesso libero, senza chiavi API.',
+    about_p3: 'Sviluppato e gestito da <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>, sull\'infrastruttura pubblica del Tribunale federale, di entscheidsuche.ch, Fedlex, LexFind, OnlineKommentar.ch e OpenLegalCommentary.ch. Collaboratori e collaborazione istituzionale: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> · <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading: 'Collaboratori',
+    connect_footer_word: 'Add-in Word per giuristi (BETA) →',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
     hero_v3_label: 'decisioni giudiziarie svizzere pubblicate',
     hero_v3_asof: 'Al',
@@ -3619,6 +3490,39 @@ const I18N = {
     latest_upcoming_title: 'Proximas revisiuns da leschas federalas',
     latest_view_all: 'Mussar tut →',
     latest_empty: 'Naginas datas disponiblas',
+    // ── 2026-04-25 refit ──
+    intl_heading: 'Per cussegliers giuridics internaziunals',
+    intl_lead: 'Il dretg svizzer tutga mintga incumbensa transcunfinala che involva ina partida svizra, in bain, ina relaziun da lavur u ina clausla contractuala. OpenCaseLaw metta la giurisprudenza publitgada da tut las dretgiras federalas e chantunalas a disposiziun da las utilities IA che Vossa squadra utilisescha gia — senza procurement, senza licenzas per plaz, senza problems d\'hosting ordadora da l\'UE.',
+    intl_card_lang_h: 'Cuverta plurilinguala',
+    intl_card_lang_p: 'Decisiuns en DE, FR ed IT, cun ils Regeste uffizials. La decisiun decisiva sin in tema po vegnir en mintga ina da las trais linguas — la tschertga returna tut las trais ordinadas tenor relevanza, independentamain da la lingua da la dumonda.',
+    intl_card_scope_h: 'Dimensiun cumparabla',
+    intl_card_scope_p: '968\u2019373 decisiuns da 108 dretgiras, 1875 fin oz. Cumparabel cun la cuverta svizra da Westlaw, Swisslex e Weblaw. Gratuit, licenza CC0.',
+    intl_card_echr_h: 'Giurisprudenza da Strasbourg',
+    intl_card_echr_p: 'Sentenzas EGMR cunter la Svizra via HUDOC, plus las sentenzas generalas da la Gronda Chombra, da las Chombras e dals Comités. Indispensabel per la pratica dals dretgs umans.',
+    intl_card_intg_h: 'Integraziun senza procurement',
+    intl_card_intg_p: 'Endpoint MCP, API REST OpenAPI 3.0.3 u download cumplet via Hugging Face. Cumpatibel cun Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Nagin onboarding da furnitur, naginas licenzas per plaz, nagin minimum.',
+    intl_contact: 'Per collaboraziun istituziunala → team@jonashertner.com',
+    didyou_heading: 'Savevas Vus che',
+    didyou_intro: 'Sis fatgs or dal corpus en viva. Actualisads mintga di.',
+    didyou_most_cited_label: 'Decisiun pli citada',
+    didyou_longest_label: 'Sentenzia pli lunga da quest onn',
+    didyou_active_court_label: 'Dretgira pli activa (ultims 30 dis)',
+    didyou_appeal_chain_label: 'Chadaina da recurs pli profunda recentamain',
+    didyou_daily_intake_label: 'Influx mintgadi (ultims 90 dis)',
+    didyou_newest_label: 'Funtauna pli nova',
+    didyou_unit_citations: 'citaziuns',
+    didyou_unit_chars: 'caracters',
+    didyou_unit_decisions: 'decisiuns',
+    didyou_unit_instances: 'instanzas',
+    didyou_unit_per_day: 'novas decisiuns mintga di',
+    didyou_window_90d: 'durant ils ultims 90 dis.',
+    didyou_added: 'Agiuntà',
+    about_heading: 'Davart il project',
+    about_p1: 'OpenCaseLaw raccoglie, deduplitgescha e publitgescha mintga decisiun giudiziala svizra publitgada, il text actual da tut las leschas federalas relevantas e la legislaziun chantunala da tut ils 26 chantuns. Il dataset vegn actualisà mintga di, sut las licenzas CC0 (datas) e MIT (code).',
+    about_p2: 'La medema infrastructura activescha in server public da Model Context Protocol che porscha 24 utensils spezialisads per la perscrutaziun giuridica svizra — tschertga full-text, graf da citaziuns, schliaziun da chadainas da recurs, lookup d\'artitgels legals, cronologias duttrinalas, cumentaris, materials preparatorics. Access libers, senza claves API.',
+    about_p3: 'Sviluppà e gestì da <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>, sin l\'infrastructura publica dal Tribunal federal, da entscheidsuche.ch, Fedlex, LexFind, OnlineKommentar.ch ed OpenLegalCommentary.ch. Collaboratuers e collaboraziun istituziunala: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> · <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading: 'Collaboratuers',
+    connect_footer_word: 'Add-in Word per giuristas (BETA) →',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
     hero_v3_label: 'decisiuns giudicialas svizras publitgadas',
     hero_v3_asof: 'Al',
@@ -3823,6 +3727,39 @@ const I18N = {
     latest_upcoming_title: 'Upcoming federal statute revisions',
     latest_view_all: 'View all →',
     latest_empty: 'No data available',
+    // ── 2026-04-25 refit ──
+    intl_heading: 'For international counsel',
+    intl_lead: 'Swiss law touches every cross-border matter that involves a Swiss party, asset, employment relationship, or contract clause. OpenCaseLaw makes the published case-law of every Swiss federal and cantonal court available to the AI tools your team already uses — without procurement, without seat licences, without non-EU data-residency concerns.',
+    intl_card_lang_h: 'Multilingual coverage',
+    intl_card_lang_p: 'Decisions in DE, FR and IT, with official Regeste head-notes. The leading case on a topic may be in any of the three languages — search returns all of them ranked by relevance, regardless of query language.',
+    intl_card_scope_h: 'Comparable scope',
+    intl_card_scope_p: '968,373 decisions across 108 courts, 1875 to today. Comparable to the Swiss case-law coverage of Westlaw, Swisslex and Weblaw. Free, CC0 licensed.',
+    intl_card_echr_h: 'Strasbourg jurisprudence',
+    intl_card_echr_p: 'Swiss-respondent ECtHR judgments from HUDOC, plus general Grand Chamber, Chamber and Committee decisions. Indispensable for human-rights and Convention-grounded practice.',
+    intl_card_intg_h: 'Procurement-free integration',
+    intl_card_intg_p: 'MCP endpoint, OpenAPI 3.0.3 REST, or Hugging Face bulk download. Works with Claude, ChatGPT, Cursor, Gemini, Copilot Studio. No vendor onboarding, no per-seat licensing, no minimum commitment.',
+    intl_contact: 'Contact for institutional collaboration → team@jonashertner.com',
+    didyou_heading: 'Did you know',
+    didyou_intro: 'Six facts drawn from the live corpus. Refreshed daily.',
+    didyou_most_cited_label: 'Most-cited decision',
+    didyou_longest_label: 'Longest opinion this year',
+    didyou_active_court_label: 'Most active court (last 30 days)',
+    didyou_appeal_chain_label: 'Deepest recent appeal chain',
+    didyou_daily_intake_label: 'Daily intake (last 90 days)',
+    didyou_newest_label: 'Newest source',
+    didyou_unit_citations: 'citations',
+    didyou_unit_chars: 'characters',
+    didyou_unit_decisions: 'decisions',
+    didyou_unit_instances: 'instances',
+    didyou_unit_per_day: 'new decisions per day',
+    didyou_window_90d: 'over the last 90 days.',
+    didyou_added: 'Added',
+    about_heading: 'About',
+    about_p1: 'OpenCaseLaw collects, deduplicates and publishes every published Swiss court decision, the current text of every relevant federal statute, and the cantonal legislation of all 26 cantons. The dataset is refreshed daily and released under CC0 (data) and MIT (code).',
+    about_p2: 'The same infrastructure powers a public Model Context Protocol server that exposes 24 specialised tools for Swiss legal research — full-text search, citation graph, appeal-chain resolution, statute lookup, doctrinal timelines, scholarly commentary, legislative materials. Open access, no API keys.',
+    about_p3: 'Built and maintained by <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>, on the public infrastructure of the Federal Supreme Court, entscheidsuche.ch, Fedlex, LexFind, OnlineKommentar.ch and OpenLegalCommentary.ch. Contributors and institutional collaboration: <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/CONTRIBUTORS.md" rel="noopener" target="_blank">CONTRIBUTORS.md</a> · <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',
+    contributors_heading: 'Contributors',
+    connect_footer_word: 'Word add-in for legal practitioners (BETA) →',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
     hero_v3_label: 'published Swiss court decisions',
     hero_v3_asof: 'As of',
@@ -3896,6 +3833,7 @@ function applyI18n() {
     if (typeof renderHero === 'function') renderHero(window._statsData);
     if (typeof renderCorpusSnapshot === 'function') renderCorpusSnapshot(window._statsData);
     if (typeof renderLatest === 'function') renderLatest(window._statsData);
+    if (typeof renderDidYouKnow === 'function') renderDidYouKnow(window._statsData);
   }
 }
 
@@ -4795,6 +4733,88 @@ function renderHero(data) {
   // ── Corpus snapshot section ──
   renderCorpusSnapshot(data);
   renderLatest(data);
+  renderDidYouKnow(data);
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Did you know — refresh six factoid cards from data.interesting_stats.
+// Each cell is rendered defensively: if the stats.json field is absent
+// or a sub-key fails to resolve, we hide the cell rather than render a
+// placeholder. The CSS grid auto-collapses around hidden cards.
+// Expected shape (extended in generate_stats.py):
+//   data.interesting_stats = {
+//     most_cited:    {docket, title, citation_count, url},
+//     longest_year:  {docket, title, char_count, year, url},
+//     active_court:  {court_label, count, window_days},
+//     appeal_chain:  {chain: [str, str, ...], depth},
+//     daily_intake:  {avg_per_day, window_days},
+//     newest_source: {court_label, count, ingested_at}
+//   }
+// ────────────────────────────────────────────────────────────────────────
+function renderDidYouKnow(data) {
+  const s = data && data.interesting_stats;
+  const fmtN = (n) => (typeof n === 'number') ? n.toLocaleString('de-CH') : '';
+  const setCell = (id, html) => {
+    const card = document.getElementById(id);
+    const text = document.getElementById(id + '-text');
+    if (!card || !text) return;
+    if (!html) { card.hidden = true; return; }
+    card.hidden = false;
+    text.innerHTML = html;
+  };
+  if (!s) {
+    ['didyou-most-cited','didyou-longest','didyou-active-court',
+     'didyou-appeal-chain','didyou-daily-intake','didyou-newest']
+      .forEach(id => setCell(id, ''));
+    return;
+  }
+
+  // Most-cited decision
+  if (s.most_cited && s.most_cited.docket) {
+    const m = s.most_cited;
+    const link = m.url ? `<a href="${m.url}">${m.docket}</a>` : `<strong>${m.docket}</strong>`;
+    const title = m.title ? `<span class="didyou-meta">${m.title}</span>` : '';
+    setCell('didyou-most-cited',
+      `${link} — ${fmtN(m.citation_count)} ${t('didyou_unit_citations') || 'citations'}.${title}`);
+  } else { setCell('didyou-most-cited', ''); }
+
+  // Longest opinion this year
+  if (s.longest_year && s.longest_year.docket) {
+    const l = s.longest_year;
+    const link = l.url ? `<a href="${l.url}">${l.docket}</a>` : `<strong>${l.docket}</strong>`;
+    const title = l.title ? `<span class="didyou-meta">${l.title}</span>` : '';
+    setCell('didyou-longest',
+      `${link} — ${fmtN(l.char_count)} ${t('didyou_unit_chars') || 'characters'}${l.year ? ' · ' + l.year : ''}.${title}`);
+  } else { setCell('didyou-longest', ''); }
+
+  // Most active court (last 30 days)
+  if (s.active_court && s.active_court.court_label) {
+    const a = s.active_court;
+    setCell('didyou-active-court',
+      `<strong>${a.court_label}</strong> — ${fmtN(a.count)} ${t('didyou_unit_decisions') || 'decisions'}.`);
+  } else { setCell('didyou-active-court', ''); }
+
+  // Deepest recent appeal chain
+  if (s.appeal_chain && Array.isArray(s.appeal_chain.chain) && s.appeal_chain.chain.length) {
+    const c = s.appeal_chain;
+    setCell('didyou-appeal-chain',
+      `${c.chain.join(' → ')} <span class="didyou-meta">(${c.depth || c.chain.length} ${t('didyou_unit_instances') || 'instances'})</span>`);
+  } else { setCell('didyou-appeal-chain', ''); }
+
+  // Daily intake (last 90 days)
+  if (s.daily_intake && typeof s.daily_intake.avg_per_day === 'number') {
+    const d = s.daily_intake;
+    setCell('didyou-daily-intake',
+      `<strong>${fmtN(Math.round(d.avg_per_day))}</strong> ${t('didyou_unit_per_day') || 'new decisions per day'} <span class="didyou-meta">${t('didyou_window_90d') || 'over the last 90 days'}.</span>`);
+  } else { setCell('didyou-daily-intake', ''); }
+
+  // Newest source (court added)
+  if (s.newest_source && s.newest_source.court_label) {
+    const n = s.newest_source;
+    const meta = n.ingested_at ? `<span class="didyou-meta">${t('didyou_added') || 'Added'} ${n.ingested_at}.</span>` : '';
+    setCell('didyou-newest',
+      `<strong>${n.court_label}</strong>${n.count ? ' — ' + fmtN(n.count) + ' ' + (t('didyou_unit_decisions') || 'decisions') : ''}.${meta}`);
+  } else { setCell('didyou-newest', ''); }
 }
 
 function renderLatest(data) {

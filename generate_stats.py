@@ -17,7 +17,7 @@ import json
 import logging
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 logger = logging.getLogger("generate_stats")
@@ -556,6 +556,176 @@ def collect_corpus_snapshot(repo_dir: Path) -> dict:
     return out
 
 
+def collect_interesting_stats(repo_dir: Path) -> dict:
+    """Compute the six factoids surfaced in the landing's "Did you know"
+    section. Each field is best-effort: if the underlying query fails or
+    returns nothing, the field is omitted and the renderer hides that cell.
+
+    Output shape:
+        {
+          "most_cited":    {docket, title, citation_count, url},
+          "longest_year":  {docket, title, char_count, year, url},
+          "active_court":  {court_label, count, window_days},
+          "appeal_chain":  {chain: [str, ...], depth},
+          "daily_intake":  {avg_per_day, window_days},
+          "newest_source": {court_label, count, ingested_at},
+        }
+    """
+    out: dict = {}
+    decisions_db = repo_dir / "output" / "decisions.db"
+    graph_db = repo_dir / "output" / "reference_graph.db"
+
+    # ── Most-cited decision ─────────────────────────────────────────────
+    if graph_db.exists() and decisions_db.exists():
+        try:
+            g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=10)
+            g.row_factory = sqlite3.Row
+            top = g.execute(
+                """
+                SELECT target_id AS decision_id, COUNT(*) AS n
+                FROM citation_targets
+                GROUP BY target_id
+                ORDER BY n DESC
+                LIMIT 1
+                """
+            ).fetchone()
+            g.close()
+            if top:
+                d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
+                d.row_factory = sqlite3.Row
+                row = d.execute(
+                    "SELECT docket_number, title FROM decisions WHERE decision_id=? LIMIT 1",
+                    (top["decision_id"],),
+                ).fetchone()
+                d.close()
+                if row:
+                    out["most_cited"] = {
+                        "docket": row["docket_number"] or top["decision_id"],
+                        "title": _truncate(row["title"], 90) if row["title"] else None,
+                        "citation_count": int(top["n"]),
+                        "url": f"https://mcp.opencaselaw.ch/entscheid/{top['decision_id']}",
+                    }
+        except sqlite3.Error:
+            pass
+
+    if decisions_db.exists():
+        # ── Longest opinion this year ──
+        try:
+            d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
+            d.row_factory = sqlite3.Row
+            year = datetime.now(timezone.utc).year
+            row = d.execute(
+                """
+                SELECT decision_id, docket_number, title, decision_date,
+                       LENGTH(full_text) AS chars
+                FROM decisions
+                WHERE decision_date BETWEEN ? AND ?
+                ORDER BY chars DESC
+                LIMIT 1
+                """,
+                (f"{year}-01-01", f"{year}-12-31"),
+            ).fetchone()
+            if row and row["chars"]:
+                out["longest_year"] = {
+                    "docket": row["docket_number"] or row["decision_id"],
+                    "title": _truncate(row["title"], 80) if row["title"] else None,
+                    "char_count": int(row["chars"]),
+                    "year": year,
+                    "url": f"https://mcp.opencaselaw.ch/entscheid/{row['decision_id']}",
+                }
+
+            # ── Most active court (last 30 days by fetched_at) ──
+            cutoff = (datetime.now(timezone.utc).date() - timedelta(days=30)).isoformat()
+            row = d.execute(
+                """
+                SELECT court, COUNT(*) AS n
+                FROM decisions
+                WHERE substr(fetched_at, 1, 10) >= ?
+                GROUP BY court
+                ORDER BY n DESC
+                LIMIT 1
+                """,
+                (cutoff,),
+            ).fetchone()
+            if row and row["n"]:
+                out["active_court"] = {
+                    "court_label": row["court"],
+                    "count": int(row["n"]),
+                    "window_days": 30,
+                }
+
+            # ── Daily intake (last 90 days, avg) ──
+            cutoff90 = (datetime.now(timezone.utc).date() - timedelta(days=90)).isoformat()
+            row = d.execute(
+                """
+                SELECT COUNT(*) AS n
+                FROM decisions
+                WHERE substr(fetched_at, 1, 10) >= ?
+                """,
+                (cutoff90,),
+            ).fetchone()
+            if row and row["n"]:
+                out["daily_intake"] = {
+                    "avg_per_day": float(row["n"]) / 90.0,
+                    "window_days": 90,
+                }
+
+            # ── Newest source (most recent court_code first appearance) ──
+            row = d.execute(
+                """
+                SELECT court, MIN(fetched_at) AS first_seen, COUNT(*) AS n
+                FROM decisions
+                GROUP BY court
+                ORDER BY first_seen DESC
+                LIMIT 1
+                """
+            ).fetchone()
+            if row and row["court"]:
+                out["newest_source"] = {
+                    "court_label": row["court"],
+                    "count": int(row["n"]),
+                    "ingested_at": row["first_seen"][:10] if row["first_seen"] else None,
+                }
+            d.close()
+        except sqlite3.Error:
+            pass
+
+    # ── Deepest recent appeal chain (best-effort, optional) ──
+    # The reference_graph.db has an `is_prior_instance` flag on edges
+    # that we can chain; for a static "deepest chain we saw recently" we
+    # walk from a recent BGer decision backwards. This is heuristic — we
+    # leave the field absent if it can't be computed quickly.
+    try:
+        if graph_db.exists() and decisions_db.exists():
+            g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=5)
+            g.row_factory = sqlite3.Row
+            # Look for the longest 3-step chain anchored at a recent BGer
+            # decision (kept small to stay under 5s timeout).
+            row = g.execute(
+                """
+                SELECT t1.source_id AS bger, t1.target_id AS l2, t2.target_id AS l1
+                FROM citation_targets t1
+                JOIN citation_targets t2 ON t1.target_id = t2.source_id
+                WHERE t1.source_id LIKE 'bger_%'
+                  AND t1.is_prior_instance = 1
+                  AND t2.is_prior_instance = 1
+                LIMIT 1
+                """
+            ).fetchone()
+            g.close()
+            if row:
+                out["appeal_chain"] = {
+                    "chain": [row["l1"], row["l2"], row["bger"]],
+                    "depth": 3,
+                }
+    except (sqlite3.Error, sqlite3.OperationalError):
+        # The is_prior_instance column may not exist on every build —
+        # the field is optional, the renderer hides the cell on absence.
+        pass
+
+    return out
+
+
 def collect_traffic(repo_dir: Path, days: int = 30) -> dict | None:
     """Read ``output/analytics.db`` and build a public traffic block.
 
@@ -848,6 +1018,12 @@ def main():
     corpus = collect_corpus_snapshot(repo_dir)
     if corpus:
         stats["corpus"] = corpus
+
+    # ── Did-you-know factoids for the landing page ──
+    try:
+        stats["interesting_stats"] = collect_interesting_stats(repo_dir)
+    except Exception as e:
+        logger.warning(f"collect_interesting_stats failed: {e}")
 
     # ── Traffic snapshot: DP-noised, k-anon aggregates from analytics.db ──
     traffic = collect_traffic(repo_dir, days=30)
