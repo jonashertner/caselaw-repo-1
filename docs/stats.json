@@ -2248,7 +2248,7 @@
     "2026-03": 2073,
     "2026-04": 372
   },
-  "generated_at": "2026-04-25T22:09:23.765183+00:00",
+  "generated_at": "2026-04-25T22:59:21.768212+00:00",
   "scraper_health": {
     "run_at": "2026-04-25T03:02:14.630639+00:00",
     "run_duration_s": 7334.1,
@@ -3314,32 +3314,32 @@
     "statute_edges": 11382843
   },
   "interesting_stats": {
-    "most_cited": {
+    "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "title": null,
       "citation_count": 62247,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
-    "longest_year": {
-      "docket": "AARP/102/2026",
-      "title": null,
-      "char_count": 256578,
-      "year": 2026,
-      "url": "https://mcp.opencaselaw.ch/entscheid/ge_gerichte_AARP_102_2026"
+    "oldest_decision": {
+      "docket": "ZK 1950 999",
+      "decision_date": "0000-00-00",
+      "year": 0,
+      "url": "https://mcp.opencaselaw.ch/entscheid/be_zivilstraf_ZK_1950_999"
     },
-    "active_court": {
-      "court_label": "bvger",
-      "count": 192,
-      "window_days": 30
+    "language_split": {
+      "de_pct": 46.6,
+      "fr_pct": 45.1,
+      "it_pct": 8.2,
+      "total": 968373
     },
-    "daily_intake": {
-      "avg_per_day": 65.04444444444445,
-      "window_days": 90
+    "regeste_coverage": {
+      "pct": 38.6,
+      "with_regeste": 373842,
+      "total": 968373
     },
-    "newest_source": {
-      "court_label": "ecthr_committee",
-      "count": 30,
-      "ingested_at": "2026-04-24"
+    "graph_size": {
+      "decision_edges": 6561388,
+      "statute_edges": 11382843,
+      "total": 17944231
     }
   },
   "traffic": {
