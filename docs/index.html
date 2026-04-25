@@ -2548,34 +2548,34 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
     </div>
   </section>
 
-  <!-- ── Did you know — corpus factoids, refreshed from stats.json ── -->
+  <!-- ── Notable — intrinsic facts about the Swiss legal corpus ── -->
   <section class="section" id="didyou" aria-labelledby="didyou-heading">
-    <h2 class="section-heading" id="didyou-heading" data-t="didyou_heading">Did you know</h2>
-    <p class="didyou-intro" data-t="didyou_intro">Six facts drawn from the live corpus. Refreshed daily.</p>
+    <h2 class="section-heading" id="didyou-heading" data-t="didyou_heading">Notable</h2>
+    <p class="didyou-intro" data-t="didyou_intro">Six facts intrinsic to the published Swiss legal corpus — independent of when we scraped them.</p>
     <div class="didyou-grid">
       <article class="card" id="didyou-most-cited">
         <h3 data-t="didyou_most_cited_label">Most-cited decision</h3>
         <p class="didyou-fact" id="didyou-most-cited-text">—</p>
       </article>
-      <article class="card" id="didyou-longest">
-        <h3 data-t="didyou_longest_label">Longest opinion this year</h3>
-        <p class="didyou-fact" id="didyou-longest-text">—</p>
+      <article class="card" id="didyou-most-cited-statute">
+        <h3 data-t="didyou_most_cited_statute_label">Most-cited statute article</h3>
+        <p class="didyou-fact" id="didyou-most-cited-statute-text">—</p>
       </article>
-      <article class="card" id="didyou-active-court">
-        <h3 data-t="didyou_active_court_label">Most active court (last 30 days)</h3>
-        <p class="didyou-fact" id="didyou-active-court-text">—</p>
+      <article class="card" id="didyou-oldest">
+        <h3 data-t="didyou_oldest_label">Oldest decision in the corpus</h3>
+        <p class="didyou-fact" id="didyou-oldest-text">—</p>
       </article>
-      <article class="card" id="didyou-appeal-chain">
-        <h3 data-t="didyou_appeal_chain_label">Deepest recent appeal chain</h3>
-        <p class="didyou-fact" id="didyou-appeal-chain-text">—</p>
+      <article class="card" id="didyou-language">
+        <h3 data-t="didyou_language_label">Three-language coverage</h3>
+        <p class="didyou-fact" id="didyou-language-text">—</p>
       </article>
-      <article class="card" id="didyou-daily-intake">
-        <h3 data-t="didyou_daily_intake_label">Daily intake (last 90 days)</h3>
-        <p class="didyou-fact" id="didyou-daily-intake-text">—</p>
+      <article class="card" id="didyou-graph">
+        <h3 data-t="didyou_graph_label">Citation graph size</h3>
+        <p class="didyou-fact" id="didyou-graph-text">—</p>
       </article>
-      <article class="card" id="didyou-newest">
-        <h3 data-t="didyou_newest_label">Newest source</h3>
-        <p class="didyou-fact" id="didyou-newest-text">—</p>
+      <article class="card" id="didyou-regeste">
+        <h3 data-t="didyou_regeste_label">Head-note coverage</h3>
+        <p class="didyou-fact" id="didyou-regeste-text">—</p>
       </article>
     </div>
   </section>
@@ -2869,21 +2869,25 @@ const I18N = {
     intl_card_intg_h: 'Beschaffungsfreie Integration',
     intl_card_intg_p: 'MCP-Endpunkt, OpenAPI 3.0.3 REST oder Hugging-Face-Bulk-Download. Funktioniert mit Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Kein Vendor-Onboarding, keine Per-Sitz-Lizenzierung, keine Mindestabnahme.',
     intl_contact: 'Für institutionelle Zusammenarbeit → team@jonashertner.com',
-    didyou_heading: 'Wussten Sie schon',
-    didyou_intro: 'Sechs Fakten aus dem laufenden Datensatz. Täglich aktualisiert.',
+    didyou_heading: 'Bemerkenswert',
+    didyou_intro: 'Sechs Fakten, die dem publizierten Schweizer Rechtskorpus immanent sind — unabhängig vom Zeitpunkt unserer Erfassung.',
     didyou_most_cited_label: 'Meistzitierter Entscheid',
-    didyou_longest_label: 'Längstes Urteil dieses Jahres',
-    didyou_active_court_label: 'Aktivstes Gericht (letzte 30 Tage)',
-    didyou_appeal_chain_label: 'Tiefste aktuelle Beschwerdekette',
-    didyou_daily_intake_label: 'Tageszuwachs (letzte 90 Tage)',
-    didyou_newest_label: 'Neueste Quelle',
-    didyou_unit_citations: 'Zitierungen',
-    didyou_unit_chars: 'Zeichen',
-    didyou_unit_decisions: 'Entscheide',
-    didyou_unit_instances: 'Instanzen',
-    didyou_unit_per_day: 'neue Entscheide pro Tag',
-    didyou_window_90d: 'über die letzten 90 Tage.',
-    didyou_added: 'Hinzugefügt',
+    didyou_most_cited_statute_label: 'Meistzitierter Gesetzesartikel',
+    didyou_oldest_label: 'Ältester Entscheid im Korpus',
+    didyou_language_label: 'Dreisprachige Abdeckung',
+    didyou_graph_label: 'Grösse des Zitationsgraphen',
+    didyou_regeste_label: 'Regesten-Abdeckung',
+    didyou_cited_prefix: 'als Autorität im Korpus zitiert',
+    didyou_statute_prefix: 'angerufen',
+    didyou_unit_times_in_decisions: 'mal in Entscheiden',
+    didyou_oldest_meta: 'Der Datensatz reicht über 150 Jahre zurück.',
+    didyou_language_prefix: 'Prozent der Entscheide auf',
+    didyou_language_meta: 'Schweizer Recht in drei Amtssprachen, gemeinsam durchsuchbar.',
+    didyou_graph_prefix: 'aufgelöste Verknüpfungen',
+    didyou_graph_d2d: 'Entscheid-zu-Entscheid',
+    didyou_graph_d2s: 'Entscheid-zu-Gesetz',
+    didyou_regeste_prefix: 'der Entscheide tragen eine offizielle Regeste',
+    didyou_regeste_unit: 'Entscheide mit gerichtsformulierter Zusammenfassung',
     about_heading: 'Über das Projekt',
     about_p1: 'OpenCaseLaw sammelt, dedupliziert und publiziert jeden veröffentlichten Schweizer Gerichtsentscheid, den aktuellen Text aller relevanten Bundesgesetze sowie die kantonale Gesetzgebung aller 26 Kantone. Der Datensatz wird täglich aktualisiert und steht unter CC0 (Daten) und MIT (Code).',
     about_p2: 'Dieselbe Infrastruktur betreibt einen öffentlichen Model-Context-Protocol-Server, der 24 spezialisierte Tools für Schweizer Rechtsrecherche bereitstellt — Volltextsuche, Zitationsgraph, Instanzenzug-Auflösung, Gesetzesabruf, Doktrintimelines, wissenschaftliche Kommentare, Materialien. Offener Zugang, keine API-Schlüssel.',
@@ -3106,21 +3110,25 @@ const I18N = {
     intl_card_intg_h: 'Intégration sans procurement',
     intl_card_intg_p: 'Endpoint MCP, API REST OpenAPI 3.0.3 ou téléchargement complet via Hugging Face. Compatible avec Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Pas d\'onboarding fournisseur, pas de licence par poste, pas de minimum.',
     intl_contact: 'Pour une collaboration institutionnelle → team@jonashertner.com',
-    didyou_heading: 'Le saviez-vous',
-    didyou_intro: 'Six faits tirés du corpus en direct. Actualisés quotidiennement.',
+    didyou_heading: 'À noter',
+    didyou_intro: 'Six faits intrinsèques au corpus publié du droit suisse — indépendants de la date à laquelle nous l\'avons collecté.',
     didyou_most_cited_label: 'Décision la plus citée',
-    didyou_longest_label: 'Arrêt le plus long de l\'année',
-    didyou_active_court_label: 'Tribunal le plus actif (30 derniers jours)',
-    didyou_appeal_chain_label: 'Chaîne de recours la plus profonde récemment',
-    didyou_daily_intake_label: 'Apport quotidien (90 derniers jours)',
-    didyou_newest_label: 'Source la plus récente',
-    didyou_unit_citations: 'citations',
-    didyou_unit_chars: 'caractères',
-    didyou_unit_decisions: 'décisions',
-    didyou_unit_instances: 'instances',
-    didyou_unit_per_day: 'nouvelles décisions par jour',
-    didyou_window_90d: 'sur les 90 derniers jours.',
-    didyou_added: 'Ajouté',
+    didyou_most_cited_statute_label: 'Article de loi le plus cité',
+    didyou_oldest_label: 'Décision la plus ancienne du corpus',
+    didyou_language_label: 'Couverture trilingue',
+    didyou_graph_label: 'Taille du graphe de citations',
+    didyou_regeste_label: 'Couverture des Regeste',
+    didyou_cited_prefix: 'cité comme autorité dans le corpus',
+    didyou_statute_prefix: 'invoqué',
+    didyou_unit_times_in_decisions: 'fois dans des décisions',
+    didyou_oldest_meta: 'Le corpus remonte à plus de 150 ans.',
+    didyou_language_prefix: 'pour cent des décisions en',
+    didyou_language_meta: 'Le droit suisse en trois langues officielles, indexées ensemble.',
+    didyou_graph_prefix: 'relations résolues',
+    didyou_graph_d2d: 'décision-à-décision',
+    didyou_graph_d2s: 'décision-à-loi',
+    didyou_regeste_prefix: 'des décisions portent un Regeste officiel',
+    didyou_regeste_unit: 'décisions avec un résumé rédigé par le tribunal',
     about_heading: 'À propos',
     about_p1: 'OpenCaseLaw collecte, dédoublonne et publie chaque décision judiciaire suisse publiée, le texte actuel de toutes les lois fédérales pertinentes et la législation cantonale des 26 cantons. Le jeu de données est rafraîchi quotidiennement, sous CC0 (données) et MIT (code).',
     about_p2: 'La même infrastructure alimente un serveur Model Context Protocol public qui expose 24 outils spécialisés pour la recherche juridique suisse — recherche plein texte, graphe de citations, résolution des chaînes de recours, consultation des lois, chronologies doctrinales, doctrine, travaux préparatoires. Accès libre, sans clé API.',
@@ -3343,21 +3351,25 @@ const I18N = {
     intl_card_intg_h: 'Integrazione senza procurement',
     intl_card_intg_p: 'Endpoint MCP, API REST OpenAPI 3.0.3 o download completo via Hugging Face. Compatibile con Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Nessun onboarding fornitore, nessuna licenza per posto, nessun minimo.',
     intl_contact: 'Per collaborazioni istituzionali → team@jonashertner.com',
-    didyou_heading: 'Lo sapevate',
-    didyou_intro: 'Sei fatti tratti dal corpus in tempo reale. Aggiornati ogni giorno.',
+    didyou_heading: 'Da notare',
+    didyou_intro: 'Sei fatti intrinseci al corpus pubblicato del diritto svizzero — indipendenti dalla data della nostra raccolta.',
     didyou_most_cited_label: 'Decisione più citata',
-    didyou_longest_label: 'Sentenza più lunga di quest\'anno',
-    didyou_active_court_label: 'Tribunale più attivo (ultimi 30 giorni)',
-    didyou_appeal_chain_label: 'Catena di ricorsi più profonda di recente',
-    didyou_daily_intake_label: 'Afflusso giornaliero (ultimi 90 giorni)',
-    didyou_newest_label: 'Fonte più recente',
-    didyou_unit_citations: 'citazioni',
-    didyou_unit_chars: 'caratteri',
-    didyou_unit_decisions: 'decisioni',
-    didyou_unit_instances: 'gradi',
-    didyou_unit_per_day: 'nuove decisioni al giorno',
-    didyou_window_90d: 'negli ultimi 90 giorni.',
-    didyou_added: 'Aggiunto',
+    didyou_most_cited_statute_label: 'Articolo di legge più citato',
+    didyou_oldest_label: 'Decisione più antica del corpus',
+    didyou_language_label: 'Copertura trilingue',
+    didyou_graph_label: 'Dimensione del grafo delle citazioni',
+    didyou_regeste_label: 'Copertura dei Regesti',
+    didyou_cited_prefix: 'citata come autorità nel corpus',
+    didyou_statute_prefix: 'invocato',
+    didyou_unit_times_in_decisions: 'volte nelle decisioni',
+    didyou_oldest_meta: 'Il corpus risale a oltre 150 anni fa.',
+    didyou_language_prefix: 'per cento delle decisioni in',
+    didyou_language_meta: 'Diritto svizzero in tre lingue ufficiali, ricercabili insieme.',
+    didyou_graph_prefix: 'relazioni risolte',
+    didyou_graph_d2d: 'decisione-a-decisione',
+    didyou_graph_d2s: 'decisione-a-legge',
+    didyou_regeste_prefix: 'delle decisioni recano un Regesto ufficiale',
+    didyou_regeste_unit: 'decisioni con sintesi redatta dal tribunale',
     about_heading: 'Informazioni',
     about_p1: 'OpenCaseLaw raccoglie, deduplica e pubblica ogni decisione giudiziaria svizzera pubblicata, il testo attuale di tutte le leggi federali rilevanti e la legislazione cantonale di tutti i 26 cantoni. Il dataset viene aggiornato quotidianamente, con licenze CC0 (dati) e MIT (codice).',
     about_p2: 'La stessa infrastruttura alimenta un server Model Context Protocol pubblico che espone 24 strumenti specializzati per la ricerca giuridica svizzera — ricerca full-text, grafo delle citazioni, risoluzione delle catene di ricorso, consultazione di legge, cronologie dottrinali, dottrina, materiali preparatori. Accesso libero, senza chiavi API.',
@@ -3580,21 +3592,25 @@ const I18N = {
     intl_card_intg_h: 'Integraziun senza procurement',
     intl_card_intg_p: 'Endpoint MCP, API REST OpenAPI 3.0.3 u download cumplet via Hugging Face. Cumpatibel cun Claude, ChatGPT, Cursor, Gemini, Copilot Studio. Nagin onboarding da furnitur, naginas licenzas per plaz, nagin minimum.',
     intl_contact: 'Per collaboraziun istituziunala → team@jonashertner.com',
-    didyou_heading: 'Savevas Vus che',
-    didyou_intro: 'Sis fatgs or dal corpus en viva. Actualisads mintga di.',
+    didyou_heading: 'Da remartgar',
+    didyou_intro: 'Sis fatgs intrinsics al corpus publitgà dal dretg svizzer — independents da la data da nossa rimnada.',
     didyou_most_cited_label: 'Decisiun pli citada',
-    didyou_longest_label: 'Sentenzia pli lunga da quest onn',
-    didyou_active_court_label: 'Dretgira pli activa (ultims 30 dis)',
-    didyou_appeal_chain_label: 'Chadaina da recurs pli profunda recentamain',
-    didyou_daily_intake_label: 'Influx mintgadi (ultims 90 dis)',
-    didyou_newest_label: 'Funtauna pli nova',
-    didyou_unit_citations: 'citaziuns',
-    didyou_unit_chars: 'caracters',
-    didyou_unit_decisions: 'decisiuns',
-    didyou_unit_instances: 'instanzas',
-    didyou_unit_per_day: 'novas decisiuns mintga di',
-    didyou_window_90d: 'durant ils ultims 90 dis.',
-    didyou_added: 'Agiuntà',
+    didyou_most_cited_statute_label: 'Artitgel da lescha pli citads',
+    didyou_oldest_label: 'Decisiun pli veglia dal corpus',
+    didyou_language_label: 'Cuverta trilingua',
+    didyou_graph_label: 'Grandezza dal graf da citaziuns',
+    didyou_regeste_label: 'Cuverta dals Regeste',
+    didyou_cited_prefix: 'cità sco autoritad en il corpus',
+    didyou_statute_prefix: 'invocà',
+    didyou_unit_times_in_decisions: 'giadas en decisiuns',
+    didyou_oldest_meta: 'Il corpus retorna passa 150 onns enavos.',
+    didyou_language_prefix: 'pertschient da las decisiuns en',
+    didyou_language_meta: 'Dretg svizzer en trais linguas uffizialas, indexà ensemen.',
+    didyou_graph_prefix: 'relaziuns resolvidas',
+    didyou_graph_d2d: 'decisiun-a-decisiun',
+    didyou_graph_d2s: 'decisiun-a-lescha',
+    didyou_regeste_prefix: 'da las decisiuns portan in Regeste uffizial',
+    didyou_regeste_unit: 'decisiuns cun ina sintesa scritta da la dretgira',
     about_heading: 'Davart il project',
     about_p1: 'OpenCaseLaw raccoglie, deduplitgescha e publitgescha mintga decisiun giudiziala svizra publitgada, il text actual da tut las leschas federalas relevantas e la legislaziun chantunala da tut ils 26 chantuns. Il dataset vegn actualisà mintga di, sut las licenzas CC0 (datas) e MIT (code).',
     about_p2: 'La medema infrastructura activescha in server public da Model Context Protocol che porscha 24 utensils spezialisads per la perscrutaziun giuridica svizra — tschertga full-text, graf da citaziuns, schliaziun da chadainas da recurs, lookup d\'artitgels legals, cronologias duttrinalas, cumentaris, materials preparatorics. Access libers, senza claves API.',
@@ -3817,21 +3833,25 @@ const I18N = {
     intl_card_intg_h: 'Procurement-free integration',
     intl_card_intg_p: 'MCP endpoint, OpenAPI 3.0.3 REST, or Hugging Face bulk download. Works with Claude, ChatGPT, Cursor, Gemini, Copilot Studio. No vendor onboarding, no per-seat licensing, no minimum commitment.',
     intl_contact: 'Contact for institutional collaboration → team@jonashertner.com',
-    didyou_heading: 'Did you know',
-    didyou_intro: 'Six facts drawn from the live corpus. Refreshed daily.',
+    didyou_heading: 'Notable',
+    didyou_intro: 'Six facts intrinsic to the published Swiss legal corpus — independent of when we scraped them.',
     didyou_most_cited_label: 'Most-cited decision',
-    didyou_longest_label: 'Longest opinion this year',
-    didyou_active_court_label: 'Most active court (last 30 days)',
-    didyou_appeal_chain_label: 'Deepest recent appeal chain',
-    didyou_daily_intake_label: 'Daily intake (last 90 days)',
-    didyou_newest_label: 'Newest source',
-    didyou_unit_citations: 'citations',
-    didyou_unit_chars: 'characters',
-    didyou_unit_decisions: 'decisions',
-    didyou_unit_instances: 'instances',
-    didyou_unit_per_day: 'new decisions per day',
-    didyou_window_90d: 'over the last 90 days.',
-    didyou_added: 'Added',
+    didyou_most_cited_statute_label: 'Most-cited statute article',
+    didyou_oldest_label: 'Oldest decision in the corpus',
+    didyou_language_label: 'Three-language coverage',
+    didyou_graph_label: 'Citation graph size',
+    didyou_regeste_label: 'Head-note coverage',
+    didyou_cited_prefix: 'cited as authority across the corpus',
+    didyou_statute_prefix: 'invoked',
+    didyou_unit_times_in_decisions: 'times in decisions',
+    didyou_oldest_meta: 'The corpus reaches back over 150 years.',
+    didyou_language_prefix: 'percent of decisions in',
+    didyou_language_meta: 'Swiss law in three official languages, indexed together.',
+    didyou_graph_prefix: 'resolved relationships',
+    didyou_graph_d2d: 'decision-to-decision',
+    didyou_graph_d2s: 'decision-to-statute',
+    didyou_regeste_prefix: 'of decisions carry an official Regeste',
+    didyou_regeste_unit: 'decisions with a court-authored summary',
     about_heading: 'About',
     about_p1: 'OpenCaseLaw collects, deduplicates and publishes every published Swiss court decision, the current text of every relevant federal statute, and the cantonal legislation of all 26 cantons. The dataset is refreshed daily and released under CC0 (data) and MIT (code).',
     about_p2: 'The same infrastructure powers a public Model Context Protocol server that exposes 24 specialised tools for Swiss legal research — full-text search, citation graph, appeal-chain resolution, statute lookup, doctrinal timelines, scholarly commentary, legislative materials. Open access, no API keys.',
@@ -4867,78 +4887,74 @@ function renderDidYouKnow(data) {
     card.hidden = false;
     text.innerHTML = html;
   };
+  const ALL_IDS = [
+    'didyou-most-cited','didyou-most-cited-statute','didyou-oldest',
+    'didyou-language','didyou-graph','didyou-regeste',
+  ];
   if (!s) {
-    ['didyou-most-cited','didyou-longest','didyou-active-court',
-     'didyou-appeal-chain','didyou-daily-intake','didyou-newest']
-      .forEach(id => setCell(id, ''));
+    ALL_IDS.forEach(id => setCell(id, ''));
     return;
   }
 
-  // Each cell: large headline (number/key fact) first, then a smaller
-  // explanatory line below, optional meta. The headline carries the
-  // tabular-nums + light-weight display treatment (see .didyou-headline
-  // in CSS). Renderer is intentionally explicit per cell so each
-  // factoid can decide what its "headline" is.
+  // Each cell: large .didyou-headline first, then a smaller explanatory
+  // line. None of these depend on scraping date — every value is an
+  // intrinsic property of the published Swiss legal corpus.
 
-  // Most-cited decision — headline is the citation count.
-  if (s.most_cited && s.most_cited.docket) {
-    const m = s.most_cited;
-    const docket = m.docket;
-    const link = m.url ? `<a href="${m.url}">${docket}</a>` : `<strong>${docket}</strong>`;
-    const title = m.title ? `<span class="didyou-meta">${m.title}</span>` : '';
+  // 1. Most-cited decision — headline is the citation count.
+  if (s.most_cited_decision && s.most_cited_decision.docket) {
+    const m = s.most_cited_decision;
+    const link = m.url ? `<a href="${m.url}">${m.docket}</a>` : `<strong>${m.docket}</strong>`;
     setCell('didyou-most-cited',
       `<span class="didyou-headline">${fmtN(m.citation_count)}×</span>` +
-      `${link} <span class="didyou-meta">${t('didyou_unit_citations') || 'citations across the corpus'}.</span>${title}`);
+      `${t('didyou_cited_prefix') || 'cited as authority across the corpus'} — ${link}.`);
   } else { setCell('didyou-most-cited', ''); }
 
-  // Longest opinion this year — headline is the character count.
-  if (s.longest_year && s.longest_year.docket) {
-    const l = s.longest_year;
-    const docket = l.docket;
-    const link = l.url ? `<a href="${l.url}">${docket}</a>` : `<strong>${docket}</strong>`;
-    const yr = l.year ? ` · ${l.year}` : '';
-    const title = l.title ? `<span class="didyou-meta">${l.title}</span>` : '';
-    setCell('didyou-longest',
-      `<span class="didyou-headline">${fmtN(l.char_count)}</span>` +
-      `${link}${yr} <span class="didyou-meta">${t('didyou_unit_chars') || 'characters'}.</span>${title}`);
-  } else { setCell('didyou-longest', ''); }
+  // 2. Most-cited statute article — headline is the article reference.
+  if (s.most_cited_statute && s.most_cited_statute.law_code && s.most_cited_statute.article) {
+    const a = s.most_cited_statute;
+    const cite = `Art. ${a.article} ${a.law_code}`;
+    setCell('didyou-most-cited-statute',
+      `<span class="didyou-headline">${cite}</span>` +
+      `${t('didyou_statute_prefix') || 'invoked'} <strong>${fmtN(a.ref_count)}</strong> ${t('didyou_unit_times_in_decisions') || 'times in decisions'}.`);
+  } else { setCell('didyou-most-cited-statute', ''); }
 
-  // Most active court — headline is the count, label is the court.
-  if (s.active_court && s.active_court.court_label) {
-    const a = s.active_court;
-    const label = courtLabel(a.court_label) || a.court_label;
-    setCell('didyou-active-court',
-      `<span class="didyou-headline">${fmtN(a.count)}</span>` +
-      `<strong>${label}</strong> <span class="didyou-meta">${t('didyou_unit_decisions') || 'decisions'}.</span>`);
-  } else { setCell('didyou-active-court', ''); }
+  // 3. Oldest decision — headline is the year.
+  if (s.oldest_decision && s.oldest_decision.year) {
+    const o = s.oldest_decision;
+    const link = o.url ? `<a href="${o.url}">${o.docket}</a>` : `<strong>${o.docket}</strong>`;
+    setCell('didyou-oldest',
+      `<span class="didyou-headline">${o.year}</span>` +
+      `${link} <span class="didyou-meta">${t('didyou_oldest_meta') || 'the corpus reaches back over 150 years.'}</span>`);
+  } else { setCell('didyou-oldest', ''); }
 
-  // Deepest recent appeal chain — headline is the depth, body the chain.
-  if (s.appeal_chain && Array.isArray(s.appeal_chain.chain) && s.appeal_chain.chain.length) {
-    const c = s.appeal_chain;
-    const labels = c.chain.map(courtLabel);
-    setCell('didyou-appeal-chain',
-      `<span class="didyou-headline">${c.depth || c.chain.length} ${t('didyou_unit_instances') || 'instances'}</span>` +
-      `${labels.join(' → ')}.`);
-  } else { setCell('didyou-appeal-chain', ''); }
+  // 4. Language split — headline is the trilingual ratio.
+  if (s.language_split && typeof s.language_split.de_pct === 'number') {
+    const l = s.language_split;
+    const headline = `${Math.round(l.de_pct)} · ${Math.round(l.fr_pct)} · ${Math.round(l.it_pct)}`;
+    setCell('didyou-language',
+      `<span class="didyou-headline">${headline}</span>` +
+      `${t('didyou_language_prefix') || 'percent of decisions in'} DE · FR · IT <span class="didyou-meta">${t('didyou_language_meta') || 'Swiss law in three official languages, all searchable together.'}</span>`);
+  } else { setCell('didyou-language', ''); }
 
-  // Daily intake — headline is the rate.
-  if (s.daily_intake && typeof s.daily_intake.avg_per_day === 'number') {
-    const d = s.daily_intake;
-    setCell('didyou-daily-intake',
-      `<span class="didyou-headline">${fmtN(Math.round(d.avg_per_day))}</span>` +
-      `${t('didyou_unit_per_day') || 'new decisions per day'} <span class="didyou-meta">${t('didyou_window_90d') || 'over the last 90 days.'}</span>`);
-  } else { setCell('didyou-daily-intake', ''); }
+  // 5. Citation graph size — headline is the total edge count.
+  if (s.graph_size && (s.graph_size.decision_edges || s.graph_size.statute_edges)) {
+    const g = s.graph_size;
+    const totalM = (g.total / 1000000).toFixed(1);
+    setCell('didyou-graph',
+      `<span class="didyou-headline">${totalM}M</span>` +
+      `${t('didyou_graph_prefix') || 'resolved relationships'} — ` +
+      `${fmtN(g.decision_edges)} ${t('didyou_graph_d2d') || 'decision-to-decision'}, ` +
+      `${fmtN(g.statute_edges)} ${t('didyou_graph_d2s') || 'decision-to-statute'}.`);
+  } else { setCell('didyou-graph', ''); }
 
-  // Newest source — headline is the source name (no number lead — court
-  // names ARE the headline here).
-  if (s.newest_source && s.newest_source.court_label) {
-    const n = s.newest_source;
-    const label = courtLabel(n.court_label) || n.court_label;
-    const meta = n.ingested_at ? ` <span class="didyou-meta">${t('didyou_added') || 'Added'} ${n.ingested_at}.</span>` : '';
-    const count = n.count ? ` ${fmtN(n.count)} ${t('didyou_unit_decisions') || 'decisions'}.` : '';
-    setCell('didyou-newest',
-      `<span class="didyou-headline">${label}</span>${count}${meta}`);
-  } else { setCell('didyou-newest', ''); }
+  // 6. Regeste coverage — headline is the percentage.
+  if (s.regeste_coverage && typeof s.regeste_coverage.pct === 'number') {
+    const r = s.regeste_coverage;
+    setCell('didyou-regeste',
+      `<span class="didyou-headline">${Math.round(r.pct)}%</span>` +
+      `${t('didyou_regeste_prefix') || 'of decisions carry an official head-note (Regeste)'} — ` +
+      `${fmtN(r.with_regeste)} ${t('didyou_regeste_unit') || 'decisions with a court-authored summary'}.`);
+  } else { setCell('didyou-regeste', ''); }
 }
 
 function renderLatest(data) {

@@ -557,25 +557,29 @@ def collect_corpus_snapshot(repo_dir: Path) -> dict:
 
 
 def collect_interesting_stats(repo_dir: Path) -> dict:
-    """Compute the six factoids surfaced in the landing's "Did you know"
-    section. Each field is best-effort: if the underlying query fails or
-    returns nothing, the field is omitted and the renderer hides that cell.
+    """Compute six intrinsic facts about the corpus for the landing's
+    "Notable" section. None of them depend on scraping date or pipeline
+    timing — every value is a property of the published Swiss legal
+    corpus itself, so the section reads as substance about Swiss law,
+    not as plumbing telemetry.
 
     Output shape:
         {
-          "most_cited":    {docket, title, citation_count, url},
-          "longest_year":  {docket, title, char_count, year, url},
-          "active_court":  {court_label, count, window_days},
-          "appeal_chain":  {chain: [str, ...], depth},
-          "daily_intake":  {avg_per_day, window_days},
-          "newest_source": {court_label, count, ingested_at},
+          "most_cited_decision": {docket, citation_count, url},
+          "most_cited_statute":  {law_code, article, ref_count},
+          "oldest_decision":     {docket, decision_date, year, url},
+          "language_split":      {de_pct, fr_pct, it_pct, total},
+          "graph_size":          {decision_edges, statute_edges, total},
+          "regeste_coverage":    {pct, with_regeste, total},
         }
+    Each field is best-effort — failures hide the corresponding card via
+    the renderer rather than failing the publish.
     """
     out: dict = {}
     decisions_db = repo_dir / "output" / "decisions.db"
     graph_db = repo_dir / "output" / "reference_graph.db"
 
-    # ── Most-cited decision ─────────────────────────────────────────────
+    # ── 1. Most-cited decision (intrinsic to citation graph) ─────────────
     if graph_db.exists() and decisions_db.exists():
         try:
             g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=10)
@@ -595,142 +599,152 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                 d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
                 d.row_factory = sqlite3.Row
                 row = d.execute(
-                    "SELECT docket_number, title FROM decisions WHERE decision_id=? LIMIT 1",
+                    "SELECT docket_number FROM decisions WHERE decision_id=? LIMIT 1",
                     (top["decision_id"],),
                 ).fetchone()
                 d.close()
                 if row:
-                    out["most_cited"] = {
+                    out["most_cited_decision"] = {
                         "docket": row["docket_number"] or top["decision_id"],
-                        "title": _truncate(row["title"], 90) if row["title"] else None,
                         "citation_count": int(top["n"]),
                         "url": f"https://mcp.opencaselaw.ch/entscheid/{top['decision_id']}",
                     }
         except sqlite3.Error:
             pass
 
+    # ── 2. Most-cited statute article (intrinsic to corpus) ──────────────
+    if graph_db.exists():
+        try:
+            g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=10)
+            g.row_factory = sqlite3.Row
+            # Inspect available tables — schemas vary across builds.
+            tables = {r[0] for r in g.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()}
+            row = None
+            if "decision_statutes" in tables:
+                # Prefer normalized columns if present.
+                cols = {r[1] for r in g.execute(
+                    "PRAGMA table_info(decision_statutes)"
+                ).fetchall()}
+                if {"law_code", "article"} <= cols:
+                    row = g.execute(
+                        """
+                        SELECT law_code, article, COUNT(*) AS n
+                        FROM decision_statutes
+                        WHERE law_code IS NOT NULL AND article IS NOT NULL
+                          AND TRIM(law_code) != '' AND TRIM(article) != ''
+                        GROUP BY law_code, article
+                        ORDER BY n DESC
+                        LIMIT 1
+                        """
+                    ).fetchone()
+            g.close()
+            if row and row["n"]:
+                out["most_cited_statute"] = {
+                    "law_code": row["law_code"],
+                    "article": row["article"],
+                    "ref_count": int(row["n"]),
+                }
+        except sqlite3.Error:
+            pass
+
+    # ── 3-6. Decisions DB facts (one connection, multiple queries) ───────
     if decisions_db.exists():
-        # ── Longest opinion this year ──
         try:
             d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
             d.row_factory = sqlite3.Row
-            year = datetime.now(timezone.utc).year
+
+            # 3. Oldest decision in the corpus
             row = d.execute(
                 """
-                SELECT decision_id, docket_number, title, decision_date,
-                       LENGTH(full_text) AS chars
+                SELECT decision_id, docket_number, decision_date
                 FROM decisions
-                WHERE decision_date BETWEEN ? AND ?
-                ORDER BY chars DESC
+                WHERE decision_date IS NOT NULL AND decision_date != ''
+                ORDER BY decision_date ASC
                 LIMIT 1
-                """,
-                (f"{year}-01-01", f"{year}-12-31"),
+                """
             ).fetchone()
-            if row and row["chars"]:
-                out["longest_year"] = {
+            if row and row["decision_date"]:
+                year = row["decision_date"][:4]
+                out["oldest_decision"] = {
                     "docket": row["docket_number"] or row["decision_id"],
-                    "title": _truncate(row["title"], 80) if row["title"] else None,
-                    "char_count": int(row["chars"]),
-                    "year": year,
+                    "decision_date": row["decision_date"],
+                    "year": int(year) if year.isdigit() else None,
                     "url": f"https://mcp.opencaselaw.ch/entscheid/{row['decision_id']}",
                 }
 
-            # ── Most active court (last 30 days by decision_date) ──
-            cutoff = (datetime.now(timezone.utc).date() - timedelta(days=30)).isoformat()
+            # 4. Language distribution (DE / FR / IT)
+            rows = d.execute(
+                """
+                SELECT language, COUNT(*) AS n
+                FROM decisions
+                WHERE language IN ('de','fr','it','rm')
+                GROUP BY language
+                """
+            ).fetchall()
+            if rows:
+                lang = {r["language"]: int(r["n"]) for r in rows}
+                total = sum(lang.values())
+                if total:
+                    out["language_split"] = {
+                        "de_pct": round(lang.get("de", 0) * 100.0 / total, 1),
+                        "fr_pct": round(lang.get("fr", 0) * 100.0 / total, 1),
+                        "it_pct": round(lang.get("it", 0) * 100.0 / total, 1),
+                        "total": total,
+                    }
+
+            # 6. Regeste (head-note) coverage — share of decisions that
+            #    carry a real head-note (>50 chars filters out empty / stub).
             row = d.execute(
                 """
-                SELECT court, COUNT(*) AS n
+                SELECT
+                  SUM(CASE WHEN regeste IS NOT NULL AND LENGTH(TRIM(regeste)) >= 50
+                           THEN 1 ELSE 0 END) AS with_regeste,
+                  COUNT(*) AS total
                 FROM decisions
-                WHERE decision_date >= ?
-                GROUP BY court
-                ORDER BY n DESC
-                LIMIT 1
-                """,
-                (cutoff,),
-            ).fetchone()
-            if row and row["n"]:
-                out["active_court"] = {
-                    "court_label": row["court"],
-                    "count": int(row["n"]),
-                    "window_days": 30,
-                }
-
-            # ── Daily intake (last 90 days, avg) ──
-            # Uses decision_date (when the court rendered the decision),
-            # NOT scraped_at (when we ingested it) — the latter spikes
-            # massively when a backfill lands and would mislead. This
-            # gives the honest "decisions courts actually rendered per
-            # day on average" number.
-            cutoff90 = (datetime.now(timezone.utc).date() - timedelta(days=90)).isoformat()
-            row = d.execute(
-                """
-                SELECT COUNT(*) AS n
-                FROM decisions
-                WHERE decision_date >= ?
-                """,
-                (cutoff90,),
-            ).fetchone()
-            if row and row["n"]:
-                out["daily_intake"] = {
-                    "avg_per_day": float(row["n"]) / 90.0,
-                    "window_days": 90,
-                }
-
-            # ── Most active court — also use decision_date so backfill
-            # spikes don't dominate. Last 30 days of court output. ──
-
-            # ── Newest source (most recent court_code first appearance) ──
-            row = d.execute(
-                """
-                SELECT court, MIN(scraped_at) AS first_seen, COUNT(*) AS n
-                FROM decisions
-                GROUP BY court
-                ORDER BY first_seen DESC
-                LIMIT 1
                 """
             ).fetchone()
-            if row and row["court"]:
-                out["newest_source"] = {
-                    "court_label": row["court"],
-                    "count": int(row["n"]),
-                    "ingested_at": row["first_seen"][:10] if row["first_seen"] else None,
+            if row and row["total"]:
+                with_r = int(row["with_regeste"] or 0)
+                total = int(row["total"])
+                out["regeste_coverage"] = {
+                    "pct": round(with_r * 100.0 / total, 1),
+                    "with_regeste": with_r,
+                    "total": total,
                 }
+
             d.close()
         except sqlite3.Error:
             pass
 
-    # ── Deepest recent appeal chain ──
-    # The reference_graph.db schema does not carry an explicit
-    # `is_prior_instance` flag on every build, so we approximate by
-    # finding a 3-step backward chain via citation_targets where the
-    # match_type indicates a prior-instance relationship. If the schema
-    # doesn't support this, the cell hides — best-effort, optional.
-    try:
-        if graph_db.exists():
-            g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=5)
+    # ── 5. Citation graph total size (decision + statute edges) ──────────
+    if graph_db.exists():
+        try:
+            g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=10)
             g.row_factory = sqlite3.Row
-            row = g.execute(
-                """
-                SELECT t1.source_decision_id AS bger,
-                       t1.target_decision_id AS l2,
-                       t2.target_decision_id AS l1
-                FROM citation_targets t1
-                JOIN citation_targets t2
-                  ON t1.target_decision_id = t2.source_decision_id
-                WHERE t1.source_decision_id LIKE 'bger_%'
-                  AND t1.match_type = 'prior_instance'
-                  AND t2.match_type = 'prior_instance'
-                LIMIT 1
-                """
-            ).fetchone()
+            tables = {r[0] for r in g.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()}
+            decision_edges = 0
+            statute_edges = 0
+            if "citation_targets" in tables:
+                r = g.execute("SELECT COUNT(*) AS n FROM citation_targets").fetchone()
+                if r:
+                    decision_edges = int(r["n"])
+            if "decision_statutes" in tables:
+                r = g.execute("SELECT COUNT(*) AS n FROM decision_statutes").fetchone()
+                if r:
+                    statute_edges = int(r["n"])
             g.close()
-            if row:
-                out["appeal_chain"] = {
-                    "chain": [row["l1"], row["l2"], row["bger"]],
-                    "depth": 3,
+            if decision_edges or statute_edges:
+                out["graph_size"] = {
+                    "decision_edges": decision_edges,
+                    "statute_edges": statute_edges,
+                    "total": decision_edges + statute_edges,
                 }
-    except (sqlite3.Error, sqlite3.OperationalError):
-        pass
+        except sqlite3.Error:
+            pass
 
     return out
 
