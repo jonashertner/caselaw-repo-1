@@ -96,12 +96,11 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
   --f-sans:  'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --f-serif: 'IBM Plex Serif', 'Iowan Old Style', 'Hoefler Text', Georgia, serif;
   --f-mono:  'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
   /* ── Type scale (modular, data-density tuned) ────────────── */
@@ -2017,121 +2016,106 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .copy-btn:hover { color: var(--tx); border-color: var(--brd); }
 
 /* ===========================================================================
-   Hero v3 (2026-04-25) — Swiss editorial: number-first, serif accent,
-   hairline ornament, modular vertical rhythm on 8px baseline.
+   Hero v3 — minimalist. One sans family, three weights (100 / 300 / 400),
+   no italics, no small caps, no decoration. Whitespace does the work.
    =========================================================================== */
 .hero-v3 {
   text-align: center;
-  padding: clamp(64px, 10vw, 144px) 0 clamp(48px, 7vw, 88px);
+  padding: clamp(80px, 12vw, 168px) 0 clamp(56px, 8vw, 112px);
 }
-.hero-v3-content { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+.hero-v3-content {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
 
-/* The number — Swiss apostrophe, tabular lining figures, ultra-thin weight. */
 .hero-v3-stat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 32px;
+  gap: 16px;
+  margin-bottom: 56px;
 }
 .hero-v3-num {
-  font-family: var(--f-sans);
-  font-size: clamp(72px, 13vw, 168px);
-  line-height: 0.92;
+  font-size: clamp(72px, 14vw, 176px);
+  line-height: 0.9;
   font-weight: 100;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.05em;
   color: var(--tx);
-  font-feature-settings: "tnum" 1, "lnum" 1, "ss01" 1, "calt" 0;
   font-variant-numeric: tabular-nums lining-nums;
 }
 .hero-v3-label {
-  font-size: clamp(13px, 1.4vw, 15px);
-  color: var(--tx3);
-  font-weight: 400;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
-}
-
-/* Hairline ornament — 1px × 32px, centered, 4 baselines below the label.
-   Provides a horizon line; classic Swiss device. */
-.hero-v3-rule {
-  width: 32px;
-  height: 1px;
-  border: 0;
-  background: var(--brd2);
-  margin: 0 auto 32px;
-  opacity: 0.7;
-}
-
-/* Function line — IBM Plex Serif, the only serif on the page, used as a
-   single editorial accent. Italic 300 reads as a headnote: precise,
-   considered, not loud. */
-.hero-v3-function {
-  font-family: var(--f-serif);
-  font-style: italic;
+  font-size: 14px;
   font-weight: 300;
-  font-size: clamp(16px, 1.7vw, 20px);
+  color: var(--tx3);
+  line-height: 1;
+}
+
+.hero-v3-function {
+  font-size: clamp(16px, 1.7vw, 19px);
+  font-weight: 300;
   line-height: 1.55;
   color: var(--tx);
-  margin: 0 auto 16px;
-  max-width: 640px;
+  margin: 0 auto 12px;
+  max-width: 540px;
   text-wrap: balance;
-  letter-spacing: 0.005em;
 }
-
-/* Availability line — sans, smaller, dimmer. The visual bridge to the CTAs. */
 .hero-v3-availability {
-  font-family: var(--f-sans);
-  font-size: clamp(13px, 1.3vw, 15px);
-  color: var(--tx3);
-  margin: 0 auto 40px;
+  font-size: 14px;
+  font-weight: 300;
   line-height: 1.55;
-  max-width: 600px;
+  color: var(--tx3);
+  margin: 0 auto 56px;
+  max-width: 520px;
   text-wrap: balance;
 }
 
 .hero-v3-ctas {
   display: flex;
-  gap: 12px;
+  gap: 36px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 32px;
+  margin-bottom: 56px;
 }
-.hero-v3-ctas .btn-lg {
-  padding: 13px 30px;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-radius: var(--r-sm);
+.hero-v3-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--tx);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 400;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--tx);
+  transition: opacity 0.18s var(--ease);
 }
+.hero-v3-link:hover { opacity: 0.55; }
+.hero-v3-arrow {
+  font-weight: 300;
+  color: var(--tx2);
+  transition: transform 0.18s var(--ease);
+}
+.hero-v3-link:hover .hero-v3-arrow { transform: translateX(2px); }
+.hero-v3-link[href^="#"]:hover .hero-v3-arrow { transform: translateY(2px); }
 
-/* Date stamp — restrained mono footer, anchors the composition without
-   competing with the number. */
 .hero-v3-stamp {
-  font-family: var(--f-mono);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 300;
   color: var(--tx3);
   margin: 0;
-  letter-spacing: 0.04em;
-}
-.hero-v3-stamp strong {
-  color: var(--tx2);
   font-variant-numeric: tabular-nums;
-  font-weight: 500;
 }
-.hero-v3-stamp .sep { color: var(--brd); margin: 0 8px; }
+.hero-v3-stamp .sep { color: var(--brd2); margin: 0 8px; }
 .hero-v3-stamp time { color: var(--tx2); }
 
 @media (max-width: 640px) {
-  .hero-v3 { padding: clamp(48px, 9vw, 80px) 0 40px; }
-  .hero-v3-num { font-size: 72px; letter-spacing: -0.04em; }
-  .hero-v3-function { font-size: 16px; }
-  .hero-v3-availability { font-size: 13px; }
-  .hero-v3-ctas { flex-direction: column; align-items: stretch; }
-  .hero-v3-ctas .btn-lg { width: 100%; justify-content: center; }
-  .hero-v3-stamp { font-size: 10px; letter-spacing: 0.02em; }
-  .hero-v3-stamp .sep { margin: 0 5px; }
+  .hero-v3 { padding: clamp(56px, 10vw, 96px) 0 56px; }
+  .hero-v3-num { font-size: 72px; letter-spacing: -0.045em; }
+  .hero-v3-function { font-size: 16px; max-width: 100%; }
+  .hero-v3-availability { font-size: 14px; max-width: 100%; }
+  .hero-v3-ctas { gap: 24px; }
+  .hero-v3-stamp { font-size: 11px; }
+  .hero-v3-stamp .sep { margin: 0 6px; }
 }
 
 /* ===========================================================================
@@ -2146,19 +2130,18 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   margin-top: clamp(48px, 6vw, 72px);
 }
 .connect-block .section-heading {
-  font-weight: 200;
-  font-size: clamp(28px, 3.4vw, 40px);
-  letter-spacing: -0.02em;
-  margin: 0 0 12px;
+  font-weight: 100;
+  font-size: clamp(32px, 4vw, 56px);
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
   text-align: center;
 }
 .connect-intro {
   color: var(--tx3);
   font-size: 14px;
-  margin: 0 0 40px;
+  font-weight: 300;
+  margin: 0 0 48px;
   text-align: center;
-  letter-spacing: 0.005em;
-  font-weight: 400;
 }
 .connect-tabs {
   display: flex;
@@ -2166,26 +2149,24 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   justify-content: center;
   gap: 0;
   border-bottom: 1px solid var(--brd);
-  margin: 0 auto 32px;
-  max-width: 880px;
+  margin: 0 auto 40px;
+  max-width: 720px;
 }
 .connect-tab {
   background: none;
   border: none;
   border-bottom: 1px solid transparent;
-  padding: 12px 18px;
+  padding: 14px 18px;
   cursor: pointer;
   color: var(--tx3);
   font-family: var(--f-sans);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 300;
   margin-bottom: -1px;
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
 .connect-tab:hover { color: var(--tx2); }
-.connect-tab.active { color: var(--tx); border-bottom-color: var(--tx); }
+.connect-tab.active { color: var(--tx); border-bottom-color: var(--tx); font-weight: 400; }
 .connect-pane { display: none; max-width: 720px; margin: 0 auto; }
 .connect-pane.active { display: block; }
 .connect-steps {
@@ -2294,22 +2275,19 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .connect-footer {
   border: 0;
-  margin-top: 48px;
+  margin-top: 56px;
   padding-top: 0;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--tx3);
   text-align: center;
-  line-height: 1.8;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-weight: 400;
+  line-height: 1.7;
+  font-weight: 300;
 }
 .connect-footer strong {
-  text-transform: none;
-  letter-spacing: 0;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--tx2);
 }
+.connect-footer .sep { color: var(--brd2); margin: 0 10px; }
 .connect-footer .sep { color: var(--brd); margin: 0 8px; }
 .connect-footer a { color: var(--tx2); }
 .connect-footer a:hover { color: var(--tx); }
@@ -2375,22 +2353,17 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <span class="hero-v3-num" id="hero-decisions">968&rsquo;373</span>
         <span class="hero-v3-label" data-t="hero_v3_label">published Swiss court decisions</span>
       </div>
-      <hr class="hero-v3-rule" aria-hidden="true">
-      <p class="hero-v3-function" data-t="hero_v3_function">Search decisions and statutes · trace citations and appeal chains · retrieve Regeste, Erwägungen, commentaries and Materialien.</p>
-      <p class="hero-v3-availability" data-t="hero_v3_availability">Available in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.</p>
-      <div class="hero-v3-ctas">
-        <a href="#connect" class="btn btn-primary btn-lg">
-          <span data-t="hero_cta_connect_v3">Connect ↓</span>
-        </a>
-        <a href="/entscheide/" class="btn btn-secondary btn-lg">
-          <span data-t="hero_cta_browse_v3">Browse</span>
-        </a>
-      </div>
+      <p class="hero-v3-function" data-t="hero_v3_function">Search decisions and statutes. Trace citations and appeal chains. Retrieve Regeste, Erwägungen, commentaries and Materialien.</p>
+      <p class="hero-v3-availability" data-t="hero_v3_availability">Available in Claude, ChatGPT, Cursor, Gemini, Copilot Studio, or via REST API.</p>
+      <nav class="hero-v3-ctas" aria-label="Primary actions">
+        <a href="#connect" class="hero-v3-link"><span data-t="hero_cta_connect_v3">Connect</span> <span class="hero-v3-arrow">↓</span></a>
+        <a href="/entscheide/" class="hero-v3-link"><span data-t="hero_cta_browse_v3">Browse</span> <span class="hero-v3-arrow">→</span></a>
+      </nav>
       <p class="hero-v3-stamp" aria-label="Dataset timestamp and daily delta">
         <span data-t="hero_v3_asof">As of</span>
         <time id="hero-stamp-date">—</time>
         <span class="sep">·</span>
-        <strong>+<span id="hero-stamp-delta">0</span></strong>
+        <span>+<span id="hero-stamp-delta">0</span></span>
         <span data-t="hero_v3_since">since yesterday</span>
       </p>
       <!-- Hidden compatibility IDs (legacy stats.json updater targets) -->
