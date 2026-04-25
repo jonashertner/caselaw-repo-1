@@ -216,8 +216,32 @@ body {
   overflow-x: clip;
 }
 .w { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--gutter-x); }
-a { color: var(--ac); text-decoration: none; }
-a:hover { text-decoration: underline; }
+/* Default link styling: neutral text colour, no underline. Class-styled
+   links (.hero-v3-link, .didyou-fact a, .intl-contact a, etc.) manage
+   their own affordance via border-bottom / colour shifts and explicitly
+   set text-decoration:none to avoid double-underlining.
+   Naked anchors inside prose contexts get a subtle underline-on-hover
+   so they remain discoverable in body copy. */
+a { color: var(--tx); text-decoration: none; transition: color 0.18s var(--ease); }
+a:hover { color: var(--tx2); }
+.landing-prose a,
+.connect-paragraph a,
+.connect-note a,
+.connect-steps a {
+  color: var(--tx);
+  text-decoration: underline;
+  text-decoration-color: var(--brd);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.landing-prose a:hover,
+.connect-paragraph a:hover,
+.connect-note a:hover,
+.connect-steps a:hover {
+  color: var(--tx);
+  text-decoration-color: var(--tx);
+}
 
 /* Section rhythm utility — single source of truth for the vertical
    gaps between top-level landing sections. Any top-level element on
@@ -714,14 +738,14 @@ footer {
   font-size: var(--fs-xs); border-top: 1px solid var(--brd2);
   margin-top: 48px;
 }
-footer a { color: var(--tx2); }
-footer a:hover { color: var(--ac); }
+footer a { color: var(--tx2); text-decoration: none; transition: color 0.18s var(--ease), border-color 0.18s var(--ease); }
+footer a:hover { color: var(--tx); text-decoration: none; }
 footer .foot-links { display: flex; gap: 20px; justify-content: center; margin-bottom: 10px; }
 footer .foot-links a {
-  font-weight: 500; text-decoration: none; padding: 4px 0;
-  border-bottom: 1px solid transparent; transition: all 0.15s var(--ease);
+  font-weight: 400; text-decoration: none; padding: 4px 0;
+  border-bottom: 1px solid transparent;
 }
-footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: none; }
+footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); text-decoration: none; }
 
 /* ── States ── */
 .ld { text-align: center; padding: 32px 0; color: var(--tx3); font-size: var(--fs-base); }
@@ -1058,8 +1082,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   color: var(--tx3);
   white-space: nowrap;
   text-decoration: none;
+  transition: color 0.18s var(--ease);
 }
-.latest-more:hover { color: var(--tx); text-decoration: underline; }
+.latest-more:hover { color: var(--tx); text-decoration: none; }
 .latest-list { list-style: none; padding: 0; margin: 0; }
 .latest-list li {
   padding: var(--s-3) 0;
@@ -1250,11 +1275,11 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
-  text-decoration-color: var(--tx3);
-  transition: text-decoration-color 0.15s;
+  text-decoration-color: var(--brd2);
+  transition: text-decoration-color 0.18s var(--ease), color 0.18s var(--ease);
 }
 .contrib-byline a:hover,
-.contributors-list a:hover { text-decoration-color: var(--tx); }
+.contributors-list a:hover { color: var(--tx); text-decoration-color: var(--tx); }
 .contrib-foundation {
   font-size: var(--fs-sm);
   line-height: var(--lh-relaxed);
@@ -1792,7 +1817,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   border-bottom: 1px solid var(--tx);
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
-.hero-v3-link:hover { color: var(--tx2); border-color: var(--tx2); }
+.hero-v3-link:hover { color: var(--tx2); border-color: var(--tx2); text-decoration: none; }
 .hero-v3-arrow {
   font-weight: 300;
   color: var(--tx2);
@@ -1892,9 +1917,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   text-decoration: none;
   border-bottom: 1px solid var(--tx);
   padding-bottom: 2px;
-  transition: opacity 0.18s var(--ease);
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
-.intl-contact a:hover { opacity: 0.55; }
+.intl-contact a:hover { color: var(--tx2); border-color: var(--tx2); text-decoration: none; }
 @media (max-width: 640px) {
   .intl-grid { grid-template-columns: 1fr; gap: 12px; }
   .intl-lead { font-size: 15px; }
@@ -1950,7 +1975,7 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   border-bottom: 1px solid var(--brd);
   transition: border-color 0.18s var(--ease);
 }
-.didyou-fact a:hover { border-color: var(--tx); }
+.didyou-fact a:hover { border-color: var(--tx); text-decoration: none; color: var(--tx); }
 .card[hidden] { display: none; }
 @media (max-width: 640px) {
   .didyou-grid { gap: 12px; }
@@ -2042,7 +2067,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   font-size: 0.9em;
   color: var(--tx);
 }
-.connect-paragraph a { color: var(--ac); }
+/* (.connect-paragraph a colour now comes from the unified link rule
+   defined near the top of the stylesheet — neutral text colour with
+   underline-on-hover. Override removed for consistency.) */
 .connect-code {
   position: relative;
   background: var(--surf);
