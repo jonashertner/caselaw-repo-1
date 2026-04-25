@@ -2015,6 +2015,252 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .copy-wrap:hover .copy-btn { opacity: 1; }
 .copy-btn:hover { color: var(--tx); border-color: var(--brd); }
 
+/* ===========================================================================
+   Hero v3 (2026-04-25) — verb-first, single primary CTA, compact stamp
+   =========================================================================== */
+.hero-v3 {
+  text-align: center;
+  padding: var(--s-9) 0 var(--s-7);
+  position: relative;
+}
+.hero-v3-content { max-width: 880px; margin: 0 auto; }
+.hero-v3-headline {
+  font-size: clamp(28px, 4.6vw, 56px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  color: var(--tx);
+  margin: 0 0 var(--s-4);
+}
+.hero-v3-sub {
+  font-size: clamp(15px, 1.6vw, 19px);
+  line-height: 1.55;
+  color: var(--tx2);
+  margin: 0 auto var(--s-7);
+  max-width: 720px;
+}
+.hero-v3-ctas {
+  display: flex;
+  gap: var(--s-3);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--s-6);
+}
+.hero-v3-ctas .btn-lg {
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.hero-v3-stamp {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tx3);
+  line-height: 1.9;
+  margin: 0 0 var(--s-3);
+  padding: 8px 14px;
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  display: inline-block;
+  background: var(--surf2);
+}
+.hero-v3-stamp strong {
+  color: var(--tx);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.hero-v3-stamp .sep { color: var(--brd); margin: 0 4px; }
+.hero-v3-stamp time { color: var(--tx2); }
+.hero-v3-tertiary {
+  font-size: 13px;
+  color: var(--tx3);
+  margin: var(--s-3) 0 0;
+}
+.hero-v3-tertiary a { color: var(--tx2); }
+.hero-v3-tertiary a:hover { color: var(--tx); }
+.hero-v3-tertiary .beta {
+  font-size: 9px;
+  padding: 1px 5px;
+  background: var(--ac-bg);
+  color: var(--ac);
+  border-radius: 3px;
+  margin-left: 4px;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+.hero-v3-tertiary .sep { color: var(--brd); margin: 0 8px; }
+@media (max-width: 640px) {
+  .hero-v3 { padding: var(--s-7) 0 var(--s-5); }
+  .hero-v3-headline { font-size: 28px; }
+  .hero-v3-sub { font-size: 15px; }
+  .hero-v3-ctas { flex-direction: column; align-items: stretch; }
+  .hero-v3-ctas .btn-lg { width: 100%; justify-content: center; }
+  .hero-v3-stamp { font-size: 11px; padding: 6px 10px; line-height: 1.8; }
+  .hero-v3-stamp .sep { display: inline; }
+}
+
+/* ===========================================================================
+   Connect block — tabbed, inline setup for every major AI client
+   =========================================================================== */
+.connect-block {
+  background: var(--surf2);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-lg);
+  padding: var(--s-7);
+  margin-top: var(--s-7);
+}
+.connect-intro {
+  color: var(--tx2);
+  font-size: 15px;
+  margin: 0 0 var(--s-5);
+}
+.connect-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 1px solid var(--brd);
+  margin-bottom: var(--s-5);
+}
+.connect-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--tx3);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.connect-tab:hover { color: var(--tx2); }
+.connect-tab.active { color: var(--tx); border-bottom-color: var(--ac); }
+.connect-pane { display: none; }
+.connect-pane.active { display: block; }
+.connect-steps {
+  margin: 0 0 var(--s-3);
+  padding-left: 22px;
+  color: var(--tx2);
+  line-height: 1.6;
+  font-size: 14px;
+}
+.connect-steps li { margin-bottom: 6px; }
+.connect-steps li strong { color: var(--tx); font-weight: 600; }
+.connect-paragraph {
+  font-size: 14px;
+  color: var(--tx2);
+  margin: 0 0 var(--s-3);
+  line-height: 1.6;
+}
+.connect-paragraph code, .connect-steps code {
+  background: var(--surf);
+  border: 1px solid var(--brd);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 0.9em;
+  color: var(--tx);
+}
+.connect-paragraph a { color: var(--ac); }
+.connect-code {
+  position: relative;
+  background: var(--surf);
+  border: 1px solid var(--brd);
+  border-radius: var(--r-md);
+  padding: 12px 56px 12px 16px;
+  margin: var(--s-3) 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--tx);
+  word-break: break-all;
+}
+.connect-code code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--mono);
+  color: var(--tx);
+  font-size: 13px;
+}
+.connect-code-block {
+  padding: 14px 56px 14px 16px;
+  word-break: normal;
+  overflow-x: auto;
+}
+.connect-code-block pre {
+  margin: 0;
+  white-space: pre;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.connect-code-block pre code {
+  font-size: 13px;
+  white-space: pre;
+}
+.connect-copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  background: var(--surf2);
+  border: 1px solid var(--brd);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--tx2);
+  font-family: inherit;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.connect-copy:hover { color: var(--tx); border-color: var(--brd2); background: var(--ac-bg); }
+.connect-copy.copied { color: var(--ok, #22863a); border-color: var(--ok, #22863a); }
+.connect-example {
+  font-size: 13px;
+  color: var(--tx2);
+  margin: var(--s-4) 0 var(--s-3);
+  padding: 10px 14px;
+  background: var(--ac-bg);
+  border-left: 3px solid var(--ac);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.connect-example em { color: var(--tx); font-style: italic; }
+.connect-note {
+  font-size: 12px;
+  color: var(--tx3);
+  margin: var(--s-3) 0 0;
+  line-height: 1.55;
+  font-style: italic;
+}
+.connect-note strong { color: var(--tx2); font-style: normal; }
+.connect-note code {
+  background: var(--surf);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-style: normal;
+}
+.connect-footer {
+  border-top: 1px solid var(--brd);
+  margin-top: var(--s-6);
+  padding-top: var(--s-4);
+  font-size: 12px;
+  color: var(--tx3);
+  text-align: center;
+  line-height: 1.7;
+}
+.connect-footer .sep { color: var(--brd); margin: 0 8px; }
+.connect-footer a { color: var(--tx2); }
+.connect-footer a:hover { color: var(--tx); }
+@media (max-width: 640px) {
+  .connect-block { padding: var(--s-5); }
+  .connect-tab { padding: 8px 11px; font-size: 12px; }
+  .connect-code { font-size: 12px; padding: 10px 50px 10px 12px; }
+  .connect-code code, .connect-code-block pre code { font-size: 12px; }
+  .connect-footer .sep { display: block; margin: 4px 0; height: 0; }
+}
+
 </style>
 </head>
 <body>
@@ -2063,64 +2309,45 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 </div>
 
 <main id="main" class="w">
-<header class="hero-v2">
-    <p class="hero-kicker" data-t="hero_kicker">An open corpus of Swiss law</p>
-    <div class="hero-stat">
-      <span class="hero-stat-num" id="hero-decisions">968,373</span>
-      <span class="hero-stat-label" data-t="hero_stat_label">published court decisions</span>
-    </div>
-    <p class="hero-stamp" aria-label="Dataset timestamp and daily delta">
-      <span data-t="hero_stamp_asof">As of</span>
-      <time id="hero-stamp-date">—</time>
-      <span class="sep">·</span>
-      <strong>+<span id="hero-stamp-delta">0</span></strong>
-      <span data-t="hero_stamp_since">since yesterday</span>
-    </p>
-    <h1 class="hero-headline" data-t="hero_headline">The open dataset of Swiss court decisions.</h1>
-    <p class="hero-tagline" data-t="hero_tagline">Searchable by you, readable by your AI.</p>
-    <div class="hero-ctas">
-      <a href="/entscheide/" class="btn btn-primary">
-        <span data-t="hero_cta_explore">Explore corpus</span>
-      </a>
-      <a href="/mcp/" class="btn btn-secondary">
-        <span data-t="hero_cta_connect">Connect your AI</span>
-      </a>
-      <a href="https://word.opencaselaw.ch/install.html" class="btn btn-tertiary">
-        <span data-t="hero_cta_word">Word Add-in</span>
-        <span class="beta">BETA</span>
-      </a>
-    </div>
-    <div class="hero-breakdown">
-      <!-- Language distribution: 3 mini cards with bar + count + percentage -->
-      <div class="hero-langs">
-        <div class="hero-lang">
-          <div class="hero-lang-num"><span id="hero-lang-de-num">449'775</span></div>
-          <div class="hero-lang-bar"><div class="hero-lang-bar-fill" id="hero-lang-de-bar" style="width:0%"></div></div>
-          <div class="hero-lang-label">Deutsch · <span id="hero-lang-de-pct">47</span>%</div>
-        </div>
-        <div class="hero-lang">
-          <div class="hero-lang-num"><span id="hero-lang-fr-num">435'610</span></div>
-          <div class="hero-lang-bar"><div class="hero-lang-bar-fill" id="hero-lang-fr-bar" style="width:0%"></div></div>
-          <div class="hero-lang-label">Français · <span id="hero-lang-fr-pct">45</span>%</div>
-        </div>
-        <div class="hero-lang">
-          <div class="hero-lang-num"><span id="hero-lang-it-num">79'750</span></div>
-          <div class="hero-lang-bar"><div class="hero-lang-bar-fill" id="hero-lang-it-bar" style="width:0%"></div></div>
-          <div class="hero-lang-label">Italiano · <span id="hero-lang-it-pct">8</span>%</div>
-        </div>
+<header class="hero-v3">
+    <div class="hero-v3-content">
+      <h1 class="hero-v3-headline" data-t="hero_headline_v3">Swiss case-law and legislation, in your AI assistant.</h1>
+      <p class="hero-v3-sub" data-t="hero_sub_v3">Search 968,000+ Swiss court decisions, 5,500 federal laws and 33,000 cantonal acts directly in Claude, ChatGPT, Cursor or Gemini — in 30 seconds, free, no API keys.</p>
+      <div class="hero-v3-ctas">
+        <a href="#connect" class="btn btn-primary btn-lg">
+          <span data-t="hero_cta_connect_v3">Connect in 30 seconds ↓</span>
+        </a>
+        <a href="/entscheide/" class="btn btn-secondary btn-lg">
+          <span data-t="hero_cta_browse_v3">Browse the corpus</span>
+        </a>
       </div>
-
-      <!-- Facts row: richer mono strip -->
-      <div class="hero-facts">
-        <span><strong><span id="hero-earliest">1875</span>–<span id="hero-latest">2026</span></strong> <span data-t="hero_fact_span">Zeitraum</span></span>
+      <p class="hero-v3-stamp" aria-label="Dataset corpus stats">
+        <strong id="hero-decisions">968,373</strong> <span data-t="hero_v3_stamp_decisions">decisions</span>
         <span class="sep">·</span>
-        <span><strong id="hero-fed">345k</strong> <span data-t="hero_fact_federal">Bund</span> / <strong id="hero-can">620k</strong> <span data-t="hero_fact_cantonal">Kantone</span></span>
+        <strong id="hero-courts">108</strong> <span data-t="hero_v3_stamp_courts">courts</span>
         <span class="sep">·</span>
-        <span><strong id="hero-courts">114</strong> <span data-t="hero_meta_courts">courts</span> · <strong>26</strong> <span data-t="hero_fact_cantons">Kantone</span></span>
+        <strong>26</strong> <span data-t="hero_v3_stamp_cantons">cantons</span>
         <span class="sep">·</span>
-        <span><strong>8.8M</strong> <span data-t="hero_meta_citations">citations</span></span>
+        <strong><span id="hero-earliest">1875</span>–<span id="hero-latest">2026</span></strong>
+        <span class="sep">·</span>
+        <span data-t="hero_v3_stamp_asof">as of</span> <time id="hero-stamp-date">—</time>
+        <span class="sep">·</span>
+        <strong>+<span id="hero-stamp-delta">0</span></strong> <span data-t="hero_v3_stamp_since">since yesterday</span>
         <span class="sep">·</span>
         <span>CC0 · MIT</span>
+      </p>
+      <p class="hero-v3-tertiary">
+        <a href="https://word.opencaselaw.ch/install.html" data-t="hero_v3_word">Word Add-in for legal practitioners</a>
+        <span class="beta">BETA</span>
+        <span class="sep">·</span>
+        <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" data-t="hero_v3_hf">Bulk download (Hugging Face, ~7 GB)</a>
+      </p>
+      <!-- Hidden compatibility IDs (legacy stats.json updater targets) -->
+      <div aria-hidden="true" style="display:none">
+        <span id="hero-lang-de-num"></span><span id="hero-lang-de-bar"></span><span id="hero-lang-de-pct"></span>
+        <span id="hero-lang-fr-num"></span><span id="hero-lang-fr-bar"></span><span id="hero-lang-fr-pct"></span>
+        <span id="hero-lang-it-num"></span><span id="hero-lang-it-bar"></span><span id="hero-lang-it-pct"></span>
+        <span id="hero-fed"></span><span id="hero-can"></span>
       </div>
     </div>
   </header>
@@ -2228,52 +2455,136 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
   </section>
 
-  <!-- Capability cards — three ways in -->
-  <section class="section">
-    <h2 class="section-heading" data-t="capabilities_heading">Three ways in</h2>
-    <div class="capabilities">
+  <!-- ── Connect in 30 seconds — inline setup for every major AI client ── -->
+  <section class="connect-block section" id="connect" aria-labelledby="connect-heading">
+    <h2 class="section-heading" id="connect-heading" data-t="connect_heading">Connect in 30 seconds</h2>
+    <p class="connect-intro" data-t="connect_intro">Pick your AI client. Paste the URL. Done.</p>
 
-      <a href="/entscheide/" class="cap-card">
-        <div class="cap-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3v18M8 21h8"/>
-            <path d="M6 6h12"/>
-            <path d="M5 6l-3 7a4 4 0 0 0 8 0z"/>
-            <path d="M19 6l-3 7a4 4 0 0 0 8 0z"/>
-          </svg>
-        </div>
-        <h3 data-t="nav_entscheide">Decisions</h3>
-        <p data-t="cap_entscheide_desc">Every published Swiss court decision. Full-text search, citation graph, multilingual (DE/FR/IT). Updated daily.</p>
-        <div class="cap-card-cta" data-t="cap_cta_entscheide">Dataset →</div>
-      </a>
-
-      <a href="/gesetze/" class="cap-card">
-        <div class="cap-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/>
-            <path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/>
-          </svg>
-        </div>
-        <h3 data-t="nav_gesetze">Legislation</h3>
-        <p data-t="cap_gesetze_desc">Local Fedlex SPARQL mirror: 5,000+ federal laws, 125,000+ articles in DE/FR/IT, synced monthly. LexFind mirror for 26,000+ cantonal acts. FTS5 full-text search, article lookup in &lt;1 ms.</p>
-        <div class="cap-card-cta" data-t="cap_cta_gesetze">Legislation →</div>
-      </a>
-
-      <a href="/mcp/" class="cap-card">
-        <div class="cap-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 2v6"/>
-            <path d="M15 2v6"/>
-            <path d="M7 8h10v4a5 5 0 0 1-10 0z"/>
-            <path d="M12 17v5"/>
-          </svg>
-        </div>
-        <h3 data-t="nav_mcp">Connect</h3>
-        <p data-t="cap_mcp_desc">24 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote or local. 30-second setup.</p>
-        <div class="cap-card-cta" data-t="cap_cta_mcp">MCP setup →</div>
-      </a>
-
+    <div class="connect-tabs" role="tablist">
+      <button class="connect-tab active" data-tab="claude" data-t="connect_tab_claude">Claude</button>
+      <button class="connect-tab" data-tab="chatgpt" data-t="connect_tab_chatgpt">ChatGPT</button>
+      <button class="connect-tab" data-tab="cursor" data-t="connect_tab_cursor">Cursor</button>
+      <button class="connect-tab" data-tab="gemini" data-t="connect_tab_gemini">Gemini CLI</button>
+      <button class="connect-tab" data-tab="claudecode" data-t="connect_tab_claudecode">Claude Code</button>
+      <button class="connect-tab" data-tab="copilot" data-t="connect_tab_copilot">Copilot Studio</button>
+      <button class="connect-tab" data-tab="api" data-t="connect_tab_api">REST / cURL</button>
     </div>
+
+    <!-- Claude -->
+    <div class="connect-pane active" data-pane="claude">
+      <ol class="connect-steps">
+        <li><span data-t="connect_claude_s1">Open Claude.ai or Claude Desktop → <strong>Settings</strong> → <strong>Connectors</strong> → <strong>Add custom connector</strong>.</span></li>
+        <li><span data-t="connect_claude_s2">Paste this URL:</span></li>
+      </ol>
+      <div class="connect-code">
+        <code>https://mcp.opencaselaw.ch</code>
+        <button class="connect-copy" data-copy="https://mcp.opencaselaw.ch" data-t="connect_copy">Copy</button>
+      </div>
+      <ol class="connect-steps" start="3">
+        <li><span data-t="connect_claude_s3"><strong>Click Add.</strong> The 24 tools appear immediately.</span></li>
+      </ol>
+      <p class="connect-example">
+        <span data-t="connect_then_ask">Then ask:</span>
+        <em data-t="connect_example_q">"Find Federal Supreme Court decisions on Art. 41 OR with the keyword Schadenersatz."</em>
+      </p>
+      <p class="connect-note" data-t="connect_claude_plan">Pro / Max / Team / Enterprise plan needed for the Connectors UI. Free Claude users: see the <strong>Claude Code</strong> tab.</p>
+    </div>
+
+    <!-- ChatGPT -->
+    <div class="connect-pane" data-pane="chatgpt">
+      <ol class="connect-steps">
+        <li><span data-t="connect_chatgpt_s1"><strong>Settings</strong> → <strong>Apps</strong> → <strong>Advanced settings</strong> → enable <strong>Developer mode</strong>.</span></li>
+        <li><span data-t="connect_chatgpt_s2">Click <strong>Create app</strong>, name it "Swiss Caselaw", paste this URL (auth: <em>None</em>):</span></li>
+      </ol>
+      <div class="connect-code">
+        <code>https://mcp.opencaselaw.ch/sse</code>
+        <button class="connect-copy" data-copy="https://mcp.opencaselaw.ch/sse" data-t="connect_copy">Copy</button>
+      </div>
+      <ol class="connect-steps" start="3">
+        <li><span data-t="connect_chatgpt_s3">In any chat: <strong>+</strong> → <strong>Developer mode</strong> → select <strong>Swiss Caselaw</strong>.</span></li>
+      </ol>
+      <p class="connect-note" data-t="connect_chatgpt_plan">Plus / Pro / Team / Enterprise / Edu plans. Best with GPT-5.3 (5.4 currently does not invoke MCP tools).</p>
+    </div>
+
+    <!-- Cursor -->
+    <div class="connect-pane" data-pane="cursor">
+      <p class="connect-paragraph"><span data-t="connect_cursor_intro">Add to</span> <code>~/.cursor/mcp.json</code><span data-t="connect_colon">:</span></p>
+      <div class="connect-code connect-code-block">
+<pre><code id="cursor-config">{
+  "mcpServers": {
+    "swiss-caselaw": { "url": "https://mcp.opencaselaw.ch" }
+  }
+}</code></pre>
+        <button class="connect-copy" data-copy-from="cursor-config" data-t="connect_copy">Copy</button>
+      </div>
+      <p class="connect-note" data-t="connect_cursor_restart">Restart Cursor. The 24 tools appear under <code>swiss-caselaw</code>.</p>
+    </div>
+
+    <!-- Gemini -->
+    <div class="connect-pane" data-pane="gemini">
+      <p class="connect-paragraph"><span data-t="connect_gemini_intro">Add to</span> <code>~/.gemini/settings.json</code><span data-t="connect_colon">:</span></p>
+      <div class="connect-code connect-code-block">
+<pre><code id="gemini-config">{
+  "mcpServers": {
+    "swiss-caselaw": { "url": "https://mcp.opencaselaw.ch" }
+  }
+}</code></pre>
+        <button class="connect-copy" data-copy-from="gemini-config" data-t="connect_copy">Copy</button>
+      </div>
+      <p class="connect-note" data-t="connect_gemini_restart">Restart Gemini CLI. Free — no plan required.</p>
+    </div>
+
+    <!-- Claude Code -->
+    <div class="connect-pane" data-pane="claudecode">
+      <p class="connect-paragraph" data-t="connect_claudecode_intro">Single CLI command (works on the Claude Code free tier):</p>
+      <div class="connect-code">
+        <code>claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch</code>
+        <button class="connect-copy" data-copy="claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch" data-t="connect_copy">Copy</button>
+      </div>
+      <p class="connect-note" data-t="connect_claudecode_restart">No restart needed. The 24 tools are immediately invocable.</p>
+    </div>
+
+    <!-- Microsoft Copilot Studio -->
+    <div class="connect-pane" data-pane="copilot">
+      <ol class="connect-steps">
+        <li><span data-t="connect_copilot_s1">Open <a href="https://copilotstudio.microsoft.com/" target="_blank" rel="noopener">Microsoft Copilot Studio</a> → your agent → <strong>Tools</strong> → <strong>Add a tool</strong> → <strong>New tool</strong> → <strong>Custom connector</strong>.</span></li>
+        <li><span data-t="connect_copilot_s2">In Power Apps "New custom connector" → <strong>Import an OpenAPI from URL</strong>, paste:</span></li>
+      </ol>
+      <div class="connect-code">
+        <code>https://mcp.opencaselaw.ch/api/openapi.json</code>
+        <button class="connect-copy" data-copy="https://mcp.opencaselaw.ch/api/openapi.json" data-t="connect_copy">Copy</button>
+      </div>
+      <ol class="connect-steps" start="3">
+        <li><span data-t="connect_copilot_s3">Authentication: <strong>No authentication</strong>. Save → <strong>Update connector</strong>.</span></li>
+        <li><span data-t="connect_copilot_s4">Back in Copilot Studio: <strong>Add tool</strong> → pick the new <em>Swiss Case Law</em> connector. The 30 REST routes (search, decisions, legislation, citations, doctrine, …) are now callable from your agent.</span></li>
+      </ol>
+      <p class="connect-note" data-t="connect_copilot_note">Spec is OpenAPI 3.0.3, WADL-converter clean (validated 2026-04-25 with LALIVE). M365 Copilot agents and Power Platform flows can both use the same connector.</p>
+    </div>
+
+    <!-- REST / API -->
+    <div class="connect-pane" data-pane="api">
+      <p class="connect-paragraph" data-t="connect_api_intro">30-route REST API. OpenAPI 3.0.3 spec at:</p>
+      <div class="connect-code">
+        <code>https://mcp.opencaselaw.ch/api/openapi.json</code>
+        <button class="connect-copy" data-copy="https://mcp.opencaselaw.ch/api/openapi.json" data-t="connect_copy">Copy</button>
+      </div>
+      <p class="connect-paragraph"><a href="https://mcp.opencaselaw.ch/api/docs" target="_blank" rel="noopener" data-t="connect_api_swagger">Interactive Swagger UI →</a></p>
+      <p class="connect-paragraph" data-t="connect_api_curl">Or call directly:</p>
+      <div class="connect-code connect-code-block">
+<pre><code id="api-curl">curl -X POST https://mcp.opencaselaw.ch/api/search_decisions \
+  -H "Content-Type: application/json" \
+  -d '{"query":"Art. 41 OR Schadenersatz","limit":5}'</code></pre>
+        <button class="connect-copy" data-copy-from="api-curl" data-t="connect_copy">Copy</button>
+      </div>
+    </div>
+
+    <p class="connect-footer">
+      <span data-t="connect_footer_tools"><strong>24 tools</strong> · search · citation graph · statute lookup · Erwägung extraction · doctrine timelines · Materialien · case briefs · exam questions</span>
+      <span class="sep">·</span>
+      <a href="/mcp/" data-t="connect_footer_link">Full reference</a>
+      <span class="sep">·</span>
+      <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai" data-t="connect_footer_offline">Local install (offline, ~65 GB)</a>
+    </p>
   </section>
 
   <!-- Latest: recent decisions + upcoming statute revisions -->
@@ -2670,6 +2981,56 @@ const I18N = {
     latest_upcoming_title: 'Bevorstehende Bundesgesetz-Änderungen',
     latest_view_all: 'Alle ansehen →',
     latest_empty: 'Keine Daten verfügbar',
+    // ── Hero v3 + Connect block (2026-04-25 redesign) ──
+    hero_headline_v3: 'Schweizer Rechtsprechung und Gesetzgebung — direkt in Ihrer KI.',
+    hero_sub_v3: 'Durchsuchen Sie 968\u2019000+ Schweizer Gerichtsentscheide, 5\u2019500 Bundesgesetze und 33\u2019000 kantonale Erlasse direkt in Claude, ChatGPT, Cursor oder Gemini — in 30 Sekunden, gratis, ohne API-Keys.',
+    hero_cta_connect_v3: 'In 30 Sekunden verbinden ↓',
+    hero_cta_browse_v3: 'Korpus durchsuchen',
+    hero_v3_stamp_decisions: 'Entscheide',
+    hero_v3_stamp_courts: 'Gerichte',
+    hero_v3_stamp_cantons: 'Kantone',
+    hero_v3_stamp_asof: 'Stand',
+    hero_v3_stamp_since: 'seit gestern',
+    hero_v3_word: 'Word-Add-in für Anwält:innen',
+    hero_v3_hf: 'Bulk-Download (Hugging Face, ~7 GB)',
+    connect_heading: 'In 30 Sekunden verbinden',
+    connect_intro: 'Wählen Sie Ihren KI-Client. URL kopieren. Fertig.',
+    connect_tab_claude: 'Claude',
+    connect_tab_chatgpt: 'ChatGPT',
+    connect_tab_cursor: 'Cursor',
+    connect_tab_gemini: 'Gemini CLI',
+    connect_tab_claudecode: 'Claude Code',
+    connect_tab_copilot: 'Copilot Studio',
+    connect_tab_api: 'REST / cURL',
+    connect_claude_s1: 'Claude.ai oder Claude Desktop öffnen → <strong>Einstellungen</strong> → <strong>Connectors</strong> → <strong>Custom connector hinzufügen</strong>.',
+    connect_claude_s2: 'Diese URL einfügen:',
+    connect_claude_s3: '<strong>Auf "Hinzufügen" klicken.</strong> Die 24 Tools sind sofort verfügbar.',
+    connect_claude_plan: 'Pro / Max / Team / Enterprise-Plan benötigt für die Connectors-UI. Free-Nutzer:innen: Tab <strong>Claude Code</strong>.',
+    connect_chatgpt_s1: '<strong>Einstellungen</strong> → <strong>Apps</strong> → <strong>Erweiterte Einstellungen</strong> → <strong>Developer Mode</strong> aktivieren.',
+    connect_chatgpt_s2: 'Auf <strong>App erstellen</strong> klicken, "Swiss Caselaw" benennen, diese URL einfügen (Auth: <em>Keine</em>):',
+    connect_chatgpt_s3: 'In jedem Chat: <strong>+</strong> → <strong>Developer Mode</strong> → <strong>Swiss Caselaw</strong> wählen.',
+    connect_chatgpt_plan: 'Plus / Pro / Team / Enterprise / Edu-Pläne. Empfohlen mit GPT-5.3 (5.4 ruft MCP-Tools derzeit nicht auf).',
+    connect_cursor_intro: 'In',
+    connect_colon: ' ablegen:',
+    connect_cursor_restart: 'Cursor neu starten. Die 24 Tools erscheinen unter <code>swiss-caselaw</code>.',
+    connect_gemini_intro: 'In',
+    connect_gemini_restart: 'Gemini CLI neu starten. Gratis — kein Plan benötigt.',
+    connect_claudecode_intro: 'Ein einziger CLI-Befehl (auch im Free-Tier von Claude Code):',
+    connect_claudecode_restart: 'Kein Neustart nötig. Die 24 Tools sind sofort aufrufbar.',
+    connect_copilot_s1: '<a href="https://copilotstudio.microsoft.com/" target="_blank" rel="noopener">Microsoft Copilot Studio</a> öffnen → Ihren Agent → <strong>Tools</strong> → <strong>Tool hinzufügen</strong> → <strong>Neues Tool</strong> → <strong>Custom connector</strong>.',
+    connect_copilot_s2: 'In Power Apps "New custom connector" → <strong>Import an OpenAPI from URL</strong>, einfügen:',
+    connect_copilot_s3: 'Authentifizierung: <strong>Keine</strong>. Speichern → <strong>Update connector</strong>.',
+    connect_copilot_s4: 'Zurück in Copilot Studio: <strong>Tool hinzufügen</strong> → den neuen Konnektor <em>Swiss Case Law</em> wählen. Die 30 REST-Routen sind nun aus Ihrem Agent aufrufbar.',
+    connect_copilot_note: 'Spec ist OpenAPI 3.0.3, WADL-Konverter-tauglich (validiert am 2026-04-25 mit LALIVE). M365 Copilot-Agents und Power Platform Flows nutzen denselben Konnektor.',
+    connect_api_intro: '30-Routen-REST-API. OpenAPI 3.0.3-Spezifikation:',
+    connect_api_swagger: 'Interaktives Swagger UI →',
+    connect_api_curl: 'Oder direkt aufrufen:',
+    connect_then_ask: 'Dann fragen:',
+    connect_example_q: '"Suche Bundesgerichts-Urteile zu Art. 41 OR mit dem Stichwort Schadenersatz."',
+    connect_copy: 'Kopieren',
+    connect_footer_tools: '<strong>24 Tools</strong> · Suche · Zitationsgraph · Gesetzes-Lookup · Erwägungs-Extraktion · Doktrin-Timelines · Materialien · Case Briefs · Prüfungsfragen',
+    connect_footer_link: 'Vollständige Referenz',
+    connect_footer_offline: 'Lokale Installation (offline, ~65 GB)',
   },
   fr: {
     title:'Swiss Case Law Open Dataset',
@@ -2821,6 +3182,56 @@ const I18N = {
     latest_upcoming_title: 'Révisions de lois fédérales à venir',
     latest_view_all: 'Voir tout →',
     latest_empty: 'Aucune donnée',
+    // ── Hero v3 + Connect block (2026-04-25 redesign) ──
+    hero_headline_v3: 'La jurisprudence et la législation suisses, dans votre assistant IA.',
+    hero_sub_v3: 'Recherchez plus de 968\u2019000 décisions judiciaires suisses, 5\u2019500 lois fédérales et 33\u2019000 actes cantonaux directement dans Claude, ChatGPT, Cursor ou Gemini — en 30 secondes, gratuitement, sans clé API.',
+    hero_cta_connect_v3: 'Connecter en 30 secondes ↓',
+    hero_cta_browse_v3: 'Parcourir le corpus',
+    hero_v3_stamp_decisions: 'décisions',
+    hero_v3_stamp_courts: 'tribunaux',
+    hero_v3_stamp_cantons: 'cantons',
+    hero_v3_stamp_asof: 'au',
+    hero_v3_stamp_since: 'depuis hier',
+    hero_v3_word: 'Add-in Word pour les juristes',
+    hero_v3_hf: 'Téléchargement complet (Hugging Face, ~7 Go)',
+    connect_heading: 'Se connecter en 30 secondes',
+    connect_intro: 'Choisissez votre client IA. Collez l\'URL. Terminé.',
+    connect_tab_claude: 'Claude',
+    connect_tab_chatgpt: 'ChatGPT',
+    connect_tab_cursor: 'Cursor',
+    connect_tab_gemini: 'Gemini CLI',
+    connect_tab_claudecode: 'Claude Code',
+    connect_tab_copilot: 'Copilot Studio',
+    connect_tab_api: 'REST / cURL',
+    connect_claude_s1: 'Ouvrez Claude.ai ou Claude Desktop → <strong>Paramètres</strong> → <strong>Connectors</strong> → <strong>Ajouter un connecteur personnalisé</strong>.',
+    connect_claude_s2: 'Collez cette URL :',
+    connect_claude_s3: '<strong>Cliquez sur "Ajouter".</strong> Les 24 outils apparaissent immédiatement.',
+    connect_claude_plan: 'Plan Pro / Max / Team / Enterprise requis pour l\'UI Connectors. Utilisateurs Free : voir l\'onglet <strong>Claude Code</strong>.',
+    connect_chatgpt_s1: '<strong>Paramètres</strong> → <strong>Apps</strong> → <strong>Paramètres avancés</strong> → activez le <strong>Mode développeur</strong>.',
+    connect_chatgpt_s2: 'Cliquez sur <strong>Créer une app</strong>, nommez-la "Swiss Caselaw", collez cette URL (auth : <em>Aucune</em>) :',
+    connect_chatgpt_s3: 'Dans n\'importe quel chat : <strong>+</strong> → <strong>Mode développeur</strong> → sélectionnez <strong>Swiss Caselaw</strong>.',
+    connect_chatgpt_plan: 'Plans Plus / Pro / Team / Enterprise / Edu. Recommandé avec GPT-5.3 (5.4 n\'invoque actuellement pas les outils MCP).',
+    connect_cursor_intro: 'Ajoutez à',
+    connect_colon: ' :',
+    connect_cursor_restart: 'Redémarrez Cursor. Les 24 outils apparaissent sous <code>swiss-caselaw</code>.',
+    connect_gemini_intro: 'Ajoutez à',
+    connect_gemini_restart: 'Redémarrez Gemini CLI. Gratuit — aucun plan requis.',
+    connect_claudecode_intro: 'Une seule commande CLI (fonctionne sur Claude Code Free) :',
+    connect_claudecode_restart: 'Aucun redémarrage requis. Les 24 outils sont immédiatement appelables.',
+    connect_copilot_s1: 'Ouvrez <a href="https://copilotstudio.microsoft.com/" target="_blank" rel="noopener">Microsoft Copilot Studio</a> → votre agent → <strong>Tools</strong> → <strong>Add a tool</strong> → <strong>New tool</strong> → <strong>Custom connector</strong>.',
+    connect_copilot_s2: 'Dans Power Apps "New custom connector" → <strong>Import an OpenAPI from URL</strong>, collez :',
+    connect_copilot_s3: 'Authentification : <strong>Aucune</strong>. Enregistrer → <strong>Update connector</strong>.',
+    connect_copilot_s4: 'De retour dans Copilot Studio : <strong>Add tool</strong> → choisissez le nouveau connecteur <em>Swiss Case Law</em>. Les 30 routes REST sont désormais appelables depuis votre agent.',
+    connect_copilot_note: 'Spec OpenAPI 3.0.3, compatible WADL (validé le 2026-04-25 avec LALIVE). Les agents M365 Copilot et les flux Power Platform utilisent le même connecteur.',
+    connect_api_intro: 'API REST à 30 routes. Spec OpenAPI 3.0.3 :',
+    connect_api_swagger: 'Swagger UI interactif →',
+    connect_api_curl: 'Ou appelez directement :',
+    connect_then_ask: 'Puis demandez :',
+    connect_example_q: '"Cherchez les arrêts du Tribunal fédéral sur l\'art. 41 CO contenant le mot-clé Schadenersatz."',
+    connect_copy: 'Copier',
+    connect_footer_tools: '<strong>24 outils</strong> · recherche · graphe de citations · consultation de loi · extraction des considérants · chronologies doctrinales · Materialien · résumés d\'arrêts · questions d\'examen',
+    connect_footer_link: 'Référence complète',
+    connect_footer_offline: 'Installation locale (hors ligne, ~65 Go)',
   },
   it: {
     title:'Swiss Case Law Open Dataset',
@@ -2972,6 +3383,56 @@ const I18N = {
     latest_upcoming_title: 'Prossime revisioni di leggi federali',
     latest_view_all: 'Vedi tutto →',
     latest_empty: 'Nessun dato disponibile',
+    // ── Hero v3 + Connect block (2026-04-25 redesign) ──
+    hero_headline_v3: 'La giurisprudenza e la legislazione svizzere, nel tuo assistente IA.',
+    hero_sub_v3: 'Cerca oltre 968\u2019000 decisioni giudiziarie svizzere, 5\u2019500 leggi federali e 33\u2019000 atti cantonali direttamente in Claude, ChatGPT, Cursor o Gemini — in 30 secondi, gratis, senza chiavi API.',
+    hero_cta_connect_v3: 'Collega in 30 secondi ↓',
+    hero_cta_browse_v3: 'Sfoglia il corpus',
+    hero_v3_stamp_decisions: 'decisioni',
+    hero_v3_stamp_courts: 'tribunali',
+    hero_v3_stamp_cantons: 'cantoni',
+    hero_v3_stamp_asof: 'al',
+    hero_v3_stamp_since: 'da ieri',
+    hero_v3_word: 'Add-in Word per giuristi',
+    hero_v3_hf: 'Download completo (Hugging Face, ~7 GB)',
+    connect_heading: 'Collega in 30 secondi',
+    connect_intro: 'Scegli il tuo client IA. Incolla l\'URL. Fatto.',
+    connect_tab_claude: 'Claude',
+    connect_tab_chatgpt: 'ChatGPT',
+    connect_tab_cursor: 'Cursor',
+    connect_tab_gemini: 'Gemini CLI',
+    connect_tab_claudecode: 'Claude Code',
+    connect_tab_copilot: 'Copilot Studio',
+    connect_tab_api: 'REST / cURL',
+    connect_claude_s1: 'Apri Claude.ai o Claude Desktop → <strong>Impostazioni</strong> → <strong>Connectors</strong> → <strong>Aggiungi connettore personalizzato</strong>.',
+    connect_claude_s2: 'Incolla questo URL:',
+    connect_claude_s3: '<strong>Clicca "Aggiungi".</strong> I 24 strumenti compaiono subito.',
+    connect_claude_plan: 'Piano Pro / Max / Team / Enterprise richiesto per la UI Connectors. Utenti Free: scheda <strong>Claude Code</strong>.',
+    connect_chatgpt_s1: '<strong>Impostazioni</strong> → <strong>Apps</strong> → <strong>Impostazioni avanzate</strong> → abilita <strong>Modalità sviluppatore</strong>.',
+    connect_chatgpt_s2: 'Clicca <strong>Crea app</strong>, chiamala "Swiss Caselaw", incolla questo URL (auth: <em>Nessuna</em>):',
+    connect_chatgpt_s3: 'In qualsiasi chat: <strong>+</strong> → <strong>Modalità sviluppatore</strong> → seleziona <strong>Swiss Caselaw</strong>.',
+    connect_chatgpt_plan: 'Piani Plus / Pro / Team / Enterprise / Edu. Consigliato con GPT-5.3 (5.4 attualmente non invoca strumenti MCP).',
+    connect_cursor_intro: 'Aggiungi a',
+    connect_colon: ' :',
+    connect_cursor_restart: 'Riavvia Cursor. I 24 strumenti compaiono sotto <code>swiss-caselaw</code>.',
+    connect_gemini_intro: 'Aggiungi a',
+    connect_gemini_restart: 'Riavvia Gemini CLI. Gratis — nessun piano richiesto.',
+    connect_claudecode_intro: 'Un singolo comando CLI (funziona anche su Claude Code Free):',
+    connect_claudecode_restart: 'Nessun riavvio richiesto. I 24 strumenti sono subito invocabili.',
+    connect_copilot_s1: 'Apri <a href="https://copilotstudio.microsoft.com/" target="_blank" rel="noopener">Microsoft Copilot Studio</a> → tuo agente → <strong>Tools</strong> → <strong>Add a tool</strong> → <strong>New tool</strong> → <strong>Custom connector</strong>.',
+    connect_copilot_s2: 'In Power Apps "New custom connector" → <strong>Import an OpenAPI from URL</strong>, incolla:',
+    connect_copilot_s3: 'Autenticazione: <strong>Nessuna</strong>. Salva → <strong>Update connector</strong>.',
+    connect_copilot_s4: 'Tornato in Copilot Studio: <strong>Add tool</strong> → seleziona il nuovo connettore <em>Swiss Case Law</em>. Le 30 route REST sono ora invocabili dal tuo agente.',
+    connect_copilot_note: 'Specifica OpenAPI 3.0.3, compatibile WADL (validato il 2026-04-25 con LALIVE). Gli agenti M365 Copilot e i flussi Power Platform usano lo stesso connettore.',
+    connect_api_intro: 'API REST con 30 route. Specifica OpenAPI 3.0.3:',
+    connect_api_swagger: 'Swagger UI interattivo →',
+    connect_api_curl: 'Oppure chiama direttamente:',
+    connect_then_ask: 'Poi chiedi:',
+    connect_example_q: '"Trova le sentenze del Tribunale federale sull\'art. 41 CO con il termine Schadenersatz."',
+    connect_copy: 'Copia',
+    connect_footer_tools: '<strong>24 strumenti</strong> · ricerca · grafo delle citazioni · consultazione di legge · estrazione dei considerandi · cronologie dottrinali · Materialien · sintesi · domande d\'esame',
+    connect_footer_link: 'Riferimento completo',
+    connect_footer_offline: 'Installazione locale (offline, ~65 GB)',
   },
   rm: {
     title:'Swiss Case Law Open Dataset',
@@ -3123,6 +3584,56 @@ const I18N = {
     latest_upcoming_title: 'Proximas revisiuns da leschas federalas',
     latest_view_all: 'Mussar tut →',
     latest_empty: 'Naginas datas disponiblas',
+    // ── Hero v3 + Connect block (2026-04-25 redesign) ──
+    hero_headline_v3: 'La giurisprudenza e la legislaziun svizras, en Voss assistent IA.',
+    hero_sub_v3: 'Tschertgar dapli che 968\u2019000 decisiuns giudicialas svizras, 5\u2019500 leschas federalas e 33\u2019000 acts chantunals directamain en Claude, ChatGPT, Cursor u Gemini — en 30 secundas, gratuit, senza claves API.',
+    hero_cta_connect_v3: 'Connectar en 30 secundas ↓',
+    hero_cta_browse_v3: 'Sfegliar il corpus',
+    hero_v3_stamp_decisions: 'decisiuns',
+    hero_v3_stamp_courts: 'dretgiras',
+    hero_v3_stamp_cantons: 'chantuns',
+    hero_v3_stamp_asof: 'al',
+    hero_v3_stamp_since: 'dapi ier',
+    hero_v3_word: 'Add-in Word per giuristas',
+    hero_v3_hf: 'Download cumplet (Hugging Face, ~7 GB)',
+    connect_heading: 'Connectar en 30 secundas',
+    connect_intro: 'Tschernì Voss client IA. Encollar l\'URL. Finì.',
+    connect_tab_claude: 'Claude',
+    connect_tab_chatgpt: 'ChatGPT',
+    connect_tab_cursor: 'Cursor',
+    connect_tab_gemini: 'Gemini CLI',
+    connect_tab_claudecode: 'Claude Code',
+    connect_tab_copilot: 'Copilot Studio',
+    connect_tab_api: 'REST / cURL',
+    connect_claude_s1: 'Avrir Claude.ai u Claude Desktop → <strong>Parameters</strong> → <strong>Connectors</strong> → <strong>Agiuntar custom connector</strong>.',
+    connect_claude_s2: 'Encollar quest URL:',
+    connect_claude_s3: '<strong>Cliccar "Agiuntar".</strong> Ils 24 utensils èn immediatamain disponibels.',
+    connect_claude_plan: 'Plan Pro / Max / Team / Enterprise necessari per la UI Connectors. Utilisaders Free: tab <strong>Claude Code</strong>.',
+    connect_chatgpt_s1: '<strong>Parameters</strong> → <strong>Apps</strong> → <strong>Parameters avanzads</strong> → activar <strong>Modus per sviluppaders</strong>.',
+    connect_chatgpt_s2: 'Cliccar <strong>Crear app</strong>, numnar "Swiss Caselaw", encollar quest URL (auth: <em>Nagina</em>):',
+    connect_chatgpt_s3: 'En mintga chat: <strong>+</strong> → <strong>Modus per sviluppaders</strong> → tscherner <strong>Swiss Caselaw</strong>.',
+    connect_chatgpt_plan: 'Plans Plus / Pro / Team / Enterprise / Edu. Recumandà cun GPT-5.3.',
+    connect_cursor_intro: 'Agiuntar a',
+    connect_colon: ':',
+    connect_cursor_restart: 'Restartar Cursor. Ils 24 utensils cumparan sut <code>swiss-caselaw</code>.',
+    connect_gemini_intro: 'Agiuntar a',
+    connect_gemini_restart: 'Restartar Gemini CLI. Gratuit — nagin plan necessari.',
+    connect_claudecode_intro: 'In sulet cumond CLI (funcziuna era sin Claude Code Free):',
+    connect_claudecode_restart: 'Nagin restart necessari. Ils 24 utensils èn immediatamain disponibels.',
+    connect_copilot_s1: 'Avrir <a href="https://copilotstudio.microsoft.com/" target="_blank" rel="noopener">Microsoft Copilot Studio</a> → Voss agent → <strong>Tools</strong> → <strong>Add a tool</strong> → <strong>New tool</strong> → <strong>Custom connector</strong>.',
+    connect_copilot_s2: 'En Power Apps "New custom connector" → <strong>Import an OpenAPI from URL</strong>, encollar:',
+    connect_copilot_s3: 'Autenticaziun: <strong>Nagina</strong>. Memorisar → <strong>Update connector</strong>.',
+    connect_copilot_s4: 'Enavos en Copilot Studio: <strong>Add tool</strong> → tscherner il nov connector <em>Swiss Case Law</em>. Las 30 routas REST èn ussa disponiblas.',
+    connect_copilot_note: 'Specificaziun OpenAPI 3.0.3, cumpatibel cun WADL (validà ils 2026-04-25 cun LALIVE).',
+    connect_api_intro: 'API REST cun 30 routas. Specificaziun OpenAPI 3.0.3:',
+    connect_api_swagger: 'Swagger UI interactiv →',
+    connect_api_curl: 'U appellar directamain:',
+    connect_then_ask: 'Lura dumandar:',
+    connect_example_q: '"Tschertgar las decisiuns dal TF a l\'art. 41 CO cun il pled clav Schadenersatz."',
+    connect_copy: 'Copiar',
+    connect_footer_tools: '<strong>24 utensils</strong> · tschertga · graf da citaziuns · lookup d\'artitgels legals · extracziun da considerands · cronologias duttrinalas · Materialien · sintesas · dumondas d\'examen',
+    connect_footer_link: 'Referenza cumpletta',
+    connect_footer_offline: 'Installaziun locala (offline, ~65 GB)',
   },
   en: {
     title:'Swiss Case Law Open Dataset',
@@ -3274,6 +3785,56 @@ const I18N = {
     latest_upcoming_title: 'Upcoming federal statute revisions',
     latest_view_all: 'View all →',
     latest_empty: 'No data available',
+    // ── Hero v3 + Connect block (2026-04-25 redesign) ──
+    hero_headline_v3: 'Swiss case-law and legislation, in your AI assistant.',
+    hero_sub_v3: 'Search 968,000+ Swiss court decisions, 5,500 federal laws and 33,000 cantonal acts directly in Claude, ChatGPT, Cursor or Gemini — in 30 seconds, free, no API keys.',
+    hero_cta_connect_v3: 'Connect in 30 seconds ↓',
+    hero_cta_browse_v3: 'Browse the corpus',
+    hero_v3_stamp_decisions: 'decisions',
+    hero_v3_stamp_courts: 'courts',
+    hero_v3_stamp_cantons: 'cantons',
+    hero_v3_stamp_asof: 'as of',
+    hero_v3_stamp_since: 'since yesterday',
+    hero_v3_word: 'Word add-in for legal practitioners',
+    hero_v3_hf: 'Bulk download (Hugging Face, ~7 GB)',
+    connect_heading: 'Connect in 30 seconds',
+    connect_intro: 'Pick your AI client. Paste the URL. Done.',
+    connect_tab_claude: 'Claude',
+    connect_tab_chatgpt: 'ChatGPT',
+    connect_tab_cursor: 'Cursor',
+    connect_tab_gemini: 'Gemini CLI',
+    connect_tab_claudecode: 'Claude Code',
+    connect_tab_copilot: 'Copilot Studio',
+    connect_tab_api: 'REST / cURL',
+    connect_claude_s1: 'Open Claude.ai or Claude Desktop → <strong>Settings</strong> → <strong>Connectors</strong> → <strong>Add custom connector</strong>.',
+    connect_claude_s2: 'Paste this URL:',
+    connect_claude_s3: '<strong>Click Add.</strong> The 24 tools appear immediately.',
+    connect_claude_plan: 'Pro / Max / Team / Enterprise plan needed for the Connectors UI. Free Claude users: see the <strong>Claude Code</strong> tab.',
+    connect_chatgpt_s1: '<strong>Settings</strong> → <strong>Apps</strong> → <strong>Advanced settings</strong> → enable <strong>Developer mode</strong>.',
+    connect_chatgpt_s2: 'Click <strong>Create app</strong>, name it "Swiss Caselaw", paste this URL (auth: <em>None</em>):',
+    connect_chatgpt_s3: 'In any chat: <strong>+</strong> → <strong>Developer mode</strong> → select <strong>Swiss Caselaw</strong>.',
+    connect_chatgpt_plan: 'Plus / Pro / Team / Enterprise / Edu plans. Best with GPT-5.3 (5.4 currently does not invoke MCP tools).',
+    connect_cursor_intro: 'Add to',
+    connect_colon: ':',
+    connect_cursor_restart: 'Restart Cursor. The 24 tools appear under <code>swiss-caselaw</code>.',
+    connect_gemini_intro: 'Add to',
+    connect_gemini_restart: 'Restart Gemini CLI. Free — no plan required.',
+    connect_claudecode_intro: 'Single CLI command (works on the Claude Code free tier):',
+    connect_claudecode_restart: 'No restart needed. The 24 tools are immediately invocable.',
+    connect_copilot_s1: 'Open <a href="https://copilotstudio.microsoft.com/" target="_blank" rel="noopener">Microsoft Copilot Studio</a> → your agent → <strong>Tools</strong> → <strong>Add a tool</strong> → <strong>New tool</strong> → <strong>Custom connector</strong>.',
+    connect_copilot_s2: 'In Power Apps "New custom connector" → <strong>Import an OpenAPI from URL</strong>, paste:',
+    connect_copilot_s3: 'Authentication: <strong>No authentication</strong>. Save → <strong>Update connector</strong>.',
+    connect_copilot_s4: 'Back in Copilot Studio: <strong>Add tool</strong> → pick the new <em>Swiss Case Law</em> connector. The 30 REST routes (search, decisions, legislation, citations, doctrine, …) are now callable from your agent.',
+    connect_copilot_note: 'Spec is OpenAPI 3.0.3, WADL-converter clean (validated 2026-04-25 with LALIVE). M365 Copilot agents and Power Platform flows can both use the same connector.',
+    connect_api_intro: '30-route REST API. OpenAPI 3.0.3 spec at:',
+    connect_api_swagger: 'Interactive Swagger UI →',
+    connect_api_curl: 'Or call directly:',
+    connect_then_ask: 'Then ask:',
+    connect_example_q: '"Find Federal Supreme Court decisions on Art. 41 OR with the keyword Schadenersatz."',
+    connect_copy: 'Copy',
+    connect_footer_tools: '<strong>24 tools</strong> · search · citation graph · statute lookup · Erwägung extraction · doctrine timelines · Materialien · case briefs · exam questions',
+    connect_footer_link: 'Full reference',
+    connect_footer_offline: 'Local install (offline, ~65 GB)',
   },
 };
 
@@ -4440,6 +5001,58 @@ async function init() {
   });
 }
 init();
+
+// ────────────────────────────────────────────────────────────────────────
+// Connect block (2026-04-25 redesign): tab switching + copy buttons
+// ────────────────────────────────────────────────────────────────────────
+(function initConnectBlock() {
+  const tabs  = document.querySelectorAll('.connect-tab');
+  const panes = document.querySelectorAll('.connect-pane');
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-tab');
+      tabs.forEach(t => t.classList.toggle('active', t === tab));
+      panes.forEach(p => p.classList.toggle('active', p.getAttribute('data-pane') === target));
+    });
+  });
+
+  const COPY_LABEL   = { de:'Kopieren', fr:'Copier', it:'Copia', rm:'Copiar', en:'Copy' };
+  const COPIED_LABEL = { de:'Kopiert!',  fr:'Copié!',  it:'Copiato!', rm:'Copià!', en:'Copied!' };
+  const langOf = () => (typeof curLang === 'string' && curLang) || 'de';
+
+  document.querySelectorAll('.connect-copy').forEach(btn => {
+    btn.addEventListener('click', () => {
+      let text = btn.getAttribute('data-copy') || '';
+      const fromId = btn.getAttribute('data-copy-from');
+      if (fromId) {
+        const el = document.getElementById(fromId);
+        if (el) text = el.textContent.trim();
+      }
+      if (!text) return;
+      const original = btn.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = COPIED_LABEL[langOf()] || 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = COPY_LABEL[langOf()] || original || 'Copy';
+          btn.classList.remove('copied');
+        }, 1600);
+      }).catch(() => {});
+    });
+  });
+
+  // Smooth-scroll the hero "Connect in 30 s ↓" CTA into the connect block.
+  document.querySelectorAll('a[href="#connect"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const target = document.getElementById('connect');
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', '#connect');
+    });
+  });
+})();
 </script>
 </body>
 </html>
