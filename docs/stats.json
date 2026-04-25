@@ -2248,7 +2248,7 @@
     "2026-03": 2073,
     "2026-04": 372
   },
-  "generated_at": "2026-04-25T22:59:21.768212+00:00",
+  "generated_at": "2026-04-25T23:01:42.570194+00:00",
   "scraper_health": {
     "run_at": "2026-04-25T03:02:14.630639+00:00",
     "run_duration_s": 7334.1,
@@ -3319,11 +3319,16 @@
       "citation_count": 62247,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
+    "most_cited_statute": {
+      "law_code": "LTF",
+      "article": "100",
+      "ref_count": 181517
+    },
     "oldest_decision": {
-      "docket": "ZK 1950 999",
-      "decision_date": "0000-00-00",
-      "year": 0,
-      "url": "https://mcp.opencaselaw.ch/entscheid/be_zivilstraf_ZK_1950_999"
+      "docket": "1_I_3",
+      "decision_date": "1875-01-01",
+      "year": 1875,
+      "url": "https://mcp.opencaselaw.ch/entscheid/bge_1_I_3"
     },
     "language_split": {
       "de_pct": 46.6,
