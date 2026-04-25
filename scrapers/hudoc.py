@@ -315,6 +315,14 @@ class HUDOCFullScraper(BaseScraper):
     REQUEST_DELAY = 1.5
     TIMEOUT = 60
     MAX_ERRORS = 50
+    # HUDOC's HTML conversion endpoint returns empty bodies for many
+    # historical judgments (especially pre-2018) — only PDF is available
+    # for those. CACHE_NONE_AS_GAP=True caches them so they aren't
+    # re-fetched, but a full-corpus crawl naturally accumulates many
+    # cumulative None-returns. The base scraper's default ceiling of 200
+    # killed the first backfill at 184/27k. Bump to 15,000 — safe because
+    # cached gaps prevent re-fetch and our None-handling is per-item idle.
+    MAX_NONE_RETURNS = 15000
     CACHE_NONE_AS_GAP = True
 
     @property
