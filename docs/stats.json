@@ -2248,7 +2248,7 @@
     "2026-03": 2073,
     "2026-04": 372
   },
-  "generated_at": "2026-04-25T10:32:59.140113+00:00",
+  "generated_at": "2026-04-25T21:56:39.791628+00:00",
   "scraper_health": {
     "run_at": "2026-04-25T03:02:14.630639+00:00",
     "run_duration_s": 7334.1,
@@ -2504,9 +2504,9 @@
         "duration_s": 511.8,
         "error": "200 unavailable decisions (possible portal issue)",
         "note": null,
-        "state_count": 236,
-        "jsonl_size_mb": 15.7,
-        "jsonl_mtime": "2026-04-25T01:15:42.274052+00:00"
+        "state_count": 1104,
+        "jsonl_size_mb": 71.0,
+        "jsonl_mtime": "2026-04-25T17:43:07.708629+00:00"
       },
       "elcom": {
         "success": true,
@@ -2879,8 +2879,8 @@
         "error": null,
         "note": null,
         "state_count": 3288,
-        "jsonl_size_mb": 11.5,
-        "jsonl_mtime": "2026-04-25T02:02:44.102922+00:00"
+        "jsonl_size_mb": 31.9,
+        "jsonl_mtime": "2026-04-25T20:08:51.414813+00:00"
       },
       "sz_verwaltungsgericht": {
         "success": true,
@@ -3312,6 +3312,35 @@
     "commentaries": 362,
     "citation_edges": 8886214,
     "statute_edges": 11382843
+  },
+  "interesting_stats": {
+    "most_cited": {
+      "docket": "BGE 125 V 351",
+      "title": null,
+      "citation_count": 62247,
+      "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
+    },
+    "longest_year": {
+      "docket": "AARP/102/2026",
+      "title": null,
+      "char_count": 256578,
+      "year": 2026,
+      "url": "https://mcp.opencaselaw.ch/entscheid/ge_gerichte_AARP_102_2026"
+    },
+    "active_court": {
+      "court_label": "mkg",
+      "count": 1244,
+      "window_days": 30
+    },
+    "daily_intake": {
+      "avg_per_day": 10759.7,
+      "window_days": 90
+    },
+    "newest_source": {
+      "court_label": "ecthr_committee",
+      "count": 30,
+      "ingested_at": "2026-04-24"
+    }
   },
   "traffic": {
     "window_days": 30,
