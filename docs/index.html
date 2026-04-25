@@ -163,9 +163,12 @@
   --dur-slow:  260ms;
 
   /* ── Color (light) ───────────────────────────────────────── */
-  --bg: #ffffff; --bg2: #f7f7f8; --surf: #ffffff;
-  --brd: #d4d4d4; --brd2: #e8e8ec;
-  --tx: #0a0a0a; --tx2: #525252; --tx3: #a3a3a3;
+  --bg: #ffffff; --bg2: #f7f7f8;
+  --surf: #fafafa;        /* card surface — subtle elevation against bg */
+  --surf2: #f1f1f3;       /* card hover surface */
+  --brd: #c4c4c4;         /* visible default border (was #d4d4d4) */
+  --brd2: #9a9a9a;        /* stronger border for hover/emphasis */
+  --tx: #0a0a0a; --tx2: #525252; --tx3: #737373;  /* tx3 readable on surf */
   --ac: #d1242f; --ac2: #b91c1c;
   --ac-bg: rgba(0,0,0,0.025);
   --green: #16a34a; --green-bg: rgba(22,163,74,0.08);
@@ -174,9 +177,12 @@
   --spark: #1e40af;
 }
 [data-theme="dark"] {
-  --bg: #09090b; --bg2: #18181b; --surf: #18181b;
-  --brd: #3f3f46; --brd2: #27272a;
-  --tx: #fafafa; --tx2: #a1a1aa; --tx3: #71717a;
+  --bg: #09090b; --bg2: #18181b;
+  --surf: #1c1c1f;        /* lighter than bg — cards visible without borders alone */
+  --surf2: #27272a;       /* card hover surface */
+  --brd: #52525b;         /* visible default border in dark mode */
+  --brd2: #71717a;        /* stronger border for hover/emphasis */
+  --tx: #fafafa; --tx2: #a1a1aa; --tx3: #8a8a93;  /* tx3 readable on surf */
   --ac: #ef4444; --ac2: #f87171;
   --ac-bg: rgba(255,255,255,0.04);
   --green: #4ade80; --green-bg: rgba(74,222,128,0.1);
@@ -1784,14 +1790,15 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   font-weight: 400;
   padding: 4px 0;
   border-bottom: 1px solid var(--tx);
-  transition: opacity 0.18s var(--ease);
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
-.hero-v3-link:hover { opacity: 0.55; }
+.hero-v3-link:hover { color: var(--tx2); border-color: var(--tx2); }
 .hero-v3-arrow {
   font-weight: 300;
   color: var(--tx2);
   transition: transform 0.18s var(--ease);
 }
+.hero-v3-link:hover .hero-v3-arrow { color: var(--tx); }
 .hero-v3-link:hover .hero-v3-arrow { transform: translateX(2px); }
 .hero-v3-link[href^="#"]:hover .hero-v3-arrow { transform: translateY(2px); }
 
@@ -1834,17 +1841,17 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .card:hover { border-color: var(--brd2); background: var(--surf2); }
 .card h3 {
   margin: 0 0 12px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  letter-spacing: 0.005em;
+  letter-spacing: 0;
   color: var(--tx);
   line-height: 1.35;
 }
 .card p {
   margin: 0;
   font-size: 14px;
-  font-weight: 300;
-  line-height: 1.55;
+  font-weight: 400;
+  line-height: 1.6;
   color: var(--tx2);
 }
 
@@ -1912,12 +1919,15 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .didyou-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* auto-fit collapses gracefully when one of the six cards is hidden
+     (e.g. appeal_chain absent). Min 240 keeps lines readable, 1fr lets
+     the grid balance whatever cards survived. */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
 }
 .didyou-fact {
-  font-size: 14px;
-  font-weight: 300;
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.55;
   color: var(--tx);
   margin: 0;
@@ -1929,16 +1939,21 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .didyou-fact .didyou-meta {
   display: block;
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--tx3);
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--tx2);
+  font-weight: 300;
 }
+.didyou-fact a {
+  color: var(--tx);
+  text-decoration: none;
+  border-bottom: 1px solid var(--brd);
+  transition: border-color 0.18s var(--ease);
+}
+.didyou-fact a:hover { border-color: var(--tx); }
 .card[hidden] { display: none; }
-@media (max-width: 900px) {
-  .didyou-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 @media (max-width: 640px) {
-  .didyou-grid { grid-template-columns: 1fr; gap: 12px; }
+  .didyou-grid { gap: 12px; }
 }
 
 /* ===========================================================================
@@ -1974,6 +1989,17 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
   border-bottom: 1px solid var(--brd);
   margin: 0 auto 40px;
   max-width: 720px;
+  /* Mobile: prefer horizontal scroll over awkward 2-row wrap. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.connect-tabs::-webkit-scrollbar { display: none; }
+@media (max-width: 640px) {
+  .connect-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 .connect-tab {
   background: none;
@@ -2651,7 +2677,7 @@ const I18N = {
     landing_card_entscheide_desc:'968\u2019000+ Gerichtsentscheide aller Bundesgerichte und 26 Kantone, t\u00e4glich aktualisiert. Volltextsuche, Zitationsgraph (8,77 Mio Kanten), mehrsprachig (DE/FR/IT).',
     landing_card_entscheide_cta:'Datensatz erkunden \u2192',
     landing_card_mcp_title:'Verbinden',
-    landing_card_mcp_desc:'24 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote-Server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) oder lokal. Einrichtung in 30 Sekunden.',
+    landing_card_mcp_desc:'24 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote-Server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) oder lokal. Einrichtung \u00fcber MCP-URL.',
     landing_card_mcp_cta:'MCP-Setup \u2192',
     landing_what_title:'Was ist OpenCaseLaw?',
     landing_what_1:'Schweizer Rechtsrecherche ist heute fragmentiert, grösstenteils hinter Paywalls und für Sprachmodelle nahezu unzugänglich. Studierende können sich teure kommerzielle Datenbanken nicht leisten, und LLMs halluzinieren Artikeltexte, weil sie keine autoritative Quelle haben. OpenCaseLaw macht <strong>alle öffentlich publizierten Schweizer Gerichtsentscheide</strong> sowie den aktuellen Text von rund 5’000 Bundesgesetzen und 30’000 kantonalen Erlassen in einem durchsuchbaren, zitationsverknüpften und maschinenlesbaren Format frei verfügbar — öffentliche Daten (CC0), Open-Source-Infrastruktur (MIT), keine Anmeldung.',
@@ -2712,7 +2738,7 @@ const I18N = {
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Chat-Oberfl\u00e4che \u2014 Fragen stellen, Entscheide erhalten',
     quick_download:'Download', quick_download_desc:'Kompletter Datensatz zum Download auf HuggingFace',
-    quick_search:'Mit KI durchsuchen', quick_search_desc:'Fragen in natürlicher Sprache stellen — Einrichtung in 30 Sekunden',
+    quick_search:'Mit KI durchsuchen', quick_search_desc:'Fragen in natürlicher Sprache stellen — Einrichtung \u00fcber MCP-URL',
     quick_api:'API', quick_api_desc:'Den Datensatz programmatisch via REST API abfragen',
     access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI, Gemini oder lokalen Modellen via Ollama (kein API-Schl\u00fcssel n\u00f6tig).',
     access_featured_title:'Mit KI durchsuchen',
@@ -2888,7 +2914,7 @@ const I18N = {
     landing_card_entscheide_desc:'Plus de 968\u2019000 d\u00e9cisions judiciaires de tous les tribunaux f\u00e9d\u00e9raux et des 26 cantons, mises \u00e0 jour quotidiennement. Recherche plein texte, graphe de citations (8,77 M arr\u00eates), multilingue (DE/FR/IT).',
     landing_card_entscheide_cta:'Explorer le dataset \u2192',
     landing_card_mcp_title:'Connexion',
-    landing_card_mcp_desc:'24 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Serveur distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) ou local. Configuration en 30 secondes.',
+    landing_card_mcp_desc:'24 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Serveur distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) ou local. Configuration via URL MCP.',
     landing_card_mcp_cta:'Configuration MCP \u2192',
     landing_what_title:'Qu\'est-ce qu\'OpenCaseLaw?',
     landing_what_1:'La recherche juridique suisse est aujourd\'hui fragmentée, majoritairement derrière des paywalls et difficilement accessible aux modèles de langue. Les étudiants ne peuvent pas se permettre les bases commerciales coûteuses, et les LLM hallucinent le texte d\'articles de loi faute de source autoritative. OpenCaseLaw rend <strong>toutes les décisions judiciaires suisses publiées</strong> et le texte actuel de quelque 5’000 lois fédérales et 30’000 actes cantonaux librement disponibles dans un format recherchable, interconnecté par citations et lisible par machine — données publiques (CC0), infrastructure open source (MIT), sans inscription.',
@@ -2949,7 +2975,7 @@ const I18N = {
     search_placeholder:'Rechercher...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interface de chat \u2014 posez des questions, obtenez des d\u00e9cisions',
     quick_download:'Télécharger', quick_download_desc:'Dataset complet à télécharger sur HuggingFace',
-    quick_search:'Recherche avec IA', quick_search_desc:'Posez des questions en langage naturel — configuration en 30 secondes',
+    quick_search:'Recherche avec IA', quick_search_desc:'Posez des questions en langage naturel — configuration via URL MCP',
     quick_api:'API', quick_api_desc:'Interroger le dataset par programmation via l\'API REST',
     access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI, Gemini ou des mod\u00e8les locaux via Ollama (sans cl\u00e9 API).',
     access_featured_title:'Recherche avec IA',
@@ -3125,7 +3151,7 @@ const I18N = {
     landing_card_entscheide_desc:'Oltre 968\u2019000 decisioni giudiziarie di tutti i tribunali federali e dei 26 cantoni, aggiornate quotidianamente. Ricerca full-text, grafo delle citazioni (8,77 mln), multilingue (DE/FR/IT).',
     landing_card_entscheide_cta:'Esplora il dataset \u2192',
     landing_card_mcp_title:'Connessione',
-    landing_card_mcp_desc:'24 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Server remoto (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) o locale. Configurazione in 30 secondi.',
+    landing_card_mcp_desc:'24 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Server remoto (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) o locale. Configurazione via URL MCP.',
     landing_card_mcp_cta:'Configurazione MCP \u2192',
     landing_what_title:'Cos\'\u00e8 OpenCaseLaw?',
     landing_what_1:'La ricerca giuridica svizzera oggi è frammentata, per lo più dietro paywall e difficilmente accessibile ai modelli linguistici. Gli studenti non possono permettersi costose banche dati commerciali, e gli LLM allucinano il testo degli articoli di legge perché privi di una fonte autorevole. OpenCaseLaw rende <strong>tutte le decisioni giudiziarie svizzere pubblicate</strong> e il testo attuale di circa 5’000 leggi federali e 30’000 atti cantonali liberamente disponibili in un formato ricercabile, collegato per citazioni e leggibile dalle macchine — dati pubblici (CC0), infrastruttura open source (MIT), senza registrazione.',
@@ -3186,7 +3212,7 @@ const I18N = {
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
     quick_webui:'Web UI', quick_webui_desc:'Interfaccia chat \u2014 fai domande, ottieni decisioni',
     quick_download:'Download', quick_download_desc:'Dataset completo da scaricare su HuggingFace',
-    quick_search:'Ricerca con IA', quick_search_desc:'Fai domande in linguaggio naturale — configurazione in 30 secondi',
+    quick_search:'Ricerca con IA', quick_search_desc:'Fai domande in linguaggio naturale — configurazione via URL MCP',
     quick_api:'API', quick_api_desc:'Interroga il dataset via API REST',
     access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI, Gemini o modelli locali via Ollama (senza chiave API).',
     access_featured_title:'Ricerca con IA',
@@ -3599,7 +3625,7 @@ const I18N = {
     landing_card_entscheide_desc:'968,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (8.77M edges), multilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explore the dataset \u2192',
     landing_card_mcp_title:'Connect',
-    landing_card_mcp_desc:'24 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. 30-second setup.',
+    landing_card_mcp_desc:'24 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. Configuration via MCP URL.',
     landing_card_mcp_cta:'MCP setup \u2192',
     landing_what_title:'What is OpenCaseLaw?',
     landing_what_1:'Swiss legal research today is fragmented, mostly behind paywalls, and hard to reach for language models. Students can’t afford commercial databases, and LLMs hallucinate statute text because they have no authoritative source. OpenCaseLaw makes <strong>every publicly published Swiss court decision</strong> and the current text of ~5,000 federal laws and ~30,000 cantonal acts freely available in a searchable, citation-linked, machine-readable format — public-domain data (CC0), open-source infrastructure (MIT), no sign-up.',
@@ -4754,6 +4780,33 @@ function renderHero(data) {
 function renderDidYouKnow(data) {
   const s = data && data.interesting_stats;
   const fmtN = (n) => (typeof n === 'number') ? n.toLocaleString('de-CH') : '';
+
+  // Friendly court label resolver — reuses COURT_LABELS_LONG defined in
+  // the dashboard for consistent naming across surfaces. Falls back to
+  // the raw court code if no localised label exists.
+  const courtLabel = (code) => {
+    if (!code) return '';
+    try {
+      if (typeof COURT_DISPLAY !== 'undefined' && COURT_DISPLAY[code]) {
+        return COURT_DISPLAY[code][curLang] || COURT_DISPLAY[code].de || code;
+      }
+    } catch (_) { /* ignore */ }
+    return code;
+  };
+  // Format a decision_id back to a readable docket. Strips the
+  // court-prefix and replaces underscores with spaces or slashes.
+  const prettyDocket = (id, fallback) => {
+    if (!id) return fallback || '';
+    // Strip leading court_ prefix (e.g. bge_BGE_140_III_86 → BGE 140 III 86)
+    let m = id.replace(/^[a-z_]+_/, '');
+    if (m.startsWith('BGE_')) {
+      return m.replace(/^BGE_/, 'BGE ').replace(/_/g, ' ');
+    }
+    // Federal docket pattern: 6B_123_2025 → 6B_123/2025
+    m = m.replace(/^(\d[A-Z]+)_(\d+)_(\d{4})$/, '$1_$2/$3');
+    return m;
+  };
+
   const setCell = (id, html) => {
     const card = document.getElementById(id);
     const text = document.getElementById(id + '-text');
@@ -4772,48 +4825,54 @@ function renderDidYouKnow(data) {
   // Most-cited decision
   if (s.most_cited && s.most_cited.docket) {
     const m = s.most_cited;
-    const link = m.url ? `<a href="${m.url}">${m.docket}</a>` : `<strong>${m.docket}</strong>`;
+    const docket = prettyDocket(null, m.docket) || m.docket;
+    const link = m.url ? `<a href="${m.url}">${docket}</a>` : `<strong>${docket}</strong>`;
     const title = m.title ? `<span class="didyou-meta">${m.title}</span>` : '';
     setCell('didyou-most-cited',
-      `${link} — ${fmtN(m.citation_count)} ${t('didyou_unit_citations') || 'citations'}.${title}`);
+      `${link} · <strong>${fmtN(m.citation_count)}</strong> ${t('didyou_unit_citations') || 'citations'}.${title}`);
   } else { setCell('didyou-most-cited', ''); }
 
   // Longest opinion this year
   if (s.longest_year && s.longest_year.docket) {
     const l = s.longest_year;
-    const link = l.url ? `<a href="${l.url}">${l.docket}</a>` : `<strong>${l.docket}</strong>`;
+    const docket = prettyDocket(null, l.docket) || l.docket;
+    const link = l.url ? `<a href="${l.url}">${docket}</a>` : `<strong>${docket}</strong>`;
+    const yr = l.year ? ` · ${l.year}` : '';
     const title = l.title ? `<span class="didyou-meta">${l.title}</span>` : '';
     setCell('didyou-longest',
-      `${link} — ${fmtN(l.char_count)} ${t('didyou_unit_chars') || 'characters'}${l.year ? ' · ' + l.year : ''}.${title}`);
+      `${link}${yr} · <strong>${fmtN(l.char_count)}</strong> ${t('didyou_unit_chars') || 'characters'}.${title}`);
   } else { setCell('didyou-longest', ''); }
 
   // Most active court (last 30 days)
   if (s.active_court && s.active_court.court_label) {
     const a = s.active_court;
+    const label = courtLabel(a.court_label) || a.court_label;
     setCell('didyou-active-court',
-      `<strong>${a.court_label}</strong> — ${fmtN(a.count)} ${t('didyou_unit_decisions') || 'decisions'}.`);
+      `<strong>${label}</strong> · ${fmtN(a.count)} ${t('didyou_unit_decisions') || 'decisions'}.`);
   } else { setCell('didyou-active-court', ''); }
 
   // Deepest recent appeal chain
   if (s.appeal_chain && Array.isArray(s.appeal_chain.chain) && s.appeal_chain.chain.length) {
     const c = s.appeal_chain;
+    const labels = c.chain.map(courtLabel);
     setCell('didyou-appeal-chain',
-      `${c.chain.join(' → ')} <span class="didyou-meta">(${c.depth || c.chain.length} ${t('didyou_unit_instances') || 'instances'})</span>`);
+      `${labels.join(' → ')} <span class="didyou-meta">(${c.depth || c.chain.length} ${t('didyou_unit_instances') || 'instances'})</span>`);
   } else { setCell('didyou-appeal-chain', ''); }
 
   // Daily intake (last 90 days)
   if (s.daily_intake && typeof s.daily_intake.avg_per_day === 'number') {
     const d = s.daily_intake;
     setCell('didyou-daily-intake',
-      `<strong>${fmtN(Math.round(d.avg_per_day))}</strong> ${t('didyou_unit_per_day') || 'new decisions per day'} <span class="didyou-meta">${t('didyou_window_90d') || 'over the last 90 days'}.</span>`);
+      `<strong>${fmtN(Math.round(d.avg_per_day))}</strong> ${t('didyou_unit_per_day') || 'new decisions per day'} <span class="didyou-meta">${t('didyou_window_90d') || 'over the last 90 days.'}</span>`);
   } else { setCell('didyou-daily-intake', ''); }
 
   // Newest source (court added)
   if (s.newest_source && s.newest_source.court_label) {
     const n = s.newest_source;
+    const label = courtLabel(n.court_label) || n.court_label;
     const meta = n.ingested_at ? `<span class="didyou-meta">${t('didyou_added') || 'Added'} ${n.ingested_at}.</span>` : '';
     setCell('didyou-newest',
-      `<strong>${n.court_label}</strong>${n.count ? ' — ' + fmtN(n.count) + ' ' + (t('didyou_unit_decisions') || 'decisions') : ''}.${meta}`);
+      `<strong>${label}</strong>${n.count ? ' · ' + fmtN(n.count) + ' ' + (t('didyou_unit_decisions') || 'decisions') : ''}.${meta}`);
   } else { setCell('didyou-newest', ''); }
 }
 

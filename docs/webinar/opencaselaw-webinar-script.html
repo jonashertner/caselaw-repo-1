@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>opencaselaw.ch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+:root{
+  --bg:#fafaf8;--fg:#1a1a18;--sub:#646460;--mute:#9a9a94;--line:#e2e2dc;--faint:#f0f0ec;
+  --red:#c03020;--grn:#2a7848;--gold:#a07010;
+  --sans:'DM Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+.sl{position:absolute;inset:0;display:flex;align-items:flex-start;
+  padding:52px 9% 56px;opacity:0;transition:opacity .4s;pointer-events:none}
+.sl.on{opacity:1;pointer-events:auto}
+
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fd{opacity:0}.sl.on .fd{animation:rise .4s ease forwards}
+
+/* Terminal */
+.term{background:#141412;border-radius:12px;padding:22px 28px;
+  font:400 15px/1.8 var(--mono);color:#71716b;-webkit-font-smoothing:auto}
+.term .c{color:#d4a74a}.term .v{color:#e2e2da}.term .d{color:#48483e}
+
+/* Nav */
+.nav{position:fixed;bottom:0;left:0;right:0;height:44px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 32px;z-index:99;
+  background:linear-gradient(transparent 0%,var(--bg) 40%)}
+.nb{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--bg);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font:500 14px var(--sans);color:var(--mute);transition:.15s}
+.nb:hover{color:var(--fg)}.nb:disabled{opacity:.15;cursor:default}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:4px;background:var(--line);cursor:pointer;transition:.25s}
+.dot.on{width:32px;background:var(--red);border-radius:4px}
+.cz{position:fixed;top:0;bottom:44px;width:12%;z-index:50}
+</style>
+</head>
+<body><div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.9/babel.min.js"></script>
+<script type="text/babel">
+const{useState:U,useEffect:E,useCallback:C}=React;
+function Fd({children,d=0}){return<div className="fd" style={{animationDelay:`${d}ms`}}>{children}</div>}
+
+/* ═══════════════════════════════════════════════════════════
+   1 · AUSGANGSLAGE
+   ═══════════════════════════════════════════════════════════ */
+function S1({on}){if(!on)return null;return<div style={{maxWidth:940,width:"100%"}}>
+
+  {/* Logo + name */}
+  <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:44}}>
+    <svg width="36" height="36" viewBox="0 0 40 40"><rect width="40" height="40" rx="6" fill="var(--red)"/><path d="M12 18.5h16M20 10.5v16" stroke="#fff" strokeWidth="3.5"/></svg>
+    <span style={{font:"500 14px/1 var(--mono)",letterSpacing:2,textTransform:"uppercase",color:"var(--mute)"}}>opencaselaw.ch</span>
+  </div>
+
+  <Fd d={100}>
+    <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--red)",marginBottom:20}}>Ausgangslage</div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:36}}>
+      Schweizer Rechtsprechung ist öffentlich.<br/>
+      <span style={{color:"var(--mute)"}}>Aber nicht durchsuchbar.</span>
+    </div>
+  </Fd>
+
+  <Fd d={400}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:20,marginBottom:36}}>
+      {[
+        ["Fragmentiert","Entscheide verteilt über Dutzende Gerichts-Webseiten. Jeder Kanton, jede Instanz eigenes Format und eigene Abdeckung."],
+        ["Keine konsolidierte Suche","Keine Möglichkeit, über alle Gerichte und Kantone gleichzeitig zu suchen. Keine Querverknüpfung zwischen Entscheiden."],
+        ["Kein integrierter Ansatz","Kein bestehendes Angebot verbindet konsolidierte Entscheiddaten mit einem systematischen Zitierungsnetzwerk und LLM-gestützter mehrstufiger Sucharchitektur."],
+      ].map(([t,d],i)=>
+        <div key={i} style={{padding:"22px 24px",borderRadius:12,border:"1.5px solid var(--line)"}}>
+          <div style={{font:"600 16px/1.3 var(--sans)",marginBottom:10}}>{t}</div>
+          <div style={{font:"300 14px/1.7 var(--sans)",color:"var(--sub)"}}>{d}</div>
+        </div>
+      )}
+    </div>
+  </Fd>
+
+  <Fd d={700}>
+    <div style={{font:"400 17px/1.7 var(--sans)",color:"var(--sub)",maxWidth:720}}>
+      <span style={{color:"var(--fg)",fontWeight:500}}>Ziel:</span> Dem LLM strukturierte, querverknüpfte Daten bereitstellen — damit die Suche so präzis und effizient wie möglich wird.
+    </div>
+  </Fd>
+
+</div>}
+
+/* ═══════════════════════════════════════════════════════════
+   2 · INHALT
+   ═══════════════════════════════════════════════════════════ */
+function S2({on}){if(!on)return null;
+  const fed=["BGer 174K","BGE 36K","BVGer 92K","BStGer 11K","BPatGer","FINMA","WEKO","EDÖB","ElCom","PostCom","ComCom","UBI","HUDOC"];
+  const cantons=[{c:"GE",v:"167K"},{c:"VD",v:"155K"},{c:"ZH",v:"80K"},{c:"TI",v:"59K"},{c:"BE",v:"20K"},{c:"BL",v:"17K"},{c:"SG",v:"19K"},{c:"GR",v:"14K"},{c:"FR",v:"14K"},{c:"AG",v:"11K"},{c:"BS",v:"10K"},{c:"SO",v:"9K"},{c:"NE",v:"7K"},{c:"VS",v:"7K"},{c:"SZ",v:"5K"},{c:"LU",v:"4K"},{c:"AR",v:"4K"},{c:"TG",v:"4K"},{c:"ZG",v:"3K"},{c:"OW",v:"2K"},{c:"GL",v:"1K"},{c:"UR",v:"1K"},{c:"JU",v:"1K"},{c:"NW",v:"1K"},{c:"SH",v:"1K"},{c:"AI",v:"174"}];
+  return<div style={{maxWidth:1060,width:"100%"}}>
+
+  <Fd d={100}>
+    <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--red)",marginBottom:20}}>Inhalt</div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:8}}>962'272 Entscheide.</div>
+  </Fd>
+
+  <Fd d={300}>
+    <div style={{font:"400 15px/1 var(--sans)",color:"var(--mute)",marginBottom:24}}>
+      1.24 Mio. Roheinträge → dedupliziert → 962'272 unique · 54 Scraper · jede Nacht 01:00–04:00 UTC · 28 Felder pro Entscheid
+    </div>
+  </Fd>
+
+  {/* Federal */}
+  <Fd d={400}>
+    <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--red)",marginBottom:10}}>Bund — 13 Quellen</div>
+    <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:20}}>
+      {fed.map((s,i)=><div key={i} style={{padding:"7px 12px",borderRadius:6,background:"var(--red)",color:"#fff",font:"500 13px/1 var(--sans)",opacity:.88}}>{s}</div>)}
+    </div>
+  </Fd>
+
+  {/* Cantons */}
+  <Fd d={600}>
+    <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--sub)",marginBottom:10}}>26 Kantone</div>
+    <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:24}}>
+      {cantons.map((ct,i)=><div key={i} style={{padding:"6px 10px",borderRadius:6,border:"1px solid var(--line)",font:"500 13px/1 var(--sans)",display:"flex",gap:6,alignItems:"baseline"}}>
+        <span>{ct.c}</span><span style={{font:"400 12px var(--mono)",color:"var(--mute)"}}>{ct.v}</span>
+      </div>)}
+    </div>
+  </Fd>
+
+  {/* Built on top */}
+  <Fd d={800}>
+    <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--sub)",marginBottom:12}}>Darauf aufgebaut</div>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:14}}>
+      {[
+        {t:"Zitierungsnetzwerk",v:"8.75 Mio. gefunden",d:"6.46M zugeordnet (73.8%)\n11.2M Gesetz→Entscheid\n281'391 versch. Artikel"},
+        {t:"Volltextindex",v:"FTS5 · 65 GB",d:"7 Felder pro Entscheid indexiert\n6-stufige Such-Pipeline\nMRR@10 = 0.647"},
+        {t:"Gesetzesindex",v:"80 Bundesgesetze",d:"39'000 Artikel aus Fedlex\n33'000+ Erlasse via LexFind"},
+        {t:"Kommentare",v:"362 Stück",d:"19 Gesetze\nOnlineKommentar.ch\nCC-BY-4.0"},
+      ].map((item,i)=><div key={i} style={{padding:"16px 18px",borderRadius:10,border:"1px solid var(--line)"}}>
+        <div style={{font:"600 14px/1.2 var(--sans)",marginBottom:5}}>{item.t}</div>
+        <div style={{font:"500 13px/1 var(--mono)",color:"var(--red)",marginBottom:8}}>{item.v}</div>
+        <div style={{font:"300 12px/1.55 var(--sans)",color:"var(--sub)",whiteSpace:"pre-line"}}>{item.d}</div>
+      </div>)}
+    </div>
+  </Fd>
+
+  <Fd d={1000}>
+    <div style={{font:"400 13px/1 var(--mono)",color:"var(--mute)",marginTop:14}}>
+      1 VPS · 16 CPU · 64 GB RAM · Hetzner · 116 €/Monat · CC0 (Daten) · MIT (Code)
+    </div>
+  </Fd>
+
+</div>}
+
+/* ═══════════════════════════════════════════════════════════
+   3 · ANBINDUNG
+   ═══════════════════════════════════════════════════════════ */
+function S3({on}){if(!on)return null;return<div style={{maxWidth:860,width:"100%"}}>
+
+  <Fd d={100}>
+    <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--red)",marginBottom:20}}>Anbindung</div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:28}}>Eine URL. Keine Authentifizierung.</div>
+  </Fd>
+
+  <Fd d={400}>
+    <div className="term" style={{marginBottom:28}}>
+      <div><span className="d">// MCP-Endpoint</span></div>
+      <div style={{marginTop:2}}><span className="c">https://mcp.opencaselaw.ch</span></div>
+
+      <div style={{marginTop:20}}><span className="d">// Claude Desktop</span></div>
+      <div><span className="v">Settings → Connectors → Add → URL einfügen</span></div>
+
+      <div style={{marginTop:16}}><span className="d">// Claude Code</span></div>
+      <div><span className="v">$ claude mcp add swiss-caselaw --transport sse \</span></div>
+      <div><span className="v">{"    "}https://mcp.opencaselaw.ch</span></div>
+
+      <div style={{marginTop:16}}><span className="d">// ChatGPT</span></div>
+      <div><span className="v">Settings → Apps → Developer mode → Create app → URL</span></div>
+
+      <div style={{marginTop:16}}><span className="d">// Gemini CLI</span></div>
+      <div><span className="v">~/.gemini/settings.json → mcpServers → URL</span></div>
+
+      <div style={{marginTop:16}}><span className="d">// Lokal (offline, ~65 GB)</span></div>
+      <div><span className="v">$ git clone github.com/jonashertner/caselaw-repo-1</span></div>
+      <div><span className="v">$ ./scripts/setup.sh</span></div>
+    </div>
+  </Fd>
+
+  <Fd d={700}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:14}}>
+      {[
+        ["opencaselaw.ch","Website"],
+        ["mcp.opencaselaw.ch","MCP-Endpoint"],
+        ["github.com/jonashertner","Quellcode"],
+        ["huggingface.co/voilaj/swiss-caselaw","Datensatz"],
+      ].map(([url,label],i)=><div key={i} style={{padding:"14px 16px",borderRadius:10,border:"1px solid var(--line)"}}>
+        <div style={{font:"400 13px/1.2 var(--mono)",color:"var(--fg)",marginBottom:4,wordBreak:"break-all"}}>{url}</div>
+        <div style={{font:"400 13px/1 var(--sans)",color:"var(--mute)"}}>{label}</div>
+      </div>)}
+    </div>
+  </Fd>
+
+</div>}
+
+/* ═══════════════════════════════════════════════════════════
+   4 · WAS PASSIERT BEI EINER SUCHANFRAGE
+   ═══════════════════════════════════════════════════════════ */
+function S4({on}){if(!on)return null;return<div style={{maxWidth:1020,width:"100%"}}>
+
+  <Fd d={100}>
+    <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--red)",marginBottom:20}}>Suchanfrage</div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:8}}>Was passiert bei einer Suche</div>
+  </Fd>
+
+  <Fd d={350}>
+    <div style={{font:"400 16px/1 var(--sans)",color:"var(--mute)",marginBottom:28}}>
+      Beispiel: «Hundebiss — wer haftet?»
+    </div>
+  </Fd>
+
+  <Fd d={500}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16}}>
+      {[
+        {n:"1",t:"Sprachliche Übersetzung",d:"Claude Haiku übersetzt Alltagssprache in Fachbegriffe: erkennt Gesetzesartikel (OR 56), Doktrin-Name (Tierhalterhaftung), BGE-Kandidaten, mehrsprachige Synonyme. Komposita-Zerlegung. Kosten: ~0.01 Rp.",c:"var(--red)"},
+        {n:"2",t:"Parallele Volltextsuche",d:"6–8 verschiedene Suchanfragen gleichzeitig an den FTS5-Index: UND-Suche, ODER-Suche, Regeste-fokussiert, Titel-fokussiert, sprachspezifisch, LLM-erweitert. Jede liefert eine BM25-Rangliste.",c:"var(--gold)"},
+        {n:"3",t:"Zusammenführung",d:"Reciprocal Rank Fusion: die 6–8 Ranglisten werden verschmolzen. Ein Entscheid, der in mehreren Strategien auftaucht, wird belohnt. Konsistenz schlägt Einzeltreffer.",c:"var(--gold)"},
+      ].map((s,i)=><div key={i} style={{padding:"18px 18px",borderRadius:12,border:`1.5px solid ${s.c}22`,background:`${s.c}04`}}>
+        <div style={{font:"600 22px/1 var(--sans)",color:s.c,marginBottom:6}}>{s.n}</div>
+        <div style={{font:"500 14px/1.25 var(--sans)",color:s.c,marginBottom:8}}>{s.t}</div>
+        <div style={{font:"300 13px/1.6 var(--sans)",color:"var(--sub)"}}>{s.d}</div>
+      </div>)}
+    </div>
+  </Fd>
+
+  <Fd d={700}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginTop:16}}>
+      {[
+        {n:"4",t:"Signalbewertung",d:"15+ Merkmale pro Kandidat: BM25-Score, Zitierungshäufigkeit, In-Pool-Zitierung (wenn 5 Resultate alle dasselbe Urteil zitieren → Leitentscheid), Gesetzesartikel-Match, Gerichtstyp, Sprachsignal.",c:"var(--grn)"},
+        {n:"5",t:"KI-Neuordnung",d:"Top 15 → Claude Haiku bewertet nach Doktrin-Übereinstimmung, Sachverhaltsähnlichkeit, Gerichtsautorität. Wird übersprungen bei eindeutigen Treffern. Entscheide ohne Regeste (48%) hier benachteiligt. ~0.02 Rp.",c:"#6a5acd"},
+        {n:"6",t:"Anreicherung",d:"Gerichtsname (lesbar), Instanzenstufe, Rechtsgebiet (aus Gesetzesartikeln abgeleitet), die 8 wichtigsten Artikel, Zitierungszahl, Leitentscheid-Markierung (BGer >200 Zitierungen, kantonal >30).",c:"var(--fg)"},
+      ].map((s,i)=><div key={i} style={{padding:"18px 18px",borderRadius:12,border:`1.5px solid ${s.c}22`,background:`${s.c}04`}}>
+        <div style={{font:"600 22px/1 var(--sans)",color:s.c,marginBottom:6}}>{s.n}</div>
+        <div style={{font:"500 14px/1.25 var(--sans)",color:s.c,marginBottom:8}}>{s.t}</div>
+        <div style={{font:"300 13px/1.6 var(--sans)",color:"var(--sub)"}}>{s.d}</div>
+      </div>)}
+    </div>
+  </Fd>
+
+  <Fd d={900}>
+    <div style={{display:"flex",gap:28,marginTop:20,alignItems:"baseline"}}>
+      <span style={{font:"600 11px var(--sans)",color:"var(--mute)",letterSpacing:1.5}}>MRR@10 (mit KI)</span>
+      <span style={{font:"500 22px var(--mono)",color:"var(--red)"}}>0.647</span>
+      <span style={{font:"600 11px var(--sans)",color:"var(--mute)",letterSpacing:1.5}}>Ohne KI</span>
+      <span style={{font:"500 22px var(--mono)",color:"var(--mute)"}}>0.470</span>
+      <span style={{font:"600 11px var(--sans)",color:"var(--mute)",letterSpacing:1.5}}>Hit@1</span>
+      <span style={{font:"500 22px var(--mono)",color:"var(--red)"}}>57%</span>
+      <span style={{font:"300 14px var(--sans)",color:"var(--mute)",marginLeft:8}}>100 Testfragen · 3 Sprachen</span>
+    </div>
+  </Fd>
+
+</div>}
+
+/* ═══════════════════════════════════════════════════════════
+   5 · FUNKTIONEN
+   ═══════════════════════════════════════════════════════════ */
+function S5({on}){if(!on)return null;return<div style={{maxWidth:1020,width:"100%"}}>
+
+  <Fd d={100}>
+    <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--red)",marginBottom:20}}>Funktionen</div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:28}}>19 MCP-Tools</div>
+  </Fd>
+
+  <Fd d={400}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 52px"}}>
+
+      {/* Left: Search & Retrieval */}
+      <div>
+        <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--sub)",marginBottom:14}}>Suche & Abruf</div>
+        {[
+          ["search_decisions","Volltextsuche mit Filtern, Rechtsgebiet, Zitierungszahlen"],
+          ["get_decision","Einzelentscheid mit Volltext (bis 200K Zeichen)"],
+          ["find_leading_cases","Leitentscheide — Rangfolge nach Zitierungshäufigkeit"],
+          ["find_citations","Zitierungsnetzwerk: zitiert + wird zitiert"],
+          ["analyze_legal_trend","Anzahl Entscheide pro Jahr zu Thema oder Norm"],
+          ["get_doctrine","Gesetzestext + Leitentscheide + Doktrin-Timeline"],
+          ["find_appeal_chain","Instanzenzug rekonstruieren"],
+        ].map(([cmd,desc],i)=><div key={i} style={{padding:"9px 0",borderBottom:"1px solid var(--faint)"}}>
+          <code style={{font:"500 14px/1 var(--mono)",color:"var(--fg)"}}>{cmd}</code>
+          <div style={{font:"300 13px/1.5 var(--sans)",color:"var(--sub)",marginTop:3}}>{desc}</div>
+        </div>)}
+      </div>
+
+      {/* Right: Laws, Commentaries, Study */}
+      <div>
+        <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--sub)",marginBottom:14}}>Gesetze · Kommentare · Studium</div>
+        {[
+          ["get_law / search_laws","80 Bundesgesetze, 39'000 Artikel, 3 Sprachen (Fedlex)"],
+          ["search_legislation","33'000+ Bundes- und Kantonserlasse (LexFind)"],
+          ["get_commentary","362 Kommentare zu 19 Gesetzen (OnlineKommentar.ch)"],
+          ["search_commentaries","Volltextsuche über alle Kommentare"],
+          ["get_case_brief","Strukturierte Urteilsanalyse eines BGE"],
+          ["generate_exam_question","Fallbearbeitung aus echtem BGE-Sachverhalt"],
+          ["draft_mock_decision","Recherche-basierter Urteilsentwurf (kein Rechtsrat)"],
+        ].map(([cmd,desc],i)=><div key={i} style={{padding:"9px 0",borderBottom:"1px solid var(--faint)"}}>
+          <code style={{font:"500 14px/1 var(--mono)",color:"var(--fg)"}}>{cmd}</code>
+          <div style={{font:"300 13px/1.5 var(--sans)",color:"var(--sub)",marginTop:3}}>{desc}</div>
+        </div>)}
+      </div>
+
+    </div>
+  </Fd>
+
+</div>}
+
+/* ═══════════════ BACKGROUND SLIDES ═══════════════ */
+
+function S6({on}){if(!on)return null;return<div style={{maxWidth:860,width:"100%"}}>
+  <Fd d={100}>
+    <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+      <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--mute)"}}>Background</div>
+      <div style={{flex:1,height:1,background:"var(--line)"}}/>
+    </div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:28}}>Transparenz</div>
+  </Fd>
+
+  <Fd d={400}>
+    <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--grn)",marginBottom:14}}>Enthalten</div>
+    <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
+      {[
+        "Alle online publizierten Entscheide aller 26 Kantone und des Bundes",
+        "Volltext, strukturierte Metadaten, Dossiernummern, Sprache, Gericht, Datum",
+        "Systematisches Zitierungsnetzwerk (8.75 Mio. Verweise, 6.46 Mio. zugeordnet) mit Konfidenzwerten",
+        "Vollständigkeitsabgleich gegen entscheidsuche.ch: alle 1.07 Mio. Einträge abgedeckt",
+        "80 Bundesgesetze mit 39'000 Artikeln (Fedlex) + 33'000 Erlasse (LexFind)",
+        "362 Kommentare von OnlineKommentar.ch (CC-BY-4.0)",
+      ].map((t,i)=><div key={i} style={{display:"flex",gap:10,alignItems:"baseline"}}>
+        <span style={{color:"var(--grn)",fontSize:14,flexShrink:0}}>✓</span>
+        <span style={{font:"400 15px/1.6 var(--sans)",color:"var(--fg)"}}>{t}</span>
+      </div>)}
+    </div>
+  </Fd>
+
+  <Fd d={600}>
+    <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--red)",marginBottom:14}}>Nicht enthalten</div>
+    <div style={{display:"flex",flexDirection:"column",gap:8}}>
+      {[
+        "Keine Kommentarliteratur (BSK, CR, Stämpfli etc.) — nur OnlineKommentar",
+        "Keine redaktionelle Aufbereitung — Rechtsgebiet und Gesetzesreferenzen automatisch extrahiert",
+        "~5'000 ältere Entscheide als gescannte PDFs ohne Textlayer (kein nachträglicher OCR-Lauf)",
+        "Einzelne Kleinkantone publizieren Entscheide nur auf Papier oder hinter Paywall",
+        "Zitierungserkennung Regex-basiert — erkennt Standardformate, nicht alle informellen Referenzen",
+        "MRR@10 = 0.647 — bei ca. einem Drittel der Anfragen relevantester Entscheid nicht in Top 10",
+        "48% der Entscheide ohne Regeste — im KI-Reranking (Schritt 5) benachteiligt",
+        "Concept-Match am schwierigsten: wenn Nutzerbegriffe ≠ juristische Fachbegriffe (z.B. «Chef hat mich gemobbt» → Art. 328 OR)",
+      ].map((t,i)=><div key={i} style={{display:"flex",gap:10,alignItems:"baseline"}}>
+        <span style={{color:"var(--red)",fontSize:14,flexShrink:0}}>✗</span>
+        <span style={{font:"400 15px/1.6 var(--sans)",color:"var(--sub)"}}>{t}</span>
+      </div>)}
+    </div>
+  </Fd>
+</div>}
+
+function S7({on}){if(!on)return null;return<div style={{maxWidth:860,width:"100%"}}>
+  <Fd d={100}>
+    <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+      <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--mute)"}}>Background</div>
+      <div style={{flex:1,height:1,background:"var(--line)"}}/>
+    </div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:28}}>Technische Kennzahlen</div>
+  </Fd>
+
+  <Fd d={400}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 56px"}}>
+      <div>
+        {[
+          ["Entscheide","962'272"],["Gerichte","101"],["Entscheidverweise gefunden","8.75 Mio."],
+          ["Davon zugeordnet","6.46 Mio. (73.8%)"],["Gesetzesverweise","11.2 Mio."],
+          ["Bundesgesetze indexiert","80 (39'000 Art.)"],
+          ["Durchsuchbare Erlasse","33'000+"],["Kommentare","362"],
+          ["MRR@10 mit KI / ohne KI","0.647 / 0.470"],["MCP-Tools","19"],
+        ].map(([k,v],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"9px 0",borderBottom:"1px solid var(--faint)"}}>
+          <span style={{font:"400 14px var(--sans)",color:"var(--sub)"}}>{k}</span>
+          <span style={{font:"500 14px var(--mono)",color:"var(--red)"}}>{v}</span>
+        </div>)}
+      </div>
+      <div>
+        {[
+          ["Infrastruktur","1 VPS · 16 CPU · 64 GB RAM"],["Hosting","Hetzner"],
+          ["Monatliche Kosten","~116 €"],["Scraper","54 Python-Skripte"],
+          ["Suchdatenbank","SQLite FTS5 · 65 GB"],["Zitierungsdatenbank","SQLite · 3.9 GB"],
+          ["MCP-Server","FastMCP / Starlette · 4 Workers"],["Transport","SSE + Streamable HTTP"],
+          ["Lizenz","CC0 (Daten) · MIT (Code)"],
+        ].map(([k,v],i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"9px 0",borderBottom:"1px solid var(--faint)"}}>
+          <span style={{font:"400 14px var(--sans)",color:"var(--sub)"}}>{k}</span>
+          <span style={{font:"400 13px var(--mono)",color:"var(--fg)"}}>{v}</span>
+        </div>)}
+      </div>
+    </div>
+  </Fd>
+</div>}
+
+function S8({on}){if(!on)return null;return<div style={{maxWidth:860,width:"100%"}}>
+  <Fd d={100}>
+    <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+      <div style={{font:"600 12px/1 var(--sans)",letterSpacing:5,textTransform:"uppercase",color:"var(--mute)"}}>Background</div>
+      <div style={{flex:1,height:1,background:"var(--line)"}}/>
+    </div>
+  </Fd>
+
+  <Fd d={200}>
+    <div style={{font:"300 48px/1.12 var(--sans)",letterSpacing:-.8,marginBottom:28}}>Haben wir eine Vektorsuche?</div>
+  </Fd>
+
+  <Fd d={400}>
+    <div style={{font:"500 20px/1 var(--sans)",color:"var(--red)",marginBottom:24}}>Nein. Getestet und verworfen.</div>
+  </Fd>
+
+  <Fd d={550}>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24}}>
+
+      <div>
+        <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--red)",marginBottom:12}}>Was wir getestet haben</div>
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          {[
+            ["BGE-M3","BAAI/bge-m3, 568M Parameter, multilinguales Embedding-Modell. Sollte semantische Ähnlichkeit erfassen — «Hundebiss» in die Nähe von «Tierhalterhaftung» bringen."],
+            ["BGE-Reranker","bge-reranker-base, 278M Parameter, Cross-Encoder. Sollte die Reihenfolge der Resultate verbessern."],
+          ].map(([t,d],i)=><div key={i}>
+            <div style={{font:"500 15px/1.3 var(--sans)",marginBottom:4}}>{t}</div>
+            <div style={{font:"300 14px/1.6 var(--sans)",color:"var(--sub)"}}>{d}</div>
+          </div>)}
+        </div>
+
+        <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--red)",marginBottom:12,marginTop:20}}>Warum es nicht funktioniert hat</div>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>
+          {[
+            "Off-the-shelf BGE-M3: null Verbesserung (März 2026 getestet)",
+            "Trainiert auf allgemeine Web-Texte, nicht auf Schweizer Recht in drei Sprachen",
+            "Versteht nicht, dass «Hundebiss» und «Art. 56 OR Tierhalterhaftung» zusammengehören",
+            "Vektorkandidaten haben FTS5-Ergebnisse verwässert statt verbessert",
+            "Cross-Encoder hat die Qualität bei jedem Gewicht verschlechtert",
+          ].map((t,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"baseline"}}>
+            <span style={{color:"var(--red)",fontSize:13,flexShrink:0}}>✗</span>
+            <span style={{font:"400 14px/1.55 var(--sans)",color:"var(--sub)"}}>{t}</span>
+          </div>)}
+        </div>
+      </div>
+
+      <div>
+        <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--grn)",marginBottom:12}}>Was stattdessen funktioniert</div>
+        <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
+          {[
+            ["Claude Haiku als Reranker","Versteht tatsächlich Schweizer Recht, Doktrin, Gesetzessystematik. Kostet 0.02 Rappen pro Anfrage statt monatelangem Training."],
+          ].map(([t,d],i)=><div key={i}>
+            <div style={{font:"500 15px/1.3 var(--sans)",marginBottom:4}}>{t}</div>
+            <div style={{font:"300 14px/1.6 var(--sans)",color:"var(--sub)"}}>{d}</div>
+          </div>)}
+        </div>
+
+        <div style={{font:"600 11px/1 var(--sans)",letterSpacing:2.5,textTransform:"uppercase",color:"var(--gold)",marginBottom:12}}>Was noch möglich wäre</div>
+        <div style={{display:"flex",flexDirection:"column",gap:10}}>
+          {[
+            ["Finetuning auf eigenen Daten","BGE-M3 auf unseren Daten trainieren — mit 200'000 Zitationspaaren als Trainingsdaten. Wenn Entscheid A den Entscheid B zitiert, sind sie thematisch verwandt."],
+            ["Status","Trainingsskript und Daten vorbereitet, noch nicht ausgeführt. ~2 Stunden auf dem Mac. Ob es danach tatsächlich hilft, ist offen."],
+          ].map(([t,d],i)=><div key={i}>
+            <div style={{font:"500 15px/1.3 var(--sans)",marginBottom:4}}>{t}</div>
+            <div style={{font:"300 14px/1.6 var(--sans)",color:"var(--sub)"}}>{d}</div>
+          </div>)}
+        </div>
+      </div>
+
+    </div>
+  </Fd>
+</div>}
+
+/* ═══════════════ APP ═══════════════ */
+function App(){
+  const[s,set]=U(0);
+  const mainCount=5;
+  const sl=[S1,S2,S3,S4,S5,S6,S7,S8];
+  const go=C(d=>set(x=>Math.max(0,Math.min(sl.length-1,x+d))),[sl.length]);
+  E(()=>{const h=e=>{
+    if(e.key==="ArrowRight"||e.key===" "||e.key==="ArrowDown"){e.preventDefault();go(1)}
+    if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();go(-1)}
+  };addEventListener("keydown",h);return()=>removeEventListener("keydown",h)},[go]);
+  return<div style={{width:"100vw",height:"100vh",overflow:"hidden",position:"relative",userSelect:"none",background:"var(--bg)"}}>
+    {sl.map((X,i)=><div key={i} className={`sl ${s===i?"on":""}`}><X on={s===i}/></div>)}
+    <div className="nav">
+      <div style={{display:"flex",gap:6}}>
+        <button className="nb" onClick={()=>go(-1)} disabled={s===0}>←</button>
+        <button className="nb" onClick={()=>go(1)} disabled={s===sl.length-1}>→</button>
+      </div>
+      <div className="dots">
+        {sl.map((_,i)=><React.Fragment key={i}>
+          {i===mainCount&&<div style={{width:1,height:12,background:"var(--line)",margin:"0 4px"}}/>}
+          <div className={`dot ${s===i?"on":""}`} onClick={()=>set(i)} style={i>=mainCount?{opacity:.5}:{}}/>
+        </React.Fragment>)}
+      </div>
+      <div style={{font:"400 13px var(--mono)",color:"var(--mute)"}}>{s<mainCount?`${s+1} / ${mainCount}`:"bg"}</div>
+    </div>
+    <div className="cz" style={{left:0,cursor:s>0?"w-resize":"default"}} onClick={()=>go(-1)}/>
+    <div className="cz" style={{right:0,cursor:s<sl.length-1?"e-resize":"default"}} onClick={()=>go(1)}/>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

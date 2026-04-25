@@ -635,13 +635,13 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                     "url": f"https://mcp.opencaselaw.ch/entscheid/{row['decision_id']}",
                 }
 
-            # ── Most active court (last 30 days by fetched_at) ──
+            # ── Most active court (last 30 days by decision_date) ──
             cutoff = (datetime.now(timezone.utc).date() - timedelta(days=30)).isoformat()
             row = d.execute(
                 """
                 SELECT court, COUNT(*) AS n
                 FROM decisions
-                WHERE substr(scraped_at, 1, 10) >= ?
+                WHERE decision_date >= ?
                 GROUP BY court
                 ORDER BY n DESC
                 LIMIT 1
@@ -656,12 +656,17 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                 }
 
             # ── Daily intake (last 90 days, avg) ──
+            # Uses decision_date (when the court rendered the decision),
+            # NOT scraped_at (when we ingested it) — the latter spikes
+            # massively when a backfill lands and would mislead. This
+            # gives the honest "decisions courts actually rendered per
+            # day on average" number.
             cutoff90 = (datetime.now(timezone.utc).date() - timedelta(days=90)).isoformat()
             row = d.execute(
                 """
                 SELECT COUNT(*) AS n
                 FROM decisions
-                WHERE substr(scraped_at, 1, 10) >= ?
+                WHERE decision_date >= ?
                 """,
                 (cutoff90,),
             ).fetchone()
@@ -670,6 +675,9 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                     "avg_per_day": float(row["n"]) / 90.0,
                     "window_days": 90,
                 }
+
+            # ── Most active court — also use decision_date so backfill
+            # spikes don't dominate. Last 30 days of court output. ──
 
             # ── Newest source (most recent court_code first appearance) ──
             row = d.execute(
