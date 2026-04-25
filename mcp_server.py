@@ -5,6 +5,22 @@ Swiss Case Law MCP Server
 Local MCP server for searching Swiss court decisions.
 Runs over stdio, searches a local SQLite FTS5 database.
 
+DESIGN NOTE — modularization (deferred):
+    This file is a deliberately monolithic ~13k-line module that hosts the
+    JSON-RPC handlers, all 24 tool implementations, the FTS5 / reference-graph
+    / structure / commentary / Materialien / LexFind backends, the OpenAPI
+    REST mirror (FastAPI), and the SSE / Streamable-HTTP MCP transport.
+    A future PR should split this into:
+        mcp_tools/        one module per tool (search, get, citation, …)
+        mcp_backends/     SQLite, reference graph, LexFind, commentaries, …
+        mcp_transport/    stdio, SSE, Streamable-HTTP, REST mirror
+        mcp_server.py     thin assembly that wires the above into a Server()
+    Out of scope for this PR (which is a tool-surface + security cleanup).
+    Contracts to preserve at split time: tool name + inputSchema (consumed
+    by remote clients), JSON-RPC stdio framing, REST URL paths,
+    web_api/providers/base.py::MCP_TOOLS subset, decision_id resolution
+    helpers used by web_api/mcp_bridge.py.
+
 Architecture:
     HuggingFace (voilaj/swiss-caselaw)
         ↓ download Parquet files

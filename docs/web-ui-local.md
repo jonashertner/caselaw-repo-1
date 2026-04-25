@@ -3,6 +3,30 @@
 Local-only web interface for searching Swiss court decisions using AI chat.
 Connects to the existing MCP server (local SQLite FTS5 database) via stdio subprocess.
 
+## Tool surface
+
+The local web chat exposes **20 read-only MCP tools** to the configured
+LLM provider (OpenAI / Anthropic / Google). The list lives in
+`web_api/providers/base.py::MCP_TOOLS` and is regression-tested in
+`tests/web/test_mcp_tools_surface.py`. Coverage:
+
+| Domain | Tools |
+|---|---|
+| Search & retrieval | `search_decisions`, `get_decision`, `list_courts`, `get_statistics`, `get_case_brief`, `draft_mock_decision` |
+| Citation graph & jurisprudence | `find_citations`, `find_appeal_chain`, `find_leading_cases`, `analyze_legal_trend`, `get_doctrine`, `generate_exam_question` |
+| Statutes (Fedlex + LexFind mirrors) | `get_law`, `search_laws`, `search_legislation`, `get_legislation` |
+| Scholarly commentary (OnlineKommentar.ch) | `get_commentary`, `search_commentaries` |
+| Materialien (legislative history) | `get_materialien`, `search_materialien` |
+
+The remote MCP server (`mcp.opencaselaw.ch`) exposes additional tools
+that involve LLM-as-judge calls (`check_claim_support`, `attest_response`,
+`cite`), structured-text retrieval that is federal-only (`get_decision_structure`,
+`get_erwaegung`, `get_regeste`), browse-style helpers (`browse_legislation_changes`),
+and local-only ops (`update_database`, `check_update_status`). Those are
+deliberately omitted from the local web chat surface either because they
+require the remote LLM-judge path or because they are operational tools,
+not research tools.
+
 ## Architecture
 
 ```

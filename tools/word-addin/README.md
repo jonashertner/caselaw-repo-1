@@ -19,18 +19,28 @@ Search 963,000+ Swiss court decisions and insert citations directly in Microsoft
 
 ## Features
 
-**Free (Tier A):**
+**Free:**
 - Search court decisions across all Swiss courts
 - Insert formatted citations at cursor: `(BGE 125 III 231, E. 3)`
 - Language-aware formatting (DE/FR/IT/EN)
 - Look up federal statute articles
 - View decision details with individual Erwägungen
 
-**With API Key (Tier B):**
+**Pro (license-based, server-side):**
 - Select a paragraph → click "Referenz prüfen"
-- AI verifies if the cited decision supports the claim
-- Color-coded verdict (green/yellow/red) with relevant Erwägung
-- Inserts Word comment with the verification result
+- AI verifies whether the cited decision supports the claim
+- Color-coded verdict (green/yellow/red) with the most relevant Erwägung
+- Inserts a Word comment with the verification result
+
+The Pro verification path is **fully server-side**: the add-in posts the
+selected text to `POST /api/billing/verify` together with the user's
+license key, and the OpenCaseLaw backend performs the LLM call. Users
+never need to provide their own LLM API key in the browser.
+
+The earlier "Tier B" flow that called `https://api.anthropic.com/v1/messages`
+directly from the add-in with a user-supplied Anthropic key was removed
+on 2026-04-25 (see `tests/web/test_word_addin_no_browser_anthropic.py`
+for the regression guard).
 
 ## Citation Formats
 

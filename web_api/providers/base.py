@@ -115,6 +115,261 @@ MCP_TOOLS = [
             "required": ["facts"],
         },
     },
+    # ── Citation graph & jurisprudence ─────────────────────────────────
+    {
+        "name": "find_citations",
+        "description": (
+            "Given a decision_id, show what it cites and what cites it. "
+            "Uses the reference graph (8.77M citation edges)."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "decision_id": {"type": "string", "description": "Decision ID (e.g. bger_6B_1_2025)"},
+                "direction": {"type": "string", "enum": ["both", "outgoing", "incoming"], "default": "both"},
+                "min_confidence": {"type": "number", "description": "Resolved-citation confidence floor (0-1)", "default": 0.3},
+                "limit": {"type": "integer", "description": "Max per direction (max 200)", "default": 50},
+            },
+            "required": ["decision_id"],
+        },
+    },
+    {
+        "name": "find_appeal_chain",
+        "description": (
+            "Trace the appeal chain (Instanzenzug) for a decision: prior instances "
+            "and subsequent appeals up to the Federal Supreme Court."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "decision_id": {"type": "string", "description": "Decision ID"},
+                "min_confidence": {"type": "number", "default": 0.3},
+            },
+            "required": ["decision_id"],
+        },
+    },
+    {
+        "name": "find_leading_cases",
+        "description": (
+            "Find the most-cited decisions for a topic or statute. "
+            "Authority ranking from the citation graph."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Optional topic query"},
+                "law_code": {"type": "string", "description": "Optional law code (BV, OR, ZGB, EMRK, StGB)"},
+                "article": {"type": "string", "description": "Optional article (requires law_code)"},
+                "court": {"type": "string", "description": "Optional court filter"},
+                "date_from": {"type": "string", "description": "YYYY-MM-DD"},
+                "date_to": {"type": "string", "description": "YYYY-MM-DD"},
+                "limit": {"type": "integer", "default": 20},
+            },
+        },
+    },
+    {
+        "name": "analyze_legal_trend",
+        "description": (
+            "Year-by-year decision counts for a statute or query. "
+            "Shows how jurisprudence on a topic has evolved over time."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Optional FTS query"},
+                "law_code": {"type": "string", "description": "Optional law code"},
+                "article": {"type": "string", "description": "Article (requires law_code)"},
+                "court": {"type": "string", "description": "Optional court filter"},
+                "date_from": {"type": "string", "description": "YYYY-MM-DD"},
+                "date_to": {"type": "string", "description": "YYYY-MM-DD"},
+            },
+        },
+    },
+    {
+        "name": "get_case_brief",
+        "description": (
+            "Structured case brief for a Swiss court decision: regeste, Sachverhalt, "
+            "key Erwägungen, Dispositiv, applicable statutes, citation authority."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "case": {"type": "string", "description": "BGE ref, decision_id, or docket number"},
+            },
+            "required": ["case"],
+        },
+    },
+    {
+        "name": "get_doctrine",
+        "description": (
+            "Statute text + leading cases + doctrinal timeline + Botschaft + scholarly "
+            "commentary for a Swiss law article or legal concept."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Statute ref ('Art. 41 OR') or legal concept"},
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "generate_exam_question",
+        "description": (
+            "Generate a Swiss law exam question (Fallbearbeitung) from a real BGE. "
+            "Returns fact pattern + hidden analysis."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "topic": {"type": "string", "description": "Legal area, statute, or concept"},
+                "exclude_ids": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "decision_ids already used in this session",
+                },
+            },
+            "required": ["topic"],
+        },
+    },
+    # ── Statute lookup (federal Fedlex + cantonal LexFind mirrors) ─────
+    {
+        "name": "get_law",
+        "description": (
+            "Authoritative lookup for the current text of any Swiss law article "
+            "(federal or cantonal). Local Fedlex + LexFind mirrors."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "sr_number": {"type": "string", "description": "SR number (e.g. 220 = OR)"},
+                "abbreviation": {"type": "string", "description": "Federal law abbreviation (BV, OR, ZGB, …)"},
+                "article": {"type": "string", "description": "Article number; omit for full article list"},
+                "language": {"type": "string", "enum": ["de", "fr", "it"], "default": "de"},
+                "canton": {"type": "string", "description": "Two-letter canton code or 'CH' for federal", "default": "CH"},
+                "as_of": {"type": "string", "description": "Optional historical version date (YYYY-MM-DD)"},
+            },
+        },
+    },
+    {
+        "name": "search_laws",
+        "description": (
+            "Unified full-text search across every Swiss statute article — federal "
+            "(Fedlex) and cantonal (LexFind, all 26 cantons). BM25 ranked, merged."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "FTS5 query"},
+                "sr_number": {"type": "string", "description": "Restrict to one federal SR number"},
+                "canton": {"type": "string", "description": "Two-letter canton code or 'CH'"},
+                "jurisdiction": {"type": "string", "enum": ["all", "federal", "cantonal"], "default": "all"},
+                "language": {"type": "string", "enum": ["de", "fr", "it"], "default": "de"},
+                "limit": {"type": "integer", "default": 10},
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "search_legislation",
+        "description": (
+            "Natural-language search across 33,000+ Swiss legislative texts via LexFind "
+            "(federal + all 26 cantons). Set fetch_top_n_texts=1..3 for single-call answers."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Natural language or keywords"},
+                "canton": {"type": "string", "description": "Two-letter canton code or 'CH'"},
+                "active_only": {"type": "boolean", "default": True},
+                "search_in_content": {"type": "boolean", "default": False},
+                "language": {"type": "string", "enum": ["de", "fr", "it"], "default": "de"},
+                "limit": {"type": "integer", "default": 20},
+                "fetch_top_n_texts": {"type": "integer", "description": "Inline parsed full-text for top N (max 10)", "default": 0},
+            },
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "get_legislation",
+        "description": (
+            "Retrieve the full text + article list of a specific Swiss law by LexFind ID "
+            "or SR/systematic number."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "lexfind_id": {"type": "integer", "description": "LexFind ID (from search_legislation)"},
+                "systematic_number": {"type": "string", "description": "SR / systematic number"},
+                "canton": {"type": "string", "default": "CH"},
+                "include_versions": {"type": "boolean", "default": False},
+                "language": {"type": "string", "enum": ["de", "fr", "it"], "default": "de"},
+            },
+        },
+    },
+    # ── Scholarly commentary (OnlineKommentar.ch) ─────────────────────
+    {
+        "name": "get_commentary",
+        "description": (
+            "Look up a scholarly legal commentary (OnlineKommentar.ch, CC-BY-4.0) "
+            "for a Swiss federal law article. Without article: lists available articles."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "abbreviation": {"type": "string", "description": "Law abbreviation (OR, BV, ZGB, …)"},
+                "sr_number": {"type": "string", "description": "SR number alternative to abbreviation"},
+                "article": {"type": "string", "description": "Article number; omit to list available"},
+                "language": {"type": "string", "default": "de"},
+            },
+        },
+    },
+    {
+        "name": "search_commentaries",
+        "description": "Full-text search across all OnlineKommentar.ch legal commentaries.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "FTS5 query"},
+                "abbreviation": {"type": "string", "description": "Filter by law abbreviation"},
+                "language": {"type": "string"},
+                "limit": {"type": "integer", "default": 10},
+            },
+            "required": ["query"],
+        },
+    },
+    # ── Materialien (legislative history / Botschaft) ─────────────────
+    {
+        "name": "get_materialien",
+        "description": (
+            "Look up preparatory materials (Botschaft, parliamentary debate) for a "
+            "Swiss federal law article. Currently covers BGFA; BV/OR/StGB/ZGB rolling out."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "law_code": {"type": "string", "description": "Law abbreviation (BV, BGFA, OR, StGB)"},
+                "article": {"type": "string", "description": "Article number; omit for all"},
+            },
+            "required": ["law_code"],
+        },
+    },
+    {
+        "name": "search_materialien",
+        "description": (
+            "Full-text search across all preparatory materials for Swiss federal laws "
+            "(legislative intent, key arguments, design choices)."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Natural-language or FTS5 query"},
+                "law_code": {"type": "string", "description": "Filter by law abbreviation"},
+                "limit": {"type": "integer", "default": 10},
+            },
+            "required": ["query"],
+        },
+    },
 ]
 
 SYSTEM_PROMPT = (
