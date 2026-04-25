@@ -2058,12 +2058,20 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 }
 .hero-v3-stamp .sep { color: var(--brd); margin: 0 6px; }
 .hero-v3-stamp time { color: var(--tx2); }
-.hero-v3-availability {
-  font-size: clamp(14px, 1.4vw, 16px);
+.hero-v3-function {
+  font-size: clamp(14px, 1.5vw, 17px);
   color: var(--tx2);
+  margin: 0 auto var(--s-3);
+  line-height: 1.6;
+  max-width: 660px;
+  letter-spacing: 0.005em;
+}
+.hero-v3-availability {
+  font-size: clamp(13px, 1.3vw, 15px);
+  color: var(--tx3);
   margin: 0 auto var(--s-7);
   line-height: 1.55;
-  max-width: 600px;
+  max-width: 620px;
 }
 .hero-v3-ctas {
   display: flex;
@@ -2310,7 +2318,8 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
         <strong>+<span id="hero-stamp-delta">0</span></strong>
         <span data-t="hero_v3_since">since yesterday</span>
       </p>
-      <p class="hero-v3-availability" data-t="hero_v3_availability">Searchable in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.</p>
+      <p class="hero-v3-function" data-t="hero_v3_function">Search decisions and statutes · trace citations and appeal chains · retrieve Regeste, Erwägungen, commentaries and Materialien.</p>
+      <p class="hero-v3-availability" data-t="hero_v3_availability">Available in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.</p>
       <div class="hero-v3-ctas">
         <a href="#connect" class="btn btn-primary btn-lg">
           <span data-t="hero_cta_connect_v3">Connect ↓</span>
@@ -2964,7 +2973,8 @@ const I18N = {
     hero_v3_label: 'publizierte Schweizer Gerichtsentscheide',
     hero_v3_asof: 'Stand',
     hero_v3_since: 'seit gestern',
-    hero_v3_availability: 'Durchsuchbar in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — oder über REST-API.',
+    hero_v3_function: 'Entscheide und Erlasse durchsuchen · Zitationen und Instanzenzug verfolgen · Regeste, Erwägungen, Kommentare und Materialien abrufen.',
+    hero_v3_availability: 'Verfügbar in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — oder über REST-API.',
     hero_cta_connect_v3: 'Verbinden ↓',
     hero_cta_browse_v3: 'Durchsuchen',
     hero_v3_stamp_decisions: 'Entscheide',
@@ -3167,7 +3177,8 @@ const I18N = {
     hero_v3_label: 'décisions judiciaires suisses publiées',
     hero_v3_asof: 'Au',
     hero_v3_since: 'depuis hier',
-    hero_v3_availability: 'Interrogeable dans Claude, ChatGPT, Cursor, Gemini, Copilot Studio — ou via API REST.',
+    hero_v3_function: 'Rechercher décisions et lois · suivre citations et voies de recours · consulter Regeste, considérants, doctrine et travaux préparatoires.',
+    hero_v3_availability: 'Disponible dans Claude, ChatGPT, Cursor, Gemini, Copilot Studio — ou via API REST.',
     hero_cta_connect_v3: 'Connecter ↓',
     hero_cta_browse_v3: 'Parcourir',
     hero_v3_stamp_decisions: 'décisions',
@@ -3370,7 +3381,8 @@ const I18N = {
     hero_v3_label: 'decisioni giudiziarie svizzere pubblicate',
     hero_v3_asof: 'Al',
     hero_v3_since: 'da ieri',
-    hero_v3_availability: 'Interrogabile in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — o tramite API REST.',
+    hero_v3_function: 'Cercare decisioni e leggi · seguire citazioni e gradi di giudizio · consultare Regeste, considerandi, dottrina e materiali preparatori.',
+    hero_v3_availability: 'Disponibile in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — o tramite API REST.',
     hero_cta_connect_v3: 'Collega ↓',
     hero_cta_browse_v3: 'Sfoglia',
     hero_v3_stamp_decisions: 'decisioni',
@@ -3573,7 +3585,8 @@ const I18N = {
     hero_v3_label: 'decisiuns giudicialas svizras publitgadas',
     hero_v3_asof: 'Al',
     hero_v3_since: 'dapi ier',
-    hero_v3_availability: 'Interrogabel en Claude, ChatGPT, Cursor, Gemini, Copilot Studio — u via API REST.',
+    hero_v3_function: 'Tschertgar decisiuns e leschas · sequir citaziuns e vias da recurs · consultar Regeste, considerands, cumentaris e materials preparatorics.',
+    hero_v3_availability: 'Disponibel en Claude, ChatGPT, Cursor, Gemini, Copilot Studio — u via API REST.',
     hero_cta_connect_v3: 'Connectar ↓',
     hero_cta_browse_v3: 'Sfegliar',
     hero_v3_stamp_decisions: 'decisiuns',
@@ -3776,7 +3789,8 @@ const I18N = {
     hero_v3_label: 'published Swiss court decisions',
     hero_v3_asof: 'As of',
     hero_v3_since: 'since yesterday',
-    hero_v3_availability: 'Searchable in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.',
+    hero_v3_function: 'Search decisions and statutes · trace citations and appeal chains · retrieve Regeste, Erwägungen, commentaries and Materialien.',
+    hero_v3_availability: 'Available in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.',
     hero_cta_connect_v3: 'Connect ↓',
     hero_cta_browse_v3: 'Browse',
     hero_v3_stamp_decisions: 'decisions',
