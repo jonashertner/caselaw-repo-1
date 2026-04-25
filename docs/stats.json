@@ -2248,7 +2248,7 @@
     "2026-03": 2073,
     "2026-04": 372
   },
-  "generated_at": "2026-04-25T21:56:39.791628+00:00",
+  "generated_at": "2026-04-25T22:09:23.765183+00:00",
   "scraper_health": {
     "run_at": "2026-04-25T03:02:14.630639+00:00",
     "run_duration_s": 7334.1,
@@ -3328,12 +3328,12 @@
       "url": "https://mcp.opencaselaw.ch/entscheid/ge_gerichte_AARP_102_2026"
     },
     "active_court": {
-      "court_label": "mkg",
-      "count": 1244,
+      "court_label": "bvger",
+      "count": 192,
       "window_days": 30
     },
     "daily_intake": {
-      "avg_per_day": 10759.7,
+      "avg_per_day": 65.04444444444445,
       "window_days": 90
     },
     "newest_source": {
