@@ -582,9 +582,10 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
             g.row_factory = sqlite3.Row
             top = g.execute(
                 """
-                SELECT target_id AS decision_id, COUNT(*) AS n
+                SELECT target_decision_id AS decision_id, COUNT(*) AS n
                 FROM citation_targets
-                GROUP BY target_id
+                WHERE target_decision_id IS NOT NULL
+                GROUP BY target_decision_id
                 ORDER BY n DESC
                 LIMIT 1
                 """
@@ -640,7 +641,7 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                 """
                 SELECT court, COUNT(*) AS n
                 FROM decisions
-                WHERE substr(fetched_at, 1, 10) >= ?
+                WHERE substr(scraped_at, 1, 10) >= ?
                 GROUP BY court
                 ORDER BY n DESC
                 LIMIT 1
@@ -660,7 +661,7 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                 """
                 SELECT COUNT(*) AS n
                 FROM decisions
-                WHERE substr(fetched_at, 1, 10) >= ?
+                WHERE substr(scraped_at, 1, 10) >= ?
                 """,
                 (cutoff90,),
             ).fetchone()
@@ -673,7 +674,7 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
             # ── Newest source (most recent court_code first appearance) ──
             row = d.execute(
                 """
-                SELECT court, MIN(fetched_at) AS first_seen, COUNT(*) AS n
+                SELECT court, MIN(scraped_at) AS first_seen, COUNT(*) AS n
                 FROM decisions
                 GROUP BY court
                 ORDER BY first_seen DESC
@@ -690,25 +691,27 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
         except sqlite3.Error:
             pass
 
-    # ── Deepest recent appeal chain (best-effort, optional) ──
-    # The reference_graph.db has an `is_prior_instance` flag on edges
-    # that we can chain; for a static "deepest chain we saw recently" we
-    # walk from a recent BGer decision backwards. This is heuristic — we
-    # leave the field absent if it can't be computed quickly.
+    # ── Deepest recent appeal chain ──
+    # The reference_graph.db schema does not carry an explicit
+    # `is_prior_instance` flag on every build, so we approximate by
+    # finding a 3-step backward chain via citation_targets where the
+    # match_type indicates a prior-instance relationship. If the schema
+    # doesn't support this, the cell hides — best-effort, optional.
     try:
-        if graph_db.exists() and decisions_db.exists():
+        if graph_db.exists():
             g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=5)
             g.row_factory = sqlite3.Row
-            # Look for the longest 3-step chain anchored at a recent BGer
-            # decision (kept small to stay under 5s timeout).
             row = g.execute(
                 """
-                SELECT t1.source_id AS bger, t1.target_id AS l2, t2.target_id AS l1
+                SELECT t1.source_decision_id AS bger,
+                       t1.target_decision_id AS l2,
+                       t2.target_decision_id AS l1
                 FROM citation_targets t1
-                JOIN citation_targets t2 ON t1.target_id = t2.source_id
-                WHERE t1.source_id LIKE 'bger_%'
-                  AND t1.is_prior_instance = 1
-                  AND t2.is_prior_instance = 1
+                JOIN citation_targets t2
+                  ON t1.target_decision_id = t2.source_decision_id
+                WHERE t1.source_decision_id LIKE 'bger_%'
+                  AND t1.match_type = 'prior_instance'
+                  AND t2.match_type = 'prior_instance'
                 LIMIT 1
                 """
             ).fetchone()
@@ -719,8 +722,6 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                     "depth": 3,
                 }
     except (sqlite3.Error, sqlite3.OperationalError):
-        # The is_prior_instance column may not exist on every build —
-        # the field is optional, the renderer hides the cell on absence.
         pass
 
     return out
