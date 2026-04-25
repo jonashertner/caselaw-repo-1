@@ -32,7 +32,7 @@ configs:
 
 # Swiss Case Law Dataset
 
-**965,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
+**968,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
 
 Full text, structured metadata, extracted case-citation references, and daily updates. The dataset contains German, French, and Italian decisions; the export schema also reserves `rm` for Romansh.
 
@@ -44,10 +44,11 @@ Full text, structured metadata, extracted case-citation references, and daily up
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions: 965,000+ decisions from 100+ federal, cantonal, and regulatory courts, scraped from official publication channels. New decisions are added every night.
+The largest open collection of Swiss court decisions: 968,000+ decisions from 108 federal, cantonal, regulatory, and international courts, scraped from official publication channels. New decisions are added every night.
 
-- **20+ federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, ECHR (Swiss cases), VPB, Sports Tribunal, and more
+- **20+ federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, MKG (Militärkassationsgericht), VPB, Sports Tribunal, and more
 - **80+ cantonal courts** across all 26 cantons
+- **ECHR/EGMR**: 834 Swiss-respondent judgments + general ECtHR Grand Chamber / Chamber / Committee judgments (currently 236 live, full-corpus backfill in progress)
 - **Current decision languages**: German (~450K; 47%), French (~436K; 45%), Italian (~80K; 8%); the export schema also reserves `rm`
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
 - **8.85 million extracted case-citation references**
@@ -114,7 +115,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 965,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 23 tools; remote mode omits 2 local-only update tools.
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 968,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 24 tools (22 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), and full decision-structure decomposition (`get_decision_structure`).
 
 **Remote (no download needed):**
 
@@ -151,8 +152,8 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 
 | Metric | Value |
 |--------|-------|
-| Total decisions | 965,000+ |
-| Courts | 100+ |
+| Total decisions | 968,373 (live count, updated daily) |
+| Courts | 108 |
 | Temporal range | 1875–present |
 | Average decision length | ~22,000 characters |
 | Full text coverage | 100% |
@@ -164,7 +165,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | Laws with Botschaft refs | 2,500 (33,000 articles) |
 | Legislation texts searchable | 33,000+ |
 | Scholarly commentaries | 362 (OnlineKommentar.ch) |
-| MCP tools | 23 |
+| MCP tools | 24 (22 remote / 24 local) |
 
 **Language distribution:**
 
@@ -253,7 +254,12 @@ Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jo
 | Federal Criminal Court (BStGer) | `bstger` | ~11,400 | 2004–present |
 | EDÖB (Data Protection) | `edoeb` | ~1,800 | 1994–present |
 | FINMA | `finma` | ~405 | 2008–present |
-| ECHR (Swiss cases) | `bge_egmr` | ~475 | 1974–present |
+| ECHR (Swiss cases, BGer-published) | `bge_egmr` | ~475 | 1974–present |
+| ECHR Switzerland (HUDOC) | `hudoc_ch` | 834 | 1959–present |
+| ECtHR Chamber judgments | `ecthr_chamber` | 193 (growing) | 1959–present |
+| ECtHR Committee judgments | `ecthr_committee` | 30 (growing) | |
+| ECtHR Grand Chamber | `ecthr_grand_chamber` | 13 (growing) | |
+| Militärkassationsgericht (MKG) | `mkg` | 1,244 | 1915–2025 |
 | Federal Patent Court (BPatGer) | `bpatger` | ~189 | 2012–present |
 | Competition Commission (WEKO) | `weko` | ~256 | 2009–present |
 | Sports Tribunal | `ta_sst` | ~49 | 2024–present |
@@ -304,15 +310,15 @@ See the governance policy for source withdrawals, re-anonymization, and verified
 
 ```bibtex
 @dataset{swiss_caselaw_2026,
-  title={Swiss Case Law Dataset: 965,000+ Court Decisions with Reference Graph},
+  title={Swiss Case Law Dataset: 968,000+ Court Decisions with Reference Graph and ECtHR Coverage},
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={965,000+ Swiss federal, cantonal, and regulatory decisions with full text,
+  note={968,000+ Swiss federal, cantonal, and regulatory decisions with full text,
         structured metadata, 8.85M citation edges, 11.34M statute links,
         5,500+ federal laws, 26,043 cantonal legislative texts,
         and legislative history for 2,500 laws.
-        Searchable via 23 MCP tools (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
+        Searchable via 24 MCP tools (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
 }
 ```
 
