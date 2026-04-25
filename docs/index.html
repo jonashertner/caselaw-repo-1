@@ -1218,16 +1218,24 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
    Thin uppercase mono label with a hairline underneath. The same
    pattern as the corpus-snapshot header, so every band on the page
    reads with the same typographic voice. */
+/* World-class typesetting (2026-04-26): one section-heading style for
+   every section — light weight, generous size, no uppercase, no
+   mono-kicker, no underline. The hero number's restraint applies at
+   smaller scale to every section title, so the page reads as one
+   publication rather than alternating editorial registers. */
 .section-heading {
-  font-family: var(--f-mono);
-  font-size: var(--fs-2xs);
-  font-weight: 600;
-  letter-spacing: var(--ls-kicker);
-  text-transform: uppercase;
-  color: var(--tx3);
-  margin: 0 0 var(--s-6);
-  padding-bottom: var(--s-3);
-  border-bottom: 1px solid var(--brd2);
+  font-family: var(--f-sans);
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 100;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--tx);
+  margin: 0 0 32px;
+  padding-bottom: 0;
+  border-bottom: 0;
+  text-align: center;
+  text-transform: none;
+  text-wrap: balance;
 }
 
 /* (Capability-cards CSS removed — markup was deleted in earlier refit.)
@@ -1768,42 +1776,48 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   font-size: clamp(72px, 14vw, 176px);
   line-height: 0.9;
   font-weight: 100;
-  letter-spacing: -0.05em;
+  /* Tighter than ideal feels brittle on Plex Sans 100 (already snug).
+     -0.035em is the sweet spot — disciplined silhouette, no glyph collision. */
+  letter-spacing: -0.035em;
   color: var(--tx);
   font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1, "ss01" 1;
 }
 .hero-v3-label {
   font-size: 14px;
-  font-weight: 300;
-  color: var(--tx3);
-  line-height: 1;
+  font-weight: 400;
+  color: var(--tx2);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
 }
 
 .hero-v3-function {
-  font-size: clamp(16px, 1.7vw, 19px);
-  font-weight: 300;
+  font-size: clamp(16px, 1.6vw, 18px);
+  font-weight: 400;
   line-height: 1.55;
   color: var(--tx);
-  margin: 0 auto 12px;
-  max-width: 540px;
+  margin: 0 auto 16px;
+  max-width: 560px;
   text-wrap: balance;
+  hyphens: auto;
 }
 .hero-v3-availability {
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.55;
   color: var(--tx3);
   margin: 0 auto 56px;
-  max-width: 520px;
+  max-width: 540px;
   text-wrap: balance;
+  hyphens: auto;
 }
 
 .hero-v3-ctas {
   display: flex;
-  gap: 36px;
+  gap: 32px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 56px;
+  margin-bottom: 48px;
 }
 .hero-v3-link {
   display: inline-flex;
@@ -1819,7 +1833,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 }
 .hero-v3-link:hover { color: var(--tx2); border-color: var(--tx2); text-decoration: none; }
 .hero-v3-arrow {
-  font-weight: 300;
+  font-weight: 400;
   color: var(--tx2);
   transition: transform 0.18s var(--ease);
 }
@@ -1829,10 +1843,11 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 
 .hero-v3-stamp {
   font-size: 12px;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--tx3);
   margin: 0;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.005em;
 }
 .hero-v3-stamp .sep { color: var(--brd2); margin: 0 8px; }
 .hero-v3-stamp time { color: var(--tx2); }
@@ -1882,17 +1897,11 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 
 /* International section ───────────────────────────────────────────────── */
 #international { padding: clamp(48px, 6vw, 72px) 16px; max-width: 880px; margin: 0 auto; }
-#international .section-heading {
-  font-weight: 100;
-  font-size: clamp(28px, 3.4vw, 44px);
-  letter-spacing: -0.025em;
-  margin: 0 0 24px;
-  text-align: center;
-  color: var(--tx);
-}
+/* (#international .section-heading override removed — uses unified
+   .section-heading rule above.) */
 .intl-lead {
   font-size: 16px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.6;
   color: var(--tx2);
   margin: 0 auto 40px;
@@ -1909,7 +1918,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 .intl-contact {
   text-align: center;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   margin: 0;
 }
 .intl-contact a {
@@ -1925,30 +1934,40 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   .intl-lead { font-size: 15px; }
 }
 
-/* Did you know section ───────────────────────────────────────────────── */
-#didyou { padding: clamp(48px, 6vw, 72px) 16px; max-width: 1080px; margin: 0 auto; border-top: 1px solid var(--brd); }
-#didyou .section-heading {
-  font-weight: 100;
-  font-size: clamp(28px, 3.4vw, 44px);
-  letter-spacing: -0.025em;
-  margin: 0 0 12px;
-  text-align: center;
-  color: var(--tx);
+/* Did you know section — number-forward editorial cards ───────────────── */
+#didyou {
+  padding: clamp(48px, 6vw, 72px) 16px;
+  max-width: 1080px;
+  margin: 0 auto;
+  border-top: 1px solid var(--brd);
 }
 .didyou-intro {
   text-align: center;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--tx3);
-  margin: 0 0 40px;
+  margin: 0 0 48px;
 }
 .didyou-grid {
   display: grid;
   /* auto-fit collapses gracefully when one of the six cards is hidden
-     (e.g. appeal_chain absent). Min 240 keeps lines readable, 1fr lets
-     the grid balance whatever cards survived. */
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+     (e.g. appeal_chain absent). 260 keeps the big number legible. */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+/* Each card is now a "data poster": large number/headline first, then
+   the small label and meta line. The H3 (label) inside the card markup
+   is hidden by default and surfaced via the .didyou-fact-label span the
+   renderer emits — keeps semantics intact while letting the data lead. */
+#didyou .card { padding: 28px 24px; }
+#didyou .card h3 {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tx3);
+  margin: 0 0 14px;
+  line-height: 1.3;
 }
 .didyou-fact {
   font-size: 15px;
@@ -1956,18 +1975,30 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   line-height: 1.55;
   color: var(--tx);
   margin: 0;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
 }
+.didyou-fact .didyou-headline {
+  display: block;
+  font-size: clamp(22px, 2.6vw, 32px);
+  font-weight: 200;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--tx);
+  margin-bottom: 10px;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.didyou-fact .didyou-headline strong { font-weight: 400; }
 .didyou-fact strong {
   font-weight: 500;
   color: var(--tx);
 }
 .didyou-fact .didyou-meta {
   display: block;
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: 13px;
   color: var(--tx2);
-  font-weight: 300;
+  font-weight: 400;
+  line-height: 1.5;
 }
 .didyou-fact a {
   color: var(--tx);
@@ -1992,17 +2023,11 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   padding: clamp(48px, 6vw, 72px) 16px clamp(48px, 6vw, 72px);
   margin-top: clamp(48px, 6vw, 72px);
 }
-.connect-block .section-heading {
-  font-weight: 100;
-  font-size: clamp(32px, 4vw, 56px);
-  letter-spacing: -0.03em;
-  margin: 0 0 16px;
-  text-align: center;
-}
+/* (.connect-block .section-heading override removed — uses unified rule.) */
 .connect-intro {
   color: var(--tx3);
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   margin: 0 0 48px;
   text-align: center;
 }
@@ -2035,7 +2060,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   color: var(--tx3);
   font-family: var(--f-sans);
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   margin-bottom: -1px;
   transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
 }
@@ -2157,7 +2182,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   color: var(--tx3);
   text-align: center;
   line-height: 1.7;
-  font-weight: 300;
+  font-weight: 400;
 }
 .connect-footer strong {
   font-weight: 400;
@@ -4849,57 +4874,70 @@ function renderDidYouKnow(data) {
     return;
   }
 
-  // Most-cited decision
+  // Each cell: large headline (number/key fact) first, then a smaller
+  // explanatory line below, optional meta. The headline carries the
+  // tabular-nums + light-weight display treatment (see .didyou-headline
+  // in CSS). Renderer is intentionally explicit per cell so each
+  // factoid can decide what its "headline" is.
+
+  // Most-cited decision — headline is the citation count.
   if (s.most_cited && s.most_cited.docket) {
     const m = s.most_cited;
-    const docket = prettyDocket(null, m.docket) || m.docket;
+    const docket = m.docket;
     const link = m.url ? `<a href="${m.url}">${docket}</a>` : `<strong>${docket}</strong>`;
     const title = m.title ? `<span class="didyou-meta">${m.title}</span>` : '';
     setCell('didyou-most-cited',
-      `${link} · <strong>${fmtN(m.citation_count)}</strong> ${t('didyou_unit_citations') || 'citations'}.${title}`);
+      `<span class="didyou-headline">${fmtN(m.citation_count)}×</span>` +
+      `${link} <span class="didyou-meta">${t('didyou_unit_citations') || 'citations across the corpus'}.</span>${title}`);
   } else { setCell('didyou-most-cited', ''); }
 
-  // Longest opinion this year
+  // Longest opinion this year — headline is the character count.
   if (s.longest_year && s.longest_year.docket) {
     const l = s.longest_year;
-    const docket = prettyDocket(null, l.docket) || l.docket;
+    const docket = l.docket;
     const link = l.url ? `<a href="${l.url}">${docket}</a>` : `<strong>${docket}</strong>`;
     const yr = l.year ? ` · ${l.year}` : '';
     const title = l.title ? `<span class="didyou-meta">${l.title}</span>` : '';
     setCell('didyou-longest',
-      `${link}${yr} · <strong>${fmtN(l.char_count)}</strong> ${t('didyou_unit_chars') || 'characters'}.${title}`);
+      `<span class="didyou-headline">${fmtN(l.char_count)}</span>` +
+      `${link}${yr} <span class="didyou-meta">${t('didyou_unit_chars') || 'characters'}.</span>${title}`);
   } else { setCell('didyou-longest', ''); }
 
-  // Most active court (last 30 days)
+  // Most active court — headline is the count, label is the court.
   if (s.active_court && s.active_court.court_label) {
     const a = s.active_court;
     const label = courtLabel(a.court_label) || a.court_label;
     setCell('didyou-active-court',
-      `<strong>${label}</strong> · ${fmtN(a.count)} ${t('didyou_unit_decisions') || 'decisions'}.`);
+      `<span class="didyou-headline">${fmtN(a.count)}</span>` +
+      `<strong>${label}</strong> <span class="didyou-meta">${t('didyou_unit_decisions') || 'decisions'}.</span>`);
   } else { setCell('didyou-active-court', ''); }
 
-  // Deepest recent appeal chain
+  // Deepest recent appeal chain — headline is the depth, body the chain.
   if (s.appeal_chain && Array.isArray(s.appeal_chain.chain) && s.appeal_chain.chain.length) {
     const c = s.appeal_chain;
     const labels = c.chain.map(courtLabel);
     setCell('didyou-appeal-chain',
-      `${labels.join(' → ')} <span class="didyou-meta">(${c.depth || c.chain.length} ${t('didyou_unit_instances') || 'instances'})</span>`);
+      `<span class="didyou-headline">${c.depth || c.chain.length} ${t('didyou_unit_instances') || 'instances'}</span>` +
+      `${labels.join(' → ')}.`);
   } else { setCell('didyou-appeal-chain', ''); }
 
-  // Daily intake (last 90 days)
+  // Daily intake — headline is the rate.
   if (s.daily_intake && typeof s.daily_intake.avg_per_day === 'number') {
     const d = s.daily_intake;
     setCell('didyou-daily-intake',
-      `<strong>${fmtN(Math.round(d.avg_per_day))}</strong> ${t('didyou_unit_per_day') || 'new decisions per day'} <span class="didyou-meta">${t('didyou_window_90d') || 'over the last 90 days.'}</span>`);
+      `<span class="didyou-headline">${fmtN(Math.round(d.avg_per_day))}</span>` +
+      `${t('didyou_unit_per_day') || 'new decisions per day'} <span class="didyou-meta">${t('didyou_window_90d') || 'over the last 90 days.'}</span>`);
   } else { setCell('didyou-daily-intake', ''); }
 
-  // Newest source (court added)
+  // Newest source — headline is the source name (no number lead — court
+  // names ARE the headline here).
   if (s.newest_source && s.newest_source.court_label) {
     const n = s.newest_source;
     const label = courtLabel(n.court_label) || n.court_label;
-    const meta = n.ingested_at ? `<span class="didyou-meta">${t('didyou_added') || 'Added'} ${n.ingested_at}.</span>` : '';
+    const meta = n.ingested_at ? ` <span class="didyou-meta">${t('didyou_added') || 'Added'} ${n.ingested_at}.</span>` : '';
+    const count = n.count ? ` ${fmtN(n.count)} ${t('didyou_unit_decisions') || 'decisions'}.` : '';
     setCell('didyou-newest',
-      `<strong>${label}</strong>${n.count ? ' · ' + fmtN(n.count) + ' ' + (t('didyou_unit_decisions') || 'decisions') : ''}.${meta}`);
+      `<span class="didyou-headline">${label}</span>${count}${meta}`);
   } else { setCell('didyou-newest', ''); }
 }
 
