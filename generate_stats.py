@@ -613,40 +613,54 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
             pass
 
     # ── 2. Most-cited statute article (intrinsic to corpus) ──────────────
+    # decision_statutes schema: (decision_id, statute_id, mention_count)
+    # statute_id is a denormalised string like "ART.89.ABS.1.BGG" or
+    # "ART.41.OR". Aggregate by statute_id (collapsing paragraph variants
+    # to the article level), then parse the winner's article + law code
+    # for display.
     if graph_db.exists():
         try:
+            import re as _re
             g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=10)
             g.row_factory = sqlite3.Row
-            # Inspect available tables — schemas vary across builds.
-            tables = {r[0] for r in g.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()}
-            row = None
-            if "decision_statutes" in tables:
-                # Prefer normalized columns if present.
-                cols = {r[1] for r in g.execute(
-                    "PRAGMA table_info(decision_statutes)"
-                ).fetchall()}
-                if {"law_code", "article"} <= cols:
-                    row = g.execute(
-                        """
-                        SELECT law_code, article, COUNT(*) AS n
-                        FROM decision_statutes
-                        WHERE law_code IS NOT NULL AND article IS NOT NULL
-                          AND TRIM(law_code) != '' AND TRIM(article) != ''
-                        GROUP BY law_code, article
-                        ORDER BY n DESC
-                        LIMIT 1
-                        """
-                    ).fetchone()
+            # Pull the top 50 raw statute_ids by total mention count, then
+            # collapse "ART.89.ABS.1.BGG" + "ART.89.ABS.2.BGG" + ... into a
+            # single "ART.89.BGG" tally. Top 50 is enough headroom for the
+            # collapse to find the true article-level winner.
+            top = g.execute(
+                """
+                SELECT statute_id, SUM(mention_count) AS n
+                FROM decision_statutes
+                WHERE statute_id IS NOT NULL AND TRIM(statute_id) != ''
+                GROUP BY statute_id
+                ORDER BY n DESC
+                LIMIT 50
+                """
+            ).fetchall()
             g.close()
-            if row and row["n"]:
+            # Collapse to (law_code, article). Pattern:
+            #   ART.<article>(.ABS.<n>)*.<LAW_CODE>
+            pat = _re.compile(
+                r"^ART\.([\dA-Za-z]+)(?:\.(?:ABS|LIT|CHIFF|ZIFF|N)\.[\dA-Za-z]+)*\.(.+)$"
+            )
+            tallies: dict[tuple[str, str], int] = {}
+            for r in top:
+                m = pat.match(r["statute_id"])
+                if not m:
+                    continue
+                article, law_code = m.group(1), m.group(2)
+                key = (law_code, article)
+                tallies[key] = tallies.get(key, 0) + int(r["n"])
+            if tallies:
+                (law_code, article), n = max(tallies.items(), key=lambda kv: kv[1])
                 out["most_cited_statute"] = {
-                    "law_code": row["law_code"],
-                    "article": row["article"],
-                    "ref_count": int(row["n"]),
+                    "law_code": law_code,
+                    "article": article,
+                    "ref_count": int(n),
                 }
         except sqlite3.Error:
+            pass
+        except Exception:
             pass
 
     # ── 3-6. Decisions DB facts (one connection, multiple queries) ───────
@@ -655,15 +669,21 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
             d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
             d.row_factory = sqlite3.Row
 
-            # 3. Oldest decision in the corpus
+            # 3. Oldest decision in the corpus.
+            # Filter out garbage dates (e.g. "0000-00-00" sentinels) by
+            # requiring a four-digit year between 1700 and the current year.
+            today_year = datetime.now(timezone.utc).year
             row = d.execute(
                 """
                 SELECT decision_id, docket_number, decision_date
                 FROM decisions
-                WHERE decision_date IS NOT NULL AND decision_date != ''
+                WHERE decision_date IS NOT NULL
+                  AND decision_date >= '1700-01-01'
+                  AND decision_date <= ?
                 ORDER BY decision_date ASC
                 LIMIT 1
-                """
+                """,
+                (f"{today_year}-12-31",),
             ).fetchone()
             if row and row["decision_date"]:
                 year = row["decision_date"][:4]
