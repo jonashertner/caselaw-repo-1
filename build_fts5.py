@@ -143,7 +143,16 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
     Falls back to exact (court, docket_number, decision_date) if canonical_key
     is not yet populated.
 
-    Keeps the version with the longest full_text (preferring non-empty regeste).
+    Strategy: keep the row with the most total content (full_text + regeste).
+    Before deleting losers, merge their regeste into the survivor if the
+    survivor's regeste is empty.
+
+    This avoids the prior bug (2026-04-25 audit) where the rule "non-empty
+    regeste wins" caused metadata-only federation stubs (~280 chars text +
+    short regeste) to win over rich direct PDF scrapes (~9,000 chars text,
+    no regeste). For Tribuna-based scrapers (gr/be/fr/zg/sz) the direct
+    scrape never extracts regeste from PDF, so the regeste-precedence rule
+    threw away ~9,300 GR full-PDF rows in favor of metadata stubs.
     Returns number of rows deleted.
     """
     # Check if canonical_key column exists and is populated
@@ -174,15 +183,24 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
         for (canonical_key, cnt) in groups:
             rows = conn.execute(
                 """
-                SELECT decision_id, LENGTH(COALESCE(full_text, '')), LENGTH(COALESCE(regeste, ''))
+                SELECT decision_id, COALESCE(regeste, ''), LENGTH(COALESCE(full_text, ''))
                 FROM decisions
                 WHERE canonical_key = ?
                 ORDER BY
-                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
-                    LENGTH(COALESCE(full_text, '')) DESC
+                    LENGTH(COALESCE(full_text, '')) + LENGTH(COALESCE(regeste, '')) DESC
                 """,
                 (canonical_key,),
             ).fetchall()
+            survivor_id, survivor_regeste, _ = rows[0]
+            # Backfill regeste from a loser if survivor has none.
+            if not survivor_regeste:
+                for _, loser_regeste, _ in rows[1:]:
+                    if loser_regeste:
+                        conn.execute(
+                            "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+                            (loser_regeste, survivor_id),
+                        )
+                        break
             for row in rows[1:]:
                 conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
                 deleted += 1
@@ -203,15 +221,23 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
         for court, docket, date, cnt in groups:
             rows = conn.execute(
                 """
-                SELECT decision_id, LENGTH(COALESCE(full_text, '')), LENGTH(COALESCE(regeste, ''))
+                SELECT decision_id, COALESCE(regeste, ''), LENGTH(COALESCE(full_text, ''))
                 FROM decisions
                 WHERE court = ? AND docket_number = ? AND decision_date IS ?
                 ORDER BY
-                    CASE WHEN LENGTH(COALESCE(regeste, '')) > 0 THEN 0 ELSE 1 END,
-                    LENGTH(COALESCE(full_text, '')) DESC
+                    LENGTH(COALESCE(full_text, '')) + LENGTH(COALESCE(regeste, '')) DESC
                 """,
                 (court, docket, date),
             ).fetchall()
+            survivor_id, survivor_regeste, _ = rows[0]
+            if not survivor_regeste:
+                for _, loser_regeste, _ in rows[1:]:
+                    if loser_regeste:
+                        conn.execute(
+                            "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+                            (loser_regeste, survivor_id),
+                        )
+                        break
             for row in rows[1:]:
                 conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
                 deleted += 1
