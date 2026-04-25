@@ -2016,86 +2016,74 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 .copy-btn:hover { color: var(--tx); border-color: var(--brd); }
 
 /* ===========================================================================
-   Hero v3 (2026-04-25) — verb-first, single primary CTA, compact stamp
+   Hero v3 (2026-04-25) — number-first, elegant, no sales talk
    =========================================================================== */
 .hero-v3 {
   text-align: center;
-  padding: var(--s-9) 0 var(--s-7);
-  position: relative;
+  padding: clamp(56px, 9vw, 120px) 0 clamp(40px, 6vw, 72px);
 }
-.hero-v3-content { max-width: 880px; margin: 0 auto; }
-.hero-v3-headline {
-  font-size: clamp(28px, 4.6vw, 56px);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  font-weight: 700;
+.hero-v3-content { max-width: 720px; margin: 0 auto; }
+.hero-v3-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: var(--s-3);
+}
+.hero-v3-num {
+  font-size: clamp(64px, 12vw, 144px);
+  line-height: 0.95;
+  font-weight: 200;
+  letter-spacing: -0.04em;
   color: var(--tx);
-  margin: 0 0 var(--s-4);
+  font-variant-numeric: tabular-nums;
 }
-.hero-v3-sub {
-  font-size: clamp(15px, 1.6vw, 19px);
-  line-height: 1.55;
+.hero-v3-label {
+  font-size: clamp(14px, 1.6vw, 17px);
+  color: var(--tx2);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+.hero-v3-stamp {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tx3);
+  margin: 0 0 var(--s-7);
+  letter-spacing: 0.01em;
+}
+.hero-v3-stamp strong {
+  color: var(--tx2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.hero-v3-stamp .sep { color: var(--brd); margin: 0 6px; }
+.hero-v3-stamp time { color: var(--tx2); }
+.hero-v3-availability {
+  font-size: clamp(14px, 1.4vw, 16px);
   color: var(--tx2);
   margin: 0 auto var(--s-7);
-  max-width: 720px;
+  line-height: 1.55;
+  max-width: 600px;
 }
 .hero-v3-ctas {
   display: flex;
   gap: var(--s-3);
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: var(--s-6);
 }
 .hero-v3-ctas .btn-lg {
-  padding: 14px 24px;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
-.hero-v3-stamp {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--tx3);
-  line-height: 1.9;
-  margin: 0 0 var(--s-3);
-  padding: 8px 14px;
-  border: 1px solid var(--brd);
-  border-radius: var(--r-md);
-  display: inline-block;
-  background: var(--surf2);
-}
-.hero-v3-stamp strong {
-  color: var(--tx);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.hero-v3-stamp .sep { color: var(--brd); margin: 0 4px; }
-.hero-v3-stamp time { color: var(--tx2); }
-.hero-v3-tertiary {
-  font-size: 13px;
-  color: var(--tx3);
-  margin: var(--s-3) 0 0;
-}
-.hero-v3-tertiary a { color: var(--tx2); }
-.hero-v3-tertiary a:hover { color: var(--tx); }
-.hero-v3-tertiary .beta {
-  font-size: 9px;
-  padding: 1px 5px;
-  background: var(--ac-bg);
-  color: var(--ac);
-  border-radius: 3px;
-  margin-left: 4px;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-}
-.hero-v3-tertiary .sep { color: var(--brd); margin: 0 8px; }
 @media (max-width: 640px) {
-  .hero-v3 { padding: var(--s-7) 0 var(--s-5); }
-  .hero-v3-headline { font-size: 28px; }
-  .hero-v3-sub { font-size: 15px; }
+  .hero-v3 { padding: clamp(40px, 8vw, 72px) 0 var(--s-5); }
+  .hero-v3-num { font-size: 64px; }
+  .hero-v3-label, .hero-v3-availability { font-size: 14px; }
   .hero-v3-ctas { flex-direction: column; align-items: stretch; }
   .hero-v3-ctas .btn-lg { width: 100%; justify-content: center; }
-  .hero-v3-stamp { font-size: 11px; padding: 6px 10px; line-height: 1.8; }
-  .hero-v3-stamp .sep { display: inline; }
+  .hero-v3-stamp { font-size: 11px; }
 }
 
 /* ===========================================================================
@@ -2311,39 +2299,30 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 <main id="main" class="w">
 <header class="hero-v3">
     <div class="hero-v3-content">
-      <h1 class="hero-v3-headline" data-t="hero_headline_v3">Swiss case-law and legislation, in your AI assistant.</h1>
-      <p class="hero-v3-sub" data-t="hero_sub_v3">Search 968,000+ Swiss court decisions, 5,500 federal laws and 33,000 cantonal acts directly in Claude, ChatGPT, Cursor or Gemini — in 30 seconds, free, no API keys.</p>
+      <div class="hero-v3-stat">
+        <span class="hero-v3-num" id="hero-decisions">968,373</span>
+        <span class="hero-v3-label" data-t="hero_v3_label">published Swiss court decisions</span>
+      </div>
+      <p class="hero-v3-stamp" aria-label="Dataset timestamp and daily delta">
+        <span data-t="hero_v3_asof">As of</span>
+        <time id="hero-stamp-date">—</time>
+        <span class="sep">·</span>
+        <strong>+<span id="hero-stamp-delta">0</span></strong>
+        <span data-t="hero_v3_since">since yesterday</span>
+      </p>
+      <p class="hero-v3-availability" data-t="hero_v3_availability">Searchable in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.</p>
       <div class="hero-v3-ctas">
         <a href="#connect" class="btn btn-primary btn-lg">
-          <span data-t="hero_cta_connect_v3">Connect in 30 seconds ↓</span>
+          <span data-t="hero_cta_connect_v3">Connect ↓</span>
         </a>
         <a href="/entscheide/" class="btn btn-secondary btn-lg">
-          <span data-t="hero_cta_browse_v3">Browse the corpus</span>
+          <span data-t="hero_cta_browse_v3">Browse</span>
         </a>
       </div>
-      <p class="hero-v3-stamp" aria-label="Dataset corpus stats">
-        <strong id="hero-decisions">968,373</strong> <span data-t="hero_v3_stamp_decisions">decisions</span>
-        <span class="sep">·</span>
-        <strong id="hero-courts">108</strong> <span data-t="hero_v3_stamp_courts">courts</span>
-        <span class="sep">·</span>
-        <strong>26</strong> <span data-t="hero_v3_stamp_cantons">cantons</span>
-        <span class="sep">·</span>
-        <strong><span id="hero-earliest">1875</span>–<span id="hero-latest">2026</span></strong>
-        <span class="sep">·</span>
-        <span data-t="hero_v3_stamp_asof">as of</span> <time id="hero-stamp-date">—</time>
-        <span class="sep">·</span>
-        <strong>+<span id="hero-stamp-delta">0</span></strong> <span data-t="hero_v3_stamp_since">since yesterday</span>
-        <span class="sep">·</span>
-        <span>CC0 · MIT</span>
-      </p>
-      <p class="hero-v3-tertiary">
-        <a href="https://word.opencaselaw.ch/install.html" data-t="hero_v3_word">Word Add-in for legal practitioners</a>
-        <span class="beta">BETA</span>
-        <span class="sep">·</span>
-        <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" data-t="hero_v3_hf">Bulk download (Hugging Face, ~7 GB)</a>
-      </p>
       <!-- Hidden compatibility IDs (legacy stats.json updater targets) -->
       <div aria-hidden="true" style="display:none">
+        <span id="hero-courts"></span>
+        <span id="hero-earliest"></span><span id="hero-latest"></span>
         <span id="hero-lang-de-num"></span><span id="hero-lang-de-bar"></span><span id="hero-lang-de-pct"></span>
         <span id="hero-lang-fr-num"></span><span id="hero-lang-fr-bar"></span><span id="hero-lang-fr-pct"></span>
         <span id="hero-lang-it-num"></span><span id="hero-lang-it-bar"></span><span id="hero-lang-it-pct"></span>
@@ -2455,9 +2434,9 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
     </div>
   </section>
 
-  <!-- ── Connect in 30 seconds — inline setup for every major AI client ── -->
+  <!-- ── Connect — inline setup for every major AI client ── -->
   <section class="connect-block section" id="connect" aria-labelledby="connect-heading">
-    <h2 class="section-heading" id="connect-heading" data-t="connect_heading">Connect in 30 seconds</h2>
+    <h2 class="section-heading" id="connect-heading" data-t="connect_heading">Connect</h2>
     <p class="connect-intro" data-t="connect_intro">Pick your AI client. Paste the URL. Done.</p>
 
     <div class="connect-tabs" role="tablist">
@@ -2982,10 +2961,12 @@ const I18N = {
     latest_view_all: 'Alle ansehen →',
     latest_empty: 'Keine Daten verfügbar',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
-    hero_headline_v3: 'Schweizer Rechtsprechung und Gesetzgebung — direkt in Ihrer KI.',
-    hero_sub_v3: 'Durchsuchen Sie 968\u2019000+ Schweizer Gerichtsentscheide, 5\u2019500 Bundesgesetze und 33\u2019000 kantonale Erlasse direkt in Claude, ChatGPT, Cursor oder Gemini — in 30 Sekunden, gratis, ohne API-Keys.',
-    hero_cta_connect_v3: 'In 30 Sekunden verbinden ↓',
-    hero_cta_browse_v3: 'Korpus durchsuchen',
+    hero_v3_label: 'publizierte Schweizer Gerichtsentscheide',
+    hero_v3_asof: 'Stand',
+    hero_v3_since: 'seit gestern',
+    hero_v3_availability: 'Durchsuchbar in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — oder über REST-API.',
+    hero_cta_connect_v3: 'Verbinden ↓',
+    hero_cta_browse_v3: 'Durchsuchen',
     hero_v3_stamp_decisions: 'Entscheide',
     hero_v3_stamp_courts: 'Gerichte',
     hero_v3_stamp_cantons: 'Kantone',
@@ -2993,8 +2974,8 @@ const I18N = {
     hero_v3_stamp_since: 'seit gestern',
     hero_v3_word: 'Word-Add-in für Anwält:innen',
     hero_v3_hf: 'Bulk-Download (Hugging Face, ~7 GB)',
-    connect_heading: 'In 30 Sekunden verbinden',
-    connect_intro: 'Wählen Sie Ihren KI-Client. URL kopieren. Fertig.',
+    connect_heading: 'Verbinden',
+    connect_intro: 'Wählen Sie Ihren Client. URL einfügen.',
     connect_tab_claude: 'Claude',
     connect_tab_chatgpt: 'ChatGPT',
     connect_tab_cursor: 'Cursor',
@@ -3183,10 +3164,12 @@ const I18N = {
     latest_view_all: 'Voir tout →',
     latest_empty: 'Aucune donnée',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
-    hero_headline_v3: 'La jurisprudence et la législation suisses, dans votre assistant IA.',
-    hero_sub_v3: 'Recherchez plus de 968\u2019000 décisions judiciaires suisses, 5\u2019500 lois fédérales et 33\u2019000 actes cantonaux directement dans Claude, ChatGPT, Cursor ou Gemini — en 30 secondes, gratuitement, sans clé API.',
-    hero_cta_connect_v3: 'Connecter en 30 secondes ↓',
-    hero_cta_browse_v3: 'Parcourir le corpus',
+    hero_v3_label: 'décisions judiciaires suisses publiées',
+    hero_v3_asof: 'Au',
+    hero_v3_since: 'depuis hier',
+    hero_v3_availability: 'Interrogeable dans Claude, ChatGPT, Cursor, Gemini, Copilot Studio — ou via API REST.',
+    hero_cta_connect_v3: 'Connecter ↓',
+    hero_cta_browse_v3: 'Parcourir',
     hero_v3_stamp_decisions: 'décisions',
     hero_v3_stamp_courts: 'tribunaux',
     hero_v3_stamp_cantons: 'cantons',
@@ -3194,8 +3177,8 @@ const I18N = {
     hero_v3_stamp_since: 'depuis hier',
     hero_v3_word: 'Add-in Word pour les juristes',
     hero_v3_hf: 'Téléchargement complet (Hugging Face, ~7 Go)',
-    connect_heading: 'Se connecter en 30 secondes',
-    connect_intro: 'Choisissez votre client IA. Collez l\'URL. Terminé.',
+    connect_heading: 'Se connecter',
+    connect_intro: 'Choisissez votre client. Collez l\'URL.',
     connect_tab_claude: 'Claude',
     connect_tab_chatgpt: 'ChatGPT',
     connect_tab_cursor: 'Cursor',
@@ -3384,10 +3367,12 @@ const I18N = {
     latest_view_all: 'Vedi tutto →',
     latest_empty: 'Nessun dato disponibile',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
-    hero_headline_v3: 'La giurisprudenza e la legislazione svizzere, nel tuo assistente IA.',
-    hero_sub_v3: 'Cerca oltre 968\u2019000 decisioni giudiziarie svizzere, 5\u2019500 leggi federali e 33\u2019000 atti cantonali direttamente in Claude, ChatGPT, Cursor o Gemini — in 30 secondi, gratis, senza chiavi API.',
-    hero_cta_connect_v3: 'Collega in 30 secondi ↓',
-    hero_cta_browse_v3: 'Sfoglia il corpus',
+    hero_v3_label: 'decisioni giudiziarie svizzere pubblicate',
+    hero_v3_asof: 'Al',
+    hero_v3_since: 'da ieri',
+    hero_v3_availability: 'Interrogabile in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — o tramite API REST.',
+    hero_cta_connect_v3: 'Collega ↓',
+    hero_cta_browse_v3: 'Sfoglia',
     hero_v3_stamp_decisions: 'decisioni',
     hero_v3_stamp_courts: 'tribunali',
     hero_v3_stamp_cantons: 'cantoni',
@@ -3395,8 +3380,8 @@ const I18N = {
     hero_v3_stamp_since: 'da ieri',
     hero_v3_word: 'Add-in Word per giuristi',
     hero_v3_hf: 'Download completo (Hugging Face, ~7 GB)',
-    connect_heading: 'Collega in 30 secondi',
-    connect_intro: 'Scegli il tuo client IA. Incolla l\'URL. Fatto.',
+    connect_heading: 'Collegare',
+    connect_intro: 'Scegli il tuo client. Incolla l\'URL.',
     connect_tab_claude: 'Claude',
     connect_tab_chatgpt: 'ChatGPT',
     connect_tab_cursor: 'Cursor',
@@ -3585,10 +3570,12 @@ const I18N = {
     latest_view_all: 'Mussar tut →',
     latest_empty: 'Naginas datas disponiblas',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
-    hero_headline_v3: 'La giurisprudenza e la legislaziun svizras, en Voss assistent IA.',
-    hero_sub_v3: 'Tschertgar dapli che 968\u2019000 decisiuns giudicialas svizras, 5\u2019500 leschas federalas e 33\u2019000 acts chantunals directamain en Claude, ChatGPT, Cursor u Gemini — en 30 secundas, gratuit, senza claves API.',
-    hero_cta_connect_v3: 'Connectar en 30 secundas ↓',
-    hero_cta_browse_v3: 'Sfegliar il corpus',
+    hero_v3_label: 'decisiuns giudicialas svizras publitgadas',
+    hero_v3_asof: 'Al',
+    hero_v3_since: 'dapi ier',
+    hero_v3_availability: 'Interrogabel en Claude, ChatGPT, Cursor, Gemini, Copilot Studio — u via API REST.',
+    hero_cta_connect_v3: 'Connectar ↓',
+    hero_cta_browse_v3: 'Sfegliar',
     hero_v3_stamp_decisions: 'decisiuns',
     hero_v3_stamp_courts: 'dretgiras',
     hero_v3_stamp_cantons: 'chantuns',
@@ -3596,8 +3583,8 @@ const I18N = {
     hero_v3_stamp_since: 'dapi ier',
     hero_v3_word: 'Add-in Word per giuristas',
     hero_v3_hf: 'Download cumplet (Hugging Face, ~7 GB)',
-    connect_heading: 'Connectar en 30 secundas',
-    connect_intro: 'Tschernì Voss client IA. Encollar l\'URL. Finì.',
+    connect_heading: 'Connectar',
+    connect_intro: 'Tschernì Voss client. Encollar l\'URL.',
     connect_tab_claude: 'Claude',
     connect_tab_chatgpt: 'ChatGPT',
     connect_tab_cursor: 'Cursor',
@@ -3786,10 +3773,12 @@ const I18N = {
     latest_view_all: 'View all →',
     latest_empty: 'No data available',
     // ── Hero v3 + Connect block (2026-04-25 redesign) ──
-    hero_headline_v3: 'Swiss case-law and legislation, in your AI assistant.',
-    hero_sub_v3: 'Search 968,000+ Swiss court decisions, 5,500 federal laws and 33,000 cantonal acts directly in Claude, ChatGPT, Cursor or Gemini — in 30 seconds, free, no API keys.',
-    hero_cta_connect_v3: 'Connect in 30 seconds ↓',
-    hero_cta_browse_v3: 'Browse the corpus',
+    hero_v3_label: 'published Swiss court decisions',
+    hero_v3_asof: 'As of',
+    hero_v3_since: 'since yesterday',
+    hero_v3_availability: 'Searchable in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.',
+    hero_cta_connect_v3: 'Connect ↓',
+    hero_cta_browse_v3: 'Browse',
     hero_v3_stamp_decisions: 'decisions',
     hero_v3_stamp_courts: 'courts',
     hero_v3_stamp_cantons: 'cantons',
@@ -3797,8 +3786,8 @@ const I18N = {
     hero_v3_stamp_since: 'since yesterday',
     hero_v3_word: 'Word add-in for legal practitioners',
     hero_v3_hf: 'Bulk download (Hugging Face, ~7 GB)',
-    connect_heading: 'Connect in 30 seconds',
-    connect_intro: 'Pick your AI client. Paste the URL. Done.',
+    connect_heading: 'Connect',
+    connect_intro: 'Pick your client. Paste the URL.',
     connect_tab_claude: 'Claude',
     connect_tab_chatgpt: 'ChatGPT',
     connect_tab_cursor: 'Cursor',
