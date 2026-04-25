@@ -2248,7 +2248,7 @@
     "2026-03": 2073,
     "2026-04": 372
   },
-  "generated_at": "2026-04-25T07:31:53.886882+00:00",
+  "generated_at": "2026-04-25T10:32:59.140113+00:00",
   "scraper_health": {
     "run_at": "2026-04-25T03:02:14.630639+00:00",
     "run_duration_s": 7334.1,
@@ -2365,12 +2365,12 @@
         "our_count": 174,
         "portal_count": null,
         "gap": null,
-        "duration_s": 453.5,
+        "duration_s": 4.1,
         "error": null,
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-25T01:01:36.420001+00:00"
+        "jsonl_mtime": "2026-04-25T09:00:04.405560+00:00"
       },
       "bge_historical": {
         "success": true,
@@ -2399,12 +2399,12 @@
         "our_count": 10846,
         "portal_count": null,
         "gap": null,
-        "duration_s": 84.8,
+        "duration_s": 84.9,
         "error": null,
         "note": null,
         "state_count": 10881,
         "jsonl_size_mb": 304.2,
-        "jsonl_mtime": "2026-04-25T01:05:49.555905+00:00"
+        "jsonl_mtime": "2026-04-25T09:01:25.242904+00:00"
       },
       "ar_gerichte": {
         "success": true,
@@ -2552,12 +2552,12 @@
         "our_count": 21239,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1111.8,
+        "duration_s": 1140.7,
         "error": null,
         "note": null,
         "state_count": 21239,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-25T01:18:33.720418+00:00"
+        "jsonl_mtime": "2026-04-25T09:19:00.915100+00:00"
       },
       "fr_anwaltsaufsicht": {
         "success": true,
@@ -2600,15 +2600,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 92071,
+        "our_count": 92089,
         "portal_count": null,
         "gap": null,
-        "duration_s": 971.5,
+        "duration_s": 794.4,
         "error": null,
         "note": null,
         "state_count": 92089,
         "jsonl_size_mb": 2652.7,
-        "jsonl_mtime": "2026-04-25T01:29:51.243217+00:00"
+        "jsonl_mtime": "2026-04-25T09:13:14.715910+00:00"
       },
       "bger": {
         "success": true,
@@ -3258,7 +3258,7 @@
       }
     },
     "run_at_daily": "2026-04-25T03:02:14.630639+00:00",
-    "run_at_federal": "2026-04-24T09:18:32.368691+00:00",
+    "run_at_federal": "2026-04-25T09:19:01.030029+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3310,8 +3310,8 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 8884304,
-    "statute_edges": 11381181
+    "citation_edges": 8886214,
+    "statute_edges": 11382843
   },
   "traffic": {
     "window_days": 30,
@@ -3942,7 +3942,10 @@
       "CE": 227,
       "AI": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 1910,
+      "statute_edges": 1662
+    },
     "previous_generated_at": "2026-04-24T10:31:20.943263+00:00"
   }
 }
