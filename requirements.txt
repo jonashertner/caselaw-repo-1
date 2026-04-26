@@ -15,7 +15,7 @@ uvicorn>=0.24
 python-dotenv>=1.0
 
 # MCP server
-mcp>=1.0
+mcp>=1.27.0
 
 # BGer PoW encryption (optional)
 pycryptodome>=3.20
