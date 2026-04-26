@@ -2260,7 +2260,7 @@
     "2026-03": 2087,
     "2026-04": 379
   },
-  "generated_at": "2026-04-26T07:58:37.326397+00:00",
+  "generated_at": "2026-04-26T11:07:40.683526+00:00",
   "scraper_health": {
     "run_at": "2026-04-26T02:33:22.722940+00:00",
     "run_duration_s": 5602.2,
@@ -2377,12 +2377,12 @@
         "our_count": 174,
         "portal_count": null,
         "gap": null,
-        "duration_s": 4.1,
+        "duration_s": 4.3,
         "error": null,
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-26T01:01:36.238169+00:00"
+        "jsonl_mtime": "2026-04-26T09:00:04.566128+00:00"
       },
       "bge_historical": {
         "success": true,
@@ -2408,15 +2408,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 10846,
+        "our_count": 10847,
         "portal_count": null,
         "gap": null,
-        "duration_s": 84.9,
+        "duration_s": 83.1,
         "error": null,
         "note": null,
         "state_count": 10882,
         "jsonl_size_mb": 304.2,
-        "jsonl_mtime": "2026-04-26T01:05:49.447730+00:00"
+        "jsonl_mtime": "2026-04-26T09:01:23.344363+00:00"
       },
       "ar_gerichte": {
         "success": true,
@@ -2530,12 +2530,12 @@
         "our_count": 92089,
         "portal_count": null,
         "gap": null,
-        "duration_s": 794.4,
+        "duration_s": 767.8,
         "error": null,
         "note": null,
         "state_count": 92089,
         "jsonl_size_mb": 2652.7,
-        "jsonl_mtime": "2026-04-26T01:18:32.881600+00:00"
+        "jsonl_mtime": "2026-04-26T09:12:48.109991+00:00"
       },
       "finma": {
         "success": true,
@@ -2564,12 +2564,12 @@
         "our_count": 21239,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1140.7,
+        "duration_s": 1198.2,
         "error": null,
         "note": null,
         "state_count": 21239,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-26T01:19:30.033671+00:00"
+        "jsonl_mtime": "2026-04-26T09:19:58.465766+00:00"
       },
       "fr_anwaltsaufsicht": {
         "success": true,
@@ -3270,7 +3270,7 @@
       }
     },
     "run_at_daily": "2026-04-26T02:33:22.722940+00:00",
-    "run_at_federal": "2026-04-25T09:19:01.030029+00:00",
+    "run_at_federal": "2026-04-26T09:19:58.580849+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3322,19 +3322,19 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 8886214,
-    "statute_edges": 11382843
+    "citation_edges": 9040835,
+    "statute_edges": 11629441
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 62247,
+      "citation_count": 63061,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 181517
+      "ref_count": 181521
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3354,9 +3354,9 @@
       "total": 969455
     },
     "graph_size": {
-      "decision_edges": 6561388,
-      "statute_edges": 11382843,
-      "total": 17944231
+      "decision_edges": 6679692,
+      "statute_edges": 11629441,
+      "total": 18309133
     }
   },
   "traffic": {
@@ -3963,7 +3963,10 @@
       "SZ": 5,
       "CE": 1041
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 154621,
+      "statute_edges": 246598
+    },
     "previous_generated_at": "2026-04-25T23:01:42.570194+00:00"
   }
 }
