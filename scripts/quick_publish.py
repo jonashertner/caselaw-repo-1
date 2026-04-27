@@ -84,7 +84,13 @@ def _read_new_jsonl(courts: list[str] | None, existing_ids: set[str]) -> list[di
 
 
 def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int:
-    """Insert new JSONL decisions into FTS5 DB. Returns count of inserted rows."""
+    """Insert new JSONL decisions into FTS5 DB. Returns count of inserted rows.
+
+    The temp .quick copy is always cleaned up on exit (success, error, or
+    early return). Without this, a crash mid-run leaves a 60+ GB stale
+    file on disk — that filled the data volume to 100% on 2026-04-26 and
+    blocked the publish pipeline.
+    """
     real_db = _resolve_real_path(DB_PATH)
     real_tmp = real_db.parent / (real_db.name + ".quick")
 
@@ -93,58 +99,71 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
         return 0
 
     t0 = time.time()
+    swap_done = False
+    conn = None
 
-    # Step 1: Copy current DB to work on
-    logger.info("Copying %s to %s (%s)", real_db, real_tmp,
-                "{:.0f} MB".format(real_db.stat().st_size / 1e6))
-    if not dry_run:
-        shutil.copy2(str(real_db), str(real_tmp))
+    try:
+        # Step 1: Copy current DB to work on
+        logger.info("Copying %s to %s (%s)", real_db, real_tmp,
+                    "{:.0f} MB".format(real_db.stat().st_size / 1e6))
+        if not dry_run:
+            shutil.copy2(str(real_db), str(real_tmp))
 
-    # Step 2: Find new rows
-    conn = sqlite3.connect(str(real_tmp) if not dry_run else f"file:{real_db}?mode=ro",
-                           uri=dry_run)
-    existing_ids = _get_existing_ids(conn)
-    logger.info("Existing decisions: %d", len(existing_ids))
+        # Step 2: Find new rows
+        conn = sqlite3.connect(str(real_tmp) if not dry_run else f"file:{real_db}?mode=ro",
+                               uri=dry_run)
+        existing_ids = _get_existing_ids(conn)
+        logger.info("Existing decisions: %d", len(existing_ids))
 
-    new_rows = _read_new_jsonl(courts, existing_ids)
-    logger.info("New decisions to insert: %d", len(new_rows))
+        new_rows = _read_new_jsonl(courts, existing_ids)
+        logger.info("New decisions to insert: %d", len(new_rows))
 
-    if not new_rows:
+        if not new_rows:
+            logger.info("Nothing to insert")
+            return 0
+
+        if dry_run:
+            for r in new_rows[:10]:
+                logger.info("  Would insert: %s (%s)", r.get("decision_id"), r.get("court"))
+            return len(new_rows)
+
+        # Step 3: Ensure WAL mode is off (for immutable=1 compat after swap)
+        conn.execute("PRAGMA journal_mode=DELETE")
+        conn.execute("PRAGMA busy_timeout=5000")
+
+        # Step 4: Insert new rows
+        inserted = 0
+        for row in new_rows:
+            if insert_decision(conn, row):
+                inserted += 1
+        conn.commit()
+
+        total_after = conn.execute("SELECT count(*) FROM decisions").fetchone()[0]
         conn.close()
-        if real_tmp.exists():
-            real_tmp.unlink()
-        logger.info("Nothing to insert")
-        return 0
+        conn = None
 
-    if dry_run:
-        conn.close()
-        for r in new_rows[:10]:
-            logger.info("  Would insert: %s (%s)", r.get("decision_id"), r.get("court"))
-        return len(new_rows)
+        elapsed = time.time() - t0
+        logger.info("Inserted %d/%d new decisions (%d total, %.1fs)",
+                    inserted, len(new_rows), total_after, elapsed)
 
-    # Step 3: Ensure WAL mode is off (for immutable=1 compat after swap)
-    conn.execute("PRAGMA journal_mode=DELETE")
-    conn.execute("PRAGMA busy_timeout=5000")
+        # Step 5: Atomic swap (consumes real_tmp — no cleanup needed below)
+        os.replace(str(real_tmp), str(real_db))
+        swap_done = True
+        logger.info("Atomic swap complete — new decisions are live")
 
-    # Step 4: Insert new rows
-    inserted = 0
-    for row in new_rows:
-        if insert_decision(conn, row):
-            inserted += 1
-    conn.commit()
-
-    total_after = conn.execute("SELECT count(*) FROM decisions").fetchone()[0]
-    conn.close()
-
-    elapsed = time.time() - t0
-    logger.info("Inserted %d/%d new decisions (%d total, %.1fs)",
-                inserted, len(new_rows), total_after, elapsed)
-
-    # Step 5: Atomic swap
-    os.replace(str(real_tmp), str(real_db))
-    logger.info("Atomic swap complete — new decisions are live")
-
-    return inserted
+        return inserted
+    finally:
+        if conn is not None:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        if not swap_done and real_tmp.exists():
+            try:
+                real_tmp.unlink()
+                logger.info("Cleaned up temp file %s", real_tmp)
+            except OSError as e:
+                logger.warning("Failed to clean up %s: %s", real_tmp, e)
 
 
 def main():

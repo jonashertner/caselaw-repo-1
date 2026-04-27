@@ -49,6 +49,22 @@ ENTSCHEIDSUCHE_ONLY = {
     "ag_baugesetzgebung", "ag_weitere",
 }
 
+# Courts where partial-fetch failures are expected (upstream limitation,
+# not a scraper bug) — downgrade FAIL → WARN. ECtHR's HUDOC HTML
+# converter returns empty bodies for many pre-2018 judgments
+# (PDF-only); CACHE_NONE_AS_GAP=True caches the gaps but the cumulative
+# count keeps creeping up. Treat as informational, not an outage.
+TOLERATED_PARTIAL_SOURCES = {
+    "ecthr",
+}
+# JU/NE depend on the MacBook reverse-SOCKS tunnel which sleeps when the
+# laptop sleeps. Failures during the 01:00 UTC window are normal; the
+# late-scrapers timer at 10:00 UTC retries once the tunnel is back.
+TUNNEL_DEPENDENT_SOURCES = {
+    "ju_gerichte",
+    "ne_gerichte",
+}
+
 
 def get_last_scraped(court: str) -> str | None:
     """Return ISO date of last successful scrape from coverage_report DB."""
@@ -120,7 +136,12 @@ def main():
                 if k in KNOWN_DEAD_SOURCES:
                     continue
                 err = v.get("error") or "unknown"
-                alerts.append(f"FAIL {k}: {err}")
+                if k in TOLERATED_PARTIAL_SOURCES:
+                    alerts.append(f"WARN {k}: {err} (tolerated upstream limitation)")
+                elif k in TUNNEL_DEPENDENT_SOURCES:
+                    alerts.append(f"WARN {k}: {err} (MacBook SOCKS tunnel — late-scrapers retry at 10:00 UTC)")
+                else:
+                    alerts.append(f"FAIL {k}: {err}")
 
             # Real silent-failure signal: success=true AND finished suspiciously
             # fast for an active court (under 30s) AND new=0. Most legitimate
