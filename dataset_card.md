@@ -285,7 +285,11 @@ Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ## Data Sources
 
-**Official court websites** — direct scraping from federal and cantonal court platforms (54 scrapers targeting court APIs, Weblaw, Tribuna, FindInfo, Omnis, and other portals).
+**Court decisions** — 59 scrapers targeting official court platforms directly (federal court APIs, Weblaw, Tribuna, FindInfo, Omnis, plus custom portals for the smaller cantons). No third-party aggregator in the case-law pipeline; we go to the source.
+
+**Federal legislation** — Fedlex SPARQL endpoint (Bundeskanzlei). Mirrored monthly into `statutes.db`; covers every consolidated federal act in DE/FR/IT.
+
+**Cantonal legislation** — dual-source pipeline. **19 cantons** are scraped directly from their official Gesetzessammlungen (LexWork + SIL platforms — the same publishing systems the cantons themselves operate), parsed natively as HTML for clean article-level data. The **remaining 7 cantons** fall back to PDF extraction via [LexFind.ch](https://www.lexfind.ch). Combined into `cantonal_laws.db` (15,722 laws / 353,464 articles) and federated with `statutes.db` via SQLite FTS5. The live LexFind API also serves as a real-time fallback for SR numbers not yet in the local mirror, and as the discovery catalog for the broader `search_legislation` tool which spans 33,000+ legislation texts including ordinances and intercantonal agreements.
 
 Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The version with the longest full text is kept.
 
