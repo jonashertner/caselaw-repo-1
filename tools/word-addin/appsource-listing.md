@@ -3,12 +3,20 @@
 ## App name
 OpenCaseLaw - Swiss Case Law
 
+## Provider Name (must match manifest <ProviderName>)
+Jonas Hertner
+
 ## Short description (100 chars max)
 Search 969,000+ Swiss court decisions and insert correct citations directly in Word.
 
 ## Long description (4000 chars max)
 
 OpenCaseLaw gives lawyers, judges, legal scholars, and students instant access to Swiss case law and legislation — directly inside Microsoft Word.
+
+**Pricing — disclosed up front (Microsoft Marketplace policy 1100.1.3)**
+
+- **Core features are free**: search across 969,000+ decisions, statute lookup, citation insertion. No account, no card, no trial expiry.
+- **Optional Pro subscription — CHF 5/month**, billed via **Stripe**. Cancelable at any time from your Stripe billing portal. Adds AI reference verification, argument search, and document scanning. The first 100 verifications per day are included; no overage charges. No other in-app purchases or hidden fees.
 
 **969,000+ court decisions. 5,510 federal laws. 15,722 cantonal laws. One search.**
 

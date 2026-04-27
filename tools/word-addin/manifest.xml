@@ -3,7 +3,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:type="TaskPaneApp">
   <Id>c0a83f2e-4d5b-4e9a-b1c7-000000000001</Id>
-  <Version>1.2.0.0</Version>
+  <Version>1.2.1.0</Version>
   <ProviderName>Jonas Hertner</ProviderName>
   <DefaultLocale>de-DE</DefaultLocale>
 
@@ -13,10 +13,10 @@
     <Override Locale="en-US" Value="OpenCaseLaw - Swiss Case Law"/>
   </DisplayName>
 
-  <Description DefaultValue="Durchsuchen und zitieren Sie 969'000+ Schweizer Gerichtsentscheide direkt in Word. Bundesgericht, BVGer, BStGer, alle 26 Kantone. Kostenlose Grundfunktionen: Suche, Zitate, Gesetzesartikel. Optionales Pro-Abonnement (via Stripe) fuer KI-gestuetzte Referenzpruefung, Argumentationssuche und Dokumentscan.">
-    <Override Locale="fr-FR" Value="Recherchez et citez 969'000+ decisions de justice suisses dans Word. TF, TAF, TPF, 26 cantons. Fonctions de base gratuites: recherche, citations, articles de loi. Abonnement Pro optionnel (via Stripe) pour verification des references par IA, recherche d'arguments et scan de documents."/>
-    <Override Locale="it-IT" Value="Cerca e cita 969'000+ decisioni giudiziarie svizzere in Word. TF, TAF, TPF, 26 cantoni. Funzioni base gratuite: ricerca, citazioni, articoli di legge. Abbonamento Pro opzionale (via Stripe) per verifica dei riferimenti con IA, ricerca argomenti e scansione documenti."/>
-    <Override Locale="en-US" Value="Search and cite 969,000+ Swiss court decisions directly in Word. Federal Supreme Court, all 26 cantons. Free core features: search, citations, statute lookup. Optional Pro subscription (via Stripe) for AI-powered reference verification, argument search, and document scanning."/>
+  <Description DefaultValue="969'000+ Schweizer Gerichtsentscheide in Word durchsuchen und zitieren. Kostenlose Kernfunktionen: Suche, Zitate, Gesetze. Optional Pro CHF 5/Monat via Stripe (jederzeit kuendbar): KI-Referenzpruefung, Argumentsuche, Dokumentscan.">
+    <Override Locale="fr-FR" Value="Recherchez et citez 969'000+ decisions suisses dans Word. Fonctions de base gratuites: recherche, citations, lois. Pro optionnel CHF 5/mois via Stripe (resiliable a tout moment): verification IA, recherche d'arguments, scan."/>
+    <Override Locale="it-IT" Value="Cerca e cita 969'000+ decisioni svizzere in Word. Funzioni base gratuite: ricerca, citazioni, leggi. Pro opzionale CHF 5/mese via Stripe (disdicibile in qualsiasi momento): verifica IA, ricerca argomenti, scansione."/>
+    <Override Locale="en-US" Value="Search and cite 969,000+ Swiss court decisions in Word. Free core features: search, citations, statute lookup. Optional Pro CHF 5/month via Stripe (cancel anytime): AI reference verification, argument search, document scan."/>
   </Description>
 
   <IconUrl DefaultValue="https://word.opencaselaw.ch/assets/icon-32.png"/>
