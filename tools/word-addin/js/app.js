@@ -138,6 +138,77 @@ function initApp() {
     handleAppClick(e);
   });
 
+  // Global keyboard shortcuts — power-user productivity features for
+  // legal practitioners who type far more than they click. Bound on
+  // document so they fire from anywhere in the task pane.
+  //
+  //   Ctrl/Cmd + K     → focus the search input from any view
+  //   Esc              → leave a sub-view (back to search) or close help
+  //   ? (Shift + /)    → toggle the help overlay
+  //   Ctrl/Cmd + Enter → insert the first result's citation directly
+  //                      from the search view (no card click needed)
+  //
+  // The handler is intentionally narrow: it suppresses defaults only on
+  // recognised shortcuts so typing in inputs / selects keeps working.
+  document.addEventListener('keydown', function (e) {
+    var meta = e.ctrlKey || e.metaKey;
+    var inField = (function () {
+      var t = document.activeElement;
+      if (!t) return false;
+      var tag = (t.tagName || '').toLowerCase();
+      return tag === 'input' || tag === 'textarea' || tag === 'select' || t.isContentEditable;
+    })();
+
+    // Ctrl/Cmd + K — focus search (works everywhere)
+    if (meta && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      if (state.view !== 'search') { state.view = 'search'; render(); }
+      var input = document.getElementById('search-input');
+      if (input) { input.focus(); input.select(); }
+      return;
+    }
+
+    // Esc — back / close help
+    if (e.key === 'Escape') {
+      if (state.view === 'help') {
+        state.view = state.previousView || 'search';
+        state.previousView = null;
+        render();
+        return;
+      }
+      var subViews = { detail: 1, verify: 1, support: 1, related: 1, guide: 1, settings: 1, scan: 1 };
+      if (subViews[state.view]) {
+        // Reuse the existing 'back' action via the handleAppClick switch
+        // so cleanup logic stays in one place.
+        var fakeBtn = document.createElement('button');
+        fakeBtn.dataset.action = 'back';
+        handleAppClick({ target: fakeBtn });
+      }
+      return;
+    }
+
+    // ? — toggle help overlay (only when not typing into a field)
+    if (!inField && !meta && e.key === '?') {
+      e.preventDefault();
+      if (state.view === 'help') {
+        state.view = state.previousView || 'search';
+        state.previousView = null;
+      } else {
+        state.previousView = state.view;
+        state.view = 'help';
+      }
+      render();
+      return;
+    }
+
+    // Ctrl/Cmd + Enter on search view — insert top result's citation
+    if (meta && e.key === 'Enter' && state.view === 'search' && state.results.length > 0) {
+      e.preventDefault();
+      insertCitation(state.results[0]);
+      return;
+    }
+  });
+
   // Load recent lookups
   try { state.recentLookups = JSON.parse(localStorage.getItem('ocl_recent') || '[]'); } catch (e) { state.recentLookups = []; }
 
@@ -315,6 +386,7 @@ function render() {
     else if (view === 'related') html += renderRelated();
     else if (view === 'scan') html += renderScan();
     else if (view === 'guide') html += renderGuide();
+    else if (view === 'help') html += renderHelp();
     else if (view === 'settings') html += renderSettings();
 
     app.innerHTML = html; // eslint-disable-line no-unsanitized/property -- all values pre-escaped via escHtml()
@@ -540,9 +612,12 @@ function renderWelcome(lang) {
   }
   html += '</div>';
 
-  // Footer — coverage stats + how-it-works link, kept whisper-quiet.
+  // Footer — coverage stats + how-it-works link + keyboard-shortcut hint.
+  // The "?" affordance is the only entry-point UI for the help overlay
+  // (the keyboard shortcut still works from anywhere); kept whisper-quiet.
   html += '<div class="welcome-footer">' +
     '<a class="welcome-link" data-action="show-guide">' + escHtml(t('how_it_works', lang)) + '</a>' +
+    '<a class="welcome-link" data-action="show-help" title="?" style="margin-left:12px;">' + escHtml(t('help_title', lang)) + '</a>' +
     '<span class="welcome-count-small">' + escHtml(t('welcome_count', lang, { n: state.totalDecisions || '969\u2009000+' })) + '</span>' +
     '</div>';
 
@@ -748,6 +823,35 @@ function renderDetail() {
   html += '<a class="fulltext-link" data-action="open-external" data-url="' + escHtml(entscheidUrl) + '">' +
     escHtml(t('fulltext_link', lang)) + ' \u2192</a>';
 
+  return html;
+}
+
+// Help / keyboard shortcuts overlay. Triggered by '?' or via the
+// gear-menu link. Lists every shortcut with both the platform-neutral
+// label (Ctrl) and Mac-friendly fallback (Cmd) — Word for Mac is a
+// real share of Swiss legal users.
+function renderHelp() {
+  var lang = state.lang;
+  var isMac = (typeof navigator !== 'undefined' && /Mac/.test(navigator.platform || ''));
+  var meta = isMac ? '\u2318' : 'Ctrl';   // ⌘ vs Ctrl
+  function row(combo, label) {
+    return '<tr><td class="kbd-cell"><kbd>' + escHtml(combo) + '</kbd></td>' +
+      '<td>' + escHtml(label) + '</td></tr>';
+  }
+  var html = '<a class="back-link" data-action="back">\u2190 ' + escHtml(t('back_short', lang)) + '</a>';
+  html += '<h3 class="settings-heading">' + escHtml(t('help_title', lang)) + '</h3>';
+  html += '<p class="help-intro">' + escHtml(t('help_intro', lang)) + '</p>';
+  html += '<table class="kbd-table"><tbody>';
+  html += row(meta + ' + K',     t('help_focus_search', lang));
+  html += row('Esc',              t('help_back',         lang));
+  html += row('?',                t('help_toggle_help',  lang));
+  html += row(meta + ' + Enter',  t('help_insert_top',   lang));
+  html += row('Enter',            t('help_open_first',   lang));
+  html += row('Tab / Shift+Tab',  t('help_navigate',     lang));
+  html += '</tbody></table>';
+  html += '<div class="help-footer">' +
+    '<a class="welcome-link" data-action="show-guide">' + escHtml(t('how_it_works', lang)) + '</a>' +
+    '</div>';
   return html;
 }
 
@@ -1038,6 +1142,44 @@ function renderSettings() {
   }
   html += '</div>';
 
+  // Citation style picker — Swiss legal practice has several conventions;
+  // expose them rather than dictating one. Live preview reflects each
+  // choice using a fixed sample decision (BGer 4A_747/2012).
+  var currentStyle = (function () {
+    try { return localStorage.getItem('ocl_citation_style') || 'parenthesised'; }
+    catch (e) { return 'parenthesised'; }
+  })();
+  var sample = {
+    docket_number: '4A_747/2012',
+    decision_date: '2013-04-05',
+    court: 'bger',
+  };
+  function previewFor(s) {
+    try { return formatCitation(sample, lang, '2.1', s); }
+    catch (e) { return ''; }
+  }
+  html += '<div class="section-card" style="margin-top:12px;">' +
+    '<div class="section-label">' + escHtml(t('cite_style_title', lang)) + '</div>' +
+    '<div class="cite-style-list">';
+  // Statically-keyed lookup keeps the i18n parity linter happy and
+  // makes the four expected strings findable via grep.
+  var STYLE_LABELS = {
+    parenthesised: t('cite_style_parenthesised', lang),
+    footnote:      t('cite_style_footnote',      lang),
+    brief:         t('cite_style_brief',         lang),
+    long:          t('cite_style_long',          lang),
+  };
+  ['parenthesised', 'footnote', 'brief', 'long'].forEach(function (s) {
+    var checked = (s === currentStyle) ? ' checked' : '';
+    html += '<label class="cite-style-row">' +
+      '<input type="radio" name="cite-style" value="' + s + '" class="cite-style-radio"' + checked + '>' +
+      '<div class="cite-style-meta">' +
+      '<div class="cite-style-name">' + escHtml(STYLE_LABELS[s]) + '</div>' +
+      '<div class="cite-style-preview">' + escHtml(previewFor(s)) + '</div>' +
+      '</div></label>';
+  });
+  html += '</div></div>';
+
   // Privacy / telemetry section — opt-out toggle for the install cohort header
   var optedOut = localStorage.getItem('ocl_usage_signal_optout') === '1';
   html += '<div class="section-card" style="margin-top:12px;">' +
@@ -1149,6 +1291,19 @@ function bindEvents() {
       } else {
         localStorage.setItem('ocl_usage_signal_optout', '1');
       }
+    });
+  }
+
+  // Citation-style radio group — persist user's pick and re-render so
+  // any previewed citations refresh immediately.
+  var styleRadios = document.querySelectorAll('input[name="cite-style"]');
+  if (styleRadios && styleRadios.length) {
+    styleRadios.forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        if (!radio.checked) return;
+        try { localStorage.setItem('ocl_citation_style', radio.value); } catch (e) {}
+        render();
+      });
     });
   }
 }
@@ -1351,7 +1506,13 @@ async function handleAppClick(e) {
         render();
         break;
       case 'show-guide':
+        state.previousView = state.view;
         state.view = 'guide';
+        render();
+        break;
+      case 'show-help':
+        state.previousView = state.view;
+        state.view = 'help';
         render();
         break;
       case 'verify-ref':   await startVerify(); break;

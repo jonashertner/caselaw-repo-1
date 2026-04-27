@@ -8,6 +8,66 @@
   <!-- Office.js from CDN -->
   <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
 
+  <!-- Pre-paint locale shim. Runs synchronously before any layout so
+       the static brand-sub / placeholder / loading text appear in the
+       user's language from frame 1, not after the 100-300 ms FOIT
+       when app.js initialises. Safe defaults: every branch falls back
+       to the existing German strings if anything goes wrong. -->
+  <script>
+  (function () {
+    try {
+      var stored = null;
+      try { stored = localStorage.getItem('ocl_lang'); } catch (e) {}
+      var raw = (stored ||
+                 (typeof navigator !== 'undefined' && (navigator.language ||
+                  (navigator.languages && navigator.languages[0]))) ||
+                 'de').toLowerCase();
+      var lang = raw.indexOf('fr') === 0 ? 'fr' :
+                 raw.indexOf('it') === 0 ? 'it' :
+                 raw.indexOf('en') === 0 ? 'en' :
+                 raw.indexOf('de') === 0 ? 'de' : 'de';
+      var STR = {
+        de: { brand: 'Schweizer Rechtsprechung',
+              placeholder: 'Entscheide, Gesetze, Doktrin suchen...',
+              loading: 'Wird geladen...',
+              gear: 'Einstellungen',
+              langLabel: 'Sprache' },
+        fr: { brand: 'Jurisprudence suisse',
+              placeholder: 'Rechercher décisions, lois, doctrine...',
+              loading: 'Chargement...',
+              gear: 'Paramètres',
+              langLabel: 'Langue' },
+        it: { brand: 'Giurisprudenza svizzera',
+              placeholder: 'Cerca decisioni, leggi, dottrina...',
+              loading: 'Caricamento...',
+              gear: 'Impostazioni',
+              langLabel: 'Lingua' },
+        en: { brand: 'Swiss Case Law',
+              placeholder: 'Search decisions, statutes, doctrine...',
+              loading: 'Loading...',
+              gear: 'Settings',
+              langLabel: 'Language' },
+      };
+      document.documentElement.lang = lang;
+      function apply() {
+        var s = STR[lang];
+        var b = document.getElementById('brand-sub'); if (b) b.textContent = s.brand;
+        var i = document.getElementById('search-input-fallback'); if (i) i.placeholder = s.placeholder;
+        var m = document.getElementById('init-msg'); if (m) m.textContent = s.loading;
+        var g = document.getElementById('btn-settings');
+        if (g) { g.title = s.gear; g.setAttribute('aria-label', s.gear); }
+        var ls = document.getElementById('lang-select');
+        if (ls) { ls.setAttribute('aria-label', s.langLabel); ls.value = lang; }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', apply);
+      } else {
+        apply();
+      }
+    } catch (e) { /* fail open — German fallback already in markup */ }
+  })();
+  </script>
+
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -48,12 +108,12 @@
   <div id="a11y-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <!-- Scripts (order matters) -->
-  <script src="js/i18n.js?v=21"></script>
-  <script src="js/citation.js?v=21"></script>
-  <script src="js/api.js?v=21"></script>
-  <script src="js/word-api.js?v=21"></script>
-  <script src="js/verify.js?v=21"></script>
-  <script src="js/app.js?v=21"></script>
+  <script src="js/i18n.js?v=22"></script>
+  <script src="js/citation.js?v=22"></script>
+  <script src="js/api.js?v=22"></script>
+  <script src="js/word-api.js?v=22"></script>
+  <script src="js/verify.js?v=22"></script>
+  <script src="js/app.js?v=22"></script>
 
 </body>
 </html>

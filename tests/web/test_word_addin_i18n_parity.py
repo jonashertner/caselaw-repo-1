@@ -36,10 +36,10 @@ I18N = JS_DIR / "i18n.js"
 
 LANGS = ("de", "fr", "it", "en")
 
-# Dead-key tolerance — old removed-feature strings are mostly harmless
-# and cleaning them is a low-priority chore. Fail only when growth is
-# obvious. Bump this number when you intentionally accumulate more.
-MAX_DEAD_KEYS = 80
+# Dead-key tolerance — strict cap so any feature removal that forgets
+# to drop the strings shows up immediately. Bumped only intentionally,
+# never tactically. Started 2026-04-27 at 0 dead keys; keep it under 10.
+MAX_DEAD_KEYS = 10
 
 
 def _t_calls() -> set[str]:

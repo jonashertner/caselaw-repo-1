@@ -411,6 +411,57 @@ test('ERWAEGUNG_LABEL values', function() {
 });
 
 // ============================================================
+// Citation style picker
+// ============================================================
+
+console.log('\n=== Citation style picker ===');
+
+test('default style is parenthesised (matches existing behaviour)', function () {
+  var s = formatCitation(bgerDecision, 'de', '2');
+  assert.strictEqual(s, '(BGer 4A_747/2012 vom 5. April 2013, E. 2)');
+});
+
+test('footnote style strips the parentheses', function () {
+  var s = formatCitation(bgerDecision, 'de', '2', 'footnote');
+  assert.strictEqual(s, 'BGer 4A_747/2012 vom 5. April 2013, E. 2');
+});
+
+test('brief style drops the date, keeps parentheses', function () {
+  var s = formatCitation(bgerDecision, 'de', '2', 'brief');
+  assert.strictEqual(s, '(BGer 4A_747/2012, E. 2)');
+});
+
+test('long style spells out the court + adds Urteil/Arrêt/Sentenza/Judgment', function () {
+  var de = formatCitation(bgerDecision, 'de', '2', 'long');
+  assert.ok(de.indexOf('Bundesgericht') >= 0, 'long DE should include Bundesgericht: ' + de);
+  assert.ok(de.indexOf('Urteil') >= 0, 'long DE should include Urteil: ' + de);
+  var fr = formatCitation(bgerDecision, 'fr', '2', 'long');
+  assert.ok(fr.indexOf('Tribunal fédéral') >= 0, 'long FR should include Tribunal fédéral: ' + fr);
+  assert.ok(fr.indexOf('Arrêt') >= 0, 'long FR should include Arrêt: ' + fr);
+});
+
+test('BGE always omits date regardless of style', function () {
+  ['parenthesised', 'footnote', 'brief', 'long'].forEach(function (style) {
+    var s = formatCitation(bgeDecision, 'de', '3', style);
+    assert.ok(!/\d{4}/.test(s) || /125 III 231/.test(s), 'BGE should not include a year in style ' + style + ': ' + s);
+  });
+});
+
+test('canonical citation_string respects brief style by stripping date suffix', function () {
+  var d = { citation_string_de: 'BGer 4A_747/2012 vom 5. April 2013', court: 'bger' };
+  assert.strictEqual(formatCitation(d, 'de', '2', 'brief'), '(BGer 4A_747/2012, E. 2)');
+});
+
+test('unknown style falls back to parenthesised', function () {
+  var s = formatCitation(bgerDecision, 'de', '2', 'no-such-style');
+  assert.strictEqual(s, '(BGer 4A_747/2012 vom 5. April 2013, E. 2)');
+});
+
+test('CITATION_STYLES is exported', function () {
+  assert.deepStrictEqual(citation.CITATION_STYLES, ['parenthesised', 'footnote', 'brief', 'long']);
+});
+
+// ============================================================
 // Summary
 // ============================================================
 

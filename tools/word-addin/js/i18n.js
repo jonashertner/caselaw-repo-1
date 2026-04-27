@@ -217,39 +217,6 @@ var UI_STRINGS = {
     it: '{n} decisioni',
     en: '{n} decisions',
   },
-  welcome_hint: {
-    de: 'Alle Schweizer Gerichte \u00B7 T\u00E4glich aktualisiert',
-    fr: 'Tous les tribunaux suisses \u00B7 Mis \u00E0 jour quotidiennement',
-    it: 'Tutti i tribunali svizzeri \u00B7 Aggiornato quotidianamente',
-    en: 'All Swiss courts \u00B7 Updated daily',
-  },
-  feat_search_title: {
-    de: 'Nachschlagen', fr: 'Consulter', it: 'Consultare', en: 'Look up',
-  },
-  feat_search_desc: {
-    de: 'BGE-Nummer, Aktenzeichen oder Gesetzesartikel eingeben. Der Volltext erscheint sofort.',
-    fr: 'Num\u00E9ro ATF, r\u00E9f\u00E9rence ou article de loi. Le texte int\u00E9gral appara\u00EEt imm\u00E9diatement.',
-    it: 'Numero DTF, riferimento o articolo di legge. Il testo integrale appare immediatamente.',
-    en: 'BGE number, docket number, or statute article. Full text appears instantly.',
-  },
-  feat_cite_title: {
-    de: 'Zitieren', fr: 'Citer', it: 'Citare', en: 'Cite',
-  },
-  feat_cite_desc: {
-    de: 'Korrekt formatierte Zitierung mit einem Klick an der Cursorposition einf\u00FCgen.',
-    fr: 'Ins\u00E9rer une citation correctement format\u00E9e en un clic \u00E0 la position du curseur.',
-    it: 'Inserire una citazione formattata correttamente con un clic alla posizione del cursore.',
-    en: 'Insert a correctly formatted citation at your cursor with one click.',
-  },
-  feat_verify_title: {
-    de: 'Referenzen pr\u00FCfen', fr: 'V\u00E9rifier les r\u00E9f\u00E9rences', it: 'Verificare i riferimenti', en: 'Verify references',
-  },
-  feat_verify_desc: {
-    de: 'Text markieren, \u00ABReferenz pr\u00FCfen\u00BB klicken \u2014 KI pr\u00FCft, ob Ihre Zitierung stimmt.',
-    fr: 'S\u00E9lectionner du texte, cliquer \u00ABV\u00E9rifier\u00BB \u2014 l\'IA v\u00E9rifie votre citation.',
-    it: 'Selezionare testo, cliccare \u00ABVerifica\u00BB \u2014 l\'IA verifica la citazione.',
-    en: 'Select text, click \u00ABVerify\u00BB \u2014 AI checks if your citation is accurate.',
-  },
   quick_try: {
     de: 'Beispiele:', fr: 'Exemples :', it: 'Esempi:', en: 'Try:',
   },
@@ -261,6 +228,50 @@ var UI_STRINGS = {
   },
   how_it_works: {
     de: 'So funktioniert es \u2192', fr: 'Comment \u00E7a marche \u2192', it: 'Come funziona \u2192', en: 'How it works \u2192',
+  },
+  // Citation style picker (settings)
+  cite_style_title: {
+    de: 'Zitationsstil', fr: 'Style de citation', it: 'Stile di citazione', en: 'Citation style',
+  },
+  cite_style_parenthesised: {
+    de: 'Standard (mit Klammern)', fr: 'Standard (entre parenthèses)', it: 'Standard (tra parentesi)', en: 'Default (parenthesised)',
+  },
+  cite_style_footnote: {
+    de: 'Fussnote (ohne Klammern)', fr: 'Note de bas de page (sans parenthèses)', it: 'Nota a piè di pagina (senza parentesi)', en: 'Footnote (no parentheses)',
+  },
+  cite_style_brief: {
+    de: 'Kurz (ohne Datum)', fr: 'Bref (sans date)', it: 'Breve (senza data)', en: 'Brief (no date)',
+  },
+  cite_style_long: {
+    de: 'Lang (Gericht ausgeschrieben)', fr: 'Long (tribunal en toutes lettres)', it: 'Lungo (tribunale per esteso)', en: 'Long (court spelled out)',
+  },
+  // Keyboard shortcuts overlay (triggered by '?')
+  help_title: {
+    de: 'Tastaturk\u00FCrzel', fr: 'Raccourcis clavier', it: 'Scorciatoie da tastiera', en: 'Keyboard shortcuts',
+  },
+  help_intro: {
+    de: 'Schnellzugriffe f\u00FCr h\u00E4ufige Aktionen.',
+    fr: 'Raccourcis pour les actions fr\u00E9quentes.',
+    it: 'Scorciatoie per le azioni frequenti.',
+    en: 'Quick access for frequent actions.',
+  },
+  help_focus_search: {
+    de: 'Suchfeld fokussieren', fr: 'Focaliser la recherche', it: 'Mettere a fuoco la ricerca', en: 'Focus search',
+  },
+  help_back: {
+    de: 'Zur\u00FCck / Hilfe schliessen', fr: 'Retour / fermer l\u2019aide', it: 'Indietro / chiudi aiuto', en: 'Back / close help',
+  },
+  help_toggle_help: {
+    de: 'Hilfe ein-/ausblenden', fr: 'Afficher/masquer l\u2019aide', it: 'Mostra/nascondi aiuto', en: 'Toggle help',
+  },
+  help_insert_top: {
+    de: 'Erstes Resultat einf\u00FCgen', fr: 'Ins\u00E9rer le premier r\u00E9sultat', it: 'Inserisci il primo risultato', en: 'Insert top result',
+  },
+  help_open_first: {
+    de: 'Erstes Resultat \u00F6ffnen', fr: 'Ouvrir le premier r\u00E9sultat', it: 'Apri il primo risultato', en: 'Open first result',
+  },
+  help_navigate: {
+    de: 'Zwischen Resultaten navigieren', fr: 'Naviguer entre les r\u00E9sultats', it: 'Naviga tra i risultati', en: 'Navigate results',
   },
   guide_title: {
     de: 'So funktioniert OpenCaseLaw', fr: 'Comment fonctionne OpenCaseLaw', it: 'Come funziona OpenCaseLaw', en: 'How OpenCaseLaw works',
@@ -304,24 +315,6 @@ var UI_STRINGS = {
   guide_start: {
     de: 'Jetzt loslegen', fr: 'Commencer', it: 'Inizia ora', en: 'Get started',
   },
-  btn_laws: {
-    de: 'Gesetze',
-    fr: 'Lois',
-    it: 'Leggi',
-    en: 'Laws',
-  },
-  btn_verify: {
-    de: 'Referenz prüfen',
-    fr: 'Vérifier référence',
-    it: 'Verifica riferimento',
-    en: 'Verify reference',
-  },
-  btn_verify_title: {
-    de: 'Einen Satz mit Referenz markieren, dann pr\u00FCfen',
-    fr: 'S\u00E9lectionner une phrase avec r\u00E9f\u00E9rence, puis v\u00E9rifier',
-    it: 'Selezionare una frase con riferimento, poi verificare',
-    en: 'Select one sentence with reference, then verify',
-  },
   results_count: {
     de: '{n} Entscheide gefunden',
     fr: '{n} décisions trouvées',
@@ -334,12 +327,6 @@ var UI_STRINGS = {
     it: 'Decisione o articolo non trovato.\nVerificare l\'inserimento \u2014 es. DTF 133 III 121 o Art. 41 CO.',
     en: 'Decision or article not found.\nCheck your input \u2014 e.g. BGE 133 III 121 or Art. 41 OR.',
   },
-  lookup_use_search: {
-    de: 'Geben Sie eine Entscheidnummer oder einen Gesetzesartikel ein.\nF\u00FCr die thematische Suche:',
-    fr: 'Entrez un num\u00E9ro de d\u00E9cision ou un article de loi.\nPour la recherche th\u00E9matique\u00A0:',
-    it: 'Inserisci un numero di decisione o un articolo di legge.\nPer la ricerca tematica:',
-    en: 'Enter a decision number or statute article.\nFor topic search:',
-  },
   no_results: {
     de: 'Keine Treffer gefunden.',
     fr: 'Aucun résultat trouvé.',
@@ -351,12 +338,6 @@ var UI_STRINGS = {
     fr: 'Essayez un terme de recherche plus général.',
     it: 'Provare con un termine di ricerca più generale.',
     en: 'Try a more general search term.',
-  },
-  load_more: {
-    de: 'Weitere laden',
-    fr: 'Charger plus',
-    it: 'Carica altri',
-    en: 'Load more',
   },
   btn_insert: {
     de: 'Einfügen',
@@ -451,24 +432,6 @@ var UI_STRINGS = {
   },
 
   // Laws view
-  law_search_placeholder: {
-    de: 'Gesetzesartikel suchen...',
-    fr: 'Rechercher un article de loi...',
-    it: 'Cerca articolo di legge...',
-    en: 'Search statute article...',
-  },
-  no_laws: {
-    de: 'Keine Gesetze gefunden.',
-    fr: 'Aucune loi trouvée.',
-    it: 'Nessuna legge trovata.',
-    en: 'No laws found.',
-  },
-  law_load_error: {
-    de: 'Fehler beim Laden.',
-    fr: 'Erreur de chargement.',
-    it: 'Errore di caricamento.',
-    en: 'Loading error.',
-  },
 
   // Verify view
   verify_title: {
@@ -525,12 +488,6 @@ var UI_STRINGS = {
     it: 'Inserisci risultato',
     en: 'Insert result',
   },
-  verify_footer: {
-    de: 'Eigener API-Key \u00B7 Claude Haiku',
-    fr: 'Clé API personnelle \u00B7 Claude Haiku',
-    it: 'Chiave API personale \u00B7 Claude Haiku',
-    en: 'Your API key \u00B7 Claude Haiku',
-  },
   verify_footer_pro: {
     de: 'OpenCaseLaw Pro \u00B7 Claude Haiku',
     fr: 'OpenCaseLaw Pro \u00B7 Claude Haiku',
@@ -543,18 +500,6 @@ var UI_STRINGS = {
     it: 'Selezionare un passaggio con un riferimento a una decisione.',
     en: 'Please select a text passage containing a decision reference.',
   },
-  no_citation_found: {
-    de: 'Keine Entscheidreferenz im markierten Text gefunden.',
-    fr: 'Aucune référence trouvée dans le texte sélectionné.',
-    it: 'Nessun riferimento trovato nel testo selezionato.',
-    en: 'No decision reference found in selected text.',
-  },
-  decision_not_found: {
-    de: 'Entscheid "{ref}" nicht gefunden.',
-    fr: 'Décision «{ref}» introuvable.',
-    it: 'Decisione «{ref}» non trovata.',
-    en: 'Decision "{ref}" not found.',
-  },
 
   // Settings
   settings_title: {
@@ -562,54 +507,6 @@ var UI_STRINGS = {
     fr: 'Paramètres',
     it: 'Impostazioni',
     en: 'Settings',
-  },
-  settings_citation_format: {
-    de: 'Zitierformat',
-    fr: 'Format de citation',
-    it: 'Formato di citazione',
-    en: 'Citation format',
-  },
-  settings_preview: {
-    de: 'Vorschau',
-    fr: 'Aperçu',
-    it: 'Anteprima',
-    en: 'Preview',
-  },
-  settings_verify_section: {
-    de: 'Referenzprüfung',
-    fr: 'Vérification de référence',
-    it: 'Verifica del riferimento',
-    en: 'Reference verification',
-  },
-  settings_api_key: {
-    de: 'Anthropic API Key',
-    fr: 'Clé API Anthropic',
-    it: 'Chiave API Anthropic',
-    en: 'Anthropic API Key',
-  },
-  settings_api_hint: {
-    de: 'Wird nur lokal gespeichert. Nie an unsere Server gesendet.',
-    fr: 'Stockée localement uniquement. Jamais envoyée à nos serveurs.',
-    it: 'Salvata solo localmente. Mai inviata ai nostri server.',
-    en: 'Stored locally only. Never sent to our servers.',
-  },
-  btn_save: {
-    de: 'Speichern',
-    fr: 'Enregistrer',
-    it: 'Salva',
-    en: 'Save',
-  },
-  btn_test: {
-    de: 'Testen',
-    fr: 'Tester',
-    it: 'Testare',
-    en: 'Test',
-  },
-  btn_delete: {
-    de: 'Löschen',
-    fr: 'Supprimer',
-    it: 'Elimina',
-    en: 'Delete',
   },
   settings_gear_title: {
     de: 'Einstellungen',
@@ -651,47 +548,17 @@ var UI_STRINGS = {
   },
 
   // Pro / Billing
-  pro_section_title: {
-    de: 'OpenCaseLaw Pro',
-    fr: 'OpenCaseLaw Pro',
-    it: 'OpenCaseLaw Pro',
-    en: 'OpenCaseLaw Pro',
-  },
-  pro_feature_verify: {
-    de: 'Automatische Referenzprüfung',
-    fr: 'Vérification automatique des références',
-    it: 'Verifica automatica dei riferimenti',
-    en: 'Automatic reference verification',
-  },
-  pro_feature_no_key: {
-    de: 'Kein eigener API-Key nötig',
-    fr: 'Pas de clé API personnelle requise',
-    it: 'Nessuna chiave API personale necessaria',
-    en: 'No personal API key needed',
-  },
   pro_feature_limit: {
     de: '25 Abfragen pro Tag',
     fr: '25 requ\u00EAtes par jour',
     it: '25 richieste al giorno',
     en: '25 queries per day',
   },
-  pro_month: {
-    de: 'Monat',
-    fr: 'mois',
-    it: 'mese',
-    en: 'month',
-  },
   pro_consent_text: {
     de: 'Ich akzeptiere die', fr: 'J\u2019accepte les', it: 'Accetto le', en: 'I accept the',
   },
   pro_consent_and: {
     de: 'und die', fr: 'et la', it: 'e la', en: 'and the',
-  },
-  btn_upgrade: {
-    de: 'Pro aktivieren',
-    fr: 'Activer Pro',
-    it: 'Attiva Pro',
-    en: 'Activate Pro',
   },
   pro_or_key: {
     de: 'oder Lizenzschlüssel eingeben',
@@ -732,40 +599,16 @@ var UI_STRINGS = {
     it: 'Chiave di licenza non valida o scaduta. Riprovare.',
     en: 'License key invalid or expired. Please try again.',
   },
-  settings_own_key: {
-    de: 'Eigener API-Key (Alternative)',
-    fr: 'Clé API personnelle (alternative)',
-    it: 'Chiave API personale (alternativa)',
-    en: 'Own API Key (Alternative)',
-  },
-  settings_own_key_hint: {
-    de: 'Kostenlos mit eigenem Anthropic API-Key.',
-    fr: 'Gratuit avec votre propre clé API Anthropic.',
-    it: 'Gratuito con la propria chiave API Anthropic.',
-    en: 'Free with your own Anthropic API key.',
-  },
 
   // Find related
   btn_find_related: {
     de: '\u00C4hnliche', fr: 'Similaires', it: 'Simili', en: 'Related',
   },
-  btn_find_related_title: {
-    de: 'Text markieren, dann \u00E4hnliche Entscheide finden',
-    fr: 'S\u00E9lectionner du texte, puis trouver des d\u00E9cisions similaires',
-    it: 'Selezionare testo, poi trovare decisioni simili',
-    en: 'Select text, then find related decisions',
-  },
   btn_verify_pro: {
     de: 'Pr\u00FCfen', fr: 'V\u00E9rifier', it: 'Verificare', en: 'Verify',
   },
-  law_article_title: {
-    de: 'Gesetzesartikel', fr: 'Article de loi', it: 'Articolo di legge', en: 'Statute article',
-  },
   source_link: {
     de: 'Originalquelle', fr: 'Source originale', it: 'Fonte originale', en: 'Original source',
-  },
-  section_citation: {
-    de: 'Zitierung', fr: 'Citation', it: 'Citazione', en: 'Citation',
   },
   btn_show_more: {
     de: 'Mehr anzeigen', fr: 'Afficher plus', it: 'Mostra di pi\u00F9', en: 'Show more',
@@ -802,12 +645,6 @@ var UI_STRINGS = {
   tool_support: {
     de: 'Begr\u00FCndung', fr: 'Fondement', it: 'Fondamento', en: 'Support',
   },
-  tool_support_desc: {
-    de: 'Text markieren \u2014 KI findet Entscheide, die Ihre Aussage st\u00FCtzen',
-    fr: 'S\u00E9lectionner du texte \u2014 l\'IA trouve des d\u00E9cisions qui soutiennent votre affirmation',
-    it: 'Selezionare testo \u2014 l\'IA trova decisioni a supporto',
-    en: 'Select text \u2014 AI finds decisions that support your statement',
-  },
   support_your_statement: {
     de: 'Ihre Aussage', fr: 'Votre affirmation', it: 'La vostra affermazione', en: 'Your statement',
   },
@@ -828,15 +665,6 @@ var UI_STRINGS = {
     fr: 'Veuillez s\u00E9lectionner une affirmation dans votre document pour laquelle vous cherchez un fondement juridique.',
     it: 'Selezionare un\'affermazione nel documento per la quale cercare un fondamento giuridico.',
     en: 'Please select a statement in your document for which you need legal support.',
-  },
-  feat_support_title: {
-    de: 'Begr\u00FCndung finden', fr: 'Trouver un fondement', it: 'Trova fondamento', en: 'Find support',
-  },
-  feat_support_desc: {
-    de: 'Aussage markieren \u2014 KI findet Entscheide, die Ihre Position st\u00FCtzen.',
-    fr: 'S\u00E9lectionnez une affirmation \u2014 l\'IA trouve des d\u00E9cisions soutenant votre position.',
-    it: 'Seleziona un\'affermazione \u2014 l\'IA trova decisioni a supporto della tua posizione.',
-    en: 'Select a statement \u2014 AI finds decisions that support your position.',
   },
   pro_feature_support: {
     de: 'St\u00FCtzende Entscheide finden (KI)', fr: 'Trouver des d\u00E9cisions \u00E0 l\'appui (IA)', it: 'Trovare decisioni a supporto (IA)', en: 'Find supporting decisions (AI)',
@@ -886,35 +714,8 @@ var UI_STRINGS = {
   },
 
   // Scan
-  tool_scan: {
-    de: 'Scan', fr: 'Scan', it: 'Scan', en: 'Scan',
-  },
-  scan_scanning: {
-    de: 'Dokument wird gescannt...', fr: 'Analyse du document...', it: 'Scansione del documento...', en: 'Scanning document...',
-  },
-  scan_found: {
-    de: '{n} Referenzen gefunden', fr: '{n} r\u00E9f\u00E9rences trouv\u00E9es', it: '{n} riferimenti trovati', en: '{n} references found',
-  },
-  scan_not_found: {
-    de: 'nicht gefunden', fr: 'introuvables', it: 'non trovati', en: 'not found',
-  },
-  scan_verify_all: {
-    de: 'Alle {n} Referenzen pr\u00FCfen', fr: 'V\u00E9rifier les {n} r\u00E9f\u00E9rences', it: 'Verifica tutti i {n} riferimenti', en: 'Verify all {n} references',
-  },
-  scan_limit_reached: {
-    de: 'Tageslimit erreicht', fr: 'Limite quotidienne atteinte', it: 'Limite giornaliero raggiunto', en: 'Daily limit reached',
-  },
-  scan_no_doc: {
-    de: 'Dokument konnte nicht gelesen werden. Bitte in Word verwenden.',
-    fr: 'Impossible de lire le document. Veuillez utiliser dans Word.',
-    it: 'Impossibile leggere il documento. Utilizzare in Word.',
-    en: 'Could not read document. Please use within Word.',
-  },
 
   // Audit (Pro) — full-document citation check via /api/attest
-  tool_audit: {
-    de: 'Dokument prüfen', fr: 'Vérifier le document', it: 'Verifica documento', en: 'Audit document',
-  },
   audit_summary_ok: {
     de: '{n} Zitate · alle gültig',
     fr: '{n} citations · toutes valides',
@@ -969,87 +770,18 @@ var UI_STRINGS = {
     it: 'Inserisci tutti i problemi come commenti',
     en: 'Insert all issues as comments',
   },
-  audit_deep_check: {
-    de: 'Tiefenprüfung: Stützt das Zitat die Aussage?',
-    fr: 'Vérification approfondie : la citation soutient-elle l\'affirmation ?',
-    it: 'Verifica approfondita: la citazione sostiene l\'affermazione?',
-    en: 'Deep check: does the citation support the claim?',
-  },
-  audit_replace_canonical: {
-    de: 'Auf kanonische Form ersetzen',
-    fr: 'Remplacer par la forme canonique',
-    it: 'Sostituisci con forma canonica',
-    en: 'Replace with canonical form',
-  },
   audit_no_word: {
     de: 'Diese Funktion ist nur in Word verfügbar.',
     fr: 'Cette fonction n\'est disponible que dans Word.',
     it: 'Questa funzione è disponibile solo in Word.',
     en: 'This feature is only available inside Word.',
   },
-  audit_done: {
-    de: 'Geprüft', fr: 'Vérifié', it: 'Verificato', en: 'Checked',
-  },
-  audit_jumped: {
-    de: 'Im Dokument markiert', fr: 'Sélectionné dans le document', it: 'Selezionato nel documento', en: 'Selected in document',
-  },
 
   // Tab bar
-  tab_search: {
-    de: 'Suchen', fr: 'Rechercher', it: 'Cerca', en: 'Search',
-  },
-  tab_audit: {
-    de: 'Prüfen', fr: 'Vérifier', it: 'Verifica', en: 'Verify',
-  },
 
   // Welcome cards (replace chip wall)
-  welcome_card_search_title: {
-    de: 'Nachschlagen & zitieren',
-    fr: 'Consulter & citer',
-    it: 'Consultare & citare',
-    en: 'Look up & cite',
-  },
-  welcome_card_search_desc: {
-    de: 'Stichwort oder Referenz eingeben — der korrekt formatierte Zitierstring ist ein Klick entfernt.',
-    fr: 'Mot-clé ou référence — la citation correctement formatée est à un clic.',
-    it: 'Parola chiave o riferimento — la citazione formattata correttamente è a un clic.',
-    en: 'Type a keyword or reference — the correctly formatted citation is one click away.',
-  },
-  welcome_card_audit_title: {
-    de: 'Dokument-Audit',
-    fr: 'Audit du document',
-    it: 'Audit del documento',
-    en: 'Document audit',
-  },
-  welcome_card_audit_desc: {
-    de: 'Lassen Sie das ganze Dokument auf falsche Zitate und ungültige Erwägungs-Verweise prüfen.',
-    fr: 'Faites vérifier tout le document : citations erronées, considérants inexistants.',
-    it: 'Fa verificare tutto il documento: citazioni errate, considerandi inesistenti.',
-    en: 'Audit the whole document for invalid citations and missing pinpoints.',
-  },
-  welcome_card_audit_open: {
-    de: 'Audit öffnen →', fr: 'Ouvrir l\'audit →', it: 'Apri audit →', en: 'Open audit →',
-  },
 
   // Audit tab entry state (no audit run yet)
-  audit_intro_title: {
-    de: 'Dokument-Audit',
-    fr: 'Audit du document',
-    it: 'Audit del documento',
-    en: 'Document audit',
-  },
-  audit_intro_desc: {
-    de: 'Jedes Zitat im Dokument wird gegen die Datenbank geprüft. Erfundene Entscheide und falsche Erwägungs-Nummern markieren wir samt Korrektur-Vorschlag.',
-    fr: 'Chaque citation du document est vérifiée. Décisions inventées et numéros de considérants erronés sont signalés avec une suggestion de correction.',
-    it: 'Ogni citazione viene verificata. Decisioni inventate e numeri di considerando errati vengono segnalati con un suggerimento di correzione.',
-    en: 'Every citation in your document is checked against the database. Made-up decisions and wrong pinpoints are flagged with a fix suggestion.',
-  },
-  audit_intro_preview_pinpoint: {
-    de: 'Erwägung existiert nicht (gültig: 2, 4.1, 4.2)',
-    fr: 'Considérant inexistant (valides : 2, 4.1, 4.2)',
-    it: 'Considerando inesistente (validi: 2, 4.1, 4.2)',
-    en: 'Pinpoint not found (valid: 2, 4.1, 4.2)',
-  },
   audit_passed_label: {
     de: '{n} gültige Zitate',
     fr: '{n} citations valides',
@@ -1129,15 +861,6 @@ var UI_STRINGS = {
     fr: 'Autres outils',
     it: 'Altri strumenti',
     en: 'More tools',
-  },
-  audit_pro_required: {
-    de: 'Audit ist Teil des Pro-Abonnements (CHF 5/Monat).',
-    fr: 'L\'audit fait partie de l\'abonnement Pro (CHF 5/mois).',
-    it: 'L\'audit è parte dell\'abbonamento Pro (CHF 5/mese).',
-    en: 'Audit is part of the Pro subscription (CHF 5/month).',
-  },
-  audit_unlock_button: {
-    de: 'Pro freischalten', fr: 'Débloquer Pro', it: 'Sblocca Pro', en: 'Unlock Pro',
   },
 
   // Audit status strip (persistent banner above the search view)

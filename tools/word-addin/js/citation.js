@@ -11,6 +11,19 @@ var COURT_NAMES = {
   bpatger:{ de: 'BPatGer',fr: 'TFB', it: 'TFB', en: 'BPatGer' }
 };
 
+// Spelled-out (long-form) court names for the federal courts. Used by
+// the "long" citation style — independent of i18n.js so citation.js
+// stays a pure module the test suite can consume directly.
+// For cantonal courts the i18n.js getCourtName() fallback covers the
+// long version; this map only provides the federal long names.
+var COURT_NAMES_LONG = {
+  bger:    { de: 'Bundesgericht',         fr: 'Tribunal fédéral',                     it: 'Tribunale federale',                en: 'Federal Supreme Court' },
+  bge:     { de: 'Bundesgericht',         fr: 'Tribunal fédéral',                     it: 'Tribunale federale',                en: 'Federal Supreme Court' },
+  bvger:   { de: 'Bundesverwaltungsgericht', fr: 'Tribunal administratif fédéral',   it: 'Tribunale amministrativo federale', en: 'Federal Administrative Court' },
+  bstger:  { de: 'Bundesstrafgericht',    fr: 'Tribunal pénal fédéral',               it: 'Tribunale penale federale',         en: 'Federal Criminal Court' },
+  bpatger: { de: 'Bundespatentgericht',   fr: 'Tribunal fédéral des brevets',         it: 'Tribunale federale dei brevetti',   en: 'Federal Patent Court' }
+};
+
 var ERWAEGUNG_LABEL = {
   de: 'E.',
   fr: 'consid.',
@@ -91,66 +104,116 @@ function extractBgeRef(docket) {
 }
 
 /**
+ * Citation style options. Swiss legal practice has several conventions
+ * depending on the publication channel (court briefs vs. journal articles
+ * vs. footnotes). The add-in lets the user pick once in settings; every
+ * insert from then on follows that style.
+ *
+ *   parenthesised : "(BGer 4A_747/2012 vom 5. April 2013, E. 2)"  ← default
+ *   footnote      : "BGer 4A_747/2012 vom 5. April 2013, E. 2"     (no parens)
+ *   brief         : "(BGer 4A_747/2012, E. 2)"                     (no date)
+ *   long          : "(Bundesgericht, Urteil vom 5. April 2013, 4A_747/2012, E. 2)"
+ *
+ * For BGE (leading decisions), the date is conventionally omitted
+ * regardless of style — they're identified by volume + page, not date.
+ */
+var CITATION_STYLES = ['parenthesised', 'footnote', 'brief', 'long'];
+
+function _wrap(style, body) {
+  return style === 'footnote' ? body : '(' + body + ')';
+}
+
+/**
  * Format a citation for a Swiss court decision.
  *
  * Prefers the API-provided citation_string_{lang} if present (verbatim,
- * authoritative — built server-side with full canonical knowledge).
- * Falls back to local reconstruction only when the API field is missing.
+ * authoritative — built server-side with full canonical knowledge). For
+ * the canonical form we still apply style transforms (parens / no
+ * parens / strip date for `brief`).
  *
- * @param {Object} decision - Decision object with at least: docket, date, court_id
- * @param {string} lang - Language code: 'de', 'fr', 'it', 'en'
- * @param {string} [erwaegung] - Optional Erwägung number (e.g. "3" or "2.1")
- * @returns {string} Formatted citation, e.g. "(BGE 125 III 231, E. 3)"
+ * @param {Object} decision   Decision object: docket, date, court_id, ...
+ * @param {string} lang       'de' | 'fr' | 'it' | 'en'
+ * @param {string} [erwaegung]  Optional Erwägung number (e.g. "3" or "2.1")
+ * @param {string} [style]    One of CITATION_STYLES. Defaults to
+ *                            localStorage('ocl_citation_style') or
+ *                            'parenthesised'.
  */
-function formatCitation(decision, lang, erwaegung) {
+function formatCitation(decision, lang, erwaegung, style) {
   lang = lang || 'de';
+  style = style || _readStylePref();
+  if (CITATION_STYLES.indexOf(style) < 0) style = 'parenthesised';
 
-  // Prefer canonical citation string from API (anti-hallucination contract).
-  // EN falls back to DE since the API only emits de/fr/it.
+  // Canonical path — API gave us a verbatim citation string.
   var apiKey = lang === 'en' ? 'citation_string_de' : 'citation_string_' + lang;
   var canonical = decision[apiKey] || decision.citation_string_de;
   if (canonical) {
-    if (erwaegung) canonical += ', ' + ERWAEGUNG_LABEL[lang] + ' ' + erwaegung;
-    return '(' + canonical + ')';
+    var c = canonical;
+    if (style === 'brief') {
+      // Drop the "vom 5. April 2013" / "du 5 avril 2013" / etc. tail.
+      c = c.replace(/\s+(?:vom|du|del|of)\s+\d.*$/i, '');
+    }
+    if (erwaegung) c += ', ' + ERWAEGUNG_LABEL[lang] + ' ' + erwaegung;
+    return _wrap(style, c);
   }
 
-  var parts = [];
-
-  // Normalize field names (API uses docket_number/decision_date/court, module uses docket/date/court_id)
+  // Fallback path — reconstruct from structured fields.
   var docket = decision.docket || decision.docket_number || '';
   var date = decision.date || decision.decision_date || '';
   var courtId = (decision.court_id || decision.court || '').toLowerCase();
-  // Patch decision for isBge/extractBgeRef
   var d = { docket: docket, date: date, court_id: courtId, court: courtId };
 
+  var parts = [];
   if (isBge(d)) {
-    // BGE format: replace "BGE" with language-appropriate prefix, no date
+    // BGE format never carries a date (volume+page is the identifier).
     var ref = extractBgeRef(docket);
-    var prefix = COURT_NAMES.bge[lang];
-    parts.push(prefix + ' ' + ref);
+    parts.push(COURT_NAMES.bge[lang] + ' ' + ref);
   } else {
-    // Non-BGE format: court name + docket + date
+    // Non-BGE: court name + docket [+ date]
     var courtName;
-    if (COURT_NAMES[courtId]) {
+    if (style === 'long') {
+      // Prefer the spelled-out federal court name; fall back to i18n.js
+      // getCourtName() (covers cantonal courts in the browser);
+      // last resort: the abbreviated COURT_NAMES entry.
+      if (COURT_NAMES_LONG[courtId]) {
+        courtName = COURT_NAMES_LONG[courtId][lang];
+      } else if (typeof getCourtName === 'function') {
+        courtName = getCourtName(courtId, lang);
+      } else if (COURT_NAMES[courtId]) {
+        courtName = COURT_NAMES[courtId][lang];
+      } else {
+        courtName = courtId || '';
+      }
+    } else if (COURT_NAMES[courtId]) {
       courtName = COURT_NAMES[courtId][lang];
     } else if (typeof getCourtName === 'function') {
       courtName = getCourtName(courtId, lang);
     } else {
       courtName = courtId || '';
     }
-    var citation = courtName + ' ' + docket;
-    if (date) {
-      citation += ' ' + formatDate(date, lang);
+
+    if (style === 'long') {
+      // "Bundesgericht, Urteil vom 5. April 2013, 4A_747/2012"
+      var URTEIL = { de: 'Urteil', fr: 'Arrêt', it: 'Sentenza', en: 'Judgment' };
+      var seg = courtName + ', ' + URTEIL[lang];
+      if (date) seg += ' ' + formatDate(date, lang);
+      seg += ', ' + docket;
+      parts.push(seg);
+    } else {
+      var seg2 = courtName + ' ' + docket;
+      if (date && style !== 'brief') seg2 += ' ' + formatDate(date, lang);
+      parts.push(seg2);
     }
-    parts.push(citation);
   }
 
-  // Append Erwägung if provided
-  if (erwaegung) {
-    parts.push(ERWAEGUNG_LABEL[lang] + ' ' + erwaegung);
-  }
+  if (erwaegung) parts.push(ERWAEGUNG_LABEL[lang] + ' ' + erwaegung);
+  return _wrap(style, parts.join(', '));
+}
 
-  return '(' + parts.join(', ') + ')';
+function _readStylePref() {
+  try {
+    var s = (typeof localStorage !== 'undefined') ? localStorage.getItem('ocl_citation_style') : null;
+    return s || 'parenthesised';
+  } catch (e) { return 'parenthesised'; }
 }
 
 // Export for both Node.js and browser
@@ -164,6 +227,7 @@ if (typeof module !== 'undefined' && module.exports) {
     formatCitation: formatCitation,
     isBge: isBge,
     extractBgeRef: extractBgeRef,
-    pinpointLabel: pinpointLabel
+    pinpointLabel: pinpointLabel,
+    CITATION_STYLES: CITATION_STYLES
   };
 }
