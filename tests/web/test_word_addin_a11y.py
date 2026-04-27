@@ -149,6 +149,36 @@ def test_office_locale_autodetect():
     )
 
 
+def test_insert_default_is_plain_text():
+    """Citations must default to plain text, not hyperlinks.
+
+    Swiss legal-practice norm: briefs and memoranda use plain-text
+    citations. Hyperlinks look amateurish on paper, are stripped by
+    most courts' filing portals, and signal an unfamiliar author. The
+    add-in keeps a dedicated "Insert with hyperlink" button for the
+    rare case where a clickable cite is wanted; everything else (every
+    result-card insert button, every Erwägung pinpoint button, the
+    detail-view primary insert) must be plain text by default.
+    """
+    js = APP_JS.read_text(encoding="utf-8")
+    # Find insertCitation()'s body and assert the asLink default is
+    # explicit opt-in — not the old `localStorage.getItem('ocl_insert_plain') !== '1'`
+    # toggle that defaulted to hyperlinked.
+    start = js.index("async function insertCitation")
+    body = js[start:start + 2000]
+    assert "opts.asLink === true" in body, (
+        "insertCitation() no longer defaults to plain text. The Swiss "
+        "legal-practice norm is plain-text citations; hyperlinks must "
+        "be the explicit opt-in via the 'Insert with hyperlink' button. "
+        "Restore the `var asLink = opts.asLink === true;` line."
+    )
+    assert "ocl_insert_plain" not in body, (
+        "Stale `ocl_insert_plain` localStorage flag is back. The flag "
+        "was removed when plain text became the default — there's no "
+        "need for an opt-out toggle when plain is the only default."
+    )
+
+
 def test_split_erwaegung_guards_against_null_number():
     """Older BGE case-briefs come back with `number: null` for every
     Erwägung — the structured extractor couldn't parse the original.

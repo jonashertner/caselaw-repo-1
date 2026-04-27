@@ -1781,9 +1781,13 @@ async function insertCitation(decision, erwaegung, opts) {
   var text = formatCitation(decision, state.lang, erwaegung);
   var btn = _lastClickedBtn;
 
-  // Default insert mode = hyperlinked (clickable citation back to source).
-  // Power users can opt out by setting `ocl_insert_plain` = '1' in settings.
-  var asLink = opts.asLink !== undefined ? opts.asLink : (localStorage.getItem('ocl_insert_plain') !== '1');
+  // Default insert mode = PLAIN TEXT. Swiss legal practice expects
+  // citations in briefs / memoranda to be plain text references —
+  // hyperlinks are unconventional in court submissions and look
+  // amateurish in printed-on-paper documents. Users who explicitly
+  // want a link click the dedicated "Insert with link" button (the
+  // only path that sets opts.asLink = true).
+  var asLink = opts.asLink === true;
   var url = decision.canonical_url || (decision.decision_id ? 'https://mcp.opencaselaw.ch/entscheid/' + encodeURIComponent(decision.decision_id) : null);
 
   try {
