@@ -114,7 +114,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 969,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 24 tools (22 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), and full decision-structure decomposition (`get_decision_structure`).
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 969,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 29 tools (27 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), and full decision-structure decomposition (`get_decision_structure`).
 
 **Remote (no download needed):**
 
@@ -164,7 +164,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | Laws with Botschaft refs | 2,500 (33,000 articles) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
 | Scholarly commentaries | 1,058 (OnlineKommentar.ch + OpenLegalCommentary.ch) |
-| MCP tools | 24 (22 remote / 24 local) |
+| MCP tools | 29 (27 remote / 29 local) |
 
 **Language distribution:**
 
@@ -321,7 +321,7 @@ See the governance policy for source withdrawals, re-anonymization, and verified
         structured metadata, 8.85M citation edges, 11.34M statute links,
         5,500+ federal laws, 26,043 cantonal legislative texts,
         and legislative history for 2,500 laws.
-        Searchable via 24 MCP tools (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
+        Searchable via 29 MCP tools (27 remote + 2 local-only) (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
 }
 ```
 
