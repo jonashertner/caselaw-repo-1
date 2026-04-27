@@ -142,3 +142,40 @@ def test_office_locale_autodetect():
         "_detectInitialLang() doesn't read Office.context.displayLanguage — "
         "the autodetect is incomplete."
     )
+
+
+def test_multi_select_contract():
+    """Multi-citation cluster wiring must stay intact end-to-end.
+
+    Three things have to line up: the renderer emits the toggle action,
+    the click handler intercepts it before the card-level 'detail'
+    action, and the keyboard shortcut for batch insert exists.
+    """
+    js = APP_JS.read_text(encoding="utf-8")
+    citation_js = (ADDIN_DIR / "js" / "citation.js").read_text(encoding="utf-8")
+
+    assert "data-action=\"toggle-select\"" in js, (
+        "Result-card renderer no longer emits the toggle-select checkbox — "
+        "users can't build a multi-citation cluster."
+    )
+    assert "case 'toggle-select':" in js, (
+        "handleAppClick lost the toggle-select branch — checkbox clicks "
+        "would fall through to the card 'detail' action and open the "
+        "decision instead of selecting it."
+    )
+    assert "case 'multi-insert':" in js, (
+        "handleAppClick lost the multi-insert branch — the 'Insert N "
+        "selected' button in the floating bar wouldn't do anything."
+    )
+    assert "function insertMultiCitation" in js, (
+        "insertMultiCitation() is gone — no implementation behind the "
+        "Insert-all action."
+    )
+    assert "e.shiftKey && e.key === 'Enter'" in js, (
+        "Ctrl/Cmd + Shift + Enter shortcut for batch insert is missing "
+        "from the global keyboard handler."
+    )
+    assert "function formatMultiCitation" in citation_js, (
+        "citation.js::formatMultiCitation is missing — the multi-bar "
+        "would have no way to format the cluster."
+    )

@@ -2495,3 +2495,57 @@ html, body {
   color: var(--text-secondary, #6b6b73);
   word-break: break-word;
 }
+
+/* Multi-select on result cards. The checkbox sits inline with the
+   docket so it's both discoverable (always visible) and out of the
+   way of the badge cluster on the right.  */
+.result-card .result-header {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.result-card .result-header-text {
+  display: flex;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+}
+.result-select {
+  margin-top: 3px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ac, #b91c24);
+}
+.result-card-selected {
+  border-color: var(--ac, #b91c24) !important;
+  background: var(--ac-bg, #fef2f2);
+}
+
+/* Floating multi-citation bar at the bottom of the panel. Sticky so
+   it stays reachable while scrolling through long result lists. */
+.multi-bar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 12px -16px -12px;
+  padding: 10px 16px;
+  background: var(--surf, #ffffff);
+  border-top: 1px solid var(--brd, #d4d4d4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+  z-index: 5;
+}
+.multi-bar-count {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx, #0a0a0a);
+}
+.multi-bar-clear { flex: 0 0 auto; }
+.multi-bar-insert { flex: 0 0 auto; }

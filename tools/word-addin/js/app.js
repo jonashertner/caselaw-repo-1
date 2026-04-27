@@ -32,6 +32,10 @@ var state = {
   scanDocText: '',
   auditRunning: false,
   lastAuditAt: null,
+  // Multi-select cluster — array of decision_id strings the user has
+  // checked from the current results list. Cleared on new search,
+  // view change away from search, or explicit "Clear" action.
+  selectedIds: [],
 };
 
 // SVG icon library — single source of truth for chrome-free, line-icon glyphs.
@@ -201,8 +205,17 @@ function initApp() {
       return;
     }
 
+    // Ctrl/Cmd + Shift + Enter — insert all selected results as a
+    // multi-citation. Checked BEFORE the single-result shortcut below
+    // because Shift would otherwise be ignored.
+    if (meta && e.shiftKey && e.key === 'Enter' && state.selectedIds.length > 0) {
+      e.preventDefault();
+      insertMultiCitation();
+      return;
+    }
+
     // Ctrl/Cmd + Enter on search view — insert top result's citation
-    if (meta && e.key === 'Enter' && state.view === 'search' && state.results.length > 0) {
+    if (meta && !e.shiftKey && e.key === 'Enter' && state.view === 'search' && state.results.length > 0) {
       e.preventDefault();
       insertCitation(state.results[0]);
       return;
@@ -388,6 +401,10 @@ function render() {
     else if (view === 'guide') html += renderGuide();
     else if (view === 'help') html += renderHelp();
     else if (view === 'settings') html += renderSettings();
+
+    // The multi-select bar floats above the main panel when ≥1
+    // result is selected; it's part of the search-view experience.
+    if (view === 'search') html += renderMultiBar();
 
     app.innerHTML = html; // eslint-disable-line no-unsanitized/property -- all values pre-escaped via escHtml()
     bindEvents();
@@ -639,16 +656,46 @@ function renderResultCard(r, idx) {
   var date = r.decision_date || r.date || '';
   var docket = r.citation_string_de || r.docket_number || r.decision_id;
 
-  return '<div class="result-card" data-action="detail" data-idx="' + idx + '" tabindex="0" role="button">' +
-    '<div class="result-header"><div>' +
+  // Multi-select checkbox — id-keyed so re-renders preserve selection
+  // even if result ordering changes. The checkbox sits inline with the
+  // docket; data-action='toggle-select' is intercepted before the card's
+  // outer 'detail' click via a stopPropagation in handleAppClick.
+  var did = r.decision_id || ('idx-' + idx);
+  var selected = state.selectedIds.indexOf(did) >= 0;
+  var checkAria = t(selected ? 'multi_deselect_aria' : 'multi_select_aria', lang);
+
+  return '<div class="result-card' + (selected ? ' result-card-selected' : '') +
+    '" data-action="detail" data-idx="' + idx + '" tabindex="0" role="button">' +
+    '<div class="result-header">' +
+    '<input type="checkbox" class="result-select" data-action="toggle-select" ' +
+    'data-id="' + escHtml(did) + '" data-idx="' + idx + '" ' +
+    'aria-label="' + escHtml(checkAria) + '"' + (selected ? ' checked' : '') + '>' +
+    '<div class="result-header-text"><div>' +
     '<div class="result-docket">' + escHtml(docket) + '</div>' +
     '<div class="result-meta">' + escHtml(date) + ' \u00B7 ' + escHtml(courtName) + '</div>' +
-    '</div><div>' + badges + '</div></div>' +
+    '</div><div>' + badges + '</div></div></div>' +
     (regeste ? '<div class="result-regeste">' + escHtml(regeste) + '</div>' : '') +
     '<div class="result-actions">' +
     '<button class="btn btn-insert btn-insert-card" data-action="insert" data-idx="' + idx + '" title="' + escHtml(t('btn_insert', lang)) + '">' +
     ICONS.insert + ' ' + escHtml(t('btn_insert', lang)) + '</button>' +
     '</div></div>';
+}
+
+// Floating multi-select bar — only rendered when ≥1 card is selected.
+// Sticky at the bottom of the panel so it's reachable without scrolling
+// back to the top, and stays out of the way until the user opts in.
+function renderMultiBar() {
+  if (!state.selectedIds.length) return '';
+  var lang = state.lang;
+  var n = state.selectedIds.length;
+  return '<div class="multi-bar" role="region" aria-label="' + escHtml(t('multi_aria_region', lang)) + '">' +
+    '<span class="multi-bar-count">' + escHtml(t('multi_n_selected', lang, { n: n })) + '</span>' +
+    '<button class="btn btn-detail multi-bar-clear" data-action="multi-clear">' +
+    escHtml(t('multi_clear', lang)) + '</button>' +
+    '<button class="btn btn-insert multi-bar-insert" data-action="multi-insert" ' +
+    'title="' + escHtml(t('help_insert_multi', lang)) + '">' +
+    ICONS.insert + ' ' + escHtml(t('multi_insert', lang)) + '</button>' +
+    '</div>';
 }
 
 // Truncate at the last sentence boundary within `max` chars; fall back to
@@ -842,12 +889,13 @@ function renderHelp() {
   html += '<h3 class="settings-heading">' + escHtml(t('help_title', lang)) + '</h3>';
   html += '<p class="help-intro">' + escHtml(t('help_intro', lang)) + '</p>';
   html += '<table class="kbd-table"><tbody>';
-  html += row(meta + ' + K',     t('help_focus_search', lang));
-  html += row('Esc',              t('help_back',         lang));
-  html += row('?',                t('help_toggle_help',  lang));
-  html += row(meta + ' + Enter',  t('help_insert_top',   lang));
-  html += row('Enter',            t('help_open_first',   lang));
-  html += row('Tab / Shift+Tab',  t('help_navigate',     lang));
+  html += row(meta + ' + K',                t('help_focus_search', lang));
+  html += row('Esc',                         t('help_back',         lang));
+  html += row('?',                           t('help_toggle_help',  lang));
+  html += row(meta + ' + Enter',             t('help_insert_top',   lang));
+  html += row(meta + ' + Shift + Enter',     t('help_insert_multi', lang));
+  html += row('Enter',                       t('help_open_first',   lang));
+  html += row('Tab / Shift+Tab',             t('help_navigate',     lang));
   html += '</tbody></table>';
   html += '<div class="help-footer">' +
     '<a class="welcome-link" data-action="show-guide">' + escHtml(t('how_it_works', lang)) + '</a>' +
@@ -1316,9 +1364,33 @@ async function handleAppClick(e) {
     var action = btn.dataset.action;
     var idx = parseInt(btn.dataset.idx, 10);
 
+    // The multi-select checkbox lives inside a result-card (whose
+    // outer click opens the detail view). Stop propagation so a
+    // checkbox toggle doesn't double-fire as a card click.
+    if (action === 'toggle-select') {
+      e.stopPropagation();
+      if (typeof e.preventDefault === 'function') e.preventDefault();
+    }
+
     switch (action) {
       case 'insert':       await insertCitation(state.results[idx]); break;
       case 'detail':       await showDetail(state.results[idx]); break;
+      case 'toggle-select': {
+        var did = btn.dataset.id;
+        if (!did) break;
+        var pos = state.selectedIds.indexOf(did);
+        if (pos >= 0) state.selectedIds.splice(pos, 1);
+        else state.selectedIds.push(did);
+        render();
+        break;
+      }
+      case 'multi-clear':
+        state.selectedIds = [];
+        render();
+        break;
+      case 'multi-insert':
+        await insertMultiCitation();
+        break;
       case 'insert-main':  await insertCitation(state.detail); break;
       case 'insert-main-link': await insertCitation(state.detail, null, { asLink: true }); break;
       case 'insert-ew':    await insertCitation(state.detail, btn.dataset.ew); break;
@@ -1602,9 +1674,22 @@ async function doSearch(query) {
   // Result objects already include citation_string_{de,fr,it} + canonical_url.
   try {
     var data = await searchDecisions(query, { limit: 20 });
+    var prevResults = state.results;
     state.results = (data && data.results) || [];
     state.total = (data && data.total) || 0;
     if (state.results.length > 0) addRecentLookup(query);
+    // Drop any previously-selected ids that aren't in the new result
+    // set — the multi-bar must only reference visible decisions.
+    if (state.selectedIds.length && state.results !== prevResults) {
+      var stillVisible = {};
+      for (var i = 0; i < state.results.length; i++) {
+        var rid = state.results[i].decision_id;
+        if (rid) stillVisible[rid] = 1;
+      }
+      state.selectedIds = state.selectedIds.filter(function (id) {
+        return !!stillVisible[id];
+      });
+    }
   } catch (e) {
     state.error = e && e.type ? e : { type: 'http_error' };
   }
@@ -1685,6 +1770,64 @@ async function insertCitation(decision, erwaegung, opts) {
       setTimeout(function () { btn.textContent = t('btn_insert', state.lang); btn.style.background = ''; }, 2000);
     }
     console.error('Insert failed:', e);
+  }
+}
+
+/**
+ * Insert all currently selected results as one Swiss-convention
+ * multi-citation. Called from the floating multi-bar's "Insert N
+ * selected" button and from the Ctrl/Cmd + Shift + Enter shortcut.
+ *
+ * Always inserts plain text (not a hyperlink) — there isn't a single
+ * meaningful URL for a cluster of authorities, and Word's
+ * insertHyperlink can only target one URL per range.
+ *
+ * Visual feedback mirrors single-insert: success tick on the button,
+ * 900 ms revert. Selection is cleared on success so the bar dismisses
+ * itself; failure preserves the selection so the user can retry.
+ */
+async function insertMultiCitation() {
+  if (!state.selectedIds.length) return;
+  var lang = state.lang;
+  var btn = _lastClickedBtn;
+
+  // Map ids back to decision objects, in the order they were clicked
+  // (which matches the order the user selected them — preserves intent).
+  var byId = {};
+  for (var i = 0; i < state.results.length; i++) {
+    var r = state.results[i];
+    var did = r.decision_id || ('idx-' + i);
+    byId[did] = r;
+  }
+  var decisions = state.selectedIds
+    .map(function (id) { return byId[id]; })
+    .filter(function (d) { return !!d; });
+  if (!decisions.length) return;
+
+  var text = formatMultiCitation(decisions, lang);
+
+  try {
+    await insertTextAtCursor(text);
+    state.selectedIds = [];
+    if (btn) {
+      var orig = btn.innerHTML;
+      btn.innerHTML = ICONS.check + ' ' + escHtml(t('multi_inserted', lang, { n: decisions.length }));
+      btn.classList.add('btn-success');
+      // Re-render after the tick so the bar dismisses cleanly.
+      setTimeout(function () {
+        btn.classList.remove('btn-success');
+        render();
+      }, 900);
+    } else {
+      render();
+    }
+  } catch (e) {
+    if (btn) {
+      btn.textContent = '\u2717';
+      btn.style.background = 'var(--red)';
+      setTimeout(function () { render(); }, 2000);
+    }
+    console.error('Multi-insert failed:', e);
   }
 }
 

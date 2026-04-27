@@ -462,6 +462,89 @@ test('CITATION_STYLES is exported', function () {
 });
 
 // ============================================================
+// Multi-citation cluster
+// ============================================================
+
+console.log('\n=== Multi-citation cluster ===');
+
+var formatMultiCitation = citation.formatMultiCitation;
+
+test('empty array returns empty string', function () {
+  assert.strictEqual(formatMultiCitation([], 'de', 'parenthesised'), '');
+});
+
+test('null / undefined returns empty string', function () {
+  assert.strictEqual(formatMultiCitation(null, 'de', 'parenthesised'), '');
+  assert.strictEqual(formatMultiCitation(undefined, 'de', 'parenthesised'), '');
+});
+
+test('single decision degrades to formatCitation()', function () {
+  var s = formatMultiCitation([bgeDecision], 'de', 'parenthesised');
+  assert.strictEqual(s, '(BGE 125 III 231)');
+});
+
+test('two decisions joined with semicolon, single outer paren (parenthesised)', function () {
+  var s = formatMultiCitation([bgeDecision, bgerDecision], 'de', 'parenthesised');
+  assert.strictEqual(s, '(BGE 125 III 231; BGer 4A_747/2012 vom 5. April 2013)');
+});
+
+test('three-way mix preserves order user clicked them', function () {
+  var s = formatMultiCitation([bgerDecision, bgeDecision, bvgerDecision], 'de', 'parenthesised');
+  assert.strictEqual(
+    s,
+    '(BGer 4A_747/2012 vom 5. April 2013; BGE 125 III 231; BVGer A-1234/2020 vom 15. März 2021)'
+  );
+});
+
+test('footnote style: no outer parens, semicolons inside', function () {
+  var s = formatMultiCitation([bgeDecision, bgerDecision], 'de', 'footnote');
+  assert.strictEqual(s, 'BGE 125 III 231; BGer 4A_747/2012 vom 5. April 2013');
+});
+
+test('brief style: dates dropped from non-BGE entries, single outer paren', function () {
+  var s = formatMultiCitation([bgeDecision, bgerDecision], 'de', 'brief');
+  assert.strictEqual(s, '(BGE 125 III 231; BGer 4A_747/2012)');
+});
+
+test('long style: federal courts spelled out, joined with semicolon', function () {
+  var s = formatMultiCitation([bgeDecision, bgerDecision], 'de', 'long');
+  // BGE: spelled out becomes "Bundesgericht 125 III 231" (no date for BGE)
+  // BGer: "Bundesgericht, Urteil vom 5. April 2013, 4A_747/2012"
+  assert.ok(s.indexOf('BGE') < 0 || s.indexOf('Bundesgericht') >= 0,
+    'long form must spell out the court: ' + s);
+  assert.ok(s.indexOf('Urteil vom') >= 0, 'long DE must include "Urteil vom": ' + s);
+  assert.ok(s.indexOf(';') >= 0, 'must join with semicolon: ' + s);
+  assert.ok(s.charAt(0) === '(' && s.charAt(s.length - 1) === ')', 'must keep outer parens: ' + s);
+});
+
+test('FR locale joins with semicolons + uses TF abbreviation', function () {
+  var s = formatMultiCitation([bgeDecision, bgerDecision], 'fr', 'parenthesised');
+  assert.strictEqual(s, '(ATF 125 III 231; TF 4A_747/2012 du 5 avril 2013)');
+});
+
+test('IT locale joins correctly', function () {
+  var s = formatMultiCitation([bgeDecision, bgerDecision], 'it', 'parenthesised');
+  assert.strictEqual(s, '(DTF 125 III 231; TF 4A_747/2012 del 5 aprile 2013)');
+});
+
+test('EN locale falls back to DE prefixes for canonical', function () {
+  var s = formatMultiCitation([bgeDecision, bgerDecision], 'en', 'parenthesised');
+  assert.ok(s.indexOf('BGE 125 III 231') >= 0);
+  assert.ok(s.indexOf('BGer 4A_747/2012') >= 0);
+});
+
+test('canonical citation_string sources are also stripped + re-wrapped correctly', function () {
+  var d1 = { citation_string_de: 'BGer 4A_100/2020 vom 1. Januar 2020', court: 'bger' };
+  var d2 = { citation_string_de: 'BGer 4A_200/2020 vom 2. Februar 2020', court: 'bger' };
+  var s = formatMultiCitation([d1, d2], 'de', 'parenthesised');
+  assert.strictEqual(s, '(BGer 4A_100/2020 vom 1. Januar 2020; BGer 4A_200/2020 vom 2. Februar 2020)');
+});
+
+test('formatMultiCitation is exported from the module', function () {
+  assert.strictEqual(typeof citation.formatMultiCitation, 'function');
+});
+
+// ============================================================
 // Summary
 // ============================================================
 

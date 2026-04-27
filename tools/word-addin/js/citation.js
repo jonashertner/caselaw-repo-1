@@ -216,6 +216,41 @@ function _readStylePref() {
   } catch (e) { return 'parenthesised'; }
 }
 
+/**
+ * Combine N decisions into a single Swiss-convention multi-citation.
+ *
+ * Used by the "Insert N selected" workflow when a practitioner wants
+ * to cite a cluster of authorities for the same proposition. Output:
+ *
+ *   parenthesised : "(BGE 125 III 231; BGE 134 V 231; BGer 4A_747/2012)"
+ *   footnote      : "BGE 125 III 231; BGE 134 V 231; BGer 4A_747/2012"
+ *   brief         : "(BGE 125 III 231; BGer 4A_747/2012)"
+ *   long          : "(Bundesgericht, Urteil vom 5. April 2013, 4A_747/2012;
+ *                    Tribunal fédéral, Arrêt du …)"
+ *
+ * Per-decision pinpoints are intentionally omitted in multi-mode —
+ * mixing pinpoints across a citation cluster is unusual and the v1
+ * UI doesn't expose per-card pinpoint selection. If the caller passes
+ * a single-element array we degrade to a single formatCitation() call.
+ */
+function formatMultiCitation(decisions, lang, style) {
+  if (!decisions || !decisions.length) return '';
+  if (decisions.length === 1) return formatCitation(decisions[0], lang, null, style);
+  style = style || _readStylePref();
+  if (CITATION_STYLES.indexOf(style) < 0) style = 'parenthesised';
+  // Strip the outer parens (when present) from each individual rendering
+  // so we can wrap the joined cluster once.
+  var parts = [];
+  for (var i = 0; i < decisions.length; i++) {
+    var raw = formatCitation(decisions[i], lang, null, style);
+    if (raw.length >= 2 && raw.charAt(0) === '(' && raw.charAt(raw.length - 1) === ')') {
+      raw = raw.slice(1, -1);
+    }
+    parts.push(raw);
+  }
+  return _wrap(style, parts.join('; '));
+}
+
 // Export for both Node.js and browser
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
@@ -225,6 +260,7 @@ if (typeof module !== 'undefined' && module.exports) {
     DATE_PREFIX: DATE_PREFIX,
     formatDate: formatDate,
     formatCitation: formatCitation,
+    formatMultiCitation: formatMultiCitation,
     isBge: isBge,
     extractBgeRef: extractBgeRef,
     pinpointLabel: pinpointLabel,

@@ -273,6 +273,37 @@ var UI_STRINGS = {
   help_navigate: {
     de: 'Zwischen Resultaten navigieren', fr: 'Naviguer entre les r\u00E9sultats', it: 'Naviga tra i risultati', en: 'Navigate results',
   },
+  help_insert_multi: {
+    de: 'Alle ausgew\u00E4hlten als Sammelzitat einf\u00FCgen',
+    fr: 'Ins\u00E9rer toutes les d\u00E9cisions s\u00E9lectionn\u00E9es comme citation group\u00E9e',
+    it: 'Inserisci tutte le decisioni selezionate come citazione raggruppata',
+    en: 'Insert all selected as a grouped citation',
+  },
+  // Multi-select cluster
+  multi_select_aria: {
+    de: 'Entscheid f\u00FCr Sammelzitat ausw\u00E4hlen',
+    fr: 'S\u00E9lectionner pour citation group\u00E9e',
+    it: 'Seleziona per citazione raggruppata',
+    en: 'Select for grouped citation',
+  },
+  multi_deselect_aria: {
+    de: 'Auswahl aufheben', fr: 'D\u00E9s\u00E9lectionner', it: 'Deseleziona', en: 'Deselect',
+  },
+  multi_aria_region: {
+    de: 'Sammelzitat-Aktionen', fr: 'Actions de citation group\u00E9e', it: 'Azioni di citazione raggruppata', en: 'Grouped-citation actions',
+  },
+  multi_n_selected: {
+    de: '{n} ausgew\u00E4hlt', fr: '{n} s\u00E9lectionn\u00E9(s)', it: '{n} selezionati', en: '{n} selected',
+  },
+  multi_clear: {
+    de: 'L\u00F6schen', fr: 'Effacer', it: 'Cancella', en: 'Clear',
+  },
+  multi_insert: {
+    de: 'Zusammen einf\u00FCgen', fr: 'Ins\u00E9rer ensemble', it: 'Inserisci insieme', en: 'Insert together',
+  },
+  multi_inserted: {
+    de: '{n} zitiert', fr: '{n} cit\u00E9s', it: '{n} citati', en: '{n} cited',
+  },
   guide_title: {
     de: 'So funktioniert OpenCaseLaw', fr: 'Comment fonctionne OpenCaseLaw', it: 'Come funziona OpenCaseLaw', en: 'How OpenCaseLaw works',
   },
