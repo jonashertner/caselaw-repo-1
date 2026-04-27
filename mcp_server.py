@@ -208,6 +208,7 @@ LEXFIND_CACHE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_LEXFIND_CACHE", str(D
 MATERIALIEN_DB_PATH = Path(os.environ.get("SWISS_CASELAW_MATERIALIEN_DB", str(DATA_DIR / "materialien.db")))
 ANWALTSRECHT_TAGS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_ANWALTSRECHT_DB", str(DATA_DIR / "anwaltsrecht_tags.db")))
 DECISION_STRUCTURE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STRUCTURE_DB", str(DATA_DIR / "decision_structure.db")))
+PRACTICE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_PRACTICE_DB", str(DATA_DIR / "practice.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -11574,6 +11575,146 @@ def _segment_articles_from_pdf_text(text: str) -> list[dict]:
     return articles
 
 
+def _open_practice_db() -> sqlite3.Connection | None:
+    """Open practice.db read-only. Returns None if file is missing — the
+    practice tools then degrade to an informational error so the server
+    keeps serving even before the first practice scrape lands."""
+    if not PRACTICE_DB_PATH.exists():
+        return None
+    try:
+        conn = sqlite3.connect(f"file:{PRACTICE_DB_PATH}?mode=ro&immutable=1",
+                               uri=True, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open practice.db: %s", e)
+        return None
+
+
+def _search_practice(
+    *,
+    query: str,
+    source: str | None = None,
+    issuing_authority: str | None = None,
+    doc_type: str | None = None,
+    language: str | None = None,
+    limit: int = 10,
+) -> dict:
+    """FTS5 search over federal Verwaltungspraxis documents."""
+    conn = _open_practice_db()
+    if conn is None:
+        return {"error": "practice_db_unavailable",
+                "message": ("Federal Verwaltungspraxis database not yet built. "
+                            "Run scrapers/practice/runner.py + "
+                            "search_stack/build_practice_db.py.")}
+
+    limit = max(1, min(int(limit), 50))
+    where, params = ["practice_fts MATCH ?"], [query]
+    if source:
+        where.append("p.source = ?"); params.append(source)
+    if issuing_authority:
+        where.append("p.issuing_authority = ?"); params.append(issuing_authority.upper())
+    if doc_type:
+        where.append("p.doc_type = ?"); params.append(doc_type.lower())
+    if language:
+        where.append("p.language = ?"); params.append(language.lower())
+    params.append(limit)
+
+    sql = f"""
+        SELECT p.doc_id, p.source, p.issuing_authority, p.doc_type,
+               p.doc_number, p.title, p.date, p.language, p.url, p.pdf_url,
+               snippet(practice_fts, 2, '«', '»', '…', 18) AS snippet,
+               rank
+        FROM practice_fts
+        JOIN practice p ON p.rowid = practice_fts.rowid
+        WHERE {' AND '.join(where)}
+        ORDER BY rank
+        LIMIT ?
+    """
+    try:
+        rows = conn.execute(sql, params).fetchall()
+    except sqlite3.OperationalError as e:
+        return {"error": "fts5_query_error", "message": str(e), "query": query}
+    finally:
+        conn.close()
+
+    return {
+        "query": query,
+        "filters": {k: v for k, v in {
+            "source": source, "issuing_authority": issuing_authority,
+            "doc_type": doc_type, "language": language,
+        }.items() if v},
+        "total": len(rows),
+        "results": [dict(r) for r in rows],
+    }
+
+
+def _get_practice(*, doc_id: str) -> dict:
+    """Return a single practice document by doc_id (full body included)."""
+    conn = _open_practice_db()
+    if conn is None:
+        return {"error": "practice_db_unavailable"}
+    row = conn.execute("""
+        SELECT doc_id, source, issuing_authority, doc_type, doc_number,
+               title, date, language, url, pdf_url, body_text,
+               topics_json, scraped_at
+        FROM practice WHERE doc_id = ?
+    """, (doc_id,)).fetchone()
+    conn.close()
+    if not row:
+        return {"error": "not_found", "doc_id": doc_id}
+    out = dict(row)
+    try:
+        out["topics"] = json.loads(out.pop("topics_json") or "[]")
+    except Exception:
+        out["topics"] = []
+    return out
+
+
+def _format_search_practice_response(result: dict) -> str:
+    if "error" in result:
+        return f"Error: {result.get('message', result['error'])}"
+    if not result["results"]:
+        return f"No practice documents matched: {result['query']}"
+    lines = [f"Found {result['total']} practice document(s) for '{result['query']}'"]
+    for f, v in result.get("filters", {}).items():
+        lines.append(f"  filter: {f} = {v}")
+    lines.append("")
+    for i, r in enumerate(result["results"], 1):
+        date = f" ({r['date']})" if r.get("date") else ""
+        lines.append(f"{i}. [{r['issuing_authority']}] {r['doc_number']} — {r['title']}{date}")
+        lines.append(f"   doc_id: {r['doc_id']}")
+        if r.get("snippet"):
+            lines.append(f"   {r['snippet']}")
+        if r.get("pdf_url"):
+            lines.append(f"   PDF: {r['pdf_url']}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def _format_get_practice_response(result: dict) -> str:
+    if "error" in result:
+        return f"Error: {result['error']} (doc_id: {result.get('doc_id', '?')})"
+    parts = [
+        f"# {result['title']}",
+        "",
+        f"**Source**: {result['issuing_authority']} ({result['source']})",
+        f"**Type**: {result['doc_type']}",
+        f"**Document number**: {result['doc_number']}",
+        f"**Date**: {result.get('date') or '(unknown)'}",
+        f"**Language**: {result['language']}",
+        f"**PDF**: {result['pdf_url']}",
+        f"**Source page**: {result.get('url') or '(n/a)'}",
+    ]
+    if result.get("topics"):
+        parts.append(f"**Topics**: {', '.join(result['topics'])}")
+    parts.append("")
+    parts.append("---")
+    parts.append("")
+    parts.append(result.get("body_text", "(no body text)"))
+    return "\n".join(parts)
+
+
 def _browse_legislation_changes(
     *,
     canton: str = "CH",
@@ -12898,6 +13039,73 @@ def _list_tools() -> list[Tool]:
                     },
                 },
             ),
+            Tool(
+                annotations=_READ_ONLY,
+                name="search_practice",
+                description=(
+                    "Full-text search across Swiss FEDERAL administrative practice "
+                    "(Verwaltungspraxis): Kreisschreiben, Rundschreiben, Weisungen, "
+                    "Vollzugshilfen, Handbücher. These are NOT court decisions — "
+                    "they are the binding interpretive guidance issued by federal "
+                    "agencies (ESTV for tax, SEM for migration/asylum/citizenship, "
+                    "BAFU for environment, ARE for spatial planning, EPA for federal "
+                    "personnel law, SSK for inter-cantonal tax coordination). "
+                    "Returns ranked excerpts with the source authority, document "
+                    "number, date, and PDF URL. Essential complement to case-law "
+                    "search whenever the question involves administrative-law practice."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives, NEAR/N for proximity).",
+                        },
+                        "source": {
+                            "type": "string",
+                            "description": "Filter by source key: estv_ks, ssk_ks, sem_weisungen, bafu_vollzug, are_vollzug, epa_personalrecht.",
+                        },
+                        "issuing_authority": {
+                            "type": "string",
+                            "description": "Filter by authority: ESTV, SSK, SEM, BAFU, ARE, EPA.",
+                        },
+                        "doc_type": {
+                            "type": "string",
+                            "description": "Filter by document type: kreisschreiben, weisung, rundschreiben, vollzugshilfe, handbuch, merkblatt.",
+                        },
+                        "language": {
+                            "type": "string",
+                            "description": "Filter by language: de, fr, it.",
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum results (1-50, default 10).",
+                            "default": 10,
+                        },
+                    },
+                    "required": ["query"],
+                },
+            ),
+            Tool(
+                annotations=_READ_ONLY,
+                name="get_practice",
+                description=(
+                    "Retrieve a single federal administrative-practice document by "
+                    "its doc_id (e.g. 'estv_ks_ks_nr_28', 'sem_weisungen_weisungen-aug-d'). "
+                    "Returns full body text, title, date, issuing authority, and PDF URL. "
+                    "Use search_practice first to discover the doc_id."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "doc_id": {
+                            "type": "string",
+                            "description": "Document identifier returned by search_practice.",
+                        },
+                    },
+                    "required": ["doc_id"],
+                },
+            ),
         ]),
         *([] if REMOTE_MODE else [
             Tool(
@@ -13365,6 +13573,22 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 language=arguments.get("language", "de"),
             )
             return [TextContent(type="text", text=_format_legislation_changes_response(result))]
+
+        elif name == "search_practice":
+            result = await asyncio.to_thread(
+                _search_practice,
+                query=arguments["query"],
+                source=arguments.get("source"),
+                issuing_authority=arguments.get("issuing_authority"),
+                doc_type=arguments.get("doc_type"),
+                language=arguments.get("language"),
+                limit=arguments.get("limit", 10),
+            )
+            return [TextContent(type="text", text=_format_search_practice_response(result))]
+
+        elif name == "get_practice":
+            result = await asyncio.to_thread(_get_practice, doc_id=arguments["doc_id"])
+            return [TextContent(type="text", text=_format_get_practice_response(result))]
 
         elif name == "update_database":
             global _update_thread
