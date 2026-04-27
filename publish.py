@@ -421,7 +421,11 @@ def step_5_generate_stats(dry_run: bool = False) -> bool:
     return run_cmd(
         [sys.executable, str(script),
          "--db", str(DB_PATH),
-         "--output", str(DOCS_DIR / "stats.json")],
+         "--output", str(DOCS_DIR / "stats.json"),
+         # interesting_stats is heavy (full scans on decisions.db +
+         # reference_graph.db). Daily publish preserves the last weekly
+         # value; opencaselaw-interesting-stats.timer recomputes it.
+         "--no-interesting-stats"],
         "Generate stats",
         dry_run,
     )

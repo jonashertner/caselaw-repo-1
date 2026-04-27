@@ -1034,6 +1034,17 @@ def main():
         help="Output path for stats.json (default: docs/stats.json)",
     )
     parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument(
+        "--no-interesting-stats", action="store_true",
+        help="Skip the heavy interesting_stats block (full table scans). "
+             "Preserves any existing block from the on-disk stats.json so "
+             "the dashboard keeps showing the most recent weekly values.",
+    )
+    parser.add_argument(
+        "--interesting-stats-only", action="store_true",
+        help="Recompute only the interesting_stats block, merge into the "
+             "existing stats.json, and exit. Used by the weekly timer.",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -1048,11 +1059,38 @@ def main():
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    repo_dir = Path(__file__).parent.resolve()
+
+    # Load existing stats.json once — used by both modes for either
+    # preserving the interesting_stats block (daily) or merging back
+    # into the rest (weekly --interesting-stats-only).
+    existing: dict = {}
+    if output_path.exists():
+        try:
+            existing = json.loads(output_path.read_text())
+        except Exception as e:
+            logger.warning(f"Failed to load existing stats.json: {e}")
+
+    # ── Weekly mode: only recompute interesting_stats, merge, write. ──
+    if args.interesting_stats_only:
+        if not existing:
+            logger.error(
+                "--interesting-stats-only requires an existing stats.json "
+                f"at {output_path}; nothing to merge into."
+            )
+            sys.exit(1)
+        try:
+            existing["interesting_stats"] = collect_interesting_stats(repo_dir)
+        except Exception as e:
+            logger.error(f"collect_interesting_stats failed: {e}")
+            sys.exit(1)
+        output_path.write_text(json.dumps(existing, indent=2, ensure_ascii=False))
+        logger.info(f"Wrote interesting_stats block → {output_path}")
+        return
 
     stats = generate_stats(db_path)
 
     # ── Scraper health ──
-    repo_dir = Path(__file__).parent.resolve()
     scraper_health = collect_scraper_health(repo_dir)
     if scraper_health:
         stats["scraper_health"] = scraper_health
@@ -1063,10 +1101,28 @@ def main():
         stats["corpus"] = corpus
 
     # ── Did-you-know factoids for the landing page ──
-    try:
-        stats["interesting_stats"] = collect_interesting_stats(repo_dir)
-    except Exception as e:
-        logger.warning(f"collect_interesting_stats failed: {e}")
+    # Heavy: walks reference_graph.db (6.46M citation rows) + full
+    # table scans on decisions.db (regeste, language). Daily publish
+    # skips this and preserves the previous weekly value; a separate
+    # weekly timer regenerates it.
+    if args.no_interesting_stats:
+        prior = existing.get("interesting_stats")
+        if prior:
+            stats["interesting_stats"] = prior
+            logger.info(
+                "Skipped interesting_stats (--no-interesting-stats); "
+                "preserved previous block from on-disk stats.json"
+            )
+        else:
+            logger.info(
+                "Skipped interesting_stats (--no-interesting-stats); "
+                "no prior block to preserve"
+            )
+    else:
+        try:
+            stats["interesting_stats"] = collect_interesting_stats(repo_dir)
+        except Exception as e:
+            logger.warning(f"collect_interesting_stats failed: {e}")
 
     # ── Traffic snapshot: DP-noised, k-anon aggregates from analytics.db ──
     traffic = collect_traffic(repo_dir, days=30)
