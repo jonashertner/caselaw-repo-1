@@ -113,12 +113,17 @@ def test_pinpoint_label_centralised():
     # The hard-coded German label `'E. '` (with trailing space — matches a
     # display-prefix rather than a regex literal) must not appear in
     # app.js. The regex on line ~1187 uses `E\.` (escaped dot, no space)
-    # and is intentionally exempt.
+    # and is intentionally exempt. Comments that *talk about* the
+    # pattern (e.g. explaining why we don't render "E. ?") are also
+    # exempt — the lint targets executable code, not prose.
     import re
+    def _is_comment_line(s: str) -> bool:
+        stripped = s.strip()
+        return stripped.startswith("//") or stripped.startswith("*") or stripped.startswith("/*")
     bad_lines = [
         (i + 1, line)
         for i, line in enumerate(app.split("\n"))
-        if re.search(r"['\"]E\. ", line)
+        if re.search(r"['\"]E\. ", line) and not _is_comment_line(line)
     ]
     assert not bad_lines, (
         f"app.js still hard-codes the German pinpoint label 'E. ' on "
@@ -141,6 +146,53 @@ def test_office_locale_autodetect():
     assert "Office.context.displayLanguage" in js, (
         "_detectInitialLang() doesn't read Office.context.displayLanguage — "
         "the autodetect is incomplete."
+    )
+
+
+def test_split_erwaegung_guards_against_null_number():
+    """Older BGE case-briefs come back with `number: null` for every
+    Erwägung — the structured extractor couldn't parse the original.
+
+    Without an explicit guard, splitErwaegung() builds an invalid
+    regex (`/(?(?:\\.\\d+)+)/`) from the placeholder mainNum, which
+    throws SyntaxError mid-render. The render() try/catch boundary
+    then surfaces it as a generic "display error" — which is exactly
+    what the user reported on 2026-04-27.
+
+    The guard regex `/^\\d+(?:\\.\\d+)*$/` must stay; without it the
+    BGE detail view crashes again.
+    """
+    js = APP_JS.read_text(encoding="utf-8")
+    assert "function splitErwaegung" in js, "splitErwaegung went missing"
+    # Pull just the function body so we can test the guard precisely.
+    start = js.index("function splitErwaegung")
+    body = js[start:start + 2500]
+    assert "/^\\d+(?:\\.\\d+)*$/" in body, (
+        "splitErwaegung() lost its non-numeric mainNum guard. "
+        "BGE case-briefs ship with `number: null` for every Erwägung; "
+        "without the guard the regex constructor throws and the global "
+        "render() error boundary surfaces a generic 'display error' "
+        "instead of the decision body. Re-add the early return that "
+        "treats any non-numeric mainNum as a single un-split block."
+    )
+
+
+def test_render_skips_pinpoint_button_for_unnumbered_erwaegung():
+    """When an Erwägung has no usable number, we mustn't render a
+    pinpoint label / insert button — they'd produce a non-functional
+    'E. ?' UI affordance and an unciteable insert action.
+    """
+    js = APP_JS.read_text(encoding="utf-8")
+    # The hasRealNum gate must drive whether the .erwaegung-header
+    # block (which contains the pinpoint label + insert button) renders.
+    assert "hasRealNum" in js, (
+        "renderDetail no longer distinguishes numbered vs. unnumbered "
+        "Erwägungen — every entry would render an 'E. ?' label."
+    )
+    assert "subHasNum" in js, (
+        "renderDetail no longer guards the pinpoint label/button on a "
+        "per-sub-section basis — unnumbered sub-sections leak the "
+        "non-functional affordance."
     )
 
 

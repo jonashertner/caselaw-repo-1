@@ -717,6 +717,19 @@ function _truncateSentence(s, max) {
  */
 function splitErwaegung(mainNum, text) {
   if (!text) return [{ num: mainNum, text: '' }];
+
+  // Defensive: the case-brief extractor sometimes returns Erwägungen
+  // with `number: null` (notably for older BGE entries whose structure
+  // couldn't be parsed). In that case there's nothing to anchor a
+  // regex against — building one from `?` or `null` produced an
+  // invalid regex (`/(?(?:\.\d+)+)/`) that threw mid-render and was
+  // caught by the global render() error boundary, surfacing as a
+  // generic "display error" to the user. Treat any non-numeric mainNum
+  // as "render the body as a single block, no sub-section splitting".
+  if (typeof mainNum !== 'string' || !/^\d+(?:\.\d+)*$/.test(mainNum)) {
+    return [{ num: mainNum || '?', text: text }];
+  }
+
   var escaped = mainNum.replace(/\./g, '\\.');
   var re = new RegExp('(?:\\. |\\n)(' + escaped + '(?:\\.\\d+)+)\\s', 'g');
   var parts = [];
@@ -800,27 +813,52 @@ function renderDetail() {
   }
 
   // ── Erwägungen (accordion with sub-sections) ──
+  // For some decisions (notably older BGE entries) the case-brief
+  // extractor cannot recover Erwägung numbers. In that case we render
+  // the body as a flat block and skip the pinpoint affordances —
+  // showing "E. ?" with a non-functional insert button would be a
+  // regression vs. just showing the text.
   var ewList = cb && (cb.key_erwaegungen || cb.erwaegungen);
   if (ewList && ewList.length) {
     html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_erwaegungen', lang)) + '</div>';
     for (var i = 0; i < ewList.length; i++) {
       var e = ewList[i];
-      var num = e.number || '?';
+      var rawNum = e.number;
+      var hasRealNum = (typeof rawNum === 'string' && /^\d+(?:\.\d+)*$/.test(rawNum)) ||
+                       (typeof rawNum === 'number' && isFinite(rawNum));
+      var num = hasRealNum ? String(rawNum) : '';
       var ewText = e.text || '';
-      var subSections = splitErwaegung(num, ewText);
+      // Without a real number, splitting is meaningless — emit one block.
+      var subSections = hasRealNum
+        ? splitErwaegung(num, ewText)
+        : [{ num: '', text: ewText }];
+
       html += '<div class="erwaegung-block">';
       for (var si = 0; si < subSections.length; si++) {
         var sub = subSections[si];
         var subNeedsCollapse = sub.text.length > 200;
         var subId = 'ew-' + i + '-' + si;
         var isMain = (si === 0);
-        html += '<div class="ew-sub' + (isMain ? ' ew-main' : '') + '">' +
-          '<div class="erwaegung-header">' +
-          '<span class="erwaegung-num' + (isMain ? '' : ' ew-sub-num') + '">' + escHtml(pinpointLabel(lang) + ' ' + sub.num) + '</span>' +
-          '<button class="btn btn-insert erwaegung-insert" data-action="insert-ew" data-ew="' + escHtml(sub.num) + '" title="' + escHtml(formatCitation(d, lang, sub.num)) + '">' + escHtml(pinpointLabel(lang) + ' ' + sub.num) + '</button>' +
-          '</div>' +
-          '<div class="erwaegung-body' + (subNeedsCollapse ? ' collapsible' : '') + '" id="' + subId + '">' + escHtml(sub.text) + '</div>' +
-          (subNeedsCollapse ? '<button class="expand-btn" data-action="toggle-expand" data-target="' + subId + '">' + escHtml(t('btn_show_more', lang)) + '</button>' : '') +
+        var subHasNum = (typeof sub.num === 'string' && sub.num.length > 0);
+
+        html += '<div class="ew-sub' + (isMain ? ' ew-main' : '') + '">';
+        if (subHasNum) {
+          // Pinpoint label + insert affordance — only when we have a
+          // citable sub-number to insert.
+          html += '<div class="erwaegung-header">' +
+            '<span class="erwaegung-num' + (isMain ? '' : ' ew-sub-num') + '">' +
+            escHtml(pinpointLabel(lang) + ' ' + sub.num) + '</span>' +
+            '<button class="btn btn-insert erwaegung-insert" data-action="insert-ew" data-ew="' +
+            escHtml(sub.num) + '" title="' + escHtml(formatCitation(d, lang, sub.num)) + '">' +
+            escHtml(pinpointLabel(lang) + ' ' + sub.num) + '</button>' +
+            '</div>';
+        }
+        html += '<div class="erwaegung-body' + (subNeedsCollapse ? ' collapsible' : '') +
+          '" id="' + subId + '">' + escHtml(sub.text) + '</div>' +
+          (subNeedsCollapse
+            ? '<button class="expand-btn" data-action="toggle-expand" data-target="' + subId + '">' +
+              escHtml(t('btn_show_more', lang)) + '</button>'
+            : '') +
           '</div>';
       }
       html += '</div>';
