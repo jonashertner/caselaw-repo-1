@@ -111,7 +111,24 @@ function initApp() {
   if (brandSub) brandSub.textContent = t('brand_sub', state.lang);
 
   // Bind delegated click handler ONCE (never re-bind)
-  document.getElementById('app').addEventListener('click', handleAppClick);
+  var appEl = document.getElementById('app');
+  appEl.addEventListener('click', handleAppClick);
+  // Mirror Enter/Space activation onto every focusable [data-action] element
+  // — without this, result cards (tabindex=0, role=button) and other
+  // keyboard-focusable controls couldn't be activated via the keyboard,
+  // breaking AT users and power users alike.
+  appEl.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+    var btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    // Don't intercept native controls — buttons handle Enter/Space
+    // themselves; <input>/<select>/<textarea> need normal typing.
+    var tag = (btn.tagName || '').toLowerCase();
+    if (tag === 'button' || tag === 'a' || tag === 'input' ||
+        tag === 'select' || tag === 'textarea') return;
+    e.preventDefault();
+    handleAppClick(e);
+  });
 
   // Load recent lookups
   try { state.recentLookups = JSON.parse(localStorage.getItem('ocl_recent') || '[]'); } catch (e) { state.recentLookups = []; }
@@ -119,7 +136,13 @@ function initApp() {
   // Check consent, then render
   try { state.consent = !!localStorage.getItem('ocl_consent'); } catch (e) {}
   render();
-  listCourts().then(function (c) { state.courts = c; }).catch(function () {});
+  // Background load of court list — used only by getCourtName() display
+  // fallback. Failure is non-fatal (we degrade to raw court codes), but
+  // log it so it shows up in the browser console if a user reports
+  // garbled court names.
+  listCourts().then(function (c) { state.courts = c; }).catch(function (err) {
+    console.warn('listCourts failed:', err);
+  });
 }
 
 // Try Office.js initialization (fires if inside Word)
@@ -213,26 +236,64 @@ function _relativeTime(iso, lang) {
 // Safe: all dynamic content is escaped via escHtml before concatenation
 function render() {
   var app = document.getElementById('app');
-  if (!state.consent) { app.innerHTML = renderConsent(); bindEvents(); return; }
+  try {
+    if (!state.consent) { app.innerHTML = renderConsent(); bindEvents(); return; }
 
-  // Audit strip mounts above the primary surfaces (search + audit summary).
-  // Sub-views (detail/verify/support/related/settings/guide) get a back-link
-  // and use the full panel.
-  var showStrip = (state.view === 'search' || state.view === 'scan');
-  var html = showStrip ? renderAuditStrip() : '';
-  var view = state.view;
-  if (view === 'search') html += renderSearch();
-  else if (view === 'detail') html += renderDetail();
-  else if (view === 'verify') html += renderVerify();
-  else if (view === 'support') html += renderSupport();
-  else if (view === 'related') html += renderRelated();
-  else if (view === 'scan') html += renderScan();
-  else if (view === 'guide') html += renderGuide();
-  else if (view === 'settings') html += renderSettings();
+    // Audit strip mounts above the primary surfaces (search + audit summary).
+    // Sub-views (detail/verify/support/related/settings/guide) get a back-link
+    // and use the full panel.
+    var showStrip = (state.view === 'search' || state.view === 'scan');
+    var html = showStrip ? renderAuditStrip() : '';
+    var view = state.view;
+    if (view === 'search') html += renderSearch();
+    else if (view === 'detail') html += renderDetail();
+    else if (view === 'verify') html += renderVerify();
+    else if (view === 'support') html += renderSupport();
+    else if (view === 'related') html += renderRelated();
+    else if (view === 'scan') html += renderScan();
+    else if (view === 'guide') html += renderGuide();
+    else if (view === 'settings') html += renderSettings();
 
-  app.innerHTML = html; // eslint-disable-line no-unsanitized/property -- all values pre-escaped via escHtml()
-  bindEvents();
-  if (state.lawResult) resolveAmendmentRefs();
+    app.innerHTML = html; // eslint-disable-line no-unsanitized/property -- all values pre-escaped via escHtml()
+    bindEvents();
+    if (state.lawResult) resolveAmendmentRefs();
+    // Announce dynamic state changes to assistive tech. Counts, errors,
+    // and loading transitions all flow through render(), so a single
+    // aria-live region beats sprinkling them in each renderer.
+    _announceState();
+  } catch (renderErr) {
+    // Never let a render exception kill the whole task pane. Log, then
+    // show a recoverable error surface so the user can still navigate
+    // back to a known-good view (settings) or retry.
+    console.error('render() failed:', renderErr);
+    var lang = state.lang || 'de';
+    var msg = (lang === 'fr') ? 'Erreur d\u2019affichage. Veuillez réessayer.' :
+              (lang === 'it') ? 'Errore di visualizzazione. Riprovare.' :
+              (lang === 'en') ? 'Display error. Please try again.' :
+                                'Anzeigefehler. Bitte erneut versuchen.';
+    app.innerHTML = '<div class="state-message" role="alert">' + escHtml(msg) +
+      '<button class="retry-btn" data-action="back">\u2190 ' + escHtml(t('back', lang)) + '</button></div>';
+  }
+}
+
+// Announce key state to screen readers via a polite aria-live region in
+// index.html. Kept terse so AT doesn't read the whole panel on every
+// keystroke; only the count / error / loading line is announced.
+function _announceState() {
+  var live = document.getElementById('a11y-live');
+  if (!live) return;
+  var lang = state.lang;
+  var msg = '';
+  if (state.loading) {
+    msg = t('loading', lang);
+  } else if (state.error && state.error.message) {
+    msg = state.error.message;
+  } else if (state.view === 'search' && state.results.length > 0 && state.total > 0) {
+    msg = t('results_count', lang, { n: state.total });
+  } else if (state.view === 'search' && state.results.length === 0 && state.query && !state.lawResult) {
+    msg = t('no_results', lang);
+  }
+  if (live.textContent !== msg) live.textContent = msg;
 }
 
 // Format law article text into styled paragraphs with superscript numbers.
@@ -419,7 +480,7 @@ function renderWelcome(lang) {
   // Footer — coverage stats + how-it-works link, kept whisper-quiet.
   html += '<div class="welcome-footer">' +
     '<a class="welcome-link" data-action="show-guide">' + escHtml(t('how_it_works', lang)) + '</a>' +
-    '<span class="welcome-count-small">' + escHtml(t('welcome_count', lang, { n: '967\u2009000+' })) + '</span>' +
+    '<span class="welcome-count-small">' + escHtml(t('welcome_count', lang, { n: '969\u2009000+' })) + '</span>' +
     '</div>';
 
   html += '</div>';
@@ -457,12 +518,12 @@ function renderResultCard(r, idx) {
 function _truncateSentence(s, max) {
   s = String(s || '').replace(/\s+/g, ' ').trim();
   if (s.length <= max) return s;
-  var window = s.substring(0, max);
-  var lastSentence = Math.max(window.lastIndexOf('. '), window.lastIndexOf('? '), window.lastIndexOf('! '));
+  var win = s.substring(0, max);
+  var lastSentence = Math.max(win.lastIndexOf('. '), win.lastIndexOf('? '), win.lastIndexOf('! '));
   if (lastSentence > max * 0.5) return s.substring(0, lastSentence + 1).trim();
-  var lastSpace = window.lastIndexOf(' ');
+  var lastSpace = win.lastIndexOf(' ');
   if (lastSpace > max * 0.6) return s.substring(0, lastSpace).trim() + '\u2026';
-  return window + '\u2026';
+  return win + '\u2026';
 }
 
 /**

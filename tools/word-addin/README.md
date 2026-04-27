@@ -1,6 +1,6 @@
 # OpenCaseLaw Word Plugin
 
-Search 963,000+ Swiss court decisions and insert citations directly in Microsoft Word.
+Search 969,000+ Swiss court decisions and insert citations directly in Microsoft Word.
 
 ## Installation (Sideload)
 

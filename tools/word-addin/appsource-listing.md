@@ -4,13 +4,13 @@
 OpenCaseLaw - Swiss Case Law
 
 ## Short description (100 chars max)
-Search 965,000+ Swiss court decisions and insert correct citations directly in Word.
+Search 969,000+ Swiss court decisions and insert correct citations directly in Word.
 
 ## Long description (4000 chars max)
 
 OpenCaseLaw gives lawyers, judges, legal scholars, and students instant access to Swiss case law and legislation — directly inside Microsoft Word.
 
-**965,000+ court decisions. 5,500 federal laws. 26,000 cantonal acts. One search.**
+**969,000+ court decisions. 5,510 federal laws. 15,722 cantonal laws. One search.**
 
 Search the full text of decisions from the Federal Supreme Court (BGer/TF), Federal Administrative Court (BVGer/TAF), Federal Criminal Court (BStGer/TPF), Federal Patent Court (BPatGer/TFB), FINMA, WEKO/COMCO, and all 26 cantonal courts. The database is updated daily (BGer decisions within 15 minutes of publication) and covers decisions from 1875 to today.
 
@@ -25,11 +25,11 @@ No more manual formatting. No more typos in docket numbers.
 
 **Look up federal and cantonal statutes inline**
 
-Search for "Art. 41 OR" or "Art. 8 BV" — the full article text appears directly in the panel. Covers 5,500 Swiss federal laws (132,000+ articles in DE/FR/IT) and 26,000 cantonal legislative texts across all 26 cantons. The current consolidated text is shown alongside the Federal Council Botschaft reference (legislative intent).
+Search for "Art. 41 OR" or "Art. 8 BV" — the full article text appears directly in the panel. Covers 5,510 Swiss federal laws (132,586 articles in DE/FR/IT) and 15,722 cantonal laws across all 26 cantons. The current consolidated text is shown alongside the Federal Council Botschaft reference (legislative intent).
 
 **Find related decisions**
 
-Select a citation in your document and click "Find related" to discover decisions on the same topic. Built on a citation graph with 8.8 million cross-references between decisions.
+Select a citation in your document and click "Find related" to discover decisions on the same topic. Built on a citation graph with 9.04 million cross-references between decisions.
 
 **Free core features, optional Pro subscription**
 

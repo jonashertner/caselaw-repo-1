@@ -2405,3 +2405,18 @@ html, body {
 .mt-12 { margin-top: var(--s-3); }
 .text-center { text-align: center; }
 .hidden { display: none; }
+
+/* Visually-hidden but available to screen readers — used by the
+   aria-live status region so dynamic state changes (loading, results
+   count, errors) are announced without occupying visual space. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
