@@ -2,7 +2,7 @@
 
 **The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
-**968,000+ court decisions · ~5,500 federal laws · ~26,000 cantonal acts · 8.8 M citation links · 11.3 M statute references · 1,100+ Botschaften (legislative history)**
+**969,000+ court decisions · 5,510 federal laws · 15,722 cantonal laws · 9.0 M citation links · 11.6 M statute references · 1,100+ Botschaften (legislative history)**
 
 Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors the full Fedlex and LexFind legislation corpora, includes the **legislative history** (Botschaft references and parliamentary debate transcripts) for 2,500+ federal laws, and ships with a **resolved citation graph** and **24 MCP tools** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
@@ -22,28 +22,28 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 
 ## What you get
 
-**Case law** — 968,000+ decisions from 1875 to today across **108 courts**, full text + structured metadata, covering:
+**Case law** — 969,573 decisions from 1875 to today across **108 courts**, full text + structured metadata, covering:
 - All 7 federal courts (BGer, BVGer, BStGer, BPatGer, BGE, BGE historical, BGE-EGMR)
 - Federal military court (Militärkassationsgericht / MKG, 1,244 decisions 1915–2025)
 - All 26 cantonal court systems (first, second, and third instance)
 - Regulatory decisions (FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom)
-- **ECHR/EGMR**: 834 Swiss-respondent (HUDOC) + general ECtHR Grand Chamber/Chamber/Committee (236 live, full-corpus backfill in progress)
-- Three official languages (DE / FR / IT); schema reserves `rm` for Romansh
-- Deduplicated via docket normalisation + content-length-aware merge (2026-04-25 fix)
+- **ECHR/EGMR**: 834 Swiss-respondent (HUDOC) + general ECtHR Grand Chamber/Chamber/Committee (1,421 judgments live, full-corpus backfill in progress)
+- Three official languages: German 447,783 (46.2%), French 441,094 (45.5%), Italian 80,696 (8.3%); schema reserves `rm` for Romansh
+- Deduplicated via docket normalisation + content-length-aware merge
 - Updated daily; BGer decisions available within ~15 minutes of court publication
 
 **Legislation** — every Swiss law, federal and cantonal, locally mirrored with article-level indexing:
-- ~5,500 federal laws / 132,000+ articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
-- ~26,000 cantonal and intercantonal acts from LexFind across all 26 cantons
+- 5,510 federal laws / 132,586 articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
+- 15,722 cantonal laws / 353,464 articles, direct-scraped from 19 cantonal portals (LexWork+SIL); LexFind fallback for the remaining cantons
 - Unified SQLite FTS5 search federates both corpora; sub-millisecond article lookup
 - Monthly refresh on the 2nd of each month (the day after laws enter into force)
-- 11.3 M resolved links from decisions to individual statute articles
+- 11.63 M resolved links from decisions to individual statute articles
 
 **Citation graph** — the **only public large-scale citation graph of the Swiss legal system**:
-- 8.84 M resolved decision-to-decision citation edges with confidence scores
-- 11.34 M decision-to-statute links resolved against the current consolidated text
+- 9.04 M resolved decision-to-decision citation edges with confidence scores
+- 11.63 M decision-to-statute links resolved against the current consolidated text
 - Bidirectional lookup, appeal-chain resolution (Instanzenzug), leading-case ranking by citation authority
-- Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend`
+- Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend` (top: BGE 125 V 351 with 63,061 incoming citations)
 
 **24 MCP tools** — specialised research tools that run in your LLM of choice:
 - Natural-language decision search (BM25 + synonym expansion + Haiku reranking, **MRR@10 = 0.647** on a 100-query golden set)
@@ -78,7 +78,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 | Article lookup latency | < 1 ms (local FTS5) |
 | BGer publication → searchable | ~15 min (was 24 h pre-poller) |
 | Daily full-text rebuild | ~5 h, zero downtime (atomic swap) |
-| Citation-to-decision resolution rate | 73.8 % (8.77 M / 11.89 M raw refs) |
+| Citation-to-decision resolution rate | 73.8 % (9.04 M / 12.25 M raw refs) |
 
 ---
 
@@ -94,14 +94,14 @@ There are eight ways to use it, depending on what you need:
 |--------|----------|-------------|
 | [**Search with AI**](#1-search-with-ai) | Everyone | Natural-language search in Claude, ChatGPT, Cursor, or Gemini — instant access, no download, full 24-tool surface |
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars, researchers | Leading cases, citation networks, appeal chains, jurisprudence trends over time |
-| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,000+ federal laws and 26,000+ cantonal acts, federated FTS5, sub-millisecond lookup |
+| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,510 federal laws and 15,722 cantonal laws, federated FTS5, sub-millisecond lookup |
 | [**Legislation Search**](#legislation-tools) | Legal professionals | LexFind-backed discovery search with `fetch_top_n_texts` for single-call natural-language workflows |
 | [**Education tools**](#education-tools) | Law students, instructors | Structured case briefs, doctrine timelines, real-BGE exam questions with hidden analysis |
 | [**Word Add-in**](https://word.opencaselaw.ch/install.html) | Legal practitioners writing briefs | Insert formatted Swiss citations into Word · click Erwägung / § to insert with correct sub-reference · Pro: verify quotes against case text, find support, scan documents (curated ~8-tool subset) |
 | [**REST API / Download**](#2-download-the-dataset) | Developers, data scientists, NLP researchers | 30-route REST API, bulk Parquet download via HuggingFace (~7 GB) |
 | [**Web UI**](https://opencaselaw.ch) | Everyone | Live dashboard with corpus stats, daily delta, top movers, multilingual browsing |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 968K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 969K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
 
 ---
 

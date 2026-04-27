@@ -32,7 +32,7 @@ configs:
 
 # Swiss Case Law Dataset
 
-**968,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
+**969,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
 
 Full text, structured metadata, extracted case-citation references, and daily updates. The dataset contains German, French, and Italian decisions; the export schema also reserves `rm` for Romansh.
 
@@ -44,18 +44,17 @@ Full text, structured metadata, extracted case-citation references, and daily up
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions: 968,000+ decisions from 108 federal, cantonal, regulatory, and international courts, scraped from official publication channels. New decisions are added every night.
+The largest open collection of Swiss court decisions: 969,000+ decisions from 108 federal, cantonal, regulatory, and international courts, scraped from official publication channels. New decisions are added every night.
 
 - **20+ federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, MKG (Militärkassationsgericht), VPB, Sports Tribunal, and more
 - **80+ cantonal courts** across all 26 cantons
-- **ECHR/EGMR**: 834 Swiss-respondent judgments + general ECtHR Grand Chamber / Chamber / Committee judgments (currently 236 live, full-corpus backfill in progress)
-- **Current decision languages**: German (~450K; 47%), French (~436K; 45%), Italian (~80K; 8%); the export schema also reserves `rm`
+- **ECHR/EGMR**: 834 Swiss-respondent judgments (HUDOC) + general ECtHR Grand Chamber / Chamber / Committee (1,421 judgments live; full-corpus backfill in progress)
+- **Current decision languages**: German (447,783; 46.2%), French (441,094; 45.5%), Italian (80,696; 8.3%); the export schema also reserves `rm`
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
-- **8.85 million extracted case-citation references**
-- **8.85 million resolved decision-to-decision links** (with confidence scores)
-- **11.34 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
-- **5,500+ federal laws indexed** with 132,000+ articles in 3 languages (from Fedlex SPARQL)
-- **26,043 cantonal legislative texts** with 1.1 million articles (from LexFind)
+- **9.04 million extracted case-citation references** (resolved with confidence scores)
+- **11.63 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
+- **5,510 federal laws indexed** with 132,586 articles in 3 languages (from Fedlex SPARQL)
+- **15,722 cantonal laws** with 353,464 articles (direct-scraped from 19 cantonal portals; LexFind fallback for the rest)
 - **Legislative history (Materialien)** for 2,500 federal laws: Botschaft references for 33,000 statute articles, structured Botschaft digests for BV and BGFA, parliamentary debate transcripts (Amtliches Bulletin) for the BV
 - **34 structured fields** per decision in Parquet; 27 in the FTS5 search index
 
@@ -115,7 +114,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 968,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 24 tools (22 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), and full decision-structure decomposition (`get_decision_structure`).
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 969,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 24 tools (22 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), and full decision-structure decomposition (`get_decision_structure`).
 
 **Remote (no download needed):**
 
@@ -152,30 +151,30 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 
 | Metric | Value |
 |--------|-------|
-| Total decisions | 968,373 (live count, updated daily) |
+| Total decisions | 969,573 (live count, updated daily) |
 | Courts | 108 |
 | Temporal range | 1875–present |
-| Average decision length | ~22,000 characters |
+| Average decision length | 22,775 characters |
 | Full text coverage | 100% |
-| Regeste (headnote) coverage | ~54% |
-| Case-citation references | 8.85 million |
-| Statute-decision links | 11.34 million |
-| Federal laws indexed | 5,500+ (132,000+ articles in DE/FR/IT) |
-| Cantonal laws indexed | 26,043 (1.1M articles) |
+| Regeste (headnote) coverage | 38.7% |
+| Case-citation references | 9.04 million |
+| Statute-decision links | 11.63 million |
+| Federal laws indexed | 5,510 (132,586 articles in DE/FR/IT) |
+| Cantonal laws indexed | 15,722 (353,464 articles, direct-scraped + LexFind) |
 | Laws with Botschaft refs | 2,500 (33,000 articles) |
-| Legislation texts searchable | 33,000+ |
-| Scholarly commentaries | 362 (OnlineKommentar.ch) |
+| Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
+| Scholarly commentaries | 1,058 (OnlineKommentar.ch + OpenLegalCommentary.ch) |
 | MCP tools | 24 (22 remote / 24 local) |
 
 **Language distribution:**
 
 | Language | Count | Share |
 |----------|-------|-------|
-| German (de) | 448,215 | 46.58% |
-| French (fr) | 434,470 | 45.15% |
-| Italian (it) | 79,587 | 8.27% |
+| German (de) | 447,783 | 46.2% |
+| French (fr) | 441,094 | 45.5% |
+| Italian (it) | 80,696 | 8.3% |
 
-**Reference graph:** 8.85 million resolved decision-to-decision citation edges and 11.34 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 54,000+ incoming citations.
+**Reference graph:** 9.04 million resolved decision-to-decision citation edges and 11.63 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 63,061 incoming citations.
 
 **Search benchmark (frozen offline baseline):** `benchmarks/search_benchmark_2026-03-19_offline_full.json` records a 100-query run against a 1,078,177-row local `decisions.db`, with MRR@10 = 0.4697, Recall@10 = 0.4958, nDCG@10 = 0.5250, and Hit@1 = 0.33. This is a reproducible offline baseline, not a fully provisioned hosted-system score.
 
@@ -199,13 +198,13 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 
 ## Dataset Creation
 
-**Collection**: 54 automated scrapers target official court websites, APIs, and publication portals (Weblaw, Tribuna, FindInfo, Omnis, and direct court APIs). Each scraper is rate-limited and resumable — it tracks already-seen decisions and fetches only new ones.
+**Collection**: 59 automated scrapers target official court websites, APIs, and publication portals (Weblaw, Tribuna, FindInfo, Omnis, and direct court APIs). Each scraper is rate-limited and resumable — it tracks already-seen decisions and fetches only new ones.
 
 **Deduplication**: `decision_id` is a deterministic hash of court code + normalized docket number. Decisions appearing across multiple sources are grouped and the version with the longest full text is kept. Cross-court overlap groups cover courts whose decisions are published on multiple portals (ZH: 17 sub-courts, AG: 18, VD: 3, BS: 3, BE: 2).
 
 **Quality control**: content hashing (MD5 of full text) detects duplicate text; stub removal discards entries with fewer than 10 characters in both full text and regeste; text length validation flags suspicious entries.
 
-**Pipeline**: daily at 01:00 UTC scrapers run; at 04:00 UTC the pipeline builds the FTS5 index, exports Parquet files, and uploads to HuggingFace. Mon–Sat runs are incremental (byte-offset checkpointing, typically under a minute); Sunday runs a full rebuild and FTS5 optimization.
+**Pipeline**: scrapers run daily at 01:00 UTC; the publish pipeline starts at 03:30 UTC and rebuilds the FTS5 index, the reference graph, the Parquet export, and uploads to HuggingFace. Every run is a full rebuild with atomic swap (zero-downtime); a typical run takes 4–6 h. The "Notable" landing-page factoids refresh weekly on Sunday at 04:30 UTC; tunnel-dependent cantonal scrapers (JU, NE) retry at 10:00 UTC after the local SOCKS reverse-tunnel comes back up.
 
 ## Schema
 
@@ -310,11 +309,11 @@ See the governance policy for source withdrawals, re-anonymization, and verified
 
 ```bibtex
 @dataset{swiss_caselaw_2026,
-  title={Swiss Case Law Dataset: 968,000+ Court Decisions with Reference Graph and ECtHR Coverage},
+  title={Swiss Case Law Dataset: 969,000+ Court Decisions with Reference Graph and ECtHR Coverage},
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={968,000+ Swiss federal, cantonal, and regulatory decisions with full text,
+  note={969,000+ Swiss federal, cantonal, and regulatory decisions with full text,
         structured metadata, 8.85M citation edges, 11.34M statute links,
         5,500+ federal laws, 26,043 cantonal legislative texts,
         and legislative history for 2,500 laws.
