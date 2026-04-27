@@ -36,6 +36,10 @@ web_ui/node_modules/
 .venv/
 *.png
 *.jpeg
+# Word add-in icons are part of the deployed asset surface (manifest.xml
+# references them as DefaultIconUrl / HighResolutionIconUrl), so the
+# blanket *.png ignore would orphan them from the deploy script.
+!tools/word-addin/assets/*.png
 .playwright-mcp/
 desktop_extension/
 search_stack/finetune_embeddings.py
