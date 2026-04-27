@@ -2260,7 +2260,7 @@
     "2026-03": 2088,
     "2026-04": 383
   },
-  "generated_at": "2026-04-27T08:03:09.098318+00:00",
+  "generated_at": "2026-04-27T11:15:08.636385+00:00",
   "scraper_health": {
     "run_at": "2026-04-27T02:30:56.540213+00:00",
     "run_duration_s": 5456.2,
@@ -2382,7 +2382,7 @@
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-04-27T01:01:36.528494+00:00"
+        "jsonl_mtime": "2026-04-27T09:00:04.871656+00:00"
       },
       "bge_historical": {
         "success": true,
@@ -2411,12 +2411,12 @@
         "our_count": 10847,
         "portal_count": null,
         "gap": null,
-        "duration_s": 83.1,
+        "duration_s": 83.0,
         "error": null,
         "note": null,
         "state_count": 10882,
         "jsonl_size_mb": 304.2,
-        "jsonl_mtime": "2026-04-27T01:05:48.387999+00:00"
+        "jsonl_mtime": "2026-04-27T09:01:23.481946+00:00"
       },
       "ar_gerichte": {
         "success": true,
@@ -2513,12 +2513,12 @@
         "our_count": 92089,
         "portal_count": null,
         "gap": null,
-        "duration_s": 767.8,
+        "duration_s": 573.4,
         "error": null,
         "note": null,
         "state_count": 92089,
         "jsonl_size_mb": 2652.7,
-        "jsonl_mtime": "2026-04-27T01:15:16.272139+00:00"
+        "jsonl_mtime": "2026-04-27T09:09:33.977155+00:00"
       },
       "elcom": {
         "success": true,
@@ -2567,9 +2567,9 @@
         "duration_s": 1061.3,
         "error": null,
         "note": null,
-        "state_count": 92235,
-        "jsonl_size_mb": 1378.2,
-        "jsonl_mtime": "2026-04-27T01:17:29.394413+00:00"
+        "state_count": 92251,
+        "jsonl_size_mb": 1378.6,
+        "jsonl_mtime": "2026-04-27T10:16:45.111704+00:00"
       },
       "fr_anwaltsaufsicht": {
         "success": true,
@@ -2598,12 +2598,12 @@
         "our_count": 21239,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1198.2,
+        "duration_s": 1135.4,
         "error": null,
         "note": null,
         "state_count": 21239,
         "jsonl_size_mb": 483.6,
-        "jsonl_mtime": "2026-04-27T01:19:01.184602+00:00"
+        "jsonl_mtime": "2026-04-27T09:18:55.890434+00:00"
       },
       "finma_versicherungsrecht": {
         "success": true,
@@ -2688,7 +2688,7 @@
         "note": null,
         "state_count": 1081,
         "jsonl_size_mb": 36.4,
-        "jsonl_mtime": "2026-04-27T01:39:12.023044+00:00"
+        "jsonl_mtime": "2026-04-27T10:04:59.832359+00:00"
       },
       "fr_gerichte": {
         "success": true,
@@ -2739,7 +2739,7 @@
         "note": null,
         "state_count": 7513,
         "jsonl_size_mb": 185.5,
-        "jsonl_mtime": "2026-04-27T01:48:42.873911+00:00"
+        "jsonl_mtime": "2026-04-27T10:33:05.234133+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -3270,7 +3270,7 @@
       }
     },
     "run_at_daily": "2026-04-27T02:30:56.540213+00:00",
-    "run_at_federal": "2026-04-26T09:19:58.580849+00:00",
+    "run_at_federal": "2026-04-27T09:18:55.999498+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3322,8 +3322,8 @@
       "ZH": 135
     },
     "commentaries": 362,
-    "citation_edges": 9040835,
-    "statute_edges": 11629441
+    "citation_edges": 9040875,
+    "statute_edges": 11629465
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3354,9 +3354,9 @@
       "total": 969573
     },
     "graph_size": {
-      "decision_edges": 6679692,
-      "statute_edges": 11629441,
-      "total": 18309133
+      "decision_edges": 6679721,
+      "statute_edges": 11629465,
+      "total": 18309186
     }
   },
   "traffic": {
@@ -3958,7 +3958,10 @@
     "by_canton": {
       "CE": 115
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 40,
+      "statute_edges": 24
+    },
     "previous_generated_at": "2026-04-26T11:07:40.683526+00:00"
   }
 }
