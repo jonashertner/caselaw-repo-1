@@ -102,9 +102,17 @@ function initApp() {
     render();
   });
 
-  // Load saved language
+  // Load saved language. Order of preference:
+  //   1. User's prior explicit choice (localStorage in browser, set
+  //      via the language picker)
+  //   2. Browser/Office display language (so first-launch users see
+  //      their own locale without touching anything)
+  //   3. DE fallback — matches the manifest's DefaultLocale.
   if (!_insideWord) {
-    try { state.lang = localStorage.getItem('ocl_lang') || 'de'; } catch (e) {}
+    try {
+      var stored = localStorage.getItem('ocl_lang');
+      state.lang = stored || _detectInitialLang();
+    } catch (e) { state.lang = _detectInitialLang(); }
   }
   document.getElementById('lang-select').value = state.lang;
   var brandSub = document.getElementById('brand-sub');
@@ -143,6 +151,55 @@ function initApp() {
   listCourts().then(function (c) { state.courts = c; }).catch(function (err) {
     console.warn('listCourts failed:', err);
   });
+
+  // Live corpus count for the welcome card. The hardcoded "969'000+" in
+  // welcome_count would otherwise drift every few weeks as the daily
+  // scrape adds decisions. Fetch the same stats.json the dashboard at
+  // opencaselaw.ch consumes; fall back silently if unreachable.
+  _loadCorpusCount();
+}
+
+function _loadCorpusCount() {
+  try {
+    fetch('https://opencaselaw.ch/stats.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (data && data.total) {
+          // de-CH apostrophe formatting matches the dashboard.
+          var n = Number(data.total);
+          if (n > 0) {
+            state.totalDecisions = n.toLocaleString('de-CH').replace(/,/g, '\u2019') + '+';
+            // Re-render only if we're currently on the welcome screen
+            // (cheap, idempotent — escHtml + render use no I/O).
+            if (state.view === 'search' && state.results.length === 0 && !state.query) {
+              render();
+            }
+          }
+        }
+      })
+      .catch(function () {});
+  } catch (e) {}
+}
+
+// Map Office.context.displayLanguage / browser navigator.language to one
+// of our four supported codes. Anything outside DE/FR/IT/EN falls back
+// to EN — that matches the AppSource locale fallback chain.
+function _detectInitialLang() {
+  var raw = '';
+  try {
+    if (typeof Office !== 'undefined' && Office.context) {
+      raw = (Office.context.displayLanguage || Office.context.contentLanguage || '');
+    }
+  } catch (e) {}
+  if (!raw && typeof navigator !== 'undefined') {
+    raw = navigator.language || (navigator.languages && navigator.languages[0]) || '';
+  }
+  raw = (raw || '').toLowerCase();
+  if (raw.indexOf('de') === 0) return 'de';
+  if (raw.indexOf('fr') === 0) return 'fr';
+  if (raw.indexOf('it') === 0) return 'it';
+  if (raw.indexOf('en') === 0) return 'en';
+  return 'de';  // Swiss-default — mirrors manifest DefaultLocale
 }
 
 // Try Office.js initialization (fires if inside Word)
@@ -152,8 +209,14 @@ if (typeof Office !== 'undefined' && Office.onReady) {
       _insideWord = true;
       try {
         var settings = Office.context.roamingSettings;
-        state.lang = settings.get('ocl_lang') || 'de';
-      } catch (e) {}
+        // Order: explicit user choice (roamingSettings) → Office display
+        // language → DE default. The display-language fallback means a
+        // French Word user sees French UI on first launch without
+        // touching the language picker.
+        state.lang = settings.get('ocl_lang') || _detectInitialLang();
+      } catch (e) {
+        state.lang = _detectInitialLang();
+      }
       _restoreAuditState();
     }
     initApp();
@@ -480,7 +543,7 @@ function renderWelcome(lang) {
   // Footer — coverage stats + how-it-works link, kept whisper-quiet.
   html += '<div class="welcome-footer">' +
     '<a class="welcome-link" data-action="show-guide">' + escHtml(t('how_it_works', lang)) + '</a>' +
-    '<span class="welcome-count-small">' + escHtml(t('welcome_count', lang, { n: '969\u2009000+' })) + '</span>' +
+    '<span class="welcome-count-small">' + escHtml(t('welcome_count', lang, { n: state.totalDecisions || '969\u2009000+' })) + '</span>' +
     '</div>';
 
   html += '</div>';
@@ -631,8 +694,8 @@ function renderDetail() {
         var isMain = (si === 0);
         html += '<div class="ew-sub' + (isMain ? ' ew-main' : '') + '">' +
           '<div class="erwaegung-header">' +
-          '<span class="erwaegung-num' + (isMain ? '' : ' ew-sub-num') + '">E. ' + escHtml(sub.num) + '</span>' +
-          '<button class="btn btn-insert erwaegung-insert" data-action="insert-ew" data-ew="' + escHtml(sub.num) + '" title="' + escHtml(formatCitation(d, lang, sub.num)) + '">E. ' + escHtml(sub.num) + '</button>' +
+          '<span class="erwaegung-num' + (isMain ? '' : ' ew-sub-num') + '">' + escHtml(pinpointLabel(lang) + ' ' + sub.num) + '</span>' +
+          '<button class="btn btn-insert erwaegung-insert" data-action="insert-ew" data-ew="' + escHtml(sub.num) + '" title="' + escHtml(formatCitation(d, lang, sub.num)) + '">' + escHtml(pinpointLabel(lang) + ' ' + sub.num) + '</button>' +
           '</div>' +
           '<div class="erwaegung-body' + (subNeedsCollapse ? ' collapsible' : '') + '" id="' + subId + '">' + escHtml(sub.text) + '</div>' +
           (subNeedsCollapse ? '<button class="expand-btn" data-action="toggle-expand" data-target="' + subId + '">' + escHtml(t('btn_show_more', lang)) + '</button>' : '') +
@@ -758,7 +821,7 @@ function renderVerify() {
 
     if (v.quote) {
       html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('relevant_ew', lang)) +
-        (v.relevant_erwaegung ? ' (E. ' + escHtml(v.relevant_erwaegung) + ')' : '') +
+        (v.relevant_erwaegung ? ' (' + escHtml(pinpointLabel(lang) + ' ' + v.relevant_erwaegung) + ')' : '') +
         '</div><div class="verdict-quote">\u00AB' + escHtml(v.quote) + '\u00BB</div></div>';
     }
 
@@ -1183,10 +1246,10 @@ async function handleAppClick(e) {
         var fIss = state.scanResults && state.scanResults.issues && state.scanResults.issues[idx];
         var newPp = btn.dataset.pp;
         if (fIss && newPp) {
-          // Strip old E./consid. suffix and re-attach the suggested one in document language.
+          // Strip old E./consid./para. suffix and re-attach the suggested
+          // one in user-language (centralised via pinpointLabel()).
           var stripped = fIss.citation.replace(/\s*(?:E\.|consid\.|para\.|cons\.)\s*[\d.]+\s*$/i, '').trim();
-          var ewLabel = (state.lang === 'fr' || state.lang === 'it') ? 'consid.' : 'E.';
-          var fixed = stripped + ' ' + ewLabel + ' ' + newPp;
+          var fixed = stripped + ' ' + pinpointLabel(state.lang) + ' ' + newPp;
           var fOk = await replaceInDocument(fIss.citation, fixed, fIss._nth || 0);
           if (btn) {
             btn.textContent = fOk ? '\u2713' : '\u2717';
@@ -1986,7 +2049,7 @@ function renderAuditIssueCard(iss, idx, lang) {
     for (var k = 0; k < Math.min(iss.valid_pinpoints.length, 8); k++) {
       var pp = iss.valid_pinpoints[k];
       html += '<button class="pill audit-pinpoint-pill" data-action="audit-fix-pinpoint" ' +
-        'data-idx="' + idx + '" data-pp="' + escHtml(pp) + '">E. ' + escHtml(pp) + '</button>';
+        'data-idx="' + idx + '" data-pp="' + escHtml(pp) + '">' + escHtml(pinpointLabel(lang) + ' ' + pp) + '</button>';
     }
     html += '</div>';
   }

@@ -26,9 +26,11 @@
   <!-- AppDomains is the egress allowlist enforced by Word's iframe sandbox.
        The "Tier B" direct browser→Anthropic call was removed on 2026-04-25
        (Pro verification is server-side via /api/billing/verify); Anthropic
-       is no longer needed here and was dropped to keep the surface tight. -->
+       is no longer needed here and was dropped to keep the surface tight.
+       opencaselaw.ch is allowed for the live stats.json corpus-count fetch. -->
   <AppDomains>
     <AppDomain>https://mcp.opencaselaw.ch</AppDomain>
+    <AppDomain>https://opencaselaw.ch</AppDomain>
     <AppDomain>https://checkout.stripe.com</AppDomain>
     <AppDomain>https://api.stripe.com</AppDomain>
   </AppDomains>

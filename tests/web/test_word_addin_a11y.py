@@ -93,3 +93,52 @@ def test_render_has_error_boundary():
         "render() lost its try/catch boundary — a single render exception "
         "now kills the entire task pane with no recovery surface."
     )
+
+
+def test_pinpoint_label_centralised():
+    """No file should hard-code the German 'E. ' label in user-facing UI.
+
+    Pinpoint references (Erwägung / consid. / para.) localise per user
+    language: DE → E., FR/IT → consid., EN → para. Centralising via
+    citation.js::pinpointLabel() makes sure FR/IT/EN users don't see
+    German labels next to French law text.
+    """
+    app = APP_JS.read_text(encoding="utf-8")
+    citation = (ADDIN_DIR / "js" / "citation.js").read_text(encoding="utf-8")
+    assert "function pinpointLabel" in citation, (
+        "citation.js::pinpointLabel() missing — without it every UI surface "
+        "has to re-derive the per-language pinpoint abbreviation, and they "
+        "drift out of sync."
+    )
+    # The hard-coded German label `'E. '` (with trailing space — matches a
+    # display-prefix rather than a regex literal) must not appear in
+    # app.js. The regex on line ~1187 uses `E\.` (escaped dot, no space)
+    # and is intentionally exempt.
+    import re
+    bad_lines = [
+        (i + 1, line)
+        for i, line in enumerate(app.split("\n"))
+        if re.search(r"['\"]E\. ", line)
+    ]
+    assert not bad_lines, (
+        f"app.js still hard-codes the German pinpoint label 'E. ' on "
+        f"{len(bad_lines)} line(s): "
+        f"{[(n, l.strip()[:80]) for n, l in bad_lines[:3]]}. "
+        f"Use pinpointLabel(lang) from citation.js so FR/IT/EN users "
+        f"see consid./para. instead of a German label."
+    )
+
+
+def test_office_locale_autodetect():
+    """First-launch language must follow the user's Office display locale."""
+    js = APP_JS.read_text(encoding="utf-8")
+    assert "_detectInitialLang" in js, (
+        "app.js no longer detects Office.context.displayLanguage on first "
+        "launch — French/Italian/English users see a German UI by default, "
+        "which is a major adoption blocker outside the German-speaking "
+        "cantons."
+    )
+    assert "Office.context.displayLanguage" in js, (
+        "_detectInitialLang() doesn't read Office.context.displayLanguage — "
+        "the autodetect is incomplete."
+    )

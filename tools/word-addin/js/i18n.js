@@ -1182,10 +1182,33 @@ var UI_STRINGS = {
 /**
  * Get a translated UI string. Supports {n} and {ref} placeholders.
  */
+// Per-key dedup so missing-translation warnings don't spam the console
+// (the same key may render dozens of times in a single view pass).
+var _missingI18nKeysSeen = (typeof Object.create === 'function') ? Object.create(null) : {};
+
 function t(key, lang, replacements) {
   var entry = UI_STRINGS[key];
-  if (!entry) return key;
-  var str = entry[lang] || entry.de || key;
+  if (!entry) {
+    if (!_missingI18nKeysSeen[key]) {
+      _missingI18nKeysSeen[key] = 1;
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[i18n] missing key: ' + key + ' (rendered as the key name itself)');
+      }
+    }
+    return key;
+  }
+  var str = entry[lang];
+  if (str === undefined) {
+    var fallbackKey = key + '/' + (lang || '');
+    if (!_missingI18nKeysSeen[fallbackKey]) {
+      _missingI18nKeysSeen[fallbackKey] = 1;
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[i18n] key "' + key + '" missing in language "' + lang +
+                     '" — falling back to DE.');
+      }
+    }
+    str = entry.de || key;
+  }
   if (replacements) {
     Object.keys(replacements).forEach(function (k) {
       str = str.replace('{' + k + '}', replacements[k]);

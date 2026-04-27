@@ -18,6 +18,19 @@ var ERWAEGUNG_LABEL = {
   en: 'para.'
 };
 
+/**
+ * Locale-correct pinpoint label for paragraph/Erwägung references.
+ * DE → "E."  ·  FR/IT → "consid."  ·  EN → "para."
+ *
+ * Centralised so every UI surface that previously hard-coded "E. " (the
+ * German abbreviation) gets the right label for FR/IT/EN users. This is
+ * the *display* label only — the citation produced by formatCitation()
+ * already localises correctly via ERWAEGUNG_LABEL.
+ */
+function pinpointLabel(lang) {
+  return ERWAEGUNG_LABEL[lang] || ERWAEGUNG_LABEL.de;
+}
+
 var MONTH_NAMES = {
   de: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
   fr: ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'],
@@ -150,6 +163,7 @@ if (typeof module !== 'undefined' && module.exports) {
     formatDate: formatDate,
     formatCitation: formatCitation,
     isBge: isBge,
-    extractBgeRef: extractBgeRef
+    extractBgeRef: extractBgeRef,
+    pinpointLabel: pinpointLabel
   };
 }
