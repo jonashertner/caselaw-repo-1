@@ -9007,6 +9007,37 @@ def _audit_quotes(
     return issues
 
 
+def _statute_source_pool(draft_text: str) -> list[dict]:
+    """Build a 'source pool' entry for every Art. X LAW reference in
+    the draft whose article text resolves in statutes.db. The quote
+    audit consumes this pool alongside cited-decision text so verbatim
+    statute quotes are not falsely flagged as unsourced.
+    """
+    pool: list[dict] = []
+    if not STATUTES_DB_PATH.exists():
+        return pool
+    seen: set[tuple[str, str]] = set()
+    for sm in _STATUTE_AUDIT_PATTERN.finditer(draft_text):
+        article = re.sub(r"\s+", "", (sm.group("article") or "").lower())
+        law_raw = (sm.group("law") or "").strip()
+        law_up = law_raw.upper()
+        if not article or not law_up or law_up in _STATUTE_AUDIT_INVALID_LAWS:
+            continue
+        key = (law_up, article)
+        if key in seen:
+            continue
+        seen.add(key)
+        stat = _fetch_statute_text(law_code=law_up, article=article)
+        if stat.get("text_de"):
+            pool.append({
+                "decision_id": f"statute:{law_up}_{article}",
+                "regeste": stat["text_de"],
+                "full_text": "",
+                "paragraphs": [],
+            })
+    return pool
+
+
 def _audit_dates(
     draft_text: str,
     case_citations: list[dict],
@@ -9099,11 +9130,11 @@ def _handle_attest_response(*, draft_text: str) -> dict:
     citations = _parse_citations_in_text(draft_text)
     if not citations:
         # No case citations — but statute references and direct quotes
-        # may still be present. Run those audits (with empty source
-        # pool: any quotation in a no-citation draft is unsourced and
-        # therefore flagged).
+        # may still be present. Build a statute-only source pool so a
+        # verbatim Art. X quote (with no accompanying case citation)
+        # is not falsely flagged as unsourced.
         statute_issues = _audit_statutes(draft_text)
-        quote_issues = _audit_quotes(draft_text, [])
+        quote_issues = _audit_quotes(draft_text, _statute_source_pool(draft_text))
         empty_issues = statute_issues + quote_issues
         empty_issues.sort(key=lambda i: i.get("position", 0))
         return {
@@ -9287,26 +9318,7 @@ def _handle_attest_response(*, draft_text: str) -> dict:
     # the LLM included in the draft. This eliminates the false-positive
     # class where a draft correctly quotes Art. X verbatim but is flagged
     # as unsourced because no case happens to be cited alongside it.
-    if STATUTES_DB_PATH.exists():
-        seen_stat: set[tuple[str, str]] = set()
-        for sm in _STATUTE_AUDIT_PATTERN.finditer(draft_text):
-            article = re.sub(r"\s+", "", (sm.group("article") or "").lower())
-            law_raw = (sm.group("law") or "").strip()
-            law_up = law_raw.upper()
-            if not article or not law_up or law_up in _STATUTE_AUDIT_INVALID_LAWS:
-                continue
-            key = (law_up, article)
-            if key in seen_stat:
-                continue
-            seen_stat.add(key)
-            stat = _fetch_statute_text(law_code=law_up, article=article)
-            if stat.get("text_de"):
-                cited_sources.append({
-                    "decision_id": f"statute:{law_up}_{article}",
-                    "regeste": stat["text_de"],
-                    "full_text": "",
-                    "paragraphs": [],
-                })
+    cited_sources.extend(_statute_source_pool(draft_text))
     quote_issues = _audit_quotes(draft_text, cited_sources)
     date_issues = _audit_dates(draft_text, citations)
     issues.extend(statute_issues)
