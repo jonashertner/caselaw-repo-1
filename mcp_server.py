@@ -15915,6 +15915,153 @@ render();setInterval(render,60000);
             claim=body.claim, decision_id=body.decision_id, pinpoint=body.pinpoint,
         )
 
+    # ── Practitioner export endpoints (.docx / BibTeX / RIS / Atom) ──
+    # Workflow tooling: every decision can be exported as a Word document
+    # (citation + Regeste + structured Erwägungen + Dispositiv), as a
+    # BibTeX entry, or as an RIS record (Zotero / EndNote / Mendeley).
+    # Per-court Atom feeds let practitioners subscribe to "newest
+    # decisions from court X" in any feed reader.
+    from fastapi.responses import Response as _FastAPIResponse  # type: ignore
+    import exports as _exports
+
+    def _fetch_export_decision(decision_id: str) -> tuple[dict, list[dict]] | None:
+        decision = get_decision_by_id(decision_id)
+        if not decision:
+            return None
+        # Enrich with canonical citation strings (already present from
+        # get_decision_by_id, but re-build defensively).
+        try:
+            citation = _build_citation_strings(decision)
+            decision.setdefault("citation_string_de", citation.get("citation_string_de"))
+            decision.setdefault("citation_string_fr", citation.get("citation_string_fr"))
+            decision.setdefault("citation_string_it", citation.get("citation_string_it"))
+        except Exception:
+            pass
+        paragraphs = _fetch_structure_paragraphs(decision.get("decision_id") or decision_id)
+        return decision, paragraphs or []
+
+    @rest_api.get("/decisions/{decision_id}/export.docx", tags=["Exports"],
+                  summary="Download a decision as Word (.docx)",
+                  description="Returns a Word document containing the canonical "
+                              "citation, Regeste, and structured Erwägungen of the "
+                              "decision — ready to drop into a brief or memo. "
+                              "Falls back to plain-text (.txt) if python-docx is "
+                              "not installed on the server.",
+                  response_class=_FastAPIResponse)
+    async def api_export_docx(
+        decision_id: str = PathParam(description="Canonical decision ID"),
+    ):
+        result = await asyncio.to_thread(_fetch_export_decision, decision_id)
+        if not result:
+            return _FastAPIResponse(
+                content=f'{{"error": "Decision not found: {decision_id}"}}',
+                status_code=404, media_type="application/json",
+            )
+        decision, paragraphs = result
+        body, mtype, fname = await asyncio.to_thread(
+            _exports.render_docx, decision, paragraphs,
+        )
+        return _FastAPIResponse(
+            content=body, media_type=mtype,
+            headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+        )
+
+    @rest_api.get("/decisions/{decision_id}/export.bib", tags=["Exports"],
+                  summary="Download a decision as BibTeX",
+                  description="Returns a BibTeX `@misc{...}` entry suitable for "
+                              "LaTeX bibliographies and reference managers.",
+                  response_class=_FastAPIResponse)
+    async def api_export_bibtex(
+        decision_id: str = PathParam(description="Canonical decision ID"),
+    ):
+        result = await asyncio.to_thread(_fetch_export_decision, decision_id)
+        if not result:
+            return _FastAPIResponse(
+                content=f'{{"error": "Decision not found: {decision_id}"}}',
+                status_code=404, media_type="application/json",
+            )
+        decision, _ = result
+        body, mtype, fname = _exports.render_bibtex(decision)
+        return _FastAPIResponse(
+            content=body, media_type=mtype,
+            headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+        )
+
+    @rest_api.get("/decisions/{decision_id}/export.ris", tags=["Exports"],
+                  summary="Download a decision as RIS (Zotero/EndNote/Mendeley)",
+                  description="Returns an RIS bibliographic record (TY-CASE) "
+                              "consumable by Zotero, EndNote, Mendeley, and other "
+                              "common reference managers.",
+                  response_class=_FastAPIResponse)
+    async def api_export_ris(
+        decision_id: str = PathParam(description="Canonical decision ID"),
+    ):
+        result = await asyncio.to_thread(_fetch_export_decision, decision_id)
+        if not result:
+            return _FastAPIResponse(
+                content=f'{{"error": "Decision not found: {decision_id}"}}',
+                status_code=404, media_type="application/json",
+            )
+        decision, _ = result
+        body, mtype, fname = _exports.render_ris(decision)
+        return _FastAPIResponse(
+            content=body, media_type=mtype,
+            headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+        )
+
+    @rest_api.get("/atom/{court}.xml", tags=["Exports"],
+                  summary="Atom feed of newest decisions for a court",
+                  description="Atom 1.0 feed of the 50 most recent decisions "
+                              "from a given court. Subscribe in any feed reader "
+                              "(NetNewsWire, Inoreader, Feedbin, etc.) to get a "
+                              "daily digest of newly published decisions.",
+                  response_class=_FastAPIResponse)
+    async def api_atom_court(
+        court: str = PathParam(description="Court code (e.g. bger, bvger, zh_obergericht)"),
+    ):
+        court = (court or "").lower().strip()
+        if not _SAFE_IDENT_RE.match(court):
+            return _FastAPIResponse(
+                content="invalid court code", status_code=400,
+                media_type="text/plain",
+            )
+
+        def _build():
+            conn = get_db()
+            try:
+                rows = conn.execute(
+                    "SELECT decision_id, court, decision_date, docket_number, "
+                    "regeste, language FROM decisions "
+                    "WHERE court = ? ORDER BY decision_date DESC LIMIT 50",
+                    (court,),
+                ).fetchall()
+                decisions = []
+                for r in rows:
+                    d = dict(r)
+                    try:
+                        c = _build_citation_strings(d)
+                        d["citation_string_de"] = c.get("citation_string_de")
+                        d["citation_string_fr"] = c.get("citation_string_fr")
+                        d["citation_string_it"] = c.get("citation_string_it")
+                    except Exception:
+                        pass
+                    decisions.append(d)
+                return decisions
+            finally:
+                conn.close()
+
+        decisions = await asyncio.to_thread(_build)
+        if not decisions:
+            return _FastAPIResponse(
+                content=f"no decisions for court '{court}'",
+                status_code=404, media_type="text/plain",
+            )
+        court_label = _get_court_display_name(court)
+        body, mtype, fname = _exports.render_atom_feed(
+            court=court, court_label=court_label, decisions=decisions,
+        )
+        return _FastAPIResponse(content=body, media_type=mtype)
+
     # ── Structure endpoints (verbatim Erwägung / Regeste / full structure) ──
 
     @rest_api.get("/erwaegung/{decision_id}/{e_number}", tags=["Decision Structure"],

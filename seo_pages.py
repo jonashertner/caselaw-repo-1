@@ -338,6 +338,12 @@ def _render_decision(row: sqlite3.Row) -> str:
     {f'<a href="{_esc(pdf_url)}" rel="noopener">PDF</a>' if pdf_url else ''}
     <a href="https://opencaselaw.ch">Alle 966'000+ Entscheide durchsuchen</a>
 </div>
+<div class="links" style="font-size:0.85rem;color:#666">
+    Export:
+    <a href="/api/decisions/{_esc(decision_id)}/export.docx" rel="nofollow">Word (.docx)</a>
+    <a href="/api/decisions/{_esc(decision_id)}/export.bib" rel="nofollow">BibTeX</a>
+    <a href="/api/decisions/{_esc(decision_id)}/export.ris" rel="nofollow">RIS (Zotero)</a>
+</div>
 {structured_html}
 {text_excerpt}
 <footer>
