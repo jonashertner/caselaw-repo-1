@@ -4,9 +4,11 @@ Per-rail ablation experiment for v0.2.
 For each of 30 questions in Swiss Legal RAG Bench v0.2:
 
   1. Generate a "prior-only" draft (no retrieval) using Claude Sonnet 4.6.
-     Without retrieval, frontier LLMs hallucinate Swiss case-law
-     references at the rates measured by Dahl/Magesh 2024 (58–82%).
-     This condition guarantees the rails have something to catch.
+     The prior-only condition is chosen as an audit-pipeline
+     stress test, not as an end-to-end RAG evaluation.
+     Note: Dahl 2024 / Magesh 2025 hallucination rates were
+     measured on different model/condition combinations than
+     ours and the comparison should not be read as like-for-like.
 
   2. Run the closing audit (attest_response with audit_grounding=True)
      against the live MCP — collects issue counts in all 5 rail
