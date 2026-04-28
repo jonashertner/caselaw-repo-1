@@ -340,9 +340,9 @@ def _render_decision(row: sqlite3.Row) -> str:
 </div>
 <div class="links" style="font-size:0.85rem;color:#666">
     Export:
-    <a href="/api/decisions/{_esc(decision_id)}/export.docx" rel="nofollow">Word (.docx)</a>
-    <a href="/api/decisions/{_esc(decision_id)}/export.bib" rel="nofollow">BibTeX</a>
-    <a href="/api/decisions/{_esc(decision_id)}/export.ris" rel="nofollow">RIS (Zotero)</a>
+    <a href="/api/decisions/{_esc(did)}/export.docx" rel="nofollow">Word (.docx)</a>
+    <a href="/api/decisions/{_esc(did)}/export.bib" rel="nofollow">BibTeX</a>
+    <a href="/api/decisions/{_esc(did)}/export.ris" rel="nofollow">RIS (Zotero)</a>
 </div>
 {structured_html}
 {text_excerpt}

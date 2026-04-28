@@ -16403,9 +16403,59 @@ render();setInterval(render,60000);
         return Response(content, media_type="application/xml")
 
     async def handle_robots(request):
+        # AI / LLM crawlers explicitly allowed: corpus is CC0, every
+        # decision page carries Schema.org markup, the verification
+        # surface stays intact regardless of crawler. Crawlers we DO
+        # NOT want indexing: see /metrics/* (operational data) — those
+        # are blocked individually.
+        body = (
+            "User-agent: *\n"
+            "Allow: /\n"
+            "Disallow: /metrics\n"
+            "Disallow: /dev\n"
+            "\n"
+            "# AI / LLM crawlers — explicitly allowed.\n"
+            "User-agent: GPTBot\nAllow: /\n"
+            "User-agent: ChatGPT-User\nAllow: /\n"
+            "User-agent: OAI-SearchBot\nAllow: /\n"
+            "User-agent: ClaudeBot\nAllow: /\n"
+            "User-agent: anthropic-ai\nAllow: /\n"
+            "User-agent: Claude-Web\nAllow: /\n"
+            "User-agent: Google-Extended\nAllow: /\n"
+            "User-agent: GoogleOther\nAllow: /\n"
+            "User-agent: PerplexityBot\nAllow: /\n"
+            "User-agent: Perplexity-User\nAllow: /\n"
+            "User-agent: CCBot\nAllow: /\n"
+            "User-agent: cohere-ai\nAllow: /\n"
+            "User-agent: Meta-ExternalAgent\nAllow: /\n"
+            "User-agent: Bytespider\nAllow: /\n"
+            "User-agent: Applebot\nAllow: /\n"
+            "User-agent: Applebot-Extended\nAllow: /\n"
+            "\n"
+            f"Sitemap: {BASE_URL}/sitemap.xml\n"
+        )
+        return Response(body, media_type="text/plain")
+
+    async def handle_llms_txt(request):
+        # /llms.txt is the emerging convention for an LLM-readable site
+        # index. Mirror the file we ship in docs/llms.txt so both hosts
+        # (opencaselaw.ch via GitHub Pages + mcp.opencaselaw.ch via this
+        # server) serve identical content. Falls back to a minimal stub
+        # if the file is missing on disk.
+        path = Path(__file__).resolve().parent / "docs" / "llms.txt"
+        if path.exists():
+            try:
+                return Response(
+                    path.read_text(encoding="utf-8"),
+                    media_type="text/markdown; charset=utf-8",
+                )
+            except Exception:
+                pass
         return Response(
-            f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n",
-            media_type="text/plain",
+            "# OpenCaseLaw\n\n"
+            "> Open Swiss legal corpus + verification-first MCP server.\n\n"
+            "See https://opencaselaw.ch/llms.txt for the full index.\n",
+            media_type="text/markdown; charset=utf-8",
         )
 
     app = Starlette(
@@ -16418,6 +16468,7 @@ render();setInterval(render,60000);
             Route("/metrics/sessions", endpoint=handle_sessions_local),
             Route("/metrics/integrators", endpoint=handle_sessions),
             Route("/robots.txt", endpoint=handle_robots),
+            Route("/llms.txt", endpoint=handle_llms_txt),
             Route("/sitemap.xml", endpoint=handle_sitemap_index),
             Route("/sitemap-{court}.xml", endpoint=handle_court_sitemap),
             Route("/google-verify", endpoint=lambda r: Response(

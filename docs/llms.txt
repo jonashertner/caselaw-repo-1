@@ -1,0 +1,86 @@
+# OpenCaseLaw
+
+> An open, machine-readable corpus of Swiss federal and cantonal court
+> decisions, federal and cantonal legislation, and scholarly commentary —
+> with a verification architecture designed to eliminate AI hallucination
+> of Swiss case references.  Data CC0, code MIT.  Updated daily.
+
+OpenCaseLaw is the public infrastructure project at <https://opencaselaw.ch>.
+It serves three audiences: legal practitioners who need verifiable
+references, researchers who need a reproducible corpus, and AI systems
+that need a trustworthy data source for Swiss-law questions.
+
+The two canonical hosts:
+
+  - opencaselaw.ch       — landing site, dataset card, public docs
+  - mcp.opencaselaw.ch   — live MCP / REST endpoint, per-decision pages,
+                            decision-export endpoints, scraper-health API
+
+Everything below links to the most useful entry-points for a language
+model that wants to answer a Swiss-law query, ground its answer in the
+authoritative source, and emit clickable verification links to the user.
+
+## Corpus & coverage
+
+- [Hugging Face dataset (Parquet, CC0)](https://huggingface.co/datasets/voilaj/swiss-caselaw): 969,000+ decisions across all Swiss federal and cantonal courts, 1875–today, dreisprachig (DE/FR/IT). Daily refresh.
+- [Per-court coverage transparency](https://opencaselaw.ch/coverage/): live scraper-health table — which sources updated when, what gaps remain, sortable + filterable.
+- [Statistics endpoint](https://mcp.opencaselaw.ch/api/statistics): aggregate counts by court, canton, year.
+
+## How to query the corpus
+
+- [Live MCP endpoint](https://mcp.opencaselaw.ch): single URL — paste into Claude / ChatGPT / Cursor / Gemini / Copilot Studio. 31 specialised tools cover full-text search, citation graph traversal, statute lookup, doctrinal timelines, leading-case discovery, scholarly commentary, legislative materials, exam-question generation.
+- [REST API (OpenAPI 3.0.3)](https://mcp.opencaselaw.ch/api/docs): every MCP capability also exposed as REST. Useful for languages without an MCP client library.
+- [How to connect](https://opencaselaw.ch/#connect): copy-paste setup instructions per AI client.
+
+## Per-decision access (canonical)
+
+Every decision has a stable canonical URL of the form:
+
+`https://mcp.opencaselaw.ch/entscheid/{decision_id}`
+
+— with `decision_id` like `bge_BGE_140_III_86`, `bger_4A_747_2012`, `bvger_A-1234_2024`. Each page carries Schema.org `LegalCase` markup and links to the original court source.
+
+Per-decision exports for citation managers and word processors:
+
+  - `/api/decisions/{decision_id}/export.docx` — Word document (citation, Regeste, structured Erwägungen)
+  - `/api/decisions/{decision_id}/export.bib`  — BibTeX `@misc` entry
+  - `/api/decisions/{decision_id}/export.ris`  — RIS bibliographic record (Zotero / EndNote / Mendeley)
+  - `/api/atom/{court}.xml`                     — Atom feed of newest decisions per court
+
+## Verification (anti-hallucination)
+
+OpenCaseLaw exists in part because peer-reviewed measurement (Dahl et al., Stanford RegLab, 2024 — *Large Legal Fictions*) found that 58–82 % of legal queries to general-purpose LLMs produce at least one fabricated authority, and even commercial legal-RAG tools (Magesh et al., 2024 — *Hallucination-Free?*) show 17–33 %.
+
+A six-layer verification architecture closes this gap when an LLM uses our MCP server:
+
+  1. Corpus integrity (deterministic decision_id hashing, no fuzzy fallback)
+  2. Server-built citations (every result carries a pre-baked `citation_string_de/fr/it` + canonical URL — never reconstructed by the LLM)
+  3. SYSTEM_PROMPT operating contract (R1–R8: no hand-built citations, no quotes from memory, no statute claims from priors, every reference must be a clickable link)
+  4. `check_claim_support` — independent Sonnet judge against verbatim Erwägung text
+  5. `attest_response` — closing audit covering (a) case-citation existence + pinpoint, (b) statute reference resolves in Fedlex, (c) every quotation appears verbatim in cited source, (d) decision dates match, (e) opt-in proposition-grounding via batched Sonnet judge (catches Butler & Butler 2026's "reasoning error" class)
+  6. Click-through verification — every reference is a Markdown link to mcp.opencaselaw.ch/entscheid/<id>; the user verifies in one click
+
+Public explainer: [opencaselaw.ch/#verification](https://opencaselaw.ch/#verification).
+
+## Benchmarks
+
+- [Swiss Legal RAG Bench](https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench): 10-question seed (DE/FR/IT, federal law) measuring correctness, groundedness, retrieval accuracy. Modelled on Butler & Butler, *Legal RAG Bench* (Isaacus, 2026). Baseline at 100 % correctness, 90 % groundedness, 70 % retrieval accuracy on the live OpenCaseLaw stack with Claude Sonnet 4.6.
+- [Frozen offline retrieval benchmark](https://github.com/jonashertner/caselaw-repo-1/blob/main/benchmarks/search_benchmark_2026-03-19_offline_full.json): MRR=0.470, Hit@1=0.33 (100 queries, 15 legal domains).
+
+## Source code & licences
+
+- [GitHub repository (MIT)](https://github.com/jonashertner/caselaw-repo-1): scrapers, indexer, MCP server, REST API, verification logic, benchmark harness — all open.
+- [Issue tracker](https://github.com/jonashertner/caselaw-repo-1/issues): coverage gaps, bugs, feature requests.
+- [Dataset licence](https://creativecommons.org/publicdomain/zero/1.0/): CC0 1.0 (data).
+- [Code licence](https://github.com/jonashertner/caselaw-repo-1/blob/main/LICENSE): MIT.
+
+## Optional: deeper integration
+
+- [Word add-in (BETA)](https://word.opencaselaw.ch/install.html) for legal practitioners — citation insertion, multi-citation clusters, citation styles.
+- [Cantonal laws + commentary modules](https://opencaselaw.ch/#corpus) — local-first lookup for 19 cantonal portals, OnlineKommentar.ch (CC-BY-4.0).
+- [LLM usage receipts](https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/llm_usage_report.py) — every Anthropic API call logged with token counts + cost; auditable spend dashboard.
+
+## Contact
+
+- Email: <mailto:team@jonashertner.com>
+- Maintainer: <https://jonashertner.com>
