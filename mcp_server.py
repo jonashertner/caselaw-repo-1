@@ -3620,7 +3620,17 @@ def _sqlite_has_table(conn: sqlite3.Connection, table: str) -> bool:
     return row is not None
 
 
+_SAFE_IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
 def _sqlite_has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
+    """Defence-in-depth: PRAGMA cannot use ?-binding, so the table
+    name is interpolated. All current callers pass internal constants,
+    but reject any input that does not match a strict identifier
+    pattern so a future caller cannot accidentally introduce SQL
+    injection."""
+    if not _SAFE_IDENT_RE.match(table or ""):
+        return False
     try:
         rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
     except sqlite3.Error:
@@ -3906,20 +3916,23 @@ def _resolve_decision_id(decision_id: str) -> str:
             ).fetchone()
             if row:
                 return row[0]
-        # Fallback: docket number match
-        for query, params in [
-            (
-                "SELECT decision_id FROM decisions WHERE docket_number = ? "
-                "ORDER BY decision_date DESC LIMIT 1",
-                (decision_id,),
-            ),
-            (
+        # Fallback: exact docket — always tried.
+        row = conn.execute(
+            "SELECT decision_id FROM decisions WHERE docket_number = ? "
+            "ORDER BY decision_date DESC LIMIT 1",
+            (decision_id,),
+        ).fetchone()
+        if row:
+            return row[0]
+        # Last resort: LIKE %x% — full table scan ~2 s on 1M rows.
+        # Skip when input clearly looks like a canonical decision_id
+        # (it would have hit step 1 if it existed).
+        if not _CANONICAL_ID_PREFIX_RE.match(decision_id or ""):
+            row = conn.execute(
                 "SELECT decision_id FROM decisions WHERE docket_number LIKE ? "
                 "ORDER BY decision_date DESC LIMIT 1",
                 (f"%{decision_id}%",),
-            ),
-        ]:
-            row = conn.execute(query, params).fetchone()
+            ).fetchone()
             if row:
                 return row[0]
     finally:
@@ -5607,8 +5620,30 @@ def _split_passages(full_text: str) -> list[str]:
     return out
 
 
+_CANONICAL_ID_PREFIX_RE = re.compile(
+    r"^(?:bge|bger|bvger|bstger|bpatger|mkg|hudoc|bge_egmr|bge_historical|"
+    r"finma|finma_versicherungsrecht|weko|edoeb|ubi|elcom|postcom|comcom|"
+    r"emark|ta_sst|ch_bundesrat|"
+    r"zh|be|lu|ur|sz|ow|nw|gl|zg|fr|so|bs|bl|sh|ar|ai|sg|gr|ag|tg|ti|vd|vs|ne|ge|ju)"
+    r"_",
+    re.IGNORECASE,
+)
+
+
 def get_decision_by_id(decision_id: str) -> dict | None:
-    """Fetch a single decision with full text."""
+    """Fetch a single decision with full text.
+
+    Lookup ladder:
+      1. Exact decision_id match (indexed) — O(1).
+      2. Exact docket_number match (indexed) — O(1).
+      3. Partial docket_number match (LIKE %x%) — full-table scan,
+         only useful for raw docket queries the user typed by hand.
+         SKIPPED when the input looks like a canonical decision_id
+         (e.g. starts with "bger_" / "bge_BGE_…") because such IDs
+         either hit step 1 or are fabricated; the LIKE scan costs
+         ~2 s on the live 970k-row table and produces nothing
+         meaningful for these inputs.
+    """
     conn = get_db()
     row = conn.execute(
         "SELECT * FROM decisions WHERE decision_id = ?",
@@ -5623,8 +5658,8 @@ def get_decision_by_id(decision_id: str) -> dict | None:
             (decision_id,),
         ).fetchone()
 
-    if not row:
-        # Try partial match on docket — prefer newest decision
+    if not row and not _CANONICAL_ID_PREFIX_RE.match(decision_id or ""):
+        # Partial match — only worthwhile for hand-typed dockets
         row = conn.execute(
             "SELECT * FROM decisions WHERE docket_number LIKE ? "
             "ORDER BY decision_date DESC LIMIT 1",
@@ -10186,11 +10221,31 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
     return {"cited_by": cited_by, "cites": cites}
 
 
+# In-process cache for statute lookups. Statutes.db is loaded
+# read-only (immutable=1) and replaced atomically on rebuild — workers
+# see the prior file until restarted (every deploy). So the cache is
+# safe and bounded by the universe of (law_code, article) pairs the
+# server is ever asked about (typically <2k in normal traffic).
+_statute_text_cache: dict[tuple[str, str], dict] = {}
+_STATUTE_TEXT_CACHE_MAX = 4096
+
+
 def _fetch_statute_text(*, law_code: str, article: str) -> dict:
-    """Fetch statute article text from statutes.db. Returns {} if unavailable."""
+    """Fetch statute article text from statutes.db. Returns {} if unavailable.
+
+    Cached. Two DB queries per uncached call (abbr → sr_number, then
+    article text); both ~2-5 ms but called repeatedly by the
+    statute-quote audit, so caching the (law_code, article) → result
+    map shaves ~10 ms per audit per repeat reference.
+    """
+    key = (law_code, article)
+    cached = _statute_text_cache.get(key)
+    if cached is not None:
+        return cached
+
     conn = _get_statutes_conn()
     if conn is None:
-        return {}
+        return {}  # DB not available — don't cache (may appear later)
     try:
         # Find SR number for the law abbreviation
         law_row = conn.execute(
@@ -10199,27 +10254,33 @@ def _fetch_statute_text(*, law_code: str, article: str) -> dict:
             (law_code, law_code, law_code),
         ).fetchone()
         if not law_row:
-            return {"law_code": law_code, "article": article}
-        sr = law_row["sr_number"]
-
-        art_row = conn.execute(
-            "SELECT article_num, text, lang FROM articles "
-            "WHERE sr_number = ? AND article_num = ? AND lang = 'de' LIMIT 1",
-            (sr, article),
-        ).fetchone()
-        if not art_row:
-            return {"law_code": law_code, "article": article, "sr_number": sr}
-
-        return {
-            "law_code": law_code,
-            "article": article,
-            "sr_number": sr,
-            "text_de": (art_row["text"] or "")[:600],
-        }
+            result = {"law_code": law_code, "article": article}
+        else:
+            sr = law_row["sr_number"]
+            art_row = conn.execute(
+                "SELECT article_num, text, lang FROM articles "
+                "WHERE sr_number = ? AND article_num = ? AND lang = 'de' LIMIT 1",
+                (sr, article),
+            ).fetchone()
+            if not art_row:
+                result = {"law_code": law_code, "article": article, "sr_number": sr}
+            else:
+                result = {
+                    "law_code": law_code,
+                    "article": article,
+                    "sr_number": sr,
+                    "text_de": (art_row["text"] or "")[:600],
+                }
     except Exception:
-        return {"law_code": law_code, "article": article}
+        result = {"law_code": law_code, "article": article}
     finally:
         conn.close()
+
+    # Bound the cache (eviction not needed often; just a safety valve).
+    if len(_statute_text_cache) >= _STATUTE_TEXT_CACHE_MAX:
+        _statute_text_cache.clear()
+    _statute_text_cache[key] = result
+    return result
 
 
 def _find_leading_cases_by_statute_fallback(

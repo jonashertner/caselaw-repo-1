@@ -308,6 +308,69 @@ def test_attest_skips_grounding_when_not_requested(m):
     assert "grounding" in res["issues_by_category"]
 
 
+def test_canonical_id_prefix_skips_like(m):
+    """get_decision_by_id and _resolve_decision_id must NOT fall through
+    to LIKE %x% scan when the input looks like a canonical decision_id
+    (has a known court prefix). Such inputs either hit the exact-match
+    path or are fabricated; the LIKE scan costs ~2 s on the live 970k
+    table and produces nothing useful."""
+    for cid in (
+        "bge_BGE_999_IV_999",       # fabricated BGE
+        "bger_4A_99999/9999",        # fabricated BGer
+        "bvger_X-1234/2099",         # fabricated BVGer
+        "zh_obergericht_NONE",       # fabricated cantonal
+    ):
+        assert m._CANONICAL_ID_PREFIX_RE.match(cid), \
+            f"prefix regex should match canonical id {cid!r}"
+    # Non-canonical inputs should NOT match (so LIKE fallback runs)
+    for raw in ("4A_747/2012", "ABC.123/2099", "random text"):
+        assert not m._CANONICAL_ID_PREFIX_RE.match(raw), \
+            f"prefix regex should NOT match raw input {raw!r}"
+
+
+def test_pragma_helper_rejects_bad_identifier(m, monkeypatch):
+    """_sqlite_has_column must reject anything that isn't a clean
+    identifier — defence in depth against future callers."""
+    import sqlite3
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE t (a INTEGER)")
+    assert m._sqlite_has_column(conn, "t", "a") is True
+    assert m._sqlite_has_column(conn, "t; DROP TABLE t", "a") is False
+    assert m._sqlite_has_column(conn, "1bad", "a") is False
+    assert m._sqlite_has_column(conn, "", "a") is False
+    conn.close()
+
+
+def test_statute_text_cache_hits(m, monkeypatch, tmp_path):
+    """Second call with the same args must be served from cache (no DB
+    round-trip). Verified by counting connection opens."""
+    monkeypatch.setattr(m, "_statute_text_cache", {})
+    calls = {"n": 0}
+
+    class FakeRow(dict):
+        def __getitem__(self, k):
+            return super().__getitem__(k)
+
+    class FakeConn:
+        def execute(self, sql, params=()):
+            calls["n"] += 1
+            class _C:
+                def fetchone(_self):
+                    if "FROM laws" in sql:
+                        return FakeRow({"sr_number": "220"})
+                    return FakeRow({"article_num": "41", "text": "TEXT", "lang": "de"})
+            return _C()
+        def close(self): pass
+
+    monkeypatch.setattr(m, "_get_statutes_conn", lambda: FakeConn())
+    r1 = m._fetch_statute_text(law_code="OR", article="41")
+    r2 = m._fetch_statute_text(law_code="OR", article="41")
+    assert r1 == r2
+    assert r1.get("sr_number") == "220"
+    # Two queries on first call, ZERO on the cached second call
+    assert calls["n"] == 2, f"expected 2 DB calls (uncached only), got {calls['n']}"
+
+
 def test_strict_resolver_returns_none_on_miss(m, monkeypatch):
     """The whole point of _resolve_decision_id_strict is to return None
     fast on a miss. Confirm it doesn't fall through to LIKE."""
