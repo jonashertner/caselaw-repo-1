@@ -50,23 +50,32 @@ verbatim-quote source-matching, decision-date sanity, and
 proposition grounding by an independent LLM judge.  Four rails are
 deterministic (${\sim}3$\,ms per draft); the fifth is judge-mediated
 (${\sim}2$\,s, ${\approx}\$0.005$ per call).  We release \textbf{Swiss
-Legal RAG Bench v0.2}, the first multilingual benchmark for legal-RAG
-\emph{evaluation} on Swiss federal law (DE\,/\,FR\,/\,IT, 30
-expert-annotated questions, every BGE evidence anchor verified
-against the live corpus before publication).  Evaluating Claude
-Sonnet 4.6 in a prior-only condition (no retrieval), we measure: (i)
-\textbf{3.0\,\%} citation-level fabrication --- well below Magesh's
-17--33\,\% on commercial legal-RAG tools, attributable to Swiss
-corpus presence in the model's pre-training; and (ii) the residual
-error class is not citation fabrication but \emph{real citation +
-misrepresented holding}, where the model cites a real BGE correctly
-but omits its load-bearing precedential element.  The four
-deterministic rails catch this class at 16.7\,\% recall (and 0\,\%
-false-positive rate); the LLM-judge rail extends recall to 50\,\%
-at 25\,\% FPR.  Closing this residual gap is the open problem for
-verification-first legal RAG.  Code MIT, benchmark CC0; both
-positioned as seeds for community-contributed expansion to v1.0
-(150 questions, named expert co-authors).
+Legal RAG Bench v0.2}, to our knowledge the first multilingual
+benchmark for legal-RAG \emph{evaluation} on Swiss federal law
+(DE\,/\,FR\,/\,IT, 30 author-curated questions; every BGE evidence
+anchor resolved against the live corpus before publication; v1.0
+will add named expert co-authors and a multi-annotator protocol).
+We stress-test the audit pipeline against the same generator in a
+prior-only condition (no retrieval) --- chosen to maximise the
+density of recoverable errors, not as a substitute for end-to-end
+RAG evaluation --- and measure: (i) \textbf{3.0\,\%} citation-level
+fabrication, well below Magesh's 17--33\,\% on commercial
+legal-RAG tools (one plausible explanation, untested here, is
+Swiss-corpus presence in the model's pre-training); and (ii) of the
+6 wrong drafts, only 1 contains a fabricated citation --- the
+remaining 5 are \emph{real citation + misrepresented holding}.
+The case-existence rail catches the one fabricated draft at
+0\,\% FPR; adding the other three deterministic rails preserves
+TPR (16.7\,\%) but raises FPR to 8.3\,\%; adding the second-pass
+LLM-judge grounding rail extends TPR to 50\,\% at 25\,\% FPR.
+The remaining 3 missed drafts are not judge-failures but
+audit-pipeline gaps: claim-extraction skipped the citation on
+two and the judge call returned an error on one.  Closing these
+gaps is the open problem.  Code MIT; benchmark CC0; underlying
+decision corpus consists of official published court decisions of
+their issuing courts, with packaging and added metadata licensed
+CC0.  v0.2 and the audit pipeline are seeds for v1.0 (150
+questions, named expert co-authors).
 \end{abstract}
 
 % ──────────────────────────────────────────────────────────────────────
@@ -142,17 +151,25 @@ the design as a five-rail closing audit pipeline
         $\leq 3$\,ms for the four deterministic rails;
         ${\sim}2$\,s, ${\approx}\$0.005$ per call for the LLM-judge
         rail.
-  \item \textbf{Swiss Legal RAG Bench v0.2}: the first multilingual
-        \emph{retrieval-augmented-generation} benchmark for Swiss
-        federal law (DE\,/\,FR\,/\,IT, 30 expert-annotated questions),
-        modelled on Butler \& Butler (2026) with cross-lingual
-        retrieval added as a fifth evaluation dimension.  Released
-        as a seed; v1.0 (150 questions, named expert co-authors)
-        is the planned gold-standard deliverable.
-  \item Per-rail ablation identifying the residual error class
-        --- \emph{real citation, misrepresented holding} --- as
-        the open problem for verification-first legal RAG.  Even
-        the LLM-judge rail catches it at only 2/3.
+  \item \textbf{Swiss Legal RAG Bench v0.2}: to our knowledge the
+        first multilingual benchmark for legal-RAG \emph{evaluation}
+        on Swiss federal law (DE\,/\,FR\,/\,IT, 30 author-curated
+        questions), modelled on Butler \& Butler (2026) with
+        cross-lingual retrieval added as a fifth evaluation dimension.
+        Released as a seed; v1.0 (150 questions, named expert
+        co-authors, multi-annotator protocol) is forthcoming.
+  \item Per-rail ablation identifying two structural gaps in
+        verification-first legal RAG: (a) the residual error
+        class is \emph{real citation, misrepresented holding} (5
+        of 6 wrong drafts in our experiment, vs.\ only 1
+        fabricated citation); (b) the audit's claim-extraction
+        heuristic skips the citation on a non-trivial fraction of
+        drafts, blocking the grounding judge before it can
+        evaluate.  In our experiment the judge converts
+        2 of 2 wrong drafts to issues whenever it gets to
+        evaluate one, but is blocked on 3 of the 5 residual-class
+        drafts (claim-extraction skips $\times 2$, judge call
+        error $\times 1$).
 \end{enumerate}
 
 % ──────────────────────────────────────────────────────────────────────
@@ -177,9 +194,9 @@ benchmark covers Australian criminal law (4{,}876 passages from the
 Victorian Criminal Charge Book, 100 hand-crafted questions) and uses
 a closed corpus.  We adapt the methodology to Swiss multilingual
 federal law, adding cross-language retrieval as a fifth leaf because
-Switzerland is the only major jurisdiction where the authoritative
-version of a leading case may be in a language other than the
-question's.  Closed-domain multiple-choice benchmarks
+Switzerland is unusual among major jurisdictions in that the
+authoritative version of a leading case may be in a language other
+than the question's.  Closed-domain multiple-choice benchmarks
 (LegalBench-RAG, Pipitone \& Houir Alami 2024; HousingQA /
 BarExamQA, Zheng et al.\ 2025; LegalBench, Guha et al.\ 2023) do not
 test hallucination because the model never needs to invent an
@@ -344,8 +361,10 @@ claim sentence is extracted (up to 250 characters
 before the citation, terminated by sentence boundary;
 ``see''-cite markers ``vgl.'' / ``siehe'' / ``cf.'' /
 ``cfr.'' suppress the rail).  All (claim, source) pairs
-go in a \emph{single batched} prompt to an independent
-Sonnet judge that returns a JSON array of verdicts
+go in a \emph{single batched} prompt to a separate
+Sonnet judge call (same model family as the
+generator; see \S\ref{sec:discussion}) that returns
+a JSON array of verdicts
 $\{$\texttt{yes, partial, no, contradicts,
 unrelated}$\}$.  Verdicts in
 $\{$\texttt{no, contradicts, unrelated}$\}$ become
@@ -370,15 +389,22 @@ leave publication-ready.
 \label{sec:benchmark}
 
 We release Swiss Legal RAG Bench v0.2 alongside this
-paper.  Version 0.2 contains 30 expert-annotated
-questions across the major substantive areas of Swiss
-federal law (Schuldrecht, Sachenrecht, Familienrecht,
-Erbrecht, Strafrecht, Strafprozess, Verfassungsrecht,
+paper.  Version 0.2 contains 30 questions
+\emph{author-curated by the maintainer of}
+\texttt{opencaselaw.ch} \emph{(the corpus mirror
+underlying the audit pipeline)}, drawn from the
+major substantive areas of Swiss federal law
+(Schuldrecht, Sachenrecht, Familienrecht, Erbrecht,
+Strafrecht, Strafprozess, Verfassungsrecht,
 Verwaltungsrecht, Mietrecht, Arbeitsrecht,
 Sozialversicherungsrecht, Verkehrsrecht, Aktienrecht,
 SchKG, Datenschutz, Verjährung, Wirtschaftsfreiheit;
 17 distinct areas).  The language distribution is
 DE\,=\,18, FR\,=\,8, IT\,=\,4 (60\,/\,27\,/\,13\,\%).
+v0.2 is explicitly framed as a single-curator seed;
+v1.0 will adopt a multi-annotator protocol with
+named expert co-authors from Swiss law faculties
+(see \S\ref{sec:discussion}).
 
 \paragraph{Question construction.}
 Each question is paired with a concise reference answer
@@ -412,21 +438,23 @@ construction, with the audit trail published in
 the supplementary material.
 
 \paragraph{Cross-lingual extension.}
-Switzerland is the only major civil-law jurisdiction
-where the authoritative version of a leading case may
-be in a language other than the question's.  Question
-q-028 (IT) anchors on DTF 126 III 113 (which has
-regesti in DE\,/\,FR\,/\,IT) to test the
-cross-language retrieval claim.  v1.0 expands this
-dimension to a full cross-language retrieval suite.
+Switzerland is unusual among major civil-law
+jurisdictions in that the authoritative version of a
+leading case may be in a language other than the
+question's.  Question q-028 (IT) anchors on DTF 126
+III 113 (which has regesti in DE\,/\,FR\,/\,IT) to
+test the cross-language retrieval claim.  v1.0
+expands this dimension to a full cross-language
+retrieval suite.
 
-\paragraph{Versioning toward gold standard.}
-v0.2 is a seed.  The version we expect to reach the
-``gold standard'' bar for Swiss legal practice is
-\textbf{v1.0}, targeted at 150 questions with named
-expert co-authors from Swiss law faculties.  v0.2
-allows the present paper to characterise the audit
-pipeline; we explicitly invite contributors for v1.0.
+\paragraph{Versioning.}
+v0.2 is a seed sufficient to characterise the audit
+pipeline in this paper.  \textbf{v1.0} is targeted at
+150 questions with named expert co-authors from
+Swiss law faculties and a multi-annotator protocol
+(inter-annotator agreement reported, third-party
+adjudication for disagreements).  We explicitly
+invite contributors for v1.0.
 
 % ──────────────────────────────────────────────────────────────────────
 
@@ -434,19 +462,24 @@ pipeline; we explicitly invite contributors for v1.0.
 \label{sec:experiments}
 
 \paragraph{Setup.}
-We use Claude Sonnet 4.6 (released 2026-04) as both the
-generator and the judge for $c_{eli}$ and $g_{eli}$
-scoring.  Same model used both sides is a known
-limitation (\S\ref{sec:discussion}); we use one model
-because the paper's contribution is the architecture,
-not the cost-optimisation.  All 30 questions in v0.2
-are run in a \emph{prior-only} condition (no
-retrieval): the generator sees only the question
-text and must rely on training knowledge.  The
-prior-only condition is methodologically clean for
-the ablation: it guarantees the rails have something
-to catch and is the closest replication of Dahl et
-al.\ 2024's general-LLM measurement.
+We use Claude Sonnet 4.6 (released 2026-02-17) as
+both the generator and the judge for $c_{eli}$,
+$g_{eli}$, and the in-pipeline grounding rail.  Using
+one model family on both sides is a known limitation
+(\S\ref{sec:discussion}); v1.0 will report inter-judge
+agreement against an independent model.  All 30
+questions in v0.2 are run in a \emph{prior-only}
+condition (no retrieval): the generator sees only
+the question text and must rely on training knowledge.
+We chose the prior-only condition as an audit-pipeline
+\emph{stress test}, not as an end-to-end RAG
+evaluation: it maximises the density of recoverable
+errors and is the closest replication of Dahl et al.\
+2024's general-LLM measurement.  A retrieval-augmented
+condition runs in production at
+\texttt{mcp.opencaselaw.ch} (BM25\,/\,RRF\,/\,Haiku
+rerank, see \S\ref{sec:discussion}); end-to-end RAG
+evaluation against v1.0 is forthcoming work.
 
 For each question we collect: the prior-only draft,
 the per-category issue counts from
@@ -476,35 +509,43 @@ Across 30 prior-only drafts, Claude Sonnet 4.6 emits
 The citation-level fabrication rate is
 \textbf{3.0\,\%}, well below Magesh et al.'s 17--33\,\%
 on commercial legal-RAG tools and Dahl et al.'s
-58--82\,\% on general LLMs.  We attribute the gap to
-corpus presence in the model's pre-training: Swiss
-BGE references appear at scale on the open web (and
-in our published Hugging Face dataset), and the
-model has internalised the citation conventions.
-This finding is jurisdiction- and model-specific:
-we do not claim the same rate would obtain for
-\emph{any} model on \emph{any} legal corpus.
+58--82\,\% on general LLMs.  Two non-exclusive
+hypotheses for the gap, neither tested in the present
+work: (i) Swiss BGE references appear at scale on the
+open web --- including via our own published Hugging
+Face dataset --- and the model may have internalised
+the citation conventions in pre-training; (ii) the
+prior-only condition asks short, well-bounded
+questions where the model can refuse, hedge, or
+ground in widely-known leading cases, whereas
+Magesh's tools were exercised on more open-ended
+litigation queries.  We do not claim the same rate
+would obtain for \emph{any} model on \emph{any} legal
+corpus, nor that the contrast against Magesh
+generalises beyond Swiss law and Sonnet 4.6.
 
 \paragraph{Per-rail ablation.}
 Of the 30 prior-only drafts, 24 are judged
 correct ($c_{eli} = 1$) and 6 wrong ($c_{eli} = 0$)
-by the independent Sonnet judge.  Table~\ref{tab:ablation}
-reports the catch rate of each cumulative
-configuration on the wrong-draft subset (true
-positives) and the correct-draft subset (false
-positives).
+by the second-pass Sonnet judge (same model family
+as the generator; see \S\ref{sec:discussion}).
+Table~\ref{tab:ablation} reports the catch rate of
+each cumulative configuration on the wrong-draft
+subset (true positives) and the correct-draft
+subset (false positives).
 
 \begin{table}[h]
 \centering
 \caption{Per-rail-configuration catch rates, v0.2 prior-only
 condition.  $n=30$ drafts; $c_{eli}=0$ for 6 (wrong) and
-$c_{eli}=1$ for 24 (correct) per the independent Sonnet judge.
+$c_{eli}=1$ for 24 (correct) per the second-pass Sonnet judge.
 TPR = $P(\text{any enabled rail fires}\,|\,c_{eli}=0)$, computed
 on $n=6$;  FPR = $P(\text{any enabled rail fires}\,|\,c_{eli}=1)$,
-computed on $n=24$.  95\,\% Wilson confidence intervals on
-TPR are wide because of the small wrong-draft denominator (e.g.\
-$3/6 \rightarrow [0.15, 0.85]$); v1.0 will tighten these with
-$\geq 30$ wrong drafts in a 150-question benchmark.}
+computed on $n=24$.  Net = TPR $-$ FPR (Youden's $J$).  95\,\%
+Wilson confidence intervals on TPR are wide because of the small
+wrong-draft denominator ($3/6 \rightarrow [18.8, 81.2]$); v1.0
+will tighten these with $\geq 30$ wrong drafts in a 150-question
+benchmark.}
 \label{tab:ablation}
 \begin{tabular}{llrrrr}
 \toprule
@@ -520,37 +561,65 @@ $C_5$ & $+$ grounding (full 5-rail)   & 3/6 = 50.0\,\% & $[18.8, 81.2]$ & 25.0\,
 \end{tabular}
 \end{table}
 
-Two findings emerge.  First, the deterministic rails
-(\textsc{case} through \textsc{date}) catch
-fabrications with \emph{perfect precision} (0\,\% FPR
-at $C_1$) but limited recall (16.7\,\% TPR).  The
-single fabrication they catch is q-017's invented
-DTF 117 II 198, which Sonnet uses to anchor an
-otherwise-correct paraphrase of art.~264 CO; our
-case-existence rail flags it cleanly.  Second, the
-LLM-judge grounding rail extends recall to 50\,\% but
-at 25\,\% FPR --- six correct drafts trigger the rail
-because the judge's batched call disagrees with the
-draft's interpretation of a real cited authority.
+Three findings emerge.  First, the deterministic
+rails behave very differently from one another: only
+the case-existence rail (configuration $C_1$) holds
+the perfect-precision floor (0\,\% FPR), and it does
+so by catching a single fabrication, q-017's invented
+DTF 117 II 198 (which Sonnet uses to anchor an
+otherwise-correct paraphrase of art.~264 CO).  Adding
+the statute, quote, and date rails ($C_2$--$C_4$)
+preserves TPR but degrades precision: FPR climbs to
+8.3\,\% by $C_4$ as the rails flag valid statute
+references and quotations as anomalies on
+correctly-answered drafts.  Second, the grounding
+rail ($C_5$) is responsible for the entire jump in
+TPR over $C_4$: it catches q-018 and q-030, the only
+two wrong drafts on which the rail's claim-extraction
+heuristic identified a preceding claim sentence and
+the judge call returned (i.e.\ TPR conditional on the
+judge actually evaluating the draft is $2/2$).  The
+25\,\% FPR is the cost of that recall: six correct
+drafts trigger the rail because the second-pass judge
+disagrees with the draft's interpretation of a real
+cited authority.  Third, the three wrong drafts that
+all rails miss (q-021, q-025, q-026) are missed for
+a structural reason different from the explanation we
+originally hypothesised.
 
 \paragraph{The residual error class.}
-Of the 6 wrong drafts, 3 are caught by some rail and
-3 are missed by all.  The 3 missed drafts share a
-pattern: Sonnet cites a \emph{real} BGE
+The three missed drafts (q-021, q-025, q-026) share
+a substantive pattern --- Sonnet cites a real BGE
 (BGE 142 III 433, BGE 144 III 481, BGE 130 V 343)
-correctly but \emph{mischaracterises} the holding ---
-omitting the load-bearing precedential element.  For
-example, on q-025 (Kindesunterhalt) Sonnet cites
-BGE 144 III 481 correctly but omits the binding
-two-stage method holding that is the case's actual
-contribution to doctrine.  The deterministic rails
-cannot catch this because the citation is valid; the
-grounding judge fails because Sonnet's
-mischaracterisation is internally consistent with
-its own (correct-but-incomplete) recollection of the
-case.  We name this the \emph{real-citation /
-misrepresented-holding} class and identify it as the
-open problem for verification-first legal RAG.
+correctly but \emph{mischaracterises} the holding,
+omitting the load-bearing precedential element ---
+which we call the \emph{real-citation /
+misrepresented-holding} class.  However, the
+proximate reason these drafts escape the audit is
+\emph{not} that the grounding judge evaluates them
+and concurs with Sonnet's mischaracterisation: it is
+that the grounding rail never gets to evaluate them.
+Per \texttt{grounding\_meta} in the artifact:
+q-021 and q-026 trip the
+\texttt{skipped\_no\_claim} branch (the heuristic
+that extracts the claim sentence preceding a
+citation found no candidate within its 250-character
+window), and q-025 returns a \texttt{judge\_unavailable}
+error (a transient API failure during the
+experimental run).  The residual error class is
+therefore really two failures stacked on top of each
+other: an audit-pipeline gap (claim-extraction
+heuristic, judge-call reliability) prevents the
+verifier from \emph{evaluating} the drafts that
+contain the most subtle error type, and the
+substantive error type itself is the hardest one
+even given evaluation.  Closing the audit gap is
+mechanical (more permissive claim extraction,
+retry-on-error) and is the obvious next deployment
+step; testing whether the grounding judge actually
+catches misrepresented-holding errors when it gets
+to evaluate them requires v1.0's larger denominator
+and an independent judge model.
 
 \paragraph{Cost / latency.}
 Across the 30 drafts, the four deterministic rails
@@ -570,15 +639,21 @@ $+$ audit $+$ judges): ${<\!}\$2$.
 
 \paragraph{When the deterministic rails miss.}
 The case-citation rail catches \emph{fabricated}
-references, not \emph{misused} ones.  For systems where
-the underlying model has high citation-level fidelity
-(as Sonnet 4.6 has on Swiss law: 3.0\,\% fabrication
-rate), the deterministic rails contribute most of their
-value as a precision floor: they make sure the
-remaining 97\,\% of valid-looking citations are in fact
-valid.  Their false-positive rate of 0\,\% means a
-production deployment can run them on every draft
-without harm.
+references, not \emph{misused} ones.  For systems
+where the underlying model has high citation-level
+fidelity (as Sonnet 4.6 has on Swiss law: 3.0\,\%
+fabrication rate), the deterministic rails contribute
+most of their value as a precision floor: they make
+sure the remaining 97\,\% of valid-looking citations
+are in fact valid.  Of the four deterministic rails,
+only $C_1$ (case-existence) holds 0\,\% FPR in our
+experiment; adding statute, quote, and date raises
+FPR to 8.3\,\%.  A production deployment can run all
+four cheaply, but the precision-floor argument for
+running them on every draft applies cleanly only to
+$C_1$ as currently implemented; the other three need
+to be tightened or made user-suppressible before they
+fire as freely.
 
 \paragraph{When the judge rail miscalls.}
 The 25\,\% FPR of the grounding rail in our experiment
@@ -633,25 +708,45 @@ Supreme Court itself.
   \item \textbf{Benchmark size.}  v0.2 is a 30-question seed.  With
         only 6 wrong drafts, the per-configuration TPR estimates
         are imprecise: 95\,\% Wilson confidence intervals on a
-        50\,\% point estimate ($n=6$) are $(15\%, 85\%)$.  We
+        50\,\% point estimate ($n=6$) are $[18.8\%, 81.2\%]$.  We
         report exact ratios in Table~\ref{tab:ablation} so the
         reader can judge directly.  v1.0 (150 questions, named
         expert co-authors from Swiss law faculties; see
-        \S\ref{sec:benchmark}) is the planned ``gold standard''
-        deliverable.
-  \item \textbf{Same model, generator and judge.}  Both roles are
-        filled by Claude Sonnet 4.6 in our experiment.  This
-        concentrates failure modes.  v1.0 will adopt a SwiLTra-Judge
-        style independent calibrated judge (Niklaus et al., 2025),
-        with human-expert validation, and report inter-judge
-        agreement.
-  \item \textbf{Prior-only condition.}  We do not report a
-        retrieval-augmented ablation here because the paper's
-        contribution is the audit pipeline, not the retrieval
-        stack.  Production deployment at
-        \texttt{mcp.opencaselaw.ch} runs the pipeline over a
-        BM25\,/\,RRF\,/\,Haiku-rerank retriever; performance
-        there is reported elsewhere.
+        \S\ref{sec:benchmark}) is the planned next deliverable.
+  \item \textbf{Single-curator benchmark.}  v0.2's questions and
+        reference answers were authored by the maintainer of
+        \texttt{opencaselaw.ch}, a Swiss-trained author with
+        practical legal-research experience but without the
+        multi-annotator protocol that a published gold-standard
+        benchmark requires.  Selection bias is the obvious risk:
+        a curator who built the underlying corpus may
+        unintentionally choose questions whose evidence the
+        corpus answers well.  We mitigate by anchoring every
+        evidence \texttt{decision\_id} on the live corpus before
+        publication and by publishing the evidence-resolution
+        audit trail; we cannot eliminate the bias, and v1.0
+        addresses it directly with named expert co-authors and
+        an independent annotation protocol.
+  \item \textbf{Same model family, generator and judge.}  Both
+        roles are filled by Claude Sonnet 4.6 in our experiment.
+        This concentrates failure modes (a wrong draft and a
+        wrong-but-self-consistent judge will agree).  v1.0 will
+        adopt a SwiLTra-Judge-style independent calibrated judge
+        (Niklaus et al., 2025) with human-expert validation, and
+        report inter-judge agreement.
+  \item \textbf{Prior-only condition.}  Our reported ablation
+        runs the generator without retrieval, chosen as a
+        stress-test of the audit pipeline (it maximises the
+        density of recoverable errors), not as an end-to-end RAG
+        evaluation.  Butler \& Butler (2026) report that
+        retrieval is the primary determinant of legal-RAG
+        performance; we do not contradict them, and an
+        end-to-end retrieval-augmented evaluation against v1.0
+        is forthcoming.  The audit pipeline is run on every
+        production query at \texttt{mcp.opencaselaw.ch} (over a
+        BM25\,/\,RRF\,/\,Haiku-rerank retriever), but
+        production-side audit catch-rates are not the subject
+        of the present paper.
   \item \textbf{Single-run experiment.}  The numbers in
         Table~\ref{tab:ablation} reflect one run; we do not
         bootstrap.  Run-to-run variance at \texttt{temperature=0}
@@ -665,20 +760,33 @@ Supreme Court itself.
 
 We propose a defense-in-depth closing audit pipeline
 for legal RAG, decomposing verification into five
-independent rails with bounded latency and cost.  We
-release Swiss Legal RAG Bench v0.2 as the first
-multilingual benchmark for Swiss legal RAG.  Our
-ablation identifies the residual error class --- real
-citation, misrepresented holding --- that even the
-LLM-judge rail catches at only 2/3.  Closing this gap
-is the open problem.
+rails with bounded latency and cost.  We release
+Swiss Legal RAG Bench v0.2 as, to our knowledge, the
+first multilingual benchmark for legal-RAG evaluation
+on Swiss federal law.  In our prior-only stress
+test, the case-existence rail catches the one
+fabricated citation among 6 wrong drafts at 0\,\%
+FPR; the second-pass grounding judge catches a
+further 2 of the 5 \emph{real-citation,
+misrepresented-holding} drafts (it scores 2/2 when
+the audit's claim-extraction heuristic gets it a
+claim to evaluate); 3 wrong drafts escape the audit
+because the claim-extraction heuristic skipped (×2)
+or the judge call returned an error (×1) before any
+verdict was reached.  Closing those audit-pipeline
+gaps and stress-testing the judge on a
+larger-denominator v1.0 against an independent model
+are the next steps.
 
 The audit pipeline is live at
 \url{mcp.opencaselaw.ch}, deployed on the entire
 published Swiss federal and cantonal court corpus
-(969,000+ decisions, daily refresh).  Code under MIT,
-benchmark under CC0, corpus under CC0.  We invite
-collaborators for v1.0.
+(969,000+ decisions, daily refresh).  Code under
+MIT; benchmark packaging under CC0; underlying
+decision texts are official published court
+decisions of their issuing courts (with the
+collation, deduplication, and added metadata
+licensed CC0).  We invite collaborators for v1.0.
 
 \section*{Data and Code Availability}
 
@@ -687,15 +795,21 @@ The numbers in \S\ref{sec:experiments} were produced from these
 exact artefacts:
 
 \begin{itemize}\itemsep0pt
-  \item Audit pipeline source (MIT): \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/mcp_server.py} \\
-        commit \texttt{4553379} (2026-04-28)
-  \item Benchmark v0.2 (CC0):   \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench} \\
-        SHA-256 of \texttt{questions.jsonl}: \\
+  \item Audit pipeline source (MIT), pinned to the
+        experiment commit: \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/4553379/mcp_server.py}
+  \item Benchmark v0.2 (CC0):
+        \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench} \\
+        SHA-256 of \texttt{questions.jsonl}:
         \texttt{b299db37\dots f21ec449}
-  \item Per-trial ablation data: \\
-        \url{https://github.com/jonashertner/caselaw-repo-1/tree/main/docs/paper/v2/experiments/ablation\_results.json} \\
+  \item Per-trial ablation data, pinned to the
+        experiment commit: \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/4553379/docs/paper/v2/experiments/ablation\_results.json} \\
         SHA-256: \texttt{79dcc442\dots 039c3b08}
-  \item Underlying Swiss-caselaw corpus (CC0):
+  \item Underlying Swiss-caselaw corpus (packaging
+        and added metadata under CC0; underlying
+        texts are official published court decisions
+        of the issuing courts):
         \url{https://huggingface.co/datasets/voilaj/swiss-caselaw} \\
         Live MCP corpus size at experiment time: 969{,}738 decisions
   \item Live MCP endpoint (for re-execution against current corpus):
@@ -744,7 +858,9 @@ N. Guha, J. Nyarko, D. E. Ho, et al.
 \bibitem{magesh2024}
 V. Magesh, F. Surani, M. Dahl, M. Suzgun, C. D. Manning, D. E. Ho.
 \newblock Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools.
-\newblock Stanford RegLab, 2024.  arXiv:2405.20362.
+\newblock Stanford RegLab working paper, 2024 (arXiv:2405.20362);
+        peer-reviewed version forthcoming in
+        \emph{Journal of Empirical Legal Studies}, 2025.
 
 \bibitem{niklaus2021}
 J. Niklaus, I. Chalkidis, M. Stürmer.
