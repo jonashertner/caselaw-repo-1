@@ -691,22 +691,6 @@ header[style*="text-align: left"] .sub {
   border-top: 1px solid var(--brd);
   display: flex; flex-direction: column; gap: 12px;
 }
-.mobile-menu-credential {
-  align-self: flex-start;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 12px 5px 9px;
-  background: var(--vb-bg);
-  border: 1px solid var(--vb-brd);
-  border-radius: 999px;
-  color: var(--vb-fg);
-  font-size: 12px;
-  font-weight: 500;
-  text-decoration: none;
-}
-.mobile-menu-credential:hover {
-  background: color-mix(in srgb, var(--vb-bg) 60%, var(--vb-fg) 12%);
-  text-decoration: none;
-}
 .mobile-menu-langs {
   display: flex; gap: 4px;
 }
@@ -1645,10 +1629,13 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 /* ── Verification banner — top-of-page brand-promise strip ────────────
    Persistent (not dismissible). Sits between toolbar and main; clicks
    through to #verification.  */
-/* Verification credential — quiet pill in the toolbar.  Replaces the
-   2026-04-28 strip-banner: same #verification target, much less visual
-   noise.  Reads as a quality signal (like an SSL padlock) rather than
-   a marketing claim, and unblocks the hero's first impression.  */
+/* Evergreen accent palette — used by the active-section underline in
+   the toolbar nav (`.toolbar-nav a.active::after`), the active-section
+   highlight in the mobile drawer (`.mobile-menu-section a.active`),
+   and the "Try sample →" CTA on toolkit tiles. The verification pill
+   that originally introduced this palette was removed; the colours
+   remain as a quiet accent vocabulary because they read as "good"
+   without shouting like the legacy red-banner did. */
 :root {
   --vb-bg:  #ecfdf5;
   --vb-brd: #a7f3d0;
@@ -1660,37 +1647,6 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
     --vb-brd: rgba(4, 120, 87, 0.32);
     --vb-fg:  #6ee7b7;
   }
-}
-.toolbar-credential {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px 4px 8px;
-  margin-left: 14px;
-  background: var(--vb-bg);
-  border: 1px solid var(--vb-brd);
-  border-radius: 999px;
-  color: var(--vb-fg);
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.005em;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 160ms var(--ease, ease),
-              color 160ms var(--ease, ease);
-}
-.toolbar-credential:hover {
-  background: color-mix(in srgb, var(--vb-bg) 60%, var(--vb-fg) 12%);
-  text-decoration: none;
-}
-.toolbar-credential-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--vb-fg);
-  flex: 0 0 auto;
-}
-@media (max-width: 600px) {
-  .toolbar-credential { font-size: 11px; padding: 3px 8px 3px 6px; margin-left: 8px; }
 }
 
 /* ── Verification section ─────────────────────────────────────────────
@@ -2731,10 +2687,6 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
     </div>
 
     <div class="mobile-menu-foot">
-      <a href="#verification" class="mobile-menu-credential">
-        <span class="toolbar-credential-dot" aria-hidden="true"></span>
-        <span data-t="banner_verification_short">Verified</span>
-      </a>
       <div class="mobile-menu-langs" role="group" aria-label="Language">
         <button data-l="de" type="button" class="on">DE</button>
         <button data-l="fr" type="button">FR</button>
@@ -3380,8 +3332,6 @@ const I18N = {
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt', footer_privacy:'Datenschutz',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
-    banner_verification:'Wie OpenCaseLaw Halluzinationen von Fall-Referenzen verhindert',
-    banner_verification_short:'Verifiziert',
     toolkit_heading:'Werkzeuge für die Praxis',
     toolkit_intro:'Über die KI-Clients oben hinaus: Jeder Entscheid exportierbar als Word, BibTeX oder RIS. Jedes Gericht mit Atom-Feed. Der gesamte Korpus auf Hugging Face. Alles CC0.',
     toolkit_docx:'Entscheid als Word-Dokument — Zitation, Regeste, strukturierte Erwägungen, bereit zum Einfügen in einen Schriftsatz.',
@@ -3394,7 +3344,6 @@ const I18N = {
     toolkit_subscribe:'Abonnieren →',
     toolkit_open:'Doku öffnen →',
     toolkit_download:'Herunterladen →',
-    banner_verification_aria:'Zur Sektion über Verifikation und Vermeidung von KI-Halluzinationen',
     verify_heading:'Verifikation — Halluzinationen von Fall-Referenzen verhindern',
     verify_lead:'Grosse Sprachmodelle halluzinieren. Peer-reviewte Messung (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ergab, dass 58–82&nbsp;% der juristischen Anfragen an Allzweck-LLMs mindestens eine erfundene Quelle enthielten. Eine Folgestudie zu kommerziellen Rechts-RAG-Werkzeugen (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) mass 17–33&nbsp;% — besser, aber immer noch alltäglich. In der Schweizer Rechtspraxis bringt die Zitation einer nicht existierenden oder falsch wiedergegebenen Autorität die Anwältin in disziplinarische Haftung und die Klientschaft um ein richtiges Ergebnis. Das Verständnis dessen, <em>was die KI liefert</em> und <em>was die Quelle ist</em>, ist deshalb keine Höflichkeit — es ist die Voraussetzung jeder verantwortbaren KI-Nutzung in der juristischen Arbeit.',
     verify_lead2:'OpenCaseLaw behandelt diese Aufgabe als das zu lösende Kernproblem. Der MCP-Server unter der Nutzeroberfläche ist um eine sechsschichtige Architektur gebaut, deren einziger Zweck es ist, jede Fall-Referenz, die eine KI schreibt, in einem Klick überprüfbar zu machen — durch die Nutzerin, in Echtzeit, gegen die Originalquelle.',
@@ -3660,8 +3609,6 @@ const I18N = {
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Confidentialit\u00e9',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
-    banner_verification:'Comment OpenCaseLaw élimine les hallucinations de références jurisprudentielles par l\'IA',
-    banner_verification_short:'Vérifié',
     toolkit_heading:'Boîte à outils du praticien',
     toolkit_intro:'Au-delà des clients IA ci-dessus : chaque décision exportable en Word, BibTeX ou RIS. Chaque tribunal avec un flux Atom. Le corpus entier sur Hugging Face. Le tout en CC0.',
     toolkit_docx:'Décision en document Word — citation, Regeste, considérants structurés, prêt à coller dans un mémoire.',
@@ -3674,7 +3621,6 @@ const I18N = {
     toolkit_subscribe:'S\'abonner →',
     toolkit_open:'Ouvrir la doc →',
     toolkit_download:'Télécharger →',
-    banner_verification_aria:'Vers la section sur la vérification et l\'élimination des hallucinations de l\'IA',
     verify_heading:'Vérification — éliminer les hallucinations de références par l\'IA',
     verify_lead:'Les grands modèles de langue hallucinent. Une mesure publiée et évaluée par les pairs (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) a montré que 58–82&nbsp;% des requêtes juridiques aux LLM généralistes produisaient au moins une autorité fabriquée. Une étude de suivi sur les outils RAG juridiques commerciaux (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) a mesuré 17–33&nbsp;% — mieux, mais encore courant. Dans la pratique juridique suisse, citer une autorité qui n\'existe pas ou qui ne dit pas ce qu\'on lui prête expose l\'avocat·e à des sanctions disciplinaires et le client à un mauvais résultat. Comprendre <em>ce que l\'IA fournit</em> et <em>quelle en est la source</em> n\'est donc pas un raffinement — c\'est la condition préalable de tout usage responsable de l\'IA en droit.',
     verify_lead2:'OpenCaseLaw traite cette question comme le problème central à résoudre. Le serveur MCP qui sous-tend l\'interface utilisateur est construit autour d\'une architecture en six couches dont la seule finalité est de rendre chaque référence jurisprudentielle qu\'une IA produit vérifiable en un clic — par l\'utilisateur, en temps réel, contre la source originale.',
@@ -3940,8 +3886,6 @@ const I18N = {
     footer_about:'Chi siamo', footer_contact:'Contatto', footer_privacy:'Privacy',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
-    banner_verification:'Come OpenCaseLaw elimina le allucinazioni dell\'IA su riferimenti giurisprudenziali',
-    banner_verification_short:'Verificato',
     toolkit_heading:'Strumenti per la pratica',
     toolkit_intro:'Oltre ai client IA sopra: ogni sentenza esportabile come Word, BibTeX o RIS. Ogni tribunale con un feed Atom. L\'intero corpus su Hugging Face. Tutto CC0.',
     toolkit_docx:'Sentenza come documento Word — citazione, Regeste, considerandi strutturati, pronto da incollare in una memoria.',
@@ -3954,7 +3898,6 @@ const I18N = {
     toolkit_subscribe:'Iscriviti →',
     toolkit_open:'Apri documentazione →',
     toolkit_download:'Scarica →',
-    banner_verification_aria:'Vai alla sezione sulla verifica e l\'eliminazione delle allucinazioni dell\'IA',
     verify_heading:'Verifica — eliminare le allucinazioni dell\'IA sui riferimenti giurisprudenziali',
     verify_lead:'I grandi modelli linguistici producono allucinazioni. Una misura sottoposta a peer review (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ha rilevato che il 58–82&nbsp;% delle interrogazioni giuridiche a LLM generalisti generava almeno un\'autorità inventata. Uno studio di seguito sugli strumenti RAG giuridici commerciali (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) ha misurato il 17–33&nbsp;% — migliore, ma ancora frequente. Nella pratica giuridica svizzera, citare un\'autorità inesistente o resa inesattamente espone l\'avvocato·a a sanzioni disciplinari e il cliente a un esito sbagliato. Comprendere <em>cosa fornisce l\'IA</em> e <em>quale ne sia la fonte</em> non è quindi un raffinamento — è il presupposto di ogni utilizzo responsabile dell\'IA in ambito legale.',
     verify_lead2:'OpenCaseLaw tratta questo come il problema centrale da risolvere. Il server MCP che alimenta l\'interfaccia utente è costruito attorno a un\'architettura a sei livelli il cui unico scopo è rendere ogni riferimento giurisprudenziale prodotto da un\'IA verificabile in un clic — dall\'utente, in tempo reale, contro la fonte originale.',
@@ -4220,8 +4163,6 @@ const I18N = {
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Protecziun da datas',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
-    banner_verification:'Co OpenCaseLaw evita ch\'IAs allucineschan referenzas da decisiuns',
-    banner_verification_short:'Verifitgà',
     toolkit_heading:'Utensils per la pratica',
     toolkit_intro:'Sur ils clients IA: mintga decisiun sa lascha exportar sco Word, BibTeX u RIS. Mintga tribunal cun in feed Atom. L\'entir corpus sin Hugging Face. Tut CC0.',
     toolkit_docx:'Decisiun sco document Word — citaziun, Regeste, considerands structurads, pront per encollar en in agir.',
@@ -4234,7 +4175,6 @@ const I18N = {
     toolkit_subscribe:'Abunar →',
     toolkit_open:'Avrir documentaziun →',
     toolkit_download:'Telechargiar →',
-    banner_verification_aria:'Vers la secziun davart verificaziun e prevenziun d\'allucinaziuns IA',
     verify_heading:'Verificaziun — evitar allucinaziuns IA da referenzas a decisiuns',
     verify_lead:'Models grands da linguatg allucineschan. Ina mesira controllada (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ha mussà che 58–82&nbsp;% da las dumondas giuridicas a LLMs generals han producì almain ina autoritad fabritgada. Ina studia da suandar davart utensils RAG giuridics commerzials (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) ha mesirà 17–33&nbsp;% — meglier, ma anc dasper. En la pratica giuridica svizra metta la citaziun d\'ina autoritad inexistenta u mal preschentada l\'avucat·a en responsabladad disciplinara e clientela ad in resultat fauss. La cumprensiun da <em>che ch\'IA furnescha</em> e <em>tge fontana</em> n\'è perquai betg in lustri — è la premissa per mintga utilisaziun responsabla d\'IA en la lavur giuridica.',
     verify_lead2:'OpenCaseLaw tracta quai sco il problem central. Il server MCP sut l\'interfatscha utilisader è construì sin in\'architectura cun sis stresch, dont l\'unic scopo è da render mintga referenza ch\'in IA scriva controllabla en in clic — da la utilisadra, en temp real, cunter la fontana originala.',
@@ -4500,8 +4440,6 @@ const I18N = {
     footer_about:'About OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Privacy',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
-    banner_verification:'How OpenCaseLaw eliminates AI hallucination of case references',
-    banner_verification_short:'Verified',
     toolkit_heading:'Practitioner toolkit',
     toolkit_intro:'Beyond the AI clients above: every decision is exportable as Word, BibTeX, or RIS. Every court has an Atom feed. The whole corpus is on Hugging Face. Everything CC0.',
     toolkit_docx:'Decision as a Word document — citation, Regeste, structured Erwägungen, ready to paste into a brief.',
@@ -4514,7 +4452,6 @@ const I18N = {
     toolkit_subscribe:'Subscribe →',
     toolkit_open:'Open docs →',
     toolkit_download:'Download →',
-    banner_verification_aria:'Jump to the section on verification and elimination of AI hallucination',
     verify_heading:'Verification — eliminating AI hallucination of case references',
     verify_lead:'Large language models hallucinate. Peer-reviewed measurement (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) found that 58–82&nbsp;% of legal queries to general-purpose LLMs produced at least one fabricated authority. A follow-up study of commercial legal-RAG tools (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) measured 17–33&nbsp;% — better, but still routine. In Swiss legal practice, citing an authority that does not exist or does not say what is claimed exposes a lawyer to professional discipline and a client to a wrong outcome. Comprehension of <em>what the AI is providing</em> and <em>what the source is</em> is therefore not a nicety — it is the precondition for any responsible use of AI in legal work.',
     verify_lead2:'OpenCaseLaw treats this as the central problem to solve. The MCP server below the user-facing search is built around a six-layer architecture whose only purpose is to make every case reference an AI writes verifiable in one click — by the user, in real time, against the original source.',
@@ -4808,7 +4745,7 @@ if (hamburgerBtn && mobileMenu) {
   }
   // Auto-close when a link inside the panel is clicked. Listener is
   // scoped to <a> only (not the lang buttons or the close button).
-  mobileMenu.querySelectorAll('.mobile-menu-section a, .mobile-menu-credential').forEach(a => {
+  mobileMenu.querySelectorAll('.mobile-menu-section a').forEach(a => {
     a.addEventListener('click', () => toggleMenu(false));
   });
   // Close on Escape so keyboard users aren't trapped.
