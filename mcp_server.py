@@ -8625,6 +8625,102 @@ def _parse_citations_in_text(draft: str) -> list[dict]:
     return found
 
 
+# ── Audit-layer fast lookups (avoid LIKE %x% scans on the hot path)
+
+def _resolve_decision_id_strict(decision_id: str) -> str | None:
+    """Exact-match-only resolver for the audit hot path.
+
+    `_resolve_decision_id` falls through to a `docket_number LIKE %x%`
+    scan when no exact match is found. On a 1M-row decisions table that
+    scan costs ~2 seconds per call. A draft with N hallucinated case
+    citations would block a worker for ~2N seconds — unacceptable for
+    an audit that the LLM is told to call on every final answer.
+
+    This strict variant tries:
+      • exact decision_id match (canonical and BGE variants)
+      • exact docket_number match
+    …and returns None on miss. No LIKE scan.
+
+    Returns the canonical decision_id on hit, None on miss.
+    """
+    if not decision_id:
+        return None
+    candidates = [decision_id]
+    bge_m = re.match(r"(?:BGE\s+)?(\d+)\s+([IVX]+)\s+(\d+)", decision_id)
+    if bge_m:
+        vol, div, page = bge_m.group(1), bge_m.group(2), bge_m.group(3)
+        candidates.extend([
+            f"bge_BGE_{vol}_{div}_{page}",
+            f"bge_{vol}_{div}_{page}",
+            f"bge_{vol} {div} {page}",
+        ])
+    conn = get_db()
+    try:
+        for cid in candidates:
+            row = conn.execute(
+                "SELECT decision_id FROM decisions WHERE decision_id = ?", (cid,)
+            ).fetchone()
+            if row:
+                return row[0]
+        # Exact docket-number match only (no LIKE)
+        row = conn.execute(
+            "SELECT decision_id FROM decisions WHERE docket_number = ? "
+            "ORDER BY decision_date DESC LIMIT 1",
+            (decision_id,),
+        ).fetchone()
+        if row:
+            return row[0]
+    finally:
+        conn.close()
+    return None
+
+
+def _get_decision_strict(decision_id: str) -> dict | None:
+    """Direct row fetch by exact decision_id — no LIKE fallback.
+
+    Mirrors `_resolve_decision_id_strict`'s contract: we already have a
+    canonical id from the strict resolver, so a single indexed lookup
+    is enough. Returns the row dict (with decision_date, court,
+    full_text, regeste, docket_number) on hit, None on miss.
+    """
+    if not decision_id:
+        return None
+    conn = get_db()
+    try:
+        row = conn.execute(
+            "SELECT decision_id, court, decision_date, docket_number, "
+            "full_text, regeste, language FROM decisions WHERE decision_id = ?",
+            (decision_id,),
+        ).fetchone()
+        return dict(row) if row else None
+    finally:
+        conn.close()
+
+
+# Pinpoint patterns we accept inside a decision's full_text as proof
+# that an Erwägung exists. Boundary-anchored to avoid matching numbers
+# that happen to follow the word "consid." inside a sentence.
+def _pinpoint_in_text(full_text: str, pinpoint: str) -> bool:
+    """Authoritative cross-check: does the decision's body literally
+    contain the cited pinpoint at an Erwägung anchor?
+
+    We accept any of: "E. X.Y", "Erw. X.Y", "consid. X.Y",
+    "consid X.Y", "cons. X.Y", a leading bullet "X.Y " at line start,
+    or a parenthetical "(E. X.Y)".
+    """
+    if not full_text or not pinpoint:
+        return False
+    pin = re.escape(pinpoint)
+    # Anchored after Erwägung markers OR at a paragraph start
+    pattern = re.compile(
+        r"(?:(?:^|[\s(])(?:E\.|Erw\.?|consid\.?|cons\.?)\s*"
+        + pin + r"(?=[\s.,;:)\]]|$))"
+        + r"|(?:^\s*" + pin + r"\s+[A-ZÄÖÜ])",
+        flags=re.MULTILINE,
+    )
+    return bool(pattern.search(full_text))
+
+
 # ── Statute / quote / date sub-audits (state-of-the-art layer) ─────
 #
 # These extend attest_response from "case-citation existence" to a
@@ -8651,22 +8747,32 @@ def _parse_citations_in_text(draft: str) -> list[dict]:
 # All three return a list of issue dicts with the same shape as the
 # case-citation issues so they merge cleanly into the attest result.
 
+# Law slot is intentionally case-SENSITIVE: Swiss statute abbreviations
+# are uppercase by convention (OR, ZGB, StGB, BV, BGG, ...). Matching
+# case-insensitively here lets German connectives like "und"/"oder" or
+# French "et"/"ou" — appearing after "Abs. 1"/"al. 1" — slip in as a
+# fake law abbreviation. The Art./art./Artikel/articolo prefix is wrapped
+# in an inline (?i:...) so it still matches in any case form.
 _STATUTE_AUDIT_PATTERN = re.compile(
     r"""
-    \b(?:Art\.?|Artikel|art\.?|articolo)\s*
+    \b(?i:Art\.?|Artikel|articolo)\s*
     (?P<article>\d+(?:\s*(?:bis|ter|quater|quinquies|sexies)|[a-z](?![a-z]))?)
-    (?:\s*(?:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?)\s*\d+[a-z]?)?
+    (?:\s*(?i:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?)\s*\d+[a-z]?)?
     \s+(?P<law>[A-Z][A-Za-zÄÖÜ0-9]{1,11}(?:/[A-Z0-9]{2,6})?)\b
     """,
-    flags=re.IGNORECASE | re.VERBOSE,
+    flags=re.VERBOSE,
 )
 
-# Statute words that are NOT laws but get caught by the all-caps suffix
+# Defence-in-depth: even with case-sensitive matching, all-caps words
+# that look like a law slot but never are.
 _STATUTE_AUDIT_INVALID_LAWS = {
     "ABS", "ABSATZ", "AL", "ALIN", "ALINEA", "CPV", "PARA", "CO",
     "BIS", "TER", "QUATER", "QUINQUIES", "SEXIES",
-    "OG", "OGER", "BG", "BGE", "BGER", "BGB",  # already-handled case forms
+    "OG", "OGER", "BG", "BGE", "BGER", "BGB",
     "EG", "IG", "VG", "RR", "EN", "DE", "FR", "IT",
+    # German / French / Italian connectives that can appear all-caps
+    # in headings or list items
+    "UND", "ODER", "BZW", "USW", "ET", "OU", "EE", "OD",
 }
 
 # Quotes: paired Unicode left/right (DE „…\u201c, FR «…», IT «…»),
@@ -8988,8 +9094,12 @@ def _handle_attest_response(*, draft_text: str) -> dict:
         annotated_parts.append(draft_text[last_end:start])
         linked_parts.append(draft_text[last_end:start])
 
-        resolved = _resolve_decision_id(guess)
-        decision = get_decision_by_id(resolved) if resolved else None
+        # Strict resolver: exact match only — no LIKE %x% scan. The audit
+        # tolerates being wrong about a hallucinated citation (we'll just
+        # flag it as not-in-corpus, which is the right outcome) but it
+        # cannot tolerate ~2-second-per-citation latency.
+        resolved = _resolve_decision_id_strict(guess)
+        decision = _get_decision_strict(resolved) if resolved else None
 
         status = "OK"
         detail: dict = {
@@ -9008,11 +9118,22 @@ def _handle_attest_response(*, draft_text: str) -> dict:
             )
             issues.append(detail)
         elif pinpoint:
+            # Two-step pinpoint check, in order of authority:
+            #   1. structured-extraction sidecar (fast, exact)
+            #   2. full-text pattern match (slower, but authoritative
+            #      when the sidecar is sparse — many BGEs only have a
+            #      handful of structured paragraphs even though the
+            #      actual decision has more Erwägungen).
             paras = _fetch_structure_paragraphs(resolved)
             valid_pinpoints = {p["e_number"] for p in paras}
             exact = pinpoint in valid_pinpoints
             has_children = any(vp.startswith(pinpoint + ".") for vp in valid_pinpoints)
-            if paras and not (exact or has_children):
+            if exact or has_children:
+                ok_count += 1
+            elif _pinpoint_in_text(decision.get("full_text") or "", pinpoint):
+                # Sidecar missed it, but the body contains "E. X.Y" verbatim
+                ok_count += 1
+            else:
                 status = "PINPOINT_INVALID"
                 detail["problem"] = "pinpoint_not_in_decision"
                 detail["valid_pinpoints"] = sorted(valid_pinpoints,
@@ -9022,8 +9143,6 @@ def _handle_attest_response(*, draft_text: str) -> dict:
                     "See valid_pinpoints above or drop the pinpoint."
                 )
                 issues.append(detail)
-            else:
-                ok_count += 1
         else:
             ok_count += 1
 
