@@ -7640,14 +7640,23 @@ server = Server(
         "statement — never push through with \"yes but…\".\n\n"
 
         "2. `attest_response(draft_text)` — MANDATORY before sending a "
-        "final answer that contains ≥1 case citation. Parses every "
-        "BGE/BGer/BVGer/BStGer/BPatGer/MKGE reference in your draft, "
-        "verifies each exists in the corpus, and verifies any pinpoint "
-        "(E. X.Y / consid. X.Y) actually exists in that decision's "
-        "Erwägungen. Returns ok=true/false + annotated text + per-"
-        "citation issues list. If ok=false, fix each flagged citation "
-        "using the suggestions, then either re-attest or remove the "
-        "offending reference.\n\n"
+        "final answer that contains ≥1 case citation, statute reference, "
+        "or direct quotation. Closing audit over FOUR hallucination "
+        "classes:\n"
+        "   • case      — every BGE/BGer/BVGer/BStGer/BPatGer/MKGE "
+        "reference exists in the corpus; any pinpoint (E. X.Y / "
+        "consid. X.Y) resolves to a real Erwägung.\n"
+        "   • statute   — every Art. X LAW reference (R3) resolves: "
+        "law abbreviation known + article number present in statutes.db.\n"
+        "   • quote     — every \"…\"-quoted substring (R2) appears "
+        "verbatim in one of the cited decisions' regeste / Erwägungen / "
+        "full text. Hallucinated quotations are caught here.\n"
+        "   • date      — any 'vom DD.MM.YYYY' adjacent to a verified "
+        "case citation matches the actual decision date.\n"
+        "Returns ok=true/false + annotated text + per-issue list with "
+        "category labels. If ok=false, fix each flagged issue using the "
+        "suggestion (re-cite / re-fetch / paraphrase / drop), then re-"
+        "attest before sending.\n\n"
 
         "══════════════════════════════════════════════════════════════\n"
         "QUESTION → TOOL ROUTING\n"
@@ -8616,6 +8625,300 @@ def _parse_citations_in_text(draft: str) -> list[dict]:
     return found
 
 
+# ── Statute / quote / date sub-audits (state-of-the-art layer) ─────
+#
+# These extend attest_response from "case-citation existence" to a
+# full closing audit that catches the three remaining hallucination
+# classes Magesh et al. (Stanford RegLab, 2024) report for legal LLMs:
+#
+#   1. Fabricated or wrong-numbered statute references (Art. X LAW).
+#      → _audit_statutes verifies every Art./art. reference resolves
+#        to a known law abbreviation AND that the article number
+#        actually exists in statutes.db.
+#
+#   2. Misgrounding via fabricated direct quotations.
+#      → _audit_quotes treats every "..." substring of length ≥ 30 as
+#        a load-bearing quote and requires it to be a verbatim
+#        substring of source text from one of the cited decisions
+#        (regeste, Erwägungen, or first 8k of full text). Whitespace
+#        and curly/straight-quote variants are normalised before match.
+#
+#   3. Date hallucination ("BGer X vom 03.04.2024" when the real
+#      decision is dated otherwise).
+#      → _audit_dates parses "vom|du|del DD.MM.YYYY" adjacent to a
+#        verified case citation and compares to decision.decision_date.
+#
+# All three return a list of issue dicts with the same shape as the
+# case-citation issues so they merge cleanly into the attest result.
+
+_STATUTE_AUDIT_PATTERN = re.compile(
+    r"""
+    \b(?:Art\.?|Artikel|art\.?|articolo)\s*
+    (?P<article>\d+(?:\s*(?:bis|ter|quater|quinquies|sexies)|[a-z](?![a-z]))?)
+    (?:\s*(?:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?)\s*\d+[a-z]?)?
+    \s+(?P<law>[A-Z][A-Za-zÄÖÜ0-9]{1,11}(?:/[A-Z0-9]{2,6})?)\b
+    """,
+    flags=re.IGNORECASE | re.VERBOSE,
+)
+
+# Statute words that are NOT laws but get caught by the all-caps suffix
+_STATUTE_AUDIT_INVALID_LAWS = {
+    "ABS", "ABSATZ", "AL", "ALIN", "ALINEA", "CPV", "PARA", "CO",
+    "BIS", "TER", "QUATER", "QUINQUIES", "SEXIES",
+    "OG", "OGER", "BG", "BGE", "BGER", "BGB",  # already-handled case forms
+    "EG", "IG", "VG", "RR", "EN", "DE", "FR", "IT",
+}
+
+# Quotes: paired Unicode left/right (DE „…\u201c, FR «…», IT «…»),
+# English curly \u201c…\u201d, and straight ASCII "…". The (?P<inner>...)
+# group is the verbatim quoted substring that we will source-verify.
+# r-string with `"` delimiter cannot embed `"` literals, so quote
+# characters are spelled via `\u…` escapes throughout.
+_QUOTE_AUDIT_PATTERNS = [
+    # German: \u201eINNER\u201c
+    re.compile("\u201e(?P<inner>[^\u201e\u201c]{30,400})\u201c"),
+    # French / Italian: \u00abINNER\u00bb (with optional thin spaces)
+    re.compile("\u00ab\\s?(?P<inner>[^\u00ab\u00bb]{30,400})\\s?\u00bb"),
+    # English curly: \u201cINNER\u201d
+    re.compile("\u201c(?P<inner>[^\u201c\u201d]{30,400})\u201d"),
+    # Straight ASCII: "INNER" — bounded to avoid eating across paragraphs
+    re.compile('"(?P<inner>[^"\\n]{30,400})"'),
+]
+
+# Date adjacent to a citation: "vom 12.03.2024", "du 12 mars 2024",
+# "del 12.03.2024", "vom 12. März 2024".
+_DATE_ADJACENT_PATTERN = re.compile(
+    r"\b(?:vom|du|del|of)\s+(?P<date>\d{1,2}(?:\.|\s)\s?(?:\d{1,2}|"
+    r"Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember|"
+    r"janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre|"
+    r"gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)"
+    r"\.?\s?\d{4})",
+    flags=re.IGNORECASE,
+)
+
+
+def _normalise_for_quote_match(text: str) -> str:
+    """Collapse whitespace + harmonise quote characters before substring match."""
+    if not text:
+        return ""
+    out = re.sub(r"\s+", " ", text)
+    # Treat all dashes as plain hyphen, all curly quotes as straight
+    out = out.translate(str.maketrans({
+        "\u2013": "-", "\u2014": "-", "\u2212": "-",
+        "\u2018": "'", "\u2019": "'", "\u201a": "'",
+        "\u201c": '"', "\u201d": '"', "\u201e": '"',
+        "«": '"', "»": '"', "„": '"',
+    }))
+    return out.strip().lower()
+
+
+def _audit_statutes(draft_text: str) -> list[dict]:
+    """Detect every Art. X LAW reference in the draft and verify each
+    against statutes.db. Returns a list of issue dicts; an empty list
+    means every detected statute reference checks out (or no references
+    were detected).
+
+    No-op when statutes.db is not deployed (dev environments without a
+    statute mirror): silently returns [] rather than producing false
+    positives for every Art. X reference in the draft.
+    """
+    if not STATUTES_DB_PATH.exists():
+        return []
+
+    issues: list[dict] = []
+    seen: set[tuple[str, str]] = set()  # (law, article) — dedup repeats
+
+    for m in _STATUTE_AUDIT_PATTERN.finditer(draft_text):
+        article = re.sub(r"\s+", "", (m.group("article") or "").lower())
+        law_raw = (m.group("law") or "").strip()
+        law_up = law_raw.upper()
+
+        if not article or not law_up:
+            continue
+        if law_up in _STATUTE_AUDIT_INVALID_LAWS:
+            continue
+        # Skip references that are clearly part of a case citation
+        # (e.g. "BGE" in "Art. 5 BGE" never happens — but "Art. 5 ABS"
+        # does, so we whitelist by the invalid-laws set above).
+        key = (law_up, article)
+        if key in seen:
+            continue
+        seen.add(key)
+
+        result = _fetch_statute_text(law_code=law_up, article=article)
+
+        # Three failure modes from _fetch_statute_text:
+        #   {} or {law_code,article} only       → law not in statutes.db
+        #   {..., sr_number} but no text_de     → law OK, article missing
+        #   {..., sr_number, text_de}           → both OK
+        if not result.get("sr_number"):
+            issues.append({
+                "category": "statute",
+                "citation": m.group(0),
+                "position": m.start(),
+                "problem": "law_abbreviation_unknown",
+                "law_code": law_raw,
+                "article": article,
+                "suggestion": (
+                    f"Law abbreviation {law_raw!r} did not resolve in "
+                    "statutes.db. Either the abbreviation is wrong "
+                    "(LLM-priors hallucinate ZRG/UVG variants) or it is a "
+                    "cantonal law — call get_law / search_legislation to "
+                    "verify before citing."
+                ),
+            })
+        elif not result.get("text_de"):
+            issues.append({
+                "category": "statute",
+                "citation": m.group(0),
+                "position": m.start(),
+                "problem": "article_not_in_law",
+                "law_code": law_raw,
+                "sr_number": result.get("sr_number"),
+                "article": article,
+                "suggestion": (
+                    f"Art. {article} {law_raw} not found in statutes.db. "
+                    "The article number may be wrong, repealed, or use a "
+                    "different sub-letter (e.g. 41a vs 41bis). Call "
+                    "get_law to confirm."
+                ),
+            })
+
+    return issues
+
+
+def _audit_quotes(
+    draft_text: str,
+    cited_decisions: list[dict],
+) -> list[dict]:
+    """For each `"..."`-quoted substring of length ≥ 30 in the draft,
+    check that it appears verbatim (after whitespace + quote-mark
+    normalisation) in the source text of at least one cited decision.
+
+    `cited_decisions` is a list of {decision_id, regeste, full_text,
+    paragraphs} dicts collected by `_handle_attest_response` while it
+    is verifying case citations — passed in to avoid duplicate fetches.
+    """
+    if not draft_text:
+        return []
+
+    # Pre-build a single normalised source pool once
+    source_pool_parts: list[str] = []
+    for cd in cited_decisions:
+        if cd.get("regeste"):
+            source_pool_parts.append(cd["regeste"])
+        for p in cd.get("paragraphs") or []:
+            if p.get("text"):
+                source_pool_parts.append(p["text"])
+        if cd.get("full_text"):
+            # Bound to first 8k chars per decision to keep the pool small;
+            # quotes longer than 400 chars are rare in legal writing.
+            source_pool_parts.append(cd["full_text"][:8000])
+    source_pool = _normalise_for_quote_match(" ".join(source_pool_parts))
+
+    issues: list[dict] = []
+    seen_inner: set[str] = set()
+    for pat in _QUOTE_AUDIT_PATTERNS:
+        for m in pat.finditer(draft_text):
+            inner = m.group("inner")
+            if not inner or len(inner.strip()) < 30:
+                continue
+            inner_norm = _normalise_for_quote_match(inner)
+            if inner_norm in seen_inner:
+                continue
+            seen_inner.add(inner_norm)
+            if source_pool and inner_norm in source_pool:
+                continue
+            issues.append({
+                "category": "quote",
+                "citation": m.group(0)[:160] + ("…" if len(m.group(0)) > 160 else ""),
+                "position": m.start(),
+                "problem": "quote_not_in_cited_sources",
+                "quote_length": len(inner),
+                "suggestion": (
+                    "This quoted text was not found verbatim in any of the "
+                    "decisions cited in the draft. Either (a) re-fetch the "
+                    "exact text via get_erwaegung / get_regeste / get_law "
+                    "and paste verbatim, or (b) drop the quotation marks and "
+                    "paraphrase. Hallucinated quotations are the most "
+                    "publication-damaging error class for legal AI."
+                ),
+            })
+    return issues
+
+
+def _audit_dates(
+    draft_text: str,
+    case_citations: list[dict],
+) -> list[dict]:
+    """For each verified case citation, check whether an adjacent date
+    (within 60 chars after) matches the decision's stored date.
+
+    `case_citations` is the same structure produced by
+    `_parse_citations_in_text`, augmented (by the caller) with a
+    `_decision_date` field for OK citations.
+    """
+    if not draft_text:
+        return []
+
+    def _normalise_date(s: str) -> str:
+        """Return YYYY-MM-DD if parseable, else lowercase trimmed input."""
+        s = s.strip().rstrip(".")
+        # Try DD.MM.YYYY
+        m = re.match(r"^(\d{1,2})\.\s?(\d{1,2})\.\s?(\d{4})$", s)
+        if m:
+            d, mo, y = (int(x) for x in m.groups())
+            return f"{y:04d}-{mo:02d}-{d:02d}"
+        # Try DD <month-name> YYYY (DE/FR/IT)
+        months = {
+            "januar": 1, "februar": 2, "märz": 3, "april": 4, "mai": 5, "juni": 6,
+            "juli": 7, "august": 8, "september": 9, "oktober": 10, "november": 11, "dezember": 12,
+            "janvier": 1, "février": 2, "mars": 3, "avril": 4, "juin": 6, "juillet": 7,
+            "août": 8, "septembre": 9, "octobre": 10, "novembre": 11, "décembre": 12,
+            "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4, "maggio": 5, "giugno": 6,
+            "luglio": 7, "agosto": 8, "settembre": 9, "ottobre": 10, "dicembre": 12,
+        }
+        m = re.match(r"^(\d{1,2})\.?\s+([A-Za-zÄÖÜäöüé]+)\s+(\d{4})$", s)
+        if m:
+            d, name, y = m.group(1), m.group(2).lower(), m.group(3)
+            mo = months.get(name)
+            if mo:
+                return f"{int(y):04d}-{mo:02d}-{int(d):02d}"
+        return s.lower()
+
+    issues: list[dict] = []
+    for cit in case_citations:
+        if not cit.get("_decision_date"):
+            continue  # only verified citations
+        actual_iso = cit["_decision_date"][:10]  # 'YYYY-MM-DD' or 'YYYY-MM-DDTHH'
+        # Look at the 60 chars after the citation for an adjacent date
+        window = draft_text[cit["span"][1]: cit["span"][1] + 60]
+        m = _DATE_ADJACENT_PATTERN.search(window)
+        if not m:
+            continue
+        claimed_iso = _normalise_date(m.group("date"))
+        if claimed_iso == actual_iso:
+            continue
+        # If we couldn't parse, only flag when both look ISO
+        if not re.match(r"^\d{4}-\d{2}-\d{2}$", claimed_iso):
+            continue
+        issues.append({
+            "category": "date",
+            "citation": cit["full_match"] + " " + m.group(0),
+            "position": cit["span"][0],
+            "problem": "date_does_not_match_decision",
+            "claimed_date": claimed_iso,
+            "actual_date": actual_iso,
+            "suggestion": (
+                f"Draft says the decision is from {claimed_iso}; the "
+                f"corpus has it dated {actual_iso}. Either the date is "
+                "wrong, or the citation references a different decision "
+                "with a similar docket — re-resolve via cite()."
+            ),
+        })
+    return issues
+
+
 def _handle_attest_response(*, draft_text: str) -> dict:
     """Post-draft audit: parse every Swiss-case citation in the LLM's
     response and verify existence + pinpoint validity.
@@ -8629,16 +8932,34 @@ def _handle_attest_response(*, draft_text: str) -> dict:
 
     citations = _parse_citations_in_text(draft_text)
     if not citations:
+        # No case citations — but statute references and direct quotes
+        # may still be present. Run those audits (with empty source
+        # pool: any quotation in a no-citation draft is unsourced and
+        # therefore flagged).
+        statute_issues = _audit_statutes(draft_text)
+        quote_issues = _audit_quotes(draft_text, [])
+        empty_issues = statute_issues + quote_issues
+        empty_issues.sort(key=lambda i: i.get("position", 0))
         return {
-            "ok": True,
+            "ok": len(empty_issues) == 0,
             "citations_found": 0,
+            "citations_ok": 0,
+            "issues_count": len(empty_issues),
+            "issues_by_category": {
+                "case": 0,
+                "statute": len(statute_issues),
+                "quote": len(quote_issues),
+                "date": 0,
+            },
             "annotated_text": draft_text,
-            "issues": [],
+            "linked_text": draft_text,
+            "issues": empty_issues,
             "_note": (
-                "No Swiss-case citation patterns detected. If your response "
-                "makes legal claims without citing authority, consider "
-                "whether that's appropriate — Swiss legal writing expects "
-                "citations for normative propositions."
+                "No Swiss-case citation patterns detected. Statute and "
+                "quote audits still ran. If your response makes legal "
+                "claims without citing authority, consider whether that's "
+                "appropriate — Swiss legal writing expects citations for "
+                "normative propositions."
             ),
         }
 
@@ -8650,6 +8971,12 @@ def _handle_attest_response(*, draft_text: str) -> dict:
     annotated_parts: list[str] = []
     linked_parts: list[str] = []
     last_end = 0
+
+    # Source pool for the quote audit: every cited decision's regeste +
+    # paragraphs + bounded full_text. Built once during the case-citation
+    # loop to avoid re-fetching.
+    cited_sources: list[dict] = []
+    seen_resolved: set[str] = set()
 
     for cit in citations:
         start, end = cit["span"]
@@ -8666,6 +8993,7 @@ def _handle_attest_response(*, draft_text: str) -> dict:
 
         status = "OK"
         detail: dict = {
+            "category": "case",
             "citation": full,
             "position": start,
             "guessed_decision_id": guess,
@@ -8699,6 +9027,20 @@ def _handle_attest_response(*, draft_text: str) -> dict:
         else:
             ok_count += 1
 
+        # Record the decision's date on the citation dict so the date
+        # audit can compare without re-fetching.
+        if decision:
+            cit["_decision_date"] = decision.get("decision_date") or ""
+            # Build the source pool entry once per decision
+            if resolved and resolved not in seen_resolved:
+                seen_resolved.add(resolved)
+                cited_sources.append({
+                    "decision_id": resolved,
+                    "regeste": decision.get("regeste") or "",
+                    "full_text": decision.get("full_text") or "",
+                    "paragraphs": _fetch_structure_paragraphs(resolved) or [],
+                })
+
         # Annotated text — gets the ✓/⚠ markers (for LLM to understand)
         if status == "OK":
             annotated_parts.append(f"{full} ✓")
@@ -8721,26 +9063,59 @@ def _handle_attest_response(*, draft_text: str) -> dict:
     annotated_text = "".join(annotated_parts)
     linked_text = "".join(linked_parts)
 
+    # ── State-of-the-art sub-audits — statute / quote / date.
+    # Each returns issue dicts in the same shape; we extend the master
+    # list without rebuilding annotated_text (markers attach only to
+    # case citations because their spans are unambiguous).
+    statute_issues = _audit_statutes(draft_text)
+    quote_issues = _audit_quotes(draft_text, cited_sources)
+    date_issues = _audit_dates(draft_text, citations)
+    issues.extend(statute_issues)
+    issues.extend(quote_issues)
+    issues.extend(date_issues)
+    # Stable order: by position
+    issues.sort(key=lambda i: i.get("position", 0))
+
     return {
         "ok": len(issues) == 0,
         "citations_found": len(citations),
         "citations_ok": ok_count,
+        "statutes_checked": len(statute_issues) + sum(
+            1 for _ in _STATUTE_AUDIT_PATTERN.finditer(draft_text)
+        ),
+        "quotes_checked": sum(
+            len(list(p.finditer(draft_text))) for p in _QUOTE_AUDIT_PATTERNS
+        ),
         "issues_count": len(issues),
+        "issues_by_category": {
+            "case": sum(1 for i in issues if i.get("category") == "case"),
+            "statute": len(statute_issues),
+            "quote": len(quote_issues),
+            "date": len(date_issues),
+        },
         "annotated_text": annotated_text,
         "linked_text": linked_text,
         "issues": issues,
         "_note": (
-            "Citations marked ✓ passed existence and pinpoint checks. "
-            "Citations marked ⚠️ did NOT — fix them before sending your "
-            "final response. Possible fixes: (a) re-call cite() with the "
-            "suggestion, (b) pick a different decision, (c) remove the "
-            "pinpoint if the Erwägung doesn't exist, (d) drop the citation. "
-            "\n\nWHEN ok=true: send the `linked_text` field VERBATIM to "
-            "the user — it is your draft with every validated citation "
+            "Closing audit covers FOUR hallucination classes:\n"
+            "  • case      — citation exists in corpus, pinpoint resolves\n"
+            "  • statute   — Art. X LAW reference resolves in statutes.db\n"
+            "  • quote     — \"…\"-text appears verbatim in a cited decision\n"
+            "  • date      — 'vom DD.MM.YYYY' adjacent to citation matches "
+            "the actual decision date\n\n"
+            "Citations marked ✓ passed case-existence + pinpoint checks. "
+            "Citations marked ⚠️ did NOT. Statute/quote/date issues are in "
+            "the `issues` list (no inline markers). Fix every issue before "
+            "sending. Possible fixes: (a) re-call cite() / get_law for the "
+            "right reference, (b) pick a different decision, (c) replace a "
+            "fabricated quote with a verbatim get_erwaegung extract, "
+            "(d) drop the assertion if no source supports it.\n\n"
+            "WHEN ok=true: send the `linked_text` field VERBATIM to the "
+            "user — it is your draft with every validated case citation "
             "wrapped in a clickable Markdown link to mcp.opencaselaw.ch. "
             "Do NOT re-paraphrase after attestation; that strips the "
-            "links. \n\nThis audit only checks existence + pinpoint; for "
-            "supports-the-claim verification, use check_claim_support."
+            "links. \n\nFor supports-the-claim verification (claim ↔ "
+            "decision-text alignment) use check_claim_support."
         ),
     }
 
@@ -12488,16 +12863,25 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="attest_response",
             description=(
-                "MANDATORY FINAL-STEP AUDIT: parse a draft response for all "
-                "Swiss-case citations (BGE/BGer/BVGer/BStGer/BPatGer/MKGE/ATF/"
-                "TF/TAF/TPF/TFB/ATMC/STMC) and verify (a) the referenced "
-                "decision exists in the corpus and (b) any pinpoint (E. X.Y / "
-                "consid. X.Y) actually exists in that decision's structured "
-                "Erwägungen. Returns the draft annotated with ✓ or ⚠️ per "
-                "citation plus a structured `issues` list with suggestions. "
-                "CALL THIS BEFORE emitting your final answer whenever your "
-                "response contains ≥1 case citation. If ok=false, fix each "
-                "flagged citation before sending."
+                "MANDATORY FINAL-STEP AUDIT covering four hallucination "
+                "classes: (1) case citations — verifies every BGE/BGer/"
+                "BVGer/BStGer/BPatGer/MKGE/ATF/TF/TAF/TPF/TFB/ATMC/STMC "
+                "reference exists in the corpus and any pinpoint "
+                "(E. X.Y / consid. X.Y) resolves to a real Erwägung; "
+                "(2) statute citations — verifies every Art. X LAW reference "
+                "resolves in statutes.db (law abbreviation known, article "
+                "number present); (3) direct quotations — verifies every "
+                "\"…\"-quoted substring (≥30 chars) appears verbatim in a "
+                "regeste / Erwägung / full text of one of the cited "
+                "decisions; (4) decision dates — verifies any 'vom "
+                "DD.MM.YYYY' adjacent to a citation matches the stored "
+                "decision date. Returns the draft annotated with ✓ or ⚠️ "
+                "per case citation plus a structured `issues` list with "
+                "category labels and suggestions. CALL THIS BEFORE emitting "
+                "your final answer whenever your response contains ≥1 case "
+                "citation, statute reference, or direct quotation. If "
+                "ok=false, fix each flagged issue before sending; if "
+                "ok=true, send `linked_text` verbatim to the user."
             ),
             inputSchema={
                 "type": "object",
