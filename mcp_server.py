@@ -8495,14 +8495,47 @@ _CITATION_PATTERNS = [
             re.I,
         ),
     ),
-    # BGer / TF docket: "4A_747/2012" with optional pinpoint
+    # BGer / TF docket (modern): "BGer 4A_747/2012" + optional pinpoint
+    # Note: the optional " vom DATE" tail is intentionally NOT consumed
+    # any more — the date audit needs to find that string itself.
     (
         "bger",
         re.compile(
             r"\b(?:BGer|TF)\s+(\d+[A-Z]+_\d+/\d{4})"
-            r"(?:\s+(?:vom|du|del)\s+[^,]+)?"
             r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
             re.I,
+        ),
+    ),
+    # Long-form BGer prefix: "Urteil des Bundesgerichts X_N/YYYY",
+    # "Arrêt du Tribunal fédéral X_N/YYYY",
+    # "Sentenza del Tribunale federale X_N/YYYY".
+    (
+        "bger_longform",
+        re.compile(
+            r"\b(?:Urteil des Bundesgerichts|Arr[êe]t du Tribunal f[ée]d[ée]ral|"
+            r"Sentenza del Tribunale federale)\s+(\d+[A-Z]+_\d+/\d{4})"
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            re.I,
+        ),
+    ),
+    # Old-style BGer pre-2007: "5C.123/2003", "4P.10/2007" etc.
+    # Optional BGer/TF prefix; the dot-separated chamber form is the
+    # discriminator vs the modern "_" form.
+    (
+        "bger_old",
+        re.compile(
+            r"\b(?:BGer\s+|TF\s+)?(\d+[A-Z]\.\d+/\d{4})"
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            re.I,
+        ),
+    ),
+    # Bare modern docket without a court prefix: "4A_747/2012".
+    # Boundary-anchored on the left to avoid eating chunks of larger IDs.
+    (
+        "bger_bare",
+        re.compile(
+            r"(?<![A-Za-z0-9_])([1-9][A-Z]+_\d+/\d{4})"
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
         ),
     ),
     # BVGer / BStGer / BPatGer / TAF / TPF / TFB docket
@@ -8510,7 +8543,6 @@ _CITATION_PATTERNS = [
         "federal_court",
         re.compile(
             r"\b(?:BVGer|BStGer|BPatGer|TAF|TPF|TFB)\s+([A-Z][A-Z.]*[-._]?[\d./_-]+)"
-            r"(?:\s+(?:vom|du|del)\s+[^,]+)?"
             r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
             re.I,
         ),
@@ -8590,9 +8622,13 @@ def _parse_citations_in_text(draft: str) -> list[dict]:
             if label == "bge":
                 volume, division, page, pinpoint = groups[0], groups[1], groups[2], groups[3]
                 decision_id_guess = f"bge_BGE_{volume}_{division}_{page}"
-            elif label == "bger":
+            elif label in ("bger", "bger_longform", "bger_bare"):
                 docket, pinpoint = groups[0], groups[1]
                 decision_id_guess = "bger_" + docket.replace("/", "_")
+            elif label == "bger_old":
+                docket, pinpoint = groups[0], groups[1]
+                # Old-style "5C.123/2003" → corpus stores as "bger_5C_123_2003"
+                decision_id_guess = "bger_" + docket.replace(".", "_").replace("/", "_")
             elif label == "federal_court":
                 docket, pinpoint = groups[0], groups[1]
                 # Map TF → bger, TAF → bvger, TPF → bstger, TFB → bpatger
@@ -8622,7 +8658,24 @@ def _parse_citations_in_text(draft: str) -> list[dict]:
             })
     # Sort by position so issues appear in reading order
     found.sort(key=lambda f: f["span"][0])
-    return found
+    # Suppress overlapping matches: when bger_longform ("Urteil des
+    # Bundesgerichts 4A_747/2012") and bger_bare ("4A_747/2012") both
+    # fire on the same docket, keep the longer (more-context) match
+    # only. Without this dedup, attest_response would double-count
+    # the citation and the linked_text would contain a nested link.
+    deduped: list[dict] = []
+    for cit in found:
+        if deduped and cit["span"][0] < deduped[-1]["span"][1]:
+            # Overlap → keep whichever span is wider
+            prev = deduped[-1]
+            prev_width = prev["span"][1] - prev["span"][0]
+            cur_width = cit["span"][1] - cit["span"][0]
+            if cur_width > prev_width:
+                deduped[-1] = cit
+            # else keep prev, drop cur
+            continue
+        deduped.append(cit)
+    return deduped
 
 
 # ── Audit-layer fast lookups (avoid LIKE %x% scans on the hot path)
@@ -8997,9 +9050,15 @@ def _audit_dates(
         if not cit.get("_decision_date"):
             continue  # only verified citations
         actual_iso = cit["_decision_date"][:10]  # 'YYYY-MM-DD' or 'YYYY-MM-DDTHH'
-        # Look at the 60 chars after the citation for an adjacent date
-        window = draft_text[cit["span"][1]: cit["span"][1] + 60]
-        m = _DATE_ADJACENT_PATTERN.search(window)
+        # Search BOTH inside the citation's own match (older or future
+        # citation regexes may consume "vom DD.MM.YYYY" greedily) AND
+        # in the 60-char trailing window. This is the most robust way
+        # to find an adjacent date regardless of where the citation
+        # regex draws its boundary.
+        full_match = cit.get("full_match", "")
+        tail = draft_text[cit["span"][1]: cit["span"][1] + 60]
+        haystack = full_match + " " + tail
+        m = _DATE_ADJACENT_PATTERN.search(haystack)
         if not m:
             continue
         claimed_iso = _normalise_date(m.group("date"))
@@ -9167,10 +9226,39 @@ def _handle_attest_response(*, draft_text: str) -> dict:
             annotated_parts.append(f"{full} ⚠️[{status}]")
 
         # Linked text — only OK citations get wrapped; broken citations stay
-        # raw so the LLM can see them and fix before re-attesting.
+        # raw so the LLM can see them and fix before re-attesting. For OK
+        # citations we replace the LLM-typed form with the corpus-canonical
+        # citation_string (correct spacing, case, and pinpoint syntax),
+        # so drafts come in messy and leave publication-ready.
         if status == "OK" and decision:
             url = _canonical_decision_url(resolved, pinpoint)
-            linked_parts.append(_md_link(full, url))
+            try:
+                canon = _build_citation_strings(decision, pinpoint=pinpoint)
+                # Preserve the LLM's prefix language — BGE/ATF/DTF and
+                # BGer/TF reflect the draft's language, not the decision's.
+                # A German answer cites "BGE 140 III 86" even when the
+                # underlying decision is French. Falling back to DE keeps
+                # the convention safe when no prefix can be detected.
+                prefix_match = re.match(
+                    r"^(BGE|ATF|DTF|BGer|TF|BVGer|BStGer|BPatGer|TAF|TPF|TFB|"
+                    r"MKGE|ATMC|STMC)",
+                    full, re.I,
+                )
+                lang_label = "de"
+                if prefix_match:
+                    pre_up = prefix_match.group(1).upper()
+                    lang_label = {
+                        "BGE": "de", "ATF": "fr", "DTF": "it",
+                        "BGER": "de", "TF": "fr",
+                        "BVGER": "de", "TAF": "fr",
+                        "BSTGER": "de", "TPF": "fr",
+                        "BPATGER": "de", "TFB": "fr",
+                        "MKGE": "de", "ATMC": "fr", "STMC": "it",
+                    }.get(pre_up, "de")
+                label = canon.get(f"citation_string_{lang_label}") or full
+            except Exception:
+                label = full
+            linked_parts.append(_md_link(label, url))
         else:
             linked_parts.append(full)
 
@@ -9187,6 +9275,30 @@ def _handle_attest_response(*, draft_text: str) -> dict:
     # list without rebuilding annotated_text (markers attach only to
     # case citations because their spans are unambiguous).
     statute_issues = _audit_statutes(draft_text)
+    # Augment the quote source pool with text from any statute reference
+    # the LLM included in the draft. This eliminates the false-positive
+    # class where a draft correctly quotes Art. X verbatim but is flagged
+    # as unsourced because no case happens to be cited alongside it.
+    if STATUTES_DB_PATH.exists():
+        seen_stat: set[tuple[str, str]] = set()
+        for sm in _STATUTE_AUDIT_PATTERN.finditer(draft_text):
+            article = re.sub(r"\s+", "", (sm.group("article") or "").lower())
+            law_raw = (sm.group("law") or "").strip()
+            law_up = law_raw.upper()
+            if not article or not law_up or law_up in _STATUTE_AUDIT_INVALID_LAWS:
+                continue
+            key = (law_up, article)
+            if key in seen_stat:
+                continue
+            seen_stat.add(key)
+            stat = _fetch_statute_text(law_code=law_up, article=article)
+            if stat.get("text_de"):
+                cited_sources.append({
+                    "decision_id": f"statute:{law_up}_{article}",
+                    "regeste": stat["text_de"],
+                    "full_text": "",
+                    "paragraphs": [],
+                })
     quote_issues = _audit_quotes(draft_text, cited_sources)
     date_issues = _audit_dates(draft_text, citations)
     issues.extend(statute_issues)
