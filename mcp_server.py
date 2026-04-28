@@ -201,6 +201,73 @@ CROSS_ENCODER_MODEL = os.environ.get(
 CROSS_ENCODER_TOP_N = max(1, int(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_TOP_N", "30")))
 CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT", "1.4"))
 
+# ── LLM usage / cost logging ──────────────────────────────────────
+# Append-only JSONL receipt per Anthropic API call so daily Sonnet/Haiku
+# spend is auditable. Path is overridable via env; defaults to a logs/
+# directory under the repo root so it works on dev + VPS without root.
+LLM_USAGE_LOG_PATH = Path(os.environ.get(
+    "OCL_LLM_USAGE_LOG",
+    str(Path(__file__).resolve().parent / "logs" / "llm_usage.jsonl"),
+))
+
+# Anthropic public pricing (USD per 1M tokens). Update when rates change.
+# (input_per_1m, output_per_1m). Cache reads bill at 10% of input rate;
+# cache writes at 125%.
+_LLM_PRICING = {
+    "claude-sonnet-4-6":          (3.00, 15.00),
+    "claude-sonnet-4-6-1m":       (6.00, 22.50),
+    "claude-haiku-4-5":           (0.80, 4.00),
+    "claude-haiku-4-5-20251001":  (0.80, 4.00),
+    "claude-opus-4-7":            (15.00, 75.00),
+}
+
+
+def _llm_usage_log(*, model: str, feature: str, response_json: dict | None,
+                    ok: bool = True, error: str | None = None) -> None:
+    """Append one JSONL receipt for an Anthropic Messages API call.
+
+    Defensive: never raises (observability must not break the request
+    path). Token counts come straight from the API response's `usage`
+    block; cost is computed from `_LLM_PRICING`.
+    """
+    try:
+        from datetime import datetime, timezone
+        usage = ((response_json or {}).get("usage") or {})
+        in_tok       = int(usage.get("input_tokens") or 0)
+        out_tok      = int(usage.get("output_tokens") or 0)
+        cache_read   = int(usage.get("cache_read_input_tokens") or 0)
+        cache_write  = int(usage.get("cache_creation_input_tokens") or 0)
+        rate_in, rate_out = _LLM_PRICING.get(model, (3.00, 15.00))
+        # Anthropic billing model: input_tokens excludes cache_read/write,
+        # which are billed separately at 10% / 125% of the input rate.
+        cost = (
+            in_tok       * rate_in
+            + cache_read  * rate_in * 0.10
+            + cache_write * rate_in * 1.25
+            + out_tok     * rate_out
+        ) / 1_000_000
+        record = {
+            "ts":        datetime.now(timezone.utc).isoformat(),
+            "model":     model,
+            "feature":   feature,
+            "in":        in_tok,
+            "out":       out_tok,
+            "cache_r":   cache_read,
+            "cache_w":   cache_write,
+            "cost_usd":  round(cost, 6),
+            "ok":        ok,
+        }
+        if error:
+            record["error"] = str(error)[:140]
+        LLM_USAGE_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(LLM_USAGE_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except Exception as e:  # noqa: BLE001
+        try:
+            logger.debug("llm_usage_log failed: %s", e)
+        except Exception:
+            pass
+
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 CANTONAL_LAWS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANTONAL_DB", str(DATA_DIR / "cantonal_laws.db")))
@@ -426,7 +493,10 @@ def _parse_query_structured(query: str) -> dict:
                 },
             )
             resp.raise_for_status()
-            text = resp.json()["content"][0]["text"].strip()
+            _resp_json = resp.json()
+            _llm_usage_log(model="claude-haiku-4-5-20251001",
+                            feature="query_parse", response_json=_resp_json)
+            text = _resp_json["content"][0]["text"].strip()
             # Strip markdown fences if present
             if text.startswith("```"):
                 text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
@@ -1217,7 +1287,10 @@ def _expand_query_with_llm(query: str) -> list[str]:
                 },
             )
             resp.raise_for_status()
-            text = resp.json()["content"][0]["text"]
+            _resp_json = resp.json()
+            _llm_usage_log(model="claude-haiku-4-5-20251001",
+                            feature="query_expansion", response_json=_resp_json)
+            text = _resp_json["content"][0]["text"]
             terms = [t.strip() for t in text.strip().split("\n") if t.strip()]
             terms = terms[:6]
             _LLM_EXPANSION_CACHE[cache_key] = terms
@@ -5310,7 +5383,10 @@ def _apply_llm_rerank(
                 },
             )
             resp.raise_for_status()
-            text = resp.json()["content"][0]["text"].strip()
+            _resp_json = resp.json()
+            _llm_usage_log(model="claude-haiku-4-5-20251001",
+                            feature="search_rerank", response_json=_resp_json)
+            text = _resp_json["content"][0]["text"].strip()
 
             # Parse JSON array of decision_ids
             if text.startswith("```"):
@@ -8472,7 +8548,11 @@ def _handle_check_claim_support(
                 },
             )
             resp.raise_for_status()
-            raw = resp.json()["content"][0]["text"].strip()
+            _resp_json = resp.json()
+            _llm_usage_log(model="claude-sonnet-4-6",
+                            feature="check_claim_support",
+                            response_json=_resp_json)
+            raw = _resp_json["content"][0]["text"].strip()
             if raw.startswith("```"):
                 raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
             verdict = json.loads(raw)
@@ -9250,7 +9330,11 @@ def _judge_grounding_batched(pairs: list[dict]) -> list[dict] | None:
                 },
             )
             resp.raise_for_status()
-            raw = resp.json()["content"][0]["text"].strip()
+            _resp_json = resp.json()
+            _llm_usage_log(model="claude-sonnet-4-6",
+                            feature="grounding_judge",
+                            response_json=_resp_json)
+            raw = _resp_json["content"][0]["text"].strip()
             if raw.startswith("```"):
                 raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
             parsed = json.loads(raw)
