@@ -153,6 +153,62 @@ def render_ris(decision: dict) -> tuple[bytes, str, str]:
 
 # ── DOCX ───────────────────────────────────────────────────────────
 
+# ── Text normalisation ────────────────────────────────────────────
+#
+# Critical for Word output: source text from the corpus is hard-wrapped
+# (one source line per line, often 60–80 chars) because that's how
+# courts publish decisions. python-docx's add_paragraph() converts every
+# `\n` in the input into a `<w:br/>` hard line break — producing a
+# Word document with 70+ broken lines per paragraph, where Word's own
+# word-wrap should be doing the wrapping at the right margin.
+#
+# Fix: collapse single newlines into spaces (so the paragraph is one
+# continuous string Word can re-flow). Caller splits on blank lines
+# upstream when paragraph boundaries matter.
+
+def _flow_paragraph(text: str) -> str:
+    """Normalise a chunk of corpus text into a single re-flowable
+    paragraph: collapse newlines and runs of whitespace into single
+    spaces so Word's own word-wrap handles the line lengths."""
+    if not text:
+        return ""
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"\s*\n\s*", " ", text)
+    text = re.sub(r" {2,}", " ", text)
+    return text.strip()
+
+
+def _split_paragraphs(text: str) -> list[str]:
+    """Split text on blank lines into logical paragraphs, then
+    `_flow_paragraph` each one. Empty paragraphs are dropped."""
+    if not text:
+        return []
+    parts = re.split(r"\n\s*\n+", text.replace("\r\n", "\n"))
+    return [p for p in (_flow_paragraph(c) for c in parts) if p]
+
+
+# Heuristic: regeste field for federal decisions concatenates DE / FR /
+# IT versions back-to-back, each typically prefixed by "Regeste" /
+# "Regeste" / "Regesto". Splitting at those boundaries gives one
+# paragraph per language instead of a 600-char wall of mixed text.
+_REGESTE_SPLIT_RE = re.compile(
+    r"(?=\b(?:Regeste|Regesto)\b)",
+    re.IGNORECASE,
+)
+
+
+def _split_regeste(regeste: str) -> list[str]:
+    """Split a multilingual regeste into per-language paragraphs.
+    Falls back to a single flowed paragraph when no language headers
+    are detectable (most cantonal decisions)."""
+    if not regeste or not regeste.strip():
+        return []
+    parts = [p for p in _REGESTE_SPLIT_RE.split(regeste) if p and p.strip()]
+    if len(parts) <= 1:
+        return [_flow_paragraph(regeste)]
+    return [_flow_paragraph(p) for p in parts if _flow_paragraph(p)]
+
+
 def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[bytes, str, str]:
     """Build a Word document with the decision's structured content.
 
@@ -216,11 +272,15 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
     if alt_lines:
         doc.add_paragraph(" · ".join(alt_lines)).italic = True
 
-    # 5. Regeste
+    # 5. Regeste — split multilingual head-note at language boundaries
+    #    (Regeste / Regeste / Regesto) so each lang gets its own
+    #    re-flowable paragraph instead of a cramped wall.
     regeste = decision.get("regeste") or ""
-    if regeste.strip():
+    regeste_paras = _split_regeste(regeste)
+    if regeste_paras:
         doc.add_heading("Regeste", level=2)
-        doc.add_paragraph(regeste.strip())
+        for rp in regeste_paras:
+            doc.add_paragraph(rp)
 
     # 6. Sachverhalt / Erwägungen (structured if available, else fallback)
     if paragraphs:
@@ -240,16 +300,19 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
             heading = doc.add_paragraph()
             run = heading.add_run(f"E. {e_num}" if e_num else "")
             run.bold = True
-            doc.add_paragraph(text)
+            # Each Erwägung from the corpus often spans multiple
+            # blank-line-separated paragraphs (judges write in real
+            # paragraphs). Preserve that structure while flowing
+            # single newlines into spaces inside each paragraph so
+            # Word handles wrapping itself.
+            for sub in _split_paragraphs(text):
+                doc.add_paragraph(sub)
     else:
         full = (decision.get("full_text") or "").strip()
         if full:
             doc.add_heading("Volltext", level=2)
-            # Split into reasonable paragraphs
-            for chunk in re.split(r"\n\s*\n", full):
-                chunk = chunk.strip()
-                if chunk:
-                    doc.add_paragraph(chunk)
+            for sub in _split_paragraphs(full):
+                doc.add_paragraph(sub)
 
     # 7. Footer disclaimer
     doc.add_paragraph()
