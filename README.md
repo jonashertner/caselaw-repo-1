@@ -362,6 +362,24 @@ Available on both remote and local unless noted.
 | `update_database` | Re-download latest Parquet files from HuggingFace and rebuild the local database *(local only)* |
 | `check_update_status` | Check progress of a running database update *(local only)* |
 
+### Citation-integrity toolkit (anti-hallucination)
+
+OpenCaseLaw treats Swiss legal citations as a closed-corpus problem: every reference an LLM writes either resolves to a real entry in the 969k-decision corpus + Fedlex statute mirror, or it does not. The MCP server ships a four-tool toolkit that makes this contract enforceable end-to-end.
+
+| Tool | Purpose |
+|------|---------|
+| `cite` | Build the canonical citation_string + canonical_url for a Swiss reference. Returns `exists=false` plus close_matches when the reference is fabricated — the LLM is contracted to copy the returned string verbatim instead of constructing one itself. |
+| `check_claim_support` | Per-claim Sonnet judge: given a (claim, decision_id, optional pinpoint), return `supports: yes / partial / no / contradicts / unrelated` against the verbatim Erwägung text. Different model family (Sonnet) than the one running retrieval (Haiku) so retrieval errors are not re-introduced in verification. |
+| `attest_response` | Closing audit, called once before a final answer ships. Runs up to **five** rails over the LLM's draft: <br>① **case** — every BGE/BGer/BVGer/BStGer/BPatGer/MKGE reference exists, every pinpoint resolves; <br>② **statute** — every `Art. X LAW` reference resolves in `statutes.db`; <br>③ **quote** — every `"…"` of ≥30 chars appears verbatim in a cited source (decision or statute); <br>④ **date** — every `vom DD.MM.YYYY` adjacent to a citation matches the stored decision date; <br>⑤ **grounding** *(opt-in via `audit_grounding=true`)* — for each verified citation, an independent Sonnet judge checks whether the cited source actually supports the proposition the LLM attached to it. <br>Returns `linked_text` ready to ship verbatim with every validated citation wrapped in a Markdown link. |
+| `get_erwaegung` / `get_regeste` / `get_law` / `get_materialien` / `get_commentary` | The verbatim-text suppliers — the only sources the LLM is permitted to direct-quote. |
+
+The architecture defends against **two empirically-measured legal-LLM failure classes**:
+
+- **Hallucination** (Magesh et al., Stanford RegLab, 2024): 58–82 % of legal queries to general-purpose LLMs produced at least one fabricated authority. → caught by audits ① ② ③ ④.
+- **Reasoning error** (Butler & Butler, Isaacus, *Legal RAG Bench*, Mar 2026): citation is real and source was retrieved, but the proposition attached to it is not actually supported by the cited text. → caught by audit ⑤.
+
+The full server prompt (R1–R8) embeds these rules so any connecting client (Claude, ChatGPT, Cursor, Gemini, Copilot Studio) inherits the contract automatically. See [`mcp_server.py`](mcp_server.py) for the implementation, [`tests/web/test_attest_audits.py`](tests/web/test_attest_audits.py) for the regression suite, and the [verification section on opencaselaw.ch](https://opencaselaw.ch/#verification) for a public explainer.
+
 ### Example queries
 
 These work on both the remote and local server:

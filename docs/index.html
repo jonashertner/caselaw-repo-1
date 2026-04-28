@@ -1446,14 +1446,17 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
    Persistent (not dismissible). Sits between toolbar and main; clicks
    through to #verification.  */
 .verify-banner {
+  --vb-bg:  #ecfdf5;        /* soft mint                         */
+  --vb-brd: #a7f3d0;        /* mint border                        */
+  --vb-fg:  #047857;        /* deep evergreen                    */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   padding: 9px 16px;
-  background: var(--ac-bg, #fef2f2);
-  border-bottom: 1px solid var(--ac-brd, #fecaca);
-  color: var(--ac, #b91c24);
+  background: var(--vb-bg);
+  border-bottom: 1px solid var(--vb-brd);
+  color: var(--vb-fg);
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -1462,18 +1465,18 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   transition: background 160ms var(--ease, ease);
 }
 .verify-banner:hover {
-  background: color-mix(in srgb, var(--ac-bg, #fef2f2) 75%, var(--ac, #b91c24) 8%);
+  background: color-mix(in srgb, var(--vb-bg) 80%, var(--vb-fg) 8%);
   text-decoration: none;
 }
 .verify-banner-mark {
   display: inline-block;
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--ac, #b91c24);
+  background: var(--vb-fg);
   flex: 0 0 auto;
   font-size: 0; line-height: 0;
 }
-.verify-banner-text { color: var(--ac, #b91c24); }
+.verify-banner-text { color: var(--vb-fg); }
 .verify-banner-arrow {
   font-size: 14px;
   transition: transform 160ms var(--ease, ease);
@@ -2555,7 +2558,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       <article class="card verify-card">
         <div class="verify-num">L4</div>
         <h3 data-t="verify_l4_title">Closing audit (mandatory)</h3>
-        <p data-t="verify_l4_body"><code>attest_response</code> parses every BGE / BGer / BVGer / BStGer / BPatGer / MKGE reference in the LLM's draft, verifies each exists in the corpus, and verifies any pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) actually exists in that decision's structured Erwägungen. Returns the draft with each citation marked ✓ or ⚠, plus a <code>linked_text</code> ready to send verbatim — every validated citation already wrapped in a Markdown link to the canonical URL.</p>
+        <p data-t="verify_l4_body"><code>attest_response</code> runs up to five audits over the LLM's draft before it leaves the server: (1) every BGE / BGer / BVGer / BStGer / BPatGer / MKGE reference exists in the corpus and any pinpoint resolves; (2) every <code>Art.&nbsp;X&nbsp;LAW</code> reference resolves in the Fedlex mirror; (3) every <code>"…"</code>-quoted substring appears verbatim in a cited source; (4) any <code>vom DD.MM.YYYY</code> matches the stored decision date; (5) opt-in <em>grounding</em> rail — for each verified citation, the preceding claim sentence is sent to an independent Sonnet judge alongside the cited Erwägung, which decides whether the source supports the proposition. Closes the "reasoning error" class identified by Butler &amp; Butler, <em>Legal RAG Bench</em> (Isaacus, Mar&nbsp;2026): citation real, source retrieved, proposition unsupported. Returns each citation marked ✓ or ⚠ plus a <code>linked_text</code> ready to send verbatim.</p>
       </article>
       <article class="card verify-card">
         <div class="verify-num">L5</div>
@@ -3004,7 +3007,7 @@ const I18N = {
     verify_l3_title:'Unabhängige Argumentations-Prüfung',
     verify_l3_body:'<code>check_claim_support</code> übergibt den wörtlichen Erwägungstext und die Behauptung des Nutzers an eine andere Modellfamilie (Sonnet) als die, die das Retrieval ausführt (Haiku) — so werden Retrieval-Fehler nicht in der Verifikation reproduziert. Liefert <code>supports / contradicts / partial</code> mit begründetem Zitat. Das ist die Verteidigung gegen die schwierigste Halluzinationsklasse: korrekte Zitation, falsche Behauptung.',
     verify_l4_title:'Abschliessendes Audit (zwingend)',
-    verify_l4_body:'<code>attest_response</code> parst jeden BGE / BGer / BVGer / BStGer / BPatGer / MKGE-Verweis im Entwurf der KI, prüft, ob jede Zitation im Korpus existiert, und prüft, ob jeder Pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) in den strukturierten Erwägungen dieses Entscheids tatsächlich vorkommt. Liefert den Entwurf mit jedem Zitat ✓ oder ⚠ markiert sowie einen <code>linked_text</code>, der wörtlich gesendet werden kann — jede validierte Zitation bereits in einen Markdown-Link auf die kanonische URL eingewickelt.',
+    verify_l4_body:'<code>attest_response</code> führt bis zu fünf Audits am Entwurf der KI aus, bevor er den Server verlässt: (1) jede BGE / BGer / BVGer / BStGer / BPatGer / MKGE-Referenz existiert im Korpus, jeder Pinpoint löst auf; (2) jede <code>Art.&nbsp;X&nbsp;GESETZ</code>-Referenz löst im Fedlex-Spiegel auf; (3) jedes <code>„…"</code>-Zitat erscheint wörtlich in einer zitierten Quelle; (4) jedes <code>vom TT.MM.JJJJ</code> stimmt mit dem gespeicherten Entscheiddatum überein; (5) optionale <em>Grounding</em>-Schicht — für jede validierte Zitation wird die vorangehende Aussage an einen unabhängigen Sonnet-Richter zusammen mit der zitierten Erwägung gesendet, der entscheidet, ob die Quelle die Behauptung trägt. Schliesst die «reasoning error»-Klasse aus Butler &amp; Butler, <em>Legal RAG Bench</em> (Isaacus, März&nbsp;2026): Zitation echt, Quelle abgerufen, Behauptung nicht gestützt. Liefert jede Zitation ✓ oder ⚠ markiert plus einen <code>linked_text</code>, der wörtlich gesendet werden kann.',
     verify_l5_title:'Ein-Klick-Verifikation',
     verify_l5_body:'Jeder Verweis muss ein Markdown-Link auf <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code> sein. Die Nutzerin kann jede Zitation in einem Klick überprüfen — keine Datenbanksuche nötig, kein Vertrauen in die KI nötig, keine Quelle auf Treu und Glauben. Das Word-Add-in fügt Zitate als Word-Hyperlinks direkt ins Dokument ein, sodass auch das Dokument selbst nach Übergabe nachprüfbar bleibt.',
     verify_objective_kicker:'Unser Ziel',
@@ -3267,7 +3270,7 @@ const I18N = {
     verify_l3_title:'Juge de raisonnement indépendant',
     verify_l3_body:'<code>check_claim_support</code> envoie le texte verbatim du considérant et l\'affirmation de l\'utilisateur à une famille de modèles différente (Sonnet) de celle qui exécute la recherche (Haiku) — afin que les erreurs de recherche ne soient pas réintroduites dans la vérification. Renvoie <code>supports / contradicts / partial</code> avec un extrait raisonné. C\'est la défense contre la classe d\'hallucination la plus difficile : citation correcte, proposition fausse.',
     verify_l4_title:'Audit de clôture (obligatoire)',
-    verify_l4_body:'<code>attest_response</code> analyse chaque référence ATF / TF / TAF / TPF / TFB / MKGE dans le brouillon de l\'IA, vérifie que chaque citation existe dans le corpus, et vérifie que chaque pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) existe réellement dans les considérants structurés de la décision. Renvoie le brouillon avec chaque citation marquée ✓ ou ⚠, ainsi qu\'un <code>linked_text</code> à envoyer verbatim — chaque citation validée déjà encapsulée dans un lien Markdown vers l\'URL canonique.',
+    verify_l4_body:'<code>attest_response</code> exécute jusqu\'à cinq audits sur le brouillon de l\'IA avant qu\'il ne quitte le serveur&nbsp;: (1) chaque référence ATF / TF / TAF / TPF / TFB / MKGE existe dans le corpus, tout pinpoint résout&nbsp;; (2) chaque référence <code>art.&nbsp;X&nbsp;LOI</code> résout dans le miroir Fedlex&nbsp;; (3) chaque <code>«&nbsp;…&nbsp;»</code> apparaît verbatim dans une source citée&nbsp;; (4) chaque <code>du JJ.MM.AAAA</code> correspond à la date de la décision&nbsp;; (5) couche optionnelle de <em>grounding</em> — pour chaque citation validée, la phrase d\'affirmation qui la précède est envoyée à un juge Sonnet indépendant avec le considérant cité, qui décide si la source soutient la proposition. Ferme la classe «&nbsp;reasoning error&nbsp;» identifiée par Butler &amp; Butler, <em>Legal RAG Bench</em> (Isaacus, mars&nbsp;2026)&nbsp;: citation réelle, source récupérée, proposition non soutenue. Retourne chaque citation marquée ✓ ou ⚠ et un <code>linked_text</code> à envoyer verbatim.',
     verify_l5_title:'Vérification en un clic',
     verify_l5_body:'Toute référence doit être un lien Markdown vers <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. L\'utilisateur peut vérifier toute citation en un clic — sans interroger une base de données, sans faire confiance à l\'IA, sans tenir la source pour acquise. Le complément Word insère les citations comme hyperliens Word directement dans le document, de sorte que le document lui-même reste vérifiable après transmission.',
     verify_objective_kicker:'Notre objectif',
@@ -3530,7 +3533,7 @@ const I18N = {
     verify_l3_title:'Giudice di ragionamento indipendente',
     verify_l3_body:'<code>check_claim_support</code> invia il testo verbatim del considerando e l\'affermazione dell\'utente a una famiglia di modelli diversa (Sonnet) da quella che esegue la ricerca (Haiku) — così gli errori di recupero non vengono reintrodotti nella verifica. Restituisce <code>supports / contradicts / partial</code> con un estratto motivato. È la difesa contro la classe di allucinazione più difficile: citazione corretta, proposizione errata.',
     verify_l4_title:'Audit di chiusura (obbligatorio)',
-    verify_l4_body:'<code>attest_response</code> analizza ogni riferimento DTF / TF / TAF / TPF / TFB / MKGE nella bozza dell\'IA, verifica che ogni citazione esista nel corpus, e verifica che ogni pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) esista realmente nei considerandi strutturati della decisione. Restituisce la bozza con ogni citazione marcata ✓ o ⚠ e un <code>linked_text</code> da inviare verbatim — ogni citazione validata già incapsulata in un link Markdown verso l\'URL canonico.',
+    verify_l4_body:'<code>attest_response</code> esegue fino a cinque audit sulla bozza dell\'IA prima che lasci il server: (1) ogni riferimento DTF / TF / TAF / TPF / TFB / MKGE esiste nel corpus, ogni pinpoint si risolve; (2) ogni riferimento <code>art.&nbsp;X&nbsp;LEGGE</code> si risolve nel mirror Fedlex; (3) ogni <code>«&nbsp;…&nbsp;»</code> appare verbatim in una fonte citata; (4) ogni <code>del GG.MM.AAAA</code> corrisponde alla data effettiva della decisione; (5) livello opzionale di <em>grounding</em> — per ogni citazione validata, l\'affermazione che la precede viene inviata a un giudice Sonnet indipendente assieme al considerando citato, che decide se la fonte sostiene la proposizione. Chiude la classe «reasoning error» identificata da Butler &amp; Butler, <em>Legal RAG Bench</em> (Isaacus, marzo&nbsp;2026): citazione reale, fonte recuperata, proposizione non sostenuta. Restituisce ogni citazione marcata ✓ o ⚠ e un <code>linked_text</code> da inviare verbatim.',
     verify_l5_title:'Verifica in un clic',
     verify_l5_body:'Ogni riferimento deve essere un link Markdown verso <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. L\'utente può verificare ogni citazione in un clic — senza interrogare un database, senza fidarsi dell\'IA, senza accettare la fonte sulla parola. Il componente aggiuntivo Word inserisce le citazioni come collegamenti ipertestuali Word direttamente nel documento, così che anche il documento resti verificabile dopo la consegna.',
     verify_objective_kicker:'Il nostro obiettivo',
@@ -3793,7 +3796,7 @@ const I18N = {
     verify_l3_title:'Derscheder independent dal raschunament',
     verify_l3_body:'<code>check_claim_support</code> trametta il text verbatim dal considerand e l\'asserziun da la utilisadra ad in\'autra famiglia da models (Sonnet) che quella che fa la tschertga (Haiku) — uschia n\'èn ils sbagls da retrieval betg reintroducids en la verificaziun. Returna <code>supports / contradicts / partial</code> cun in extract motivà. Quai è la defensiun cunter la classa la pli difficila d\'allucinaziun: citaziun correcta, proposiziun fauss.',
     verify_l4_title:'Audit final (obligatoric)',
-    verify_l4_body:'<code>attest_response</code> analisescha mintga referenza BGE / BGer / BVGer / BStGer / BPatGer / MKGE en la sboza da la IA, verifitgescha che mintga citaziun existescha en il corpus, e verifitgescha che mintga pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) sa chatta atgnamain en ils considerands structurads da quella decisiun. Returna la sboza cun mintga citaziun marcada ✓ u ⚠, ed in <code>linked_text</code> da trametter verbatim — mintga citaziun validada gia integrada en in link Markdown sin il URL canonic.',
+    verify_l4_body:'<code>attest_response</code> exequescha fin cinch audits sin la sboza da la IA avant ch\'ella bandunescha il server: (1) mintga referenza BGE / BGer / BVGer / BStGer / BPatGer / MKGE existescha en il corpus, mintga pinpoint sa schliescha; (2) mintga referenza <code>Art.&nbsp;X&nbsp;LEGIA</code> sa schliescha en il spievel Fedlex; (3) mintga citaziun <code>„…"</code> apparescha verbatim en ina fontana citada; (4) mintga <code>dals DD.MM.YYYY</code> correspunda al datum stuvent da la decisiun; (5) strat opziunal da <em>grounding</em> — per mintga citaziun validada, la frasa d\'asserziun anteceditura vegn tramessa ad in derschader Sonnet independent cun il considerand cità, che decida sche la fontana sustegna la proposiziun. Serra la classa «reasoning error» identifitgada da Butler &amp; Butler, <em>Legal RAG Bench</em> (Isaacus, mars&nbsp;2026): citaziun reala, fontana retschercada, proposiziun nun sustegnida. Returna mintga citaziun marcada ✓ u ⚠ ed in <code>linked_text</code> da trametter verbatim.',
     verify_l5_title:'Verificaziun en in clic',
     verify_l5_body:'Mintga referenza sto esser in link Markdown sin <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. La utilisadra po verifitgar mintga citaziun en in clic — senza dumandar ina banca da datas, senza fidanza en la IA, senza prender la fontana sin trev e bun. L\'add-in Word inserescha citaziuns sco hyperlinks Word directamain en il document, uschia che er il document sez resta verifitgabel suenter la consegna.',
     verify_objective_kicker:'Noss intent',
@@ -4056,7 +4059,7 @@ const I18N = {
     verify_l3_title:'Independent reasoning judge',
     verify_l3_body:'<code>check_claim_support</code> sends the verbatim Erwägung text and the user\'s claim to a different model family (Sonnet) than the one running retrieval (Haiku) — so retrieval errors are not re-introduced in verification. Returns <code>supports / contradicts / partial</code> with a reasoned excerpt. This is the defence against the hardest hallucination class: real citation, wrong proposition.',
     verify_l4_title:'Closing audit (mandatory)',
-    verify_l4_body:'<code>attest_response</code> parses every BGE / BGer / BVGer / BStGer / BPatGer / MKGE reference in the LLM\'s draft, verifies each exists in the corpus, and verifies any pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) actually exists in that decision\'s structured Erwägungen. Returns the draft with each citation marked ✓ or ⚠, plus a <code>linked_text</code> ready to send verbatim — every validated citation already wrapped in a Markdown link to the canonical URL.',
+    verify_l4_body:'<code>attest_response</code> runs up to five audits over the LLM\'s draft before it leaves the server: (1) every BGE / BGer / BVGer / BStGer / BPatGer / MKGE reference exists in the corpus and any pinpoint resolves; (2) every <code>Art.&nbsp;X&nbsp;LAW</code> reference resolves in the Fedlex mirror; (3) every <code>"…"</code>-quoted substring appears verbatim in a cited source; (4) any <code>vom DD.MM.YYYY</code> matches the stored decision date; (5) opt-in <em>grounding</em> rail — for each verified citation, the preceding claim sentence is sent to an independent Sonnet judge alongside the cited Erwägung, which decides whether the source supports the proposition. Closes the "reasoning error" class identified by Butler &amp; Butler, <em>Legal RAG Bench</em> (Isaacus, Mar&nbsp;2026): citation real, source retrieved, proposition unsupported. Returns each citation marked ✓ or ⚠ plus a <code>linked_text</code> ready to send verbatim.',
     verify_l5_title:'Click-through verification',
     verify_l5_body:'Every reference must be a Markdown link to <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. The user can verify any citation in one click — no need to search a database, no need to trust the AI, no need to take the source on faith. The Word add-in inserts citations as Word hyperlinks directly into the document so the document itself remains verifiable after handoff.',
     verify_objective_kicker:'Our objective',
