@@ -1,0 +1,1412 @@
+{
+  "experiment": "ablation_v02_prior_only",
+  "version": "0.1",
+  "questions_count": 30,
+  "generator": "claude-sonnet-4-6",
+  "judge": "claude-sonnet-4-6",
+  "audit_endpoint": "https://mcp.opencaselaw.ch/api/attest",
+  "wall_clock_s": 104.2,
+  "results": [
+    {
+      "id": "q-001",
+      "language": "de",
+      "claim_type": "elements_of_norm",
+      "difficulty": "basic",
+      "draft": "Nach Art. 41 OR setzt die ausservertragliche Haftung das kumulative Vorliegen von vier Elementen voraus: erstens ein **Schaden**, d.h. eine unfreiwillige Vermögensverminderung; zweitens ein **widerrechtliches Verhalten**, wobei das Bundesgericht zwischen der Erfolgsunrechtslehre (Verletzung eines absoluten Rechts) und der Verhaltensunrechtslehre (Verletzung einer Schutznorm) unterscheidet (vgl. BGE 123 II 577); drittens ein **natürlicher und adäquater Kausalzusammenhang** zwischen dem schädigenden Verhalten und dem eingetretenen Schaden (BGE 129 II 312); und viertens ein **Verschulden** in Form von Vorsatz oder Fahrlässigkeit, wobei als Massstab das Verhalten einer vernünftigen, sorgfältigen Person in der gleichen Situation herangezogen wird. Fehlt auch nur eines dieser Elemente, entfällt die Haftungspflicht nach Art. 41 OR.",
+      "draft_length": 836,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 2,
+        "citations_ok": 2,
+        "grounding_meta": {
+          "checked": 2,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers all four elements (Schaden, Widerrechtlichkeit, Kausalzusammenhang, Verschulden) and stresses cumulative requirement. Matches reference fully.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual/legal claims are ungrounded."
+      },
+      "timing": {
+        "generate_s": 6.4,
+        "attest_s": 3.5
+      }
+    },
+    {
+      "id": "q-002",
+      "language": "fr",
+      "claim_type": "elements_of_norm",
+      "difficulty": "basic",
+      "draft": "Selon l'art. 41 al. 1 CO, la responsabilité aquilienne suppose la réunion de quatre conditions cumulatives : un acte illicite (violation d'un droit absolu ou d'une norme de protection), une faute de l'auteur (intentionnelle ou par négligence), un dommage subi par la victime, et un lien de causalité (naturelle et adéquate) entre l'acte illicite et le dommage. Le Tribunal fédéral rappelle régulièrement ces éléments dans sa jurisprudence, notamment dans ATF 132 III 122 et ATF 123 III 306. En l'absence de l'une de ces conditions, la responsabilité délictuelle ne peut être retenue.",
+      "draft_length": 583,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 2,
+        "citations_ok": 2,
+        "grounding_meta": {
+          "checked": 2,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "ATF 123 III 306",
+            "position": 474,
+            "problem": "claim_unrelated_by_source",
+            "claim": "Le Tribunal fédéral rappelle régulièrement ces éléments dans sa jurisprudence, notamment dans ATF 132 III 122 et",
+            "supports": "unrelated",
+            "confidence": 0.95,
+            "checked_text_source": "Regeste",
+            "reasoning": "ATF 123 III 306 concerns tort liability and diving board accidents, unrelated to collective labour dispute criteria mentioned in the claim.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers all four cumulative elements (damage, illicit act, causal link natural+adequate, fault) matching the reference exactly.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims (art. 41 CO, ATF references, four conditions) are unverifiable against any source."
+      },
+      "timing": {
+        "generate_s": 4.5,
+        "attest_s": 3.8
+      }
+    },
+    {
+      "id": "q-003",
+      "language": "it",
+      "claim_type": "statute_text",
+      "difficulty": "basic",
+      "draft": "L'art. 111 del Codice penale svizzero (CP) prevede per l'omicidio intenzionale semplice una pena detentiva non inferiore a cinque anni oppure una pena detentiva da uno a cinque anni, a seconda delle circostanze. In concreto, la norma stabilisce che chiunque intenzionalmente uccide una persona è punito con una pena detentiva da cinque anni come minimo, mentre il limite massimo è quello generale di venti anni previsto dall'art. 40 CP. Il Tribunale federale ha avuto modo di precisare, in diverse pronunce (tra cui BGE 141 IV 61), i criteri di commisurazione della pena nell'ambito dei reati contro la vita.",
+      "draft_length": 608,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer confirms min 5 years custodial sentence for intentional homicide under Art. 111 CP, matching the reference's core element.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims are unverifiable and thus ungrounded."
+      },
+      "timing": {
+        "generate_s": 4.9,
+        "attest_s": 2.6
+      }
+    },
+    {
+      "id": "q-004",
+      "language": "de",
+      "claim_type": "elements_of_norm",
+      "difficulty": "intermediate",
+      "draft": "Nach Art. 36 BV sind Grundrechtseinschränkungen nur zulässig, wenn vier kumulative Voraussetzungen erfüllt sind: Erstens bedarf jede Einschränkung einer gesetzlichen Grundlage (Art. 36 Abs. 1 BV), wobei schwerwiegende Einschränkungen im Gesetz selbst vorgesehen sein müssen. Zweitens muss ein öffentliches Interesse oder der Schutz von Grundrechten Dritter die Einschränkung rechtfertigen (Art. 36 Abs. 2 BV). Drittens muss die Einschränkung verhältnismässig sein, d.h. geeignet, erforderlich und dem Eingriffszweck angemessen (Art. 36 Abs. 3 BV; vgl. BGE 136 I 87). Viertens darf der Kerngehalt der Grundrechte nicht angetastet werden (Art. 36 Abs. 4 BV), da dieser absolut geschützt ist und keiner Abwägung zugänglich ist.",
+      "draft_length": 724,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers all four elements: legal basis (formal law for severe restrictions), public interest/third-party rights, proportionality (suitability, necessity, proportionality), and core content prote",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about Art. 36 BV and BGE 136 I 87 are unverifiable against empty source list."
+      },
+      "timing": {
+        "generate_s": 5.3,
+        "attest_s": 2.4
+      }
+    },
+    {
+      "id": "q-005",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "intermediate",
+      "draft": "Nach Art. 42 Abs. 2 BGG verlangt das Bundesgericht, dass in der Beschwerdebegründung in gedrängter Form dargelegt wird, inwiefern der angefochtene Akt Recht verletzt. Die beschwerdeführende Partei muss sich dabei mit den Erwägungen des angefochtenen Entscheids auseinandersetzen und konkret aufzeigen, welche Rechtsnormen und warum diese verletzt sein sollen; blosse Verweise auf kantonale Akten oder allgemeine Kritik genügen nicht (vgl. BGE 140 III 86 E. 2; BGE 134 II 244 E. 2.1). Bei der Rüge der Verletzung von Grundrechten sowie von kantonalem Recht gilt gemäss Art. 106 Abs. 2 BGG darüber hinaus ein qualifiziertes Rügeprinzip, wonach die Vorbringen klar und detailliert anhand der Erwägungen des angefochtenen Entscheids substanziiert werden müssen (BGE 142 III 364 E. 2.4).",
+      "draft_length": 782,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 3,
+        "citations_ok": 3,
+        "grounding_meta": {
+          "checked": 3,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "BGE 134 II 244 E. 2.1",
+            "position": 460,
+            "problem": "claim_unrelated_by_source",
+            "claim": "BGE 140 III 86 E. 2;",
+            "supports": "unrelated",
+            "confidence": 0.85,
+            "checked_text_source": "Erwägung 2.1",
+            "reasoning": "Claim is just a citation reference 'BGE 140 III 86 E. 2'; text is BGE 134 II 244 E. 2.1 which doesn't verify that citation label.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers all key elements: concise form, showing how law violated, no mere assertions or references to prior submissions, concrete norm and reason required.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about Art. 42/106 BGG and cited BGE rulings are unverifiable."
+      },
+      "timing": {
+        "generate_s": 6.9,
+        "attest_s": 5.0
+      }
+    },
+    {
+      "id": "q-006",
+      "language": "fr",
+      "claim_type": "statute_procedure",
+      "difficulty": "intermediate",
+      "draft": "Selon l'art. 257e al. 3 CO, à l'échéance du bail, le bailleur ne peut s'opposer à la libération de la garantie que s'il fait valoir des créances échues à l'encontre du locataire, notamment des loyers impayés ou des indemnités pour dommages causés à la chose louée. Concrètement, le bailleur doit notifier à l'établissement dépositaire (en général la banque) qu'il s'oppose à la restitution, en indiquant les prétentions qu'il entend faire valoir. Le Tribunal fédéral a précisé que ces prétentions doivent être suffisamment déterminées et ne pas être manifestement infondées (cf. ATF 119 II 337). Si le locataire conteste l'opposition, c'est au juge de trancher sur le fond, le bailleur devant agir en justice dans un délai raisonnable pour faire constater ses droits.",
+      "draft_length": 767,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "ATF 119 II 337",
+            "position": 579,
+            "problem": "claim_unrelated_by_source",
+            "claim": "Le Tribunal fédéral a précisé que ces prétentions doivent être suffisamment déterminées et ne pas être manifestement infondées (cf.",
+            "supports": "unrelated",
+            "confidence": 0.95,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text concerns liability of tenant for acts of landlord toward subtenant (Art.101 CO). No mention of 'sufficiently determined' or 'not manifestly unfounded' clai",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": false,
+        "c_reasoning": "Answer omits the key 1-year deadline and the dual-consent/court order rule for releasing guarantee during pending proceedings.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims (art. 257e al.3 CO, ATF 119 II 337, procedural details) are unverifiable."
+      },
+      "timing": {
+        "generate_s": 5.9,
+        "attest_s": 2.4
+      }
+    },
+    {
+      "id": "q-007",
+      "language": "de",
+      "claim_type": "norm_overview",
+      "difficulty": "intermediate",
+      "draft": "Der privatrechtliche Persönlichkeitsschutz beruht primär auf Art. 28 ZGB, der jede Person gegen widerrechtliche Verletzungen ihrer Persönlichkeit durch Dritte schützt; ergänzt wird er durch Art. 28a ZGB, der die prozessualen Rechtsbehelfe aufführt, sowie durch Art. 49 OR für den Anspruch auf Genugtuung bei besonders schweren Verletzungen. Der verletzten Person stehen drei Hauptklagen zur Verfügung: die Unterlassungsklage (zur Abwehr drohender oder andauernder Verletzungen), die Beseitigungsklage (zur Behebung einer bestehenden Beeinträchtigung) sowie die Feststellungsklage (wenn das Interesse an der Feststellung der Widerrechtlichkeit fortbesteht, etwa wegen Wiederholungsgefahr oder zur Rehabilitation). Daneben kann bei Vorliegen der allgemeinen Haftungsvoraussetzungen Schadenersatz nach Art. 41 OR sowie Genugtuung nach Art. 49 OR verlangt werden; das Bundesgericht hat in seiner Rechtsprechung (vgl. etwa BGE 129 III 715) die Voraussetzungen und den Umfang dieser Ansprüche wiederholt konkretisiert.",
+      "draft_length": 1012,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers Art. 28/28a ZGB, all three claims (Unterlassung, Beseitigung, Feststellung), plus Schadenersatz and Genugtuung; minor extra detail tolerable.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about ZGB, OR articles, legal remedies, and BGE case law are unverifiable."
+      },
+      "timing": {
+        "generate_s": 7.5,
+        "attest_s": 2.2
+      }
+    },
+    {
+      "id": "q-008",
+      "language": "de",
+      "claim_type": "statute_thresholds",
+      "difficulty": "advanced",
+      "draft": "Nach Art. 74 Abs. 1 BGG ist die Beschwerde in Zivilsachen grundsätzlich nur zulässig, wenn der Streitwert mindestens 15 000 Franken in arbeits- und mietrechtlichen Fällen bzw. mindestens 30 000 Franken in allen übrigen Zivilsachen beträgt. Unterhalb dieser Schwellen ist die Beschwerde in Zivilsachen unzulässig, sofern keine Ausnahme eingreift. Unabhängig vom Streitwert ist die Beschwerde jedoch nach Art. 74 Abs. 2 lit. a BGG zulässig, wenn sich eine Rechtsfrage von grundsätzlicher Bedeutung stellt; das Bundesgericht legt diesen Begriff restriktiv aus und bejaht ihn nur, wenn eine Frage höchstrichterlich noch nicht geklärt ist und sich in zahlreichen Fällen stellen kann (vgl. etwa BGE 135 III 1 E. 1.3).",
+      "draft_length": 711,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers same thresholds (30k general, 15k labour/tenancy) and fundamental legal question exception; extra detail doesn't contradict reference.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all claims about Art. 74 BGG, thresholds, and BGE 135 III 1 are unverifiable."
+      },
+      "timing": {
+        "generate_s": 5.6,
+        "attest_s": 2.6
+      }
+    },
+    {
+      "id": "q-009",
+      "language": "de",
+      "claim_type": "statute_change",
+      "difficulty": "advanced",
+      "draft": "Seit der Revision des Verjährungsrechts, die am 1. Januar 2020 in Kraft trat, gilt für Forderungen aus Personenschäden gemäss Art. 60 Abs. 1bis OR eine relative Verjährungsfrist von drei Jahren ab Kenntnis des Schadens und der Person des Ersatzpflichtigen sowie eine absolute Frist von zwanzig Jahren ab dem schädigenden Ereignis. Damit wurde die frühere relative Einjahresfrist für Personenschäden auf drei Jahre verlängert, um dem Umstand Rechnung zu tragen, dass sich Personenschäden oft erst verzögert manifestieren. Die absolute Frist von zwanzig Jahren entspricht der allgemeinen Regelung in Art. 60 Abs. 1 OR (absolute Frist) in der revidierten Fassung, welche die frühere zehnjährige absolute Frist erheblich verlängert hat.",
+      "draft_length": 732,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 0,
+        "citations_ok": 0,
+        "grounding_meta": {
+          "requested": true,
+          "checked": 0,
+          "note": "no case citations to ground"
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers 3yr relative, 20yr absolute (vs prior 10yr) for personal injury claims, matching reference's key elements.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about Swiss law revisions are unverifiable against any source."
+      },
+      "timing": {
+        "generate_s": 5.4,
+        "attest_s": 0.0
+      }
+    },
+    {
+      "id": "q-010",
+      "language": "fr",
+      "claim_type": "norm_overview",
+      "difficulty": "intermediate",
+      "draft": "La liberté économique de l'art. 27 Cst. peut être invoquée par toute personne physique ainsi que par les personnes morales de droit privé, pour autant qu'elles exercent une activité économique ; en revanche, les collectivités publiques et les entreprises étatiques agissant dans l'accomplissement de tâches publiques ne peuvent en principe pas s'en prévaloir (ATF 138 I 289). Elle protège le libre choix de la profession, le libre accès à une activité économique privée et son libre exercice, ce qui englobe tant les activités commerciales et industrielles que les professions libérales. Le Tribunal fédéral a précisé que cette garantie couvre aussi bien la concurrence entre acteurs économiques que la liberté contractuelle dans le cadre de relations d'affaires (ATF 130 I 26). Sont en revanche exclues du champ de protection les activités purement privées sans caractère économique, ainsi que les activités illicites.",
+      "draft_length": 919,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 1,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 2,
+        "citations_found": 2,
+        "citations_ok": 2,
+        "grounding_meta": {
+          "checked": 2,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "statute",
+            "citation": "art. 27 Cst",
+            "position": 27,
+            "problem": "law_abbreviation_unknown",
+            "law_code": "Cst",
+            "article": "27",
+            "suggestion": "Law abbreviation 'Cst' did not resolve in statutes.db. Either the abbreviation is wrong (LLM-priors hallucinate ZRG/UVG variants) or it is a cantonal law — call get_law / search_legislation to verify before citing."
+          },
+          {
+            "category": "grounding",
+            "citation": "ATF 130 I 26",
+            "position": 764,
+            "problem": "claim_no_by_source",
+            "claim": "Le Tribunal fédéral a précisé que cette garantie couvre aussi bien la concurrence entre acteurs économiques que la liberté contractuelle dans le cadre de relations d'affaires",
+            "supports": "no",
+            "confidence": 0.8,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text concerns admission restrictions for healthcare providers and KVG art.55a; no mention of competition between economic actors or contractual freedom as cover",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers same core elements: protected persons, scope (free choice/access/exercise), limits. Extra details don't contradict reference.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims (ATF references, scope of art. 27 Cst.) are unverifiable and ungrounded."
+      },
+      "timing": {
+        "generate_s": 6.6,
+        "attest_s": 4.2
+      }
+    },
+    {
+      "id": "q-011",
+      "language": "de",
+      "claim_type": "norm_overview",
+      "difficulty": "basic",
+      "draft": "Nach Schweizer Recht steht die gemeinsame elterliche Sorge seit der Reform von 2014 (Inkrafttreten 1. Juli 2014, Art. 296 Abs. 2 ZGB) als Regelfall im Vordergrund, unabhängig davon, ob die Eltern verheiratet sind oder waren. Nach einer Scheidung oder Trennung wird die gemeinsame Sorge grundsätzlich beibehalten (Art. 298 Abs. 1 ZGB); das Gericht kann sie nur dann einem Elternteil allein zuweisen, wenn dies zum Wohl des Kindes erforderlich ist, etwa bei dauerhafter Kommunikationsunfähigkeit der Eltern, bei Gefährdung des Kindeswohls oder bei einem Elternteil, der sich nachweislich nicht um das Kind kümmert (BGE 142 III 197). Für nicht miteinander verheiratete Eltern sieht Art. 298a ZGB vor, dass die gemeinsame Sorge auf gemeinsame Erklärung beider Elternteile hin oder auf Anordnung des Kindesschutzgerichts entsteht. Massgebliches Kriterium ist stets das Kindeswohl gemäss Art. 133 ZGB (bei Scheidung) bzw. Art. 298b ZGB (bei unverheirateten Eltern), wobei das Bundesgericht betont, dass bloss fehlende Kooperationsbereitschaft der Eltern allein nicht genügt, um die alleinige Sorge anzuordnen (BGE 141 III 472).",
+      "draft_length": 1121,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 2,
+        "citations_ok": 2,
+        "grounding_meta": {
+          "checked": 2,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "BGE 141 III 472",
+            "position": 1104,
+            "problem": "claim_no_by_source",
+            "claim": "Art. 298b ZGB (bei unverheirateten Eltern), wobei das Bundesgericht betont, dass bloss fehlende Kooperationsbereitschaft der Eltern allein nicht genügt, um die alleinige Sorge anzuordnen",
+            "supports": "no",
+            "confidence": 0.78,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text states chronic communication incapacity justifies sole custody, contradicting the claim that lack of cooperation alone doesn't suffice.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers gemeinsame Sorge als Regelfall ab 2014, Art. 296 Abs. 2, Abweichung nur bei Kindeswohl, Art. 298/298a. Minor omissions on Art. 298a Abs. 5 re ledige Mutter.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about Swiss law, ZGB articles, and BGE rulings are unverifiable."
+      },
+      "timing": {
+        "generate_s": 8.0,
+        "attest_s": 3.1
+      }
+    },
+    {
+      "id": "q-012",
+      "language": "de",
+      "claim_type": "statute_change",
+      "difficulty": "intermediate",
+      "draft": "Mit der Erbrechtsrevision, die am 1. Januar 2023 in Kraft getreten ist, wurden die Pflichtteilsquoten erheblich reduziert, um den Erblassern mehr Testierfreiheit zu gewähren. Der Pflichtteil der Nachkommen beträgt neu gemäss Art. 471 ZGB (in der revidierten Fassung) drei Viertel ihres gesetzlichen Erbteils – was gegenüber der alten Regelung, die noch drei Viertel vorsah, unverändert blieb, jedoch wurde der Elternpflichtteil vollständig abgeschafft. Wesentlichste Neuerung ist, dass der Pflichtteil des Ehegatten bzw. des eingetragenen Partners von der Hälfte auf neu ebenfalls die Hälfte des gesetzlichen Erbteils verblieb, während der Pflichtteil der Eltern ersatzlos gestrichen wurde. Konkret beträgt der Pflichtteil der Nachkommen heute die Hälfte ihres gesetzlichen Erbteils (Art. 471 Ziff. 1 ZGB n.F.), da die Quote von drei Vierteln auf die Hälfte herabgesetzt wurde, was die zentrale Änderung für die Nachkommen darstellt.",
+      "draft_length": 933,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 1,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 1,
+        "citations_found": 0,
+        "citations_ok": 0,
+        "grounding_meta": {
+          "requested": true,
+          "checked": 0,
+          "note": "no case citations to ground"
+        },
+        "issues": [
+          {
+            "category": "statute",
+            "citation": "Art. 471 Ziff",
+            "position": 784,
+            "problem": "law_abbreviation_unknown",
+            "law_code": "Ziff",
+            "article": "471",
+            "suggestion": "Law abbreviation 'Ziff' did not resolve in statutes.db. Either the abbreviation is wrong (LLM-priors hallucinate ZRG/UVG variants) or it is a cantonal law — call get_law / search_legislation to verify before citing."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Despite confused internal wording, the answer ultimately states descendants' compulsory share is now 1/2, parents' share abolished, spouse's stays 1/2 — matching reference.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about the 2023 revision, Art. 471 ZGB, and Pflichtteil quotas are unverifiable."
+      },
+      "timing": {
+        "generate_s": 6.6,
+        "attest_s": 0.0
+      }
+    },
+    {
+      "id": "q-013",
+      "language": "fr",
+      "claim_type": "statute_thresholds",
+      "difficulty": "intermediate",
+      "draft": "Selon l'art. 336c al. 1 let. b CO, l'employeur ne peut pas résilier le contrat de travail pendant une incapacité de travail totale ou partielle résultant d'une maladie ou d'un accident non imputables à la faute du travailleur, et ce durant les délais suivants : 30 jours au cours de la première année de service, 90 jours de la deuxième à la cinquième année de service, et 180 jours à partir de la sixième année de service. Ces périodes constituent des délais de protection absolus pendant lesquels tout congé signifié est nul (art. 336c al. 2 CO). Le Tribunal fédéral a précisé dans sa jurisprudence (notamment BGE 128 III 212) que ces délais ne courent que pendant les périodes d'incapacité effective, et que si le congé a été donné avant l'incapacité, le délai de congé est suspendu et ne reprend qu'à la fin de la période protégée.",
+      "draft_length": 835,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "error": "judge_unavailable",
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers protection periods (30/90/180 days), nullity of notice, and suspension of notice given before incapacity, matching reference. Pregnancy omitted but not contradicted.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about CO art. 336c, délais, nullité, and BGE 128 III 212 are unverifiable."
+      },
+      "timing": {
+        "generate_s": 6.0,
+        "attest_s": 14.9
+      }
+    },
+    {
+      "id": "q-014",
+      "language": "fr",
+      "claim_type": "elements_of_norm",
+      "difficulty": "intermediate",
+      "draft": "Selon l'art. 15 CP, la légitime défense suppose réunies trois conditions cumulatives : il doit exister une attaque, celle-ci doit être illicite et actuelle (imminente ou en cours), et la défense doit être dirigée contre l'agresseur lui-même. La réaction défensive doit en outre être proportionnée à l'attaque, c'est-à-dire que les moyens employés ne doivent pas être excessifs par rapport à la gravité de l'agression et aux intérêts en jeu. Le Tribunal fédéral a précisé ces exigences dans de nombreux arrêts, notamment en rappelant que l'appréciation de la proportionnalité se fait à l'aune de la situation telle qu'elle apparaissait raisonnablement à l'auteur au moment des faits (cf. ATF 136 IV 49). Si le défenseur dépasse les limites de la légitime défense, l'art. 16 CP prévoit une atténuation de la peine, voire une exemption si l'excès résulte d'un état excusable d'émotion ou de saisissement.",
+      "draft_length": 901,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "ATF 136 IV 49",
+            "position": 687,
+            "problem": "claim_no_by_source",
+            "claim": "Le Tribunal fédéral a précisé ces exigences dans de nombreux arrêts, notamment en rappelant que l'appréciation de la proportionnalité se fait à l'aune de la situation telle qu'elle apparaissait raisonnablement à l'auteur au moment des faits (cf.",
+            "supports": "no",
+            "confidence": 0.82,
+            "checked_text_source": "Regeste",
+            "reasoning": "Regeste focuses on proportionality of knife use in self-defence; does not mention the 'as it reasonably appeared to the author at the time' standard.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers illicit/current attack, proportionality, and art.16 excess/exemption matching reference's key elements.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all claims about art. 15/16 CP, ATF 136 IV 49, and Tribunal fédéral rulings are unverifiable."
+      },
+      "timing": {
+        "generate_s": 6.8,
+        "attest_s": 2.2
+      }
+    },
+    {
+      "id": "q-015",
+      "language": "fr",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Selon l'art. 56 CO, la responsabilité du détenteur d'animal repose sur trois éléments constitutifs : un dommage, un acte de l'animal comme cause directe de ce dommage, et la qualité de détenteur chez le défendeur. Le Tribunal fédéral précise que la notion de « détenteur » désigne celui qui, en fait, a la maîtrise de l'animal et en tire un avantage ou un intérêt, indépendamment de la propriété (ATF 97 II 221). Il s'agit d'une responsabilité causale simple (ou atténuée), en ce sens que le détenteur peut s'exonérer en prouvant qu'il a pris toute la vigilance commandée par les circonstances pour prévenir le dommage, ou que cette vigilance n'aurait pas empêché le dommage, ou encore en invoquant la faute du lésé ou la force majeure (art. 56 al. 1 CO). Le lien de causalité naturelle et adéquate entre le comportement de l'animal et le dommage doit également être établi, conformément aux principes généraux développés par le Tribunal fédéral en matière de causalité (ATF 123 III 110).",
+      "draft_length": 988,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 2,
+        "citations_ok": 2,
+        "grounding_meta": {
+          "checked": 2,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "ATF 97 II 221",
+            "position": 397,
+            "problem": "claim_unrelated_by_source",
+            "claim": "Le Tribunal fédéral précise que la notion de « détenteur » désigne celui qui, en fait, a la maîtrise de l'animal et en tire un avantage ou un intérêt, indépendamment de la propriété",
+            "supports": "unrelated",
+            "confidence": 0.97,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text concerns employer liability (Art.55 OR) and causal link interruption; no mention of animal keeper/Tierhalter concept.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers damage, animal causation, keeper concept (factual control), and exoneration proof—matching reference's three elements and causal nature.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims (art. 56 CO, ATF references, legal elements) cannot be verified against any source."
+      },
+      "timing": {
+        "generate_s": 7.1,
+        "attest_s": 3.3
+      }
+    },
+    {
+      "id": "q-016",
+      "language": "it",
+      "claim_type": "elements_of_norm",
+      "difficulty": "intermediate",
+      "draft": "Secondo l'art. 1 CO, un contratto si conclude validamente quando le parti hanno manifestato, in modo concorde, la loro volontà reciproca, sia espressamente sia tacitamente. È necessario che vi sia un accordo su tutti i punti essenziali del contratto (art. 2 cpv. 1 CO): in mancanza di tale accordo, il contratto non è perfezionato. Il Tribunale federale ha costantemente confermato che la conclusione del contratto richiede la corrispondenza tra offerta e accettazione (consensus), interpretando le dichiarazioni di volontà secondo il principio dell'affidamento qualora le volontà interne divergano (cfr. BGE 144 III 93 e la consolidata giurisprudenza sul principio dell'«Vertrauensprinzip»).",
+      "draft_length": 692,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers mutual consent, express/tacit manifestation, essentialia negotii, and offer/acceptance match — all key elements of the reference.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about CO articles, BGE 144 III 93, and legal principles are unverifiable."
+      },
+      "timing": {
+        "generate_s": 10.3,
+        "attest_s": 2.1
+      }
+    },
+    {
+      "id": "q-017",
+      "language": "it",
+      "claim_type": "statute_procedure",
+      "difficulty": "intermediate",
+      "draft": "Secondo l'art. 264 CO, il conduttore che restituisce anticipatamente la cosa locata è liberato dai suoi obblighi se presenta al locatore un nuovo conduttore solvibile, disposto a riprendere il contratto alle stesse condizioni. Il Tribunale federale ha precisato (cfr. BGE 117 II 198) che il conduttore deve proporre almeno un candidato serio e idoneo, che il locatore non può rifiutare senza giustificato motivo. Se il locatore accetta il nuovo conduttore, il contratto si trasferisce a quest'ultimo e il conduttore originario è esonerato da qualsiasi ulteriore obbligo, compreso quello di pagare i canoni futuri. Qualora il locatore rifiuti senza ragione valida un candidato oggettivamente adatto, il conduttore può comunque essere liberato dalla sua obbligazione, poiché il rifiuto ingiustificato costituisce una violazione del principio della buona fede (art. 2 CC).",
+      "draft_length": 869,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 1,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 0,
+        "grounding_meta": {
+          "checked": 0,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "case",
+            "citation": "BGE 117 II 198",
+            "position": 268,
+            "guessed_decision_id": "bge_BGE_117_II_198",
+            "problem": "decision_not_in_corpus",
+            "suggestion": "This reference doesn't resolve to a known decision. Call `cite` to find close matches or drop the citation."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers key elements: art.264 CO, solvible replacement tenant, same conditions, unjustified refusal frees tenant. Minor omissions on cpv.3 savings deduction, but core conclusion matches.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims (art. 264 CO, BGE 117 II 198, art. 2 CC) lack any source support."
+      },
+      "timing": {
+        "generate_s": 6.4,
+        "attest_s": 0.0
+      }
+    },
+    {
+      "id": "q-018",
+      "language": "de",
+      "claim_type": "elements_of_norm",
+      "difficulty": "advanced",
+      "draft": "Nach Art. 28 Abs. 1 IVG besteht ein Anspruch auf eine Invalidenrente, wenn die versicherte Person während mindestens drei Jahren Beiträge geleistet hat (Mindestbeitragsdauer), infolge Invalidität in ihrer Erwerbsfähigkeit oder in der Fähigkeit, sich im Aufgabenbereich zu betätigen, voraussichtlich dauerhaft oder längere Zeit erheblich eingeschränkt ist und einen Invaliditätsgrad von mindestens 40 % aufweist. Die Rente wird nach dem Invaliditätsgrad abgestuft: Ab 40 % besteht Anspruch auf eine Viertelsrente, ab 50 % auf eine halbe Rente, ab 60 % auf eine Dreiviertelsrente und ab 70 % auf eine ganze Rente (Art. 28 Abs. 2 IVG). Die Höhe der Rente richtet sich nach dem massgebenden durchschnittlichen Jahreseinkommen und den Beitragsjahren gemäss den Bestimmungen des AHVG, die sinngemäss anwendbar sind (Art. 37 IVG), wobei das Bundesgericht in ständiger Rechtsprechung – etwa in BGE 130 V 343 – die Grundsätze zur Invaliditätsbemessung, insbesondere den Einkommensvergleich nach Art. 16 ATSG, präzisiert hat.",
+      "draft_length": 1015,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "BGE 130 V 343",
+            "position": 886,
+            "problem": "claim_no_by_source",
+            "claim": "Höhe der Rente richtet sich nach dem massgebenden durchschnittlichen Jahreseinkommen und den Beitragsjahren gemäss den Bestimmungen des AHVG, die sinngemäss anwendbar sind (Art. 37 IVG), wobei das Bundesgericht in ständiger Rechtsprechung – etwa in",
+            "supports": "no",
+            "confidence": 0.85,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text covers ATSG concepts (incapacity, invalidity, income comparison, revision) but says nothing about pension amount, average annual income, or contribution ye",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": false,
+        "c_reasoning": "Answer misses 1-year incapacity requirement, wrongly states 3-year contribution period, and uses old stepped system instead of 2022 linear scale.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about IVG, ATSG, BGE 130 V 343 are unverifiable."
+      },
+      "timing": {
+        "generate_s": 9.2,
+        "attest_s": 2.5
+      }
+    },
+    {
+      "id": "q-019",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Nach der bundesgerichtlichen Rechtsprechung setzt der Vertrauensschutz aufgrund einer unrichtigen behördlichen Auskunft gemäss Art. 9 BV kumulativ voraus, dass die Behörde in einer konkreten Situation gehandelt und eine vorbehaltlose Auskunft erteilt hat, dass die auskunftserteilende Behörde zuständig war oder der Bürger sie vernünftigerweise als zuständig betrachten durfte, dass der Bürger die Unrichtigkeit der Auskunft nicht kannte und auch nicht hätte kennen müssen, dass er im Vertrauen auf die Auskunft eine Disposition getroffen hat, die er nicht ohne Nachteil rückgängig machen kann, und dass die einschlägige Rechtslage seit der Auskunftserteilung keine Änderung erfahren hat (vgl. statt vieler BGE 131 II 627 E. 6.1).\n\nBGE 137 I 69 konkretisiert diese Voraussetzungen namentlich in Bezug auf das Erfordernis der Vertrauensbetätigung und der Kausalität zwischen Auskunft und Disposition: Das Bundesgericht hält dort fest, dass der Betroffene darlegen muss, dass er gerade wegen der behördlichen Auskunft eine bestimmte Handlung vorgenommen oder unterlassen hat, und dass zwischen der Auskunft und dem eingetretenen Nachteil ein hinreichend enger Kausalzusammenhang bestehen muss. Zugleich betont das Gericht in diesem Entscheid, dass das Interesse an der richtigen Rechtsanwendung das Vertrauensinteresse des Bürgers überwiegen kann, wenn die Auskunft offensichtlich gesetzwidrig war oder wenn gewichtige öffentliche Interessen entgegenstehen, was die Schutzwirkung entsprechend begrenzt.",
+      "draft_length": 1500,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 2,
+        "citations_ok": 2,
+        "grounding_meta": {
+          "checked": 2,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers all 6 elements (competence, unconditional advice, ignorance of error, disposition, unchanged law, public interest balance) and correctly references BGE 137 I 69, though with slight frami",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about BGE 131 II 627, BGE 137 I 69, and Art. 9 BV conditions are unverifiable."
+      },
+      "timing": {
+        "generate_s": 11.0,
+        "attest_s": 3.5
+      }
+    },
+    {
+      "id": "q-020",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Nach Art. 35 Abs. 1 VwVG müssen schriftliche Verfügungen als solche bezeichnet werden, begründet sein und eine Rechtsmittelbelehrung enthalten. Die Begründungspflicht verlangt, dass die Behörde die wesentlichen Überlegungen darlegt, von denen sie sich leiten liess, damit die betroffene Person die Verfügung sachgerecht anfechten kann; dies folgt zudem aus dem verfassungsrechtlichen Anspruch auf rechtliches Gehör gemäss Art. 29 Abs. 2 BV.\n\nEin Begründungsmangel stellt grundsätzlich eine Verletzung des rechtlichen Gehörs dar und führt zur Aufhebung der Verfügung. Nach der bundesgerichtlichen Rechtsprechung, wie sie in BGE 132 V 387 präzisiert wird, kann eine ungenügende Begründung im Beschwerdeverfahren jedoch geheilt werden, wenn die Rechtsmittelbehörde über dieselbe Kognition verfügt wie die Vorinstanz und die betroffene Person Gelegenheit hatte, sich im Beschwerdeverfahren vollständig zu äussern, sodass ihr durch die Heilung kein Nachteil entsteht. Voraussetzung ist zudem, dass es sich um einen nicht allzu schwerwiegenden Mangel handelt; bei besonders gravierenden Verletzungen – etwa wenn eine Begründung gänzlich fehlt und die betroffene Person dadurch in ihrer Rechtsverteidigung erheblich beeinträchtigt wurde – scheidet eine Heilung im Beschwerdeverfahren aus und die Sache ist zur Neubeurteilung an die Vorinstanz zurückzuweisen.",
+      "draft_length": 1351,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers Art.35 VwVG, Art.29 BV, BGE 132 V 387 healing conditions (same cognition, no disadvantage, belated reasoning). Extra detail on severity doesn't contradict reference.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about VwVG Art.35, BV Art.29, BGE 132 V 387, and related legal principles are unverifiable."
+      },
+      "timing": {
+        "generate_s": 10.2,
+        "attest_s": 2.1
+      }
+    },
+    {
+      "id": "q-021",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Im Schweizer Verkehrsrecht richtet sich der Anspruch naher Angehöriger auf Ersatz ihres eigenen Schadens (sog. Reflexschaden oder mittelbarer Schaden) primär nach Art. 45 Abs. 3 OR (Tötungsfall: Ersatz der Kosten sowie des entgangenen Unterhalts) und Art. 46 OR sowie nach den Haftungsgrundlagen des SVG, namentlich Art. 58 SVG (Halterhaftung). Der Angehörigenschaden ist kein abgeleiteter, sondern ein eigener Schaden des Angehörigen, setzt aber voraus, dass der Geschädigte getötet oder in seiner Erwerbsfähigkeit erheblich beeinträchtigt wurde, dass ein Unterhaltsanspruch oder eine tatsächlich erbrachte Unterhaltsleistung bestanden hat und dass dem Angehörigen durch das schädigende Ereignis ein wirtschaftlich nachweisbarer Nachteil entstanden ist.\n\nIn BGE 142 III 433 hat das Bundesgericht präzisiert, dass für den Unterhaltsschaden eines Angehörigen nach Art. 45 Abs. 3 OR nicht bloss ein rechtlicher Unterhaltsanspruch erforderlich ist, sondern auch eine rein faktisch erbrachte Unterstützung genügen kann, sofern diese auf einer gewissen Regelmässigkeit und Dauerhaftigkeit beruht. Zudem betonte das Gericht, dass der Schaden konkret zu berechnen ist und hypothetische Entwicklungen – etwa die künftige Erwerbssituation des Getöteten – nach dem Beweismass der überwiegenden Wahrscheinlichkeit festzustellen sind. Damit wurden die Anforderungen an den Nachweis des Kausalzusammenhangs zwischen dem Unfalltod und dem behaupteten Unterhaltsausfall des Angehörigen klarer konturiert.",
+      "draft_length": 1489,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "BGE 142 III 433",
+            "position": 759,
+            "problem": "claim_unrelated_by_source",
+            "claim": "hat das Bundesgericht präzisiert, dass für den Unterhaltsschaden eines Angehörigen nach Art. 45 Abs. 3 OR nicht bloss ein rechtlicher Unterhaltsanspruch erforderlich ist, sondern auch eine rein faktisch erbrachte Unterstützung genügen kann, sofern diese auf einer gewissen Regelmässigkeit und Dauerhaftigkeit beruht.",
+            "supports": "unrelated",
+            "confidence": 0.95,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text concerns SVG liability and adequate causation for a husband's overload damage; no mention of Art. 45 Abs. 3 OR or factual support sufficiency.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": false,
+        "c_reasoning": "Answer focuses on Art.45 Abs.3 OR maintenance damage; misses Schockschaden, adäquate Kausalität, and abgrenzung zur psychischen Beeinträchtigung central to reference.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about Swiss law and BGE 142 III 433 are unverifiable."
+      },
+      "timing": {
+        "generate_s": 10.8,
+        "attest_s": 2.5
+      }
+    },
+    {
+      "id": "q-022",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Bei der Genugtuung nach Art. 47 OR hat das Gericht nach freiem Ermessen zu entscheiden, wobei es insbesondere die Schwere der Verletzung, das Ausmass des Verschuldens des Schädigers, die Intensität und Dauer des Leidens der geschädigten Person sowie allfälliges Selbstverschulden des Opfers zu berücksichtigen hat. Weitere anerkannte Bemessungsfaktoren sind die wirtschaftlichen Verhältnisse beider Parteien, obwohl diesen nach neuerer Praxis nur noch untergeordnete Bedeutung zukommt, sowie die Genugtuungsfunktion der Leistung, die sowohl Ausgleichs- als auch Sühnezwecke verfolgt.\n\nIn BGE 141 III 97 hat das Bundesgericht klargestellt, dass das Prozessverhalten des Schädigers – namentlich ein rücksichtsloses, kränkendes oder das Leiden des Opfers vertiefendes Vorgehen im Verfahren – als eigenständiger Bemessungsfaktor die Genugtuungssumme erhöhen kann. Das Gericht hielt fest, dass ein solches Verhalten die seelische Unbill der geschädigten Person zusätzlich verstärkt und damit unmittelbar in die Bemessung der Genugtuung einfliessen darf, sofern es über das normale Prozessieren hinausgeht und eine eigenständige Beeinträchtigung bewirkt.",
+      "draft_length": 1148,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "BGE 141 III 97",
+            "position": 588,
+            "problem": "claim_contradicts_by_source",
+            "claim": "hat das Bundesgericht klargestellt, dass das Prozessverhalten des Schädigers – namentlich ein rücksichtsloses, kränkendes oder das Leiden des Opfers vertiefendes Vorgehen im Verfahren – als eigenständiger Bemessungsfaktor die Genugtuungssumme erhöhen kann.",
+            "supports": "contradicts",
+            "confidence": 0.99,
+            "checked_text_source": "Regeste",
+            "reasoning": "The text explicitly states that procedural conduct of the tortfeasor/insurer is NOT to be considered when fixing Genugtuung under Art. 47 OR.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers all load-bearing elements: Art.47 OR factors, BGE 141 III 97 on procedural conduct increasing award, and immaterial damage focus.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims including BGE 141 III 97 reference are unverifiable and thus ungrounded."
+      },
+      "timing": {
+        "generate_s": 8.9,
+        "attest_s": 2.1
+      }
+    },
+    {
+      "id": "q-023",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Nach Art. 717 Abs. 1 OR müssen die Mitglieder des Verwaltungsrats und – soweit anwendbar – der Geschäftsleitung ihre Aufgaben mit aller Sorgfalt erfüllen und die Interessen der Gesellschaft in guten Treuen wahren; dazu gehören insbesondere das Verbot der Interessenkollision, die Pflicht zur Verschwiegenheit sowie das Gebot, Geschäftschancen der Gesellschaft nicht für eigene Zwecke auszunutzen. Diese aktienrechtliche Treuepflicht gilt als organschaftliche Pflicht und richtet sich unmittelbar an das Organ als solches, unabhängig davon, ob daneben ein Arbeitsvertrag besteht. Die arbeitsrechtliche Treuepflicht nach Art. 321a OR verpflichtet den Arbeitnehmer hingegen zur Wahrung der berechtigten Interessen des Arbeitgebers im Rahmen des Arbeitsverhältnisses, etwa durch Unterlassung von Konkurrenztätigkeit und Geheimhaltung. Das Bundesgericht hat in BGE 130 III 213 klargestellt, dass bei einem Geschäftsleitungsmitglied, das gleichzeitig Arbeitnehmer ist, beide Pflichtenkreise nebeneinander bestehen und sich überschneiden können, wobei die organschaftliche Pflicht nach Art. 717 OR in der Regel strenger ist und weitergeht als die arbeitsrechtliche Mindestverpflichtung; eine Verletzung der organschaftlichen Treuepflicht begründet gesellschaftsrechtliche Verantwortlichkeitsansprüche nach Art. 754 OR, während eine Verletzung von Art. 321a OR primär arbeitsrechtliche Konsequenzen wie fristlose Kündigung oder Schadenersatzansprüche nach Art. 337 ff. OR zeitigt.",
+      "draft_length": 1472,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "BGE 130 III 213",
+            "position": 856,
+            "problem": "claim_unrelated_by_source",
+            "claim": "Das Bundesgericht hat in",
+            "supports": "unrelated",
+            "confidence": 0.85,
+            "checked_text_source": "Regeste",
+            "reasoning": "The claim is incomplete (cut off), so no specific claim can be evaluated against the text.",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers Art.717 OR, BGE 130 III 213, cumulative duties, stricter corporate duty, conflict of interest, and Art.754 OR liability—all load-bearing elements.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims are ungrounded as there is no source text to support any assertion."
+      },
+      "timing": {
+        "generate_s": 10.5,
+        "attest_s": 2.0
+      }
+    },
+    {
+      "id": "q-024",
+      "language": "fr",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Selon l'art. 221 al. 2 CPP, la détention provisoire peut être ordonnée lorsqu'il y a sérieusement lieu de craindre qu'une personne mette à exécution une menace qu'elle a proférée de commettre un crime grave. Cette disposition exige ainsi la réunion de trois conditions cumulatives : l'existence d'une menace concrète et sérieuse, le fait que cette menace porte sur un crime grave (notamment une infraction contre la vie, l'intégrité corporelle ou la liberté sexuelle), et un risque réel — apprécié sur la base d'indices concrets — que l'auteur passe effectivement à l'acte.\n\nL'ATF 137 IV 122 a précisé la portée de ce motif de détention en soulignant que le risque de passage à l'acte (Ausführungsgefahr) constitue un motif autonome par rapport au risque de récidive au sens de l'art. 221 al. 1 let. c CPP. Le Tribunal fédéral y a jugé que ce motif vise spécifiquement la situation dans laquelle l'infraction n'a pas encore été commise mais se profile de manière crédible : il ne s'agit donc pas d'un risque de réitération d'un comportement passé, mais d'une première commission imminente. Cette distinction est importante sur le plan pratique, car les critères d'appréciation diffèrent : les autorités doivent évaluer la crédibilité et le caractère sérieux des menaces proférées ainsi que la personnalité de l'intéressé, sans nécessairement pouvoir se fonder sur des antécédents criminels. Le Tribunal fédéral a en outre rappelé que, conformément au principe de proportionnalité ancré à l'art. 197 CPP, la détention fondée sur ce motif ne se justifie que si des mesures moins incisives s'avèrent insuffisantes pour écarter le danger.",
+      "draft_length": 1634,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "ATF 137 IV 122",
+            "position": 577,
+            "problem": "claim_no_by_source",
+            "claim": "a précisé la portée de ce motif de détention en soulignant que le risque de passage à l'acte (Ausführungsgefahr) constitue un motif autonome par rapport au risque de récidive au sens de l'art. 221 al. 1 let. c CPP.",
+            "supports": "no",
+            "confidence": 0.82,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text addresses Art.221 al.2 CPP (Ausführungsgefahr) as separate from collusion risk, but never contrasts it with Art.221 al.1 let.c (récidive) as autonomous gro",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers the key elements: art.221 al.2 CPP conditions, ATF 137 IV 122 on concrete risk basis, and proportionality/substitution measures preference.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about art. 221 CPP and ATF 137 IV 122 are unverifiable."
+      },
+      "timing": {
+        "generate_s": 11.2,
+        "attest_s": 2.7
+      }
+    },
+    {
+      "id": "q-025",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "In BGE 144 III 481 hat das Bundesgericht die Methodik zur Berechnung des Betreuungsunterhalts nach Art. 285 ZGB grundlegend geklärt. Es entschied, dass der Betreuungsunterhalt nach der sogenannten «Lebenshaltungskosten-Methode» («méthode des frais de subsistance» bzw. konkrete Bedarfsberechnung) zu ermitteln ist: Massgebend ist, welchen Bedarf der betreuende Elternteil hat, soweit dieser durch die Kinderbetreuung an einer Erwerbstätigkeit gehindert wird, d.h. es wird der hypothetische Einkommensausfall infolge der Betreuungsarbeit berechnet und dieser dem Kind als Betreuungsunterhalt zugerechnet. Das Bundesgericht verwarf damit andere diskutierte Ansätze und legte verbindlich fest, dass der Betreuungsunterhalt den Bedarf des betreuenden Elternteils abdeckt, der ohne die Betreuungsaufgabe durch eigenes Einkommen gedeckt werden könnte («coût indirect de la prise en charge»). Diese Methode gilt seither als verbindliche Grundlage für Gerichte bei der Festsetzung des Betreuungsunterhalts und wurde in der Folge durch BGE 147 III 265 ergänzt und präzisiert, namentlich hinsichtlich der Berechnungsreihenfolge und des Vorrangs bestimmter Unterhaltsansprüche.",
+      "draft_length": 1166,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 1,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 1,
+        "citations_found": 2,
+        "citations_ok": 2,
+        "grounding_meta": {
+          "checked": 2,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "quote",
+            "citation": "«coût indirect de la prise en charge»",
+            "position": 846,
+            "problem": "quote_not_in_cited_sources",
+            "quote_length": 35,
+            "suggestion": "This quoted text was not found verbatim in any of the decisions cited in the draft. Either (a) re-fetch the exact text via get_erwaegung / get_regeste / get_law and paste verbatim, or (b) drop the quotation marks and paraphrase. Hallucinated quotations are the most publication-damaging error class for legal AI."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": false,
+        "c_reasoning": "Answer describes a cost-of-living/indirect-cost method, not the two-stage method with surplus distribution mandated by BGE 144 III 481.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about BGE 144 III 481 and BGE 147 III 265 are unverifiable and ungrounded."
+      },
+      "timing": {
+        "generate_s": 8.1,
+        "attest_s": 3.5
+      }
+    },
+    {
+      "id": "q-026",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Der Invaliditätsgrad nach Art. 16 ATSG wird durch einen Einkommensvergleich ermittelt: Das trotz Gesundheitsschaden zumutbarerweise erzielbare Einkommen (Invalideneinkommen) wird dem Einkommen gegenübergestellt, das die versicherte Person ohne Invalidität erzielen könnte (Valideneinkommen), und die Differenz ergibt – ausgedrückt in Prozent des Valideneinkommens – den Invaliditätsgrad. In BGE 130 V 343 hat das Bundesgericht grundlegend festgehalten, dass bei der Festsetzung des Valideneinkommens auf den hypothetischen Lohn abzustellen ist, den die versicherte Person im Gesundheitsfall im massgebenden Zeitpunkt tatsächlich erzielen würde, wobei auf die konkrete berufliche Situation vor Eintritt des Gesundheitsschadens abzustellen ist. Für das Invalideneinkommen sind in erster Linie die tatsächlich erzielten Einkünfte massgebend; fehlen solche, können Tabellenlöhne (namentlich die Lohnstrukturerhebung des Bundesamts für Statistik, LSE) herangezogen werden, gegebenenfalls mit einem leidensbedingten Abzug von bis zu 25 Prozent. Das Urteil konkretisiert damit die methodischen Grundsätze, die seither die gesamte Invaliditätsbemessung im Sozialversicherungsrecht prägen.",
+      "draft_length": 1180,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers Art.16 ATSG income comparison, BGE 130 V 343 principles, valid/invalid income concepts. Misses 40% threshold but core elements match.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about Art.16 ATSG, BGE 130 V 343, and methodology are unverifiable."
+      },
+      "timing": {
+        "generate_s": 9.5,
+        "attest_s": 1.9
+      }
+    },
+    {
+      "id": "q-027",
+      "language": "fr",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "intermediate",
+      "draft": "Selon l'art. 257d CO, le bailleur peut résilier le contrat de bail à loyer lorsque le locataire, après réception de la chose, est en retard dans le paiement du loyer ou des frais accessoires. Le bailleur doit d'abord lui adresser une mise en demeure écrite en lui impartissant un délai de paiement de 30 jours au minimum (10 jours pour les baux d'habitations ou locaux commerciaux selon l'al. 1, respectivement 30 jours pour les autres baux), en l'avertissant expressément qu'à défaut de paiement dans ce délai, le bail sera résilié. Si le locataire ne s'acquitte pas dans le délai imparti, le bailleur peut résilier le bail avec effet immédiat pour les baux d'habitations ou locaux commerciaux, en respectant un délai de congé minimal de 30 jours pour la fin d'un mois (art. 257d al. 2 CO). Dans l'ATF 119 II 147, le Tribunal fédéral a précisé que la mise en demeure doit indiquer de manière claire et non équivoque le montant dû ainsi que la menace de résiliation, et que ces exigences formelles sont des conditions de validité strictes : une mise en demeure imprécise quant au montant ou ne mentionnant pas expressément la conséquence résolutoire est insuffisante pour fonder une résiliation valable.",
+      "draft_length": 1203,
+      "attest": {
+        "ok": false,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 1
+        },
+        "issues_count": 1,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": [
+          {
+            "category": "grounding",
+            "citation": "ATF 119 II 147",
+            "position": 799,
+            "problem": "claim_no_by_source",
+            "claim": "le Tribunal fédéral a précisé que la mise en demeure doit indiquer de manière claire et non équivoque le montant dû ainsi que la menace de résiliation, et que ces exigences formelles sont des conditions de validité strictes : une mise en demeure imprécise quant au montant ou ne mentionnant pas expressément la conséquence résolutoire est insuffisante pour fonder une résiliation valable.",
+            "supports": "no",
+            "confidence": 0.85,
+            "checked_text_source": "Regeste",
+            "reasoning": "Text addresses timing of notice/termination under Art.257d CO but says nothing about formal requirements re: amount or threat of termination being strict validi",
+            "suggestion": "An independent Sonnet judge read the cited text and concluded it does not support the claim attached to it. Either (a) replace the citation with one whose text actually supports the proposition, (b) qualify the claim to match what the cited text says, or (c) drop the proposition. This is the 'reasoning error' class from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+          }
+        ]
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers art.257d CO requirements, written notice, 30-day delay, ATF 119 II 147 precision requirements (amount, deadline, threat). Minor inaccuracies on delay periods don't omit load-bearing elem",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about art. 257d CO and ATF 119 II 147 are unverifiable and thus ungrounded."
+      },
+      "timing": {
+        "generate_s": 7.7,
+        "attest_s": 2.4
+      }
+    },
+    {
+      "id": "q-028",
+      "language": "it",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "In DTF 126 III 113 il Tribunale federale ha chiarito che il rapporto tra l'utente di un impianto di risalita e il gestore è di natura contrattuale (contratto di trasporto), sicché la responsabilità primaria si fonda sull'art. 97 CO: il gestore risponde del danno causato dall'inadempimento o dall'inesatta esecuzione della prestazione, con inversione dell'onere della prova a suo carico. Il Tribunale federale ha tuttavia ammesso il concorso (cumul de responsabilités) tra la responsabilità contrattuale ex art. 97 CO e quella del proprietario di un'opera ex art. 58 CO, riconoscendo che quest'ultima norma si applica in parallelo quando il danno deriva da un difetto dell'opera (l'impianto o le sue infrastrutture), poiché la responsabilità dell'opera è di natura oggettiva e il danneggiato può fondarsi su entrambe le basi giuridiche cumulativamente. La responsabilità aquiliana ex art. 41 CO rimane invece sussidiaria e trova applicazione solo laddove manchi un rapporto contrattuale valido o per pretese di terzi estranei al contratto di trasporto. Ne consegue che l'utente infortunato beneficia di una tutela rafforzata potendo invocare sia l'art. 97 CO sia l'art. 58 CO, sfruttando i regimi probatori più favorevoli offerti da ciascuna disposizione.",
+      "draft_length": 1255,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": false,
+        "c_reasoning": "Answer wrongly states art. 41 CO is subsidiary/inapplicable; reference requires all three actions (41, 58, 97 CO) to concur freely.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about DTF 126 III 113 and legal rules are unverifiable."
+      },
+      "timing": {
+        "generate_s": 8.8,
+        "attest_s": 2.2
+      }
+    },
+    {
+      "id": "q-029",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "In BGE 138 II 346 hat das Bundesgericht klargestellt, dass die Veröffentlichung von Personenbildnissen im Internet – konkret durch Google Street View – einen Eingriff in die Persönlichkeit gemäss Art. 28 ZGB darstellt, der nur dann gerechtfertigt ist, wenn ein überwiegendes privates oder öffentliches Interesse besteht oder die betroffene Person eingewilligt hat. Als zentralen Massstab verlangte das Gericht, dass technische Schutzmassnahmen (insbesondere die Verpixelung von Gesichtern und Fahrzeugnummernschildern) mit einer Erkennungsrate vorgenommen werden müssen, die einen wirksamen Schutz gewährleistet; eine Fehlerquote von 1 % wurde als nicht ausreichend erachtet, weshalb Google verpflichtet wurde, die Anonymisierung zu verbessern und eine effektive Möglichkeit zur Meldung unzureichend verpixelter Aufnahmen bereitzustellen. Das Bundesgericht verknüpfte dabei den Persönlichkeitsschutz des ZGB mit den datenschutzrechtlichen Anforderungen des DSG (namentlich den Grundsätzen der Verhältnismässigkeit und der Zweckbindung gemäss Art. 4 DSG a.F.) und betonte, dass bei Massenbearbeitungen von Personendaten durch private Anbieter ein besonders strenger Massstab an die technischen und organisatorischen Schutzvorkehrungen anzulegen ist, da das Gefährdungspotenzial für eine Vielzahl von Personen erheblich ist.",
+      "draft_length": 1322,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": true,
+        "c_reasoning": "Answer covers Art.28 ZGB, pixelation requirement, effective objection/reporting mechanism, DSG oversight, and landmark status—all core reference elements.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about BGE 138 II 346 are unverifiable and thus ungrounded."
+      },
+      "timing": {
+        "generate_s": 10.0,
+        "attest_s": 8.6
+      }
+    },
+    {
+      "id": "q-030",
+      "language": "de",
+      "claim_type": "doctrine_from_bge",
+      "difficulty": "advanced",
+      "draft": "Nach Art. 174 Abs. 2 SchKG kann der Schuldner im Konkursaufschieberverfahren (Beschwerde gegen den Konkurseröffnungsentscheid) den Konkurs abwenden, indem er entweder die Schuld, für die er betrieben wird, vollständig tilgt (einschliesslich Zinsen und Kosten), oder die Forderung ernsthaft und substantiiert bestreitet, oder ausreichende Sicherheiten für die Forderung leistet. Diese drei Hindernungsgründe sind abschliessend und müssen kumulativ zur sonstigen Voraussetzung der fehlenden Überschuldung treten, sofern der Konkurs nicht auf dem Weg des ordentlichen Konkursverfahrens eröffnet wurde.\n\nIn BGE 136 III 294 hat das Bundesgericht präzisiert, dass sämtliche Konkurshinderungsgründe nach Art. 174 Abs. 2 SchKG bis zum Ablauf der zwanzigtägigen Beschwerdefrist vollständig verwirklicht sein müssen und nicht erst im Laufe des Beschwerdeverfahrens nachgereicht werden können. Massgebend ist damit der Zeitpunkt des Fristablaufs: Was bis dahin nicht eingetreten ist – etwa die vollständige Zahlung oder die Sicherheitsleistung –, kann den Konkurs nicht mehr verhindern. Diese strikte zeitliche Schranke dient der Rechtssicherheit und dem Schutz der Gläubiger vor Verschleppungsmanövern.",
+      "draft_length": 1192,
+      "attest": {
+        "ok": true,
+        "issues_by_category": {
+          "case": 0,
+          "statute": 0,
+          "quote": 0,
+          "date": 0,
+          "grounding": 0
+        },
+        "issues_count": 0,
+        "citations_found": 1,
+        "citations_ok": 1,
+        "grounding_meta": {
+          "checked": 1,
+          "skipped_no_claim": 0,
+          "skipped_no_source": 0,
+          "truncated": false,
+          "available": true,
+          "requested": true
+        },
+        "issues": []
+      },
+      "judges": {
+        "c_eli": false,
+        "c_reasoning": "Answer lists wrong grounds (tilgung, bestreitung, sicherheitsleistung) vs. reference (tilgung, hinterlage, verzicht, nachlassstundung); also states 20-day instead of 10-day period.",
+        "g_eli": false,
+        "g_reasoning": "No sources provided; all factual claims about Art. 174 SchKG and BGE 136 III 294 are unverifiable and thus ungrounded."
+      },
+      "timing": {
+        "generate_s": 9.2,
+        "attest_s": 2.3
+      }
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "n_questions": 30,
+  "n_correct": 24,
+  "n_wrong": 6,
+  "total_citations_emitted": 37,
+  "total_citations_corpus_valid": 36,
+  "citation_validity_rate": 97.3,
+  "ablation_rows": [
+    {
+      "config": "C0",
+      "label": "∅ (no rails)",
+      "rails": [],
+      "flagged_wrong": 0,
+      "flagged_correct": 0,
+      "flagged_total": 0,
+      "tpr": 0.0,
+      "fpr": 0.0,
+      "net": 0.0
+    },
+    {
+      "config": "C1",
+      "label": "+ case",
+      "rails": [
+        "case"
+      ],
+      "flagged_wrong": 0,
+      "flagged_correct": 1,
+      "flagged_total": 1,
+      "tpr": 0.0,
+      "fpr": 4.2,
+      "net": -4.2
+    },
+    {
+      "config": "C2",
+      "label": "+ statute",
+      "rails": [
+        "case",
+        "statute"
+      ],
+      "flagged_wrong": 0,
+      "flagged_correct": 3,
+      "flagged_total": 3,
+      "tpr": 0.0,
+      "fpr": 12.5,
+      "net": -12.5
+    },
+    {
+      "config": "C3",
+      "label": "+ quote",
+      "rails": [
+        "case",
+        "quote",
+        "statute"
+      ],
+      "flagged_wrong": 1,
+      "flagged_correct": 3,
+      "flagged_total": 4,
+      "tpr": 16.7,
+      "fpr": 12.5,
+      "net": 4.2
+    },
+    {
+      "config": "C4",
+      "label": "+ date  (all 4 deterministic)",
+      "rails": [
+        "case",
+        "date",
+        "quote",
+        "statute"
+      ],
+      "flagged_wrong": 1,
+      "flagged_correct": 3,
+      "flagged_total": 4,
+      "tpr": 16.7,
+      "fpr": 12.5,
+      "net": 4.2
+    },
+    {
+      "config": "C5",
+      "label": "+ grounding  (full 5-rail audit)",
+      "rails": [
+        "case",
+        "date",
+        "grounding",
+        "quote",
+        "statute"
+      ],
+      "flagged_wrong": 4,
+      "flagged_correct": 12,
+      "flagged_total": 16,
+      "tpr": 66.7,
+      "fpr": 50.0,
+      "net": 16.7
+    }
+  ],
+  "rail_solo_stats": {
+    "case": {
+      "fired_n": 1,
+      "fired_on_wrong": 0,
+      "fired_on_correct": 1,
+      "tpr": 0.0,
+      "fpr": 4.2
+    },
+    "statute": {
+      "fired_n": 2,
+      "fired_on_wrong": 0,
+      "fired_on_correct": 2,
+      "tpr": 0.0,
+      "fpr": 8.3
+    },
+    "quote": {
+      "fired_n": 1,
+      "fired_on_wrong": 1,
+      "fired_on_correct": 0,
+      "tpr": 16.7,
+      "fpr": 0.0
+    },
+    "date": {
+      "fired_n": 0,
+      "fired_on_wrong": 0,
+      "fired_on_correct": 0,
+      "tpr": 0.0,
+      "fpr": 0.0
+    },
+    "grounding": {
+      "fired_n": 13,
+      "fired_on_wrong": 3,
+      "fired_on_correct": 10,
+      "tpr": 50.0,
+      "fpr": 41.7
+    }
+  },
+  "by_language": {
+    "de": {
+      "n": 18,
+      "wrong": 4,
+      "fired": 8
+    },
+    "fr": {
+      "n": 8,
+      "wrong": 1,
+      "fired": 7
+    },
+    "it": {
+      "n": 4,
+      "wrong": 1,
+      "fired": 1
+    }
+  },
+  "issue_type_counts": {
+    "case": 1,
+    "statute": 2,
+    "quote": 1,
+    "date": 0,
+    "grounding": 13
+  }
+}
