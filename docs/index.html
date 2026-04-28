@@ -1445,45 +1445,52 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 /* ── Verification banner — top-of-page brand-promise strip ────────────
    Persistent (not dismissible). Sits between toolbar and main; clicks
    through to #verification.  */
-.verify-banner {
-  --vb-bg:  #ecfdf5;        /* soft mint                         */
-  --vb-brd: #a7f3d0;        /* mint border                        */
-  --vb-fg:  #047857;        /* deep evergreen                    */
-  display: flex;
+/* Verification credential — quiet pill in the toolbar.  Replaces the
+   2026-04-28 strip-banner: same #verification target, much less visual
+   noise.  Reads as a quality signal (like an SSL padlock) rather than
+   a marketing claim, and unblocks the hero's first impression.  */
+:root {
+  --vb-bg:  #ecfdf5;
+  --vb-brd: #a7f3d0;
+  --vb-fg:  #047857;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --vb-bg:  rgba(4, 120, 87, 0.10);
+    --vb-brd: rgba(4, 120, 87, 0.32);
+    --vb-fg:  #6ee7b7;
+  }
+}
+.toolbar-credential {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 9px 16px;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  margin-left: 14px;
   background: var(--vb-bg);
-  border-bottom: 1px solid var(--vb-brd);
+  border: 1px solid var(--vb-brd);
+  border-radius: 999px;
   color: var(--vb-fg);
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 500;
+  letter-spacing: 0.005em;
   text-decoration: none;
-  letter-spacing: -0.005em;
-  text-align: center;
-  transition: background 160ms var(--ease, ease);
+  white-space: nowrap;
+  transition: background 160ms var(--ease, ease),
+              color 160ms var(--ease, ease);
 }
-.verify-banner:hover {
-  background: color-mix(in srgb, var(--vb-bg) 80%, var(--vb-fg) 8%);
+.toolbar-credential:hover {
+  background: color-mix(in srgb, var(--vb-bg) 60%, var(--vb-fg) 12%);
   text-decoration: none;
 }
-.verify-banner-mark {
-  display: inline-block;
+.toolbar-credential-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--vb-fg);
   flex: 0 0 auto;
-  font-size: 0; line-height: 0;
 }
-.verify-banner-text { color: var(--vb-fg); }
-.verify-banner-arrow {
-  font-size: 14px;
-  transition: transform 160ms var(--ease, ease);
-}
-.verify-banner:hover .verify-banner-arrow { transform: translateX(3px); }
 @media (max-width: 600px) {
-  .verify-banner { font-size: 12px; padding: 8px 12px; gap: 8px; }
+  .toolbar-credential { font-size: 11px; padding: 3px 8px 3px 6px; margin-left: 8px; }
 }
 
 /* ── Verification section ─────────────────────────────────────────────
@@ -2080,6 +2087,84 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   .intl-lead { font-size: 15px; }
 }
 
+/* Practitioner toolkit — surfaces the export endpoints (.docx / BibTeX
+   / RIS / Atom / REST / bulk download) so users discover them without
+   reading the API docs. Six tiles in a 3×2 grid (desktop) → 2×3
+   (tablet) → 1×6 (mobile). Visual register sits between Connect
+   (technical) and Verification (institutional).  */
+.toolkit-block {
+  padding: clamp(48px, 6vw, 72px) 16px clamp(56px, 7vw, 80px);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.toolkit-intro {
+  font-size: 15px;
+  color: var(--tx2);
+  font-weight: 300;
+  line-height: 1.55;
+  margin: 0 auto 32px;
+  max-width: 640px;
+  text-align: center;
+  text-wrap: balance;
+}
+.toolkit-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.toolkit-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px;
+  background: var(--surf);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--tx);
+  transition: border-color 160ms var(--ease, ease),
+              transform 160ms var(--ease, ease);
+}
+.toolkit-tile:hover {
+  border-color: var(--tx2);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.toolkit-tile-name {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--tx);
+}
+.toolkit-tile-desc {
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--tx2);
+  flex: 1 1 auto;
+}
+.toolkit-tile-desc code {
+  background: var(--bg2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 11.5px;
+  color: var(--tx);
+}
+.toolkit-tile-cta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--vb-fg);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+@media (max-width: 880px) {
+  .toolkit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .toolkit-grid { grid-template-columns: 1fr; gap: 10px; }
+  .toolkit-tile { padding: 18px; }
+}
+
 /* Did you know section — number-forward editorial cards ───────────────── */
 #didyou {
   padding: clamp(48px, 6vw, 72px) 16px;
@@ -2357,16 +2442,15 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
      surface: every Swiss legal practitioner who lands here should see,
      before anything else, that we treat AI hallucination of case
      references as the central problem to solve. -->
-<a class="verify-banner" href="#verification" data-t-aria="banner_verification_aria">
-  <span class="verify-banner-mark" aria-hidden="true">●</span>
-  <span class="verify-banner-text" data-t="banner_verification">How OpenCaseLaw eliminates AI hallucination of case references</span>
-  <span class="verify-banner-arrow" aria-hidden="true">→</span>
-</a>
-
 <nav class="toolbar"><div class="w toolbar-inner">
   <a href="/" class="toolbar-brand" aria-label="opencaselaw.ch — home">
     <span class="brand-mark">+</span>
     <span class="brand-wordmark">opencaselaw.ch</span>
+  </a>
+  <a href="#verification" class="toolbar-credential" data-t-aria="banner_verification_aria"
+     title="How OpenCaseLaw eliminates AI hallucination of case references">
+    <span class="toolbar-credential-dot" aria-hidden="true"></span>
+    <span data-t="banner_verification_short">Verified</span>
   </a>
   <div class="toolbar-center">
     <div class="url-nav" id="url-nav">
@@ -2411,8 +2495,8 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
         <span class="hero-v3-num" id="hero-decisions">968&rsquo;373</span>
         <span class="hero-v3-label" data-t="hero_v3_label">published Swiss court decisions</span>
       </div>
-      <p class="hero-v3-function" data-t="hero_v3_function">Search decisions and statutes. Trace citations and appeal chains. Retrieve Regeste, Erwägungen, commentaries and Materialien.</p>
-      <p class="hero-v3-availability" data-t="hero_v3_availability">Available in Claude, ChatGPT, Cursor, Gemini, Copilot Studio, or via REST API.</p>
+      <p class="hero-v3-function" data-t="hero_v3_function">Every published Swiss court decision, every federal article, every cited authority — accessible to AI in one URL.</p>
+      <p class="hero-v3-availability" data-t="hero_v3_availability"><code>mcp.opencaselaw.ch</code> · works in Claude, ChatGPT, Cursor, Gemini and Copilot Studio · also via REST and bulk download.</p>
       <nav class="hero-v3-ctas" aria-label="Primary actions">
         <a href="#connect" class="hero-v3-link"><span data-t="hero_cta_connect_v3">Connect</span> <span class="hero-v3-arrow">↓</span></a>
         <a href="/entscheide/" class="hero-v3-link"><span data-t="hero_cta_browse_v3">Browse</span> <span class="hero-v3-arrow">→</span></a>
@@ -2714,6 +2798,46 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
     </p>
   </section>
 
+  <!-- ── Practitioner toolkit — surfaces export endpoints (Word / BibTeX /
+       RIS / Atom / REST / bulk download). Each tile links to a real
+       working endpoint or sample artifact so users can test in one click. -->
+  <section class="section toolkit-block" id="toolkit" aria-labelledby="toolkit-heading">
+    <h2 class="section-heading" id="toolkit-heading" data-t="toolkit_heading">Practitioner toolkit</h2>
+    <p class="toolkit-intro" data-t="toolkit_intro">Beyond the AI clients above: every decision is exportable as Word, BibTeX, or RIS. Every court has an Atom feed. The whole corpus is on Hugging Face. Everything CC0.</p>
+    <div class="toolkit-grid">
+      <a class="toolkit-tile" href="https://mcp.opencaselaw.ch/api/decisions/bge_BGE_140_III_86/export.docx">
+        <span class="toolkit-tile-name">Word (.docx)</span>
+        <span class="toolkit-tile-desc" data-t="toolkit_docx">Decision as a Word document — citation, Regeste, structured Erwägungen, ready to paste into a brief.</span>
+        <span class="toolkit-tile-cta" data-t="toolkit_try">Try sample →</span>
+      </a>
+      <a class="toolkit-tile" href="https://mcp.opencaselaw.ch/api/decisions/bge_BGE_140_III_86/export.bib">
+        <span class="toolkit-tile-name">BibTeX</span>
+        <span class="toolkit-tile-desc" data-t="toolkit_bib">Cite-ready <code>@misc</code> entry for LaTeX bibliographies and reference managers.</span>
+        <span class="toolkit-tile-cta" data-t="toolkit_try">Try sample →</span>
+      </a>
+      <a class="toolkit-tile" href="https://mcp.opencaselaw.ch/api/decisions/bge_BGE_140_III_86/export.ris">
+        <span class="toolkit-tile-name">RIS</span>
+        <span class="toolkit-tile-desc" data-t="toolkit_ris">Bibliographic record (TY-CASE) — drop straight into Zotero, EndNote, Mendeley.</span>
+        <span class="toolkit-tile-cta" data-t="toolkit_try">Try sample →</span>
+      </a>
+      <a class="toolkit-tile" href="https://mcp.opencaselaw.ch/api/atom/bger.xml">
+        <span class="toolkit-tile-name">Atom feed</span>
+        <span class="toolkit-tile-desc" data-t="toolkit_atom">Subscribe in any feed reader — newest 50 decisions per court, refreshed daily.</span>
+        <span class="toolkit-tile-cta" data-t="toolkit_subscribe">Subscribe →</span>
+      </a>
+      <a class="toolkit-tile" href="https://mcp.opencaselaw.ch/api/docs">
+        <span class="toolkit-tile-name">REST API</span>
+        <span class="toolkit-tile-desc" data-t="toolkit_rest">Full OpenAPI 3.0.3 spec — search, citations, statutes, exports — usable from any language.</span>
+        <span class="toolkit-tile-cta" data-t="toolkit_open">Open docs →</span>
+      </a>
+      <a class="toolkit-tile" href="https://huggingface.co/datasets/voilaj/swiss-caselaw">
+        <span class="toolkit-tile-name">Bulk download</span>
+        <span class="toolkit-tile-desc" data-t="toolkit_hf">Whole corpus as Parquet (~7 GB) on Hugging Face. Daily refresh, CC0.</span>
+        <span class="toolkit-tile-cta" data-t="toolkit_download">Download →</span>
+      </a>
+    </div>
+  </section>
+
   <!-- ── For international counsel — explicit positioning for non-Swiss firms ── -->
   <section class="section" id="international" aria-labelledby="intl-heading">
     <h2 class="section-heading" id="intl-heading" data-t="intl_heading">For international counsel</h2>
@@ -2994,6 +3118,19 @@ const I18N = {
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
     banner_verification:'Wie OpenCaseLaw Halluzinationen von Fall-Referenzen verhindert',
+    banner_verification_short:'Verifiziert',
+    toolkit_heading:'Werkzeuge für die Praxis',
+    toolkit_intro:'Über die KI-Clients oben hinaus: Jeder Entscheid exportierbar als Word, BibTeX oder RIS. Jedes Gericht mit Atom-Feed. Der gesamte Korpus auf Hugging Face. Alles CC0.',
+    toolkit_docx:'Entscheid als Word-Dokument — Zitation, Regeste, strukturierte Erwägungen, bereit zum Einfügen in einen Schriftsatz.',
+    toolkit_bib:'Zitierbarer <code>@misc</code>-Eintrag für LaTeX-Bibliografien und Literaturverwaltung.',
+    toolkit_ris:'Bibliografischer Datensatz (TY-CASE) — direkt in Zotero, EndNote, Mendeley einlesbar.',
+    toolkit_atom:'In jedem Feed-Reader abonnieren — die 50 neuesten Entscheide pro Gericht, täglich aktualisiert.',
+    toolkit_rest:'Vollständige OpenAPI 3.0.3-Spezifikation — Suche, Zitate, Erlasse, Exporte — aus jeder Sprache nutzbar.',
+    toolkit_hf:'Gesamtkorpus als Parquet (~7 GB) auf Hugging Face. Tägliche Aktualisierung, CC0.',
+    toolkit_try:'Beispiel öffnen →',
+    toolkit_subscribe:'Abonnieren →',
+    toolkit_open:'Doku öffnen →',
+    toolkit_download:'Herunterladen →',
     banner_verification_aria:'Zur Sektion über Verifikation und Vermeidung von KI-Halluzinationen',
     verify_heading:'Verifikation — Halluzinationen von Fall-Referenzen verhindern',
     verify_lead:'Grosse Sprachmodelle halluzinieren. Peer-reviewte Messung (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ergab, dass 58–82&nbsp;% der juristischen Anfragen an Allzweck-LLMs mindestens eine erfundene Quelle enthielten. Eine Folgestudie zu kommerziellen Rechts-RAG-Werkzeugen (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) mass 17–33&nbsp;% — besser, aber immer noch alltäglich. In der Schweizer Rechtspraxis bringt die Zitation einer nicht existierenden oder falsch wiedergegebenen Autorität die Anwältin in disziplinarische Haftung und die Klientschaft um ein richtiges Ergebnis. Das Verständnis dessen, <em>was die KI liefert</em> und <em>was die Quelle ist</em>, ist deshalb keine Höflichkeit — es ist die Voraussetzung jeder verantwortbaren KI-Nutzung in der juristischen Arbeit.',
@@ -3132,8 +3269,8 @@ const I18N = {
     hero_v3_label: 'publizierte Schweizer Gerichtsentscheide',
     hero_v3_asof: 'Stand',
     hero_v3_since: 'seit gestern',
-    hero_v3_function: 'Entscheide und Erlasse durchsuchen · Zitationen und Instanzenzug verfolgen · Regeste, Erwägungen, Kommentare und Materialien abrufen.',
-    hero_v3_availability: 'Verfügbar in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — oder über REST-API.',
+    hero_v3_function: 'Jeder publizierte Schweizer Gerichtsentscheid, jeder Bundesartikel, jede zitierte Autorität — über eine URL für jede KI zugänglich.',
+    hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · funktioniert in Claude, ChatGPT, Cursor, Gemini und Copilot Studio · auch via REST und Bulk-Download.',
     hero_cta_connect_v3: 'Verbinden ↓',
     hero_cta_browse_v3: 'Durchsuchen',
     hero_v3_stamp_decisions: 'Entscheide',
@@ -3257,6 +3394,19 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
     banner_verification:'Comment OpenCaseLaw élimine les hallucinations de références jurisprudentielles par l\'IA',
+    banner_verification_short:'Vérifié',
+    toolkit_heading:'Boîte à outils du praticien',
+    toolkit_intro:'Au-delà des clients IA ci-dessus : chaque décision exportable en Word, BibTeX ou RIS. Chaque tribunal avec un flux Atom. Le corpus entier sur Hugging Face. Le tout en CC0.',
+    toolkit_docx:'Décision en document Word — citation, Regeste, considérants structurés, prêt à coller dans un mémoire.',
+    toolkit_bib:'Entrée <code>@misc</code> citationnable pour les bibliographies LaTeX et les gestionnaires de références.',
+    toolkit_ris:'Notice bibliographique (TY-CASE) — à importer directement dans Zotero, EndNote, Mendeley.',
+    toolkit_atom:'À suivre dans tout lecteur de flux — les 50 décisions les plus récentes par tribunal, rafraîchies quotidiennement.',
+    toolkit_rest:'Spécification OpenAPI 3.0.3 complète — recherche, citations, lois, exports — utilisable depuis tout langage.',
+    toolkit_hf:'Corpus entier en Parquet (~7 Go) sur Hugging Face. Mise à jour quotidienne, CC0.',
+    toolkit_try:'Voir un exemple →',
+    toolkit_subscribe:'S\'abonner →',
+    toolkit_open:'Ouvrir la doc →',
+    toolkit_download:'Télécharger →',
     banner_verification_aria:'Vers la section sur la vérification et l\'élimination des hallucinations de l\'IA',
     verify_heading:'Vérification — éliminer les hallucinations de références par l\'IA',
     verify_lead:'Les grands modèles de langue hallucinent. Une mesure publiée et évaluée par les pairs (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) a montré que 58–82&nbsp;% des requêtes juridiques aux LLM généralistes produisaient au moins une autorité fabriquée. Une étude de suivi sur les outils RAG juridiques commerciaux (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) a mesuré 17–33&nbsp;% — mieux, mais encore courant. Dans la pratique juridique suisse, citer une autorité qui n\'existe pas ou qui ne dit pas ce qu\'on lui prête expose l\'avocat·e à des sanctions disciplinaires et le client à un mauvais résultat. Comprendre <em>ce que l\'IA fournit</em> et <em>quelle en est la source</em> n\'est donc pas un raffinement — c\'est la condition préalable de tout usage responsable de l\'IA en droit.',
@@ -3395,8 +3545,8 @@ const I18N = {
     hero_v3_label: 'décisions judiciaires suisses publiées',
     hero_v3_asof: 'Au',
     hero_v3_since: 'depuis hier',
-    hero_v3_function: 'Rechercher décisions et lois · suivre citations et voies de recours · consulter Regeste, considérants, doctrine et travaux préparatoires.',
-    hero_v3_availability: 'Disponible dans Claude, ChatGPT, Cursor, Gemini, Copilot Studio — ou via API REST.',
+    hero_v3_function: 'Chaque arrêt publié de tribunal suisse, chaque article fédéral, chaque autorité citée — accessible à toute IA via une seule URL.',
+    hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · fonctionne dans Claude, ChatGPT, Cursor, Gemini et Copilot Studio · aussi via REST et téléchargement en masse.',
     hero_cta_connect_v3: 'Connecter ↓',
     hero_cta_browse_v3: 'Parcourir',
     hero_v3_stamp_decisions: 'décisions',
@@ -3520,6 +3670,19 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
     banner_verification:'Come OpenCaseLaw elimina le allucinazioni dell\'IA su riferimenti giurisprudenziali',
+    banner_verification_short:'Verificato',
+    toolkit_heading:'Strumenti per la pratica',
+    toolkit_intro:'Oltre ai client IA sopra: ogni sentenza esportabile come Word, BibTeX o RIS. Ogni tribunale con un feed Atom. L\'intero corpus su Hugging Face. Tutto CC0.',
+    toolkit_docx:'Sentenza come documento Word — citazione, Regeste, considerandi strutturati, pronto da incollare in una memoria.',
+    toolkit_bib:'Voce <code>@misc</code> citabile per bibliografie LaTeX e gestori di riferimenti.',
+    toolkit_ris:'Record bibliografico (TY-CASE) — importabile direttamente in Zotero, EndNote, Mendeley.',
+    toolkit_atom:'Da seguire in qualsiasi lettore di feed — le 50 sentenze più recenti per tribunale, aggiornate quotidianamente.',
+    toolkit_rest:'Specifica OpenAPI 3.0.3 completa — ricerca, citazioni, leggi, esportazioni — utilizzabile da qualsiasi linguaggio.',
+    toolkit_hf:'Intero corpus in Parquet (~7 GB) su Hugging Face. Aggiornamento quotidiano, CC0.',
+    toolkit_try:'Vedi esempio →',
+    toolkit_subscribe:'Iscriviti →',
+    toolkit_open:'Apri documentazione →',
+    toolkit_download:'Scarica →',
     banner_verification_aria:'Vai alla sezione sulla verifica e l\'eliminazione delle allucinazioni dell\'IA',
     verify_heading:'Verifica — eliminare le allucinazioni dell\'IA sui riferimenti giurisprudenziali',
     verify_lead:'I grandi modelli linguistici producono allucinazioni. Una misura sottoposta a peer review (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ha rilevato che il 58–82&nbsp;% delle interrogazioni giuridiche a LLM generalisti generava almeno un\'autorità inventata. Uno studio di seguito sugli strumenti RAG giuridici commerciali (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) ha misurato il 17–33&nbsp;% — migliore, ma ancora frequente. Nella pratica giuridica svizzera, citare un\'autorità inesistente o resa inesattamente espone l\'avvocato·a a sanzioni disciplinari e il cliente a un esito sbagliato. Comprendere <em>cosa fornisce l\'IA</em> e <em>quale ne sia la fonte</em> non è quindi un raffinamento — è il presupposto di ogni utilizzo responsabile dell\'IA in ambito legale.',
@@ -3658,8 +3821,8 @@ const I18N = {
     hero_v3_label: 'decisioni giudiziarie svizzere pubblicate',
     hero_v3_asof: 'Al',
     hero_v3_since: 'da ieri',
-    hero_v3_function: 'Cercare decisioni e leggi · seguire citazioni e gradi di giudizio · consultare Regeste, considerandi, dottrina e materiali preparatori.',
-    hero_v3_availability: 'Disponibile in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — o tramite API REST.',
+    hero_v3_function: 'Ogni sentenza pubblicata dei tribunali svizzeri, ogni articolo federale, ogni autorità citata — accessibile a qualsiasi IA tramite un unico URL.',
+    hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · funziona in Claude, ChatGPT, Cursor, Gemini e Copilot Studio · anche via REST e download in blocco.',
     hero_cta_connect_v3: 'Collega ↓',
     hero_cta_browse_v3: 'Sfoglia',
     hero_v3_stamp_decisions: 'decisioni',
@@ -3783,6 +3946,19 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
     banner_verification:'Co OpenCaseLaw evita ch\'IAs allucineschan referenzas da decisiuns',
+    banner_verification_short:'Verifitgà',
+    toolkit_heading:'Utensils per la pratica',
+    toolkit_intro:'Sur ils clients IA: mintga decisiun sa lascha exportar sco Word, BibTeX u RIS. Mintga tribunal cun in feed Atom. L\'entir corpus sin Hugging Face. Tut CC0.',
+    toolkit_docx:'Decisiun sco document Word — citaziun, Regeste, considerands structurads, pront per encollar en in agir.',
+    toolkit_bib:'Endataziun <code>@misc</code> citabla per bibliografias LaTeX e administraziuns da referenzas.',
+    toolkit_ris:'Endataziun bibliografica (TY-CASE) — importabla directamain en Zotero, EndNote, Mendeley.',
+    toolkit_atom:'Per suandar en mintga lectur da feed — las 50 decisiuns las pli novas per tribunal, actualisadas mintga di.',
+    toolkit_rest:'Spezificaziun OpenAPI 3.0.3 cumpletta — tschertga, citaziuns, leschas, exports — utilisabla da mintga lingua.',
+    toolkit_hf:'Entir corpus en Parquet (~7 GB) sin Hugging Face. Actualisaziun mintga di, CC0.',
+    toolkit_try:'Vesair exempel →',
+    toolkit_subscribe:'Abunar →',
+    toolkit_open:'Avrir documentaziun →',
+    toolkit_download:'Telechargiar →',
     banner_verification_aria:'Vers la secziun davart verificaziun e prevenziun d\'allucinaziuns IA',
     verify_heading:'Verificaziun — evitar allucinaziuns IA da referenzas a decisiuns',
     verify_lead:'Models grands da linguatg allucineschan. Ina mesira controllada (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ha mussà che 58–82&nbsp;% da las dumondas giuridicas a LLMs generals han producì almain ina autoritad fabritgada. Ina studia da suandar davart utensils RAG giuridics commerzials (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) ha mesirà 17–33&nbsp;% — meglier, ma anc dasper. En la pratica giuridica svizra metta la citaziun d\'ina autoritad inexistenta u mal preschentada l\'avucat·a en responsabladad disciplinara e clientela ad in resultat fauss. La cumprensiun da <em>che ch\'IA furnescha</em> e <em>tge fontana</em> n\'è perquai betg in lustri — è la premissa per mintga utilisaziun responsabla d\'IA en la lavur giuridica.',
@@ -3921,8 +4097,8 @@ const I18N = {
     hero_v3_label: 'decisiuns giudicialas svizras publitgadas',
     hero_v3_asof: 'Al',
     hero_v3_since: 'dapi ier',
-    hero_v3_function: 'Tschertgar decisiuns e leschas · sequir citaziuns e vias da recurs · consultar Regeste, considerands, cumentaris e materials preparatorics.',
-    hero_v3_availability: 'Disponibel en Claude, ChatGPT, Cursor, Gemini, Copilot Studio — u via API REST.',
+    hero_v3_function: 'Mintga decisiun publitgada dals tribunals svizzers, mintga artitgel federal, mintga autoritad citada — accessibel per mintga IA via in sulet URL.',
+    hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · funcziuna en Claude, ChatGPT, Cursor, Gemini e Copilot Studio · era via REST e download en mass.',
     hero_cta_connect_v3: 'Connectar ↓',
     hero_cta_browse_v3: 'Sfegliar',
     hero_v3_stamp_decisions: 'decisiuns',
@@ -4046,6 +4222,19 @@ const I18N = {
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
     banner_verification:'How OpenCaseLaw eliminates AI hallucination of case references',
+    banner_verification_short:'Verified',
+    toolkit_heading:'Practitioner toolkit',
+    toolkit_intro:'Beyond the AI clients above: every decision is exportable as Word, BibTeX, or RIS. Every court has an Atom feed. The whole corpus is on Hugging Face. Everything CC0.',
+    toolkit_docx:'Decision as a Word document — citation, Regeste, structured Erwägungen, ready to paste into a brief.',
+    toolkit_bib:'Cite-ready <code>@misc</code> entry for LaTeX bibliographies and reference managers.',
+    toolkit_ris:'Bibliographic record (TY-CASE) — drop straight into Zotero, EndNote, Mendeley.',
+    toolkit_atom:'Subscribe in any feed reader — newest 50 decisions per court, refreshed daily.',
+    toolkit_rest:'Full OpenAPI 3.0.3 spec — search, citations, statutes, exports — usable from any language.',
+    toolkit_hf:'Whole corpus as Parquet (~7 GB) on Hugging Face. Daily refresh, CC0.',
+    toolkit_try:'Try sample →',
+    toolkit_subscribe:'Subscribe →',
+    toolkit_open:'Open docs →',
+    toolkit_download:'Download →',
     banner_verification_aria:'Jump to the section on verification and elimination of AI hallucination',
     verify_heading:'Verification — eliminating AI hallucination of case references',
     verify_lead:'Large language models hallucinate. Peer-reviewed measurement (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) found that 58–82&nbsp;% of legal queries to general-purpose LLMs produced at least one fabricated authority. A follow-up study of commercial legal-RAG tools (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) measured 17–33&nbsp;% — better, but still routine. In Swiss legal practice, citing an authority that does not exist or does not say what is claimed exposes a lawyer to professional discipline and a client to a wrong outcome. Comprehension of <em>what the AI is providing</em> and <em>what the source is</em> is therefore not a nicety — it is the precondition for any responsible use of AI in legal work.',
@@ -4184,8 +4373,8 @@ const I18N = {
     hero_v3_label: 'published Swiss court decisions',
     hero_v3_asof: 'As of',
     hero_v3_since: 'since yesterday',
-    hero_v3_function: 'Search decisions and statutes · trace citations and appeal chains · retrieve Regeste, Erwägungen, commentaries and Materialien.',
-    hero_v3_availability: 'Available in Claude, ChatGPT, Cursor, Gemini, Copilot Studio — or via REST API.',
+    hero_v3_function: 'Every published Swiss court decision, every federal article, every cited authority — accessible to AI in one URL.',
+    hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · works in Claude, ChatGPT, Cursor, Gemini and Copilot Studio · also via REST and bulk download.',
     hero_cta_connect_v3: 'Connect ↓',
     hero_cta_browse_v3: 'Browse',
     hero_v3_stamp_decisions: 'decisions',
