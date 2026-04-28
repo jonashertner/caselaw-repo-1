@@ -1,0 +1,314 @@
+{
+  "version": "v0.1",
+  "corpus_snapshot_date": "2026-04-28",
+  "evaluator": {
+    "mcp_url": "https://mcp.opencaselaw.ch",
+    "top_k": 5,
+    "generator_model": "claude-sonnet-4-6",
+    "judge_model": "claude-sonnet-4-6"
+  },
+  "aggregate": {
+    "n_questions": 10,
+    "correctness_pct": 100.0,
+    "groundedness_pct": 90.0,
+    "retrieval_accuracy_pct": 70.0,
+    "error_decomposition": {
+      "correct": 9,
+      "hallucination": 1,
+      "retrieval": 0,
+      "reasoning": 0
+    },
+    "by_language": {
+      "de": {
+        "n": 6,
+        "correct_pct": 100.0,
+        "grounded_pct": 83.3,
+        "retrieval_pct": 66.7
+      },
+      "fr": {
+        "n": 3,
+        "correct_pct": 100.0,
+        "grounded_pct": 100.0,
+        "retrieval_pct": 66.7
+      },
+      "it": {
+        "n": 1,
+        "correct_pct": 100.0,
+        "grounded_pct": 100.0,
+        "retrieval_pct": 100.0
+      }
+    }
+  },
+  "per_question": [
+    {
+      "question_id": "q-001",
+      "retrieved_decision_ids": [
+        "ar_gerichte_ARGVP_2007_3514",
+        "sg_gerichte_IV-2020_88",
+        "sg_gerichte_IV-2013_167",
+        "zh_verwaltungsgericht__VB.2021.00624",
+        "sg_gerichte_B_2013_169"
+      ],
+      "retrieved_statute_ids": [
+        "OR_41"
+      ],
+      "answer": "## Voraussetzungen der ausservertraglichen Haftung nach Art. 41 OR\n\nGestützt auf den Wortlaut von **Art. 41 OR** müssen folgende vier Voraussetzungen **kumulativ** erfüllt sein:\n\n1. **Schaden**: Es muss ein Schaden entstanden sein (eine unfreiwillige Vermögenseinbusse beim Geschädigten).\n\n2. **Widerrechtlichkeit**: Der Schaden muss widerrechtlich zugefügt worden sein – d.h. durch Verletzung einer Rechtsnorm oder eines absoluten Rechts (Abs. 1), oder alternativ durch eine gegen die **guten Sitten** verstossende Handlung (Abs. 2).\n\n3. **Verschulden**: Der Schädiger muss mit **Absicht** oder **Fahrlässigkeit** gehandelt haben (Abs. 1), bzw. bei sittenwidriger Schädigung mit Absicht (Abs. 2).\n\n4. **Kausalzusammenhang**: Zwischen dem schädigenden Verhalten und dem eingetretenen Schaden muss ein natürlicher und adäquater Kausalzusammenhang bestehen.\n\n> *Hinweis*: Die abgerufenen Passagen [P1]–[P5] enthalten keine einschlägigen Ausführungen zu diesen Voraussetzungen. Die Antwort stützt sich ausschliesslich auf den Gesetzestext **[STATUTE: Art. 41 OR]**. Für eine vertiefte dogmatische Herleitung (insbesondere zum Kausalzusammenhang, der im Gesetzestext nicht explizit erwähnt wird) wären zusätzliche Quellen erforderlich.",
+      "correctness": true,
+      "groundedness": false,
+      "retrieval_accuracy": false,
+      "error_class": "hallucination",
+      "latency_ms": {
+        "retrieve": 2648.2,
+        "generate": 8258.6
+      },
+      "judge_notes": {
+        "correctness": "All four elements (Schaden, Widerrechtlichkeit, Kausalzusammenhang, Verschulden) are correctly identified and stated as cumulative.",
+        "groundedness": "Art. 41 OR text does not mention causation; this is a doctrinal addition not found in the retrieved passages.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-002",
+      "retrieved_decision_ids": [
+        "bger_4A_13_2017",
+        "bger_4C.422_2004",
+        "ge_gerichte_4A_219_2020",
+        "ge_gerichte_4A_209_2019",
+        "ge_gerichte_4A_401_2021"
+      ],
+      "retrieved_statute_ids": [
+        "CO_41"
+      ],
+      "answer": "## Conditions cumulatives de la responsabilité aquilienne selon l'art. 41 CO\n\nSur la base du texte légal fourni, l'art. 41 al. 1 CO pose **quatre conditions cumulatives** pour engager la responsabilité délictuelle (aquilienne) :\n\n1. **Un dommage** — une atteinte au patrimoine d'autrui ;\n2. **L'illicéité** — le comportement doit être « illicite » ;\n3. **Un lien de causalité** — entre le comportement et le dommage (la causalité est implicitement requise par la formule « cause… un dommage ») ;\n4. **Une faute** — intentionnelle, ou par négligence ou imprudence.\n\nL'al. 2 prévoit en outre une variante spécifique : la responsabilité peut également être engagée lorsque le dommage est causé **intentionnellement par des actes contraires aux mœurs**, même sans illicéité au sens strict.\n\n> *« Celui qui cause, d'une manière illicite, un dommage à autrui, soit intentionnellement, soit par négligence ou imprudence, est tenu de le réparer. »* [Art. 41 CO]\n\n---\n\n**Remarque** : Les passages jurisprudentiels récupérés [P1–P5] ne développent pas directement les conditions de l'art. 41 CO ; la réponse repose donc essentiellement sur le texte légal lui-même.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 13974.6,
+        "generate": 7546.9
+      },
+      "judge_notes": {
+        "correctness": "Answer lists same 4 cumulative conditions (dommage, illicéité, causalité, faute) and confirms they are cumulative, matching reference.",
+        "groundedness": "All claims derive directly from Art. 41 CO text provided. The four conditions and al.2 variant are accurately extracted from the statute.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-003",
+      "retrieved_decision_ids": [
+        "ti_gerichte_17.2020.256",
+        "ti_gerichte_INC.2008.40804",
+        "ti_gerichte_TI-100558",
+        "ti_gerichte_17.2012.78",
+        "ti_gerichte_72.2017.196"
+      ],
+      "retrieved_statute_ids": [
+        "CP_111"
+      ],
+      "answer": "## Risposta\n\nIn base all'**art. 111 CP**, l'omicidio intenzionale (omicidio semplice) è punito con una **pena detentiva non inferiore a cinque anni**, a condizione che non ricorrano le condizioni previste negli articoli seguenti (quali ad esempio l'omicidio passionale, l'omicidio su richiesta della vittima, ecc.).\n\n> *\"Chiunque intenzionalmente uccide una persona è punito con una pena detentiva non inferiore a cinque anni, in quanto non ricorrano le condizioni previste negli articoli seguenti.\"* [STATUTE: Art. 111 CP]",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 9379.5,
+        "generate": 3949.5
+      },
+      "judge_notes": {
+        "correctness": "Answer matches reference: 5-year minimum detention for intentional killing, unless subsequent articles apply (passional, honorable motives, etc.).",
+        "groundedness": "The answer's key claims (5-year minimum, conditional on subsequent articles) are directly quoted from Art. 111 CP. Examples given are generic background.",
+        "language": "it"
+      }
+    },
+    {
+      "question_id": "q-004",
+      "retrieved_decision_ids": [
+        "zh_verwaltungsgericht__VB.2006.00222",
+        "bge_BGE_129_I_173",
+        "zh_verwaltungsgericht__VB.2004.00230",
+        "bge_BGE_140_I_176",
+        "bstger_CN.2024.16"
+      ],
+      "retrieved_statute_ids": [
+        "BV_36"
+      ],
+      "answer": "Gemäss **Art. 36 BV** sind für die Einschränkung von Grundrechten folgende vier Voraussetzungen kumulativ erforderlich:\n\n1. **Gesetzliche Grundlage** (Abs. 1): Die Einschränkung bedarf einer gesetzlichen Grundlage; schwerwiegende Einschränkungen müssen im Gesetz selbst vorgesehen sein (Ausnahme: ernste, unmittelbare und nicht anders abwendbare Gefahr).\n\n2. **Öffentliches Interesse oder Schutz von Grundrechten Dritter** (Abs. 2): Die Einschränkung muss durch ein öffentliches Interesse oder durch den Schutz von Grundrechten Dritter gerechtfertigt sein.\n\n3. **Verhältnismässigkeit** (Abs. 3): Die Einschränkung muss verhältnismässig sein.\n\n4. **Wahrung des Kerngehalts** (Abs. 4): Der Kerngehalt der Grundrechte ist unantastbar.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 9274.9,
+        "generate": 3850.7
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all four elements: legal basis (formal law for severe restrictions), public interest/third-party rights, proportionality, and core essence protection.",
+        "groundedness": "All four conditions listed in the ANSWER map directly to Art. 36 Abs. 1–4 BV as reproduced verbatim in the retrieved passage.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-005",
+      "retrieved_decision_ids": [
+        "bger_5F_30_2023",
+        "bger_5A_605_2013",
+        "bger_5F_13_2024",
+        "bger_5F_29_2023",
+        "bger_1B_218_2016"
+      ],
+      "retrieved_statute_ids": [
+        "BGG_42"
+      ],
+      "answer": "## Anforderungen an die Beschwerdebegründung nach Art. 42 Abs. 2 BGG\n\nNach **Art. 42 Abs. 2 BGG** muss in der Begründung **in gedrängter Form dargelegt werden, inwiefern der angefochtene Akt Recht verletzt**.\n\nDas Bundesgericht konkretisiert diese Anforderung dahingehend, dass es sich **nur mit formell ausreichend begründeten Rügen** befasst [P2]. Die blosse Behauptung einer Rechtsverletzung genügt nicht; der Beschwerdeführer muss substanziiert aufzeigen, **inwiefern** der angefochtene Entscheid gegen Recht verstösst [P2].\n\nObwohl das Bundesgericht das Recht grundsätzlich von Amtes wegen anwendet (Art. 106 Abs. 1 BGG), setzt es für seine Prüfung eine **formell ausreichende Begründung** voraus [P2].\n\nZudem dient das Rechtsmittelverfahren nicht dazu, die Rechtslage erneut zu diskutieren und inhaltlich eine Wiedererwägung zu verlangen – der Beschwerdeführer muss vielmehr gezielt darlegen, worin die Rechtsverletzung liegt [P1].",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 12009.3,
+        "generate": 6780.2
+      },
+      "judge_notes": {
+        "correctness": "Answer covers same core requirements: concise form, showing how law violated, mere assertion insufficient, must concretely demonstrate the violation.",
+        "groundedness": "All claims are directly supported by P1, P2, and the statute text (Art. 42 BGG). No unsupported specific factual claims.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-006",
+      "retrieved_decision_ids": [
+        "vd_findinfo_ML___2013___274",
+        "ge_gerichte_A_939_2007",
+        "vd_findinfo_AP___2011___81",
+        "vd_gerichte_KC13.011452",
+        "vd_findinfo_ML___2017___78"
+      ],
+      "retrieved_statute_ids": [
+        "CO_257e"
+      ],
+      "answer": "## Conditions d'opposition à la libération de la garantie locative (art. 257e al. 3 CO)\n\nSelon **l'art. 257e al. 3 CO**, la banque ne peut restituer les sûretés qu'avec **l'accord des deux parties** ou sur la base d'un **commandement de payer non frappé d'opposition** ou d'un **jugement exécutoire**.\n\nAinsi, le bailleur peut s'opposer à la libération de la garantie en refusant simplement de donner son accord. Toutefois, cette faculté est **limitée dans le temps** : si, dans l'**année qui suit la fin du bail**, le bailleur n'a fait valoir aucune prétention contre le locataire dans le cadre d'une :\n- **procédure judiciaire**, ou\n- **poursuite pour dettes**, ou\n- **faillite**,\n\nalors le locataire peut exiger de la banque la **restitution des sûretés**, sans que le bailleur puisse s'y opposer.\n\nEn résumé, le bailleur peut bloquer la restitution en refusant son accord, mais il doit impérativement faire valoir ses prétentions par voie judiciaire ou de poursuite dans l'année suivant la fin du bail, faute de quoi le locataire obtient la libération de la garantie de plein droit.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 15680.9,
+        "generate": 6273.8
+      },
+      "judge_notes": {
+        "correctness": "Answer covers the 1-year deadline, judicial/debt-collection proceedings requirement, and dual-consent/court-order rule for releasing the guarantee.",
+        "groundedness": "All factual claims mirror Art. 257e al. 3 CO verbatim: dual consent, unpaid debt order, enforceable judgment, one-year deadline, judicial/debt-collection/bankruptcy proceedings.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-007",
+      "retrieved_decision_ids": [
+        "bge_BGE_143_III_297",
+        "bger_5A_256_2016",
+        "bger_5A_658_2014",
+        "zh_obergericht_LB250027",
+        "gl_gerichte_VG.2021.00072"
+      ],
+      "retrieved_statute_ids": [
+        "ZGB_28"
+      ],
+      "answer": "## Schutz der Persönlichkeit im schweizerischen Privatrecht\n\n### Gesetzliche Grundlage\n\nDer Schutz der Persönlichkeit gegen Verletzungen durch Dritte beruht auf **Art. 28 ZGB**. Danach kann, wer in seiner Persönlichkeit widerrechtlich verletzt wird, zu seinem Schutz gegen jeden, der an der Verletzung mitwirkt, das Gericht anrufen [Art. 28 ZGB].\n\nEine Verletzung ist dabei widerrechtlich, wenn sie nicht gerechtfertigt ist durch:\n- Einwilligung des Verletzten,\n- ein überwiegendes privates oder öffentliches Interesse, oder\n- Gesetz [Art. 28 ZGB].\n\n### Verfügbare Klagen\n\nGemäß **Art. 28a ZGB** stehen der verletzten Person folgende Klagen zur Verfügung [P1]:\n\n1. **Beseitigungsklage** (Art. 28a Abs. 1 Ziff. 1 ZGB) – Beseitigung einer bestehenden Verletzung\n2. **Unterlassungsklage** (Art. 28a Abs. 1 Ziff. 2 ZGB) – Unterlassung einer drohenden Verletzung\n3. **Feststellungsklage** (Art. 28a Abs. 1 Ziff. 3 ZGB) – Feststellung einer Verletzung, wenn diese fortdauert\n4. **Gewinnherausgabeanspruch** (Art. 28a Abs. 3 ZGB i.V.m. Art. 423 OR) – Herausgabe des erzielten Gewinns\n5. **Genugtuungsanspruch** (Art. 28a Abs. 3 ZGB i.V.m. Art. 49 OR) – Ersatz für erlittene seelische Unbill\n\nDie Passagen erlauben keine vollständig erschöpfende Darstellung aller prozessualen Einzelheiten; für weitere Details wären zusätzliche Quellen erforderlich.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 8862.8,
+        "generate": 7328.1
+      },
+      "judge_notes": {
+        "correctness": "Answer covers Art. 28 ZGB basis, all three main claims (Unterlassung, Beseitigung, Feststellung) and monetary remedies (Genugtuung, Gewinnherausgabe) per Art. 28a Abs. 3 ZGB. Schadenersatz not explicitly named but all load-bearing elements present.",
+        "groundedness": "All claims trace directly to Art. 28 ZGB text and P1 regeste citing Art. 28a Abs.1 Ziff.1-3, Abs.3 ZGB, Art. 423 OR, Art. 49 OR.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-008",
+      "retrieved_decision_ids": [
+        "zh_obergericht_LF140013",
+        "zh_obergericht_LF130077",
+        "zh_gerichte_LF140013",
+        "zh_obergericht_LF130075",
+        "zh_obergericht_LF130076"
+      ],
+      "retrieved_statute_ids": [
+        "BGG_74"
+      ],
+      "answer": "## Streitwertgrenzen nach Art. 74 BGG\n\nGemäss **Art. 74 Abs. 1 BGG** ist die Beschwerde in Zivilsachen bei vermögensrechtlichen Angelegenheiten nur zulässig, wenn der Streitwert mindestens beträgt:\n\n- **CHF 15'000** in arbeits- und mietrechtlichen Fällen (lit. a)\n- **CHF 30'000** in allen übrigen Fällen (lit. b)\n\n## Ausnahmen unabhängig vom Streitwert\n\nNach **Art. 74 Abs. 2 BGG** ist die Beschwerde auch bei Unterschreitung dieser Streitwertgrenzen zulässig, insbesondere wenn:\n\n- sich eine **Rechtsfrage von grundsätzlicher Bedeutung** stellt (lit. a)\n- ein Bundesgesetz eine einzige kantonale Instanz vorsieht (lit. b)\n- es sich um Entscheide kantonaler Aufsichtsbehörden in Schuldbetreibungs- und Konkurssachen handelt (lit. c)\n- es sich um Entscheide des Konkurs- und Nachlassrichters handelt (lit. d)\n- es sich um Entscheide des Bundespatentgerichts handelt (lit. e)\n\nDie praktisch wichtigste Ausnahme, die unabhängig vom Streitwert greift, ist somit das Vorliegen einer **Rechtsfrage von grundsätzlicher Bedeutung** gemäss Art. 74 Abs. 2 lit. a BGG.\n\n**Quelle:** [STATUTE: Art. 74 BGG]",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 14761.2,
+        "generate": 6333.2
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all load-bearing elements: 30k general threshold, 15k for tenancy/employment, and grundsätzliche Bedeutung exception per Art.74 BGG.",
+        "groundedness": "All factual claims in the ANSWER directly mirror Art. 74 BGG as reproduced in the retrieved statute passage, including amounts, conditions, and sub-letter references.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-009",
+      "retrieved_decision_ids": [
+        "bge_BGE_147_III_419",
+        "be_zivilstraf_ZK_2022_176",
+        "zh_obergericht_SB140102",
+        "bger_4A_554_2013",
+        "bge_BGE_139_IV_62"
+      ],
+      "retrieved_statute_ids": [
+        "OR_60"
+      ],
+      "answer": "Seit der Revision des Verjährungsrechts (in Kraft seit 1. Januar 2020) gilt für Forderungen aus **Tötung eines Menschen oder Körperverletzung** gemäss dem neu eingefügten **Art. 60 Abs. 1bis OR** eine absolute Verjährungsfrist von **zwanzig Jahren** ab dem Tag, an welchem das schädigende Verhalten erfolgte oder aufhörte. Die relative Frist beträgt weiterhin drei Jahre ab Kenntnis des Schadens und der ersatzpflichtigen Person.\n\nFür **übrige Schadenersatz- oder Genugtuungsansprüche** (Art. 60 Abs. 1 OR) gilt unverändert eine absolute Frist von **zehn Jahren** [STATUTE: Art. 60 OR].",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 13484.5,
+        "generate": 4529.9
+      },
+      "judge_notes": {
+        "correctness": "Answer covers 3yr relative, 20yr absolute for personal injury, prior 10yr regime implied by contrast. Core revision purpose matches.",
+        "groundedness": "All claims (20yr absolute for death/injury, 3yr relative, 10yr for other claims, in force 1.1.2020, Art.60 Abs.1bis OR) are directly in Art.60 OR passage.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-010",
+      "retrieved_decision_ids": [
+        "bger_2P.134_2003",
+        "bge_BGE_145_I_73",
+        "vd_omni_GE.2008.0001",
+        "vd_omni_GE.2005.0206",
+        "vd_omni_CCST.2023.0003"
+      ],
+      "retrieved_statute_ids": [
+        "BV_27"
+      ],
+      "answer": "## La liberté économique (art. 27 Cst.)\n\n### Titulaires\n\nL'art. 27 Cst. garantit la liberté économique sans préciser expressément ses titulaires dans le texte constitutionnel lui-même. Sur la base des passages disponibles, on peut relever que cette liberté a été invoquée tant par des **personnes physiques** (chauffeurs de taxi) que par des **personnes morales** (sociétés, entreprises), comme l'illustrent les affaires de taxis [P3, P4] et la requête d'une Sàrl concernant la prostitution [P5].\n\n### Activités protégées\n\nSelon l'**art. 27 al. 2 Cst.**, la liberté économique comprend notamment :\n\n1. **Le libre choix de la profession**\n2. **Le libre accès à une activité économique lucrative privée**\n3. **Le libre exercice** de cette activité\n\n### Illustrations jurisprudentielles\n\n- Le droit d'obtenir des **autorisations de stationnement pour taxis** (autorisations de type « A ») relève de la liberté économique ; un système empêchant tout nouveau chauffeur d'en obtenir une dans un délai raisonnable viole ce principe [P4].\n- L'exploitation d'un **salon de prostitution** constitue une activité économique lucrative privée protégée par l'art. 27 Cst., même si des restrictions territoriales peuvent être justifiées [P5].\n\n### Limite notable\n\nLes passages disponibles ne permettent pas de répondre de manière exhaustive à la question des titulaires (personnes étrangères, collectivités publiques agissant *iure gestionis*, etc.). Des développements plus complets nécessiteraient des sources doctrinales ou jurisprudentielles additionnelles.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 13595.7,
+        "generate": 8950.2
+      },
+      "judge_notes": {
+        "correctness": "Answer covers titulaires (physical/legal persons), protected activities (free choice, access, exercise), with minor gap on foreign persons/36 Cst., but core elements match.",
+        "groundedness": "All specific claims (Art.27 text, taxi authorizations, Sàrl prostitution case, violations) are directly supported by the retrieved passages.",
+        "language": "fr"
+      }
+    }
+  ]
+}

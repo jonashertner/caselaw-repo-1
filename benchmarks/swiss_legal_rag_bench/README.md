@@ -135,12 +135,50 @@ The harness expects:
 
 ## Results (v0.1, 2026-04-28)
 
-To be populated by the first run. Each cell reports
-`(c%, g%, r%)` averaged across the question set.
+First baseline against the live OpenCaseLaw stack. Each cell averages
+across the 10-question seed set; per-language splits are below.
 
 | Embedder / Retriever | Generator | Correctness | Groundedness | Retrieval acc. |
 |---|---|---|---|---|
-| OpenCaseLaw (BM25 + RRF + Haiku rerank) | Claude Sonnet 4.6 | TBD | TBD | TBD |
+| OpenCaseLaw (BM25 + RRF + Haiku rerank), top-K = 5 | Claude Sonnet 4.6 | **100.0 %** | **90.0 %** | **70.0 %** |
+
+**Error decomposition** (out of 10):
+- correct: **9**
+- hallucination (g = 0): **1**
+- retrieval error (g = 1, c = 0, r = 0): 0
+- reasoning error (g = 1, c = 0, r = 1): 0
+
+**By language:**
+
+| Lang | n | Correct | Grounded | Retrieved |
+|---|---|---|---|---|
+| de | 6 | 100.0 % | 83.3 % | 66.7 % |
+| fr | 3 | 100.0 % | 100.0 % | 66.7 % |
+| it | 1 | 100.0 % | 100.0 % | 100.0 % |
+
+**Reading:**
+- 100 % correctness on a small expert-curated set says the questions
+  are answerable and the generator can answer them. Tightening the set
+  (and adding harder questions) is the v0.2 priority.
+- The 30-point gap between groundedness (90) and retrieval accuracy (70)
+  is the gap the paper predicts: even when our annotated leading case
+  is not in top-K, the generator can still answer correctly using the
+  Fedlex statute text we always surface alongside.
+- The single hallucination is q-001 (Art. 41 OR conditions). The
+  generator correctly listed the four classical elements (Schaden /
+  Widerrechtlichkeit / Verschulden / Kausalzusammenhang), but the
+  *"Kausalzusammenhang"* component is a doctrinal addition not found
+  literally in either the Art. 41 OR text or in the retrieved
+  passages. The judge correctly flagged it: the answer is legally
+  correct (priors), but ungrounded in the retrieved context. This is
+  precisely the failure mode Butler & Butler 2026 identified — and
+  exactly why retrieval-only benchmarks miss it.
+- 0 reasoning errors: when retrieval succeeded, the generator
+  synthesized faithfully. The lever for v0.2 is **retrieval coverage**,
+  consistent with the paper's main empirical finding that the embedder
+  dominates RAG performance.
+
+Per-question results: [`results/run_2026-04-28.json`](results/run_2026-04-28.json).
 
 ## Scope and limitations
 

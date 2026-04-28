@@ -380,6 +380,8 @@ The architecture defends against **two empirically-measured legal-LLM failure cl
 
 The full server prompt (R1–R8) embeds these rules so any connecting client (Claude, ChatGPT, Cursor, Gemini, Copilot Studio) inherits the contract automatically. See [`mcp_server.py`](mcp_server.py) for the implementation, [`tests/web/test_attest_audits.py`](tests/web/test_attest_audits.py) for the regression suite, and the [verification section on opencaselaw.ch](https://opencaselaw.ch/#verification) for a public explainer.
 
+End-to-end performance against this architecture is measured by **[Swiss Legal RAG Bench](benchmarks/swiss_legal_rag_bench/README.md)** — a benchmark modelled on Butler & Butler's *Legal RAG Bench* methodology, covering DE/FR/IT federal-law questions and decomposing errors into hallucination / retrieval / reasoning components. v0.1 baseline (live OpenCaseLaw + Claude Sonnet 4.6, 10 questions): **100 % correctness, 90 % groundedness, 70 % retrieval accuracy**.
+
 ### Example queries
 
 These work on both the remote and local server:
