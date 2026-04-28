@@ -106,6 +106,7 @@ from pydantic import BaseModel, Field
 
 class _AttestBody(BaseModel):
     draft_text: str
+    audit_grounding: bool = False
 
 
 class _VerifyClaimBody(BaseModel):
@@ -7607,6 +7608,23 @@ server = Server(
         "citations using the suggestions, call attest_response again, "
         "then send the new `linked_text` verbatim.\n\n"
 
+        "R8. GROUNDEDNESS — for any answer with ≥2 case citations, OR "
+        "where attaching a wrong proposition to a real citation would "
+        "mislead a Swiss lawyer, call `attest_response(draft_text, "
+        "audit_grounding=true)`. The fast audits (R1–R7) defend against "
+        "fabricated citations and quotes (the 'hallucination' class). "
+        "audit_grounding additionally defends against the 'reasoning "
+        "error' class (Butler & Butler, 'Legal RAG Bench', Isaacus, "
+        "Mar 2026): the citation is real and the source was retrieved, "
+        "but the proposition you attached to it is not actually "
+        "supported by the cited text. If audit_grounding flags an "
+        "issue with category=\"grounding\", either (a) replace the "
+        "citation with one whose text actually supports the claim, "
+        "(b) qualify the claim to match what the cited text says, or "
+        "(c) drop the proposition. Verifiability matters more than "
+        "veracity in legal work — an unverifiable but correct answer "
+        "is unprovable; a verifiable answer can always be checked.\n\n"
+
         "══════════════════════════════════════════════════════════════\n"
         "CITATION WORKFLOW — THE ONLY LEGITIMATE PATH\n"
         "══════════════════════════════════════════════════════════════\n"
@@ -9116,7 +9134,261 @@ def _audit_dates(
     return issues
 
 
-def _handle_attest_response(*, draft_text: str) -> dict:
+# ── Grounding audit (Butler & Butler, "Legal RAG Bench", Mar 2026) ─
+#
+# The four fast audits (case / statute / quote / date) defend against
+# the paper's "hallucination" class (g=0): citations that don't exist,
+# quotes that aren't in the source, dates that don't match.  They do
+# NOT defend against the paper's "reasoning error" class (g=1, c=0,
+# r=1): the citation is real and the source was retrieved, but the
+# proposition the LLM attached to it is not supported by the source.
+#
+# This audit closes that gap.  For each verified case citation in the
+# draft, it extracts the immediately-preceding claim sentence and asks
+# an independent Sonnet judge (different model family from the Haiku
+# that runs retrieval rerank, so retrieval errors don't replicate in
+# verification) whether the cited decision supports the claim.  All
+# (claim, source) pairs go in a single batched call to keep latency
+# bounded regardless of citation count.
+
+# Sentence boundaries — terminate at . ! ? ; or paragraph break.
+# Lookahead requires the next non-space character to be an uppercase
+# letter or opening quote/paren — never a digit, since "Art. 41" /
+# "Abs. 2" / "E. 2.3" / "Nr. 5" / "Bd. 16" are not sentence boundaries.
+_SENTENCE_END = re.compile(r"[.!?;]\s+(?=[A-ZÄÖÜ«„(])|\n\s*\n")
+# "See-cite" markers — the LLM is just pointing at authority, not
+# making a strong assertion.  We skip grounding-audit on these.
+_SEE_CITE_MARKERS = re.compile(
+    r"^\s*(?:vgl\.?|siehe|see|cf\.?|comp\.?|cit\.?|cfr\.?|so\s)\s",
+    flags=re.IGNORECASE,
+)
+
+
+def _extract_preceding_claim(draft_text: str, citation_start: int,
+                             max_chars: int = 250) -> str | None:
+    """Walk backwards from a citation's start position and return the
+    immediately-preceding claim sentence — what the LLM is attaching
+    to the citation.  Returns None when no usable claim is in scope
+    (too short, too long, or a "see-cite" marker prefix)."""
+    if citation_start <= 0:
+        return None
+    window_start = max(0, citation_start - max_chars)
+    window = draft_text[window_start:citation_start]
+    # Drop any opening parenthesis / bracket immediately before the cite
+    window = re.sub(r"[\s(\[]+$", "", window)
+    if not window:
+        return None
+    # Find the last sentence boundary inside the window — the claim is
+    # everything between that boundary and the citation.
+    boundary_iter = list(_SENTENCE_END.finditer(window))
+    if boundary_iter:
+        claim = window[boundary_iter[-1].end():].strip()
+    else:
+        claim = window.strip()
+    if not claim or len(claim) < 20 or len(claim) > 400:
+        return None
+    if _SEE_CITE_MARKERS.match(claim):
+        return None
+    return claim
+
+
+def _judge_grounding_batched(pairs: list[dict]) -> list[dict] | None:
+    """Send a list of (claim, source_text, label) tuples to the Sonnet
+    judge in a single request and return verdict dicts in input order.
+    Returns None if the API call fails or produces unparseable output —
+    callers should treat this as "audit unavailable" rather than as a
+    verdict.  Cost ≈ $0.005 per call regardless of citation count."""
+    if not pairs or not ANTHROPIC_API_KEY:
+        return None
+
+    system_prompt = (
+        "You are a Swiss legal-research verifier.  You receive an array "
+        "of legal CLAIMS each paired with the verbatim TEXT of the cited "
+        "Swiss source (decision Erwägung, Regeste, or article text).  "
+        "For each pair you must judge whether the TEXT supports the "
+        "CLAIM, using ONLY the TEXT provided (no external knowledge).\n\n"
+        "Verdicts:\n"
+        "  yes        — TEXT clearly states or directly implies the CLAIM.\n"
+        "  partial    — TEXT is relevant and partially supports, with "
+        "qualifications.\n"
+        "  no         — TEXT is on topic but does NOT support the CLAIM.\n"
+        "  contradicts— TEXT contradicts the CLAIM.\n"
+        "  unrelated  — TEXT is not on the topic of the CLAIM.\n\n"
+        "Respond with ONLY a JSON array (no markdown, no prose), one "
+        "object per input pair, in the same order:\n"
+        "[\n"
+        '  {"index":0,"supports":"yes|partial|no|contradicts|unrelated",'
+        '"confidence":0.0,"reasoning":"≤120 chars"},\n'
+        "  ...\n"
+        "]"
+    )
+
+    blocks = []
+    for i, p in enumerate(pairs):
+        blocks.append(
+            f"[{i}] CITATION: {p['label']}\n"
+            f"    CLAIM: {p['claim']}\n"
+            f"    TEXT ({p['source_label']}): {p['source_text']}"
+        )
+    user_prompt = "PAIRS:\n\n" + "\n\n".join(blocks)
+
+    try:
+        import httpx
+        with httpx.Client(timeout=20.0) as client:
+            resp = client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-sonnet-4-6",
+                    "max_tokens": 200 * len(pairs) + 200,
+                    "system": system_prompt,
+                    "messages": [{"role": "user", "content": user_prompt}],
+                },
+            )
+            resp.raise_for_status()
+            raw = resp.json()["content"][0]["text"].strip()
+            if raw.startswith("```"):
+                raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+            parsed = json.loads(raw)
+            if not isinstance(parsed, list):
+                return None
+            return parsed
+    except Exception as e:
+        logger.debug("grounding judge failed: %s", e)
+        return None
+
+
+# Cap the per-attest grounding call so a runaway draft can't blow
+# through token budget; the LLM is told to invoke us per-section anyway.
+_GROUNDING_MAX_CITATIONS = 8
+# Per-source text budget — Sonnet sees up to this many chars per pair.
+_GROUNDING_SOURCE_BUDGET = 2000
+
+
+def _audit_grounding(
+    draft_text: str,
+    case_citations: list[dict],
+    cited_sources: list[dict],
+) -> tuple[list[dict], dict]:
+    """For each verified case citation, extract the preceding claim and
+    judge whether the cited decision supports it.  Returns (issues, meta)
+    where meta carries diagnostic info (how many pairs were judged, was
+    the audit truncated, did the API call fail)."""
+    meta: dict = {
+        "checked": 0,
+        "skipped_no_claim": 0,
+        "skipped_no_source": 0,
+        "truncated": False,
+        "available": ANTHROPIC_API_KEY is not None,
+    }
+    if not meta["available"]:
+        meta["error"] = "anthropic_api_key_missing"
+        return [], meta
+
+    # Index cited sources by decision_id for O(1) lookup
+    sources_by_id: dict[str, dict] = {
+        s["decision_id"]: s for s in cited_sources if s.get("decision_id")
+    }
+
+    pairs: list[dict] = []
+    pair_to_cit: list[dict] = []  # parallel array for emitting issues
+
+    for cit in case_citations:
+        if cit.get("_status") != "OK":
+            continue  # only audit citations that passed existence
+        decision_id = cit.get("_resolved_id")
+        if not decision_id or decision_id not in sources_by_id:
+            meta["skipped_no_source"] += 1
+            continue
+        claim = _extract_preceding_claim(draft_text, cit["span"][0])
+        if not claim:
+            meta["skipped_no_claim"] += 1
+            continue
+
+        source = sources_by_id[decision_id]
+        pinpoint = cit.get("pinpoint")
+        # Choose the most-specific source text we have for this cite.
+        text = ""
+        text_label = ""
+        if pinpoint:
+            for p in source.get("paragraphs", []) or []:
+                if p["e_number"] == pinpoint or p["e_number"].startswith(pinpoint + "."):
+                    text = (text + "\n\n" if text else "") + f"[E. {p['e_number']}] {p['text']}"
+                    text_label = f"Erwägung {pinpoint}"
+                    if len(text) >= _GROUNDING_SOURCE_BUDGET:
+                        break
+        if not text and source.get("regeste"):
+            text = source["regeste"]
+            text_label = "Regeste"
+        if not text and source.get("full_text"):
+            text = source["full_text"][:_GROUNDING_SOURCE_BUDGET]
+            text_label = "Full text (head)"
+        if not text or len(text.strip()) < 30:
+            meta["skipped_no_source"] += 1
+            continue
+
+        pairs.append({
+            "label": cit["full_match"],
+            "claim": claim,
+            "source_label": text_label,
+            "source_text": text[:_GROUNDING_SOURCE_BUDGET],
+        })
+        pair_to_cit.append(cit)
+
+        if len(pairs) >= _GROUNDING_MAX_CITATIONS:
+            meta["truncated"] = True
+            break
+
+    meta["checked"] = len(pairs)
+    if not pairs:
+        return [], meta
+
+    verdicts = _judge_grounding_batched(pairs)
+    if verdicts is None:
+        meta["error"] = "judge_unavailable"
+        return [], meta
+
+    issues: list[dict] = []
+    for entry in verdicts:
+        if not isinstance(entry, dict):
+            continue
+        idx = entry.get("index")
+        if not isinstance(idx, int) or idx < 0 or idx >= len(pair_to_cit):
+            continue
+        supports = (entry.get("supports") or "").lower()
+        if supports in ("yes", "partial"):
+            continue  # grounded
+        cit = pair_to_cit[idx]
+        pair = pairs[idx]
+        issues.append({
+            "category": "grounding",
+            "citation": pair["label"],
+            "position": cit["span"][0],
+            "problem": f"claim_{supports or 'unknown'}_by_source",
+            "claim": pair["claim"],
+            "supports": supports or "unknown",
+            "confidence": float(entry.get("confidence") or 0.0),
+            "checked_text_source": pair["source_label"],
+            "reasoning": (entry.get("reasoning") or "")[:160],
+            "suggestion": (
+                "An independent Sonnet judge read the cited text and "
+                "concluded it does not support the claim attached to it. "
+                "Either (a) replace the citation with one whose text "
+                "actually supports the proposition, (b) qualify the "
+                "claim to match what the cited text says, or (c) drop "
+                "the proposition. This is the 'reasoning error' class "
+                "from Butler & Butler (Isaacus, Legal RAG Bench, 2026)."
+            ),
+        })
+    return issues, meta
+
+
+def _handle_attest_response(*, draft_text: str,
+                             audit_grounding: bool = False) -> dict:
     """Post-draft audit: parse every Swiss-case citation in the LLM's
     response and verify existence + pinpoint validity.
 
@@ -9147,6 +9419,12 @@ def _handle_attest_response(*, draft_text: str) -> dict:
                 "statute": len(statute_issues),
                 "quote": len(quote_issues),
                 "date": 0,
+                "grounding": 0,
+            },
+            "grounding_meta": {
+                "requested": audit_grounding,
+                "checked": 0,
+                "note": "no case citations to ground",
             },
             "annotated_text": draft_text,
             "linked_text": draft_text,
@@ -9237,8 +9515,10 @@ def _handle_attest_response(*, draft_text: str) -> dict:
         else:
             ok_count += 1
 
-        # Record the decision's date on the citation dict so the date
-        # audit can compare without re-fetching.
+        # Record audit-context on the citation dict so downstream audits
+        # (date, grounding) can read it without re-resolving.
+        cit["_status"] = status
+        cit["_resolved_id"] = resolved if decision else None
         if decision:
             cit["_decision_date"] = decision.get("decision_date") or ""
             # Build the source pool entry once per decision
@@ -9324,6 +9604,20 @@ def _handle_attest_response(*, draft_text: str) -> dict:
     issues.extend(statute_issues)
     issues.extend(quote_issues)
     issues.extend(date_issues)
+
+    # Optional grounding audit (Butler & Butler 2026 — closes the
+    # "reasoning error" class g=1∧c=0∧r=1: real citation, retrieved
+    # source, but proposition not actually supported).
+    grounding_meta: dict = {"requested": audit_grounding}
+    if audit_grounding:
+        grounding_issues, grounding_meta = _audit_grounding(
+            draft_text, citations, cited_sources
+        )
+        grounding_meta["requested"] = True
+        issues.extend(grounding_issues)
+    else:
+        grounding_issues = []
+
     # Stable order: by position
     issues.sort(key=lambda i: i.get("position", 0))
 
@@ -9343,30 +9637,40 @@ def _handle_attest_response(*, draft_text: str) -> dict:
             "statute": len(statute_issues),
             "quote": len(quote_issues),
             "date": len(date_issues),
+            "grounding": len(grounding_issues),
         },
+        "grounding_meta": grounding_meta,
         "annotated_text": annotated_text,
         "linked_text": linked_text,
         "issues": issues,
         "_note": (
-            "Closing audit covers FOUR hallucination classes:\n"
+            "Closing audit covers up to FIVE hallucination classes:\n"
             "  • case      — citation exists in corpus, pinpoint resolves\n"
             "  • statute   — Art. X LAW reference resolves in statutes.db\n"
-            "  • quote     — \"…\"-text appears verbatim in a cited decision\n"
-            "  • date      — 'vom DD.MM.YYYY' adjacent to citation matches "
-            "the actual decision date\n\n"
+            "  • quote     — \"…\"-text appears verbatim in a cited source\n"
+            "  • date      — 'vom DD.MM.YYYY' adjacent to citation matches\n"
+            "  • grounding — (opt-in via audit_grounding=True) the proposition\n"
+            "               attached to each verified citation is actually\n"
+            "               supported by the cited Erwägung / Regeste / text.\n"
+            "               Closes the 'reasoning error' class identified by\n"
+            "               Butler & Butler, 'Legal RAG Bench' (Isaacus, 2026):\n"
+            "               citation correct + source retrieved + proposition\n"
+            "               unsupported. Costs one Sonnet call (~3 s, ≈$0.005)\n"
+            "               regardless of citation count.\n\n"
             "Citations marked ✓ passed case-existence + pinpoint checks. "
-            "Citations marked ⚠️ did NOT. Statute/quote/date issues are in "
-            "the `issues` list (no inline markers). Fix every issue before "
-            "sending. Possible fixes: (a) re-call cite() / get_law for the "
-            "right reference, (b) pick a different decision, (c) replace a "
-            "fabricated quote with a verbatim get_erwaegung extract, "
-            "(d) drop the assertion if no source supports it.\n\n"
-            "WHEN ok=true: send the `linked_text` field VERBATIM to the "
-            "user — it is your draft with every validated case citation "
-            "wrapped in a clickable Markdown link to mcp.opencaselaw.ch. "
-            "Do NOT re-paraphrase after attestation; that strips the "
-            "links. \n\nFor supports-the-claim verification (claim ↔ "
-            "decision-text alignment) use check_claim_support."
+            "Citations marked ⚠️ did NOT. Statute/quote/date/grounding issues "
+            "are in the `issues` list (no inline markers). Fix every issue "
+            "before sending. Possible fixes: (a) re-call cite() / get_law for "
+            "the right reference, (b) pick a different decision whose text "
+            "actually supports the claim, (c) replace a fabricated quote with "
+            "a verbatim get_erwaegung extract, (d) qualify or drop the "
+            "proposition.\n\n"
+            "WHEN to set audit_grounding=True: any answer with ≥2 citations, "
+            "or where a wrong proposition would mislead a Swiss lawyer.\n\n"
+            "WHEN ok=true: send the `linked_text` field VERBATIM to the user "
+            "— it is your draft with every validated case citation wrapped "
+            "in a clickable Markdown link to mcp.opencaselaw.ch. Do NOT "
+            "re-paraphrase after attestation; that strips the links."
         ),
     }
 
@@ -13114,7 +13418,7 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="attest_response",
             description=(
-                "MANDATORY FINAL-STEP AUDIT covering four hallucination "
+                "MANDATORY FINAL-STEP AUDIT covering up to FIVE hallucination "
                 "classes: (1) case citations — verifies every BGE/BGer/"
                 "BVGer/BStGer/BPatGer/MKGE/ATF/TF/TAF/TPF/TFB/ATMC/STMC "
                 "reference exists in the corpus and any pinpoint "
@@ -13123,16 +13427,29 @@ def _list_tools() -> list[Tool]:
                 "resolves in statutes.db (law abbreviation known, article "
                 "number present); (3) direct quotations — verifies every "
                 "\"…\"-quoted substring (≥30 chars) appears verbatim in a "
-                "regeste / Erwägung / full text of one of the cited "
-                "decisions; (4) decision dates — verifies any 'vom "
-                "DD.MM.YYYY' adjacent to a citation matches the stored "
-                "decision date. Returns the draft annotated with ✓ or ⚠️ "
-                "per case citation plus a structured `issues` list with "
-                "category labels and suggestions. CALL THIS BEFORE emitting "
-                "your final answer whenever your response contains ≥1 case "
-                "citation, statute reference, or direct quotation. If "
-                "ok=false, fix each flagged issue before sending; if "
-                "ok=true, send `linked_text` verbatim to the user."
+                "regeste / Erwägung / full text of one of the cited sources "
+                "(decisions or statutes); (4) decision dates — verifies any "
+                "'vom DD.MM.YYYY' adjacent to a citation matches the stored "
+                "decision date; (5) GROUNDING (opt-in via "
+                "audit_grounding=true) — for each verified citation, the "
+                "claim sentence immediately preceding it is sent to an "
+                "independent Sonnet judge alongside the cited Erwägung / "
+                "Regeste, which decides whether the source supports, "
+                "contradicts, or is unrelated to the claim. Closes the "
+                "'reasoning error' class from Butler & Butler, 'Legal RAG "
+                "Bench' (Isaacus, 2026): the citation is real and the source "
+                "was retrieved, but the proposition is not actually "
+                "supported. Costs one Sonnet call (~3 s) regardless of "
+                "citation count.\n\n"
+                "Returns the draft annotated with ✓ or ⚠️ per case citation "
+                "plus a structured `issues` list with category labels and "
+                "suggestions. CALL THIS BEFORE emitting your final answer "
+                "whenever your response contains ≥1 case citation, statute "
+                "reference, or direct quotation. SET audit_grounding=true "
+                "for any answer with ≥2 citations or where a wrong "
+                "proposition would mislead a Swiss lawyer. If ok=false, "
+                "fix each flagged issue before sending; if ok=true, send "
+                "`linked_text` verbatim to the user."
             ),
             inputSchema={
                 "type": "object",
@@ -13140,6 +13457,21 @@ def _list_tools() -> list[Tool]:
                     "draft_text": {
                         "type": "string",
                         "description": "Your draft response text.",
+                    },
+                    "audit_grounding": {
+                        "type": "boolean",
+                        "description": (
+                            "When true, additionally runs the LLM-judge "
+                            "grounding rail: for each verified case citation "
+                            "in the draft, the preceding claim sentence is "
+                            "checked against the cited Erwägung / Regeste / "
+                            "text by an independent Sonnet judge. Catches "
+                            "the 'reasoning error' class (real citation, "
+                            "unsupported proposition). Adds ~3 s and one "
+                            "Sonnet call (~$0.005). Set to true for any "
+                            "answer with ≥2 citations or where a wrong "
+                            "proposition would mislead a Swiss lawyer."
+                        ),
                     },
                 },
                 "required": ["draft_text"],
@@ -13977,6 +14309,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             result = await asyncio.to_thread(
                 _handle_attest_response,
                 draft_text=arguments["draft_text"],
+                audit_grounding=bool(arguments.get("audit_grounding", False)),
             )
             return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
 
@@ -15408,7 +15741,11 @@ render();setInterval(render,60000);
                                "issues}. CALL THIS before finalizing any LLM response containing ≥1 "
                                "case citation.")
     async def api_attest(body: _AttestBody):
-        return await asyncio.to_thread(_handle_attest_response, draft_text=body.draft_text)
+        return await asyncio.to_thread(
+            _handle_attest_response,
+            draft_text=body.draft_text,
+            audit_grounding=body.audit_grounding,
+        )
 
     @rest_api.post("/verify-claim", tags=["Citation Integrity"],
                    summary="Verify that a decision supports a claim (Sonnet-4.6 judge)",

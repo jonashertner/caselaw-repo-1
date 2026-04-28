@@ -131,7 +131,7 @@ def test_attest_empty_draft_clean(m):
     assert res["citations_found"] == 0
     assert res["issues_count"] == 0
     assert res["issues_by_category"] == {
-        "case": 0, "statute": 0, "quote": 0, "date": 0,
+        "case": 0, "statute": 0, "quote": 0, "date": 0, "grounding": 0,
     }
     # New shape promises both rails even on the no-citation path
     assert "annotated_text" in res
@@ -201,6 +201,112 @@ def test_pinpoint_in_text_authoritative(m, body, pinpoint, expected):
 
 
 # ── Regression: strict resolver must not run LIKE %x% scan ─────────
+
+@pytest.mark.parametrize("draft,citation_start,expected_starts_with", [
+    ("Der Vermieter haftet für Mängel an der Mietsache (BGE 140 III 86).",
+     len("Der Vermieter haftet für Mängel an der Mietsache ("),
+     "Der Vermieter haftet"),
+    ("Erstens. Zweitens haftet der Vermieter (BGE 140 III 86).",
+     len("Erstens. Zweitens haftet der Vermieter ("),
+     "Zweitens haftet"),
+    # See-cite — should return None
+    ("Vgl. BGE 140 III 86", 5, None),
+    # Too short — None
+    ("Ja (BGE 140 III 86)", 4, None),
+])
+def test_extract_preceding_claim(m, draft, citation_start, expected_starts_with):
+    out = m._extract_preceding_claim(draft, citation_start)
+    if expected_starts_with is None:
+        assert out is None
+    else:
+        assert out is not None
+        assert out.startswith(expected_starts_with)
+
+
+def test_grounding_audit_unavailable_without_api_key(m, monkeypatch):
+    monkeypatch.setattr(m, "ANTHROPIC_API_KEY", None)
+    out, meta = m._audit_grounding("draft", [], [])
+    assert out == []
+    assert meta["available"] is False
+    assert meta.get("error") == "anthropic_api_key_missing"
+
+
+def test_grounding_audit_calls_judge_with_pairs(m, monkeypatch):
+    """End-to-end stub: synthesize verified citations + cited sources,
+    monkeypatch the Sonnet call, confirm pairs are built and verdicts
+    flow through to issues."""
+    monkeypatch.setattr(m, "ANTHROPIC_API_KEY", "sk-test")
+    captured: dict = {}
+
+    def fake_judge(pairs):
+        captured["pairs"] = pairs
+        # Verdicts: pair 0 = grounded, pair 1 = unrelated
+        return [
+            {"index": 0, "supports": "yes", "confidence": 0.9, "reasoning": "matches"},
+            {"index": 1, "supports": "unrelated", "confidence": 0.8,
+             "reasoning": "off-topic"},
+        ]
+
+    monkeypatch.setattr(m, "_judge_grounding_batched", fake_judge)
+
+    claim_a = "Der Vermieter haftet f\u00fcr M\u00e4ngel an der Mietsache "
+    cit_a = "BGE 140 III 86"
+    sep = ". "
+    claim_b = "Schadenersatz nach Art. 41 OR setzt Verschulden voraus "
+    cit_b = "BGer 4A_747/2012"
+    draft = claim_a + cit_a + sep + claim_b + cit_b + "."
+    span_a = (len(claim_a), len(claim_a) + len(cit_a))
+    pre_b = len(claim_a) + len(cit_a) + len(sep)
+    span_b = (pre_b + len(claim_b), pre_b + len(claim_b) + len(cit_b))
+    citations = [
+        {"span": span_a, "full_match": cit_a, "_status": "OK",
+         "_resolved_id": "bge_BGE_140_III_86", "pinpoint": None},
+        {"span": span_b, "full_match": cit_b, "_status": "OK",
+         "_resolved_id": "bger_4A_747_2012", "pinpoint": None},
+    ]
+    sources = [
+        {"decision_id": "bge_BGE_140_III_86",
+         "regeste": "Der Vermieter haftet für Mängel an der Sache.",
+         "full_text": "", "paragraphs": []},
+        {"decision_id": "bger_4A_747_2012",
+         "regeste": "Verfahrensrechtliche Grundsätze zur Beschwerde.",
+         "full_text": "", "paragraphs": []},
+    ]
+    issues, meta = m._audit_grounding(draft, citations, sources)
+    assert meta["checked"] == 2, f"expected 2 pairs, meta={meta}"
+    assert meta.get("error") is None
+    # Pair 1 (unrelated) → flagged; pair 0 (yes) → not flagged
+    assert len(issues) == 1
+    assert issues[0]["category"] == "grounding"
+    assert issues[0]["supports"] == "unrelated"
+    assert "Schadenersatz" in issues[0]["claim"]
+
+
+def test_grounding_audit_judge_failure_is_soft(m, monkeypatch):
+    """If the Sonnet API errors, the audit must NOT throw — return []
+    and surface the failure in meta."""
+    monkeypatch.setattr(m, "ANTHROPIC_API_KEY", "sk-test")
+    monkeypatch.setattr(m, "_judge_grounding_batched", lambda pairs: None)
+    claim = "Eine ausreichend lange Behauptung mit Substanz "
+    cit_str = "BGE 140 III 86"
+    draft_full = claim + cit_str + "."
+    span = (len(claim), len(claim) + len(cit_str))
+    citations = [{
+        "span": span, "full_match": cit_str,
+        "_status": "OK", "_resolved_id": "bge_BGE_140_III_86", "pinpoint": None,
+    }]
+    sources = [{"decision_id": "bge_BGE_140_III_86",
+                "regeste": "x" * 80, "full_text": "", "paragraphs": []}]
+    out, meta = m._audit_grounding(draft_full, citations, sources)
+    assert out == []
+    assert meta.get("error") == "judge_unavailable"
+
+
+def test_attest_skips_grounding_when_not_requested(m):
+    res = m._handle_attest_response(draft_text="Pure prose.")
+    assert res["grounding_meta"]["requested"] is False
+    assert "grounding" in res["issues_by_category"]
+
 
 def test_strict_resolver_returns_none_on_miss(m, monkeypatch):
     """The whole point of _resolve_decision_id_strict is to return None
