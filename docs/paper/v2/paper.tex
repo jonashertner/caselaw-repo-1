@@ -1,0 +1,205 @@
+% Verification-First Legal RAG: A Defense-in-Depth Audit Pipeline and a
+% Multilingual Swiss-Law Benchmark
+%
+% arXiv submission v2 — paper.tex skeleton, populated in Step 5.
+%
+% Style: NeurIPS-like single-column LaTeX (we'll switch to ACL or
+% specific arXiv-friendly class once we confirm the target during Step 1).
+% This skeleton is deliberately minimal so the structure is the
+% review surface, not the formatting.
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{authblk}
+\usepackage{abstract}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!50!black,
+    urlcolor=blue!50!black,
+    citecolor=blue!50!black,
+}
+
+\title{Verification-First Legal RAG:\\
+A Defense-in-Depth Audit Pipeline and\\
+a Multilingual Swiss-Law Benchmark}
+
+\author[1]{Jonas Hertner}
+\affil[1]{OpenCaseLaw, Zurich, Switzerland \\ \texttt{team@jonashertner.com}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+% [Abstract draft A — locked in Step 1, populated in Step 5 once
+% per-rail ablation numbers are in.]
+%
+% TODO: paste from 01_title_and_abstract.md once Step 1 questions
+% are answered and Draft A vs B vs C is chosen.
+\end{abstract}
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section{Introduction}
+\label{sec:intro}
+
+% [§1 — open with Dahl 2024 + Magesh 2024 numbers; introduce the
+% rail decomposition as the conceptual move; state the two
+% contributions; close with paper roadmap.]
+
+% Length budget: 0.75 page.
+
+% Outline:
+% - Sentence 1: Magesh / Dahl finding (58–82 % / 17–33 % hallucination).
+% - Sentence 2: Why this matters specifically for legal practice
+%   (Sorgfaltspflicht / professional liability).
+% - Sentence 3: The conceptual move — decompose verification by
+%   error class.
+% - Paragraph 2: The two contributions (C1, C2 from
+%   02_contribution_table.md).
+% - Paragraph 3: Roadmap (§3 architecture, §4 benchmark, §5 results,
+%   §6 discussion, §7 conclusion).
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section{Related Work}
+\label{sec:related}
+
+% [§2 — Tier 1 / Tier 2 / Tier 3 / Tier 4 from 03_related_work_map.md
+% prose-ified into 4 paragraphs.]
+
+% Length budget: 0.75 page.
+
+% Closing paragraph: the "positioning paragraph" from
+% 03_related_work_map.md.
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section{The Five-Rail Audit Pipeline}
+\label{sec:rails}
+
+% [§3 — the methodological contribution.]
+
+% Length budget: 1.5 pages.
+
+% Outline:
+% - §3.1 Architecture overview (figure 1: pipeline diagram)
+% - §3.2 Rail 1: case-citation existence (regex parse, exact-match
+%   lookup, pinpoint validation against structured Erwägungen +
+%   full-text fallback)
+% - §3.3 Rail 2: statute-reference resolution (regex parse, statute-DB
+%   lookup, abbreviation guard)
+% - §3.4 Rail 3: verbatim-quote source-matching (regex parse,
+%   whitespace + punctuation normalisation, source-pool from cited
+%   decisions + cited statutes)
+% - §3.5 Rail 4: decision-date sanity (date adjacency parse,
+%   match against stored decision_date)
+% - §3.6 Rail 5: opt-in proposition grounding (preceding-claim
+%   extraction, batched Sonnet judge, JSON verdict array)
+% - §3.7 Cost and latency budget (Table 1: per-rail cost; Figure 2:
+%   latency histogram on 100 sample drafts)
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section{Swiss Legal RAG Bench v0.2}
+\label{sec:benchmark}
+
+% [§4 — the resource contribution.]
+
+% Length budget: 1.5 pages.
+
+% Outline:
+% - §4.1 Design rationale (extension of Butler & Butler 2026 with
+%   cross-lingual leaf)
+% - §4.2 Question construction (expert-annotated, balanced across
+%   DE/FR/IT × major legal areas; 30 questions)
+% - §4.3 Evaluation methodology (5-leaf decomposition: correctness ×
+%   groundedness × retrieval accuracy × cross-language)
+% - §4.4 Statistics (Table 2: distribution by language / area /
+%   difficulty; Table 3: claim-type distribution)
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section{Experiments}
+\label{sec:experiments}
+
+% [§5 — the empirical core.]
+
+% Length budget: 2 pages.
+
+% Outline:
+% - §5.1 Setup (live OpenCaseLaw stack as retriever; Claude Sonnet 4.6
+%   as generator and judge; Step 4 produces the actual numbers)
+% - §5.2 Per-rail ablation (Table 4: 6 audit configurations × 30
+%   questions; per-rail catch rate per error class)
+% - §5.3 Comparison against Butler & Butler 2026 baseline (Table 5:
+%   our Swiss numbers vs their Australian numbers, with same metrics)
+% - §5.4 Cross-lingual subset analysis (where retrieval succeeds in
+%   the question's language vs cross-language; Figure 3: language
+%   confusion matrix)
+% - §5.5 Cost / latency tradeoff (4 deterministic rails ~3 ms;
+%   judge rail ~2 s, ~$0.005)
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section{Discussion}
+\label{sec:discussion}
+
+% [§6 — limitations and generalisation.]
+
+% Length budget: 0.75 page.
+
+% Outline:
+% - §6.1 When the deterministic rails miss (paraphrased quotes;
+%   indirect citations; multi-source propositions)
+% - §6.2 When the judge rail miscalls (long claims with multiple
+%   sub-propositions; claims requiring inference beyond the
+%   retrieved text)
+% - §6.3 Generalisation to other jurisdictions (each rail's
+%   prerequisite; what a non-Swiss adaptation would change)
+% - §6.4 Limitations (30-question benchmark size; live-corpus
+%   dependency in some experiments; reliance on Claude as both
+%   generator and judge for cost reasons)
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+% [§7 — concise.]
+
+% Length budget: 0.25 page.
+
+% Restate the two contributions; point to code (MIT) + benchmark
+% (CC0) + corpus (CC0); thank the OnlineKommentar.ch and
+% entscheidsuche.ch communities; gesture at v0.3 of the benchmark
+% (100 questions) and the open question of automated benchmark
+% growth.
+
+% ──────────────────────────────────────────────────────────────────────
+
+\section*{Data Availability}
+
+% Audit pipeline: \url{https://github.com/jonashertner/caselaw-repo-1}
+% Benchmark: \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench}
+% Corpus: \url{https://huggingface.co/datasets/voilaj/swiss-caselaw}
+% Live MCP endpoint: \url{https://mcp.opencaselaw.ch}
+% Frozen paper-release snapshot (DOI): % [Zenodo DOI from Step 2]
+
+% ──────────────────────────────────────────────────────────────────────
+
+\bibliographystyle{plain}
+\bibliography{bib/references}
+
+\end{document}
