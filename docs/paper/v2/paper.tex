@@ -24,7 +24,8 @@
 Defense-in-Depth Auditing for Multilingual Swiss Law}
 
 \author[1]{Jonas Hertner}
-\affil[1]{OpenCaseLaw, Zurich, Switzerland \\
+\affil[1]{Independent researcher and maintainer, OpenCaseLaw \\
+          Zurich, Switzerland \\
           \texttt{team@jonashertner.com} \\
           \url{https://opencaselaw.ch}}
 
@@ -661,13 +662,36 @@ collaborators for v1.0.
 
 \section*{Data and Code Availability}
 
+\paragraph{Reproducibility pin (2026-04-28).}
+The numbers in \S\ref{sec:experiments} were produced from these
+exact artefacts:
+
 \begin{itemize}\itemsep0pt
-  \item Audit pipeline source: \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/mcp_server.py}
-  \item Benchmark v0.2: \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench}
-  \item Corpus: \url{https://huggingface.co/datasets/voilaj/swiss-caselaw}
-  \item Live MCP endpoint: \url{https://mcp.opencaselaw.ch}
-  \item Per-trial ablation data: \url{https://github.com/jonashertner/caselaw-repo-1/tree/main/docs/paper/v2/experiments}
+  \item Audit pipeline source (MIT): \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/mcp_server.py} \\
+        commit \texttt{4553379} (2026-04-28)
+  \item Benchmark v0.2 (CC0):   \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench} \\
+        SHA-256 of \texttt{questions.jsonl}: \\
+        \texttt{b299db37\dots f21ec449}
+  \item Per-trial ablation data: \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/tree/main/docs/paper/v2/experiments/ablation\_results.json} \\
+        SHA-256: \texttt{79dcc442\dots 039c3b08}
+  \item Underlying Swiss-caselaw corpus (CC0):
+        \url{https://huggingface.co/datasets/voilaj/swiss-caselaw} \\
+        Live MCP corpus size at experiment time: 969{,}738 decisions
+  \item Live MCP endpoint (for re-execution against current corpus):
+        \url{https://mcp.opencaselaw.ch}
 \end{itemize}
+
+Generator and judge: \texttt{claude-sonnet-4-6} (Anthropic),
+\texttt{temperature=0}.  Each trial in \S\ref{sec:experiments} can
+be re-executed by pinning to the commits + SHAs above and pointing
+the harness at the live MCP endpoint.
+
+\paragraph{No competing financial interests declared.}  This work
+was funded by the author and the volunteer
+\href{https://github.com/jonashertner/caselaw-repo-1}{OpenCaseLaw
+contributor community}.  The author maintains the project as a
+public-interest infrastructure; no commercial product is sold.
 
 % ──────────────────────────────────────────────────────────────────────
 
