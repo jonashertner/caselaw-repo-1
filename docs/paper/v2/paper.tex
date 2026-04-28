@@ -24,8 +24,9 @@
 \usepackage[colorlinks=true,linkcolor=blue!50!black,
             urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
 
-\title{A Pilot Closing-Audit Pipeline for Legal RAG:\\
-Failure Analysis on Swiss Federal Law}
+\title{Verification-First Legal RAG:\\
+A Five-Rail Closing Audit and Calibration Stress Test on
+Swiss Federal Law}
 
 \author[1]{Jonas Hertner}
 \affil[1]{OpenCaseLaw\,---\,Independent researcher and maintainer\\
@@ -39,48 +40,49 @@ Failure Analysis on Swiss Federal Law}
 \maketitle
 
 \begin{abstract}
-This is a \emph{pilot failure-analysis note}, not a finalised
-verification system or a generalisable performance claim.  We
-present a five-rail closing audit pipeline for
+We propose a five-rail closing audit pipeline for
 retrieval-augmented legal LLMs --- case-citation existence,
 statute-reference resolution, verbatim-quote source-matching,
 decision-date sanity, and proposition grounding by a
-separate-call LLM judge (same model family as the generator in
-the present experiment) --- and stress-test it against Claude
+separate-call LLM judge --- and stress-test it against Claude
 Sonnet 4.6 on 30 Swiss-federal-law questions in a
 \emph{prior-only} condition (no retrieval).  Four rails are
 deterministic (${\sim}3$\,ms per draft); the fifth is
 judge-mediated (${\sim}2$\,s, ${\approx}\$0.005$ per call).
-Three findings.  (i) Citation existence is not the bottleneck
-in this setting: only 1 of 33 emitted citations is fabricated,
-and 5 of 6 drafts judged wrong by a same-family $c_{eli}$
-judge contain only valid citations; the misrepresented-holding
-class dominates.  Comparable absolute hallucination rates
-reported by Dahl et al.\ 2024 and Magesh et al.\ 2025 were
-measured under different model/condition combinations and we
-do not claim a like-for-like comparison.  (ii) On the
-6-wrong-draft sample, the case-existence rail flags the one
-fabricated draft (0\,\% false-positive rate); adding the other
-deterministic rails preserves the wrong-draft flag rate
-(16.7\,\%) but raises FPR to 8.3\,\%; adding the grounding
-rail brings the wrong-draft flag rate to 50\,\% at FPR
-25\,\%, but inspection shows neither of the two added flags
-is a clean semantic catch of the misrepresented holding ---
-one fires on a secondary citation-attachment claim, the other
-on a fragmentary claim string.  (iii) The 3 wrong drafts that
-escape the audit do so for mechanical reasons (claim-extraction
-heuristic skipped the citation on two; the judge call returned
-an error on one), not because the judge evaluates and concurs
-with the model's mischaracterisation.  We release the audit
-pipeline (MIT) and \textbf{Swiss Legal RAG Bench v0.2}, a
-30-question pilot multilingual evaluation set
-(DE\,/\,FR\,/\,IT; benchmark packaging CC0).  v1.0 will (a)
-implement more permissive claim extraction and judge-call
-retry, (b) add an end-to-end retrieval-augmented condition,
-(c) replace the same-family $c_{eli}$ judge with an
-independent model, and (d) expand the benchmark to 150
-questions with named expert co-authors and a multi-annotator
-protocol.
+We report two runs against the same questions and benchmark
+artefact: a v1 run, and a v2 run after deploying mechanical
+fixes (citation-leading claim extraction, judge-call retry)
+that the v1 run identified as audit-pipeline gaps.
+
+Three findings.  (i) \emph{Citation existence is not the
+bottleneck}: only 1 of 33 emitted citations is fabricated
+(3.0\,\%); 5 of 6 wrong drafts in v1 contain only valid
+citations.  Hallucination rates reported by Dahl et al.\ 2024
+(58--82\,\%) and Magesh et al.\ 2025 (17--33\,\%) were measured
+under different model and condition combinations and we do not
+claim a like-for-like comparison.  (ii) \emph{Calibration of
+the grounding judge is the open problem}: with the mechanical
+fixes in place, the v2 grounding rail evaluates 13 of 30
+drafts (vs.\ 8/30 in v1) and fires on 3 of the 6 wrong
+drafts (50\,\% wrong-draft flag rate for the rail alone) but
+also on 10 of the 24 correct drafts (FPR 41.7\,\%).
+Inspection shows the three wrong-draft flags are clean
+semantic catches on the misrepresented-holding class, but
+the judge is opinionated enough on correct drafts that
+running it as a binary gate would over-flag.  The full v2
+audit (case $+$ statute $+$ quote $+$ date $+$ grounding)
+flags 4 of 6 wrong drafts (the quote rail catches q-025's
+non-verbatim French quotation) at FPR 50\,\%.
+(iii) \emph{The $c_{eli}$ ground-truth judge has substantial
+run-to-run variance}: 4 of 30 drafts received different
+correctness verdicts in our v1 vs v2 runs at $\textsc{temperature}=0$
+(wrong-set $\{$q-017, q-018, q-021, q-025, q-026, q-030$\}$
+in v1, $\{$q-006, q-018, q-021, q-025, q-028, q-030$\}$ in
+v2).  At $n=30$ this is a meaningful caveat; v1.0 will report
+inter-run agreement and use an independent judge.  We release
+the audit pipeline (MIT) and \textbf{Swiss Legal RAG Bench
+v0.2} (30 author-curated questions, DE\,/\,FR\,/\,IT;
+benchmark packaging CC0).
 \end{abstract}
 
 % ──────────────────────────────────────────────────────────────────────
@@ -124,26 +126,24 @@ Our central empirical result is that on a closed Swiss-law corpus
 (969\,k decisions, daily refresh; portions of which are
 plausibly present in the web-scale pretraining of the model
 under test) Claude Sonnet 4.6 fabricates only \textbf{3.0\,\%}
-of emitted citations.  Comparable absolute hallucination rates
-have been reported by Magesh et al.\ (2025, 17--33\,\% on
-commercial legal-RAG products) and Dahl et al.\ (2024,
-58--82\,\% on general LLMs); those measurements were taken
+of emitted citations.  Hallucination rates reported by Magesh
+et al.\ (2025, 17--33\,\% on commercial legal-RAG products) and
+Dahl et al.\ (2024, 58--82\,\% on general LLMs) were measured
 under different model and condition combinations and we do not
-claim a like-for-like comparison.  Citation existence is not
-the bottleneck in our setting.  But the
-$c_{eli}$ correctness rate is only 80\,\% (24/30): of the 6 wrong
-drafts, only 1 contains a fabricated citation; 3 are clean
-\emph{real-citation, misrepresented-holding} errors (the model
-cites a real BGE correctly but omits its load-bearing
-precedential element); and 2 mix the misrepresentation pattern
-with a primary error of another class (an outdated statutory
-scale on q-018, a wrong-grounds enumeration on q-030).  None of
-these five non-fabrication failures are detectable by
-per-citation existence checks; an LLM-judge grounding rail can
-in principle reach them, at meaningful false-positive cost, and
-in practice the rail is bottlenecked at our claim-extraction
-heuristic.  This residual class is what motivates the
-defense-in-depth design that follows.
+claim a like-for-like comparison.  Citation existence is not the
+bottleneck in our setting.  The $c_{eli}$ correctness rate is
+80\,\% (24/30) in both of our runs, but the wrong-draft
+\emph{set} differs by 4 of 6 across runs --- a run-to-run noise
+floor we surface as a primary limitation in
+\S\ref{sec:discussion}.  The dominant residual error class is
+\emph{real citation, misrepresented holding}: the model cites a
+real BGE correctly but omits or misrepresents its load-bearing
+precedential element.  Per-citation existence checks cannot
+detect this class; an LLM-judge grounding rail can, but the
+question of how to \emph{calibrate} that judge --- when to defer
+to the draft, when to override --- becomes the dominant open
+problem once the rail's mechanical claim-extraction gap is
+closed.
 
 \paragraph{The conceptual move.}
 A production verification system for legal RAG should not be a
@@ -173,22 +173,21 @@ the design as a five-rail closing audit pipeline
         future cross-language suite.  v1.0 (150 questions,
         named expert co-authors, multi-annotator protocol) is
         the planned gold-standard deliverable.
-  \item Per-rail ablation identifying two structural gaps in
-        verification-first legal RAG: (a) the dominant residual
-        error class is \emph{real citation, misrepresented
-        holding} (3 of 6 wrong drafts cleanly, plus 2 that
-        blend it with current-law / statutory-eligibility error,
-        vs.\ 1 fabricated citation); (b) the audit's
-        claim-extraction heuristic skips the citation on a
-        non-trivial fraction of drafts, blocking the grounding
-        judge before it can evaluate.  In our experiment the
-        rail fires on the 2 wrong drafts where claim-extraction
-        provided a candidate (though on inspection the trigger
-        is a secondary citation-attachment issue rather than a
-        clean semantic catch of the misrepresented holding) and
-        is blocked on 3 of the 5 non-fabrication wrong drafts
-        (claim-extraction skips $\times 2$, judge call error
-        $\times 1$).
+  \item Per-rail ablation across two runs --- v1 against the
+        as-instrumented audit code, v2 after deploying the
+        mechanical fixes (citation-leading claim extraction,
+        judge-call retry) the v1 inspection identified ---
+        identifying \emph{calibration} of the grounding judge
+        as the open problem.  In v2 the grounding rail
+        evaluates 13 of 30 drafts (vs.\ 8 in v1) and makes 3
+        clean semantic catches on wrong drafts (q-006, q-018,
+        q-021) but also fires on 10/24 correct drafts (FPR
+        41.7\,\%).  Two wrong drafts (q-028, q-030) reach the
+        judge but the extracted claim is a narrow factual
+        statement that is literally supported by the source
+        even though the draft as a whole is wrong --- the
+        \emph{narrow-claim, broad-error} failure mode joins
+        calibration as the second open problem.
 \end{enumerate}
 
 % ──────────────────────────────────────────────────────────────────────
@@ -560,38 +559,71 @@ widely-known leading cases, whereas Magesh's tools
 were exercised on more open-ended litigation
 queries.
 
-\paragraph{Per-rail ablation.}
-Of the 30 prior-only drafts, 24 are judged
-correct ($c_{eli} = 1$) and 6 wrong ($c_{eli} = 0$)
-by the second-pass Sonnet judge (same model family
-as the generator; see \S\ref{sec:discussion}).
-Table~\ref{tab:ablation} reports the rate at which
-each cumulative configuration \emph{flags} drafts in
-the wrong-draft subset (\textbf{wrong-draft flag
-rate}, ``WFR'') and the correct-draft subset
-(\textbf{false-positive rate}, FPR).  We deliberately
-avoid calling WFR a ``true-positive rate'' or
-``catch rate'' because, as the inspection in this
-section makes clear, several flags happen to land on
-wrong drafts without semantically detecting the
-underlying primary error.
+\paragraph{Per-rail ablation: two runs.}
+Of the 30 prior-only drafts, 24 are judged correct
+($c_{eli} = 1$) and 6 wrong ($c_{eli} = 0$) in each
+run by the second-pass Sonnet judge (same model
+family as the generator; see
+\S\ref{sec:discussion}).  We report two runs:
+\textbf{v1} against the original audit code at
+commit \texttt{4553379}, and \textbf{v2} after
+deploying the mechanical fixes (citation-leading
+claim extraction, judge-call retry) at commit
+\texttt{12d32d3}.  Both runs use the same 30
+questions, the same generator, the same judge model,
+and \texttt{temperature}=0.  Table~\ref{tab:ablation}
+reports the v2 numbers as primary;
+Table~\ref{tab:ablation_v1} reports the v1 baseline
+for comparison.  We deliberately call the wrong-draft
+column \textbf{WFR} (wrong-draft flag rate) rather
+than ``TPR'' or ``catch rate'' because, as the
+inspection later in this section shows, several flags
+happen to land on wrong drafts without semantically
+detecting the underlying primary error.
 
 \begin{table}[h]
 \centering
-\caption{Per-rail-configuration flag rates, v0.2 prior-only
-condition.  $n=30$ drafts; $c_{eli}=0$ for 6 (wrong) and
-$c_{eli}=1$ for 24 (correct) per the second-pass Sonnet judge.
-WFR (wrong-draft flag rate) = $P(\text{any enabled rail
-fires}\,|\,c_{eli}=0)$, computed on $n=6$; FPR =
-$P(\text{any enabled rail fires}\,|\,c_{eli}=1)$, computed on
-$n=24$.  Net = WFR $-$ FPR.  WFR counts \emph{any} rail
-firing on a wrong draft and does \emph{not} certify that the
-flag identifies the draft's primary error; the post-table
-inspection shows neither of the two grounding-rail flags is a
-clean semantic catch of the misrepresented holding.  95\,\%
-Wilson CIs on WFR are wide because of the small wrong-draft
-denominator ($3/6 \rightarrow [18.8, 81.2]$).}
+\caption{\textbf{v2 (post-mechanical-fix) ablation.}
+Per-rail-configuration flag rates, v0.2 prior-only condition,
+audit code at commit \texttt{12d32d3}.  $n=30$ drafts;
+$c_{eli}=0$ for 6 (wrong: $\{$q-006, q-018, q-021, q-025,
+q-028, q-030$\}$) and $c_{eli}=1$ for 24 (correct).  WFR
+(wrong-draft flag rate) $= P(\text{any enabled rail fires}\,|\,
+c_{eli}=0)$, computed on $n=6$; FPR $= P(\text{any enabled
+rail fires}\,|\,c_{eli}=1)$, computed on $n=24$; Net $=$
+WFR $-$ FPR.  WFR counts \emph{any} rail firing on a wrong
+draft and does \emph{not} certify that the flag identifies the
+draft's primary error.}
 \label{tab:ablation}
+\begin{tabular}{llrrrr}
+\toprule
+\textbf{Config} & \textbf{Rails enabled} & \textbf{WFR} & \textbf{WFR 95\%\,CI} & \textbf{FPR} & \textbf{Net} \\
+\midrule
+$C_0$ & $\emptyset$ (no rails)        & 0/6 = 0.0\,\%  & $[0.0, 39.0]$  & 0.0\,\%   & $+0.0$\,pp \\
+$C_1$ & $+$ case                      & 0/6 = 0.0\,\%  & $[0.0, 39.0]$  & 4.2\,\%   & $-4.2$\,pp \\
+$C_2$ & $+$ statute                   & 0/6 = 0.0\,\%  & $[0.0, 39.0]$  & 12.5\,\%  & $-12.5$\,pp \\
+$C_3$ & $+$ quote                     & 1/6 = 16.7\,\% & $[3.0, 56.4]$  & 12.5\,\%  & $+4.2$\,pp \\
+$C_4$ & $+$ date  (4 deterministic)   & 1/6 = 16.7\,\% & $[3.0, 56.4]$  & 12.5\,\%  & $+4.2$\,pp \\
+$C_5$ & $+$ grounding (full 5-rail)   & 4/6 = 66.7\,\% & $[30.0, 90.3]$ & 50.0\,\%  & $+16.7$\,pp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{v1 (pre-mechanical-fix) ablation, for
+comparison.}  Audit code at commit \texttt{4553379}; same 30
+questions, same generator, same judge model, $\textsc{temperature}=0$.
+$c_{eli}$ wrong set in v1: $\{$q-017, q-018, q-021, q-025, q-026,
+q-030$\}$ --- 4 of these labels flipped between v1 and v2 (q-017
+and q-026 went $\textsc{wrong}\rightarrow \textsc{correct}$;
+q-006 and q-028 went $\textsc{correct}\rightarrow \textsc{wrong}$),
+which we discuss as a primary limitation in \S\ref{sec:discussion}.
+The $C_5$ jump in WFR (3/6 in v1 $\rightarrow$ 4/6 in v2) and
+the FPR jump (25\,\% in v1 $\rightarrow$ 50\,\% in v2) both
+reflect the mechanical fixes unblocking 16 of 17 previously
+skipped or errored grounding evaluations.}
+\label{tab:ablation_v1}
 \begin{tabular}{llrrrr}
 \toprule
 \textbf{Config} & \textbf{Rails enabled} & \textbf{WFR} & \textbf{WFR 95\%\,CI} & \textbf{FPR} & \textbf{Net} \\
@@ -606,80 +638,84 @@ $C_5$ & $+$ grounding (full 5-rail)   & 3/6 = 50.0\,\% & $[18.8, 81.2]$ & 25.0\,
 \end{tabular}
 \end{table}
 
-Three findings emerge.  First, the deterministic
-rails behave very differently from one another: only
-the case-existence rail (configuration $C_1$) holds
-the perfect-precision floor (0\,\% FPR), and it does
-so by catching a single fabrication, q-017's invented
-DTF 117 II 198, which Sonnet uses to anchor a
-substantively flawed art.~264 CO answer (the draft
-also omits cpv.~3 and mischaracterises the
-unjustified-refusal consequences --- both
-correctness failures the case-existence rail is
-not designed to detect).  Adding
-the statute, quote, and date rails ($C_2$--$C_4$)
-preserves TPR but degrades precision: FPR climbs to
-8.3\,\% by $C_4$ as the rails flag valid statute
-references and quotations as anomalies on
-correctly-answered drafts.  Second, the grounding
-rail ($C_5$) is responsible for the entire jump in
-TPR over $C_4$: it fires on the only two wrong
-drafts (q-018, q-030) where claim-extraction
-supplied the judge with a candidate.  Inspection
-qualifies the credit: on q-018 the rail flags a
-secondary citation-attachment claim
-(``BGE 135 V 297'' attached to a generic
-concretisation claim) while the draft's primary
-correctness failures --- omission of
-\emph{Eingliederungsmassnahmen}, the six-month
-waiting period, and the 2022 linear scale --- go
-undetected; on q-030 the extracted claim is the
-fragment ``Entscheidend ist nach'', and the judge
-returns \texttt{unrelated} because the claim string
-is too short to evaluate.  Both flags happen to land
-on wrong drafts, but neither is a clean semantic
-catch of a misrepresented-holding error.  The
-25\,\% FPR is the cost of that recall: six correct
-drafts trigger the rail because the second-pass judge
-disagrees with the draft's interpretation of a real
-cited authority.  Third, the three wrong drafts that
-all rails miss (q-021, q-025, q-026) are missed for
-a structural reason different from the explanation we
-originally hypothesised.
+Three v2 findings emerge.
 
-\paragraph{The residual error class.}
-The three missed drafts (q-021, q-025, q-026) share
-a substantive pattern --- Sonnet cites a real BGE
-(BGE 142 III 433, BGE 144 III 481, BGE 130 V 343)
-correctly but \emph{mischaracterises} the holding,
-omitting the load-bearing precedential element ---
-which we call the \emph{real-citation /
-misrepresented-holding} class.  However, the
-proximate reason these drafts escape the audit is
-\emph{not} that the grounding judge evaluates them
-and concurs with Sonnet's mischaracterisation: it is
-that the grounding rail never gets to evaluate them.
-Per \texttt{grounding\_meta} in the artifact:
-q-021 and q-026 trip the
-\texttt{skipped\_no\_claim} branch (the heuristic
-that extracts the claim sentence preceding a
-citation found no candidate within its 250-character
-window), and q-025 returns a \texttt{judge\_unavailable}
-error (a transient API failure during the
-experimental run).  The residual error class is
-therefore really two failures stacked on top of each
-other: an audit-pipeline gap (claim-extraction
-heuristic, judge-call reliability) prevents the
-verifier from \emph{evaluating} the drafts that
-contain the most subtle error type, and the
-substantive error type itself is the hardest one
-even given evaluation.  Closing the audit gap is
-mechanical (more permissive claim extraction,
-retry-on-error) and is the obvious next deployment
-step; testing whether the grounding judge actually
-catches misrepresented-holding errors when it gets
-to evaluate them requires v1.0's larger denominator
-and an independent judge model.
+\emph{First, in v2 the case-existence rail no longer holds
+the perfect-precision floor it held in v1.}  The v1 wrong set
+contained q-017 (a fabricated DTF 117 II 198) which $C_1$
+caught cleanly.  In v2, the $c_{eli}$ judge re-scored q-017
+as \emph{correct} (the draft's substantive flaws --- omission
+of cpv.~3, mischaracterisation of unjustified-refusal
+consequences --- did not change between runs, but the judge's
+tolerance for them did; this is the run-to-run variance we
+discuss in \S\ref{sec:discussion}).  In v2 the deterministic
+rails fire only on correct-judged drafts (case rail: 1,
+statute: 2; FPR by $C_2$: 12.5\,\%, WFR 0\,\%).  The
+\emph{quote} rail does pick up q-025: the FR draft contained
+the phrase \guillemotleft\,co\^ut indirect de la prise en
+charge\,\guillemotright\ in quotation marks but the cited
+source contains no such verbatim string, so the rail
+correctly flags the quotation as unsupported.  That single
+hit raises WFR from 0\,\% to 16.7\,\% at $C_3$.
+
+\emph{Second, the grounding rail in v2 is now actually
+evaluating drafts.}  In v1, 12 drafts were
+\texttt{skipped\_no\_claim} because the claim-extraction
+heuristic looked only backwards from the citation and found
+nothing of substance --- a structural bias against the
+citation-leading pattern (``In BGE X, ...'',
+``Selon ATF Y, ...'') that is very common in Swiss legal
+writing.  The v2 audit code adds a forward fallback that
+extracts the claim from the rest of the citation's sentence,
+which closed 11 of 12 skip cases (q-022 still skips because
+the candidate is below the 20-character minimum).  A single
+transient \texttt{judge\_unavailable} error remained (q-013,
+on a correct draft), down from one such error on q-025 in v1
+that the new retry-with-backoff did not encounter on this
+run.  The grounding rail in v2 therefore fires on 13/30
+drafts --- 3 of the 6 wrong (q-006, q-018, q-021) and 10 of
+the 24 correct.
+
+\emph{Third, the v2 grounding rail's catches are
+substantive.}  Inspection of the three grounding flags on
+wrong drafts:
+(a) \emph{q-006}: model attached the claim ``ces
+pr\'etentions doivent \^etre suffisamment d\'etermin\'ees et
+ne pas \^etre manifestement infond\'ees'' to ATF 119 II 337,
+but the cited source is about tenant/sub-tenant liability
+under Art.~101 CO; judge verdict \texttt{unrelated},
+confidence high.  $c_{eli}$ judge agrees the draft is wrong
+(omits the 1-year deadline and consent rule).
+(b) \emph{q-018}: model attached a claim about pension
+amount and contribution years to BGE 130 V 343, but that BGE
+is the LSE-Tabellenl\"ohne case, unrelated to pension
+calculation; judge verdict \texttt{no}.  $c_{eli}$ agrees
+the draft is wrong (uses the pre-2022 stepped scale).
+(c) \emph{q-021}: model presented BGE 142 III 433 as
+about the maintenance damage of Art.~45 Abs.~3 OR, but the
+case is about \emph{Schockschaden} (psychic impairment); judge
+verdict \texttt{unrelated}.  $c_{eli}$ agrees the draft is
+wrong (misses the Schockschaden component).
+All three v2 grounding flags on wrong drafts are clean
+semantic catches of the rail's intended target class.
+
+\emph{The v2 trade-off is calibration, not coverage.}
+The grounding rail also flags 10 of 24 correct-judged drafts,
+typically by registering a \texttt{partial} or \texttt{no}
+verdict on a side-claim that the $c_{eli}$ judge accepted as
+part of the overall correct answer.  Whether this is
+over-flagging by the grounding judge or excessive
+permissiveness by the $c_{eli}$ judge is not something a
+same-family two-judge configuration can decide; v1.0 will
+substitute an independent judge to break the tie.  The two
+wrong drafts the v2 rail still misses (q-028 and q-030)
+\emph{do} reach the judge, which returns \texttt{partial} or
+\texttt{yes} on the extracted claim --- in both cases the
+extracted claim is a narrow factual statement that is
+literally supported by the source even though the draft as a
+whole is wrong on the broader question.  This is the
+\emph{narrow-claim, broad-error} failure mode and joins
+calibration as the second open problem.
 
 \paragraph{Cost / latency.}
 Across the 30 drafts, the four deterministic rails
@@ -779,40 +815,30 @@ Supreme Court itself.
 
 \paragraph{Limitations.}
 \begin{itemize}
-  \item \textbf{Pilot scope.}  This paper is a pilot
-        failure-analysis note, not a finalised verification
-        system or a generalisable performance claim.  Several
-        of the audit-pipeline behaviours we report are visibly
-        fixable (claim-extraction skip, judge-call retry; see
-        below), and we explicitly chose to publish the
-        as-instrumented numbers \emph{before} fixing them so
-        that the failure modes are documented for the
-        community rather than papered over in code.  v1.0
-        will rerun after the fixes.
-  \item \textbf{Mechanical audit-pipeline gaps.}  Three of the
-        six wrong drafts (q-021, q-025, q-026) are missed by
-        all rails for mechanical reasons: the
-        claim-extraction heuristic looks for a sentence-bounded
-        candidate within 250 characters before each citation
-        and finds none on q-021/q-026; the grounding judge call
-        on q-025 returned a \texttt{judge\_unavailable} error
-        (no retry was attempted).  Both gaps are addressable in
-        code; we report the as-instrumented numbers here so
-        the failure modes are documented faithfully against
-        the artefact pinned in the Data and Code Availability
-        section, and defer the fixed-code rerun to v1.0 to
-        avoid moving the experimental target while also
-        drafting the paper.  We do \emph{not} claim the
-        post-fix numbers in advance of running them.
+  \item \textbf{Ground-truth run-to-run variance.}  Our v1
+        and v2 runs differ on 4 of 30 $c_{eli}$ verdicts at
+        $\textsc{temperature}=0$ (q-017 and q-026 went
+        $\textsc{wrong}\rightarrow \textsc{correct}$; q-006 and
+        q-028 went $\textsc{correct}\rightarrow \textsc{wrong}$).
+        Per-flip rate $\sim 13\,\%$ at $n=30$ is large enough
+        that any single run's ablation cannot be treated as
+        the population value.  We report both runs side by
+        side (Tables~\ref{tab:ablation} and
+        \ref{tab:ablation_v1}) so the structural findings ---
+        citation existence is not the bottleneck;
+        grounding-rail FPR is the calibration problem ---
+        can be inspected against both denominators.  v1.0
+        will use an independent judge model and run multiple
+        seeds to bound the noise.
   \item \textbf{Benchmark size.}  v0.2 is a 30-question seed.
         With only 6 wrong drafts, the per-configuration WFR
         estimates are imprecise: 95\,\% Wilson confidence
-        intervals on a 50\,\% point estimate ($n=6$) are
-        $[18.8\%, 81.2\%]$.  We report exact ratios in
-        Table~\ref{tab:ablation} so the reader can judge
-        directly.  v1.0 (150 questions, named expert co-authors
-        from Swiss law faculties; see \S\ref{sec:benchmark}) is
-        the planned next deliverable.
+        intervals on a 66.7\,\% point estimate ($n=6$) are
+        $[30.0\%, 90.3\%]$.  We report exact ratios in
+        Tables~\ref{tab:ablation} and \ref{tab:ablation_v1}
+        so the reader can judge directly.  v1.0 (150 questions,
+        named expert co-authors from Swiss law faculties; see
+        \S\ref{sec:benchmark}) is the planned next deliverable.
   \item \textbf{Single-curator benchmark.}  v0.2's questions and
         reference answers were authored by the maintainer of
         \texttt{opencaselaw.ch}, a Swiss-trained author with
@@ -872,29 +898,28 @@ Supreme Court itself.
 \section{Conclusion}
 \label{sec:conclusion}
 
-This pilot proposes a defense-in-depth closing audit
-pipeline for legal RAG, decomposing verification into
-five rails with bounded latency and cost, and reports
-a 30-question stress test of an early instrumentation
-of that pipeline.  We release the audit pipeline (MIT)
-and Swiss Legal RAG Bench v0.2 (CC0 packaging), the
-latter as a 30-question pilot multilingual evaluation
-set for Swiss federal law.  In our prior-only stress
-test, the case-existence rail catches the one
-fabricated citation among 6 wrong drafts at 0\,\%
-FPR; the second-pass grounding rail fires on the
-2 wrong drafts where claim-extraction supplied a
-candidate (though on inspection both flags target
-secondary attachment issues, not the primary
-misrepresentation); the remaining 3 wrong drafts
-escape the audit because the claim-extraction
-heuristic skipped the citation ($\times 2$) or the
-judge call returned an error ($\times 1$) before any
-verdict was reached.  Closing those audit-pipeline
-gaps, calibrating the grounding judge against an
-independent model on a larger-denominator v1.0, and
-running an end-to-end retrieval-augmented evaluation
-are the next steps.
+We propose a defense-in-depth closing audit pipeline
+for legal RAG, decomposing verification into five
+rails with bounded latency and cost, and report two
+runs of a 30-question stress test against Claude
+Sonnet 4.6 on Swiss federal law: a v1 run against the
+as-instrumented code, and a v2 run after closing the
+mechanical audit-pipeline gaps the v1 inspection
+identified.  Three findings carry across both runs:
+citation existence is not the bottleneck (only 1 of
+33 emitted citations is fabricated); the misrepresented-
+holding error class dominates the residual; and the
+$c_{eli}$ judge has substantial run-to-run variance
+($\sim$13\,\% per-flip rate at $n=30$).  In v2 the
+grounding rail makes 3 clean semantic catches on
+wrong drafts (q-006, q-018, q-021) at FPR 41.7\,\%;
+calibration of the grounding judge, not coverage,
+is now the dominant open problem.  Two wrong drafts
+(q-028, q-030) reach the judge but their extracted
+claims are narrow factual statements that the source
+literally supports --- the \emph{narrow-claim,
+broad-error} failure mode joins calibration as the
+second open problem.
 
 The audit pipeline is live at
 \url{mcp.opencaselaw.ch}, deployed on the entire
@@ -908,28 +933,38 @@ licensed CC0).  We invite collaborators for v1.0.
 
 \section*{Data and Code Availability}
 
-\paragraph{Reproducibility pin (2026-04-28).}
-The numbers in \S\ref{sec:experiments} were produced from these
-exact artefacts:
+\paragraph{Reproducibility pin (2026-04-29).}
+The numbers in \S\ref{sec:experiments} were produced from
+these exact artefacts.  v1 (Table~\ref{tab:ablation_v1}) was
+run against the audit code at commit \texttt{4553379}; v2
+(Table~\ref{tab:ablation}) was run against the audit code at
+commit \texttt{12d32d3}, which adds citation-leading claim
+extraction and judge-call retry-on-error.
 
 \begin{itemize}\itemsep0pt
-  \item Audit pipeline source (MIT), pinned to the
-        experiment commit: \\
+  \item \textbf{v2 audit pipeline source} (MIT), pinned to the
+        v2 experiment commit: \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/12d32d3/mcp_server.py}
+  \item \textbf{v1 audit pipeline source} (MIT), pinned to the
+        v1 experiment commit: \\
         \url{https://github.com/jonashertner/caselaw-repo-1/blob/4553379/mcp_server.py}
   \item Run harness (the script that generated 30 prior-only
         drafts and audited them): \\
-        \url{https://github.com/jonashertner/caselaw-repo-1/blob/4553379/docs/paper/v2/experiments/01_run_ablation.py}
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/12d32d3/docs/paper/v2/experiments/01_run_ablation.py}
   \item Table-rendering script (computes
         \texttt{ablation\_table.json/.md} from the per-trial
         results in post-processing): \\
-        \url{https://github.com/jonashertner/caselaw-repo-1/blob/4553379/docs/paper/v2/experiments/02_compute_table.py}
-  \item Per-trial ablation data, pinned to the
-        experiment commit: \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/12d32d3/docs/paper/v2/experiments/02_compute_table.py}
+  \item \textbf{v2 per-trial ablation data} (Table~\ref{tab:ablation}): \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/12d32d3/docs/paper/v2/experiments_v2/ablation\_results.json} \\
+        SHA-256: \texttt{26deebb7\dots 175d318b}
+  \item \textbf{v1 per-trial ablation data} (Table~\ref{tab:ablation_v1}): \\
         \url{https://github.com/jonashertner/caselaw-repo-1/blob/4553379/docs/paper/v2/experiments/ablation\_results.json} \\
         SHA-256: \texttt{79dcc442\dots 039c3b08}
-  \item Derived ablation table (the JSON behind
-        Table~\ref{tab:ablation}): \\
-        \url{https://github.com/jonashertner/caselaw-repo-1/blob/4553379/docs/paper/v2/experiments/ablation_table.json}
+  \item Derived ablation tables (the JSONs behind
+        Tables~\ref{tab:ablation} and \ref{tab:ablation_v1}): \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/12d32d3/docs/paper/v2/experiments_v2/ablation_table.json} \\
+        \url{https://github.com/jonashertner/caselaw-repo-1/blob/12d32d3/docs/paper/v2/experiments/ablation_table.json}
   \item Benchmark v0.2 (CC0):
         \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench} \\
         SHA-256 of \texttt{questions.jsonl}:
