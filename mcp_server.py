@@ -8424,8 +8424,10 @@ def _handle_check_claim_support(
     decision_id: str,
     pinpoint: str | None = None,
 ) -> dict:
-    """Ask Sonnet-4.6 whether a decision supports a claim (the Magesh-61%
-    Reasoning-Error counter).
+    """Ask Sonnet-4.6 whether a decision supports a claim — counters the
+    "reasoning error" / mis-grounding class measured by Magesh et al.
+    (Stanford RegLab, "Hallucination-Free?", 2024) at 17-33% even on
+    commercial legal-RAG tools.
 
     Sonnet-as-judge is the independent verification layer. Different model
     family than the Haiku that runs query parse + rerank, so errors in
@@ -8876,7 +8878,10 @@ def _pinpoint_in_text(full_text: str, pinpoint: str) -> bool:
 #
 # These extend attest_response from "case-citation existence" to a
 # full closing audit that catches the three remaining hallucination
-# classes Magesh et al. (Stanford RegLab, 2024) report for legal LLMs:
+# classes documented for legal LLMs (Dahl, Magesh, Suzgun & Ho,
+# "Large Legal Fictions", Stanford RegLab, 2024 — 58-82% on general-
+# purpose LLMs; Magesh et al., "Hallucination-Free?", Stanford RegLab,
+# 2024 — 17-33% on commercial legal-RAG tools):
 #
 #   1. Fabricated or wrong-numbered statute references (Art. X LAW).
 #      → _audit_statutes verifies every Art./art. reference resolves
@@ -15838,9 +15843,11 @@ render();setInterval(render,60000);
                                "verbatim text supports the claim. Returns {supports: yes|partial|no|"
                                "contradicts|unrelated, confidence, supporting_excerpt, "
                                "qualifying_excerpt, reasoning}. Use when paraphrasing a decision or "
-                               "drawing a proposition from a complex Erwägung — prevents the Magesh-"
-                               "2025 'Reasoning Error' class of hallucination (cited authority exists "
-                               "but doesn't actually support the proposition).")
+                               "drawing a proposition from a complex Erwägung — counters the "
+                               "mis-grounding / reasoning-error class measured at 17-33% on commercial "
+                               "legal-RAG tools by Magesh et al., 'Hallucination-Free?', Stanford "
+                               "RegLab, 2024 (cited authority exists but doesn't actually support "
+                               "the proposition).")
     async def api_verify_claim(body: _VerifyClaimBody):
         return await asyncio.to_thread(
             _handle_check_claim_support,

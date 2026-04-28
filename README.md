@@ -375,7 +375,7 @@ OpenCaseLaw treats Swiss legal citations as a closed-corpus problem: every refer
 
 The architecture defends against **two empirically-measured legal-LLM failure classes**:
 
-- **Hallucination** (Magesh et al., Stanford RegLab, 2024): 58–82 % of legal queries to general-purpose LLMs produced at least one fabricated authority. → caught by audits ① ② ③ ④.
+- **Hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Stanford RegLab, 2024 — Journal of Legal Analysis): 58–82 % of legal queries to general-purpose LLMs produced at least one fabricated authority. A follow-up Stanford RegLab study of commercial legal-RAG tools (Magesh et al., *Hallucination-Free?*, 2024) measured 17–33 %. → caught by audits ① ② ③ ④.
 - **Reasoning error** (Butler & Butler, Isaacus, *Legal RAG Bench*, Mar 2026): citation is real and source was retrieved, but the proposition attached to it is not actually supported by the cited text. → caught by audit ⑤.
 
 The full server prompt (R1–R8) embeds these rules so any connecting client (Claude, ChatGPT, Cursor, Gemini, Copilot Studio) inherits the contract automatically. See [`mcp_server.py`](mcp_server.py) for the implementation, [`tests/web/test_attest_audits.py`](tests/web/test_attest_audits.py) for the regression suite, and the [verification section on opencaselaw.ch](https://opencaselaw.ch/#verification) for a public explainer.
