@@ -8828,20 +8828,21 @@ _STATUTE_AUDIT_INVALID_LAWS = {
     "UND", "ODER", "BZW", "USW", "ET", "OU", "EE", "OD",
 }
 
-# Quotes: paired Unicode left/right (DE „…\u201c, FR «…», IT «…»),
-# English curly \u201c…\u201d, and straight ASCII "…". The (?P<inner>...)
-# group is the verbatim quoted substring that we will source-verify.
-# r-string with `"` delimiter cannot embed `"` literals, so quote
-# characters are spelled via `\u…` escapes throughout.
+# Quotes: a single permissive pattern matches every common open/close
+# pair AND mixed forms (real LLM output frequently mixes German „
+# with ASCII " or English \u201d). One pass over the draft is faster
+# and avoids per-pattern overlap-handling. The character class for
+# inner content forbids ALL quote characters and newlines so we never
+# eat across paragraphs or nested quotations.
+_QUOTE_OPEN_CHARS = "\u201e\u00ab\u201c\""  # „ « " "
+_QUOTE_CLOSE_CHARS = "\u201c\u00bb\u201d\""  # " » " "
+_QUOTE_FORBIDDEN_INSIDE = _QUOTE_OPEN_CHARS + _QUOTE_CLOSE_CHARS
 _QUOTE_AUDIT_PATTERNS = [
-    # German: \u201eINNER\u201c
-    re.compile("\u201e(?P<inner>[^\u201e\u201c]{30,400})\u201c"),
-    # French / Italian: \u00abINNER\u00bb (with optional thin spaces)
-    re.compile("\u00ab\\s?(?P<inner>[^\u00ab\u00bb]{30,400})\\s?\u00bb"),
-    # English curly: \u201cINNER\u201d
-    re.compile("\u201c(?P<inner>[^\u201c\u201d]{30,400})\u201d"),
-    # Straight ASCII: "INNER" — bounded to avoid eating across paragraphs
-    re.compile('"(?P<inner>[^"\\n]{30,400})"'),
+    re.compile(
+        f"[{re.escape(_QUOTE_OPEN_CHARS)}]"
+        f"(?P<inner>[^{re.escape(_QUOTE_FORBIDDEN_INSIDE)}\\n]{{30,400}})"
+        f"[{re.escape(_QUOTE_CLOSE_CHARS)}]"
+    ),
 ]
 
 # Date adjacent to a citation: "vom 12.03.2024", "du 12 mars 2024",
@@ -9256,6 +9257,13 @@ def _handle_attest_response(*, draft_text: str) -> dict:
                         "MKGE": "de", "ATMC": "fr", "STMC": "it",
                     }.get(pre_up, "de")
                 label = canon.get(f"citation_string_{lang_label}") or full
+                # Strip the "vom DATE" suffix from the canonical label
+                # to avoid duplicating any date the LLM has already
+                # written after the citation. The date audit still
+                # verifies date correctness; we just don't double-print.
+                label = re.sub(
+                    r"\s+(?:vom|du|del)\s+.*$", "", label
+                ).rstrip()
             except Exception:
                 label = full
             linked_parts.append(_md_link(label, url))
