@@ -211,7 +211,7 @@ def main():
     md.append("")
     md.append("## Notes for paper §5")
     md.append("")
-    md.append("- The prior-only condition (no retrieval) is the cleanest test of the rails: it guarantees Sonnet has to invent some Swiss legal references, providing a substrate the rails can detect. Adding retrieval would lower the prior to detect.")
+    md.append("- The prior-only condition (no retrieval) is chosen as a stress test of the audit rails: it maximises the density of recoverable errors by forcing the model to rely on training knowledge alone. It does NOT guarantee invented citations (in this run the model produced very few). See paper §5 for the qualified framing.")
     md.append("- Per-rail WFR is monotone non-decreasing as rails are added (each rail can only flag more, never fewer). FPR is also monotone non-decreasing — a known tradeoff. The Net column shows the marginal contribution.")
     md.append("- The cite-citation validity rate (Sonnet's citation-level fabrication rate without retrieval) is reported alongside Magesh et al. 2025's 17–33% measurements on commercial legal-RAG tools, but the two are NOT a like-for-like comparison: different model families, query distributions, and tool conditions. See paper §5 for the qualified framing.")
 

@@ -41,12 +41,15 @@ Swiss Federal Law}
 
 \begin{abstract}
 We propose a five-rail closing audit pipeline for
-retrieval-augmented legal LLMs --- case-citation existence,
+\emph{legal-RAG outputs} (case-citation existence,
 statute-reference resolution, verbatim-quote source-matching,
 decision-date sanity, and proposition grounding by a
-separate-call LLM judge --- and stress-test it against Claude
+separate-call LLM judge) and stress-test it against Claude
 Sonnet 4.6 on 30 Swiss-federal-law questions in a
-\emph{prior-only} condition (no retrieval).  Four rails are
+\emph{prior-only} condition (no retrieval; the audit pipeline
+is intended for production RAG outputs but the present
+experiment exercises it on outputs without retrieval, by
+design).  Four rails are
 deterministic (${\sim}3$\,ms per draft); the fifth is
 judge-mediated (${\sim}2$\,s, ${\approx}\$0.005$ per call).
 We report two runs against the same questions and benchmark
@@ -54,24 +57,35 @@ artefact: a v1 run, and a v2 run after deploying mechanical
 fixes (citation-leading claim extraction, judge-call retry)
 that the v1 run identified as audit-pipeline gaps.
 
-Three findings.  (i) \emph{Citation existence is not the
-bottleneck}: in v1 the model emits 33 case citations and
-fabricates 1 (3.0\,\%); in v2 it emits 37 and fabricates 1
-(2.7\,\%); in both runs the same docket is fabricated
-(BGE/DTF 117 II 198 on q-017).  In v1, 5 of the 6 wrong
-drafts contain only valid citations.  Hallucination rates reported by Dahl et al.\ 2024
+Three findings.  (i) \emph{Citation-existence is not the
+bottleneck}: in v1 the model emits 33 case citations and 1
+fails to resolve in our corpus (3.0\,\%); in v2 it emits 37
+and 1 fails to resolve (2.7\,\%).  In both runs the same
+docket fails to resolve (BGE/DTF 117 II 198 on q-017); we
+cannot assert without external verification whether the
+docket is fabricated or simply absent from our corpus
+snapshot (the case-existence rail's
+\texttt{decision\_not\_in\_corpus} verdict conflates the
+two), but neighbouring dockets BGE 117 II 192 and BGE 117
+II 199 are present, so a corpus gap is plausible.  In v1, 5
+of the 6 drafts judged wrong by the second-pass $c_{eli}$
+judge contain only citations that resolve.  Hallucination rates reported by Dahl et al.\ 2024
 (58--82\,\%) and Magesh et al.\ 2025 (17--33\,\%) were measured
 under different model and condition combinations and we do not
 claim a like-for-like comparison.  (ii) \emph{Calibration of
 the grounding judge is the open problem}: with the mechanical
-fixes in place, the v2 grounding rail evaluates 13 of 30
-drafts (vs.\ 8/30 in v1) and fires on 3 of the 6 wrong
-drafts (50\,\% wrong-draft flag rate for the rail alone) but
-also on 10 of the 24 correct drafts (FPR 41.7\,\%).
+fixes in place, the v2 grounding rail evaluates at least
+one citation on 27 of 30 drafts (vs.\ 18/30 in v1) and
+\emph{fires} (raises at least one issue) on 13/30 drafts
+in v2 (vs.\ 8/30 in v1) --- 3 of 6 wrong drafts (50\,\%
+wrong-draft flag rate for the rail alone) plus 10 of 24
+correct (FPR 41.7\,\%).
 Inspection shows the three wrong-draft flags are clean
-semantic catches on the misrepresented-holding class, but
-the judge is opinionated enough on correct drafts that
-running it as a binary gate would over-flag.  The full v2
+citation--claim mismatch flags (the cited source does not
+support the claim attached to it), though they vary in how
+directly each identifies the draft's primary error.  The
+judge is opinionated enough on correct drafts that running
+it as a binary gate would over-flag.  The full v2
 audit (case $+$ statute $+$ quote $+$ date $+$ grounding)
 flags 4 of 6 wrong drafts (the quote rail catches q-025's
 non-verbatim French quotation) at FPR 50\,\%.
@@ -131,8 +145,14 @@ evaluation; the present paper occupies that specific gap.
 Our central empirical result is that on a closed Swiss-law corpus
 (969\,k decisions, daily refresh; portions of which are
 plausibly present in the web-scale pretraining of the model
-under test) Claude Sonnet 4.6 fabricates only \textbf{3.0\,\%}
-of emitted citations.  Hallucination rates reported by Magesh
+under test) only \textbf{3.0\,\%} of citations Claude Sonnet
+4.6 emits in v1 (1 of 33; 1 of 37 in v2, $\sim 2.7\,\%$)
+fail to resolve against our corpus snapshot.  We deliberately
+say ``fail to resolve'' rather than ``fabricated'' because the
+case-existence rail's
+\texttt{decision\_not\_in\_corpus} verdict conflates fabricated
+dockets with corpus gaps, and we have not externally verified
+the single recurring miss (BGE/DTF 117 II 198 on q-017).  Hallucination rates reported by Magesh
 et al.\ (2025, 17--33\,\% on commercial legal-RAG products) and
 Dahl et al.\ (2024, 58--82\,\% on general LLMs) were measured
 under different model and condition combinations and we do not
@@ -186,15 +206,18 @@ the design as a five-rail closing audit pipeline
         judge-call retry) the v1 inspection identified ---
         identifying \emph{calibration} of the grounding judge
         as the open problem.  In v2 the grounding rail
-        evaluates 13 of 30 drafts (vs.\ 8 in v1) and makes 3
-        clean semantic catches on wrong drafts (q-006, q-018,
-        q-021) but also fires on 10/24 correct drafts (FPR
-        41.7\,\%).  Two wrong drafts (q-028, q-030) reach the
-        judge but the extracted claim is a narrow factual
-        statement that is literally supported by the source
-        even though the draft as a whole is wrong --- the
-        \emph{narrow-claim, broad-error} failure mode joins
-        calibration as the second open problem.
+        \emph{evaluates} at least one citation on 27/30
+        drafts (vs.\ 18 in v1) and \emph{fires} on 13/30
+        (vs.\ 8 in v1), of which 3 are clean
+        citation--claim mismatch flags on wrong drafts
+        (q-006, q-018, q-021) and 10 are flags on correct
+        drafts (FPR 41.7\,\%).  Two wrong drafts (q-028,
+        q-030) are evaluated by the judge but the extracted
+        claim is a narrow factual statement that the source
+        literally supports even though the draft as a whole
+        is wrong --- the \emph{narrow-claim, broad-error}
+        failure mode joins calibration as the second open
+        problem.
 \end{enumerate}
 
 % ──────────────────────────────────────────────────────────────────────
@@ -410,11 +433,11 @@ issues.  One Sonnet call per draft regardless of
 citation count.  Latency: 1.5--2.5\,s.  Cost:
 $\approx\$0.005$ per call.  Targets the Butler\,/\,Butler
 ``reasoning error'' class (real citation +
-misrepresented holding); empirical catch rate
-on this class is qualified in \S\ref{sec:experiments}
-(the rail in our experiment fires on secondary
-attachment issues rather than cleanly on the
-underlying mischaracterisation).
+misrepresented holding); empirical behaviour --- including
+the calibration trade-off and the
+\emph{narrow-claim, broad-error} failure mode --- is
+characterised against the v0.2 benchmark in
+\S\ref{sec:experiments}.
 
 \paragraph{Output canonicalisation.}
 When all rails pass, the audit emits a
@@ -539,13 +562,12 @@ sources $\Rightarrow$ no claim can be grounded).
 We use the $c_{eli}$ verdict as ground truth for
 the per-rail ablation.
 
-Per question we issue four base Sonnet calls (one
-generation, one in-pipeline grounding judge, one
-$c_{eli}$ judge, one $g_{eli}$ judge) plus one
-deterministic-rails pass; the in-pipeline grounding
-judge can additionally retry up to twice on transient
-API failure (we observed 1 such retry across the v2
-run on q-013).  The 6-row ablation in
+Per question we issue up to four Sonnet calls (one
+generation, at most one in-pipeline grounding judge ---
+omitted when the draft has no verified citation or only
+\texttt{see}-cite markers, retried up to twice on
+transient API failure --- one $c_{eli}$ judge, one
+$g_{eli}$ judge) plus one deterministic-rails pass.  The 6-row ablation in
 Table~\ref{tab:ablation} is computed in
 post-processing by intersecting each draft's
 per-rail fire flags with each configuration's
@@ -554,17 +576,31 @@ across 30 drafts; v1 wall-clock 106\,s and v2
 wall-clock 104\,s with 4-way parallelism; ${<\!}\$2$
 in API charges per run.
 
-\paragraph{Citation-level fabrication rate.}
+\paragraph{Citation-resolution rate.}
 Across the 30 prior-only drafts, Claude Sonnet 4.6
-emits 33 case citations in v1 (32 valid, fabrication
-\textbf{3.0\,\%}) and 37 in v2 (36 valid, fabrication
-\textbf{2.7\,\%}).  In both runs the single fabricated
-docket is on q-017 (BGE/DTF 117 II 198, an invented
-combination of a real volume number and an unrelated
-case position).  More informatively, in v1 5 of the
-6 drafts judged wrong by the $c_{eli}$ judge contain
-only valid citations: \emph{citation existence is not
-the bottleneck in this setting}.  Magesh et al.\ (2025) reported
+emits 33 case citations in v1 (32 resolve in the
+corpus, 1 does not: $\sim$\textbf{3.0\,\%
+non-resolution}) and 37 in v2 (36 resolve, 1 does not:
+$\sim$\textbf{2.7\,\%}).  In both runs the same single
+docket fails to resolve --- BGE/DTF 117 II 198 on
+q-017.  We use \emph{non-resolution} rather than
+\emph{fabrication} for this rate: the case-existence
+rail's \texttt{decision\_not\_in\_corpus} verdict
+fires whenever a parsed docket is absent from our
+corpus snapshot, which conflates a hallucinated
+docket with a real docket missing from our coverage.
+Volume 117 II of the BGE series spans dockets we do
+have (BGE 117 II 192 and BGE 117 II 199 are present),
+so a corpus gap is at least plausible; without
+external verification (e.g., against the BGer
+publication portal), we cannot decide between
+fabrication and gap.  This caveat applies symmetrically
+to the v1 case-rail catch reported in
+Table~\ref{tab:ablation_v1}.  More informatively, in
+v1 5 of the 6 drafts judged wrong by the $c_{eli}$
+judge contain only citations that resolve cleanly:
+\emph{citation existence is not the bottleneck in
+this setting}.  Magesh et al.\ (2025) reported
 17--33\,\% on commercial legal-RAG tools and Dahl
 et al.\ (2024) reported 58--82\,\% on general LLMs;
 those measurements were taken under different model
@@ -698,7 +734,9 @@ sentence, which closed all 9 skip cases.  Two transient
 both resolved by v2's retry-with-backoff; one new
 \texttt{judge\_unavailable} appeared in v2 on q-013 (a
 correct draft), surviving all three retry attempts.  The
-grounding rail in v2 therefore fires on 13/30 drafts ---
+grounding rail in v2 therefore evaluates at least one
+citation on 27/30 drafts (vs.\ 18/30 in v1) and \emph{fires}
+(raises at least one issue) on 13/30 (vs.\ 8/30 in v1) ---
 3 of the 6 wrong (q-006, q-018, q-021) and 10 of the 24
 correct.
 
@@ -939,22 +977,28 @@ Supreme Court itself.
 \label{sec:conclusion}
 
 We propose a defense-in-depth closing audit pipeline
-for legal RAG, decomposing verification into five
-rails with bounded latency and cost, and report two
-runs of a 30-question stress test against Claude
-Sonnet 4.6 on Swiss federal law: a v1 run against the
-as-instrumented code, and a v2 run after closing the
-mechanical audit-pipeline gaps the v1 inspection
-identified.  Three findings carry across both runs:
-citation existence is not the bottleneck (only 1 of
-33 emitted citations is fabricated); the misrepresented-
-holding error class dominates the residual; and the
-$c_{eli}$ judge has substantial run-to-run variance
+for legal-RAG outputs, decomposing verification into
+five rails with bounded latency and cost, and report
+two runs of a 30-question prior-only stress test
+against Claude Sonnet 4.6 on Swiss federal law: a v1
+run against the as-instrumented code, and a v2 run
+after closing the mechanical audit-pipeline gaps the
+v1 inspection identified.  Three findings carry
+across both runs: citation existence is not the
+bottleneck (1 of 33 emitted citations fails to
+resolve in our corpus snapshot in v1, 1 of 37 in v2,
+and we cannot decide between fabrication and corpus
+gap without external verification); the
+misrepresented-holding error class dominates the
+residual; and end-to-end run variance (combining
+generator and judge variance) is substantial
 ($\sim$13\,\% per-flip rate at $n=30$).  In v2 the
-grounding rail makes 3 clean semantic catches on
-wrong drafts (q-006, q-018, q-021) at FPR 41.7\,\%;
-calibration of the grounding judge, not coverage,
-is now the dominant open problem.  Two wrong drafts
+grounding rail produces 3 citation--claim mismatch
+flags on wrong drafts (q-006, q-018, q-021; the
+flags vary in how directly they identify each
+draft's primary error) at FPR 41.7\,\%; calibration
+of the grounding judge, not coverage, is now the
+dominant open problem.  Two wrong drafts
 (q-028, q-030) reach the judge but their extracted
 claims are narrow factual statements that the source
 literally supports --- the \emph{narrow-claim,
