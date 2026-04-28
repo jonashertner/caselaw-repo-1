@@ -162,3 +162,65 @@ def test_normalise_collapses_whitespace_and_quotes(m):
     out = m._normalise_for_quote_match(raw)
     # « » → "; — → -; ’ → '; whitespace collapsed; lowercased
     assert out == '"hello" world-today\'s'
+
+
+# ── Regression: regex must NOT eat connector words as law slot ────
+
+@pytest.mark.parametrize("connector", ["und", "oder", "et", "ou", "bzw"])
+def test_connector_after_absatz_not_flagged_as_law(m, connector, monkeypatch, tmp_path):
+    """Bug fix: regex used re.IGNORECASE on the law slot, so "Art. 18 Abs. 1 und"
+    parsed as law='und'. Connector words are now case-sensitive-rejected via
+    invalid-laws guard AND can't match the (uppercase-required) law slot.
+    """
+    # Force the audit to run by pretending statutes.db exists; the body
+    # itself never calls the DB because no Art. <num> <UPPERCASE-LAW>
+    # match should fire.
+    fake_db = tmp_path / "fake.db"
+    fake_db.touch()
+    monkeypatch.setattr(m, "STATUTES_DB_PATH", fake_db)
+    monkeypatch.setattr(m, "_fetch_statute_text",
+                        lambda **kw: {"sr_number": "x", "text_de": "y"})
+    draft = f"Art. 18 Abs. 1 {connector} Art. 32 Abs. 1 OR sind klar."
+    issues = m._audit_statutes(draft)
+    flagged_laws = [i.get("law_code") for i in issues]
+    assert connector not in [(s or "").lower() for s in flagged_laws]
+
+
+# ── Regression: pinpoint full-text fallback ────────────────────────
+
+@pytest.mark.parametrize("body,pinpoint,expected", [
+    ("Erwägungen: ... E. 2.3. Wie das BGer hielt fest", "2.3", True),
+    ("siehe consid. 4.1 hierzu", "4.1", True),
+    ("siehe Erw. 5.2 hierzu", "5.2", True),
+    ("(E. 6) ist klar", "6", True),
+    ("nichts Erwägendes hier", "2.3", False),
+    ("Erwägung 99.99 wird nicht erwähnt", "99.99", False),
+])
+def test_pinpoint_in_text_authoritative(m, body, pinpoint, expected):
+    assert m._pinpoint_in_text(body, pinpoint) is expected
+
+
+# ── Regression: strict resolver must not run LIKE %x% scan ─────────
+
+def test_strict_resolver_returns_none_on_miss(m, monkeypatch):
+    """The whole point of _resolve_decision_id_strict is to return None
+    fast on a miss. Confirm it doesn't fall through to LIKE."""
+    class FakeRow:
+        def __init__(self, val): self.val = val
+        def __getitem__(self, idx): return self.val
+
+    calls = []
+    class FakeConn:
+        def execute(self, sql, params=()):
+            calls.append((sql, params))
+            class _Cur:
+                def fetchone(self_): return None
+            return _Cur()
+        def close(self): pass
+
+    monkeypatch.setattr(m, "get_db", lambda: FakeConn())
+    out = m._resolve_decision_id_strict("bge_BGE_999_IV_999")
+    assert out is None
+    # Every SQL should be exact-match — none must contain LIKE
+    for sql, _ in calls:
+        assert "LIKE" not in sql.upper(), f"strict resolver leaked LIKE: {sql}"
