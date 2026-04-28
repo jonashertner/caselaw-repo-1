@@ -9312,6 +9312,88 @@ def _extract_preceding_claim(draft_text: str, citation_start: int,
     return claim
 
 
+# Sentence boundary regex tuned for forward search.  Mirrors the
+# backward-search regex (_SENTENCE_END) by requiring the next
+# non-space character after .!? to be uppercase / opening quote /
+# paren — so "Art. 28b" / "Abs. 2" / "E. 3.4" / "Nr. 5" are NOT
+# treated as sentence boundaries.  Also accepts paragraph breaks
+# and end-of-string as terminators.
+_SENTENCE_END_FORWARD = re.compile(
+    r"[.!?](?:\s+(?=[A-ZÄÖÜ«„(])|\Z|\n\s*\n)"
+)
+# Connector tokens immediately preceding the citation in citation-
+# leading sentences ("In BGE …", "Vgl. BGE …", "Selon ATF …", etc.).
+# When the preceding text is purely such a connector, we know the
+# substantive claim is in the FOLLOWING text, not what came before.
+_CITATION_LEADING_CONNECTOR = re.compile(
+    r"^(?:in|gemäss|gemäß|nach|laut|vgl\.?|siehe|cf\.?|cfr\.?|"
+    r"selon|d['’]apr[èe]s|conform[ée]ment\s+à|voir|"
+    r"secondo|conformemente\s+a|cfr\.?|vedi)\s+$",
+    flags=re.IGNORECASE,
+)
+
+
+def _extract_following_claim(draft_text: str, citation_end: int,
+                              max_chars: int = 500) -> str | None:
+    """When a citation leads its sentence ('In BGE 142 III 433 hat das
+    Bundesgericht festgehalten, dass …'), the substantive claim is in
+    the SAME sentence as the citation, after the citation.  This
+    extracts the rest of the citation's sentence as the claim — handles
+    the very common Swiss-legal pattern where the citation is the
+    sentence's grammatical subject or the object of a leading
+    preposition.  Returns None when no usable claim is in scope."""
+    if citation_end >= len(draft_text):
+        return None
+    window = draft_text[citation_end:citation_end + max_chars]
+    m = _SENTENCE_END_FORWARD.search(window)
+    if m:
+        # Include the sentence-ending punctuation but drop trailing whitespace
+        claim = window[:m.start() + 1].strip()
+    else:
+        # No sentence end inside the window: use the whole window
+        # (typical for very long sentences with embedded clauses).
+        claim = window.strip()
+    # Strip leading connectors / punctuation that linked the citation
+    # into its sentence ("hat das BGer …" → "hat das BGer …", but also
+    # ", dass ..." → "dass ..." and " (E. 3.2): X" → "X").
+    claim = re.sub(
+        r"^[\s,.;:)\]]+(?:\([^)]*\)\s*[,;:]?\s*)?",
+        "",
+        claim,
+    )
+    if not claim or len(claim) < 20 or len(claim) > 600:
+        return None
+    if _SEE_CITE_MARKERS.match(claim):
+        return None
+    return claim
+
+
+def _extract_claim_for_citation(
+    draft_text: str, citation_span: tuple[int, int]
+) -> tuple[str | None, str]:
+    """Try preceding-claim extraction first (canonical case: 'X is
+    true (BGE Y).'), then fall back to following-claim extraction
+    (citation-leading case: 'In BGE Y, X is true.').  Returns
+    (claim, position) where position ∈ {'preceding', 'following',
+    'see_cite', ''}.  The 'see_cite' position is reserved for a
+    'vgl.' / 'cf.' / 'siehe' marker on the preceding side: in
+    that case the LLM is signposting authority rather than
+    asserting, and we suppress the rail."""
+    cs, ce = citation_span
+    pre = _extract_preceding_claim(draft_text, cs)
+    if pre:
+        return pre, "preceding"
+    # Cheap classifier: if the immediately-preceding text is a
+    # citation-leading connector ("In ", "Gemäss ", etc.), the
+    # claim must be on the other side.  We always try following
+    # as the fallback regardless, but recording this signal helps
+    # downstream debugging.
+    foll = _extract_following_claim(draft_text, ce)
+    if foll:
+        return foll, "following"
+    return None, ""
+
+
 def _judge_grounding_batched(pairs: list[dict]) -> list[dict] | None:
     """Send a list of (claim, source_text, label) tuples to the Sonnet
     judge in a single request and return verdict dicts in input order.
@@ -9352,38 +9434,52 @@ def _judge_grounding_batched(pairs: list[dict]) -> list[dict] | None:
         )
     user_prompt = "PAIRS:\n\n" + "\n\n".join(blocks)
 
-    try:
-        import httpx
-        with httpx.Client(timeout=20.0) as client:
-            resp = client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={
-                    "x-api-key": ANTHROPIC_API_KEY,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json",
-                },
-                json={
-                    "model": "claude-sonnet-4-6",
-                    "max_tokens": 200 * len(pairs) + 200,
-                    "system": system_prompt,
-                    "messages": [{"role": "user", "content": user_prompt}],
-                },
+    # Retry on transient failures: network blips, 5xx, JSON parse
+    # errors. Exponential backoff between attempts (1s, 2s).  The
+    # final failure returns None so callers can record
+    # `judge_unavailable` honestly rather than silently swallowing
+    # errors.
+    import httpx
+    import time
+    last_err: Exception | None = None
+    for attempt in range(3):
+        try:
+            with httpx.Client(timeout=20.0) as client:
+                resp = client.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers={
+                        "x-api-key": ANTHROPIC_API_KEY,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
+                    json={
+                        "model": "claude-sonnet-4-6",
+                        "max_tokens": 200 * len(pairs) + 200,
+                        "system": system_prompt,
+                        "messages": [{"role": "user", "content": user_prompt}],
+                    },
+                )
+                resp.raise_for_status()
+                _resp_json = resp.json()
+                _llm_usage_log(model="claude-sonnet-4-6",
+                                feature="grounding_judge",
+                                response_json=_resp_json)
+                raw = _resp_json["content"][0]["text"].strip()
+                if raw.startswith("```"):
+                    raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+                parsed = json.loads(raw)
+                if not isinstance(parsed, list):
+                    return None
+                return parsed
+        except Exception as e:
+            last_err = e
+            logger.debug(
+                "grounding judge attempt %d/3 failed: %s", attempt + 1, e
             )
-            resp.raise_for_status()
-            _resp_json = resp.json()
-            _llm_usage_log(model="claude-sonnet-4-6",
-                            feature="grounding_judge",
-                            response_json=_resp_json)
-            raw = _resp_json["content"][0]["text"].strip()
-            if raw.startswith("```"):
-                raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-            parsed = json.loads(raw)
-            if not isinstance(parsed, list):
-                return None
-            return parsed
-    except Exception as e:
-        logger.debug("grounding judge failed: %s", e)
-        return None
+            if attempt < 2:
+                time.sleep(2 ** attempt)  # 1s, 2s
+    logger.warning("grounding judge failed after 3 attempts: %s", last_err)
+    return None
 
 
 # Cap the per-attest grounding call so a runaway draft can't blow
@@ -9428,7 +9524,9 @@ def _audit_grounding(
         if not decision_id or decision_id not in sources_by_id:
             meta["skipped_no_source"] += 1
             continue
-        claim = _extract_preceding_claim(draft_text, cit["span"][0])
+        claim, claim_position = _extract_claim_for_citation(
+            draft_text, cit["span"]
+        )
         if not claim:
             meta["skipped_no_claim"] += 1
             continue
@@ -9458,6 +9556,7 @@ def _audit_grounding(
         pairs.append({
             "label": cit["full_match"],
             "claim": claim,
+            "claim_position": claim_position,
             "source_label": text_label,
             "source_text": text[:_GROUNDING_SOURCE_BUDGET],
         })
