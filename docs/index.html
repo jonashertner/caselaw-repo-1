@@ -253,17 +253,29 @@ a:hover { color: var(--tx2); }
 /* ── Toolbar ── */
 .toolbar {
   position: sticky; top: 0; z-index: 100;
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(16px) saturate(1.8); -webkit-backdrop-filter: blur(16px) saturate(1.8);
   border-bottom: 1px solid var(--brd2);
 }
 
+/* Sticky-toolbar offset — set as a CSS variable so smooth-scroll JS
+   can read it; also drives scroll-margin-top on each <section>.
+   Without this, anchor jumps land BEHIND the sticky toolbar and the
+   user sees the section heading clipped. */
+:root { --toolbar-h: 56px; }
+section[id], header[id] {
+  scroll-margin-top: calc(var(--toolbar-h) + 12px);
+}
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 .toolbar-inner {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
-  gap: var(--s-6);
-  height: 56px;
+  gap: 24px;
+  height: var(--toolbar-h);
 }
 .toolbar-brand {
   display: inline-flex;
@@ -293,11 +305,7 @@ a:hover { color: var(--tx2); }
 }
 .toolbar-brand:hover .brand-mark { border-color: var(--tx3); color: var(--tx); }
 .toolbar-brand .brand-wordmark { font-weight: 500; color: var(--tx); }
-.toolbar-center {
-  display: flex; justify-content: center; align-items: center;
-  min-width: 0;
-}
-.toolbar-right { display: flex; align-items: center; gap: 4px; justify-content: flex-end; justify-self: end; }
+.toolbar-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .lang-sw {
   display: flex; gap: 0; align-items: center;
   margin-right: 4px;
@@ -313,22 +321,50 @@ a:hover { color: var(--tx2); }
 .lang-sw button.on {
   color: var(--tx); font-weight: 700;
 }
-.url-nav { display: flex; gap: 2px; align-items: center; }
-.url-nav a {
+
+/* In-page section navigation — single source of truth, used in the
+   desktop toolbar AND mirrored in the mobile drawer. */
+.toolbar-nav {
+  display: flex; align-items: center; gap: 2px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.toolbar-nav::-webkit-scrollbar { display: none; }
+.toolbar-nav a {
+  position: relative;
+  font-size: 13px; font-weight: 500; color: var(--tx2);
+  padding: 8px 12px;
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+}
+.toolbar-nav a:hover { color: var(--tx); background: var(--bg2); text-decoration: none; }
+.toolbar-nav a.active {
+  color: var(--tx);
+  font-weight: 600;
+}
+.toolbar-nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 12px; right: 12px; bottom: 2px;
+  height: 2px;
+  background: var(--vb-fg, currentColor);
+  border-radius: 1px;
+}
+
+/* Legacy aliases so any stale references keep compiling */
+.url-nav, .section-nav { display: flex; gap: 2px; align-items: center; }
+.url-nav a, .section-nav a {
   font-size: 13px; font-weight: 500; color: var(--tx2);
   padding: 8px 14px; text-decoration: none; border-radius: 6px;
   transition: color 0.15s var(--ease), background 0.15s var(--ease);
 }
-.url-nav a:hover { color: var(--tx); background: var(--bg2); text-decoration: none; }
-.url-nav a.active, .url-nav a[aria-current="page"] {
-  color: var(--tx);
-  font-weight: 600;
-  background: var(--bg2);
+.url-nav a:hover, .section-nav a:hover {
+  color: var(--tx); background: var(--bg2); text-decoration: none;
 }
-/* Legacy alias so old callsites keep compiling */
-.section-nav { display: flex; gap: 2px; align-items: center; }
-.section-nav a { font-size: 13px; font-weight: 500; color: var(--tx2); padding: 8px 14px; text-decoration: none; border-radius: 6px; transition: color 0.15s var(--ease), background 0.15s var(--ease); }
-.section-nav a:hover { color: var(--tx); background: var(--bg2); text-decoration: none; }
 .tbtn {
   display: flex; align-items: center; justify-content: center;
   width: 32px; height: 32px; border: none;
@@ -502,37 +538,158 @@ header[style*="text-align: left"] .sub {
   padding: 20px 24px 28px; border-top: 1px solid var(--brd2);
 }
 
-/* ── Hamburger & Mobile Menu ── */
+/* ── Hamburger button (visible <900 px only) ── */
 .hamburger {
   display: none;
   align-items: center; justify-content: center;
-  width: 32px; height: 32px; border: none;
-  border-radius: var(--r-sm); background: transparent; color: var(--tx3);
-  cursor: pointer; transition: color 0.15s var(--ease);
+  width: 36px; height: 36px; border: none;
+  border-radius: var(--r-sm); background: transparent; color: var(--tx2);
+  cursor: pointer; transition: color 0.15s var(--ease), background 0.15s var(--ease);
 }
-.hamburger:hover { color: var(--tx); }
-.hamburger svg { width: 18px; height: 18px; }
+.hamburger:hover { color: var(--tx); background: var(--bg2); }
+.hamburger svg { width: 20px; height: 20px; }
+
+/* ── Mobile drawer — slides from the right; covers ~85 % of the
+   viewport width but leaves a peek so users see context. Single
+   source of truth for navigation on screens <900 px: section jumps,
+   subpage links, language switcher, theme toggle, verified credential
+   all live here. ── */
 .mobile-menu {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99;
+  position: fixed; inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+.mobile-menu.open { pointer-events: auto; }
+.mobile-menu-scrim {
+  position: absolute; inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  border: 0; padding: 0; cursor: pointer;
+  opacity: 0;
+  transition: opacity 240ms var(--ease, ease);
+}
+.mobile-menu.open .mobile-menu-scrim { opacity: 1; }
+.mobile-menu-panel {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: min(340px, 85vw);
   background: var(--bg);
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.25s var(--ease);
+  border-left: 1px solid var(--brd2);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 280ms var(--ease, ease);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
-.mobile-menu.open {
-  opacity: 1; pointer-events: auto;
+.mobile-menu.open .mobile-menu-panel { transform: translateX(0); }
+.mobile-menu-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--brd);
+  position: sticky; top: 0;
+  background: var(--bg);
+  z-index: 1;
 }
-.mobile-menu-inner { text-align: center; }
-.mobile-menu a {
-  display: block; padding: 14px 0;
-  font-size: var(--fs-2xl); font-weight: 500; color: var(--tx2);
-  text-decoration: none; letter-spacing: -0.01em;
-  transition: color 0.15s var(--ease);
+.mobile-menu-title {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tx3);
+  font-weight: 500;
 }
-.mobile-menu a:hover, .mobile-menu a.active, .mobile-menu a[aria-current="page"] {
-  color: var(--tx); text-decoration: none; font-weight: 700;
+.mobile-menu-close {
+  width: 36px; height: 36px;
+  border: 0; background: transparent; color: var(--tx2);
+  border-radius: 6px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
 }
-.section-nav a.active { color: var(--tx); font-weight: 600; }
+.mobile-menu-close:hover { color: var(--tx); background: var(--bg2); }
+.mobile-menu-close svg { width: 18px; height: 18px; }
+.mobile-menu-section {
+  padding: 18px 12px 6px;
+}
+.mobile-menu-section + .mobile-menu-section {
+  border-top: 1px solid var(--brd);
+  padding-top: 14px;
+}
+.mobile-menu-label {
+  padding: 0 12px 8px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tx3);
+  font-weight: 500;
+}
+.mobile-menu-section a {
+  display: block;
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--tx);
+  text-decoration: none;
+  border-radius: 6px;
+  letter-spacing: -0.005em;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease);
+}
+.mobile-menu-section a:hover {
+  background: var(--bg2);
+  text-decoration: none;
+}
+.mobile-menu-section a.active {
+  color: var(--vb-fg, var(--tx));
+  background: var(--bg2);
+  font-weight: 500;
+}
+.mobile-menu-foot {
+  margin-top: auto;
+  padding: 16px 18px 22px;
+  border-top: 1px solid var(--brd);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.mobile-menu-credential {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px 5px 9px;
+  background: var(--vb-bg);
+  border: 1px solid var(--vb-brd);
+  border-radius: 999px;
+  color: var(--vb-fg);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.mobile-menu-credential:hover {
+  background: color-mix(in srgb, var(--vb-bg) 60%, var(--vb-fg) 12%);
+  text-decoration: none;
+}
+.mobile-menu-langs {
+  display: flex; gap: 4px;
+}
+.mobile-menu-langs button {
+  flex: 1 1 auto;
+  padding: 8px 0;
+  font-family: var(--f-mono);
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  border: 1px solid var(--brd);
+  background: transparent;
+  color: var(--tx3);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.15s var(--ease), background 0.15s var(--ease),
+              border-color 0.15s var(--ease);
+}
+.mobile-menu-langs button:hover { color: var(--tx); background: var(--bg2); }
+.mobile-menu-langs button.on {
+  color: var(--tx);
+  background: var(--bg2);
+  border-color: var(--tx3);
+  font-weight: 700;
+}
+
+body.menu-open { overflow: hidden; }
 
 /* ── Charts ── */
 .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -1813,12 +1970,29 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
    on /entscheide/, /gesetze/, /mcp/, /ueber/. Same breakpoint cascade
    as the landing page but applied to sub-page components. */
 
-/* ≤ 900 px — hamburger + hide desktop nav */
-@media (max-width: 900px) {
-  .hamburger { display: flex; }
-  .url-nav { display: none; }
-  .toolbar-inner { grid-template-columns: auto 1fr; }
-  .toolbar-center { display: none; }
+/* ── Toolbar responsive breakpoints — single source of truth ────────
+   Strategy: progressive disclosure. Show as much as fits on the
+   current screen; never overflow horizontally; always keep the
+   brand + the means of navigation visible.  */
+
+/* ≤ 980 px — language switcher moves into the drawer (limited toolbar
+   real-estate; theme stays so users can still flip dark/light without
+   opening the menu). */
+@media (max-width: 980px) {
+  .toolbar-right .lang-sw { display: none; }
+}
+
+/* ≤ 760 px — drop the in-page nav; hamburger takes over. */
+@media (max-width: 760px) {
+  .toolbar-nav { display: none; }
+  .hamburger { display: inline-flex; }
+}
+
+/* ≤ 480 px — tighten the brand wordmark + spacing */
+@media (max-width: 480px) {
+  .toolbar-inner { gap: 12px; }
+  .toolbar-brand { font-size: 13px; }
+  .toolbar-brand .brand-mark { width: 22px; height: 22px; font-size: 12px; }
 }
 
 /* ≤ 768 px — sub-page two-col → one-col */
@@ -2443,23 +2617,20 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
      before anything else, that we treat AI hallucination of case
      references as the central problem to solve. -->
 <nav class="toolbar"><div class="w toolbar-inner">
-  <a href="/" class="toolbar-brand" aria-label="opencaselaw.ch — home">
+  <a href="#top" class="toolbar-brand" aria-label="opencaselaw.ch — home">
     <span class="brand-mark">+</span>
     <span class="brand-wordmark">opencaselaw.ch</span>
   </a>
-  <a href="#verification" class="toolbar-credential" data-t-aria="banner_verification_aria"
-     title="How OpenCaseLaw eliminates AI hallucination of case references">
-    <span class="toolbar-credential-dot" aria-hidden="true"></span>
-    <span data-t="banner_verification_short">Verified</span>
-  </a>
-  <div class="toolbar-center">
-    <div class="url-nav" id="url-nav">
-      <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
-      <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
-      <a href="/mcp/" data-t="nav_mcp">Connect</a>
-      <a href="/ueber/" data-t="nav_ueber">About</a>
-    </div>
+
+  <div class="toolbar-nav" role="navigation" aria-label="Page sections">
+    <a href="#connect"      data-section="connect"      data-t="nav_connect">Connect</a>
+    <a href="#toolkit"      data-section="toolkit"      data-t="nav_toolkit">Toolkit</a>
+    <a href="#verification" data-section="verification" data-t="nav_verification">Verification</a>
+    <a href="#corpus"       data-section="corpus"       data-t="nav_corpus">Corpus</a>
+    <a href="#latest"       data-section="latest"       data-t="nav_latest">Latest</a>
+    <a href="#about"        data-section="about"        data-t="nav_about">About</a>
   </div>
+
   <div class="toolbar-right">
     <div class="lang-sw" role="group" aria-label="Language">
       <button data-l="de" class="on">DE</button>
@@ -2468,28 +2639,66 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       <button data-l="rm">RM</button>
       <button data-l="en">EN</button>
     </div>
-    <button class="hamburger" id="hamburger-btn" aria-label="Menu">
-      <svg class="ico-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      <svg class="ico-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
     <button class="tbtn" id="theme-btn" aria-label="Toggle theme">
       <svg id="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg id="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
+      <svg class="ico-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
   </div>
 </div></nav>
 
-<div class="mobile-menu" id="mobile-menu">
-  <div class="mobile-menu-inner">
-    <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
-    <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
-    <a href="/mcp/" data-t="nav_mcp">Connect</a>
-    <a href="/ueber/" data-t="nav_ueber">About</a>
+<!-- Mobile drawer — slides from the right.  Single source of truth for
+     navigation on screens <900 px: section jumps + subpage links +
+     verification credential + language + theme inside one panel.  -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="mobile-menu-panel">
+    <div class="mobile-menu-head">
+      <span class="mobile-menu-title" data-t="menu_title">Menu</span>
+      <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-label" data-t="menu_sections">On this page</div>
+      <a href="#connect"      data-section="connect"      data-t="nav_connect">Connect</a>
+      <a href="#toolkit"      data-section="toolkit"      data-t="nav_toolkit">Toolkit</a>
+      <a href="#verification" data-section="verification" data-t="nav_verification">Verification</a>
+      <a href="#corpus"       data-section="corpus"       data-t="nav_corpus">Corpus</a>
+      <a href="#latest"       data-section="latest"       data-t="nav_latest">Latest</a>
+      <a href="#international" data-section="international" data-t="nav_international">International</a>
+      <a href="#about"        data-section="about"        data-t="nav_about">About</a>
+    </div>
+
+    <div class="mobile-menu-section">
+      <div class="mobile-menu-label" data-t="menu_more">More</div>
+      <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
+      <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
+      <a href="/mcp/" data-t="nav_mcp">MCP reference</a>
+      <a href="/ueber/" data-t="nav_ueber">About OpenCaseLaw</a>
+    </div>
+
+    <div class="mobile-menu-foot">
+      <a href="#verification" class="mobile-menu-credential">
+        <span class="toolbar-credential-dot" aria-hidden="true"></span>
+        <span data-t="banner_verification_short">Verified</span>
+      </a>
+      <div class="mobile-menu-langs" role="group" aria-label="Language">
+        <button data-l="de" class="on">DE</button>
+        <button data-l="fr">FR</button>
+        <button data-l="it">IT</button>
+        <button data-l="rm">RM</button>
+        <button data-l="en">EN</button>
+      </div>
+    </div>
   </div>
+  <button class="mobile-menu-scrim" id="mobile-menu-scrim" aria-label="Close menu" tabindex="-1"></button>
 </div>
 
 <main id="main" class="w">
-<header class="hero-v3">
+<header class="hero-v3" id="top">
     <div class="hero-v3-content">
       <div class="hero-v3-stat">
         <span class="hero-v3-num" id="hero-decisions">968&rsquo;373</span>
@@ -2529,7 +2738,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   </header>
 
   <!-- ── Corpus snapshot — data-driven composition + 24h delta ── -->
-  <section class="corpus-snapshot" aria-labelledby="snapshot-heading">
+  <section class="corpus-snapshot" id="corpus" aria-labelledby="snapshot-heading">
     <div class="snapshot-header">
       <h2 id="snapshot-heading" data-t="snapshot_heading">Corpus snapshot</h2>
       <p class="snapshot-stamp">
@@ -2864,7 +3073,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   </section>
 
   <!-- Latest: recent decisions + upcoming statute revisions -->
-  <section class="section latest-block" aria-labelledby="latest-heading">
+  <section class="section latest-block" id="latest" aria-labelledby="latest-heading">
     <h2 class="section-heading" id="latest-heading" data-t="latest_heading">Latest</h2>
     <div class="latest-grid">
       <div class="latest-card" id="latest-bge-card">
@@ -2917,7 +3126,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   </section>
 
   <!-- Live from the corpus — tabbed demo -->
-  <section class="live-demo section">
+  <section class="live-demo section" id="demo">
     <h2 class="section-heading" data-t="demo_heading">Live from the corpus</h2>
     <p class="demo-tagline" data-t="demo_tagline">Concrete examples of what your AI agent sees when it hits the MCP server.</p>
 
@@ -3059,6 +3268,9 @@ const I18N = {
     browse:'Durchsuchen',
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_browse:'Durchsuchen', nav_access:'Zugang',
     nav_entscheide:'Entscheide', nav_gesetze:'Gesetze', nav_mcp:'Verbinden', nav_ueber:'\u00dcber uns',
+    nav_connect:'Verbinden', nav_toolkit:'Praxis', nav_verification:'Verifikation',
+    nav_corpus:'Korpus', nav_latest:'Neuste', nav_international:'International', nav_about:'\u00dcber',
+    menu_title:'Men\u00fc', menu_sections:'Auf dieser Seite', menu_more:'Mehr',
     landing_title:'Schweizer Rechtsprechung &amp; Gesetze,<br>gebaut f\u00fcr KI-Agenten.',
     landing_sub:'Ein offener Datensatz der publizierten Schweizer Gerichtsentscheide (968\u2019000+) und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar \u2014 per MCP-Server, HuggingFace-Download oder REST-API.',
     landing_card_entscheide_title:'Entscheide',
@@ -3335,6 +3547,9 @@ const I18N = {
     browse:'Parcourir',
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Parcourir', nav_access:'Acc\u00e8s',
     nav_entscheide:'D\u00e9cisions', nav_gesetze:'L\u00e9gislation', nav_mcp:'Connexion', nav_ueber:'\u00c0 propos',
+    nav_connect:'Connexion', nav_toolkit:'Praxis', nav_verification:'V\u00e9rification',
+    nav_corpus:'Corpus', nav_latest:'R\u00e9cents', nav_international:'International', nav_about:'\u00c0 propos',
+    menu_title:'Menu', menu_sections:'Sur cette page', menu_more:'Plus',
     landing_title:'Jurisprudence et l\u00e9gislation suisses,<br>con\u00e7ues pour les agents IA.',
     landing_sub:'Un corpus ouvert des d\u00e9cisions judiciaires suisses publi\u00e9es (968\u2019000+) et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'acc\u00e8s \u2014 via serveur MCP, t\u00e9l\u00e9chargement HuggingFace ou API REST.',
     landing_card_entscheide_title:'D\u00e9cisions',
@@ -3611,6 +3826,9 @@ const I18N = {
     browse:'Sfoglia',
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_browse:'Sfoglia', nav_access:'Accesso',
     nav_entscheide:'Decisioni', nav_gesetze:'Legislazione', nav_mcp:'Connessione', nav_ueber:'Chi siamo',
+    nav_connect:'Connessione', nav_toolkit:'Pratica', nav_verification:'Verifica',
+    nav_corpus:'Corpus', nav_latest:'Recenti', nav_international:'Internazionale', nav_about:'Chi siamo',
+    menu_title:'Menu', menu_sections:'Su questa pagina', menu_more:'Altro',
     landing_title:'Giurisprudenza e legislazione svizzera,<br>per agenti IA.',
     landing_sub:'Un corpus aperto delle decisioni giudiziarie svizzere pubblicate (968\u2019000+) e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero accesso \u2014 tramite server MCP, download HuggingFace o API REST.',
     landing_card_entscheide_title:'Decisioni',
@@ -3887,6 +4105,9 @@ const I18N = {
     browse:'Navigar',
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_browse:'Navigar', nav_access:'Access',
     nav_entscheide:'Decisiuns', nav_gesetze:'Leschas', nav_mcp:'Connectar', nav_ueber:'Davart',
+    nav_connect:'Connectar', nav_toolkit:'Pratica', nav_verification:'Verificaziun',
+    nav_corpus:'Corpus', nav_latest:'Pli novs', nav_international:'Internaziunal', nav_about:'Davart',
+    menu_title:'Men\u00fa', menu_sections:'Sin questa pagina', menu_more:'Dapli',
     landing_title:'Giurisprudenza svizra &amp; leschas,<br>per agents AI.',
     landing_sub:'In corpus avert da las decisiuns giudizialas svizras publitgadas (968\u2019000+) e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber access \u2014 via server MCP, telechargiada HuggingFace u API REST.',
     landing_card_entscheide_title:'Decisiuns',
@@ -4163,6 +4384,9 @@ const I18N = {
     browse:'Browse',
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
     nav_entscheide:'Decisions', nav_gesetze:'Legislation', nav_mcp:'Connect', nav_ueber:'About',
+    nav_connect:'Connect', nav_toolkit:'Toolkit', nav_verification:'Verification',
+    nav_corpus:'Corpus', nav_latest:'Latest', nav_international:'International', nav_about:'About',
+    menu_title:'Menu', menu_sections:'On this page', menu_more:'More',
     landing_title:'Swiss case law &amp; legislation,<br>built for AI agents.',
     landing_sub:'An open dataset of published Swiss court decisions (969,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
     landing_card_entscheide_title:'Decisions',
@@ -4479,39 +4703,107 @@ document.getElementById('theme-btn').addEventListener('click', () => {
   applyTheme();
 });
 
-/* ── Hamburger toggle ── */
+/* ── Mobile drawer ─ open/close, scrim, Escape, focus return ── */
 const hamburgerBtn = document.getElementById('hamburger-btn');
 const mobileMenu = document.getElementById('mobile-menu');
+const mobileMenuClose = document.getElementById('mobile-menu-close');
+const mobileMenuScrim = document.getElementById('mobile-menu-scrim');
 if (hamburgerBtn && mobileMenu) {
-  const icoMenu = hamburgerBtn.querySelector('.ico-menu');
-  const icoClose = hamburgerBtn.querySelector('.ico-close');
   const toggleMenu = (open) => {
     const isOpen = open !== undefined ? open : !mobileMenu.classList.contains('open');
     mobileMenu.classList.toggle('open', isOpen);
     hamburgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    if (icoMenu) icoMenu.style.display = isOpen ? 'none' : '';
-    if (icoClose) icoClose.style.display = isOpen ? '' : 'none';
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    document.body.classList.toggle('menu-open', isOpen);
     if (isOpen) {
       // Focus the first link when the menu opens so keyboard users land in it.
       const first = mobileMenu.querySelector('a');
-      if (first) setTimeout(() => first.focus(), 50);
+      if (first) setTimeout(() => first.focus(), 60);
     }
   };
-  hamburgerBtn.setAttribute('aria-expanded', 'false');
-  hamburgerBtn.setAttribute('aria-controls', 'mobile-menu');
   hamburgerBtn.addEventListener('click', () => toggleMenu());
+  if (mobileMenuClose) mobileMenuClose.addEventListener('click', () => { toggleMenu(false); hamburgerBtn.focus(); });
+  if (mobileMenuScrim) mobileMenuScrim.addEventListener('click', () => { toggleMenu(false); hamburgerBtn.focus(); });
+  // Auto-close when a section/subpage link is clicked
   mobileMenu.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => toggleMenu(false));
   });
-  // Close on Escape so users aren't trapped in the overlay.
+  // Close on Escape so keyboard users aren't trapped.
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
       toggleMenu(false);
       hamburgerBtn.focus();
     }
   });
+  // Wire the language buttons inside the drawer to the same handler
+  // as the toolbar ones (so changing language inside the drawer
+  // re-applies i18n immediately, just like the toolbar buttons).
+  mobileMenu.querySelectorAll('.mobile-menu-langs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.l;
+      curLang = lang;
+      try { localStorage.setItem('lang', lang); } catch (_) {}
+      // Mirror state across both toolbar + drawer button groups
+      document.querySelectorAll('.lang-sw button, .mobile-menu-langs button')
+        .forEach(b => b.classList.toggle('on', b.dataset.l === lang));
+      applyI18n();
+    });
+  });
 }
+
+/* ── Scroll-spy ─ highlight the current section in toolbar + drawer ── */
+(function scrollSpy() {
+  const sections = Array.from(document.querySelectorAll('section[id], header[id]'))
+    .filter(s => s.id && s.id !== 'top');
+  if (!sections.length) return;
+  const navLinks = Array.from(document.querySelectorAll('[data-section]'));
+  if (!navLinks.length) return;
+
+  const setActive = (id) => {
+    navLinks.forEach(a => a.classList.toggle('active', a.dataset.section === id));
+  };
+
+  if ('IntersectionObserver' in window) {
+    let active = null;
+    // Observe each section; the one whose top is closest to (but past)
+    // the toolbar bottom edge is "current".
+    const visible = new Map();
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) visible.set(e.target.id, e.intersectionRatio);
+        else                  visible.delete(e.target.id);
+      });
+      if (visible.size) {
+        // Pick the visible section closest to the top of the viewport.
+        let best = null, bestTop = Infinity;
+        for (const id of visible.keys()) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          const top = el.getBoundingClientRect().top;
+          if (top < bestTop && top < window.innerHeight * 0.5) {
+            bestTop = top; best = id;
+          }
+        }
+        if (best && best !== active) { active = best; setActive(best); }
+      }
+    }, {
+      rootMargin: `-${getComputedStyle(document.documentElement).getPropertyValue('--toolbar-h').trim() || '56px'} 0px -55% 0px`,
+      threshold: [0, 0.1, 0.5, 1]
+    });
+    sections.forEach(s => obs.observe(s));
+  } else {
+    // Fallback: cheap scroll-based update for old browsers.
+    const onScroll = () => {
+      const tb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-h')) || 56;
+      let active = sections[0].id;
+      for (const s of sections) {
+        if (s.getBoundingClientRect().top - tb - 12 <= 0) active = s.id;
+      }
+      setActive(active);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+})();
 
 /* ── Landing demo tab keyboard navigation (ArrowLeft/Right, Home, End) ── */
 {
