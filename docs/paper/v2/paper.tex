@@ -39,7 +39,7 @@ Defense-in-Depth Auditing for Multilingual Swiss Law}
 \maketitle
 
 \begin{abstract}
-Peer-reviewed measurement (Dahl et al., 2024; Magesh et al., 2024)
+Peer-reviewed measurement (Dahl et al., 2024; Magesh et al., 2025)
 finds that 58--82\,\% of legal queries to general-purpose LLMs and
 17--33\,\% to commercial legal-RAG tools produce a fabricated
 authority.  We present a five-rail closing audit pipeline for
@@ -47,7 +47,9 @@ retrieval-augmented legal LLMs that addresses each error class with
 the cheapest mechanism that can detect it.  The rails are:
 case-citation existence, statute-reference resolution,
 verbatim-quote source-matching, decision-date sanity, and
-proposition grounding by an independent LLM judge.  Four rails are
+proposition grounding by a separate-call LLM judge (same model
+family as the generator in the present experiment; v1.0 will add
+inter-judge agreement against an independent model).  Four rails are
 deterministic (${\sim}3$\,ms per draft); the fifth is judge-mediated
 (${\sim}2$\,s, ${\approx}\$0.005$ per call).  We release \textbf{Swiss
 Legal RAG Bench v0.2}, to our knowledge the first multilingual
@@ -62,16 +64,20 @@ RAG evaluation --- and measure: (i) \textbf{3.0\,\%} citation-level
 fabrication, well below Magesh's 17--33\,\% on commercial
 legal-RAG tools (one plausible explanation, untested here, is
 Swiss-corpus presence in the model's pre-training); and (ii) of the
-6 wrong drafts, only 1 contains a fabricated citation --- the
-remaining 5 are \emph{real citation + misrepresented holding}.
+6 wrong drafts, only 1 contains a fabricated citation; 3 are clean
+\emph{real citation + misrepresented holding}; the remaining 2
+mix that pattern with current-law / statutory-eligibility errors.
 The case-existence rail catches the one fabricated draft at
 0\,\% FPR; adding the other three deterministic rails preserves
 TPR (16.7\,\%) but raises FPR to 8.3\,\%; adding the second-pass
-LLM-judge grounding rail extends TPR to 50\,\% at 25\,\% FPR.
-The remaining 3 missed drafts are not judge-failures but
-audit-pipeline gaps: claim-extraction skipped the citation on
-two and the judge call returned an error on one.  Closing these
-gaps is the open problem.  Code MIT; benchmark CC0; underlying
+grounding rail extends TPR to 50\,\% at 25\,\% FPR (the rail fires
+on the 2 wrong drafts where claim-extraction supplied a
+candidate, though on inspection the trigger is a secondary
+citation-attachment issue rather than a clean semantic catch
+of the misrepresented holding).  The other 3 wrong drafts
+escape entirely: claim-extraction skipped the citation on two,
+and the judge call returned an error on one.  Closing these
+audit-pipeline gaps is the open problem.  Code MIT; benchmark CC0; underlying
 decision corpus consists of official published court decisions of
 their issuing courts, with packaging and added metadata licensed
 CC0.  v0.2 and the audit pipeline are seeds for v1.0 (150
@@ -93,7 +99,7 @@ Switzerland, this is a violation of the \emph{Sorgfaltspflicht}
 legal research, this asymmetry collides with a measured failure
 mode: 58--82\,\% of legal queries to general-purpose LLMs (Dahl et
 al., 2024) and 17--33\,\% of queries to commercial legal-RAG products
-(Magesh et al., 2024) produce a fabricated authority, miscited
+(Magesh et al., 2025) produce a fabricated authority, miscited
 statute, or unsupported quotation.
 
 Two recent developments shape the present work.  First, Butler \&
@@ -118,7 +124,7 @@ evaluation; the present paper occupies that specific gap.
 Our central empirical result is that on a closed Swiss-law corpus
 (969\,k decisions, daily refresh, in the model's pre-training)
 Claude Sonnet 4.6 fabricates only \textbf{3.0\,\%} of emitted
-citations --- an order of magnitude below the Magesh et al.\ (2024)
+citations --- an order of magnitude below the Magesh et al.\ (2025)
 17--33\,\% measurement on commercial legal-RAG products.  At face
 value this would suggest verification is unnecessary.  But the
 $c_{eli}$ correctness rate is only 80\,\% (24/30): of the 6 wrong
@@ -159,17 +165,21 @@ the design as a five-rail closing audit pipeline
         Released as a seed; v1.0 (150 questions, named expert
         co-authors, multi-annotator protocol) is forthcoming.
   \item Per-rail ablation identifying two structural gaps in
-        verification-first legal RAG: (a) the residual error
-        class is \emph{real citation, misrepresented holding} (5
-        of 6 wrong drafts in our experiment, vs.\ only 1
-        fabricated citation); (b) the audit's claim-extraction
-        heuristic skips the citation on a non-trivial fraction of
-        drafts, blocking the grounding judge before it can
-        evaluate.  In our experiment the judge converts
-        2 of 2 wrong drafts to issues whenever it gets to
-        evaluate one, but is blocked on 3 of the 5 residual-class
-        drafts (claim-extraction skips $\times 2$, judge call
-        error $\times 1$).
+        verification-first legal RAG: (a) the dominant residual
+        error class is \emph{real citation, misrepresented
+        holding} (3 of 6 wrong drafts cleanly, plus 2 that
+        blend it with current-law / statutory-eligibility error,
+        vs.\ 1 fabricated citation); (b) the audit's
+        claim-extraction heuristic skips the citation on a
+        non-trivial fraction of drafts, blocking the grounding
+        judge before it can evaluate.  In our experiment the
+        rail fires on the 2 wrong drafts where claim-extraction
+        provided a candidate (though on inspection the trigger
+        is a secondary citation-attachment issue rather than a
+        clean semantic catch of the misrepresented holding) and
+        is blocked on 3 of the 5 non-fabrication wrong drafts
+        (claim-extraction skips $\times 2$, judge call error
+        $\times 1$).
 \end{enumerate}
 
 % ──────────────────────────────────────────────────────────────────────
@@ -181,7 +191,7 @@ the design as a five-rail closing audit pipeline
 Dahl et al.\ (2024, \emph{Large Legal Fictions}) profiled
 hallucination on six legal-task types in general-purpose LLMs,
 reporting fabricated-authority rates of 58--82\,\%.  The follow-up
-Magesh et al.\ (2024, \emph{Hallucination-Free?}) measured
+Magesh et al.\ (2025, \emph{Hallucination-Free?}) measured
 commercial legal-RAG tools (Lexis+ AI, Westlaw AI-Assisted Research,
 Ask Practical Law) at 17--33\,\%.  Our paper accepts these as the
 problem statement; the five-rail pipeline of \S\ref{sec:rails} is
@@ -241,17 +251,18 @@ analogous in spirit to the SwiLTra-Judge calibration approach
 (Niklaus et al., 2025) but addresses retrieval-grounded text
 generation rather than translation evaluation.
 
-\paragraph{Positioning.}  No prior work proposes a \emph{deployed}
-mechanism that systematically reduces hallucination by decomposing
-the verification problem into independent error-class detectors.
-Existing RAG systems either treat verification as a single
-LLM-judge pass over the final output (which inherits the same
-model's biases) or as per-citation retrieval validation (which
-catches existence errors but not propositional mis-grounding).  The
-five-rail closing audit we propose in \S\ref{sec:rails} is the
-first to address each error class with the cheapest mechanism that
-can detect it, with each rail independently testable and
-ablatable.
+\paragraph{Positioning.}  To our knowledge, no prior work proposes
+a \emph{deployed} mechanism that systematically reduces hallucination
+by decomposing the verification problem into independent
+error-class detectors.  Existing RAG systems we are aware of
+treat verification as either a single LLM-judge pass over the
+final output (which inherits the same model's biases) or
+per-citation retrieval validation (which catches existence
+errors but not propositional mis-grounding).  The five-rail
+closing audit we propose in \S\ref{sec:rails} is, to our
+knowledge, the first to address each error class with the
+cheapest mechanism that can detect it, with each rail
+independently testable and ablatable.
 
 % ──────────────────────────────────────────────────────────────────────
 
@@ -566,19 +577,34 @@ rails behave very differently from one another: only
 the case-existence rail (configuration $C_1$) holds
 the perfect-precision floor (0\,\% FPR), and it does
 so by catching a single fabrication, q-017's invented
-DTF 117 II 198 (which Sonnet uses to anchor an
-otherwise-correct paraphrase of art.~264 CO).  Adding
+DTF 117 II 198, which Sonnet uses to anchor a
+substantively flawed art.~264 CO answer (the draft
+also omits cpv.~3 and mischaracterises the
+unjustified-refusal consequences --- both
+correctness failures the case-existence rail is
+not designed to detect).  Adding
 the statute, quote, and date rails ($C_2$--$C_4$)
 preserves TPR but degrades precision: FPR climbs to
 8.3\,\% by $C_4$ as the rails flag valid statute
 references and quotations as anomalies on
 correctly-answered drafts.  Second, the grounding
 rail ($C_5$) is responsible for the entire jump in
-TPR over $C_4$: it catches q-018 and q-030, the only
-two wrong drafts on which the rail's claim-extraction
-heuristic identified a preceding claim sentence and
-the judge call returned (i.e.\ TPR conditional on the
-judge actually evaluating the draft is $2/2$).  The
+TPR over $C_4$: it fires on the only two wrong
+drafts (q-018, q-030) where claim-extraction
+supplied the judge with a candidate.  Inspection
+qualifies the credit: on q-018 the rail flags a
+secondary citation-attachment claim
+(``BGE 135 V 297'' attached to a generic
+concretisation claim) while the draft's primary
+correctness failures --- omission of
+\emph{Eingliederungsmassnahmen}, the six-month
+waiting period, and the 2022 linear scale --- go
+undetected; on q-030 the extracted claim is the
+fragment ``Entscheidend ist nach'', and the judge
+returns \texttt{unrelated} because the claim string
+is too short to evaluate.  Both flags happen to land
+on wrong drafts, but neither is a clean semantic
+catch of a misrepresented-holding error.  The
 25\,\% FPR is the cost of that recall: six correct
 drafts trigger the rail because the second-pass judge
 disagrees with the draft's interpretation of a real
@@ -657,34 +683,48 @@ fire as freely.
 
 \paragraph{When the judge rail miscalls.}
 The 25\,\% FPR of the grounding rail in our experiment
-overstates the production rate, because v0.2's
-prior-only condition gives the judge little context.
-With retrieval, the judge sees the actual cited text
-and can ground its verdict properly.  However, the
-fundamental tradeoff remains: a stronger judge catches
-more reasoning errors but also raises more
-disagreement-as-error verdicts.  Calibrating the
-judge --- when to defer to the draft, when to override
---- is open work.
+plausibly overstates the production rate, but not for
+the reason we initially supposed: the rail already
+fetches the cited regeste / source text for verified
+citations, so the judge's access to source material
+does not change with retrieval.  What changes with
+retrieval is the \emph{generator}: a draft built on
+retrieved passages tends to anchor each claim with a
+pinpoint that maps cleanly to the source, leaving the
+judge less room to score \texttt{partial} or
+\texttt{unrelated}.  This is a hypothesis, not a
+result of the present paper.  The fundamental
+tradeoff remains in either condition: a stronger
+judge catches more reasoning errors but raises more
+disagreement-as-error verdicts; calibrating it ---
+when to defer, when to override --- is open work.
 
 \paragraph{Generalisation.}
-Each rail is corpus-agnostic.  The case-existence rail
-needs an enumerable decision corpus; the statute rail
-needs a statute mirror; the quote rail needs the cited
-decisions' verbatim text.  None of these are
-Swiss-specific.  An English-law adaptation
-(e.g.\ England \& Wales) would require: (i) regex
-patterns for English neutral citations and ICLR
-references; (ii) a statute mirror for primary
-legislation (\texttt{legislation.gov.uk}-derived);
-(iii) decision full-text for the quote rail.  All
-three are public-domain artefacts.  We expect the
-catch-rate / FPR profile to be model-dependent: a
-weaker generator with higher citation-level
-fabrication rate will see higher rail TPR.
+Each rail is corpus-agnostic in design.  The
+case-existence rail needs an enumerable decision
+corpus; the statute rail needs a statute mirror; the
+quote rail needs the cited decisions' verbatim text.
+None of these are Swiss-specific.  An English-law
+adaptation (e.g.\ England \& Wales) would require:
+(i) regex patterns for English neutral citations and
+law-report references; (ii) a statute mirror for
+primary legislation (e.g.\
+\texttt{legislation.gov.uk}-derived); (iii) decision
+full-text for the quote rail.  Open or low-friction
+sources exist for much of this --- BAILII for
+judgments, \texttt{legislation.gov.uk} for primary
+legislation --- but ICLR / commercial law-report text
+sits behind licensing, and corpus-construction
+licensing is jurisdiction-specific in ways we do not
+attempt to inventory here.  We expect the catch-rate
+/ FPR profile to be model-dependent: a weaker
+generator with higher citation-level fabrication
+rate will see higher rail TPR.
 
 \paragraph{Privacy and re-identification.}
-The corpus we publish (969\,k Swiss court decisions, CC0) consists
+The corpus we redistribute (969\,k Swiss court decisions; packaging
+and added metadata under CC0; underlying texts are official
+published court decisions of the issuing courts) consists
 exclusively of decisions \emph{as published by the issuing court}
 or via the official Swiss judicial publication portal
 \texttt{entscheidsuche.ch}.  We perform no de-anonymisation, no
@@ -855,12 +895,12 @@ M. Geering, J. Merane.
 N. Guha, J. Nyarko, D. E. Ho, et al.
 \newblock LegalBench: A collaboratively built benchmark for measuring legal reasoning in large language models, 2023.
 
-\bibitem{magesh2024}
+\bibitem{magesh2025}
 V. Magesh, F. Surani, M. Dahl, M. Suzgun, C. D. Manning, D. E. Ho.
 \newblock Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools.
-\newblock Stanford RegLab working paper, 2024 (arXiv:2405.20362);
-        peer-reviewed version forthcoming in
-        \emph{Journal of Empirical Legal Studies}, 2025.
+\newblock \emph{Journal of Empirical Legal Studies}, 22(2):216--242,
+        2025.  DOI: \texttt{10.1111/jels.12413}.
+        Working-paper version: Stanford RegLab, 2024 (arXiv:2405.20362).
 
 \bibitem{niklaus2021}
 J. Niklaus, I. Chalkidis, M. Stürmer.
