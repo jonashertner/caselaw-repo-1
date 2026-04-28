@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Coverage — OpenCaseLaw</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Per-court scraper health and known coverage gaps for the OpenCaseLaw Swiss legal corpus. Refreshed nightly.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://opencaselaw.ch/coverage/">
+<style>
+  :root {
+    --bg:#fff; --surf:#fafbfc; --tx:#1a1f26; --tx2:#5b6573; --tx3:#8b95a3;
+    --brd:#e4e7eb; --brd2:#d1d5db; --ac:#0369a1;
+    --ok-bg:#ecfdf5; --ok-fg:#047857; --ok-brd:#a7f3d0;
+    --warn-bg:#fef3c7; --warn-fg:#92400e; --warn-brd:#fcd34d;
+    --err-bg:#fee2e2;  --err-fg:#991b1b;  --err-brd:#fca5a5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0b0f14; --surf:#121821; --tx:#e6edf3; --tx2:#9ca6b1; --tx3:#6b7480;
+      --brd:#1f2733; --brd2:#2a3340; --ac:#7dd3fc;
+      --ok-bg:rgba(4,120,87,0.12); --ok-fg:#6ee7b7; --ok-brd:rgba(4,120,87,0.32);
+      --warn-bg:rgba(146,64,14,0.18); --warn-fg:#fcd34d; --warn-brd:rgba(146,64,14,0.4);
+      --err-bg:rgba(153,27,27,0.18); --err-fg:#fca5a5; --err-brd:rgba(153,27,27,0.4);
+    }
+  }
+  *,*::before,*::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--tx);
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-weight: 300; line-height: 1.55; letter-spacing: -0.005em;
+  }
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px) saturate(1.6);
+    border-bottom: 1px solid var(--brd);
+  }
+  .topbar-inner {
+    max-width: 1100px; margin: 0 auto; padding: 12px 20px;
+    display: flex; align-items: center; gap: 12px; height: 56px;
+  }
+  .topbar a.brand {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px; color: var(--tx); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .topbar a.brand .mark {
+    width: 22px; height: 22px;
+    border: 1px solid var(--brd2); border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 12px; color: var(--tx2);
+  }
+  .topbar .crumb { color: var(--tx3); font-size: 13px; }
+  .topbar .crumb::before { content: "/"; margin-right: 8px; color: var(--tx3); }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 {
+    font-weight: 200; font-size: clamp(28px, 4vw, 44px);
+    letter-spacing: -0.02em; margin: 8px 0 12px;
+  }
+  .lead {
+    color: var(--tx2); max-width: 640px;
+    font-size: 15.5px; line-height: 1.6; margin-bottom: 28px;
+  }
+
+  .summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+    gap: 12px; margin-bottom: 32px;
+  }
+  .stat {
+    background: var(--surf); border: 1px solid var(--brd);
+    border-radius: 8px; padding: 16px 18px;
+  }
+  .stat .k {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--tx3); margin-bottom: 6px; font-weight: 500;
+  }
+  .stat .v { font-weight: 300; font-size: 24px; letter-spacing: -0.01em; }
+  .stat.ok    .v { color: var(--ok-fg); }
+  .stat.warn  .v { color: var(--warn-fg); }
+  .stat.err   .v { color: var(--err-fg); }
+
+  .controls {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .controls input[type=search] {
+    flex: 1 1 240px; min-width: 200px;
+    padding: 8px 12px; font: inherit;
+    background: var(--surf);
+    border: 1px solid var(--brd); border-radius: 6px;
+    color: var(--tx);
+  }
+  .controls input[type=search]:focus {
+    outline: 2px solid var(--ac); outline-offset: -1px;
+  }
+  .controls .filters {
+    display: flex; gap: 4px;
+  }
+  .controls .filters button {
+    padding: 6px 12px; font: inherit; font-size: 13px;
+    background: transparent; border: 1px solid var(--brd);
+    border-radius: 6px; color: var(--tx2);
+    cursor: pointer; transition: 160ms ease;
+  }
+  .controls .filters button:hover { color: var(--tx); background: var(--surf); }
+  .controls .filters button.active {
+    color: var(--tx); background: var(--surf);
+    border-color: var(--brd2); font-weight: 500;
+  }
+
+  .table-wrap {
+    background: var(--surf); border: 1px solid var(--brd);
+    border-radius: 8px; overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead {
+    background: var(--bg); border-bottom: 1px solid var(--brd);
+    position: sticky; top: 56px; z-index: 1;
+  }
+  th {
+    text-align: left; padding: 10px 14px;
+    font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--tx3); font-weight: 500;
+  }
+  th.numeric { text-align: right; }
+  td { padding: 10px 14px; border-top: 1px solid var(--brd); vertical-align: middle; }
+  td.numeric {
+    text-align: right;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px; color: var(--tx2);
+  }
+  tr:hover td { background: color-mix(in srgb, var(--bg) 50%, var(--surf) 50%); }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 9px 2px 7px;
+    border-radius: 999px; font-size: 11.5px; font-weight: 500;
+    border: 1px solid;
+  }
+  .pill::before {
+    content: ""; width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor; opacity: 0.85;
+  }
+  .pill.ok    { background: var(--ok-bg);   color: var(--ok-fg);   border-color: var(--ok-brd); }
+  .pill.warn  { background: var(--warn-bg); color: var(--warn-fg); border-color: var(--warn-brd); }
+  .pill.err   { background: var(--err-bg);  color: var(--err-fg);  border-color: var(--err-brd); }
+  .pill--small { font-size: 10.5px; padding: 1px 6px 1px 5px; }
+
+  .scraper-name {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12.5px; color: var(--tx);
+  }
+  .scraper-label {
+    font-size: 12px; color: var(--tx3); margin-top: 2px;
+  }
+  .new-badge { color: var(--ok-fg); font-weight: 500; }
+  .meta {
+    color: var(--tx3); font-size: 13px; margin-top: 28px; line-height: 1.6;
+  }
+  .meta a { color: var(--ac); }
+
+  .skel-bar {
+    display: inline-block; height: 0.85em; width: 4em;
+    background: var(--brd); border-radius: 4px; opacity: 0.55;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  .skeleton-row td { height: 22px; }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; } 50% { opacity: 0.75; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skel-bar { animation: none; opacity: 0.5; }
+  }
+  @media (max-width: 640px) {
+    th, td { padding: 8px 10px; }
+    .col-portal, .col-duration { display: none; }
+    .topbar-inner { gap: 8px; padding: 8px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">
+      <span class="mark">+</span>
+      <span>opencaselaw.ch</span>
+    </a>
+    <span class="crumb">Coverage</span>
+  </div>
+</header>
+
+<main>
+  <h1>Coverage</h1>
+  <p class="lead">
+    Per-source scraper health for the OpenCaseLaw Swiss legal corpus.
+    Refreshed nightly by the publish pipeline (03:00&nbsp;UTC). The
+    table below shows every active scraper, the decisions it added in
+    the last run, total decisions held by us, and — where the source
+    portal exposes it — a comparison against the portal's published
+    count so you can see any gap.
+  </p>
+
+  <div class="summary" id="summary">
+    <div class="stat"><div class="k">last run</div><div class="v" id="stat-runat"><span class="skel-bar"></span></div></div>
+    <div class="stat ok"><div class="k">healthy</div><div class="v" id="stat-ok"><span class="skel-bar"></span></div></div>
+    <div class="stat warn"><div class="k">no new docs</div><div class="v" id="stat-zero"><span class="skel-bar"></span></div></div>
+    <div class="stat err"><div class="k">failing</div><div class="v" id="stat-err"><span class="skel-bar"></span></div></div>
+    <div class="stat"><div class="k">total decisions</div><div class="v" id="stat-total"><span class="skel-bar"></span></div></div>
+  </div>
+
+  <div class="controls">
+    <input id="search" type="search" placeholder="Filter by source key (e.g. bger, zh, ti…)" autocomplete="off">
+    <div class="filters" role="group" aria-label="Filter by status">
+      <button data-filter="all"   class="active">All</button>
+      <button data-filter="ok">Healthy</button>
+      <button data-filter="zero">No new</button>
+      <button data-filter="err">Failing</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="scrapers">
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Status</th>
+          <th class="numeric">+ last run</th>
+          <th class="numeric">Total ours</th>
+          <th class="numeric col-portal">Portal</th>
+          <th class="numeric">Gap</th>
+          <th class="numeric col-duration">Duration</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr class="skeleton-row"><td colspan="7"><span class="skel-bar" style="width:60%"></span></td></tr>
+        <tr class="skeleton-row"><td colspan="7"><span class="skel-bar" style="width:80%"></span></td></tr>
+        <tr class="skeleton-row"><td colspan="7"><span class="skel-bar" style="width:40%"></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="meta">
+    Data source: <a href="https://mcp.opencaselaw.ch/api/scraper-health"><code>/api/scraper-health</code></a>
+    (<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/run_scraper.py">run_scraper.py</a>).
+    A non-zero gap usually means a publication delay at the source portal,
+    not a missed scrape. Persistent failures are tracked in the
+    <a href="https://github.com/jonashertner/caselaw-repo-1/issues">issue tracker</a>.
+    For institutional collaboration on coverage gaps, write to
+    <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.
+  </p>
+</main>
+
+<script>
+"use strict";
+
+const SCRAPER_LABELS = {
+  bger: "Bundesgericht",
+  bge: "BGE (amtl. Sammlung)",
+  bge_historical: "BGE 1875–1953",
+  bvger: "Bundesverwaltungsgericht",
+  bstger: "Bundesstrafgericht",
+  bpatger: "Bundespatentgericht",
+  bge_egmr: "EGMR (CH)",
+  hudoc: "EGMR / HUDOC",
+  emark: "EMARK (asyl)",
+  ch_bundesrat: "Bundesrat",
+  finma: "FINMA",
+  finma_versicherungsrecht: "FINMA (Versicherung)",
+  weko: "WEKO",
+  edoeb: "EDÖB",
+  ubi: "UBI",
+  elcom: "ElCom",
+  postcom: "PostCom",
+  comcom: "ComCom",
+  ta_sst: "TA-SST",
+  mkg: "Militärkassationsgericht",
+  sav_international: "SAV international",
+  sav_kantone: "SAV Kantone",
+};
+
+function scraperLabel(key) {
+  if (SCRAPER_LABELS[key]) return SCRAPER_LABELS[key];
+  const m = key.match(/^([a-z]{2})_(.+)$/);
+  if (m) return m[1].toUpperCase() + " · " + m[2].replace(/_/g, " ");
+  return key;
+}
+
+function classify(s) {
+  if (!s) return "err";
+  if (s.error || s.timed_out || s.success === false) return "err";
+  if ((s.new_count || 0) === 0 && (s.our_count || 0) === 0) return "err";
+  if ((s.new_count || 0) === 0) return "zero";
+  return "ok";
+}
+
+function fmtN(n) {
+  if (n == null) return "—";
+  return Number(n).toLocaleString("de-CH");
+}
+
+function fmtDate(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toISOString().slice(0, 16).replace("T", " ") + " UTC";
+}
+
+function fmtDuration(s) {
+  if (s == null) return "—";
+  if (s < 60) return s.toFixed(1) + "s";
+  return (s / 60).toFixed(1) + "m";
+}
+
+// Safe DOM builder helpers — never use innerHTML with row data.
+function el(tag, opts = {}) {
+  const node = document.createElement(tag);
+  if (opts.cls) node.className = opts.cls;
+  if (opts.text != null) node.textContent = String(opts.text);
+  if (opts.children) for (const c of opts.children) if (c) node.appendChild(c);
+  return node;
+}
+function pill(cls, text, small = false) {
+  const span = el("span", { cls: "pill " + cls + (small ? " pill--small" : ""), text });
+  return span;
+}
+
+const STATE = { rows: [], filter: "all", q: "" };
+
+function applyFilters() {
+  const q = STATE.q.toLowerCase().trim();
+  const f = STATE.filter;
+  return STATE.rows.filter(r => {
+    if (f !== "all" && classify(r) !== f) return false;
+    if (q && !r._key.toLowerCase().includes(q) && !scraperLabel(r._key).toLowerCase().includes(q))
+      return false;
+    return true;
+  });
+}
+
+function render() {
+  const rows = applyFilters();
+  const tbody = document.getElementById("rows");
+  tbody.replaceChildren();
+
+  if (!rows.length) {
+    const tr = el("tr", { children: [
+      el("td", { text: "No sources match." })
+    ]});
+    tr.firstChild.colSpan = 7;
+    tr.firstChild.style.cssText = "padding:20px;text-align:center;color:var(--tx3)";
+    tbody.appendChild(tr);
+    return;
+  }
+
+  rows.sort((a, b) => {
+    const order = { err: 0, zero: 1, ok: 2 };
+    const oc = order[classify(a)] - order[classify(b)];
+    if (oc !== 0) return oc;
+    return a._key.localeCompare(b._key);
+  });
+
+  for (const r of rows) {
+    const cls = classify(r);
+
+    // Source — name + label
+    const tdSrc = el("td", { children: [
+      el("div", { cls: "scraper-name", text: r._key }),
+      el("div", { cls: "scraper-label", text: scraperLabel(r._key) }),
+    ]});
+
+    // Status
+    let pillText = (cls === "ok") ? "healthy"
+                  : (cls === "zero") ? "no new docs"
+                  : (r.timed_out ? "timed out"
+                     : r.error ? "error"
+                     : "no data");
+    const tdStatus = el("td", { children: [pill(cls, pillText)] });
+
+    // + last run
+    const newCount = r.new_count || 0;
+    const tdNew = el("td", { cls: "numeric" });
+    if (newCount > 0) {
+      tdNew.appendChild(el("span", { cls: "new-badge", text: "+" + fmtN(newCount) }));
+    } else {
+      tdNew.textContent = "0";
+    }
+
+    // Total ours
+    const tdOurs = el("td", { cls: "numeric", text: fmtN(r.our_count) });
+
+    // Portal
+    const tdPortal = el("td", {
+      cls: "numeric col-portal",
+      text: r.portal_count != null ? fmtN(r.portal_count) : "—",
+    });
+
+    // Gap
+    const tdGap = el("td", { cls: "numeric" });
+    if (r.gap == null) {
+      tdGap.textContent = "—";
+    } else if (r.gap === 0) {
+      tdGap.appendChild(pill("ok", "complete", true));
+    } else {
+      tdGap.appendChild(pill("warn", "−" + fmtN(r.gap), true));
+    }
+
+    // Duration
+    const tdDur = el("td", { cls: "numeric col-duration", text: fmtDuration(r.duration_s) });
+
+    const tr = el("tr", { children: [tdSrc, tdStatus, tdNew, tdOurs, tdPortal, tdGap, tdDur] });
+    tbody.appendChild(tr);
+  }
+}
+
+function renderSummary(data) {
+  const setText = (id, val) => {
+    const node = document.getElementById(id);
+    if (node) node.textContent = String(val);
+  };
+  setText("stat-runat", fmtDate(data.run_at));
+  const scrapers = Object.values(data.scrapers || {});
+  let ok = 0, zero = 0, errC = 0, total = 0;
+  for (const s of scrapers) {
+    const c = classify(s);
+    if (c === "ok") ok++;
+    else if (c === "zero") zero++;
+    else errC++;
+    total += (s.our_count || 0);
+  }
+  setText("stat-ok", ok);
+  setText("stat-zero", zero);
+  setText("stat-err", errC);
+  setText("stat-total", fmtN(total));
+}
+
+function loadHealth() {
+  fetch("https://mcp.opencaselaw.ch/api/scraper-health", { cache: "no-store" })
+    .then(r => r.json())
+    .then(data => {
+      if (!data || !data.scrapers) throw new Error("malformed payload");
+      STATE.rows = Object.entries(data.scrapers).map(([k, v]) => ({ _key: k, ...v }));
+      renderSummary(data);
+      render();
+    })
+    .catch(err => {
+      const tbody = document.getElementById("rows");
+      tbody.replaceChildren();
+      const td = el("td", { text: "Could not load scraper health: " + err.message });
+      td.colSpan = 7;
+      td.style.cssText = "padding:20px;text-align:center;color:var(--err-fg)";
+      tbody.appendChild(el("tr", { children: [td] }));
+    });
+}
+
+document.getElementById("search").addEventListener("input", (e) => {
+  STATE.q = e.target.value;
+  render();
+});
+document.querySelectorAll(".filters button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    STATE.filter = btn.dataset.filter;
+    render();
+  });
+});
+
+loadHealth();
+</script>
+</body>
+</html>

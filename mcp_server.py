@@ -15560,6 +15560,24 @@ render();setInterval(render,60000);
     async def api_list_courts():
         return await asyncio.to_thread(list_courts)
 
+    @rest_api.get("/scraper-health", tags=["Coverage"],
+                  summary="Per-court scraper health (last daily run)",
+                  description="Returns the latest scraper_health.json — one entry per "
+                              "scraper with success flag, decisions added in the last "
+                              "run, total decisions held by us, and last-known portal "
+                              "count where available. Drives the public /coverage/ "
+                              "transparency page. Refreshed nightly by the publish "
+                              "pipeline; cache-busted via the run_at timestamp.")
+    async def api_scraper_health():
+        path = Path(__file__).resolve().parent / "logs" / "scraper_health.json"
+        if not path.exists():
+            return {"error": "scraper_health.json not yet written", "scrapers": {}}
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except Exception as e:
+            return {"error": f"failed to read scraper_health.json: {e}",
+                    "scrapers": {}}
+
     @rest_api.get("/statistics", tags=["Case Law"],
                   summary="Get dataset statistics",
                   description="Aggregate statistics about the dataset. Optionally filter by court, canton, or year.")

@@ -258,6 +258,33 @@ a:hover { color: var(--tx2); }
   border-bottom: 1px solid var(--brd2);
 }
 
+/* Loading skeletons — replace `—` em-dash placeholders that made cards
+   look broken until stats.json hydrated.  Each skeleton is a small,
+   gently-pulsing grey bar sized roughly to the eventual content. The
+   existing setText / innerHTML wiring overwrites the skeleton span
+   when real data arrives, so no JS plumbing changes are needed. */
+.skel {
+  display: inline-block;
+  vertical-align: middle;
+  height: 0.85em;
+  width: 4em;
+  background: var(--brd);
+  border-radius: 4px;
+  opacity: 0.55;
+  animation: skel-pulse 1.4s ease-in-out infinite;
+}
+.skel--big  { height: 0.62em; width: 4.2em; }   /* big numbers */
+.skel--num  { width: 3em; }                       /* short row values */
+.skel--date { width: 6.5em; }                     /* ISO-like dates */
+.skel--list { width: 14em; }                      /* movers / lists */
+@keyframes skel-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.75; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; opacity: 0.5; }
+}
+
 /* Sticky-toolbar offset — set as a CSS variable so smooth-scroll JS
    can read it; also drives scroll-margin-top on each <section>.
    Without this, anchor jumps land BEHIND the sticky toolbar and the
@@ -2712,7 +2739,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       </nav>
       <p class="hero-v3-stamp" aria-label="Dataset timestamp and daily delta">
         <span data-t="hero_v3_asof">As of</span>
-        <time id="hero-stamp-date">—</time>
+        <time id="hero-stamp-date"><span class="skel skel--date"></span></time>
         <span class="sep">·</span>
         <span>+<span id="hero-stamp-delta">0</span></span>
         <span data-t="hero_v3_since">since yesterday</span>
@@ -2743,7 +2770,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       <h2 id="snapshot-heading" data-t="snapshot_heading">Corpus snapshot</h2>
       <p class="snapshot-stamp">
         <span data-t="snapshot_asof">As of</span>
-        <time id="snapshot-date">—</time>
+        <time id="snapshot-date"><span class="skel skel--date"></span></time>
         <span class="sep">·</span>
         <strong>+<span id="snapshot-delta-total">0</span></strong>
         <span data-t="snapshot_since">since yesterday</span>
@@ -2762,20 +2789,20 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
           <h3 id="sn-l-heading" data-t="snapshot_legislation">Legislation</h3>
           <span class="snapshot-card-delta">+<strong id="sn-l-delta">0</strong> 24h</span>
         </header>
-        <div class="snapshot-big" id="sn-l-total">—</div>
+        <div class="snapshot-big" id="sn-l-total"><span class="skel skel--big"></span></div>
         <div class="snapshot-big-sub" data-t="snapshot_legislation_sub">laws locally indexed</div>
         <div class="snapshot-rows">
           <div>
             <span class="snapshot-row-label" data-t="snapshot_federal_laws">Federal (Fedlex mirror)</span>
-            <strong id="sn-l-fed">—</strong>
+            <strong id="sn-l-fed"><span class="skel skel--num"></span></strong>
           </div>
           <div>
             <span class="snapshot-row-label" data-t="snapshot_cantonal_laws">Cantonal (19 portals + LexFind, 26 cantons)</span>
-            <strong id="sn-l-can">—</strong>
+            <strong id="sn-l-can"><span class="skel skel--num"></span></strong>
           </div>
           <div>
             <span class="snapshot-row-label" data-t="snapshot_articles">Articles indexed</span>
-            <strong id="sn-l-arts">—</strong>
+            <strong id="sn-l-arts"><span class="skel skel--num"></span></strong>
           </div>
         </div>
         <ul class="snapshot-meta">
@@ -2789,16 +2816,16 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
           <h3 id="sn-s-heading" data-t="snapshot_graph">Graph &amp; doctrine</h3>
           <span class="snapshot-card-delta" id="sn-s-delta-wrap">+<strong id="sn-s-delta">0</strong> 24h</span>
         </header>
-        <div class="snapshot-big" id="sn-s-cits">—</div>
+        <div class="snapshot-big" id="sn-s-cits"><span class="skel skel--big"></span></div>
         <div class="snapshot-big-sub" data-t="snapshot_citations_sub">resolved case-citation edges</div>
         <div class="snapshot-rows">
           <div>
             <span class="snapshot-row-label" data-t="snapshot_statutes_links">Statute links</span>
-            <strong id="sn-s-stats">—</strong>
+            <strong id="sn-s-stats"><span class="skel skel--num"></span></strong>
           </div>
           <div>
             <span class="snapshot-row-label" data-t="snapshot_commentaries_row">Scholarly commentaries</span>
-            <strong id="sn-s-comm">—</strong>
+            <strong id="sn-s-comm"><span class="skel skel--num"></span></strong>
           </div>
           <div>
             <span class="snapshot-row-label" data-t="snapshot_languages">Languages</span>
@@ -2814,7 +2841,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
     <!-- Top movers strip — top 5 courts by 24h delta -->
     <div class="snapshot-movers" id="snapshot-movers-wrap">
       <span class="snapshot-movers-label" data-t="snapshot_movers">New since yesterday</span>
-      <span id="snapshot-movers-list">—</span>
+      <span id="snapshot-movers-list"><span class="skel skel--list"></span></span>
     </div>
   </section>
 
@@ -3215,6 +3242,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
         <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener" target="_blank">HuggingFace</a>
         <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
         <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
+        <a href="/coverage/" data-t="footer_coverage">Coverage</a>
         <span class="footer-badge">CC0 1.0</span>
       </div>
       <div class="footer-col">
@@ -3326,6 +3354,7 @@ const I18N = {
     demo_label_call:'Tool-Aufruf', demo_label_response:'Antwort',
     footer_col_data:'Daten', footer_col_code:'Code', footer_col_connect:'Verbinden', footer_col_about:'\u00dcber',
     footer_report:'Issue melden', footer_commits:'Commits', footer_status:'API-Status',
+    footer_coverage:'Abdeckung',
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt', footer_privacy:'Datenschutz',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
@@ -3605,6 +3634,7 @@ const I18N = {
     demo_label_call:'Appel d\'outil', demo_label_response:'R\u00e9ponse',
     footer_col_data:'Donn\u00e9es', footer_col_code:'Code', footer_col_connect:'Connexion', footer_col_about:'\u00c0 propos',
     footer_report:'Signaler un probl\u00e8me', footer_commits:'Commits', footer_status:'\u00c9tat API',
+    footer_coverage:'Couverture',
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Confidentialit\u00e9',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
@@ -3884,6 +3914,7 @@ const I18N = {
     demo_label_call:'Chiamata', demo_label_response:'Risposta',
     footer_col_data:'Dati', footer_col_code:'Codice', footer_col_connect:'Connessione', footer_col_about:'Chi siamo',
     footer_report:'Segnala problema', footer_commits:'Commit', footer_status:'Stato API',
+    footer_coverage:'Copertura',
     footer_about:'Chi siamo', footer_contact:'Contatto', footer_privacy:'Privacy',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
@@ -4163,6 +4194,7 @@ const I18N = {
     demo_label_call:'Chalenda', demo_label_response:'Resposta',
     footer_col_data:'Datas', footer_col_code:'Code', footer_col_connect:'Connectar', footer_col_about:'Davart',
     footer_report:'Annunziar problem', footer_commits:'Commits', footer_status:'Status API',
+    footer_coverage:'Cuvertura',
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Protecziun da datas',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
@@ -4442,6 +4474,7 @@ const I18N = {
     demo_label_call:'Tool call', demo_label_response:'Response',
     footer_col_data:'Data', footer_col_code:'Code', footer_col_connect:'Connect', footer_col_about:'About',
     footer_report:'Report issue', footer_commits:'Commits', footer_status:'API status',
+    footer_coverage:'Coverage',
     footer_about:'About OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Privacy',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
