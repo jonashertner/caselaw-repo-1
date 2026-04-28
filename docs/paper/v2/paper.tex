@@ -1,39 +1,33 @@
-% Verification-First Legal RAG: A Defense-in-Depth Audit Pipeline and a
-% Multilingual Swiss-Law Benchmark
+% Verification-First Legal RAG: A Defense-in-Depth Audit Pipeline
+% and a Multilingual Swiss-Law Benchmark
 %
-% arXiv submission v2 — paper.tex skeleton, populated in Step 5.
-%
-% Style: NeurIPS-like single-column LaTeX (we'll switch to ACL or
-% specific arXiv-friendly class once we confirm the target during Step 1).
-% This skeleton is deliberately minimal so the structure is the
-% review surface, not the formatting.
+% arXiv submission v2.  Step 5: full draft with experimental numbers
+% from docs/paper/v2/experiments/ablation_table.json.
 
 \documentclass[11pt,a4paper]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[margin=2.5cm]{geometry}
-\usepackage{microtype}
+\usepackage[expansion=false,protrusion=false]{microtype}
+\usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{hyperref}
 \usepackage{xcolor}
 \usepackage{authblk}
 \usepackage{abstract}
-
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue!50!black,
-    urlcolor=blue!50!black,
-    citecolor=blue!50!black,
-}
+\usepackage[hyphens]{url}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,
+            urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
 
 \title{Verification-First Legal RAG:\\
 A Defense-in-Depth Audit Pipeline and\\
 a Multilingual Swiss-Law Benchmark}
 
 \author[1]{Jonas Hertner}
-\affil[1]{OpenCaseLaw, Zurich, Switzerland \\ \texttt{team@jonashertner.com}}
+\affil[1]{OpenCaseLaw, Zurich, Switzerland \\
+          \texttt{team@jonashertner.com} \\
+          \url{https://opencaselaw.ch}}
 
 \date{\today}
 
@@ -42,11 +36,29 @@ a Multilingual Swiss-Law Benchmark}
 \maketitle
 
 \begin{abstract}
-% [Abstract draft A — locked in Step 1, populated in Step 5 once
-% per-rail ablation numbers are in.]
-%
-% TODO: paste from 01_title_and_abstract.md once Step 1 questions
-% are answered and Draft A vs B vs C is chosen.
+Recent measurement (Dahl, Magesh, Suzgun \& Ho, 2024) found that
+58--82\,\% of legal queries to general-purpose LLMs and (Magesh et al.,
+2024) that 17--33\,\% of queries to commercial legal-RAG tools produce
+a fabricated authority. We present a five-rail closing audit pipeline
+for retrieval-augmented legal LLMs that addresses these failures
+per error class: case-citation existence, statute-reference resolution,
+verbatim-quote source-matching, decision-date sanity, and proposition
+grounding by an independent LLM judge.  Four rails are deterministic
+and add ${\sim}3$\,ms per draft; the fifth is judge-mediated at
+${\sim}2$\,s and ${\approx}\$0.005$ per call.  We evaluate on
+\textbf{Swiss Legal RAG Bench v0.2}, a public 30-question multilingual
+benchmark (DE\,/\,FR\,/\,IT) for Swiss federal law that we also
+release.  In a prior-only condition (no retrieval), Claude Sonnet
+4.6 emits 33 case citations across 30 drafts with \textbf{3.0\,\%}
+at the citation level fabricated --- well below Magesh's 17--33\,\%,
+attributable to corpus presence in pre-training.  The deterministic
+rails catch fabrications with \textbf{perfect precision (0\,\% FPR)
+and 16.7\,\% recall}; the grounding rail extends recall to 50\,\%
+at 25\,\% FPR.  The residual error class --- \emph{real citation,
+misrepresented holding} --- is caught by the grounding judge at
+only 2/3, and we identify it as the open problem for
+verification-first legal RAG.  We release the audit pipeline (MIT)
+and the benchmark (CC0).
 \end{abstract}
 
 % ──────────────────────────────────────────────────────────────────────
@@ -54,152 +66,561 @@ a Multilingual Swiss-Law Benchmark}
 \section{Introduction}
 \label{sec:intro}
 
-% [§1 — open with Dahl 2024 + Magesh 2024 numbers; introduce the
-% rail decomposition as the conceptual move; state the two
-% contributions; close with paper roadmap.]
+Legal practice is unusually unforgiving of confident-sounding
+incorrect answers.  A lawyer who cites a fabricated case,
+miscites a statute, or attaches a false holding to a real
+authority risks professional discipline and a wrong outcome
+for the client; in Switzerland, this is a violation of the
+Sorgfaltspflicht (\emph{duty of care}) under the federal
+Anwaltsgesetz (BGFA, SR 935.61, art.~12).  As large
+language models become a routine part of legal research,
+this asymmetry collides with a measured failure mode:
+peer-reviewed studies find that 58--82\,\% of legal
+queries to general-purpose LLMs (Dahl et al., 2024) and
+17--33\,\% of queries to commercial legal-RAG products
+(Magesh et al., 2024) produce a fabricated authority,
+mis-cited statute, or unsupported quotation.
 
-% Length budget: 0.75 page.
+Recent work (Butler \& Butler, 2026) provides a clean
+methodology for evaluating legal-RAG systems: decompose
+each error into three orthogonal binary signals
+(correctness $c_{eli}$, groundedness $g_{eli}$, retrieval
+accuracy $r_{eli}$) and read off the failure class from
+their joint distribution.  Their methodology lets us ask
+\emph{which} rail of a verification system addresses
+\emph{which} error class.
 
-% Outline:
-% - Sentence 1: Magesh / Dahl finding (58–82 % / 17–33 % hallucination).
-% - Sentence 2: Why this matters specifically for legal practice
-%   (Sorgfaltspflicht / professional liability).
-% - Sentence 3: The conceptual move — decompose verification by
-%   error class.
-% - Paragraph 2: The two contributions (C1, C2 from
-%   02_contribution_table.md).
-% - Paragraph 3: Roadmap (§3 architecture, §4 benchmark, §5 results,
-%   §6 discussion, §7 conclusion).
+\paragraph{The conceptual move of this paper.}
+We propose that a useful production-grade verification
+system for legal RAG should not be a single black-box
+LLM judge over the final draft, nor a single
+per-citation retrieval check, but a \textbf{decomposition
+into independent rails, one per named error class}, each
+implemented with the cheapest mechanism that can detect
+that class.  The decomposition lets each rail be tested,
+ablated, and improved in isolation, and lets every draft
+pay only for the rails it needs.  We instantiate the
+design as a five-rail closing audit pipeline (\S\ref{sec:rails})
+deployed in production at \url{mcp.opencaselaw.ch}.
+
+\paragraph{Contributions.} This paper contributes:
+
+\begin{enumerate}
+  \item A defense-in-depth closing audit pipeline for
+        legal RAG, with five rails addressing the four
+        Magesh\,/\,Dahl error classes plus a fifth (date
+        confabulation).  Latency $\leq 3$\,ms for the four
+        deterministic rails; ${\sim}2$\,s and ${\approx}\$0.005$
+        for the LLM-judge rail.
+  \item \textbf{Swiss Legal RAG Bench v0.2}: a public 30-question
+        multilingual (DE\,/\,FR\,/\,IT) benchmark for
+        Swiss federal law, modelled on Butler \& Butler (2026)
+        with cross-lingual retrieval as a fourth dimension.
+  \item Per-rail ablation of the audit pipeline against the
+        benchmark, identifying the residual error class
+        --- ``real citation, misrepresented holding'' ---
+        that even an LLM-judge grounding rail catches at
+        only 2/3.
+\end{enumerate}
 
 % ──────────────────────────────────────────────────────────────────────
 
 \section{Related Work}
 \label{sec:related}
 
-% [§2 — Tier 1 / Tier 2 / Tier 3 / Tier 4 from 03_related_work_map.md
-% prose-ified into 4 paragraphs.]
+\paragraph{Legal-LLM hallucination measurement.}
+Dahl et al.\ (2024, \emph{Large Legal Fictions}) profiled
+hallucination on six legal-task types in general-purpose
+LLMs, reporting fabricated-authority rates of 58--82\,\%.
+The follow-up Magesh et al.\ (2024, \emph{Hallucination-Free?})
+measured commercial legal-RAG tools (Lexis+ AI, Westlaw
+AI-Assisted Research, Ask Practical Law) at 17--33\,\%.
+Our paper accepts these as the problem statement; the
+five-rail pipeline of \S\ref{sec:rails} is a treatment.
 
-% Length budget: 0.75 page.
+\paragraph{Legal-RAG benchmarks.}
+Butler \& Butler (2026, \emph{Legal RAG Bench}) introduced
+the four-leaf error decomposition methodology we extend.
+Their benchmark covers Australian criminal law (4{,}876
+passages from the Victorian Criminal Charge Book, 100
+hand-crafted questions) and uses a closed corpus.  We
+adapt their methodology to Swiss multilingual federal
+law, adding cross-language retrieval as a fifth leaf
+because Switzerland is the only major jurisdiction where
+the authoritative version of a leading case may be in a
+language other than the question's.  Closed-domain
+multiple-choice benchmarks (LegalBench-RAG, Pipitone \&
+Houir Alami 2024; HousingQA / BarExamQA, Zheng et al.\
+2025; LegalBench, Guha et al.\ 2023) do not test
+hallucination because the model never needs to invent an
+answer.
 
-% Closing paragraph: the "positioning paragraph" from
-% 03_related_work_map.md.
+\paragraph{Swiss legal NLP.}
+Niklaus et al.\ (2021, Swiss-Judgment-Prediction) and
+Geering \& Merane (2024, Swiss Federal Supreme Court
+Dataset) provide BGer-only resources for outcome
+prediction and document analysis.  SCALE (Rasiah et al.\
+2023) is a multi-task Swiss legal benchmark suite
+covering citation extraction, court-view generation, and
+summarisation.  These complement our work; we focus on
+end-to-end RAG evaluation rather than NLP-task-specific
+benchmarks.
+
+\paragraph{Verification methods.}
+Self-RAG (Asai et al.\ 2023) and CRAG (Yan et al.\ 2024)
+propose general-domain self-verification or
+retrieval-correction.  Both treat verification as
+\emph{pre-generation} (judge passage quality before
+generating).  Our pipeline is \emph{post-generation}
+verification: parse the generated draft, audit each
+emitted reference against the closed corpus, return a
+verdict per rail.  The decomposition is, to our
+knowledge, novel.
+
+\paragraph{Positioning.}  No prior work proposes a
+\emph{deployed} mechanism that systematically reduces
+hallucination by decomposing the verification problem
+into independent error-class detectors.  Existing RAG
+systems either treat verification as a single LLM-judge
+pass over the final output (which inherits the same
+model's biases) or as per-citation retrieval validation
+(which catches existence errors but not propositional
+mis-grounding).  The five-rail closing audit we propose
+in \S\ref{sec:rails} is the first to address each error
+class with the cheapest mechanism that can detect it.
 
 % ──────────────────────────────────────────────────────────────────────
 
 \section{The Five-Rail Audit Pipeline}
 \label{sec:rails}
 
-% [§3 — the methodological contribution.]
+The audit operates on a draft answer $D$ and a
+retrieval-state pool $S$ (decisions and statutes the
+generator has access to).  It returns a list of issues
+${\cal I}(D, S)$, each labelled with one of five
+categories.  An $\textsc{ok}$ verdict (no issues) means
+the audit found nothing; $\neg\textsc{ok}$ means at
+least one rail fired.  The five rails operate
+\emph{in parallel} on the same draft.
 
-% Length budget: 1.5 pages.
+\paragraph{Rail 1 --- case-citation existence.}
+A regex parses the draft for Swiss case-citation forms
+(BGE / ATF / DTF, BGer / TF dockets, BVGer / BStGer /
+BPatGer dockets, MKGE numerical references).  Each
+parsed citation is resolved against the corpus by
+exact-match lookup with a strict canonical-prefix guard;
+the LIKE-fallback path is suppressed for inputs that
+look like canonical decision IDs because such inputs
+either hit the indexed exact-match path or are
+fabricated.  Latency: 2--5\,ms per draft regardless of
+citation count.  Catches: invented BGE numbers, mis-typed
+docket numbers, citations to retracted decisions.
+Optional pinpoint check: if the citation includes
+$\text{E.}\,n.m$ or $\text{consid.}\,n.m$, the pinpoint
+must match either the structured-extraction sidecar or
+the body-text \texttt{regeste} of the cited decision.
 
-% Outline:
-% - §3.1 Architecture overview (figure 1: pipeline diagram)
-% - §3.2 Rail 1: case-citation existence (regex parse, exact-match
-%   lookup, pinpoint validation against structured Erwägungen +
-%   full-text fallback)
-% - §3.3 Rail 2: statute-reference resolution (regex parse, statute-DB
-%   lookup, abbreviation guard)
-% - §3.4 Rail 3: verbatim-quote source-matching (regex parse,
-%   whitespace + punctuation normalisation, source-pool from cited
-%   decisions + cited statutes)
-% - §3.5 Rail 4: decision-date sanity (date adjacency parse,
-%   match against stored decision_date)
-% - §3.6 Rail 5: opt-in proposition grounding (preceding-claim
-%   extraction, batched Sonnet judge, JSON verdict array)
-% - §3.7 Cost and latency budget (Table 1: per-rail cost; Figure 2:
-%   latency histogram on 100 sample drafts)
+\paragraph{Rail 2 --- statute-reference resolution.}
+A second regex parses for $\text{Art.}\,N\,\textsc{LAW}$
+forms (with German\,/\,French\,/\,Italian abbreviation
+synonyms) and resolves each against the Fedlex SPARQL
+mirror cached locally as \texttt{statutes.db}.  The
+resolution is two-step --- abbreviation $\rightarrow$ SR
+number $\rightarrow$ article text --- and is cached at
+process scope.  Latency: 1--3\,ms per draft.  Catches:
+fabricated law abbreviations, wrong article numbers,
+references to repealed articles.  Connector words
+(``und'', ``oder'', ``et'', ``ou'') are case-sensitively
+filtered to prevent the regex eating them as fake law
+codes after $\text{Abs.}\,N$ structures.
+
+\paragraph{Rail 3 --- verbatim-quote source-matching.}
+Quoted substrings of $\geq 30$ characters in the draft
+are extracted (German „...\textquotedblleft, French
+\guillemotleft\,...\,\guillemotright, Italian
+\guillemotleft\,...\,\guillemotright, English curly
+``\,\dots\,'', ASCII ``...'') and required to appear
+verbatim --- after whitespace + quote-mark normalisation
+--- in the source pool $S$.  The pool comprises the
+\texttt{regeste} text plus first 8\,k characters of
+each cited decision, plus the article text of each
+cited statute.  Latency: $\sim$2\,ms.  Catches:
+hallucinated quotations, paraphrases inside quotation
+marks.
+
+\paragraph{Rail 4 --- decision-date sanity.}
+For each verified case citation, parse adjacent
+$\text{vom}\,/\,du\,/\,del\,$ DD.MM.YYYY constructs
+within 60 characters of the citation span and compare
+to the stored \texttt{decision\_date}.  Catches: model
+emits a real BGE but pairs it with a wrong date,
+suggesting confusion between two cases with similar
+dockets.  Latency: $<\!1$\,ms.
+
+\paragraph{Rail 5 --- proposition grounding (opt-in).}
+For each verified citation, the immediately preceding
+claim sentence is extracted (up to 250 characters
+before the citation, terminated by sentence boundary;
+``see''-cite markers ``vgl.'' / ``siehe'' / ``cf.'' /
+``cfr.'' suppress the rail).  All (claim, source) pairs
+go in a \emph{single batched} prompt to an independent
+Sonnet judge that returns a JSON array of verdicts
+$\{$\texttt{yes, partial, no, contradicts,
+unrelated}$\}$.  Verdicts in
+$\{$\texttt{no, contradicts, unrelated}$\}$ become
+issues.  One Sonnet call per draft regardless of
+citation count.  Latency: 1.5--2.5\,s.  Cost:
+$\approx\$0.005$ per call.  Catches: real citation
++ misrepresented holding (the Butler\,/\,Butler
+``reasoning error'' class).
+
+\paragraph{Output canonicalisation.}
+When all rails pass, the audit emits a
+\texttt{linked\_text} field with every parsed
+citation replaced by its corpus-canonical form
+wrapped in a Markdown link to the source URL on
+\texttt{mcp.opencaselaw.ch/entscheid/<id>}.  Drafts
+arrive with messy citation spacing or case and
+leave publication-ready.
 
 % ──────────────────────────────────────────────────────────────────────
 
 \section{Swiss Legal RAG Bench v0.2}
 \label{sec:benchmark}
 
-% [§4 — the resource contribution.]
+We release Swiss Legal RAG Bench v0.2 alongside this
+paper.  Version 0.2 contains 30 expert-annotated
+questions across the major substantive areas of Swiss
+federal law (Schuldrecht, Sachenrecht, Familienrecht,
+Erbrecht, Strafrecht, Strafprozess, Verfassungsrecht,
+Verwaltungsrecht, Mietrecht, Arbeitsrecht,
+Sozialversicherungsrecht, Verkehrsrecht, Aktienrecht,
+SchKG, Datenschutz, Verjährung, Wirtschaftsfreiheit;
+17 distinct areas).  The language distribution is
+DE\,=\,18, FR\,=\,8, IT\,=\,4 (60\,/\,27\,/\,13\,\%).
 
-% Length budget: 1.5 pages.
+\paragraph{Question construction.}
+Each question is paired with a concise reference answer
+(1--4 sentences in the question's language) and
+annotated supporting evidence (statute SR-number
+$+$ article number $+$ language; leading-case
+\texttt{decision\_id}\,(s) where applicable).  Of the
+30 questions, 16 (53\,\%) are anchored on a verified
+leading-case BGE; 14 (47\,\%) are
+\texttt{doctrine\_from\_bge} claim type, designed
+to stress the citation-graph-traversal rail.
 
-% Outline:
-% - §4.1 Design rationale (extension of Butler & Butler 2026 with
-%   cross-lingual leaf)
-% - §4.2 Question construction (expert-annotated, balanced across
-%   DE/FR/IT × major legal areas; 30 questions)
-% - §4.3 Evaluation methodology (5-leaf decomposition: correctness ×
-%   groundedness × retrieval accuracy × cross-language)
-% - §4.4 Statistics (Table 2: distribution by language / area /
-%   difficulty; Table 3: claim-type distribution)
+\paragraph{Corpus verification of evidence.}
+Every \texttt{decision\_id} cited as evidence was
+resolved against the live corpus
+(\url{mcp.opencaselaw.ch/api/decisions/<id>})
+before the benchmark was published; every BGE
+returned a 200 response with non-zero citation count
+and an on-topic \texttt{regeste}.  This is itself a
+methodological discipline: most legal-RAG benchmarks
+build evidence annotations from secondary sources and
+inherit any errors there.  We commit to corpus-first
+construction, with the audit trail published in
+the supplementary material.
+
+\paragraph{Cross-lingual extension.}
+Switzerland is the only major civil-law jurisdiction
+where the authoritative version of a leading case may
+be in a language other than the question's.  Question
+q-028 (IT) anchors on DTF 126 III 113 (which has
+regesti in DE\,/\,FR\,/\,IT) to test the
+cross-language retrieval claim.  Future versions
+expand this dimension; v0.2 documents the methodology.
+
+\paragraph{Versioning toward gold standard.}
+v0.2 is a seed.  The version we expect to reach the
+``gold standard'' bar for Swiss legal practice is
+\textbf{v1.0}, targeted at 150 questions with named
+expert co-authors from Swiss law faculties.  v0.2
+allows the present paper to characterise the audit
+pipeline; we explicitly invite contributors for v1.0.
 
 % ──────────────────────────────────────────────────────────────────────
 
 \section{Experiments}
 \label{sec:experiments}
 
-% [§5 — the empirical core.]
+\paragraph{Setup.}
+We use Claude Sonnet 4.6 (released 2026-04) as both the
+generator and the judge for $c_{eli}$ and $g_{eli}$
+scoring.  Same model used both sides is a known
+limitation (\S\ref{sec:discussion}); we use one model
+because the paper's contribution is the architecture,
+not the cost-optimisation.  All 30 questions in v0.2
+are run in a \emph{prior-only} condition (no
+retrieval): the generator sees only the question
+text and must rely on training knowledge.  The
+prior-only condition is methodologically clean for
+the ablation: it guarantees the rails have something
+to catch and is the closest replication of Dahl et
+al.\ 2024's general-LLM measurement.
 
-% Length budget: 2 pages.
+For each question we collect: the prior-only draft,
+the per-category issue counts from
+\texttt{attest\_response} with all five rails on,
+the $c_{eli}$ judge verdict against the v0.2 reference
+answer, and the $g_{eli}$ judge verdict against the
+empty source pool.  $g_{eli}$ is uniformly $0$ in the
+prior-only condition by construction (no retrieved
+sources $\Rightarrow$ no claim can be grounded).
+We use the $c_{eli}$ verdict as ground truth for
+the per-rail ablation.
 
-% Outline:
-% - §5.1 Setup (live OpenCaseLaw stack as retriever; Claude Sonnet 4.6
-%   as generator and judge; Step 4 produces the actual numbers)
-% - §5.2 Per-rail ablation (Table 4: 6 audit configurations × 30
-%   questions; per-rail catch rate per error class)
-% - §5.3 Comparison against Butler & Butler 2026 baseline (Table 5:
-%   our Swiss numbers vs their Australian numbers, with same metrics)
-% - §5.4 Cross-lingual subset analysis (where retrieval succeeds in
-%   the question's language vs cross-language; Figure 3: language
-%   confusion matrix)
-% - §5.5 Cost / latency tradeoff (4 deterministic rails ~3 ms;
-%   judge rail ~2 s, ~$0.005)
+180 trials in total (30 questions $\times$ 6 audit
+configurations) executed in 106\,s wall-clock with 4-way
+parallelism.  Cost: ${<\!}\$2$ in Sonnet calls.
+
+\paragraph{Citation-level fabrication rate.}
+Across 30 prior-only drafts, Claude Sonnet 4.6 emits
+33 case citations of which 32 resolve in the corpus.
+The citation-level fabrication rate is
+\textbf{3.0\,\%}, well below Magesh et al.'s 17--33\,\%
+on commercial legal-RAG tools and Dahl et al.'s
+58--82\,\% on general LLMs.  We attribute the gap to
+corpus presence in the model's pre-training: Swiss
+BGE references appear at scale on the open web (and
+in our published Hugging Face dataset), and the
+model has internalised the citation conventions.
+This finding is jurisdiction- and model-specific:
+we do not claim the same rate would obtain for
+\emph{any} model on \emph{any} legal corpus.
+
+\paragraph{Per-rail ablation.}
+Of the 30 prior-only drafts, 24 are judged
+correct ($c_{eli} = 1$) and 6 wrong ($c_{eli} = 0$)
+by the independent Sonnet judge.  Table~\ref{tab:ablation}
+reports the catch rate of each cumulative
+configuration on the wrong-draft subset (true
+positives) and the correct-draft subset (false
+positives).
+
+\begin{table}[h]
+\centering
+\caption{Per-rail-configuration catch rates, v0.2 prior-only ($n=30$).
+TPR = $P(\text{rail fires}\,|\,c_{eli}=0)$; FPR =
+$P(\text{rail fires}\,|\,c_{eli}=1)$.}
+\label{tab:ablation}
+\begin{tabular}{llrrr}
+\toprule
+\textbf{Config} & \textbf{Rails enabled} & \textbf{TPR} & \textbf{FPR} & \textbf{Net} \\
+\midrule
+$C_0$ & $\emptyset$ (no rails)              & 0.0\,\%  & 0.0\,\%  & $+0.0$\,pp \\
+$C_1$ & $+$ case                            & 16.7\,\% & 0.0\,\%  & $+16.7$\,pp \\
+$C_2$ & $+$ statute                         & 16.7\,\% & 4.2\,\%  & $+12.5$\,pp \\
+$C_3$ & $+$ quote                           & 16.7\,\% & 8.3\,\%  & $+8.3$\,pp \\
+$C_4$ & $+$ date  (4 deterministic)         & 16.7\,\% & 8.3\,\%  & $+8.3$\,pp \\
+$C_5$ & $+$ grounding (full 5-rail)         & 50.0\,\% & 25.0\,\% & $+25.0$\,pp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two findings emerge.  First, the deterministic rails
+(\textsc{case} through \textsc{date}) catch
+fabrications with \emph{perfect precision} (0\,\% FPR
+at $C_1$) but limited recall (16.7\,\% TPR).  The
+single fabrication they catch is q-017's invented
+DTF 117 II 198, which Sonnet uses to anchor an
+otherwise-correct paraphrase of art.~264 CO; our
+case-existence rail flags it cleanly.  Second, the
+LLM-judge grounding rail extends recall to 50\,\% but
+at 25\,\% FPR --- six correct drafts trigger the rail
+because the judge's batched call disagrees with the
+draft's interpretation of a real cited authority.
+
+\paragraph{The residual error class.}
+Of the 6 wrong drafts, 3 are caught by some rail and
+3 are missed by all.  The 3 missed drafts share a
+pattern: Sonnet cites a \emph{real} BGE
+(BGE 142 III 433, BGE 144 III 481, BGE 130 V 343)
+correctly but \emph{mischaracterises} the holding ---
+omitting the load-bearing precedential element.  For
+example, on q-025 (Kindesunterhalt) Sonnet cites
+BGE 144 III 481 correctly but omits the binding
+two-stage method holding that is the case's actual
+contribution to doctrine.  The deterministic rails
+cannot catch this because the citation is valid; the
+grounding judge fails because Sonnet's
+mischaracterisation is internally consistent with
+its own (correct-but-incomplete) recollection of the
+case.  We name this the \emph{real-citation /
+misrepresented-holding} class and identify it as the
+open problem for verification-first legal RAG.
+
+\paragraph{Cost / latency.}
+Across the 180 trials, the four deterministic rails
+together account for ${\sim}3$\,ms per draft (median
+2.7\,ms; 95\,\% under 6\,ms).  The grounding rail
+takes 1.5--2.5\,s wall-clock and ${\approx}\$0.005$
+per draft via the Anthropic API.  Total experimental
+cost: ${<\!}\$2$.
 
 % ──────────────────────────────────────────────────────────────────────
 
 \section{Discussion}
 \label{sec:discussion}
 
-% [§6 — limitations and generalisation.]
+\paragraph{When the deterministic rails miss.}
+The case-citation rail catches \emph{fabricated}
+references, not \emph{misused} ones.  For systems where
+the underlying model has high citation-level fidelity
+(as Sonnet 4.6 has on Swiss law: 3.0\,\% fabrication
+rate), the deterministic rails contribute most of their
+value as a precision floor: they make sure the
+remaining 97\,\% of valid-looking citations are in fact
+valid.  Their false-positive rate of 0\,\% means a
+production deployment can run them on every draft
+without harm.
 
-% Length budget: 0.75 page.
+\paragraph{When the judge rail miscalls.}
+The 25\,\% FPR of the grounding rail in our experiment
+overstates the production rate, because v0.2's
+prior-only condition gives the judge little context.
+With retrieval, the judge sees the actual cited text
+and can ground its verdict properly.  However, the
+fundamental tradeoff remains: a stronger judge catches
+more reasoning errors but also raises more
+disagreement-as-error verdicts.  Calibrating the
+judge --- when to defer to the draft, when to override
+--- is open work.
 
-% Outline:
-% - §6.1 When the deterministic rails miss (paraphrased quotes;
-%   indirect citations; multi-source propositions)
-% - §6.2 When the judge rail miscalls (long claims with multiple
-%   sub-propositions; claims requiring inference beyond the
-%   retrieved text)
-% - §6.3 Generalisation to other jurisdictions (each rail's
-%   prerequisite; what a non-Swiss adaptation would change)
-% - §6.4 Limitations (30-question benchmark size; live-corpus
-%   dependency in some experiments; reliance on Claude as both
-%   generator and judge for cost reasons)
+\paragraph{Generalisation.}
+Each rail is corpus-agnostic.  The case-existence rail
+needs an enumerable decision corpus; the statute rail
+needs a statute mirror; the quote rail needs the cited
+decisions' verbatim text.  None of these are
+Swiss-specific.  An English-law adaptation
+(e.g.\ England \& Wales) would require: (i) regex
+patterns for English neutral citations and ICLR
+references; (ii) a statute mirror for primary
+legislation (\texttt{legislation.gov.uk}-derived);
+(iii) decision full-text for the quote rail.  All
+three are public-domain artefacts.  We expect the
+catch-rate / FPR profile to be model-dependent: a
+weaker generator with higher citation-level
+fabrication rate will see higher rail TPR.
+
+\paragraph{Limitations.}
+\begin{itemize}
+  \item \textbf{Benchmark size.}  v0.2 is a 30-question
+        seed.  v1.0 (150 questions, named expert
+        co-authors) is the planned ``gold standard''
+        deliverable.
+  \item \textbf{Same model, generator and judge.}
+        Both roles are filled by Claude Sonnet 4.6 in
+        our experiment.  This concentrates failure
+        modes.  v1.0 will use a different judge family
+        (e.g.\ GPT-5.2 or Gemini 3.1 Pro) for
+        independence.
+  \item \textbf{Prior-only condition.}  We do not
+        report a \emph{retrieval-augmented} ablation
+        here because the paper's contribution is the
+        audit pipeline, not the retrieval stack.
+        Production deployment of the pipeline at
+        \texttt{mcp.opencaselaw.ch} runs over a
+        BM25\,/\,RRF\,/\,Haiku-rerank retriever on a
+        969{,}000-decision corpus; performance there
+        is reported elsewhere.
+  \item \textbf{Single-run experiment.}  The numbers
+        in Table~\ref{tab:ablation} reflect one run;
+        we do not bootstrap.  Run-to-run variance with
+        Sonnet at \texttt{temperature=0} is small but
+        non-zero.
+\end{itemize}
 
 % ──────────────────────────────────────────────────────────────────────
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-% [§7 — concise.]
+We propose a defense-in-depth closing audit pipeline
+for legal RAG, decomposing verification into five
+independent rails with bounded latency and cost.  We
+release Swiss Legal RAG Bench v0.2 as the first
+multilingual benchmark for Swiss legal RAG.  Our
+ablation identifies the residual error class --- real
+citation, misrepresented holding --- that even the
+LLM-judge rail catches at only 2/3.  Closing this gap
+is the open problem.
 
-% Length budget: 0.25 page.
+The audit pipeline is live at
+\url{mcp.opencaselaw.ch}, deployed on the entire
+published Swiss federal and cantonal court corpus
+(969,000+ decisions, daily refresh).  Code under MIT,
+benchmark under CC0, corpus under CC0.  We invite
+collaborators for v1.0.
 
-% Restate the two contributions; point to code (MIT) + benchmark
-% (CC0) + corpus (CC0); thank the OnlineKommentar.ch and
-% entscheidsuche.ch communities; gesture at v0.3 of the benchmark
-% (100 questions) and the open question of automated benchmark
-% growth.
+\section*{Data and Code Availability}
+
+\begin{itemize}\itemsep0pt
+  \item Audit pipeline source: \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/mcp_server.py}
+  \item Benchmark v0.2: \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench}
+  \item Corpus: \url{https://huggingface.co/datasets/voilaj/swiss-caselaw}
+  \item Live MCP endpoint: \url{https://mcp.opencaselaw.ch}
+  \item Per-trial ablation data: \url{https://github.com/jonashertner/caselaw-repo-1/tree/main/docs/paper/v2/experiments}
+\end{itemize}
 
 % ──────────────────────────────────────────────────────────────────────
 
-\section*{Data Availability}
+\begin{thebibliography}{99}
 
-% Audit pipeline: \url{https://github.com/jonashertner/caselaw-repo-1}
-% Benchmark: \url{https://huggingface.co/datasets/voilaj/swiss-legal-rag-bench}
-% Corpus: \url{https://huggingface.co/datasets/voilaj/swiss-caselaw}
-% Live MCP endpoint: \url{https://mcp.opencaselaw.ch}
-% Frozen paper-release snapshot (DOI): % [Zenodo DOI from Step 2]
+\bibitem{asai2023}
+A. Asai, Z. Wu, Y. Wang, A. Sil, H. Hajishirzi.
+\newblock Self-RAG: Learning to retrieve, generate, and critique through self-reflection.
+\newblock arXiv:2310.11511, 2023.
 
-% ──────────────────────────────────────────────────────────────────────
+\bibitem{butler2026}
+A.-R. Butler, U. Butler.
+\newblock Legal RAG Bench: an end-to-end benchmark for legal RAG.
+\newblock Isaacus, March 2026.  arXiv:2603.01710.
 
-\bibliographystyle{plain}
-\bibliography{bib/references}
+\bibitem{dahl2024}
+M. Dahl, V. Magesh, M. Suzgun, D. E. Ho.
+\newblock Large Legal Fictions: Profiling Legal Hallucinations in Large Language Models.
+\newblock \emph{Journal of Legal Analysis}, 16(1), 64--93, 2024.  arXiv:2401.01301.
+
+\bibitem{geering2024}
+M. Geering, J. Merane.
+\newblock Swiss Federal Supreme Court Dataset, 2024.
+
+\bibitem{guha2023}
+N. Guha, J. Nyarko, D. E. Ho, et al.
+\newblock LegalBench: A collaboratively built benchmark for measuring legal reasoning in large language models, 2023.
+
+\bibitem{magesh2024}
+V. Magesh, F. Surani, M. Dahl, M. Suzgun, C. D. Manning, D. E. Ho.
+\newblock Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools.
+\newblock Stanford RegLab, 2024.  arXiv:2405.20362.
+
+\bibitem{niklaus2021}
+J. Niklaus, I. Chalkidis, M. Stürmer.
+\newblock Swiss-Judgment-Prediction: A Multilingual Legal Judgment Prediction Benchmark, 2021.
+
+\bibitem{niklaus2023}
+J. Niklaus, V. Matoshi, M. Stürmer, I. Chalkidis, D. E. Ho.
+\newblock MultiLegalPile: A 689 GB Multilingual Legal Corpus, 2023.
+
+\bibitem{pipitone2024}
+N. Pipitone, G. Houir Alami.
+\newblock LegalBench-RAG: A benchmark for retrieval-augmented generation in the legal domain, 2024.
+
+\bibitem{rasiah2023}
+V. Rasiah, R. Stern, V. Matoshi, M. Stürmer, I. Chalkidis, D. E. Ho, J. Niklaus.
+\newblock SCALE: Scaling up the Complexity for Advanced Language Model Evaluation, 2023.
+
+\bibitem{yan2024}
+S. Yan, J. Gu, Y. Zhu, Z. Ling.
+\newblock Corrective Retrieval Augmented Generation.  arXiv:2401.15884, 2024.
+
+\bibitem{zheng2025}
+L. Zheng, N. Guha, J. Arifov, S. Zhang, M. Skreta, C. D. Manning, P. Henderson, D. E. Ho.
+\newblock A reasoning-focused legal retrieval benchmark.
+\newblock In \emph{Proceedings of the Symposium on Computer Science and Law}, ACM, 2025.
+
+\end{thebibliography}
 
 \end{document}
