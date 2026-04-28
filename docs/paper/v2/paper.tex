@@ -128,13 +128,17 @@ citations --- an order of magnitude below the Magesh et al.\ (2025)
 17--33\,\% measurement on commercial legal-RAG products.  At face
 value this would suggest verification is unnecessary.  But the
 $c_{eli}$ correctness rate is only 80\,\% (24/30): of the 6 wrong
-drafts, only 1 contains a fabricated citation; the remaining 5
-stem from a different mechanism --- the model cites a \emph{real}
-BGE \emph{correctly} but \emph{misrepresents} the holding,
-omitting the load-bearing precedential element or attributing a
-different doctrine to the case.  Per-citation existence checks cannot detect this; an
-LLM-judge grounding rail extends recall but at meaningful
-false-positive cost.  This residual class is what motivates the
+drafts, only 1 contains a fabricated citation; 3 are clean
+\emph{real-citation, misrepresented-holding} errors (the model
+cites a real BGE correctly but omits its load-bearing
+precedential element); and 2 mix the misrepresentation pattern
+with a primary error of another class (an outdated statutory
+scale on q-018, a wrong-grounds enumeration on q-030).  None of
+these five non-fabrication failures are detectable by
+per-citation existence checks; an LLM-judge grounding rail can
+in principle reach them, at meaningful false-positive cost, and
+in practice the rail is bottlenecked at our claim-extraction
+heuristic.  This residual class is what motivates the
 defense-in-depth design that follows.
 
 \paragraph{The conceptual move.}
@@ -199,14 +203,17 @@ the treatment.
 
 \paragraph{Legal-RAG benchmarks.}
 Butler \& Butler (2026, \emph{Legal RAG Bench}) introduced the
-four-leaf error decomposition methodology we extend.  Their
+three-signal error decomposition ($c_{eli}$, $g_{eli}$,
+$r_{eli}$) we extend.  Their
 benchmark covers Australian criminal law (4{,}876 passages from the
 Victorian Criminal Charge Book, 100 hand-crafted questions) and uses
 a closed corpus.  We adapt the methodology to Swiss multilingual
-federal law, adding cross-language retrieval as a fifth leaf because
+federal law, adding a cross-language retrieval signal because
 Switzerland is unusual among major jurisdictions in that the
-authoritative version of a leading case may be in a language other
-than the question's.  Closed-domain multiple-choice benchmarks
+authoritative version of a leading case may be in a language
+other than the question's (we acknowledge that v0.2 includes
+only one cross-lingual question, q-028; v1.0 expands this to a
+full cross-language retrieval suite).  Closed-domain multiple-choice benchmarks
 (LegalBench-RAG, Pipitone \& Houir Alami 2024; HousingQA /
 BarExamQA, Zheng et al.\ 2025; LegalBench, Guha et al.\ 2023) do not
 test hallucination because the model never needs to invent an
@@ -381,9 +388,13 @@ unrelated}$\}$.  Verdicts in
 $\{$\texttt{no, contradicts, unrelated}$\}$ become
 issues.  One Sonnet call per draft regardless of
 citation count.  Latency: 1.5--2.5\,s.  Cost:
-$\approx\$0.005$ per call.  Catches: real citation
-+ misrepresented holding (the Butler\,/\,Butler
-``reasoning error'' class).
+$\approx\$0.005$ per call.  Targets the Butler\,/\,Butler
+``reasoning error'' class (real citation +
+misrepresented holding); empirical catch rate
+on this class is qualified in \S\ref{sec:experiments}
+(the rail in our experiment fires on secondary
+attachment issues rather than cleanly on the
+underlying mischaracterisation).
 
 \paragraph{Output canonicalisation.}
 When all rails pass, the audit emits a
@@ -485,8 +496,12 @@ the question text and must rely on training knowledge.
 We chose the prior-only condition as an audit-pipeline
 \emph{stress test}, not as an end-to-end RAG
 evaluation: it maximises the density of recoverable
-errors and is the closest replication of Dahl et al.\
-2024's general-LLM measurement.  A retrieval-augmented
+errors, and the
+no-retrieval setup is methodologically aligned with
+Dahl et al.\ 2024's general-LLM hallucination
+measurement (we do not claim it replicates Dahl's
+substantive coverage of US legal tasks; our
+questions are Swiss federal law, single-curator).  A retrieval-augmented
 condition runs in production at
 \texttt{mcp.opencaselaw.ch} (BM25\,/\,RRF\,/\,Haiku
 rerank, see \S\ref{sec:discussion}); end-to-end RAG
@@ -774,6 +789,20 @@ Supreme Court itself.
         adopt a SwiLTra-Judge-style independent calibrated judge
         (Niklaus et al., 2025) with human-expert validation, and
         report inter-judge agreement.
+  \item \textbf{Ground-truth circularity.}  We use the
+        $c_{eli}$ verdict (also produced by Sonnet 4.6) as the
+        ground-truth label for which drafts are ``wrong'' in the
+        per-rail ablation (Table~\ref{tab:ablation}).  If Sonnet
+        has a systematic bias on a given proposition, that bias
+        affects both the draft and its $c_{eli}$ judgment in the
+        same direction, and a draft can be scored ``correct''
+        because the same misconception underlies both.  We
+        partially mitigate this by anchoring each question's
+        reference answer on a corpus-verified BGE before
+        generation, so the $c_{eli}$ judge has an explicit
+        external anchor to compare against; we do not claim to
+        have eliminated the circularity.  v1.0's independent
+        judge addresses this directly.
   \item \textbf{Prior-only condition.}  Our reported ablation
         runs the generator without retrieval, chosen as a
         stress-test of the audit pipeline (it maximises the
@@ -806,16 +835,18 @@ first multilingual benchmark for legal-RAG evaluation
 on Swiss federal law.  In our prior-only stress
 test, the case-existence rail catches the one
 fabricated citation among 6 wrong drafts at 0\,\%
-FPR; the second-pass grounding judge catches a
-further 2 of the 5 \emph{real-citation,
-misrepresented-holding} drafts (it scores 2/2 when
-the audit's claim-extraction heuristic gets it a
-claim to evaluate); 3 wrong drafts escape the audit
-because the claim-extraction heuristic skipped (×2)
-or the judge call returned an error (×1) before any
+FPR; the second-pass grounding rail fires on the
+2 wrong drafts where claim-extraction supplied a
+candidate (though on inspection both flags target
+secondary attachment issues, not the primary
+misrepresentation); the remaining 3 wrong drafts
+escape the audit because the claim-extraction
+heuristic skipped the citation ($\times 2$) or the
+judge call returned an error ($\times 1$) before any
 verdict was reached.  Closing those audit-pipeline
-gaps and stress-testing the judge on a
-larger-denominator v1.0 against an independent model
+gaps, calibrating the grounding judge against an
+independent model on a larger-denominator v1.0, and
+running an end-to-end retrieval-augmented evaluation
 are the next steps.
 
 The audit pipeline is live at
