@@ -155,13 +155,13 @@ def main():
     md = []
     md.append("# Per-rail ablation — v0.2 (n=30, prior-only condition)")
     md.append("")
-    md.append(f"**Setup:** Claude Sonnet 4.6 generates an answer for each of the 30 questions in v0.2 *without retrieval* (prior-only condition). The closing audit (`attest_response`, `audit_grounding=True`) runs all 5 rails. Per-configuration TPR / FPR computed in post-processing by intersecting the rail-fire flags with each configuration's enabled rail set.")
+    md.append(f"**Setup:** Claude Sonnet 4.6 generates an answer for each of the 30 questions in v0.2 *without retrieval* (prior-only condition). The closing audit (`attest_response`, `audit_grounding=True`) runs all 5 rails. Per-configuration WFR (wrong-draft flag rate) and FPR computed in post-processing by intersecting the rail-fire flags with each configuration's enabled rail set.")
     md.append("")
-    md.append("**Ground truth:** an independent Sonnet judge scores each draft for `c_eli` (does the answer entail the v0.2 reference answer?). 6 of 30 drafts judged wrong (= ground truth fabrications); 24 correct.")
+    md.append("**Ground-truth labels:** a second-pass Sonnet call (same model family as the generator) scores each draft for `c_eli` (does the answer entail the v0.2 reference answer?). 6 of 30 drafts labelled wrong by this judge; 24 correct. WFR counts *any* enabled rail firing on a wrong-labelled draft and is NOT a `catch rate' / `TPR' (firing on a wrong draft does not certify that the flag identifies the draft's primary error; see paper §5).")
     md.append("")
-    md.append("## Table 4 — per-configuration catch rates")
+    md.append("## Table 4 — per-configuration flag rates")
     md.append("")
-    md.append("| Config | Rails | TPR (catch wrong) | FPR (flag correct) | Net (TPR – FPR) |")
+    md.append("| Config | Rails | WFR (flagged wrong) | FPR (flagged correct) | Net (WFR – FPR) |")
     md.append("|---|---|---:|---:|---:|")
     for row in rows:
         rails_str = ", ".join(row["rails"]) if row["rails"] else "—"
@@ -176,7 +176,7 @@ def main():
     md.append("")
     md.append("(How many drafts each rail fires on, regardless of other rails. Reveals each rail's independent contribution.)")
     md.append("")
-    md.append("| Rail | Fires on N drafts | Fires on wrong | Fires on correct | Solo TPR | Solo FPR |")
+    md.append("| Rail | Fires on N drafts | Fires on wrong | Fires on correct | Solo WFR | Solo FPR |")
     md.append("|---|---:|---:|---:|---:|---:|")
     for rail in RAILS:
         s = rail_solo[rail]
@@ -212,7 +212,7 @@ def main():
     md.append("## Notes for paper §5")
     md.append("")
     md.append("- The prior-only condition (no retrieval) is the cleanest test of the rails: it guarantees Sonnet has to invent some Swiss legal references, providing a substrate the rails can detect. Adding retrieval would lower the prior to detect.")
-    md.append("- Per-rail TPR is monotone non-decreasing as rails are added (each rail can only catch more, never fewer). FPR is also monotone non-decreasing — a known tradeoff. The Net column shows the marginal contribution.")
+    md.append("- Per-rail WFR is monotone non-decreasing as rails are added (each rail can only flag more, never fewer). FPR is also monotone non-decreasing — a known tradeoff. The Net column shows the marginal contribution.")
     md.append("- The cite-citation validity rate (Sonnet's citation-level fabrication rate without retrieval) is reported alongside Magesh et al. 2025's 17–33% measurements on commercial legal-RAG tools, but the two are NOT a like-for-like comparison: different model families, query distributions, and tool conditions. See paper §5 for the qualified framing.")
 
     TABLE_MD.write_text("\n".join(md), encoding="utf-8")
