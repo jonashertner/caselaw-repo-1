@@ -8,9 +8,13 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}              % Latin Modern fonts: correct fi/fl ligatures
+\usepackage{textcomp}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage[expansion=false,protrusion=false]{microtype}
 \usepackage{amsmath}
+\input{glyphtounicode}
+\pdfgentounicode=1                % glyph→Unicode map; PDF text remains searchable
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -24,10 +28,9 @@
 Defense-in-Depth Auditing for Multilingual Swiss Law}
 
 \author[1]{Jonas Hertner}
-\affil[1]{Independent researcher and maintainer, OpenCaseLaw \\
-          Zurich, Switzerland \\
-          \texttt{team@jonashertner.com} \\
-          \url{https://opencaselaw.ch}}
+\affil[1]{OpenCaseLaw\,---\,Independent researcher and maintainer\\
+          Zurich, Switzerland\\
+          \texttt{team@jonashertner.com}\quad\url{https://opencaselaw.ch}}
 
 \date{\today}
 
@@ -40,12 +43,12 @@ Peer-reviewed measurement (Dahl et al., 2024; Magesh et al., 2024)
 finds that 58--82\,\% of legal queries to general-purpose LLMs and
 17--33\,\% to commercial legal-RAG tools produce a fabricated
 authority.  We present a five-rail closing audit pipeline for
-retrieval-augmented legal LLMs --- case-citation existence,
-statute-reference resolution, verbatim-quote source-matching,
-decision-date sanity, and proposition grounding by an independent
-LLM judge --- that addresses each error class with the cheapest
-mechanism that detects it.  Four rails are deterministic
-(${\sim}3$\,ms per draft); the fifth is judge-mediated
+retrieval-augmented legal LLMs that addresses each error class with
+the cheapest mechanism that can detect it.  The rails are:
+case-citation existence, statute-reference resolution,
+verbatim-quote source-matching, decision-date sanity, and
+proposition grounding by an independent LLM judge.  Four rails are
+deterministic (${\sim}3$\,ms per draft); the fifth is judge-mediated
 (${\sim}2$\,s, ${\approx}\$0.005$ per call).  We release \textbf{Swiss
 Legal RAG Bench v0.2}, the first multilingual benchmark for legal-RAG
 \emph{evaluation} on Swiss federal law (DE\,/\,FR\,/\,IT, 30
@@ -109,12 +112,12 @@ Claude Sonnet 4.6 fabricates only \textbf{3.0\,\%} of emitted
 citations --- an order of magnitude below the Magesh et al.\ (2024)
 17--33\,\% measurement on commercial legal-RAG products.  At face
 value this would suggest verification is unnecessary.  But the
-$c_{eli}$ correctness rate is only 80\,\% (24/30), meaning roughly
-half of all factual errors come from a different mechanism:
-the model cites a \emph{real} BGE \emph{correctly} but
-\emph{misrepresents} the holding --- omitting the load-bearing
-precedential element, or attributing a different doctrine to the
-case.  Per-citation existence checks cannot detect this; an
+$c_{eli}$ correctness rate is only 80\,\% (24/30): of the 6 wrong
+drafts, only 1 contains a fabricated citation; the remaining 5
+stem from a different mechanism --- the model cites a \emph{real}
+BGE \emph{correctly} but \emph{misrepresents} the holding,
+omitting the load-bearing precedential element or attributing a
+different doctrine to the case.  Per-citation existence checks cannot detect this; an
 LLM-judge grounding rail extends recall but at meaningful
 false-positive cost.  This residual class is what motivates the
 defense-in-depth design that follows.
@@ -384,9 +387,16 @@ annotated supporting evidence (statute SR-number
 $+$ article number $+$ language; leading-case
 \texttt{decision\_id}\,(s) where applicable).  Of the
 30 questions, 16 (53\,\%) are anchored on a verified
-leading-case BGE; 14 (47\,\%) are
-\texttt{doctrine\_from\_bge} claim type, designed
-to stress the citation-graph-traversal rail.
+leading-case BGE; 14 (47\,\%) carry the
+\texttt{doctrine\_from\_bge} claim type, in which the
+expected answer derives a doctrinal proposition from
+a seed BGE rather than restating its holding directly.
+The two annotations are not disjoint: every
+\texttt{doctrine\_from\_bge} question is also anchored
+on a leading-case BGE.  The split exists to let the
+ablation surface where each rail contributes ---
+case-existence on the seed citations, the grounding
+judge on the doctrinal proposition.
 
 \paragraph{Corpus verification of evidence.}
 Every \texttt{decision\_id} cited as evidence was
@@ -407,8 +417,8 @@ where the authoritative version of a leading case may
 be in a language other than the question's.  Question
 q-028 (IT) anchors on DTF 126 III 113 (which has
 regesti in DE\,/\,FR\,/\,IT) to test the
-cross-language retrieval claim.  Future versions
-expand this dimension; v0.2 documents the methodology.
+cross-language retrieval claim.  v1.0 expands this
+dimension to a full cross-language retrieval suite.
 
 \paragraph{Versioning toward gold standard.}
 v0.2 is a seed.  The version we expect to reach the
@@ -449,9 +459,16 @@ sources $\Rightarrow$ no claim can be grounded).
 We use the $c_{eli}$ verdict as ground truth for
 the per-rail ablation.
 
-180 trials in total (30 questions $\times$ 6 audit
-configurations) executed in 106\,s wall-clock with 4-way
-parallelism.  Cost: ${<\!}\$2$ in Sonnet calls.
+Per question we issue exactly four Sonnet calls (one
+generation, one in-pipeline grounding judge, one
+$c_{eli}$ judge, one $g_{eli}$ judge) plus one
+deterministic-rails pass; the 6-row ablation in
+Table~\ref{tab:ablation} is computed in
+post-processing by intersecting each draft's
+per-rail fire flags with each configuration's
+enabled rail set.  Total: 120 Sonnet calls across
+30 drafts; 106\,s wall-clock with 4-way parallelism;
+${<\!}\$2$ in API charges.
 
 \paragraph{Citation-level fabrication rate.}
 Across 30 prior-only drafts, Claude Sonnet 4.6 emits
@@ -536,12 +553,15 @@ misrepresented-holding} class and identify it as the
 open problem for verification-first legal RAG.
 
 \paragraph{Cost / latency.}
-Across the 180 trials, the four deterministic rails
+Across the 30 drafts, the four deterministic rails
 together account for ${\sim}3$\,ms per draft (median
-2.7\,ms; 95\,\% under 6\,ms).  The grounding rail
-takes 1.5--2.5\,s wall-clock and ${\approx}\$0.005$
-per draft via the Anthropic API.  Total experimental
-cost: ${<\!}\$2$.
+2.7\,ms; 95\,\% under 6\,ms), measured by wrapping
+the rail dispatch in
+\texttt{time.perf\_counter\_ns()} on the production
+deployment.  The grounding rail takes 1.5--2.5\,s
+wall-clock and ${\approx}\$0.005$ per draft via the
+Anthropic API.  Total experimental cost (generation
+$+$ audit $+$ judges): ${<\!}\$2$.
 
 % ──────────────────────────────────────────────────────────────────────
 
@@ -715,6 +735,7 @@ M. Dahl, V. Magesh, M. Suzgun, D. E. Ho.
 \bibitem{geering2024}
 M. Geering, J. Merane.
 \newblock Swiss Federal Supreme Court Dataset, 2024.
+\newblock Hugging Face datasets repository, \texttt{rcds/swiss\_court\_view\_generation}.
 
 \bibitem{guha2023}
 N. Guha, J. Nyarko, D. E. Ho, et al.
@@ -755,7 +776,8 @@ L. Rolshoven, V. Rasiah, S. Br{\"u}gger Bose, S. Hostettler, L. Burkhalter, M. S
 
 \bibitem{pipitone2024}
 N. Pipitone, G. Houir Alami.
-\newblock LegalBench-RAG: A benchmark for retrieval-augmented generation in the legal domain, 2024.
+\newblock LegalBench-RAG: A benchmark for retrieval-augmented generation in the legal domain.
+\newblock arXiv:2408.10343, 2024.
 
 \bibitem{rasiah2023}
 V. Rasiah, R. Stern, V. Matoshi, M. Stürmer, I. Chalkidis, D. E. Ho, J. Niklaus.
