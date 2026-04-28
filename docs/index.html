@@ -1442,6 +1442,149 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 /* (Word add-in banner CSS removed — demoted to a single text-link
    inside the Connect section's footer.) */
 
+/* ── Verification banner — top-of-page brand-promise strip ────────────
+   Persistent (not dismissible). Sits between toolbar and main; clicks
+   through to #verification.  */
+.verify-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 16px;
+  background: var(--ac-bg, #fef2f2);
+  border-bottom: 1px solid var(--ac-brd, #fecaca);
+  color: var(--ac, #b91c24);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: -0.005em;
+  text-align: center;
+  transition: background 160ms var(--ease, ease);
+}
+.verify-banner:hover {
+  background: color-mix(in srgb, var(--ac-bg, #fef2f2) 75%, var(--ac, #b91c24) 8%);
+  text-decoration: none;
+}
+.verify-banner-mark {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--ac, #b91c24);
+  flex: 0 0 auto;
+  font-size: 0; line-height: 0;
+}
+.verify-banner-text { color: var(--ac, #b91c24); }
+.verify-banner-arrow {
+  font-size: 14px;
+  transition: transform 160ms var(--ease, ease);
+}
+.verify-banner:hover .verify-banner-arrow { transform: translateX(3px); }
+@media (max-width: 600px) {
+  .verify-banner { font-size: 12px; padding: 8px 12px; gap: 8px; }
+}
+
+/* ── Verification section ─────────────────────────────────────────────
+   Six layered cards + closing "objective" block. Visual register sits
+   between the connect block (technical) and the international card
+   grid (institutional).  */
+.verify-lead {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--tx2);
+  max-width: 75ch;
+  margin: 0 auto 14px;
+  text-align: left;
+}
+.verify-lead em {
+  font-style: italic;
+  color: var(--tx);
+}
+.verify-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 28px 0 32px;
+}
+.verify-card {
+  position: relative;
+  padding: 22px 22px 20px;
+}
+.verify-card .verify-num {
+  font-family: var(--f-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--tx3);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.verify-card h3 {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0 0 10px;
+  color: var(--tx);
+  letter-spacing: -0.01em;
+}
+.verify-card p {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--tx2);
+  margin: 0;
+}
+.verify-card code {
+  font-family: var(--f-mono, ui-monospace, monospace);
+  font-size: 12px;
+  background: var(--bg2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--tx);
+}
+.verify-objective {
+  margin-top: 12px;
+  padding: 28px 32px;
+  background: var(--bg2);
+  border: 1px solid var(--brd2);
+  border-radius: var(--r-md, 8px);
+  text-align: left;
+}
+.verify-objective > p:first-child {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx3);
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+.verify-objective-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--tx);
+  margin: 0 0 16px;
+  max-width: 75ch;
+}
+.verify-objective-text strong {
+  font-weight: 500;
+  color: var(--tx);
+}
+.verify-objective-meta {
+  font-size: 13px;
+  color: var(--tx2);
+  margin: 0;
+}
+.verify-objective-meta a {
+  color: var(--tx2);
+  text-decoration: underline;
+  text-decoration-color: var(--brd);
+  text-underline-offset: 3px;
+}
+.verify-objective-meta a:hover {
+  color: var(--tx);
+  text-decoration-color: var(--tx2);
+}
+.verify-sep {
+  color: var(--brd);
+  margin: 0 8px;
+}
+
 /* ── Live from the corpus (landing demo) ── */
 .live-demo { }  /* section rhythm now comes from .section utility */
 .demo-tagline {
@@ -2206,6 +2349,17 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 
 <a class="skip-link" href="#main" data-t="skip_link">Skip to content</a>
 
+<!-- ── Verification banner ─────────────────────────────────────────────
+     Persistent strip linking to the #verification section. Brand-promise
+     surface: every Swiss legal practitioner who lands here should see,
+     before anything else, that we treat AI hallucination of case
+     references as the central problem to solve. -->
+<a class="verify-banner" href="#verification" data-t-aria="banner_verification_aria">
+  <span class="verify-banner-mark" aria-hidden="true">●</span>
+  <span class="verify-banner-text" data-t="banner_verification">How OpenCaseLaw eliminates AI hallucination of case references</span>
+  <span class="verify-banner-arrow" aria-hidden="true">→</span>
+</a>
+
 <nav class="toolbar"><div class="w toolbar-inner">
   <a href="/" class="toolbar-brand" aria-label="opencaselaw.ch — home">
     <span class="brand-mark">+</span>
@@ -2365,6 +2519,61 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
     <div class="snapshot-movers" id="snapshot-movers-wrap">
       <span class="snapshot-movers-label" data-t="snapshot_movers">New since yesterday</span>
       <span id="snapshot-movers-list">—</span>
+    </div>
+  </section>
+
+  <!-- ── Verification — anti-hallucination architecture ────────────────
+       Six layers that, together, ensure every case reference an LLM
+       writes when grounded on this corpus is real, locatable, and
+       opens to its source in one click. Linked from the top banner.  -->
+  <section class="section verification" id="verification" aria-labelledby="verify-heading">
+    <h2 class="section-heading" id="verify-heading" data-t="verify_heading">Verification — eliminating AI hallucination of case references</h2>
+    <p class="verify-lead" data-t="verify_lead">Large language models hallucinate. Recent peer-reviewed measurement (Magesh et al., 2024, Stanford RegLab) found that 58–82&nbsp;% of legal queries to general-purpose LLMs produced at least one fabricated authority — invented decisions, miscited articles, mischaracterised holdings. In Swiss legal practice, citing an authority that does not exist or does not say what is claimed exposes a lawyer to professional discipline and a client to a wrong outcome. Comprehension of <em>what the AI is providing</em> and <em>what the source is</em> is therefore not a nicety — it is the precondition for any responsible use of AI in legal work.</p>
+    <p class="verify-lead" data-t="verify_lead2">OpenCaseLaw treats this as the central problem to solve. The MCP server below the user-facing search is built around a six-layer architecture whose only purpose is to make every case reference an AI writes verifiable in one click — by the user, in real time, against the original source.</p>
+
+    <div class="verify-grid">
+      <article class="card verify-card">
+        <div class="verify-num">L0</div>
+        <h3 data-t="verify_l0_title">Corpus integrity</h3>
+        <p data-t="verify_l0_body">969,573 verified Swiss decisions, every <code>decision_id</code> a deterministic hash of court&nbsp;+&nbsp;normalised docket. There is no canonical reference outside this database. A citation either resolves to a real entry or it does not — no fuzzy fallback, no inference.</p>
+      </article>
+      <article class="card verify-card">
+        <div class="verify-num">L1</div>
+        <h3 data-t="verify_l1_title">Server-built citations</h3>
+        <p data-t="verify_l1_body">Every search result, detail view and lookup carries pre-baked <code>citation_string_de / fr / it</code> + <code>canonical_url</code> built by a single server function that encodes per-court Swiss conventions. The LLM is never given the choice of formatting a citation itself — it copies the canonical string verbatim or it does not cite.</p>
+      </article>
+      <article class="card verify-card">
+        <div class="verify-num">L2</div>
+        <h3 data-t="verify_l2_title">Operating contract (R1–R7)</h3>
+        <p data-t="verify_l2_body">Seven non-negotiable rules embedded in the MCP server's instructions, sent to every connecting client (Claude, ChatGPT, Cursor, Gemini). Forbid hand-built citations, hand-quoted text, statute claims from memory, speculation about legislative intent, and bare references without a clickable link to the source.</p>
+      </article>
+      <article class="card verify-card">
+        <div class="verify-num">L3</div>
+        <h3 data-t="verify_l3_title">Independent reasoning judge</h3>
+        <p data-t="verify_l3_body"><code>check_claim_support</code> sends the verbatim Erwägung text and the user's claim to a different model family (Sonnet) than the one running retrieval (Haiku) — so retrieval errors are not re-introduced in verification. Returns <code>supports / contradicts / partial</code> with a reasoned excerpt. This is the defence against the hardest hallucination class: real citation, wrong proposition.</p>
+      </article>
+      <article class="card verify-card">
+        <div class="verify-num">L4</div>
+        <h3 data-t="verify_l4_title">Closing audit (mandatory)</h3>
+        <p data-t="verify_l4_body"><code>attest_response</code> parses every BGE / BGer / BVGer / BStGer / BPatGer / MKGE reference in the LLM's draft, verifies each exists in the corpus, and verifies any pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) actually exists in that decision's structured Erwägungen. Returns the draft with each citation marked ✓ or ⚠, plus a <code>linked_text</code> ready to send verbatim — every validated citation already wrapped in a Markdown link to the canonical URL.</p>
+      </article>
+      <article class="card verify-card">
+        <div class="verify-num">L5</div>
+        <h3 data-t="verify_l5_title">Click-through verification</h3>
+        <p data-t="verify_l5_body">Every reference must be a Markdown link to <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. The user can verify any citation in one click — no need to search a database, no need to trust the AI, no need to take the source on faith. The Word add-in inserts citations as Word hyperlinks directly into the document so the document itself remains verifiable after handoff.</p>
+      </article>
+    </div>
+
+    <div class="verify-objective">
+      <p data-t="verify_objective_kicker">Our objective</p>
+      <p class="verify-objective-text" data-t="verify_objective"><strong>To become the gold standard — open source, open access — for verification of AI output in Swiss case-law research.</strong> The architecture above is published under MIT, the corpus under CC0; every layer is inspectable, reproducible and auditable. We invite courts, bar associations, academic researchers and AI providers to verify the mechanism, contribute improvements, and adopt the verification surface in their own tools.</p>
+      <p class="verify-objective-meta">
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/mcp_server.py" target="_blank" rel="noopener" data-t="verify_link_code">Source: mcp_server.py</a>
+        <span class="verify-sep">·</span>
+        <a href="https://github.com/jonashertner/caselaw-repo-1" target="_blank" rel="noopener" data-t="verify_link_repo">Repository</a>
+        <span class="verify-sep">·</span>
+        <a href="mailto:team@jonashertner.com" data-t="verify_link_contact">Institutional collaboration</a>
+      </p>
     </div>
   </section>
 
@@ -2781,6 +2990,28 @@ const I18N = {
     footer_about:'\u00dcber OpenCaseLaw', footer_contact:'Kontakt', footer_privacy:'Datenschutz',
     footer_tagline_mid:'Open Source (MIT) \u00b7 Daten CC0 \u00b7 114 Schweizer Gerichte',
     skip_link:'Zum Inhalt springen', page_toc:'Auf dieser Seite',
+    banner_verification:'Wie OpenCaseLaw Halluzinationen von Fall-Referenzen verhindert',
+    banner_verification_aria:'Zur Sektion über Verifikation und Vermeidung von KI-Halluzinationen',
+    verify_heading:'Verifikation — Halluzinationen von Fall-Referenzen verhindern',
+    verify_lead:'Grosse Sprachmodelle halluzinieren. Eine peer-reviewte Messung (Magesh et al., 2024, Stanford RegLab) ergab, dass 58–82&nbsp;% der juristischen Anfragen an Allzweck-LLMs mindestens eine erfundene Quelle enthielten — frei erfundene Entscheide, falsch zitierte Artikel, fehlcharakterisierte Erwägungen. In der Schweizer Rechtspraxis bringt die Zitation einer nicht existierenden oder falsch wiedergegebenen Autorität die Anwältin in disziplinarische Haftung und die Klientschaft um ein richtiges Ergebnis. Das Verständnis dessen, <em>was die KI liefert</em> und <em>was die Quelle ist</em>, ist deshalb keine Höflichkeit — es ist die Voraussetzung jeder verantwortbaren KI-Nutzung in der juristischen Arbeit.',
+    verify_lead2:'OpenCaseLaw behandelt diese Aufgabe als das zu lösende Kernproblem. Der MCP-Server unter der Nutzeroberfläche ist um eine sechsschichtige Architektur gebaut, deren einziger Zweck es ist, jede Fall-Referenz, die eine KI schreibt, in einem Klick überprüfbar zu machen — durch die Nutzerin, in Echtzeit, gegen die Originalquelle.',
+    verify_l0_title:'Korpus-Integrität',
+    verify_l0_body:'969\u2019573 verifizierte Schweizer Entscheide, jede <code>decision_id</code> ein deterministischer Hash aus Gericht und normalisierter Verfahrensnummer. Es gibt keine kanonische Referenz ausserhalb dieser Datenbank. Eine Zitation löst sich gegen einen realen Eintrag auf — oder eben nicht. Kein Fuzzy-Fallback, keine Inferenz.',
+    verify_l1_title:'Server-erzeugte Zitate',
+    verify_l1_body:'Jedes Suchresultat, jede Detailansicht, jeder Lookup trägt vorgefertigte <code>citation_string_de / fr / it</code> + <code>canonical_url</code>, erzeugt durch eine einzige Server-Funktion, die die schweizerischen Zitierkonventionen pro Gericht kodiert. Das LLM erhält nie die Wahl, eine Zitation selbst zu formatieren — es kopiert den kanonischen String wörtlich oder es zitiert nicht.',
+    verify_l2_title:'Operatives Regelwerk (R1–R7)',
+    verify_l2_body:'Sieben nicht verhandelbare Regeln, eingebettet in die Instruktionen des MCP-Servers, an jeden verbundenen Client (Claude, ChatGPT, Cursor, Gemini) ausgeliefert. Verbieten handgefertigte Zitate, handzitierte Texte, Aussagen über Gesetzesartikel aus dem Gedächtnis, Spekulationen über die ratio legis und blosse Verweise ohne klickbaren Link zur Quelle.',
+    verify_l3_title:'Unabhängige Argumentations-Prüfung',
+    verify_l3_body:'<code>check_claim_support</code> übergibt den wörtlichen Erwägungstext und die Behauptung des Nutzers an eine andere Modellfamilie (Sonnet) als die, die das Retrieval ausführt (Haiku) — so werden Retrieval-Fehler nicht in der Verifikation reproduziert. Liefert <code>supports / contradicts / partial</code> mit begründetem Zitat. Das ist die Verteidigung gegen die schwierigste Halluzinationsklasse: korrekte Zitation, falsche Behauptung.',
+    verify_l4_title:'Abschliessendes Audit (zwingend)',
+    verify_l4_body:'<code>attest_response</code> parst jeden BGE / BGer / BVGer / BStGer / BPatGer / MKGE-Verweis im Entwurf der KI, prüft, ob jede Zitation im Korpus existiert, und prüft, ob jeder Pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) in den strukturierten Erwägungen dieses Entscheids tatsächlich vorkommt. Liefert den Entwurf mit jedem Zitat ✓ oder ⚠ markiert sowie einen <code>linked_text</code>, der wörtlich gesendet werden kann — jede validierte Zitation bereits in einen Markdown-Link auf die kanonische URL eingewickelt.',
+    verify_l5_title:'Ein-Klick-Verifikation',
+    verify_l5_body:'Jeder Verweis muss ein Markdown-Link auf <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code> sein. Die Nutzerin kann jede Zitation in einem Klick überprüfen — keine Datenbanksuche nötig, kein Vertrauen in die KI nötig, keine Quelle auf Treu und Glauben. Das Word-Add-in fügt Zitate als Word-Hyperlinks direkt ins Dokument ein, sodass auch das Dokument selbst nach Übergabe nachprüfbar bleibt.',
+    verify_objective_kicker:'Unser Ziel',
+    verify_objective:'<strong>Goldstandard zu werden — Open Source, Open Access — für die Verifikation von KI-Output in der Schweizer Rechtsprechungs-Recherche.</strong> Die obige Architektur ist unter MIT publiziert, der Korpus unter CC0; jede Schicht ist einsehbar, reproduzierbar und auditierbar. Wir laden Gerichte, Anwaltsverbände, Forschende und KI-Anbieter ein, den Mechanismus zu prüfen, Verbesserungen beizutragen und die Verifikationsschnittstelle in ihre eigenen Werkzeuge zu übernehmen.',
+    verify_link_code:'Quellcode: mcp_server.py',
+    verify_link_repo:'Repository',
+    verify_link_contact:'Institutionelle Zusammenarbeit',
     gesetze_h1:'Schweizer Bundes- und kantonale Gesetzgebung',
     gesetze_sub:'~5\u2019000 Schweizer Bundesgesetze (125\u2019000+ Artikel in drei Amtssprachen, vollst\u00e4ndige \u00c4nderungshistorie) aus dem Fedlex-SPARQL-Endpunkt, monatlich lokal gespiegelt. 26\u2019000+ kantonale und interkantonale Erlasse, lokal aus LexFind gespiegelt, monatlich refreshed. Stateless MCP-Calls f\u00fcr Artikel-Lookup, Volltextsuche, Versionsgeschichte und \u00c4nderungsverlauf.',
     mcp_h1:'KI-Agenten verbinden',
@@ -3022,6 +3253,28 @@ const I18N = {
     footer_about:'\u00c0 propos d\'OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Confidentialit\u00e9',
     footer_tagline_mid:'Open source (MIT) \u00b7 Donn\u00e9es CC0 \u00b7 114 tribunaux suisses',
     skip_link:'Aller au contenu', page_toc:'Sur cette page',
+    banner_verification:'Comment OpenCaseLaw élimine les hallucinations de références jurisprudentielles par l\'IA',
+    banner_verification_aria:'Vers la section sur la vérification et l\'élimination des hallucinations de l\'IA',
+    verify_heading:'Vérification — éliminer les hallucinations de références par l\'IA',
+    verify_lead:'Les grands modèles de langue hallucinent. Une mesure publiée et évaluée par les pairs (Magesh et al., 2024, Stanford RegLab) a montré que 58–82&nbsp;% des requêtes juridiques aux LLM généralistes produisaient au moins une autorité fabriquée — décisions inventées, articles mal cités, considérants déformés. Dans la pratique juridique suisse, citer une autorité qui n\'existe pas ou qui ne dit pas ce qu\'on lui prête expose l\'avocat·e à des sanctions disciplinaires et le client à un mauvais résultat. Comprendre <em>ce que l\'IA fournit</em> et <em>quelle en est la source</em> n\'est donc pas un raffinement — c\'est la condition préalable de tout usage responsable de l\'IA en droit.',
+    verify_lead2:'OpenCaseLaw traite cette question comme le problème central à résoudre. Le serveur MCP qui sous-tend l\'interface utilisateur est construit autour d\'une architecture en six couches dont la seule finalité est de rendre chaque référence jurisprudentielle qu\'une IA produit vérifiable en un clic — par l\'utilisateur, en temps réel, contre la source originale.',
+    verify_l0_title:'Intégrité du corpus',
+    verify_l0_body:'969\u2019573 décisions suisses vérifiées, chaque <code>decision_id</code> étant un hachage déterministe de la juridiction et du numéro de dossier normalisé. Aucune référence canonique n\'existe en dehors de cette base. Une citation se résout vers une entrée réelle — ou pas. Aucune correspondance approximative, aucune inférence.',
+    verify_l1_title:'Citations construites côté serveur',
+    verify_l1_body:'Chaque résultat de recherche, vue détaillée et consultation porte des champs <code>citation_string_de / fr / it</code> et <code>canonical_url</code> précomputés par une seule fonction serveur qui encode les conventions suisses propres à chaque juridiction. Le LLM n\'a jamais le choix de formater une citation lui-même — il copie verbatim la chaîne canonique, ou il ne cite pas.',
+    verify_l2_title:'Contrat opératoire (R1–R7)',
+    verify_l2_body:'Sept règles non négociables intégrées aux instructions du serveur MCP, transmises à chaque client connecté (Claude, ChatGPT, Cursor, Gemini). Interdisent les citations construites à la main, les citations textuelles à la main, les affirmations sur des articles de loi tirées de mémoire, la spéculation sur la ratio legis, et les références sans lien cliquable vers la source.',
+    verify_l3_title:'Juge de raisonnement indépendant',
+    verify_l3_body:'<code>check_claim_support</code> envoie le texte verbatim du considérant et l\'affirmation de l\'utilisateur à une famille de modèles différente (Sonnet) de celle qui exécute la recherche (Haiku) — afin que les erreurs de recherche ne soient pas réintroduites dans la vérification. Renvoie <code>supports / contradicts / partial</code> avec un extrait raisonné. C\'est la défense contre la classe d\'hallucination la plus difficile : citation correcte, proposition fausse.',
+    verify_l4_title:'Audit de clôture (obligatoire)',
+    verify_l4_body:'<code>attest_response</code> analyse chaque référence ATF / TF / TAF / TPF / TFB / MKGE dans le brouillon de l\'IA, vérifie que chaque citation existe dans le corpus, et vérifie que chaque pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) existe réellement dans les considérants structurés de la décision. Renvoie le brouillon avec chaque citation marquée ✓ ou ⚠, ainsi qu\'un <code>linked_text</code> à envoyer verbatim — chaque citation validée déjà encapsulée dans un lien Markdown vers l\'URL canonique.',
+    verify_l5_title:'Vérification en un clic',
+    verify_l5_body:'Toute référence doit être un lien Markdown vers <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. L\'utilisateur peut vérifier toute citation en un clic — sans interroger une base de données, sans faire confiance à l\'IA, sans tenir la source pour acquise. Le complément Word insère les citations comme hyperliens Word directement dans le document, de sorte que le document lui-même reste vérifiable après transmission.',
+    verify_objective_kicker:'Notre objectif',
+    verify_objective:'<strong>Devenir la référence absolue — open source, open access — pour la vérification des sorties d\'IA dans la recherche jurisprudentielle suisse.</strong> L\'architecture ci-dessus est publiée sous MIT, le corpus sous CC0 ; chaque couche est inspectable, reproductible et auditable. Nous invitons les tribunaux, les ordres d\'avocats, les chercheuses et chercheurs académiques et les fournisseurs d\'IA à vérifier le mécanisme, à contribuer aux améliorations, et à adopter cette interface de vérification dans leurs propres outils.',
+    verify_link_code:'Code source : mcp_server.py',
+    verify_link_repo:'Dépôt',
+    verify_link_contact:'Collaboration institutionnelle',
     gesetze_h1:'L\u00e9gislation f\u00e9d\u00e9rale et cantonale suisse',
     gesetze_sub:'~5 000 lois f\u00e9d\u00e9rales suisses (125 000+ articles en trois langues officielles, historique complet des amendements) depuis l\'endpoint SPARQL Fedlex, mises en miroir localement chaque mois. Plus de 15 722 actes cantonaux et intercantonaux via l\'agr\u00e9gateur LexFind. Appels MCP stateless pour la consultation d\'article, la recherche plein texte, l\'historique et les modifications.',
     mcp_h1:'Connecter des agents IA',
@@ -3263,6 +3516,28 @@ const I18N = {
     footer_about:'Chi siamo', footer_contact:'Contatto', footer_privacy:'Privacy',
     footer_tagline_mid:'Open source (MIT) \u00b7 Dati CC0 \u00b7 114 tribunali svizzeri',
     skip_link:'Vai al contenuto', page_toc:'In questa pagina',
+    banner_verification:'Come OpenCaseLaw elimina le allucinazioni dell\'IA su riferimenti giurisprudenziali',
+    banner_verification_aria:'Vai alla sezione sulla verifica e l\'eliminazione delle allucinazioni dell\'IA',
+    verify_heading:'Verifica — eliminare le allucinazioni dell\'IA sui riferimenti giurisprudenziali',
+    verify_lead:'I grandi modelli linguistici producono allucinazioni. Una misura sottoposta a peer review (Magesh et al., 2024, Stanford RegLab) ha rilevato che il 58–82&nbsp;% delle interrogazioni giuridiche a LLM generalisti generava almeno un\'autorità inventata — sentenze fabbricate, articoli mal citati, considerandi distorti. Nella pratica giuridica svizzera, citare un\'autorità inesistente o resa inesattamente espone l\'avvocato·a a sanzioni disciplinari e il cliente a un esito sbagliato. Comprendere <em>cosa fornisce l\'IA</em> e <em>quale ne sia la fonte</em> non è quindi un raffinamento — è il presupposto di ogni utilizzo responsabile dell\'IA in ambito legale.',
+    verify_lead2:'OpenCaseLaw tratta questo come il problema centrale da risolvere. Il server MCP che alimenta l\'interfaccia utente è costruito attorno a un\'architettura a sei livelli il cui unico scopo è rendere ogni riferimento giurisprudenziale prodotto da un\'IA verificabile in un clic — dall\'utente, in tempo reale, contro la fonte originale.',
+    verify_l0_title:'Integrità del corpus',
+    verify_l0_body:'969\u2019573 decisioni svizzere verificate, ogni <code>decision_id</code> un hash deterministico di tribunale e numero di incarto normalizzato. Non esistono riferimenti canonici al di fuori di questo database. Una citazione si risolve in una voce reale — oppure no. Nessun fallback approssimativo, nessuna inferenza.',
+    verify_l1_title:'Citazioni costruite lato server',
+    verify_l1_body:'Ogni risultato di ricerca, vista di dettaglio e consultazione porta i campi <code>citation_string_de / fr / it</code> e <code>canonical_url</code> precomputati da una singola funzione del server che codifica le convenzioni svizzere per ciascun tribunale. Il LLM non ha mai la scelta di formattare una citazione — copia verbatim la stringa canonica, oppure non cita.',
+    verify_l2_title:'Contratto operativo (R1–R7)',
+    verify_l2_body:'Sette regole non negoziabili integrate nelle istruzioni del server MCP, trasmesse a ogni client connesso (Claude, ChatGPT, Cursor, Gemini). Vietano citazioni costruite a mano, citazioni testuali a mano, affermazioni sugli articoli di legge a memoria, speculazioni sulla ratio legis, e riferimenti senza link cliccabile alla fonte.',
+    verify_l3_title:'Giudice di ragionamento indipendente',
+    verify_l3_body:'<code>check_claim_support</code> invia il testo verbatim del considerando e l\'affermazione dell\'utente a una famiglia di modelli diversa (Sonnet) da quella che esegue la ricerca (Haiku) — così gli errori di recupero non vengono reintrodotti nella verifica. Restituisce <code>supports / contradicts / partial</code> con un estratto motivato. È la difesa contro la classe di allucinazione più difficile: citazione corretta, proposizione errata.',
+    verify_l4_title:'Audit di chiusura (obbligatorio)',
+    verify_l4_body:'<code>attest_response</code> analizza ogni riferimento DTF / TF / TAF / TPF / TFB / MKGE nella bozza dell\'IA, verifica che ogni citazione esista nel corpus, e verifica che ogni pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) esista realmente nei considerandi strutturati della decisione. Restituisce la bozza con ogni citazione marcata ✓ o ⚠ e un <code>linked_text</code> da inviare verbatim — ogni citazione validata già incapsulata in un link Markdown verso l\'URL canonico.',
+    verify_l5_title:'Verifica in un clic',
+    verify_l5_body:'Ogni riferimento deve essere un link Markdown verso <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. L\'utente può verificare ogni citazione in un clic — senza interrogare un database, senza fidarsi dell\'IA, senza accettare la fonte sulla parola. Il componente aggiuntivo Word inserisce le citazioni come collegamenti ipertestuali Word direttamente nel documento, così che anche il documento resti verificabile dopo la consegna.',
+    verify_objective_kicker:'Il nostro obiettivo',
+    verify_objective:'<strong>Diventare lo standard di riferimento — open source, open access — per la verifica dell\'output dell\'IA nella ricerca giurisprudenziale svizzera.</strong> L\'architettura sopra descritta è pubblicata sotto MIT, il corpus sotto CC0; ogni livello è ispezionabile, riproducibile e verificabile. Invitiamo tribunali, ordini degli avvocati, ricercatori accademici e fornitori di IA a verificare il meccanismo, contribuire con miglioramenti e adottare questa interfaccia di verifica nei loro strumenti.',
+    verify_link_code:'Codice sorgente: mcp_server.py',
+    verify_link_repo:'Repository',
+    verify_link_contact:'Collaborazione istituzionale',
     gesetze_h1:'Legislazione federale e cantonale svizzera',
     gesetze_sub:'~5\u2019000 leggi federali svizzere (125\u2019000+ articoli in tre lingue ufficiali, cronologia completa delle modifiche) dall\'endpoint SPARQL Fedlex, rispecchiate localmente ogni mese. Oltre 30\u2019000 atti cantonali e intercantonali tramite l\'aggregatore LexFind. Chiamate MCP stateless per lookup di articolo, ricerca full-text, storia delle versioni e modifiche.',
     mcp_h1:'Collegare agenti IA',
@@ -3504,6 +3779,28 @@ const I18N = {
     footer_about:'Davart OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Protecziun da datas',
     footer_tagline_mid:'Open source (MIT) \u00b7 Datas CC0 \u00b7 114 dretgiras svizras',
     skip_link:'Al cuntegn', page_toc:'Sin questa pagina',
+    banner_verification:'Co OpenCaseLaw evita ch\'IAs allucineschan referenzas da decisiuns',
+    banner_verification_aria:'Vers la secziun davart verificaziun e prevenziun d\'allucinaziuns IA',
+    verify_heading:'Verificaziun — evitar allucinaziuns IA da referenzas a decisiuns',
+    verify_lead:'Models grands da linguatg allucineschan. Ina mesira controllada (Magesh et al., 2024, Stanford RegLab) ha mussà che 58–82&nbsp;% da las dumondas giuridicas a LLMs generals han producì almain ina autoritad fabritgada — decisiuns inventadas, artitgels mal citads, considerands deformads. En la pratica giuridica svizra metta la citaziun d\'ina autoritad inexistenta u mal preschentada l\'avucat·a en responsabladad disciplinara e clientela ad in resultat fauss. La cumprensiun da <em>che ch\'IA furnescha</em> e <em>tge fontana</em> n\'è perquai betg in lustri — è la premissa per mintga utilisaziun responsabla d\'IA en la lavur giuridica.',
+    verify_lead2:'OpenCaseLaw tracta quai sco il problem central. Il server MCP sut l\'interfatscha utilisader è construì sin in\'architectura cun sis stresch, dont l\'unic scopo è da render mintga referenza ch\'in IA scriva controllabla en in clic — da la utilisadra, en temp real, cunter la fontana originala.',
+    verify_l0_title:'Integritad dal corpus',
+    verify_l0_body:'969\u2019573 decisiuns svizras verifitgadas, mintga <code>decision_id</code> in hash deterministic da curt e numer da fascicul normalisà. I dat naginas referenzas canonicas ordaifer questa banca da datas. Ina citaziun sa schliua sin ina endataziun reala — u betg. Nagin fallback approximativ, nagina inferenza.',
+    verify_l1_title:'Citaziuns construidas dal server',
+    verify_l1_body:'Mintga resultat da tschertga, vista da detagls e lookup porta ils champs <code>citation_string_de / fr / it</code> e <code>canonical_url</code> precalculads d\'ina suletta funcziun da server che codifitgescha las convenziuns svizras per mintga curt. Il LLM n\'ha mai la tscherna da formattar ina citaziun sez — el copia verbatim la stringa canonica, u sa cita betg.',
+    verify_l2_title:'Contract operativ (R1–R7)',
+    verify_l2_body:'Set reglas nundiscutiblas integradas en las instrucziuns dal server MCP, transmessas a mintga client connectà (Claude, ChatGPT, Cursor, Gemini). Scumondan citaziuns construidas a maun, citads textuals a maun, declaraziuns sur d\'artitgels da lescha or da memoria, speculaziun sur la ratio legis, e referenzas senza link clictabel a la fontana.',
+    verify_l3_title:'Derscheder independent dal raschunament',
+    verify_l3_body:'<code>check_claim_support</code> trametta il text verbatim dal considerand e l\'asserziun da la utilisadra ad in\'autra famiglia da models (Sonnet) che quella che fa la tschertga (Haiku) — uschia n\'èn ils sbagls da retrieval betg reintroducids en la verificaziun. Returna <code>supports / contradicts / partial</code> cun in extract motivà. Quai è la defensiun cunter la classa la pli difficila d\'allucinaziun: citaziun correcta, proposiziun fauss.',
+    verify_l4_title:'Audit final (obligatoric)',
+    verify_l4_body:'<code>attest_response</code> analisescha mintga referenza BGE / BGer / BVGer / BStGer / BPatGer / MKGE en la sboza da la IA, verifitgescha che mintga citaziun existescha en il corpus, e verifitgescha che mintga pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) sa chatta atgnamain en ils considerands structurads da quella decisiun. Returna la sboza cun mintga citaziun marcada ✓ u ⚠, ed in <code>linked_text</code> da trametter verbatim — mintga citaziun validada gia integrada en in link Markdown sin il URL canonic.',
+    verify_l5_title:'Verificaziun en in clic',
+    verify_l5_body:'Mintga referenza sto esser in link Markdown sin <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. La utilisadra po verifitgar mintga citaziun en in clic — senza dumandar ina banca da datas, senza fidanza en la IA, senza prender la fontana sin trev e bun. L\'add-in Word inserescha citaziuns sco hyperlinks Word directamain en il document, uschia che er il document sez resta verifitgabel suenter la consegna.',
+    verify_objective_kicker:'Noss intent',
+    verify_objective:'<strong>Daventar la referenza standard — open source, open access — per la verificaziun dad output IA en la perscrutaziun giuridica svizra.</strong> L\'architectura survart è publitgada sut MIT, il corpus sut CC0; mintga stresch è inspectabel, reproduzibel ed auditabel. Nus envidain las curts, las uniuns dad avucats, las perscrutadras academicas ed ils purschiders d\'IA a verifitgar il mecanissem, da contribuir cun amelioraziuns e dad assumer questa interfatscha da verificaziun en lur agens utensils.',
+    verify_link_code:'Code da fontana: mcp_server.py',
+    verify_link_repo:'Repository',
+    verify_link_contact:'Collavuraziun instituziunala',
     gesetze_h1:'Legislaziun federala e chantunala svizra',
     gesetze_sub:'~5\u2019000 leschas federalas svizras (125\u2019000+ artitgels en trais linguas uffizialas, cronologia cumpletta da midadas) da l\'endpoint SPARQL Fedlex, spiegladas local mintga mais. Passa 30\u2019000 acts chantunals ed interchantunals via l\'aggregatur LexFind. MCP-Calls stateless per lookup d\'artitgels, tschertga full-text, cronologia e midadas.',
     mcp_h1:'Connectar agents AI',
@@ -3745,6 +4042,28 @@ const I18N = {
     footer_about:'About OpenCaseLaw', footer_contact:'Contact', footer_privacy:'Privacy',
     footer_tagline_mid:'Open source (MIT) \u00b7 Data CC0 \u00b7 114 Swiss courts',
     skip_link:'Skip to content', page_toc:'On this page',
+    banner_verification:'How OpenCaseLaw eliminates AI hallucination of case references',
+    banner_verification_aria:'Jump to the section on verification and elimination of AI hallucination',
+    verify_heading:'Verification — eliminating AI hallucination of case references',
+    verify_lead:'Large language models hallucinate. Recent peer-reviewed measurement (Magesh et al., 2024, Stanford RegLab) found that 58–82&nbsp;% of legal queries to general-purpose LLMs produced at least one fabricated authority — invented decisions, miscited articles, mischaracterised holdings. In Swiss legal practice, citing an authority that does not exist or does not say what is claimed exposes a lawyer to professional discipline and a client to a wrong outcome. Comprehension of <em>what the AI is providing</em> and <em>what the source is</em> is therefore not a nicety — it is the precondition for any responsible use of AI in legal work.',
+    verify_lead2:'OpenCaseLaw treats this as the central problem to solve. The MCP server below the user-facing search is built around a six-layer architecture whose only purpose is to make every case reference an AI writes verifiable in one click — by the user, in real time, against the original source.',
+    verify_l0_title:'Corpus integrity',
+    verify_l0_body:'969,573 verified Swiss decisions, every <code>decision_id</code> a deterministic hash of court&nbsp;+&nbsp;normalised docket. There is no canonical reference outside this database. A citation either resolves to a real entry or it does not — no fuzzy fallback, no inference.',
+    verify_l1_title:'Server-built citations',
+    verify_l1_body:'Every search result, detail view and lookup carries pre-baked <code>citation_string_de / fr / it</code> + <code>canonical_url</code> built by a single server function that encodes per-court Swiss conventions. The LLM is never given the choice of formatting a citation itself — it copies the canonical string verbatim or it does not cite.',
+    verify_l2_title:'Operating contract (R1–R7)',
+    verify_l2_body:'Seven non-negotiable rules embedded in the MCP server\'s instructions, sent to every connecting client (Claude, ChatGPT, Cursor, Gemini). Forbid hand-built citations, hand-quoted text, statute claims from memory, speculation about legislative intent, and bare references without a clickable link to the source.',
+    verify_l3_title:'Independent reasoning judge',
+    verify_l3_body:'<code>check_claim_support</code> sends the verbatim Erwägung text and the user\'s claim to a different model family (Sonnet) than the one running retrieval (Haiku) — so retrieval errors are not re-introduced in verification. Returns <code>supports / contradicts / partial</code> with a reasoned excerpt. This is the defence against the hardest hallucination class: real citation, wrong proposition.',
+    verify_l4_title:'Closing audit (mandatory)',
+    verify_l4_body:'<code>attest_response</code> parses every BGE / BGer / BVGer / BStGer / BPatGer / MKGE reference in the LLM\'s draft, verifies each exists in the corpus, and verifies any pinpoint (E.&nbsp;X.Y / consid.&nbsp;X.Y) actually exists in that decision\'s structured Erwägungen. Returns the draft with each citation marked ✓ or ⚠, plus a <code>linked_text</code> ready to send verbatim — every validated citation already wrapped in a Markdown link to the canonical URL.',
+    verify_l5_title:'Click-through verification',
+    verify_l5_body:'Every reference must be a Markdown link to <code>mcp.opencaselaw.ch/entscheid/&lt;id&gt;</code>. The user can verify any citation in one click — no need to search a database, no need to trust the AI, no need to take the source on faith. The Word add-in inserts citations as Word hyperlinks directly into the document so the document itself remains verifiable after handoff.',
+    verify_objective_kicker:'Our objective',
+    verify_objective:'<strong>To become the gold standard — open source, open access — for verification of AI output in Swiss case-law research.</strong> The architecture above is published under MIT, the corpus under CC0; every layer is inspectable, reproducible and auditable. We invite courts, bar associations, academic researchers and AI providers to verify the mechanism, contribute improvements, and adopt the verification surface in their own tools.',
+    verify_link_code:'Source: mcp_server.py',
+    verify_link_repo:'Repository',
+    verify_link_contact:'Institutional collaboration',
     gesetze_h1:'Swiss federal and cantonal legislation',
     gesetze_sub:'5,000+ Swiss federal laws (132,586 articles in three official languages, full amendment history) from the Fedlex SPARQL endpoint, mirrored locally each month. 15,722 cantonal and intercantonal acts locally mirrored from LexFind, monthly refresh. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
     mcp_h1:'Connect AI agents',
