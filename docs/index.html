@@ -578,25 +578,38 @@ header[style*="text-align: left"] .sub {
 
 /* ── Mobile drawer — slides from the right; covers ~85 % of the
    viewport width but leaves a peek so users see context. Single
-   source of truth for navigation on screens <900 px: section jumps,
-   subpage links, language switcher, theme toggle, verified credential
-   all live here. ── */
+   source of truth for navigation on screens <760 px: section jumps,
+   subpage links, language switcher, verified credential all live
+   here.
+
+   Wrapper uses `hidden` HTML attribute when closed so the dialog is
+   genuinely off the accessibility tree AND can't be hit-tested by
+   the browser. JS toggles `hidden` + `.open` together so closed-state
+   is fully neutral.
+
+   Scrim sits BEFORE the panel in the DOM so default stacking puts
+   the panel on top — taps inside the open panel hit the panel,
+   never the scrim. z-index is also set explicitly for paranoia. ── */
 .mobile-menu {
   position: fixed; inset: 0;
   z-index: 200;
-  pointer-events: none;
 }
-.mobile-menu.open { pointer-events: auto; }
+.mobile-menu[hidden] { display: none !important; }
+
 .mobile-menu-scrim {
   position: absolute; inset: 0;
+  z-index: 1;
   background: rgba(0, 0, 0, 0.42);
   border: 0; padding: 0; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
   opacity: 0;
   transition: opacity 240ms var(--ease, ease);
 }
 .mobile-menu.open .mobile-menu-scrim { opacity: 1; }
+
 .mobile-menu-panel {
   position: absolute; top: 0; right: 0; bottom: 0;
+  z-index: 2;                                          /* always above scrim */
   width: min(340px, 85vw);
   background: var(--bg);
   border-left: 1px solid var(--brd2);
@@ -608,6 +621,9 @@ header[style*="text-align: left"] .sub {
   -webkit-overflow-scrolling: touch;
 }
 .mobile-menu.open .mobile-menu-panel { transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu-panel, .mobile-menu-scrim { transition: none; }
+}
 .mobile-menu-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 18px;
@@ -2677,13 +2693,19 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 </div></nav>
 
 <!-- Mobile drawer — slides from the right.  Single source of truth for
-     navigation on screens <900 px: section jumps + subpage links +
-     verification credential + language + theme inside one panel.  -->
-<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+     navigation on screens <760 px: section jumps + subpage links +
+     verification credential + language inside one panel.
+
+     DOM ORDER MATTERS: scrim FIRST, panel SECOND.  CSS-default stacking
+     puts later siblings on top; we rely on that so the panel is
+     clickable and the scrim sits behind it.  z-index is also set
+     explicitly as a belt-and-braces guard.  -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="mobile-menu-scrim" id="mobile-menu-scrim" role="button" tabindex="-1" aria-label="Close menu"></div>
   <div class="mobile-menu-panel">
     <div class="mobile-menu-head">
       <span class="mobile-menu-title" data-t="menu_title">Menu</span>
-      <button class="mobile-menu-close" id="mobile-menu-close" aria-label="Close menu">
+      <button class="mobile-menu-close" id="mobile-menu-close" type="button" aria-label="Close menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
@@ -2705,6 +2727,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
       <a href="/mcp/" data-t="nav_mcp">MCP reference</a>
       <a href="/ueber/" data-t="nav_ueber">About OpenCaseLaw</a>
+      <a href="/coverage/" data-t="footer_coverage">Coverage</a>
     </div>
 
     <div class="mobile-menu-foot">
@@ -2713,15 +2736,14 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
         <span data-t="banner_verification_short">Verified</span>
       </a>
       <div class="mobile-menu-langs" role="group" aria-label="Language">
-        <button data-l="de" class="on">DE</button>
-        <button data-l="fr">FR</button>
-        <button data-l="it">IT</button>
-        <button data-l="rm">RM</button>
-        <button data-l="en">EN</button>
+        <button data-l="de" type="button" class="on">DE</button>
+        <button data-l="fr" type="button">FR</button>
+        <button data-l="it" type="button">IT</button>
+        <button data-l="rm" type="button">RM</button>
+        <button data-l="en" type="button">EN</button>
       </div>
     </div>
   </div>
-  <button class="mobile-menu-scrim" id="mobile-menu-scrim" aria-label="Close menu" tabindex="-1"></button>
 </div>
 
 <main id="main" class="w">
@@ -4736,7 +4758,11 @@ document.getElementById('theme-btn').addEventListener('click', () => {
   applyTheme();
 });
 
-/* ── Mobile drawer ─ open/close, scrim, Escape, focus return ── */
+/* ── Mobile drawer ─ open/close, scrim, Escape, focus return ──
+   The drawer wrapper carries the HTML `hidden` attribute when closed
+   so it is genuinely removed from layout / a11y tree / hit-testing.
+   We also toggle the `.open` class which CSS uses to drive the
+   open-state animations. The two flags must move together. */
 const hamburgerBtn = document.getElementById('hamburger-btn');
 const mobileMenu = document.getElementById('mobile-menu');
 const mobileMenuClose = document.getElementById('mobile-menu-close');
@@ -4744,20 +4770,45 @@ const mobileMenuScrim = document.getElementById('mobile-menu-scrim');
 if (hamburgerBtn && mobileMenu) {
   const toggleMenu = (open) => {
     const isOpen = open !== undefined ? open : !mobileMenu.classList.contains('open');
-    mobileMenu.classList.toggle('open', isOpen);
+    if (isOpen) {
+      mobileMenu.hidden = false;
+      // Force a reflow so the next class change triggers the transition.
+      void mobileMenu.offsetHeight;
+      mobileMenu.classList.add('open');
+    } else {
+      mobileMenu.classList.remove('open');
+      // Hide AFTER the transition finishes so the slide-out animation
+      // is visible. Match the CSS transition duration (~280 ms).
+      setTimeout(() => {
+        if (!mobileMenu.classList.contains('open')) mobileMenu.hidden = true;
+      }, 320);
+    }
     hamburgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     document.body.classList.toggle('menu-open', isOpen);
     if (isOpen) {
-      // Focus the first link when the menu opens so keyboard users land in it.
-      const first = mobileMenu.querySelector('a');
-      if (first) setTimeout(() => first.focus(), 60);
+      // Focus the close button so keyboard users land at the top of the
+      // panel; tabbing forward goes into the section list.
+      if (mobileMenuClose) setTimeout(() => mobileMenuClose.focus(), 80);
     }
   };
-  hamburgerBtn.addEventListener('click', () => toggleMenu());
-  if (mobileMenuClose) mobileMenuClose.addEventListener('click', () => { toggleMenu(false); hamburgerBtn.focus(); });
-  if (mobileMenuScrim) mobileMenuScrim.addEventListener('click', () => { toggleMenu(false); hamburgerBtn.focus(); });
-  // Auto-close when a section/subpage link is clicked
-  mobileMenu.querySelectorAll('a').forEach(a => {
+  hamburgerBtn.addEventListener('click', (e) => { e.preventDefault(); toggleMenu(); });
+  if (mobileMenuClose) mobileMenuClose.addEventListener('click', (e) => {
+    e.preventDefault(); toggleMenu(false); hamburgerBtn.focus();
+  });
+  if (mobileMenuScrim) {
+    mobileMenuScrim.addEventListener('click', (e) => {
+      e.preventDefault(); toggleMenu(false); hamburgerBtn.focus();
+    });
+    // Allow keyboard activation of the role=button div
+    mobileMenuScrim.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault(); toggleMenu(false); hamburgerBtn.focus();
+      }
+    });
+  }
+  // Auto-close when a link inside the panel is clicked. Listener is
+  // scoped to <a> only (not the lang buttons or the close button).
+  mobileMenu.querySelectorAll('.mobile-menu-section a, .mobile-menu-credential').forEach(a => {
     a.addEventListener('click', () => toggleMenu(false));
   });
   // Close on Escape so keyboard users aren't trapped.
@@ -4768,14 +4819,14 @@ if (hamburgerBtn && mobileMenu) {
     }
   });
   // Wire the language buttons inside the drawer to the same handler
-  // as the toolbar ones (so changing language inside the drawer
-  // re-applies i18n immediately, just like the toolbar buttons).
+  // as the toolbar ones (changing language inside the drawer
+  // re-applies i18n immediately, mirrors selection in both groups).
   mobileMenu.querySelectorAll('.mobile-menu-langs button').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       const lang = btn.dataset.l;
       curLang = lang;
       try { localStorage.setItem('lang', lang); } catch (_) {}
-      // Mirror state across both toolbar + drawer button groups
       document.querySelectorAll('.lang-sw button, .mobile-menu-langs button')
         .forEach(b => b.classList.toggle('on', b.dataset.l === lang));
       applyI18n();
