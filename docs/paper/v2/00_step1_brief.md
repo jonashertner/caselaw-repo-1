@@ -52,29 +52,34 @@ answers and supporting evidence. CC0 on Hugging Face.
 - Optional second cross-list: **cs.CY** (Computers and Society —
   legal/public-interest application)
 
-## Diagnostic questions for v1 rejection (please answer)
+## Diagnostic answers (resolved 2026-04-28)
 
-To shape v2 correctly:
+1. **Rejection text from v1.** Bare "rejected" with no reason given.
+   Worst-signal case → de-risk on all four likely causes simultaneously
+   (no contribution, no endorsement, wrong category, duplicate).
+   Our hypothesis: dominant cause is "looks like a software/dataset
+   release with no research contribution" (~67 % of remaining
+   probability mass after we eliminate the endorsement bucket).
 
-1. **Rejection text.** What did the moderators actually say? Even one
-   sentence of the rejection email would let me target the exact
-   objection. If you don't have it, we proceed on the most-likely-cause
-   hypothesis: "no novel methodology beyond resource description".
+2. **Endorsement.** ✅ Already endorsed. Removes the gating risk.
 
-2. **Endorsement.** First-time arXiv submitters in cs.CL / cs.IR need
-   an endorsement. Have you been endorsed before in either category?
-   (If yes: nothing to do. If no: we either need an endorser before
-   submission, or we route through a category that doesn't gate
-   first-time submissions.)
+3. **Author list.** Solo (Jonas Hertner). To compensate for absent
+   institutional affiliation: stronger methodology section,
+   explicit reproducibility manifest, two real DOIs from Zenodo
+   (corpus + benchmark), benchmark on Hugging Face.
 
-3. **Author list.** Solo (Jonas Hertner)? Or do you want to bring in
-   a co-author from a Swiss law faculty / informatics chair? Adding an
-   institutional affiliation line is the single biggest credibility
-   signal a moderator sees.
+4. **Reclassification check.** Confirmed rejected (not reclassified).
 
-4. **Reclassification check.** Was v1 actually rejected, or was it
-   reclassified to a category you didn't want? These have very
-   different fixes — please confirm.
+## Strategy locked
+
+- **Title:** *Verification-First Legal RAG: A Defense-in-Depth Audit
+  Pipeline and a Multilingual Swiss-Law Benchmark*
+- **Abstract:** Draft A (problem-first; opens with Magesh/Dahl numbers)
+- **Category:** primary cs.CL · cross-list cs.IR · cross-list cs.CY
+- **Authors:** Jonas Hertner (solo)
+- **Two contributions:** C1 (5-rail audit pipeline, methods) +
+  C2 (Swiss Legal RAG Bench v0.2, resource)
+- **Length:** 8 pages + references
 
 ## What I'm doing while you answer
 
