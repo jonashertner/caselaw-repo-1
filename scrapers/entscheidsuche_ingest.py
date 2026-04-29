@@ -70,9 +70,11 @@ SPIDER_MAP = {
     # ZH_Sozialversicherungsgericht retired 2026-04-29: direct scraper
     # at parity (33,799 direct rows vs 43 entscheidsuche, <0.2% es
     # contribution).  See memory/per_court_audit_2026_04_29.md.
-    "ZH_Verwaltungsgericht":        ("zh_verwaltungsgericht",      "ZH", "ZH Verwaltungsgericht",        "cantonal"),
-    "ZH_Baurekurs":     ("zh_baurekursgericht",        "ZH", "ZH Baurekursgericht",          "cantonal"),
-    "ZH_Steuerrekurs":  ("zh_steuerrekursgericht",     "ZH", "ZH Steuerrekursgericht",       "cantonal"),
+    # ZH_Verwaltungsgericht retired 2026-04-29 (Day 2 V2 audit):
+    # direct scraper at parity (11,585 direct vs 11,367 es; 50% dedup
+    # pattern in db).  See memory/per_court_audit_2026_04_29.md.
+    # ZH_Baurekurs retired 2026-04-29: 1,142 direct vs 1 es.
+    # ZH_Steuerrekurs retired 2026-04-29: 861 direct vs 17 es.
 
     # ── Aargau ──
     "AG_Gerichte":      ("ag_gerichte",  "AG", "AG Gerichte",   "cantonal"),
@@ -83,10 +85,9 @@ SPIDER_MAP = {
     "BS_Omni":          ("bs_gerichte",  "BS", "BS Gerichte",   "cantonal"),
 
     # ── Zug ──
-    # ZG_Verwaltungsgericht retired 2026-04-29: direct scraper at
-    # parity (1,340 direct rows vs 2 entscheidsuche).  See
-    # memory/per_court_audit_2026_04_29.md.
-    "ZG_Obergericht":        ("zg_obergericht",        "ZG", "ZG Obergericht",        "cantonal"),
+    # ZG_Verwaltungsgericht retired 2026-04-29: 1,340 direct vs 2 es.
+    # ZG_Obergericht retired 2026-04-29 (Day 2 V2): 2,069 direct vs
+    # 349 es; direct dominates.
 
     # ── Genève ──
     "GE_Gerichte":      ("ge_gerichte",  "GE", "GE Gerichte",   "cantonal"),
@@ -96,29 +97,36 @@ SPIDER_MAP = {
     "VD_Omni":          ("vd_omni",      "VD", "VD Gerichte",   "cantonal"),
 
     # ── Ticino ──
-    "TI_Gerichte":      ("ti_gerichte",  "TI", "TI Gerichte",   "cantonal"),
+    # TI_Gerichte retired 2026-04-29 (Day 2 V2): 59,273 direct vs
+    # 58,116 es, db_total 59,368 → ~50% dedup confirms full overlap.
 
     # ── Luzern ──
-    "LU_Gerichte":      ("lu_gerichte",  "LU", "LU Gerichte",   "cantonal"),
+    # LU_Gerichte retired 2026-04-29 (Day 2 V2): 4,047 direct vs
+    # 3,944 es, fully overlapping.
 
     # ── St. Gallen ──
     "SG_Gerichte":      ("sg_gerichte",  "SG", "SG Gerichte",   "cantonal"),
     "SG_Publikationen": ("sg_publikationen", "SG", "SG Publikationen", "cantonal"),
 
     # ── Solothurn ──
-    "SO_Omni":          ("so_gerichte",  "SO", "SO Gerichte",   "cantonal"),
+    # SO_Omni retired 2026-04-29 (Day 2 V2): 9,033 direct vs 8,845 es,
+    # fully overlapping.
 
     # ── Baselland ──
     "BL_Gerichte":      ("bl_gerichte",  "BL", "BL Gerichte",   "cantonal"),
 
     # ── Graubünden ──
-    "GR_Gerichte":      ("gr_gerichte",  "GR", "GR Gerichte",   "cantonal"),
+    # GR_Gerichte retired 2026-04-29 (Day 2 V2): 14,498 direct vs
+    # 14,300 es, fully overlapping.
 
     # ── Fribourg ──
-    "FR_Gerichte":      ("fr_gerichte",  "FR", "FR Gerichte",   "cantonal"),
+    # FR_Gerichte retired 2026-04-29 (Day 2 V2): 14,267 direct vs
+    # 13,956 es, fully overlapping.
 
     # ── Neuchâtel ──
-    "NE_Omni":          ("ne_gerichte",  "NE", "NE Gerichte",   "cantonal"),
+    # NE_Omni retired 2026-04-29 (Day 2 V2): 7,513 direct vs 7,391 es,
+    # fully overlapping. Direct scraper Hetzner-blocked; needs tunnel
+    # route, but existing JSONL is at parity.
 
     # ── Bern ──
     "BE_Verwaltungsgericht": ("be_verwaltungsgericht", "BE", "BE Verwaltungsgericht", "cantonal"),
@@ -129,8 +137,10 @@ SPIDER_MAP = {
     "BE_Weitere":       ("be_weitere",   "BE", "BE Weitere",       "cantonal"),
 
     # ── Schwyz ──
-    "SZ_Gerichte":      ("sz_gerichte",  "SZ", "SZ Gerichte",   "cantonal"),
-    "SZ_Verwaltungsgericht": ("sz_verwaltungsgericht", "SZ", "SZ Verwaltungsgericht", "cantonal"),
+    # SZ_Gerichte retired 2026-04-29 (Day 2 V2): 3,289 direct vs
+    # 3,191 es, fully overlapping.
+    # SZ_Verwaltungsgericht retired 2026-04-29 (Day 2 V2):
+    # 2,130 direct vs 2,027 es, fully overlapping.
 
     # ── Thurgau ──
     "TG_OG":            ("tg_obergericht","TG", "TG Obergericht","cantonal"),
@@ -145,7 +155,8 @@ SPIDER_MAP = {
     "UR_Gerichte":      ("ur_gerichte",  "UR", "UR Gerichte",   "cantonal"),
 
     # ── Obwalden ──
-    "OW_Gerichte":      ("ow_gerichte",  "OW", "OW Gerichte",   "cantonal"),
+    # OW_Gerichte retired 2026-04-29 (Day 2 V2): 2,205 direct vs
+    # 2,205 es, full parity.
 
     # ── Nidwalden ──
     "NW_Gerichte":      ("nw_gerichte",  "NW", "NW Gerichte",   "cantonal"),
@@ -154,7 +165,9 @@ SPIDER_MAP = {
     "SH_OG":            ("sh_obergericht","SH", "SH Obergericht","cantonal"),
 
     # ── Jura ──
-    "JU_Gerichte":      ("ju_gerichte",  "JU", "JU Gerichte",   "cantonal"),
+    # JU_Gerichte retired 2026-04-29 (Day 2 V2): 1,083 direct vs
+    # 1,052 es, fully overlapping. Direct scraper Hetzner-blocked
+    # ongoing; existing JSONL is at parity from prior tunneled runs.
 
     # ── Glarus ──
     "GL_Omni":          ("gl_gerichte",  "GL", "GL Gerichte",   "cantonal"),
