@@ -371,6 +371,31 @@ def build_decision(
         pdf_obj = meta.get("PDF", {})
         pdf_url = pdf_obj.get("URL")
 
+    # Normalise relative source_urls observed in the entscheidsuche feed for
+    # GL_Omni and BS_Omni: the upstream metadata sometimes provides bare
+    # /cgi-bin/... paths instead of fully-qualified URLs. Prefix with the
+    # known host for the spider, and upgrade http→https while we are here.
+    _RELATIVE_HOSTS = {
+        "gl_gerichte": "https://findinfo.gl.ch",
+        "bs_gerichte": "https://rechtsprechung.gerichte.bs.ch",
+    }
+    if source_url.startswith("/") and court_code in _RELATIVE_HOSTS:
+        source_url = _RELATIVE_HOSTS[court_code] + source_url
+    if source_url.startswith("http://"):
+        source_url = "https://" + source_url[len("http://"):]
+    if pdf_url and pdf_url.startswith("/") and court_code in _RELATIVE_HOSTS:
+        pdf_url = _RELATIVE_HOSTS[court_code] + pdf_url
+    if pdf_url and pdf_url.startswith("http://"):
+        pdf_url = "https://" + pdf_url[len("http://"):]
+
+    # The eurospider's CH_BGE feed includes EGMR (cedh) decisions alongside
+    # BGE decisions; without this override they land in court='bge' and
+    # collide downstream with the bge_egmr.py scraper's output for the same
+    # docket. Detect the cedh URL pattern and reroute to bge_egmr so the
+    # downstream merge_shards/dedup step recognises the pair.
+    if court_code == "bge" and "cedh" in source_url:
+        court_code = "bge_egmr"
+
     # Build content: combine kopfzeile + regeste + full_text
     content_parts = []
     if kopfzeile:
