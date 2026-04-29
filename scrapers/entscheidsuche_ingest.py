@@ -67,7 +67,9 @@ SPIDER_MAP = {
 
     # ── Zürich ──
     "ZH_Obergericht":   ("zh_gerichte",                "ZH", "ZH Obergericht",              "cantonal"),
-    "ZH_Sozialversicherungsgericht": ("zh_sozialversicherungsgericht","ZH", "ZH Sozialversicherungsgericht","cantonal"),
+    # ZH_Sozialversicherungsgericht retired 2026-04-29: direct scraper
+    # at parity (33,799 direct rows vs 43 entscheidsuche, <0.2% es
+    # contribution).  See memory/per_court_audit_2026_04_29.md.
     "ZH_Verwaltungsgericht":        ("zh_verwaltungsgericht",      "ZH", "ZH Verwaltungsgericht",        "cantonal"),
     "ZH_Baurekurs":     ("zh_baurekursgericht",        "ZH", "ZH Baurekursgericht",          "cantonal"),
     "ZH_Steuerrekurs":  ("zh_steuerrekursgericht",     "ZH", "ZH Steuerrekursgericht",       "cantonal"),
@@ -81,7 +83,9 @@ SPIDER_MAP = {
     "BS_Omni":          ("bs_gerichte",  "BS", "BS Gerichte",   "cantonal"),
 
     # ── Zug ──
-    "ZG_Verwaltungsgericht": ("zg_verwaltungsgericht", "ZG", "ZG Verwaltungsgericht", "cantonal"),
+    # ZG_Verwaltungsgericht retired 2026-04-29: direct scraper at
+    # parity (1,340 direct rows vs 2 entscheidsuche).  See
+    # memory/per_court_audit_2026_04_29.md.
     "ZG_Obergericht":        ("zg_obergericht",        "ZG", "ZG Obergericht",        "cantonal"),
 
     # ── Genève ──
