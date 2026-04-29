@@ -49,15 +49,21 @@ MIN_TEXT_LENGTH = 500
 
 SPIDER_MAP = {
     # ── Federal ──
-    "CH_BGE":       ("bge",    "CH", "Bundesgericht (BGE)",              "federal"),
-    "CH_BGer":      ("bger",   "CH", "Bundesgericht",                    "federal"),
-    "CH_BVGer":     ("bvger",  "CH", "Bundesverwaltungsgericht",         "federal"),
-    "CH_BSTG":      ("bstger", "CH", "Bundesstrafgericht",               "federal"),
-    "CH_BPatG":     ("bpatger","CH", "Bundespatentgericht",              "federal"),
+    # NOTE: 2026-04-29 retirement. The eight federal/regulatory feeds
+    # (CH_BGE, CH_BGer, CH_BVGer, CH_BSTG, CH_BPatG, CH_Bundesrat,
+    # CH_EDOEB, CH_WEKO) all duplicated their direct-scraper
+    # canonical sources (scrapers/bge.py, bger.py, bvger.py, bstger.py,
+    # bpatger.py, ch_bundesrat.py, edoeb.py, weko.py).  The duplication
+    # was the root of the König-2026-04-29 EGMR double-coverage bug:
+    # entscheidsuche's CH_BGE feed mixes EGMR cedh-decisions in with
+    # ordinary BGE rows, and we were ingesting both paths.  Direct
+    # scrapers preserve the canonical issuing-court source_url, which
+    # matters for the verifiable-citation property of the corpus, so
+    # entscheidsuche federal feeds are now retired in favour of the
+    # canonical scrapers.  CH_VB (Eidgenössische Verwaltungsbehörden)
+    # is RETAINED until a direct scraper is built — it has no
+    # canonical equivalent yet.
     "CH_VB":        ("ch_vb",  "CH", "Eidg. Verwaltungsbehörden",        "federal"),
-    "CH_Bundesrat": ("ch_bundesrat","CH","Bundesrat",                    "federal"),
-    "CH_EDOEB":     ("edoeb",  "CH", "EDÖB",                             "regulatory"),
-    "CH_WEKO":      ("weko",   "CH", "WEKO",                             "regulatory"),
 
     # ── Zürich ──
     "ZH_Obergericht":   ("zh_gerichte",                "ZH", "ZH Obergericht",              "cantonal"),
