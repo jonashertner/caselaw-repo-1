@@ -64,39 +64,61 @@ def step_egmr_merge(conn: sqlite3.Connection) -> dict:
     print(f"  pre: bge+cedh={pre_bge_cedh}, bge_egmr={pre_bge_egmr}, "
           f"paired by docket_number={paired}")
 
-    # Best-of-both merge: copy the longer full_text + content_hash + source
-    # from the bge row into the bge_egmr row (only when the bge row's
-    # full_text is at least as long, which the audit confirms is the case).
+    # Performance: a previous version used correlated subqueries with
+    # `source_url LIKE '%cedh%'` against the full 985k-row decisions table
+    # for every target row, which fails to use any index and runs in
+    # O(N×M). Build a small temp lookup table once (474 rows ≈ 25 MB),
+    # index it on docket_number, and join through it instead.
+    c.execute("DROP TABLE IF EXISTS _bge_cedh_lookup")
+    c.execute(
+        """
+        CREATE TEMP TABLE _bge_cedh_lookup AS
+        SELECT docket_number, full_text, content_hash, source, decision_id
+          FROM decisions
+         WHERE court='bge' AND source_url LIKE '%cedh%'
+        """
+    )
+    c.execute(
+        "CREATE INDEX _bge_cedh_lookup_idx ON _bge_cedh_lookup(docket_number)"
+    )
+    n_lookup = c.execute(
+        "SELECT COUNT(*) FROM _bge_cedh_lookup"
+    ).fetchone()[0]
+    print(f"  built temp lookup of {n_lookup} bge+cedh rows")
+
+    # Best-of-both merge via the temp table. Indexed docket lookups make
+    # this O(N) in the size of bge_egmr × log(N_lookup).
     rows_updated = c.execute(
         """
-        UPDATE decisions AS b
+        UPDATE decisions
            SET full_text = COALESCE(
-                   (SELECT a.full_text FROM decisions a
-                     WHERE a.court='bge' AND a.source_url LIKE '%cedh%'
-                       AND a.docket_number = b.docket_number),
-                   b.full_text),
+                   (SELECT t.full_text FROM _bge_cedh_lookup t
+                     WHERE t.docket_number = decisions.docket_number),
+                   decisions.full_text),
                content_hash = COALESCE(
-                   (SELECT a.content_hash FROM decisions a
-                     WHERE a.court='bge' AND a.source_url LIKE '%cedh%'
-                       AND a.docket_number = b.docket_number),
-                   b.content_hash),
+                   (SELECT t.content_hash FROM _bge_cedh_lookup t
+                     WHERE t.docket_number = decisions.docket_number),
+                   decisions.content_hash),
                source = COALESCE(
-                   (SELECT a.source FROM decisions a
-                     WHERE a.court='bge' AND a.source_url LIKE '%cedh%'
-                       AND a.docket_number = b.docket_number),
-                   b.source)
-         WHERE b.court='bge_egmr'
-           AND EXISTS (
-               SELECT 1 FROM decisions a
-                WHERE a.court='bge' AND a.source_url LIKE '%cedh%'
-                  AND a.docket_number = b.docket_number)
+                   (SELECT t.source FROM _bge_cedh_lookup t
+                     WHERE t.docket_number = decisions.docket_number),
+                   decisions.source)
+         WHERE decisions.court = 'bge_egmr'
+           AND decisions.docket_number IN (
+               SELECT docket_number FROM _bge_cedh_lookup)
         """
     ).rowcount
 
-    # Delete the bge+cedh duplicates.
+    # Delete the bge+cedh duplicates by their decision_id (precomputed in
+    # the lookup table) so we avoid the repeated LIKE.
     rows_deleted = c.execute(
-        "DELETE FROM decisions WHERE court='bge' AND source_url LIKE '%cedh%'"
+        """
+        DELETE FROM decisions
+         WHERE decision_id IN (SELECT decision_id FROM _bge_cedh_lookup)
+        """
     ).rowcount
+
+    c.execute("DROP TABLE _bge_cedh_lookup")
 
     post_bge_cedh = c.execute(
         "SELECT COUNT(*) FROM decisions WHERE court='bge' AND source_url LIKE '%cedh%'"
