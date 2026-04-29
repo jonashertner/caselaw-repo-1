@@ -82,7 +82,10 @@ SPIDER_MAP = {
     "AG_Weitere":       ("ag_weitere",   "AG", "AG Weitere",    "cantonal"),
 
     # ── Basel-Stadt ──
-    "BS_Omni":          ("bs_gerichte",  "BS", "BS Gerichte",   "cantonal"),
+    # BS_Omni retired 2026-04-29 (Day 2 V3): direct scraper writes
+    # under chamber-specific court codes (bs_appellationsgericht 8,090
+    # rows, bs_sozialversicherungsgericht 2,090) totalling 10,180; the
+    # entscheidsuche feed contributes only 2 rows under court=bs_gerichte.
 
     # ── Zug ──
     # ZG_Verwaltungsgericht retired 2026-04-29: 1,340 direct vs 2 es.
