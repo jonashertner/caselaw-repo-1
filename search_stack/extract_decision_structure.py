@@ -348,6 +348,29 @@ def extract(full_text: str, language: str = "de", decision_id: str = "") -> Deci
             out.erwaegungen = inferred_body
             out.erwaegungen_method = "inferred_from_sachverhalt_dispositiv_bounds"
 
+    # Numerical-headers fallback: many cantonal decisions (TI Camera di
+    # esecuzione, ZH Obergericht, BE Verwaltungsgericht, etc.) have no
+    # Sachverhalt / Erwägungen / Dispositiv markers — they begin the
+    # reasoning straight away under bare numbered headers (1, 2, 2.1,
+    # 2.2.1, ...).  When none of the marker-driven branches above produced
+    # an erwaegungen body, fall back to the numerical headers themselves:
+    # if the validator finds a clean, monotone sequence of at least 3
+    # top-level numbers, take the body from the first such header onward
+    # as the reasoning.  This is the only way to make E. 2.2.1 reachable
+    # via get_erwaegung() for cantonal decisions, since their text never
+    # carries the federal opener phrases.
+    if out.erwaegungen is None:
+        candidates = _validate_erw_sequence(_erw_candidates(text))
+        top_level = [c for c in candidates if "." not in c[2]]
+        if len(top_level) >= 3:
+            first_start = top_level[0][0]
+            tail_end = disp_start if disp_start is not None and disp_start > first_start else len(text)
+            body = text[first_start:tail_end]
+            body = MKG_TRAILER_RE.sub("", body).strip()
+            if len(body) > 100:
+                out.erwaegungen = body
+                out.erwaegungen_method = "fallback_numerical_headers"
+
     # Sub-parse Erwägungen into numbered paragraphs (the actual citable units)
     if out.erwaegungen:
         out.erwaegungen_paragraphs = parse_erwaegungen_paragraphs(out.erwaegungen)
