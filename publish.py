@@ -289,10 +289,17 @@ def step_2e_build_anwaltsrecht_tags(dry_run: bool = False, full_rebuild: bool = 
 def step_2g_build_decision_structure(dry_run: bool = False, full_rebuild: bool = False) -> bool:
     """Step 2g: Rebuild decision_structure.db sidecar (Sachverhalt / Erwägungen-Paragraphs / Dispositiv / Regeste).
 
-    Federal courts only (BGer/BVGer/BStGer/BGE/BPatGer/EGMR-CH/BGE-historical/MKG).
-    Cantonal courts: separate iteration. Reads JSONL shards, writes sidecar
-    SQLite with atomic swap. Used by get_decision_structure / get_erwaegung /
+    Federal + cantonal courts. Reads JSONL shards, writes sidecar SQLite
+    with atomic swap. Used by get_decision_structure / get_erwaegung /
     get_regeste MCP tools and to enrich get_case_brief responses.
+
+    Federal shards are court-named (bger.jsonl, bvger.jsonl, ...);
+    cantonal shards are entscheidsuche-sourced and prefixed `es_`
+    (es_ti_gerichte.jsonl, es_zh_gerichte.jsonl, ...). The
+    `extract_decision_structure.py` script handles both via the same
+    `--shards` argument; the marker-driven extractors fall back to a
+    pure numerical-headers extractor for cantonal decisions that lack
+    federal-style "Sachverhalt / In Erwägung" openers.
     """
     logger.info("Step 2g: Build decision_structure sidecar")
 
@@ -301,14 +308,57 @@ def step_2g_build_decision_structure(dry_run: bool = False, full_rebuild: bool =
         logger.info("  extract_decision_structure.py not found, skipping")
         return True
 
+    federal_shards = (
+        "bger,bvger,bstger,bge,bpatger,bge_egmr,bge_historical,mkg"
+    )
+    # Cantonal shards: entscheidsuche-sourced, all 26 cantons. The set
+    # below mirrors the registered SPIDER_MAP entries in
+    # scrapers/entscheidsuche_ingest.py. Where multiple spiders map to
+    # the same cantonal court (e.g. ZH: zh_gerichte vs the chamber
+    # spiders), each shard is listed because they're written to
+    # separate JSONL files at ingest time.
+    cantonal_shards = ",".join([
+        # Multi-canton via es_ prefix (entscheidsuche)
+        "es_ag_baugesetzgebung", "es_ag_gerichte", "es_ag_weitere",
+        "es_ai_gerichte", "es_ar_gerichte",
+        "es_be_anwaltsaufsicht", "es_be_bvd", "es_be_steuerrekurs",
+        "es_be_verwaltungsgericht", "es_be_weitere", "es_be_zivilstraf",
+        "es_bl_gerichte", "es_bs_gerichte",
+        "es_fr_gerichte",
+        "es_ge_gerichte", "es_gl_gerichte", "es_gr_gerichte",
+        "es_ju_gerichte",
+        "es_lu_gerichte",
+        "es_ne_gerichte", "es_nw_gerichte",
+        "es_ow_gerichte",
+        "es_sg_gerichte", "es_sg_publikationen",
+        "es_sh_obergericht", "es_so_gerichte",
+        "es_sz_gerichte", "es_sz_verwaltungsgericht",
+        "es_tg_obergericht", "es_ti_gerichte",
+        "es_ur_gerichte",
+        "es_vd_findinfo", "es_vd_omni", "es_vs_gerichte",
+        "es_zg_obergericht", "es_zg_verwaltungsgericht",
+        "es_zh_baurekursgericht", "es_zh_gerichte",
+        "es_zh_sozialversicherungsgericht",
+        "es_zh_steuerrekursgericht", "es_zh_verwaltungsgericht",
+        # Cantonal courts with own (non-entscheidsuche) scrapers
+        "ag_gerichte", "ai_gerichte", "ar_gerichte",
+        "be_anwaltsaufsicht", "be_verwaltungsgericht", "be_zivilstraf",
+        "bl_gerichte", "bl_wayback", "bs_gerichte",
+        "fr_gerichte",
+        "ge_gerichte", "gl_gerichte", "gr_gerichte",
+        # (other cantonal scraper-shards are added as they become
+        # available; missing files are warned, not fatal)
+    ])
+    shards = f"{federal_shards},{cantonal_shards}"
+
     return run_cmd(
         [sys.executable, str(script), "--build",
-         "--shards", "bger,bvger,bstger,bge,bpatger,bge_egmr,bge_historical,mkg",
+         "--shards", shards,
          "--decisions-dir", str(OUTPUT_DIR / "decisions"),
          "--output", str(OUTPUT_DIR / "decision_structure.db")],
-        "Build decision_structure sidecar",
+        "Build decision_structure sidecar (federal + cantonal)",
         dry_run,
-        timeout=1800,  # ~6min typical, generous bound
+        timeout=3600,  # cantonal shards roughly triple the row count
     )
 
 
