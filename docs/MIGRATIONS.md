@@ -224,6 +224,48 @@ host-prefixed URLs, 779,037 https URLs.
 
 ---
 
+---
+
+## 2026-04-30 — Known per-court data-quality limitations (post-recovery floor)
+
+After today's normalisations + recovery passes, the following per-court NULL
+`decision_date` and short `full_text` populations reflect **source-data limits**
+(not bugs we can fix without external data). Consumers should be aware:
+
+### NULL decision_date (1,542 of 970,649 rows = 0.16%)
+
+| Court | NULL count | % of court | Cause |
+|---|---:|---:|---|
+| `ti_gerichte` | 549 | 0.9% | source PDFs are header-only stubs (~1.5K chars typical); decision body absent. **Needs re-scrape from sentenze.ti.ch with deeper extraction.** |
+| `mkg` | 542 | 43.6% | Militärkassationsgerichtsentscheidungen Bd 1-15 (1914-2010) historical archive; PDFs don't expose decision dates in machine-readable form. **Needs external academic cross-reference (e.g. ETHZ legal-history database).** |
+| `hudoc_ch` | 246 | 29.5% | ECHR mixed-language documents; decision dates often only in metadata, not body. **Could be filled via HUDOC API by case-ID lookup** (e.g. `001-180707`). |
+| `gr_gerichte` | 80 | 0.6% | Residual after 90% recovery; remaining 10% have non-standard date formats. |
+| `fr_gerichte`, `be_verwaltungsgericht` | 33 each | 0.2% | Per-chamber variation. |
+| `sav_kantone`, `sav_international`, `tg_anwaltskommission` | ~36 | various | Aufsichtsbehörden — no PDFs published, only docket+title. |
+
+### Short full_text after migration (64 rows)
+
+| Court | Count | Cause |
+|---|---:|---|
+| `so_gerichte` | 59 | Has both regeste AND short body — truncated PDF extraction. **Needs scraper PDF re-fetch.** |
+| Others | 5 | Distributed; per-row PDF debugging needed. |
+
+### What we did NOT do (and why)
+
+- **Synthetic "YYYY-01-01" placeholder dates**: would mislead consumers using
+  `WHERE decision_date BETWEEN ...` filters. NULL is honest about uncertainty.
+- **Set decision_date from publication_date when present**: production audit
+  showed 0 mkg/ti/hudoc rows have publication_date populated — no fallback
+  source available.
+- **Force-extract from full_text for ti_gerichte**: text genuinely truncated
+  (median 1,271 chars). The decision body — and its date — never made it
+  through the scraper's PDF extraction.
+
+These residuals are tracked in `pending_backlog_2026_04_30.md` for future
+sessions targeting per-court scraper PDF re-extraction.
+
+---
+
 ## License
 
 This document, like all OpenCaseLaw documentation, is published under **CC0 1.0**.
