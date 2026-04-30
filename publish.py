@@ -656,6 +656,67 @@ def step_6_git_push(dry_run: bool = False) -> bool:
     return run_cmd(["git", "push"], "git push", dry_run)
 
 
+def _run_parallel_post_build(deferred: list, args, manual_step_mode: bool) -> dict:
+    """Execute deferred parallel-safe steps concurrently.
+
+    All steps in `deferred` are read-only of decisions.db; each opens its own
+    SQLite connection (WAL mode allows many concurrent readers) and writes to
+    its own output file. Uses a ThreadPoolExecutor — each step internally
+    spawns a subprocess via run_cmd, so threads block on subprocess I/O while
+    the OS schedules workloads across CPU cores. No pickling, no shared state.
+
+    Returns dict {step_id: bool}. Failures are logged and reported per-step;
+    one failure does not abort the others (independent steps continue).
+    """
+    import concurrent.futures
+
+    logger.info(
+        f"=== Parallel batch start: {len(deferred)} steps, "
+        f"{PARALLEL_MAX_WORKERS} workers ==="
+    )
+    for num, name, _ in deferred:
+        logger.info(f"  [parallel-queued] Step {num} ({name})")
+
+    def _call(num, name, func):
+        t0 = time.time()
+        try:
+            if num in ("2b", "2c", "2d", "2e", "2f", "2g"):
+                ok = func(
+                    dry_run=args.dry_run,
+                    full_rebuild=(args.full_rebuild or manual_step_mode),
+                )
+            else:
+                ok = func(dry_run=args.dry_run)
+            return num, name, ok, None, time.time() - t0
+        except Exception as e:
+            return num, name, False, str(e), time.time() - t0
+
+    results = {}
+    batch_start = time.time()
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=PARALLEL_MAX_WORKERS,
+        thread_name_prefix="post-build",
+    ) as executor:
+        futures = [executor.submit(_call, num, name, func) for num, name, func in deferred]
+        for future in concurrent.futures.as_completed(futures):
+            num, name, ok, err, elapsed = future.result()
+            results[num] = ok
+            status = "OK" if ok else "FAILED"
+            err_suffix = (" — " + err) if err else ""
+            logger.info(
+                f"  [parallel-done] Step {num} ({name}): {status} "
+                f"({elapsed:.1f}s){err_suffix}"
+            )
+
+    total_elapsed = time.time() - batch_start
+    n_pass = sum(1 for v in results.values() if v)
+    logger.info(
+        f"=== Parallel batch done in {total_elapsed:.1f}s "
+        f"({n_pass}/{len(deferred)} passed) ==="
+    )
+    return results
+
+
 def step_6b_health_check(dry_run: bool = False) -> bool:
     """Step 6b: Auto-validate the publish output.
 
@@ -700,6 +761,21 @@ def step_6b_health_check(dry_run: bool = False) -> bool:
 # The key insight: stats.json + git push happen TWICE — once after
 # FTS5 (fast, site-visible) and again after everything else finishes
 # (includes updated graph counts, quality report, etc.).
+
+# Steps that READ decisions.db but write to separate output files. Safe to
+# run concurrently after Step 2d (Quality Enrichment) — the only step that
+# WRITES decisions.db. Each opens its own SQLite connection (WAL mode allows
+# many concurrent readers) and writes to its own output (reference_graph.db,
+# decision_structure.db, anwaltsrecht_tags.db, materialien.db, dataset/*.parquet,
+# output/quality_report.json).
+PARALLEL_POST_BUILD_STEPS = {"2e", "2b", "2c", "2f", "2g", 3}
+
+# Concurrency cap: 16-CPU ccx43 has plenty, but disk I/O on /mnt is the real
+# constraint when 2c (graph) + 2g (sidecar) + 3 (parquet) all read the 60 GB
+# decisions.db at once. 4 workers gives ~60 min savings (long pole becomes 2c
+# at 78 min) without saturating the volume.
+PARALLEL_MAX_WORKERS = 4
+
 
 STEPS = [
     (1, "Ingest", step_1_ingest),
@@ -784,6 +860,22 @@ def main():
     # Steps after the fast tier — skipped with --fast-only
     SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", "2g", 3, 4, 5, 6}
 
+    # Parallel mode: run PARALLEL_POST_BUILD_STEPS concurrently after Step 2d.
+    # Default ON; set OCL_PARALLEL_POST_BUILD=0 to fall back to sequential.
+    # Disabled when running a single --step or --fast-only (those bypass the
+    # batch entirely).
+    parallel_mode = (
+        os.environ.get("OCL_PARALLEL_POST_BUILD", "1") not in ("0", "false", "no")
+        and not manual_step_mode
+        and not args.fast_only
+    )
+    parallel_deferred: list = []  # collected (num, name, func) awaiting batch flush
+    if parallel_mode:
+        logger.info(
+            f"Parallel post-build mode: ON ({len(PARALLEL_POST_BUILD_STEPS)} steps "
+            f"with {PARALLEL_MAX_WORKERS}-way pool, set OCL_PARALLEL_POST_BUILD=0 to disable)"
+        )
+
     # Resume from checkpoint if prior run crashed
     checkpoint = _load_checkpoint() if not manual_step_mode else None
     if checkpoint:
@@ -794,6 +886,17 @@ def main():
                 if str(snum) == k:
                     results[snum] = v
                     break
+
+    def _flush_parallel_batch():
+        """Flush any deferred parallel-safe steps as one concurrent batch."""
+        if not parallel_deferred:
+            return
+        batch_results = _run_parallel_post_build(parallel_deferred, args, manual_step_mode)
+        results.update(batch_results)
+        for nkey, nok in batch_results.items():
+            if nok:
+                _save_checkpoint(nkey, results)
+        parallel_deferred.clear()
 
     for num, name, func in STEPS:
         if args.step is not None and str(args.step) != str(num):
@@ -813,6 +916,15 @@ def main():
             logger.info(f"  Step {num} ({name}): SKIPPED (--fast-only)")
             results[num] = True
             continue
+        # Defer parallel-safe steps; the batch flushes before any subsequent
+        # sequential step (so guarded-step checks see their results).
+        if parallel_mode and num in PARALLEL_POST_BUILD_STEPS:
+            parallel_deferred.append((num, name, func))
+            continue
+        # Flush parallel batch BEFORE the GUARDED_STEPS check so critical-step
+        # results (incl. step 3 from the parallel batch) are populated.
+        if parallel_deferred:
+            _flush_parallel_batch()
         # Skip guarded steps if a critical step failed (unless running single step)
         if not manual_step_mode and num in GUARDED_STEPS:
             critical_failed = any(
@@ -845,6 +957,12 @@ def main():
         except Exception as e:
             results[num] = False
             logger.error(f"  → EXCEPTION: {e}\n", exc_info=True)
+
+    # Defensive: flush any deferred parallel batch in case STEPS ends with
+    # parallel-safe entries (current layout has 4, 7, 5, 6, 6b after the batch,
+    # so this is a no-op today; future-proofs the code).
+    if parallel_deferred:
+        _flush_parallel_batch()
 
     # Summary
     total_elapsed = time.time() - start
