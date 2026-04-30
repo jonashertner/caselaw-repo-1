@@ -23,6 +23,7 @@ import argparse
 import io
 import json
 import logging
+import os
 import re
 import sqlite3
 import time
@@ -519,7 +520,29 @@ def import_jsonl(
     skipped = 0
     new_checkpoint: dict = {}
 
-    for jsonl_file in sorted(jsonl_dir.glob("*.jsonl")):
+    # Process direct shards (filename does not start with "es_") BEFORE
+    # entscheidsuche shards.  This prevents the SG-bug-class
+    # alphabetical-collision pattern (commit f249f1f, 2026-04-30):
+    # es_<court>.jsonl uses generic court_code in SPIDER_MAP, while
+    # direct <court>.jsonl writes chamber-specific court codes.  When
+    # both shards happen to use the SAME decision_id prefix and es
+    # processes first (alphabetical order, 'e' < most letters),
+    # INSERT OR IGNORE silently drops direct's chamber-specific rows.
+    # Direct-first ordering means direct's chamber labels win all
+    # dedups; es supplements with rows that have no direct counterpart.
+    # Trade-off: for shared decisions, direct's metadata wins over es.
+    # Set BUILD_FTS5_DIRECT_FIRST=0 to revert to plain-alphabetical
+    # order (use only as an emergency revert).
+    _direct_first = os.environ.get("BUILD_FTS5_DIRECT_FIRST", "1") not in ("0", "false", "no")
+    _all_files = sorted(jsonl_dir.glob("*.jsonl"))
+    if _direct_first:
+        _direct_shards = [f for f in _all_files if not f.name.startswith("es_")]
+        _es_shards = [f for f in _all_files if f.name.startswith("es_")]
+        _files_to_process = _direct_shards + _es_shards
+    else:
+        _files_to_process = _all_files
+
+    for jsonl_file in _files_to_process:
         fname = jsonl_file.name
         current_size = jsonl_file.stat().st_size
 
