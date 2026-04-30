@@ -44,3 +44,9 @@ jobs:
             --ignore=test_build_vectors.py \
             --ignore=test_appeal_chain.py \
             --ignore=scripts/
+
+      - name: Quality-control package tests
+        run: pytest tests/qc/ -q
+
+      - name: Quality-control check discovery
+        run: python -m quality.cli list
