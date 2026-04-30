@@ -457,18 +457,22 @@ def _fill_missing_regeste(conn: sqlite3.Connection) -> int:
 
 
 def _log_quality_summary(conn: sqlite3.Connection) -> None:
-    """Log a summary of remaining data quality issues."""
+    """Log a summary of remaining data quality issues.
+
+    Note: the previous version included a `LENGTH(full_text) < 500` count which
+    forced a full table scan reading every full_text blob (~31 min on 970k
+    rows / 60 GB DB measured 2026-04-30). That metric was a one-line log only
+    — not load-bearing — so we drop it. The remaining two checks scan small
+    columns (regeste, decision_date) without overflow pages and are cheap.
+    """
     total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
-    short = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE LENGTH(COALESCE(full_text, '')) < 500"
-    ).fetchone()[0]
     no_regeste = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE regeste IS NULL OR LENGTH(TRIM(regeste)) = 0"
+        "SELECT COUNT(*) FROM decisions WHERE regeste IS NULL OR regeste = ''"
     ).fetchone()[0]
     no_date = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE decision_date IS NULL OR LENGTH(TRIM(decision_date)) = 0"
+        "SELECT COUNT(*) FROM decisions WHERE decision_date IS NULL OR decision_date = ''"
     ).fetchone()[0]
-    logger.info(f"  Quality: {short} short text (<500), {no_regeste} no regeste, {no_date} no date (of {total})")
+    logger.info(f"  Quality: {no_regeste} no regeste, {no_date} no date (of {total})")
 
 
 # Court code remapping: merge historical variants into canonical codes

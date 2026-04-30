@@ -51,8 +51,11 @@ REPO_DIR = Path(__file__).parent.resolve()
 # Default timeout per scraper (seconds)
 DEFAULT_TIMEOUT = 7200  # 2 hours
 
-# Maximum concurrent scrapers
-DEFAULT_PARALLEL = 6
+# Maximum concurrent scrapers. The ccx43 has 16 dedicated CPU + 64 GB RAM,
+# and most scrapers are HTTP I/O-bound rather than CPU-bound. Heavy Playwright
+# scrapers (~200 MB RSS each: bger, bge, bvger, ow, vd, zh) cap us; at 10
+# parallel we use ~2 GB peak for those alongside ~50 MB each for the rest.
+DEFAULT_PARALLEL = 10
 
 # Scrapers that need extra time (Playwright-based, large volume)
 SLOW_SCRAPERS = {
