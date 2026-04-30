@@ -95,6 +95,13 @@ DB_PATH = OUTPUT_DIR / "decisions.db"
 
 HF_REPO_ID = "voilaj/swiss-caselaw"
 
+# Build_fts5 writes decisions.db.tmp (~63 GB) plus a .tmp-wal that peaks
+# around 10 GB, then atomically swaps. We keep a 7 GB safety margin so the
+# concurrent decision_structure sidecar build (step 2g) doesn't squeeze the
+# volume during the brief window before the .tmp is replaced.
+DATA_VOLUME = "/mnt/HC_Volume_104655575"
+BUILD_DISK_REQUIRED_GB = 80
+
 
 
 
@@ -168,6 +175,70 @@ def step_1_ingest(dry_run: bool = False) -> bool:
     )
 
 
+def _cleanup_stale_build_artifacts() -> None:
+    """Remove .tmp/.tmp-wal/.tmp-shm leftover from a crashed prior build.
+
+    Only removes files older than 6 h to avoid clobbering an in-flight build
+    invoked outside publish.py (the lockfile already prevents concurrent
+    publish runs, so this is defence-in-depth for manual build_fts5 invocations).
+    """
+    candidates = [
+        f"{DATA_VOLUME}/output/decisions.db.tmp",
+        f"{DATA_VOLUME}/output/decisions.db.tmp-wal",
+        f"{DATA_VOLUME}/output/decisions.db.tmp-shm",
+    ]
+    now = time.time()
+    for path in candidates:
+        try:
+            st = os.stat(path)
+        except FileNotFoundError:
+            continue
+        age_h = (now - st.st_mtime) / 3600
+        if age_h < 6:
+            logger.warning(
+                f"  Stale-build cleanup: skipping {path} "
+                f"(age {age_h:.1f}h < 6h, possibly active)"
+            )
+            continue
+        try:
+            os.unlink(path)
+            logger.warning(
+                f"  Stale-build cleanup: removed {path} "
+                f"({st.st_size / 1e9:.1f} GB freed, age {age_h:.1f}h)"
+            )
+        except OSError as e:
+            logger.error(f"  Stale-build cleanup failed for {path}: {e}")
+
+
+def _preflight_disk_check() -> bool:
+    """Verify /mnt has enough room for build_fts5's transient .tmp + .tmp-wal."""
+    import shutil
+    if not Path(DATA_VOLUME).exists():
+        logger.warning(f"  Pre-flight: {DATA_VOLUME} not present, skipping check")
+        return True
+    free_gb = shutil.disk_usage(DATA_VOLUME).free / 1e9
+    if free_gb < BUILD_DISK_REQUIRED_GB:
+        logger.error(
+            f"PRE-FLIGHT FAILED: {DATA_VOLUME} has {free_gb:.1f} GB free, "
+            f"build needs ~{BUILD_DISK_REQUIRED_GB} GB transient. "
+            f"Top consumers in {DATA_VOLUME}/output:"
+        )
+        out = Path(f"{DATA_VOLUME}/output")
+        if out.exists():
+            top = sorted(
+                ((p, p.stat().st_size) for p in out.iterdir() if p.is_file()),
+                key=lambda x: -x[1],
+            )[:10]
+            for p, sz in top:
+                logger.error(f"    {sz / 1e9:>6.1f} GB  {p.name}")
+        return False
+    logger.info(
+        f"  Pre-flight: {DATA_VOLUME} has {free_gb:.1f} GB free "
+        f"(need >= {BUILD_DISK_REQUIRED_GB})"
+    )
+    return True
+
+
 def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool:
     """Step 2: Build/update FTS5 search database.
 
@@ -179,12 +250,20 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
         logger.error("  build_fts5.py not found")
         return False
 
+    logger.info("Step 2: Full FTS5 rebuild (low I/O priority, zero-downtime swap)")
+
+    # Pre-flight: clean stale .tmp from a prior crashed build, then check we
+    # have room for the new build. Fail fast (skip the 90-min crash cycle).
+    if not dry_run:
+        _cleanup_stale_build_artifacts()
+        if not _preflight_disk_check():
+            return False
+
     # Use ionice/nice to prevent I/O starvation of live MCP workers.
     cmd = ["ionice", "-c3", "nice", "-n", "19",
            sys.executable, str(script), "--output", str(OUTPUT_DIR),
            "--full-rebuild"]
 
-    logger.info("Step 2: Full FTS5 rebuild (low I/O priority, zero-downtime swap)")
     timeout = 18000  # ~3h40m for 1M decisions + optimize
 
     return run_cmd(cmd, "Build FTS5 database", dry_run, timeout=timeout)
