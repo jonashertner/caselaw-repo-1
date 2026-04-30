@@ -234,7 +234,7 @@ def check_date_plausibility() -> bool:
 
 
 def check_court_top10() -> bool:
-    banner("[7] Top-10 courts by row count (sanity)")
+    banner("[8] Top-10 courts by row count (sanity)")
     c = sqlite3.connect(DB).cursor()
     print(f"  {'court':40s} {'count':>10s}")
     for court, n in c.execute(
