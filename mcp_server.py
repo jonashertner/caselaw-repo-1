@@ -16083,6 +16083,31 @@ render();setInterval(render,60000);
             headers={"Content-Disposition": f'attachment; filename="{fname}"'},
         )
 
+    @rest_api.get("/decisions/{decision_id}/export.pdf", tags=["Exports"],
+                  summary="Download a decision as PDF",
+                  description="Returns a PDF rendering of the decision in the "
+                              "canonical OpenCaseLaw style: Times New Roman 12 pt, "
+                              "1.2 line spacing, monochrome, A4. Falls back to "
+                              "plain-text (.txt) if reportlab is not installed.",
+                  response_class=_FastAPIResponse)
+    async def api_export_pdf(
+        decision_id: str = PathParam(description="Canonical decision ID"),
+    ):
+        result = await asyncio.to_thread(_fetch_export_decision, decision_id)
+        if not result:
+            return _FastAPIResponse(
+                content=f'{{"error": "Decision not found: {decision_id}"}}',
+                status_code=404, media_type="application/json",
+            )
+        decision, paragraphs = result
+        body, mtype, fname = await asyncio.to_thread(
+            _exports.render_pdf, decision, paragraphs,
+        )
+        return _FastAPIResponse(
+            content=body, media_type=mtype,
+            headers={"Content-Disposition": f'attachment; filename="{fname}"'},
+        )
+
     @rest_api.get("/decisions/{decision_id}/export.bib", tags=["Exports"],
                   summary="Download a decision as BibTeX",
                   description="Returns a BibTeX `@misc{...}` entry suitable for "

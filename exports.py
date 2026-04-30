@@ -67,10 +67,10 @@ def _short_title(decision: dict, max_chars: int = 80) -> str:
     if decision.get("title"):
         t = decision["title"].strip()
         if t and t.lower() not in (parts[0] or "").lower():
-            parts.append("— " + t)
+            parts.append(", " + t)
     out = " ".join(parts)
     if len(out) > max_chars:
-        out = out[: max_chars - 1] + "…"
+        out = out[: max_chars - 1] + "..."
     return out
 
 
@@ -226,7 +226,7 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
     try:
         from docx import Document  # type: ignore
         from docx.shared import Pt, Cm
-        from docx.enum.text import WD_ALIGN_PARAGRAPH
+        from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
     except ImportError:
         # Defensive fallback — text version of the same content
         return _render_decision_txt(decision, paragraphs)
@@ -238,10 +238,35 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
         section.top_margin = Cm(2.5); section.bottom_margin = Cm(2.5)
         section.left_margin = Cm(2.5); section.right_margin = Cm(2.5)
 
-    # Default font (sans for screen readability; user can restyle)
-    style = doc.styles["Normal"]
-    style.font.name = "Calibri"
-    style.font.size = Pt(11)
+    # Typography: Times New Roman 12pt, line spacing 1.2 (multiple).
+    # Apply to Normal + heading styles so the whole document inherits a
+    # single, monochrome serif look — the canonical legal-document style.
+    BODY_FONT = "Times New Roman"
+    BODY_SIZE = Pt(12)
+
+    def _apply_typography(style):
+        style.font.name = BODY_FONT
+        style.font.size = BODY_SIZE
+        pf = style.paragraph_format
+        pf.line_spacing_rule = WD_LINE_SPACING.MULTIPLE
+        pf.line_spacing = 1.2
+        pf.space_before = Pt(0)
+        pf.space_after = Pt(6)
+
+    _apply_typography(doc.styles["Normal"])
+    for sname in ("Heading 1", "Heading 2", "Heading 3"):
+        try:
+            _apply_typography(doc.styles[sname])
+        except KeyError:
+            pass
+    # Heading sizes — restrained, monochrome (no color overrides)
+    try:
+        doc.styles["Heading 1"].font.size = Pt(16)
+        doc.styles["Heading 1"].font.bold = True
+        doc.styles["Heading 2"].font.size = Pt(13)
+        doc.styles["Heading 2"].font.bold = True
+    except KeyError:
+        pass
 
     # 1. Citation header (title)
     cite_de = decision.get("citation_string_de") or decision.get("citation_string")
@@ -250,31 +275,33 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
     title = doc.add_heading(cite_de or _short_title(decision), level=1)
     title.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
-    # 2. Metadata block
-    meta_p = doc.add_paragraph()
-    meta_p.add_run(decision.get("court_name") or decision.get("court") or "").italic = True
+    # 2. Metadata block — court, date, language, joined by commas (no em-dashes,
+    # no middots). Plain weight, no italic.
+    meta_parts = []
+    if decision.get("court_name") or decision.get("court"):
+        meta_parts.append(str(decision.get("court_name") or decision.get("court")))
     if decision.get("decision_date"):
-        meta_p.add_run(f"  ·  {decision['decision_date']}").italic = True
+        meta_parts.append(str(decision["decision_date"]))
     if decision.get("language"):
-        meta_p.add_run(f"  ·  {decision['language'].upper()}").italic = True
+        meta_parts.append(str(decision["language"]).upper())
+    if meta_parts:
+        doc.add_paragraph(", ".join(meta_parts))
 
-    # 3. Source URL line
+    # 3. Source URL
     url_p = doc.add_paragraph()
-    url_p.add_run("Source: ").bold = True
+    url_p.add_run("Quelle: ").bold = True
     url_p.add_run(_decision_url(decision_id))
 
-    # 4. Alternate-language citations (collapsed inline)
+    # 4. Alternate-language citations
     alt_lines = []
     if cite_fr and cite_fr != cite_de:
         alt_lines.append(f"FR: {cite_fr}")
     if cite_it and cite_it != cite_de:
         alt_lines.append(f"IT: {cite_it}")
-    if alt_lines:
-        doc.add_paragraph(" · ".join(alt_lines)).italic = True
+    for line in alt_lines:
+        doc.add_paragraph(line)
 
     # 5. Regeste — split multilingual head-note at language boundaries
-    #    (Regeste / Regeste / Regesto) so each lang gets its own
-    #    re-flowable paragraph instead of a cramped wall.
     regeste = decision.get("regeste") or ""
     regeste_paras = _split_regeste(regeste)
     if regeste_paras:
@@ -285,7 +312,6 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
     # 6. Sachverhalt / Erwägungen (structured if available, else fallback)
     if paragraphs:
         doc.add_heading("Erwägungen", level=2)
-        # Sort by e_number using the same key the server uses
         try:
             from mcp_server import _e_number_sort_key  # type: ignore
             sorted_paras = sorted(paragraphs, key=lambda p: _e_number_sort_key(
@@ -300,11 +326,6 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
             heading = doc.add_paragraph()
             run = heading.add_run(f"E. {e_num}" if e_num else "")
             run.bold = True
-            # Each Erwägung from the corpus often spans multiple
-            # blank-line-separated paragraphs (judges write in real
-            # paragraphs). Preserve that structure while flowing
-            # single newlines into spaces inside each paragraph so
-            # Word handles wrapping itself.
             for sub in _split_paragraphs(text):
                 doc.add_paragraph(sub)
     else:
@@ -314,15 +335,14 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
             for sub in _split_paragraphs(full):
                 doc.add_paragraph(sub)
 
-    # 7. Footer disclaimer
+    # 7. Footer disclaimer (plain, no italic, no separator line)
     doc.add_paragraph()
-    foot = doc.add_paragraph()
-    foot.add_run(
-        "Exported from OpenCaseLaw (CC0). The authoritative text is the "
-        "decision as published by the issuing court. Verify any quoted "
-        "passage against the source URL above before relying on it in "
-        "professional work."
-    ).italic = True
+    foot = doc.add_paragraph(
+        "Export aus OpenCaseLaw (CC0). Verbindlich ist allein der vom "
+        "erlassenden Gericht veröffentlichte Originaltext. Quellen-URL "
+        "siehe oben."
+    )
+    foot.paragraph_format.space_before = Pt(12)
 
     buf = io.BytesIO()
     doc.save(buf)
@@ -331,6 +351,145 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         suggested_name,
     )
+
+
+# ── PDF (reportlab Platypus) ───────────────────────────────────────
+
+def render_pdf(decision: dict, paragraphs: list[dict] | None = None) -> tuple[bytes, str, str]:
+    """Build a PDF with the decision's structured content.
+
+    Same typography as the docx export: Times-Roman 12pt body, leading
+    14.4pt (1.2× 12), 2.5 cm margins, A4. Monochrome — no colored
+    accents, no horizontal rules. Falls back to plain-text if reportlab
+    is not installed (so the endpoint never 500s).
+    """
+    decision_id = decision.get("decision_id", "decision")
+    suggested_name = f"{decision_id}.pdf"
+
+    try:
+        from reportlab.lib.pagesizes import A4  # type: ignore
+        from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+        from reportlab.lib.units import cm
+        from reportlab.platypus import (
+            SimpleDocTemplate, Paragraph, Spacer, KeepTogether,
+        )
+    except ImportError:
+        return _render_decision_txt(decision, paragraphs)
+
+    base = ParagraphStyle(
+        "Body",
+        fontName="Times-Roman",
+        fontSize=12,
+        leading=14.4,  # 1.2 × 12pt
+        spaceBefore=0,
+        spaceAfter=6,
+        textColor="#000000",
+    )
+    h1 = ParagraphStyle(
+        "H1", parent=base,
+        fontName="Times-Bold", fontSize=16, leading=19.2,
+        spaceBefore=0, spaceAfter=8,
+    )
+    h2 = ParagraphStyle(
+        "H2", parent=base,
+        fontName="Times-Bold", fontSize=13, leading=15.6,
+        spaceBefore=14, spaceAfter=6,
+    )
+    meta = ParagraphStyle(
+        "Meta", parent=base,
+        fontSize=11, leading=13.2,
+    )
+    e_num_style = ParagraphStyle(
+        "ErwNum", parent=base,
+        fontName="Times-Bold",
+        spaceBefore=8, spaceAfter=2,
+    )
+
+    def P(text, style=base):
+        # reportlab Paragraph parses XML-like markup; escape & < >
+        from xml.sax.saxutils import escape as xml_escape
+        return Paragraph(xml_escape(text or ""), style)
+
+    story: list = []
+
+    # 1. Citation header
+    cite_de = decision.get("citation_string_de") or decision.get("citation_string")
+    cite_fr = decision.get("citation_string_fr")
+    cite_it = decision.get("citation_string_it")
+    story.append(P(cite_de or _short_title(decision), h1))
+
+    # 2. Metadata
+    meta_parts = []
+    if decision.get("court_name") or decision.get("court"):
+        meta_parts.append(str(decision.get("court_name") or decision.get("court")))
+    if decision.get("decision_date"):
+        meta_parts.append(str(decision["decision_date"]))
+    if decision.get("language"):
+        meta_parts.append(str(decision["language"]).upper())
+    if meta_parts:
+        story.append(P(", ".join(meta_parts), meta))
+
+    # 3. Source URL
+    story.append(P(f"Quelle: {_decision_url(decision_id)}", meta))
+
+    # 4. Alternate-language citations
+    if cite_fr and cite_fr != cite_de:
+        story.append(P(f"FR: {cite_fr}", meta))
+    if cite_it and cite_it != cite_de:
+        story.append(P(f"IT: {cite_it}", meta))
+
+    # 5. Regeste
+    regeste = decision.get("regeste") or ""
+    regeste_paras = _split_regeste(regeste)
+    if regeste_paras:
+        story.append(P("Regeste", h2))
+        for rp in regeste_paras:
+            story.append(P(rp, base))
+
+    # 6. Erwägungen / Volltext
+    if paragraphs:
+        story.append(P("Erwägungen", h2))
+        try:
+            from mcp_server import _e_number_sort_key  # type: ignore
+            sorted_paras = sorted(paragraphs, key=lambda p: _e_number_sort_key(
+                p.get("e_number") or ""))
+        except Exception:
+            sorted_paras = paragraphs
+        for p in sorted_paras:
+            e_num = (p.get("e_number") or "").strip()
+            text = (p.get("text") or "").strip()
+            if not text:
+                continue
+            if e_num:
+                story.append(P(f"E. {e_num}", e_num_style))
+            for sub in _split_paragraphs(text):
+                story.append(P(sub, base))
+    else:
+        full = (decision.get("full_text") or "").strip()
+        if full:
+            story.append(P("Volltext", h2))
+            for sub in _split_paragraphs(full):
+                story.append(P(sub, base))
+
+    # 7. Footer disclaimer
+    story.append(Spacer(1, 12))
+    story.append(P(
+        "Export aus OpenCaseLaw (CC0). Verbindlich ist allein der vom "
+        "erlassenden Gericht veröffentlichte Originaltext. Quellen-URL "
+        "siehe oben.", meta,
+    ))
+
+    buf = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buf, pagesize=A4,
+        leftMargin=2.5 * cm, rightMargin=2.5 * cm,
+        topMargin=2.5 * cm, bottomMargin=2.5 * cm,
+        title=cite_de or _short_title(decision),
+        author=decision.get("court_name") or decision.get("court") or "OpenCaseLaw",
+        subject="Swiss Case Law",
+    )
+    doc.build(story)
+    return buf.getvalue(), "application/pdf", suggested_name
 
 
 def _render_decision_txt(decision: dict, paragraphs: list[dict] | None) \

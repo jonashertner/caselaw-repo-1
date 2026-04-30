@@ -161,11 +161,10 @@ def _render_decision(row: sqlite3.Row) -> str:
     meta_desc = _truncate(re.sub(r"\s+", " ", clean_regeste).strip(), 160)
 
     # Page title
-    page_title = f"{docket} — {court_name}"
     if title:
-        page_title = f"{docket} — {_truncate(title, 60)} | OpenCaseLaw"
+        page_title = f"{docket}, {_truncate(title, 60)} | OpenCaseLaw"
     else:
-        page_title = f"{docket} — {court_name} | OpenCaseLaw"
+        page_title = f"{docket}, {court_name} | OpenCaseLaw"
 
     canonical = f"{BASE_URL}/entscheid/{did}"
 
@@ -280,52 +279,85 @@ def _render_decision(row: sqlite3.Row) -> str:
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="{_esc(canonical)}">
 <meta property="og:type" content="article">
-<meta property="og:title" content="{_esc(docket)} — {_esc(court_name)}">
+<meta property="og:title" content="{_esc(docket)}, {_esc(court_name)}">
 <meta property="og:description" content="{_esc(meta_desc)}">
 <meta property="og:url" content="{_esc(canonical)}">
 <meta property="og:site_name" content="OpenCaseLaw.ch">
 <meta property="og:locale" content="{_esc(language)}_CH">
 <script type="application/ld+json">{schema_str}</script>
 <style>
-    body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-           max-width: 800px; margin: 0 auto; padding: 1rem; line-height: 1.6;
-           color: #1a1a1a; background: #fff; }}
-    h1 {{ font-size: 1.5rem; margin-bottom: 0.25rem; }}
-    .meta {{ color: #555; font-size: 0.9rem; margin-bottom: 1rem; }}
-    .meta span {{ margin-right: 1rem; }}
-    .regeste {{ background: #f8f8f8; padding: 1rem; border-left: 3px solid #c00;
-                margin: 1rem 0; font-size: 0.95rem; }}
+    html {{ background: #fff; }}
+    body {{
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 12pt;
+        line-height: 1.2;
+        max-width: 720px;
+        margin: 4rem auto 6rem;
+        padding: 0 2rem;
+        color: #000;
+        background: #fff;
+        font-feature-settings: "kern" 1, "liga" 1;
+        -webkit-font-smoothing: antialiased;
+    }}
+    a {{ color: inherit; text-decoration: underline; text-underline-offset: 2px; }}
+    a:hover {{ text-decoration-thickness: 2px; }}
+    nav {{ font-size: 10.5pt; margin-bottom: 3rem; }}
+    nav .sep {{ margin: 0 0.5em; }}
+    h1 {{
+        font-size: 18pt;
+        font-weight: bold;
+        line-height: 1.2;
+        margin: 0 0 0.4rem 0;
+        letter-spacing: -0.005em;
+    }}
+    .subtitle {{ font-size: 12pt; font-style: italic; margin: 0 0 1.6rem 0; line-height: 1.2; }}
+    .meta {{ font-size: 11pt; margin: 0 0 2.4rem 0; }}
+    .meta span + span {{ margin-left: 1.5em; }}
+    h2 {{ font-size: 13pt; font-weight: bold; margin: 2.4rem 0 0.6rem 0; line-height: 1.2; }}
+    .regeste {{ margin: 0 0 2rem 0; font-size: 12pt; line-height: 1.2; }}
     .regeste p {{ margin: 0.5rem 0; }}
-    .links {{ margin: 1rem 0; }}
-    .links a {{ margin-right: 1rem; color: #0066cc; }}
-    .fulltext {{ white-space: pre-wrap; font-size: 0.85rem; color: #333;
-                 max-height: 600px; overflow-y: auto; padding: 1rem;
-                 background: #fafafa; border: 1px solid #eee; }}
-    details summary {{ cursor: pointer; color: #0066cc; margin: 1rem 0; }}
-    .structured {{ margin: 1rem 0; }}
-    .structured .section-body {{ white-space: pre-wrap; padding: 0.75rem 1rem;
-                                   background: #fafafa; border-left: 2px solid #ddd;
-                                   margin: 0.5rem 0; font-size: 0.9rem; }}
-    .erwaegungen .erw {{ padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0;
-                         font-size: 0.9rem; }}
-    .erwaegungen .e-num {{ color: #c00; font-weight: 600; text-decoration: none;
-                           margin-right: 0.5rem; }}
-    .erwaegungen .e-text {{ white-space: pre-wrap; }}
-    .dispositiv-orders {{ background: #fff8e6; border-left: 3px solid #d80;
-                          padding: 0.75rem 1rem 0.75rem 2.5rem;
-                          margin: 0.5rem 0; }}
-    .dispositiv-orders li {{ margin: 0.4rem 0; }}
-    .count {{ color: #888; font-weight: normal; font-size: 0.85em; }}
-    nav {{ font-size: 0.85rem; margin-bottom: 1rem; }}
-    nav a {{ color: #0066cc; text-decoration: none; }}
-    footer {{ margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #eee;
-              font-size: 0.8rem; color: #888; }}
+    .links {{ margin: 1.6rem 0; font-size: 11pt; }}
+    .links a {{ margin-right: 1.4em; }}
+    .links.exports {{ margin-top: 0.8rem; font-size: 10.5pt; }}
+    details {{ margin: 1.6rem 0; }}
+    details summary {{
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 12pt;
+        margin: 0;
+        padding: 0;
+    }}
+    details summary .count {{ font-weight: normal; }}
+    .structured {{ margin: 0; }}
+    .section-body {{ white-space: pre-wrap; margin: 0.8rem 0 0 0; }}
+    .erwaegungen {{ margin: 0.8rem 0 0 0; }}
+    .erw {{ padding: 0.4rem 0; }}
+    .erw .e-num {{ font-weight: bold; margin-right: 0.5em; text-decoration: none; }}
+    .erw .e-num:hover {{ text-decoration: underline; }}
+    .erw .e-text {{ white-space: pre-wrap; }}
+    .dispositiv-orders {{ margin: 0.8rem 0 0 1.5em; padding: 0; list-style: decimal; }}
+    .dispositiv-orders li {{ margin: 0.5rem 0; padding-left: 0.4em; }}
+    .fulltext {{
+        white-space: pre-wrap;
+        font-size: 12pt;
+        line-height: 1.2;
+        margin: 0.8rem 0 0 0;
+        padding: 0;
+        background: none;
+    }}
+    footer {{ margin-top: 4rem; font-size: 10.5pt; }}
+    footer p {{ margin: 0.6rem 0; }}
+    @media (max-width: 600px) {{
+        body {{ margin: 2rem auto 4rem; padding: 0 1.2rem; font-size: 11.5pt; }}
+        h1 {{ font-size: 16pt; }}
+        .meta span + span {{ margin-left: 0; display: block; margin-top: 0.2em; }}
+    }}
 </style>
 </head>
 <body>
-<nav><a href="https://opencaselaw.ch">OpenCaseLaw.ch</a> &rsaquo; <a href="{_esc(canonical)}">{_esc(docket)}</a></nav>
+<nav><a href="https://opencaselaw.ch">OpenCaseLaw.ch</a><span class="sep">/</span><a href="{_esc(canonical)}">{_esc(docket)}</a></nav>
 <h1>{_esc(docket)}</h1>
-{f'<p style="color:#555;font-size:0.95rem">{_esc(title)}</p>' if title else ''}
+{f'<p class="subtitle">{_esc(title)}</p>' if title else ''}
 <div class="meta">
     <span>{_esc(court_name)}</span>
     <span>{_esc(date)}</span>
@@ -335,23 +367,24 @@ def _render_decision(row: sqlite3.Row) -> str:
 {f'<div class="regeste">{regeste_html}</div>' if regeste_html else ''}
 <div class="links">
     {f'<a href="{_esc(source_url)}" rel="noopener">Originalquelle</a>' if source_url else ''}
-    {f'<a href="{_esc(pdf_url)}" rel="noopener">PDF</a>' if pdf_url else ''}
-    <a href="https://opencaselaw.ch">Alle 966'000+ Entscheide durchsuchen</a>
+    {f'<a href="{_esc(pdf_url)}" rel="noopener">Original-PDF</a>' if pdf_url else ''}
+    <a href="https://opencaselaw.ch">Alle Entscheide durchsuchen</a>
 </div>
-<div class="links" style="font-size:0.85rem;color:#666">
+<div class="links exports">
     Export:
-    <a href="/api/decisions/{_esc(did)}/export.docx" rel="nofollow">Word (.docx)</a>
+    <a href="/api/decisions/{_esc(did)}/export.docx" rel="nofollow">Word</a>
+    <a href="/api/decisions/{_esc(did)}/export.pdf" rel="nofollow">PDF</a>
     <a href="/api/decisions/{_esc(did)}/export.bib" rel="nofollow">BibTeX</a>
-    <a href="/api/decisions/{_esc(did)}/export.ris" rel="nofollow">RIS (Zotero)</a>
+    <a href="/api/decisions/{_esc(did)}/export.ris" rel="nofollow">RIS</a>
 </div>
 {structured_html}
 {text_excerpt}
 <footer>
-    <p>OpenCaseLaw.ch — Offener Datensatz Schweizer Rechtsprechung.
-       962'000+ Entscheide aller Bundesgerichte und 26 Kantone.
-       <a href="https://opencaselaw.ch">Suche</a> |
-       <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">Download</a> |
-       <a href="https://mcp.opencaselaw.ch/api/docs">API</a></p>
+    <p>OpenCaseLaw.ch. Offener Datensatz Schweizer Rechtsprechung.
+       Alle Bundesgerichte und 26 Kantone.</p>
+    <p><a href="https://opencaselaw.ch">Suche</a>
+       <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" style="margin-left:1.4em">Download</a>
+       <a href="https://mcp.opencaselaw.ch/api/docs" style="margin-left:1.4em">API</a></p>
 </footer>
 </body>
 </html>"""
@@ -366,7 +399,19 @@ def _render_404(decision_id: str) -> str:
 <meta name="robots" content="noindex">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
 <style>
-    body {{ font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }}
+    body {{
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 12pt;
+        line-height: 1.2;
+        max-width: 600px;
+        margin: 4rem auto;
+        padding: 0 2rem;
+        color: #000;
+        background: #fff;
+    }}
+    h1 {{ font-size: 18pt; font-weight: bold; margin: 0 0 1rem 0; line-height: 1.2; }}
+    code {{ font-family: 'Courier New', Courier, monospace; font-size: 11pt; }}
+    a {{ color: inherit; text-decoration: underline; text-underline-offset: 2px; }}
 </style>
 </head>
 <body>

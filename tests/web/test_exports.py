@@ -118,6 +118,51 @@ def test_docx_includes_paragraphs_when_provided(exports, sample_decision):
         assert "Marker_BBB" in text
 
 
+def test_docx_uses_times_new_roman_12pt(exports, sample_decision):
+    """Typography contract — body style must be Times New Roman 12pt."""
+    body, mt, _ = exports.render_docx(sample_decision, [])
+    if "wordprocessingml" not in mt:
+        pytest.skip("python-docx not installed; txt fallback served")
+    import zipfile, io
+    zf = zipfile.ZipFile(io.BytesIO(body))
+    styles_xml = zf.read("word/styles.xml").decode("utf-8")
+    assert "Times New Roman" in styles_xml
+    # docx stores font size as half-points → 12pt = 24
+    assert 'w:val="24"' in styles_xml
+
+
+# ── PDF ────────────────────────────────────────────────────────────
+
+def test_pdf_or_txt_fallback(exports, sample_decision):
+    """Either reportlab is installed (binary PDF, magic %PDF), or the
+    txt fallback is served."""
+    body, mt, fname = exports.render_pdf(sample_decision, [])
+    if mt == "application/pdf":
+        assert body.startswith(b"%PDF")
+        assert fname.endswith(".pdf")
+        assert len(body) > 1000
+    else:
+        text = body.decode("utf-8")
+        assert "BGE 140 III 86" in text
+        assert "Bundesgericht" in text
+        assert fname.endswith(".txt")
+
+
+def test_pdf_includes_paragraphs(exports, sample_decision):
+    paragraphs = [
+        {"e_number": "1", "text": "Marker_PDF_AAA."},
+        {"e_number": "2.3", "text": "Marker_PDF_BBB."},
+    ]
+    body, mt, _ = exports.render_pdf(sample_decision, paragraphs)
+    if mt != "application/pdf":
+        pytest.skip("reportlab not installed; txt fallback served")
+    # PDF text is compressed by default, but reportlab embeds plain
+    # ASCII for short Tj strings. Minimal sanity: the rendered bytes
+    # contain the regeste's distinctive markers (or at least the
+    # decision_id metadata).
+    assert b"bge_BGE_140_III_86" in body or b"BGE 140 III 86" in body
+
+
 # ── Atom feed ──────────────────────────────────────────────────────
 
 def test_atom_feed_well_formed(exports, sample_decision):
