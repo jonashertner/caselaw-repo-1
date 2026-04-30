@@ -372,6 +372,37 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
     return deleted
 
 
+def _dedup_egmr_in_bge(conn: sqlite3.Connection) -> int:
+    """König audit #1: drop ECHR/CEDH cases that the BGE scraper picked up.
+
+    Some BGE decisions cross-reference Strasbourg judgments and the BGE scraper
+    follows the link, ingesting the EGMR case under court='bge' with a
+    cedh.coe.int URL. The dedicated bge_egmr scraper also ingests the same case
+    under court='bge_egmr'. This produces 474 duplicate pairs (pre-fix).
+
+    Yesterday's audit applied a one-off DELETE that didn't survive the next
+    rebuild because the source JSONL still contains the misclassified rows.
+    This pass codifies the cleanup so the duplicates don't recur every nightly.
+
+    Conservative: only deletes a bge row when the matching bge_egmr row exists
+    (matched on identical source_url). Archive-unique entries are preserved.
+    """
+    cur = conn.execute(
+        """DELETE FROM decisions
+           WHERE court = 'bge'
+             AND source_url LIKE '%cedh%'
+             AND EXISTS (
+               SELECT 1 FROM decisions d2
+               WHERE d2.court = 'bge_egmr'
+                 AND d2.source_url = decisions.source_url
+             )""",
+    )
+    deleted = cur.rowcount
+    if deleted:
+        conn.commit()
+    return deleted
+
+
 def _remove_stubs(conn: sqlite3.Connection) -> int:
     """Remove decisions that are completely empty (no text AND no regeste).
 
@@ -755,6 +786,11 @@ def build_database(
         cross_deduped = _cross_court_dedup(conn)
         if cross_deduped:
             logger.info(f"  Removed {cross_deduped} cross-court duplicates")
+
+        logger.info("EGMR dedup (König #1: bge with cedh URL covered by bge_egmr)...")
+        egmr_deduped = _dedup_egmr_in_bge(conn)
+        if egmr_deduped:
+            logger.info(f"  Removed {egmr_deduped} bge+cedh duplicates (canonical entries remain in bge_egmr)")
 
         logger.info("Removing stub decisions (text <10 AND regeste <10 chars)...")
         stubs_removed = _remove_stubs(conn)
