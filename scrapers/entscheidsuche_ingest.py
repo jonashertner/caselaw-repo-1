@@ -109,7 +109,16 @@ SPIDER_MAP = {
 
     # ── St. Gallen ──
     "SG_Gerichte":      ("sg_gerichte",  "SG", "SG Gerichte",   "cantonal"),
-    "SG_Publikationen": ("sg_publikationen", "SG", "SG Publikationen", "cantonal"),
+    # SG_Publikationen retired 2026-04-30: root cause of the SG merge
+    # bug.  es_sg_publikationen.jsonl wrote 12,187 rows under generic
+    # court='sg_publikationen', and processes BEFORE direct
+    # sg_publikationen.jsonl alphabetically.  For SG chambers with high
+    # overlap (sg_verwaltungsrekurskommission, sg_kantonsgericht,
+    # sg_handelsgericht), the es_ rows won the dedup and direct's
+    # chamber-specific rows were IGNOREd at INSERT time.  Result was
+    # ~1,450 rows mis-court-coded (89-92% loss in those chambers).
+    # Retiring es_sg_publikationen lets direct's chamber labels stand.
+    # See memory/sg_merge_anomaly_2026_04_29.md.
 
     # ── Solothurn ──
     # SO_Omni retired 2026-04-29 (Day 2 V2): 9,033 direct vs 8,845 es,
