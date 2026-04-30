@@ -257,9 +257,14 @@ After today's normalisations + recovery passes, the following per-court NULL
 - **Set decision_date from publication_date when present**: production audit
   showed 0 mkg/ti/hudoc rows have publication_date populated — no fallback
   source available.
+- **Tail-text mining for mkg**: dry-run recovered 203 of 542 (37.5%) but
+  spot-check showed **~60% of those were cited Bundesratsbeschluss dates,
+  event dates, or different cited cases — NOT the decision date**. Wrong
+  dates are worse than NULL for date-range filters. Skipped.
 - **Force-extract from full_text for ti_gerichte**: text genuinely truncated
   (median 1,271 chars). The decision body — and its date — never made it
-  through the scraper's PDF extraction.
+  through the scraper's PDF extraction. Solved instead by re-fetching
+  source URLs from sentenze.ti.ch (98.5% recovery).
 
 These residuals are tracked in `pending_backlog_2026_04_30.md` for future
 sessions targeting per-court scraper PDF re-extraction.
