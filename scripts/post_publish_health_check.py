@@ -233,8 +233,40 @@ def check_date_plausibility() -> bool:
     return True
 
 
+def check_data_quality_normalisations() -> bool:
+    """König audit 2026-04-30 follow-up — verify post-normalisation cleanliness:
+
+    - docket_number whitespace == 0  (target: scraper-side .strip() + build_fts5
+      _normalize_dockets() makes this auto-correcting)
+    - year-0000 decision_date == 0  (build_fts5 _normalize_dates() converts to NULL)
+    - decision_date > today + 365d == 0  (obvious typos cleared by build_fts5)
+    """
+    banner("[8] Data-quality normalisations (König audit follow-up)")
+    from datetime import date, timedelta
+    c = sqlite3.connect(DB).cursor()
+
+    n_ws = c.execute(
+        "SELECT COUNT(*) FROM decisions WHERE docket_number != trim(docket_number)"
+    ).fetchone()[0]
+    n_zero = c.execute(
+        "SELECT COUNT(*) FROM decisions WHERE decision_date LIKE '0000%'"
+    ).fetchone()[0]
+    cutoff = (date.today() + timedelta(days=365)).isoformat()
+    n_far_future = c.execute(
+        "SELECT COUNT(*) FROM decisions WHERE decision_date > ?", (cutoff,)
+    ).fetchone()[0]
+
+    print(f"  whitespace docket_number:    {n_ws:,}  (target 0)")
+    print(f"  year-0000 dates:             {n_zero:,}  (target 0)")
+    print(f"  date > today+365d:           {n_far_future:,}  (target 0)")
+
+    ok = (n_ws == 0) and (n_zero == 0) and (n_far_future == 0)
+    print(f"  {'✓' if ok else '✗'} normalisations {'clean' if ok else 'incomplete'}")
+    return ok
+
+
 def check_court_top10() -> bool:
-    banner("[8] Top-10 courts by row count (sanity)")
+    banner("[9] Top-10 courts by row count (sanity)")
     c = sqlite3.connect(DB).cursor()
     print(f"  {'court':40s} {'count':>10s}")
     for court, n in c.execute(
@@ -257,6 +289,7 @@ def main() -> int:
     results.append(("EGMR cleanup", check_egmr_clean()))
     results.append(("cantonal Erwägungen", check_cantonal_erwaegungen()))
     results.append(("date plausibility", check_date_plausibility()))
+    results.append(("data normalisations", check_data_quality_normalisations()))
     check_court_top10()  # informational only
 
     banner("SUMMARY")

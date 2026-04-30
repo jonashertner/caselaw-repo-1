@@ -372,6 +372,56 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
     return deleted
 
 
+def _normalize_dockets(conn: sqlite3.Connection) -> int:
+    """König audit 2026-04-30: strip leading/trailing whitespace from docket_number.
+
+    Found ~21,000 rows with whitespace, concentrated in zh_verwaltungsgericht
+    (11,359), ch_vb (6,721), vd_findinfo (2,705), edoeb (45), sh_obergericht
+    (10), and several AG chambers. Whitespace docket_numbers cause exact-match
+    queries to fail (e.g. ' AEG.2018.00004' won't match query 'AEG.2018.00004').
+
+    Codifies the one-shot fix applied 2026-04-30 so future scraper regressions
+    are auto-corrected on every rebuild.
+    """
+    cur = conn.execute(
+        "UPDATE decisions SET docket_number = trim(docket_number) "
+        "WHERE docket_number != trim(docket_number)"
+    )
+    fixed = cur.rowcount
+    if fixed:
+        conn.commit()
+    return fixed
+
+
+def _normalize_dates(conn: sqlite3.Connection) -> tuple[int, int]:
+    """König audit 2026-04-30: sanitise invalid decision_date values.
+
+    - year-0000 markers ("0000-..." pattern, mostly from gr_gerichte's scraper
+      default when the date can't be extracted) → NULL. 796 rows in 2026-04-30.
+    - obvious future typos (> today + 365d, e.g. zg_obergericht's "2026-11-01"
+      Wahlausschreibung mis-dated) → NULL.
+
+    Soft tolerance for near-future dates (< 365d) preserves legitimate pending
+    publications and hearing schedules.
+    """
+    import datetime as _dt
+    cur1 = conn.execute(
+        "UPDATE decisions SET decision_date = NULL WHERE decision_date LIKE '0000%'"
+    )
+    n_zero = cur1.rowcount
+
+    cutoff = (_dt.date.today() + _dt.timedelta(days=365)).isoformat()
+    cur2 = conn.execute(
+        "UPDATE decisions SET decision_date = NULL WHERE decision_date > ?",
+        (cutoff,),
+    )
+    n_future = cur2.rowcount
+
+    if n_zero or n_future:
+        conn.commit()
+    return n_zero, n_future
+
+
 def _dedup_egmr_in_bge(conn: sqlite3.Connection) -> int:
     """König audit #1: drop ECHR/CEDH cases that the BGE scraper picked up.
 
@@ -795,6 +845,14 @@ def build_database(
         egmr_deduped = _dedup_egmr_in_bge(conn)
         if egmr_deduped:
             logger.info(f"  Removed {egmr_deduped} bge+cedh duplicates (canonical entries remain in bge_egmr)")
+
+        logger.info("Normalising docket whitespace + invalid dates (König audit 2026-04-30)...")
+        ws_fixed = _normalize_dockets(conn)
+        if ws_fixed:
+            logger.info(f"  Trimmed whitespace from {ws_fixed} docket_numbers")
+        n_zero, n_future = _normalize_dates(conn)
+        if n_zero or n_future:
+            logger.info(f"  Cleared {n_zero} year-0000 dates + {n_future} far-future (>today+365d) dates → NULL")
 
         logger.info("Removing stub decisions (text <10 AND regeste <10 chars)...")
         stubs_removed = _remove_stubs(conn)
