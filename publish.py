@@ -717,6 +717,59 @@ def _run_parallel_post_build(deferred: list, args, manual_step_mode: bool) -> di
     return results
 
 
+def step_5c_quality_gate(dry_run: bool = False) -> bool:
+    """Step 5c: Pre-push QC gate.
+
+    Runs `python -m quality.cli run --critical-only --gate` against the
+    just-built decisions.db. The CLI exits 1 iff any CRITICAL check
+    failed; that propagates here as `return False`, which marks Step 5c
+    as failed and (because 5c is in CRITICAL_STEPS) skips the guarded
+    Step 6 git pushes — so a regression never reaches users.
+
+    The gate ALSO writes the full report to docs/quality.json (for the
+    public dashboard) and to quality/reports/latest.json + dated
+    archive (for the per-run audit trail).
+
+    Costs ~1-2 minutes on the production DB. Runs only the CRITICAL
+    subset; warnings + drift detection happen in Step 6c (background).
+    """
+    logger.info("Step 5c: Quality-control gate (block on CRITICAL regression)")
+    if dry_run:
+        logger.info("  [dry-run] would run quality.cli --critical-only --gate")
+        return True
+
+    docs_quality_json = DOCS_DIR / "quality.json"
+
+    cmd = [
+        sys.executable, "-m", "quality.cli", "run",
+        "--critical-only", "--gate",
+        "--db", str(REPO_DIR / "output" / "decisions.db"),
+        "--output", str(docs_quality_json),
+    ]
+    ok = run_cmd(cmd, "QC gate", dry_run, timeout=600)
+    if not ok:
+        # Send a focused alert with the failing-check names so the
+        # operator knows what triggered the block.
+        try:
+            import json as _json
+            if docs_quality_json.exists():
+                payload = _json.loads(docs_quality_json.read_text())
+                fails = [
+                    r["name"] for r in payload.get("results", [])
+                    if r.get("severity") == "critical" and not r.get("passed")
+                ]
+                _notify(
+                    "Publish BLOCKED — QC gate failed",
+                    "Critical: " + ", ".join(fails[:5])
+                    + (f" (+{len(fails)-5} more)" if len(fails) > 5 else "")
+                    + "\nGit push skipped. Investigate then re-run.",
+                    priority="urgent",
+                )
+        except Exception:
+            logger.exception("(failed to format QC alert)")
+    return ok
+
+
 def step_6b_health_check(dry_run: bool = False) -> bool:
     """Step 6b: Auto-validate the publish output.
 
@@ -783,6 +836,7 @@ STEPS = [
     # ── Fast publish: site shows today's date immediately ──
     ("5a", "Generate Stats (early)", step_5_generate_stats),
     ("5b", "Generate RSS Feeds", step_5b_generate_feeds),
+    ("5c", "Quality-Control Gate", step_5c_quality_gate),
     ("6a", "Git Push (early)", step_6_git_push),
     # ── Slow tier: enrichment, graph, materialien, export ──
     ("2d", "Quality Enrichment", step_2d_enrich_quality),
@@ -850,9 +904,11 @@ def main():
     manual_step_mode = args.step is not None
 
     # Steps 4 (HF upload) and 6/6a (git push) must not run if critical steps failed,
-    # because step 4 prunes remote parquet based on local state.
-    CRITICAL_STEPS = {2, 3}
-    GUARDED_STEPS = {4, 6}
+    # because step 4 prunes remote parquet based on local state. Step 5c (QC gate)
+    # blocks 6/6a when a CRITICAL data-quality regression is detected — ensuring
+    # broken data never reaches users on opencaselaw.ch.
+    CRITICAL_STEPS = {2, 3, "5c"}
+    GUARDED_STEPS = {4, 6, "6a"}
     # Non-fatal steps: still logged as FAILED in summary, but don't trigger
     # systemd exit-code=1. These depend on flaky external sources (e.g. sav-fsa.ch
     # PDFs) and their failure doesn't degrade the published dataset.

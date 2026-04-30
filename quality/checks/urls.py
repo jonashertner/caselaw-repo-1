@@ -73,19 +73,18 @@ def check_http_when_https_available(conn: sqlite3.Connection, **_) -> CheckResul
 
 
 def check_decision_id_url_safe(conn: sqlite3.Connection, **_) -> CheckResult:
-    """decision_id is used in /entscheid/{decision_id} URLs. Spaces or
-    URL-unsafe chars break routing.
+    """decision_id is used in /entscheid/{decision_id:path} URLs.
 
-    Excludes the slash (/) since dockets like 4A_321/2013 legitimately
-    contain it; the route uses {decision_id:path}.
+    The route uses :path-converter so `/` is permitted (legit dockets
+    like 4A_321/2013 contain it). Real URL-breakers are characters
+    that change the URL's structure: whitespace, `?` (query string),
+    `#` (fragment), `&` (param sep). Those must be 0.
     """
-    # SQLite REGEXP isn't always loaded; use NOT GLOB pattern to detect
-    # URL-unsafe chars: spaces, ?, #, &, plus the slash which is OK in
-    # path-style routes.
     n = conn.execute(
         "SELECT COUNT(*) FROM decisions "
-        "WHERE decision_id LIKE '% %' OR decision_id LIKE '%?%' "
-        "OR decision_id LIKE '%#%' OR decision_id LIKE '%&%'"
+        "WHERE decision_id LIKE '% %' OR decision_id LIKE '%' || char(9) || '%' "
+        "OR decision_id LIKE '%?%' OR decision_id LIKE '%#%' "
+        "OR decision_id LIKE '%&%'"
     ).fetchone()[0]
     sample = [
         dict(r) for r in conn.execute(
@@ -100,9 +99,10 @@ def check_decision_id_url_safe(conn: sqlite3.Connection, **_) -> CheckResult:
         passed=(n == 0),
         metric_value=n,
         threshold=0,
-        message=f"{n} decision_ids contain URL-unsafe characters" if n
-                else "all decision_ids are URL-safe",
+        message=f"{n} decision_ids contain URL-breaking characters" if n
+                else "all decision_ids URL-safe",
         sample_rows=sample,
-        fix_advice="decision_ids appear in /entscheid/{id} URLs; sanitise at "
-                   "scraper time",
+        fix_advice="decision_ids appear in /entscheid/{id:path} URLs; "
+                   "URL-breaking chars (space, tab, ?, #, &) must be sanitised "
+                   "at scraper time. Slash (/) is OK.",
     )

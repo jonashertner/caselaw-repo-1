@@ -54,12 +54,18 @@ def compute_band(values: list[float], k: float = K_MAD) -> DriftBand | None:
 
 def detect(
     check_name: str, court: str | None, current_value: float,
-    metric: str = "value", days: int = 7,
+    metric: str = "value", days: int = 7, db=None,
 ) -> tuple[bool, DriftBand | None]:
     """Return (is_drift, band). is_drift is True iff current_value falls
     outside median ± k×MAD over the prior `days` days. band is None when
-    insufficient history exists (always returns False in that case)."""
-    values = historical_values(check_name, court, metric, days)
+    insufficient history exists (always returns False in that case).
+
+    `db` defaults to `baseline.HISTORY_DB` at call time (so test
+    monkeypatching of the module attr works)."""
+    from quality import baseline as _baseline
+    if db is None:
+        db = _baseline.HISTORY_DB
+    values = historical_values(check_name, court, metric, days, db=db)
     if not values:
         return False, None
     band = compute_band(values)

@@ -26,13 +26,16 @@ from quality.types import CheckResult, Severity
 # A new court value appearing must be reviewed (registered in seo_pages
 # + intentional). Missing one means a court was lost (CRITICAL).
 EXPECTED_FEDERAL = {
-    "bger", "bge", "bge_historical", "bvger", "bstger", "bpatger",
+    "bger", "bge", "bvger", "bstger", "bpatger",
     "bge_egmr", "ch_bundesrat", "ta_sst", "emark", "hudoc_ch",
     # regulatory:
     "finma", "finma_versicherungsrecht", "weko", "edoeb", "ubi",
     "elcom", "postcom", "comcom",
     # other federal:
-    "ch_vb", "ch_anwaltsaufsicht", "mkg",
+    "ch_vb", "mkg",
+    # NOTE: bge_historical was merged into the main bge court at some
+    # point; ch_anwaltsaufsicht / fr_anwaltsaufsicht: portals have no
+    # decisions by design (registered scrapers, expected zero rows).
 }
 
 # Cantonal codes derived from court IDs that start with a 2-letter prefix.

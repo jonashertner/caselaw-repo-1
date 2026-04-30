@@ -58,9 +58,10 @@ def check_null_language_pct(conn: sqlite3.Connection, **_) -> CheckResult:
 
 
 def check_language_distribution_plausible(conn: sqlite3.Connection, **_) -> CheckResult:
-    """Swiss case-law is overwhelmingly DE (≈ 70%), with FR ≈ 22%,
-    IT ≈ 6%, RM ≈ 0.1%. A nightly with 0% German would mean DE-source
-    courts failed to import."""
+    """Swiss case-law has roughly equal DE+FR contributions (~46% / ~45%
+    each at 2026-04-30, with IT ~8%, RM <0.01%). A nightly where any of
+    DE / FR drops below 30% means a multi-court import failure (e.g.
+    every German cantonal scraper crashed)."""
     rows = dict(conn.execute(
         "SELECT language, COUNT(*) FROM decisions "
         "WHERE language IN ('de','fr','it','rm') GROUP BY language"
@@ -77,17 +78,20 @@ def check_language_distribution_plausible(conn: sqlite3.Connection, **_) -> Chec
         )
     de_pct = 100 * rows.get("de", 0) / n_total
     fr_pct = 100 * rows.get("fr", 0) / n_total
-    ok = de_pct >= 50 and fr_pct >= 10
+    it_pct = 100 * rows.get("it", 0) / n_total
+    # Both DE and FR must each contribute ≥30% (catastrophic-import-loss
+    # threshold). IT must be at least 3% (TI gerichte alone has ~58k).
+    ok = de_pct >= 30 and fr_pct >= 30 and it_pct >= 3
     return CheckResult(
         name="languages.distribution_plausible",
         severity=Severity.CRITICAL,
         passed=ok,
         metric_value=de_pct,
-        threshold=50.0,
+        threshold=30.0,
         message=f"DE {de_pct:.1f}% / FR {fr_pct:.1f}% / "
-                f"IT {100*rows.get('it',0)/n_total:.1f}% / "
-                f"RM {100*rows.get('rm',0)/n_total:.2f}%",
+                f"IT {it_pct:.1f}% / RM "
+                f"{100*rows.get('rm',0)/n_total:.2f}%",
         extra=rows,
-        fix_advice="if DE < 50%, the German-source scrapers (BGer, BVGer, "
-                   "ZH, BE) likely failed; check publish.py Step 1 logs",
+        fix_advice="DE and FR each need ≥30%, IT ≥3%; under-floor means a "
+                   "language-block of scrapers crashed in publish.py Step 1",
     )

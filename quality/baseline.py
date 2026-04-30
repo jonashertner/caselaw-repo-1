@@ -88,9 +88,14 @@ def append_measurements(report: CheckRunReport, db: Path | str = HISTORY_DB) -> 
 
 def historical_values(
     check_name: str, court: str | None, metric: str = "value",
-    days: int = 7, db: Path | str = HISTORY_DB,
+    days: int = 7, db: Path | str | None = None,
 ) -> list[float]:
-    """Return values from the last `days` days for the given key."""
+    """Return values from the last `days` days for the given key.
+
+    `db` defaults to the module-level `HISTORY_DB` at call time so
+    test monkeypatching works."""
+    if db is None:
+        db = HISTORY_DB
     if not Path(db).exists():
         return []
     conn = _connect(db)
