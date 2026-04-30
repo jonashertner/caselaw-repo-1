@@ -541,6 +541,28 @@ def step_5_generate_stats(dry_run: bool = False) -> bool:
     )
 
 
+def step_5b_generate_feeds(dry_run: bool = False) -> bool:
+    """Step 5b: Generate RSS feeds for the dashboard.
+
+    Static RSS 2.0 XML files written to docs/feed.xml + docs/feeds/*.xml,
+    based on the latest decisions in decisions.db. Reads decisions.db with
+    immutable=1 (no lock contention with build_fts5 / 2d / 2e).
+    """
+    logger.info("Step 5b: Generate RSS feeds")
+    script = REPO_DIR / "generate_feeds.py"
+    if not script.exists():
+        logger.warning("  generate_feeds.py not found, skipping")
+        return True
+    return run_cmd(
+        [sys.executable, str(script),
+         "--db", str(DB_PATH),
+         "--out", str(DOCS_DIR)],
+        "Generate RSS feeds",
+        dry_run,
+        timeout=300,
+    )
+
+
 def step_7_publish_delta(dry_run: bool = False) -> bool:
     """Step 7: Publish daily delta (SQLite + parquet + manifest) to HuggingFace.
 
@@ -580,35 +602,43 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
 
 
 def step_6_git_push(dry_run: bool = False) -> bool:
-    """Step 6: Git commit + push docs/stats.json."""
-    logger.info("Step 6: Git commit + push stats.json")
+    """Step 6: Git commit + push docs/stats.json + docs/feed.xml + docs/feeds/."""
+    logger.info("Step 6: Git commit + push stats.json + feeds")
 
     stats_file = DOCS_DIR / "stats.json"
     if not stats_file.exists():
         logger.warning("  docs/stats.json does not exist, skipping")
         return True
 
-    # Check if there are changes
+    # Files we publish on every cycle. The diff check below short-circuits
+    # if none of them changed.
+    paths = ["docs/stats.json", "docs/feed.xml", "docs/feeds"]
+
+    # Check if any of these have unstaged changes
     result = subprocess.run(
-        ["git", "diff", "--quiet", "docs/stats.json"],
+        ["git", "diff", "--quiet", "--", *paths],
         capture_output=True, cwd=str(REPO_DIR),
     )
-    if result.returncode == 0:
-        logger.info("  No changes to stats.json, skipping")
+    untracked = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard", "--", *paths],
+        capture_output=True, text=True, cwd=str(REPO_DIR),
+    )
+    if result.returncode == 0 and not untracked.stdout.strip():
+        logger.info("  No changes to stats.json / feeds, skipping")
         return True
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     if dry_run:
-        logger.info(f"  [dry-run] would commit and push stats.json ({today})")
+        logger.info(f"  [dry-run] would commit and push stats + feeds ({today})")
         return True
 
-    ok = run_cmd(["git", "add", "docs/stats.json"], "git add", dry_run)
+    ok = run_cmd(["git", "add", *paths], "git add", dry_run)
     if not ok:
         return False
 
     ok = run_cmd(
-        ["git", "commit", "-m", f"Update stats.json ({today})"],
+        ["git", "commit", "-m", f"Update stats.json + feeds ({today})"],
         "git commit",
         dry_run,
     )
@@ -646,6 +676,7 @@ STEPS = [
     (2, "Build FTS5", step_2_build_fts5),
     # ── Fast publish: site shows today's date immediately ──
     ("5a", "Generate Stats (early)", step_5_generate_stats),
+    ("5b", "Generate RSS Feeds", step_5b_generate_feeds),
     ("6a", "Git Push (early)", step_6_git_push),
     # ── Slow tier: enrichment, graph, materialien, export ──
     ("2d", "Quality Enrichment", step_2d_enrich_quality),
