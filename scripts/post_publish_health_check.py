@@ -136,15 +136,18 @@ def check_archive_shards() -> bool:
         # processes direct shards first; archive shards' duplicate decision_ids
         # are then INSERT-OR-IGNOREd. So a shard's own sample IDs may be absent
         # from the db while the canonical court (e.g. bstger for es_bstger.jsonl)
-        # still has the same logical decisions via direct. Only flag a true
-        # failure: 0 sample IDs land AND the canonical court has < 100 rows.
+        # still has the same logical decisions via direct. The smallest
+        # legitimate court (ta_sst) has only 49 rows, so we only flag a true
+        # failure when canonical court is LITERALLY EMPTY (zero rows) — that
+        # would mean both the direct shard and the archive contribution are
+        # missing, i.e. an actual ingest failure, not just a dedup outcome.
         if in_db == 0:
             canonical_court = shard.stem.replace("es_", "", 1)
             n_canonical = c.execute(
                 "SELECT COUNT(*) FROM decisions WHERE court=?",
                 (canonical_court,),
             ).fetchone()[0]
-            if n_canonical < 100:
+            if n_canonical == 0:
                 failed.append((shard.name, in_db, len(sample), canonical_court, n_canonical))
     print(f"  total archive shards: {len(shards)}")
     if not failed:
