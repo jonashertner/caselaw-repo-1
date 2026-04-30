@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import sqlite3
+import urllib.parse
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from email.utils import format_datetime
@@ -102,7 +103,11 @@ def make_item(row: dict) -> ET.Element:
     ET.SubElement(item, "title").text = title
 
     decision_id = row["decision_id"]
-    ET.SubElement(item, "link").text = f"{MCP_URL}/entscheid/{decision_id}"
+    # decision_ids may contain spaces or other URL-unsafe chars (cantonal data
+    # can carry the source docket-number verbatim). Encode the path component
+    # so RSS readers and HTTP clients don't choke.
+    safe_id = urllib.parse.quote(decision_id, safe="")
+    ET.SubElement(item, "link").text = f"{MCP_URL}/entscheid/{safe_id}"
 
     desc = (row.get("regeste") or "").strip()
     if not desc:
