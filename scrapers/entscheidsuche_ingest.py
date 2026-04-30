@@ -49,20 +49,20 @@ MIN_TEXT_LENGTH = 500
 
 SPIDER_MAP = {
     # ── Federal ──
-    # NOTE: 2026-04-29 retirement. The eight federal/regulatory feeds
+    # NOTE: 2026-04-29 SPIDER_MAP entries removed for the eight federal/
+    # regulatory feeds that duplicated direct-scraper canonical sources
     # (CH_BGE, CH_BGer, CH_BVGer, CH_BSTG, CH_BPatG, CH_Bundesrat,
-    # CH_EDOEB, CH_WEKO) all duplicated their direct-scraper
-    # canonical sources (scrapers/bge.py, bger.py, bvger.py, bstger.py,
-    # bpatger.py, ch_bundesrat.py, edoeb.py, weko.py).  The duplication
-    # was the root of the König-2026-04-29 EGMR double-coverage bug:
-    # entscheidsuche's CH_BGE feed mixes EGMR cedh-decisions in with
-    # ordinary BGE rows, and we were ingesting both paths.  Direct
-    # scrapers preserve the canonical issuing-court source_url, which
-    # matters for the verifiable-citation property of the corpus, so
-    # entscheidsuche federal feeds are now retired in favour of the
-    # canonical scrapers.  CH_VB (Eidgenössische Verwaltungsbehörden)
-    # is RETAINED until a direct scraper is built — it has no
-    # canonical equivalent yet.
+    # CH_EDOEB, CH_WEKO).  The es_<court>.jsonl shards are PRESERVED
+    # in output/decisions/ as a frozen historical archive — they
+    # contain decisions entscheidsuche crawled when the BGer/etc.
+    # sites exposed them; the canonical portals have since rotated
+    # some of them out of public access.  The architectural fix in
+    # build_fts5.py (commit 713afe3) ensures direct-shard rows always
+    # win the dedup, so the historical es shards only ADD decisions
+    # that have no canonical counterpart — no quality regression.
+    # The SPIDER_MAP omission means entscheidsuche's daily download
+    # won't refresh those JSONL files.  That's intentional: new
+    # federal decisions arrive via canonical scrapers.
     "CH_VB":        ("ch_vb",  "CH", "Eidg. Verwaltungsbehörden",        "federal"),
 
     # ── Zürich ──
