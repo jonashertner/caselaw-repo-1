@@ -195,6 +195,44 @@ def check_cantonal_erwaegungen() -> bool:
     return ok
 
 
+def check_date_plausibility() -> bool:
+    """Detect scraper date-parsing regressions: rows whose decision_date lies
+    more than a month in the future. Today (2026-04-30) we found 12 such
+    rows across fr_gerichte (11) and sz_gerichte (1) — German month-name
+    parse bug ("März" misread as Juni in one case). Catches that class
+    automatically going forward.
+
+    Tolerances:
+      ≤ 5 future-dated rows → OK (occasional benign typos / pending pubs)
+      6-50                  → WARN (logged, doesn't fail pipeline)
+      > 50                  → FAIL (alert via OnFailure)
+    """
+    banner("[7] Date-plausibility (no decision_date > today + 30 days)")
+    from datetime import date, timedelta
+    cutoff = (date.today() + timedelta(days=30)).isoformat()
+    c = sqlite3.connect(DB).cursor()
+    n = c.execute(
+        "SELECT COUNT(*) FROM decisions WHERE decision_date > ?", (cutoff,)
+    ).fetchone()[0]
+    print(f"  decisions with date > {cutoff}: {n}")
+    if n > 0:
+        # Show the offending courts (top 5)
+        for row in c.execute(
+            "SELECT court, COUNT(*) FROM decisions WHERE decision_date > ? "
+            "GROUP BY court ORDER BY 2 DESC LIMIT 5",
+            (cutoff,),
+        ):
+            print(f"    {row[0]:35s} {row[1]:>4d}")
+    if n > 50:
+        print(f"  ✗ {n} future-dated rows exceeds 50 — likely scraper regression")
+        return False
+    if n > 5:
+        print(f"  ⚠ {n} future-dated rows (5 < n ≤ 50; logged, not fatal)")
+        return True
+    print(f"  ✓ within tolerance (≤ 5)")
+    return True
+
+
 def check_court_top10() -> bool:
     banner("[7] Top-10 courts by row count (sanity)")
     c = sqlite3.connect(DB).cursor()
@@ -218,6 +256,7 @@ def main() -> int:
     results.append(("archive shards", check_archive_shards()))
     results.append(("EGMR cleanup", check_egmr_clean()))
     results.append(("cantonal Erwägungen", check_cantonal_erwaegungen()))
+    results.append(("date plausibility", check_date_plausibility()))
     check_court_top10()  # informational only
 
     banner("SUMMARY")
