@@ -393,6 +393,28 @@ def _normalize_dockets(conn: sqlite3.Connection) -> int:
     return fixed
 
 
+def _migrate_short_text_to_regeste(conn: sqlite3.Connection) -> int:
+    """König P7: short full_text values are often a regeste in the wrong field.
+
+    Pattern: rows where full_text is 10-100 chars (typically Art./§ references
+    + a one-line topic, e.g. 'Art. 116a ZPO. Verhältnis Kostenerlass...') AND
+    regeste is empty. Move to regeste; null out full_text to correctly mark
+    "no decision body extracted".
+
+    Found 248 affected rows in 2026-04-30 audit (sh_gerichte 204 dominated).
+    Auto-applies on every nightly so future scraper regressions self-correct.
+    """
+    cur = conn.execute(
+        "UPDATE decisions SET regeste = full_text, full_text = NULL "
+        "WHERE LENGTH(COALESCE(full_text, '')) BETWEEN 10 AND 99 "
+        "AND (regeste IS NULL OR regeste = '')"
+    )
+    migrated = cur.rowcount
+    if migrated:
+        conn.commit()
+    return migrated
+
+
 def _recover_decision_dates(conn: sqlite3.Connection) -> int:
     """König audit P4: recover decision_date from full_text for NULL rows.
 
@@ -964,6 +986,9 @@ def build_database(
         recovered = _recover_decision_dates(conn)
         if recovered:
             logger.info(f"  Recovered {recovered} decision_date values from full_text (zh_verwaltungsgericht/gr_gerichte/bl_gerichte)")
+        text_migrated = _migrate_short_text_to_regeste(conn)
+        if text_migrated:
+            logger.info(f"  Migrated {text_migrated} short full_text values → regeste (correct field for Art./§ references)")
 
         logger.info("Removing stub decisions (text <10 AND regeste <10 chars)...")
         stubs_removed = _remove_stubs(conn)
