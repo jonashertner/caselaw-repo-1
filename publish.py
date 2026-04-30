@@ -656,6 +656,36 @@ def step_6_git_push(dry_run: bool = False) -> bool:
     return run_cmd(["git", "push"], "git push", dry_run)
 
 
+def step_6b_health_check(dry_run: bool = False) -> bool:
+    """Step 6b: Auto-validate the publish output.
+
+    Runs scripts/post_publish_health_check.py at the very end of the pipeline.
+    The check exercises 7 independent assertions (publish status, total count,
+    SG chambers, archive shards, EGMR cleanup, cantonal Erwägungen, top-10
+    courts). If any FAIL: returns False → publish.py exits non-zero → systemd
+    marks the service failed → OnFailure drop-in fires the alert.
+
+    The König #1 EGMR regression was caught manually today; codifying the check
+    means every future nightly self-validates without operator review.
+
+    Threshold tuning: the health check uses conservative bounds (e.g. SG
+    sg_kantonsgericht ≥ 1050 vs measured 1074) so normal day-to-day fluctuation
+    won't false-positive. See scripts/post_publish_health_check.py for the
+    measured 2026-04-30 baselines that informed the thresholds.
+    """
+    logger.info("Step 6b: Post-publish health check (auto-validate)")
+    script = REPO_DIR / "scripts" / "post_publish_health_check.py"
+    if not script.exists():
+        logger.warning("  scripts/post_publish_health_check.py not found, skipping")
+        return True
+    return run_cmd(
+        [sys.executable, str(script)],
+        "Health check",
+        dry_run,
+        timeout=600,
+    )
+
+
 # Execution order intentionally differs from the step IDs to preserve the
 # existing CLI surface (`--step 2b`, `--step 2c`, `--step 2d`) while ensuring
 # weekly enrichment happens before quality gating and graph construction.
@@ -692,6 +722,8 @@ STEPS = [
     # ── Final stats refresh (includes graph counts) ──
     (5, "Generate Stats (final)", step_5_generate_stats),
     (6, "Git Push (final)", step_6_git_push),
+    # ── Auto-validate (FAIL → systemd OnFailure → alert) ──
+    ("6b", "Health Check", step_6b_health_check),
 ]
 
 
