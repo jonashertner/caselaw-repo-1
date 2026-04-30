@@ -422,13 +422,18 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
       - zh_verwaltungsgericht: "Endentscheid vom DD.MM.YYYY" (100% precision)
       - gr_gerichte:           "Urteil/Entscheid vom DD. Monat YYYY"
       - bl_gerichte:           "Entscheid vom DD. Monat YYYY"
+      - fr_gerichte:           "Arrêt du DD mois YYYY" (FR anchors)
+      - be_verwaltungsgericht: "Urteil des Einzelrichters vom DD. Monat YYYY"
 
     Skipped (ambiguous date contexts — wrong dates worse than NULL):
       - ti_gerichte:  custody dates / cited cases dominate first match
-      - mkg:          1914-archive cited Bundesratsbeschluss dates
-      - hudoc_ch:     mixed ECHR formats, low confidence
+                       (handled separately by ti_date_recovery_2026_04_30.py
+                       which fetches source URL for full document)
+      - mkg:          1914-archive cited Bundesratsbeschluss dates verified
+                       to false-positive ~60% of the time on spot-check
+      - hudoc_ch:     handled separately by HUDOC API recovery script
 
-    2026-04-30 audit: recovered 5,193 of 5,273 NULL rows (98.5%) across the
+    2026-04-30 audit: recovered 5,258 of 5,339 NULL rows (98.5%) across the
     safe courts. Auto-applies on every nightly so future scraper regressions
     are self-healed where the full_text contains a valid anchor + date.
     """
@@ -440,21 +445,50 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
         "mai": 5, "juni": 6, "juli": 7, "august": 8, "september": 9,
         "oktober": 10, "november": 11, "dezember": 12,
     }
+    FR_MONTHS = {
+        "janvier": 1, "février": 2, "fevrier": 2, "mars": 3, "avril": 4,
+        "mai": 5, "juin": 6, "juillet": 7, "août": 8, "aout": 8,
+        "septembre": 9, "octobre": 10, "novembre": 11,
+        "décembre": 12, "decembre": 12,
+    }
+    IT_MONTHS = {
+        "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4,
+        "maggio": 5, "giugno": 6, "luglio": 7, "agosto": 8,
+        "settembre": 9, "ottobre": 10, "novembre": 11, "dicembre": 12,
+    }
+    ALL_MONTHS = {**DE_MONTHS, **FR_MONTHS, **IT_MONTHS}
+
     DE_RE = re.compile(
         r"(\d{1,2})\.\s*(Januar|Februar|M[äa]rz|April|Mai|Juni|Juli|August|"
         r"September|Oktober|November|Dezember)\s+(\d{4})",
         re.IGNORECASE,
     )
+    FR_RE = re.compile(
+        r"(\d{1,2})\s+(janvier|f[ée]vrier|mars|avril|mai|juin|juillet|"
+        r"ao[ûu]t|septembre|octobre|novembre|d[ée]cembre)\s+(\d{4})",
+        re.IGNORECASE,
+    )
+    IT_RE = re.compile(
+        r"(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|"
+        r"luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})",
+        re.IGNORECASE,
+    )
     DDMMYYYY = re.compile(r"\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b")
     ANCHORS = (
-        "Urteil vom", "Urteil der", "Entscheid vom",
-        "Endentscheid vom", "Verfügung vom", "Beschluss vom",
+        # German
+        "Urteil vom", "Urteil des", "Urteil der",
+        "Entscheid vom", "Entscheid des", "Endentscheid vom",
+        "Verfügung vom", "Verfügung des", "Beschluss vom", "Beschluss des",
+        # French
+        "Arrêt du", "Décision du", "Jugement du", "Ordonnance du",
+        # Italian
+        "Sentenza del", "Decisione del", "Decreto del",
     )
     THIS_YEAR = _date.today().year
 
     def _try_parse(d, m, y):
         if isinstance(m, str):
-            m = DE_MONTHS.get(m.lower())
+            m = ALL_MONTHS.get(m.lower())
             if not m:
                 return None
         if not (1 <= m <= 12 and 1 <= d <= 31):
@@ -469,6 +503,14 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
     def _extract_first(text):
         cands = []
         for m in DE_RE.finditer(text):
+            d = _try_parse(int(m.group(1)), m.group(2), int(m.group(3)))
+            if d:
+                cands.append((m.start(), d))
+        for m in FR_RE.finditer(text):
+            d = _try_parse(int(m.group(1)), m.group(2), int(m.group(3)))
+            if d:
+                cands.append((m.start(), d))
+        for m in IT_RE.finditer(text):
             d = _try_parse(int(m.group(1)), m.group(2), int(m.group(3)))
             if d:
                 cands.append((m.start(), d))
@@ -498,7 +540,10 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
                 idx = i + len(anchor)
         return _extract_first(full_text[:5000])
 
-    SAFE_COURTS = ("zh_verwaltungsgericht", "gr_gerichte", "bl_gerichte")
+    SAFE_COURTS = (
+        "zh_verwaltungsgericht", "gr_gerichte", "bl_gerichte",
+        "fr_gerichte", "be_verwaltungsgericht",
+    )
     placeholders = ",".join("?" * len(SAFE_COURTS))
     rows = conn.execute(
         f"SELECT decision_id, full_text FROM decisions "
