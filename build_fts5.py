@@ -373,21 +373,48 @@ def _cross_court_dedup(conn: sqlite3.Connection) -> int:
 
 
 def _normalize_dockets(conn: sqlite3.Connection) -> int:
-    """König audit 2026-04-30: strip leading/trailing whitespace from docket_number.
+    """König audit 2026-04-30 + QC follow-up 2026-05-01: normalise whitespace
+    in docket_number.
 
-    Found ~21,000 rows with whitespace, concentrated in zh_verwaltungsgericht
-    (11,359), ch_vb (6,721), vd_findinfo (2,705), edoeb (45), sh_obergericht
-    (10), and several AG chambers. Whitespace docket_numbers cause exact-match
-    queries to fail (e.g. ' AEG.2018.00004' won't match query 'AEG.2018.00004').
+    Two passes (idempotent, run on every nightly):
 
-    Codifies the one-shot fix applied 2026-04-30 so future scraper regressions
-    are auto-corrected on every rebuild.
+    1. Trim leading/trailing whitespace. Found ~21,000 rows in 2026-04-30,
+       concentrated in zh_verwaltungsgericht (11,359), ch_vb (6,721),
+       vd_findinfo (2,705), edoeb (45), sh_obergericht (10), and several
+       AG chambers. Whitespace breaks exact-match queries
+       (' AEG.2018.00004' won't match 'AEG.2018.00004').
+
+    2. Replace internal newlines (LF / CR) with a single space. The QC
+       gate surfaced 5,441 rows in 2026-05-01 audit where the scraper
+       grabbed two adjacent table cells and joined them with a newline,
+       e.g. 'A 2024 015\\nUrteil vom...'. Internal newlines also break
+       URL routing (/entscheid/{id}) and exact-match queries.
     """
     cur = conn.execute(
         "UPDATE decisions SET docket_number = trim(docket_number) "
         "WHERE docket_number != trim(docket_number)"
     )
     fixed = cur.rowcount
+    # Pass 2: collapse internal newlines (and tabs) to single space, then
+    # collapse multiple spaces to one.
+    cur2 = conn.execute(
+        "UPDATE decisions SET docket_number = "
+        "trim(replace(replace(replace(docket_number, char(10), ' '), "
+        "                                              char(13), ' '), "
+        "                                              char(9),  ' ')) "
+        "WHERE docket_number LIKE '%' || char(10) || '%' "
+        "   OR docket_number LIKE '%' || char(13) || '%' "
+        "   OR docket_number LIKE '%' || char(9)  || '%'"
+    )
+    fixed += cur2.rowcount
+    # Pass 3: collapse runs of spaces (often left by passes 1+2).
+    cur3 = conn.execute(
+        "UPDATE decisions SET docket_number = "
+        "  trim(replace(replace(replace(docket_number, "
+        "    '   ', ' '), '  ', ' '), '  ', ' ')) "
+        "WHERE docket_number LIKE '%  %'"
+    )
+    fixed += cur3.rowcount
     if fixed:
         conn.commit()
     return fixed

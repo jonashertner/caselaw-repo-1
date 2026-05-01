@@ -313,7 +313,10 @@ def step_2c_build_reference_graph(dry_run: bool = False, full_rebuild: bool = Fa
          "--db", str(graph_db)],
         "Build reference graph",
         dry_run,
-        timeout=7200,  # ~78 min for 1M decisions
+        # Bumped from 7200→10800: 2026-05-01 nightly timed out at 99%
+        # (960k of 970k decisions processed at the 7200s mark). 3h gives
+        # ~25% headroom for the corpus growth between rebuilds.
+        timeout=10800,
     )
 
 

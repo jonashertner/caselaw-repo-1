@@ -531,10 +531,17 @@ def build_db(shard_paths: list[Path], out_db: Path) -> dict:
         stats["with_subnumbered_erw"] += ssub
         stats["all_three"] += sa
         stats["total_paragraphs"] += n_paragraphs
+        # Guard against empty shards (n=0): a recently-retired or
+        # not-yet-populated source can land here with zero rows. The
+        # stats dict above already uses the same `if n else 0` guard;
+        # the logger formatting was the only path that still divided
+        # raw and crashed the whole 6h pipeline.
+        def _pct(num):
+            return f"{num/n*100:.0f}" if n else "0"
         logger.info(
-            f"{court_label}: n={n}, disp={sd}({sd/n*100:.0f}%), erw={se}({se/n*100:.0f}%), "
-            f"sav={ss}({ss/n*100:.0f}%), regeste={sreg}({sreg/n*100:.0f}%), "
-            f"subnum={ssub}({ssub/n*100:.0f}%), paragraphs={n_paragraphs} — {time.time()-started:.0f}s"
+            f"{court_label}: n={n}, disp={sd}({_pct(sd)}%), erw={se}({_pct(se)}%), "
+            f"sav={ss}({_pct(ss)}%), regeste={sreg}({_pct(sreg)}%), "
+            f"subnum={ssub}({_pct(ssub)}%), paragraphs={n_paragraphs} — {time.time()-started:.0f}s"
         )
 
     conn.close()
