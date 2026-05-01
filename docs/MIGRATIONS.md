@@ -6,6 +6,65 @@ apply remedial migrations without re-deriving them.
 
 ---
 
+## 2026-05-01 — QC system + 5 codified auto-correction passes
+
+A 4-layer quality-control system was deployed end-to-end. Going forward, every
+nightly publish runs **61 integrity checks** before the `git push` step;
+a CRITICAL regression blocks publication and users keep yesterday's data.
+Live dashboard: <https://opencaselaw.ch/quality.html>.
+
+### Auto-corrections now codified in `build_fts5.py` (run every nightly)
+
+| Pass | Effect | Removes data-quality class |
+|---|---|---|
+| `_normalize_dockets()` | trim + strip internal `\n`/`\r`/`\t` + collapse spaces | König P5 (whitespace dockets, ~21,000) + 5,441 newline dockets |
+| `_normalize_dates()` | clear `'0000-…'` markers + dates `> today+365` to NULL | König P6 (year-0000, ~796) |
+| `_recover_decision_dates()` | multilingual anchor extraction for 5 safe courts | König P4 (5,258 NULL dates recovered) |
+| `_normalize_source_urls()` | host-prefix bs/gl Tribuna `/cgi-bin/...` paths | König P2 (694 relative URLs in BS/GL) |
+| `_truncate_oversized_regestes()` | head-note only when regeste > 8 KB and ≈ duplicates `full_text` | HUDOC bge_egmr leakage (462 rows, max 875 KB) |
+| `_dedup_egmr_in_bge()` | DELETE `bge` rows with cedh URLs | König #1 (474 EGMR duplicates) |
+| `_migrate_short_text_to_regeste()` | 10-99 char `full_text` → `regeste` when regeste empty | König P7 (248 rows, sh_gerichte) |
+
+Source-side fix in `scrapers/entscheidsuche_ingest.py` complements the regeste
+truncation by truncating `Abstract > 8000` chars at ingest, so future-imported
+HUDOC rows are clean from the start.
+
+### Step 5c QC gate (semantics)
+
+`publish.py` step 5c runs `python -m quality.cli run --critical-only --gate`
+between RSS feed generation (5b) and the early git push (6a). Severity matrix:
+
+- **CRITICAL** → blocks Step 6a and 6 (git push). 8 classes: schema integrity,
+  total-count cliff > 1%, EGMR re-regression, court not in registry, whitespace
+  dockets > 0, year-0000 dates > 0, future dates > 50, cross-DB row mismatch
+  > 0.5%.
+- **WARNING** → ntfy alert only. Examples: per-court drift > 5×MAD over 7-day
+  median, OCR-quality regression, citation-graph edge drop > 5%, floor residuals
+  growing.
+- **INFO** → recorded only.
+
+When the gate blocks: `docs/quality.json` records the failing checks; an
+ntfy.sh alert fires with the names; users on opencaselaw.ch keep yesterday's
+data until the regression is investigated and resolved.
+
+### Production-uptime smoke (L4)
+
+`opencaselaw-smoke.timer` fires `python -m quality.smoke` every 5 min on the VPS.
+Six probes (health, /entscheid HTML, four export formats). Logs at
+`/var/log/opencaselaw-smoke/latest.json`. On any non-200 response, systemd
+`OnFailure` triggers an ntfy alert (topic `opencaselaw-smoke`).
+
+### Consumer-facing impact
+
+The HuggingFace dataset gets cleaner data going forward — the 7,000+ rows
+across the issue classes above are corrected automatically at the next
+publish. **No consumer-side migration required**: rows are mutated in place,
+preserving `decision_id`. If a consumer was doing string equality on the
+old (whitespace / newline / relative-URL / oversized-regeste) values to
+detect them, that detection becomes a no-op (which is correct).
+
+---
+
 ## 2026-04-30 — Historical Delta Schema Drift (2026-02-16 to 2026-04-22)
 
 **Status**: upstream fixed 2026-04-23. **Legacy artifacts still on HF.** Consumers
