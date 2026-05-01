@@ -380,6 +380,30 @@ def build_decision(
             regeste_parts.append(item["Text"])
     regeste = "\n".join(regeste_parts) if regeste_parts else None
 
+    # 2026-05-01 root-cause fix for HUDOC bge_egmr feed: ECHR judgments
+    # via entscheidsuche put the FULL judgment text into the Abstract
+    # field (not a head-note). When that flows into `regeste` here, we
+    # end up with regestes of 800k+ chars that dwarf normal head-notes
+    # (max legitimate Bundesgericht regeste ≈ 4,500 chars).
+    #
+    # When the Abstract is huge, treat it as body content: keep only
+    # the head-note portion (text up to the first body-boundary marker
+    # like "Sachverhalt" / "Faits" / "Fatti") or truncate to 5000 chars.
+    # The full text is preserved later in `content` (regeste + full_text
+    # concat), so no info is lost — the regeste field just stops being
+    # a near-mirror of the body.
+    if regeste and len(regeste) > 8000:
+        _BODY_BOUNDARIES = (
+            "\nSachverhalt\n", "\nFaits\n", "\nFatti\n", "\nFakten\n",
+            "\nProcédure\n", "\nProcedura\n",
+        )
+        cut = None
+        for marker in _BODY_BOUNDARIES:
+            idx = regeste.find(marker)
+            if idx > 0 and (cut is None or idx < cut):
+                cut = idx
+        regeste = (regeste[:cut] if cut else regeste[:5000]).rstrip()
+
     # Kopfzeile (header) — useful metadata
     kopf_parts = []
     for item in meta.get("Kopfzeile", []):
