@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 30 Apr 2026 11:13:06 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 01 May 2026 04:05:45 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -859,6 +859,22 @@ Sequestro di valori (art. 80e cpv. 2 lett. a AIMP)</description>
       <category>bstger</category>
     </item>
     <item>
+      <title>gr_gerichte SV2 2025 34 vom 2026-03-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202025%2034</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 10 marzo 2026
+comunicata il 13 marzo 2026
+N. d'incarto
+SV2 25 34
+Istanza
+Seconda Camera di diritto delle assicurazion…</description>
+      <pubDate>Tue, 10 Mar 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV2 2025 34</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>Bundesgericht 5A_73/2026 vom 2026-03-09</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_73_2026</link>
       <description>Bundesgericht
@@ -927,22 +943,6 @@ A._____…</description>
       <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-812.2024</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SBK 2025 96 vom 2026-03-09</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SBK%202025%2096</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Decisione del 26 gennaio 2026
-comunicata il 27 gennaio 2026
-N. d'incarto
-SBK 25 96
-Istanza
-Camera delle esecuzioni e dei falliment…</description>
-      <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SBK 2025 96</guid>
-      <category>gr_gerichte</category>
     </item>
   </channel>
 </rss>
