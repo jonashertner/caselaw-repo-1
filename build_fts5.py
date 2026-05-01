@@ -420,6 +420,92 @@ def _normalize_dockets(conn: sqlite3.Connection) -> int:
     return fixed
 
 
+def _normalize_source_urls(conn: sqlite3.Connection) -> int:
+    """QC follow-up 2026-05-01: prefix relative source_urls with their host.
+
+    König P2 (Apr 29) fixed 694 GL/BS rows at scraper-side, but the same
+    pattern keeps reappearing because the Tribuna platform underlying
+    bs_gerichte and gl_gerichte serves URLs as bare `/cgi-bin/nph-omniscgi.exe?...`
+    paths. Auto-correcting at build time means any future scraper miss
+    or re-ingest from the entscheidsuche archive self-heals.
+
+    Court → host mapping:
+        bs_gerichte → https://www.gerichte.bs.ch
+        gl_gerichte → https://findinfo.gl.ch
+    """
+    HOST_BY_COURT = {
+        "bs_gerichte": "https://www.gerichte.bs.ch",
+        "gl_gerichte": "https://findinfo.gl.ch",
+    }
+    fixed_total = 0
+    for court, host in HOST_BY_COURT.items():
+        cur = conn.execute(
+            "UPDATE decisions SET source_url = ? || source_url "
+            "WHERE court = ? AND source_url IS NOT NULL AND source_url != '' "
+            "AND source_url NOT LIKE 'http%'",
+            (host, court),
+        )
+        fixed_total += cur.rowcount
+    if fixed_total:
+        conn.commit()
+    return fixed_total
+
+
+# Boundary markers that separate the head-note (Regeste) from the body
+# in HUDOC-sourced ECHR judgments. Used by _truncate_oversized_regestes.
+_REGESTE_BODY_BOUNDARIES = (
+    "\nSachverhalt\n", "\nFaits\n", "\nFatti\n", "\nFakten\n",
+    "\nProcédure\n", "\nProcedura\n",
+)
+
+
+def _truncate_oversized_regestes(conn: sqlite3.Connection) -> int:
+    """QC follow-up 2026-05-01: HUDOC scraper duplicates entire judgment
+    into BOTH `regeste` and `full_text` fields. Result: 462 rows in the
+    2026-05-01 audit have regestes >8000 chars (max 875,989 chars), a
+    near-mirror of full_text.
+
+    For every row where the regeste is >8000 chars AND substantially
+    duplicates the full_text (length within 90%), keep only the head-note
+    portion: text up to the first body-boundary marker (Sachverhalt /
+    Faits / Fatti / Fakten / Procédure / Procedura). If no boundary is
+    found, truncate to 5000 chars (the longest legitimate Bundesgericht
+    regeste is ~4500). full_text is left untouched — no info loss.
+
+    Idempotent: WHERE clause filters to rows still oversized.
+    """
+    rows = conn.execute(
+        "SELECT decision_id, regeste, full_text FROM decisions "
+        "WHERE regeste IS NOT NULL AND length(regeste) > 8000"
+    ).fetchall()
+    updates = []
+    for did, regeste, full_text in rows:
+        if not regeste:
+            continue
+        full_len = len(full_text or "")
+        # Only collapse when regeste is essentially a duplicate of full_text;
+        # otherwise the regeste might be legitimately huge for some reason
+        # we don't want to silently destroy.
+        if full_len < 1000 or len(regeste) < 0.9 * full_len:
+            continue
+        cut = None
+        for marker in _REGESTE_BODY_BOUNDARIES:
+            idx = regeste.find(marker)
+            if idx > 0 and (cut is None or idx < cut):
+                cut = idx
+        new_regeste = regeste[:cut] if cut else regeste[:5000]
+        new_regeste = new_regeste.rstrip()
+        if new_regeste != regeste:
+            updates.append((new_regeste, did))
+    if updates:
+        conn.executemany(
+            "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+            updates,
+        )
+        conn.commit()
+    return len(updates)
+
+
 def _migrate_short_text_to_regeste(conn: sqlite3.Connection) -> int:
     """König P7: short full_text values are often a regeste in the wrong field.
 
@@ -1061,6 +1147,16 @@ def build_database(
         text_migrated = _migrate_short_text_to_regeste(conn)
         if text_migrated:
             logger.info(f"  Migrated {text_migrated} short full_text values → regeste (correct field for Art./§ references)")
+
+        logger.info("Normalising relative source_urls (König P2 follow-up)...")
+        urls_fixed = _normalize_source_urls(conn)
+        if urls_fixed:
+            logger.info(f"  Prefixed host on {urls_fixed} relative source_urls (bs_gerichte / gl_gerichte Tribuna paths)")
+
+        logger.info("Truncating oversized regestes (HUDOC scraper full_text leakage)...")
+        regestes_truncated = _truncate_oversized_regestes(conn)
+        if regestes_truncated:
+            logger.info(f"  Truncated {regestes_truncated} oversized regestes to head-note portion (full_text untouched)")
 
         logger.info("Removing stub decisions (text <10 AND regeste <10 chars)...")
         stubs_removed = _remove_stubs(conn)

@@ -75,22 +75,28 @@ def check_http_when_https_available(conn: sqlite3.Connection, **_) -> CheckResul
 def check_decision_id_url_safe(conn: sqlite3.Connection, **_) -> CheckResult:
     """decision_id is used in /entscheid/{decision_id:path} URLs.
 
-    The route uses :path-converter so `/` is permitted (legit dockets
-    like 4A_321/2013 contain it). Real URL-breakers are characters
-    that change the URL's structure: whitespace, `?` (query string),
-    `#` (fragment), `&` (param sep). Those must be 0.
+    Two tiers of unsafety:
+      - CRITICAL: `?`, `#`, `&` reshape the URL (query string / fragment
+        / param separator). Browsers and HTTP clients won't reach the
+        decision route at all. Must be 0.
+      - WARNING (separate check below): spaces and tabs work via
+        percent-encoding under :path-routes but produce ugly URLs.
+        Some AG scrapers emit IDs like 'XBE.2025.32 _ XBE.2025.5'
+        (joined-docket cases) — semantically valid IDs, just need
+        encoding by the client.
+
+    Slash (/) is allowed because :path accepts it (e.g. '4A_321/2013').
     """
     n = conn.execute(
         "SELECT COUNT(*) FROM decisions "
-        "WHERE decision_id LIKE '% %' OR decision_id LIKE '%' || char(9) || '%' "
-        "OR decision_id LIKE '%?%' OR decision_id LIKE '%#%' "
+        "WHERE decision_id LIKE '%?%' OR decision_id LIKE '%#%' "
         "OR decision_id LIKE '%&%'"
     ).fetchone()[0]
     sample = [
         dict(r) for r in conn.execute(
             "SELECT decision_id, court FROM decisions "
-            "WHERE decision_id LIKE '% %' OR decision_id LIKE '%?%' "
-            "OR decision_id LIKE '%#%' OR decision_id LIKE '%&%' LIMIT 5"
+            "WHERE decision_id LIKE '%?%' OR decision_id LIKE '%#%' "
+            "OR decision_id LIKE '%&%' LIMIT 5"
         ).fetchall()
     ] if n else []
     return CheckResult(
@@ -99,10 +105,35 @@ def check_decision_id_url_safe(conn: sqlite3.Connection, **_) -> CheckResult:
         passed=(n == 0),
         metric_value=n,
         threshold=0,
-        message=f"{n} decision_ids contain URL-breaking characters" if n
-                else "all decision_ids URL-safe",
+        message=f"{n} decision_ids contain URL-breaking characters (?, #, &)"
+                if n else "all decision_ids URL-safe",
         sample_rows=sample,
         fix_advice="decision_ids appear in /entscheid/{id:path} URLs; "
-                   "URL-breaking chars (space, tab, ?, #, &) must be sanitised "
-                   "at scraper time. Slash (/) is OK.",
+                   "?, #, & reshape the URL — sanitise at scraper time. "
+                   "Slash (/) and spaces (percent-encoded) are OK.",
+    )
+
+
+def check_decision_id_has_whitespace(conn: sqlite3.Connection, **_) -> CheckResult:
+    """Whitespace in decision_id (space or tab) produces ugly
+    percent-encoded URLs. Routes still work via :path, but consumers
+    using `requests.get(url)` without explicit encoding will fail.
+
+    AG scrapers emit ~41k joined-docket IDs like 'XBE.2025.32 _ XBE.2025.5'
+    today; this is the baseline. Drift detection catches new growth."""
+    n = conn.execute(
+        "SELECT COUNT(*) FROM decisions "
+        "WHERE decision_id LIKE '% %' OR decision_id LIKE '%' || char(9) || '%'"
+    ).fetchone()[0]
+    return CheckResult(
+        name="urls.decision_id_whitespace",
+        severity=Severity.WARNING,
+        passed=(n <= 50_000),  # baseline ~41k from AG joined-docket IDs
+        metric_value=n,
+        threshold=50_000,
+        message=f"{n:,} decision_ids contain whitespace "
+                f"(percent-encoded in URLs; ugly but functional)",
+        fix_advice="if growing >50k, a new scraper started concatenating "
+                   "dockets with spaces; consider underscore separator at "
+                   "scraper time for cleaner URLs",
     )
