@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
+<title>Data quality | OpenCaseLaw</title>
+<meta name="description" content="Live data-quality report for the OpenCaseLaw corpus. Updated on every nightly publish; gates the pipeline on critical regressions.">
+<link rel="canonical" href="https://opencaselaw.ch/quality.html">
+<meta name="robots" content="index, follow">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+    --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --f-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+}
+* { box-sizing: border-box; }
+html { background: #fff; }
+body {
+    font-family: var(--f-sans);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.45;
+    color: #111;
+    background: #fff;
+    max-width: 960px;
+    margin: 4rem auto 6rem;
+    padding: 0 2rem;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "kern" 1, "liga" 1, "tnum" 1;
+}
+a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+nav.top { font-size: 13px; font-weight: 300; margin-bottom: 3.5rem; }
+nav.top .sep { margin: 0 0.4em; opacity: 0.45; }
+h1 {
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 100;
+    letter-spacing: -0.012em;
+    line-height: 1.1;
+    margin: 0 0 0.4rem 0;
+}
+.lede {
+    font-size: 15px; font-weight: 300; color: #444;
+    margin: 0 0 2.5rem 0; max-width: 640px;
+}
+.summary {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    margin: 0 0 3.5rem 0;
+}
+.summary-cell { padding: 0.4rem 0; }
+.summary-num {
+    font-family: var(--f-mono);
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 400; line-height: 1; letter-spacing: -0.02em;
+    font-feature-settings: "tnum" 1;
+    margin-bottom: 0.4rem;
+}
+.summary-label { font-size: 12px; font-weight: 400; color: #666; }
+.summary-num.crit { color: #111; }
+.summary-num.warn { color: #444; }
+.gate {
+    display: inline-flex; align-items: center; gap: 0.6em;
+    margin-bottom: 3rem; font-size: 14px; font-weight: 400;
+}
+.gate-dot { width: 10px; height: 10px; border-radius: 50%; background: #111; }
+.gate.fail .gate-dot { background: #fff; border: 1.5px solid #111; }
+.tabs {
+    display: flex; gap: 1.6em; margin: 0 0 2rem 0;
+    font-size: 13px; font-weight: 400;
+}
+.tab { cursor: pointer; padding: 0.2em 0; color: #666; user-select: none; }
+.tab.active { color: #111; font-weight: 500; }
+.tab-count {
+    font-family: var(--f-mono); font-size: 11px; color: #888;
+    margin-left: 0.4em;
+}
+.category { margin: 0 0 2.4rem 0; }
+.category-name {
+    font-size: 11px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.08em; color: #888; margin: 0 0 0.6rem 0;
+}
+.checks { display: grid; grid-template-columns: 1fr; gap: 0; }
+.check {
+    display: grid; grid-template-columns: 80px 1fr 140px;
+    gap: 1.2rem; padding: 0.55rem 0; align-items: baseline;
+    font-size: 14px;
+}
+.check-status {
+    font-family: var(--f-mono); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.04em; padding-top: 1px;
+}
+.check-status.pass-info { color: #888; }
+.check-status.pass-warn { color: #444; }
+.check-status.pass-crit { color: #111; }
+.check-status.fail-info { color: #888; }
+.check-status.fail-warn { color: #b56b1f; }
+.check-status.fail-crit { color: #aa1a1a; }
+.check-name {
+    font-family: var(--f-mono); font-size: 12px; color: #444;
+}
+.check-message { font-size: 13px; color: #444; margin-top: 0.15em; }
+.check-metric {
+    font-family: var(--f-mono); font-size: 12px; color: #555;
+    text-align: right; font-feature-settings: "tnum" 1;
+}
+.check-detail {
+    grid-column: 1 / -1; margin: 0.5rem 0 0.4rem 0;
+    padding: 0.6rem 0 0.6rem 80px;
+    font-size: 12px; color: #555; display: none;
+}
+.check-detail.open { display: block; }
+.check-detail .advice { margin-bottom: 0.6em; }
+.check-detail .samples { font-family: var(--f-mono); font-size: 11px; }
+.check-detail .samples pre {
+    margin: 0.3em 0; padding: 0; background: none;
+    white-space: pre-wrap; word-break: break-all; color: #444;
+}
+.expand {
+    grid-column: 2 / 3; cursor: pointer; color: #888;
+    font-size: 12px; margin-top: 0.2em; user-select: none;
+}
+.expand:hover { color: #111; }
+footer { margin-top: 6rem; font-size: 12px; color: #777; line-height: 1.6; }
+footer p { margin: 0.4rem 0; }
+@media (max-width: 600px) {
+    body { margin: 2.5rem auto 4rem; padding: 0 1.2rem; font-size: 14px; }
+    .summary { grid-template-columns: repeat(2, 1fr); gap: 1.4rem 0; }
+    .check { grid-template-columns: 70px 1fr; }
+    .check-metric { grid-column: 2; text-align: left; padding-top: 0.2em; }
+    .check-detail { padding-left: 70px; }
+}
+</style>
+</head>
+<body>
+<nav class="top">
+    <a href="https://opencaselaw.ch">OpenCaseLaw</a><span class="sep">/</span><span>Data quality</span>
+</nav>
+<h1>Data quality</h1>
+<p class="lede">
+    Every nightly publish runs <span id="check-count">…</span> integrity, schema and content checks
+    against the full corpus before users see new data. A critical regression
+    blocks the publish; users keep yesterday's data until investigation.
+    <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/quality/checks">Methodology</a>.
+</p>
+
+<div id="gate" class="gate">
+    <span class="gate-dot"></span>
+    <span id="gate-text">Loading…</span>
+</div>
+
+<div class="summary">
+    <div class="summary-cell">
+        <div class="summary-num" id="num-total">—</div>
+        <div class="summary-label">Total checks</div>
+    </div>
+    <div class="summary-cell">
+        <div class="summary-num" id="num-passed">—</div>
+        <div class="summary-label">Passed</div>
+    </div>
+    <div class="summary-cell">
+        <div class="summary-num crit" id="num-crit">—</div>
+        <div class="summary-label">Critical (blocks publish)</div>
+    </div>
+    <div class="summary-cell">
+        <div class="summary-num warn" id="num-warn">—</div>
+        <div class="summary-label">Warnings (alert)</div>
+    </div>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div id="report"></div>
+
+<footer>
+    <p>Last run <span id="ts">—</span>, took <span id="dur">—</span>. Source DB <span id="db">—</span>.</p>
+    <p>JSON: <a href="quality.json">quality.json</a>. Source: <a href="https://github.com/jonashertner/caselaw-repo-1/tree/main/quality">github.com/jonashertner/caselaw-repo-1/quality</a>.</p>
+</footer>
+
+<script>
+const TIER_LABEL = { critical: "FAIL", warning: "WARN", info: "INFO" };
+const PASS_LABEL = "PASS";
+const FILTERS = [
+    { id: "all",  label: "All" },
+    { id: "fail", label: "Failures" },
+    { id: "crit", label: "Critical" },
+    { id: "warn", label: "Warnings" },
+    { id: "pass", label: "Passed" },
+];
+let DATA = null;
+let activeFilter = "all";
+
+function fmt(n) {
+    if (n === null || n === undefined || Number.isNaN(n)) return "\u2014";
+    if (typeof n !== "number") return String(n);
+    if (Number.isInteger(n)) return n.toLocaleString("en-US").replace(/,/g, "\u2019");
+    if (Math.abs(n) >= 100) return n.toFixed(0);
+    if (Math.abs(n) >= 10)  return n.toFixed(1);
+    return n.toFixed(2);
+}
+function fmtDate(s) {
+    if (!s) return "\u2014";
+    const d = new Date(s);
+    return d.toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" });
+}
+function fmtDur(s) {
+    if (s === undefined || s === null) return "\u2014";
+    if (s < 60) return s.toFixed(1) + "s";
+    if (s < 3600) return (s/60).toFixed(1) + "m";
+    return (s/3600).toFixed(1) + "h";
+}
+function statusClass(r) {
+    return (r.passed ? "pass-" : "fail-") + r.severity.slice(0,4);
+}
+function statusLabel(r) {
+    return r.passed ? PASS_LABEL : TIER_LABEL[r.severity];
+}
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function(c){
+        return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];
+    });
+}
+function categoryOf(name) { return name.split(".")[0]; }
+function checkPasses(r, f) {
+    if (f === "all")  return true;
+    if (f === "fail") return !r.passed;
+    if (f === "pass") return r.passed;
+    if (f === "crit") return !r.passed && r.severity === "critical";
+    if (f === "warn") return !r.passed && r.severity === "warning";
+    return true;
+}
+
+function renderTabs() {
+    const counts = {
+        all:  DATA.results.length,
+        fail: DATA.results.filter(function(r){return !r.passed;}).length,
+        pass: DATA.results.filter(function(r){return r.passed;}).length,
+        crit: DATA.results.filter(function(r){return !r.passed && r.severity === "critical";}).length,
+        warn: DATA.results.filter(function(r){return !r.passed && r.severity === "warning";}).length,
+    };
+    const tabsEl = document.getElementById("tabs");
+    while (tabsEl.firstChild) tabsEl.removeChild(tabsEl.firstChild);
+    FILTERS.forEach(function(f){
+        const span = document.createElement("span");
+        span.className = "tab" + (f.id === activeFilter ? " active" : "");
+        span.dataset.id = f.id;
+        span.textContent = f.label;
+        const count = document.createElement("span");
+        count.className = "tab-count";
+        count.textContent = counts[f.id];
+        span.appendChild(count);
+        span.onclick = function() {
+            activeFilter = f.id;
+            renderTabs();
+            renderResults();
+        };
+        tabsEl.appendChild(span);
+    });
+}
+
+function makeCheckRow(r) {
+    const row = document.createElement("div");
+    row.className = "check";
+    const subname = r.name.slice(categoryOf(r.name).length + 1);
+    const did = "c-" + r.name.replace(/[^a-z0-9]/gi, "_");
+    const hasDetail = !!(r.fix_advice || (r.sample_rows && r.sample_rows.length));
+
+    const status = document.createElement("div");
+    status.className = "check-status " + statusClass(r);
+    status.textContent = statusLabel(r);
+    row.appendChild(status);
+
+    const middle = document.createElement("div");
+    const nm = document.createElement("div");
+    nm.className = "check-name";
+    nm.textContent = subname;
+    middle.appendChild(nm);
+    const msg = document.createElement("div");
+    msg.className = "check-message";
+    msg.textContent = r.message || "";
+    middle.appendChild(msg);
+    if (hasDetail) {
+        const exp = document.createElement("div");
+        exp.className = "expand";
+        exp.dataset.target = did;
+        exp.textContent = "show detail \u2193";
+        middle.appendChild(exp);
+    }
+    row.appendChild(middle);
+
+    const metric = document.createElement("div");
+    metric.className = "check-metric";
+    metric.textContent = fmt(r.metric_value)
+        + (r.threshold !== null && r.threshold !== undefined ? " / " + fmt(r.threshold) : "");
+    row.appendChild(metric);
+
+    if (hasDetail) {
+        const detail = document.createElement("div");
+        detail.className = "check-detail";
+        detail.id = did;
+        if (r.fix_advice) {
+            const adv = document.createElement("div");
+            adv.className = "advice";
+            const lab = document.createElement("strong");
+            lab.textContent = "Remediation. ";
+            adv.appendChild(lab);
+            adv.appendChild(document.createTextNode(r.fix_advice));
+            detail.appendChild(adv);
+        }
+        if (r.sample_rows && r.sample_rows.length) {
+            const samples = document.createElement("div");
+            samples.className = "samples";
+            r.sample_rows.forEach(function(s){
+                const pre = document.createElement("pre");
+                pre.textContent = JSON.stringify(s);
+                samples.appendChild(pre);
+            });
+            detail.appendChild(samples);
+        }
+        row.appendChild(detail);
+    }
+    return row;
+}
+
+function renderResults() {
+    const reportEl = document.getElementById("report");
+    while (reportEl.firstChild) reportEl.removeChild(reportEl.firstChild);
+    const filtered = DATA.results.filter(function(r){return checkPasses(r, activeFilter);});
+    if (filtered.length === 0) {
+        const p = document.createElement("p");
+        p.style.color = "#888";
+        p.textContent = "(no results match this filter)";
+        reportEl.appendChild(p);
+        return;
+    }
+    const byCat = {};
+    filtered.forEach(function(r){
+        const c = categoryOf(r.name);
+        (byCat[c] = byCat[c] || []).push(r);
+    });
+    const cats = Object.keys(byCat).sort();
+    cats.forEach(function(cat){
+        const wrap = document.createElement("div");
+        wrap.className = "category";
+        const h = document.createElement("div");
+        h.className = "category-name";
+        h.textContent = cat;
+        wrap.appendChild(h);
+        const checks = document.createElement("div");
+        checks.className = "checks";
+        byCat[cat].forEach(function(r){
+            checks.appendChild(makeCheckRow(r));
+        });
+        wrap.appendChild(checks);
+        reportEl.appendChild(wrap);
+    });
+    document.querySelectorAll(".expand").forEach(function(el){
+        el.onclick = function() {
+            const t = document.getElementById(el.dataset.target);
+            const open = t.classList.toggle("open");
+            el.textContent = open ? "hide detail \u2191" : "show detail \u2193";
+        };
+    });
+}
+
+function render() {
+    document.getElementById("check-count").textContent = DATA.summary.total + "+";
+    document.getElementById("num-total").textContent = fmt(DATA.summary.total);
+    document.getElementById("num-passed").textContent = fmt(DATA.summary.passed);
+    document.getElementById("num-crit").textContent = fmt(DATA.summary.critical_failures);
+    document.getElementById("num-warn").textContent = fmt(DATA.summary.warning_failures);
+
+    const gate = document.getElementById("gate");
+    if (DATA.summary.publish_safe) {
+        gate.className = "gate ok";
+        document.getElementById("gate-text").textContent = "Publish safe — no critical regressions";
+    } else {
+        gate.className = "gate fail";
+        document.getElementById("gate-text").textContent =
+            "Publish blocked — " + DATA.summary.critical_failures + " critical regression(s) detected";
+    }
+
+    document.getElementById("ts").textContent = fmtDate(DATA.run_at);
+    document.getElementById("dur").textContent = fmtDur(DATA.duration_seconds);
+    document.getElementById("db").textContent = (DATA.db_path || "").split("/").pop() || "\u2014";
+
+    renderTabs();
+    renderResults();
+}
+
+fetch("quality.json", { cache: "no-store" })
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)); })
+    .then(function(d){ DATA = d; render(); })
+    .catch(function(e){
+        const reportEl = document.getElementById("report");
+        const p1 = document.createElement("p");
+        p1.style.color = "#aa1a1a";
+        p1.textContent = "Failed to load quality.json: " + (e.message || String(e));
+        const p2 = document.createElement("p");
+        p2.textContent = "The dashboard refreshes after each nightly publish (around 04-07 UTC).";
+        reportEl.appendChild(p1);
+        reportEl.appendChild(p2);
+        document.getElementById("gate-text").textContent = "\u2014";
+    });
+</script>
+</body>
+</html>

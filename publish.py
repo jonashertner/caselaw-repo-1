@@ -615,7 +615,8 @@ def step_6_git_push(dry_run: bool = False) -> bool:
 
     # Files we publish on every cycle. The diff check below short-circuits
     # if none of them changed.
-    paths = ["docs/stats.json", "docs/feed.xml", "docs/feeds"]
+    paths = ["docs/stats.json", "docs/feed.xml", "docs/feeds",
+             "docs/quality.json", "docs/quality.html"]
 
     # Check if any of these have unstaged changes
     result = subprocess.run(
