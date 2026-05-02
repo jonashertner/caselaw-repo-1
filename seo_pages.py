@@ -823,7 +823,8 @@ def _render_decision(row: sqlite3.Row) -> str:
         <a href="https://opencaselaw.ch/?lang=de" data-l="de">DE</a>
         <a href="https://opencaselaw.ch/?lang=fr" data-l="fr">FR</a>
         <a href="https://opencaselaw.ch/?lang=it" data-l="it">IT</a>
-        <a href="https://opencaselaw.ch/?lang=en" data-l="en" class="on">EN</a>
+        <a href="https://opencaselaw.ch/?lang=rm" data-l="rm">RM</a>
+        <a href="https://opencaselaw.ch/?lang=en" data-l="en">EN</a>
       </span>
     </nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
@@ -993,7 +994,8 @@ def _render_404(decision_id: str) -> str:
         <a href="https://opencaselaw.ch/?lang=de" data-l="de">DE</a>
         <a href="https://opencaselaw.ch/?lang=fr" data-l="fr">FR</a>
         <a href="https://opencaselaw.ch/?lang=it" data-l="it">IT</a>
-        <a href="https://opencaselaw.ch/?lang=en" data-l="en" class="on">EN</a>
+        <a href="https://opencaselaw.ch/?lang=rm" data-l="rm">RM</a>
+        <a href="https://opencaselaw.ch/?lang=en" data-l="en">EN</a>
       </span>
     </nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
