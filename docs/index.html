@@ -253,13 +253,6 @@ main a:hover { color: var(--tx2); }
 .section-sm { margin: 0 0 var(--gap-section-sm); }
 
 /* ── Toolbar ── */
-.toolbar {
-  position: sticky; top: 0; z-index: 100;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: blur(16px) saturate(1.8); -webkit-backdrop-filter: blur(16px) saturate(1.8);
-  border-bottom: 1px solid var(--brd2);
-}
-
 /* Loading skeletons — replace `—` em-dash placeholders that made cards
    look broken until stats.json hydrated.  Each skeleton is a small,
    gently-pulsing grey bar sized roughly to the eventual content. The
@@ -287,54 +280,14 @@ main a:hover { color: var(--tx2); }
   .skel { animation: none; opacity: 0.5; }
 }
 
-/* Sticky-toolbar offset — set as a CSS variable so smooth-scroll JS
-   can read it; also drives scroll-margin-top on each <section>.
-   Without this, anchor jumps land BEHIND the sticky toolbar and the
-   user sees the section heading clipped. */
-:root { --toolbar-h: 56px; }
+/* Sticky-header offset — keeps anchor-jumps from landing BEHIND the
+   shared design-system header.site (which is ~56px tall). */
 section[id], header[id] {
-  scroll-margin-top: calc(var(--toolbar-h) + 12px);
+  scroll-margin-top: 68px;
 }
-html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
-
-.toolbar-inner {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  height: var(--toolbar-h);
-}
-.toolbar-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-2);
-  color: var(--tx);
-  text-decoration: none;
-  font-family: var(--f-mono);
-  font-size: var(--fs-sm);
-  letter-spacing: var(--ls-snug);
-  transition: color var(--dur) var(--ease);
-}
-.toolbar-brand:hover { color: var(--tx); text-decoration: none; }
-.toolbar-brand .brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--brd);
-  border-radius: var(--r-xs);
-  color: var(--tx2);
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 1;
-  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
-}
-.toolbar-brand:hover .brand-mark { border-color: var(--tx3); color: var(--tx); }
-.toolbar-brand .brand-wordmark { font-weight: 500; color: var(--tx); }
-.toolbar-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .lang-sw {
   /* Sits inside the shared header.site nav. Marker on the right with a
      subtle separator from the nav links to its left. */
@@ -355,58 +308,6 @@ html { scroll-behavior: smooth; }
 .lang-sw button.on {
   color: var(--tx); font-weight: 700;
 }
-
-/* In-page section navigation — single source of truth, used in the
-   desktop toolbar AND mirrored in the mobile drawer. */
-.toolbar-nav {
-  display: flex; align-items: center; gap: 2px;
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.toolbar-nav::-webkit-scrollbar { display: none; }
-.toolbar-nav a {
-  position: relative;
-  font-size: 13px; font-weight: 500; color: var(--tx2);
-  padding: 8px 12px;
-  text-decoration: none;
-  border-radius: 6px;
-  white-space: nowrap;
-  transition: color 0.15s var(--ease), background 0.15s var(--ease);
-}
-.toolbar-nav a:hover { color: var(--tx); background: var(--bg2); text-decoration: none; }
-.toolbar-nav a.active {
-  color: var(--tx);
-  font-weight: 600;
-}
-.toolbar-nav a.active::after {
-  content: "";
-  position: absolute;
-  left: 12px; right: 12px; bottom: 2px;
-  height: 2px;
-  background: var(--vb-fg, currentColor);
-  border-radius: 1px;
-}
-
-/* Legacy aliases so any stale references keep compiling */
-.url-nav, .section-nav { display: flex; gap: 2px; align-items: center; }
-.url-nav a, .section-nav a {
-  font-size: 13px; font-weight: 500; color: var(--tx2);
-  padding: 8px 14px; text-decoration: none; border-radius: 6px;
-  transition: color 0.15s var(--ease), background 0.15s var(--ease);
-}
-.url-nav a:hover, .section-nav a:hover {
-  color: var(--tx); background: var(--bg2); text-decoration: none;
-}
-.tbtn {
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px; border: none;
-  border-radius: var(--r-sm); background: transparent; color: var(--tx3);
-  cursor: pointer; transition: color 0.15s var(--ease);
-}
-.tbtn:hover { color: var(--tx); }
-.tbtn svg { width: 16px; height: 16px; }
 
 /* ── Hero (sub-page generic header — not the shared header.site) ──
    Scoped with :not(.site) so the design-system shared header that wraps
@@ -573,159 +474,6 @@ header:not(.site)[style*="text-align: left"] .sub {
 .section-body {
   padding: 20px 24px 28px; border-top: 1px solid var(--brd2);
 }
-
-/* ── Hamburger button (visible <900 px only) ── */
-.hamburger {
-  display: none;
-  align-items: center; justify-content: center;
-  width: 36px; height: 36px; border: none;
-  border-radius: var(--r-sm); background: transparent; color: var(--tx2);
-  cursor: pointer; transition: color 0.15s var(--ease), background 0.15s var(--ease);
-}
-.hamburger:hover { color: var(--tx); background: var(--bg2); }
-.hamburger svg { width: 20px; height: 20px; }
-
-/* ── Mobile drawer — slides from the right; covers ~85 % of the
-   viewport width but leaves a peek so users see context. Single
-   source of truth for navigation on screens <760 px: section jumps,
-   subpage links, language switcher, verified credential all live
-   here.
-
-   Wrapper uses `hidden` HTML attribute when closed so the dialog is
-   genuinely off the accessibility tree AND can't be hit-tested by
-   the browser. JS toggles `hidden` + `.open` together so closed-state
-   is fully neutral.
-
-   Scrim sits BEFORE the panel in the DOM so default stacking puts
-   the panel on top — taps inside the open panel hit the panel,
-   never the scrim. z-index is also set explicitly for paranoia. ── */
-.mobile-menu {
-  position: fixed; inset: 0;
-  z-index: 200;
-}
-.mobile-menu[hidden] { display: none !important; }
-
-.mobile-menu-scrim {
-  position: absolute; inset: 0;
-  z-index: 1;
-  background: rgba(0, 0, 0, 0.42);
-  border: 0; padding: 0; cursor: pointer;
-  -webkit-appearance: none; appearance: none;
-  opacity: 0;
-  transition: opacity 240ms var(--ease, ease);
-}
-.mobile-menu.open .mobile-menu-scrim { opacity: 1; }
-
-.mobile-menu-panel {
-  position: absolute; top: 0; right: 0; bottom: 0;
-  z-index: 2;                                          /* always above scrim */
-  width: min(340px, 85vw);
-  background: var(--bg);
-  border-left: 1px solid var(--brd2);
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
-  display: flex; flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 280ms var(--ease, ease);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.mobile-menu.open .mobile-menu-panel { transform: translateX(0); }
-@media (prefers-reduced-motion: reduce) {
-  .mobile-menu-panel, .mobile-menu-scrim { transition: none; }
-}
-.mobile-menu-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--brd);
-  position: sticky; top: 0;
-  background: var(--bg);
-  z-index: 1;
-}
-.mobile-menu-title {
-  font-family: var(--f-mono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--tx3);
-  font-weight: 500;
-}
-.mobile-menu-close {
-  width: 36px; height: 36px;
-  border: 0; background: transparent; color: var(--tx2);
-  border-radius: 6px; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  transition: color 0.15s var(--ease), background 0.15s var(--ease);
-}
-.mobile-menu-close:hover { color: var(--tx); background: var(--bg2); }
-.mobile-menu-close svg { width: 18px; height: 18px; }
-.mobile-menu-section {
-  padding: 18px 12px 6px;
-}
-.mobile-menu-section + .mobile-menu-section {
-  border-top: 1px solid var(--brd);
-  padding-top: 14px;
-}
-.mobile-menu-label {
-  padding: 0 12px 8px;
-  font-family: var(--f-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--tx3);
-  font-weight: 500;
-}
-.mobile-menu-section a {
-  display: block;
-  padding: 11px 16px;
-  font-size: 15px;
-  font-weight: 400;
-  color: var(--tx);
-  text-decoration: none;
-  border-radius: 6px;
-  letter-spacing: -0.005em;
-  transition: color 0.15s var(--ease), background 0.15s var(--ease);
-}
-.mobile-menu-section a:hover {
-  background: var(--bg2);
-  text-decoration: none;
-}
-.mobile-menu-section a.active {
-  color: var(--vb-fg, var(--tx));
-  background: var(--bg2);
-  font-weight: 500;
-}
-.mobile-menu-foot {
-  margin-top: auto;
-  padding: 16px 18px 22px;
-  border-top: 1px solid var(--brd);
-  display: flex; flex-direction: column; gap: 12px;
-}
-.mobile-menu-langs {
-  display: flex; gap: 4px;
-}
-.mobile-menu-langs button {
-  flex: 1 1 auto;
-  padding: 8px 0;
-  font-family: var(--f-mono);
-  font-size: 12px; font-weight: 500;
-  letter-spacing: 0.04em; text-transform: uppercase;
-  border: 1px solid var(--brd);
-  background: transparent;
-  color: var(--tx3);
-  cursor: pointer;
-  border-radius: 6px;
-  transition: color 0.15s var(--ease), background 0.15s var(--ease),
-              border-color 0.15s var(--ease);
-}
-.mobile-menu-langs button:hover { color: var(--tx); background: var(--bg2); }
-.mobile-menu-langs button.on {
-  color: var(--tx);
-  background: var(--bg2);
-  border-color: var(--tx3);
-  font-weight: 700;
-}
-
-body.menu-open { overflow: hidden; }
 
 /* ── Charts ── */
 .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
@@ -1876,78 +1624,10 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   .demo-tab { padding: 10px 12px; font-size: 12px; }
 }
 
-/* ── Footer ─────────────────────────────────────────────── */
-.footer-v2 {
-  padding: clamp(48px, 6vw, 80px) 0 var(--s-7);
-  border-top: 1px solid var(--brd2);
-  margin-top: var(--gap-section);
-}
-.footer-cols {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(24px, 4vw, 56px);
-  margin-bottom: clamp(32px, 5vw, 48px);
-}
-.footer-col {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  min-width: 0;
-}
-.footer-col-head {
-  font-family: var(--f-mono);
-  font-size: var(--fs-2xs);
-  text-transform: uppercase;
-  letter-spacing: var(--ls-kicker);
-  color: var(--tx3);
-  margin: 0 0 var(--s-2);
-  font-weight: 600;
-}
-.footer-col a {
-  font-size: var(--fs-sm);
-  color: var(--tx2);
-  text-decoration: none;
-  transition: color var(--dur) var(--ease);
-  line-height: 1.5;
-}
-.footer-col a:hover { color: var(--tx); text-decoration: none; }
-.footer-badge {
-  font-family: var(--f-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: var(--ls-wide);
-  color: var(--tx3);
-  background: var(--bg2);
-  border: 1px solid var(--brd2);
-  border-radius: var(--r-xs);
-  padding: 3px 8px;
-  align-self: flex-start;
-  margin-top: var(--s-1);
-  font-weight: 600;
-}
-.footer-meta {
-  text-align: center;
-  font-size: var(--fs-xs);
-  color: var(--tx3);
-  padding-top: var(--s-6);
-  border-top: 1px solid var(--brd2);
-  line-height: 1.6;
-}
-.footer-meta #ts {
-  font-family: var(--f-mono);
-  font-size: var(--fs-2xs);
-  margin-bottom: var(--s-1);
-  color: var(--tx3);
-  letter-spacing: 0.01em;
-}
-.footer-meta a {
-  color: var(--tx3);
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
-}
-.footer-meta a:hover { color: var(--tx2); border-bottom-color: var(--brd2); }
-.footer-meta .sep { color: var(--brd); margin: 0 var(--s-3); }
+/* (Legacy .footer-v2 / .footer-cols / .footer-col / .footer-meta /
+   .footer-badge rules removed 2026-05-02 — markup replaced by the
+   shared design-system footer.site, which owns its own 4-col grid +
+   typography in /docs/static/css/design-system.css.) */
 /* ══════════════════════════════════════════════════════════════
    Responsive tiers — single source of truth for landing-page
    breakpoints. Use a coherent 4-step cascade:
@@ -1957,21 +1637,9 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
      • ≤ 420 px  — tiny-screen special case (hero facts wrap)
    ══════════════════════════════════════════════════════════════ */
 
-/* ── ≤ 760 px ── */
-@media (max-width: 760px) {
-  .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-7); }
-}
-
 /* ── ≤ 640 px ── */
 @media (max-width: 640px) {
   .section-heading { margin-bottom: var(--s-5); padding-bottom: var(--s-2); }
-}
-
-/* ── ≤ 480 px ── */
-@media (max-width: 480px) {
-  .footer-cols { grid-template-columns: 1fr; gap: var(--s-6); }
-  .footer-meta .sep { display: none; }
-  .footer-meta > span { display: block; }
 }
 
 
@@ -1980,30 +1648,9 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
    on /entscheide/, /gesetze/, /mcp/, /ueber/. Same breakpoint cascade
    as the landing page but applied to sub-page components. */
 
-/* ── Toolbar responsive breakpoints — single source of truth ────────
-   Strategy: progressive disclosure. Show as much as fits on the
-   current screen; never overflow horizontally; always keep the
-   brand + the means of navigation visible.  */
-
-/* ≤ 980 px — language switcher moves into the drawer (limited toolbar
-   real-estate; theme stays so users can still flip dark/light without
-   opening the menu). */
-@media (max-width: 980px) {
-  .toolbar-right .lang-sw { display: none; }
-}
-
-/* ≤ 760 px — drop the in-page nav; hamburger takes over. */
-@media (max-width: 760px) {
-  .toolbar-nav { display: none; }
-  .hamburger { display: inline-flex; }
-}
-
-/* ≤ 480 px — tighten the brand wordmark + spacing */
-@media (max-width: 480px) {
-  .toolbar-inner { gap: 12px; }
-  .toolbar-brand { font-size: 13px; }
-  .toolbar-brand .brand-mark { width: 22px; height: 22px; font-size: 12px; }
-}
+/* (Legacy toolbar / hamburger / brand-mark @media rules removed —
+   shared design-system header.site owns its own responsive contract:
+   horizontal-scroll nav at <720px, brand collapses to logo at <480px.) */
 
 /* ≤ 768 px — sub-page two-col → one-col */
 @media (max-width: 768px) {
@@ -2059,8 +1706,6 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   .cc2 .cv { font-size: var(--fs-xs); }
   .cn { max-width: 120px; }
   .ct th, .ct td { padding: 6px 8px; font-size: var(--fs-xs); }
-  .toolbar-inner { height: 48px; }
-  .lang-sw button { padding: 2px 5px; font-size: var(--fs-2xs); min-height: 40px; }
   .hero-links { gap: 6px; }
   .hero-links a { padding: 5px 8px; font-size: var(--fs-2xs); }
   header h1 { font-size: 1.4rem; }
