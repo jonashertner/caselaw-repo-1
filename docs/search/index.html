@@ -11,6 +11,12 @@
 <meta property="og:description" content="971,000+ published Swiss court decisions, free full-text search.">
 <meta property="og:url" content="https://opencaselaw.ch/search/">
 <meta property="og:type" content="website">
+<!-- This page's logic lives entirely in inline JS, so a stale HTML cache
+     means stale JS. Force always-revalidate on this single URL — the
+     payload is small (~13 KB) and the freshness matters more than the
+     bandwidth save. -->
+<meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <link rel="stylesheet" href="/static/css/design-system.css?v=2">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
@@ -409,6 +415,24 @@ async function runSearch(q, lang, offset) {
     const data = await r.json();
     const ms = Math.round(performance.now() - t0);
     const total = data.total ?? (data.results || []).length;
+
+    // Sanity check: if `total` looks like the entire corpus the API has
+    // ignored our `query=` filter (older versions accepted only `q=`,
+    // and the wrong param silently returned every decision sorted by
+    // date). Surface this clearly instead of pretending the noise is
+    // a result set.
+    if (total >= 500000 && q.length > 0) {
+      const list = $('#results');
+      clear(list);
+      list.appendChild(el('li', {
+        class: 'error',
+        text: `The API returned the unfiltered corpus (${fmtNum(total)} rows). This usually means the page JS is stale — hard-refresh (⌘⇧R / Ctrl+Shift+R) to load the latest version.`,
+      }));
+      $('#meta').hidden = true;
+      $('#pager').hidden = true;
+      return;
+    }
+
     setMeta(`${fmtNum(total)} matching decisions  ·  ${ms} ms`);
     renderResults(data, q);
     renderPager(total, offset || 0, q, lang);
