@@ -197,16 +197,11 @@
   --spark: #60a5fa;
 }
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-/* overflow-x: clip (not hidden) is critical — hidden creates a scroll
-   container that breaks position: sticky on all descendants. The
-   `hidden` fallback handles Safari 15 and earlier where `clip` is
-   unsupported; those users lose sticky positioning but keep overflow
-   protection. */
-html {
-  overflow-x: hidden;
-  overflow-x: clip;
-  scroll-behavior: smooth;
-}
+/* overflow-x clipping is removed — both `hidden` AND `clip` break
+   `position: sticky` on the design-system shared header.site. If a
+   wide chart or strip ever bleeds, address it on that element with
+   `max-width: 100%` rather than clipping the page-level scrollbar. */
+html { scroll-behavior: smooth; }
 body {
   font-family: var(--f-sans);
   font-size: var(--fs-md);
@@ -218,8 +213,6 @@ body {
   font-feature-settings: "kern", "ss01", "cv05";
   text-rendering: optimizeLegibility;
   transition: background var(--dur-slow) var(--ease), color var(--dur-slow) var(--ease);
-  overflow-x: hidden;
-  overflow-x: clip;
 }
 .w { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--gutter-x); }
 /* Default link styling: neutral text colour, no underline. Class-styled
@@ -228,8 +221,11 @@ body {
    set text-decoration:none to avoid double-underlining.
    Naked anchors inside prose contexts get a subtle underline-on-hover
    so they remain discoverable in body copy. */
-a { color: var(--tx); text-decoration: none; transition: color 0.18s var(--ease); }
-a:hover { color: var(--tx2); }
+/* Naked link defaults — scoped to <main> so the shared design-system
+   header.site / footer.site keep their own underline-on-hover affordance
+   from design-system.css. */
+main a { color: var(--tx); text-decoration: none; transition: color 0.18s var(--ease); }
+main a:hover { color: var(--tx2); }
 .landing-prose a,
 .connect-paragraph a,
 .connect-note a,
@@ -340,6 +336,11 @@ html { scroll-behavior: smooth; }
 .toolbar-brand .brand-wordmark { font-weight: 500; color: var(--tx); }
 .toolbar-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .lang-sw {
+  /* Sits inside the shared header.site nav. Marker on the right with a
+     subtle separator from the nav links to its left. */
+  margin-left: auto;
+  padding-left: var(--s-3);
+  border-left: 1px solid var(--brd, var(--border));
   display: flex; gap: 0; align-items: center;
   margin-right: 4px;
 }
@@ -407,23 +408,25 @@ html { scroll-behavior: smooth; }
 .tbtn:hover { color: var(--tx); }
 .tbtn svg { width: 16px; height: 16px; }
 
-/* ── Hero ── */
-header { padding: 80px 0 24px; text-align: center; position: relative; }
-header::before { display: none; }
-header h1 {
+/* ── Hero (sub-page generic header — not the shared header.site) ──
+   Scoped with :not(.site) so the design-system shared header that wraps
+   the brand + nav stays untouched by this hero rule. */
+header:not(.site) { padding: 80px 0 24px; text-align: center; position: relative; }
+header:not(.site)::before { display: none; }
+header:not(.site) h1 {
   font-size: var(--fs-3xl); font-weight: 600;
   letter-spacing: -0.03em; line-height: 1.1;
 }
-header h1 .ch { color: var(--ac); }
-header .sub {
+header:not(.site) h1 .ch { color: var(--ac); }
+header:not(.site) .sub {
   color: var(--tx2); font-size: var(--fs-md); margin-top: 10px;
   font-weight: 400; max-width: 540px; margin-left: auto; margin-right: auto;
   line-height: 1.6;
 }
 /* When a header is explicitly left-aligned, the .sub paragraph should
    line up to the same left edge as the h1 — not stay margin:auto centered. */
-header[style*="text-align:left"] .sub,
-header[style*="text-align: left"] .sub {
+header:not(.site)[style*="text-align:left"] .sub,
+header:not(.site)[style*="text-align: left"] .sub {
   margin-left: 0;
   max-width: 64ch;
 }
@@ -922,20 +925,22 @@ body.menu-open { overflow: hidden; }
   line-height: 1.6;
 }
 
-/* ── Footer ── */
-footer {
+/* ── Generic page footer (sub-pages only). The shared design-system
+   footer.site owns its own layout via design-system.css; scoped with
+   :not(.site) so the 4-col grid + underline affordances aren't smashed. */
+footer:not(.site) {
   text-align: center; padding: 48px 0 64px; color: var(--tx3);
   font-size: var(--fs-xs); border-top: 1px solid var(--brd2);
   margin-top: 48px;
 }
-footer a { color: var(--tx2); text-decoration: none; transition: color 0.18s var(--ease), border-color 0.18s var(--ease); }
-footer a:hover { color: var(--tx); text-decoration: none; }
-footer .foot-links { display: flex; gap: 20px; justify-content: center; margin-bottom: 10px; }
-footer .foot-links a {
+footer:not(.site) a { color: var(--tx2); text-decoration: none; transition: color 0.18s var(--ease), border-color 0.18s var(--ease); }
+footer:not(.site) a:hover { color: var(--tx); text-decoration: none; }
+footer:not(.site) .foot-links { display: flex; gap: 20px; justify-content: center; margin-bottom: 10px; }
+footer:not(.site) .foot-links a {
   font-weight: 400; text-decoration: none; padding: 4px 0;
   border-bottom: 1px solid transparent;
 }
-footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); text-decoration: none; }
+footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); text-decoration: none; }
 
 /* ── States ── */
 .ld { text-align: center; padding: 32px 0; color: var(--tx3); font-size: var(--fs-base); }
@@ -2018,14 +2023,12 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   .kpis { gap: var(--s-8); }
 }
 
-/* ≤ 640 px — sub-page mobile */
+/* ≤ 640 px — sub-page mobile (scoped away from shared header.site) */
 @media (max-width: 640px) {
-  header { padding: var(--s-9) 0 var(--s-3); }
-  header h1 { font-size: 1.75rem; }
-  header::before { width: 100%; }
+  header:not(.site) { padding: var(--s-9) 0 var(--s-3); }
+  header:not(.site) h1 { font-size: 1.75rem; }
+  header:not(.site)::before { width: 100%; }
   .section-nav { display: none; }
-  .brand-wordmark { display: none; }
-  .lang-sw button { padding: 6px 4px; font-size: 10px; }
   .lang-sw { margin-right: 0; }
   .kpis { gap: var(--s-7); margin: var(--s-7) 0 var(--s-1); }
   .kpi-v { font-size: 1.75rem; }
