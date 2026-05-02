@@ -580,7 +580,9 @@ footer.site a:hover { color: var(--text); text-decoration: underline; }
 .lang-switch {
   display: inline-flex;
   gap: var(--s-1);
-  margin-left: var(--s-3);
+  /* Push to the right edge of the nav with a divider — matches the
+     landing's `.lang-sw` placement so /word/* and / look identical. */
+  margin-left: auto;
   padding-left: var(--s-3);
   border-left: 1px solid var(--border);
   flex: 0 0 auto;
