@@ -387,9 +387,40 @@ footer.site a:hover { color: var(--text); text-decoration: underline; }
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
 }
-.input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .input::placeholder { color: var(--text-3); }
 .input--lg { padding: 12px 16px; }
+
+/* ── Skip-to-content (a11y) ──────────────────────────────────
+   Hidden until keyboard-focused; jumps to <main id="main">. */
+.skip-link {
+  position: absolute;
+  left: var(--s-3); top: var(--s-3);
+  padding: 8px 14px;
+  background: var(--text);
+  color: var(--bg);
+  text-decoration: none;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  z-index: 1000;
+  transform: translateY(calc(-100% - var(--s-3)));
+  transition: transform var(--t-fast) var(--ease);
+}
+.skip-link:focus,
+.skip-link:focus-visible { transform: translateY(0); outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ── Keyboard focus on every interactive primitive ──────────── */
+.filter-pill:focus-visible,
+.lang-switch a:focus-visible,
+.lang-sw button:focus-visible,
+.brand:focus-visible,
+header.site nav a:focus-visible,
+footer.site a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
 
 /* ── Search bar (hero-level: flex row + flex-grow input + button) ── */
 .search-bar {
