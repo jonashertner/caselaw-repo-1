@@ -40,6 +40,9 @@ web_ui/node_modules/
 # references them as DefaultIconUrl / HighResolutionIconUrl), so the
 # blanket *.png ignore would orphan them from the deploy script.
 !tools/word-addin/assets/*.png
+# docs/static/img/ is the public-static asset surface (served by GH Pages
+# under opencaselaw.ch/static/img/) — must be tracked.
+!docs/static/img/*.png
 .playwright-mcp/
 desktop_extension/
 search_stack/finetune_embeddings.py

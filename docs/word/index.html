@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenCaseLaw für Microsoft Word — Schweizer Rechtsprechung in jedem Dokument</title>
+<meta name="description" content="971'000+ Schweizer Gerichtsentscheide direkt in Word durchsuchen, zitieren und prüfen. Free, optional Pro CHF 5/Monat. Microsoft AppSource verifiziert.">
+<link rel="canonical" href="https://opencaselaw.ch/word/">
+<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/word/">
+<link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/word/?lang=fr">
+<link rel="alternate" hreflang="it" href="https://opencaselaw.ch/word/?lang=it">
+<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/word/?lang=en">
+<meta property="og:title" content="OpenCaseLaw für Microsoft Word">
+<meta property="og:description" content="971'000+ Schweizer Gerichtsentscheide direkt in Word durchsuchen, zitieren und prüfen.">
+<meta property="og:image" content="https://opencaselaw.ch/static/img/word-welcome.png">
+<meta property="og:url" content="https://opencaselaw.ch/word/">
+<meta property="og:type" content="website">
+<meta name="robots" content="index, follow">
+<link rel="stylesheet" href="/static/css/design-system.css?v=1">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+.word-hero { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); align-items: center; }
+@media (max-width: 880px) { .word-hero { grid-template-columns: 1fr; } }
+.word-hero img { border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-3); }
+.howto { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--s-5); counter-reset: step; }
+.howto .step { position: relative; padding-left: var(--s-6); }
+.howto .step::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-family: var(--f-mono); font-weight: 500; display: flex; align-items: center; justify-content: center; font-size: var(--t-md); }
+.howto .step h3 { font-size: var(--t-base); font-weight: 500; margin-bottom: var(--s-2); }
+.howto .step p { color: var(--text-2); font-size: var(--t-md); line-height: 1.6; }
+.proof { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-5); }
+@media (max-width: 720px) { .proof { grid-template-columns: 1fr; } }
+.proof blockquote { font-family: var(--f-serif); font-size: var(--t-lg); line-height: 1.5; padding: var(--s-5); border-left: 3px solid var(--accent); background: var(--bg-soft); margin: 0; border-radius: var(--radius-sm); color: var(--text); }
+.proof blockquote cite { display: block; margin-top: var(--s-3); font-family: var(--f-sans); font-style: normal; font-size: var(--t-sm); color: var(--text-2); }
+.lang-switch { display: inline-flex; gap: var(--s-2); margin-left: var(--s-3); }
+.lang-switch a { font-family: var(--f-mono); font-size: var(--t-xs); padding: 4px 8px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-2); }
+.lang-switch a.active, .lang-switch a:hover { background: var(--bg-soft); color: var(--text); }
+.screenshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-4); }
+.screenshot-grid figure { margin: 0; }
+.screenshot-grid img { border-radius: var(--radius); border: 1px solid var(--border); }
+.screenshot-grid figcaption { font-size: var(--t-sm); color: var(--text-2); margin-top: var(--s-2); }
+.cta-row { display: inline-flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; }
+.appsource-badge { display: inline-flex; align-items: center; gap: var(--s-2); padding: 12px 20px; background: var(--text); color: var(--bg); border-radius: var(--radius); font-weight: 500; text-decoration: none; font-size: var(--t-base); transition: transform var(--t-fast) var(--ease); }
+.appsource-badge:hover { transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) { .appsource-badge:hover { transform: none; } }
+.appsource-badge svg { width: 18px; height: 18px; flex: 0 0 auto; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">⊙</span>
+      <span>OpenCaseLaw</span>
+    </a>
+    <nav>
+      <a href="/">Übersicht</a>
+      <a href="/entscheide/">Entscheide</a>
+      <a href="/gesetze/">Gesetze</a>
+      <a href="/word/" class="active">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/quality.html">Qualität</a>
+      <span class="lang-switch" aria-label="Sprache">
+        <a href="?lang=de" class="active">DE</a>
+        <a href="?lang=fr">FR</a>
+        <a href="?lang=it">IT</a>
+        <a href="?lang=en">EN</a>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="container hero">
+    <div class="word-hero">
+      <div>
+        <p class="eyebrow">Microsoft AppSource — verifiziert</p>
+        <h1>Schweizer Rechtsprechung. Direkt in Ihrem Word-Dokument.</h1>
+        <p class="lede">Suchen Sie 971'000+ Gerichtsentscheide aus 108 Gerichten, fügen Sie korrekt formatierte Zitate ein und prüfen Sie jede Zitierung in Ihrem Entwurf — ohne Word zu verlassen.</p>
+        <div class="hero-actions">
+          <a class="appsource-badge" href="https://marketplace.microsoft.com/en-us/product/office/WA200010700" rel="noopener" target="_blank">
+            <svg viewBox="0 0 23 23" fill="currentColor" aria-hidden="true"><path d="M0 0h11v11H0zM12 0h11v11H12zM0 12h11v11H0zM12 12h11v11H12z"/></svg>
+            Im Microsoft AppSource installieren
+          </a>
+          <a class="btn" href="#how">So funktioniert's</a>
+        </div>
+        <p class="hero-meta">Free Core-Funktionen · Optional Pro CHF 5/Monat via Stripe · jederzeit kündbar</p>
+      </div>
+      <div>
+        <img src="/static/img/word-welcome.png" alt="OpenCaseLaw als Word-Aufgabenbereich mit Suchfeld und Trefferliste" loading="eager" width="900" height="600">
+      </div>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="stats">
+      <div class="stat"><div class="num">971'067</div><div class="label">Gerichtsentscheide</div></div>
+      <div class="stat"><div class="num">108</div><div class="label">Gerichte (CH + Kantone)</div></div>
+      <div class="stat"><div class="num">5'510</div><div class="label">Bundesgesetze</div></div>
+      <div class="stat"><div class="num">15'722</div><div class="label">Kantonale Erlasse</div></div>
+      <div class="stat"><div class="num">29</div><div class="label">MCP-Tools live</div></div>
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2>Drei Aktionen, ein Klick</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">🔍</div>
+        <h3>Suchen</h3>
+        <p>Volltextsuche über 971'000 Entscheide direkt aus dem Schreibfluss. Boolean, Regeste, Aktenzeichen, BGE-Referenz, Artikel-Lookup. Sprache des Treffers folgt der Originalsprache des Entscheids (DE/FR/IT).</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📋</div>
+        <h3>Zitieren</h3>
+        <p>Korrekt formatierte Zitate in DE/FR/IT/EN — Bundesgericht, BVGer, BStGer, alle Kantonsgerichte. Pinpoint auf Erwägung möglich. Ein Klick fügt den Standardtext direkt am Cursor ein.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">✓</div>
+        <h3>Prüfen</h3>
+        <p>Optional Pro: Jede Zitierung im Entwurf wird gegen den Live-Korpus geprüft. Erfundene BGE-Nummern, falsche Aktenzeichen, ungenaue Pinpoints werden direkt im Dokument als Word-Kommentar markiert.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section container" id="how">
+    <h2>So funktioniert's</h2>
+    <div class="howto">
+      <div class="step"><h3>Installieren</h3><p>Microsoft AppSource → "Get it now". Free, ohne Konto, ohne Kreditkarte. Funktioniert in Word für Windows, macOS und Web.</p></div>
+      <div class="step"><h3>Öffnen</h3><p>Word → Reiter „Einfügen" → „Add-Ins" → OpenCaseLaw. Aufgabenbereich erscheint rechts neben dem Dokument.</p></div>
+      <div class="step"><h3>Suchen</h3><p>Stichwort, BGE-Referenz oder Aktenzeichen ins Suchfeld. Lebende Trefferliste mit Court-Name, Datum, Regeste-Auszug, Citation-Count.</p></div>
+      <div class="step"><h3>Einfügen</h3><p>Karte anklicken oder Pfeil-Tasten + Enter — die Zitation landet exakt am Cursor in der gewählten Sprache. Bestätigung via Toast.</p></div>
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2>Screenshots</h2>
+    <div class="screenshot-grid">
+      <figure><img src="/static/img/word-welcome.png" alt="Aufgabenbereich nach Installation"><figcaption>Aufgabenbereich beim ersten Start — Sprache auto-erkannt aus Office-Locale.</figcaption></figure>
+      <figure><img src="/static/img/word-law.png" alt="Gesetzesartikel in der Detailansicht"><figcaption>Gesetzes-Lookup — Art. + Abs./al./cpv. korrekt lokalisiert.</figcaption></figure>
+      <figure><img src="/static/img/word-decision.png" alt="Entscheid-Detailansicht mit Erwägungen"><figcaption>Entscheid-Detail mit strukturierten Erwägungen + Pinpoint-Insert.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2>Im Einsatz</h2>
+    <div class="proof">
+      <blockquote>
+        Erste kantonale Behörde, die täglich auf opencaselaw.ch zugreift — über die MCP-Schnittstelle des Add-Ins. Echte Praktiker-Anfragen, von Tag eins.
+        <cite>— Etat du Valais (sci-ava-opencaselaw-mcp/1.0)</cite>
+      </blockquote>
+      <blockquote>
+        322'825 Sessions im April 2026 von claude.ai-Nutzern — die gleiche Datenbank, die das Add-In nutzt, beweist sich täglich gegen Millionen Anfragen.
+        <cite>— Anonymisierte Telemetrie, Mai 2026</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section container">
+    <h2>Preis</h2>
+    <div class="pricing">
+      <div class="card">
+        <h3>Free</h3>
+        <div class="price">CHF 0<span class="unit"> / Monat</span></div>
+        <ul>
+          <li>Suche 971'000+ Entscheide</li>
+          <li>Zitieren in DE/FR/IT/EN</li>
+          <li>Bundes- + Kantonalgesetze</li>
+          <li>Doctrine + Materialien</li>
+          <li>Ohne Konto, ohne Karte</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color: var(--accent);">
+        <h3>Pro</h3>
+        <div class="price">CHF 5<span class="unit"> / Monat</span></div>
+        <ul>
+          <li>Alles aus Free</li>
+          <li>KI-Referenzprüfung (Pro-Tier)</li>
+          <li>Argumentsuche aus Selektion</li>
+          <li>Dokumentscan + Auto-Kommentar</li>
+          <li>Stripe-Abo, jederzeit kündbar</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: var(--s-4); font-size: var(--t-sm);">
+      Pro wird über Stripe abgerechnet (Microsoft-Marketplace-Richtlinie 1100.1.3 transparent ausgewiesen). Erste 100 Verifikationen pro Tag inklusive; keine versteckten Gebühren.
+    </p>
+  </section>
+
+  <section class="section container faq" style="max-width: var(--max-w-prose); margin: 0 auto;">
+    <h2>FAQ</h2>
+    <details>
+      <summary>Welche Sprachen unterstützt das Add-In?</summary>
+      <p>Die Oberfläche erscheint in DE, FR, IT und EN — automatisch aus der Office-Locale, manuell umstellbar. Suche, Zitierformate und Gesetzes-Abkürzungen folgen Schweizer Konvention pro Sprache (DE „Abs.", FR „al.", IT „cpv.").</p>
+    </details>
+    <details>
+      <summary>Datenschutz — werden meine Suchanfragen gespeichert?</summary>
+      <p>Nein. Wir loggen weder Inhalte Ihres Dokuments noch personalisierte Suchanfragen. Aggregierte, differenziell-private Telemetrie nur, falls Sie zugestimmt haben. Voll dokumentiert in der <a href="/datenschutz/">Datenschutzerklärung</a>.</p>
+    </details>
+    <details>
+      <summary>Kann ich Pro jederzeit kündigen?</summary>
+      <p>Ja, vollständig im Stripe-Billing-Portal. Keine Kündigungsfrist. Free-Funktionen bleiben unverändert verfügbar.</p>
+    </details>
+    <details>
+      <summary>Funktioniert es auch in Word für Mac und Word Web?</summary>
+      <p>Ja. Office.js läuft in Word Win, Mac, Web (Microsoft 365). Das Add-In benötigt eine Internet-Verbindung zur Live-Datenbank (mcp.opencaselaw.ch).</p>
+    </details>
+    <details>
+      <summary>Gibt es eine Self-Hosting-Variante?</summary>
+      <p>Ja — der gesamte Korpus liegt unter CC-BY-4.0 auf <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">Hugging Face</a>, und der MCP-Server-Code ist MIT-lizenziert auf <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a>. Kanzleien mit eigener Infrastruktur können den vollen Stack lokal betreiben.</p>
+    </details>
+    <details>
+      <summary>Wie aktuell sind die Daten?</summary>
+      <p>Bundesgericht (BGer): in der Regel innerhalb von 15 Minuten nach Veröffentlichung im Document Service. Alle anderen Quellen: täglich via nightly publish (03:30 UTC). Live-Status auf <a href="/quality.html">opencaselaw.ch/quality.html</a>.</p>
+    </details>
+    <details>
+      <summary>Was ist OpenCaseLaw?</summary>
+      <p>OpenCaseLaw ist eine offene Infrastruktur für Schweizer Rechtsprechung — 971'000 Entscheide aus 108 Gerichten, 6.5 Mio. Zitations-Edges, 29 MCP-Tools, 4-Layer-Qualitäts-Framework. Das Word-Add-In ist eine von mehreren Oberflächen; siehe auch das <a href="/mcp/">MCP-Setup</a> für Claude.ai/ChatGPT/Gemini sowie das <a href="/paper/">Forschungs-Paper</a>.</p>
+    </details>
+  </section>
+
+  <section class="section container center">
+    <h2 style="margin-bottom: var(--s-3);">Bereit?</h2>
+    <p class="lede" style="margin: 0 auto var(--s-5);">Drei Klicks zum installierten Add-In. Free Core-Funktionen sofort verfügbar, ohne Konto.</p>
+    <div class="cta-row" style="justify-content: center;">
+      <a class="appsource-badge" href="https://marketplace.microsoft.com/en-us/product/office/WA200010700" rel="noopener" target="_blank">
+        <svg viewBox="0 0 23 23" fill="currentColor" aria-hidden="true"><path d="M0 0h11v11H0zM12 0h11v11H12zM0 12h11v11H0zM12 12h11v11H12z"/></svg>
+        Im Microsoft AppSource installieren
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/">
+        <span class="logo">⊙</span>
+        <span>OpenCaseLaw</span>
+      </a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Offene Schweizer Rechtsprechung. CC-BY-4.0. 4-Layer-Qualitäts-Framework. Public-good infrastructure.
+      </p>
+    </div>
+    <div>
+      <h4>Daten</h4>
+      <ul>
+        <li><a href="/entscheide/">Entscheide</a></li>
+        <li><a href="/gesetze/">Gesetze</a></li>
+        <li><a href="/quality.html">Qualität</a></li>
+        <li><a href="/coverage/">Abdeckung</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Zugang</h4>
+      <ul>
+        <li><a href="/word/">Word-Add-In</a></li>
+        <li><a href="/mcp/">MCP-Server</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Über</h4>
+      <ul>
+        <li><a href="/ueber/">Mission</a></li>
+        <li><a href="/paper/">Forschung</a></li>
+        <li><a href="/datenschutz/">Datenschutz</a></li>
+        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Korpus CC-BY-4.0 · Code MIT · Schweiz
+  </div>
+</footer>
+
+</body>
+</html>
