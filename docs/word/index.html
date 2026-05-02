@@ -17,34 +17,8 @@
 <meta property="og:url" content="https://opencaselaw.ch/word/">
 <meta property="og:type" content="website">
 <meta name="robots" content="index, follow">
-<link rel="stylesheet" href="/static/css/design-system.css?v=4">
+<link rel="stylesheet" href="/static/css/design-system.css?v=5">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<style>
-.word-hero { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); align-items: center; }
-@media (max-width: 880px) { .word-hero { grid-template-columns: 1fr; } }
-.word-hero img { border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-3); }
-.howto { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--s-5); counter-reset: step; }
-.howto .step { position: relative; padding-left: var(--s-6); }
-.howto .step::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-family: var(--f-mono); font-weight: 500; display: flex; align-items: center; justify-content: center; font-size: var(--t-md); }
-.howto .step h3 { font-size: var(--t-base); font-weight: 500; margin-bottom: var(--s-2); }
-.howto .step p { color: var(--text-2); font-size: var(--t-md); line-height: 1.6; }
-.proof { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-5); }
-@media (max-width: 720px) { .proof { grid-template-columns: 1fr; } }
-.proof blockquote { font-family: var(--f-serif); font-size: var(--t-lg); line-height: 1.5; padding: var(--s-5); border-left: 3px solid var(--accent); background: var(--bg-soft); margin: 0; border-radius: var(--radius-sm); color: var(--text); }
-.proof blockquote cite { display: block; margin-top: var(--s-3); font-family: var(--f-sans); font-style: normal; font-size: var(--t-sm); color: var(--text-2); }
-.lang-switch { display: inline-flex; gap: var(--s-2); margin-left: var(--s-3); }
-.lang-switch a { font-family: var(--f-mono); font-size: var(--t-xs); padding: 4px 8px; border-radius: var(--radius-sm); text-decoration: none; color: var(--text-2); }
-.lang-switch a.active, .lang-switch a:hover { background: var(--bg-soft); color: var(--text); }
-.screenshot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-4); }
-.screenshot-grid figure { margin: 0; }
-.screenshot-grid img { border-radius: var(--radius); border: 1px solid var(--border); }
-.screenshot-grid figcaption { font-size: var(--t-sm); color: var(--text-2); margin-top: var(--s-2); }
-.cta-row { display: inline-flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; }
-.appsource-badge { display: inline-flex; align-items: center; gap: var(--s-2); padding: 12px 20px; background: var(--text); color: var(--bg); border-radius: var(--radius); font-weight: 500; text-decoration: none; font-size: var(--t-base); transition: transform var(--t-fast) var(--ease); }
-.appsource-badge:hover { transform: translateY(-1px); }
-@media (prefers-reduced-motion: reduce) { .appsource-badge:hover { transform: none; } }
-.appsource-badge svg { width: 18px; height: 18px; flex: 0 0 auto; }
-</style>
 </head>
 <body>
 
