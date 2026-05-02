@@ -36,7 +36,18 @@ var state = {
   // checked from the current results list. Cleared on new search,
   // view change away from search, or explicit "Clear" action.
   selectedIds: [],
+  // Keyboard-traversed result index in the search view. -1 = no card focused.
+  // Up/Down arrows move it; render() applies `.is-focused` to the matching
+  // .result-card; Enter inserts the focused card's citation; Right Arrow
+  // opens its detail. Reset to -1 on every new search / view change.
+  focusedIdx: -1,
 };
+
+// In-memory prefetch cache for hovered result cards. Keys are decision_id;
+// values are the resolved getDecisionDetail payload. Bounded by the size of
+// the current results list so it never grows unbounded across searches.
+var _prefetchCache = {};
+var _prefetchTimers = {};
 
 // SVG icon library — single source of truth for chrome-free, line-icon glyphs.
 // Each function returns a string (escape-safe; no user input concatenated).
@@ -219,6 +230,47 @@ function initApp() {
       e.preventDefault();
       insertCitation(state.results[0]);
       return;
+    }
+
+    // Arrow-key navigation through result cards (search view only).
+    // Up/Down move the focused index; Enter inserts the focused card;
+    // Right Arrow opens detail; Left Arrow / Escape clears focus.
+    // We intentionally avoid render() so navigation feels snappy — DOM
+    // class flip + scrollIntoView only.
+    if (!meta && state.view === 'search' && state.results.length > 0) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        // If user is mid-typing in the search bar with Shift held, leave
+        // arrow keys to the input (selection extension etc.).
+        if (inField && document.activeElement &&
+            document.activeElement.id === 'search-input' && !e.shiftKey) {
+          // Allow arrow nav to take over even from the input — most
+          // search UIs (Spotlight, Quicksilver, Google) work this way.
+        }
+        e.preventDefault();
+        var dir = (e.key === 'ArrowDown') ? 1 : -1;
+        var nextIdx = state.focusedIdx + dir;
+        if (nextIdx < 0) nextIdx = 0;
+        if (nextIdx >= state.results.length) nextIdx = state.results.length - 1;
+        _moveResultFocus(nextIdx);
+        return;
+      }
+      if (state.focusedIdx >= 0 && state.focusedIdx < state.results.length) {
+        if (!inField && e.key === 'Enter') {
+          e.preventDefault();
+          insertCitation(state.results[state.focusedIdx]);
+          return;
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          showDetail(state.results[state.focusedIdx]);
+          return;
+        }
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          _moveResultFocus(-1);
+          return;
+        }
+      }
     }
   });
 
@@ -574,7 +626,10 @@ function renderSearch() {
   }
 
   if (state.loading) {
-    html += '<div class="loading-spinner"><div class="spinner"></div><span>' + escHtml(t('loading', lang)) + '</span></div>';
+    // Skeleton screens (CSS already shipping) replace the bare spinner so the
+    // layout doesn't jump when results land — keeps perceived response fast.
+    // The text is for screen readers only via the polite live region.
+    html += renderResultsSkeleton();
   } else if (state.error) {
     html += renderError();
   } else if (state.results.length === 0 && state.query && !state.lawResult) {
@@ -664,8 +719,11 @@ function renderResultCard(r, idx) {
   var selected = state.selectedIds.indexOf(did) >= 0;
   var checkAria = t(selected ? 'multi_deselect_aria' : 'multi_select_aria', lang);
 
+  var focused = (state.focusedIdx === idx);
   return '<div class="result-card' + (selected ? ' result-card-selected' : '') +
-    '" data-action="detail" data-idx="' + idx + '" tabindex="0" role="button">' +
+    (focused ? ' is-focused' : '') +
+    '" data-action="detail" data-idx="' + idx + '" data-decision-id="' +
+    escHtml(did) + '" tabindex="0" role="button">' +
     '<div class="result-header">' +
     '<input type="checkbox" class="result-select" data-action="toggle-select" ' +
     'data-id="' + escHtml(did) + '" data-idx="' + idx + '" ' +
@@ -1321,6 +1379,104 @@ function renderSkeletonLines(n) {
   return html;
 }
 
+// Search-results skeleton — three result-card-shaped placeholders.
+// Replaces the bare spinner so the layout doesn't jump when results
+// arrive (CLS = 0) and the user feels a faster perceived response.
+function renderResultsSkeleton() {
+  function card() {
+    return '<div class="skeleton-card">' +
+      '<div class="skeleton-line" style="width:35%;height:14px;"></div>' +
+      '<div class="skeleton-line" style="width:55%;height:11px;margin-top:6px;"></div>' +
+      '<div class="skeleton-line" style="margin-top:12px;"></div>' +
+      '<div class="skeleton-line short"></div>' +
+    '</div>';
+  }
+  return '<div class="results-skeleton" aria-hidden="true">' +
+    card() + card() + card() +
+  '</div>';
+}
+
+// Move the keyboard focus to a result card. -1 clears focus.
+// Doesn't trigger a full render — just swaps the .is-focused class
+// and scrolls the new card into view. State stays in sync so any
+// subsequent render() picks up the right card.
+function _moveResultFocus(newIdx) {
+  var prev = document.querySelector('.result-card.is-focused');
+  if (prev) prev.classList.remove('is-focused');
+  state.focusedIdx = newIdx;
+  if (newIdx < 0) return;
+  var next = document.querySelector('.result-card[data-idx="' + newIdx + '"]');
+  if (!next) return;
+  next.classList.add('is-focused');
+  if (typeof next.scrollIntoView === 'function') {
+    try { next.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+  }
+}
+
+// Lightweight bottom-edge toast for action confirmations (e.g. after a
+// successful citation insert into Word). Fades in 200 ms, holds 2.5 s,
+// fades out 200 ms. Single-instance: subsequent calls replace the
+// previous message rather than stacking. Live-region attribute makes
+// AT users hear the confirmation too.
+var _toastEl = null;
+var _toastHideTimer = null;
+function showToast(message, opts) {
+  opts = opts || {};
+  if (!_toastEl) {
+    _toastEl = document.createElement('div');
+    _toastEl.className = 'ocl-toast';
+    _toastEl.setAttribute('role', 'status');
+    _toastEl.setAttribute('aria-live', 'polite');
+    document.body.appendChild(_toastEl);
+  }
+  if (_toastHideTimer) clearTimeout(_toastHideTimer);
+  // Use textContent to avoid any HTML-injection surface (the toast is
+  // called from places that pass raw decision dockets / titles).
+  _toastEl.textContent = '';
+  var iconMark = document.createElement('span');
+  iconMark.className = 'ocl-toast-icon';
+  iconMark.textContent = opts.icon || '\u2713';
+  _toastEl.appendChild(iconMark);
+  var msgSpan = document.createElement('span');
+  msgSpan.className = 'ocl-toast-msg';
+  msgSpan.textContent = message;
+  _toastEl.appendChild(msgSpan);
+  _toastEl.classList.add('is-visible');
+  var holdMs = (opts.duration != null) ? opts.duration : 2500;
+  _toastHideTimer = setTimeout(function () {
+    if (_toastEl) _toastEl.classList.remove('is-visible');
+  }, holdMs);
+}
+
+// Pre-fetch the detail payload for a result card the user is hovering.
+// 200 ms debounce so flick-overs (cursor passing through the list to
+// reach a button) don't burn API calls. Cached by decision_id; when
+// the user actually clicks "detail", showDetail can hit the cache and
+// render instantly. Failures are silent (no UI surface).
+function _prefetchDetail(decisionId) {
+  if (!decisionId) return;
+  if (_prefetchCache[decisionId]) return;          // already cached
+  if (_prefetchTimers[decisionId]) return;         // already pending
+  _prefetchTimers[decisionId] = setTimeout(function () {
+    delete _prefetchTimers[decisionId];
+    if (_prefetchCache[decisionId]) return;
+    if (typeof getDecisionDetail !== 'function') return;
+    try {
+      Promise.resolve(getDecisionDetail(decisionId))
+        .then(function (data) {
+          if (data) _prefetchCache[decisionId] = data;
+        })
+        .catch(function () {});
+    } catch (e) { /* swallow */ }
+  }, 200);
+}
+function _cancelPrefetch(decisionId) {
+  if (_prefetchTimers[decisionId]) {
+    clearTimeout(_prefetchTimers[decisionId]);
+    delete _prefetchTimers[decisionId];
+  }
+}
+
 function renderDetailSkeleton() {
   return '<a class="back-link" data-action="back">\u2190 ' + escHtml(t('back', state.lang)) + '</a>' +
     '<div class="skeleton-card" style="margin-top:8px;">' +
@@ -1358,6 +1514,22 @@ function bindEvents() {
       _liveSearchTimer = setTimeout(function () { doSearch(value); }, 350);
     });
     searchInput.focus();
+  }
+
+  // Hover-prefetch on every visible result card. 200 ms debounce inside
+  // _prefetchDetail so flick-overs don't burn API calls. When the user
+  // actually clicks "detail", showDetail can hit _prefetchCache and
+  // render instantly. Cleared (cancelled) when the cursor leaves before
+  // the debounce fires.
+  var resultCards = document.querySelectorAll('.result-card[data-decision-id]');
+  for (var rci = 0; rci < resultCards.length; rci++) {
+    (function (card) {
+      var did = card.getAttribute('data-decision-id');
+      if (!did) return;
+      card.addEventListener('mouseenter', function () { _prefetchDetail(did); });
+      card.addEventListener('mouseleave', function () { _cancelPrefetch(did); });
+      card.addEventListener('focus', function () { _prefetchDetail(did); });
+    })(resultCards[rci]);
   }
 
   var proCheck = document.getElementById('pro-consent-check');
@@ -1661,6 +1833,11 @@ async function doSearch(query) {
   state.lawResult = null;
   state.loading = true;
   state.error = null;
+  // Clear keyboard focus + prefetch cache on every new search so we don't
+  // dangle a focused-card ref to a stale result list and don't grow the
+  // cache unbounded across queries.
+  state.focusedIdx = -1;
+  _prefetchCache = {};
   render();
 
   // 1. Detect law article pattern → direct law lookup
@@ -1757,10 +1934,27 @@ async function showDetail(decision) {
   state.view = 'detail';
   state.detail = decision;
   state.caseBrief = null;
+  var id = decision.decision_id || decision.docket_number;
+  // Hover-prefetch hit: if the user paused over this card before
+  // clicking, we already have the detail payload in memory. Skip the
+  // network round-trip entirely and render synchronously.
+  var cached = id ? _prefetchCache[id] : null;
+  if (cached && cached.regeste) {
+    state.detail = Object.assign({}, decision, cached);
+    state.loading = false;
+    render();
+    // Still fetch the case-brief in the background so we have the
+    // structured Sachverhalt / Erwägungen / Dispositiv (the prefetch
+    // only carries the lighter getDecision payload).
+    try {
+      var brief = await getCaseBrief(id).catch(function () { return null; });
+      if (brief) { state.caseBrief = brief; render(); }
+    } catch (e) { /* silent */ }
+    return;
+  }
   state.loading = true;
   render();
   try {
-    var id = decision.decision_id || decision.docket_number;
     var results = await Promise.all([
       getDecision(id).catch(function () { return null; }),
       getCaseBrief(id).catch(function () { return null; }),
@@ -1805,12 +1999,20 @@ async function insertCitation(decision, erwaegung, opts) {
         btn.classList.remove('btn-success');
       }, 900);
     }
+    // Bottom-edge toast confirms the insert visibly even when the user's
+    // eyes are on Word (most cases). The button micro-feedback above
+    // covers the local "I clicked the right thing" affordance; the toast
+    // covers the remote "did it actually land in my document" affordance.
+    var docket = decision.citation_string_de || decision.docket_number ||
+                 decision.decision_id || '';
+    showToast(t('toast_inserted', state.lang) + (docket ? ' \u00B7 ' + docket : ''));
   } catch (e) {
     if (btn) {
       btn.textContent = '\u2717';
       btn.style.background = 'var(--red)';
       setTimeout(function () { btn.textContent = t('btn_insert', state.lang); btn.style.background = ''; }, 2000);
     }
+    showToast(t('toast_insert_failed', state.lang), { icon: '\u2717', duration: 4000 });
     console.error('Insert failed:', e);
   }
 }

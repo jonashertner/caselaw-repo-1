@@ -376,6 +376,18 @@ var UI_STRINGS = {
     it: 'Inserisci',
     en: 'Insert',
   },
+  toast_inserted: {
+    de: 'Eingefügt',
+    fr: 'Inséré',
+    it: 'Inserito',
+    en: 'Inserted',
+  },
+  toast_insert_failed: {
+    de: 'Einfügen fehlgeschlagen',
+    fr: 'Échec de l\u2019insertion',
+    it: 'Inserimento non riuscito',
+    en: 'Insert failed',
+  },
   btn_fulltext: {
     de: 'Volltext',
     fr: 'Texte intégral',

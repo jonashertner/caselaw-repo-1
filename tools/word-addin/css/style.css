@@ -414,6 +414,19 @@ html, body {
   outline-offset: 2px;
 }
 
+/* Keyboard-traversed result (Up/Down arrow). Distinct from :focus so it
+   shows even when the user types into the search bar (which keeps DOM
+   focus while their hands navigate the list). */
+.result-card.is-focused {
+  background: var(--card-hover);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft), var(--shadow-2);
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .result-card.is-focused { transform: none; }
+}
+
 /* Inner action buttons should never trigger the card-level click feel */
 .result-card .btn-insert-card {
   cursor: pointer;
@@ -2549,3 +2562,69 @@ html, body {
 }
 .multi-bar-clear { flex: 0 0 auto; }
 .multi-bar-insert { flex: 0 0 auto; }
+
+/* --- Bottom-edge toast (post-action confirmation) ----------------------
+   Used by showToast() in app.js — currently fires after a successful
+   citation insert into Word. Single-instance: subsequent calls replace
+   the message rather than stacking. Sits above the multi-bar but below
+   any modal. Live-region role on the element makes it announce to AT.
+*/
+.ocl-toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  background: var(--text);
+  color: var(--card);
+  font-size: var(--text-md);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-3);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1000;
+  transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1),
+              transform 200ms cubic-bezier(0.2, 0, 0, 1);
+  max-width: calc(100vw - 32px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ocl-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.ocl-toast-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--green);
+  background: var(--card);
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ocl-toast { transition: opacity 80ms linear; transform: translateX(-50%); }
+  .ocl-toast.is-visible { transform: translateX(-50%); }
+}
+
+/* --- Search-results skeleton (replaces the bare spinner) -------------- */
+.results-skeleton {
+  margin-top: var(--s-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.results-skeleton .skeleton-card {
+  margin-top: 0;
+}
