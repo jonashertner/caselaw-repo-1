@@ -97,6 +97,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Shared design system: same chrome as / and every other page. -->
+<link rel="stylesheet" href="/static/css/design-system.css?v=8">
 <style>
 :root {
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -134,21 +136,15 @@
    `hidden` fallback handles Safari 15 and earlier where `clip` is
    unsupported; those users lose sticky positioning but keep overflow
    protection. */
-html {
-  overflow-x: hidden;
-  overflow-x: clip;
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 body {
   font-family: var(--f-sans); font-size: var(--fs-md); line-height: 1.55;
   background: var(--bg); color: var(--tx);
   -webkit-font-smoothing: antialiased;
   transition: background 0.3s var(--ease), color 0.3s var(--ease);
-  overflow-x: hidden;
-  overflow-x: clip;
 }
 .w { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
-a { color: var(--ac); text-decoration: none; }
+main a { color: var(--ac); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 /* ── Toolbar ── */
@@ -228,7 +224,7 @@ a:hover { text-decoration: underline; }
 .tbtn svg { width: 16px; height: 16px; }
 
 /* ── Hero ── */
-header { padding: 80px 0 24px; text-align: center; position: relative; }
+header:not(.site) { padding: 80px 0 24px; text-align: center; position: relative; }
 header::before { display: none; }
 header h1 {
   font-size: var(--fs-3xl); font-weight: 600;
@@ -622,19 +618,19 @@ header[style*="text-align: left"] .sub {
 }
 
 /* ── Footer ── */
-footer {
+footer:not(.site) {
   text-align: center; padding: 48px 0 64px; color: var(--tx3);
   font-size: var(--fs-xs); border-top: 1px solid var(--brd2);
   margin-top: 48px;
 }
 footer a { color: var(--tx2); }
 footer a:hover { color: var(--ac); }
-footer .foot-links { display: flex; gap: 20px; justify-content: center; margin-bottom: 10px; }
-footer .foot-links a {
+footer:not(.site) .foot-links { display: flex; gap: 20px; justify-content: center; margin-bottom: 10px; }
+footer:not(.site) .foot-links a {
   font-weight: 500; text-decoration: none; padding: 4px 0;
   border-bottom: 1px solid transparent; transition: all 0.15s var(--ease);
 }
-footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: none; }
+footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: none; }
 
 /* ── States ── */
 .ld { text-align: center; padding: 32px 0; color: var(--tx3); font-size: var(--fs-base); }
@@ -1453,46 +1449,28 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
 <a class="skip-link" href="#main" data-t="skip_link">Skip to content</a>
 
-<nav class="toolbar"><div class="w toolbar-inner">
-  <a href="/" class="toolbar-brand" aria-label="opencaselaw.ch — home">
-    <span class="brand-mark">+</span>
-    <span class="brand-wordmark">opencaselaw.ch</span>
-  </a>
-  <div class="toolbar-center">
-    <div class="url-nav" id="url-nav">
-      <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
-      <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
-      <a href="/mcp/" data-t="nav_mcp">Connect</a>
-      <a href="/ueber/" data-t="nav_ueber">About</a>
-    </div>
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="/search/" data-t="nav_search">Search</a>
+      <a href="/courts/" data-t="nav_courts">Courts</a>
+      <a href="/laws/" data-t="nav_laws" class="active">Laws</a>
+      <a href="/word/" data-t="nav_word">Word</a>
+      <a href="/mcp/" data-t="nav_mcp">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/quality.html" data-t="nav_quality">Quality</a>
+      <span class="lang-sw" role="group" aria-label="Language">
+        <button data-l="de" type="button" class="on">DE</button>
+        <button data-l="fr" type="button">FR</button>
+        <button data-l="it" type="button">IT</button>
+        <button data-l="en" type="button">EN</button>
+      </span>
+    </nav>
   </div>
-  <div class="toolbar-right">
-    <div class="lang-sw" role="group" aria-label="Language">
-      <button data-l="de" class="on">DE</button>
-      <button data-l="fr">FR</button>
-      <button data-l="it">IT</button>
-      <button data-l="rm">RM</button>
-      <button data-l="en">EN</button>
-    </div>
-    <button class="hamburger" id="hamburger-btn" aria-label="Menu">
-      <svg class="ico-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      <svg class="ico-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M18 6L6 18M6 6l12 12"/></svg>
-    </button>
-    <button class="tbtn" id="theme-btn" aria-label="Toggle theme">
-      <svg id="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-      <svg id="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
-  </div>
-</div></nav>
-
-<div class="mobile-menu" id="mobile-menu">
-  <div class="mobile-menu-inner">
-    <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
-    <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
-    <a href="/mcp/" data-t="nav_mcp">Connect</a>
-    <a href="/ueber/" data-t="nav_ueber">About</a>
-  </div>
-</div>
+</header>
 
 <main id="main" class="w">
 <header style="margin-top:56px; margin-bottom:48px; text-align:left">
@@ -1626,45 +1604,48 @@ footer .foot-links a:hover { border-bottom-color: var(--ac); text-decoration: no
 
 </main>
 
-<footer class="footer-v2">
-  <div class="w">
-    <div class="footer-cols">
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_data">Data</div>
-        <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener" target="_blank">HuggingFace</a>
-        <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
-        <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
-        <span class="footer-badge">CC0 1.0</span>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_code">Code</div>
-        <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">GitHub</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank" data-t="footer_report">Report issue</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/commits/main" rel="noopener" target="_blank" data-t="footer_commits">Commit history</a>
-        <span class="footer-badge">MIT License</span>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_connect">Connect</div>
-        <a href="/mcp/">MCP Server</a>
-        <a href="https://word.opencaselaw.ch/install.html" rel="noopener" target="_blank">Word Add-in</a>
-        <a href="https://mcp.opencaselaw.ch/health" rel="noopener" target="_blank" data-t="footer_status">API Status</a>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_about">About</div>
-        <a href="/ueber/" data-t="footer_about">About OpenCaseLaw</a>
-        <a href="mailto:team@jonashertner.com" data-t="footer_contact">Contact</a>
-        <a href="/datenschutz/" data-t="footer_privacy">Privacy</a>
-        <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>
-      </div>
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC-BY-4.0. 4-layer quality framework. Public-good infrastructure.
+      </p>
+      <div id="ts" style="margin-top: var(--s-3); font-size: var(--t-xs); color: var(--text-3);"></div>
     </div>
-    <div class="footer-meta">
-      <div id="ts"></div>
-      <div>
-        <span data-t="made">Built with &#9829; by <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a></span>
-        <span class="sep">&middot;</span>
-        <span data-t="footer_tagline_mid">Open source (MIT) &middot; Data CC0 &middot; 114 Swiss courts</span>
-      </div>
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li><a href="/entscheide/" data-t="nav_entscheide">Decisions</a></li>
+        <li><a href="/gesetze/" data-t="nav_gesetze">Laws</a></li>
+        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/coverage/" data-t="footer_coverage">Coverage</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+      </ul>
     </div>
+    <div>
+      <h4>Access</h4>
+      <ul>
+        <li><a href="/word/" data-t="nav_word">Word add-in</a></li>
+        <li><a href="/mcp/">MCP server</a></li>
+        <li><a href="/api/">REST API</a></li>
+        <li><a href="/feed.xml" type="application/rss+xml">RSS feed</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul>
+        <li><a href="/ueber/" data-t="footer_about">Mission</a></li>
+        <li><a href="/paper/">Research</a></li>
+        <li><a href="/datenschutz/" data-t="footer_privacy">Privacy</a></li>
+        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
+        <li><a href="mailto:team@jonashertner.com" data-t="footer_contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
   </div>
 </footer>
 
