@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REST API — OpenCaseLaw</title>
+<meta name="description" content="29 OpenAPI 3.0.3 routes for the OpenCaseLaw Swiss case law platform. Free, no API key, ready to call from any language. CORS-enabled.">
+<link rel="canonical" href="https://opencaselaw.ch/api/">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="REST API — OpenCaseLaw">
+<meta property="og:description" content="29 OpenAPI routes for Swiss case law search. Free, no API key, CORS enabled.">
+<meta property="og:url" content="https://opencaselaw.ch/api/">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  main.api { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
+  .api-cta { display: flex; gap: var(--s-3); flex-wrap: wrap; margin: var(--s-5) 0; }
+  .endpoint-list { list-style: none; padding: 0; margin: 0; }
+  .endpoint {
+    display: grid; grid-template-columns: 60px 1fr;
+    gap: var(--s-3); padding: var(--s-3) 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--f-mono); font-size: var(--t-sm);
+    align-items: baseline;
+  }
+  .endpoint:last-child { border-bottom: none; }
+  .endpoint .method {
+    font-weight: 500; color: var(--accent);
+    text-align: right;
+    font-size: var(--t-xs); letter-spacing: 0.04em;
+  }
+  .endpoint .path { color: var(--text); word-break: break-all; }
+  .endpoint .desc {
+    font-family: var(--f-sans); font-size: var(--t-sm);
+    color: var(--text-2); grid-column: 2;
+    margin-top: 2px;
+  }
+  .group-head {
+    margin-top: var(--s-5); padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--border-strong);
+    font-size: var(--t-md); font-weight: 500;
+    color: var(--text); text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  pre.code {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-4) var(--s-5);
+    font-family: var(--f-mono); font-size: var(--t-xs);
+    line-height: 1.6; overflow-x: auto;
+    margin: var(--s-3) 0 var(--s-5);
+  }
+  .response {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-3) var(--s-4);
+    font-family: var(--f-mono); font-size: var(--t-xs);
+    color: var(--text-2);
+    margin: var(--s-2) 0 var(--s-4);
+    overflow-x: auto;
+  }
+  table.params { width: 100%; border-collapse: collapse; font-size: var(--t-sm); margin: var(--s-3) 0 var(--s-5); }
+  table.params th, table.params td {
+    text-align: left; padding: var(--s-2) var(--s-3);
+    border-bottom: 1px solid var(--border);
+    vertical-align: baseline;
+  }
+  table.params th { font-weight: 500; color: var(--text-2); font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.06em; }
+  table.params td.name { font-family: var(--f-mono); font-weight: 500; }
+  table.params td.req { color: var(--accent); font-family: var(--f-mono); font-size: var(--t-xs); }
+  h2 { margin-top: var(--s-6); margin-bottom: var(--s-3); }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">⊙</span>
+      <span>OpenCaseLaw</span>
+    </a>
+    <nav>
+      <a href="/">Overview</a>
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
+      <a href="/word/">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/api/" class="active">REST API</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container api" id="main">
+  <p class="eyebrow">REST API · OpenAPI 3.0.3</p>
+  <h1>Call the OpenCaseLaw corpus from any language</h1>
+  <p class="lede">29 documented HTTP routes covering search, citation graph, statute lookup, doctrine timelines, and exports. Free. No API key. CORS enabled (<code>Access-Control-Allow-Origin: *</code>). Same backend that powers Claude, ChatGPT, the Word add-in, and <code>opencaselaw.ch/search</code>.</p>
+
+  <div class="api-cta">
+    <a class="btn btn-primary" href="https://mcp.opencaselaw.ch/api/docs" rel="noopener" target="_blank">Open Swagger UI</a>
+    <a class="btn" href="https://mcp.opencaselaw.ch/api/openapi.json" rel="noopener" target="_blank">openapi.json (raw spec)</a>
+    <a class="btn" href="https://mcp.opencaselaw.ch/health" rel="noopener" target="_blank">/health</a>
+  </div>
+
+  <h2>Quickstart — search the corpus</h2>
+  <pre class="code">curl -s "https://mcp.opencaselaw.ch/api/decisions?q=Mietrecht+K%C3%BCndigung&amp;limit=5"</pre>
+  <p style="font-size: var(--t-sm); color: var(--text-2);">Returns:</p>
+  <pre class="response">{
+  "total": 12847,
+  "results": [
+    { "decision_id": "bge_BGE_140_III_86", "court": "bge",
+      "decision_date": "2014-04-15", "language": "de",
+      "title": "Mietrecht; …", "regeste": "…",
+      "citation_string_de": "BGE 140 III 86", "canonical_url": "https://mcp.opencaselaw.ch/entscheid/…" },
+    …
+  ],
+  "limit": 5, "offset": 0
+}</pre>
+
+  <h2>Quickstart — look up an article</h2>
+  <pre class="code">curl -s "https://mcp.opencaselaw.ch/api/laws/OR?article=41"</pre>
+  <pre class="response">{
+  "sr_number": "220",
+  "abbreviation": "OR",
+  "title": "Bundesgesetz vom 30. März 1911 …",
+  "consolidation_date": "2026-01-01",
+  "language": "de",
+  "articles": [
+    { "article_num": "41", "heading": null,
+      "text": "1 Wer einem andern widerrechtlich Schaden zufügt, …" }
+  ]
+}</pre>
+
+  <h2>Common parameters</h2>
+  <table class="params">
+    <thead>
+      <tr><th>Param</th><th>Used by</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="name">q</td><td>/decisions</td><td>Free-text query. Boolean operators (AND, OR, NOT), exact phrases ("…"), docket numbers, BGE references.</td></tr>
+      <tr><td class="name">query</td><td>/laws/search · /commentaries/search</td><td>Free-text query for statute / commentary search.</td></tr>
+      <tr><td class="name">limit</td><td>everywhere</td><td>1–50, default 10 (decisions) / 20 (laws).</td></tr>
+      <tr><td class="name">offset</td><td>/decisions · /laws/search</td><td>For pagination. <code>?offset=20&amp;limit=20</code> = page 2.</td></tr>
+      <tr><td class="name">language</td><td>/decisions</td><td><code>de</code> / <code>fr</code> / <code>it</code>. Filters by decision language.</td></tr>
+      <tr><td class="name">canton</td><td>/decisions · /laws/search</td><td>Two-letter cantonal code (ZH, BE, …) or <code>CH</code> for federal.</td></tr>
+      <tr><td class="name">court</td><td>/decisions</td><td>Court key (bger, bvger, ge_gerichte, …). See <a href="/courts/">/courts</a>.</td></tr>
+      <tr><td class="name">level</td><td>/laws/search</td><td><code>federal</code> or <code>cantonal</code>.</td></tr>
+      <tr><td class="name">article</td><td>/laws/{abbreviation}</td><td>Article number (e.g. <code>41</code>, <code>266l</code>).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Endpoint reference</h2>
+
+  <div class="group-head">Decisions</div>
+  <ul class="endpoint-list">
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/decisions</span><span class="desc">Search decisions. Returns paginated results with citation strings + canonical URLs.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/decisions/{decision_id}</span><span class="desc">Fetch a single decision with full text.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/decisions/{decision_id}/export.docx</span><span class="desc">Export as Word document (citation, regeste, structured Erwägungen).</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/decisions/{decision_id}/export.bib</span><span class="desc">BibTeX entry for LaTeX bibliographies.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/decisions/{decision_id}/export.ris</span><span class="desc">RIS record for Zotero / EndNote / Mendeley.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/decisions/{decision_id}/export.pdf</span><span class="desc">PDF re-render of the decision.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/case-brief/{case}</span><span class="desc">Structured brief: facts · reasoning · statutes · authority · related.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/structure/{decision_id}</span><span class="desc">Sachverhalt + Erwägungen-paragraphs + Dispositiv + Regeste.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/erwaegung/{decision_id}/{e_number}</span><span class="desc">Verbatim Schweizer Citation-Einheit (e.g. <code>2.3</code>).</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/regeste/{decision_id}</span><span class="desc">Official BGer / BVGer head-note text.</span></li>
+  </ul>
+
+  <div class="group-head">Citation graph</div>
+  <ul class="endpoint-list">
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/citations/{decision_id}</span><span class="desc">Both directions: what this cites + what cites it.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/appeal-chain/{decision_id}</span><span class="desc">Procedural history through the instances.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/leading-cases</span><span class="desc">Authority-ranked decisions for a statute / topic.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/cite</span><span class="desc">Build a server-formatted citation string.</span></li>
+  </ul>
+
+  <div class="group-head">Statutes &amp; doctrine</div>
+  <ul class="endpoint-list">
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/laws/search</span><span class="desc">Federated FTS5 over federal + cantonal articles. Returns snippets.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/laws/{abbreviation}</span><span class="desc">Single article by abbreviation (OR, ZGB, StGB, …).</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/legislation/search</span><span class="desc">LexFind catalog search (33,000+ federal + cantonal acts).</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/legislation/{lexfind_id}</span><span class="desc">Single legislation record.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/legislation/changes</span><span class="desc">Recent &amp; upcoming federal-law amendments.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/doctrine</span><span class="desc">Statute text + ranked BGEs + doctrine timeline + commentary excerpt.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/materialien</span><span class="desc">Federal Council Botschaften — legislative intent.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/materialien/{law_code}</span><span class="desc">Materialien for a specific law.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/amendment-ref</span><span class="desc">Resolve "Art. X (revised version Y)" patterns.</span></li>
+  </ul>
+
+  <div class="group-head">Commentary &amp; teaching</div>
+  <ul class="endpoint-list">
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/commentaries/search</span><span class="desc">Search OnlineKommentar + OpenLegalCommentary excerpts.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/commentaries/{abbreviation}</span><span class="desc">Commentary index for a law (OR, ZGB, …).</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/exam-question</span><span class="desc">Real BGE fact pattern as Fallbearbeitung with hidden analysis.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/mock-decision</span><span class="desc">Research-only mock decision from facts + caselaw + statutes.</span></li>
+  </ul>
+
+  <div class="group-head">Verification &amp; introspection</div>
+  <ul class="endpoint-list">
+    <li class="endpoint"><span class="method">POST</span><span class="path">/api/attest</span><span class="desc">Audit a draft response — verifies every BGE / Art. / quoted string against the corpus before it leaves the server.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/courts</span><span class="desc">List all 121 courts (federal, regulatory, international, cantonal).</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/statistics</span><span class="desc">Aggregate stats — corpus, citation graph, statutes, languages.</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/scraper-health</span><span class="desc">Per-source last-run status (drives <a href="/coverage/">/coverage</a>).</span></li>
+    <li class="endpoint"><span class="method">GET</span><span class="path">/api/atom/{court}.xml</span><span class="desc">Atom feed — newest 50 decisions per court.</span></li>
+  </ul>
+
+  <p style="margin-top: var(--s-6); font-size: var(--t-sm); color: var(--text-2);">
+    Schema, parameter docs and example responses are auto-generated in
+    <a href="https://mcp.opencaselaw.ch/api/openapi.json">openapi.json</a>.
+    Validated against Microsoft Power Platform / Copilot Studio's WADL converter
+    (2026-04-25, with LALIVE) — same connector used in the
+    <a href="/word/">Microsoft Word add-in</a>.
+  </p>
+
+  <h2>Rate limits</h2>
+  <p style="font-size: var(--t-base); line-height: 1.7;">
+    Soft-limited at the nginx layer to protect the upstream workers. Pace your batch jobs at ≤&nbsp;5 requests/second per IP. If you need higher throughput, run the stack locally — full instructions in
+    <a href="https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai" rel="noopener" target="_blank">README</a>
+    (~65 GB disk, ~30 min setup).
+  </p>
+</main>
+
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+      </p>
+    </div>
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li><a href="/entscheide/">Decisions</a></li>
+        <li><a href="/gesetze/">Laws</a></li>
+        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/coverage/">Coverage</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Access</h4>
+      <ul>
+        <li><a href="/word/">Word add-in</a></li>
+        <li><a href="/mcp/">MCP server</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul>
+        <li><a href="/ueber/">Mission</a></li>
+        <li><a href="/paper/">Research</a></li>
+        <li><a href="/datenschutz/">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
+  </div>
+</footer>
+
+</body>
+</html>

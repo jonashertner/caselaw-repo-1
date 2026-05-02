@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenCaseLaw — research paper · Jonas Hertner · March 2026</title>
+<meta name="description" content="OpenCaseLaw: an open corpus and retrieval stack for Swiss case law. 971,000+ decisions, 6.5M citation edges, multilingual benchmark, MIT-licensed. arXiv preprint, March 2026.">
+<link rel="canonical" href="https://opencaselaw.ch/paper/">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="OpenCaseLaw — research paper · March 2026">
+<meta property="og:description" content="An open corpus and retrieval stack for Swiss case law. 971,000+ decisions, 6.5M citation edges, multilingual benchmark, MIT-licensed.">
+<meta property="og:image" content="https://opencaselaw.ch/og-image.png">
+<meta property="og:url" content="https://opencaselaw.ch/paper/">
+<meta property="og:type" content="article">
+<meta name="citation_title" content="OpenCaseLaw: An Open Dataset and Search Platform for Swiss Court Decisions">
+<meta name="citation_author" content="Hertner, Jonas">
+<meta name="citation_publication_date" content="2026/03/20">
+<meta name="citation_pdf_url" content="https://opencaselaw.ch/paper/opencaselaw-arxiv-final.pdf">
+<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  main.paper { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
+  .paper-meta {
+    display: flex; gap: var(--s-3); flex-wrap: wrap;
+    margin: var(--s-3) 0 var(--s-5);
+    font-size: var(--t-sm); color: var(--text-2);
+  }
+  .paper-meta .pill {
+    display: inline-flex; padding: 2px 10px;
+    border-radius: 999px; background: var(--bg-soft);
+    font-family: var(--f-mono); font-size: var(--t-xs);
+    color: var(--text-2);
+  }
+  .paper-abstract {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent);
+    padding: var(--s-5);
+    border-radius: var(--radius-sm);
+    font-size: var(--t-md);
+    line-height: 1.7;
+    margin: var(--s-5) 0;
+  }
+  .paper-cta {
+    display: flex; gap: var(--s-3); flex-wrap: wrap;
+    margin: var(--s-5) 0 var(--s-6);
+  }
+  .download-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--s-3); margin: var(--s-4) 0 var(--s-6);
+  }
+  .download-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: var(--s-4);
+    text-decoration: none; color: inherit;
+    transition: border-color var(--t-fast) var(--ease);
+  }
+  .download-card:hover { border-color: var(--border-strong); }
+  .download-card .name {
+    font-family: var(--f-mono); font-size: var(--t-md); font-weight: 500;
+    margin-bottom: var(--s-1);
+  }
+  .download-card .meta { font-size: var(--t-xs); color: var(--text-3); }
+  .download-card .desc { font-size: var(--t-sm); color: var(--text-2); margin-top: var(--s-2); }
+  .cite-block {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-4) var(--s-5);
+    font-family: var(--f-mono);
+    font-size: var(--t-xs);
+    line-height: 1.6;
+    margin: var(--s-3) 0 var(--s-5);
+    overflow-x: auto;
+    white-space: pre-wrap;
+  }
+  h2 { margin-top: var(--s-6); margin-bottom: var(--s-3); }
+  ul.contrib { padding-left: 1.2rem; line-height: 1.8; font-size: var(--t-base); }
+  ul.contrib li { margin-bottom: var(--s-2); }
+  ul.contrib code { font-family: var(--f-mono); font-size: var(--t-xs); background: var(--bg-soft); padding: 1px 6px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">⊙</span>
+      <span>OpenCaseLaw</span>
+    </a>
+    <nav>
+      <a href="/">Overview</a>
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
+      <a href="/word/">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/paper/" class="active">Paper</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container paper" id="main">
+  <p class="eyebrow">Research preprint · March 2026</p>
+  <h1 style="max-width: 26ch;">OpenCaseLaw: An Open Dataset and Search Platform for Swiss Court Decisions</h1>
+
+  <div class="paper-meta">
+    <span><strong>Jonas Hertner</strong></span>
+    <span class="pill">arXiv preprint</span>
+    <span class="pill">v1 · March 20, 2026</span>
+    <span class="pill">MIT (code) · CC0 (data)</span>
+  </div>
+
+  <div class="paper-cta">
+    <a href="opencaselaw-arxiv-final.pdf" class="btn btn-primary">Download PDF (final)</a>
+    <a href="opencaselaw-arxiv-submission.pdf" class="btn">arXiv submission PDF</a>
+    <a href="https://github.com/jonashertner/caselaw-repo-1" class="btn" rel="noopener" target="_blank">Source code (MIT)</a>
+    <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" class="btn" rel="noopener" target="_blank">Dataset (CC0)</a>
+  </div>
+
+  <h2>Abstract</h2>
+  <div class="paper-abstract">
+    We present OpenCaseLaw, an open corpus and retrieval stack for Swiss case law. In the repository snapshot generated on March&nbsp;20, 2026, the dataset contains 962,724 decisions from 102 federal, cantonal, and regulatory courts or public bodies, covering all 26 cantons and the period 1875–2026. The current snapshot contains 448,461 German decisions (46.6&thinsp;%), 434,663 French decisions (45.1&thinsp;%), and 79,600 Italian decisions (8.3&thinsp;%); the export schema also reserves a Romansh language code. OpenCaseLaw releases a 34-field Parquet export together with tooling to build a local SQLite&nbsp;FTS5 index and reference database; in the March&nbsp;20, 2026 graph build, that database contains 8.76&nbsp;million extracted case-citation references, 6.42&nbsp;million resolved in-corpus decision links, and 11.23&nbsp;million decision-statute links. We describe the collection, normalization, deduplication, export, and retrieval pipeline, and release a multilingual benchmark harness with 100 tagged evaluation queries plus a release-matched offline baseline report. The code is MIT-licensed, and each record links back to the decision as published by the originating court or public body.
+  </div>
+
+  <h2>Contributions</h2>
+  <ul class="contrib">
+    <li><strong>Open corpus.</strong> 971,067 published Swiss court decisions (snapshot 2026-05-02) across 121 federal, regulatory, international, and cantonal courts. Released as a 34-field Parquet export under CC0 — the largest open dataset of Swiss case law.</li>
+    <li><strong>Open retrieval stack.</strong> SQLite FTS5 index + atomic-rebuild pipeline. BM25 + RRF + structured-LLM parse + Haiku reranking. Frozen offline baseline (March 19, 2026) at MRR&nbsp;0.470, online with LLM at 0.647 — both reproducible from <code>benchmarks/</code>.</li>
+    <li><strong>Citation graph.</strong> 8.76&nbsp;M extracted case-citation references; 6.42&nbsp;M resolved to in-corpus decisions (73.8&thinsp;% link rate). 11.23&nbsp;M extracted decision-statute links across 281&nbsp;K distinct provisions.</li>
+    <li><strong>Open MCP surface.</strong> 29 specialised tools at <code>mcp.opencaselaw.ch</code> — search, citation graph, statute lookup, doctrine timelines, multilingual commentary, exam-question generation. Free, no API keys, OpenAPI 3.0.3.</li>
+    <li><strong>Multilingual benchmark.</strong> 100 tagged queries (74&nbsp;de · 16&nbsp;fr · 7&nbsp;it · 3 cross-lingual) across 15 legal domains, citation-graph verified. Plus a 50-question cross-lingual leading-case retrieval set with parallel DE/FR/IT phrasings.</li>
+    <li><strong>Quality framework.</strong> 4-layer dataset quality framework — 61 dataset checks + 46 pytest checks + L4 production smoke + Step&nbsp;6c gate that blocks <code>git&nbsp;push</code> on critical regressions. Public dashboard at <a href="/quality.html">opencaselaw.ch/quality.html</a>.</li>
+  </ul>
+
+  <h2>Cite</h2>
+  <p style="font-size: var(--t-sm); color: var(--text-2);">Until the paper appears on arXiv, please cite as:</p>
+  <pre class="cite-block">@misc{hertner2026opencaselaw,
+  author       = {Hertner, Jonas},
+  title        = {OpenCaseLaw: An Open Dataset and Search Platform for Swiss Court Decisions},
+  year         = {2026},
+  howpublished = {Preprint, March 2026},
+  url          = {https://opencaselaw.ch/paper/opencaselaw-arxiv-final.pdf},
+  note         = {Snapshot 2026-03-20: 962,724 decisions; current corpus 971,067 (May 2026)}
+}</pre>
+
+  <h2>Materials</h2>
+  <div class="download-grid">
+    <a class="download-card" href="opencaselaw-arxiv-final.pdf">
+      <div class="name">paper.pdf</div>
+      <div class="meta">PDF · final draft · ~20 pp</div>
+      <div class="desc">The full paper, internal cold-read pass complete.</div>
+    </a>
+    <a class="download-card" href="opencaselaw-arxiv-submission.pdf">
+      <div class="name">submission.pdf</div>
+      <div class="meta">PDF · arXiv-ready</div>
+      <div class="desc">Submission-formatted PDF (NeurIPS D&amp;B template).</div>
+    </a>
+    <a class="download-card" href="opencaselaw-arxiv-submission.tar.gz">
+      <div class="name">source.tar.gz</div>
+      <div class="meta">LaTeX source · figures · BibTeX</div>
+      <div class="desc">Full reproducible source bundle.</div>
+    </a>
+    <a class="download-card" href="opencaselaw-arxiv-final.md">
+      <div class="name">paper.md</div>
+      <div class="meta">Markdown render</div>
+      <div class="desc">Plain-text version for diffing &amp; web reading.</div>
+    </a>
+    <a class="download-card" href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">
+      <div class="name">github.com/jonashertner/caselaw-repo-1</div>
+      <div class="meta">Source code · MIT</div>
+      <div class="desc">All scrapers, retrieval stack, MCP server, build pipeline.</div>
+    </a>
+    <a class="download-card" href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener" target="_blank">
+      <div class="name">voilaj/swiss-caselaw</div>
+      <div class="meta">Hugging Face · CC0 · ~7 GB Parquet</div>
+      <div class="desc">Daily-refreshed Parquet export of the full corpus.</div>
+    </a>
+  </div>
+
+  <h2>Reproducibility</h2>
+  <p style="font-size: var(--t-base); line-height: 1.7;">
+    Every numerical claim in the paper resolves to a commit-pinned artifact in the public repository. The 100-question multilingual benchmark lives at
+    <code>benchmarks/swiss_legal_rag_bench/v1.jsonl</code> with the 50-question cross-lingual companion at
+    <code>benchmarks/swiss_legal_rag_bench/cross_lingual_v1.jsonl</code>. Frozen offline retrieval results are pinned at
+    <code>benchmarks/search_benchmark_2026-03-19_offline_full.json</code>. The dataset quality framework lives in
+    <code>quality/</code>; its public dashboard is at <a href="/quality.html">/quality.html</a>.
+  </p>
+
+  <h2>Contact</h2>
+  <p style="font-size: var(--t-base);">
+    Questions, collaboration, peer review, citation chains:
+    <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.
+    Issue tracker: <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank">GitHub issues</a>.
+  </p>
+</main>
+
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+      </p>
+    </div>
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li><a href="/entscheide/">Decisions</a></li>
+        <li><a href="/gesetze/">Laws</a></li>
+        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/coverage/">Coverage</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Access</h4>
+      <ul>
+        <li><a href="/word/">Word add-in</a></li>
+        <li><a href="/mcp/">MCP server</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul>
+        <li><a href="/ueber/">Mission</a></li>
+        <li><a href="/paper/">Research</a></li>
+        <li><a href="/datenschutz/">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
+  </div>
+</footer>
+
+</body>
+</html>
