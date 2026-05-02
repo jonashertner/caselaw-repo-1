@@ -48,6 +48,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://opencaselaw.ch/laws/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://opencaselaw.ch/mcp/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

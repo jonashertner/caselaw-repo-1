@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Swiss laws — federal + cantonal — OpenCaseLaw</title>
+<meta name="description" content="Search the full text of 5,510 Swiss federal laws (Fedlex mirror) plus 15,722 cantonal acts. Article-level snippets with one-click direct link. Free, no account, no API key.">
+<link rel="canonical" href="https://opencaselaw.ch/laws/">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Search Swiss laws — federal + cantonal — OpenCaseLaw">
+<meta property="og:description" content="5,510 federal laws + 15,722 cantonal acts, full-text searchable.">
+<meta property="og:url" content="https://opencaselaw.ch/laws/">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  main.laws { padding-top: var(--s-6); padding-bottom: var(--s-7); }
+  .laws-form {
+    display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
+    margin: var(--s-5) 0 var(--s-3);
+  }
+  .laws-input {
+    flex: 1 1 320px; min-width: 240px;
+    padding: 12px 16px; font: inherit; font-size: var(--t-base);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius); color: var(--text);
+  }
+  .laws-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .laws-filters { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-bottom: var(--s-5); }
+  .laws-filters button {
+    padding: 6px 12px; font: inherit; font-size: var(--t-md);
+    background: var(--surface); color: var(--text-2);
+    border: 1px solid var(--border); border-radius: var(--radius-pill);
+    cursor: pointer; transition: all var(--t-fast) var(--ease);
+  }
+  .laws-filters button:hover { color: var(--text); border-color: var(--border-strong); }
+  .laws-filters button.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .laws-meta { font-size: var(--t-sm); color: var(--text-2); margin-bottom: var(--s-4); font-feature-settings: 'tnum' 1; }
+
+  .quickgrid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--s-3); margin-top: var(--s-4); margin-bottom: var(--s-6);
+  }
+  .quick-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: var(--s-4);
+    text-decoration: none; color: inherit;
+    transition: border-color var(--t-fast) var(--ease);
+    display: flex; flex-direction: column; gap: var(--s-1);
+  }
+  .quick-card:hover { border-color: var(--border-strong); }
+  .quick-card-abbr {
+    font-family: var(--f-mono); font-size: var(--t-lg); font-weight: 500;
+    color: var(--text); letter-spacing: -0.01em;
+  }
+  .quick-card-name { font-size: var(--t-xs); color: var(--text-2); line-height: 1.4; }
+
+  .quick-section-head {
+    margin: var(--s-6) 0 var(--s-3);
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .quick-section-head h2 { font-size: var(--t-lg); font-weight: 400; margin: 0; }
+  .quick-section-head .meta { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--text-3); }
+
+  .article-lookup {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-5);
+    margin: var(--s-6) 0;
+  }
+  .article-lookup h3 { font-size: var(--t-lg); font-weight: 400; margin: 0 0 var(--s-3); }
+  .article-form { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: stretch; }
+  .article-form input {
+    padding: 8px 12px; font: inherit; font-size: var(--t-md);
+    background: var(--surface);
+    border: 1px solid var(--border-strong); border-radius: var(--radius);
+    color: var(--text);
+  }
+  .article-form input.law { width: 110px; font-family: var(--f-mono); }
+  .article-form input.art { width: 110px; font-family: var(--f-mono); }
+
+  .result-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--s-3); }
+  .law-result {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: var(--s-4) var(--s-5);
+    transition: border-color var(--t-fast) var(--ease);
+  }
+  .law-result:hover { border-color: var(--border-strong); }
+  .law-result-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--s-3); margin-bottom: var(--s-2);
+  }
+  .law-result-cite {
+    font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text);
+    letter-spacing: -0.01em; font-weight: 500;
+  }
+  .law-result-level {
+    font-family: var(--f-mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-3);
+    flex: 0 0 auto;
+  }
+  .law-result-title {
+    font-size: var(--t-md); color: var(--text-2);
+    margin: 0 0 var(--s-2); line-height: 1.4;
+  }
+  .law-result-snippet {
+    font-size: var(--t-md); color: var(--text); line-height: 1.6;
+    margin: 0; padding: var(--s-3) 0 0;
+    border-top: 1px solid var(--border);
+  }
+  .law-result-snippet mark {
+    background: rgba(185, 28, 36, 0.12); color: inherit;
+    padding: 0 2px; border-radius: 2px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme='auto'] .law-result-snippet mark,
+    :root:not([data-theme]) .law-result-snippet mark {
+      background: rgba(248, 113, 113, 0.18);
+    }
+  }
+
+  .article-display {
+    background: var(--surface); border: 1px solid var(--border-strong);
+    border-radius: var(--radius); padding: var(--s-5);
+    margin-bottom: var(--s-5);
+  }
+  .article-display .head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: var(--s-3); margin-bottom: var(--s-3);
+    padding-bottom: var(--s-2); border-bottom: 1px solid var(--border);
+  }
+  .article-display .head .law {
+    font-family: var(--f-mono); font-size: var(--t-md); color: var(--text);
+  }
+  .article-display .head .sr {
+    font-family: var(--f-mono); font-size: var(--t-xs); color: var(--text-3);
+  }
+  .article-display .law-title {
+    font-size: var(--t-sm); color: var(--text-2); margin: 0 0 var(--s-3); line-height: 1.5;
+  }
+  .article-display .article-num {
+    font-family: var(--f-mono); font-size: var(--t-base); font-weight: 500;
+    color: var(--accent); margin-bottom: var(--s-2);
+  }
+  .article-display .text {
+    font-size: var(--t-md); line-height: 1.7; white-space: pre-wrap;
+  }
+
+  .empty, .error, .loading { padding: var(--s-6) var(--s-4); text-align: center; color: var(--text-2); font-size: var(--t-base); }
+  .error { color: var(--accent); }
+  .skeleton { background: var(--bg-soft); border-radius: var(--radius); animation: pulse 1.4s ease-in-out infinite; height: 92px; margin-bottom: var(--s-3); }
+  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.95; } }
+  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">⊙</span>
+      <span>OpenCaseLaw</span>
+    </a>
+    <nav>
+      <a href="/">Overview</a>
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/" class="active">Laws</a>
+      <a href="/word/">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/quality.html">Quality</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container laws" id="main">
+  <h1 style="max-width: 22ch;">Swiss federal + cantonal laws</h1>
+  <p class="lede">Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.</p>
+
+  <form class="laws-form" id="form" role="search" aria-label="Search Swiss laws">
+    <input class="laws-input" type="search" id="q" name="q"
+           placeholder='e.g. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"'
+           autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search query">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  <div class="laws-filters" id="filters" hidden>
+    <button data-filter="" class="active" type="button">All levels</button>
+    <button data-filter="federal" type="button">Federal only</button>
+    <button data-filter="cantonal" type="button">Cantonal only</button>
+  </div>
+
+  <div class="laws-meta" id="meta" hidden></div>
+  <ul class="result-list" id="results" aria-live="polite"></ul>
+
+  <!-- Article lookup — when no search query, this is the primary action -->
+  <div class="article-lookup" id="article-lookup">
+    <h3>Look up an article directly</h3>
+    <p style="font-size: var(--t-sm); color: var(--text-2); margin-bottom: var(--s-3);">
+      Enter the law's standard abbreviation (OR, ZGB, STGB, STPO, ZPO, BV, …) and an article number. Returns the verbatim text from the local Fedlex mirror in &lt;1 ms.
+    </p>
+    <form class="article-form" id="article-form">
+      <input type="text" class="law" id="article-law" placeholder="OR" aria-label="Law abbreviation" required>
+      <input type="text" class="art" id="article-num" placeholder="41" aria-label="Article number" required>
+      <button type="submit" class="btn">Show article</button>
+    </form>
+    <div id="article-result" style="margin-top: var(--s-4);"></div>
+  </div>
+
+  <!-- Quick-access grid -->
+  <div class="quick-section-head"><h2>Most-searched federal laws</h2><span class="meta">click to look up Art. 1</span></div>
+  <div class="quickgrid" id="quickgrid"></div>
+
+  <p style="margin-top: var(--s-6); font-size: var(--t-sm); color: var(--text-2);">
+    Need cantonal coverage detail? See <a href="/coverage/">/coverage</a> for per-portal scraper health.
+    Looking for legislative materials (Botschaften, parliamentary debates)?
+    Use <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via the MCP server or REST API.
+  </p>
+</main>
+
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+      </p>
+    </div>
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li><a href="/entscheide/">Decisions</a></li>
+        <li><a href="/gesetze/">Laws</a></li>
+        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/coverage/">Coverage</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Access</h4>
+      <ul>
+        <li><a href="/word/">Word add-in</a></li>
+        <li><a href="/mcp/">MCP server</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul>
+        <li><a href="/ueber/">Mission</a></li>
+        <li><a href="/paper/">Research</a></li>
+        <li><a href="/datenschutz/">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+// All API-derived strings rendered via createElement / textContent (no
+// innerHTML on user data). Snippet ">>>foo<<<" markers turned into <mark>
+// via String.matchAll — no string interpolation through innerHTML.
+
+const API_SEARCH = 'https://mcp.opencaselaw.ch/api/laws/search';
+const API_LAW = 'https://mcp.opencaselaw.ch/api/laws';
+const PAGE_SIZE = 20;
+
+const $ = (sel) => document.querySelector(sel);
+const params = () => new URLSearchParams(location.search);
+
+const QUICK_LAWS = [
+  ['BV',   'Bundesverfassung'],
+  ['ZGB',  'Zivilgesetzbuch'],
+  ['OR',   'Obligationenrecht'],
+  ['StGB', 'Strafgesetzbuch'],
+  ['StPO', 'Strafprozessordnung'],
+  ['ZPO',  'Zivilprozessordnung'],
+  ['DSG',  'Datenschutzgesetz'],
+  ['BGG',  'Bundesgerichtsgesetz'],
+  ['VStrR','Verwaltungsstrafrecht'],
+  ['SVG',  'Strassenverkehrsgesetz'],
+  ['ATSG', 'Allg. Sozialversicherungsrecht'],
+  ['IVG',  'Invalidenversicherung'],
+  ['AHVG', 'Alters- und Hinterlassenenvers.'],
+  ['UVG',  'Unfallversicherung'],
+  ['MWSTG','Mehrwertsteuer'],
+  ['AsylG','Asylgesetz'],
+  ['AuG',  'Auslaendergesetz'],
+  ['BZP',  'Bundeszivilprozess'],
+  ['VRV',  'Verkehrsregelnverordnung'],
+  ['GeBueV','Geschaeftsbuecherverordnung'],
+];
+
+function fmtNum(n) { return Number(n || 0).toLocaleString('de-CH').replace(/,/g, '\u2019'); }
+
+function el(tag, props, children) {
+  const node = document.createElement(tag);
+  if (props) {
+    for (const k in props) {
+      if (k === 'class') node.className = props[k];
+      else if (k === 'text') node.textContent = props[k];
+      else if (k === 'href') node.setAttribute('href', props[k]);
+      else if (k === 'role' || k.startsWith('aria-') || k === 'rel' || k === 'target') node.setAttribute(k, props[k]);
+      else node[k] = props[k];
+    }
+  }
+  if (children) for (const c of children) {
+    if (c == null) continue;
+    node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  }
+  return node;
+}
+function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+function renderSnippet(into, snippet) {
+  if (!snippet) return;
+  const pattern = />>>(.+?)<<</g;
+  const matches = Array.from(snippet.matchAll(pattern));
+  let cursor = 0;
+  for (const m of matches) {
+    if (m.index > cursor) into.appendChild(document.createTextNode(snippet.slice(cursor, m.index)));
+    const mark = document.createElement('mark');
+    mark.textContent = m[1];
+    into.appendChild(mark);
+    cursor = m.index + m[0].length;
+  }
+  if (cursor < snippet.length) into.appendChild(document.createTextNode(snippet.slice(cursor)));
+}
+
+function buildResult(r) {
+  const li = el('li', { class: 'law-result' });
+  const head = el('div', { class: 'law-result-head' });
+  const cite = `${r.abbreviation || r.sr_number || '—'} · Art. ${r.article_num || '?'}${r.heading ? ' — ' + r.heading : ''}`;
+  head.appendChild(el('span', { class: 'law-result-cite', text: cite }));
+  head.appendChild(el('span', { class: 'law-result-level', text: r.level || '' }));
+  li.appendChild(head);
+  if (r.title) li.appendChild(el('p', { class: 'law-result-title', text: r.title }));
+  if (r.snippet) {
+    const p = el('p', { class: 'law-result-snippet' });
+    renderSnippet(p, r.snippet);
+    li.appendChild(p);
+  }
+  return li;
+}
+
+function showSkeleton() {
+  const list = $('#results');
+  clear(list);
+  for (let i = 0; i < 6; i++) list.appendChild(el('li', { class: 'skeleton', 'aria-hidden': 'true' }));
+}
+
+async function runSearch(q, level) {
+  if (!q) {
+    clear($('#results'));
+    $('#meta').hidden = true;
+    $('#filters').hidden = true;
+    return;
+  }
+  $('#filters').hidden = false;
+  showSkeleton();
+  $('#meta').hidden = false;
+  $('#meta').textContent = `Searching for "${q}"…`;
+  try {
+    const url = new URL(API_SEARCH);
+    url.searchParams.set('query', q);
+    url.searchParams.set('limit', String(PAGE_SIZE));
+    if (level) url.searchParams.set('level', level);
+    const t0 = performance.now();
+    const r = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!r.ok) throw new Error(`API ${r.status}`);
+    const data = await r.json();
+    const ms = Math.round(performance.now() - t0);
+    const results = data.results || [];
+    $('#meta').textContent = `${fmtNum(data.count || results.length)} matching articles  ·  federal: ${fmtNum(data.federal_hits)}  ·  cantonal: ${fmtNum(data.cantonal_hits)}  ·  ${ms} ms`;
+    const list = $('#results');
+    clear(list);
+    if (results.length === 0) {
+      list.appendChild(el('li', { class: 'empty', text: `No articles match "${q}". Try a single keyword.` }));
+      return;
+    }
+    for (const r of results) list.appendChild(buildResult(r));
+  } catch (e) {
+    const list = $('#results');
+    clear(list);
+    list.appendChild(el('li', { class: 'error', text: `Search failed: ${e.message}.` }));
+  }
+}
+
+async function lookupArticle(law, num) {
+  const into = $('#article-result');
+  clear(into);
+  into.appendChild(el('div', { class: 'loading', text: 'Loading…' }));
+  try {
+    const url = new URL(`${API_LAW}/${encodeURIComponent(law)}`);
+    url.searchParams.set('article', num);
+    const r = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!r.ok) throw new Error(`API ${r.status}`);
+    const data = await r.json();
+    clear(into);
+    const card = el('div', { class: 'article-display' });
+    const head = el('div', { class: 'head' }, [
+      el('span', { class: 'law', text: `${data.abbreviation || law.toUpperCase()} · Art. ${num}` }),
+      el('span', { class: 'sr', text: data.sr_number ? `SR ${data.sr_number}` : '' }),
+    ]);
+    card.appendChild(head);
+    if (data.title) card.appendChild(el('p', { class: 'law-title', text: data.title }));
+    const articles = data.articles || [];
+    if (articles.length === 0) {
+      card.appendChild(el('div', { class: 'empty', text: `Article ${num} not found in ${law.toUpperCase()}.` }));
+    } else {
+      for (const a of articles) {
+        if (a.heading) card.appendChild(el('div', { class: 'article-num', text: `Art. ${a.article_num} — ${a.heading}` }));
+        else card.appendChild(el('div', { class: 'article-num', text: `Art. ${a.article_num}` }));
+        card.appendChild(el('div', { class: 'text', text: a.text || '' }));
+      }
+    }
+    into.appendChild(card);
+  } catch (e) {
+    clear(into);
+    into.appendChild(el('div', { class: 'error', text: `Lookup failed: ${e.message}` }));
+  }
+}
+
+function buildQuick() {
+  const grid = $('#quickgrid');
+  clear(grid);
+  for (const [abbr, name] of QUICK_LAWS) {
+    const a = el('a', {
+      class: 'quick-card',
+      href: `?law=${encodeURIComponent(abbr)}&art=1`,
+      title: `Show Art. 1 of ${abbr} (${name})`,
+    }, [
+      el('span', { class: 'quick-card-abbr', text: abbr }),
+      el('span', { class: 'quick-card-name', text: name }),
+    ]);
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      $('#article-law').value = abbr;
+      $('#article-num').value = '1';
+      const p = new URLSearchParams(location.search);
+      p.set('law', abbr); p.set('art', '1');
+      history.pushState({ law: abbr, art: '1' }, '', `?${p}`);
+      lookupArticle(abbr, '1');
+      $('#article-lookup').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    grid.appendChild(a);
+  }
+}
+
+function setLevelButtons(level) {
+  document.querySelectorAll('#filters button').forEach((b) => {
+    b.classList.toggle('active', (b.dataset.filter || '') === (level || ''));
+  });
+}
+
+function bind() {
+  $('#form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = $('#q').value.trim();
+    const p = new URLSearchParams();
+    if (q) p.set('q', q);
+    history.pushState({ q }, '', q ? `?${p}` : location.pathname);
+    runSearch(q, '');
+    setLevelButtons('');
+  });
+  document.querySelectorAll('#filters button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const level = btn.dataset.filter || '';
+      const q = $('#q').value.trim();
+      const p = new URLSearchParams({ q });
+      if (level) p.set('level', level);
+      history.pushState({ q, level }, '', `?${p}`);
+      runSearch(q, level);
+      setLevelButtons(level);
+    });
+  });
+  $('#article-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const law = $('#article-law').value.trim();
+    const num = $('#article-num').value.trim();
+    if (!law || !num) return;
+    const p = new URLSearchParams({ law, art: num });
+    history.pushState({ law, art: num }, '', `?${p}`);
+    lookupArticle(law, num);
+  });
+  window.addEventListener('popstate', () => init());
+}
+
+function init() {
+  const p = params();
+  const q = p.get('q') || '';
+  const level = p.get('level') || '';
+  const law = p.get('law');
+  const art = p.get('art');
+  $('#q').value = q;
+  setLevelButtons(level);
+  if (q) runSearch(q, level);
+  if (law && art) {
+    $('#article-law').value = law;
+    $('#article-num').value = art;
+    lookupArticle(law, art);
+  }
+}
+
+buildQuick();
+bind();
+init();
+</script>
+
+</body>
+</html>
