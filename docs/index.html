@@ -102,7 +102,7 @@
 <!-- Shared design system — gives every page the same tokens, type scale, and
      header/footer/btn/card primitives. Page-specific styles in the inline
      <style> block below override these where the landing diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=10">
+<link rel="stylesheet" href="/static/css/design-system.css?v=11">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
@@ -2328,10 +2328,10 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
       <a href="/api/">API</a>
       <a href="/quality.html" data-t="nav_quality">Quality</a>
       <span class="lang-sw" role="group" aria-label="Language">
-        <button data-l="de" type="button" class="on">DE</button>
-        <button data-l="fr" type="button">FR</button>
-        <button data-l="it" type="button">IT</button>
-        <button data-l="en" type="button">EN</button>
+        <a href="?lang=de" data-l="de" class="on">DE</a>
+        <a href="?lang=fr" data-l="fr">FR</a>
+        <a href="?lang=it" data-l="it">IT</a>
+        <a href="?lang=en" data-l="en">EN</a>
       </span>
     </nav>
   </div>
@@ -4347,15 +4347,22 @@ function applyI18n() {
   }
 }
 
-document.querySelectorAll('.lang-sw button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    curLang = btn.dataset.l;
+// Apply ?lang=XX query-param override before wiring clicks.
+const _qsLang = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+if (_qsLang && I18N[_qsLang]) {
+  curLang = _qsLang;
+  localStorage.setItem('lang', curLang);
+}
+document.querySelectorAll('.lang-sw [data-l]').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    curLang = el.dataset.l;
     localStorage.setItem('lang', curLang);
-    document.querySelectorAll('.lang-sw button').forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
+    document.querySelectorAll('.lang-sw [data-l]').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
     applyI18n();
   });
-  btn.classList.toggle('on', btn.dataset.l === curLang);
+  el.classList.toggle('on', el.dataset.l === curLang);
 });
 
 /* ── Theme: trust prefers-color-scheme + re-render charts on OS change.

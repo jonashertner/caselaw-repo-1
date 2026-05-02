@@ -595,7 +595,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <meta property="og:site_name" content="OpenCaseLaw.ch">
 <meta property="og:locale" content="{_esc(language)}_CH">
 <script type="application/ld+json">{schema_str}</script>
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=10">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=11">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
     /* /entscheid/{{id}} v2 — site chrome wears the shared design system,
@@ -916,6 +916,22 @@ def _render_decision(row: sqlite3.Row) -> str:
   </div>
 </footer>
 
+<script>
+(function () {{
+  var qs = (location.search.match(/[?&]lang=([a-z]{{2}})/) || [])[1];
+  var stored = null;
+  try {{ stored = localStorage.getItem('lang'); }} catch (_) {{}}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  var lang = qs || stored || html || 'en';
+  if (qs) {{ try {{ localStorage.setItem('lang', qs); }} catch (_) {{}} }}
+  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {{
+    el.classList.toggle('on', el.dataset.l === lang);
+    el.addEventListener('click', function () {{
+      try {{ localStorage.setItem('lang', el.dataset.l); }} catch (_) {{}}
+    }});
+  }});
+}})();
+</script>
 </body>
 </html>"""
 
@@ -929,7 +945,7 @@ def _render_404(decision_id: str) -> str:
 <title>Entscheid nicht gefunden | OpenCaseLaw</title>
 <meta name="robots" content="noindex">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=10">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=11">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
   main.notfound {{ max-width: 560px; padding-top: var(--s-7); padding-bottom: var(--s-7); }}
@@ -975,6 +991,22 @@ def _render_404(decision_id: str) -> str:
   </p>
 </main>
 
+<script>
+(function () {{
+  var qs = (location.search.match(/[?&]lang=([a-z]{{2}})/) || [])[1];
+  var stored = null;
+  try {{ stored = localStorage.getItem('lang'); }} catch (_) {{}}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  var lang = qs || stored || html || 'en';
+  if (qs) {{ try {{ localStorage.setItem('lang', qs); }} catch (_) {{}} }}
+  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {{
+    el.classList.toggle('on', el.dataset.l === lang);
+    el.addEventListener('click', function () {{
+      try {{ localStorage.setItem('lang', el.dataset.l); }} catch (_) {{}}
+    }});
+  }});
+}})();
+</script>
 </body>
 </html>"""
 

@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <!-- Shared design system: tokens, fonts, header/footer chrome.
      Inline styles below only carry dashboard-specific layout. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=10">
+<link rel="stylesheet" href="/static/css/design-system.css?v=11">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
 /* Tokens come from design-system.css. */
@@ -175,7 +175,7 @@ h1 {
         <a href="/?lang=de" data-l="de">DE</a>
         <a href="/?lang=fr" data-l="fr">FR</a>
         <a href="/?lang=it" data-l="it">IT</a>
-        <a href="/?lang=en" data-l="en" class="on">EN</a>
+        <a href="/?lang=en" data-l="en">EN</a>
       </span>
     </nav>
   </div>
@@ -529,6 +529,37 @@ fetch("quality.json", { cache: "no-store" })
             "quality.json could not be loaded. The CDN may still be propagating " +
             "the most recent publish, or the report file was not generated.";
     });
+</script>
+<script>
+/* Shared lang-switch wiring (works on every page).
+   - Reads current locale from ?lang=, then localStorage, then <html lang>.
+   - Highlights the matching .lang-sw [data-l] item with .on.
+   - On click: persists to localStorage. If applyI18n() is defined on
+     this page, intercepts and switches in-place; otherwise lets the
+     browser navigate to /?lang=XX so the landing renders in that lang. */
+(function () {
+  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+  var stored = null;
+  try { stored = localStorage.getItem('lang'); } catch (_) {}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  var lang = qs || stored || html || 'en';
+  if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
+  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
+    el.classList.toggle('on', el.dataset.l === lang);
+    el.addEventListener('click', function (e) {
+      var l = el.dataset.l;
+      try { localStorage.setItem('lang', l); } catch (_) {}
+      if (typeof window.applyI18n === 'function') {
+        e.preventDefault();
+        window.curLang = l;
+        document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
+          b.classList.toggle('on', b.dataset.l === l);
+        });
+        try { window.applyI18n(); } catch (_) {}
+      }
+    });
+  });
+})();
 </script>
 </body>
 </html>

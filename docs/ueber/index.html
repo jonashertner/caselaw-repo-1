@@ -98,7 +98,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- Shared design system: same chrome as / and every other page. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=10">
+<link rel="stylesheet" href="/static/css/design-system.css?v=11">
 <style>
 :root {
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -1296,10 +1296,10 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
       <a href="/api/">API</a>
       <a href="/quality.html" data-t="nav_quality">Quality</a>
       <span class="lang-sw" role="group" aria-label="Language">
-        <button data-l="de" type="button" class="on">DE</button>
-        <button data-l="fr" type="button">FR</button>
-        <button data-l="it" type="button">IT</button>
-        <button data-l="en" type="button">EN</button>
+        <a href="/?lang=de" data-l="de">DE</a>
+        <a href="/?lang=fr" data-l="fr">FR</a>
+        <a href="/?lang=it" data-l="it">IT</a>
+        <a href="/?lang=en" data-l="en">EN</a>
       </span>
     </nav>
   </div>
@@ -3202,6 +3202,37 @@ async function init() {
   });
 }
 init();
+</script>
+<script>
+/* Shared lang-switch wiring (works on every page).
+   - Reads current locale from ?lang=, then localStorage, then <html lang>.
+   - Highlights the matching .lang-sw [data-l] item with .on.
+   - On click: persists to localStorage. If applyI18n() is defined on
+     this page, intercepts and switches in-place; otherwise lets the
+     browser navigate to /?lang=XX so the landing renders in that lang. */
+(function () {
+  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+  var stored = null;
+  try { stored = localStorage.getItem('lang'); } catch (_) {}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  var lang = qs || stored || html || 'en';
+  if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
+  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
+    el.classList.toggle('on', el.dataset.l === lang);
+    el.addEventListener('click', function (e) {
+      var l = el.dataset.l;
+      try { localStorage.setItem('lang', l); } catch (_) {}
+      if (typeof window.applyI18n === 'function') {
+        e.preventDefault();
+        window.curLang = l;
+        document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
+          b.classList.toggle('on', b.dataset.l === l);
+        });
+        try { window.applyI18n(); } catch (_) {}
+      }
+    });
+  });
+})();
 </script>
 </body>
 </html>
