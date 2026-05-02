@@ -2654,107 +2654,42 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 
 <a class="skip-link" href="#main" data-t="skip_link">Skip to content</a>
 
-<!-- ── Verification banner ─────────────────────────────────────────────
-     Persistent strip linking to the #verification section. Brand-promise
-     surface: every Swiss legal practitioner who lands here should see,
-     before anything else, that we treat AI hallucination of case
-     references as the central problem to solve. -->
-<nav class="toolbar"><div class="w toolbar-inner">
-  <a href="#top" class="toolbar-brand" aria-label="opencaselaw.ch — home">
-    <span class="brand-mark">+</span>
-    <span class="brand-wordmark">opencaselaw.ch</span>
-  </a>
-
-  <div class="toolbar-nav" role="navigation" aria-label="Page sections">
-    <a href="/search/"      data-t="nav_search">Search</a>
-    <a href="#connect"      data-section="connect"      data-t="nav_connect">Connect</a>
-    <a href="/word/"        data-t="nav_word">Word</a>
-    <a href="#verification" data-section="verification" data-t="nav_verification">Verification</a>
-    <a href="#corpus"       data-section="corpus"       data-t="nav_corpus">Corpus</a>
-    <a href="/quality.html" data-t="nav_quality">Quality</a>
-    <a href="#about"        data-section="about"        data-t="nav_about">About</a>
-  </div>
-
-  <div class="toolbar-right">
-    <div class="lang-sw" role="group" aria-label="Language">
-      <button data-l="de" class="on">DE</button>
-      <button data-l="fr">FR</button>
-      <button data-l="it">IT</button>
-      <button data-l="rm">RM</button>
-      <button data-l="en">EN</button>
-    </div>
-    <button class="tbtn" id="theme-btn" aria-label="Toggle theme">
-      <svg id="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-      <svg id="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
-    <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-controls="mobile-menu" aria-expanded="false">
-      <svg class="ico-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-    </button>
-  </div>
-</div></nav>
-
-<!-- Mobile drawer — slides from the right.  Single source of truth for
-     navigation on screens <760 px: section jumps + subpage links +
-     verification credential + language inside one panel.
-
-     DOM ORDER MATTERS: scrim FIRST, panel SECOND.  CSS-default stacking
-     puts later siblings on top; we rely on that so the panel is
-     clickable and the scrim sits behind it.  z-index is also set
-     explicitly as a belt-and-braces guard.  -->
-<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
-  <div class="mobile-menu-scrim" id="mobile-menu-scrim" role="button" tabindex="-1" aria-label="Close menu"></div>
-  <div class="mobile-menu-panel">
-    <div class="mobile-menu-head">
-      <span class="mobile-menu-title" data-t="menu_title">Menu</span>
-      <button class="mobile-menu-close" id="mobile-menu-close" type="button" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-
-    <div class="mobile-menu-section">
-      <div class="mobile-menu-label" data-t="menu_sections">On this page</div>
-      <a href="#connect"      data-section="connect"      data-t="nav_connect">Connect</a>
-      <a href="#toolkit"      data-section="toolkit"      data-t="nav_toolkit">Toolkit</a>
-      <a href="#verification" data-section="verification" data-t="nav_verification">Verification</a>
-      <a href="#corpus"       data-section="corpus"       data-t="nav_corpus">Corpus</a>
-      <a href="#latest"       data-section="latest"       data-t="nav_latest">Latest</a>
-      <a href="#international" data-section="international" data-t="nav_international">International</a>
-      <a href="#about"        data-section="about"        data-t="nav_about">About</a>
-    </div>
-
-    <div class="mobile-menu-section">
-      <div class="mobile-menu-label" data-t="menu_more">More</div>
-      <a href="/search/" data-t="nav_search">Search the corpus</a>
-      <a href="/courts/">All 121 courts</a>
-      <a href="/laws/">Federal + cantonal laws</a>
-      <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
-      <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
-      <a href="/word/" data-t="nav_word">Word add-in</a>
-      <a href="/mcp/" data-t="nav_mcp">MCP reference</a>
-      <a href="/api/">REST API</a>
-      <a href="/quality.html" data-t="nav_quality">Quality dashboard</a>
-      <a href="/coverage/" data-t="footer_coverage">Coverage</a>
-      <a href="/paper/">Research paper</a>
-      <a href="/ueber/" data-t="nav_ueber">About OpenCaseLaw</a>
-    </div>
-
-    <div class="mobile-menu-foot">
-      <div class="mobile-menu-langs" role="group" aria-label="Language">
+<!-- Shared design-system header — same across every page (search,
+     courts, laws, word, mcp, api, paper, quality, coverage, entscheid).
+     The lang-switch group keeps the same `.lang-sw button[data-l]`
+     contract the i18n JS targets, so language change still applies
+     instantly without a reload. -->
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">⊙</span>
+      <span>OpenCaseLaw</span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="/search/"      data-t="nav_search">Search</a>
+      <a href="/courts/"      data-t="nav_courts">Courts</a>
+      <a href="/laws/"        data-t="nav_laws">Laws</a>
+      <a href="/word/"        data-t="nav_word">Word</a>
+      <a href="/mcp/"         data-t="nav_mcp">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/paper/">Paper</a>
+      <a href="/quality.html" data-t="nav_quality">Quality</a>
+      <span class="lang-sw" role="group" aria-label="Language">
         <button data-l="de" type="button" class="on">DE</button>
         <button data-l="fr" type="button">FR</button>
         <button data-l="it" type="button">IT</button>
         <button data-l="rm" type="button">RM</button>
         <button data-l="en" type="button">EN</button>
-      </div>
-    </div>
+      </span>
+    </nav>
   </div>
-</div>
+</header>
 
 <!-- ── Microsoft AppSource launch strip — 2026-05-02
      Calls attention to the Marketplace listing of the Word add-in
      (WA200010700). One row, two CTAs (learn / install). -->
 <aside class="appsource-strip" aria-label="Microsoft AppSource launch">
-  <div class="w appsource-strip-row">
+  <div class="container appsource-strip-row">
     <div class="appsource-strip-text">
       <span class="appsource-strip-badge" data-t="strip_new">New</span>
       <strong data-t="strip_word_title">OpenCaseLaw for Microsoft Word</strong>
@@ -2767,7 +2702,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   </div>
 </aside>
 
-<main id="main" class="w">
+<main id="main" class="container">
 <header class="hero-v3" id="top">
     <div class="hero-v3-content">
       <div class="hero-v3-stat">
@@ -3277,50 +3212,50 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 
 </main>
 
-<footer class="footer-v2">
-  <div class="w">
-    <div class="footer-cols">
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_data">Data</div>
-        <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener" target="_blank">HuggingFace</a>
-        <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
-        <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
-        <a href="/coverage/" data-t="footer_coverage">Coverage</a>
-        <a href="/quality.html">Data quality</a>
-        <a href="/schema/v0.1-draft" rel="noopener">Decision Schema (v0.1)</a>
-        <span class="footer-badge">CC0 1.0</span>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_code">Code</div>
-        <a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener" target="_blank">GitHub</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/issues" rel="noopener" target="_blank" data-t="footer_report">Report issue</a>
-        <a href="https://github.com/jonashertner/caselaw-repo-1/commits/main" rel="noopener" target="_blank" data-t="footer_commits">Commit history</a>
-        <span class="footer-badge">MIT License</span>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_connect">Connect</div>
-        <a href="/mcp/">MCP Server</a>
-        <a href="https://word.opencaselaw.ch/install.html" rel="noopener" target="_blank">Word Add-in</a>
-        <a href="/feed.xml" type="application/rss+xml">RSS Feed</a>
-        <a href="/feeds/bger.xml" type="application/rss+xml">RSS — Bundesgericht</a>
-        <a href="https://mcp.opencaselaw.ch/health" rel="noopener" target="_blank" data-t="footer_status">API Status</a>
-      </div>
-      <div class="footer-col">
-        <div class="footer-col-head" data-t="footer_col_about">About</div>
-        <a href="/ueber/" data-t="footer_about">About OpenCaseLaw</a>
-        <a href="mailto:team@jonashertner.com" data-t="footer_contact">Contact</a>
-        <a href="/datenschutz/" data-t="footer_privacy">Privacy</a>
-        <a href="https://jonashertner.com" rel="noopener" target="_blank">Jonas Hertner</a>
-      </div>
+<!-- Shared design-system footer — same 4-column matrix as every other
+     page (Data / Access / About + brand kicker). -->
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC-BY-4.0. 4-layer quality framework. Public-good infrastructure.
+      </p>
+      <div id="ts" style="margin-top: var(--s-3); font-size: var(--t-xs); color: var(--text-3);"></div>
     </div>
-    <div class="footer-meta">
-      <div id="ts"></div>
-      <div>
-        <span data-t="made">Built with &#9829; by <a href="https://jonashertner.com" rel="author noopener" target="_blank">Jonas Hertner</a></span>
-        <span class="sep">&middot;</span>
-        <span data-t="footer_tagline_mid">Open source (MIT) &middot; Data CC0 &middot; 114 Swiss courts</span>
-      </div>
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li><a href="/entscheide/" data-t="nav_entscheide">Decisions</a></li>
+        <li><a href="/gesetze/" data-t="nav_gesetze">Laws</a></li>
+        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/coverage/" data-t="footer_coverage">Coverage</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+      </ul>
     </div>
+    <div>
+      <h4>Access</h4>
+      <ul>
+        <li><a href="/word/" data-t="nav_word">Word add-in</a></li>
+        <li><a href="/mcp/">MCP server</a></li>
+        <li><a href="/api/">REST API</a></li>
+        <li><a href="/feed.xml" type="application/rss+xml">RSS feed</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul>
+        <li><a href="/ueber/" data-t="footer_about">Mission</a></li>
+        <li><a href="/paper/">Research</a></li>
+        <li><a href="/datenschutz/" data-t="footer_privacy">Privacy</a></li>
+        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
+        <li><a href="mailto:team@jonashertner.com" data-t="footer_contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
   </div>
 </footer>
 
@@ -3346,6 +3281,7 @@ const I18N = {
     nav_connect:'Verbinden', nav_toolkit:'Praxis', nav_verification:'Verifikation',
     nav_corpus:'Korpus', nav_latest:'Neuste', nav_international:'International', nav_about:'\u00dcber',
     nav_word:'Word', nav_quality:'Qualit\u00e4t', nav_search:'Suche',
+    nav_courts:'Gerichte', nav_laws:'Gesetze',
     strip_new:'Neu', strip_word_title:'OpenCaseLaw f\u00fcr Microsoft Word',
     strip_word_meta:'auf Microsoft AppSource verifiziert \u2014 kostenlos installieren',
     strip_word_more:'Mehr erfahren \u2192', strip_word_install:'Auf AppSource installieren \u2192',
@@ -3627,6 +3563,7 @@ const I18N = {
     nav_connect:'Connexion', nav_toolkit:'Praxis', nav_verification:'V\u00e9rification',
     nav_corpus:'Corpus', nav_latest:'R\u00e9cents', nav_international:'International', nav_about:'\u00c0 propos',
     nav_word:'Word', nav_quality:'Qualit\u00e9', nav_search:'Recherche',
+    nav_courts:'Tribunaux', nav_laws:'Lois',
     strip_new:'Nouveau', strip_word_title:'OpenCaseLaw pour Microsoft Word',
     strip_word_meta:'v\u00e9rifi\u00e9 sur Microsoft AppSource \u2014 installation gratuite',
     strip_word_more:'En savoir plus \u2192', strip_word_install:'Installer sur AppSource \u2192',
@@ -3908,6 +3845,7 @@ const I18N = {
     nav_connect:'Connessione', nav_toolkit:'Pratica', nav_verification:'Verifica',
     nav_corpus:'Corpus', nav_latest:'Recenti', nav_international:'Internazionale', nav_about:'Chi siamo',
     nav_word:'Word', nav_quality:'Qualit\u00e0', nav_search:'Ricerca',
+    nav_courts:'Tribunali', nav_laws:'Leggi',
     strip_new:'Nuovo', strip_word_title:'OpenCaseLaw per Microsoft Word',
     strip_word_meta:'verificato su Microsoft AppSource \u2014 installazione gratuita',
     strip_word_more:'Scopri di pi\u00f9 \u2192', strip_word_install:'Installa su AppSource \u2192',
@@ -4189,6 +4127,7 @@ const I18N = {
     nav_connect:'Connectar', nav_toolkit:'Pratica', nav_verification:'Verificaziun',
     nav_corpus:'Corpus', nav_latest:'Pli novs', nav_international:'Internaziunal', nav_about:'Davart',
     nav_word:'Word', nav_quality:'Qualitad', nav_search:'Tschertga',
+    nav_courts:'Dretgiras', nav_laws:'Leschas',
     strip_new:'Nov', strip_word_title:'OpenCaseLaw per Microsoft Word',
     strip_word_meta:'verifitg\u00e0 sin Microsoft AppSource \u2014 installaziun gratuita',
     strip_word_more:'Vegnir a savair dapli \u2192', strip_word_install:'Installar sin AppSource \u2192',
@@ -4470,6 +4409,7 @@ const I18N = {
     nav_connect:'Connect', nav_toolkit:'Toolkit', nav_verification:'Verification',
     nav_corpus:'Corpus', nav_latest:'Latest', nav_international:'International', nav_about:'About',
     nav_word:'Word', nav_quality:'Quality', nav_search:'Search',
+    nav_courts:'Courts', nav_laws:'Laws',
     strip_new:'New', strip_word_title:'OpenCaseLaw for Microsoft Word',
     strip_word_meta:'verified on Microsoft AppSource \u2014 install for free',
     strip_word_more:'Learn more \u2192', strip_word_install:'Install on AppSource \u2192',
@@ -4766,103 +4706,23 @@ document.querySelectorAll('.lang-sw button').forEach(btn => {
   btn.classList.toggle('on', btn.dataset.l === curLang);
 });
 
+/* ── Theme: trust prefers-color-scheme + re-render charts on OS change.
+   Manual toggle dropped with the chrome refit — design-system wears
+   `:root[data-theme='auto']` selectors that auto-switch. */
 const _mq = matchMedia('(prefers-color-scheme: dark)');
-let _userOverride = localStorage.getItem('theme');
-let themePref = _userOverride || (_mq.matches ? 'dark' : 'light');
 function applyTheme() {
-  const isDark = themePref === 'dark';
+  const isDark = _mq.matches;
   document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
-  document.getElementById('ico-sun').style.display = isDark ? 'none' : '';
-  document.getElementById('ico-moon').style.display = isDark ? '' : 'none';
-  if (window._statsData) { destroyCharts(); renderCharts(window._statsData); }
+  if (window._statsData && typeof destroyCharts === 'function') {
+    destroyCharts(); renderCharts(window._statsData);
+  }
 }
 applyTheme();
-// Live-switch when OS theme changes (unless user manually toggled)
-_mq.addEventListener('change', (e) => {
-  if (!_userOverride) { themePref = e.matches ? 'dark' : 'light'; applyTheme(); }
-});
-document.getElementById('theme-btn').addEventListener('click', () => {
-  themePref = themePref === 'dark' ? 'light' : 'dark';
-  _userOverride = themePref;
-  localStorage.setItem('theme', themePref);
-  applyTheme();
-});
+_mq.addEventListener('change', applyTheme);
 
-/* ── Mobile drawer ─ open/close, scrim, Escape, focus return ──
-   The drawer wrapper carries the HTML `hidden` attribute when closed
-   so it is genuinely removed from layout / a11y tree / hit-testing.
-   We also toggle the `.open` class which CSS uses to drive the
-   open-state animations. The two flags must move together. */
-const hamburgerBtn = document.getElementById('hamburger-btn');
-const mobileMenu = document.getElementById('mobile-menu');
-const mobileMenuClose = document.getElementById('mobile-menu-close');
-const mobileMenuScrim = document.getElementById('mobile-menu-scrim');
-if (hamburgerBtn && mobileMenu) {
-  const toggleMenu = (open) => {
-    const isOpen = open !== undefined ? open : !mobileMenu.classList.contains('open');
-    if (isOpen) {
-      mobileMenu.hidden = false;
-      // Force a reflow so the next class change triggers the transition.
-      void mobileMenu.offsetHeight;
-      mobileMenu.classList.add('open');
-    } else {
-      mobileMenu.classList.remove('open');
-      // Hide AFTER the transition finishes so the slide-out animation
-      // is visible. Match the CSS transition duration (~280 ms).
-      setTimeout(() => {
-        if (!mobileMenu.classList.contains('open')) mobileMenu.hidden = true;
-      }, 320);
-    }
-    hamburgerBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    document.body.classList.toggle('menu-open', isOpen);
-    if (isOpen) {
-      // Focus the close button so keyboard users land at the top of the
-      // panel; tabbing forward goes into the section list.
-      if (mobileMenuClose) setTimeout(() => mobileMenuClose.focus(), 80);
-    }
-  };
-  hamburgerBtn.addEventListener('click', (e) => { e.preventDefault(); toggleMenu(); });
-  if (mobileMenuClose) mobileMenuClose.addEventListener('click', (e) => {
-    e.preventDefault(); toggleMenu(false); hamburgerBtn.focus();
-  });
-  if (mobileMenuScrim) {
-    mobileMenuScrim.addEventListener('click', (e) => {
-      e.preventDefault(); toggleMenu(false); hamburgerBtn.focus();
-    });
-    // Allow keyboard activation of the role=button div
-    mobileMenuScrim.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault(); toggleMenu(false); hamburgerBtn.focus();
-      }
-    });
-  }
-  // Auto-close when a link inside the panel is clicked. Listener is
-  // scoped to <a> only (not the lang buttons or the close button).
-  mobileMenu.querySelectorAll('.mobile-menu-section a').forEach(a => {
-    a.addEventListener('click', () => toggleMenu(false));
-  });
-  // Close on Escape so keyboard users aren't trapped.
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
-      toggleMenu(false);
-      hamburgerBtn.focus();
-    }
-  });
-  // Wire the language buttons inside the drawer to the same handler
-  // as the toolbar ones (changing language inside the drawer
-  // re-applies i18n immediately, mirrors selection in both groups).
-  mobileMenu.querySelectorAll('.mobile-menu-langs button').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const lang = btn.dataset.l;
-      curLang = lang;
-      try { localStorage.setItem('lang', lang); } catch (_) {}
-      document.querySelectorAll('.lang-sw button, .mobile-menu-langs button')
-        .forEach(b => b.classList.toggle('on', b.dataset.l === lang));
-      applyI18n();
-    });
-  });
-}
+/* Mobile drawer + hamburger are removed — design-system header.site
+   provides a horizontal-scrolling nav at <720px so every link stays
+   reachable without a separate panel. */
 
 /* ── Scroll-spy ─ highlight the current section in toolbar + drawer ── */
 (function scrollSpy() {
