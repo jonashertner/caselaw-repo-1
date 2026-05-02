@@ -110,7 +110,7 @@ def run_cmd(
     description: str,
     dry_run: bool = False,
     timeout: int = 3600,
-    stall_timeout: int | None = 1800,
+    stall_timeout: int | None = 5400,
 ) -> bool:
     """Run a command, return True on success.
 
@@ -123,10 +123,14 @@ def run_cmd(
         bound has to accommodate the longest legitimate step (Step 2c
         reference graph at 10800 s).
       - ``stall_timeout``: kill the process if no output line is received
-        for this many seconds (default 1800 s = 30 min). Catches the
+        for this many seconds (default 5400 s = 90 min). Catches the
         "process is alive but wedged" class — silent OOM, deadlocked DB,
-        infinite loop. Faster failure than the wall-clock timeout.
-        Set to None to disable.
+        infinite loop. Bumped from the 30 min initial value on
+        2026-05-02 after that watchdog killed a healthy build mid-dedup
+        (build_fts5 dedup is silent for ~45 min by design; optimize is
+        silent for ~45 min; both are legitimate). 90 min covers the
+        longest legitimate silent phase with 2× margin. Set to None to
+        disable.
     """
     logger.info(f"  $ {' '.join(cmd)}")
     if dry_run:
