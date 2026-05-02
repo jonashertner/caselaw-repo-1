@@ -1,0 +1,64 @@
+% §9 narrative — included via \input{sections/qc_case_studies.tex}.
+% Three real production incidents detected by L3 dataset audit and codified as
+% permanent regression tests + auto-correction passes. All three pre-date the
+% paper-release snapshot.
+
+\paragraph{Case study 1 --- the SG merge anomaly (alphabetical-collision class).}
+On 2026-04-29 a routine total-count check fired: the \texttt{sg\_publikationen}
+court had lost 1{,}450 rows ($\approx$\,90\,\% loss) on the nightly rebuild without
+any scraper failure. The diagnostic chain was: (a) the \texttt{INSERT OR
+IGNORE} dedup pattern in \texttt{build\_fts5.py} processes JSONL shards in
+alphabetical order; (b) the \texttt{entscheidsuche} side-feed
+(\texttt{es\_sg\_publikationen.jsonl}) processes \emph{before} the direct
+shard (\texttt{sg\_publikationen.jsonl}) because `e' precedes `s'; (c) the two
+shards happen to construct identical decision-id prefixes
+(\texttt{sg\_publikationen\_<docket>}); (d) the earlier-processed shard wins
+all dedups, silently dropping the chamber-correct rows from the direct shard.
+Reproducer scripts (\texttt{scripts/sg\_anomaly\_*.py}) confirmed the
+hypothesis on a fresh database. Two fixes shipped on 2026-04-30: (i) the
+problematic \texttt{es\_sg\_publikationen} feed was retired (commit
+\texttt{f249f1f}); (ii) an architectural fix forced direct shards to process
+before \texttt{es\_*} shards (commit \texttt{713afe3}, gated by
+\texttt{BUILD\_FTS5\_DIRECT\_FIRST=1}). The pattern check across all
+multi-chamber cantons confirmed only SG was affected. The fix added two
+permanent regression checks to the L3 audit: per-court row-count drift
+$>$10\,\% (warning) and per-court row-count drop $>$50\,\% (critical, blocks
+publish).
+
+\paragraph{Case study 2 --- the EGMR re-regression class (cross-source double-coverage).}
+The \texttt{entscheidsuche} \texttt{CH\_BGE} feed includes \texttt{cedh} (ECHR)
+decisions that should land under our \texttt{bge\_egmr} court rather than
+\texttt{bge}. Without an override, 474 ECHR cases were duplicated with
+divergent metadata (BGE side carried the full text but no chamber labels,
+the BGE-EGMR side carried chamber and regeste but truncated text). External
+audit on 2026-04-29 surfaced this; we backfilled production with a
+best-of-both merge (preserve full text from BGE side, preserve chamber and
+regeste from BGE-EGMR side) and deleted the BGE side. The L3 audit now
+includes a hard-zero check on (\texttt{court='bge'} AND
+\texttt{source\_url} contains \texttt{cedh}): \emph{any} positive count
+blocks the next publish.
+
+\paragraph{Case study 3 --- the König P-class incidents.}
+A second external audit (König, 2026-04-29 to 2026-05-01) uncovered seven
+distinct issue classes over two days: oversized HUDOC regestes (P1, full
+judgment text in the regeste field, max 165k chars; truncation pass added
+in \texttt{build\_fts5.\_truncate\_oversized\_regestes}); short-text
+fragments that belonged in the regeste field (P7, migration pass added);
+internal-newline dockets (5{,}441 rows fixed via extended
+\texttt{\_normalize\_dockets}); BS/GL relative source URLs (694 rows, host
+prefix recovery via \texttt{\_normalize\_source\_urls}); and ZH targeted
+gap-fill of 11 missing dockets. Each issue class is now a permanent
+\texttt{check\_*} function in \texttt{quality/checks/*.py} and a build-time
+auto-correction pass in \texttt{build\_fts5.py}.
+
+\paragraph{Detection cadence.} During the codification period
+(2026-04-29 to 2026-05-01), the L3 audit fired at least one critical
+condition on the majority of nightly runs because each external-audit
+finding initially manifested as a publish-blocking regression. After
+each issue class was codified into a build-time auto-correction pass in
+\texttt{build\_fts5.py}, the same regression class was prevented at
+build time on subsequent runs, so the audit no longer fires for it.
+The drift band ($\pm 5{\times}\mathrm{MAD}$ on a 7-day rolling median)
+flags court-level anomalies typically within one nightly run of the
+underlying scrape change; a deeper longitudinal study of detection
+latency is left for future work.

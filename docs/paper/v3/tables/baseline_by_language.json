@@ -1,0 +1,95 @@
+{
+  "per_language": {
+    "de": {
+      "n": 74,
+      "mrr_at_10": 0.43124731874731875,
+      "recall_at_10": 0.4222972972972973,
+      "hit_at_1": 0.28378378378378377,
+      "ndcg_at_10": 0.4632276359717194
+    },
+    "fr": {
+      "n": 16,
+      "mrr_at_10": 0.5104166666666666,
+      "recall_at_10": 0.6302083333333334,
+      "hit_at_1": 0.375,
+      "ndcg_at_10": 0.6105843526645505
+    },
+    "it": {
+      "n": 7,
+      "mrr_at_10": 0.7704081632653061,
+      "recall_at_10": 0.8928571428571429,
+      "hit_at_1": 0.7142857142857143,
+      "ndcg_at_10": 0.8031627323914518
+    },
+    "unknown": {
+      "n": 3,
+      "mrr_at_10": 0.5,
+      "recall_at_10": 0.6666666666666666,
+      "hit_at_1": 0.3333333333333333,
+      "ndcg_at_10": 0.9448796084753047
+    }
+  },
+  "cross_lingual_subset": [
+    {
+      "id": "q016",
+      "query": "responsabilit\u00e9 du d\u00e9tenteur d'animal",
+      "tags": [
+        "semantic",
+        "cross-lingual",
+        "fr",
+        "liability"
+      ],
+      "status": "ok",
+      "rr": 1.0,
+      "recall": 0.6666666666666666,
+      "ndcg": 0.8838695436828513,
+      "hit1": 1.0,
+      "latency_ms": 382.49966700095683,
+      "topk_ids": [
+        "bge_BGE_110_II_136",
+        "bge_BGE_85_II_243",
+        "bge_BGE_126_III_14",
+        "vs_gerichte_C1_21_118",
+        "bge_BGE_102_II_232",
+        "bge_BGE_104_II_23",
+        "ne_gerichte_CC.1994.266",
+        "bge_BGE_115_II_237",
+        "bge_110 II 136",
+        "vd_findinfo_D_cision___2014___165"
+      ],
+      "matched_ranks": {
+        "bge_BGE_85_II_243": 2,
+        "bge_BGE_110_II_136": 1
+      }
+    },
+    {
+      "id": "q046",
+      "query": "d\u00e9tenteur d'animal responsabilit\u00e9 chien morsure",
+      "tags": [
+        "fr",
+        "liability",
+        "cross-lingual",
+        "concept-match"
+      ],
+      "status": "ok",
+      "rr": 0.0,
+      "recall": 0.0,
+      "ndcg": 0.0,
+      "hit1": 0.0,
+      "latency_ms": 168.7217089929618,
+      "topk_ids": [
+        "vd_omni_GE.2008.0068",
+        "vd_findinfo_D_cision___2011___765",
+        "bger_2P.52_2007",
+        "vd_omni_GE.2024.0371",
+        "vd_omni_GE.2007.0126",
+        "vd_omni_GE.2009.0224",
+        "vd_omni_GE.2022.0007",
+        "vd_omni_GE.2010.0085",
+        "vd_omni_GE.2009.0205",
+        "ge_gerichte_ATA_671_2010"
+      ],
+      "matched_ranks": {}
+    }
+  ]
+}

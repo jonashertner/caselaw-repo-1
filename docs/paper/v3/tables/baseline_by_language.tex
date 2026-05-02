@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Search-quality baseline by query language. 100-question golden set, offline (BM25+RRF, no LLM rerank), 2026-03-19. Italian queries score highest because the Italian corpus is the smallest (lowest target ambiguity).}
+\label{tab:baseline_by_language}
+\small
+\begin{tabular}{l r r r r r}
+\toprule
+\textbf{Language} & \textbf{n} & \textbf{MRR@10} & \textbf{Recall@10} & \textbf{Hit@1} & \textbf{nDCG@10} \\
+\midrule
+DE & 74 & 0.431 & 0.422 & 0.284 & 0.463 \\
+FR & 16 & 0.510 & 0.630 & 0.375 & 0.611 \\
+IT & 7 & 0.770 & 0.893 & 0.714 & 0.803 \\
+\bottomrule
+\end{tabular}
+\end{table}

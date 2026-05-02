@@ -1,0 +1,15 @@
+\begin{table}[t]
+\centering
+\caption{Cross-lingual leading-case retrieval. Cells give MRR@10 (n queries) for retrieval of a leading-case decision when the query is in language \emph{Q} and the decision's authoritative language is \emph{T}. 50 leading cases (in-degree range 4{,}412--53{,}251, median 8{,}180; top 0.025\,\% of cited decisions), with regeste-derived parallel queries in DE/FR/IT. BM25+RRF (no LLM rerank). The 50 cases include 38 originally DE and 12 originally FR; none is originally IT (consistent with the corpus distribution among most-cited decisions). Overall MRR@10=0.630, Hit@10=0.833 across n=150 queries. Numbers are upper-bounded by query--regeste vocabulary coupling; see \S\ref{sec:limit}.}
+\label{tab:cross_lingual_mrr}
+\small
+\begin{tabular}{l c c c}
+\toprule
+\textbf{Q lang $\downarrow$ \, T lang $\to$} & \textbf{DE} & \textbf{FR} & \textbf{IT} \\
+\midrule
+\textbf{DE} & 0.617 (n=38) & 0.333 (n=12) & \textemdash \\
+\textbf{FR} & 0.566 (n=38) & 0.785 (n=12) & \textemdash \\
+\textbf{IT} & 0.776 (n=38) & 0.549 (n=12) & \textemdash \\
+\bottomrule
+\end{tabular}
+\end{table}

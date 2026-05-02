@@ -1,0 +1,56 @@
+\paragraph{Goal.} Demonstrate that the five-rail closing-audit decomposition
+is corpus-agnostic, given (a)~an enumerable decision corpus, (b)~a statute
+mirror, and (c)~a citation extraction grammar for the local conventions.
+We sketch this for English law (UK + Welsh decisions, BAILII).
+
+\paragraph{Components.}
+
+\textbf{Citation grammar.} English neutral citations follow a fixed
+schema: \texttt{[YEAR] COURT NN}, where \texttt{COURT} is one of a small
+controlled vocabulary (\texttt{UKSC}, \texttt{EWCA Civ}, \texttt{EWCA
+Crim}, \texttt{EWHC}, \texttt{UKHL}, \texttt{UKPC}, \texttt{EWFC},
+\texttt{EWCOP}, etc.). A regular expression captures these reliably:
+\begin{verbatim}
+r"\[(\d{4})\]\s+(UKSC|UKHL|UKPC|EWCA\s+Civ|EWCA\s+Crim
+   |EWHC|EWCOP|EWFC|EWCC|UKEAT|UKUT|UKFTT)\s+(\d+)"
+\end{verbatim}
+
+\textbf{Statute mirror.} \texttt{legislation.gov.uk} publishes machine-
+readable XML for every UK Public General Act since 1267. The R1 statute-
+existence rail can be implemented identically to our Swiss Fedlex
+mirror, swapping the \texttt{statutes.db} schema in place.
+
+\textbf{Decision corpus.} BAILII publishes UK and Irish decisions free
+of charge (single-source: subscription model retired, donate-as-you-go).
+The corpus is approximately 750{,}000 decisions across UK courts. A
+single-script crawler is feasible.
+
+\paragraph{What works without modification.}
+\begin{itemize}
+\item \textbf{R1 case-citation existence}: one regex change (above).
+\item \textbf{R3 verbatim-quote source matching}: identical algorithm,
+re-uses our 5-gram shingle hashing pipeline.
+\item \textbf{R4 decision-date sanity}: identical (date $\leq$ today and
+$\geq$ corpus floor).
+\item \textbf{R5 grounding judge}: identical (LLM-mediated, prompt
+templates have only the corpus name in them).
+\end{itemize}
+
+\paragraph{What requires adaptation.}
+\begin{itemize}
+\item \textbf{R2 statute resolution}: needs the
+\texttt{legislation.gov.uk} URN scheme rather than Fedlex SR numbers.
+URN structure is well-documented; estimated 1--2 weeks of integration
+work.
+\item \textbf{Cross-lingual}: not applicable (English law is
+monolingual). The cross-lingual benchmark would target a different
+multilingual jurisdiction (Belgium, Canada-Quebec, South Africa,
+India).
+\end{itemize}
+
+\paragraph{Status.} The architecture above is a sketch only; we have
+not yet performed an English-law evaluation. Full implementation and
+evaluation are left for future work. The two implementation tasks
+estimated above (citation-grammar swap, statute-mirror swap) are the
+non-trivial portions; the corpus crawl and rail orchestration reuse
+this paper's harness directly.

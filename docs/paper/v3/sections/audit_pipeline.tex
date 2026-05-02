@@ -1,0 +1,27 @@
+% §6 Five-rail closing audit — embedded into the resource paper.
+% Expanded prose drawn from the v2 verification-first paper, condensed to ~2 pp.
+
+The closing audit operates on a draft answer $D$ and a retrieval-state pool $S$ (decisions and statutes the generator had access to). It returns a list of issues $\mathcal{I}(D, S)$, each labelled with one of five named error classes. The five rails operate \emph{in parallel} on the same draft.
+
+\paragraph{Rail 1 --- case-citation existence.}
+A regex parses the draft for Swiss case-citation forms (BGE / ATF / DTF, BGer / TF dockets, BVGer / BStGer / BPatGer dockets, MKGE numerical references). Each parsed citation is resolved against the corpus by exact-match lookup with a strict canonical-prefix guard. Latency 2--5\,ms regardless of citation count. Catches: invented BGE numbers, mis-typed docket numbers, citations to retracted decisions. An optional pinpoint check requires \texttt{E.\,n.m} or \texttt{consid.\,n.m} markers to match the structured-extraction sidecar (\texttt{decision\_structure.db}) or the body \texttt{regeste} of the cited decision.
+
+\paragraph{Rail 2 --- statute-reference resolution.}
+A second regex parses for \texttt{Art.\,N\,LAW} forms (with German\,/\,French\,/\,Italian abbreviation synonyms; LTF$=$BGG, CO$=$OR, CC$=$ZGB, etc.) and resolves each against the Fedlex SPARQL mirror cached locally as \texttt{statutes.db}. Two-step resolution: abbreviation $\rightarrow$ SR number $\rightarrow$ article text, cached at process scope. Latency 1--3\,ms. Catches: fabricated law abbreviations, wrong article numbers, references to repealed articles. Connector words (``und'', ``oder'', ``et'', ``ou'') are case-sensitively filtered to prevent the regex eating them as fake law codes.
+
+\paragraph{Rail 3 --- verbatim-quote source-matching.}
+Quoted substrings of $\geq 30$ characters in the draft are extracted (German „\,...\,\textquotedblleft, French \guillemotleft\,...\,\guillemotright, Italian \guillemotleft\,...\,\guillemotright, English curly and ASCII variants) and required to appear verbatim --- after whitespace + quote-mark normalisation --- in the source pool $S$. The pool comprises the \texttt{regeste} text plus the first 8\,k characters of each cited decision, plus the article text of each cited statute. Latency $\sim$2\,ms. Catches: hallucinated quotations, paraphrases inside quotation marks.
+
+\paragraph{Rail 4 --- decision-date sanity.}
+For each verified case citation, parse adjacent \texttt{vom} / \texttt{du} / \texttt{del} DD.MM.YYYY constructs within 60 characters of the citation span and compare to the stored \texttt{decision\_date}. Latency $<$1\,ms. Catches: model emits a real BGE but pairs it with a wrong date, suggesting confusion between two cases with similar dockets.
+
+\paragraph{Rail 5 --- proposition grounding (opt-in, judge-mediated).}
+For each verified citation, a claim sentence is extracted (preceding sentence, with forward-fallback for ``In BGE X, ...'' patterns). ``See''-cite markers (\texttt{vgl.}, \texttt{cf.}, \texttt{siehe}, \texttt{cfr.}) suppress the rail. All (claim, source) pairs go to a separate LLM judge call (same model family as the generator) that returns one of \{\texttt{yes}, \texttt{partial}, \texttt{no}, \texttt{contradicts}, \texttt{unrelated}\}. Verdicts in \{\texttt{no}, \texttt{contradicts}, \texttt{unrelated}\} become issues. One judge call per draft regardless of citation count. Latency 1.5--2.5\,s. Cost $\approx\$0.005$ per call.
+
+\paragraph{Output canonicalisation.}
+When all rails pass, the audit emits a \texttt{linked\_text} field with every parsed citation replaced by its corpus-canonical form wrapped in a Markdown link to \texttt{mcp.opencaselaw.ch/entscheid/<id>}. Drafts arrive with messy citation spacing or case and leave publication-ready.
+
+\paragraph{Empirical baseline (from prior-only condition).}
+On the v2 30-question Swiss Legal RAG bench, $\sim$33 distinct authority citations were emitted across 30 drafts; the deterministic rails (R1--R4) flagged 1 (3\,\% observed fabrication rate). For context, Magesh et al.~\cite{magesh2024} report 17--33\,\% on commercial legal-RAG and Dahl et al.~\cite{dahl2024} report 58--82\,\% on general-purpose LLMs in different settings; we cite these to bracket the literature, not as a like-for-like comparison. The full five-rail audit including the LLM-judge rail R5 reaches a 66.7\,\% wrong-draft flag rate at a 50\,\% false-positive rate; calibration of the judge's threshold remains an open problem and the rail should be deployed in advisory mode pending future calibration work.
+
+\paragraph{Retrieval-augmented condition.} The retrieval-augmented re-run on the same 30-question bench, comparing prior-only and top-5-passage retrieval-augmented conditions, is in progress; results will be reported in a forthcoming revision of this paper.

@@ -1,0 +1,92 @@
+All claims in this paper are backed by code, data, and configuration
+that anyone can clone or query. This appendix lists every claim's
+provenance so a reviewer can verify in less than five minutes.
+
+\paragraph{Code.}
+\begin{itemize}
+\item \textbf{Repository}: \url{https://github.com/jonashertner/caselaw-repo-1}
+  (MIT licence). The release tag for this paper is
+  \texttt{paper-resource-2026-05} (to be assigned at submission;
+  prior to that, all numerical claims trace to the commit pinned in
+  the HuggingFace dataset's \texttt{manifest.json}).
+\item \textbf{Five-rail audit pipeline}:
+  \texttt{mcp\_server.py::\_handle\_attest\_response} (entry at line
+  9613 of the release tag). The four deterministic rail
+  implementations are inline in the same file:
+  \texttt{\_audit\_statutes} (R2, line 9013),
+  \texttt{\_audit\_quotes} (R3, line 9088),
+  \texttt{\_audit\_dates} (R4, line 9179),
+  \texttt{\_audit\_grounding} (R5, line 9492). R1 (case-citation
+  existence) is inline in \texttt{\_handle\_attest\_response}.
+\item \textbf{Quality framework}: \texttt{quality/} package
+  (\texttt{runner.py}, \texttt{cli.py}, \texttt{drift.py},
+  \texttt{baseline.py}, \texttt{smoke.py}, plus 17 modules
+  in \texttt{quality/checks/} containing 61 \texttt{check\_*}
+  functions).
+\item \textbf{Cross-lingual harness}:
+  \texttt{benchmarks/run\_cross\_lingual.py}.
+\item \textbf{Pipeline guards}:
+  \texttt{build\_fts5.py} \texttt{\_normalize\_*} /
+  \texttt{\_dedup\_*} / \texttt{\_truncate\_*} passes.
+\end{itemize}
+
+\paragraph{Data artifacts.}
+\begin{itemize}
+\item \textbf{Corpus}: HuggingFace \texttt{voilaj/swiss-caselaw}
+  (CC-BY-4.0). Each release is accompanied by a
+  \texttt{manifest.json} listing per-court row counts plus SHA-256.
+\item \textbf{Cross-lingual benchmark v1}: HuggingFace
+  \texttt{voilaj/swiss-legal-rag-bench/cross\_lingual\_v1.jsonl}
+  (CC0). 150 queries, anchored on the citation graph.
+\item \textbf{Audit-bench v2}: same repository,
+  \texttt{verification\_seed\_v2.jsonl}.
+\item \textbf{Citation graph}: derived from the corpus via
+  \texttt{search\_stack/build\_reference\_graph.py}; release snapshot
+  available on Zenodo (DOI to be assigned at submission).
+\item \textbf{Statute mirrors}: \texttt{statutes.db}
+  (federal, derived from Fedlex SPARQL endpoint),
+  \texttt{cantonal\_laws.db}
+  (cantonal, derived from LexWork+SIL+ZH portals via
+  \texttt{scrapers/cantonal\_laws/}).
+\end{itemize}
+
+\paragraph{Live system (runtime verification).}
+\begin{itemize}
+\item \texttt{https://mcp.opencaselaw.ch/sse} (MCP server endpoint).
+\item \texttt{https://opencaselaw.ch/} (corpus dashboard, multilingual).
+\item \texttt{https://opencaselaw.ch/quality.html} (live dataset health).
+\item \texttt{https://opencaselaw.ch/coverage/} (per-source scrape health).
+\end{itemize}
+
+\paragraph{Reproducing key numerical claims.}
+\begin{verbatim}
+git clone https://github.com/jonashertner/caselaw-repo-1
+cd caselaw-repo-1
+git checkout paper-resource-2026-05
+pip install -r requirements.txt
+huggingface-cli download voilaj/swiss-caselaw --local-dir output/
+python -m quality.cli run                    # 4-layer dataset health
+python benchmarks/run_search_benchmark.py    # Tab.~2 baseline
+python benchmarks/run_cross_lingual.py       # Tab.~3, Fig.~2 (cross-lang)
+\end{verbatim}
+
+\paragraph{Telemetry, costs, latency.} The MCP server exposes
+\texttt{/health} (corpus row count) and is monitored every 5 minutes
+by a systemd timer that probes 6 endpoints (search, decision, export
+docx/pdf/bib/ris) with $p_{95}<2$\,s. Every audit run since
+2026-05-01 is logged with full per-rail latency and judge cost
+to \texttt{logs/audit\_telemetry.jsonl}.
+
+\paragraph{Hardware.} Production runs on a Hetzner CCX43 dedicated
+instance (16 vCPUs, 64\,GB RAM, 200\,GB attached volume). The full
+nightly publish takes 3\,h 50\,min, dominated by the FTS5 rebuild.
+
+\paragraph{Licences.}
+\begin{itemize}
+\item Code: MIT.
+\item Corpus + benchmark: CC-BY-4.0 (corpus) / CC0 (benchmark).
+\item Commentaries: CC-BY-4.0 (OnlineKommentar.ch) / CC-BY-SA-4.0
+  (OpenLegalCommentary.ch).
+\item Federal statutes: derived from Fedlex SPARQL endpoint; Swiss
+  Confederation copyright applies, fair-use distribution permitted.
+\end{itemize}
