@@ -69,8 +69,9 @@
   --max-w-prose: 720px;
   --max-w-narrow: 560px;
   /* Generous side gutter — keeps the brand off the window edge on every
-     viewport. 32px at 320, ~5vw mid-range, capped at 64px on desktop. */
-  --gutter-x: clamp(32px, 5vw, 64px);
+     viewport. 40px at 320, ~6vw mid-range, capped at 96px on desktop.
+     This is the single canonical horizontal padding for every page. */
+  --gutter-x: clamp(40px, 6vw, 96px);
 
   /* Radius / shadow */
   --radius: 8px;
@@ -262,11 +263,12 @@ body.nav-open .nav-toggle .icon-menu { display: none; }
 body.nav-open .nav-toggle .icon-close { display: block; }
 body.nav-open { overflow: hidden; }
 
-@media (max-width: 720px) {
+@media (max-width: 1024px) {
+  /* Below 1024px the inline nav (7 nav links + 5 lang anchors + brand)
+     gets crowded. Switch to the hamburger overlay so the desktop nav
+     never collides with the brand on narrower viewports. */
   header.site .row { padding: var(--s-2) 0; }
   .nav-toggle { display: inline-flex; }
-  /* Default: hide the nav inline; the hamburger toggles `body.nav-open`
-     which re-displays the nav as a full-width slide-down panel. */
   header.site nav { display: none; }
   body.nav-open header.site nav {
     display: flex;

@@ -102,7 +102,7 @@
 <!-- Shared design system — gives every page the same tokens, type scale, and
      header/footer/btn/card primitives. Page-specific styles in the inline
      <style> block below override these where the landing diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=12">
+<link rel="stylesheet" href="/static/css/design-system.css?v=13">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
@@ -2265,43 +2265,10 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   .connect-footer .sep { display: block; margin: 4px 0; height: 0; }
 }
 
-/* ── Microsoft AppSource launch strip (2026-05-02) ─────────────────────
-   Sits between the sticky toolbar and the hero. Announces the verified
-   Marketplace launch of the Word add-in (WA200010700). Designed to be
-   visually distinct without competing with the hero number, and to be
-   one tap away from /word/ on mobile. */
-.appsource-strip {
-  background: linear-gradient(90deg, var(--accent-soft, #fef2f2) 0%, transparent 60%);
-  border-bottom: 1px solid var(--brd, #e4e4e7);
-  font-size: var(--fs-sm);
-  padding: 10px 0;
-}
-@media (prefers-color-scheme: dark) {
-  :root[data-theme='auto'] .appsource-strip,
-  :root:not([data-theme]) .appsource-strip {
-    background: linear-gradient(90deg, rgba(248, 113, 113, 0.08) 0%, transparent 60%);
-  }
-}
-.appsource-strip-row {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: var(--s-4); flex-wrap: wrap;
-}
-.appsource-strip-text { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
-.appsource-strip-badge {
-  display: inline-block; padding: 2px 9px;
-  border-radius: 999px; background: var(--ac, #b91c24); color: #fff;
-  font-family: var(--f-mono); font-size: 10px;
-  font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
-}
-.appsource-strip-meta { color: var(--tx2, #52525b); }
-.appsource-strip-actions { display: inline-flex; gap: var(--s-4); align-items: center; flex-wrap: wrap; }
-.appsource-strip-cta { text-decoration: none; font-weight: 500; color: var(--tx, #18181b); }
-.appsource-strip-cta:hover { text-decoration: underline; }
-.appsource-strip-cta-primary { color: var(--ac, #b91c24); }
-@media (max-width: 720px) {
-  .appsource-strip-row { flex-direction: column; align-items: flex-start; }
-  .appsource-strip-actions { width: 100%; justify-content: flex-start; }
-}
+/* (AppSource launch strip removed 2026-05-02 — was overlaying the
+   sticky header and conflicting with the hamburger overlay. Word
+   add-in still reachable via the Word link in the nav and the
+   footer Access column.) */
 
 </style>
 </head>
@@ -2341,23 +2308,6 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
     </button>
   </div>
 </header>
-
-<!-- ── Microsoft AppSource launch strip — 2026-05-02
-     Calls attention to the Marketplace listing of the Word add-in
-     (WA200010700). One row, two CTAs (learn / install). -->
-<aside class="appsource-strip" aria-label="Microsoft AppSource launch">
-  <div class="container appsource-strip-row">
-    <div class="appsource-strip-text">
-      <span class="appsource-strip-badge" data-t="strip_new">New</span>
-      <strong data-t="strip_word_title">OpenCaseLaw for Microsoft Word</strong>
-      <span class="appsource-strip-meta" data-t="strip_word_meta">verified on Microsoft AppSource — install free</span>
-    </div>
-    <div class="appsource-strip-actions">
-      <a href="/word/" class="appsource-strip-cta" data-t="strip_word_more">Learn more →</a>
-      <a href="https://marketplace.microsoft.com/en-us/product/office/WA200010700" target="_blank" rel="noopener" class="appsource-strip-cta appsource-strip-cta-primary" data-t="strip_word_install">Install on AppSource →</a>
-    </div>
-  </div>
-</aside>
 
 <main id="main" class="container">
 <header class="hero-v3" id="top">
