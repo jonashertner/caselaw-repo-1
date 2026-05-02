@@ -9,6 +9,11 @@
 <link rel="canonical" href="https://opencaselaw.ch/quality.html">
 <meta name="robots" content="index, follow">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- Shared design system — gives this dashboard the same cross-site nav,
+     footer, and tokens as / and /word. Inline styles below override
+     where the dashboard-specific layout diverges. -->
+<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
 :root {
     --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -23,12 +28,13 @@ body {
     line-height: 1.45;
     color: #111;
     background: #fff;
-    max-width: 960px;
-    margin: 4rem auto 6rem;
-    padding: 0 2rem;
+    margin: 0;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "kern" 1, "liga" 1, "tnum" 1;
 }
+/* Dashboard column constraint — keeps the report tight; header / footer
+   live outside this wrapper and span the full --max-w via .container. */
+main.container { max-width: 960px; padding-top: var(--s-6); padding-bottom: var(--s-7); }
 a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 nav.top { font-size: 13px; font-weight: 300; margin-bottom: 3.5rem; }
@@ -147,9 +153,29 @@ footer p { margin: 0.4rem 0; }
 </style>
 </head>
 <body>
-<nav class="top">
-    <a href="https://opencaselaw.ch">OpenCaseLaw</a><span class="sep">/</span><span>Data quality</span>
-</nav>
+
+<!-- Shared site header (matches / and /word) so the user keeps the same
+     mental model when navigating between landing, ops dashboards, and
+     decision pages. -->
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">⊙</span>
+      <span>OpenCaseLaw</span>
+    </a>
+    <nav>
+      <a href="/">Overview</a>
+      <a href="/entscheide/">Decisions</a>
+      <a href="/gesetze/">Laws</a>
+      <a href="/word/">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/quality.html" class="active">Quality</a>
+      <a href="/coverage/">Coverage</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container" style="padding-top: var(--s-6); padding-bottom: var(--s-7);">
 <h1>Data quality</h1>
 <p class="lede">
     Every nightly publish runs <span id="check-count">…</span> integrity, schema and content checks
@@ -195,6 +221,47 @@ footer p { margin: 0.4rem 0; }
 <footer>
     <p>Last run <span id="ts">—</span>, took <span id="dur">—</span>. Source DB <span id="db">—</span>.</p>
     <p>JSON: <a href="quality.json">quality.json</a>. Source: <a href="https://github.com/jonashertner/caselaw-repo-1/tree/main/quality">github.com/jonashertner/caselaw-repo-1/quality</a>.</p>
+</footer>
+</main>
+
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC-BY-4.0. 4-layer quality framework. Public-good infrastructure.
+      </p>
+    </div>
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li><a href="/entscheide/">Decisions</a></li>
+        <li><a href="/gesetze/">Laws</a></li>
+        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/coverage/">Coverage</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Access</h4>
+      <ul>
+        <li><a href="/word/">Word add-in</a></li>
+        <li><a href="/mcp/">MCP server</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul>
+        <li><a href="/ueber/">Mission</a></li>
+        <li><a href="/paper/">Research</a></li>
+        <li><a href="/datenschutz/">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
+  </div>
 </footer>
 
 <script>
