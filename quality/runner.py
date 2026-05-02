@@ -141,7 +141,7 @@ def run(
 
         checks = [c for c in checks if matches(c)]
 
-    ctx: dict = {"critical_only": critical_only}
+    ctx: dict = {"critical_only": critical_only, "db_path": str(db_path)}
     started = time.monotonic()
     results: list[CheckResult] = []
 

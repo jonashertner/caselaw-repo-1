@@ -24,19 +24,33 @@ ANCHOR_BGE_ID = "bge_BGE_140_III_86"
 ANCHOR_DOCKET = "4A_321/2013"
 
 
-def _try_import_mcp() -> object | None:
+def _try_import_mcp(db_path: str | None = None) -> object | None:
     """Best-effort load of mcp_server. Returns None if unavailable
-    (e.g. running with --check exports without server deps)."""
+    (e.g. running with --check exports without server deps).
+
+    If ``db_path`` is provided, repoint mcp_server.DB_PATH and the
+    related sidecar DB paths to it — otherwise the default
+    (``~/.swiss-caselaw/decisions.db``) will not exist on the gate
+    runner host and every helper that touches the corpus will fail.
+    """
     try:
         import mcp_server as _mcp
-        return _mcp
     except Exception:
         return None
+    if db_path:
+        from pathlib import Path as _Path
+        p = _Path(db_path)
+        _mcp.DB_PATH = p
+        _mcp.DATA_DIR = p.parent
+        _mcp.PARQUET_DIR = p.parent / "parquet"
+        _mcp.GRAPH_DB_PATH = p.parent / "reference_graph.db"
+        _mcp.VECTOR_DB_PATH = p.parent / "vectors.db"
+    return _mcp
 
 
-def check_get_decision_by_id(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_get_decision_by_id(conn: sqlite3.Connection, **_ctx) -> CheckResult:
     """get_decision_by_id must return a row for our anchor BGE."""
-    mcp = _try_import_mcp()
+    mcp = _try_import_mcp(_ctx.get("db_path") if isinstance(_ctx, dict) else None)
     if mcp is None:
         return CheckResult(
             name="mcp_tools.get_decision_by_id",
@@ -79,11 +93,11 @@ def check_get_decision_by_id(conn: sqlite3.Connection, **_) -> CheckResult:
     )
 
 
-def check_decision_id_variants_helper(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_decision_id_variants_helper(conn: sqlite3.Connection, **_ctx) -> CheckResult:
     """The _decision_id_variants helper underpins every cross-DB ID
     resolution. Bidirectional: BGE_xxx ↔ xxx must both produce the
     other form."""
-    mcp = _try_import_mcp()
+    mcp = _try_import_mcp(_ctx.get("db_path") if isinstance(_ctx, dict) else None)
     if mcp is None:
         return CheckResult(
             name="mcp_tools.decision_id_variants_helper",
@@ -124,10 +138,10 @@ def check_decision_id_variants_helper(conn: sqlite3.Connection, **_) -> CheckRes
     )
 
 
-def check_e_number_sort_key_helper(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_e_number_sort_key_helper(conn: sqlite3.Connection, **_ctx) -> CheckResult:
     """_e_number_sort_key sorts hierarchical paragraph numbers like a
     human: '2.10' > '2.2'. Critical for /erwaegung correct ordering."""
-    mcp = _try_import_mcp()
+    mcp = _try_import_mcp(_ctx.get("db_path") if isinstance(_ctx, dict) else None)
     if mcp is None:
         return CheckResult(
             name="mcp_tools.e_number_sort_key_helper",
@@ -162,7 +176,7 @@ def check_e_number_sort_key_helper(conn: sqlite3.Connection, **_) -> CheckResult
     )
 
 
-def check_search_fts_returns_hits(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_search_fts_returns_hits(conn: sqlite3.Connection, **_ctx) -> CheckResult:
     """A canonical FTS5 query — single common word — must return hits.
     If zero hits, the FTS5 index didn't build, search is broken."""
     n = conn.execute(
@@ -180,7 +194,7 @@ def check_search_fts_returns_hits(conn: sqlite3.Connection, **_) -> CheckResult:
     )
 
 
-def check_search_fts_handles_special_chars(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_search_fts_handles_special_chars(conn: sqlite3.Connection, **_ctx) -> CheckResult:
     """User queries can contain quoting / colons / parentheses that
     must be sanitised. Verify a tricky query doesn't raise."""
     try:
