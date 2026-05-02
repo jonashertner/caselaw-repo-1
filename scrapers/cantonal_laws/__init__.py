@@ -27,8 +27,20 @@ CANTONAL_LAW_SCRAPERS: dict[str, tuple[str, str]] = {
     "SH": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "SO": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "TG": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
+    # UR — discovered 2026-05-02: rechtsbuch.ur.ch is a LexWork SPA with the
+    # same /api/{lang}/texts_of_law/* endpoints as the other 18 cantons.
+    # Replaces the lossy LexFind PDF fallback (489 laws → direct extraction).
+    "UR": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "VS": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
     "ZG": ("scrapers.cantonal_laws.lexwork", "LexWorkScraper"),
+    # ──────────────────────────────────────────────────────────
+    # Still on lexfind_pdf fallback (lossy text extraction):
+    #   JU 1,164 laws — rsju.jura.ch (custom IceCube CMS)
+    #   VD 1,305 laws — Base législative vaudoise (BLV) under www.vd.ch
+    #   SZ   587 laws — www.sz.ch/kanton/gesetze/systematische-gesetzsammlung
+    # Each needs a custom scraper (no shared LexWork API). See
+    # docs/cantonal_laws_missing.md for portal URLs and structural notes.
+    # ──────────────────────────────────────────────────────────
 }
 
 # LexWork portal hostnames per canton
@@ -49,6 +61,7 @@ LEXWORK_HOSTS: dict[str, str] = {
     "SH": "sh.clex.ch",
     "SO": "bgs.so.ch",
     "TG": "www.rechtsbuch.tg.ch",
+    "UR": "rechtsbuch.ur.ch",
     "VS": "vs.clex.ch",
     "ZG": "zg.clex.ch",
 }
