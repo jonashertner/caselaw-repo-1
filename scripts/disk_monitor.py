@@ -83,6 +83,10 @@ def main() -> int:
     )
     print(line)
 
+    # Exit 0 on every successful check (regardless of threshold) so systemd
+    # does not also fire OnFailure= on top of our own ntfy alert. The
+    # ntfy notification is the signal; systemd's job is just to re-run
+    # us every 30 min.
     if used_pct >= args.urgent_pct:
         _ntfy(
             f"Disk URGENT: {used_pct:.0f}% used",
@@ -90,14 +94,12 @@ def main() -> int:
             f"Next nightly publish will fail at pre-flight if free < 80 GB.",
             priority="urgent",
         )
-        return 2
-    if used_pct >= args.warn_pct:
+    elif used_pct >= args.warn_pct:
         _ntfy(
             f"Disk WARNING: {used_pct:.0f}% used",
             f"{line}\n\nTop files:\n{_top_files(args.output_dir)}",
             priority="default",
         )
-        return 1
     return 0
 
 
