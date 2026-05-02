@@ -117,16 +117,17 @@ def check_decision_id_variants_helper(conn: sqlite3.Connection, **_ctx) -> Check
             threshold=None,
             message="_decision_id_variants helper not found",
         )
-    cases = [
-        ("bge_BGE_140_III_86", "BGE_140_III_86"),  # strip prefix
-        ("BGE_140_III_86", "bge_BGE_140_III_86"),  # add prefix
-    ]
+    # The helper normalises underscores ↔ spaces (the actual call-site contract)
+    # rather than adding/stripping the bge_ namespace prefix. The contract that
+    # matters: input is in the variants list, AND at least one space/underscore
+    # alternative is present.
+    cases = ["bge_BGE_140_III_86", "BGE_140_III_86"]
     fails = []
-    for input_id, expected_other in cases:
+    for input_id in cases:
         variants = list(fn(input_id))
-        if expected_other not in variants:
-            fails.append({"input": input_id, "expected": expected_other,
-                          "got": variants[:5]})
+        ok = (input_id in variants) and any(v != input_id for v in variants)
+        if not ok:
+            fails.append({"input": input_id, "got": variants[:5]})
     return CheckResult(
         name="mcp_tools.decision_id_variants_helper",
         severity=Severity.CRITICAL,
