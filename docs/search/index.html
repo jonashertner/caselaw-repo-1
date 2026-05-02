@@ -394,8 +394,12 @@ async function runSearch(q, lang, offset) {
   showSkeleton();
   setMeta(`Searching for "${q}"…`);
   try {
+    // The /api/decisions endpoint expects `query=`, not `q=` — passing `q=`
+    // silently returns the unfiltered corpus sorted by date (971k results).
+    // The user-facing URL keeps `?q=` because that is shorter to share;
+    // we translate at the API boundary.
     const url = new URL(API);
-    url.searchParams.set('q', q);
+    url.searchParams.set('query', q);
     url.searchParams.set('limit', String(PAGE_SIZE));
     if (offset) url.searchParams.set('offset', String(offset));
     if (lang) url.searchParams.set('language', lang);
