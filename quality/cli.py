@@ -29,9 +29,19 @@ def _cmd_run(args: argparse.Namespace) -> int:
         out_dir=Path(args.output).parent if args.output else runner.DEFAULT_REPORT_DIR,
     )
     if args.output:
-        # Custom output path also requested
-        with open(args.output, "w", encoding="utf-8") as f:
+        # Custom output path: atomic write (.tmp + os.replace) so the
+        # public dashboard never reads a partially-written file if the
+        # gate is killed mid-write.
+        import os, tempfile
+        out = Path(args.output)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", delete=False,
+            dir=str(out.parent), prefix=out.name + ".", suffix=".tmp",
+        ) as f:
             json.dump(report.to_dict(), f, indent=2, ensure_ascii=False)
+            tmp_path = f.name
+        os.replace(tmp_path, str(out))
 
     print(f"\nReport: {out_path}")
     print(f"Duration: {report.duration_seconds:.1f}s  "
