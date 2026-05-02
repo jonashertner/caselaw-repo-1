@@ -36,26 +36,41 @@ section() {
 # ── Phase 1: wait for publish to leave 'activating' ────────────────
 section "Phase 1: waiting for opencaselaw-publish.service to leave activating"
 WAIT_START=$(date +%s)
+# systemctl is-active returns exit 3 for both "activating" and "failed"
+# states — we MUST capture the printed state, not exit code, and never
+# overlay with `|| echo unknown` (would clobber a valid "activating").
 while true; do
-  state=$(systemctl is-active opencaselaw-publish.service 2>/dev/null || echo unknown)
+  state=$(systemctl is-active opencaselaw-publish.service 2>/dev/null)
+  state=${state:-unknown}
+  elapsed=$(( $(date +%s) - WAIT_START ))
   case "$state" in
-    activating)
-      elapsed=$(( $(date +%s) - WAIT_START ))
+    activating|reloading)
       if (( elapsed > 21600 )); then    # 6h hard cap
-        echo "[$(date -u)] giving up after 6h wait; publish stuck"
+        echo "[$(date -u)] giving up after 6h wait; publish stuck in $state"
         break
+      fi
+      # Tick every 30 min so the log shows we are alive
+      if (( elapsed > 0 && elapsed % 1800 < 60 )); then
+        echo "[$(date -u)] still $state (waited ${elapsed}s, ${elapsed} / 21600)"
       fi
       sleep 60
       continue
       ;;
-    *)
-      echo "[$(date -u)] publish state: $state (waited ${elapsed:-0}s)"
+    active|inactive|failed)
+      echo "[$(date -u)] publish reached terminal state '$state' after ${elapsed}s"
       break
+      ;;
+    *)
+      # Transient unknown — keep polling instead of bailing out.
+      echo "[$(date -u)] transient state '$state' at ${elapsed}s; continuing"
+      sleep 60
+      continue
       ;;
   esac
 done
 
-PUBLISH_FINAL_STATE=$(systemctl is-active opencaselaw-publish.service 2>/dev/null || echo unknown)
+PUBLISH_FINAL_STATE=$(systemctl is-active opencaselaw-publish.service 2>/dev/null)
+PUBLISH_FINAL_STATE=${PUBLISH_FINAL_STATE:-unknown}
 echo "publish final state: $PUBLISH_FINAL_STATE"
 
 # ── Phase 2: capture publish.log Summary ──────────────────────────
