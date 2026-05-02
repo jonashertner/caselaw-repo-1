@@ -102,7 +102,7 @@
 <!-- Shared design system — gives every page the same tokens, type scale, and
      header/footer/btn/card primitives. Page-specific styles in the inline
      <style> block below override these where the landing diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=11">
+<link rel="stylesheet" href="/static/css/design-system.css?v=12">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
@@ -2331,9 +2331,14 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
         <a href="?lang=de" data-l="de" class="on">DE</a>
         <a href="?lang=fr" data-l="fr">FR</a>
         <a href="?lang=it" data-l="it">IT</a>
+        <a href="?lang=rm" data-l="rm">RM</a>
         <a href="?lang=en" data-l="en">EN</a>
       </span>
     </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
+      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
+    </button>
   </div>
 </header>
 
@@ -5688,6 +5693,29 @@ init();
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       history.replaceState(null, '', '#connect');
     });
+  });
+})();
+</script>
+<script>
+/* Mobile nav-toggle: <720px shows a hamburger that toggles `body.nav-open`,
+   which the design-system CSS uses to slide the full nav (links + lang
+   switch) in from the top. ESC + outside-click + nav-link-click also close. */
+(function () {
+  var btn = document.getElementById('nav-toggle');
+  if (!btn) return;
+  var nav = document.querySelector('header.site nav');
+  function setOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  btn.addEventListener('click', function () {
+    setOpen(!document.body.classList.contains('nav-open'));
+  });
+  if (nav) nav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { setOpen(false); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setOpen(false);
   });
 })();
 </script>

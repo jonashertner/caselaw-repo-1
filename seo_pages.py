@@ -595,7 +595,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <meta property="og:site_name" content="OpenCaseLaw.ch">
 <meta property="og:locale" content="{_esc(language)}_CH">
 <script type="application/ld+json">{schema_str}</script>
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=11">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=12">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
     /* /entscheid/{{id}} v2 — site chrome wears the shared design system,
@@ -826,6 +826,10 @@ def _render_decision(row: sqlite3.Row) -> str:
         <a href="https://opencaselaw.ch/?lang=en" data-l="en" class="on">EN</a>
       </span>
     </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
+      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
+    </button>
   </div>
 </header>
 
@@ -932,6 +936,20 @@ def _render_decision(row: sqlite3.Row) -> str:
   }});
 }})();
 </script>
+<script>
+(function () {
+  var btn = document.getElementById('nav-toggle');
+  if (!btn) return;
+  var nav = document.querySelector('header.site nav');
+  function setOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  btn.addEventListener('click', function () { setOpen(!document.body.classList.contains('nav-open')); });
+  if (nav) nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setOpen(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+})();
+</script>
 </body>
 </html>"""
 
@@ -945,7 +963,7 @@ def _render_404(decision_id: str) -> str:
 <title>Entscheid nicht gefunden | OpenCaseLaw</title>
 <meta name="robots" content="noindex">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=11">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=12">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
   main.notfound {{ max-width: 560px; padding-top: var(--s-7); padding-bottom: var(--s-7); }}
@@ -978,6 +996,10 @@ def _render_404(decision_id: str) -> str:
         <a href="https://opencaselaw.ch/?lang=en" data-l="en" class="on">EN</a>
       </span>
     </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
+      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
+    </button>
   </div>
 </header>
 
@@ -1006,6 +1028,20 @@ def _render_404(decision_id: str) -> str:
     }});
   }});
 }})();
+</script>
+<script>
+(function () {
+  var btn = document.getElementById('nav-toggle');
+  if (!btn) return;
+  var nav = document.querySelector('header.site nav');
+  function setOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  btn.addEventListener('click', function () { setOpen(!document.body.classList.contains('nav-open')); });
+  if (nav) nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setOpen(false); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+})();
 </script>
 </body>
 </html>"""

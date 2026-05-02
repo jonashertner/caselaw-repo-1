@@ -18,7 +18,7 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CH">
 <meta name="robots" content="index, follow">
-<link rel="stylesheet" href="/static/css/design-system.css?v=11">
+<link rel="stylesheet" href="/static/css/design-system.css?v=12">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
@@ -45,6 +45,10 @@
         <a href="/word/en/">EN</a>
       </span>
     </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
+      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
+    </button>
   </div>
 </header>
 
@@ -252,5 +256,28 @@
   </div>
 </footer>
 
+<script>
+/* Mobile nav-toggle: <720px shows a hamburger that toggles `body.nav-open`,
+   which the design-system CSS uses to slide the full nav (links + lang
+   switch) in from the top. ESC + outside-click + nav-link-click also close. */
+(function () {
+  var btn = document.getElementById('nav-toggle');
+  if (!btn) return;
+  var nav = document.querySelector('header.site nav');
+  function setOpen(open) {
+    document.body.classList.toggle('nav-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  btn.addEventListener('click', function () {
+    setOpen(!document.body.classList.contains('nav-open'));
+  });
+  if (nav) nav.querySelectorAll('a').forEach(function (a) {
+    a.addEventListener('click', function () { setOpen(false); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setOpen(false);
+  });
+})();
+</script>
 </body>
 </html>

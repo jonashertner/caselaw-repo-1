@@ -242,11 +242,70 @@ header.site nav a.active {
   color: var(--text);
   font-weight: 500;
 }
+/* ── Mobile nav toggle (hamburger) — visible at ≤720px only ───── */
+.nav-toggle {
+  display: none;
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  margin-left: var(--s-2);
+  margin-right: calc(-1 * var(--s-2));
+  border: none; background: transparent; color: var(--text);
+  border-radius: var(--radius-sm);
+  cursor: pointer; padding: 0;
+  align-items: center; justify-content: center;
+}
+.nav-toggle:hover { background: var(--bg-soft); }
+.nav-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.nav-toggle svg { width: 22px; height: 22px; }
+.nav-toggle .icon-close { display: none; }
+body.nav-open .nav-toggle .icon-menu { display: none; }
+body.nav-open .nav-toggle .icon-close { display: block; }
+body.nav-open { overflow: hidden; }
+
 @media (max-width: 720px) {
   header.site .row { padding: var(--s-2) 0; }
-  header.site nav { gap: var(--s-4); font-size: var(--t-sm); margin-left: var(--s-3); }
-  /* Allow the nav to reach the right edge of the viewport for swipe scroll. */
-  header.site nav { padding-right: var(--gutter-x); margin-right: calc(-1 * var(--gutter-x)); }
+  .nav-toggle { display: inline-flex; }
+  /* Default: hide the nav inline; the hamburger toggles `body.nav-open`
+     which re-displays the nav as a full-width slide-down panel. */
+  header.site nav { display: none; }
+  body.nav-open header.site nav {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    position: fixed;
+    top: 56px; left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    padding: var(--s-4) var(--gutter-x) var(--s-7);
+    overflow-y: auto;
+    z-index: 99;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+  body.nav-open header.site nav a {
+    padding: var(--s-3) 0;
+    font-size: var(--t-base);
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  body.nav-open header.site nav a.active { font-weight: 600; }
+  body.nav-open header.site nav .lang-sw,
+  body.nav-open header.site nav .lang-switch {
+    margin: var(--s-5) 0 0;
+    padding: var(--s-4) 0 0;
+    border-top: 1px solid var(--border);
+    border-left: none;
+    padding-left: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  body.nav-open header.site nav .lang-sw a,
+  body.nav-open header.site nav .lang-switch a {
+    padding: var(--s-2) var(--s-3);
+    border-bottom: none !important;
+    background: var(--bg-soft);
+  }
 }
 @media (max-width: 480px) {
   header.site .brand span:not(.logo) { display: none; }
