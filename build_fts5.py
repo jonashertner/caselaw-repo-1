@@ -528,6 +528,85 @@ def _migrate_short_text_to_regeste(conn: sqlite3.Connection) -> int:
     return migrated
 
 
+def _compute_content_hashes(conn: sqlite3.Connection, batch_size: int = 5000) -> int:
+    """Per-decision SHA-256(regeste || full_text) for content verifiability.
+
+    Computed AFTER all _normalize_* / _migrate_* / _truncate_* passes so the
+    hash reflects the canonical (post-cleanup) content the corpus serves.
+    Anyone — auditor, lawyer, researcher — can later prove that the bytes
+    we returned for decision Y on date X were exactly this content.
+
+    Idempotent: only computes for rows where content_hash is NULL OR
+    differs from the computed value (i.e. content changed since the last
+    rebuild). Stores 64-hex SHA-256 per row (~64 MB extra at 970k rows).
+    """
+    import hashlib
+    rows = conn.execute(
+        "SELECT decision_id, regeste, full_text, content_hash "
+        "FROM decisions"
+    ).fetchall()
+    updates: list[tuple[str, str]] = []
+    for decision_id, regeste, full_text, existing_hash in rows:
+        body = (regeste or "") + (full_text or "")
+        # SHA-256 over UTF-8 bytes; empty body still yields the canonical
+        # SHA-256 of the empty string (e3b0c4...). That's a valid signal
+        # that this row has no content.
+        h = hashlib.sha256(body.encode("utf-8", errors="replace")).hexdigest()
+        if h != existing_hash:
+            updates.append((h, decision_id))
+    fixed = 0
+    for i in range(0, len(updates), batch_size):
+        batch = updates[i : i + batch_size]
+        conn.executemany(
+            "UPDATE decisions SET content_hash = ? WHERE decision_id = ?",
+            batch,
+        )
+        fixed += len(batch)
+    if fixed:
+        conn.commit()
+    return fixed
+
+
+def _ensure_wayback_queue(conn: sqlite3.Connection) -> None:
+    """Provision the wayback_queue table that scripts/wayback_archiver.py
+    drains. Populated at the tail of every full rebuild — one row per
+    (decision_id, url, url_type) where url_type is 'source' or 'pdf'.
+    Idempotent: PRIMARY KEY ignores duplicates.
+
+    The archiver's job is to call https://web.archive.org/save/<url>
+    (rate-limited) so we own a permanent snapshot of every source URL
+    even if the upstream portal drops it later.
+    """
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS wayback_queue (
+            decision_id  TEXT NOT NULL,
+            url          TEXT NOT NULL,
+            url_type     TEXT NOT NULL,        -- 'source' | 'pdf'
+            queued_at    TEXT NOT NULL DEFAULT (datetime('now')),
+            attempted_at TEXT,
+            status_code  INTEGER,
+            archived_url TEXT,
+            PRIMARY KEY (decision_id, url, url_type)
+        );
+        CREATE INDEX IF NOT EXISTS wq_pending
+          ON wayback_queue(attempted_at) WHERE attempted_at IS NULL;
+        """
+    )
+    # Backfill: enqueue every decision's URLs (idempotent via PRIMARY KEY).
+    conn.execute(
+        "INSERT OR IGNORE INTO wayback_queue(decision_id, url, url_type) "
+        "SELECT decision_id, source_url, 'source' FROM decisions "
+        "WHERE source_url LIKE 'http%'"
+    )
+    conn.execute(
+        "INSERT OR IGNORE INTO wayback_queue(decision_id, url, url_type) "
+        "SELECT decision_id, pdf_url, 'pdf' FROM decisions "
+        "WHERE pdf_url LIKE 'http%'"
+    )
+    conn.commit()
+
+
 def _recover_decision_dates(conn: sqlite3.Connection) -> int:
     """König audit P4: recover decision_date from full_text for NULL rows.
 
@@ -1020,6 +1099,11 @@ def _migrate_schema(conn: sqlite3.Connection) -> None:
     """
     migrations = [
         ("canonical_key", "TEXT"),
+        # Per-decision SHA-256 of (regeste || full_text). Computed at the
+        # tail of every full rebuild via _compute_content_hashes(). Lets
+        # any consumer prove "what we served on date X for decision Y was
+        # exactly this content" without re-fetching the row.
+        ("content_hash", "TEXT"),
     ]
     for col_name, col_type in migrations:
         try:
@@ -1167,6 +1251,23 @@ def build_database(
         filled = _fill_missing_regeste(conn)
         if filled:
             logger.info(f"  Extracted regeste for {filled} decisions")
+
+        # Per-decision content hash — must run AFTER all _normalize_* /
+        # _migrate_* / _truncate_* / _fill_* passes so the hash reflects
+        # the canonical post-cleanup content the corpus serves.
+        logger.info("Computing per-decision content hashes (SHA-256 of regeste||full_text)...")
+        hashes = _compute_content_hashes(conn)
+        if hashes:
+            logger.info(f"  Hashed/refreshed {hashes} decisions")
+
+        # Provision the wayback_queue table; populated as part of the
+        # same step so scripts/wayback_archiver.py finds work to do.
+        logger.info("Provisioning wayback_queue (source_url + pdf_url)...")
+        _ensure_wayback_queue(conn)
+        wq_pending = conn.execute(
+            "SELECT COUNT(*) FROM wayback_queue WHERE attempted_at IS NULL"
+        ).fetchone()[0]
+        logger.info(f"  wayback_queue pending: {wq_pending:,} entries")
 
         _log_quality_summary(conn)
 

@@ -821,6 +821,33 @@ def step_5c_quality_gate(dry_run: bool = False) -> bool:
     return ok
 
 
+def step_5d_release_manifest(dry_run: bool = False) -> bool:
+    """Step 5d: Append-only release manifest.
+
+    Writes ``releases/<YYYY-MM-DD>/manifest.json`` with corpus counts,
+    content-hash totals, gate state, schema version, and license info.
+    Committed by Step 6 to GitHub so the repo history is the immutable
+    audit trail. Lets anyone reconstruct what was live on a given date
+    for citation / reproducibility / forensic use.
+
+    Non-fatal: a manifest-write failure does not block git push (the
+    publish itself is still safe; only the audit trail is missing).
+    """
+    logger.info("Step 5d: Generate release manifest (releases/<date>/manifest.json)")
+    if dry_run:
+        logger.info("  [dry-run] would run scripts/generate_release_manifest.py")
+        return True
+    cmd = [
+        sys.executable,
+        str(REPO_DIR / "scripts" / "generate_release_manifest.py"),
+        "--db", str(REPO_DIR / "output" / "decisions.db"),
+        "--repo", str(REPO_DIR),
+        "--quality-json", str(DOCS_DIR / "quality.json"),
+        "--out-root", str(REPO_DIR / "releases"),
+    ]
+    return run_cmd(cmd, "release manifest", dry_run, timeout=120)
+
+
 def step_6b_health_check(dry_run: bool = False) -> bool:
     """Step 6b: Auto-validate the publish output.
 
@@ -888,6 +915,10 @@ STEPS = [
     ("5a", "Generate Stats (early)", step_5_generate_stats),
     ("5b", "Generate RSS Feeds", step_5b_generate_feeds),
     ("5c", "Quality-Control Gate", step_5c_quality_gate),
+    # 5d after gate so the manifest captures the gate's verdict + counts.
+    # Non-fatal if it fails — git push (Step 6a/6) still runs; the audit
+    # trail just gets a missing entry for that day.
+    ("5d", "Release Manifest", step_5d_release_manifest),
     ("6a", "Git Push (early)", step_6_git_push),
     # ── Slow tier: enrichment, graph, materialien, export ──
     ("2d", "Quality Enrichment", step_2d_enrich_quality),
@@ -963,7 +994,7 @@ def main():
     # Non-fatal steps: still logged as FAILED in summary, but don't trigger
     # systemd exit-code=1. These depend on flaky external sources (e.g. sav-fsa.ch
     # PDFs) and their failure doesn't degrade the published dataset.
-    NON_FATAL_STEPS = {"2e"}
+    NON_FATAL_STEPS = {"2e", "5d"}
     # Steps after the fast tier — skipped with --fast-only
     SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", "2g", 3, 4, 5, 6}
 
