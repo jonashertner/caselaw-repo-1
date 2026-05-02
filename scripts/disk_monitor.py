@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
-"""Disk-space monitor for the OpenCaseLaw data volume.
+"""Disk-space monitor for the OpenCaseLaw VPS — every mount that matters.
 
 Runs every 30 min via systemd timer. Emits ntfy alerts at two thresholds
-so the operator hears about the disk filling up *before* the next nightly
-publish blocks at pre-flight (which is what burned the 2026-05-02
-nightly: stale .quick + .tmp files filled /mnt to 75% used overnight).
+so the operator hears about a disk filling up *before* the next nightly
+publish blocks at pre-flight.
 
-Thresholds (percent of volume used):
-  - WARNING (>= 80%): default-priority ntfy, daily reminder until cleared
-  - URGENT (>= 95%): urgent-priority ntfy, every run until cleared
+Watched mounts (default — both must clear or both alert):
+  /                           — root filesystem (system + /opt/caselaw repo)
+  /mnt/HC_Volume_104655575    — data volume (FTS5, sidecars, parquet)
 
-The script also dumps the top-10 largest files in /mnt/.../output so the
-operator immediately sees the candidate cleanup targets.
+Both have caused publish-cascade incidents:
+  2026-05-02 13:49 UTC — / filled to 100% mid-build because
+                         decision_structure.db (44 GB) was not symlinked
+                         to /mnt and its .tmp pushed root over the line.
+  2026-05-02 03:30 UTC — /mnt was at 75% with a stale .quick file from a
+                         crashed BGer-poller run; build pre-flight blocked
+                         until cleanup ran.
+
+Thresholds (percent of mount used):
+  - WARNING (>= 80%): default-priority ntfy
+  - URGENT  (>= 95%): urgent-priority ntfy
 """
 from __future__ import annotations
 
@@ -22,8 +30,19 @@ import subprocess
 import sys
 from pathlib import Path
 
-DEFAULT_VOLUME = Path("/mnt/HC_Volume_104655575")
-DEFAULT_OUTPUT_DIR = DEFAULT_VOLUME / "output"
+# Default mounts the OpenCaseLaw VPS depends on.
+DEFAULT_MOUNTS = [
+    Path("/"),
+    Path("/mnt/HC_Volume_104655575"),
+]
+# Where to look for "top biggest files" when alerting. Maps mount → dir.
+# Falls back to the mount itself if no specific dir is registered.
+TOP_DIR_FOR_MOUNT = {
+    Path("/"):
+        Path("/opt/caselaw/repo/output"),
+    Path("/mnt/HC_Volume_104655575"):
+        Path("/mnt/HC_Volume_104655575/output"),
+}
 WARN_PCT = 80
 URGENT_PCT = 95
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "opencaselaw-prod")
@@ -50,56 +69,72 @@ def _ntfy(title: str, body: str, priority: str = "default") -> None:
 def _top_files(directory: Path, n: int = 10) -> str:
     if not directory.exists():
         return "(directory missing)"
-    rows = sorted(
-        ((p, p.stat().st_size) for p in directory.iterdir() if p.is_file()),
-        key=lambda x: -x[1],
-    )[:n]
+    rows = []
+    try:
+        for p in directory.iterdir():
+            try:
+                if p.is_file() and not p.is_symlink():
+                    rows.append((p, p.stat().st_size))
+            except (OSError, FileNotFoundError):
+                continue
+    except (OSError, PermissionError):
+        return "(directory unreadable)"
+    rows.sort(key=lambda x: -x[1])
+    rows = rows[:n]
     return "\n".join(f"  {sz / 1e9:>6.1f} GB  {p.name}" for p, sz in rows)
 
 
-def main() -> int:
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--volume", type=Path, default=DEFAULT_VOLUME)
-    p.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
-    p.add_argument("--warn-pct", type=int, default=WARN_PCT)
-    p.add_argument("--urgent-pct", type=int, default=URGENT_PCT)
-    p.add_argument("--quiet", action="store_true",
-                   help="Don't emit ntfy on under-threshold runs")
-    args = p.parse_args()
-
-    if not args.volume.exists():
-        print(f"Volume not present: {args.volume}", file=sys.stderr)
-        return 1
-
-    usage = shutil.disk_usage(args.volume)
+def _check_mount(mount: Path, top_dir: Path,
+                 warn_pct: int, urgent_pct: int) -> int:
+    """Check a single mount; emit ntfy if over threshold. Returns the
+    used-percent (rounded down) so the caller can report a per-mount
+    summary. Always returns successfully (never raises)."""
+    if not mount.exists():
+        print(f"Mount not present: {mount}", file=sys.stderr)
+        return 0
+    usage = shutil.disk_usage(mount)
     used_pct = (usage.used / usage.total) * 100
     free_gb = usage.free / 1e9
     used_gb = usage.used / 1e9
     total_gb = usage.total / 1e9
 
     line = (
-        f"{args.volume}: {used_pct:.1f}% used "
+        f"{mount}: {used_pct:.1f}% used "
         f"({used_gb:.0f} / {total_gb:.0f} GB; {free_gb:.0f} GB free)"
     )
     print(line)
 
-    # Exit 0 on every successful check (regardless of threshold) so systemd
-    # does not also fire OnFailure= on top of our own ntfy alert. The
-    # ntfy notification is the signal; systemd's job is just to re-run
-    # us every 30 min.
-    if used_pct >= args.urgent_pct:
+    if used_pct >= urgent_pct:
         _ntfy(
-            f"Disk URGENT: {used_pct:.0f}% used",
-            f"{line}\n\nTop files:\n{_top_files(args.output_dir)}\n\n"
-            f"Next nightly publish will fail at pre-flight if free < 80 GB.",
+            f"Disk URGENT [{mount}]: {used_pct:.0f}% used",
+            f"{line}\n\nTop files in {top_dir}:\n{_top_files(top_dir)}\n\n"
+            f"Next nightly publish will block at pre-flight if free < 80 GB.",
             priority="urgent",
         )
-    elif used_pct >= args.warn_pct:
+    elif used_pct >= warn_pct:
         _ntfy(
-            f"Disk WARNING: {used_pct:.0f}% used",
-            f"{line}\n\nTop files:\n{_top_files(args.output_dir)}",
+            f"Disk WARNING [{mount}]: {used_pct:.0f}% used",
+            f"{line}\n\nTop files in {top_dir}:\n{_top_files(top_dir)}",
             priority="default",
         )
+    return int(used_pct)
+
+
+def main() -> int:
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--mount", type=Path, action="append",
+                   help="Mount to monitor. May be passed multiple times. "
+                        "Defaults to / and the data volume if omitted.")
+    p.add_argument("--warn-pct", type=int, default=WARN_PCT)
+    p.add_argument("--urgent-pct", type=int, default=URGENT_PCT)
+    args = p.parse_args()
+
+    mounts = args.mount if args.mount else DEFAULT_MOUNTS
+    for m in mounts:
+        top_dir = TOP_DIR_FOR_MOUNT.get(m, m)
+        _check_mount(m, top_dir, args.warn_pct, args.urgent_pct)
+
+    # Always exit 0 — ntfy is the signal, systemd just re-fires us.
     return 0
 
 
