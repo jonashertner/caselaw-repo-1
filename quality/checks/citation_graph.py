@@ -12,6 +12,8 @@ from pathlib import Path
 
 from quality.types import CheckResult, Severity
 
+MODULE_NEVER_CRITICAL = True  # all checks here return WARNING/INFO; runner skips in --critical-only
+
 
 def _rg_path() -> Path:
     return Path(os.environ.get(

@@ -44,17 +44,24 @@ def _open_db(db_path: Path) -> sqlite3.Connection:
     return conn
 
 
-def discover_checks() -> list[Callable]:
+def discover_checks(critical_only: bool = False) -> list[Callable]:
     """Find every check_* function in quality.checks.*.
 
     Order is deterministic: alphabetical by module, then function name.
     A check function may return either a single CheckResult or an
     iterable of them (for per-court fan-out).
+
+    When ``critical_only`` is True, modules that declare
+    ``MODULE_NEVER_CRITICAL = True`` at module scope are skipped
+    entirely (they only emit WARNING/INFO results, so running them
+    inside the publish gate just burns time).
     """
     import quality.checks as checks_pkg
     found: list[tuple[str, Callable]] = []
     for _, name, _ in pkgutil.iter_modules(checks_pkg.__path__):
         mod = importlib.import_module(f"quality.checks.{name}")
+        if critical_only and getattr(mod, "MODULE_NEVER_CRITICAL", False):
+            continue
         for attr_name in sorted(dir(mod)):
             if not attr_name.startswith("check_"):
                 continue
@@ -123,7 +130,7 @@ def run(
     if not db_path.exists():
         raise FileNotFoundError(f"corpus DB not found: {db_path}")
 
-    checks = discover_checks()
+    checks = discover_checks(critical_only=critical_only)
     if only:
         prefixes = list(only)
 

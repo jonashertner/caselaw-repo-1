@@ -22,6 +22,8 @@ import sqlite3
 
 from quality.types import CheckResult, Severity
 
+MODULE_NEVER_CRITICAL = True  # WARNING-only; runner skips in --critical-only (slow full_text scans)
+
 
 # König P7 floor: 64 short-text rows known unfixable without re-download
 SHORT_TEXT_FLOOR_DEFAULT = 100        # absolute global floor

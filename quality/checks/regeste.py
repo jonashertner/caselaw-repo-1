@@ -14,6 +14,8 @@ import sqlite3
 
 from quality.types import CheckResult, Severity
 
+MODULE_NEVER_CRITICAL = True  # WARNING-only; runner skips in --critical-only
+
 
 # Per-court regeste coverage floors (measured 2026-04-30).
 # Many old BGer cases don't have a regeste at all — the court only

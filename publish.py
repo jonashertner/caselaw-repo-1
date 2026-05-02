@@ -734,8 +734,11 @@ def step_5c_quality_gate(dry_run: bool = False) -> bool:
     public dashboard) and to quality/reports/latest.json + dated
     archive (for the per-run audit trail).
 
-    Costs ~1-2 minutes on the production DB. Runs only the CRITICAL
-    subset; warnings + drift detection happen in Step 6c (background).
+    Costs ~3-8 minutes on the production DB (after the 2026-05-02 fix
+    that makes ``--critical-only`` actually skip W-only modules).
+    Generous 1800s timeout so a slow nightly never re-creates the
+    cascade incident we hit on 2026-05-02 (full-corpus run pegged the
+    earlier 600s budget). Warnings + drift run separately.
     """
     logger.info("Step 5c: Quality-control gate (block on CRITICAL regression)")
     if dry_run:
@@ -750,7 +753,7 @@ def step_5c_quality_gate(dry_run: bool = False) -> bool:
         "--db", str(REPO_DIR / "output" / "decisions.db"),
         "--output", str(docs_quality_json),
     ]
-    ok = run_cmd(cmd, "QC gate", dry_run, timeout=600)
+    ok = run_cmd(cmd, "QC gate", dry_run, timeout=1800)
     if not ok:
         # Send a focused alert with the failing-check names so the
         # operator knows what triggered the block.

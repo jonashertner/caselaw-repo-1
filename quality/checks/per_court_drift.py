@@ -14,6 +14,8 @@ from quality.checks._common import iter_active_courts
 from quality.drift import detect
 from quality.types import CheckResult, Severity
 
+MODULE_NEVER_CRITICAL = True  # WARNING-only; runner skips in --critical-only
+
 
 def check_per_court_row_count_drift(conn: sqlite3.Connection, **_):
     """For every active court, record + check today's row count vs

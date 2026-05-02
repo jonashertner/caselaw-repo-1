@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import sqlite3
 
+MODULE_NEVER_CRITICAL = True  # all checks here return WARNING; runner skips in --critical-only
+
 from quality.types import CheckResult, Severity
 
 

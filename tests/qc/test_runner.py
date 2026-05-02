@@ -76,7 +76,7 @@ def test_buggy_check_does_not_kill_run(temp_db, monkeypatch):
 
     real_discover = runner.discover_checks
     monkeypatch.setattr(runner, "discover_checks",
-                        lambda: real_discover() + [bad_check])
+                        lambda critical_only=False: real_discover(critical_only=critical_only) + [bad_check])
 
     report = runner.run(db_path=temp_db, record_history=False, parallel=False)
     bad_results = [r for r in report.results if "synthetic_buggy" in r.name]
