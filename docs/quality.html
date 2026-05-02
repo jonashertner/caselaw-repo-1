@@ -60,11 +60,25 @@ h1 {
 .summary-num.crit { color: #111; }
 .summary-num.warn { color: #444; }
 .gate {
-    display: inline-flex; align-items: center; gap: 0.6em;
-    margin-bottom: 3rem; font-size: 14px; font-weight: 400;
+    display: flex; flex-direction: column; gap: 0.35em;
+    margin: 0 0 3rem 0; font-size: 14px; font-weight: 400;
 }
-.gate-dot { width: 10px; height: 10px; border-radius: 50%; background: #111; }
-.gate.fail .gate-dot { background: #fff; border: 1.5px solid #111; }
+.gate-row {
+    display: inline-flex; align-items: center; gap: 0.6em;
+}
+.gate-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #111; flex: 0 0 auto;
+}
+.gate.ok      .gate-dot { background: #111; }
+.gate.blocked .gate-dot { background: #fff; border: 1.5px solid #111; }
+.gate.stale   .gate-dot { background: #fff; border: 1.5px dashed #888; }
+.gate-sub {
+    font-size: 12px; color: #666; padding-left: 1.4em;
+    max-width: 640px;
+}
+.gate.stale  .gate-sub { color: #aa1a1a; }
+.gate.blocked .gate-sub { color: #aa1a1a; }
 .tabs {
     display: flex; gap: 1.6em; margin: 0 0 2rem 0;
     font-size: 13px; font-weight: 400;
@@ -140,13 +154,20 @@ footer p { margin: 0.4rem 0; }
 <p class="lede">
     Every nightly publish runs <span id="check-count">…</span> integrity, schema and content checks
     against the full corpus before users see new data. A critical regression
-    blocks the publish; users keep yesterday's data until investigation.
+    blocks the publish; users keep the previous successful corpus until investigation.
+    The badge below distinguishes <em>publish safe</em> (today's data is live),
+    <em>publish blocked</em> (gate fired today, refused to push), and
+    <em>quality report stale</em> (gate has not run recently — corpus is correct
+    but ageing).
     <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/quality/checks">Methodology</a>.
 </p>
 
 <div id="gate" class="gate">
-    <span class="gate-dot"></span>
-    <span id="gate-text">Loading…</span>
+    <div class="gate-row">
+        <span class="gate-dot"></span>
+        <span id="gate-text">Loading…</span>
+    </div>
+    <div id="gate-sub" class="gate-sub"></div>
 </div>
 
 <div class="summary">
@@ -369,14 +390,41 @@ function render() {
     document.getElementById("num-crit").textContent = fmt(DATA.summary.critical_failures);
     document.getElementById("num-warn").textContent = fmt(DATA.summary.warning_failures);
 
+    // Three-state badge: all-clear / publish-blocked / data-stale.
+    // The publish runs nightly at ~03:30 UTC; if the gate hasn't run in
+    // STALE_HOURS_THRESHOLD hours, the corpus on the live MCP is whatever
+    // last successful build produced (correct but ageing).
+    const STALE_HOURS_THRESHOLD = 30;
     const gate = document.getElementById("gate");
-    if (DATA.summary.publish_safe) {
+    const gateText = document.getElementById("gate-text");
+    const gateSub = document.getElementById("gate-sub");
+    const runAt = DATA.run_at ? new Date(DATA.run_at) : null;
+    const ageH = runAt ? (Date.now() - runAt.getTime()) / 3.6e6 : null;
+    const ageStr = ageH == null ? "unknown" :
+                   ageH < 1.5 ? Math.round(ageH * 60) + " min ago" :
+                   ageH < 36  ? Math.round(ageH) + " h ago" :
+                                Math.round(ageH / 24) + " d ago";
+
+    if (ageH != null && ageH > STALE_HOURS_THRESHOLD) {
+        // Gate hasn't run recently → publish has been failing → data is ageing
+        gate.className = "gate stale";
+        gateText.textContent = "Quality report stale — last gate run " + ageStr;
+        gateSub.textContent = "The nightly publish has not produced a fresh report in " +
+            Math.round(ageH) + " hours. The live MCP at mcp.opencaselaw.ch continues to " +
+            "serve the last successful build, which is correct but no longer growing.";
+    } else if (DATA.summary.publish_safe) {
         gate.className = "gate ok";
-        document.getElementById("gate-text").textContent = "Publish safe — no critical regressions";
+        gateText.textContent = "Publish safe — all " + DATA.summary.total +
+            " critical and warning checks passed";
+        gateSub.textContent = "Last gate run " + ageStr +
+            ". Today's data was published to opencaselaw.ch and the MCP server.";
     } else {
-        gate.className = "gate fail";
-        document.getElementById("gate-text").textContent =
-            "Publish blocked — " + DATA.summary.critical_failures + " critical regression(s) detected";
+        gate.className = "gate blocked";
+        gateText.textContent = "Publish blocked — " +
+            DATA.summary.critical_failures + " critical regression(s) detected";
+        gateSub.textContent = "Last gate run " + ageStr +
+            ". The nightly publish refused to advance to git push; users keep " +
+            "the previous successful corpus on mcp.opencaselaw.ch.";
     }
 
     document.getElementById("ts").textContent = fmtDate(DATA.run_at);
@@ -399,7 +447,12 @@ fetch("quality.json", { cache: "no-store" })
         p2.textContent = "The dashboard refreshes after each nightly publish (around 04-07 UTC).";
         reportEl.appendChild(p1);
         reportEl.appendChild(p2);
-        document.getElementById("gate-text").textContent = "\u2014";
+        const gate = document.getElementById("gate");
+        gate.className = "gate stale";
+        document.getElementById("gate-text").textContent = "Quality report unavailable";
+        document.getElementById("gate-sub").textContent =
+            "quality.json could not be loaded. The CDN may still be propagating " +
+            "the most recent publish, or the report file was not generated.";
     });
 </script>
 </body>
