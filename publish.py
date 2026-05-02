@@ -970,8 +970,15 @@ def main():
     for num, name, func in STEPS:
         if args.step is not None and str(args.step) != str(num):
             continue
-        # Skip steps already completed in a prior checkpoint
-        if checkpoint and str(num) in checkpoint["results"] and checkpoint["results"][str(num)]:
+        # Skip steps already completed in a prior checkpoint. Only treat
+        # ``True`` as "done"; a cascade-skip ("skipped_cascade") or False
+        # in the checkpoint means the step never actually ran and should
+        # be retried.
+        if (
+            checkpoint
+            and str(num) in checkpoint["results"]
+            and checkpoint["results"][str(num)] is True
+        ):
             logger.info(f"  Step {num} ({name}): SKIPPED (completed in prior run)")
             results[num] = True
             continue
@@ -1000,7 +1007,12 @@ def main():
                 results.get(s) is False for s in CRITICAL_STEPS
             )
             if critical_failed:
-                results[num] = False
+                # Mark as skipped (not failed) so the summary doesn't claim
+                # "Step X (Y): FAILED" for a step that was never attempted.
+                # Use the dedicated cascade-skip sentinel so the summary can
+                # distinguish "we ran it and it failed" from "the gate before
+                # it failed and we elided this run".
+                results[num] = "skipped_cascade"
                 logger.warning(
                     f"  Step {num} ({name}): SKIPPED — critical earlier step failed\n"
                 )
@@ -1033,20 +1045,30 @@ def main():
     if parallel_deferred:
         _flush_parallel_batch()
 
-    # Summary
+    # Summary — distinguish OK / FAILED / SKIPPED so cascade-skipped
+    # steps don't masquerade as outright failures.
     total_elapsed = time.time() - start
     failed_steps = []
     non_fatal_failures = []
     logger.info("=== Summary ===")
     for num, name, _ in STEPS:
-        if num in results:
-            status = "OK" if results[num] else "FAILED"
-            logger.info(f"  Step {num} ({name}): {status}")
-            if not results[num]:
-                if num in NON_FATAL_STEPS:
-                    non_fatal_failures.append(f"{num} ({name})")
-                else:
-                    failed_steps.append(f"{num} ({name})")
+        if num not in results:
+            continue
+        outcome = results[num]
+        if outcome is True:
+            status = "OK"
+        elif outcome == "skipped_cascade":
+            status = "SKIPPED (cascade)"
+        elif outcome is False:
+            status = "FAILED"
+        else:
+            status = str(outcome)
+        logger.info(f"  Step {num} ({name}): {status}")
+        if outcome is False:  # only true outright failures count
+            if num in NON_FATAL_STEPS:
+                non_fatal_failures.append(f"{num} ({name})")
+            else:
+                failed_steps.append(f"{num} ({name})")
     logger.info(f"  Total time: {total_elapsed:.1f}s")
 
     # Notify on completion

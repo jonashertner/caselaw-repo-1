@@ -98,6 +98,24 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
         logger.error("FTS5 DB not found at %s", real_db)
         return 0
 
+    # Defensive: clean any .quick leftover from a hard-killed prior run
+    # (OOM, SIGKILL, reboot — cases where the finally block didn't run).
+    # Without this, quick_publish accumulates 60+ GB of dead files until
+    # the data volume fills up and the nightly publish blocks at
+    # pre-flight. This burned the 2026-05-02 nightly.
+    if real_tmp.exists():
+        try:
+            stale_age_h = (time.time() - real_tmp.stat().st_mtime) / 3600
+            real_tmp.unlink()
+            logger.warning(
+                "Cleaned up stale .quick from prior crashed run "
+                "(age %.1fh, freed %.1f GB)",
+                stale_age_h, real_tmp.stat().st_size / 1e9
+                if real_tmp.exists() else 0,
+            )
+        except OSError as e:
+            logger.error("Failed to clean stale .quick: %s", e)
+
     t0 = time.time()
     swap_done = False
     conn = None
