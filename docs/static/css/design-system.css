@@ -151,7 +151,13 @@ h3 { font-size: clamp(var(--t-lg), 2.5vw, var(--t-xl)); }
 h4 { font-size: var(--t-lg); font-weight: 500; }
 p { margin: 0; }
 .lede { font-size: var(--t-lg); font-weight: 300; color: var(--text-2); line-height: 1.5; max-width: 56ch; }
-.eyebrow { font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: var(--s-3); }
+.eyebrow {
+  display: block;
+  font-size: var(--t-xs); font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 0 0 var(--s-3);
+}
 .mono { font-family: var(--f-mono); font-feature-settings: 'tnum' 1; }
 .subtle { color: var(--text-2); }
 .muted { color: var(--text-3); }
@@ -363,6 +369,55 @@ footer.site a:hover { color: var(--text); text-decoration: underline; }
 }
 .input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 .input::placeholder { color: var(--text-3); }
+.input--lg { padding: 12px 16px; }
+
+/* ── Search bar (hero-level: flex row + flex-grow input + button) ── */
+.search-bar {
+  display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
+  margin: 0;
+}
+.search-bar > .input { flex: 1 1 320px; min-width: 240px; }
+
+/* ── Filter pill row (exclusive filters: lang, level, status…) ───── */
+.filter-bar {
+  display: flex; gap: var(--s-2); flex-wrap: wrap;
+  margin: 0;
+}
+.filter-pill {
+  padding: 6px 12px;
+  font: inherit; font-size: var(--t-md);
+  background: var(--surface); color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease);
+  white-space: nowrap;
+}
+.filter-pill:hover { color: var(--text); border-color: var(--border-strong); }
+.filter-pill.active {
+  background: var(--text); color: var(--bg); border-color: var(--text);
+}
+
+/* ── Section head — h2 with optional count meta on the right ────── */
+.section-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--s-3);
+  margin: var(--s-6) 0 var(--s-3);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--border);
+}
+.section-head h2,
+.section-head h3 {
+  margin: 0;
+  font-size: var(--t-xl);
+  font-weight: 400;
+}
+.section-head .count {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  color: var(--text-3);
+  font-weight: 400;
+}
 
 /* ── Pill / badge / tag ───────────────────────────────────── */
 .pill {
@@ -415,15 +470,20 @@ footer.site a:hover { color: var(--text); text-decoration: underline; }
   padding-left: var(--s-3);
   border-left: 1px solid var(--border);
   flex: 0 0 auto;
+  align-items: center;
 }
 .lang-switch a {
-  font-family: var(--f-mono); font-size: var(--t-xs);
-  padding: 4px 8px;
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
   text-decoration: none;
   color: var(--text-3);
+  border-bottom: none !important;  /* override header.site nav a underline */
 }
-.lang-switch a.active, .lang-switch a:hover { background: var(--bg-soft); color: var(--text); }
+.lang-switch a:hover,
+.lang-switch a.active,
+.lang-switch a.on { background: var(--bg-soft); color: var(--text); }
 
 /* ── Print baseline ───────────────────────────────────────── */
 @media print {

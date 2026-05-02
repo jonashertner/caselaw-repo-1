@@ -11,10 +11,10 @@
 <meta property="og:description" content="121 Swiss courts indexed — federal, regulatory, and cantonal. Per-court counts and date ranges.">
 <meta property="og:url" content="https://opencaselaw.ch/courts/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=3">
+<link rel="stylesheet" href="/static/css/design-system.css?v=4">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
-  main.courts { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: 1100px; }
+  main.courts { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w); }
 
   .courts-controls {
     display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
@@ -153,8 +153,9 @@
 </header>
 
 <main class="container courts" id="main">
-  <h1>Swiss courts indexed</h1>
-  <p class="lede" id="lede">Browse every Swiss federal, regulatory and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.</p>
+  <p class="eyebrow">Browse · 121 courts</p>
+  <h1>Swiss courts in the corpus</h1>
+  <p class="lede" id="lede">Every Swiss federal, regulatory, international and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.</p>
 
   <div class="courts-controls">
     <input class="courts-search" type="search" id="filter"
@@ -178,7 +179,7 @@
     <div>
       <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
       <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
-        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+        Open Swiss case law. CC-BY-4.0. 4-layer quality framework. Public-good infrastructure.
       </p>
     </div>
     <div>

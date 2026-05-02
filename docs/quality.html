@@ -8,17 +8,12 @@
 <meta name="description" content="Live data-quality report for the OpenCaseLaw corpus. Updated on every nightly publish; gates the pipeline on critical regressions.">
 <link rel="canonical" href="https://opencaselaw.ch/quality.html">
 <meta name="robots" content="index, follow">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-<!-- Shared design system — gives this dashboard the same cross-site nav,
-     footer, and tokens as / and /word. Inline styles below override
-     where the dashboard-specific layout diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=3">
+<!-- Shared design system: tokens, fonts, header/footer chrome.
+     Inline styles below only carry dashboard-specific layout. -->
+<link rel="stylesheet" href="/static/css/design-system.css?v=4">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
-:root {
-    --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --f-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-}
+/* Tokens come from design-system.css. */
 * { box-sizing: border-box; }
 html { background: #fff; }
 /* Use design-system tokens so dark mode + brand accent flow through. */
@@ -27,13 +22,8 @@ body {
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "kern" 1, "liga" 1, "tnum" 1;
 }
-main.container { max-width: 960px; padding-top: var(--s-6); padding-bottom: var(--s-7); }
+main.container { max-width: var(--max-w); padding-top: var(--s-6); padding-bottom: var(--s-7); }
 .lede { color: var(--text-2); }
-a { color: inherit; }
-a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-a:hover { text-decoration-thickness: 2px; }
-nav.top { font-size: 13px; font-weight: 300; margin-bottom: 3.5rem; }
-nav.top .sep { margin: 0 0.4em; opacity: 0.45; }
 h1 {
     font-size: clamp(28px, 4vw, 36px);
     font-weight: 100;
@@ -146,6 +136,14 @@ h1 {
     font-size: var(--t-sm); margin-top: 0.2em; user-select: none;
 }
 .expand:hover { color: var(--text); }
+.report-meta {
+    margin-top: var(--s-7);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--border);
+    font-size: var(--t-sm); color: var(--text-3); line-height: 1.6;
+}
+.report-meta p { margin: 0.4rem 0; }
+
 @media (max-width: 720px) {
     .check { grid-template-columns: 70px 1fr; }
     .check-metric { grid-column: 2; text-align: left; padding-top: 0.2em; }
@@ -177,7 +175,8 @@ h1 {
   </div>
 </header>
 
-<main class="container" style="padding-top: var(--s-6); padding-bottom: var(--s-7);">
+<main class="container">
+<p class="eyebrow">Operational · live</p>
 <h1>Data quality</h1>
 <p class="lede">
     Every nightly publish runs <span id="check-count">…</span> integrity, schema and content checks
@@ -220,10 +219,10 @@ h1 {
 <div class="tabs" id="tabs"></div>
 <div id="report"></div>
 
-<footer>
+<div class="report-meta">
     <p>Last run <span id="ts">—</span>, took <span id="dur">—</span>. Source DB <span id="db">—</span>.</p>
     <p>JSON: <a href="quality.json">quality.json</a>. Source: <a href="https://github.com/jonashertner/caselaw-repo-1/tree/main/quality">github.com/jonashertner/caselaw-repo-1/quality</a>.</p>
-</footer>
+</div>
 </main>
 
 <footer class="site">

@@ -17,13 +17,13 @@
      bandwidth save. -->
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<link rel="stylesheet" href="/static/css/design-system.css?v=3">
+<link rel="stylesheet" href="/static/css/design-system.css?v=4">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   /* Page-specific layout — generous vertical rhythm so each section
      reads as its own beat (hero → form → examples → filters → results
-     → pager). Width caps at the prose column for legal-document scan. */
-  main.search { padding-top: var(--s-7); padding-bottom: var(--s-7); max-width: 880px; }
+     → pager). Caps at the prose column for legal-document scan. */
+  main.search { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
   main.search h1 { margin-bottom: var(--s-3); }
   main.search .lede { margin-bottom: var(--s-6); }
   .search-form {
@@ -168,8 +168,9 @@
 </header>
 
 <main class="container search" id="main">
-  <h1 style="max-width: 22ch;">Search 971,000+ Swiss court decisions</h1>
-  <p class="lede">Free full-text search over the entire OpenCaseLaw corpus. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.</p>
+  <p class="eyebrow">Search · 971,067 decisions</p>
+  <h1>Search the open Swiss corpus</h1>
+  <p class="lede">Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.</p>
 
   <form class="search-form" id="form" role="search" aria-label="Search Swiss case law">
     <input class="search-input" type="search" id="q" name="q"
@@ -204,7 +205,7 @@
     <div>
       <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
       <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
-        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+        Open Swiss case law. CC-BY-4.0. 4-layer quality framework. Public-good infrastructure.
       </p>
     </div>
     <div>

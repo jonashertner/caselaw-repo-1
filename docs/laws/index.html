@@ -11,10 +11,10 @@
 <meta property="og:description" content="5,510 federal laws + 15,722 cantonal acts, full-text searchable.">
 <meta property="og:url" content="https://opencaselaw.ch/laws/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=3">
+<link rel="stylesheet" href="/static/css/design-system.css?v=4">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
-  main.laws { padding-top: var(--s-6); padding-bottom: var(--s-7); }
+  main.laws { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
   .laws-form {
     display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
     margin: var(--s-5) 0 var(--s-3);
@@ -181,7 +181,8 @@
 </header>
 
 <main class="container laws" id="main">
-  <h1 style="max-width: 22ch;">Swiss federal + cantonal laws</h1>
+  <p class="eyebrow">Look up · Federal + cantonal</p>
+  <h1>Swiss federal and cantonal laws</h1>
   <p class="lede">Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.</p>
 
   <form class="laws-form" id="form" role="search" aria-label="Search Swiss laws">
@@ -230,7 +231,7 @@
     <div>
       <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
       <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
-        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+        Open Swiss case law. CC-BY-4.0. 4-layer quality framework. Public-good infrastructure.
       </p>
     </div>
     <div>
