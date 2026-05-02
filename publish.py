@@ -230,6 +230,17 @@ def _cleanup_stale_build_artifacts() -> None:
         f"{DATA_VOLUME}/output/decisions.db.quick",
         f"{DATA_VOLUME}/output/.reference_graph.db.tmp-journal",
         f"{DATA_VOLUME}/output/.decisions.db.tmp-journal",
+        # decision_structure rebuild artefacts. The full rebuild writes
+        # to a sibling .tmp file that can grow to ~45 GB. A crash mid-
+        # build leaves the .tmp orphaned and burns the next nightly
+        # at pre-flight. Once decision_structure.db lives on /mnt
+        # (post-2026-05-02 symlink) the .tmp lands there too; covering
+        # both legacy /opt and current /mnt paths is defence-in-depth.
+        f"{DATA_VOLUME}/output/decision_structure.db.tmp",
+        f"{DATA_VOLUME}/output/decision_structure.db.tmp-journal",
+        "/opt/caselaw/repo/output/decision_structure.db.tmp",
+        "/opt/caselaw/repo/output/decision_structure.db.tmp-journal",
+        "/opt/caselaw/repo/output/decision_structure.db.partial-2026-04-29",
     ]
     now = time.time()
     for path in candidates:
