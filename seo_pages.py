@@ -23,6 +23,93 @@ logger = logging.getLogger("swiss-caselaw-mcp")
 DATA_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / ".swiss-caselaw")))
 BASE_URL = os.environ.get("SWISS_CASELAW_BASE_URL", "https://mcp.opencaselaw.ch")
 
+
+# ── Text reflow ───────────────────────────────────────────────────────
+#
+# Source corpus text is hard-wrapped at PDF column width (60–80 chars)
+# and additionally wraps inline citations like "BGE 129 III 209" or
+# "Art. 27 ZGB" onto their own lines. Rendering those `\n`s with
+# CSS `white-space: pre-wrap` produces the jagged "citation dangling
+# mid-sentence" look the user reported.
+#
+# Fix: split on blank lines into logical paragraphs, then within each
+# paragraph collapse single newlines + whitespace runs into single
+# spaces. List items (1. / a) / – ) keep their hard break so dispositiv
+# orders and enumerations stay legible.
+#
+# This mirrors the helpers in exports.py (used by DOCX / PDF) so HTML,
+# DOCX and PDF outputs all flow identically.
+
+_LIST_MARKER_RE = re.compile(r"^([0-9]+[.)]|[a-z][.)]|[-*\u2013\u2022])\s")
+
+
+def _flow_paragraph(text: str) -> str:
+    """Collapse a chunk of corpus text into a single re-flowable
+    paragraph: newlines + runs of whitespace become single spaces."""
+    if not text:
+        return ""
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"\s*\n\s*", " ", text)
+    text = re.sub(r" {2,}", " ", text)
+    return text.strip()
+
+
+def _split_paragraphs(text: str) -> list[str]:
+    """Split text into logical paragraphs.
+
+    * Blank lines (``\\n\\s*\\n``) → paragraph boundary.
+    * Within a paragraph, lines that begin with a list marker stay as
+      their own paragraph (preserves dispositiv-style enumerations).
+    * Other single newlines collapse into spaces (joins PDF column
+      wraps and dangling citations).
+    """
+    if not text:
+        return []
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    paragraphs: list[str] = []
+    for block in re.split(r"\n\s*\n+", text.strip()):
+        if not block.strip():
+            continue
+        items: list[str] = []
+        for raw_line in block.split("\n"):
+            line = raw_line.strip()
+            if not line:
+                continue
+            if not items:
+                items.append(line)
+                continue
+            if _LIST_MARKER_RE.match(line):
+                items.append(line)
+            else:
+                items[-1] = re.sub(r" {2,}", " ", items[-1].rstrip() + " " + line)
+        paragraphs.extend(items)
+    return paragraphs
+
+
+_REGESTE_SPLIT_RE = re.compile(r"(?=\b(?:Regeste|Regesto)\b)", re.IGNORECASE)
+
+
+def _split_regeste(regeste: str) -> list[str]:
+    """Split a multilingual regeste into per-language paragraphs.
+    Falls back to a single flowed paragraph when no language headers
+    are detectable (most cantonal decisions)."""
+    if not regeste or not regeste.strip():
+        return []
+    parts = [p for p in _REGESTE_SPLIT_RE.split(regeste) if p and p.strip()]
+    if len(parts) <= 1:
+        return [_flow_paragraph(regeste)]
+    return [_flow_paragraph(p) for p in parts if _flow_paragraph(p)]
+
+
+def _paragraphs_html(text: str, *, classname: str | None = None) -> str:
+    """Render `text` as a sequence of <p> elements after reflow.
+    Returns the empty string for empty input."""
+    paras = _split_paragraphs(text)
+    if not paras:
+        return ""
+    cls = f' class="{classname}"' if classname else ""
+    return "\n".join(f"<p{cls}>{_esc(p)}</p>" for p in paras)
+
 # Court display names (subset — full list in mcp_server.py)
 _COURT_NAMES = {
     "bger": "Bundesgericht", "bge": "Bundesgericht (BGE)",
@@ -201,13 +288,12 @@ def _render_decision(row: sqlite3.Row) -> str:
     lang_labels = {"de": "Deutsch", "fr": "Français", "it": "Italiano", "rm": "Rumantsch"}
     lang_label = lang_labels.get(language, language)
 
-    # Regeste paragraphs
+    # Regeste paragraphs — multilingual headers split per-language, then
+    # each language is reflowed (collapses PDF column line-wraps).
     regeste_html = ""
     if regeste:
-        for para in regeste.split("\n"):
-            para = para.strip()
-            if para:
-                regeste_html += f"<p>{_esc(para)}</p>\n"
+        for para in _split_regeste(regeste):
+            regeste_html += f"<p>{_esc(para)}</p>\n"
 
     # Structured fields (Sachverhalt / Erwägungen / Dispositiv) from sidecar DB
     structure = _fetch_structure(did)
@@ -227,7 +313,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 
         if sachverhalt:
             parts.append('<details><summary><strong>Sachverhalt</strong></summary>')
-            parts.append(f'<div class="section-body">{_esc(sachverhalt)}</div></details>')
+            parts.append(f'<div class="section-body">{_paragraphs_html(sachverhalt)}</div></details>')
 
         if paragraphs:
             parts.append('<details open><summary><strong>Erwägungen</strong> '
@@ -237,10 +323,19 @@ def _render_decision(row: sqlite3.Row) -> str:
                 indent_px = (p["depth"] - 1) * 16
                 e_label = f"E. {p['e_number']}"
                 anchor = f"e-{p['e_number'].replace('.', '-')}"
+                # Each Erwägung is paragraph-flowed; the E-number anchor
+                # sits inline with the first paragraph for compact scanning.
+                e_paras = _split_paragraphs(p["text"])
+                if not e_paras:
+                    continue
+                first_html = (
+                    f'<a class="e-num" href="#{anchor}">{_esc(e_label)}</a> '
+                    f'{_esc(e_paras[0])}'
+                )
+                rest_html = "".join(f'<p>{_esc(par)}</p>' for par in e_paras[1:])
                 parts.append(
                     f'<div class="erw" id="{anchor}" style="margin-left:{indent_px}px">'
-                    f'<a class="e-num" href="#{anchor}">{_esc(e_label)}</a> '
-                    f'<span class="e-text">{_esc(p["text"])}</span></div>'
+                    f'<p class="e-text">{first_html}</p>{rest_html}</div>'
                 )
             parts.append('</div></details>')
 
@@ -252,7 +347,7 @@ def _render_decision(row: sqlite3.Row) -> str:
                     parts.append(f'<li>{_esc(order)}</li>')
                 parts.append('</ol>')
             else:
-                parts.append(f'<div class="section-body">{_esc(dispositiv)}</div>')
+                parts.append(f'<div class="section-body">{_paragraphs_html(dispositiv)}</div>')
             parts.append('</details>')
 
         parts.append('</section>')
@@ -265,7 +360,7 @@ def _render_decision(row: sqlite3.Row) -> str:
         text_excerpt = f"""
         <details{is_open}>
             <summary>Volltext (verifizierbarer Originaltext)</summary>
-            <div class="fulltext">{_esc(full_text)}</div>
+            <div class="fulltext">{_paragraphs_html(full_text)}</div>
         </details>"""
 
     return f"""<!DOCTYPE html>
@@ -329,21 +424,39 @@ def _render_decision(row: sqlite3.Row) -> str:
     }}
     details summary .count {{ font-weight: normal; }}
     .structured {{ margin: 0; }}
-    .section-body {{ white-space: pre-wrap; margin: 0.8rem 0 0 0; }}
+    /* Body text is now rendered as real <p> elements (server-side reflow
+       collapses PDF column line-wraps), so word-wrap is the browser's
+       job — no `white-space: pre-wrap`. */
+    .section-body {{ margin: 0.8rem 0 0 0; }}
+    .section-body p,
+    .erw .e-text,
+    .erw p,
+    .fulltext p {{ margin: 0 0 0.7rem 0; line-height: 1.45; text-align: justify; hyphens: auto; }}
+    .section-body p:last-child,
+    .erw p:last-child,
+    .fulltext p:last-child {{ margin-bottom: 0; }}
     .erwaegungen {{ margin: 0.8rem 0 0 0; }}
     .erw {{ padding: 0.4rem 0; }}
     .erw .e-num {{ font-weight: bold; margin-right: 0.5em; text-decoration: none; }}
     .erw .e-num:hover {{ text-decoration: underline; }}
-    .erw .e-text {{ white-space: pre-wrap; }}
     .dispositiv-orders {{ margin: 0.8rem 0 0 1.5em; padding: 0; list-style: decimal; }}
     .dispositiv-orders li {{ margin: 0.5rem 0; padding-left: 0.4em; }}
     .fulltext {{
-        white-space: pre-wrap;
         font-size: 12pt;
-        line-height: 1.2;
+        line-height: 1.45;
         margin: 0.8rem 0 0 0;
         padding: 0;
         background: none;
+    }}
+    /* Print: tighten margins, drop nav/footer chrome. Browsers honour
+       hyphens + justify in print, giving exports + paper printouts the
+       same cleanly-flowed paragraphs as the screen. */
+    @media print {{
+        body {{ max-width: none; margin: 1.6cm 1.8cm; padding: 0; font-size: 11pt; }}
+        nav, footer, .links.exports, details > summary {{ display: none !important; }}
+        details, details[open] {{ display: block; }}
+        details > *:not(summary) {{ display: block !important; }}
+        .erw, .section-body p, .fulltext p {{ page-break-inside: avoid; }}
     }}
     footer {{ margin-top: 4rem; font-size: 10.5pt; }}
     footer p {{ margin: 0.6rem 0; }}
