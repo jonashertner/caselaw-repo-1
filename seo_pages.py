@@ -937,18 +937,18 @@ def _render_decision(row: sqlite3.Row) -> str:
 }})();
 </script>
 <script>
-(function () {
+(function () {{
   var btn = document.getElementById('nav-toggle');
   if (!btn) return;
   var nav = document.querySelector('header.site nav');
-  function setOpen(open) {
+  function setOpen(open) {{
     document.body.classList.toggle('nav-open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-  btn.addEventListener('click', function () { setOpen(!document.body.classList.contains('nav-open')); });
-  if (nav) nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setOpen(false); }); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
-})();
+  }}
+  btn.addEventListener('click', function () {{ setOpen(!document.body.classList.contains('nav-open')); }});
+  if (nav) nav.querySelectorAll('a').forEach(function (a) {{ a.addEventListener('click', function () {{ setOpen(false); }}); }});
+  document.addEventListener('keydown', function (e) {{ if (e.key === 'Escape') setOpen(false); }});
+}})();
 </script>
 </body>
 </html>"""
@@ -1030,18 +1030,18 @@ def _render_404(decision_id: str) -> str:
 }})();
 </script>
 <script>
-(function () {
+(function () {{
   var btn = document.getElementById('nav-toggle');
   if (!btn) return;
   var nav = document.querySelector('header.site nav');
-  function setOpen(open) {
+  function setOpen(open) {{
     document.body.classList.toggle('nav-open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-  btn.addEventListener('click', function () { setOpen(!document.body.classList.contains('nav-open')); });
-  if (nav) nav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { setOpen(false); }); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
-})();
+  }}
+  btn.addEventListener('click', function () {{ setOpen(!document.body.classList.contains('nav-open')); }});
+  if (nav) nav.querySelectorAll('a').forEach(function (a) {{ a.addEventListener('click', function () {{ setOpen(false); }}); }});
+  document.addEventListener('keydown', function (e) {{ if (e.key === 'Escape') setOpen(false); }});
+}})();
 </script>
 </body>
 </html>"""
