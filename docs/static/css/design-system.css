@@ -1,7 +1,7 @@
 /* ============================================================================
-   OpenCaseLaw — shared design system v1
+   OpenCaseLaw — shared design system v2
    ----------------------------------------------------------------------------
-   One stylesheet to rule them all. Drop into the <head> of any new page; the
+   One stylesheet to rule them all. Drop into the <head> of any page; the
    tokens + components below match the Word add-in (so users have one mental
    model across surfaces) and the existing /quality.html dashboard.
 
@@ -12,7 +12,10 @@
    - Spacing scale: 4 / 8 / 12 / 16 / 24 / 40 / 64 px.
    - Type scale: 11 / 12 / 13 / 15 / 18 / 24 / 32 / 48 px.
    - Layout: --max-w 1240px (landing), 720px (prose), full (dashboards).
-   - Dark mode: respected via prefers-color-scheme.
+   - Breakpoints: 480 (phone) / 720 (tablet) / 1024 (laptop). Use these
+     three values everywhere; no per-page custom breakpoints.
+   - Dark mode: respected via prefers-color-scheme. Every shared component
+     has a dark-mode counterpart — page-level CSS must use var() tokens.
    - Reduced motion: every animation gated on prefers-reduced-motion.
    ============================================================================ */
 
@@ -182,12 +185,41 @@ header.site .brand .logo {
   font-family: var(--f-mono);
   color: var(--accent);
 }
-header.site nav { display: flex; gap: var(--s-5); align-items: center; }
-header.site nav a { text-decoration: none; color: var(--text-2); }
+header.site nav {
+  display: flex;
+  gap: var(--s-5);
+  align-items: center;
+  /* On narrow viewports the nav scrolls horizontally instead of
+     disappearing — no link should ever be unreachable. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+  margin-left: var(--s-4);
+  min-width: 0;
+}
+header.site nav::-webkit-scrollbar { display: none; }
+header.site nav a {
+  text-decoration: none;
+  color: var(--text-2);
+  flex: 0 0 auto;
+  padding: var(--s-1) 0;
+  border-bottom: 2px solid transparent;
+}
 header.site nav a:hover { color: var(--text); }
-header.site nav a.active { color: var(--text); font-weight: 500; }
+header.site nav a.active {
+  color: var(--text);
+  font-weight: 500;
+  border-bottom-color: var(--accent);
+}
 @media (max-width: 720px) {
-  header.site nav a:not(.cta) { display: none; }
+  header.site .row { padding: var(--s-2) 0; }
+  header.site nav { gap: var(--s-4); font-size: var(--t-sm); margin-left: var(--s-3); }
+  /* Allow the nav to reach the right edge of the viewport for swipe scroll. */
+  header.site nav { padding-right: var(--gutter-x); margin-right: calc(-1 * var(--gutter-x)); }
+}
+@media (max-width: 480px) {
+  header.site .brand span:not(.logo) { display: none; }
 }
 
 /* ── Footer (shared) ──────────────────────────────────────── */
@@ -250,10 +282,18 @@ footer.site a:hover { color: var(--text); text-decoration: underline; }
   padding: clamp(var(--s-6), 8vw, var(--s-7)) 0 var(--s-7);
   text-align: left;
 }
-.hero h1 { margin-bottom: var(--s-4); max-width: 22ch; }
+/* 28ch fits the longest localized headlines (DE/FR) without wrapping
+   awkwardly. Pages with a 2-column hero override this on the wrapper. */
+.hero h1 { margin-bottom: var(--s-4); max-width: 28ch; }
 .hero .lede { margin-bottom: var(--s-5); }
-.hero-actions { display: inline-flex; gap: var(--s-3); flex-wrap: wrap; align-items: center; }
+.hero-actions { display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: center; }
 .hero-meta { font-size: var(--t-sm); color: var(--text-2); margin-top: var(--s-3); }
+@media (max-width: 480px) {
+  /* Mobile: CTAs stretch to the screen so each tap target is comfortable. */
+  .hero-actions { width: 100%; }
+  .hero-actions > .btn,
+  .hero-actions > a { flex: 1 1 100%; justify-content: center; }
+}
 
 /* ── Section ──────────────────────────────────────────────── */
 .section { padding: var(--s-7) 0; border-top: 1px solid var(--border); }
@@ -262,7 +302,9 @@ footer.site a:hover { color: var(--text); text-decoration: underline; }
 /* ── Feature grid ─────────────────────────────────────────── */
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  /* 220px lower bound = three-up at 720, two-up at 480, one column on
+     phones without overflow risk on 320 px viewports. */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: var(--s-4);
 }
 .feature .icon {
@@ -305,8 +347,92 @@ footer.site a:hover { color: var(--text); text-decoration: underline; }
 .faq details[open] summary::after { content: '−'; }
 .faq details > p { margin-top: var(--s-3); color: var(--text-2); font-size: var(--t-md); }
 
+/* ── Forms ────────────────────────────────────────────────── */
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: var(--t-base);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+}
+.input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.input::placeholder { color: var(--text-3); }
+
+/* ── Pill / badge / tag ───────────────────────────────────── */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--f-mono); font-size: var(--t-xs);
+  background: var(--bg-soft); color: var(--text-2);
+  border: 1px solid transparent;
+}
+.pill-accent { background: var(--accent-soft); color: var(--accent); }
+.pill-green { background: var(--green-soft); color: var(--green); }
+
+/* ── Skeleton + state placeholders ────────────────────────── */
+.skeleton {
+  background: var(--bg-soft);
+  border-radius: var(--radius);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+  height: 92px;
+}
+.skeleton-line {
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  height: 12px;
+  display: inline-block;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.95; } }
+@media (prefers-reduced-motion: reduce) { .skeleton, .skeleton-line { animation: none; } }
+.state-empty, .state-error, .state-loading {
+  padding: var(--s-6) var(--s-4);
+  text-align: center;
+  color: var(--text-2);
+  font-size: var(--t-base);
+}
+.state-empty strong {
+  display: block;
+  margin-bottom: var(--s-2);
+  font-size: var(--t-lg);
+  font-weight: 400;
+  color: var(--text);
+}
+.state-error { color: var(--accent); }
+
+/* ── Language switch (used on /word/* pages) ──────────────── */
+.lang-switch {
+  display: inline-flex;
+  gap: var(--s-1);
+  margin-left: var(--s-3);
+  padding-left: var(--s-3);
+  border-left: 1px solid var(--border);
+  flex: 0 0 auto;
+}
+.lang-switch a {
+  font-family: var(--f-mono); font-size: var(--t-xs);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-3);
+}
+.lang-switch a.active, .lang-switch a:hover { background: var(--bg-soft); color: var(--text); }
+
+/* ── Print baseline ───────────────────────────────────────── */
+@media print {
+  header.site, footer.site { display: none; }
+  body { background: #fff; color: #000; }
+  a { color: inherit; text-decoration: underline; }
+}
+
 /* ── Utility ──────────────────────────────────────────────── */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .gap-2 { gap: var(--s-2); } .gap-3 { gap: var(--s-3); } .gap-4 { gap: var(--s-4); } .gap-5 { gap: var(--s-5); }
 .flex { display: flex; } .grid { display: grid; }
 .center { text-align: center; }
+.muted { color: var(--text-3); }
+.subtle { color: var(--text-2); }

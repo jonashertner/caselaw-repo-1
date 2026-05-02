@@ -18,7 +18,7 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="it_CH">
 <meta name="robots" content="index, follow">
-<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="stylesheet" href="/static/css/design-system.css?v=3">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
 .word-hero { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); align-items: center; }
@@ -55,12 +55,14 @@
       <span class="logo">⊙</span>
       <span>OpenCaseLaw</span>
     </a>
-    <nav>
-      <a href="/">Panoramica</a>
-      <a href="/entscheide/">Decisioni</a>
-      <a href="/gesetze/">Leggi</a>
+    <nav aria-label="Principale">
+      <a href="/search/">Ricerca</a>
+      <a href="/courts/">Tribunali</a>
+      <a href="/laws/">Leggi</a>
       <a href="/word/it/" class="active">Word</a>
       <a href="/mcp/">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/paper/">Paper</a>
       <a href="/quality.html">Qualità</a>
       <span class="lang-switch" aria-label="Lingua">
         <a href="/word/">DE</a>

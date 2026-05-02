@@ -11,7 +11,7 @@
 <meta property="og:description" content="5,510 federal laws + 15,722 cantonal acts, full-text searchable.">
 <meta property="og:url" content="https://opencaselaw.ch/laws/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="stylesheet" href="/static/css/design-system.css?v=3">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   main.laws { padding-top: var(--s-6); padding-bottom: var(--s-7); }
@@ -33,6 +33,7 @@
     background: var(--surface); color: var(--text-2);
     border: 1px solid var(--border); border-radius: var(--radius-pill);
     cursor: pointer; transition: all var(--t-fast) var(--ease);
+    white-space: nowrap;
   }
   .laws-filters button:hover { color: var(--text); border-color: var(--border-strong); }
   .laws-filters button.active { background: var(--text); color: var(--bg); border-color: var(--text); }
@@ -166,13 +167,14 @@
       <span class="logo">⊙</span>
       <span>OpenCaseLaw</span>
     </a>
-    <nav>
-      <a href="/">Overview</a>
+    <nav aria-label="Primary">
       <a href="/search/">Search</a>
       <a href="/courts/">Courts</a>
       <a href="/laws/" class="active">Laws</a>
       <a href="/word/">Word</a>
       <a href="/mcp/">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/paper/">Paper</a>
       <a href="/quality.html">Quality</a>
     </nav>
   </div>
@@ -255,6 +257,7 @@
         <li><a href="/ueber/">Mission</a></li>
         <li><a href="/paper/">Research</a></li>
         <li><a href="/datenschutz/">Privacy</a></li>
+        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
       </ul>
     </div>
   </div>

@@ -12,7 +12,7 @@
 <!-- Shared design system — gives this dashboard the same cross-site nav,
      footer, and tokens as / and /word. Inline styles below override
      where the dashboard-specific layout diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="stylesheet" href="/static/css/design-system.css?v=3">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
 :root {
@@ -21,20 +21,15 @@
 }
 * { box-sizing: border-box; }
 html { background: #fff; }
+/* Use design-system tokens so dark mode + brand accent flow through. */
 body {
-    font-family: var(--f-sans);
-    font-size: 15px;
-    font-weight: 300;
-    line-height: 1.45;
-    color: #111;
-    background: #fff;
     margin: 0;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "kern" 1, "liga" 1, "tnum" 1;
 }
-/* Dashboard column constraint — keeps the report tight; header / footer
-   live outside this wrapper and span the full --max-w via .container. */
 main.container { max-width: 960px; padding-top: var(--s-6); padding-bottom: var(--s-7); }
+.lede { color: var(--text-2); }
+a { color: inherit; }
 a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 nav.top { font-size: 13px; font-weight: 300; margin-bottom: 3.5rem; }
@@ -47,11 +42,17 @@ h1 {
     margin: 0 0 0.4rem 0;
 }
 .lede {
-    font-size: 15px; font-weight: 300; color: #444;
+    font-size: var(--t-base);
+    color: var(--text-2);
     margin: 0 0 2.5rem 0; max-width: 640px;
+    line-height: 1.5;
 }
 .summary {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    display: grid;
+    /* Auto-fit prevents the 4-cell jam at 600-800px where the long labels
+       break to 3 lines while the numbers compete for ~140px. */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--s-4);
     margin: 0 0 3.5rem 0;
 }
 .summary-cell { padding: 0.4rem 0; }
@@ -61,10 +62,11 @@ h1 {
     font-weight: 400; line-height: 1; letter-spacing: -0.02em;
     font-feature-settings: "tnum" 1;
     margin-bottom: 0.4rem;
+    color: var(--text);
 }
-.summary-label { font-size: 12px; font-weight: 400; color: #666; }
-.summary-num.crit { color: #111; }
-.summary-num.warn { color: #444; }
+.summary-label { font-size: var(--t-sm); font-weight: 400; color: var(--text-2); }
+.summary-num.crit { color: var(--text); }
+.summary-num.warn { color: var(--text-2); }
 .gate {
     display: flex; flex-direction: column; gap: 0.35em;
     margin: 0 0 3rem 0; font-size: 14px; font-weight: 400;
@@ -74,78 +76,77 @@ h1 {
 }
 .gate-dot {
     width: 10px; height: 10px; border-radius: 50%;
-    background: #111; flex: 0 0 auto;
+    background: var(--text); flex: 0 0 auto;
 }
-.gate.ok      .gate-dot { background: #111; }
-.gate.blocked .gate-dot { background: #fff; border: 1.5px solid #111; }
-.gate.stale   .gate-dot { background: #fff; border: 1.5px dashed #888; }
+.gate.ok      .gate-dot { background: var(--green); }
+.gate.blocked .gate-dot { background: var(--surface); border: 1.5px solid var(--accent); }
+.gate.stale   .gate-dot { background: var(--surface); border: 1.5px dashed var(--text-3); }
 .gate-sub {
-    font-size: 12px; color: #666; padding-left: 1.4em;
+    font-size: var(--t-sm); color: var(--text-2); padding-left: 1.4em;
     max-width: 640px;
 }
-.gate.stale  .gate-sub { color: #aa1a1a; }
-.gate.blocked .gate-sub { color: #aa1a1a; }
+.gate.stale  .gate-sub { color: var(--accent); }
+.gate.blocked .gate-sub { color: var(--accent); }
 .tabs {
-    display: flex; gap: 1.6em; margin: 0 0 2rem 0;
-    font-size: 13px; font-weight: 400;
+    display: flex; gap: var(--s-5); margin: 0 0 2rem 0;
+    font-size: var(--t-md); font-weight: 400;
+    flex-wrap: wrap;
 }
-.tab { cursor: pointer; padding: 0.2em 0; color: #666; user-select: none; }
-.tab.active { color: #111; font-weight: 500; }
+.tab { cursor: pointer; padding: 0.2em 0; color: var(--text-2); user-select: none; }
+.tab.active { color: var(--text); font-weight: 500; border-bottom: 2px solid var(--accent); }
 .tab-count {
-    font-family: var(--f-mono); font-size: 11px; color: #888;
+    font-family: var(--f-mono); font-size: var(--t-xs); color: var(--text-3);
     margin-left: 0.4em;
 }
 .category { margin: 0 0 2.4rem 0; }
 .category-name {
-    font-size: 11px; font-weight: 500; text-transform: uppercase;
-    letter-spacing: 0.08em; color: #888; margin: 0 0 0.6rem 0;
+    font-size: var(--t-xs); font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--text-3); margin: 0 0 0.6rem 0;
 }
 .checks { display: grid; grid-template-columns: 1fr; gap: 0; }
 .check {
     display: grid; grid-template-columns: 80px 1fr 140px;
-    gap: 1.2rem; padding: 0.55rem 0; align-items: baseline;
-    font-size: 14px;
+    gap: var(--s-4); padding: 0.55rem 0; align-items: baseline;
+    font-size: var(--t-base);
+    border-bottom: 1px solid var(--border);
 }
+.check:last-child { border-bottom: none; }
 .check-status {
-    font-family: var(--f-mono); font-size: 11px; font-weight: 500;
+    font-family: var(--f-mono); font-size: var(--t-xs); font-weight: 500;
     letter-spacing: 0.04em; padding-top: 1px;
 }
-.check-status.pass-info { color: #888; }
-.check-status.pass-warn { color: #444; }
-.check-status.pass-crit { color: #111; }
-.check-status.fail-info { color: #888; }
+.check-status.pass-info { color: var(--text-3); }
+.check-status.pass-warn { color: var(--text-2); }
+.check-status.pass-crit { color: var(--green); }
+.check-status.fail-info { color: var(--text-3); }
 .check-status.fail-warn { color: #b56b1f; }
-.check-status.fail-crit { color: #aa1a1a; }
+.check-status.fail-crit { color: var(--accent); }
 .check-name {
-    font-family: var(--f-mono); font-size: 12px; color: #444;
+    font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text-2);
 }
-.check-message { font-size: 13px; color: #444; margin-top: 0.15em; }
+.check-message { font-size: var(--t-md); color: var(--text-2); margin-top: 0.15em; }
 .check-metric {
-    font-family: var(--f-mono); font-size: 12px; color: #555;
+    font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text-2);
     text-align: right; font-feature-settings: "tnum" 1;
 }
 .check-detail {
     grid-column: 1 / -1; margin: 0.5rem 0 0.4rem 0;
     padding: 0.6rem 0 0.6rem 80px;
-    font-size: 12px; color: #555; display: none;
+    font-size: var(--t-sm); color: var(--text-2); display: none;
 }
 .check-detail.open { display: block; }
 .check-detail .advice { margin-bottom: 0.6em; }
-.check-detail .samples { font-family: var(--f-mono); font-size: 11px; }
+.check-detail .samples { font-family: var(--f-mono); font-size: var(--t-xs); }
 .check-detail .samples pre {
     margin: 0.3em 0; padding: 0; background: none;
-    white-space: pre-wrap; word-break: break-all; color: #444;
+    white-space: pre-wrap; word-break: break-all; color: var(--text-2);
 }
 .expand {
-    grid-column: 2 / 3; cursor: pointer; color: #888;
-    font-size: 12px; margin-top: 0.2em; user-select: none;
+    grid-column: 2 / 3; cursor: pointer; color: var(--text-3);
+    font-size: var(--t-sm); margin-top: 0.2em; user-select: none;
 }
-.expand:hover { color: #111; }
-footer { margin-top: 6rem; font-size: 12px; color: #777; line-height: 1.6; }
-footer p { margin: 0.4rem 0; }
-@media (max-width: 600px) {
-    body { margin: 2.5rem auto 4rem; padding: 0 1.2rem; font-size: 14px; }
-    .summary { grid-template-columns: repeat(2, 1fr); gap: 1.4rem 0; }
+.expand:hover { color: var(--text); }
+@media (max-width: 720px) {
     .check { grid-template-columns: 70px 1fr; }
     .check-metric { grid-column: 2; text-align: left; padding-top: 0.2em; }
     .check-detail { padding-left: 70px; }
@@ -163,14 +164,15 @@ footer p { margin: 0.4rem 0; }
       <span class="logo">⊙</span>
       <span>OpenCaseLaw</span>
     </a>
-    <nav>
-      <a href="/">Overview</a>
-      <a href="/entscheide/">Decisions</a>
-      <a href="/gesetze/">Laws</a>
+    <nav aria-label="Primary">
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
       <a href="/word/">Word</a>
       <a href="/mcp/">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/paper/">Paper</a>
       <a href="/quality.html" class="active">Quality</a>
-      <a href="/coverage/">Coverage</a>
     </nav>
   </div>
 </header>
@@ -256,6 +258,7 @@ footer p { margin: 0.4rem 0; }
         <li><a href="/ueber/">Mission</a></li>
         <li><a href="/paper/">Research</a></li>
         <li><a href="/datenschutz/">Privacy</a></li>
+        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
       </ul>
     </div>
   </div>

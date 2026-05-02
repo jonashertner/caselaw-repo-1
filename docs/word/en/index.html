@@ -18,7 +18,7 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_GB">
 <meta name="robots" content="index, follow">
-<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="stylesheet" href="/static/css/design-system.css?v=3">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
 .word-hero { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); align-items: center; }
@@ -55,12 +55,14 @@
       <span class="logo">⊙</span>
       <span>OpenCaseLaw</span>
     </a>
-    <nav>
-      <a href="/">Overview</a>
-      <a href="/entscheide/">Decisions</a>
-      <a href="/gesetze/">Laws</a>
+    <nav aria-label="Primary">
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
       <a href="/word/en/" class="active">Word</a>
       <a href="/mcp/">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/paper/">Paper</a>
       <a href="/quality.html">Quality</a>
       <span class="lang-switch" aria-label="Language">
         <a href="/word/">DE</a>
@@ -270,6 +272,7 @@
         <li><a href="/datenschutz/">Privacy</a></li>
         <li><a href="/governance-and-removal-policy.md">Governance</a></li>
       </ul>
+
     </div>
   </div>
   <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">

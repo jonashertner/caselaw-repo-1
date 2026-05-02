@@ -9,205 +9,154 @@
 <link rel="canonical" href="https://opencaselaw.ch/coverage/">
 <!-- Shared design system — provides cross-site nav + footer. Inline
      styles below override layout/colour for the dashboard. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="stylesheet" href="/static/css/design-system.css?v=3">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
+  /* Status palette — semantic tones layered on top of design-system tokens.
+     Single accent stays brand red (var(--accent)); ok / warn use derived
+     greens / ambers that auto-adapt in dark mode. */
   :root {
-    --bg:#fff; --surf:#fafbfc; --tx:#1a1f26; --tx2:#5b6573; --tx3:#8b95a3;
-    --brd:#e4e7eb; --brd2:#d1d5db; --ac:#0369a1;
-    --ok-bg:#ecfdf5; --ok-fg:#047857; --ok-brd:#a7f3d0;
-    --warn-bg:#fef3c7; --warn-fg:#92400e; --warn-brd:#fcd34d;
-    --err-bg:#fee2e2;  --err-fg:#991b1b;  --err-brd:#fca5a5;
+    --status-ok-bg:#ecfdf5; --status-ok-fg:var(--green); --status-ok-brd:#a7f3d0;
+    --status-warn-bg:#fef3c7; --status-warn-fg:#92400e; --status-warn-brd:#fcd34d;
+    --status-err-bg:var(--accent-soft); --status-err-fg:var(--accent); --status-err-brd:#fca5a5;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
-      --bg:#0b0f14; --surf:#121821; --tx:#e6edf3; --tx2:#9ca6b1; --tx3:#6b7480;
-      --brd:#1f2733; --brd2:#2a3340; --ac:#7dd3fc;
-      --ok-bg:rgba(4,120,87,0.12); --ok-fg:#6ee7b7; --ok-brd:rgba(4,120,87,0.32);
-      --warn-bg:rgba(146,64,14,0.18); --warn-fg:#fcd34d; --warn-brd:rgba(146,64,14,0.4);
-      --err-bg:rgba(153,27,27,0.18); --err-fg:#fca5a5; --err-brd:rgba(153,27,27,0.4);
+    :root[data-theme='auto'], :root:not([data-theme]) {
+      --status-ok-bg:rgba(74,222,128,0.10); --status-ok-fg:var(--green); --status-ok-brd:rgba(74,222,128,0.30);
+      --status-warn-bg:rgba(146,64,14,0.18); --status-warn-fg:#fcd34d; --status-warn-brd:rgba(146,64,14,0.40);
+      --status-err-bg:rgba(248,113,113,0.12); --status-err-fg:var(--accent); --status-err-brd:rgba(248,113,113,0.30);
     }
   }
-  *,*::before,*::after { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0; background: var(--bg); color: var(--tx);
-    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    font-weight: 300; line-height: 1.55; letter-spacing: -0.005em;
-  }
-  .topbar {
-    position: sticky; top: 0; z-index: 10;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    backdrop-filter: blur(14px) saturate(1.6);
-    border-bottom: 1px solid var(--brd);
-  }
-  .topbar-inner {
-    max-width: 1100px; margin: 0 auto; padding: 12px 20px;
-    display: flex; align-items: center; gap: 12px; height: 56px;
-  }
-  .topbar a.brand {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 13px; color: var(--tx); text-decoration: none;
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .topbar a.brand .mark {
-    width: 22px; height: 22px;
-    border: 1px solid var(--brd2); border-radius: 4px;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-weight: 600; font-size: 12px; color: var(--tx2);
-  }
-  .topbar .crumb { color: var(--tx3); font-size: 13px; }
-  .topbar .crumb::before { content: "/"; margin-right: 8px; color: var(--tx3); }
 
-  main { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
-  h1 {
-    font-weight: 200; font-size: clamp(28px, 4vw, 44px);
-    letter-spacing: -0.02em; margin: 8px 0 12px;
-  }
-  .lead {
-    color: var(--tx2); max-width: 640px;
-    font-size: 15.5px; line-height: 1.6; margin-bottom: 28px;
-  }
+  main.coverage { max-width: 1100px; padding: var(--s-6) var(--gutter-x) var(--s-7); margin: 0 auto; }
+  h1 { margin: var(--s-2) 0 var(--s-3); }
+  .lead { color: var(--text-2); max-width: 640px; line-height: 1.6; margin-bottom: var(--s-6); font-size: var(--t-base); }
 
   .summary {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
-    gap: 12px; margin-bottom: 32px;
+    gap: var(--s-3); margin-bottom: var(--s-6);
   }
   .stat {
-    background: var(--surf); border: 1px solid var(--brd);
-    border-radius: 8px; padding: 16px 18px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: var(--s-4) var(--s-5);
   }
   .stat .k {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--tx3); margin-bottom: 6px; font-weight: 500;
+    font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-3); margin-bottom: var(--s-1); font-weight: 500;
   }
-  .stat .v { font-weight: 300; font-size: 24px; letter-spacing: -0.01em; }
-  .stat.ok    .v { color: var(--ok-fg); }
-  .stat.warn  .v { color: var(--warn-fg); }
-  .stat.err   .v { color: var(--err-fg); }
+  .stat .v { font-weight: 300; font-size: var(--t-xl); letter-spacing: -0.01em; color: var(--text); font-variant-numeric: tabular-nums; }
+  .stat.ok    .v { color: var(--status-ok-fg); }
+  .stat.warn  .v { color: var(--status-warn-fg); }
+  .stat.err   .v { color: var(--status-err-fg); }
 
   .controls {
-    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-    margin-bottom: 16px;
+    display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap;
+    margin-bottom: var(--s-4);
   }
   .controls input[type=search] {
     flex: 1 1 240px; min-width: 200px;
-    padding: 8px 12px; font: inherit;
-    background: var(--surf);
-    border: 1px solid var(--brd); border-radius: 6px;
-    color: var(--tx);
+    padding: 10px 14px; font: inherit; font-size: var(--t-base);
+    background: var(--surface);
+    border: 1px solid var(--border-strong); border-radius: var(--radius);
+    color: var(--text);
   }
-  .controls input[type=search]:focus {
-    outline: 2px solid var(--ac); outline-offset: -1px;
-  }
-  .controls .filters {
-    display: flex; gap: 4px;
-  }
+  .controls input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .controls .filters { display: flex; gap: var(--s-2); flex-wrap: wrap; }
   .controls .filters button {
-    padding: 6px 12px; font: inherit; font-size: 13px;
-    background: transparent; border: 1px solid var(--brd);
-    border-radius: 6px; color: var(--tx2);
-    cursor: pointer; transition: 160ms ease;
+    padding: 6px 12px; font: inherit; font-size: var(--t-md);
+    background: var(--surface); color: var(--text-2);
+    border: 1px solid var(--border); border-radius: var(--radius-pill);
+    cursor: pointer; transition: all var(--t-fast) var(--ease);
   }
-  .controls .filters button:hover { color: var(--tx); background: var(--surf); }
+  .controls .filters button:hover { color: var(--text); border-color: var(--border-strong); }
   .controls .filters button.active {
-    color: var(--tx); background: var(--surf);
-    border-color: var(--brd2); font-weight: 500;
+    background: var(--text); color: var(--bg); border-color: var(--text);
   }
 
   .table-wrap {
-    background: var(--surf); border: 1px solid var(--brd);
-    border-radius: 8px; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
   }
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: var(--t-base); }
   thead {
-    background: var(--bg); border-bottom: 1px solid var(--brd);
+    background: var(--bg); border-bottom: 1px solid var(--border);
     position: sticky; top: 56px; z-index: 1;
   }
   th {
-    text-align: left; padding: 10px 14px;
-    font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--tx3); font-weight: 500;
+    text-align: left; padding: var(--s-3) var(--s-4);
+    font-size: var(--t-xs); text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-3); font-weight: 500;
   }
   th.numeric { text-align: right; }
-  td { padding: 10px 14px; border-top: 1px solid var(--brd); vertical-align: middle; }
+  td { padding: var(--s-3) var(--s-4); border-top: 1px solid var(--border); vertical-align: middle; }
   td.numeric {
     text-align: right;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: var(--f-mono);
     font-variant-numeric: tabular-nums;
-    font-size: 13px; color: var(--tx2);
+    font-size: var(--t-sm); color: var(--text-2);
   }
-  tr:hover td { background: color-mix(in srgb, var(--bg) 50%, var(--surf) 50%); }
+  tr:hover td { background: var(--bg-soft); }
 
   .pill {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 2px 9px 2px 7px;
-    border-radius: 999px; font-size: 11.5px; font-weight: 500;
+    border-radius: var(--radius-pill); font-size: var(--t-xs); font-weight: 500;
     border: 1px solid;
   }
   .pill::before {
     content: ""; width: 5px; height: 5px; border-radius: 50%;
     background: currentColor; opacity: 0.85;
   }
-  .pill.ok    { background: var(--ok-bg);   color: var(--ok-fg);   border-color: var(--ok-brd); }
-  .pill.warn  { background: var(--warn-bg); color: var(--warn-fg); border-color: var(--warn-brd); }
-  .pill.err   { background: var(--err-bg);  color: var(--err-fg);  border-color: var(--err-brd); }
+  .pill.ok    { background: var(--status-ok-bg);   color: var(--status-ok-fg);   border-color: var(--status-ok-brd); }
+  .pill.warn  { background: var(--status-warn-bg); color: var(--status-warn-fg); border-color: var(--status-warn-brd); }
+  .pill.err   { background: var(--status-err-bg);  color: var(--status-err-fg);  border-color: var(--status-err-brd); }
   .pill--small { font-size: 10.5px; padding: 1px 6px 1px 5px; }
 
   .scraper-name {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 12.5px; color: var(--tx);
+    font-family: var(--f-mono);
+    font-size: var(--t-sm); color: var(--text);
   }
-  .scraper-label {
-    font-size: 12px; color: var(--tx3); margin-top: 2px;
-  }
-  .new-badge { color: var(--ok-fg); font-weight: 500; }
-  .meta {
-    color: var(--tx3); font-size: 13px; margin-top: 28px; line-height: 1.6;
-  }
-  .meta a { color: var(--ac); }
+  .scraper-label { font-size: var(--t-sm); color: var(--text-3); margin-top: 2px; }
+  .new-badge { color: var(--status-ok-fg); font-weight: 500; }
+  .meta { color: var(--text-3); font-size: var(--t-sm); margin-top: var(--s-6); line-height: 1.6; }
+  .meta a { color: var(--text-2); }
 
   .skel-bar {
     display: inline-block; height: 0.85em; width: 4em;
-    background: var(--brd); border-radius: 4px; opacity: 0.55;
-    animation: pulse 1.4s ease-in-out infinite;
+    background: var(--bg-soft); border-radius: var(--radius-sm); opacity: 0.55;
+    animation: skel-pulse 1.4s ease-in-out infinite;
   }
   .skeleton-row td { height: 22px; }
-  @keyframes pulse {
-    0%, 100% { opacity: 0.4; } 50% { opacity: 0.75; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .skel-bar { animation: none; opacity: 0.5; }
-  }
-  @media (max-width: 640px) {
+  @keyframes skel-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.75; } }
+  @media (prefers-reduced-motion: reduce) { .skel-bar { animation: none; opacity: 0.5; } }
+  @media (max-width: 720px) {
     th, td { padding: 8px 10px; }
     .col-portal, .col-duration { display: none; }
-    .topbar-inner { gap: 8px; padding: 8px 14px; }
   }
 </style>
 </head>
 <body>
 
-<!-- Shared site header — same across /, /word, /quality, /coverage. -->
 <header class="site">
   <div class="container row">
     <a class="brand" href="/">
       <span class="logo">⊙</span>
       <span>OpenCaseLaw</span>
     </a>
-    <nav>
-      <a href="/">Overview</a>
-      <a href="/entscheide/">Decisions</a>
-      <a href="/gesetze/">Laws</a>
+    <nav aria-label="Primary">
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
       <a href="/word/">Word</a>
       <a href="/mcp/">MCP</a>
-      <a href="/quality.html">Quality</a>
-      <a href="/coverage/" class="active">Coverage</a>
+      <a href="/api/">API</a>
+      <a href="/paper/">Paper</a>
+      <a href="/quality.html" class="active">Quality</a>
     </nav>
   </div>
 </header>
 
-<main>
+<main class="coverage">
   <h1>Coverage</h1>
   <p class="lead">
     Per-source scraper health for the OpenCaseLaw Swiss legal corpus.
@@ -301,6 +250,7 @@
         <li><a href="/ueber/">Mission</a></li>
         <li><a href="/paper/">Research</a></li>
         <li><a href="/datenschutz/">Privacy</a></li>
+        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
       </ul>
     </div>
   </div>

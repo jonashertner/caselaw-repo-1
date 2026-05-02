@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://opencaselaw.ch/word/">
 <meta property="og:type" content="website">
 <meta name="robots" content="index, follow">
-<link rel="stylesheet" href="/static/css/design-system.css?v=1">
+<link rel="stylesheet" href="/static/css/design-system.css?v=3">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
 .word-hero { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-6); align-items: center; }
@@ -54,12 +54,14 @@
       <span class="logo">⊙</span>
       <span>OpenCaseLaw</span>
     </a>
-    <nav>
-      <a href="/">Übersicht</a>
-      <a href="/entscheide/">Entscheide</a>
-      <a href="/gesetze/">Gesetze</a>
+    <nav aria-label="Primär">
+      <a href="/search/">Suche</a>
+      <a href="/courts/">Gerichte</a>
+      <a href="/laws/">Gesetze</a>
       <a href="/word/" class="active">Word</a>
       <a href="/mcp/">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/paper/">Paper</a>
       <a href="/quality.html">Qualität</a>
       <span class="lang-switch" aria-label="Sprache">
         <a href="/word/" class="active">DE</a>
