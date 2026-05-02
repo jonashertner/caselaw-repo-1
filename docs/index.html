@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
 <title>OpenCaseLaw.ch — The Complete Open Dataset of Swiss Case Law</title>
-<meta name="description" content="969'000+ published Swiss court decisions, 5,510 federal laws, 15,722 cantonal acts. Searchable by humans, readable by AI. Open source, CC0, updated daily.">
+<meta name="description" content="971'000+ published Swiss court decisions, 5,510 federal laws, 15,722 cantonal acts. Searchable by humans, readable by AI. Now also as a Microsoft Word add-in. Open source, CC0, updated daily.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -19,8 +19,8 @@
 <link rel="alternate" type="application/rss+xml" title="OpenCaseLaw — Latest Bundesgericht decisions" href="https://opencaselaw.ch/feeds/bger.xml">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
-<meta property="og:title" content="Swiss Case Law Open Dataset — 969,000+ Court Decisions">
-<meta property="og:description" content="OpenCaseLaw publishes 969,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.04 million extracted case-citation references.">
+<meta property="og:title" content="Swiss Case Law Open Dataset — 971,000+ Court Decisions">
+<meta property="og:description" content="OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.04 million extracted case-citation references. Free MCP endpoint, REST API, and Microsoft Word add-in.">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -31,8 +31,8 @@
 <meta property="og:locale:alternate" content="fr_CH">
 <meta property="og:locale:alternate" content="it_CH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Swiss Case Law Open Dataset — 969,000+ Court Decisions">
-<meta name="twitter:description" content="969,000+ Swiss federal, cantonal, and regulatory decisions with full text and 9.04 million extracted case-citation references.">
+<meta name="twitter:title" content="Swiss Case Law Open Dataset — 971,000+ Court Decisions">
+<meta name="twitter:description" content="971,000+ Swiss federal, cantonal, and regulatory decisions with full text and 9.04 million extracted case-citation references. Now also as a Microsoft Word add-in.">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
@@ -42,7 +42,7 @@
     "@type": "Dataset",
     "name": "Swiss Case Law Open Dataset",
     "alternateName": "OpenCaseLaw",
-    "description": "OpenCaseLaw publishes 969,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.04 million extracted case-citation references. Updated daily. Searchable via MCP.",
+    "description": "OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.04 million extracted case-citation references. Updated daily. Searchable via MCP, REST, and a Microsoft Word add-in.",
     "url": "https://opencaselaw.ch/",
     "license": "https://creativecommons.org/publicdomain/zero/1.0/",
     "isAccessibleForFree": true,
@@ -99,6 +99,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<!-- Shared design system — gives every page the same tokens, type scale, and
+     header/footer/btn/card primitives. Page-specific styles in the inline
+     <style> block below override these where the landing diverges. -->
+<link rel="stylesheet" href="/static/css/design-system.css?v=2">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
@@ -2606,6 +2610,44 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   .connect-footer .sep { display: block; margin: 4px 0; height: 0; }
 }
 
+/* ── Microsoft AppSource launch strip (2026-05-02) ─────────────────────
+   Sits between the sticky toolbar and the hero. Announces the verified
+   Marketplace launch of the Word add-in (WA200010700). Designed to be
+   visually distinct without competing with the hero number, and to be
+   one tap away from /word/ on mobile. */
+.appsource-strip {
+  background: linear-gradient(90deg, var(--accent-soft, #fef2f2) 0%, transparent 60%);
+  border-bottom: 1px solid var(--brd, #e4e4e7);
+  font-size: var(--fs-sm);
+  padding: 10px 0;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='auto'] .appsource-strip,
+  :root:not([data-theme]) .appsource-strip {
+    background: linear-gradient(90deg, rgba(248, 113, 113, 0.08) 0%, transparent 60%);
+  }
+}
+.appsource-strip-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-4); flex-wrap: wrap;
+}
+.appsource-strip-text { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
+.appsource-strip-badge {
+  display: inline-block; padding: 2px 9px;
+  border-radius: 999px; background: var(--ac, #b91c24); color: #fff;
+  font-family: var(--f-mono); font-size: 10px;
+  font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.appsource-strip-meta { color: var(--tx2, #52525b); }
+.appsource-strip-actions { display: inline-flex; gap: var(--s-4); align-items: center; flex-wrap: wrap; }
+.appsource-strip-cta { text-decoration: none; font-weight: 500; color: var(--tx, #18181b); }
+.appsource-strip-cta:hover { text-decoration: underline; }
+.appsource-strip-cta-primary { color: var(--ac, #b91c24); }
+@media (max-width: 720px) {
+  .appsource-strip-row { flex-direction: column; align-items: flex-start; }
+  .appsource-strip-actions { width: 100%; justify-content: flex-start; }
+}
+
 </style>
 </head>
 <body>
@@ -2625,10 +2667,11 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
 
   <div class="toolbar-nav" role="navigation" aria-label="Page sections">
     <a href="#connect"      data-section="connect"      data-t="nav_connect">Connect</a>
-    <a href="#toolkit"      data-section="toolkit"      data-t="nav_toolkit">Toolkit</a>
+    <a href="/word/"        data-t="nav_word">Word</a>
     <a href="#verification" data-section="verification" data-t="nav_verification">Verification</a>
     <a href="#corpus"       data-section="corpus"       data-t="nav_corpus">Corpus</a>
     <a href="#latest"       data-section="latest"       data-t="nav_latest">Latest</a>
+    <a href="/quality.html" data-t="nav_quality">Quality</a>
     <a href="#about"        data-section="about"        data-t="nav_about">About</a>
   </div>
 
@@ -2683,7 +2726,9 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       <div class="mobile-menu-label" data-t="menu_more">More</div>
       <a href="/entscheide/" data-t="nav_entscheide">Decisions</a>
       <a href="/gesetze/" data-t="nav_gesetze">Legislation</a>
+      <a href="/word/" data-t="nav_word">Word add-in</a>
       <a href="/mcp/" data-t="nav_mcp">MCP reference</a>
+      <a href="/quality.html" data-t="nav_quality">Quality dashboard</a>
       <a href="/ueber/" data-t="nav_ueber">About OpenCaseLaw</a>
       <a href="/coverage/" data-t="footer_coverage">Coverage</a>
     </div>
@@ -2700,11 +2745,28 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
   </div>
 </div>
 
+<!-- ── Microsoft AppSource launch strip — 2026-05-02
+     Calls attention to the Marketplace listing of the Word add-in
+     (WA200010700). One row, two CTAs (learn / install). -->
+<aside class="appsource-strip" aria-label="Microsoft AppSource launch">
+  <div class="w appsource-strip-row">
+    <div class="appsource-strip-text">
+      <span class="appsource-strip-badge" data-t="strip_new">New</span>
+      <strong data-t="strip_word_title">OpenCaseLaw for Microsoft Word</strong>
+      <span class="appsource-strip-meta" data-t="strip_word_meta">verified on Microsoft AppSource — install free</span>
+    </div>
+    <div class="appsource-strip-actions">
+      <a href="/word/" class="appsource-strip-cta" data-t="strip_word_more">Learn more →</a>
+      <a href="https://marketplace.microsoft.com/en-us/product/office/WA200010700" target="_blank" rel="noopener" class="appsource-strip-cta appsource-strip-cta-primary" data-t="strip_word_install">Install on AppSource →</a>
+    </div>
+  </div>
+</aside>
+
 <main id="main" class="w">
 <header class="hero-v3" id="top">
     <div class="hero-v3-content">
       <div class="hero-v3-stat">
-        <span class="hero-v3-num" id="hero-decisions">968&rsquo;373</span>
+        <span class="hero-v3-num" id="hero-decisions">971&rsquo;067</span>
         <span class="hero-v3-label" data-t="hero_v3_label">published Swiss court decisions</span>
       </div>
       <p class="hero-v3-function" data-t="hero_v3_function">Every published Swiss court decision, every federal article, every cited authority — accessible to AI in one URL.</p>
@@ -2834,7 +2896,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       <article class="card verify-card">
         <div class="verify-num">L0</div>
         <h3 data-t="verify_l0_title">Corpus integrity</h3>
-        <p data-t="verify_l0_body">969,573 verified Swiss decisions, every <code>decision_id</code> a deterministic hash of court&nbsp;+&nbsp;normalised docket. There is no canonical reference outside this database. A citation either resolves to a real entry or it does not — no fuzzy fallback, no inference.</p>
+        <p data-t="verify_l0_body">971,067 verified Swiss decisions, every <code>decision_id</code> a deterministic hash of court&nbsp;+&nbsp;normalised docket. There is no canonical reference outside this database. A citation either resolves to a real entry or it does not — no fuzzy fallback, no inference.</p>
       </article>
       <article class="card verify-card">
         <div class="verify-num">L1</div>
@@ -3061,7 +3123,7 @@ footer .foot-links a:hover { color: var(--tx); border-bottom-color: var(--tx); t
       </article>
       <article class="card">
         <h3 data-t="intl_card_scope_h">Comparable scope</h3>
-        <p data-t="intl_card_scope_p">969,573 decisions across 108 courts, 1875 to today. Comparable to the Swiss case-law coverage of Westlaw, Swisslex and Weblaw. Free, CC0 licensed.</p>
+        <p data-t="intl_card_scope_p">971,067 decisions across 108 courts, 1875 to today. Comparable to the Swiss case-law coverage of Westlaw, Swisslex and Weblaw. Free, CC0 licensed.</p>
       </article>
       <article class="card">
         <h3 data-t="intl_card_echr_h">Strasbourg jurisprudence</h3>
@@ -3278,6 +3340,10 @@ const I18N = {
     nav_entscheide:'Entscheide', nav_gesetze:'Gesetze', nav_mcp:'Verbinden', nav_ueber:'\u00dcber uns',
     nav_connect:'Verbinden', nav_toolkit:'Praxis', nav_verification:'Verifikation',
     nav_corpus:'Korpus', nav_latest:'Neuste', nav_international:'International', nav_about:'\u00dcber',
+    nav_word:'Word', nav_quality:'Qualit\u00e4t',
+    strip_new:'Neu', strip_word_title:'OpenCaseLaw f\u00fcr Microsoft Word',
+    strip_word_meta:'auf Microsoft AppSource verifiziert \u2014 kostenlos installieren',
+    strip_word_more:'Mehr erfahren \u2192', strip_word_install:'Auf AppSource installieren \u2192',
     menu_title:'Men\u00fc', menu_sections:'Auf dieser Seite', menu_more:'Mehr',
     landing_title:'Schweizer Rechtsprechung &amp; Gesetze,<br>gebaut f\u00fcr KI-Agenten.',
     landing_sub:'Ein offener Datensatz der publizierten Schweizer Gerichtsentscheide (968\u2019000+) und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar \u2014 per MCP-Server, HuggingFace-Download oder REST-API.',
@@ -3317,7 +3383,7 @@ const I18N = {
     snapshot_languages:'Sprachen', snapshot_graph_meta:'OnlineKommentar.ch',
     snapshot_span_label:'Zeitraum', snapshot_courts:'Gerichte', snapshot_cantons:'Kantone',
     snapshot_movers:'Neu seit gestern',
-    cap_entscheide_desc:'968’000+ Schweizer Gerichtsentscheide von 1875 bis heute, aus allen Bundesgerichten und 26 Kantonen — inklusive Regulatoren (FINMA, WEKO, EDÖB, UBI). Volltextsuche mit BM25+LLM-Reranking, aufgelöster Zitationsgraph mit 9,0 Mio Kanten, Appeal-Chain-Auflösung, Leading-Case-Ranking. BGer-Entscheide innert 15 Min nach Publikation.',
+    cap_entscheide_desc:'971’000+ Schweizer Gerichtsentscheide von 1875 bis heute, aus allen Bundesgerichten und 26 Kantonen — inklusive Regulatoren (FINMA, WEKO, EDÖB, UBI). Volltextsuche mit BM25+LLM-Reranking, aufgelöster Zitationsgraph mit 9,0 Mio Kanten, Appeal-Chain-Auflösung, Leading-Case-Ranking. BGer-Entscheide innert 15 Min nach Publikation.',
     cap_gesetze_desc:'~5’000 Bundesgesetze (125’000+ Artikel, DE/FR/IT) aus Fedlex — plus ~15’722 kantonale und interkantonale Erlasse aus LexFind, lokal gespiegelt. Föderierte FTS5-Volltextsuche über beide Ebenen, Artikel-Lookup in <1 ms, monatlich refreshed. 11,3 Mio Verweise aus Entscheiden auf einzelne Gesetzesartikel.',
     cap_mcp_desc:'31 spezialisierte MCP-Tools für natürliche Rechtsabfragen: Suche, Zitationsgraph, Leading Cases, Doktrin-Timelines, Gesetzesabruf, Fallbearbeitungs-Prüfungsfragen aus echten BGEs. Läuft mit Claude, ChatGPT, Cursor und Gemini — plus REST-API und Parquet-Download. Das Word-Add-in ist eine kuratierte Practitioner-Oberfläche (siehe unten). Einrichtung in 30 s, keine Anmeldung, keine API-Keys.',
     cap_cta_entscheide:'Datensatz \u2192', cap_cta_gesetze:'Gesetze \u2192', cap_cta_mcp:'MCP-Setup \u2192',
@@ -3354,7 +3420,7 @@ const I18N = {
     verify_lead:'Grosse Sprachmodelle halluzinieren. Peer-reviewte Messung (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ergab, dass 58–82&nbsp;% der juristischen Anfragen an Allzweck-LLMs mindestens eine erfundene Quelle enthielten. Eine Folgestudie zu kommerziellen Rechts-RAG-Werkzeugen (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) mass 17–33&nbsp;% — besser, aber immer noch alltäglich. In der Schweizer Rechtspraxis bringt die Zitation einer nicht existierenden oder falsch wiedergegebenen Autorität die Anwältin in disziplinarische Haftung und die Klientschaft um ein richtiges Ergebnis. Das Verständnis dessen, <em>was die KI liefert</em> und <em>was die Quelle ist</em>, ist deshalb keine Höflichkeit — es ist die Voraussetzung jeder verantwortbaren KI-Nutzung in der juristischen Arbeit.',
     verify_lead2:'OpenCaseLaw behandelt diese Aufgabe als das zu lösende Kernproblem. Der MCP-Server unter der Nutzeroberfläche ist um eine sechsschichtige Architektur gebaut, deren einziger Zweck es ist, jede Fall-Referenz, die eine KI schreibt, in einem Klick überprüfbar zu machen — durch die Nutzerin, in Echtzeit, gegen die Originalquelle.',
     verify_l0_title:'Korpus-Integrität',
-    verify_l0_body:'969\u2019573 verifizierte Schweizer Entscheide, jede <code>decision_id</code> ein deterministischer Hash aus Gericht und normalisierter Verfahrensnummer. Es gibt keine kanonische Referenz ausserhalb dieser Datenbank. Eine Zitation löst sich gegen einen realen Eintrag auf — oder eben nicht. Kein Fuzzy-Fallback, keine Inferenz.',
+    verify_l0_body:'971\u2019067 verifizierte Schweizer Entscheide, jede <code>decision_id</code> ein deterministischer Hash aus Gericht und normalisierter Verfahrensnummer. Es gibt keine kanonische Referenz ausserhalb dieser Datenbank. Eine Zitation löst sich gegen einen realen Eintrag auf — oder eben nicht. Kein Fuzzy-Fallback, keine Inferenz.',
     verify_l1_title:'Server-erzeugte Zitate',
     verify_l1_body:'Jedes Suchresultat, jede Detailansicht, jeder Lookup trägt vorgefertigte <code>citation_string_de / fr / it</code> + <code>canonical_url</code>, erzeugt durch eine einzige Server-Funktion, die die schweizerischen Zitierkonventionen pro Gericht kodiert. Das LLM erhält nie die Wahl, eine Zitation selbst zu formatieren — es kopiert den kanonischen String wörtlich oder es zitiert nicht.',
     verify_l2_title:'Operatives Regelwerk (R1–R7)',
@@ -3452,7 +3518,7 @@ const I18N = {
     intl_card_lang_h: 'Mehrsprachige Abdeckung',
     intl_card_lang_p: 'Entscheide auf DE, FR und IT, mit offiziellen Regesten. Der Leitentscheid zu einem Thema kann in jeder der drei Sprachen ergehen — die Suche liefert alle drei nach Relevanz gerankt, unabhängig von der Anfragesprache.',
     intl_card_scope_h: 'Vergleichbarer Umfang',
-    intl_card_scope_p: '968\u2019373 Entscheide aus 108 Gerichten, 1875 bis heute. Vergleichbar mit der Schweizer Abdeckung von Westlaw, Swisslex und Weblaw. Frei, CC0-lizenziert.',
+    intl_card_scope_p: '971\u2019067 Entscheide aus 108 Gerichten, 1875 bis heute. Vergleichbar mit der Schweizer Abdeckung von Westlaw, Swisslex und Weblaw. Frei, CC0-lizenziert.',
     intl_card_echr_h: 'Strassburger Rechtsprechung',
     intl_card_echr_p: 'Schweizer EGMR-Urteile aus HUDOC sowie allgemeine Urteile der Grossen Kammer, Kammer und Ausschüsse. Unverzichtbar für Menschenrechts- und EMRK-gestützte Praxis.',
     intl_card_intg_h: 'Beschaffungsfreie Integration',
@@ -3555,6 +3621,10 @@ const I18N = {
     nav_entscheide:'D\u00e9cisions', nav_gesetze:'L\u00e9gislation', nav_mcp:'Connexion', nav_ueber:'\u00c0 propos',
     nav_connect:'Connexion', nav_toolkit:'Praxis', nav_verification:'V\u00e9rification',
     nav_corpus:'Corpus', nav_latest:'R\u00e9cents', nav_international:'International', nav_about:'\u00c0 propos',
+    nav_word:'Word', nav_quality:'Qualit\u00e9',
+    strip_new:'Nouveau', strip_word_title:'OpenCaseLaw pour Microsoft Word',
+    strip_word_meta:'v\u00e9rifi\u00e9 sur Microsoft AppSource \u2014 installation gratuite',
+    strip_word_more:'En savoir plus \u2192', strip_word_install:'Installer sur AppSource \u2192',
     menu_title:'Menu', menu_sections:'Sur cette page', menu_more:'Plus',
     landing_title:'Jurisprudence et l\u00e9gislation suisses,<br>con\u00e7ues pour les agents IA.',
     landing_sub:'Un corpus ouvert des d\u00e9cisions judiciaires suisses publi\u00e9es (968\u2019000+) et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'acc\u00e8s \u2014 via serveur MCP, t\u00e9l\u00e9chargement HuggingFace ou API REST.',
@@ -3594,7 +3664,7 @@ const I18N = {
     snapshot_languages:'Langues', snapshot_graph_meta:'OnlineKommentar.ch',
     snapshot_span_label:'P\u00e9riode', snapshot_courts:'juridictions', snapshot_cantons:'cantons',
     snapshot_movers:'Nouveaux depuis hier',
-    cap_entscheide_desc:'968’000+ décisions judiciaires suisses de 1875 à aujourd\'hui, de tous les tribunaux fédéraux et des 26 cantons — régulateurs inclus (FINMA, COMCO, PFPDT, AIEP). Recherche plein texte avec reranking BM25+LLM, graphe de citations résolu à 8,8 M d\'arêtes, résolution des chaînes de recours, classement par autorité. Décisions du TF disponibles en moins de 15 min.',
+    cap_entscheide_desc:'971’000+ décisions judiciaires suisses de 1875 à aujourd\'hui, de tous les tribunaux fédéraux et des 26 cantons — régulateurs inclus (FINMA, COMCO, PFPDT, AIEP). Recherche plein texte avec reranking BM25+LLM, graphe de citations résolu à 8,8 M d\'arêtes, résolution des chaînes de recours, classement par autorité. Décisions du TF disponibles en moins de 15 min.',
     cap_gesetze_desc:'~5’000 lois fédérales (125’000+ articles, DE/FR/IT) depuis Fedlex — plus ~15’722 actes cantonaux et intercantonaux depuis LexFind, en miroir local. Recherche plein texte FTS5 fédérée sur les deux niveaux, consultation d\'article en <1 ms, rafraîchie chaque mois. 11,3 M de références depuis les décisions vers des articles de loi individuels.',
     cap_mcp_desc:'31 outils MCP spécialisés pour la recherche juridique en langage naturel : recherche, graphe de citations, arrêts de principe, chronologies doctrinales, consultation d\'articles de loi, questions d\'examen Fallbearbeitung générées depuis de vrais arrêts. Fonctionne avec Claude, ChatGPT, Cursor et Gemini — plus API REST et téléchargement Parquet. L\'add-in Word est une interface dédiée aux juristes (voir ci-dessous). Configuration en 30 s, aucune inscription, aucune clé API.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'L\u00e9gislation \u2192', cap_cta_mcp:'Configuration MCP \u2192',
@@ -3631,7 +3701,7 @@ const I18N = {
     verify_lead:'Les grands modèles de langue hallucinent. Une mesure publiée et évaluée par les pairs (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) a montré que 58–82&nbsp;% des requêtes juridiques aux LLM généralistes produisaient au moins une autorité fabriquée. Une étude de suivi sur les outils RAG juridiques commerciaux (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) a mesuré 17–33&nbsp;% — mieux, mais encore courant. Dans la pratique juridique suisse, citer une autorité qui n\'existe pas ou qui ne dit pas ce qu\'on lui prête expose l\'avocat·e à des sanctions disciplinaires et le client à un mauvais résultat. Comprendre <em>ce que l\'IA fournit</em> et <em>quelle en est la source</em> n\'est donc pas un raffinement — c\'est la condition préalable de tout usage responsable de l\'IA en droit.',
     verify_lead2:'OpenCaseLaw traite cette question comme le problème central à résoudre. Le serveur MCP qui sous-tend l\'interface utilisateur est construit autour d\'une architecture en six couches dont la seule finalité est de rendre chaque référence jurisprudentielle qu\'une IA produit vérifiable en un clic — par l\'utilisateur, en temps réel, contre la source originale.',
     verify_l0_title:'Intégrité du corpus',
-    verify_l0_body:'969\u2019573 décisions suisses vérifiées, chaque <code>decision_id</code> étant un hachage déterministe de la juridiction et du numéro de dossier normalisé. Aucune référence canonique n\'existe en dehors de cette base. Une citation se résout vers une entrée réelle — ou pas. Aucune correspondance approximative, aucune inférence.',
+    verify_l0_body:'971\u2019067 décisions suisses vérifiées, chaque <code>decision_id</code> étant un hachage déterministe de la juridiction et du numéro de dossier normalisé. Aucune référence canonique n\'existe en dehors de cette base. Une citation se résout vers une entrée réelle — ou pas. Aucune correspondance approximative, aucune inférence.',
     verify_l1_title:'Citations construites côté serveur',
     verify_l1_body:'Chaque résultat de recherche, vue détaillée et consultation porte des champs <code>citation_string_de / fr / it</code> et <code>canonical_url</code> précomputés par une seule fonction serveur qui encode les conventions suisses propres à chaque juridiction. Le LLM n\'a jamais le choix de formater une citation lui-même — il copie verbatim la chaîne canonique, ou il ne cite pas.',
     verify_l2_title:'Contrat opératoire (R1–R7)',
@@ -3729,7 +3799,7 @@ const I18N = {
     intl_card_lang_h: 'Couverture multilingue',
     intl_card_lang_p: 'Décisions en DE, FR et IT, avec les Regeste officiels. L\'arrêt de principe sur un sujet peut être rendu dans n\'importe laquelle des trois langues — la recherche renvoie les trois classés par pertinence, indépendamment de la langue de la requête.',
     intl_card_scope_h: 'Portée comparable',
-    intl_card_scope_p: '968\u2019373 décisions provenant de 108 tribunaux, de 1875 à aujourd\'hui. Comparable à la couverture suisse de Westlaw, Swisslex et Weblaw. Gratuit, sous licence CC0.',
+    intl_card_scope_p: '971\u2019067 décisions provenant de 108 tribunaux, de 1875 à aujourd\'hui. Comparable à la couverture suisse de Westlaw, Swisslex et Weblaw. Gratuit, sous licence CC0.',
     intl_card_echr_h: 'Jurisprudence de Strasbourg',
     intl_card_echr_p: 'Arrêts CEDH dont la Suisse est partie défenderesse via HUDOC, plus les arrêts généraux de la Grande Chambre, des Chambres et des Comités. Indispensable pour la pratique des droits humains.',
     intl_card_intg_h: 'Intégration sans procurement',
@@ -3832,6 +3902,10 @@ const I18N = {
     nav_entscheide:'Decisioni', nav_gesetze:'Legislazione', nav_mcp:'Connessione', nav_ueber:'Chi siamo',
     nav_connect:'Connessione', nav_toolkit:'Pratica', nav_verification:'Verifica',
     nav_corpus:'Corpus', nav_latest:'Recenti', nav_international:'Internazionale', nav_about:'Chi siamo',
+    nav_word:'Word', nav_quality:'Qualit\u00e0',
+    strip_new:'Nuovo', strip_word_title:'OpenCaseLaw per Microsoft Word',
+    strip_word_meta:'verificato su Microsoft AppSource \u2014 installazione gratuita',
+    strip_word_more:'Scopri di pi\u00f9 \u2192', strip_word_install:'Installa su AppSource \u2192',
     menu_title:'Menu', menu_sections:'Su questa pagina', menu_more:'Altro',
     landing_title:'Giurisprudenza e legislazione svizzera,<br>per agenti IA.',
     landing_sub:'Un corpus aperto delle decisioni giudiziarie svizzere pubblicate (968\u2019000+) e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero accesso \u2014 tramite server MCP, download HuggingFace o API REST.',
@@ -3871,7 +3945,7 @@ const I18N = {
     snapshot_languages:'Lingue', snapshot_graph_meta:'OnlineKommentar.ch',
     snapshot_span_label:'Periodo', snapshot_courts:'tribunali', snapshot_cantons:'cantoni',
     snapshot_movers:'Nuovi da ieri',
-    cap_entscheide_desc:'968’000+ decisioni giudiziarie svizzere dal 1875 a oggi, da tutti i tribunali federali e 26 cantoni — regolatori inclusi (FINMA, COMCO, IFPDT, AIRR). Ricerca full-text con reranking BM25+LLM, grafo delle citazioni risolto con 8,8 M di archi, risoluzione delle catene di ricorso, classifica per autorità. Decisioni del TF disponibili entro 15 min.',
+    cap_entscheide_desc:'971’000+ decisioni giudiziarie svizzere dal 1875 a oggi, da tutti i tribunali federali e 26 cantoni — regolatori inclusi (FINMA, COMCO, IFPDT, AIRR). Ricerca full-text con reranking BM25+LLM, grafo delle citazioni risolto con 8,8 M di archi, risoluzione delle catene di ricorso, classifica per autorità. Decisioni del TF disponibili entro 15 min.',
     cap_gesetze_desc:'~5’000 leggi federali (125’000+ articoli, DE/FR/IT) da Fedlex — più ~30’000 atti cantonali e intercantonali da LexFind, in mirror locale. Ricerca full-text FTS5 federata su entrambi i livelli, lookup di articolo in <1 ms, aggiornata mensilmente. 11,3 mln di riferimenti dalle decisioni a singoli articoli di legge.',
     cap_mcp_desc:'31 strumenti MCP specializzati per domande giuridiche in linguaggio naturale: ricerca, grafo delle citazioni, casi guida, cronologie dottrinali, consultazione articoli di legge, domande d\'esame Fallbearbeitung da veri arresti. Compatibile con Claude, ChatGPT, Cursor e Gemini — più API REST e download Parquet. L\'add-in Word è un\'interfaccia dedicata ai professionisti (vedi sotto). Configurazione in 30 s, senza registrazione, senza chiavi API.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislazione \u2192', cap_cta_mcp:'Configurazione MCP \u2192',
@@ -3908,7 +3982,7 @@ const I18N = {
     verify_lead:'I grandi modelli linguistici producono allucinazioni. Una misura sottoposta a peer review (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ha rilevato che il 58–82&nbsp;% delle interrogazioni giuridiche a LLM generalisti generava almeno un\'autorità inventata. Uno studio di seguito sugli strumenti RAG giuridici commerciali (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) ha misurato il 17–33&nbsp;% — migliore, ma ancora frequente. Nella pratica giuridica svizzera, citare un\'autorità inesistente o resa inesattamente espone l\'avvocato·a a sanzioni disciplinari e il cliente a un esito sbagliato. Comprendere <em>cosa fornisce l\'IA</em> e <em>quale ne sia la fonte</em> non è quindi un raffinamento — è il presupposto di ogni utilizzo responsabile dell\'IA in ambito legale.',
     verify_lead2:'OpenCaseLaw tratta questo come il problema centrale da risolvere. Il server MCP che alimenta l\'interfaccia utente è costruito attorno a un\'architettura a sei livelli il cui unico scopo è rendere ogni riferimento giurisprudenziale prodotto da un\'IA verificabile in un clic — dall\'utente, in tempo reale, contro la fonte originale.',
     verify_l0_title:'Integrità del corpus',
-    verify_l0_body:'969\u2019573 decisioni svizzere verificate, ogni <code>decision_id</code> un hash deterministico di tribunale e numero di incarto normalizzato. Non esistono riferimenti canonici al di fuori di questo database. Una citazione si risolve in una voce reale — oppure no. Nessun fallback approssimativo, nessuna inferenza.',
+    verify_l0_body:'971\u2019067 decisioni svizzere verificate, ogni <code>decision_id</code> un hash deterministico di tribunale e numero di incarto normalizzato. Non esistono riferimenti canonici al di fuori di questo database. Una citazione si risolve in una voce reale — oppure no. Nessun fallback approssimativo, nessuna inferenza.',
     verify_l1_title:'Citazioni costruite lato server',
     verify_l1_body:'Ogni risultato di ricerca, vista di dettaglio e consultazione porta i campi <code>citation_string_de / fr / it</code> e <code>canonical_url</code> precomputati da una singola funzione del server che codifica le convenzioni svizzere per ciascun tribunale. Il LLM non ha mai la scelta di formattare una citazione — copia verbatim la stringa canonica, oppure non cita.',
     verify_l2_title:'Contratto operativo (R1–R7)',
@@ -4006,7 +4080,7 @@ const I18N = {
     intl_card_lang_h: 'Copertura multilingue',
     intl_card_lang_p: 'Decisioni in DE, FR e IT, con i Regeste ufficiali. La sentenza guida su un tema può essere in una qualunque delle tre lingue — la ricerca restituisce tutte e tre per rilevanza, indipendentemente dalla lingua della query.',
     intl_card_scope_h: 'Portata comparabile',
-    intl_card_scope_p: '968\u2019373 decisioni da 108 tribunali, dal 1875 a oggi. Comparabile alla copertura svizzera di Westlaw, Swisslex e Weblaw. Gratuito, licenza CC0.',
+    intl_card_scope_p: '971\u2019067 decisioni da 108 tribunali, dal 1875 a oggi. Comparabile alla copertura svizzera di Westlaw, Swisslex e Weblaw. Gratuito, licenza CC0.',
     intl_card_echr_h: 'Giurisprudenza di Strasburgo',
     intl_card_echr_p: 'Sentenze CEDU contro la Svizzera tramite HUDOC, più sentenze generali della Grande Camera, delle Camere e dei Comitati. Indispensabile per la pratica dei diritti umani.',
     intl_card_intg_h: 'Integrazione senza procurement',
@@ -4109,6 +4183,10 @@ const I18N = {
     nav_entscheide:'Decisiuns', nav_gesetze:'Leschas', nav_mcp:'Connectar', nav_ueber:'Davart',
     nav_connect:'Connectar', nav_toolkit:'Pratica', nav_verification:'Verificaziun',
     nav_corpus:'Corpus', nav_latest:'Pli novs', nav_international:'Internaziunal', nav_about:'Davart',
+    nav_word:'Word', nav_quality:'Qualitad',
+    strip_new:'Nov', strip_word_title:'OpenCaseLaw per Microsoft Word',
+    strip_word_meta:'verifitg\u00e0 sin Microsoft AppSource \u2014 installaziun gratuita',
+    strip_word_more:'Vegnir a savair dapli \u2192', strip_word_install:'Installar sin AppSource \u2192',
     menu_title:'Men\u00fa', menu_sections:'Sin questa pagina', menu_more:'Dapli',
     landing_title:'Giurisprudenza svizra &amp; leschas,<br>per agents AI.',
     landing_sub:'In corpus avert da las decisiuns giudizialas svizras publitgadas (968\u2019000+) e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber access \u2014 via server MCP, telechargiada HuggingFace u API REST.',
@@ -4148,7 +4226,7 @@ const I18N = {
     snapshot_languages:'Linguas', snapshot_graph_meta:'OnlineKommentar.ch',
     snapshot_span_label:'Perioda', snapshot_courts:'dretgiras', snapshot_cantons:'chantuns',
     snapshot_movers:'Novas dapi ier',
-    cap_entscheide_desc:'968’000+ decisiuns giudicialas svizras dal 1875 fin oz, da tut las dretgiras federalas e 26 chantuns — inclus ils regulaturs (FINMA, WEKO, EDÖB, UBI). Tschertga full-text cun reranking BM25+LLM, graf da citaziuns resolvì cun 8,8 mio. charnieras, schliaziun da chadainas da recurs, rangaziun tenor autoritad. Decisiuns dal TF disponiblas en 15 min.',
+    cap_entscheide_desc:'971’000+ decisiuns giudicialas svizras dal 1875 fin oz, da tut las dretgiras federalas e 26 chantuns — inclus ils regulaturs (FINMA, WEKO, EDÖB, UBI). Tschertga full-text cun reranking BM25+LLM, graf da citaziuns resolvì cun 8,8 mio. charnieras, schliaziun da chadainas da recurs, rangaziun tenor autoritad. Decisiuns dal TF disponiblas en 15 min.',
     cap_gesetze_desc:'~5’000 leschas federalas (125’000+ artitgels, DE/FR/IT) da Fedlex — plus ~30’000 acts chantunals ed interchantunals da LexFind, spieglads localmain. Tschertga full-text FTS5 federada sur omaduas nivels, lookup d’artitgel en <1 ms, actualisà mintga mais. 11,3 mio. referenzas da decisiuns ad artitgels legals singuls.',
     cap_mcp_desc:'31 utensils MCP spezialisòs per dumondas giuridicas en linguatg natiral: tschertga, graf da citaziuns, cas lidaders, cronologias duttrinalas, lookup d’artitgels legals, dumondas d’examen Fallbearbeitung or da ver BGEs. Cumpatibel cun Claude, ChatGPT, Cursor e Gemini — plus API REST e downloads Parquet. L\'add-in Word è in’interfatscha spezifica per professiunistas (guarda sut). Setup en 30 s, nagina inscripziun, nagina clav API.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Leschas \u2192', cap_cta_mcp:'MCP-Setup \u2192',
@@ -4185,7 +4263,7 @@ const I18N = {
     verify_lead:'Models grands da linguatg allucineschan. Ina mesira controllada (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) ha mussà che 58–82&nbsp;% da las dumondas giuridicas a LLMs generals han producì almain ina autoritad fabritgada. Ina studia da suandar davart utensils RAG giuridics commerzials (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) ha mesirà 17–33&nbsp;% — meglier, ma anc dasper. En la pratica giuridica svizra metta la citaziun d\'ina autoritad inexistenta u mal preschentada l\'avucat·a en responsabladad disciplinara e clientela ad in resultat fauss. La cumprensiun da <em>che ch\'IA furnescha</em> e <em>tge fontana</em> n\'è perquai betg in lustri — è la premissa per mintga utilisaziun responsabla d\'IA en la lavur giuridica.',
     verify_lead2:'OpenCaseLaw tracta quai sco il problem central. Il server MCP sut l\'interfatscha utilisader è construì sin in\'architectura cun sis stresch, dont l\'unic scopo è da render mintga referenza ch\'in IA scriva controllabla en in clic — da la utilisadra, en temp real, cunter la fontana originala.',
     verify_l0_title:'Integritad dal corpus',
-    verify_l0_body:'969\u2019573 decisiuns svizras verifitgadas, mintga <code>decision_id</code> in hash deterministic da curt e numer da fascicul normalisà. I dat naginas referenzas canonicas ordaifer questa banca da datas. Ina citaziun sa schliua sin ina endataziun reala — u betg. Nagin fallback approximativ, nagina inferenza.',
+    verify_l0_body:'971\u2019067 decisiuns svizras verifitgadas, mintga <code>decision_id</code> in hash deterministic da curt e numer da fascicul normalisà. I dat naginas referenzas canonicas ordaifer questa banca da datas. Ina citaziun sa schliua sin ina endataziun reala — u betg. Nagin fallback approximativ, nagina inferenza.',
     verify_l1_title:'Citaziuns construidas dal server',
     verify_l1_body:'Mintga resultat da tschertga, vista da detagls e lookup porta ils champs <code>citation_string_de / fr / it</code> e <code>canonical_url</code> precalculads d\'ina suletta funcziun da server che codifitgescha las convenziuns svizras per mintga curt. Il LLM n\'ha mai la tscherna da formattar ina citaziun sez — el copia verbatim la stringa canonica, u sa cita betg.',
     verify_l2_title:'Contract operativ (R1–R7)',
@@ -4283,7 +4361,7 @@ const I18N = {
     intl_card_lang_h: 'Cuverta plurilinguala',
     intl_card_lang_p: 'Decisiuns en DE, FR ed IT, cun ils Regeste uffizials. La decisiun decisiva sin in tema po vegnir en mintga ina da las trais linguas — la tschertga returna tut las trais ordinadas tenor relevanza, independentamain da la lingua da la dumonda.',
     intl_card_scope_h: 'Dimensiun cumparabla',
-    intl_card_scope_p: '968\u2019373 decisiuns da 108 dretgiras, 1875 fin oz. Cumparabel cun la cuverta svizra da Westlaw, Swisslex e Weblaw. Gratuit, licenza CC0.',
+    intl_card_scope_p: '971\u2019067 decisiuns da 108 dretgiras, 1875 fin oz. Cumparabel cun la cuverta svizra da Westlaw, Swisslex e Weblaw. Gratuit, licenza CC0.',
     intl_card_echr_h: 'Giurisprudenza da Strasbourg',
     intl_card_echr_p: 'Sentenzas EGMR cunter la Svizra via HUDOC, plus las sentenzas generalas da la Gronda Chombra, da las Chombras e dals Comités. Indispensabel per la pratica dals dretgs umans.',
     intl_card_intg_h: 'Integraziun senza procurement',
@@ -4386,11 +4464,15 @@ const I18N = {
     nav_entscheide:'Decisions', nav_gesetze:'Legislation', nav_mcp:'Connect', nav_ueber:'About',
     nav_connect:'Connect', nav_toolkit:'Toolkit', nav_verification:'Verification',
     nav_corpus:'Corpus', nav_latest:'Latest', nav_international:'International', nav_about:'About',
+    nav_word:'Word', nav_quality:'Quality',
+    strip_new:'New', strip_word_title:'OpenCaseLaw for Microsoft Word',
+    strip_word_meta:'verified on Microsoft AppSource \u2014 install for free',
+    strip_word_more:'Learn more \u2192', strip_word_install:'Install on AppSource \u2192',
     menu_title:'Menu', menu_sections:'On this page', menu_more:'More',
     landing_title:'Swiss case law &amp; legislation,<br>built for AI agents.',
-    landing_sub:'An open dataset of published Swiss court decisions (969,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
+    landing_sub:'An open dataset of published Swiss court decisions (971,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
     landing_card_entscheide_title:'Decisions',
-    landing_card_entscheide_desc:'969,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (9.04M edges), multilingual (DE/FR/IT).',
+    landing_card_entscheide_desc:'971,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (9.04M edges), multilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explore the dataset \u2192',
     landing_card_mcp_title:'Connect',
     landing_card_mcp_desc:'31 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. Configuration via MCP URL.',
@@ -4425,7 +4507,7 @@ const I18N = {
     snapshot_languages:'Languages', snapshot_graph_meta:'OnlineKommentar.ch',
     snapshot_span_label:'Date span', snapshot_courts:'courts', snapshot_cantons:'cantons',
     snapshot_movers:'New since yesterday',
-    cap_entscheide_desc:'969,000+ Swiss court decisions from 1875 to today, covering every federal court and all 26 cantons — plus regulators (FINMA, ComCo, FDPIC, IndepBC). BM25 + LLM-reranked full-text search, resolved citation graph with 8.8 M edges, appeal-chain resolution, leading-case ranking. BGer decisions available within 15 min of publication.',
+    cap_entscheide_desc:'971,000+ Swiss court decisions from 1875 to today, covering every federal court and all 26 cantons — plus regulators (FINMA, ComCo, FDPIC, IndepBC). BM25 + LLM-reranked full-text search, resolved citation graph with 8.8 M edges, appeal-chain resolution, leading-case ranking. BGer decisions available within 15 min of publication.',
     cap_gesetze_desc:'~5,000 federal laws (132,586 articles, DE/FR/IT) from Fedlex — plus ~26,000 cantonal and intercantonal acts from LexFind, locally mirrored. Federated FTS5 full-text search across both levels, sub-millisecond article lookup, monthly refresh. 11.3 M references from decisions to individual statute articles.',
     cap_mcp_desc:'24 specialised MCP tools for natural-language legal research: search, citation graph, leading cases, doctrine timelines, statute lookup, Fallbearbeitung exam questions generated from real BGE decisions. Works with Claude, ChatGPT, Cursor and Gemini — plus REST API and Parquet download. The Word add-in is a dedicated practitioner interface (see below). 30 s setup, no registration, no API keys.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislation \u2192', cap_cta_mcp:'MCP setup \u2192',
@@ -4462,7 +4544,7 @@ const I18N = {
     verify_lead:'Large language models hallucinate. Peer-reviewed measurement (Dahl, Magesh, Suzgun &amp; Ho, <em>Large Legal Fictions</em>, Stanford RegLab, 2024 — Journal of Legal Analysis) found that 58–82&nbsp;% of legal queries to general-purpose LLMs produced at least one fabricated authority. A follow-up study of commercial legal-RAG tools (Magesh et al., <em>Hallucination-Free?</em>, Stanford RegLab, 2024) measured 17–33&nbsp;% — better, but still routine. In Swiss legal practice, citing an authority that does not exist or does not say what is claimed exposes a lawyer to professional discipline and a client to a wrong outcome. Comprehension of <em>what the AI is providing</em> and <em>what the source is</em> is therefore not a nicety — it is the precondition for any responsible use of AI in legal work.',
     verify_lead2:'OpenCaseLaw treats this as the central problem to solve. The MCP server below the user-facing search is built around a six-layer architecture whose only purpose is to make every case reference an AI writes verifiable in one click — by the user, in real time, against the original source.',
     verify_l0_title:'Corpus integrity',
-    verify_l0_body:'969,573 verified Swiss decisions, every <code>decision_id</code> a deterministic hash of court&nbsp;+&nbsp;normalised docket. There is no canonical reference outside this database. A citation either resolves to a real entry or it does not — no fuzzy fallback, no inference.',
+    verify_l0_body:'971,067 verified Swiss decisions, every <code>decision_id</code> a deterministic hash of court&nbsp;+&nbsp;normalised docket. There is no canonical reference outside this database. A citation either resolves to a real entry or it does not — no fuzzy fallback, no inference.',
     verify_l1_title:'Server-built citations',
     verify_l1_body:'Every search result, detail view and lookup carries pre-baked <code>citation_string_de / fr / it</code> + <code>canonical_url</code> built by a single server function that encodes per-court Swiss conventions. The LLM is never given the choice of formatting a citation itself — it copies the canonical string verbatim or it does not cite.',
     verify_l2_title:'Operating contract (R1–R7)',
@@ -4481,7 +4563,7 @@ const I18N = {
     gesetze_h1:'Swiss federal and cantonal legislation',
     gesetze_sub:'5,000+ Swiss federal laws (132,586 articles in three official languages, full amendment history) from the Fedlex SPARQL endpoint, mirrored locally each month. 15,722 cantonal and intercantonal acts locally mirrored from LexFind, monthly refresh. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
     mcp_h1:'Connect AI agents',
-    mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 969,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 31 specialized tools, no sign-up, no API keys.',
+    mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 971,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 31 specialized tools, no sign-up, no API keys.',
     ueber_h1:'About OpenCaseLaw',
     ueber_sub:'OpenCaseLaw is the largest open dataset of Swiss case law and the first LLM-ready interface to federal and cantonal legislation. Free to use, updated daily, independently funded.',
     search_placeholder:'Search courts...', csv_export:'CSV',
@@ -4491,7 +4573,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Query the dataset programmatically via REST API',
     access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).',
     access_featured_title:'Search with AI',
-    access_featured_desc:'Search over 969,000 Swiss court decisions in natural language. Find relevant cases, trace citations between decisions, analyze legal trends, and draft research memos.',
+    access_featured_desc:'Search over 971,000 Swiss court decisions in natural language. Find relevant cases, trace citations between decisions, analyze legal trends, and draft research memos.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (recommended)', access_local_label:'Local (offline)',
@@ -4560,7 +4642,7 @@ const I18N = {
     intl_card_lang_h: 'Multilingual coverage',
     intl_card_lang_p: 'Decisions in DE, FR and IT, with official Regeste head-notes. The leading case on a topic may be in any of the three languages — search returns all of them ranked by relevance, regardless of query language.',
     intl_card_scope_h: 'Comparable scope',
-    intl_card_scope_p: '969,573 decisions across 108 courts, 1875 to today. Comparable to the Swiss case-law coverage of Westlaw, Swisslex and Weblaw. Free, CC0 licensed.',
+    intl_card_scope_p: '971,067 decisions across 108 courts, 1875 to today. Comparable to the Swiss case-law coverage of Westlaw, Swisslex and Weblaw. Free, CC0 licensed.',
     intl_card_echr_h: 'Strasbourg jurisprudence',
     intl_card_echr_p: 'Swiss-respondent ECtHR judgments from HUDOC, plus general Grand Chamber, Chamber and Committee decisions. Indispensable for human-rights and Convention-grounded practice.',
     intl_card_intg_h: 'Procurement-free integration',
