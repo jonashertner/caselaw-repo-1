@@ -12,4 +12,64 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://opencaselaw.ch/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/" />
   </url>
+  <url>
+    <loc>https://opencaselaw.ch/word/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://opencaselaw.ch/word/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/word/fr/" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://opencaselaw.ch/word/it/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://opencaselaw.ch/word/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/word/" />
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/word/fr/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/word/it/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/word/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/mcp/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/quality.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/coverage/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/entscheide/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/gesetze/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/paper/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/ueber/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>
