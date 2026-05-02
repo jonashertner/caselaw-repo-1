@@ -69,8 +69,8 @@
   --max-w-prose: 720px;
   --max-w-narrow: 560px;
   /* Generous side gutter — keeps the brand off the window edge on every
-     viewport. 24px at 320, ~5vw mid-range, capped at 48px on desktop. */
-  --gutter-x: clamp(24px, 5vw, 48px);
+     viewport. 32px at 320, ~5vw mid-range, capped at 64px on desktop. */
+  --gutter-x: clamp(32px, 5vw, 64px);
 
   /* Radius / shadow */
   --radius: 8px;
@@ -233,13 +233,14 @@ header.site nav a {
   color: var(--text-2);
   flex: 0 0 auto;
   padding: var(--s-1) 0;
-  border-bottom: 2px solid transparent;
 }
 header.site nav a:hover { color: var(--text); }
+/* Active state: subtle font-weight bump only — no red underline. The
+   inconsistency between pages with/without an active marker (red bar
+   appearing on some pages, missing on others) was visually jarring. */
 header.site nav a.active {
   color: var(--text);
   font-weight: 500;
-  border-bottom-color: var(--accent);
 }
 @media (max-width: 720px) {
   header.site .row { padding: var(--s-2) 0; }
@@ -631,6 +632,24 @@ footer.site a:focus-visible {
 .lang-switch a:hover,
 .lang-switch a.active,
 .lang-switch a.on { background: var(--bg-soft); color: var(--text); }
+
+/* Landing's .lang-sw uses <button> elements; sub-pages use <a> elements
+   pointing to /?lang=XX. Same visual contract for both. Sits in the
+   header.site nav with margin-left:auto (already on .lang-sw above). */
+.lang-sw a {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-3);
+  text-transform: uppercase;
+  border-bottom: none !important;  /* override header.site nav a underline */
+  transition: color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+}
+.lang-sw a:hover, .lang-sw a.on { color: var(--text); background: var(--bg-soft); }
 
 /* ── Print baseline ───────────────────────────────────────── */
 @media print {
