@@ -429,8 +429,19 @@ def iter_jsonl(path: Path) -> Iterator[dict]:
 
 
 def build_db(shard_paths: list[Path], out_db: Path) -> dict:
-    """Run extractor over each JSONL shard, persist to SQLite. Atomic swap."""
-    tmp_db = out_db.with_suffix(".db.tmp")
+    """Run extractor over each JSONL shard, persist to SQLite. Atomic swap.
+
+    Symlink-aware: when out_db is a symlink (post-2026-05-02 the
+    decision_structure.db at /opt/caselaw/repo/output is a symlink to
+    /mnt/HC_Volume_104655575/output/decision_structure.db so the 44 GB
+    file lives on the data volume, not the 150 GB root disk), resolve
+    to the real path before deciding where to put the .tmp. Otherwise
+    the .tmp is created next to the symlink (i.e. on /opt) and the
+    final os.replace clobbers the symlink — landing the new 44 GB DB
+    back on the small disk and re-creating the disk-fill incident class.
+    """
+    real_out = out_db.resolve() if out_db.is_symlink() else out_db
+    tmp_db = real_out.with_suffix(".db.tmp")
     if tmp_db.exists():
         tmp_db.unlink()
 
@@ -545,7 +556,11 @@ def build_db(shard_paths: list[Path], out_db: Path) -> dict:
         )
 
     conn.close()
-    tmp_db.replace(out_db)
+    # Atomic swap: rename .tmp into the real (resolved) target, not the
+    # symlink. POSIX rename on the same filesystem (both paths now under
+    # /mnt) is atomic. The symlink at /opt is untouched and continues to
+    # point at the new file.
+    tmp_db.replace(real_out)
     stats["duration_s"] = round(time.time() - started, 1)
     return stats
 
