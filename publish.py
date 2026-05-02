@@ -105,12 +105,28 @@ BUILD_DISK_REQUIRED_GB = 80
 
 
 
-def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: int = 3600) -> bool:
+def run_cmd(
+    cmd: list[str],
+    description: str,
+    dry_run: bool = False,
+    timeout: int = 3600,
+    stall_timeout: int | None = 1800,
+) -> bool:
     """Run a command, return True on success.
 
     Streams stdout/stderr line-by-line to the logger instead of buffering
     the full output in memory (avoids OOM on long-running steps like
     build_fts5 or graph build that can produce hundreds of MB of output).
+
+    Two independent kill-switches:
+      - ``timeout``: hard wall-clock cap (default 3600 s). The wall-clock
+        bound has to accommodate the longest legitimate step (Step 2c
+        reference graph at 10800 s).
+      - ``stall_timeout``: kill the process if no output line is received
+        for this many seconds (default 1800 s = 30 min). Catches the
+        "process is alive but wedged" class — silent OOM, deadlocked DB,
+        infinite loop. Faster failure than the wall-clock timeout.
+        Set to None to disable.
     """
     logger.info(f"  $ {' '.join(cmd)}")
     if dry_run:
@@ -124,28 +140,50 @@ def run_cmd(cmd: list[str], description: str, dry_run: bool = False, timeout: in
             text=True,
             cwd=str(REPO_DIR),
         )
-        # Watchdog timer: kill the process if it exceeds the timeout.
-        # We can't rely on proc.wait(timeout=) because the for-loop
-        # over proc.stdout blocks until EOF (i.e. process exit).
+        # Watchdog timers: kill the process either on wall-clock timeout
+        # OR on output-stall timeout. We can't rely on proc.wait(timeout=)
+        # because the for-loop over proc.stdout blocks until EOF
+        # (i.e. process exit).
         timed_out = threading.Event()
+        stalled = threading.Event()
+        last_output_at = [time.time()]
 
         def _kill_on_timeout():
             timed_out.set()
             proc.kill()
 
-        timer = threading.Timer(timeout, _kill_on_timeout)
-        timer.start()
+        def _kill_on_stall():
+            while proc.poll() is None and not timed_out.is_set():
+                idle = time.time() - last_output_at[0]
+                if stall_timeout is not None and idle > stall_timeout:
+                    stalled.set()
+                    proc.kill()
+                    return
+                time.sleep(min(60, max(5, (stall_timeout or 60) // 4)))
+
+        wall_timer = threading.Timer(timeout, _kill_on_timeout)
+        wall_timer.start()
+        stall_thread = None
+        if stall_timeout is not None:
+            stall_thread = threading.Thread(target=_kill_on_stall, daemon=True)
+            stall_thread.start()
         try:
             assert proc.stdout is not None
             for line in proc.stdout:
+                last_output_at[0] = time.time()
                 line = line.rstrip("\n")
                 if line:
                     logger.info(f"  | {line}")
             proc.wait()
         finally:
-            timer.cancel()
+            wall_timer.cancel()
         if timed_out.is_set():
-            logger.error(f"  timed out after {timeout}s")
+            logger.error(f"  timed out after {timeout}s (wall-clock)")
+            return False
+        if stalled.is_set():
+            logger.error(
+                f"  stalled — no output for {stall_timeout}s; killed by watchdog"
+            )
             return False
         if proc.returncode != 0:
             logger.error(f"  exit code {proc.returncode}")
