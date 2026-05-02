@@ -183,17 +183,37 @@ header.site .row {
   font-size: var(--t-md);
   min-height: 56px;
 }
-header.site .brand {
+/* Brand mark — boxed `+` glyph in mono, lowercase "opencaselaw.ch"
+   wordmark. Used in header.site and footer.site brand <a>. */
+.brand {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--s-2);
-  font-weight: 500;
-  text-decoration: none;
-}
-header.site .brand .logo {
   font-family: var(--f-mono);
-  color: var(--accent);
+  font-size: var(--t-md);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+  transition: color var(--t-fast) var(--ease);
 }
+.brand .logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-family: var(--f-mono);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1;
+  transition: border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.brand:hover { color: var(--text); }
+.brand:hover .logo { border-color: var(--border-strong); color: var(--text); }
+.brand .wordmark { color: var(--text); font-weight: 500; }
 header.site nav {
   display: flex;
   gap: var(--s-5);

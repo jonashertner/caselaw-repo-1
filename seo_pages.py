@@ -595,7 +595,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <meta property="og:site_name" content="OpenCaseLaw.ch">
 <meta property="og:locale" content="{_esc(language)}_CH">
 <script type="application/ld+json">{schema_str}</script>
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=5">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=6">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
     /* /entscheid/{{id}} v2 — site chrome wears the shared design system,
@@ -807,8 +807,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <header class="site">
   <div class="container row">
     <a class="brand" href="https://opencaselaw.ch/">
-      <span class="logo">⊙</span>
-      <span>OpenCaseLaw</span>
+      <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
     <nav aria-label="Primary">
       <a href="https://opencaselaw.ch/search/">Search</a>
@@ -817,7 +816,6 @@ def _render_decision(row: sqlite3.Row) -> str:
       <a href="https://opencaselaw.ch/word/">Word</a>
       <a href="https://opencaselaw.ch/mcp/">MCP</a>
       <a href="https://opencaselaw.ch/api/">API</a>
-      <a href="https://opencaselaw.ch/paper/">Paper</a>
       <a href="https://opencaselaw.ch/quality.html">Quality</a>
     </nav>
   </div>
@@ -872,7 +870,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <footer class="site">
   <div class="container row">
     <div>
-      <a class="brand" href="https://opencaselaw.ch/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
+      <a class="brand" href="https://opencaselaw.ch/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
       <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
         Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
       </p>
@@ -923,7 +921,7 @@ def _render_404(decision_id: str) -> str:
 <title>Entscheid nicht gefunden | OpenCaseLaw</title>
 <meta name="robots" content="noindex">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=5">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=6">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
   main.notfound {{ max-width: 560px; padding-top: var(--s-7); padding-bottom: var(--s-7); }}
@@ -937,8 +935,7 @@ def _render_404(decision_id: str) -> str:
 <header class="site">
   <div class="container row">
     <a class="brand" href="https://opencaselaw.ch/">
-      <span class="logo">⊙</span>
-      <span>OpenCaseLaw</span>
+      <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
     <nav aria-label="Primary">
       <a href="https://opencaselaw.ch/search/">Search</a>
@@ -947,7 +944,6 @@ def _render_404(decision_id: str) -> str:
       <a href="https://opencaselaw.ch/word/">Word</a>
       <a href="https://opencaselaw.ch/mcp/">MCP</a>
       <a href="https://opencaselaw.ch/api/">API</a>
-      <a href="https://opencaselaw.ch/paper/">Paper</a>
       <a href="https://opencaselaw.ch/quality.html">Quality</a>
     </nav>
   </div>
