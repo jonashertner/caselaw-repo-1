@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss courts in the OpenCaseLaw corpus — 121 courts indexed</title>
+<meta name="description" content="Browse the 121 Swiss federal, regulatory and cantonal courts indexed by OpenCaseLaw. Per-court decision counts, date ranges, languages, and direct search.">
+<link rel="canonical" href="https://opencaselaw.ch/courts/">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Swiss courts in the OpenCaseLaw corpus">
+<meta property="og:description" content="121 Swiss courts indexed — federal, regulatory, and cantonal. Per-court counts and date ranges.">
+<meta property="og:url" content="https://opencaselaw.ch/courts/">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="/static/css/design-system.css?v=2">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  main.courts { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: 1100px; }
+
+  .courts-controls {
+    display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
+    margin: var(--s-5) 0 var(--s-4);
+  }
+  .courts-search {
+    flex: 1 1 240px; min-width: 200px;
+    padding: 10px 14px; font: inherit; font-size: var(--t-base);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text);
+  }
+  .courts-search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .courts-tabs {
+    display: inline-flex; gap: var(--s-1);
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    padding: 4px;
+  }
+  .courts-tabs button {
+    padding: 6px 14px; font: inherit; font-size: var(--t-md);
+    background: transparent; color: var(--text-2);
+    border: none; border-radius: var(--radius-sm);
+    cursor: pointer; transition: all var(--t-fast) var(--ease);
+  }
+  .courts-tabs button:hover { color: var(--text); }
+  .courts-tabs button.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-1); }
+
+  .court-summary {
+    margin: var(--s-4) 0 var(--s-5);
+    font-size: var(--t-sm); color: var(--text-2);
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .court-section { margin-top: var(--s-6); }
+  .court-section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: var(--s-3); padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .court-section-head h2 {
+    font-size: var(--t-xl); font-weight: 400; margin: 0;
+  }
+  .court-section-head .count {
+    font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text-3);
+  }
+
+  .court-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--s-3);
+  }
+  .court-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--s-4) var(--s-5);
+    transition: border-color var(--t-fast) var(--ease);
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column; gap: var(--s-2);
+  }
+  .court-card:hover { border-color: var(--border-strong); }
+  .court-card-name {
+    font-size: var(--t-base); font-weight: 500;
+    line-height: 1.3;
+  }
+  .court-card-code {
+    font-family: var(--f-mono); font-size: var(--t-xs);
+    color: var(--text-3);
+    letter-spacing: -0.01em;
+  }
+  .court-card-num {
+    font-family: var(--f-mono); font-size: var(--t-lg);
+    color: var(--text);
+    font-feature-settings: 'tnum' 1;
+    line-height: 1;
+    margin-top: var(--s-2);
+  }
+  .court-card-num .label {
+    font-family: var(--f-sans); font-size: var(--t-xs);
+    color: var(--text-3);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-left: var(--s-2);
+  }
+  .court-card-meta {
+    display: flex; gap: var(--s-3); flex-wrap: wrap;
+    font-size: var(--t-xs); color: var(--text-3);
+    margin-top: var(--s-2);
+  }
+  .court-card-langs {
+    display: inline-flex; gap: 4px;
+    font-family: var(--f-mono); text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .court-card-cta {
+    margin-top: var(--s-2);
+    font-size: var(--t-xs);
+    color: var(--text-2);
+  }
+  .court-card-cta a { color: var(--text); text-decoration: underline; text-decoration-thickness: 1px; }
+  .court-card-cta a:hover { text-decoration-thickness: 2px; }
+  .empty {
+    padding: var(--s-7) var(--s-4); text-align: center;
+    color: var(--text-2); font-size: var(--t-base);
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/">
+      <span class="logo">⊙</span>
+      <span>OpenCaseLaw</span>
+    </a>
+    <nav>
+      <a href="/">Overview</a>
+      <a href="/search/">Search</a>
+      <a href="/courts/" class="active">Courts</a>
+      <a href="/word/">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/quality.html">Quality</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container courts" id="main">
+  <h1>Swiss courts indexed</h1>
+  <p class="lede" id="lede">Browse every Swiss federal, regulatory and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.</p>
+
+  <div class="courts-controls">
+    <input class="courts-search" type="search" id="filter"
+           placeholder="Filter — e.g. zh, bger, finma, kantonsgericht…"
+           autocomplete="off" aria-label="Filter courts">
+    <div class="courts-tabs" role="tablist" aria-label="Court group">
+      <button data-group="all" class="active" type="button">All</button>
+      <button data-group="federal" type="button">Federal</button>
+      <button data-group="regulatory" type="button">Regulatory</button>
+      <button data-group="international" type="button">International</button>
+      <button data-group="cantonal" type="button">Cantonal</button>
+    </div>
+  </div>
+
+  <div class="court-summary" id="summary">Loading…</div>
+  <div id="sections"></div>
+</main>
+
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">⊙</span><span>OpenCaseLaw</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+      </p>
+    </div>
+    <div>
+      <h4>Data</h4>
+      <ul>
+        <li><a href="/entscheide/">Decisions</a></li>
+        <li><a href="/gesetze/">Laws</a></li>
+        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/coverage/">Coverage</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Access</h4>
+      <ul>
+        <li><a href="/word/">Word add-in</a></li>
+        <li><a href="/mcp/">MCP server</a></li>
+        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
+        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>About</h4>
+      <ul>
+        <li><a href="/ueber/">Mission</a></li>
+        <li><a href="/paper/">Research</a></li>
+        <li><a href="/datenschutz/">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+// ─── Court taxonomy + display names ─────────────────────────────────────
+// Static map of code → display name + group. Codes not in the map fall
+// back to a derived name (cantonal patterns like "zh_gerichte" become
+// "ZH cantonal courts"). All API-derived strings flow through textContent.
+
+const COURT_NAMES = {
+  // Federal
+  bger: 'Bundesgericht (Tribunal fédéral)',
+  bge: 'BGE — official Federal Supreme Court reports',
+  bge_historical: 'BGE — historical (1875–1985)',
+  bvger: 'Bundesverwaltungsgericht (TAF)',
+  bstger: 'Bundesstrafgericht (TPF)',
+  bpatger: 'Bundespatentgericht (TFB)',
+  ch_bundesrat: 'Bundesrat (Federal Council)',
+  // International
+  bge_egmr: 'EGMR (ECtHR — Switzerland-respondent)',
+  hudoc_ch: 'HUDOC — ECtHR Switzerland decisions',
+  ta_sst: 'Eidg. Schiedskommission',
+  emark: 'EMARK — Asylrekurskommission',
+  // Regulators
+  finma: 'FINMA — financial regulator',
+  finma_versicherungsrecht: 'FINMA Versicherungsrecht',
+  weko: 'WEKO (Competition Commission)',
+  edoeb: 'EDÖB (Data Protection)',
+  ubi: 'UBI — Independent Complaints Authority for Radio + TV',
+  elcom: 'ElCom — Electricity Commission',
+  postcom: 'PostCom — Postal Services Commission',
+  comcom: 'ComCom — Communications Commission',
+  // Special / military
+  mkg: 'Militärkassationsgericht (1915–2025)',
+};
+
+const FEDERAL_CODES = new Set(['bger', 'bge', 'bge_historical', 'bvger', 'bstger', 'bpatger', 'ch_bundesrat', 'mkg']);
+const REGULATORY_CODES = new Set(['finma', 'finma_versicherungsrecht', 'weko', 'edoeb', 'ubi', 'elcom', 'postcom', 'comcom']);
+const INTERNATIONAL_CODES = new Set(['bge_egmr', 'hudoc_ch', 'ta_sst', 'emark']);
+
+const CANTON_NAMES = {
+  AG: 'Aargau', AI: 'Appenzell Innerrhoden', AR: 'Appenzell Ausserrhoden',
+  BE: 'Bern', BL: 'Basel-Landschaft', BS: 'Basel-Stadt',
+  FR: 'Fribourg', GE: 'Genève', GL: 'Glarus', GR: 'Graubünden',
+  JU: 'Jura', LU: 'Luzern', NE: 'Neuchâtel', NW: 'Nidwalden',
+  OW: 'Obwalden', SG: 'St. Gallen', SH: 'Schaffhausen', SO: 'Solothurn',
+  SZ: 'Schwyz', TG: 'Thurgau', TI: 'Ticino', UR: 'Uri',
+  VD: 'Vaud', VS: 'Valais', ZG: 'Zug', ZH: 'Zürich',
+  CH: 'Federal', CE: 'Council of Europe',
+};
+
+function courtGroup(c) {
+  if (FEDERAL_CODES.has(c.court)) return 'federal';
+  if (REGULATORY_CODES.has(c.court)) return 'regulatory';
+  if (INTERNATIONAL_CODES.has(c.court)) return 'international';
+  return 'cantonal';
+}
+
+function deriveName(code, canton) {
+  if (COURT_NAMES[code]) return COURT_NAMES[code];
+  // Cantonal patterns: "<canton>_gerichte" / "<canton>_obergericht" / etc.
+  const cantonName = CANTON_NAMES[canton] || canton;
+  if (code.endsWith('_gerichte') || code.endsWith('_publikationen') || code.endsWith('_obergericht')) {
+    return `${cantonName} cantonal courts`;
+  }
+  if (code.endsWith('_findinfo') || code.endsWith('_findcourt') || code.endsWith('_findecisions')) {
+    return `${cantonName} — historical archive`;
+  }
+  if (code.endsWith('_verwaltungsgericht')) return `${cantonName} Verwaltungsgericht`;
+  if (code.endsWith('_kantonsgericht')) return `${cantonName} Kantonsgericht`;
+  if (code.endsWith('_handelsgericht')) return `${cantonName} Handelsgericht`;
+  if (code.endsWith('_versicherungsgericht')) return `${cantonName} Versicherungsgericht`;
+  if (code.endsWith('_strafgericht')) return `${cantonName} Strafgericht`;
+  if (code.endsWith('_anwaltsaufsicht')) return `${cantonName} Anwaltsaufsicht`;
+  if (code.endsWith('_steuerrekursgericht')) return `${cantonName} Steuerrekurs`;
+  // Fallback: replace underscores with spaces
+  return code.replace(/_/g, ' ');
+}
+
+function fmtNum(n) {
+  if (n == null) return '0';
+  return Number(n).toLocaleString('de-CH').replace(/,/g, '\u2019');
+}
+
+function fmtDate(iso) {
+  if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return '';
+  return iso.split('T')[0];
+}
+
+// --- DOM helpers (no innerHTML on user data) --------------------------------
+
+function el(tag, props, children) {
+  const node = document.createElement(tag);
+  if (props) {
+    for (const k in props) {
+      if (k === 'class') node.className = props[k];
+      else if (k === 'text') node.textContent = props[k];
+      else if (k === 'href') node.setAttribute('href', props[k]);
+      else if (k === 'role' || k.startsWith('aria-') || k === 'rel' || k === 'target') node.setAttribute(k, props[k]);
+      else node[k] = props[k];
+    }
+  }
+  if (children) {
+    for (const c of children) {
+      if (c == null) continue;
+      node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    }
+  }
+  return node;
+}
+
+function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+// --- State ------------------------------------------------------------------
+
+let ALL_COURTS = []; // [{ court, canton, count, earliest, latest, languages, group, name }]
+let activeGroup = 'all';
+let activeFilter = '';
+
+function buildCard(c) {
+  const card = el('a', {
+    class: 'court-card',
+    href: `/search/?q=${encodeURIComponent(c.court)}`,
+    title: `Search recent ${c.name} decisions`,
+  });
+  card.appendChild(el('div', { class: 'court-card-name', text: c.name }));
+  card.appendChild(el('div', { class: 'court-card-code', text: `${c.court} · ${c.canton}` }));
+  const num = el('div', { class: 'court-card-num' });
+  num.appendChild(document.createTextNode(fmtNum(c.count)));
+  num.appendChild(el('span', { class: 'label', text: 'decisions' }));
+  card.appendChild(num);
+  const meta = el('div', { class: 'court-card-meta' });
+  if (c.earliest) meta.appendChild(el('span', { text: `${fmtDate(c.earliest)} → ${fmtDate(c.latest)}` }));
+  if (c.languages && c.languages.length) {
+    const langs = el('span', { class: 'court-card-langs' });
+    langs.textContent = c.languages.join(' · ');
+    meta.appendChild(langs);
+  }
+  card.appendChild(meta);
+  return card;
+}
+
+function buildSection(title, courts) {
+  if (courts.length === 0) return null;
+  const sec = el('section', { class: 'court-section' });
+  const head = el('div', { class: 'court-section-head' });
+  head.appendChild(el('h2', { text: title }));
+  const total = courts.reduce((s, c) => s + (c.count || 0), 0);
+  head.appendChild(el('span', { class: 'count', text: `${courts.length} courts · ${fmtNum(total)} decisions` }));
+  sec.appendChild(head);
+  const grid = el('div', { class: 'court-grid' });
+  for (const c of courts) grid.appendChild(buildCard(c));
+  sec.appendChild(grid);
+  return sec;
+}
+
+function renderSections() {
+  const root = document.getElementById('sections');
+  clear(root);
+
+  const f = activeFilter.toLowerCase();
+  const filtered = ALL_COURTS.filter((c) => {
+    if (activeGroup !== 'all' && c.group !== activeGroup) return false;
+    if (!f) return true;
+    return c.court.includes(f) || (c.name && c.name.toLowerCase().includes(f)) || (c.canton && c.canton.toLowerCase().includes(f));
+  });
+
+  document.getElementById('summary').textContent =
+    `${filtered.length} of ${ALL_COURTS.length} courts shown · ${fmtNum(filtered.reduce((s, c) => s + c.count, 0))} decisions`;
+
+  if (filtered.length === 0) {
+    root.appendChild(el('div', { class: 'empty', text: 'No courts match the current filter.' }));
+    return;
+  }
+
+  if (activeGroup === 'all') {
+    const groups = [
+      ['Federal courts', filtered.filter((c) => c.group === 'federal')],
+      ['Regulators', filtered.filter((c) => c.group === 'regulatory')],
+      ['International', filtered.filter((c) => c.group === 'international')],
+      ['Cantonal courts', filtered.filter((c) => c.group === 'cantonal')],
+    ];
+    for (const [title, list] of groups) {
+      list.sort((a, b) => b.count - a.count);
+      const sec = buildSection(title, list);
+      if (sec) root.appendChild(sec);
+    }
+  } else {
+    const sorted = filtered.slice().sort((a, b) => b.count - a.count);
+    const titles = {
+      federal: 'Federal courts',
+      regulatory: 'Regulators',
+      international: 'International',
+      cantonal: 'Cantonal courts',
+    };
+    const sec = buildSection(titles[activeGroup] || 'Courts', sorted);
+    if (sec) root.appendChild(sec);
+  }
+}
+
+function bind() {
+  document.querySelectorAll('.courts-tabs button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.courts-tabs button').forEach((b) => b.classList.toggle('active', b === btn));
+      activeGroup = btn.dataset.group || 'all';
+      renderSections();
+    });
+  });
+  document.getElementById('filter').addEventListener('input', (e) => {
+    activeFilter = e.target.value.trim();
+    renderSections();
+  });
+}
+
+async function init() {
+  bind();
+  try {
+    const r = await fetch('/stats.json');
+    if (!r.ok) throw new Error(`stats.json HTTP ${r.status}`);
+    const data = await r.json();
+    ALL_COURTS = (data.by_court || []).map((c) => ({
+      ...c,
+      group: courtGroup(c),
+      name: deriveName(c.court, c.canton),
+    }));
+    document.getElementById('lede').textContent =
+      `Browse the ${ALL_COURTS.length} Swiss federal, regulatory, international and cantonal courts whose published decisions OpenCaseLaw indexes — ${fmtNum(data.total)} decisions in total. Click any card to search recent decisions from that court.`;
+    renderSections();
+  } catch (e) {
+    document.getElementById('summary').textContent = `Failed to load /stats.json: ${e.message}`;
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
