@@ -514,10 +514,13 @@ function formatLawParagraphs(text, artNum, abbrev) {
     if (!line) continue;
     var m = line.match(/^(\d+[a-z]?(?:bis|ter|quater)?)\s+(.*)$/);
     if (m) {
-      var paraRef = 'Art. ' + artNum + ' Abs. ' + m[1] + ' ' + abbrev;
+      // Locale-correct paragraph abbreviation: DE Abs., FR al., IT cpv., EN para.
+      var paraRef = 'Art. ' + artNum + ' ' + paragraphLabel(lang) + ' ' + m[1] + ' ' + abbrev;
       var paraBody = formatLawFootnotes(m[2]);
       // Strip footnote markers from the verbatim text we insert (no inline HTML).
-      var verbatim = m[2].replace(/\s*(Fassung gemäss|Eingef\u00fcgt durch|Aufgehoben durch|Berichtigung der|Bereinigt gemäss|Strafdrohungen?\s+gem\u00e4ss|SR\s+\d+[\.\d]*).*$/i, '').trim();
+      // Patterns cover the three languages of the official statute publications
+      // (DE Fedlex, FR RS, IT RS) so French/Italian users also get clean inserts.
+      var verbatim = m[2].replace(/\s*(Fassung gem\u00e4ss|Eingef\u00fcgt durch|Aufgehoben durch|Berichtigung der|Bereinigt gem\u00e4ss|Strafdrohungen?\s+gem\u00e4ss|Nouvelle teneur selon|Introduit par|Abrog\u00e9 par|Erratum|Mis \u00e0 jour selon|Nuovo testo giusta|Introdotto dal|Abrogato dal|Aggiornato giusta|SR\s+\d+[\.\d]*).*$/i, '').trim();
       html += '<div class="law-para">' +
         '<span class="law-para-num" data-action="insert-law-para" data-ref="' + escHtml(paraRef) + '" title="' + escHtml(t('btn_insert_ref', lang)) + ': ' + escHtml(paraRef) + '">' + escHtml(m[1]) + '</span> ' +
         paraBody +
@@ -536,15 +539,30 @@ function formatLawParagraphs(text, artNum, abbrev) {
 }
 
 function formatLawFootnotes(text) {
-  // Split inline footnotes (e.g. "Fassung gemäss...", "SR 281.1") from the main text
-  // Pattern: text ending with a period, followed by footnote-style content
+  // Split inline footnotes (e.g. "Fassung gemäss...", "Nouvelle teneur selon...",
+  // "Nuovo testo giusta...", "SR 281.1") from the main text. Patterns cover the
+  // three languages of the official Swiss statute publications so French and
+  // Italian law-text retains its rendering quality.
   var footnotePatterns = [
+    // German (Fedlex DE)
     /(\.\s*)(Fassung gem\u00e4ss.+)$/,
     /(\.\s*)(Strafdrohungen?.+gem\u00e4ss.+)$/,
     /(\.\s*)(Eingef\u00fcgt durch.+)$/,
     /(\.\s*)(Aufgehoben durch.+)$/,
     /(\.\s*)(Berichtigung der.+)$/,
     /(\.\s*)(Bereinigt gem\u00e4ss.+)$/,
+    // French (Fedlex FR / RS)
+    /(\.\s*)(Nouvelle teneur selon.+)$/,
+    /(\.\s*)(Introduit par.+)$/,
+    /(\.\s*)(Abrog\u00e9 par.+)$/,
+    /(\.\s*)(Erratum.+)$/,
+    /(\.\s*)(Mis \u00e0 jour selon.+)$/,
+    // Italian (Fedlex IT / RS)
+    /(\.\s*)(Nuovo testo giusta.+)$/,
+    /(\.\s*)(Introdotto dal.+)$/,
+    /(\.\s*)(Abrogato dal.+)$/,
+    /(\.\s*)(Aggiornato giusta.+)$/,
+    // Universal
     /(\.\s*)(SR \d+[\.\d]*)$/,
   ];
   for (var i = 0; i < footnotePatterns.length; i++) {

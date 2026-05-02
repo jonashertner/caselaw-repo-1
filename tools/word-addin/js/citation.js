@@ -44,6 +44,25 @@ function pinpointLabel(lang) {
   return ERWAEGUNG_LABEL[lang] || ERWAEGUNG_LABEL.de;
 }
 
+// Locale-correct *paragraph* abbreviation inside a statute reference.
+// Swiss legal convention:
+//   DE  →  "Abs."  (Absatz)
+//   FR  →  "al."   (alinéa)
+//   IT  →  "cpv."  (capoverso)
+//   EN  →  "para." (paragraph)
+// Used by formatLawParagraphs in app.js so the inserted reference for a
+// French user reads "Art. 41 al. 1 CO" rather than the wrong-language
+// "Art. 41 Abs. 1 OR".
+var PARAGRAPH_LABEL = {
+  de: 'Abs.',
+  fr: 'al.',
+  it: 'cpv.',
+  en: 'para.'
+};
+function paragraphLabel(lang) {
+  return PARAGRAPH_LABEL[lang] || PARAGRAPH_LABEL.de;
+}
+
 var MONTH_NAMES = {
   de: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
   fr: ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'],
@@ -264,6 +283,8 @@ if (typeof module !== 'undefined' && module.exports) {
     isBge: isBge,
     extractBgeRef: extractBgeRef,
     pinpointLabel: pinpointLabel,
+    paragraphLabel: paragraphLabel,
+    PARAGRAPH_LABEL: PARAGRAPH_LABEL,
     CITATION_STYLES: CITATION_STYLES
   };
 }
