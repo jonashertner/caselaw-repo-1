@@ -20,13 +20,15 @@
 <link rel="stylesheet" href="/static/css/design-system.css?v=3">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
-  /* Page-specific layout — sits inside a 720px reading column so the
-     result cards have legal-document scan rhythm rather than dashboard
-     density. */
-  main.search { padding-top: var(--s-6); padding-bottom: var(--s-7); }
+  /* Page-specific layout — generous vertical rhythm so each section
+     reads as its own beat (hero → form → examples → filters → results
+     → pager). Width caps at the prose column for legal-document scan. */
+  main.search { padding-top: var(--s-7); padding-bottom: var(--s-7); max-width: 880px; }
+  main.search h1 { margin-bottom: var(--s-3); }
+  main.search .lede { margin-bottom: var(--s-6); }
   .search-form {
     display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
-    margin: var(--s-5) 0 var(--s-4);
+    margin: 0 0 var(--s-3);
   }
   .search-input {
     flex: 1 1 320px; min-width: 240px;
@@ -40,7 +42,7 @@
   .search-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
   .search-filters {
     display: flex; gap: var(--s-2); flex-wrap: wrap;
-    margin-bottom: var(--s-5);
+    margin: var(--s-5) 0 var(--s-5);
   }
   .search-filters button {
     padding: 6px 12px;
@@ -57,15 +59,15 @@
   }
   .search-meta {
     font-size: var(--t-sm); color: var(--text-2);
-    margin: var(--s-4) 0 var(--s-4);
+    margin: 0 0 var(--s-4);
     font-feature-settings: 'tnum' 1;
   }
-  .result-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--s-3); }
+  .result-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--s-4); }
   .result {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: var(--s-4) var(--s-5);
+    padding: var(--s-5);
     transition: border-color var(--t-fast) var(--ease);
   }
   .result:hover { border-color: var(--border-strong); }
@@ -132,10 +134,13 @@
   .pager a:hover { border-color: var(--border-strong); }
   .pager .pager-info { color: var(--text-3); padding: 8px 0; }
   .examples {
-    margin-top: var(--s-3); font-size: var(--t-sm); color: var(--text-2);
+    margin: var(--s-4) 0 0; font-size: var(--t-sm); color: var(--text-2);
+    line-height: 2;
   }
   .examples a {
-    color: var(--text-2); text-decoration: none; margin-right: var(--s-3);
+    color: var(--text-2); text-decoration: none;
+    margin-right: var(--s-4);
+    padding-bottom: 2px;
     border-bottom: 1px dotted var(--text-3);
   }
   .examples a:hover { color: var(--text); border-color: var(--text); }

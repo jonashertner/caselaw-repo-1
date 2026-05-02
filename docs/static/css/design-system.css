@@ -68,7 +68,9 @@
   --max-w: 1240px;
   --max-w-prose: 720px;
   --max-w-narrow: 560px;
-  --gutter-x: clamp(16px, 4vw, 32px);
+  /* Generous side gutter — keeps the brand off the window edge on every
+     viewport. 24px at 320, ~5vw mid-range, capped at 48px on desktop. */
+  --gutter-x: clamp(24px, 5vw, 48px);
 
   /* Radius / shadow */
   --radius: 8px;
@@ -171,8 +173,9 @@ header.site .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--s-3) 0;
+  padding: var(--s-4) 0;
   font-size: var(--t-md);
+  min-height: 56px;
 }
 header.site .brand {
   display: inline-flex;
