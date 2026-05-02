@@ -186,6 +186,12 @@ def _cleanup_stale_build_artifacts() -> None:
         f"{DATA_VOLUME}/output/decisions.db.tmp",
         f"{DATA_VOLUME}/output/decisions.db.tmp-wal",
         f"{DATA_VOLUME}/output/decisions.db.tmp-shm",
+        # `.quick` is a SQLite quickcheck snapshot left behind by a
+        # crashed build_fts5 PRAGMA quick_check pass. It can reach 60 GB
+        # and burned the 2026-05-02 nightly when the disk filled up.
+        f"{DATA_VOLUME}/output/decisions.db.quick",
+        f"{DATA_VOLUME}/output/.reference_graph.db.tmp-journal",
+        f"{DATA_VOLUME}/output/.decisions.db.tmp-journal",
     ]
     now = time.time()
     for path in candidates:
