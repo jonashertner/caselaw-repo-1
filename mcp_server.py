@@ -105,8 +105,16 @@ from pydantic import BaseModel, Field
 
 
 class _AttestBody(BaseModel):
-    draft_text: str
+    """Pro /attest body. The Word add-in (>=v3 redactor) sends
+    ``redacted_text``. Older clients sent ``draft_text``; both are
+    accepted for a transition window. The server-side redaction guard
+    runs against whichever field was supplied, so a missed redaction
+    is caught either way."""
+    redacted_text: str | None = None
+    draft_text: str | None = None  # legacy field, accepted but deprecated
     audit_grounding: bool = False
+    client_redactor_version: str | None = None
+    client_redactor_summary: dict | None = None
 
 
 class _VerifyClaimBody(BaseModel):
@@ -129,11 +137,22 @@ class MockDecisionRequest(BaseModel):
 
 
 class VerifyRequest(BaseModel):
-    """Request body for Pro reference verification."""
+    """Request body for Pro reference verification.
+
+    The Word add-in (>=v3 redactor) sends ``redacted_text``. Older
+    clients sent ``selected_text`` — both are accepted during the
+    transition window. The server-side redaction guard runs against
+    whichever field was supplied so a missed redaction is caught
+    either way; the field name is just a documentation hint to
+    AppSource reviewers / security auditors that the contract is
+    "this text is already redacted client-side"."""
     license_key: str
-    selected_text: str = Field(..., max_length=5000)
+    redacted_text: str | None = Field(default=None, max_length=5000)
+    selected_text: str | None = Field(default=None, max_length=5000)  # legacy
     case_ref: str = Field(..., max_length=200)
     lang: str = "de"
+    client_redactor_version: str | None = None
+    client_redactor_summary: dict | None = None
 
 
 class FindSupportRequest(BaseModel):
@@ -16008,9 +16027,37 @@ render();setInterval(render,60000);
                                "issues}. CALL THIS before finalizing any LLM response containing ≥1 "
                                "case citation.")
     async def api_attest(body: _AttestBody):
+        from quality.redact import is_likely_unredacted, redact as _server_redact
+        # Resolve the input field — prefer the new name, fall back to legacy.
+        text = body.redacted_text or body.draft_text or ""
+        # HARD GUARD: refuse the request if the supposedly-redacted text
+        # still contains structurally-identifiable PII. This catches old
+        # clients that haven't loaded redact.js, tampered curl requests,
+        # and any future code path that bypasses the client redactor.
+        guard = is_likely_unredacted(text)
+        if not guard.clean:
+            return JSONResponse(
+                {
+                    "error": "client_redaction_incomplete",
+                    "message": (
+                        "Request rejected: the submitted text contains "
+                        "structurally-identifiable PII patterns. The Word "
+                        "add-in must run js/redact.js before sending Pro "
+                        "requests. If you are calling the API directly, "
+                        "redact PII client-side first."
+                    ),
+                    "patterns_detected": guard.patterns_found,
+                    "client_redactor_version": body.client_redactor_version,
+                },
+                status_code=400,
+            )
+        # Defense-in-depth: scrub anything the guard's high-confidence
+        # patterns missed before passing to the LLM. No-op when the
+        # client did its job.
+        text = _server_redact(text).redacted
         return await asyncio.to_thread(
             _handle_attest_response,
-            draft_text=body.draft_text,
+            draft_text=text,
             audit_grounding=body.audit_grounding,
         )
 
@@ -16341,6 +16388,28 @@ render();setInterval(render,60000);
                                "Fetches the case brief and calls Claude to verify the citation.")
     async def api_billing_verify(req: VerifyRequest):
         from stripe_billing import log_pro_usage
+        from quality.redact import is_likely_unredacted, redact as _server_redact
+        # Resolve the input field — prefer the new name, fall back to legacy.
+        text = req.redacted_text or req.selected_text or ""
+        # HARD GUARD: see /attest above — refuse if PII detected.
+        guard = is_likely_unredacted(text)
+        if not guard.clean:
+            return JSONResponse(
+                {
+                    "error": "client_redaction_incomplete",
+                    "message": (
+                        "Request rejected: text contains structurally-"
+                        "identifiable PII. The Word add-in must run "
+                        "js/redact.js before sending Pro requests."
+                    ),
+                    "patterns_detected": guard.patterns_found,
+                    "client_redactor_version": req.client_redactor_version,
+                },
+                status_code=400,
+            )
+        # Defense-in-depth: scrub anything the guard missed.
+        text = _server_redact(text).redacted
+
         # Validate license
         license_info = await asyncio.to_thread(validate_license, req.license_key)
         if not license_info:
@@ -16364,7 +16433,7 @@ render();setInterval(render,60000);
 
         # Run verification with Sonnet
         result = await asyncio.to_thread(
-            verify_reference_pro, req.selected_text, verify_context, req.case_ref, req.lang,
+            verify_reference_pro, text, verify_context, req.case_ref, req.lang,
         )
         if "error" in result:
             return JSONResponse(result, status_code=500)

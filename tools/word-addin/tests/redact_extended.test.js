@@ -344,68 +344,71 @@ test('200KB worst-case (PII-heavy) document', function () {
 // ────────────────────────────────────────────────────────────────────
 section('6. api.js _maybeRedact() integration (mocked):');
 
-test('opt-out via localStorage is honored end-to-end', function () {
-  /* Simulate: stub window+localStorage, load api.js, flip opt-out, call _maybeRedact */
-  global.localStorage = {
-    _store: { 'ocl_pii_redact_optout': '1' },
-    getItem: function (k) { return this._store[k] || null; },
-    setItem: function (k, v) { this._store[k] = v; },
-  };
-  global.window = {
-    redactPII: r.redactPII,
-    unredactPII: r.unredact,
-    PII_TYPES: r.PII_TYPES,
-  };
-  global.fetch = function () { return Promise.resolve({ ok: true, status: 200, json: function () { return {}; } }); };
-  global.crypto = { randomUUID: function () { return 'x'; }, getRandomValues: function (b) { return b; } };
-  global.TextEncoder = function () { return { encode: function (s) { return new Uint8Array(s.length); } }; };
-
-  /* Read api.js into a fresh sandbox + grab _maybeRedact */
+/* Helper: load api.js into a fresh vm sandbox with stubs and return
+   { sandbox, requireRedact }. Each test gets a clean module instance
+   so window mutations don't bleed across cases. */
+function loadApi(stubs) {
   var fs = require('fs');
-  var src = fs.readFileSync(__dirname + '/../js/api.js', 'utf8');
-  var sandbox = { window: global.window, localStorage: global.localStorage, fetch: global.fetch,
-                   crypto: global.crypto, TextEncoder: global.TextEncoder, console: console };
   var vm = require('vm');
+  var sandbox = Object.assign({
+    console: console,
+    window: { redactPII: r.redactPII, unredactPII: r.unredact, PII_TYPES: r.PII_TYPES },
+    localStorage: { _store: {}, getItem: function (k) { return this._store[k] || null; },
+                    setItem: function (k, v) { this._store[k] = v; },
+                    removeItem: function (k) { delete this._store[k]; } },
+    fetch: function () { return Promise.resolve({ ok: true, status: 200,
+                                                    json: function () { return {}; } }); },
+    crypto: { randomUUID: function () { return 'x'; }, getRandomValues: function (b) { return b; } },
+    TextEncoder: function () { return { encode: function (s) { return new Uint8Array(s.length); } }; },
+  }, stubs || {});
   vm.createContext(sandbox);
-  /* Strip top-level `const` to avoid TDZ issues across vm reloads */
+  var src = fs.readFileSync(__dirname + '/../js/api.js', 'utf8');
   vm.runInContext(src, sandbox);
+  return sandbox;
+}
 
-  var result = sandbox._maybeRedact('Herr Max Müller, max@x.ch, AHV 756.1234.5678.90');
-  assert.strictEqual(result.summary.total, 0,
-    'opt-out flag must skip redaction; got: ' + JSON.stringify(result));
-  assert.strictEqual(result.redacted, 'Herr Max Müller, max@x.ch, AHV 756.1234.5678.90');
+test('STRUCTURAL: opt-out localStorage flag is IGNORED (no opt-out exists)', function () {
+  /* Day 1 redesign: the privacy property is structural, not a user
+     setting. Even if a user (or attacker) sets the legacy opt-out
+     key, redaction MUST still run. This locks the property in the
+     test so a future regression that re-introduces an opt-out fails
+     the build. */
+  var sandbox = loadApi();
+  sandbox.localStorage.setItem('ocl_pii_redact_optout', '1');
+  var result = sandbox._requireRedact('Herr Max Müller, max@x.ch, AHV 756.1234.5678.90');
+  assert.ok(result.summary.total >= 3,
+    'opt-out must NOT prevent redaction; got: ' + JSON.stringify(result));
+  assert.ok(result.redacted.indexOf('Max Müller') < 0);
+  assert.ok(result.redacted.indexOf('max@x.ch') < 0);
+  assert.ok(result.redacted.indexOf('756.1234.5678.90') < 0);
 });
 
-test('opt-out OFF (default) → redaction runs end-to-end', function () {
-  global.localStorage._store = {};  /* clear opt-out */
-  var fs = require('fs');
-  var src = fs.readFileSync(__dirname + '/../js/api.js', 'utf8');
-  var sandbox = { window: global.window, localStorage: global.localStorage, fetch: global.fetch,
-                   crypto: global.crypto, TextEncoder: global.TextEncoder, console: console };
-  var vm = require('vm');
-  vm.createContext(sandbox);
-  vm.runInContext(src, sandbox);
-
-  var result = sandbox._maybeRedact('Herr Max Müller (max@x.ch)');
-  assert.ok(result.summary.total >= 2, 'should redact at least name + email; got: ' + JSON.stringify(result));
+test('STRUCTURAL: default invocation redacts every PII class', function () {
+  var sandbox = loadApi();
+  var result = sandbox._requireRedact('Herr Max Müller (max@x.ch)');
+  assert.ok(result.summary.total >= 2,
+    'should redact name + email; got: ' + JSON.stringify(result));
   assert.ok(result.redacted.indexOf('Max Müller') < 0);
 });
 
-test('_maybeRedact returns passthrough on null window.redactPII', function () {
-  global.window.redactPII = undefined;
-  var fs = require('fs');
-  var src = fs.readFileSync(__dirname + '/../js/api.js', 'utf8');
-  var sandbox = { window: global.window, localStorage: global.localStorage, fetch: global.fetch,
-                   crypto: global.crypto, TextEncoder: global.TextEncoder, console: console };
-  var vm = require('vm');
-  vm.createContext(sandbox);
-  vm.runInContext(src, sandbox);
+test('STRUCTURAL: missing window.redactPII → THROWS (fail-closed)', function () {
+  /* If the redactor module fails to load, the Pro request must NOT
+     proceed silently with un-redacted text. The function throws a
+     typed error the UI catches and shows to the user. */
+  var sandbox = loadApi({ window: { /* no redactPII */ } });
+  assert.throws(
+    function () { sandbox._requireRedact('Herr Max Müller'); },
+    function (err) { return err && err.type === 'redact_unavailable'; },
+    'expected throw with type=redact_unavailable when redactor missing'
+  );
+});
 
-  var result = sandbox._maybeRedact('Herr Max Müller');
-  assert.strictEqual(result.summary.total, 0);
-  assert.strictEqual(result.redacted, 'Herr Max Müller');
-  /* restore */
-  global.window.redactPII = r.redactPII;
+test('STRUCTURAL: REDACTOR_VERSION is exposed for server logging', function () {
+  var sandbox = loadApi();
+  assert.strictEqual(typeof sandbox.REDACTOR_VERSION, 'string',
+    'REDACTOR_VERSION must be defined for server-side guard logging');
+  assert.ok(sandbox.REDACTOR_VERSION.indexOf('redact.js@') === 0,
+    'version string should be "redact.js@vN"; got: ' + sandbox.REDACTOR_VERSION);
 });
 
 // ────────────────────────────────────────────────────────────────────

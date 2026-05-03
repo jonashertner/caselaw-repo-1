@@ -2104,7 +2104,8 @@ async function startVerify() {
   }
   state.previousView = state.view;
   try {
-    var selected = await getSelectedText();
+    /* Selection-or-paragraph fallback: lawyers don't pre-select. */
+    var selected = await getSelectionOrParagraph();
     if (!selected || selected.trim().length < 10) {
       state.error = { type: 'no_selection', message: t('no_selection', lang) };
       state.view = 'verify';
@@ -2125,6 +2126,16 @@ async function startVerify() {
     if (e.type === 'invalid_license') {
       localStorage.removeItem('ocl_pro_key');
       state.error = { type: 'no_selection', message: t('pro_key_invalid', lang) };
+    } else if (e.type === 'redact_unavailable') {
+      /* Structural-redaction guard fired client-side. Show a clean
+         message; don't silently fall back to sending un-redacted. */
+      state.error = e;
+    } else if (e.type === 'http_error' && e.status === 400 &&
+               (e.message || '').indexOf('client_redaction_incomplete') >= 0) {
+      state.error = { type: 'redact_server_reject',
+                      message: 'Datenleck-Schutz: Server hat Anfrage abgelehnt, '
+                             + 'da nicht alle persönlichen Daten redigiert wurden. '
+                             + 'Add-in bitte neu laden.' };
     } else {
       state.error = e;
     }

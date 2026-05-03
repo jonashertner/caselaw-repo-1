@@ -70,6 +70,41 @@ async function getSelectedText() {
   });
 }
 
+/**
+ * Get text the user "intends" to verify: their selection if any,
+ * otherwise the paragraph containing the cursor. Lawyers think in
+ * paragraphs, not selections — making the cite-check button work
+ * without requiring a selection eliminates the most common failure
+ * mode of the Pro flow.
+ *
+ * Returns the source verbatim. Caller is responsible for redaction.
+ */
+async function getSelectionOrParagraph() {
+  if (!_wordAvailable()) return "";
+  return Word.run(async function (context) {
+    var sel = context.document.getSelection();
+    sel.load('text,isEmpty');
+    await context.sync();
+    if (sel.text && sel.text.trim().length > 0) {
+      return sel.text;
+    }
+    /* Empty selection — collect every paragraph the cursor's range
+       intersects (usually just one) and concatenate. Word treats a
+       collapsed cursor as a zero-length range that still belongs to
+       the paragraph(s) it sits in, so paragraphs.getRange().intersect
+       gives us the right text. */
+    var paragraphs = sel.paragraphs;
+    paragraphs.load('text');
+    await context.sync();
+    var parts = [];
+    for (var i = 0; i < paragraphs.items.length; i++) {
+      var t = paragraphs.items[i].text;
+      if (t && t.trim().length > 0) parts.push(t);
+    }
+    return parts.join('\n').trim();
+  }).catch(function () { return ""; });
+}
+
 /** Insert a Word comment on the current selection. Returns false if unsupported. */
 async function insertComment(text) {
   if (!_wordAvailable() || !supportsComments()) return false;
