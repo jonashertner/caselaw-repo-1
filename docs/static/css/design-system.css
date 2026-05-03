@@ -66,12 +66,14 @@
 
   /* Layout */
   --max-w: 1240px;
+  --site-max-w: 1240px;
   --max-w-prose: 720px;
   --max-w-narrow: 560px;
   /* Canonical page gutter — single source of truth for horizontal
-     padding. Brand sits exactly this far from the window edge:
-     48px on 320 phone, ~7vw mid-range, capped at 112px on desktop. */
-  --gutter-x: clamp(48px, 7vw, 112px);
+     padding. The container max-width includes this padding so desktop
+     content aligns at ~100px on wide screens, while phones retain a
+     usable 20px edge buffer. */
+  --gutter-x: clamp(20px, 5vw, 48px);
 
   /* Radius / shadow */
   --radius: 8px;
@@ -140,9 +142,11 @@ a:focus-visible {
 img, svg, video { max-width: 100%; height: auto; display: block; }
 
 /* ── Layout containers ────────────────────────────────────── */
-.container { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--gutter-x); }
-.container-prose { max-width: var(--max-w-prose); margin: 0 auto; padding: 0 var(--gutter-x); }
-.container-narrow { max-width: var(--max-w-narrow); margin: 0 auto; padding: 0 var(--gutter-x); }
+.container { max-width: calc(var(--max-w) + (var(--gutter-x) * 2)); margin: 0 auto; padding: 0 var(--gutter-x); }
+.container-prose { max-width: calc(var(--max-w-prose) + (var(--gutter-x) * 2)); margin: 0 auto; padding: 0 var(--gutter-x); }
+.container-narrow { max-width: calc(var(--max-w-narrow) + (var(--gutter-x) * 2)); margin: 0 auto; padding: 0 var(--gutter-x); }
+header.site .container,
+footer.site .container { max-width: calc(var(--site-max-w) + (var(--gutter-x) * 2)); }
 
 /* ── Type ─────────────────────────────────────────────────── */
 h1, h2, h3, h4 { margin: 0; font-weight: 300; letter-spacing: -0.012em; line-height: var(--leading-tight); color: var(--text); }
@@ -180,7 +184,7 @@ header.site .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--s-4) 0;
+  padding-block: var(--s-4);
   font-size: var(--t-md);
   min-height: 56px;
 }
@@ -250,6 +254,7 @@ header.site nav a.active {
   display: none;
   align-items: center; justify-content: center;
   width: 44px; height: 44px;
+  position: relative;
   flex: 0 0 auto;
   border: 1px solid var(--border-strong);
   background: var(--surface);
@@ -264,6 +269,7 @@ header.site nav a.active {
 .nav-toggle .icon-close { display: none; }
 body.nav-open .nav-toggle .icon-menu { display: none !important; }
 body.nav-open .nav-toggle .icon-close { display: block !important; }
+body.nav-open .nav-toggle { z-index: 1002; }
 
 @media (max-width: 1024px) {
   /* Hide the inline nav and reveal the hamburger. */
@@ -282,9 +288,13 @@ body.nav-open .nav-toggle .icon-close { display: block !important; }
     gap: 0;
     position: fixed;
     inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100vh;
     background: var(--bg);
-    padding: 80px var(--gutter-x) 40px;
+    padding: calc(80px + env(safe-area-inset-top)) var(--gutter-x) calc(40px + env(safe-area-inset-bottom));
     overflow-y: auto;
+    overscroll-behavior: contain;
     z-index: 1000;
     margin: 0;
   }

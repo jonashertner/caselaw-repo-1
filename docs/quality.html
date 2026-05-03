@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <!-- Shared design system: tokens, fonts, header/footer chrome.
      Inline styles below only carry dashboard-specific layout. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=14">
+<link rel="stylesheet" href="/static/css/design-system.css?v=16">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
 /* Tokens come from design-system.css. */
@@ -95,11 +95,12 @@ h1 {
 }
 .checks { display: grid; grid-template-columns: 1fr; gap: 0; }
 .check {
-    display: grid; grid-template-columns: 80px 1fr 140px;
+    display: grid; grid-template-columns: 80px minmax(0, 1fr) minmax(96px, 140px);
     gap: var(--s-4); padding: 0.55rem 0; align-items: baseline;
     font-size: var(--t-base);
     border-bottom: 1px solid var(--border);
 }
+.check > * { min-width: 0; }
 .check:last-child { border-bottom: none; }
 .check-status {
     font-family: var(--f-mono); font-size: var(--t-xs); font-weight: 500;
@@ -113,11 +114,13 @@ h1 {
 .check-status.fail-crit { color: var(--accent); }
 .check-name {
     font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text-2);
+    overflow-wrap: anywhere;
 }
-.check-message { font-size: var(--t-md); color: var(--text-2); margin-top: 0.15em; }
+.check-message { font-size: var(--t-md); color: var(--text-2); margin-top: 0.15em; overflow-wrap: anywhere; }
 .check-metric {
     font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text-2);
     text-align: right; font-feature-settings: "tnum" 1;
+    overflow-wrap: anywhere;
 }
 .check-detail {
     grid-column: 1 / -1; margin: 0.5rem 0 0.4rem 0;
@@ -145,7 +148,7 @@ h1 {
 .report-meta p { margin: 0.4rem 0; }
 
 @media (max-width: 720px) {
-    .check { grid-template-columns: 70px 1fr; }
+    .check { grid-template-columns: 70px minmax(0, 1fr); }
     .check-metric { grid-column: 2; text-align: left; padding-top: 0.2em; }
     .check-detail { padding-left: 70px; }
 }
@@ -163,7 +166,7 @@ h1 {
     <a class="brand" href="/">
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
-    <nav aria-label="Primary">
+    <nav id="primary-nav" aria-label="Primary">
       <a href="/search/">Search</a>
       <a href="/courts/">Courts</a>
       <a href="/laws/">Laws</a>

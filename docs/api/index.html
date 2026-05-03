@@ -11,7 +11,7 @@
 <meta property="og:description" content="29 OpenAPI routes for Swiss case law search. Free, no API key, CORS enabled.">
 <meta property="og:url" content="https://opencaselaw.ch/api/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=14">
+<link rel="stylesheet" href="/static/css/design-system.css?v=16">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   main.api { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
@@ -42,6 +42,42 @@
     .endpoint { grid-template-columns: 1fr; gap: var(--s-1); }
     .endpoint .method { text-align: left; }
     .endpoint .desc { grid-column: 1; }
+    table.params,
+    table.params thead,
+    table.params tbody,
+    table.params tr,
+    table.params th,
+    table.params td {
+      display: block;
+      width: 100%;
+    }
+    table.params thead { display: none; }
+    table.params tr {
+      padding: var(--s-3) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    table.params tr:last-child { border-bottom: none; }
+    table.params th,
+    table.params td {
+      padding: 0;
+      border-bottom: none;
+    }
+    table.params td + td { margin-top: var(--s-1); }
+    table.params td.name::before,
+    table.params td.name + td::before,
+    table.params td.name + td + td::before {
+      display: block;
+      margin-bottom: 2px;
+      font-family: var(--f-sans);
+      font-size: var(--t-xs);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    table.params td.name::before { content: "Param"; }
+    table.params td.name + td::before { content: "Used by"; }
+    table.params td.name + td + td::before { content: "Notes"; }
   }
   .group-head {
     margin-top: var(--s-5); padding-bottom: var(--s-2);
@@ -90,7 +126,7 @@
     <a class="brand" href="/">
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
-    <nav aria-label="Primary">
+    <nav id="primary-nav" aria-label="Primary">
       <a href="/search/">Search</a>
       <a href="/courts/">Courts</a>
       <a href="/laws/">Laws</a>

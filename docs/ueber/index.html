@@ -98,7 +98,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- Shared design system: same chrome as / and every other page. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=14">
+<link rel="stylesheet" href="/static/css/design-system.css?v=16">
 <style>
 :root {
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -168,21 +168,21 @@ a:hover { text-decoration: underline; }
 
 /* ── Hero ── */
 header:not(.site) { padding: 80px 0 24px; text-align: center; position: relative; }
-header::before { display: none; }
-header h1 {
+header:not(.site)::before { display: none; }
+header:not(.site) h1 {
   font-size: var(--fs-3xl); font-weight: 600;
   letter-spacing: -0.03em; line-height: 1.1;
 }
-header h1 .ch { color: var(--ac); }
-header .sub {
+header:not(.site) h1 .ch { color: var(--ac); }
+header:not(.site) .sub {
   color: var(--tx2); font-size: var(--fs-md); margin-top: 10px;
   font-weight: 400; max-width: 540px; margin-left: auto; margin-right: auto;
   line-height: 1.6;
 }
 /* When a header is explicitly left-aligned, the .sub paragraph should
    line up to the same left edge as the h1 — not stay margin:auto centered. */
-header[style*="text-align:left"] .sub,
-header[style*="text-align: left"] .sub {
+header:not(.site)[style*="text-align:left"] .sub,
+header:not(.site)[style*="text-align: left"] .sub {
   margin-left: 0;
   max-width: 64ch;
 }
@@ -1216,9 +1216,9 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
 }
 @media (max-width: 640px) {
   .w { padding: 0 16px; }
-  header { padding: 48px 0 12px; }
-  header h1 { font-size: 1.75rem; }
-  header::before { width: 100%; }
+  header:not(.site) { padding: 48px 0 12px; }
+  header:not(.site) h1 { font-size: 1.75rem; }
+  header:not(.site)::before { width: 100%; }
   .lang-sw button { padding: 6px 4px; font-size: 10px; }
   .lang-sw { margin-right: 0; }
   .kpis { gap: 36px; margin: 28px 0 4px; }
@@ -1253,7 +1253,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
   .lang-sw button { padding: 2px 5px; font-size: var(--fs-2xs); min-height: 40px; }
   .hero-links { gap: 6px; }
   .hero-links a { padding: 5px 8px; font-size: var(--fs-2xs); }
-  header h1 { font-size: 1.4rem; }
+  header:not(.site) h1 { font-size: 1.4rem; }
   .access-featured { padding: 16px 12px; }
   .access-featured .setup-paths { gap: 12px; }
   .study-card { padding: 16px 12px; }
@@ -1287,7 +1287,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
     <a class="brand" href="/">
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
-    <nav aria-label="Primary">
+    <nav id="primary-nav" aria-label="Primary">
       <a href="/search/" data-t="nav_search">Search</a>
       <a href="/courts/" data-t="nav_courts">Courts</a>
       <a href="/laws/" data-t="nav_laws">Laws</a>

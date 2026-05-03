@@ -102,7 +102,7 @@
 <!-- Shared design system — gives every page the same tokens, type scale, and
      header/footer/btn/card primitives. Page-specific styles in the inline
      <style> block below override these where the landing diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=14">
+<link rel="stylesheet" href="/static/css/design-system.css?v=16">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
@@ -160,7 +160,7 @@
   --max-w-prose:  68ch;
   --max-w-narrow: 640px;
   /* --gutter-x DELETED — let design-system.css own the page gutter
-     (clamp(24px, 5vw, 48px)) so the brand sits the same distance from
+     (clamp(20px, 5vw, 48px)) so the brand sits the same distance from
      the window edge on every page. The landing's narrower 16-28px
      gutter was the visible "logo too close to edge" complaint. */
 
@@ -2286,7 +2286,7 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
     <a class="brand" href="/">
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
-    <nav aria-label="Primary">
+    <nav id="primary-nav" aria-label="Primary">
       <a href="/search/"      data-t="nav_search">Search</a>
       <a href="/courts/"      data-t="nav_courts">Courts</a>
       <a href="/laws/"        data-t="nav_laws">Laws</a>
