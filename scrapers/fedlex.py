@@ -22,6 +22,7 @@ import os
 import re
 import sqlite3
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
@@ -439,13 +440,36 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
             failed += 1
             continue
 
+        # Sidecar meta.json records the consolidation URI of whatever XML
+        # is on disk for this SR. Without it, the previous `dest.exists()`
+        # check froze each SR at the consolidation it was captured under
+        # the first time the scraper crawled it — amendments published by
+        # Fedlex were never picked up. With the sidecar we still take the
+        # fast path when the recorded URI matches what SPARQL just resolved,
+        # but we re-download whenever Fedlex has rolled out a new
+        # consolidation for this SR.
+        meta_path = xml_dir / sr_dir / "meta.json"
+        expected_cons = entry.get("consolidation_uri", "")
+        recorded_cons = ""
+        if meta_path.exists():
+            try:
+                recorded_cons = json.loads(meta_path.read_text()).get("consolidation_uri", "")
+            except (OSError, json.JSONDecodeError):
+                recorded_cons = ""
+
         for lang in LANGUAGES:
             url = urls.get(lang)
             if not url:
                 continue
 
             dest = xml_dir / sr_dir / f"{lang}.xml"
-            if dest.exists():
+            up_to_date = (
+                dest.exists()
+                and recorded_cons
+                and expected_cons
+                and recorded_cons == expected_cons
+            )
+            if up_to_date:
                 skipped += 1
                 continue
 
@@ -457,6 +481,24 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
                 failed += 1
 
             time.sleep(REQUEST_DELAY)
+
+        # After (re-)downloading any language file for this SR, refresh
+        # the sidecar so future runs can take the fast path again.
+        if expected_cons and (xml_dir / sr_dir).exists():
+            try:
+                meta_path.write_text(
+                    json.dumps(
+                        {
+                            "consolidation_uri": expected_cons,
+                            "consolidation_date": entry.get("consolidation_date", ""),
+                            "downloaded_at": datetime.now(timezone.utc).isoformat(),
+                        },
+                        ensure_ascii=False,
+                        indent=2,
+                    )
+                )
+            except OSError as e:
+                log.warning("Could not write meta sidecar for SR %s: %s", sr, e)
 
         if downloaded % 50 == 0 and downloaded > 0:
             log.info("Progress: %d downloaded, %d skipped, %d failed", downloaded, skipped, failed)

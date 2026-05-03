@@ -275,16 +275,30 @@ def build_db():
     total_laws = 0
     total_articles = 0
 
-    # Iterate over downloaded XML directories
-    sr_dirs = sorted(xml_dir.iterdir()) if xml_dir.exists() else []
-    log.info("Processing %d law directories...", len(sr_dirs))
+    # Iterate over laws.json (authoritative SPARQL discovery) rather than
+    # over xml_dir contents. SPARQL drops abrogated laws from the index
+    # the moment they're repealed; iterating xml_dir.iterdir() would keep
+    # ingesting their stale on-disk XML and silently insert articles
+    # for repealed laws into statutes.db with NULL metadata. By driving
+    # off the index, abrogated SRs whose XML still happens to be on disk
+    # are quietly skipped — the on-disk leftover is harmless until a
+    # separate cleanup pass runs.
+    sr_dirs_present = (
+        {p.name for p in xml_dir.iterdir() if p.is_dir()}
+        if xml_dir.exists() else set()
+    )
+    log.info(
+        "Processing %d laws from index (xml_dir has %d directories on disk)",
+        len(law_index), len(sr_dirs_present),
+    )
 
-    for sr_dir in sr_dirs:
+    for sr_number in sorted(law_index.keys()):
+        sr_dir_name = sr_number.replace(".", "_")
+        sr_dir = xml_dir / sr_dir_name
         if not sr_dir.is_dir():
+            log.debug("SR %s in index but no XML on disk yet, skipping", sr_number)
             continue
 
-        # Reconstruct SR number from directory name
-        sr_number = sr_dir.name.replace("_", ".")
         meta = law_index.get(sr_number, {})
 
         # Insert law metadata
