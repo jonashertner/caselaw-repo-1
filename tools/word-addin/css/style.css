@@ -76,6 +76,15 @@
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --transition: 160ms cubic-bezier(0.2, 0, 0, 1);
   --transition-slow: 280ms cubic-bezier(0.2, 0, 0, 1);
+
+  /* Focus ring — adapts per theme so it stays visible on both light and
+     dark surfaces. The near-black rgba below disappears against --card
+     in dark mode; the dark-mode override below restores contrast. */
+  --ring: rgba(24, 24, 27, 0.08);
+
+  /* Tells the UA which palettes the page supports — auto-themes native
+     scrollbars, form controls, autofill backgrounds, etc. */
+  color-scheme: light dark;
 }
 
 /* --- Dark Mode --- */
@@ -97,6 +106,7 @@
     --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
     --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.5);
+    --ring: rgba(255, 255, 255, 0.22);
   }
 }
 
@@ -117,6 +127,20 @@ body.ms-theme-dark {
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
   --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-3: 0 8px 24px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.5);
+  --ring: rgba(255, 255, 255, 0.22);
+}
+
+/* Form controls don't auto-inherit `color` from <body>. Without this
+   baseline rule the user sees black text on a dark --card background
+   in dark mode (text fields invisible — reported 2026-05-03). */
+input, textarea, select {
+  color: var(--text);
+  caret-color: var(--text);
+  background-color: var(--card);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-3);
 }
 
 /* --- Reset & Base --- */
@@ -225,7 +249,7 @@ html, body {
 
 .lang-select:focus {
   border-color: var(--blue);
-  box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
 .btn-icon {
@@ -277,7 +301,7 @@ html, body {
 
 .search-bar:focus {
   border-color: var(--blue);
-  box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
 .search-bar::placeholder {
@@ -1255,7 +1279,7 @@ html, body {
 
 .settings-input:focus {
   border-color: var(--blue);
-  box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 
 .settings-actions {
