@@ -777,6 +777,12 @@ var UI_STRINGS = {
     it: 'Nessuna citazione di decisione svizzera trovata nel documento.',
     en: 'No Swiss decision citations found in the document.',
   },
+  audit_pii_redacted: {
+    de: '{n} sensible Angaben vor Versand redigiert',
+    fr: '{n} données sensibles caviardées avant envoi',
+    it: '{n} dati sensibili oscurati prima dell\u2019invio',
+    en: '{n} sensitive items redacted before upload',
+  },
   audit_running: {
     de: 'Dokument wird geprüft...', fr: 'Vérification en cours...', it: 'Verifica in corso...', en: 'Auditing document...',
   },

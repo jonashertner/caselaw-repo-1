@@ -2515,6 +2515,21 @@ function renderScan() {
     '<span class="audit-summary-text">' + escHtml(summaryText) + '</span>' +
     '</div>';
 
+  // Privacy banner: surface what was redacted before the document was
+  // sent to the server, so the lawyer can confirm no client data leaked.
+  var pii = report._pii_summary;
+  if (pii && pii.total > 0 && typeof window.formatPIISummary === 'function') {
+    var piiDetails = window.formatPIISummary(pii, lang);
+    var piiLabel = t('audit_pii_redacted', lang, { n: pii.total }) || ('PII redacted: ' + pii.total);
+    html += '<div class="audit-pii-banner" style="' +
+      'display:flex;align-items:center;gap:8px;padding:8px 12px;margin:8px 0;' +
+      'background:var(--blue-light);color:var(--text-2);border-radius:8px;font-size:12px;' +
+      '" title="' + escHtml(piiDetails) + '">' +
+      '<span aria-hidden="true">\uD83D\uDD12</span>' +
+      '<span>' + escHtml(piiLabel) + ' &mdash; ' + escHtml(piiDetails) + '</span>' +
+      '</div>';
+  }
+
   // Bulk actions: re-comment-all (only useful if user dismissed the auto
   // comments) + insert-bibliography
   var bulkActions = '';

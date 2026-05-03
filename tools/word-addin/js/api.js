@@ -151,8 +151,39 @@ async function citeReference(reference, lang) {
 
 // Document audit — single POST that finds every citation, validates existence
 // and pinpoints, and returns annotated_text + structured issues with positions.
+//
+// Privacy: redactPII() runs first when the user has the redaction toggle on
+// (default = on; opt-out via localStorage 'ocl_pii_redact_optout' = '1').
+// The server only ever sees redacted text + opaque placeholders. Citations
+// (BGE/BGer/dockets/Art. X) are PRESERVED, so verification still works.
+// On success, the server's annotated_text is un-redacted before being
+// returned to the caller, so the user sees their original PII restored
+// in the report (without any of it ever leaving the machine).
 async function attestDocument(draftText, lang) {
-  return apiPost('/attest', { draft_text: draftText, lang: lang || 'de' });
+  var redaction = _maybeRedact(draftText);
+  var report = await apiPost('/attest', {
+    draft_text: redaction.redacted,
+    lang: lang || 'de',
+    /* Tell the server-side prompt that placeholders may appear so it
+       doesn't try to "fix" them. Server should treat them as opaque. */
+    pii_redacted: redaction.summary.total > 0,
+  });
+  /* Restore PII in user-visible fields so the lawyer sees their own
+     document text, not [NAME_1]. Server-only fields are left alone. */
+  if (redaction.summary.total > 0 && report) {
+    if (typeof report.annotated_text === 'string') {
+      report.annotated_text = unredact(report.annotated_text, redaction.replacements);
+    }
+    if (Array.isArray(report.issues)) {
+      report.issues.forEach(function (iss) {
+        if (typeof iss.context === 'string') iss.context = unredact(iss.context, redaction.replacements);
+        if (typeof iss.message === 'string') iss.message = unredact(iss.message, redaction.replacements);
+      });
+    }
+    /* Surface the summary so the UI can show "Redacted: 3 names, 1 AHV…" */
+    report._pii_summary = redaction.summary;
+  }
+  return report;
 }
 
 // ── Billing / Pro ───────────────────────────────────────────
@@ -167,12 +198,44 @@ async function validateLicense(key) {
 }
 
 async function verifyReferencePro(licenseKey, selectedText, caseRef, lang) {
-  return apiPost('/billing/verify', {
+  var redaction = _maybeRedact(selectedText);
+  var resp = await apiPost('/billing/verify', {
     license_key: licenseKey,
-    selected_text: selectedText,
+    selected_text: redaction.redacted,
     case_ref: caseRef,
     lang: lang || 'de',
+    pii_redacted: redaction.summary.total > 0,
   });
+  if (redaction.summary.total > 0 && resp) {
+    /* Un-redact any user-visible string the server may echo back. */
+    ['explanation', 'evidence', 'context', 'comment'].forEach(function (k) {
+      if (typeof resp[k] === 'string') resp[k] = unredact(resp[k], redaction.replacements);
+    });
+    resp._pii_summary = redaction.summary;
+  }
+  return resp;
+}
+
+/* Apply window.redactPII when present + user hasn't opted out.
+   Returns the redact() shape so callers can ship .redacted and
+   keep .replacements for un-redacting the response. */
+function _maybeRedact(text) {
+  var passthrough = { redacted: text, replacements: [], summary: { byType: {}, total: 0 } };
+  if (typeof window === 'undefined' || typeof window.redactPII !== 'function') {
+    return passthrough; /* module not loaded — fail open (no redaction) */
+  }
+  try {
+    if (localStorage.getItem('ocl_pii_redact_optout') === '1') return passthrough;
+  } catch (e) { /* localStorage blocked — proceed with redaction */ }
+  return window.redactPII(text || '');
+}
+
+/* Browser-side helper: unredact server-returned strings. */
+function unredact(text, replacements) {
+  if (typeof window !== 'undefined' && typeof window.unredactPII === 'function') {
+    return window.unredactPII(text, replacements);
+  }
+  return text;
 }
 
 async function apiPost(path, body) {
