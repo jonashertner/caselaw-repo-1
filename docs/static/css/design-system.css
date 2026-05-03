@@ -70,10 +70,11 @@
   --max-w-prose: 720px;
   --max-w-narrow: 560px;
   /* Canonical page gutter — single source of truth for horizontal
-     padding. The container max-width includes this padding so desktop
-     content aligns at ~100px on wide screens, while phones retain a
-     usable 20px edge buffer. */
-  --gutter-x: clamp(20px, 5vw, 48px);
+     padding. Brand sits exactly this far from the window edge:
+     32px on a 320px phone (was 20 — felt glued to the edge),
+     ~6vw mid-range, capped at 96px on desktop (was 48 — too tight
+     on wide monitors). */
+  --gutter-x: clamp(32px, 6vw, 96px);
 
   /* Radius / shadow */
   --radius: 8px;
