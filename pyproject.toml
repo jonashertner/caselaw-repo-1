@@ -42,6 +42,9 @@ swiss-caselaw-gap-report = "coverage_report:main"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 addopts = "-m \"not live and not manual\""
+# Make project root importable so tests/qc/ can import the `quality`
+# package (pytest only adds testpath dirs to sys.path by default).
+pythonpath = ["."]
 # scripts/ holds ad-hoc diagnostic scripts (some named *_test.py or test_*.py)
 # that aren't pytest tests. Real tests live in tests/.
 testpaths = ["tests"]
