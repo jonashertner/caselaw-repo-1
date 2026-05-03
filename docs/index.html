@@ -102,7 +102,7 @@
 <!-- Shared design system — gives every page the same tokens, type scale, and
      header/footer/btn/card primitives. Page-specific styles in the inline
      <style> block below override these where the landing diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=18">
+<link rel="stylesheet" href="/static/css/design-system.css?v=19">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
@@ -2287,13 +2287,13 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
     <nav id="primary-nav" aria-label="Primary">
-      <a href="/search/"      data-t="nav_search">Search</a>
-      <a href="/courts/"      data-t="nav_courts">Courts</a>
-      <a href="/laws/"        data-t="nav_laws">Laws</a>
-      <a href="/word/"        data-t="nav_word">Word</a>
-      <a href="/mcp/"         data-t="nav_mcp">MCP</a>
-      <a href="/api/">API</a>
-      <a href="/quality.html" data-t="nav_quality">Quality</a>
+      <a href="/search/"      data-t="nav_search" data-nav-key="search">Search</a>
+      <a href="/courts/"      data-t="nav_courts" data-nav-key="courts">Courts</a>
+      <a href="/laws/"        data-t="nav_laws" data-nav-key="laws">Laws</a>
+      <a href="/word/"        data-t="nav_word" data-nav-key="word">Word</a>
+      <a href="/mcp/"         data-t="nav_mcp" data-nav-key="mcp">MCP</a>
+      <a href="/api/" data-nav-key="api">API</a>
+      <a href="/quality.html" data-t="nav_quality" data-nav-key="quality">Quality</a>
       <span class="lang-sw" role="group" aria-label="Language">
         <a href="?lang=de" data-l="de" class="on">DE</a>
         <a href="?lang=fr" data-l="fr">FR</a>

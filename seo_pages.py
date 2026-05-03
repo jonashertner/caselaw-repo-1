@@ -595,7 +595,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <meta property="og:site_name" content="OpenCaseLaw.ch">
 <meta property="og:locale" content="{_esc(language)}_CH">
 <script type="application/ld+json">{schema_str}</script>
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=14">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=19">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
     /* /entscheid/{{id}} v2 — site chrome wears the shared design system,
@@ -812,13 +812,13 @@ def _render_decision(row: sqlite3.Row) -> str:
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
     <nav aria-label="Primary">
-      <a href="https://opencaselaw.ch/search/">Search</a>
-      <a href="https://opencaselaw.ch/courts/">Courts</a>
-      <a href="https://opencaselaw.ch/laws/">Laws</a>
-      <a href="https://opencaselaw.ch/word/">Word</a>
-      <a href="https://opencaselaw.ch/mcp/">MCP</a>
-      <a href="https://opencaselaw.ch/api/">API</a>
-      <a href="https://opencaselaw.ch/quality.html">Quality</a>
+      <a href="https://opencaselaw.ch/search/" data-nav-key="search">Search</a>
+      <a href="https://opencaselaw.ch/courts/" data-nav-key="courts">Courts</a>
+      <a href="https://opencaselaw.ch/laws/" data-nav-key="laws">Laws</a>
+      <a href="https://opencaselaw.ch/word/" data-nav-key="word">Word</a>
+      <a href="https://opencaselaw.ch/mcp/" data-nav-key="mcp">MCP</a>
+      <a href="https://opencaselaw.ch/api/" data-nav-key="api">API</a>
+      <a href="https://opencaselaw.ch/quality.html" data-nav-key="quality">Quality</a>
       <span class="lang-sw" role="group" aria-label="Language">
         <a href="https://opencaselaw.ch/?lang=de" data-l="de">DE</a>
         <a href="https://opencaselaw.ch/?lang=fr" data-l="fr">FR</a>
@@ -923,20 +923,39 @@ def _render_decision(row: sqlite3.Row) -> str:
 
 <script>
 (function () {{
+  /* Canonical lookup by data-nav-key — fixes RM-stickiness where
+     textContent='Tschertga' could not be looked up after first click. */
   var NAV_I18N = {{
-    'Search':  {{ de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' }},
-    'Courts':  {{ de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' }},
-    'Laws':    {{ de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' }},
-    'Word':    {{ de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' }},
-    'MCP':     {{ de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' }},
-    'API':     {{ de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' }},
-    'Quality': {{ de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' }}
+    search:  {{ de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' }},
+    courts:  {{ de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' }},
+    laws:    {{ de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' }},
+    word:    {{ de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' }},
+    mcp:     {{ de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' }},
+    api:     {{ de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' }},
+    quality: {{ de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }}
+  }};
+  var I18N_FOOTER = {{
+    'footer.product':  {{ de: 'Produkt',     fr: 'Produit',     it: 'Prodotto',        rm: 'Product',     en: 'Product' }},
+    'footer.data':     {{ de: 'Daten',       fr: 'Donnees',     it: 'Dati',            rm: 'Datas',       en: 'Data' }},
+    'footer.about':    {{ de: 'Ueber',       fr: 'A propos',    it: 'Chi siamo',       rm: 'Davart',      en: 'About' }},
+    'footer.search':   {{ de: 'Suche',       fr: 'Recherche',   it: 'Ricerca',         rm: 'Tschertga',   en: 'Search' }},
+    'footer.courts':   {{ de: 'Gerichte',    fr: 'Tribunaux',   it: 'Tribunali',       rm: 'Dretgiras',   en: 'Courts' }},
+    'footer.laws':     {{ de: 'Gesetze',     fr: 'Lois',        it: 'Leggi',           rm: 'Leschas',     en: 'Laws' }},
+    'footer.word':     {{ de: 'Word-Add-in', fr: 'Word add-in', it: 'Componente Word', rm: 'Add-in Word', en: 'Word add-in' }},
+    'footer.mcp':      {{ de: 'MCP',         fr: 'MCP',         it: 'MCP',             rm: 'MCP',         en: 'MCP' }},
+    'footer.api':      {{ de: 'API',         fr: 'API',         it: 'API',             rm: 'API',         en: 'API' }},
+    'footer.paper':    {{ de: 'Paper',       fr: 'Article',     it: 'Articolo',        rm: 'Artitgel',    en: 'Paper' }},
+    'footer.quality':  {{ de: 'Qualitaet',   fr: 'Qualite',     it: 'Qualita',         rm: 'Qualitad',    en: 'Quality' }},
+    'footer.coverage': {{ de: 'Abdeckung',   fr: 'Couverture',  it: 'Copertura',       rm: 'Cuvrida',     en: 'Coverage' }}
   }};
   function applyNavLang(lang) {{
-    document.querySelectorAll('header.site nav > a').forEach(function (a) {{
-      var key = (a.textContent || '').trim();
-      var dict = NAV_I18N[key];
+    document.querySelectorAll('header.site nav > a[data-nav-key]').forEach(function (a) {{
+      var dict = NAV_I18N[a.dataset.navKey];
       if (dict && dict[lang]) a.textContent = dict[lang];
+    }});
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {{
+      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      if (dict && dict[lang]) el.textContent = dict[lang];
     }});
     document.documentElement.setAttribute('lang', lang);
   }}
@@ -988,7 +1007,7 @@ def _render_404(decision_id: str) -> str:
 <title>Entscheid nicht gefunden | OpenCaseLaw</title>
 <meta name="robots" content="noindex">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=14">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=19">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
   main.notfound {{ max-width: 560px; padding-top: var(--s-7); padding-bottom: var(--s-7); }}
@@ -1007,13 +1026,13 @@ def _render_404(decision_id: str) -> str:
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
     <nav aria-label="Primary">
-      <a href="https://opencaselaw.ch/search/">Search</a>
-      <a href="https://opencaselaw.ch/courts/">Courts</a>
-      <a href="https://opencaselaw.ch/laws/">Laws</a>
-      <a href="https://opencaselaw.ch/word/">Word</a>
-      <a href="https://opencaselaw.ch/mcp/">MCP</a>
-      <a href="https://opencaselaw.ch/api/">API</a>
-      <a href="https://opencaselaw.ch/quality.html">Quality</a>
+      <a href="https://opencaselaw.ch/search/" data-nav-key="search">Search</a>
+      <a href="https://opencaselaw.ch/courts/" data-nav-key="courts">Courts</a>
+      <a href="https://opencaselaw.ch/laws/" data-nav-key="laws">Laws</a>
+      <a href="https://opencaselaw.ch/word/" data-nav-key="word">Word</a>
+      <a href="https://opencaselaw.ch/mcp/" data-nav-key="mcp">MCP</a>
+      <a href="https://opencaselaw.ch/api/" data-nav-key="api">API</a>
+      <a href="https://opencaselaw.ch/quality.html" data-nav-key="quality">Quality</a>
       <span class="lang-sw" role="group" aria-label="Language">
         <a href="https://opencaselaw.ch/?lang=de" data-l="de">DE</a>
         <a href="https://opencaselaw.ch/?lang=fr" data-l="fr">FR</a>
@@ -1041,20 +1060,39 @@ def _render_404(decision_id: str) -> str:
 
 <script>
 (function () {{
+  /* Canonical lookup by data-nav-key — fixes RM-stickiness where
+     textContent='Tschertga' could not be looked up after first click. */
   var NAV_I18N = {{
-    'Search':  {{ de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' }},
-    'Courts':  {{ de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' }},
-    'Laws':    {{ de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' }},
-    'Word':    {{ de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' }},
-    'MCP':     {{ de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' }},
-    'API':     {{ de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' }},
-    'Quality': {{ de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' }}
+    search:  {{ de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' }},
+    courts:  {{ de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' }},
+    laws:    {{ de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' }},
+    word:    {{ de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' }},
+    mcp:     {{ de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' }},
+    api:     {{ de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' }},
+    quality: {{ de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }}
+  }};
+  var I18N_FOOTER = {{
+    'footer.product':  {{ de: 'Produkt',     fr: 'Produit',     it: 'Prodotto',        rm: 'Product',     en: 'Product' }},
+    'footer.data':     {{ de: 'Daten',       fr: 'Donnees',     it: 'Dati',            rm: 'Datas',       en: 'Data' }},
+    'footer.about':    {{ de: 'Ueber',       fr: 'A propos',    it: 'Chi siamo',       rm: 'Davart',      en: 'About' }},
+    'footer.search':   {{ de: 'Suche',       fr: 'Recherche',   it: 'Ricerca',         rm: 'Tschertga',   en: 'Search' }},
+    'footer.courts':   {{ de: 'Gerichte',    fr: 'Tribunaux',   it: 'Tribunali',       rm: 'Dretgiras',   en: 'Courts' }},
+    'footer.laws':     {{ de: 'Gesetze',     fr: 'Lois',        it: 'Leggi',           rm: 'Leschas',     en: 'Laws' }},
+    'footer.word':     {{ de: 'Word-Add-in', fr: 'Word add-in', it: 'Componente Word', rm: 'Add-in Word', en: 'Word add-in' }},
+    'footer.mcp':      {{ de: 'MCP',         fr: 'MCP',         it: 'MCP',             rm: 'MCP',         en: 'MCP' }},
+    'footer.api':      {{ de: 'API',         fr: 'API',         it: 'API',             rm: 'API',         en: 'API' }},
+    'footer.paper':    {{ de: 'Paper',       fr: 'Article',     it: 'Articolo',        rm: 'Artitgel',    en: 'Paper' }},
+    'footer.quality':  {{ de: 'Qualitaet',   fr: 'Qualite',     it: 'Qualita',         rm: 'Qualitad',    en: 'Quality' }},
+    'footer.coverage': {{ de: 'Abdeckung',   fr: 'Couverture',  it: 'Copertura',       rm: 'Cuvrida',     en: 'Coverage' }}
   }};
   function applyNavLang(lang) {{
-    document.querySelectorAll('header.site nav > a').forEach(function (a) {{
-      var key = (a.textContent || '').trim();
-      var dict = NAV_I18N[key];
+    document.querySelectorAll('header.site nav > a[data-nav-key]').forEach(function (a) {{
+      var dict = NAV_I18N[a.dataset.navKey];
       if (dict && dict[lang]) a.textContent = dict[lang];
+    }});
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {{
+      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      if (dict && dict[lang]) el.textContent = dict[lang];
     }});
     document.documentElement.setAttribute('lang', lang);
   }}

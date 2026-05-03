@@ -98,7 +98,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- Shared design system: same chrome as / and every other page. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=18">
+<link rel="stylesheet" href="/static/css/design-system.css?v=19">
 <style>
 :root {
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -1288,13 +1288,13 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
     <nav id="primary-nav" aria-label="Primary">
-      <a href="/search/" data-t="nav_search">Search</a>
-      <a href="/courts/" data-t="nav_courts">Courts</a>
-      <a href="/laws/" data-t="nav_laws">Laws</a>
-      <a href="/word/" data-t="nav_word">Word</a>
-      <a href="/mcp/" data-t="nav_mcp">MCP</a>
-      <a href="/api/">API</a>
-      <a href="/quality.html" data-t="nav_quality">Quality</a>
+      <a href="/search/" data-t="nav_search" data-nav-key="search">Search</a>
+      <a href="/courts/" data-t="nav_courts" data-nav-key="courts">Courts</a>
+      <a href="/laws/" data-t="nav_laws" data-nav-key="laws">Laws</a>
+      <a href="/word/" data-t="nav_word" data-nav-key="word">Word</a>
+      <a href="/mcp/" data-t="nav_mcp" data-nav-key="mcp">MCP</a>
+      <a href="/api/" data-nav-key="api">API</a>
+      <a href="/quality.html" data-t="nav_quality" data-nav-key="quality">Quality</a>
       <span class="lang-sw" role="group" aria-label="Language">
         <a href="/?lang=de" data-l="de">DE</a>
         <a href="/?lang=fr" data-l="fr">FR</a>
@@ -3235,35 +3235,45 @@ init();
    - On i18n-capable pages (where window.applyI18n is defined), also
      calls applyI18n() to translate the whole body in-place. */
 (function () {
+  /* Canonical lookup by data-nav-key (added to every nav anchor) so that
+     translating once does NOT lose the key — fixes the RM-stickiness bug
+     where textContent='Tschertga' could not be looked up again. */
   var NAV_I18N = {
-    'Search':  { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    'Courts':  { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    'Laws':    { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    'Word':    { de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' },
-    'MCP':     { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' },
-    'API':     { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' },
-    'Quality': { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' },
-    'Suche':       { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    'Gerichte':    { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    'Gesetze':     { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    'Qualität':    { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' },
-    'Recherche':   { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    'Tribunaux':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    'Lois':        { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    'Qualité':     { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' },
-    'Ricerca':     { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    'Tribunali':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    'Leggi':       { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    'Qualità':     { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' }
+    search:  { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
+    courts:  { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
+    laws:    { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
+    word:    { de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' },
+    mcp:     { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' },
+    api:     { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' },
+    quality: { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }
   };
+  var I18N_FOOTER = {
+    'footer.product':  { de: 'Produkt',   fr: 'Produit',   it: 'Prodotto', rm: 'Product',   en: 'Product' },
+    'footer.data':     { de: 'Daten',     fr: 'Donnees',   it: 'Dati',     rm: 'Datas',     en: 'Data' },
+    'footer.about':    { de: 'Ueber',     fr: 'A propos',  it: 'Chi siamo',rm: 'Davart',    en: 'About' },
+    'footer.search':   { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
+    'footer.courts':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
+    'footer.laws':     { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
+    'footer.word':     { de: 'Word-Add-in', fr: 'Word add-in', it: 'Componente Word', rm: 'Add-in Word', en: 'Word add-in' },
+    'footer.mcp':      { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',      en: 'MCP' },
+    'footer.api':      { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',      en: 'API' },
+    'footer.paper':    { de: 'Paper',     fr: 'Article',   it: 'Articolo',  rm: 'Artitgel', en: 'Paper' },
+    'footer.quality':  { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad', en: 'Quality' },
+    'footer.coverage': { de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', rm: 'Cuvrida', en: 'Coverage' }
+  };
+
   function applyNavLang(lang) {
-    document.querySelectorAll('header.site nav > a').forEach(function (a) {
-      var key = (a.textContent || '').trim();
-      var dict = NAV_I18N[key];
+    document.querySelectorAll('header.site nav > a[data-nav-key]').forEach(function (a) {
+      var dict = NAV_I18N[a.dataset.navKey];
       if (dict && dict[lang]) a.textContent = dict[lang];
+    });
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);
   }
+
   var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
   var stored = null;
   try { stored = localStorage.getItem('lang'); } catch (_) {}
