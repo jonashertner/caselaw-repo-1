@@ -32,8 +32,12 @@
    eaten by the address pattern. */
 var PATTERNS = [
   {
+    /* TLD constrained to LOWERCASE letters: the case-sensitivity of
+       [a-z]{2,} makes "info@x.chHerr" stop at ".ch" because the next
+       character (uppercase 'H') simply doesn't match the class. \b
+       handles plain end-of-word/string for normal cases. */
     type: 'EMAIL',
-    regex: /[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/g,
+    regex: /[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[a-z]{2,}\b/g,
   },
   {
     /* Swiss social-security number: 756.XXXX.XXXX.XX (or with spaces). */
@@ -66,9 +70,12 @@ var PATTERNS = [
   {
     /* Street + number, all four official languages.
        Matches "Bahnhofstrasse 12", "Rue du Rhône 65", "Via Pretorio 7",
-       "Place de la Gare 4". */
+       "Place de la Gare 4". The charset has to cover every Swiss-French
+       and Swiss-Italian accented letter (ô, î, û, ê, ñ in addition to
+       ä/ö/ü/é/à/è/ç) — otherwise streets like "Rue du Rhône" silently
+       leak. */
     type: 'ADDRESS',
-    regex: /\b(?:[A-ZÄÖÜ][A-Za-zäöüéàèç\-]{2,}(?:strasse|gasse|weg|platz|allee|str\.)|(?:Rue|Avenue|Boulevard|Chemin|Place|Route|Via|Piazza|Viale|Vicolo)(?:\s+(?:de|du|des|de\s+la|del|della|delle|dei)?)?\s+[A-Za-zäöüéàèç\-]{2,}(?:\s+[A-Za-zäöüéàèç\-]+){0,3})\s+\d+[a-z]?\b/g,
+    regex: /\b(?:[A-ZÄÖÜ][A-Za-zäöüéàèçôîûêñÄÖÜÉÀÈÇÔÎÛÊÑ\-]{2,}(?:strasse|gasse|weg|platz|allee|str\.)|(?:Rue|Avenue|Boulevard|Chemin|Place|Route|Via|Piazza|Viale|Vicolo)(?:\s+(?:de|du|des|de\s+la|del|della|delle|dei)?)?\s+[A-Za-zäöüéàèçôîûêñÄÖÜÉÀÈÇÔÎÛÊÑ\-]{2,}(?:\s+[A-Za-zäöüéàèçôîûêñÄÖÜÉÀÈÇÔÎÛÊÑ\-]+){0,3})\s+\d+[a-z]?\b/g,
   },
   {
     /* PLZ + city: CH-8001 Zürich  /  8001 Zürich  /  1003 Lausanne. */
@@ -77,9 +84,16 @@ var PATTERNS = [
   },
   {
     /* Title-anchored personal names. Avoids false positives by
-       requiring a leading honorific or professional title. */
+       requiring a leading honorific or professional title.
+
+       Title list covers all four official languages:
+         DE: Herr, Frau, Hr., Fr., Dr., Prof.
+         FR: M., Mme, Mlle, Me, Maître
+         IT: Sig., Sig.ra, Avv., Avvocato
+       Counter `{0,3}` (was `{1,3}`) lets a single surname after the
+       title match — common form in pleadings ("Hr. Müller"). */
     type: 'NAME',
-    regex: /(?:Herr|Frau|Hr\.|Fr\.|Me\.?|Maître|Avv\.|Avvocato|Dr\.|Prof\.)\s+(?:Dr\.\s+|Prof\.\s+|med\.\s+|iur\.\s+)?[A-ZÄÖÜ][a-zäöüéàèç\-]+(?:\s+[A-ZÄÖÜ][a-zäöüéàèç\-]+){1,3}\b/g,
+    regex: /(?:Herr|Frau|Hr\.|Fr\.|Me\.?|Maître|Mme|Mlle|M\.|Sig\.(?:ra)?|Avv\.|Avvocato|Dr\.|Prof\.)\s+(?:Dr\.\s+|Prof\.\s+|med\.\s+|iur\.\s+)?[A-ZÄÖÜ][a-zäöüéàèçôîûêñ\-]+(?:\s+[A-ZÄÖÜ][a-zäöüéàèçôîûêñ\-]+){0,3}\b/g,
   },
 ];
 
