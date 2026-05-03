@@ -11,7 +11,7 @@
 <meta property="og:description" content="29 OpenAPI routes for Swiss case law search. Free, no API key, CORS enabled.">
 <meta property="og:url" content="https://opencaselaw.ch/api/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   main.api { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
@@ -150,8 +150,8 @@
 </header>
 
 <main class="container api" id="main">
-  <p class="eyebrow">REST API · OpenAPI 3.0.3</p>
-  <h1>Call the OpenCaseLaw corpus from any language</h1>
+  <p class="eyebrow" data-i18n="hero.eyebrow">REST API · OpenAPI 3.0.3</p>
+  <h1 data-i18n="hero.h1">Call the OpenCaseLaw corpus from any language</h1>
   <p class="lede">29 documented HTTP routes covering search, citation graph, statute lookup, doctrine timelines, and exports. Free. No API key. CORS enabled (<code>Access-Control-Allow-Origin: *</code>). Same backend that powers Claude, ChatGPT, the Word add-in, and <code>opencaselaw.ch/search</code>.</p>
 
   <div class="api-cta">
@@ -319,6 +319,13 @@
 </footer>
 
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: 'REST-API · OpenAPI 3.0.3', fr: 'API REST · OpenAPI 3.0.3', it: 'API REST · OpenAPI 3.0.3', rm: 'API REST · OpenAPI 3.0.3', en: 'REST API · OpenAPI 3.0.3' },
+    'hero.h1': { de: 'Den OpenCaseLaw-Korpus aus jeder Programmiersprache abfragen', fr: "Interroger le corpus OpenCaseLaw depuis n'importe quel langage", it: 'Interrogare il corpus OpenCaseLaw da qualsiasi linguaggio', rm: 'Interrogar il corpus OpenCaseLaw da mintga linguatg', en: 'Call the OpenCaseLaw corpus from any language' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -364,7 +371,8 @@
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);

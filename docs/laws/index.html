@@ -11,7 +11,7 @@
 <meta property="og:description" content="5,510 federal laws + 15,722 cantonal acts, full-text searchable.">
 <meta property="og:url" content="https://opencaselaw.ch/laws/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   main.laws { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
@@ -192,9 +192,9 @@
 </header>
 
 <main class="container laws" id="main">
-  <p class="eyebrow">Look up · Federal + cantonal</p>
-  <h1>Swiss federal and cantonal laws</h1>
-  <p class="lede">Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.</p>
+  <p class="eyebrow" data-i18n="hero.eyebrow">Look up · Federal + cantonal</p>
+  <h1 data-i18n="hero.h1">Swiss federal and cantonal laws</h1>
+  <p class="lede" data-i18n="hero.lede">Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.</p>
 
   <form class="laws-form" id="form" role="search" aria-label="Search Swiss laws">
     <input class="laws-input" type="search" id="q" name="q"
@@ -532,6 +532,14 @@ init();
 </script>
 
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: 'Nachschlagen · Bund + Kantone', fr: 'Consulter · fédéral + cantonal', it: 'Consulta · federale + cantonale', rm: 'Consultar · federal + cantunal', en: 'Look up · Federal + cantonal' },
+    'hero.h1': { de: 'Schweizer Bundes- und kantonale Gesetze', fr: 'Lois fédérales et cantonales suisses', it: 'Leggi federali e cantonali svizzere', rm: 'Leschas federalas e cantunalas svizras', en: 'Swiss federal and cantonal laws' },
+    'hero.lede': { de: "Volltext von 5'510 Bundesgesetzen (Spiegel von Fedlex SPARQL) plus 15'722 kantonale Erlasse (LexWork direkt + LexFind-Fallback). Artikelweise Suche mit Snippets. Jeden Artikel über Abkürzung + Nummer nachschlagen. Frei, ohne Anmeldung, ohne API-Key.", fr: "Texte intégral de 5'510 lois fédérales (miroir de Fedlex SPARQL) et 15'722 actes cantonaux (LexWork direct + repli LexFind). Recherche par article avec extraits. Consultez n'importe quel article par abréviation + numéro. Gratuit, sans inscription, sans clé API.", it: "Testo integrale di 5'510 leggi federali (mirror di Fedlex SPARQL) più 15'722 atti cantonali (LexWork diretto + fallback LexFind). Ricerca per articolo con estratti. Consultate qualunque articolo tramite abbreviazione + numero. Gratuito, senza registrazione, senza chiave API.", rm: "Text cumplet da 5'510 leschas federalas (spievel da Fedlex SPARQL) e 15'722 actas cantunalas (LexWork directamain + repli LexFind). Tschertga per artitgel cun extracts. Consultar mintga artitgel cun l'abreviaziun + numer. Gratuit, senza annunzia, senza clav API.", en: 'Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -577,7 +585,8 @@ init();
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);

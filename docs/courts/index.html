@@ -11,7 +11,7 @@
 <meta property="og:description" content="121 Swiss courts indexed — federal, regulatory, and cantonal. Per-court counts and date ranges.">
 <meta property="og:url" content="https://opencaselaw.ch/courts/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   main.courts { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w); }
@@ -164,9 +164,9 @@
 </header>
 
 <main class="container courts" id="main">
-  <p class="eyebrow">Browse · 121 courts</p>
-  <h1>Swiss courts in the corpus</h1>
-  <p class="lede" id="lede">Every Swiss federal, regulatory, international and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.</p>
+  <p class="eyebrow" data-i18n="hero.eyebrow">Browse · 121 courts</p>
+  <h1 data-i18n="hero.h1">Swiss courts in the corpus</h1>
+  <p class="lede" id="lede" data-i18n="hero.lede">Every Swiss federal, regulatory, international and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.</p>
 
   <div class="courts-controls">
     <input class="courts-search" type="search" id="filter"
@@ -462,6 +462,14 @@ init();
 </script>
 
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: 'Stöbern · 121 Gerichte', fr: 'Parcourir · 121 tribunaux', it: 'Sfoglia · 121 tribunali', rm: 'Sfegliar · 121 dretgiras', en: 'Browse · 121 courts' },
+    'hero.h1': { de: 'Schweizer Gerichte im Korpus', fr: 'Tribunaux suisses dans le corpus', it: 'Tribunali svizzeri nel corpus', rm: 'Dretgiras svizras en il corpus', en: 'Swiss courts in the corpus' },
+    'hero.lede': { de: 'Alle Schweizer Bundes-, Regulierungs-, internationalen und kantonalen Gerichte, deren publizierte Entscheide OpenCaseLaw indexiert. Pro Gericht Anzahl, Zeitraum, Sprachen und Direktsuche.', fr: 'Tous les tribunaux suisses fédéraux, régulatoires, internationaux et cantonaux dont OpenCaseLaw indexe les décisions publiées. Par tribunal : nombre, période, langues et recherche directe.', it: 'Tutti i tribunali svizzeri federali, di regolazione, internazionali e cantonali le cui decisioni pubblicate sono indicizzate da OpenCaseLaw. Per tribunale: conteggi, intervalli, lingue e ricerca diretta.', rm: 'Tut las dretgiras svizras federalas, da regulaziun, internaziunalas e cantunalas, da las qualas las decisiuns publitgadas vegnan indexadas da OpenCaseLaw. Per dretgira: dumbers, perioda, linguas e tschertga directa.', en: 'Every Swiss federal, regulatory, international and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -507,7 +515,8 @@ init();
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);

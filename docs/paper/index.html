@@ -16,7 +16,7 @@
 <meta name="citation_author" content="Hertner, Jonas">
 <meta name="citation_publication_date" content="2026/03/20">
 <meta name="citation_pdf_url" content="https://opencaselaw.ch/paper/opencaselaw-arxiv-final.pdf">
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   main.paper { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
@@ -114,8 +114,8 @@
 </header>
 
 <main class="container paper" id="main">
-  <p class="eyebrow">Research preprint · March 2026</p>
-  <h1>OpenCaseLaw: An Open Dataset and Search Platform for Swiss Court Decisions</h1>
+  <p class="eyebrow" data-i18n="hero.eyebrow">Research preprint · March 2026</p>
+  <h1 data-i18n="hero.h1">OpenCaseLaw: An Open Dataset and Search Platform for Swiss Court Decisions</h1>
 
   <div class="paper-meta">
     <span><strong>Jonas Hertner</strong></span>
@@ -250,6 +250,13 @@
 </footer>
 
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: 'Forschungspreprint · März 2026', fr: 'Préimpression · mars 2026', it: 'Preprint di ricerca · marzo 2026', rm: 'Preprint da retschertga · mars 2026', en: 'Research preprint · March 2026' },
+    'hero.h1': { de: 'OpenCaseLaw: Ein offener Datensatz und eine Suchplattform für Schweizer Gerichtsentscheide', fr: 'OpenCaseLaw : un jeu de données ouvert et une plateforme de recherche pour les décisions des tribunaux suisses', it: 'OpenCaseLaw: un dataset aperto e una piattaforma di ricerca per le decisioni dei tribunali svizzeri', rm: 'OpenCaseLaw: in dataset avert ed ina plattafurma da tschertga per las decisiuns dals tribunals svizzers', en: 'OpenCaseLaw: An Open Dataset and Search Platform for Swiss Court Decisions' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -295,7 +302,8 @@
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);

@@ -102,7 +102,7 @@
 <!-- Shared design system — gives every page the same tokens, type scale, and
      header/footer/btn/card primitives. Page-specific styles in the inline
      <style> block below override these where the landing diverges. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <style>
 :root {
   /* ── Fonts ───────────────────────────────────────────────── */
@@ -2319,8 +2319,8 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
       <p class="hero-v3-function" data-t="hero_v3_function">Every published Swiss court decision, every federal article, every cited authority — accessible to AI in one URL.</p>
       <p class="hero-v3-availability" data-t="hero_v3_availability"><code>mcp.opencaselaw.ch</code> · works in Claude, ChatGPT, Cursor, Gemini and Copilot Studio · also via REST and bulk download.</p>
       <nav class="hero-v3-ctas" aria-label="Primary actions">
-        <a href="#connect" class="hero-v3-link"><span data-t="hero_cta_connect_v3">Connect</span> <span class="hero-v3-arrow">↓</span></a>
-        <a href="/entscheide/" class="hero-v3-link"><span data-t="hero_cta_browse_v3">Browse</span> <span class="hero-v3-arrow">→</span></a>
+        <a href="/mcp/" class="hero-v3-link"><span data-t="hero_cta_connect_v3">Connect</span> <span class="hero-v3-arrow">→</span></a>
+        <a href="/search/" class="hero-v3-link"><span data-t="hero_cta_browse_v3">Browse</span> <span class="hero-v3-arrow">→</span></a>
       </nav>
       <p class="hero-v3-stamp" aria-label="Dataset timestamp and daily delta">
         <span data-t="hero_v3_asof">As of</span>
@@ -3103,7 +3103,7 @@ const I18N = {
     hero_v3_since: 'seit gestern',
     hero_v3_function: 'Jeder publizierte Schweizer Gerichtsentscheid, jeder Bundesartikel, jede zitierte Autorität — über eine URL für jede KI zugänglich.',
     hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · funktioniert in Claude, ChatGPT, Cursor, Gemini und Copilot Studio · auch via REST und Bulk-Download.',
-    hero_cta_connect_v3: 'Verbinden ↓',
+    hero_cta_connect_v3: 'Verbinden',
     hero_cta_browse_v3: 'Durchsuchen',
     hero_v3_stamp_decisions: 'Entscheide',
     hero_v3_stamp_courts: 'Gerichte',
@@ -3385,7 +3385,7 @@ const I18N = {
     hero_v3_since: 'depuis hier',
     hero_v3_function: 'Chaque arrêt publié de tribunal suisse, chaque article fédéral, chaque autorité citée — accessible à toute IA via une seule URL.',
     hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · fonctionne dans Claude, ChatGPT, Cursor, Gemini et Copilot Studio · aussi via REST et téléchargement en masse.',
-    hero_cta_connect_v3: 'Connecter ↓',
+    hero_cta_connect_v3: 'Connecter',
     hero_cta_browse_v3: 'Parcourir',
     hero_v3_stamp_decisions: 'décisions',
     hero_v3_stamp_courts: 'tribunaux',
@@ -3667,7 +3667,7 @@ const I18N = {
     hero_v3_since: 'da ieri',
     hero_v3_function: 'Ogni sentenza pubblicata dei tribunali svizzeri, ogni articolo federale, ogni autorità citata — accessibile a qualsiasi IA tramite un unico URL.',
     hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · funziona in Claude, ChatGPT, Cursor, Gemini e Copilot Studio · anche via REST e download in blocco.',
-    hero_cta_connect_v3: 'Collega ↓',
+    hero_cta_connect_v3: 'Collega',
     hero_cta_browse_v3: 'Sfoglia',
     hero_v3_stamp_decisions: 'decisioni',
     hero_v3_stamp_courts: 'tribunali',
@@ -3949,7 +3949,7 @@ const I18N = {
     hero_v3_since: 'dapi ier',
     hero_v3_function: 'Mintga decisiun publitgada dals tribunals svizzers, mintga artitgel federal, mintga autoritad citada — accessibel per mintga IA via in sulet URL.',
     hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · funcziuna en Claude, ChatGPT, Cursor, Gemini e Copilot Studio · era via REST e download en mass.',
-    hero_cta_connect_v3: 'Connectar ↓',
+    hero_cta_connect_v3: 'Connectar',
     hero_cta_browse_v3: 'Sfegliar',
     hero_v3_stamp_decisions: 'decisiuns',
     hero_v3_stamp_courts: 'dretgiras',
@@ -4231,7 +4231,7 @@ const I18N = {
     hero_v3_since: 'since yesterday',
     hero_v3_function: 'Every published Swiss court decision, every federal article, every cited authority — accessible to AI in one URL.',
     hero_v3_availability: '<code>mcp.opencaselaw.ch</code> · works in Claude, ChatGPT, Cursor, Gemini and Copilot Studio · also via REST and bulk download.',
-    hero_cta_connect_v3: 'Connect ↓',
+    hero_cta_connect_v3: 'Connect',
     hero_cta_browse_v3: 'Browse',
     hero_v3_stamp_decisions: 'decisions',
     hero_v3_stamp_courts: 'courts',

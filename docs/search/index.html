@@ -17,7 +17,7 @@
      bandwidth save. -->
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   /* Page-specific layout — generous vertical rhythm so each section
@@ -179,9 +179,9 @@
 </header>
 
 <main class="container search" id="main">
-  <p class="eyebrow">Search · 971,067 decisions</p>
-  <h1>Search the open Swiss corpus</h1>
-  <p class="lede">Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.</p>
+  <p class="eyebrow" data-i18n="hero.eyebrow">Search · 971,067 decisions</p>
+  <h1 data-i18n="hero.h1">Search the open Swiss corpus</h1>
+  <p class="lede" data-i18n="hero.lede">Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.</p>
 
   <form class="search-form" id="form" role="search" aria-label="Search Swiss case law">
     <input class="search-input" type="search" id="q" name="q"
@@ -513,6 +513,14 @@ init();
 </script>
 
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: "Suche · 971'067 Entscheide", fr: "Recherche · 971'067 décisions", it: "Ricerca · 971'067 decisioni", rm: "Tschertga · 971'067 decisiuns", en: 'Search · 971,067 decisions' },
+    'hero.h1': { de: 'Den offenen Schweizer Korpus durchsuchen', fr: 'Rechercher dans le corpus suisse ouvert', it: 'Cerca nel corpus svizzero aperto', rm: 'Tschertgar en il corpus svizzer avert', en: 'Search the open Swiss corpus' },
+    'hero.lede': { de: 'Volltextsuche über alle publizierten Schweizer Gerichtsentscheide. DE, FR, IT. Ohne Anmeldung, ohne API-Key. Gleiches MCP-Backend wie für Claude, ChatGPT und das Word-Add-in.', fr: "Recherche plein texte sur toutes les décisions publiées des tribunaux suisses. DE, FR, IT. Sans inscription ni clé API. Même backend MCP que Claude, ChatGPT et l'add-in Word.", it: 'Ricerca a testo pieno su tutte le decisioni pubblicate dei tribunali svizzeri. DE, FR, IT. Senza registrazione, senza chiave API. Stesso backend MCP usato da Claude, ChatGPT e dal componente Word.', rm: "Tschertga da text cumplet sur tut las decisiuns publitgadas dals tribunals svizzers. DE, FR, IT. Senza annunzia, senza clav API. Medem MCP-Backend che Claude, ChatGPT e l'add-in Word.", en: 'Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -558,7 +566,8 @@ init();
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);

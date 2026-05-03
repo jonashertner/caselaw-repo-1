@@ -98,7 +98,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- Shared design system: same chrome as / and every other page. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <style>
 :root {
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -1311,7 +1311,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
 </header>
 
 <main id="main" class="container" style="padding-top: var(--s-6); padding-bottom: var(--s-7);">
-  <p class="eyebrow">About</p>
+  <p class="eyebrow" data-i18n="hero.eyebrow">About</p>
   <h1 data-t="ueber_h1">Über OpenCaseLaw</h1>
   <p class="lede" data-t="ueber_sub">OpenCaseLaw ist der grösste offene Datensatz Schweizer Gerichtsentscheide und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar, täglich aktualisiert, unabhängig finanziert.</p>
 
@@ -3209,6 +3209,12 @@ async function init() {
 init();
 </script>
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: 'Über', fr: 'À propos', it: 'Chi siamo', rm: 'Davart', en: 'About' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -3254,7 +3260,8 @@ init();
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);

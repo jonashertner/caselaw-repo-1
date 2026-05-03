@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <!-- Shared design system: tokens, fonts, header/footer chrome.
      Inline styles below only carry dashboard-specific layout. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
 /* Tokens come from design-system.css. */
@@ -190,8 +190,8 @@ h1 {
 </header>
 
 <main class="container">
-<p class="eyebrow">Operational · live</p>
-<h1>Data quality</h1>
+<p class="eyebrow" data-i18n="hero.eyebrow">Operational · live</p>
+<h1 data-i18n="hero.h1">Data quality</h1>
 <p class="lede">
     Every nightly publish runs <span id="check-count">…</span> integrity, schema and content checks
     against the full corpus before users see new data. A critical regression
@@ -539,6 +539,13 @@ fetch("quality.json", { cache: "no-store" })
     });
 </script>
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: 'Operativ · live', fr: 'Opérationnel · en direct', it: 'Operativo · live', rm: 'Operativ · live', en: 'Operational · live' },
+    'hero.h1': { de: 'Datenqualität', fr: 'Qualité des données', it: 'Qualità dei dati', rm: 'Qualitad da las datas', en: 'Data quality' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -584,7 +591,8 @@ fetch("quality.json", { cache: "no-store" })
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);

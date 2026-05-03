@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://opencaselaw.ch/coverage/">
 <!-- Shared design system — provides cross-site nav + footer. Inline
      styles below override layout/colour for the dashboard. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=20">
+<link rel="stylesheet" href="/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   /* Status palette — semantic tones layered on top of design-system tokens.
@@ -168,8 +168,8 @@
 </header>
 
 <main class="coverage">
-  <p class="eyebrow">Operational · scrapers</p>
-  <h1>Coverage</h1>
+  <p class="eyebrow" data-i18n="hero.eyebrow">Operational · scrapers</p>
+  <h1 data-i18n="hero.h1">Coverage</h1>
   <p class="lead">
     Per-source scraper health for the OpenCaseLaw Swiss legal corpus.
     Refreshed nightly by the publish pipeline (03:00&nbsp;UTC). The
@@ -489,6 +489,13 @@ document.querySelectorAll(".filters button").forEach(btn => {
 loadHealth();
 </script>
 <script>
+/* Per-page i18n table — translated by the shared IIFE walker. */
+window.I18N_PAGE = {
+    'hero.eyebrow': { de: 'Operativ · Scraper', fr: 'Opérationnel · scrapers', it: 'Operativo · scraper', rm: 'Operativ · scrapers', en: 'Operational · scrapers' },
+    'hero.h1': { de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', rm: 'Cuvrida', en: 'Coverage' }
+  };
+</script>
+<script>
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
@@ -534,7 +541,8 @@ loadHealth();
       if (dict && dict[lang]) a.textContent = dict[lang];
     });
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var dict = I18N_FOOTER[el.getAttribute('data-i18n')];
+      var key = el.getAttribute('data-i18n');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
     document.documentElement.setAttribute('lang', lang);
