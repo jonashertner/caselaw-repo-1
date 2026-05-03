@@ -17,6 +17,7 @@ var state = {
   error: null,
   detail: null,
   caseBrief: null,
+  structure: null,  /* /api/structure response — gold-standard E. numbers */
   verifyResult: null,
   verifyText: '',
   courts: [],
@@ -894,12 +895,33 @@ function renderDetail() {
   // the body as a flat block and skip the pinpoint affordances —
   // showing "E. ?" with a non-functional insert button would be a
   // regression vs. just showing the text.
-  var ewList = cb && (cb.key_erwaegungen || cb.erwaegungen);
+  /* Prefer /api/structure (dedicated decision_structure.db, federal courts):
+     it returns one entry per Erwägung paragraph with `e_number`, `depth`,
+     `parent`, and `text_excerpt`/`text` — gold-standard source. Fall back
+     to the case-brief `key_erwaegungen` (which also exposes `e_number`,
+     historically also `number` from older API versions). */
+  var ewList = null;
+  if (state.structure && Array.isArray(state.structure.erwaegungen_paragraphs)
+      && state.structure.erwaegungen_paragraphs.length) {
+    /* Normalise structure rows to the same shape the renderer below
+       expects (number + text). We use text_excerpt because the full
+       text isn't returned by /api/structure to keep the payload small;
+       a future iteration can lazily fetch /api/erwaegung/{id}/{e} on
+       expand for the verbatim full body. */
+    ewList = state.structure.erwaegungen_paragraphs.map(function (p) {
+      return { e_number: p.e_number, depth: p.depth, text: p.text || p.text_excerpt || '' };
+    });
+  } else if (cb) {
+    ewList = cb.key_erwaegungen || cb.erwaegungen || null;
+  }
   if (ewList && ewList.length) {
     html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('section_erwaegungen', lang)) + '</div>';
     for (var i = 0; i < ewList.length; i++) {
       var e = ewList[i];
-      var rawNum = e.number;
+      /* The API returns `e_number` (snake_case) — older add-in code
+         only checked `.number` which silently always failed. Accept
+         both so we work against any vintage of the server response. */
+      var rawNum = e.e_number || e.number;
       var hasRealNum = (typeof rawNum === 'string' && /^\d+(?:\.\d+)*$/.test(rawNum)) ||
                        (typeof rawNum === 'number' && isFinite(rawNum));
       var num = hasRealNum ? String(rawNum) : '';
@@ -1630,11 +1652,13 @@ async function handleAppClick(e) {
           state.view = state.previousView;
           state.detail = null;
           state.caseBrief = null;
+          state.structure = null;
           state.error = null;
         } else {
           state.view = 'search';
           state.detail = null;
           state.caseBrief = null;
+          state.structure = null;
           state.verifyResult = null;
           state.supportResult = null;
           state.supportText = '';
@@ -1952,6 +1976,7 @@ async function showDetail(decision) {
   state.view = 'detail';
   state.detail = decision;
   state.caseBrief = null;
+  state.structure = null;
   var id = decision.decision_id || decision.docket_number;
   // Hover-prefetch hit: if the user paused over this card before
   // clicking, we already have the detail payload in memory. Skip the
@@ -1961,12 +1986,17 @@ async function showDetail(decision) {
     state.detail = Object.assign({}, decision, cached);
     state.loading = false;
     render();
-    // Still fetch the case-brief in the background so we have the
-    // structured Sachverhalt / Erwägungen / Dispositiv (the prefetch
-    // only carries the lighter getDecision payload).
+    // Still fetch case-brief AND the structured-paragraphs sidecar
+    // in the background. The structure DB has gold-standard E. numbers
+    // for federal decisions; case-brief has Sachverhalt / statutes.
     try {
-      var brief = await getCaseBrief(id).catch(function () { return null; });
-      if (brief) { state.caseBrief = brief; render(); }
+      var pair = await Promise.all([
+        getCaseBrief(id).catch(function () { return null; }),
+        getDecisionStructure(id).catch(function () { return null; }),
+      ]);
+      if (pair[0]) state.caseBrief = pair[0];
+      if (pair[1]) state.structure = pair[1];
+      if (pair[0] || pair[1]) render();
     } catch (e) { /* silent */ }
     return;
   }
@@ -1976,9 +2006,11 @@ async function showDetail(decision) {
     var results = await Promise.all([
       getDecision(id).catch(function () { return null; }),
       getCaseBrief(id).catch(function () { return null; }),
+      getDecisionStructure(id).catch(function () { return null; }),
     ]);
     if (results[0]) state.detail = Object.assign({}, decision, results[0]);
     state.caseBrief = results[1];
+    state.structure = results[2];
   } catch (e) {
     state.error = e;
   }

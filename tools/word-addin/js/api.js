@@ -112,6 +112,17 @@ async function getCaseBrief(caseRef) {
   return apiFetch('/case-brief/' + encodeURIComponent(caseRef));
 }
 
+/* Structured Sachverhalt + Erwägungen + Dispositiv from the dedicated
+   decision_structure.db. Federal courts only (BGE/BGer/BVGer/BStGer).
+   Returns null on 404 so callers can degrade gracefully for cantonal
+   decisions where structure isn't extracted. The renderer prefers this
+   source over case-brief because each Erwägung paragraph comes with a
+   verified `e_number` ("3", "3.1", "3.2.1") suitable for inline pinpoint
+   citations and one-click insert. */
+async function getDecisionStructure(decisionId) {
+  return apiFetch('/structure/' + encodeURIComponent(decisionId));
+}
+
 async function listCourts() {
   return apiFetch('/courts');
 }
