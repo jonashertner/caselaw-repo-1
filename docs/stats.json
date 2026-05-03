@@ -1873,7 +1873,6 @@
     "2026": 8471
   },
   "recent_daily": {
-    "2026-04-02": 76,
     "2026-04-07": 65,
     "2026-04-08": 42,
     "2026-04-09": 53,
@@ -2220,7 +2219,7 @@
     }
   },
   "by_month": {
-    "2023-05": 4085,
+    "2023-05": 3824,
     "2023-06": 4455,
     "2023-07": 3394,
     "2023-08": 3752,
@@ -2257,7 +2256,7 @@
     "2026-03": 2334,
     "2026-04": 709
   },
-  "generated_at": "2026-05-02T12:51:17.993756+00:00",
+  "generated_at": "2026-05-03T00:42:37.265646+00:00",
   "scraper_health": {
     "run_at": "2026-05-02T02:46:51.718018+00:00",
     "run_duration_s": 6411.4,
@@ -3318,20 +3317,20 @@
       "ZG": 617,
       "ZH": 135
     },
-    "commentaries": 362,
+    "commentaries": 1104,
     "citation_edges": 8631598,
     "statute_edges": 11243363
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 63061,
+      "citation_count": 60600,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 181521
+      "ref_count": 179808
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3340,20 +3339,20 @@
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_1_I_3"
     },
     "language_split": {
-      "de_pct": 46.2,
-      "fr_pct": 45.5,
+      "de_pct": 46.3,
+      "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 969573
+      "total": 971067
     },
     "regeste_coverage": {
-      "pct": 38.7,
-      "with_regeste": 374870,
-      "total": 969573
+      "pct": 34.9,
+      "with_regeste": 338961,
+      "total": 971067
     },
     "graph_size": {
-      "decision_edges": 6679721,
-      "statute_edges": 11629465,
-      "total": 18309186
+      "decision_edges": 6486569,
+      "statute_edges": 11243363,
+      "total": 17729932
     }
   },
   "traffic": {
@@ -3944,71 +3943,17 @@
     }
   ],
   "delta": {
-    "total": 418,
+    "total": 0,
     "by_court": {
-      "bger": 88,
-      "ge_gerichte": 17,
-      "bvger": 58,
-      "ti_gerichte": 13,
-      "vd_gerichte": 66,
-      "bge": 4,
-      "zh_sozialversicherungsgericht": 18,
-      "zh_obergericht": 19,
-      "bl_gerichte": 13,
-      "gr_gerichte": 8,
-      "fr_gerichte": 38,
-      "bstger": 1,
-      "be_verwaltungsgericht": 9,
-      "bs_appellationsgericht": 6,
-      "ne_gerichte": 9,
-      "sg_versicherungsgericht": 11,
-      "zh_handelsgericht": 1,
-      "ag_strafgericht": 1,
-      "ag_versicherungsgericht": 3,
-      "ag_zivilgericht": 2,
-      "gl_gerichte": 1,
-      "zg_obergericht": 2,
-      "zh_baurekursgericht": 1,
       "ecthr_chamber": 1087,
-      "ju_gerichte": 5,
-      "ag_spezialverwaltungsgericht": 4,
-      "hudoc_ch": 1,
-      "bge_egmr": 1,
-      "ag_handelsgericht": 1,
-      "ecthr_committee": 1,
+      "ecthr_committee": 222,
       "ecthr_grand_chamber": 80,
-      "zh_bezirksgericht_horgen": 6,
-      "zh_bezirksgericht_dietikon": 2,
-      "zh_bezirksgericht_dielsdorf": 1,
-      "zh_bezirksgericht_hinwil": 1,
-      "zh_bezirksgericht_uster": 1,
       "sav_kantone": 1
     },
-    "by_canton": {
-      "GE": 17,
-      "VD": 66,
-      "ZH": 50,
-      "TI": 13,
-      "BE": 9,
-      "BL": 13,
-      "SG": 11,
-      "GR": 8,
-      "FR": 38,
-      "AG": 11,
-      "BS": 6,
-      "NE": 9,
-      "ZG": 2,
-      "CE": 5,
-      "GL": 1,
-      "JU": 5
-    },
+    "by_canton": {},
     "corpus": {
-      "federal_laws": 6,
-      "federal_law_articles": 107,
-      "cantonal_law_articles": -27,
-      "citation_edges": 37,
-      "statute_edges": 97
+      "commentaries": 742
     },
-    "previous_generated_at": "2026-05-01T04:01:24.615043+00:00"
+    "previous_generated_at": "2026-05-02T12:51:17.993756+00:00"
   }
 }
