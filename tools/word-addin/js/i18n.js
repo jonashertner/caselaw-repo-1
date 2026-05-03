@@ -783,6 +783,70 @@ var UI_STRINGS = {
     it: '{n} dati sensibili oscurati prima dell\u2019invio',
     en: '{n} sensitive items redacted before upload',
   },
+
+  /* Strengthen — Pro feature #2 (paragraph review) */
+  btn_strengthen: {
+    de: 'Stärken', fr: 'Renforcer', it: 'Rafforzare', en: 'Strengthen',
+  },
+  strengthen_title: {
+    de: 'Argument prüfen & stärken',
+    fr: 'Vérifier et renforcer',
+    it: 'Verifica e rafforza',
+    en: 'Verify & Strengthen',
+  },
+  strengthen_subtitle: {
+    de: 'Absatz am Cursor wird geprüft und mit weiteren Leitentscheiden ergänzt.',
+    fr: 'Le paragraphe au curseur est vérifié et complété par d\u2019autres arrêts de principe.',
+    it: 'Il paragrafo al cursore viene verificato e arricchito con ulteriori decisioni guida.',
+    en: 'Paragraph at the cursor is verified and supplemented with additional leading cases.',
+  },
+  strengthen_no_text: {
+    de: 'Kein Text gefunden — bitte Absatz markieren oder Cursor in einen Absatz setzen.',
+    fr: 'Aucun texte trouvé — sélectionnez un paragraphe ou placez le curseur dans un paragraphe.',
+    it: 'Nessun testo trovato — selezionate un paragrafo o posizionate il cursore in un paragrafo.',
+    en: 'No text found — select a paragraph or place the cursor in a paragraph.',
+  },
+  strengthen_start: {
+    de: 'Absatz prüfen', fr: 'Vérifier le paragraphe',
+    it: 'Verifica paragrafo', en: 'Verify paragraph',
+  },
+  strengthen_retry: {
+    de: 'Nochmals versuchen', fr: 'Réessayer', it: 'Riprova', en: 'Retry',
+  },
+  strengthen_verified: {
+    de: 'Geprüfte Zitate', fr: 'Citations vérifiées',
+    it: 'Citazioni verificate', en: 'Verified citations',
+  },
+  strengthen_suggested: {
+    de: 'Weitere relevante Leitentscheide',
+    fr: 'Autres arrêts de principe pertinents',
+    it: 'Altre decisioni guida rilevanti',
+    en: 'Additional leading cases',
+  },
+  strengthen_commentary: {
+    de: 'Lehrmeinung', fr: 'Doctrine', it: 'Dottrina', en: 'Commentary',
+  },
+  strengthen_insert_btn: {
+    de: 'Einfügen', fr: 'Insérer', it: 'Inserisci', en: 'Insert',
+  },
+  strengthen_no_results: {
+    de: 'Keine Zitate oder anwendbaren Statuten im Absatz erkannt.',
+    fr: 'Aucune citation ou disposition applicable détectée dans le paragraphe.',
+    it: 'Nessuna citazione o disposizione applicabile rilevata nel paragrafo.',
+    en: 'No citations or applicable statutes detected in the paragraph.',
+  },
+  strength_strong: {
+    de: 'Starkes Argument', fr: 'Argument solide',
+    it: 'Argomentazione solida', en: 'Strong argument',
+  },
+  strength_medium: {
+    de: 'Mittleres Argument', fr: 'Argument moyen',
+    it: 'Argomentazione media', en: 'Medium argument',
+  },
+  strength_weak: {
+    de: 'Schwaches Argument', fr: 'Argument faible',
+    it: 'Argomentazione debole', en: 'Weak argument',
+  },
   audit_running: {
     de: 'Dokument wird geprüft...', fr: 'Vérification en cours...', it: 'Verifica in corso...', en: 'Auditing document...',
   },

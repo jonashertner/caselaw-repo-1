@@ -136,6 +136,22 @@ class MockDecisionRequest(BaseModel):
     limit: int = 8
 
 
+class StrengthenRequest(BaseModel):
+    """Request body for Pro paragraph Verify-and-Strengthen.
+
+    The Word add-in (>=v3 redactor) sends ``redacted_text``. Always
+    redacted client-side; server-side redaction guard re-runs to enforce
+    the contract for any non-Word caller. Paragraph-only scoping —
+    multi-paragraph review would dilute the per-suggestion ranking;
+    lawyers run Strengthen 3-5 times per document, not once on the
+    whole thing."""
+    license_key: str
+    redacted_text: str = Field(..., max_length=8000)
+    lang: str = "de"
+    client_redactor_version: str | None = None
+    client_redactor_summary: dict | None = None
+
+
 class VerifyRequest(BaseModel):
     """Request body for Pro reference verification.
 
@@ -9629,6 +9645,151 @@ def _audit_grounding(
     return issues, meta
 
 
+def _handle_strengthen(*, redacted_text: str, lang: str = "de") -> dict:
+    """Pro paragraph "Verify-and-Strengthen" — combines existing helpers
+    into one structured response per paragraph:
+
+      1. Parse Swiss-case citations (BGE/BGer/BVGer/...) + statute refs.
+      2. Verify each citation exists in the corpus.
+      3. For each cited statute, find leading cases NOT already cited
+         (ranked by citation-graph centrality).
+      4. Pull relevant scholarly commentary excerpts.
+      5. Compute a coarse argument-strength signal.
+
+    No LLM call in v1 — the structured assembly is already valuable
+    and keeps Strengthen latency in the same band as Verify (~300-500 ms).
+    A v1.1 sonnet-based synthesis pass can add `summary` and
+    `counter_authorities` once we know what users actually want.
+
+    Caller (api_billing_strengthen) handles license validation, daily
+    cap, and the structural-redaction guard before reaching this.
+    """
+    if not redacted_text or not redacted_text.strip():
+        return {"error": "empty_paragraph", "message": "Paragraph is empty after redaction."}
+
+    # Step 1: extract
+    citations = _parse_citations_in_text(redacted_text)
+    statute_hits: list[tuple[str, str]] = []  # (law_upper, article)
+    seen_statutes: set[tuple[str, str]] = set()
+    for sm in _STATUTE_AUDIT_PATTERN.finditer(redacted_text):
+        article = (sm.group("article") or "").strip()
+        law = (sm.group("law") or "").strip().upper()
+        if not article or not law or law in _STATUTE_AUDIT_INVALID_LAWS:
+            continue
+        key = (law, article)
+        if key in seen_statutes:
+            continue
+        seen_statutes.add(key)
+        statute_hits.append(key)
+
+    # Step 2: verify each citation
+    verified_citations: list[dict] = []
+    cited_decision_ids: set[str] = set()
+    for cit in citations:
+        guess = cit.get("decision_id_guess") or ""
+        decision = get_decision_by_id(guess) if guess else None
+        if not decision:
+            # fall back to docket-prefix resolver
+            resolved = _resolve_decision_id(cit.get("full_match", "").strip())
+            if resolved:
+                decision = get_decision_by_id(resolved)
+        v = {
+            "citation": cit.get("full_match", "").strip(),
+            "verified": bool(decision),
+            "decision_id": (decision.get("decision_id") if decision else None),
+            "court": (decision.get("court") if decision else None),
+            "date": (decision.get("decision_date") if decision else None),
+            "citation_count": (int(decision.get("citation_count") or 0) if decision else 0),
+            "is_leading_case": bool(decision and decision.get("is_leading_case")),
+            "pinpoint": cit.get("pinpoint") or "",
+        }
+        verified_citations.append(v)
+        if v["decision_id"]:
+            cited_decision_ids.add(v["decision_id"])
+
+    # Step 3: leading cases NOT already cited (capped at 5)
+    suggested_citations: list[dict] = []
+    suggested_seen: set[str] = set()
+    for law, article in statute_hits[:3]:
+        try:
+            r = _find_leading_cases(law_code=law, article=article, limit=10)
+        except Exception:
+            continue
+        for case in (r.get("cases") or []):
+            did = case.get("decision_id")
+            if not did or did in cited_decision_ids or did in suggested_seen:
+                continue
+            suggested_seen.add(did)
+            suggested_citations.append({
+                "decision_id": did,
+                "citation": case.get("citation_string_de") or case.get("docket_number") or did,
+                "court": case.get("court"),
+                "date": case.get("decision_date"),
+                "citation_count": int(case.get("citation_count") or 0),
+                "regeste_excerpt": (case.get("regeste") or "")[:300],
+                "rationale": (
+                    f"Leitentscheid zu Art. {article} {law} "
+                    f"({case.get('citation_count', 0)} eingehende Zitationen)"
+                ),
+                "related_statute": f"Art. {article} {law}",
+                "url": case.get("canonical_url") or f"https://mcp.opencaselaw.ch/entscheid/{did}",
+            })
+            if len(suggested_citations) >= 5:
+                break
+        if len(suggested_citations) >= 5:
+            break
+
+    # Step 4: scholarly commentary excerpts (cap 2)
+    commentary_excerpts: list[dict] = []
+    for law, article in statute_hits[:2]:
+        try:
+            ck = search_commentaries(query=f"Art. {article} {law}", limit=2, language=lang)
+        except Exception:
+            continue
+        for c in (ck.get("results") or [])[:2]:
+            commentary_excerpts.append({
+                "title": c.get("title") or "",
+                "authors": c.get("authors") or "",
+                "law_abbreviation": c.get("abbr") or law,
+                "article_number": c.get("article_num") or article,
+                "language": c.get("language") or lang,
+                "snippet": (c.get("snippet") or "")[:400],
+                "url": c.get("html_link") or "",
+                "source": "OnlineKommentar.ch (CC-BY-4.0)",
+                "why_relevant": f"Lehrmeinung zu Art. {article} {law}",
+            })
+        if len(commentary_excerpts) >= 3:
+            break
+
+    # Step 5: coarse strength signal
+    n_verified = sum(1 for v in verified_citations if v["verified"])
+    n_suggested = len(suggested_citations)
+    relevant = n_verified + min(n_suggested, 3)
+    if relevant >= 4:
+        strength = "strong"
+    elif relevant >= 2:
+        strength = "medium"
+    else:
+        strength = "weak"
+
+    return {
+        "ok": True,
+        "verified_citations": verified_citations,
+        "suggested_citations": suggested_citations,
+        "commentary_excerpts": commentary_excerpts,
+        "counter_authorities": [],  # v1.1 — needs deeper graph traversal
+        "argument_strength": strength,
+        "argument_strength_explanation": (
+            f"{n_verified} Leitautorit\u00e4t(en) zitiert, {n_suggested} weitere "
+            f"relevante Entscheide gefunden, {len(commentary_excerpts)} Kommentar-Exzerpt(e)."
+        ),
+        "summary": "",  # v1.1 — sonnet synthesis pass
+        "_paragraph_chars": len(redacted_text),
+        "_statutes_extracted": [f"Art. {a} {l}" for l, a in statute_hits],
+        "_citations_extracted": len(citations),
+    }
+
+
 def _handle_attest_response(*, draft_text: str,
                              audit_grounding: bool = False) -> dict:
     """Post-draft audit: parse every Swiss-case citation in the LLM's
@@ -16446,6 +16607,53 @@ render();setInterval(render,60000);
             "date": decision.get("decision_date", ""),
         }
         result["_ref"] = req.case_ref
+        return result
+
+    @rest_api.post("/billing/strengthen", tags=["Billing"],
+                   summary="Pro paragraph Verify-and-Strengthen",
+                   description="For a single legal paragraph: verifies cited "
+                               "decisions, finds leading cases not cited (ranked "
+                               "by citation-graph centrality), pulls scholarly "
+                               "commentary excerpts, and computes an argument-"
+                               "strength signal. Paragraph-only — multi-paragraph "
+                               "would dilute per-suggestion ranking. Daily cap "
+                               "shared with /verify (25/day per license).")
+    async def api_billing_strengthen(req: StrengthenRequest):
+        from stripe_billing import log_pro_usage
+        from quality.redact import is_likely_unredacted, redact as _server_redact
+        # HARD GUARD: refuse PII-bearing payloads, same as /attest + /verify.
+        text = req.redacted_text or ""
+        guard = is_likely_unredacted(text)
+        if not guard.clean:
+            return JSONResponse(
+                {
+                    "error": "client_redaction_incomplete",
+                    "message": (
+                        "Request rejected: text contains structurally-"
+                        "identifiable PII. The Word add-in must run "
+                        "js/redact.js before sending Pro requests."
+                    ),
+                    "patterns_detected": guard.patterns_found,
+                    "client_redactor_version": req.client_redactor_version,
+                },
+                status_code=400,
+            )
+        text = _server_redact(text).redacted
+
+        license_info = await asyncio.to_thread(validate_license, req.license_key)
+        if not license_info:
+            return JSONResponse({"error": "Invalid or expired license key"}, status_code=401)
+
+        allowed = await asyncio.to_thread(increment_usage, req.license_key)
+        if not allowed:
+            return JSONResponse({"error": "Daily limit reached (25/day)"}, status_code=429)
+        await asyncio.to_thread(log_pro_usage, req.license_key, "strengthen")
+
+        result = await asyncio.to_thread(
+            _handle_strengthen, redacted_text=text, lang=req.lang or "de",
+        )
+        if "error" in result:
+            return JSONResponse(result, status_code=400)
         return result
 
     @rest_api.post("/billing/find-support", tags=["Billing"],

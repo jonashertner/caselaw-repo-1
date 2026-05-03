@@ -19,6 +19,8 @@ var state = {
   caseBrief: null,
   structure: null,  /* /api/structure response — gold-standard E. numbers */
   verifyResult: null,
+  strengthenResult: null,
+  strengthenText: '',
   verifyText: '',
   courts: [],
   lawResult: null,
@@ -451,6 +453,7 @@ function render() {
     else if (view === 'support') html += renderSupport();
     else if (view === 'related') html += renderRelated();
     else if (view === 'scan') html += renderScan();
+    else if (view === 'strengthen') html += renderStrengthen();
     else if (view === 'guide') html += renderGuide();
     else if (view === 'help') html += renderHelp();
     else if (view === 'settings') html += renderSettings();
@@ -1840,6 +1843,18 @@ async function handleAppClick(e) {
         render();
         break;
       case 'verify-ref':   await startVerify(); break;
+      case 'strengthen':   await startStrengthen(); break;
+      case 'strengthen-insert-citation': {
+        var sIdx = parseInt(btn.dataset.idx, 10);
+        var s = state.strengthenResult && state.strengthenResult.suggested_citations &&
+                state.strengthenResult.suggested_citations[sIdx];
+        if (s) {
+          /* Insert citation_string verbatim — server returns canonical
+             "BGE 132 III 222" / "BGer 4A_747/2012 vom 5. April 2013" forms */
+          await insertTextAtCursor(' (' + (s.citation || '') + ')');
+        }
+        break;
+      }
       case 'insert-comment': await doInsertComment(); break;
       case 'insert-verdict-text': await doInsertVerdictText(); break;
       case 'verify-fulltext':
@@ -2161,6 +2176,54 @@ async function startVerify() {
     } else if (e.type === 'redact_unavailable') {
       /* Structural-redaction guard fired client-side. Show a clean
          message; don't silently fall back to sending un-redacted. */
+      state.error = e;
+    } else if (e.type === 'http_error' && e.status === 400 &&
+               (e.message || '').indexOf('client_redaction_incomplete') >= 0) {
+      state.error = { type: 'redact_server_reject',
+                      message: 'Datenleck-Schutz: Server hat Anfrage abgelehnt, '
+                             + 'da nicht alle persönlichen Daten redigiert wurden. '
+                             + 'Add-in bitte neu laden.' };
+    } else {
+      state.error = e;
+    }
+  }
+  state.loading = false;
+  render();
+}
+
+/* Verify-and-Strengthen — Pro feature #2.
+   Paragraph-only: lawyers run this on individual argument paragraphs
+   they want to bulletproof. Selection-or-paragraph fallback identical
+   to startVerify so behaviour stays predictable across both buttons. */
+async function startStrengthen() {
+  var lang = state.lang;
+  var proKey = localStorage.getItem('ocl_pro_key');
+  if (!proKey) {
+    state.view = 'settings';
+    render();
+    return;
+  }
+  state.previousView = state.view;
+  try {
+    var paragraph = await getSelectionOrParagraph();
+    if (!paragraph || paragraph.trim().length < 20) {
+      state.error = { type: 'no_selection', message: t('strengthen_no_text', lang) };
+      state.view = 'strengthen';
+      render();
+      return;
+    }
+    state.strengthenText = paragraph;
+    state.view = 'strengthen';
+    state.loading = true;
+    state.strengthenResult = null;
+    state.error = null;
+    render();
+    state.strengthenResult = await verifyAndStrengthenPro(proKey, paragraph, lang);
+  } catch (e) {
+    if (e.type === 'invalid_license') {
+      localStorage.removeItem('ocl_pro_key');
+      state.error = { type: 'no_selection', message: t('pro_key_invalid', lang) };
+    } else if (e.type === 'redact_unavailable') {
       state.error = e;
     } else if (e.type === 'http_error' && e.status === 400 &&
                (e.message || '').indexOf('client_redaction_incomplete') >= 0) {
@@ -2615,11 +2678,124 @@ function renderScan() {
     '<div class="audit-secondary-title">' + escHtml(t('audit_secondary_title', lang)) + '</div>' +
     '<button class="btn btn-detail audit-secondary-btn" data-action="verify-ref">' +
     '<span class="audit-secondary-label">' + escHtml(t('btn_verify_pro', lang)) + '</span></button>' +
+    '<button class="btn btn-detail audit-secondary-btn" data-action="strengthen">' +
+    '<span class="audit-secondary-label">' + escHtml(t('btn_strengthen', lang)) + '</span></button>' +
     '<button class="btn btn-detail audit-secondary-btn" data-action="find-support">' +
     '<span class="audit-secondary-label">' + escHtml(t('tool_support', lang)) + '</span></button>' +
     '<button class="btn btn-detail audit-secondary-btn" data-action="find-related">' +
     '<span class="audit-secondary-label">' + escHtml(t('btn_find_related', lang)) + '</span></button>' +
     '</div>';
+
+  return html;
+}
+
+// ── Verify-and-Strengthen view (Pro feature #2) ──────────────────────
+// Renders the structured response from /api/billing/strengthen as a
+// scrollable "junior associate review" card: verified citations,
+// suggested leading cases (with one-click insert), commentary excerpts,
+// and an argument-strength signal. Counter-authorities + summary fields
+// are present in the API response but empty in v1; renderer skips them.
+function renderStrengthen() {
+  var lang = state.lang;
+  var html = '<button class="back-link" data-action="back">\u2190 ' + escHtml(t('back', lang)) + '</button>';
+  html += '<h2 class="detail-title">' + escHtml(t('strengthen_title', lang)) + '</h2>';
+  html += '<div class="detail-meta" style="margin-bottom:12px;">' + escHtml(t('strengthen_subtitle', lang)) + '</div>';
+
+  if (state.loading) {
+    html += renderSkeletonLines(8);
+    return html;
+  }
+  if (state.error) {
+    var em = (state.error && state.error.message) || t('error_connection', lang);
+    html += '<div class="audit-inline-error">' + escHtml(em) + '</div>';
+    html += '<button class="btn btn-pro-primary btn-full" data-action="strengthen">' + escHtml(t('strengthen_retry', lang)) + '</button>';
+    return html;
+  }
+  var r = state.strengthenResult;
+  if (!r) {
+    html += '<button class="btn btn-pro-primary btn-full" data-action="strengthen">' + escHtml(t('strengthen_start', lang)) + '</button>';
+    return html;
+  }
+  if (r.error) {
+    html += '<div class="audit-inline-error">' + escHtml(r.message || r.error) + '</div>';
+    return html;
+  }
+
+  /* ── Argument-strength banner ── */
+  var strengthClass = 'audit-summary-' + (r.argument_strength === 'strong' ? 'ok'
+                       : r.argument_strength === 'medium' ? 'mixed' : 'mixed');
+  var strengthLabel = t('strength_' + (r.argument_strength || 'weak'), lang) ||
+                      r.argument_strength || '';
+  html += '<div class="audit-summary ' + strengthClass + '">' +
+    '<span class="audit-summary-icon">\u2696</span>' +
+    '<span class="audit-summary-text"><b>' + escHtml(strengthLabel) + '</b> &mdash; ' +
+    escHtml(r.argument_strength_explanation || '') + '</span></div>';
+
+  /* ── Verified citations ── */
+  if (Array.isArray(r.verified_citations) && r.verified_citations.length) {
+    html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('strengthen_verified', lang)) + '</div>';
+    for (var i = 0; i < r.verified_citations.length; i++) {
+      var v = r.verified_citations[i];
+      var ok = v.verified ? '\u2713' : '\u2717';
+      var cls = v.verified ? 'badge-leading' : 'badge-area';
+      html += '<div class="erwaegung-block" style="border-left:3px solid var(--' +
+              (v.verified ? 'green' : 'accent') + ');padding-left:8px;">' +
+        '<div><span class="badge ' + cls + '">' + ok + '</span> <b>' +
+        escHtml(v.citation) + '</b>' +
+        (v.pinpoint ? ' <span style="color:var(--text-secondary);">(' + escHtml(v.pinpoint) + ')</span>' : '') +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">' +
+          escHtml(v.court || '') + (v.date ? ' &middot; ' + escHtml(v.date) : '') +
+          (v.citation_count ? ' &middot; ' + v.citation_count + '\u00d7 ' + escHtml(t('citations_label', lang)) : '') +
+        '</div>' +
+      '</div>';
+    }
+    html += '</div>';
+  }
+
+  /* ── Suggested citations (the headline value) ── */
+  if (Array.isArray(r.suggested_citations) && r.suggested_citations.length) {
+    html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('strengthen_suggested', lang)) + '</div>';
+    for (var s = 0; s < r.suggested_citations.length; s++) {
+      var sc = r.suggested_citations[s];
+      html += '<div class="erwaegung-block" style="border-left:3px solid var(--blue);padding-left:8px;">' +
+        '<div><b>' + escHtml(sc.citation || '') + '</b>' +
+        (sc.citation_count ? ' <span class="badge badge-citations">' + sc.citation_count + '</span>' : '') + '</div>' +
+        '<div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">' +
+          escHtml(sc.court || '') + (sc.date ? ' &middot; ' + escHtml(sc.date) : '') +
+          (sc.related_statute ? ' &middot; ' + escHtml(sc.related_statute) : '') +
+        '</div>' +
+        (sc.regeste_excerpt ? '<div style="font-size:11px;margin-top:4px;color:var(--text);">' + escHtml(sc.regeste_excerpt) + '</div>' : '') +
+        '<div style="margin-top:6px;display:flex;gap:6px;">' +
+          '<button class="btn btn-detail" data-action="strengthen-insert-citation" data-idx="' + s + '">' +
+            ICONS.insert + escHtml(t('strengthen_insert_btn', lang)) + '</button>' +
+          (sc.url ? '<a class="btn btn-detail" href="' + escHtml(sc.url) + '" target="_blank">' + ICONS.link + ' ' + escHtml(t('source_link', lang)) + '</a>' : '') +
+        '</div>' +
+      '</div>';
+    }
+    html += '</div>';
+  }
+
+  /* ── Commentary excerpts ── */
+  if (Array.isArray(r.commentary_excerpts) && r.commentary_excerpts.length) {
+    html += '<div class="detail-section"><div class="detail-label">' + escHtml(t('strengthen_commentary', lang)) + '</div>';
+    for (var k = 0; k < r.commentary_excerpts.length; k++) {
+      var cx = r.commentary_excerpts[k];
+      html += '<div class="erwaegung-block">' +
+        '<div><b>' + escHtml(cx.title || cx.law_abbreviation + ' Art. ' + cx.article_number) + '</b></div>' +
+        (cx.authors ? '<div style="font-size:11px;color:var(--text-secondary);">' + escHtml(cx.authors) + '</div>' : '') +
+        (cx.snippet ? '<div style="font-size:11px;margin-top:4px;color:var(--text);">' + cx.snippet + '</div>' : '') +
+        '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">' + escHtml(cx.source || '') + '</div>' +
+      '</div>';
+    }
+    html += '</div>';
+  }
+
+  /* ── Empty state ── */
+  if ((!r.verified_citations || !r.verified_citations.length) &&
+      (!r.suggested_citations || !r.suggested_citations.length)) {
+    html += '<div class="state-message">' + escHtml(t('strengthen_no_results', lang)) + '</div>';
+  }
 
   return html;
 }
