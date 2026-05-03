@@ -9,7 +9,7 @@
 <link rel="canonical" href="https://opencaselaw.ch/coverage/">
 <!-- Shared design system — provides cross-site nav + footer. Inline
      styles below override layout/colour for the dashboard. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=17">
+<link rel="stylesheet" href="/static/css/design-system.css?v=18">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   /* Status palette — semantic tones layered on top of design-system tokens.
@@ -492,27 +492,62 @@ loadHealth();
 /* Shared lang-switch wiring (works on every page).
    - Reads current locale from ?lang=, then localStorage, then <html lang>.
    - Highlights the matching .lang-sw [data-l] item with .on.
-   - On click: persists to localStorage. If applyI18n() is defined on
-     this page, intercepts and switches in-place; otherwise lets the
-     browser navigate to /?lang=XX so the landing renders in that lang. */
+   - Translates the primary nav labels via NAV_I18N so the user always
+     sees the language they picked, even on English-only pages.
+   - Click is ALWAYS preventDefault'd so the user stays on the current
+     page; localStorage persists their choice for the next i18n-capable
+     surface (landing, /word/*).
+   - On i18n-capable pages (where window.applyI18n is defined), also
+     calls applyI18n() to translate the whole body in-place. */
 (function () {
+  var NAV_I18N = {
+    'Search':  { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
+    'Courts':  { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
+    'Laws':    { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
+    'Word':    { de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' },
+    'MCP':     { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' },
+    'API':     { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' },
+    'Quality': { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' },
+    'Suche':       { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
+    'Gerichte':    { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
+    'Gesetze':     { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
+    'Qualität':    { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' },
+    'Recherche':   { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
+    'Tribunaux':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
+    'Lois':        { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
+    'Qualité':     { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' },
+    'Ricerca':     { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
+    'Tribunali':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
+    'Leggi':       { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
+    'Qualità':     { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' }
+  };
+  function applyNavLang(lang) {
+    document.querySelectorAll('header.site nav > a').forEach(function (a) {
+      var key = (a.textContent || '').trim();
+      var dict = NAV_I18N[key];
+      if (dict && dict[lang]) a.textContent = dict[lang];
+    });
+    document.documentElement.setAttribute('lang', lang);
+  }
   var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
   var stored = null;
   try { stored = localStorage.getItem('lang'); } catch (_) {}
   var html = (document.documentElement.lang || '').slice(0, 2);
   var lang = qs || stored || html || 'en';
   if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
+  applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
     el.classList.toggle('on', el.dataset.l === lang);
     el.addEventListener('click', function (e) {
+      e.preventDefault();
       var l = el.dataset.l;
       try { localStorage.setItem('lang', l); } catch (_) {}
+      document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
+        b.classList.toggle('on', b.dataset.l === l);
+      });
+      applyNavLang(l);
       if (typeof window.applyI18n === 'function') {
-        e.preventDefault();
         window.curLang = l;
-        document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
-          b.classList.toggle('on', b.dataset.l === l);
-        });
         try { window.applyI18n(); } catch (_) {}
       }
     });

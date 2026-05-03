@@ -923,16 +923,40 @@ def _render_decision(row: sqlite3.Row) -> str:
 
 <script>
 (function () {{
+  var NAV_I18N = {{
+    'Search':  {{ de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' }},
+    'Courts':  {{ de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' }},
+    'Laws':    {{ de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' }},
+    'Word':    {{ de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' }},
+    'MCP':     {{ de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' }},
+    'API':     {{ de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' }},
+    'Quality': {{ de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' }}
+  }};
+  function applyNavLang(lang) {{
+    document.querySelectorAll('header.site nav > a').forEach(function (a) {{
+      var key = (a.textContent || '').trim();
+      var dict = NAV_I18N[key];
+      if (dict && dict[lang]) a.textContent = dict[lang];
+    }});
+    document.documentElement.setAttribute('lang', lang);
+  }}
   var qs = (location.search.match(/[?&]lang=([a-z]{{2}})/) || [])[1];
   var stored = null;
   try {{ stored = localStorage.getItem('lang'); }} catch (_) {{}}
   var html = (document.documentElement.lang || '').slice(0, 2);
   var lang = qs || stored || html || 'en';
   if (qs) {{ try {{ localStorage.setItem('lang', qs); }} catch (_) {{}} }}
+  applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {{
     el.classList.toggle('on', el.dataset.l === lang);
-    el.addEventListener('click', function () {{
-      try {{ localStorage.setItem('lang', el.dataset.l); }} catch (_) {{}}
+    el.addEventListener('click', function (e) {{
+      e.preventDefault();
+      var l = el.dataset.l;
+      try {{ localStorage.setItem('lang', l); }} catch (_) {{}}
+      document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {{
+        b.classList.toggle('on', b.dataset.l === l);
+      }});
+      applyNavLang(l);
     }});
   }});
 }})();
@@ -1017,16 +1041,40 @@ def _render_404(decision_id: str) -> str:
 
 <script>
 (function () {{
+  var NAV_I18N = {{
+    'Search':  {{ de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' }},
+    'Courts':  {{ de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' }},
+    'Laws':    {{ de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' }},
+    'Word':    {{ de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' }},
+    'MCP':     {{ de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' }},
+    'API':     {{ de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' }},
+    'Quality': {{ de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' }}
+  }};
+  function applyNavLang(lang) {{
+    document.querySelectorAll('header.site nav > a').forEach(function (a) {{
+      var key = (a.textContent || '').trim();
+      var dict = NAV_I18N[key];
+      if (dict && dict[lang]) a.textContent = dict[lang];
+    }});
+    document.documentElement.setAttribute('lang', lang);
+  }}
   var qs = (location.search.match(/[?&]lang=([a-z]{{2}})/) || [])[1];
   var stored = null;
   try {{ stored = localStorage.getItem('lang'); }} catch (_) {{}}
   var html = (document.documentElement.lang || '').slice(0, 2);
   var lang = qs || stored || html || 'en';
   if (qs) {{ try {{ localStorage.setItem('lang', qs); }} catch (_) {{}} }}
+  applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {{
     el.classList.toggle('on', el.dataset.l === lang);
-    el.addEventListener('click', function () {{
-      try {{ localStorage.setItem('lang', el.dataset.l); }} catch (_) {{}}
+    el.addEventListener('click', function (e) {{
+      e.preventDefault();
+      var l = el.dataset.l;
+      try {{ localStorage.setItem('lang', l); }} catch (_) {{}}
+      document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {{
+        b.classList.toggle('on', b.dataset.l === l);
+      }});
+      applyNavLang(l);
     }});
   }});
 }})();
