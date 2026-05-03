@@ -98,7 +98,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- Shared design system: same chrome as / and every other page. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=19">
+<link rel="stylesheet" href="/static/css/design-system.css?v=20">
 <style>
 :root {
   --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -1448,7 +1448,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
       <div id="ts" style="margin-top: var(--s-3); font-size: var(--t-xs); color: var(--text-3);"></div>
     </div>
     <div>
-      <h4>Data</h4>
+      <h4 data-i18n="footer.data">Data</h4>
       <ul>
         <li><a href="/entscheide/" data-t="nav_entscheide">Decisions</a></li>
         <li><a href="/gesetze/" data-t="nav_gesetze">Laws</a></li>
@@ -1458,7 +1458,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
       </ul>
     </div>
     <div>
-      <h4>Access</h4>
+      <h4 data-i18n="footer.access">Access</h4>
       <ul>
         <li><a href="/word/" data-t="nav_word">Word add-in</a></li>
         <li><a href="/mcp/">MCP server</a></li>
@@ -1468,7 +1468,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
       </ul>
     </div>
     <div>
-      <h4>About</h4>
+      <h4 data-i18n="footer.about">About</h4>
       <ul>
         <li><a href="/ueber/" data-t="footer_about">Mission</a></li>
         <li><a href="/paper/">Research</a></li>
@@ -3158,6 +3158,7 @@ init();
     quality: { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }
   };
   var I18N_FOOTER = {
+    'footer.access': { de: 'Zugang',     fr: 'Accès',      it: 'Accesso',        rm: 'Access',      en: 'Access' },
     'footer.product':  { de: 'Produkt',   fr: 'Produit',   it: 'Prodotto', rm: 'Product',   en: 'Product' },
     'footer.data':     { de: 'Daten',     fr: 'Donnees',   it: 'Dati',     rm: 'Datas',     en: 'Data' },
     'footer.about':    { de: 'Ueber',     fr: 'A propos',  it: 'Chi siamo',rm: 'Davart',    en: 'About' },

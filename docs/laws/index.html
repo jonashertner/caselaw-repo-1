@@ -11,7 +11,7 @@
 <meta property="og:description" content="5,510 federal laws + 15,722 cantonal acts, full-text searchable.">
 <meta property="og:url" content="https://opencaselaw.ch/laws/">
 <meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=19">
+<link rel="stylesheet" href="/static/css/design-system.css?v=20">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   main.laws { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
@@ -246,7 +246,7 @@
       </p>
     </div>
     <div>
-      <h4>Data</h4>
+      <h4 data-i18n="footer.data">Data</h4>
       <ul>
         <li><a href="/entscheide/">Decisions</a></li>
         <li><a href="/gesetze/">Laws</a></li>
@@ -255,7 +255,7 @@
       </ul>
     </div>
     <div>
-      <h4>Access</h4>
+      <h4 data-i18n="footer.access">Access</h4>
       <ul>
         <li><a href="/word/">Word add-in</a></li>
         <li><a href="/mcp/">MCP server</a></li>
@@ -264,7 +264,7 @@
       </ul>
     </div>
     <div>
-      <h4>About</h4>
+      <h4 data-i18n="footer.about">About</h4>
       <ul>
         <li><a href="/ueber/">Mission</a></li>
         <li><a href="/paper/">Research</a></li>
@@ -556,6 +556,7 @@ init();
     quality: { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }
   };
   var I18N_FOOTER = {
+    'footer.access': { de: 'Zugang',     fr: 'Accès',      it: 'Accesso',        rm: 'Access',      en: 'Access' },
     'footer.product':  { de: 'Produkt',   fr: 'Produit',   it: 'Prodotto', rm: 'Product',   en: 'Product' },
     'footer.data':     { de: 'Daten',     fr: 'Donnees',   it: 'Dati',     rm: 'Datas',     en: 'Data' },
     'footer.about':    { de: 'Ueber',     fr: 'A propos',  it: 'Chi siamo',rm: 'Davart',    en: 'About' },

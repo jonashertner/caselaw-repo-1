@@ -595,7 +595,7 @@ def _render_decision(row: sqlite3.Row) -> str:
 <meta property="og:site_name" content="OpenCaseLaw.ch">
 <meta property="og:locale" content="{_esc(language)}_CH">
 <script type="application/ld+json">{schema_str}</script>
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=19">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=20">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
     /* /entscheid/{{id}} v2 — site chrome wears the shared design system,
@@ -889,7 +889,7 @@ def _render_decision(row: sqlite3.Row) -> str:
       </p>
     </div>
     <div>
-      <h4>Data</h4>
+      <h4 data-i18n="footer.data">Data</h4>
       <ul>
         <li><a href="https://opencaselaw.ch/entscheide/">Decisions</a></li>
         <li><a href="https://opencaselaw.ch/laws/">Laws</a></li>
@@ -898,7 +898,7 @@ def _render_decision(row: sqlite3.Row) -> str:
       </ul>
     </div>
     <div>
-      <h4>Access</h4>
+      <h4 data-i18n="footer.access">Access</h4>
       <ul>
         <li><a href="https://opencaselaw.ch/word/">Word add-in</a></li>
         <li><a href="https://opencaselaw.ch/mcp/">MCP server</a></li>
@@ -907,7 +907,7 @@ def _render_decision(row: sqlite3.Row) -> str:
       </ul>
     </div>
     <div>
-      <h4>About</h4>
+      <h4 data-i18n="footer.about">About</h4>
       <ul>
         <li><a href="https://opencaselaw.ch/ueber/">Mission</a></li>
         <li><a href="https://opencaselaw.ch/paper/">Research</a></li>
@@ -936,6 +936,7 @@ def _render_decision(row: sqlite3.Row) -> str:
   }};
   var I18N_FOOTER = {{
     'footer.product':  {{ de: 'Produkt',     fr: 'Produit',     it: 'Prodotto',        rm: 'Product',     en: 'Product' }},
+    'footer.access':   {{ de: 'Zugang',      fr: 'Accès',       it: 'Accesso',         rm: 'Access',      en: 'Access' }},
     'footer.data':     {{ de: 'Daten',       fr: 'Donnees',     it: 'Dati',            rm: 'Datas',       en: 'Data' }},
     'footer.about':    {{ de: 'Ueber',       fr: 'A propos',    it: 'Chi siamo',       rm: 'Davart',      en: 'About' }},
     'footer.search':   {{ de: 'Suche',       fr: 'Recherche',   it: 'Ricerca',         rm: 'Tschertga',   en: 'Search' }},
@@ -1007,7 +1008,7 @@ def _render_404(decision_id: str) -> str:
 <title>Entscheid nicht gefunden | OpenCaseLaw</title>
 <meta name="robots" content="noindex">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=19">
+<link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=20">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
 <style>
   main.notfound {{ max-width: 560px; padding-top: var(--s-7); padding-bottom: var(--s-7); }}
@@ -1073,6 +1074,7 @@ def _render_404(decision_id: str) -> str:
   }};
   var I18N_FOOTER = {{
     'footer.product':  {{ de: 'Produkt',     fr: 'Produit',     it: 'Prodotto',        rm: 'Product',     en: 'Product' }},
+    'footer.access':   {{ de: 'Zugang',      fr: 'Accès',       it: 'Accesso',         rm: 'Access',      en: 'Access' }},
     'footer.data':     {{ de: 'Daten',       fr: 'Donnees',     it: 'Dati',            rm: 'Datas',       en: 'Data' }},
     'footer.about':    {{ de: 'Ueber',       fr: 'A propos',    it: 'Chi siamo',       rm: 'Davart',      en: 'About' }},
     'footer.search':   {{ de: 'Suche',       fr: 'Recherche',   it: 'Ricerca',         rm: 'Tschertga',   en: 'Search' }},
