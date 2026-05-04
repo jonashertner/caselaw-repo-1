@@ -7781,7 +7781,13 @@ server = Server(
         "   b) Call `get_decision(decision_id=\"bge_140_III_86\")` — the "
         "response starts with a \"Citation — copy verbatim\" block.\n"
         "   c) Call `get_erwaegung(decision_id, e_number)` if you need "
-        "the verbatim text of the cited paragraph.\n"
+        "the verbatim text of the cited paragraph (e_number known).\n"
+        "   d) Call `find_relevant_erwaegung(decision_id, claim)` if the "
+        "user described a claim but did NOT supply an e_number — server-"
+        "side FTS5+BM25 returns the matching Erwägung with confidence. "
+        "If the response says `no_match` or `confidence=low`, DO NOT "
+        "fall back to E. 3.1 or any other plausible-looking pinpoint — "
+        "tell the user no Erwägung clearly matches.\n"
         "Then copy the returned `citation_string_*` INTO your response, "
         "character-for-character. Include the `canonical_url` as a link "
         "if the user may benefit from one-click verification.\n\n"
@@ -7833,6 +7839,7 @@ server = Server(
         "• 'What does [canton] law say about Y?'   → search_laws with canton\n"
         "• 'How has Swiss law on Y evolved?'       → analyze_legal_trend\n"
         "• 'What is BGE 140 III 86 E. 2.3?'        → get_erwaegung\n"
+        "• 'Which E. supports [claim] in BGE X?'   → find_relevant_erwaegung\n"
         "• 'Summarise this case'                   → get_case_brief\n"
         "• 'Format this citation for me'           → cite\n\n"
 
@@ -8306,6 +8313,203 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         "rule_statement": _rule_statement(decision_for_citation, pinpoint_text=target["text"]),
         "_citation_format": citation["citation_string_de"],  # kept for backwards compat
     }
+
+
+def _handle_find_relevant_erwaegung(
+    *,
+    decision_id: str,
+    claim: str,
+    top_k: int = 3,
+) -> dict:
+    """Handler for find_relevant_erwaegung MCP tool.
+
+    Given a decision_id and a free-text legal claim (the user's prose
+    proposition), returns the top-k Erwägungen-paragraphs from that
+    decision ranked by BM25 over their text. Each match carries:
+
+    * ``e_number`` — the canonical Schweizer Citation-Einheit
+    * ``highlighted_snippet`` — the matched sentence(s) wrapped in
+      ``<mark>…</mark>``, suitable for verbatim display
+    * ``confidence`` — "high" / "medium" / "low" derived from the BM25
+      score gap between rank 1 and rank 2
+    * ``citation_string_{de,fr,it}`` + ``url`` — pre-formatted to copy
+
+    Designed to fix the systematic "verweist immer auf E. 3.1" failure
+    mode: when no paragraph clearly matches, returns ``no_match=true``
+    and instructs the LLM not to guess a pinpoint number.
+    """
+    if not decision_id or not claim or not claim.strip():
+        return {"error": "Provide both decision_id and a non-empty claim."}
+
+    claim = claim.strip()
+    resolved = _resolve_decision_id(decision_id.strip())
+    if not resolved:
+        return {"error": f"Decision not found: {decision_id!r}"}
+
+    conn = _get_structure_conn()
+    if not conn:
+        return {"error": "decision_structure.db not available; "
+                         "try get_case_brief instead."}
+
+    try:
+        # Graceful degradation for DBs that predate the FTS5 index:
+        # return a clean error instead of falling through to a guess.
+        has_fts = conn.execute(
+            "SELECT name FROM sqlite_master "
+            "WHERE type='table' AND name='erwaegungen_paragraph_fts'"
+        ).fetchone() is not None
+        if not has_fts:
+            return {
+                "error": (
+                    "FTS5 paragraph index not present in decision_structure.db. "
+                    "This DB predates the find_relevant_erwaegung feature; "
+                    "rebuild needed. Falling back to get_decision_structure / "
+                    "get_erwaegung is acceptable but the LLM must NOT guess "
+                    "a pinpoint Erwägung number."
+                ),
+                "no_match": True,
+            }
+
+        # FTS5 reserves a few characters; quote the claim defensively so
+        # short/all-stopword queries don't break parsing. Per FTS5 docs,
+        # wrapping in double quotes treats the input as a phrase prefix
+        # which is a reasonable default for a multi-word claim.
+        fts_query = '"' + claim.replace('"', '""') + '"'
+
+        rows: list[sqlite3.Row] = []
+        for did_variant in _decision_id_variants(resolved) or [resolved]:
+            try:
+                rows = conn.execute(
+                    """
+                    SELECT
+                        p.decision_id, p.e_number, p.depth, p.parent, p.text,
+                        bm25(erwaegungen_paragraph_fts) AS score,
+                        snippet(erwaegungen_paragraph_fts,
+                                0, '<mark>', '</mark>', '…', 24) AS highlighted
+                    FROM erwaegungen_paragraph_fts fts
+                    JOIN erwaegungen_paragraph p ON p.rowid = fts.rowid
+                    WHERE fts MATCH ? AND p.decision_id = ?
+                    ORDER BY score
+                    LIMIT ?
+                    """,
+                    (fts_query, did_variant, max(1, min(top_k, 10))),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                # FTS5 syntax error on the user's claim — retry with a
+                # plain bag-of-words query (less precise but robust).
+                tokens = [t for t in re.findall(r"\w+", claim) if len(t) > 2]
+                if not tokens:
+                    rows = []
+                else:
+                    rows = conn.execute(
+                        """
+                        SELECT
+                            p.decision_id, p.e_number, p.depth, p.parent, p.text,
+                            bm25(erwaegungen_paragraph_fts) AS score,
+                            snippet(erwaegungen_paragraph_fts,
+                                    0, '<mark>', '</mark>', '…', 24) AS highlighted
+                        FROM erwaegungen_paragraph_fts fts
+                        JOIN erwaegungen_paragraph p ON p.rowid = fts.rowid
+                        WHERE fts MATCH ? AND p.decision_id = ?
+                        ORDER BY score
+                        LIMIT ?
+                        """,
+                        (" OR ".join(tokens), did_variant, max(1, min(top_k, 10))),
+                    ).fetchall()
+            if rows:
+                break
+
+        if not rows:
+            return {
+                "decision_id": resolved,
+                "claim": claim,
+                "matches": [],
+                "no_match": True,
+                "_hint": (
+                    "No Erwägung in this decision matched the claim. "
+                    "Do NOT guess a pinpoint number — report no_match to "
+                    "the user."
+                ),
+            }
+
+        # Resolve decision metadata once for citation building.
+        row = _fetch_structure_row(resolved)
+        main = get_decision_by_id(resolved)
+        canonical_id = (main or {}).get("decision_id") or resolved
+        decision_for_citation = {
+            "decision_id": canonical_id,
+            "court": (row or {}).get("court"),
+            "decision_date": (row or {}).get("decision_date"),
+            "docket_number": (main or {}).get("docket_number"),
+            "collection": (main or {}).get("collection"),
+            "bge_reference": (main or {}).get("bge_reference"),
+            "regeste": (row or {}).get("regeste"),
+        }
+
+        # Confidence from BM25 score-gap between rank 1 and rank 2.
+        # bm25() returns negative numbers; smaller (more negative) = better.
+        scores = [float(r["score"]) for r in rows]
+        if len(scores) >= 2 and scores[1] != 0:
+            gap_ratio = abs(scores[0]) / max(abs(scores[1]), 1e-6)
+        else:
+            gap_ratio = 999.0  # only one match: defer to absolute strength
+        if gap_ratio > 1.5 or (len(scores) == 1 and abs(scores[0]) > 2.0):
+            confidence = "high"
+        elif gap_ratio > 1.2 or (len(scores) == 1 and abs(scores[0]) > 1.0):
+            confidence = "medium"
+        else:
+            confidence = "low"
+
+        matches: list[dict] = []
+        for r in rows:
+            cite = _build_citation_strings(
+                decision_for_citation, pinpoint=r["e_number"]
+            )
+            matches.append({
+                "e_number": r["e_number"],
+                "parent_e_number": r["parent"],
+                "depth": r["depth"],
+                "text": r["text"],
+                "highlighted_snippet": r["highlighted"],
+                "score": -float(r["score"]),  # flip sign so higher = better
+                "citation_string_de": cite.get("citation_string_de"),
+                "citation_string_fr": cite.get("citation_string_fr"),
+                "citation_string_it": cite.get("citation_string_it"),
+                "url": cite.get("canonical_url"),
+            })
+
+        if confidence == "low":
+            return {
+                "decision_id": canonical_id,
+                "claim": claim,
+                "confidence": "low",
+                "matches": [],
+                "best_low_confidence_match": matches[0] if matches else None,
+                "no_match": True,
+                "_hint": (
+                    "No Erwägung clearly matched the claim (BM25 gap < 1.2). "
+                    "best_low_confidence_match holds the rank-1 result — do "
+                    "NOT cite it as the relevant Erwägung. Tell the user no "
+                    "Erwägung clearly matches and ask for a more specific "
+                    "claim, or list the top-k as candidates without picking."
+                ),
+            }
+
+        return {
+            "decision_id": canonical_id,
+            "claim": claim,
+            "confidence": confidence,
+            "matches": matches,
+            "no_match": False,
+            "_hint": (
+                "highlighted_snippet shows the matched sentence(s) with "
+                "<mark>…</mark> — quote it verbatim, do not paraphrase. Use "
+                "citation_string_{de,fr,it} verbatim instead of constructing "
+                "your own pinpoint."
+            ),
+        }
+    finally:
+        conn.close()
 
 
 def _handle_get_regeste(*, decision_id: str) -> dict:
@@ -13702,10 +13906,14 @@ def _list_tools() -> list[Tool]:
                 "Get a structured case brief for any Swiss court decision. "
                 "Accepts any reference format: BGE reference ('BGE 133 III 121', '133 III 121'), "
                 "decision_id, or docket number. Returns: regeste (official headnote), "
-                "Sachverhalt (facts), key Erwägungen (reasoning excerpts with paragraph numbers), "
+                "Sachverhalt (facts), key Erwägungen (reasoning excerpts with paragraph numbers — "
+                "the FIRST 12 paragraphs only; later paragraphs are NOT shown), "
                 "Dispositiv (holding), applicable statutes with Fedlex text, citation authority "
                 "(how often this case is cited), and related cases (what it cites, what cites it). "
-                "Use this when a student wants to understand or brief a specific case."
+                "Use this when a student wants to understand or brief a specific case. "
+                "PINPOINT POLICY: the key_erwaegungen list is for orientation, NOT a pinpoint "
+                "ranking. To identify which Erwägung supports a specific user claim, use "
+                "find_relevant_erwaegung — never guess based on which paragraph 'looks substantive'."
             ),
             inputSchema={
                 "type": "object",
@@ -13734,7 +13942,13 @@ def _list_tools() -> list[Tool]:
                 "the holding', or 'cite Erwägung X'. The structured fields are extracted "
                 "deterministically from the decision text, eliminating the holding/dicta confusion "
                 "that plagues raw-text reasoning. Returns paragraphs as excerpts; for verbatim full "
-                "text of a single Erwägung, follow up with get_erwaegung."
+                "text of a single Erwägung, follow up with get_erwaegung. "
+                "PINPOINT POLICY (critical): NEVER guess which Erwägung is relevant for a claim. "
+                "If the user provided an e_number, verify it with get_erwaegung. If the user "
+                "described a claim without an e_number, route to find_relevant_erwaegung — it "
+                "ranks paragraphs by FTS5+BM25 against the claim and returns confidence labels. "
+                "If neither tool gives a confident answer, tell the user no Erwägung clearly "
+                "matches — do NOT default to E. 3.1 or any other plausible-looking pinpoint."
             ),
             inputSchema={
                 "type": "object",
@@ -13757,9 +13971,12 @@ def _list_tools() -> list[Tool]:
                 "Get the verbatim full text of a SINGLE numbered Erwägung from a Swiss court "
                 "decision. This is the actual citable unit in Swiss legal practice — lawyers cite "
                 "'BGE 140 III 86 E. 2.3' to point at one specific paragraph of reasoning. "
-                "Use this when the user wants to quote, analyze, or verify a specific Erwägung "
-                "rather than the whole decision. Returns text + sibling Erwägung numbers for "
-                "navigation. e_number can be top-level ('1', '2') or sub-level ('1.1', '2.3.1')."
+                "Use this when the USER has already provided an e_number to verify or quote. "
+                "If the user has only described a legal claim (no e_number), DO NOT GUESS — "
+                "use `find_relevant_erwaegung` instead, which performs FTS5 ranking against the "
+                "decision's per-paragraph index and returns the top match with confidence label. "
+                "Returns text + sibling Erwägung numbers for navigation. e_number can be top-level "
+                "('1', '2') or sub-level ('1.1', '2.3.1')."
             ),
             inputSchema={
                 "type": "object",
@@ -13777,6 +13994,50 @@ def _list_tools() -> list[Tool]:
                     },
                 },
                 "required": ["decision_id", "e_number"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="find_relevant_erwaegung",
+            description=(
+                "Find the Erwägung paragraph(s) in a Swiss court decision that best match a "
+                "given legal claim or proposition. Use this whenever the user provides a legal "
+                "claim and you need to identify WHICH Erwägung supports/discusses it — instead "
+                "of reading the whole decision and guessing (which produces the systematic 'E. 3.1' "
+                "fallback bias). Server-side FTS5+BM25 over per-paragraph text, returns top-k matches "
+                "with confidence labels (high/medium/low) derived from the score gap between "
+                "rank 1 and rank 2. CRITICAL: when confidence is 'low' or no_match=true, the tool "
+                "explicitly refuses to surface a guess — DO NOT then cite any Erwägung; report "
+                "no_match to the user and ask for a more specific claim. Each match carries a "
+                "highlighted_snippet with <mark>…</mark> around the matched sentence(s) — quote it "
+                "verbatim. Federal decisions only (BGE/BGer/BVGer/BStGer) — no structured E. for "
+                "cantonal."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": (
+                            "decision_id, BGE reference, or docket number. "
+                            "Must be a federal decision (structured Erwägungen)."
+                        ),
+                    },
+                    "claim": {
+                        "type": "string",
+                        "description": (
+                            "Free-text legal claim or proposition the user wants "
+                            "to verify against the decision. The more specific, "
+                            "the higher the confidence."
+                        ),
+                    },
+                    "top_k": {
+                        "type": "integer",
+                        "description": "Number of top matches to return (default 3, max 10).",
+                        "default": 3,
+                    },
+                },
+                "required": ["decision_id", "claim"],
             },
         ),
         Tool(
@@ -14853,6 +15114,15 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 _handle_get_erwaegung,
                 decision_id=arguments.get("decision_id", ""),
                 e_number=arguments.get("e_number", ""),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "find_relevant_erwaegung":
+            result = await asyncio.to_thread(
+                _handle_find_relevant_erwaegung,
+                decision_id=arguments.get("decision_id", ""),
+                claim=arguments.get("claim", ""),
+                top_k=int(arguments.get("top_k", 3) or 3),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
@@ -16427,6 +16697,24 @@ render();setInterval(render,60000);
     ):
         return await asyncio.to_thread(
             _handle_get_erwaegung, decision_id=decision_id, e_number=e_number,
+        )
+
+    @rest_api.get("/relevant-erwaegung/{decision_id}", tags=["Decision Structure"],
+                  summary="Find the Erwägung paragraph(s) that match a legal claim",
+                  description="Server-side FTS5 + BM25 ranking over per-paragraph "
+                              "text. Returns top-k matches with confidence labels "
+                              "(high / medium / low) and a highlighted_snippet "
+                              "showing the matched sentence(s). Refuses to surface "
+                              "a guess when the score gap is weak — fixes the "
+                              "systematic 'pinpoint=3.1 fallback' failure mode.")
+    async def api_find_relevant_erwaegung(
+        decision_id: str = PathParam(description="Decision ID, BGE reference, or docket number"),
+        claim: str = Query(..., description="The legal claim or proposition to match against the decision's Erwägungen."),
+        top_k: int = Query(3, ge=1, le=10, description="Number of top matches to return."),
+    ):
+        return await asyncio.to_thread(
+            _handle_find_relevant_erwaegung,
+            decision_id=decision_id, claim=claim, top_k=top_k,
         )
 
     @rest_api.get("/regeste/{decision_id}", tags=["Decision Structure"],

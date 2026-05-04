@@ -413,6 +413,20 @@ CREATE TABLE IF NOT EXISTS erwaegungen_paragraph (
 );
 CREATE INDEX IF NOT EXISTS idx_erw_decision ON erwaegungen_paragraph(decision_id);
 CREATE INDEX IF NOT EXISTS idx_erw_depth ON erwaegungen_paragraph(depth);
+
+-- Per-paragraph FTS5 index for claim → Erwägung matching.
+-- External-content references erwaegungen_paragraph by rowid; diacritic-
+-- stripped tokenizer so "widerrechtlich" matches "widerréchtlich" forms
+-- and German Umlaute survive normalization. Rebuilt at end of build_db.
+-- The find_relevant_erwaegung MCP tool depends on this index existing —
+-- DBs that predate this schema will return a clean error and prompt for
+-- a rebuild rather than silently returning a "3.1" guess.
+CREATE VIRTUAL TABLE IF NOT EXISTS erwaegungen_paragraph_fts USING fts5(
+    text,
+    content='erwaegungen_paragraph',
+    content_rowid='rowid',
+    tokenize='unicode61 remove_diacritics 1'
+);
 """
 
 
@@ -554,6 +568,20 @@ def build_db(shard_paths: list[Path], out_db: Path) -> dict:
             f"sav={ss}({_pct(ss)}%), regeste={sreg}({_pct(sreg)}%), "
             f"subnum={ssub}({_pct(ssub)}%), paragraphs={n_paragraphs} — {time.time()-started:.0f}s"
         )
+
+    # Build the FTS5 index over erwaegungen_paragraph.text. Done as a
+    # single 'rebuild' after all paragraph rows are inserted — far faster
+    # than per-row triggers, and the build is one-shot so we don't need
+    # incremental maintenance. The find_relevant_erwaegung tool refuses
+    # to run when this index is missing rather than fall back to a guess.
+    fts_started = time.time()
+    cur.execute("INSERT INTO erwaegungen_paragraph_fts(erwaegungen_paragraph_fts) VALUES('rebuild')")
+    conn.commit()
+    cur.execute("INSERT INTO erwaegungen_paragraph_fts(erwaegungen_paragraph_fts) VALUES('optimize')")
+    conn.commit()
+    fts_count = cur.execute("SELECT count(*) FROM erwaegungen_paragraph_fts").fetchone()[0]
+    logger.info(f"FTS5 index built: {fts_count} paragraphs indexed in {time.time()-fts_started:.1f}s")
+    stats["fts_paragraphs"] = fts_count
 
     conn.close()
     # Atomic swap: rename .tmp into the real (resolved) target, not the
