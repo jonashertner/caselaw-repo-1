@@ -13924,17 +13924,11 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="get_case_brief",
             description=(
-                "Get a structured case brief for any Swiss court decision. "
-                "Accepts any reference format: BGE reference ('BGE 133 III 121', '133 III 121'), "
-                "decision_id, or docket number. Returns: regeste (official headnote), "
-                "Sachverhalt (facts), key Erwägungen (reasoning excerpts with paragraph numbers — "
-                "the FIRST 12 paragraphs only; later paragraphs are NOT shown), "
-                "Dispositiv (holding), applicable statutes with Fedlex text, citation authority "
-                "(how often this case is cited), and related cases (what it cites, what cites it). "
-                "Use this when a student wants to understand or brief a specific case. "
-                "PINPOINT POLICY: the key_erwaegungen list is for orientation, NOT a pinpoint "
-                "ranking. To identify which Erwägung supports a specific user claim, use "
-                "find_relevant_erwaegung — never guess based on which paragraph 'looks substantive'."
+                "Structured case brief: regeste, Sachverhalt, key Erwägungen (first 12 only — "
+                "for orientation, NOT a pinpoint ranking), Dispositiv, statutes, citation "
+                "authority, related cases. Accepts BGE ref, decision_id, or docket. "
+                "To pinpoint which Erwägung supports a specific claim, use "
+                "find_relevant_erwaegung — never guess from key_erwaegungen alone."
             ),
             inputSchema={
                 "type": "object",
@@ -13954,22 +13948,13 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="get_decision_structure",
             description=(
-                "Get the structured fields of a Swiss court decision: Sachverhalt (facts), "
-                "Erwägungen split into individually-citable numbered paragraphs ('1', '1.1', '2.3', "
-                "etc.), Dispositiv (operative ruling), and Regeste (official rule summary, BGE only). "
-                "Available for federal decisions (BGer/BVGer/BStGer/BGE/BPatGer/EGMR-CH); cantonal "
-                "courts: use get_decision instead. "
-                "USE THIS — not full_text — when the user asks 'what did the court rule', 'what is "
-                "the holding', or 'cite Erwägung X'. The structured fields are extracted "
-                "deterministically from the decision text, eliminating the holding/dicta confusion "
-                "that plagues raw-text reasoning. Returns paragraphs as excerpts; for verbatim full "
-                "text of a single Erwägung, follow up with get_erwaegung. "
-                "PINPOINT POLICY (critical): NEVER guess which Erwägung is relevant for a claim. "
-                "If the user provided an e_number, verify it with get_erwaegung. If the user "
-                "described a claim without an e_number, route to find_relevant_erwaegung — it "
-                "ranks paragraphs by FTS5+BM25 against the claim and returns confidence labels. "
-                "If neither tool gives a confident answer, tell the user no Erwägung clearly "
-                "matches — do NOT default to E. 3.1 or any other plausible-looking pinpoint."
+                "Structured decision fields: Sachverhalt (facts), Erwägungen as numbered paragraphs "
+                "('1', '1.1', '2.3'), Dispositiv (ruling), Regeste (BGE only). Federal decisions "
+                "only; for cantonal use get_decision. Returns excerpts; for verbatim full text of "
+                "one Erwägung, use get_erwaegung. "
+                "PINPOINT POLICY: never guess. If user gave an e_number → verify with get_erwaegung. "
+                "If user gave only a claim → use find_relevant_erwaegung (FTS5+BM25 with confidence "
+                "labels). If neither is confident, report no_match — do NOT default to E. 3.1."
             ),
             inputSchema={
                 "type": "object",
@@ -13989,15 +13974,10 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="get_erwaegung",
             description=(
-                "Get the verbatim full text of a SINGLE numbered Erwägung from a Swiss court "
-                "decision. This is the actual citable unit in Swiss legal practice — lawyers cite "
-                "'BGE 140 III 86 E. 2.3' to point at one specific paragraph of reasoning. "
-                "Use this when the USER has already provided an e_number to verify or quote. "
-                "If the user has only described a legal claim (no e_number), DO NOT GUESS — "
-                "use `find_relevant_erwaegung` instead, which performs FTS5 ranking against the "
-                "decision's per-paragraph index and returns the top match with confidence label. "
-                "Returns text + sibling Erwägung numbers for navigation. e_number can be top-level "
-                "('1', '2') or sub-level ('1.1', '2.3.1')."
+                "Verbatim text of ONE numbered Erwägung — the citable unit in Swiss practice "
+                "(e.g. 'BGE 140 III 86 E. 2.3'). Use when the user already gave an e_number. "
+                "If only a claim was given (no e_number): use find_relevant_erwaegung — never guess. "
+                "Returns text + sibling Erwägung numbers. e_number: '1', '2.3', '5.2.1', …"
             ),
             inputSchema={
                 "type": "object",
@@ -14021,18 +14001,11 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="find_relevant_erwaegung",
             description=(
-                "Find the Erwägung paragraph(s) in a Swiss court decision that best match a "
-                "given legal claim or proposition. Use this whenever the user provides a legal "
-                "claim and you need to identify WHICH Erwägung supports/discusses it — instead "
-                "of reading the whole decision and guessing (which produces the systematic 'E. 3.1' "
-                "fallback bias). Server-side FTS5+BM25 over per-paragraph text, returns top-k matches "
-                "with confidence labels (high/medium/low) derived from the score gap between "
-                "rank 1 and rank 2. CRITICAL: when confidence is 'low' or no_match=true, the tool "
-                "explicitly refuses to surface a guess — DO NOT then cite any Erwägung; report "
-                "no_match to the user and ask for a more specific claim. Each match carries a "
-                "highlighted_snippet with <mark>…</mark> around the matched sentence(s) — quote it "
-                "verbatim. Federal decisions only (BGE/BGer/BVGer/BStGer) — no structured E. for "
-                "cantonal."
+                "Find which Erwägung paragraph(s) match a legal claim. Server-side FTS5+BM25 over "
+                "per-paragraph text; returns top-k with confidence labels (high/medium/low) and a "
+                "highlighted_snippet wrapping the matched sentence in <mark>…</mark> (quote it "
+                "verbatim). When no_match=true or confidence=low, do NOT cite any Erwägung — report "
+                "no_match. Federal decisions only. Replaces the 'always-E.-3.1' guessing pattern."
             ),
             inputSchema={
                 "type": "object",
