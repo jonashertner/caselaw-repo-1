@@ -7852,7 +7852,9 @@ server = Server(
         "══════════════════════════════════════════════════════════════\n"
         "For a full provision workup:\n"
         "  get_law (current text) → get_doctrine (cases + timeline) →\n"
-        "  get_materialien (Botschaft) → get_commentary (scholarly views)\n\n"
+        "  get_materialien (Botschaft — currently digested only for BV/BGFA; "
+        "other laws return BBl/AS publication-locator refs while full expansion "
+        "is in active build) → get_commentary (scholarly views)\n\n"
 
         "To check if a precedent still holds:\n"
         "  find_citations(direction=\"incoming\") on the BGE → scan "
@@ -14488,12 +14490,15 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="get_materialien",
             description=(
-                "Look up the preparatory materials (Materialien) behind a Swiss federal law "
-                "article: the Federal Council's Botschaft, its legislative intent, key arguments, "
-                "design choices, rejected alternatives, and parliamentary modifications. "
-                "Essential for understanding WHY a provision was drafted the way it was. "
-                "Currently covers: BGFA (Anwaltsgesetz). BV, OR, StGB, ZGB coming soon. "
-                "Data sourced from openlegalcommentary.ch (CC BY-SA 4.0)."
+                "Look up Materialien for a Swiss federal law article: Botschaft (legislative "
+                "intent, key arguments, design choices, rejected alternatives) + parliamentary "
+                "modifications. "
+                "COVERAGE TODAY: per-article digests for BV (128 articles) and BGFA (39 articles) "
+                "only; for every other law the response includes BBl/AS publication-locator refs "
+                "(`amendment_refs` field) but `sources=[]`. Full per-article digested expansion to "
+                "all federal laws is in active build — for now, treat empty `sources` as 'no "
+                "digested Materialien yet' and surface the BBl reference to the user instead of "
+                "claiming the law has no legislative history."
             ),
             inputSchema={
                 "type": "object",
@@ -14514,10 +14519,10 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_materialien",
             description=(
-                "Full-text search across all preparatory materials (Botschaften, parliamentary "
-                "data) for Swiss federal laws. Searches legislative intent, key arguments, "
-                "design choices, and general context. Use this to find the legislative history "
-                "behind any provision. Currently covers: BGFA. BV, OR, StGB, ZGB coming soon."
+                "Full-text search across digested Materialien (legislative intent, key arguments, "
+                "design choices, general context). "
+                "COVERAGE TODAY: BV + BGFA digests + BV parliamentary debate transcripts only. "
+                "Full per-article digested expansion to every federal law is in active build."
             ),
             inputSchema={
                 "type": "object",
