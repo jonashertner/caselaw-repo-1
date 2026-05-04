@@ -2173,6 +2173,38 @@ html, body {
   padding: 4px 10px;
 }
 
+/* PII trust banner — shared across all Pro views (Verify / Strengthen /
+   Support / Scan). Proves the structural redaction layer ran before any
+   client text crossed the network; lawyer and AppSource reviewer alike
+   can confirm names/IBANs/AHV/etc. were caught. */
+.pii-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 8px 0 12px;
+  background: var(--blue-light);
+  color: var(--text-secondary);
+  border-radius: 8px;
+  font-size: 12px;
+  border: 1px solid color-mix(in srgb, var(--blue) 18%, transparent);
+}
+
+.pii-banner-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.pii-banner-text {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.pii-banner-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
 /* --- Audit Results (document-wide /api/attest) --- */
 .audit-summary {
   display: flex;

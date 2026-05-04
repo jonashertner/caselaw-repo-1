@@ -353,6 +353,16 @@ if (typeof Office !== 'undefined' && Office.onReady) {
         // French Word user sees French UI on first launch without
         // touching the language picker.
         state.lang = settings.get('ocl_lang') || _detectInitialLang();
+        /* License-key roaming: roamingSettings is the only Office store
+           that follows a user across Word for Mac / Win / Online, so a
+           lawyer who activated Pro once shouldn't have to paste the key
+           again on a second device. Mirror into localStorage on first
+           sight so the rest of the code (which reads localStorage)
+           continues to work without a new code path. */
+        var roamingKey = settings.get('ocl_pro_key');
+        if (roamingKey && !localStorage.getItem('ocl_pro_key')) {
+          try { localStorage.setItem('ocl_pro_key', roamingKey); } catch (_e) {}
+        }
       } catch (e) {
         state.lang = _detectInitialLang();
       }
@@ -482,6 +492,25 @@ function render() {
     app.innerHTML = '<div class="state-message" role="alert">' + escHtml(msg) +
       '<button class="retry-btn" data-action="back">\u2190 ' + escHtml(t('back', lang)) + '</button></div>';
   }
+}
+
+/* Render the "PII redacted before send" trust banner for any Pro view
+   whose response carries a `_pii_summary`. The Word channel's whole
+   reason for existing is the structural redaction layer — show what
+   it caught on every view that called a Pro endpoint, not just Scan.
+   Returns '' when nothing was redacted (server saw no PII), which is
+   itself a meaningful signal: don't clutter the panel for clean text. */
+function _renderPIIBanner(piiSummary, lang) {
+  if (!piiSummary || !piiSummary.total || typeof window.formatPIISummary !== 'function') return '';
+  var details = window.formatPIISummary(piiSummary, lang);
+  var label = t('audit_pii_redacted', lang, { n: piiSummary.total });
+  return '<div class="pii-banner" title="' + escHtml(details) + '">' +
+    '<span class="pii-banner-icon" aria-hidden="true">\uD83D\uDD12</span>' +
+    '<span class="pii-banner-text">' +
+      '<span class="pii-banner-label">' + escHtml(label) + '</span>' +
+      ' &mdash; ' + escHtml(details) +
+    '</span>' +
+  '</div>';
 }
 
 // Announce key state to screen readers via a polite aria-live region in
@@ -1097,6 +1126,10 @@ function renderVerify() {
     html += '<div class="verify-loading"><div class="spinner"></div><span>' + escHtml(t('verify_checking', lang)) + '</span></div>';
   } else if (state.verifyResult) {
     var v = state.verifyResult;
+    /* PII trust banner — proves to the lawyer (and AppSource reviewers)
+       that names / IBAN / AHV etc. never crossed the network. Total=0
+       means clean input; helper returns '' so we don't clutter. */
+    html += _renderPIIBanner(v._pii_summary, lang);
     var verdictLabels = {
       supports: t('verdict_supports', lang),
       partial: t('verdict_partial', lang),
@@ -1146,6 +1179,7 @@ function renderSupport() {
     html += '<div class="verify-loading"><div class="spinner"></div><span>' + escHtml(t('support_searching', lang)) + '</span></div>';
   } else if (state.supportResult) {
     var sr = state.supportResult;
+    html += _renderPIIBanner(sr._pii_summary, lang);
 
     // Show parsed claim + legal area
     if (sr.claim || sr.legal_area) {
@@ -1874,7 +1908,7 @@ async function handleAppClick(e) {
       case 'upgrade-pro':  await doUpgradePro(); break;
       case 'activate-pro': await doActivatePro(); break;
       case 'remove-pro':
-        localStorage.removeItem('ocl_pro_key');
+        _clearProKey();
         render();
         break;
     }
@@ -2171,7 +2205,7 @@ async function startVerify() {
     state.verifyResult = await verifyReferencePro(proKey, selected, caseRef, lang);
   } catch (e) {
     if (e.type === 'invalid_license') {
-      localStorage.removeItem('ocl_pro_key');
+      _clearProKey();
       state.error = { type: 'no_selection', message: t('pro_key_invalid', lang) };
     } else if (e.type === 'redact_unavailable') {
       /* Structural-redaction guard fired client-side. Show a clean
@@ -2221,7 +2255,7 @@ async function startStrengthen() {
     state.strengthenResult = await verifyAndStrengthenPro(proKey, paragraph, lang);
   } catch (e) {
     if (e.type === 'invalid_license') {
-      localStorage.removeItem('ocl_pro_key');
+      _clearProKey();
       state.error = { type: 'no_selection', message: t('pro_key_invalid', lang) };
     } else if (e.type === 'redact_unavailable') {
       state.error = e;
@@ -2261,7 +2295,7 @@ async function findSupport() {
     state.supportResult = await findSupportingDecisions(proKey, selected, lang);
   } catch (e) {
     if (e.type === 'invalid_license') {
-      localStorage.removeItem('ocl_pro_key');
+      _clearProKey();
       state.error = { type: 'no_selection', message: t('pro_key_invalid', lang) };
     } else {
       state.error = e;
@@ -2383,6 +2417,20 @@ async function doUpgradePro() {
   }
 }
 
+/* Clear the Pro license from BOTH localStorage and roamingSettings.
+   Called from every site that handled an invalid_license error or an
+   explicit user "remove key" action — without the roaming side, an
+   invalidated key would silently re-appear on next launch. */
+function _clearProKey() {
+  try { localStorage.removeItem('ocl_pro_key'); } catch (_e) {}
+  if (_insideWord && Office.context && Office.context.roamingSettings) {
+    try {
+      Office.context.roamingSettings.remove('ocl_pro_key');
+      Office.context.roamingSettings.saveAsync();
+    } catch (_e) {}
+  }
+}
+
 async function doActivatePro() {
   var keyInput = document.getElementById('pro-key-input');
   if (!keyInput) return;
@@ -2394,6 +2442,16 @@ async function doActivatePro() {
     var data = await validateLicense(key);
     if (data.valid) {
       localStorage.setItem('ocl_pro_key', key);
+      /* Mirror into roamingSettings so the activation follows the user
+         across Word for Mac / Win / Online — they paste once, not once
+         per device. saveAsync is fire-and-forget; failure here only
+         affects roaming, not the local activation. */
+      if (_insideWord && Office.context && Office.context.roamingSettings) {
+        try {
+          Office.context.roamingSettings.set('ocl_pro_key', key);
+          Office.context.roamingSettings.saveAsync();
+        } catch (_e) { /* roaming unavailable — local activation still works */ }
+      }
       render();
     }
   } catch (e) {
@@ -2475,7 +2533,7 @@ async function scanDocument() {
     state.view = 'scan';
   } catch (e) {
     if (e && e.type === 'invalid_license') {
-      try { localStorage.removeItem('ocl_pro_key'); } catch (_e) {}
+      _clearProKey();
       state.error = { type: 'no_selection', message: t('pro_key_invalid', lang) };
     } else {
       state.error = e;
@@ -2621,20 +2679,8 @@ function renderScan() {
     '<span class="audit-summary-text">' + escHtml(summaryText) + '</span>' +
     '</div>';
 
-  // Privacy banner: surface what was redacted before the document was
-  // sent to the server, so the lawyer can confirm no client data leaked.
-  var pii = report._pii_summary;
-  if (pii && pii.total > 0 && typeof window.formatPIISummary === 'function') {
-    var piiDetails = window.formatPIISummary(pii, lang);
-    var piiLabel = t('audit_pii_redacted', lang, { n: pii.total }) || ('PII redacted: ' + pii.total);
-    html += '<div class="audit-pii-banner" style="' +
-      'display:flex;align-items:center;gap:8px;padding:8px 12px;margin:8px 0;' +
-      'background:var(--blue-light);color:var(--text-2);border-radius:8px;font-size:12px;' +
-      '" title="' + escHtml(piiDetails) + '">' +
-      '<span aria-hidden="true">\uD83D\uDD12</span>' +
-      '<span>' + escHtml(piiLabel) + ' &mdash; ' + escHtml(piiDetails) + '</span>' +
-      '</div>';
-  }
+  // Privacy banner — same shared helper as Verify/Strengthen/Support.
+  html += _renderPIIBanner(report._pii_summary, lang);
 
   // Bulk actions: re-comment-all (only useful if user dismissed the auto
   // comments) + insert-bibliography
@@ -2720,6 +2766,8 @@ function renderStrengthen() {
     html += '<div class="audit-inline-error">' + escHtml(r.message || r.error) + '</div>';
     return html;
   }
+
+  html += _renderPIIBanner(r._pii_summary, lang);
 
   /* ── Argument-strength banner ── */
   var strengthClass = 'audit-summary-' + (r.argument_strength === 'strong' ? 'ok'
