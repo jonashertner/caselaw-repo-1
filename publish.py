@@ -323,7 +323,15 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
            sys.executable, str(script), "--output", str(OUTPUT_DIR),
            "--full-rebuild"]
 
-    timeout = 18000  # ~3h40m for 1M decisions + optimize
+    # Wall-clock cap. Was 18000s (5h) — got hit on 2026-05-04 03:30 run when
+    # the König-cleanup phase + content-hash + concurrent entscheidsuche
+    # download pushed the optimize step past the limit (process killed at
+    # 18003.6s mid-optimize, no atomic swap, decisions.db left stale at
+    # May 2 12:30). Bumped to 25200s (7h) — gives optimize a 2h cushion
+    # over the historical worst-case-but-completed runs (~5h 30m). The
+    # stall_timeout in run_cmd (default 5400s = 90 min between log lines)
+    # still catches the genuinely-wedged case.
+    timeout = 25200  # 7h hard cap; legitimate completion ranges 3.5–6h
 
     return run_cmd(cmd, "Build FTS5 database", dry_run, timeout=timeout)
 
