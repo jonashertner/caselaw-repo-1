@@ -83,6 +83,7 @@ import sys
 import threading
 import time
 import unicodedata
+import urllib.parse
 import html as html_lib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -8465,17 +8466,37 @@ def _handle_find_relevant_erwaegung(
             cite = _build_citation_strings(
                 decision_for_citation, pinpoint=r["e_number"]
             )
+            # Extract the matched sentence verbatim from the FTS5 snippet
+            # (strip <mark> tags). Used as the ?highlight= query param so
+            # the rendered /entscheid/ page can wrap the same span on arrival.
+            matched_sentence = re.sub(
+                r"</?mark>", "", (r["highlighted"] or "")
+            ).strip().strip("…").strip()
+            base_url = cite.get("canonical_url") or ""
+            display_url = base_url
+            if matched_sentence and base_url:
+                # Cap to ~200 chars; longer URLs cause issues in some chat
+                # clients and the substring is enough to disambiguate the
+                # match within the focused Erwägung.
+                hl_value = matched_sentence[:200]
+                sep = "&" if "?" in base_url else "?"
+                display_url = (
+                    f"{base_url}{sep}highlight={urllib.parse.quote(hl_value)}"
+                    f"&e={urllib.parse.quote(r['e_number'])}"
+                )
             matches.append({
                 "e_number": r["e_number"],
                 "parent_e_number": r["parent"],
                 "depth": r["depth"],
                 "text": r["text"],
                 "highlighted_snippet": r["highlighted"],
+                "matched_sentence": matched_sentence,
                 "score": -float(r["score"]),  # flip sign so higher = better
                 "citation_string_de": cite.get("citation_string_de"),
                 "citation_string_fr": cite.get("citation_string_fr"),
                 "citation_string_it": cite.get("citation_string_it"),
                 "url": cite.get("canonical_url"),
+                "display_url": display_url,
             })
 
         if confidence == "low":
@@ -17079,7 +17100,18 @@ render();setInterval(render,60000);
 
     async def handle_decision_page(request):
         decision_id = request.path_params["decision_id"]
-        html_content, status = await asyncio.to_thread(render_decision_page, decision_id)
+        # ?highlight=<verbatim substring> tags one Erwägung sentence with
+        # <mark> after the page is rendered. Used by find_relevant_erwaegung
+        # display_urls so the lawyer landing on the page sees the matched
+        # sentence already highlighted, not just the right anchor scrolled.
+        # ?e=<e_number> picks which paragraph to apply highlight to (so a
+        # substring that happens to occur in multiple paragraphs only marks
+        # the one that actually matched the claim).
+        highlight = request.query_params.get("highlight") or None
+        e_focus = request.query_params.get("e") or None
+        html_content, status = await asyncio.to_thread(
+            render_decision_page, decision_id, highlight=highlight, e_focus=e_focus,
+        )
         return Response(html_content, status_code=status, media_type="text/html")
 
     async def handle_sitemap_index(request):

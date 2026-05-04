@@ -405,8 +405,21 @@ def _truncate(text: str | None, max_len: int) -> str:
     return text[:max_len].rsplit(" ", 1)[0] + "..."
 
 
-def render_decision_page(decision_id: str) -> tuple[str, int]:
-    """Render an HTML page for a single decision. Returns (html, status_code)."""
+def render_decision_page(
+    decision_id: str,
+    *,
+    highlight: str | None = None,
+    e_focus: str | None = None,
+) -> tuple[str, int]:
+    """Render an HTML page for a single decision. Returns (html, status_code).
+
+    Optional ``highlight``: a verbatim substring that, if found in the
+    Erwägung whose ``e_number`` matches ``e_focus``, is wrapped in
+    ``<mark>…</mark>`` so the lawyer landing on the page sees the exact
+    sentence that triggered the citation. Used by the
+    find_relevant_erwaegung MCP tool's display_url so chat → browser
+    handoff lands on the highlighted span, not just the right anchor.
+    """
     conn = _get_db()
     try:
         row = conn.execute(
@@ -423,12 +436,60 @@ def render_decision_page(decision_id: str) -> tuple[str, int]:
         if not row:
             return _render_404(decision_id), 404
 
-        return _render_decision(row), 200
+        return _render_decision(row, highlight=highlight, e_focus=e_focus), 200
     finally:
         conn.close()
 
 
-def _render_decision(row: sqlite3.Row) -> str:
+def _apply_highlight(escaped_text: str, highlight: str) -> str:
+    """Wrap the first verbatim occurrence of ``highlight`` in ``escaped_text``
+    with ``<mark>…</mark>``. Both inputs are HTML-escaped already; the wrapper
+    tags are injected raw. Case-sensitive on the raw substring (lawyers cite
+    verbatim quotes), but normalises whitespace runs so PDF column wrapping
+    in the corpus doesn't defeat the match.
+    """
+    if not highlight or not escaped_text:
+        return escaped_text
+    needle = _esc(highlight.strip())
+    if not needle:
+        return escaped_text
+    # Whitespace-tolerant match: replace runs of whitespace in BOTH the
+    # haystack and needle with a single space for matching, but rewrite
+    # the original positions in the haystack — so we don't lose layout.
+    norm_re = re.compile(r"\s+")
+    flat_hay = norm_re.sub(" ", escaped_text)
+    flat_needle = norm_re.sub(" ", needle)
+    idx = flat_hay.find(flat_needle)
+    if idx < 0:
+        return escaped_text
+    # Re-find the same position in the un-flattened haystack by walking
+    # both strings in lockstep.
+    j = 0  # cursor in escaped_text
+    flat_cursor = 0
+    start = end = -1
+    while j < len(escaped_text):
+        ch = escaped_text[j]
+        flat_ch = " " if ch.isspace() else ch
+        # advance the flat cursor only when we emit a non-collapsed char
+        if not (ch.isspace() and j > 0 and escaped_text[j - 1].isspace()):
+            if flat_cursor == idx and start < 0:
+                start = j
+            flat_cursor += 1
+            if flat_cursor == idx + len(flat_needle):
+                end = j + 1
+                break
+        j += 1
+    if start < 0 or end < 0:
+        return escaped_text
+    return escaped_text[:start] + "<mark>" + escaped_text[start:end] + "</mark>" + escaped_text[end:]
+
+
+def _render_decision(
+    row: sqlite3.Row,
+    *,
+    highlight: str | None = None,
+    e_focus: str | None = None,
+) -> str:
     did = row["decision_id"]
     court = row["court"] or ""
     court_name = _COURT_NAMES.get(court, court.replace("_", " ").title())
@@ -520,6 +581,17 @@ def _render_decision(row: sqlite3.Row) -> str:
             parts.append('<details open><summary><strong>Erwägungen</strong> '
                          f'<span class="count">({len(paragraphs)} Absätze)</span></summary>')
             parts.append('<div class="erwaegungen">')
+            # If we received a ?highlight=… query, render a banner above
+            # the Erwägungen section so the lawyer sees WHY the page was
+            # opened with a highlight (came from chat / Word add-in).
+            if highlight and e_focus:
+                parts.append(
+                    f'<div class="match-banner" role="status">'
+                    f'<span class="match-banner-icon" aria-hidden="true">★</span> '
+                    f'Treffer in <a href="#e-{_esc(e_focus.replace(".", "-"))}">'
+                    f'E. {_esc(e_focus)}</a> — markierter Satz unten hervorgehoben.'
+                    f'</div>'
+                )
             for p in paragraphs:
                 indent_px = (p["depth"] - 1) * 16
                 e_label = f"E. {p['e_number']}"
@@ -529,13 +601,28 @@ def _render_decision(row: sqlite3.Row) -> str:
                 e_paras = _split_paragraphs(p["text"])
                 if not e_paras:
                     continue
+                # Apply the ?highlight= substring only to the focused
+                # Erwägung — never elsewhere — so the same string showing up
+                # in another paragraph (boilerplate, repeated tests) doesn't
+                # also get marked.
+                is_focus = bool(e_focus and p["e_number"] == e_focus)
+                first_esc = _esc(e_paras[0])
+                if is_focus and highlight:
+                    first_esc = _apply_highlight(first_esc, highlight)
                 first_html = (
                     f'<a class="e-num" href="#{anchor}">{_esc(e_label)}</a> '
-                    f'{_esc(e_paras[0])}'
+                    f'{first_esc}'
                 )
-                rest_html = "".join(f'<p>{_esc(par)}</p>' for par in e_paras[1:])
+                rest_paras = []
+                for par in e_paras[1:]:
+                    par_esc = _esc(par)
+                    if is_focus and highlight:
+                        par_esc = _apply_highlight(par_esc, highlight)
+                    rest_paras.append(f'<p>{par_esc}</p>')
+                rest_html = "".join(rest_paras)
+                focus_class = " erw-focus" if is_focus and highlight else ""
                 parts.append(
-                    f'<div class="erw" id="{anchor}" style="margin-left:{indent_px}px">'
+                    f'<div class="erw{focus_class}" id="{anchor}" style="margin-left:{indent_px}px">'
                     f'<p class="e-text">{first_html}</p>{rest_html}</div>'
                 )
             parts.append('</div></details>')
@@ -740,6 +827,47 @@ def _render_decision(row: sqlite3.Row) -> str:
         text-decoration: none;
     }}
     .decision-body .erw .e-num:hover {{ text-decoration: underline; }}
+
+    /* Highlight from ?highlight=&e=… (find_relevant_erwaegung handoff). */
+    .decision-body .erw-focus {{
+        background: color-mix(in srgb, var(--accent) 5%, transparent);
+        border-left: 3px solid var(--accent);
+        padding-left: var(--s-3);
+        margin-left: 0 !important;
+        scroll-margin-top: 80px;
+    }}
+    .decision-body .erw-focus .e-num {{ color: var(--accent); font-weight: 600; }}
+    .decision-body .erw mark {{
+        background: color-mix(in srgb, var(--accent) 22%, transparent);
+        color: var(--text);
+        padding: 1px 2px;
+        border-radius: 2px;
+        font-weight: 500;
+    }}
+    .decision-body .match-banner {{
+        margin: var(--s-4) 0 var(--s-5);
+        padding: var(--s-3) var(--s-4);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+        border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+        border-radius: 8px;
+        font-family: var(--f-sans);
+        font-size: 14px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: var(--s-2);
+    }}
+    .decision-body .match-banner-icon {{
+        color: var(--accent);
+        font-size: 16px;
+        flex-shrink: 0;
+    }}
+    .decision-body .match-banner a {{
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 500;
+    }}
+    .decision-body .match-banner a:hover {{ text-decoration: underline; }}
     .decision-body .dispositiv-orders {{
         margin: var(--s-3) 0 0 var(--s-5);
         padding: 0; list-style: decimal;
