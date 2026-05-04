@@ -25,10 +25,13 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import atexit
+import fcntl
 import json
 import logging
 import os
 import shutil
+import signal
 import sqlite3
 import sys
 import time
@@ -46,6 +49,51 @@ OUTPUT_DIR = REPO_DIR / "output"
 DB_PATH = OUTPUT_DIR / "decisions.db"
 JSONL_DIR = OUTPUT_DIR / "decisions"
 TMP_PATH = Path(str(DB_PATH) + ".quick")
+PUBLISH_LOCK_PATH = "/tmp/opencaselaw-publish.lock"
+
+# Tracked so atexit / SIGTERM handlers can unlink the .quick file even if
+# the normal try/finally block doesn't run (e.g. parent kills us with SIGTERM
+# on subprocess timeout — what burned 2026-05-04 with a 55 GB orphan).
+_active_tmp: Path | None = None
+
+
+def _publish_in_progress() -> bool:
+    """Probe publish.py's exclusive lock. Returns True if a full publish holds it.
+
+    publish.py acquires fcntl.LOCK_EX on PUBLISH_LOCK_PATH at startup. A shared
+    lock probe (LOCK_SH | LOCK_NB) succeeds iff no exclusive holder exists.
+    """
+    try:
+        with open(PUBLISH_LOCK_PATH, "r") as lf:
+            try:
+                fcntl.flock(lf.fileno(), fcntl.LOCK_SH | fcntl.LOCK_NB)
+                fcntl.flock(lf.fileno(), fcntl.LOCK_UN)
+                return False
+            except BlockingIOError:
+                return True
+    except FileNotFoundError:
+        return False
+
+
+def _cleanup_active_tmp() -> None:
+    """Unlink the in-flight .quick file if a swap never completed."""
+    global _active_tmp
+    p = _active_tmp
+    _active_tmp = None
+    if p is None:
+        return
+    try:
+        if p.exists():
+            size_gb = p.stat().st_size / 1e9
+            p.unlink()
+            logger.warning("Cleanup: removed orphan %s (%.1f GB)", p, size_gb)
+    except OSError as e:
+        logger.warning("Cleanup failed for %s: %s", p, e)
+
+
+def _signal_handler(signum, frame):  # noqa: ARG001
+    _cleanup_active_tmp()
+    sys.exit(128 + signum)
 
 
 def _resolve_real_path(p: Path) -> Path:
@@ -119,12 +167,14 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
     t0 = time.time()
     swap_done = False
     conn = None
+    global _active_tmp
 
     try:
         # Step 1: Copy current DB to work on
         logger.info("Copying %s to %s (%s)", real_db, real_tmp,
                     "{:.0f} MB".format(real_db.stat().st_size / 1e6))
         if not dry_run:
+            _active_tmp = real_tmp
             shutil.copy2(str(real_db), str(real_tmp))
 
         # Step 2: Find new rows
@@ -167,6 +217,7 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
         # Step 5: Atomic swap (consumes real_tmp — no cleanup needed below)
         os.replace(str(real_tmp), str(real_db))
         swap_done = True
+        _active_tmp = None
         logger.info("Atomic swap complete — new decisions are live")
 
         return inserted
@@ -182,6 +233,7 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
                 logger.info("Cleaned up temp file %s", real_tmp)
             except OSError as e:
                 logger.warning("Failed to clean up %s: %s", real_tmp, e)
+        _active_tmp = None
 
 
 def main():
@@ -195,6 +247,22 @@ def main():
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
+
+    # Defense-in-depth cleanup of the .quick orphan: SIGTERM (parent timeout)
+    # bypasses the try/finally below; atexit covers normal-exit paths the
+    # finally also covers, but is harmless redundancy.
+    atexit.register(_cleanup_active_tmp)
+    signal.signal(signal.SIGTERM, _signal_handler)
+    signal.signal(signal.SIGINT, _signal_handler)
+
+    # Skip if a full publish holds the exclusive lock — quick_publish copies
+    # the 60 GB decisions.db, which collides with build_fts5's atomic-swap
+    # disk budget. The 2026-05-04 incident: BGer poller fired this mid-publish,
+    # subprocess timeout killed it at 600 s, left 55 GB orphan, ENOSPC followed.
+    if not args.dry_run and _publish_in_progress():
+        logger.info("Full publish.py is running (holds %s); skipping quick_publish.",
+                    PUBLISH_LOCK_PATH)
+        return
 
     courts = args.courts.split(",") if args.courts else None
     inserted = quick_publish(courts=courts, dry_run=args.dry_run)
