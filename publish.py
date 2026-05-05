@@ -495,6 +495,17 @@ def step_2g_build_decision_structure(dry_run: bool = False, full_rebuild: bool =
         f"Build decision_structure sidecar ({len(shard_names)} shards)",
         dry_run,
         timeout=7200,  # full corpus build can take ~1h
+        # The new FTS5 'rebuild' + 'optimize' phase added in commit
+        # b8e4cf3 (find_relevant_erwaegung infra) emits no stdout while
+        # SQLite rewrites the index over ~970K paragraph rows. On the
+        # 2026-05-04 publish that silent phase ran past the default
+        # 5400s stall watchdog and got killed mid-rebuild — leaving the
+        # decision_structure.db sidecar (and therefore the FTS5 index
+        # find_relevant_erwaegung depends on) un-built. Bumped to 9000s
+        # (2.5h) — wide enough for the silent finalisation window
+        # observed in production, narrow enough to still catch a
+        # genuinely-wedged process within a few hours.
+        stall_timeout=9000,
     )
 
 
