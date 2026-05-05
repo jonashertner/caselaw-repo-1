@@ -61,6 +61,12 @@ SPARQL_ENDPOINT = "https://fedlex.data.admin.ch/sparqlendpoint"
 # Publications Office). Predicates we need:
 JOLUX = "http://data.legilux.public.lu/resource/ontology/jolux#"
 SKOS = "http://www.w3.org/2004/02/skos/core#"
+# Fedlex follows ELI conventions and reuses Dublin Core Terms for
+# canonical identifiers — Expression-level dct:identifier carries the
+# short citation string ("AS 2025 615" / "RO 2025 615" / "RU 2025 615")
+# that lawyers use in briefs. NOT jolux:identifier (which exists on the
+# Act/Work level but doesn't carry the AS/BBl reference string).
+DCT = "http://purl.org/dc/terms/"
 
 # Language URIs as used throughout Fedlex
 LANG_URIS = {
@@ -241,10 +247,11 @@ def discover_acts(sr_numbers: list[str] | None = None) -> Iterator[ActRecord]:
     # per-language rows into one Act row; we re-split client-side.
     query = f"""
     PREFIX jolux: <{JOLUX}>
+    PREFIX dct: <{DCT}>
     SELECT
         ?work ?srNumber ?act ?dateDoc ?dateEif
         ?publicationDate ?processType ?typeDoc ?genre ?isPartOf
-        ?expr ?lang ?title ?titleAlt ?identifier
+        ?expr ?lang ?title ?titleAlt ?titleShort ?identifier
         ?memName ?memYear ?memNumber ?memPage
     WHERE {{
       ?work a jolux:ConsolidationAbstract .
@@ -264,7 +271,7 @@ def discover_acts(sr_numbers: list[str] | None = None) -> Iterator[ActRecord]:
         OPTIONAL {{ ?expr jolux:title ?title }}
         OPTIONAL {{ ?expr jolux:titleAlternative ?titleAlt }}
         OPTIONAL {{ ?expr jolux:titleShort ?titleShort }}
-        OPTIONAL {{ ?expr jolux:identifier ?identifier }}
+        OPTIONAL {{ ?expr dct:identifier ?identifier }}
         OPTIONAL {{ ?expr jolux:memorialName ?memName }}
         OPTIONAL {{ ?expr jolux:memorialYear ?memYear }}
         OPTIONAL {{ ?expr jolux:memorialNumber ?memNumber }}
@@ -485,6 +492,7 @@ def discover_amendment_acts(
     # type). The strstarts on the eli/oc/ namespace is restrictive enough.
     query = f"""
     PREFIX jolux: <{JOLUX}>
+    PREFIX dct: <{DCT}>
     SELECT
         ?act ?dateDoc ?dateEif ?publicationDate ?processType
         ?typeDoc ?genre ?isPartOf
@@ -502,7 +510,7 @@ def discover_amendment_acts(
       OPTIONAL {{ ?expr jolux:title ?title }}
       OPTIONAL {{ ?expr jolux:titleAlternative ?titleAlt }}
       OPTIONAL {{ ?expr jolux:titleShort ?titleShort }}
-      OPTIONAL {{ ?expr jolux:identifier ?identifier }}
+      OPTIONAL {{ ?expr dct:identifier ?identifier }}
       OPTIONAL {{ ?act jolux:dateDocument ?dateDoc }}
       OPTIONAL {{ ?act jolux:dateEntryInForce ?dateEif }}
       OPTIONAL {{ ?act jolux:publicationDate ?publicationDate }}
