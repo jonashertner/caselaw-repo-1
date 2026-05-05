@@ -57,6 +57,25 @@ h1 {
 .summary-label { font-size: var(--t-sm); font-weight: 400; color: var(--text-2); }
 .summary-num.crit { color: var(--text); }
 .summary-num.warn { color: var(--text-2); }
+/* Active-improvement banner — always visible (independent of gate state),
+   communicates that the DB is being actively worked on while MCP workers
+   continue to serve the last successful build. */
+.active-banner {
+    display: flex; align-items: flex-start; gap: 0.85em;
+    margin: 1.5rem 0 2rem; padding: 1em 1.2em;
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    border-radius: 8px;
+    font-size: var(--t-sm); line-height: 1.55; color: var(--text);
+    max-width: 720px;
+}
+.active-banner-icon {
+    color: var(--accent); font-size: 18px; flex: 0 0 auto;
+    line-height: 1;
+}
+.active-banner strong { color: var(--text); display: block; margin-bottom: 0.25em; }
+.active-banner a { color: var(--accent); }
+
 .gate {
     display: flex; flex-direction: column; gap: 0.35em;
     margin: 0 0 3rem 0; font-size: 14px; font-weight: 400;
@@ -192,6 +211,17 @@ h1 {
 <main class="container">
 <p class="eyebrow" data-i18n="hero.eyebrow">Operational · live</p>
 <h1 data-i18n="hero.h1">Data quality</h1>
+
+<div class="active-banner" role="status">
+  <span class="active-banner-icon" aria-hidden="true">⚙</span>
+  <div>
+    <strong>Database actively being improved to handle a growing number of requests.</strong>
+    The MCP workers at <a href="https://mcp.opencaselaw.ch">mcp.opencaselaw.ch</a>
+    continue to function — search, citation graph, statute lookup and case briefs
+    all serve the last successful build while we catch up.
+  </div>
+</div>
+
 <p class="lede">
     Every nightly publish runs <span id="check-count">…</span> integrity, schema and content checks
     against the full corpus before users see new data. A critical regression
