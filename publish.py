@@ -937,6 +937,51 @@ PARALLEL_POST_BUILD_STEPS = {"2e", "2b", "2c", "2f", "2g", 3}
 PARALLEL_MAX_WORKERS = 4
 
 
+# ── DAG runner integration (Phase B v0.2) ─────────────────────────────
+#
+# OCL_USE_DAG=1 hands the pipeline over to publish_dag.run_targets()
+# instead of the linear for-loop in main(). Default OFF — every nightly
+# and every CI run continues to use the existing path. The opt-in flag
+# lets us validate the DAG runner against real workloads before flipping
+# the default in a future commit.
+#
+# Limitations of v0.2 (intentional, to keep the wiring small):
+#   • Sequential (no parallel post-build) — slower than today's mode
+#   • No checkpoint resume — a mid-run failure restarts from scratch
+#   • --fast-only is honoured by passing requested=["git_push_early"]
+#   • --step N is honoured by mapping N → DAG target name
+#   • --ingest is honoured by force-including the opt-in 'ingest' target
+#
+# v0.3 will add parallel-wave scheduling, checkpoint integration, and
+# (assuming clean A/B against today's pipeline) make DAG mode the default.
+
+# Mapping from publish.py step number/key → publish_dag target name.
+# Both directions used so we can translate user --step args INTO the
+# DAG, and the DAG result dict BACK into the step-keyed summary log
+# operators are familiar with.
+STEP_TO_DAG_TARGET: dict[int | str, str] = {
+    1: "ingest",
+    2: "build_fts5",
+    "2b": "quality_report",
+    "2c": "reference_graph",
+    "2d": "enrich_quality",
+    "2e": "anwaltsrecht_tags",
+    "2f": "materialien_build",
+    "2g": "decision_structure",
+    3: "export_parquet",
+    4: "upload_hf",
+    "5a": "stats_early",
+    "5b": "rss_feeds",
+    "5c": "qc_gate",
+    "5d": "release_manifest",
+    "6a": "git_push_early",
+    7: "publish_delta",
+    5: "stats_final",
+    6: "git_push_final",
+    "6b": "health_check",
+}
+
+
 STEPS = [
     (1, "Ingest", step_1_ingest),
     (2, "Build FTS5", step_2_build_fts5),
@@ -966,6 +1011,121 @@ STEPS = [
     # ── Auto-validate (FAIL → systemd OnFailure → alert) ──
     ("6b", "Health Check", step_6b_health_check),
 ]
+
+
+def _build_dag_builder_map() -> dict:
+    """Produce the {target_name → callable} dict the DAG runner expects.
+
+    Wraps each existing step_X function so its signature matches the
+    runner's contract ``builder(args, *, dry_run, full_rebuild) -> bool``,
+    regardless of whether the original step took only ``dry_run`` or
+    also ``full_rebuild``. Keeps the step functions themselves untouched
+    so the linear path stays a 1:1 baseline for A/B comparison.
+    """
+    def _wrap(fn, *, accepts_rebuild: bool):
+        def wrapped(_args, *, dry_run=False, full_rebuild=False):
+            if accepts_rebuild:
+                return fn(dry_run=dry_run, full_rebuild=full_rebuild)
+            return fn(dry_run=dry_run)
+        return wrapped
+
+    return {
+        "ingest":             _wrap(step_1_ingest,                       accepts_rebuild=False),
+        "build_fts5":         _wrap(step_2_build_fts5,                   accepts_rebuild=True),
+        "enrich_quality":     _wrap(step_2d_enrich_quality,              accepts_rebuild=True),
+        "anwaltsrecht_tags":  _wrap(step_2e_build_anwaltsrecht_tags,     accepts_rebuild=True),
+        "quality_report":     _wrap(step_2b_quality_report,              accepts_rebuild=True),
+        "reference_graph":    _wrap(step_2c_build_reference_graph,       accepts_rebuild=True),
+        "materialien_build":  _wrap(step_2f_build_materialien,           accepts_rebuild=True),
+        "decision_structure": _wrap(step_2g_build_decision_structure,    accepts_rebuild=True),
+        "export_parquet":     _wrap(step_3_export_parquet,               accepts_rebuild=False),
+        "upload_hf":          _wrap(step_4_upload_hf,                    accepts_rebuild=False),
+        "publish_delta":      _wrap(step_7_publish_delta,                accepts_rebuild=False),
+        "stats_early":        _wrap(step_5_generate_stats,               accepts_rebuild=False),
+        "stats_final":        _wrap(step_5_generate_stats,               accepts_rebuild=False),
+        "rss_feeds":          _wrap(step_5b_generate_feeds,              accepts_rebuild=False),
+        "qc_gate":            _wrap(step_5c_quality_gate,                accepts_rebuild=False),
+        "release_manifest":   _wrap(step_5d_release_manifest,            accepts_rebuild=False),
+        "git_push_early":     _wrap(step_6_git_push,                     accepts_rebuild=False),
+        "git_push_final":     _wrap(step_6_git_push,                     accepts_rebuild=False),
+        "health_check":       _wrap(step_6b_health_check,                accepts_rebuild=False),
+    }
+
+
+def _run_via_dag(args, manual_step_mode: bool) -> int:
+    """Execute the publish pipeline through publish_dag.run_targets().
+
+    Phase B v0.2 — opt-in via OCL_USE_DAG=1. Translates publish.py's
+    classic CLI flags (--step / --ingest / --fast-only / --full-rebuild
+    / --dry-run) into the DAG runner's `requested` list, then maps the
+    runner's result dict back into publish.py's classic OK/FAILED/
+    SKIPPED summary log so operator-facing output stays familiar.
+
+    Returns systemd-style exit code (0 = OK, 1 = had fatal failures).
+    """
+    import publish_dag  # imported lazily so the linear path doesn't pay
+
+    builders = _build_dag_builder_map()
+
+    # Translate flags → requested target list:
+    #   • --step N            → run only that target (and its closure)
+    #   • --fast-only         → stop after git_push_early
+    #   • --ingest            → force-include the opt-in 'ingest' target
+    #   • (default)           → full pipeline, ingest auto-skipped
+    requested: list[str] | None = None
+    if manual_step_mode:
+        target = STEP_TO_DAG_TARGET.get(args.step) or STEP_TO_DAG_TARGET.get(str(args.step))
+        if target is None:
+            logger.error(f"--step {args.step!r} maps to no DAG target")
+            return 2
+        requested = [target]
+    elif args.fast_only:
+        requested = ["git_push_early"]
+        if args.ingest:
+            requested.append("ingest")
+    elif args.ingest:
+        # Want every target including the opt-in ingest. Listing all
+        # target names overrides the opt-in skip for ingest while still
+        # running the full pipeline.
+        requested = list(publish_dag.REGISTRY.keys())
+
+    logger.info(
+        f"OCL_USE_DAG=1 — running via publish_dag "
+        f"({len(publish_dag.REGISTRY)} targets, sequential, opt-in)"
+    )
+    if requested is not None:
+        closure_size = len(publish_dag.closure(publish_dag.REGISTRY, requested))
+        logger.info(f"  Requested: {requested} (closure: {closure_size} targets)")
+
+    start = time.time()
+    dag_results = publish_dag.run_targets(
+        publish_dag.REGISTRY, builders, args, requested=requested,
+    )
+    elapsed = time.time() - start
+
+    # Translate DAG result dict → step-keyed summary, mirroring the
+    # operator-facing log format the linear path produces.
+    target_to_step = {tgt: step for step, tgt in STEP_TO_DAG_TARGET.items()}
+    nice_status = {
+        publish_dag.OK:               "OK",
+        publish_dag.FAILED:           "FAILED",
+        publish_dag.SKIPPED_CASCADE:  "SKIPPED (cascade)",
+        publish_dag.SKIPPED_OPTIN:    "SKIPPED (opt-in)",
+    }
+    # Use the DAG's own non-fatal markers (anwaltsrecht_tags + release_manifest).
+    NON_FATAL_TARGETS = {n for n, t in publish_dag.REGISTRY.items() if t.non_fatal}
+    fatal_failures: list[str] = []
+    for tgt_name, status in dag_results.items():
+        snum = target_to_step.get(tgt_name, tgt_name)
+        nice = nice_status.get(status, str(status))
+        logger.info(f"  Step {snum} ({tgt_name}): {nice}")
+        if status is publish_dag.FAILED and tgt_name not in NON_FATAL_TARGETS:
+            fatal_failures.append(tgt_name)
+    logger.info(f"=== DAG pipeline complete in {elapsed:.1f}s ===")
+    if fatal_failures:
+        logger.error(f"Fatal failures: {fatal_failures}")
+        return 1
+    return 0
 
 
 def main():
@@ -1010,9 +1170,18 @@ def main():
     if args.dry_run:
         logger.info("DRY RUN — no changes will be made")
 
+    manual_step_mode = args.step is not None
+
+    # Phase B v0.2: opt-in DAG runner. OCL_USE_DAG=1 hands control over
+    # to publish_dag.run_targets() and short-circuits the linear path.
+    # Default off — every nightly + every CI run uses the established
+    # for-loop until v0.3 flips the default after parallel + checkpoint
+    # support land in the DAG runner.
+    if os.environ.get("OCL_USE_DAG") == "1":
+        sys.exit(_run_via_dag(args, manual_step_mode))
+
     results = {}
     start = time.time()
-    manual_step_mode = args.step is not None
 
     # Steps 4 (HF upload) and 6/6a (git push) must not run if critical steps failed,
     # because step 4 prunes remote parquet based on local state. Step 5c (QC gate)
