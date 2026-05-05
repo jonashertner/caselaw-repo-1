@@ -1614,6 +1614,57 @@ def build_database(
                     logger.info(f"  Removed stale sidecar {stale_path.name}")
         db_path = final_db_path
 
+        # Post-swap integrity check (added 2026-05-05 after WAL-corruption
+        # incident). Open the freshly-swapped DB with a PLAIN connection
+        # — i.e. without ?immutable=1 — so any leftover WAL/SHM that
+        # would corrupt non-immutable readers is caught HERE, not 30 min
+        # later when generate_stats.py / generate_feeds.py crash.
+        # Three cheap probes:
+        #   1. PRAGMA integrity_check — verifies B-tree page consistency
+        #      and FTS5 index well-formedness. Returns 'ok' or a list of
+        #      structural problems.
+        #   2. SELECT COUNT(*) — flushes the page cache, runs an index
+        #      scan, would surface "database disk image is malformed"
+        #      from any orphan WAL.
+        #   3. SELECT a single row — exercises the read path end-to-end.
+        # If any check fails, raise so the caller marks Step 2 FAILED.
+        # The atomic-swap stays — a swap-then-fail path is safer than
+        # a swap-then-pretend-it-worked path, because the post-mortem
+        # diagnosis is much easier when the new file is on disk.
+        try:
+            check_conn = sqlite3.connect(str(final_db_path))
+            check_conn.execute("SELECT 1").fetchone()  # warm-up
+            integrity = check_conn.execute("PRAGMA integrity_check").fetchone()
+            if not integrity or integrity[0] != "ok":
+                raise RuntimeError(
+                    f"post-swap integrity_check failed: {integrity}"
+                )
+            n_rows = check_conn.execute(
+                "SELECT COUNT(*) FROM decisions"
+            ).fetchone()[0]
+            sample = check_conn.execute(
+                "SELECT decision_id FROM decisions LIMIT 1"
+            ).fetchone()
+            check_conn.close()
+            if n_rows == 0:
+                raise RuntimeError("post-swap row count is 0 — empty DB")
+            if sample is None:
+                raise RuntimeError("post-swap sample SELECT returned NULL")
+            logger.info(
+                f"  Post-swap integrity OK: {n_rows} rows, sample id={sample[0]!r}"
+            )
+        except Exception as e:
+            logger.error(
+                f"  Post-swap integrity check FAILED: {e}. "
+                f"The new {final_db_path.name} exists but is unreadable. "
+                f"Workers using ?immutable=1 may be unaffected, but "
+                f"generate_stats / generate_feeds / quality.cli without "
+                f"immutable=1 will crash. Manual recovery: inspect "
+                f"sidecar files at {final_db_path}-wal / -shm; if any "
+                f"are present, remove them and retry."
+            )
+            raise
+
     # Save checkpoint
     if incremental or full_rebuild:
         now = datetime.now(timezone.utc).isoformat()
