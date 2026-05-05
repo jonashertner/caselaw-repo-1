@@ -1588,11 +1588,30 @@ def build_database(
         import os
         logger.info(f"Swapping {db_path} → {final_db_path}")
         os.replace(str(db_path), str(final_db_path))
-        # Clean up any leftover WAL/SHM from the temp DB
+        # Clean up leftover WAL/SHM on BOTH sides of the swap:
+        #   (a) Source — temp-DB sidecars (.tmp-wal, .tmp-shm). Orphaned by
+        #       the os.replace which only renames the main file.
+        #   (b) Destination — STALE sidecars from a previous build at the
+        #       final path (e.g. decisions.db-wal from a build three days
+        #       ago). The new DB is in DELETE journal mode and doesn't
+        #       need them. Leftover sidecars cause SQLite to mis-recover
+        #       a non-existent transaction on the first non-immutable=1
+        #       connection, surfacing as "database disk image is
+        #       malformed". Latent bug — masked when the atomic swap was
+        #       failing daily; surfaced 2026-05-05 on the first
+        #       successful swap in three days when generate_stats.py
+        #       opened the freshly-swapped decisions.db without
+        #       immutable=1 and tried to apply the stale May-2 WAL.
+        # Workers using immutable=1 don't open the WAL at all, so removing
+        # these sidecars under their reads is safe.
         for ext in ("-wal", "-shm"):
-            tmp_wal = Path(str(db_path) + ext)
-            if tmp_wal.exists():
-                tmp_wal.unlink()
+            for stale_path in (
+                Path(str(db_path) + ext),         # source: .tmp-wal / .tmp-shm
+                Path(str(final_db_path) + ext),   # destination: stale from previous build
+            ):
+                if stale_path.exists():
+                    stale_path.unlink()
+                    logger.info(f"  Removed stale sidecar {stale_path.name}")
         db_path = final_db_path
 
     # Save checkpoint
