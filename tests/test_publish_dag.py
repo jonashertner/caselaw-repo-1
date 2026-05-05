@@ -13,6 +13,7 @@ Phase B v0.1 — covers:
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -410,3 +411,268 @@ def test_shipped_registry_build_fts5_failure_cascades_widely() -> None:
         assert status == SKIPPED_CASCADE, (
             f"{name} did not cascade-skip on build_fts5 failure (got {status})"
         )
+
+
+# ── Parallel scheduling ───────────────────────────────────────────────
+
+
+def _timed_builder(seconds: float, value: bool = True):
+    """Builder that sleeps for `seconds` then returns `value`. Records
+    start/end timestamps so tests can assert on actual concurrency."""
+    import threading
+    times = {"start": None, "end": None, "thread": None}
+    lock = threading.Lock()
+
+    def b(args, *, dry_run=False, full_rebuild=False):
+        with lock:
+            if times["start"] is None:
+                times["start"] = time.monotonic()
+            times["thread"] = threading.current_thread().name
+        time.sleep(seconds)
+        with lock:
+            times["end"] = time.monotonic()
+        return value
+
+    b.times = times  # type: ignore[attr-defined]
+    return b
+
+
+def test_run_targets_parallel_safe_siblings_run_concurrently() -> None:
+    """Two parallel_safe siblings with the same root dep should run
+    concurrently — total wall-clock < sum of their durations."""
+    reg = _registry(
+        _mk(name="root"),
+        _mk(name="a", deps=["root"], parallel_safe=True),
+        _mk(name="b", deps=["root"], parallel_safe=True),
+    )
+    builders = {
+        "root": _timed_builder(0.05),
+        "a": _timed_builder(0.30),
+        "b": _timed_builder(0.30),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    t0 = time.monotonic()
+    results = run_targets(reg, builders, args, max_workers=2)
+    elapsed = time.monotonic() - t0
+    assert results == {"root": OK, "a": OK, "b": OK}
+    # If a and b ran sequentially: ~0.65s. Concurrent: ~0.35s.
+    # Generous bound to dodge CI flakiness.
+    assert elapsed < 0.55, f"expected concurrent (<0.55s), got {elapsed:.2f}s"
+
+
+def test_run_targets_parallel_unsafe_blocks_others() -> None:
+    """A non-parallel_safe target must run alone — even when parallel_safe
+    siblings are also ready, the executor doesn't run any while the
+    exclusive one is in flight."""
+    reg = _registry(
+        _mk(name="root"),
+        _mk(name="x", deps=["root"], parallel_safe=False),  # exclusive
+        _mk(name="a", deps=["root"], parallel_safe=True),
+        _mk(name="b", deps=["root"], parallel_safe=True),
+    )
+    builders = {
+        "root": _timed_builder(0.02),
+        "x": _timed_builder(0.30),
+        "a": _timed_builder(0.20),
+        "b": _timed_builder(0.20),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    t0 = time.monotonic()
+    results = run_targets(reg, builders, args, max_workers=4)
+    elapsed = time.monotonic() - t0
+    assert all(v is True for v in results.values())
+    # Lower bound: x runs alone (0.30s) + a/b parallel (0.20s) ≥ ~0.50s.
+    # Whichever picks first, the exclusive must NOT overlap with siblings.
+    assert elapsed >= 0.45, f"expected exclusive serialisation (>=0.45s), got {elapsed:.2f}s"
+    # Upper bound: not full sequential — a and b should overlap with each other.
+    assert elapsed < 0.85, f"expected a+b overlap (<0.85s), got {elapsed:.2f}s"
+
+
+def test_run_targets_parallel_respects_max_workers() -> None:
+    """Three parallel_safe siblings with max_workers=2 should observe
+    no more than two simultaneous starts."""
+    import threading
+    reg = _registry(
+        _mk(name="root"),
+        _mk(name="a", deps=["root"], parallel_safe=True),
+        _mk(name="b", deps=["root"], parallel_safe=True),
+        _mk(name="c", deps=["root"], parallel_safe=True),
+    )
+    in_flight = {"count": 0, "max": 0}
+    lock = threading.Lock()
+
+    def make_b():
+        def b(args, *, dry_run=False, full_rebuild=False):
+            with lock:
+                in_flight["count"] += 1
+                in_flight["max"] = max(in_flight["max"], in_flight["count"])
+            time.sleep(0.15)
+            with lock:
+                in_flight["count"] -= 1
+            return True
+        return b
+
+    builders = {"root": _builder_returning(True), "a": make_b(),
+                "b": make_b(), "c": make_b()}
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    run_targets(reg, builders, args, max_workers=2)
+    assert in_flight["max"] <= 2, f"saw {in_flight['max']} concurrent (cap 2)"
+
+
+def test_run_targets_parallel_cascade_on_root_failure() -> None:
+    """Same cascade semantics as sequential — failure propagates through
+    deps even when downstream is parallel_safe."""
+    reg = _registry(
+        _mk(name="root"),
+        _mk(name="a", deps=["root"], parallel_safe=True),
+        _mk(name="b", deps=["root"], parallel_safe=True),
+    )
+    builders = {
+        "root": _builder_returning(False),  # FAILS
+        "a": _builder_returning(True),
+        "b": _builder_returning(True),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    results = run_targets(reg, builders, args, max_workers=4)
+    assert results["root"] == FAILED
+    assert results["a"] == SKIPPED_CASCADE
+    assert results["b"] == SKIPPED_CASCADE
+    assert builders["a"].calls == []  # type: ignore[attr-defined]
+    assert builders["b"].calls == []  # type: ignore[attr-defined]
+
+
+def test_run_targets_parallel_independent_branch_isolated() -> None:
+    """Localised cascade in parallel mode: failure in branch x must not
+    skip branch y."""
+    reg = _registry(
+        _mk(name="root"),
+        _mk(name="x", deps=["root"], parallel_safe=True),
+        _mk(name="x_child", deps=["x"], parallel_safe=True),
+        _mk(name="y", deps=["root"], parallel_safe=True),
+        _mk(name="y_child", deps=["y"], parallel_safe=True),
+    )
+    builders = {
+        "root": _builder_returning(True),
+        "x": _builder_returning(False),  # x branch fails
+        "x_child": _builder_returning(True),
+        "y": _builder_returning(True),
+        "y_child": _builder_returning(True),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    results = run_targets(reg, builders, args, max_workers=4)
+    assert results["x"] == FAILED
+    assert results["x_child"] == SKIPPED_CASCADE
+    assert results["y"] == OK
+    assert results["y_child"] == OK
+
+
+# ── Checkpoint integration ────────────────────────────────────────────
+
+
+def test_run_targets_skips_targets_already_ok_in_checkpoint() -> None:
+    """checkpoint_load returning {a: True} should mark a as already done;
+    its builder must not run, and downstream targets must still execute."""
+    reg = _registry(
+        _mk(name="a"),
+        _mk(name="b", deps=["a"]),
+    )
+    builders = {
+        "a": _builder_returning(True),
+        "b": _builder_returning(True),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    results = run_targets(
+        reg, builders, args,
+        checkpoint_load=lambda: {"a": True},
+    )
+    assert results["a"] == OK
+    assert results["b"] == OK
+    assert builders["a"].calls == []  # type: ignore[attr-defined]  # skipped
+    assert builders["b"].calls == ["called"]  # type: ignore[attr-defined]
+
+
+def test_run_targets_does_not_resume_failed_or_skipped_targets() -> None:
+    """A FAILED checkpoint entry should NOT be respected — the target
+    should be re-attempted on this run."""
+    reg = _registry(_mk(name="a"))
+    builders = {"a": _builder_returning(True)}
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    results = run_targets(
+        reg, builders, args,
+        checkpoint_load=lambda: {"a": False},
+    )
+    assert results["a"] == OK
+    assert builders["a"].calls == ["called"]  # type: ignore[attr-defined]
+
+
+def test_run_targets_invokes_checkpoint_save_after_each_target() -> None:
+    """checkpoint_save should be called once per completed target with
+    its final status."""
+    saved: list[tuple[str, object]] = []
+
+    def save_cb(name, status):
+        saved.append((name, status))
+
+    reg = _registry(
+        _mk(name="a"),
+        _mk(name="b", deps=["a"]),
+        _mk(name="c", deps=["a"], opt_in=True),
+    )
+    builders = {
+        "a": _builder_returning(True),
+        "b": _builder_returning(False),
+        "c": _builder_returning(True),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    run_targets(reg, builders, args, checkpoint_save=save_cb)
+    # Three targets ran or were skipped; each should have saved once.
+    saved_dict = dict(saved)
+    assert saved_dict["a"] == OK
+    assert saved_dict["b"] == FAILED
+    assert saved_dict["c"] == SKIPPED_OPTIN
+
+
+def test_run_targets_checkpoint_save_in_parallel_mode_too() -> None:
+    """Checkpoint hooks must work in the parallel runner too."""
+    saved: list[tuple[str, object]] = []
+    reg = _registry(
+        _mk(name="root"),
+        _mk(name="a", deps=["root"], parallel_safe=True),
+        _mk(name="b", deps=["root"], parallel_safe=True),
+    )
+    builders = {
+        "root": _builder_returning(True),
+        "a": _builder_returning(True),
+        "b": _builder_returning(True),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    run_targets(reg, builders, args, max_workers=4,
+                checkpoint_save=lambda n, s: saved.append((n, s)))
+    saved_names = {n for n, _ in saved}
+    assert saved_names == {"root", "a", "b"}
+    # All saved with OK
+    assert all(s is True for _, s in saved)
+
+
+def test_run_targets_checkpoint_resume_skips_completed_branch() -> None:
+    """If branch x completed in a prior run (checkpoint), only branch y
+    runs this time."""
+    reg = _registry(
+        _mk(name="root"),
+        _mk(name="x", deps=["root"]),
+        _mk(name="y", deps=["root"]),
+    )
+    builders = {
+        "root": _builder_returning(True),
+        "x": _builder_returning(True),
+        "y": _builder_returning(True),
+    }
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    results = run_targets(
+        reg, builders, args,
+        checkpoint_load=lambda: {"root": True, "x": True},
+    )
+    assert results == {"root": OK, "x": OK, "y": OK}
+    assert builders["root"].calls == []  # type: ignore[attr-defined]
+    assert builders["x"].calls == []     # type: ignore[attr-defined]
+    assert builders["y"].calls == ["called"]  # type: ignore[attr-defined]

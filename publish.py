@@ -1089,9 +1089,67 @@ def _run_via_dag(args, manual_step_mode: bool) -> int:
         # running the full pipeline.
         requested = list(publish_dag.REGISTRY.keys())
 
+    # OCL_DAG_WORKERS=N enables parallel scheduling: parallel_safe targets
+    # run concurrently up to N workers; non-parallel-safe targets still run
+    # exclusively. Default 1 (sequential) — A/B parity with the linear path.
+    # Today's pipeline uses 4 workers in its post-build batch; matching
+    # that recovers the lost speedup once we mark fast-tier targets as
+    # parallel_safe in a future commit.
+    try:
+        max_workers = max(1, int(os.environ.get("OCL_DAG_WORKERS", "1")))
+    except ValueError:
+        max_workers = 1
+
+    # Checkpoint hooks bridge to publish.py's existing _save_checkpoint /
+    # _load_checkpoint helpers so resume works the same way under DAG mode.
+    # The save callback translates the DAG target name back to the classic
+    # step number/key so the on-disk checkpoint format stays compatible
+    # with the linear path's parser.
+    target_to_step = {tgt: step for step, tgt in STEP_TO_DAG_TARGET.items()}
+    accumulated_results: dict = {}
+
+    def _ckpt_load() -> dict[str, bool | str] | None:
+        # Skip checkpoint resume in manual --step mode (the operator
+        # explicitly wants to run that one step regardless).
+        if manual_step_mode:
+            return None
+        cp = _load_checkpoint()
+        if not cp:
+            return None
+        # cp["results"] is keyed by step (str numbers like "2", "5c"); the
+        # DAG runner expects target names. Translate via STEP_TO_DAG_TARGET.
+        out: dict[str, bool | str] = {}
+        for step_key, status in cp["results"].items():
+            # Try int-key first (e.g. "2" → 2), fall back to str key.
+            try:
+                lookup_key: int | str = int(step_key)
+            except ValueError:
+                lookup_key = step_key
+            tgt = STEP_TO_DAG_TARGET.get(lookup_key)
+            if tgt is None:
+                continue
+            out[tgt] = status
+        if out:
+            logger.info(
+                f"  Resuming from checkpoint ({sum(1 for v in out.values() if v is True)}"
+                f"/{len(out)} targets already OK)"
+            )
+        return out
+
+    def _ckpt_save(name: str, status: bool | str) -> None:
+        # Translate DAG target name back to step key for checkpoint compat.
+        snum = target_to_step.get(name, name)
+        accumulated_results[snum] = status
+        try:
+            _save_checkpoint(snum, accumulated_results)
+        except Exception as e:  # noqa: BLE001
+            logger.warning(f"checkpoint save failed for {name!r}: {e}")
+
     logger.info(
         f"OCL_USE_DAG=1 — running via publish_dag "
-        f"({len(publish_dag.REGISTRY)} targets, sequential, opt-in)"
+        f"({len(publish_dag.REGISTRY)} targets, "
+        f"{'parallel ' + str(max_workers) + 'w' if max_workers > 1 else 'sequential'}, "
+        f"checkpoint=on, opt-in)"
     )
     if requested is not None:
         closure_size = len(publish_dag.closure(publish_dag.REGISTRY, requested))
@@ -1099,7 +1157,11 @@ def _run_via_dag(args, manual_step_mode: bool) -> int:
 
     start = time.time()
     dag_results = publish_dag.run_targets(
-        publish_dag.REGISTRY, builders, args, requested=requested,
+        publish_dag.REGISTRY, builders, args,
+        requested=requested,
+        max_workers=max_workers,
+        checkpoint_load=_ckpt_load,
+        checkpoint_save=_ckpt_save,
     )
     elapsed = time.time() - start
 

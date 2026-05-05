@@ -26,6 +26,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import logging
 import sys
 import time
@@ -116,24 +117,28 @@ _register(Target(
 _register(Target(
     name="stats_early",
     deps=["build_fts5"],
+    parallel_safe=True,  # writes only docs/stats.json, no shared state
     description="Step 5a — early stats.json (kicks off the homepage update)",
 ))
 
 _register(Target(
     name="rss_feeds",
     deps=["build_fts5"],
+    parallel_safe=True,  # writes only docs/feeds/, no shared state
     description="Step 5b — generate decision RSS feeds",
 ))
 
 _register(Target(
     name="qc_gate",
     deps=["build_fts5"],
+    parallel_safe=True,  # read-only on decisions.db, writes quality_report.json
     description="Step 5c — quality-control gate (blocks publish on CRITICAL regression)",
 ))
 
 _register(Target(
     name="release_manifest",
     deps=["qc_gate"],
+    parallel_safe=True,  # writes only releases/<date>/manifest.json
     non_fatal=True,
     description="Step 5d — release manifest (audit trail; failure doesn't block push)",
 ))
@@ -309,80 +314,301 @@ def validate_dag(targets: dict[str, Target]) -> tuple[bool, list[str]]:
 # ── Runner ────────────────────────────────────────────────────────────
 
 
+def _eval_dep_status(
+    targets: dict[str, Target],
+    results: dict[str, bool | str],
+    name: str,
+) -> str:
+    """Inspect a target's deps and report what to do with it.
+
+    Returns:
+        "ready"             — all deps complete, no fatal cascade
+        "wait"              — at least one dep hasn't finished yet
+        "cascade"           — a non-non_fatal dep failed/cascaded
+    """
+    cascaded = False
+    waiting = False
+    for dep in targets[name].deps:
+        dep_status = results.get(dep)
+        if dep_status is None:
+            waiting = True
+            continue
+        if dep_status is True or dep_status == SKIPPED_OPTIN:
+            continue
+        if dep_status is False or dep_status == SKIPPED_CASCADE:
+            if not targets[dep].non_fatal:
+                cascaded = True
+                break
+    if cascaded:
+        return "cascade"
+    if waiting:
+        return "wait"
+    return "ready"
+
+
+def _exec_one(
+    name: str,
+    target: Target,
+    builder: Callable | None,
+    args,
+) -> bool:
+    """Run one target's builder. Returns OK/FAILED. Catches exceptions."""
+    if builder is None:
+        return OK  # no-op target — caller logs separately
+    try:
+        return bool(builder(
+            args,
+            dry_run=getattr(args, "dry_run", False),
+            full_rebuild=getattr(args, "full_rebuild", False),
+        ))
+    except Exception as exc:  # noqa: BLE001
+        logger.error(f"  {name}: EXCEPTION — {exc}", exc_info=True)
+        return FAILED
+
+
 def run_targets(
     targets: dict[str, Target],
     builder_map: dict[str, Callable],
     args,
     *,
     requested: list[str] | None = None,
+    max_workers: int = 1,
+    checkpoint_load: Callable[[], dict[str, bool | str] | None] | None = None,
+    checkpoint_save: Callable[[str, bool | str], None] | None = None,
 ) -> dict[str, bool | str]:
-    """Run targets in topological order. Cascade-skip when a non-non_fatal
-    dep failed.
+    """Run targets respecting deps, parallel_safe siblings, opt-in skips.
 
     Args:
         targets: the registry to execute.
-        builder_map: name → callable. The callable is invoked as
+        builder_map: name → callable invoked as
             ``builder(args, dry_run=…, full_rebuild=…) -> bool``. Targets
-            with no entry in this map are treated as no-ops (logged as
-            OK so dependent targets don't cascade-skip).
+            with no entry in this map are treated as no-ops (logged as OK
+            so dependent targets don't cascade-skip).
         args: argparse.Namespace forwarded to each builder.
-        requested: if given, run only these targets and their transitive
+        requested: if given, run only these targets + their transitive
             dependencies. Otherwise run the entire registry.
+        max_workers: 1 (default) for sequential, >1 to enable parallel
+            scheduling. Within parallel mode the rule is:
+              • parallel_safe=True targets can run concurrently with
+                each other, up to max_workers.
+              • parallel_safe=False targets run alone — nothing else
+                may be executing while they run.
+        checkpoint_load: callable returning prior {name: status} dict.
+            Targets with status=OK are skipped (already done in a prior
+            run). Pass None to disable checkpoint resume.
+        checkpoint_save: callback invoked after every target completion
+            with (name, status). Pass None to disable persistence.
 
     Returns:
         ``{target_name: True|False|"skipped_cascade"|"skipped_optin"}``.
     """
     order = closure(targets, requested) if requested else topological_sort(targets)
-
-    results: dict[str, bool | str] = {}
+    in_scope = set(order)
     requested_set = set(requested or [])
 
-    for name in order:
-        tgt = targets[name]
+    results: dict[str, bool | str] = {}
 
-        # Opt-in targets only run when explicitly requested.
-        if tgt.opt_in and name not in requested_set:
+    # Seed from checkpoint: any target marked True in a prior run is
+    # treated as already complete. Failed/skipped statuses are NOT
+    # restored — those should be retried on the new run.
+    if checkpoint_load is not None:
+        prior = checkpoint_load() or {}
+        for name, status in prior.items():
+            if name in in_scope and status is True:
+                results[name] = OK
+                logger.info(f"  {name}: SKIPPED (already OK in checkpoint)")
+
+    # First pass: handle opt-in skips for everything still unresolved.
+    for name in order:
+        if name in results:
+            continue
+        if targets[name].opt_in and name not in requested_set:
             results[name] = SKIPPED_OPTIN
             logger.info(f"  {name}: SKIPPED (opt-in; pass --target to run)")
-            continue
+            if checkpoint_save:
+                checkpoint_save(name, SKIPPED_OPTIN)
 
-        # Cascade-skip if any dep failed AND that dep was not non_fatal.
-        cascaded_from: str | None = None
-        for dep in tgt.deps:
-            dep_result = results.get(dep)
-            if dep_result is True or dep_result == SKIPPED_OPTIN:
-                continue
-            if dep_result is False or dep_result == SKIPPED_CASCADE:
-                if not targets[dep].non_fatal:
-                    cascaded_from = dep
-                    break
-        if cascaded_from:
+    # Sequential path — small, well-tested, used when max_workers <= 1.
+    if max_workers <= 1:
+        return _run_sequential(
+            order, targets, builder_map, args,
+            results, checkpoint_save,
+        )
+
+    # Parallel path — concurrent.futures with parallel_safe gating.
+    return _run_parallel(
+        order, targets, builder_map, args,
+        results, checkpoint_save, max_workers,
+    )
+
+
+def _run_sequential(
+    order: list[str],
+    targets: dict[str, Target],
+    builder_map: dict[str, Callable],
+    args,
+    results: dict[str, bool | str],
+    checkpoint_save: Callable[[str, bool | str], None] | None,
+) -> dict[str, bool | str]:
+    for name in order:
+        if name in results:
+            continue
+        status = _eval_dep_status(targets, results, name)
+        if status == "cascade":
             results[name] = SKIPPED_CASCADE
-            logger.warning(
-                f"  {name}: SKIPPED (cascade from {cascaded_from!r})"
-            )
+            logger.warning(f"  {name}: SKIPPED (cascade)")
+            if checkpoint_save:
+                checkpoint_save(name, SKIPPED_CASCADE)
             continue
-
+        # status == "ready" — ("wait" can't happen in topo order)
         builder = builder_map.get(name)
         if builder is None:
-            logger.info(f"  {name}: no builder registered — treating as OK")
             results[name] = OK
+            logger.info(f"  {name}: no builder registered — treating as OK")
+            if checkpoint_save:
+                checkpoint_save(name, OK)
             continue
-
         start = time.time()
-        try:
-            ok = bool(builder(
-                args,
-                dry_run=getattr(args, "dry_run", False),
-                full_rebuild=getattr(args, "full_rebuild", False),
-            ))
-        except Exception as exc:  # noqa: BLE001
-            logger.error(f"  {name}: EXCEPTION — {exc}", exc_info=True)
-            ok = False
+        ok = _exec_one(name, targets[name], builder, args)
         elapsed = time.time() - start
-        status = "OK" if ok else "FAILED"
-        logger.info(f"  {name}: → {status} ({elapsed:.1f}s)")
         results[name] = ok
+        logger.info(f"  {name}: → {'OK' if ok else 'FAILED'} ({elapsed:.1f}s)")
+        if checkpoint_save:
+            checkpoint_save(name, ok)
+    return results
+
+
+def _run_parallel(
+    order: list[str],
+    targets: dict[str, Target],
+    builder_map: dict[str, Callable],
+    args,
+    results: dict[str, bool | str],
+    checkpoint_save: Callable[[str, bool | str], None] | None,
+    max_workers: int,
+) -> dict[str, bool | str]:
+    """Concurrent runner. parallel_safe siblings co-run up to max_workers;
+    parallel_safe=False targets run exclusively (nothing else executing).
+
+    Implementation: dynamic Kahn's-algorithm scheduling — at any moment
+    look at all unfinished targets, mark cascade-skips, schedule any
+    runnable ones onto the executor pool subject to the parallel-safe
+    exclusivity rule, then wait for at least one to finish before
+    re-evaluating. This handles the "diamond" pattern naturally: as soon
+    as a slow critical step completes, all its parallel-safe children
+    become eligible together.
+    """
+    pending = [n for n in order if n not in results]
+    running: dict[concurrent.futures.Future, tuple[str, float]] = {}
+    exclusive_active = False
+
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_workers, thread_name_prefix="dag",
+    ) as executor:
+        while pending or running:
+            # Resolve any new cascade-skips first — once a parent fails,
+            # children waiting on it should be marked SKIPPED before we
+            # try to schedule anything else.
+            still_pending: list[str] = []
+            for name in pending:
+                status = _eval_dep_status(targets, results, name)
+                if status == "cascade":
+                    results[name] = SKIPPED_CASCADE
+                    logger.warning(f"  {name}: SKIPPED (cascade)")
+                    if checkpoint_save:
+                        checkpoint_save(name, SKIPPED_CASCADE)
+                else:
+                    still_pending.append(name)
+            pending = still_pending
+
+            # Schedule as many runnable targets as the rules allow.
+            scheduled_this_pass = True
+            while scheduled_this_pass:
+                scheduled_this_pass = False
+                if not pending:
+                    break
+                if exclusive_active:
+                    break  # nothing can join while a non-parallel-safe runs
+                if len(running) >= max_workers:
+                    break
+                # Pick the next ready target. Prefer parallel_safe so we
+                # don't starve the pool by picking a non-parallel-safe
+                # target that requires the pool to be empty.
+                pick_idx: int | None = None
+                for i, name in enumerate(pending):
+                    if _eval_dep_status(targets, results, name) != "ready":
+                        continue
+                    t = targets[name]
+                    if t.parallel_safe:
+                        pick_idx = i
+                        break
+                    # non-parallel-safe needs the entire pool empty
+                    if not running:
+                        pick_idx = i
+                        break
+                if pick_idx is None:
+                    break
+                name = pending.pop(pick_idx)
+                t = targets[name]
+                builder = builder_map.get(name)
+                if builder is None:
+                    results[name] = OK
+                    logger.info(f"  {name}: no builder registered — treating as OK")
+                    if checkpoint_save:
+                        checkpoint_save(name, OK)
+                    scheduled_this_pass = True
+                    continue
+                if not t.parallel_safe:
+                    exclusive_active = True
+                logger.info(f"  {name}: started")
+                fut = executor.submit(_exec_one, name, t, builder, args)
+                running[fut] = (name, time.time())
+                scheduled_this_pass = True
+
+            if not running:
+                # Nothing scheduled and nothing running — either everything
+                # is done OR all remaining targets are blocked on cascades.
+                # The cascade-resolution pass at the top of the loop will
+                # handle the latter; if even that doesn't progress, break.
+                if not pending:
+                    break
+                # If pending targets all have at least one un-resolved dep
+                # somehow, we're stuck. This shouldn't happen given topo
+                # order, but guard against an infinite loop:
+                stuck_count_before = sum(
+                    1 for n in pending
+                    if _eval_dep_status(targets, results, n) == "wait"
+                )
+                if stuck_count_before == len(pending):
+                    logger.error(
+                        f"scheduler stuck: {len(pending)} targets waiting "
+                        f"with no runners. Pending: {pending}"
+                    )
+                    for name in pending:
+                        results[name] = SKIPPED_CASCADE
+                        if checkpoint_save:
+                            checkpoint_save(name, SKIPPED_CASCADE)
+                    break
+                continue
+
+            # Wait for at least one running target to finish.
+            done, _ = concurrent.futures.wait(
+                running.keys(),
+                return_when=concurrent.futures.FIRST_COMPLETED,
+            )
+            for fut in done:
+                name, started_at = running.pop(fut)
+                t = targets[name]
+                ok = fut.result()  # _exec_one already swallowed exceptions
+                results[name] = ok
+                if not t.parallel_safe:
+                    exclusive_active = False
+                elapsed = time.time() - started_at
+                logger.info(
+                    f"  {name}: → {'OK' if ok else 'FAILED'} ({elapsed:.1f}s)"
+                )
+                if checkpoint_save:
+                    checkpoint_save(name, ok)
 
     return results
 
