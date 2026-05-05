@@ -491,11 +491,12 @@ function render() {
     if (ageH != null && ageH > STALE_HOURS_THRESHOLD) {
         // Gate hasn't run recently → publish has been failing → data is ageing
         gate.className = "gate stale";
-        gateText.textContent = "Database actively being improved to scale request volume";
-        gateSub.textContent = "We are upgrading the database structure to serve a higher " +
-            "volume of concurrent requests. Live updates will return shortly. " +
-            "The MCP at mcp.opencaselaw.ch continues to serve the last successful " +
-            "build in the meantime.";
+        gateText.textContent = "Database actively being improved to handle a growing number of requests";
+        gateSub.textContent = "The database is actively being worked on to improve " +
+            "performance for a growing number of requests. The MCP workers at " +
+            "mcp.opencaselaw.ch continue to function — search, citation graph, " +
+            "statute lookup and case briefs all serve the last successful build " +
+            "while we catch up.";
     } else if (DATA.summary.publish_safe) {
         gate.className = "gate ok";
         gateText.textContent = "Publish safe — all " + DATA.summary.total +
