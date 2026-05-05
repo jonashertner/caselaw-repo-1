@@ -892,6 +892,216 @@ def _log_quality_summary(conn: sqlite3.Connection) -> None:
     logger.info(f"  Quality: {no_regeste} no regeste, {no_date} no date (of {total})")
 
 
+# ────────────────────────────────────────────────────────────────────
+# Inline cleanups (2026-05-05) — pure per-row transformations.
+#
+# These mirror the logic of the post-import _normalize_* / _migrate_* /
+# _recover_* / _truncate_* / _fill_* SQL passes so that every row is
+# already in canonical form by the time it's INSERTed. The post-pass
+# UPDATEs still run as a safety net (idempotent — they find nothing to
+# update on a fresh build, completing in seconds rather than ~2h on
+# the critical path).
+#
+# Why this is safe (vs. the rejected "post-swap UPDATE" alternative):
+#   • The atomic-swap pattern keeps workers' immutable=1 contract intact
+#     because all writes happen to decisions.db.tmp BEFORE swap.
+#   • The work moves earlier in the same single-writer window — it does
+#     NOT touch the live DB.
+#   • The post-pass UPDATEs continue to run unchanged; if any inline
+#     helper has a bug, the SQL pass catches it (idempotent recovery).
+# ────────────────────────────────────────────────────────────────────
+
+
+def _docket_normalize_inline(docket):
+    """Collapse internal newlines/tabs + multiple spaces; trim."""
+    if not docket:
+        return docket
+    s = str(docket)
+    if "\n" in s or "\r" in s or "\t" in s:
+        s = s.replace("\n", " ").replace("\r", " ").replace("\t", " ")
+    while "  " in s:
+        s = s.replace("  ", " ")
+    return s.strip()
+
+
+_HOST_BY_COURT_INLINE = {
+    "bs_gerichte": "https://www.gerichte.bs.ch",
+    "gl_gerichte": "https://findinfo.gl.ch",
+}
+
+
+def _source_url_normalize_inline(court, source_url):
+    """Prefix host for relative source_urls on the bs/gl Tribuna platform."""
+    if not source_url or not court:
+        return source_url
+    s = str(source_url)
+    if s.startswith("http"):
+        return s
+    host = _HOST_BY_COURT_INLINE.get(court)
+    return host + s if host else s
+
+
+def _date_normalize_inline(date_str):
+    """year-0000 → None; obvious far-future typos (>today+365d) → None."""
+    if not date_str:
+        return date_str
+    s = str(date_str).strip()
+    if s.startswith("0000"):
+        return None
+    try:
+        from datetime import date as _date_cls, timedelta
+        cutoff = (_date_cls.today() + timedelta(days=365)).isoformat()
+        if s > cutoff:
+            return None
+    except Exception:
+        pass
+    return s
+
+
+def _regeste_truncate_inline(regeste, full_text):
+    """HUDOC duplication artefact: regeste >8 K chars near-duplicating
+    full_text → keep only the head-note up to the first body-boundary
+    marker (Sachverhalt / Faits / Fatti / Fakten / Procédure / Procedura)."""
+    if not regeste or len(regeste) <= 8000:
+        return regeste
+    full_len = len(full_text or "")
+    if full_len < 1000 or len(regeste) < 0.9 * full_len:
+        return regeste
+    cut = None
+    for marker in _REGESTE_BODY_BOUNDARIES:
+        idx = regeste.find(marker)
+        if idx > 0 and (cut is None or idx < cut):
+            cut = idx
+    new_regeste = regeste[:cut] if cut else regeste[:5000]
+    return new_regeste.rstrip()
+
+
+def _compute_row_content_hash_inline(regeste, full_text):
+    """SHA-256(regeste || full_text). Mirror of _compute_content_hashes()."""
+    import hashlib
+    content = ((regeste or "") + (full_text or "")).encode("utf-8")
+    return hashlib.sha256(content).hexdigest()
+
+
+# Date-recovery helper — same anchor-phrase + month-name patterns as
+# _recover_decision_dates(). Lifted to module level so both the inline
+# insert path and the post-pass UPDATE can share one source of truth.
+
+_DATE_DE_MONTHS = {
+    "januar": 1, "februar": 2, "märz": 3, "maerz": 3, "april": 4,
+    "mai": 5, "juni": 6, "juli": 7, "august": 8, "september": 9,
+    "oktober": 10, "november": 11, "dezember": 12,
+}
+_DATE_FR_MONTHS = {
+    "janvier": 1, "février": 2, "fevrier": 2, "mars": 3, "avril": 4,
+    "mai": 5, "juin": 6, "juillet": 7, "août": 8, "aout": 8,
+    "septembre": 9, "octobre": 10, "novembre": 11,
+    "décembre": 12, "decembre": 12,
+}
+_DATE_IT_MONTHS = {
+    "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4,
+    "maggio": 5, "giugno": 6, "luglio": 7, "agosto": 8,
+    "settembre": 9, "ottobre": 10, "novembre": 11, "dicembre": 12,
+}
+_DATE_ALL_MONTHS = {**_DATE_DE_MONTHS, **_DATE_FR_MONTHS, **_DATE_IT_MONTHS}
+
+_DATE_DE_RE = re.compile(
+    r"(\d{1,2})\.\s*(Januar|Februar|M[äa]rz|April|Mai|Juni|Juli|August|"
+    r"September|Oktober|November|Dezember)\s+(\d{4})", re.IGNORECASE,
+)
+_DATE_FR_RE = re.compile(
+    r"(\d{1,2})\s+(janvier|f[ée]vrier|mars|avril|mai|juin|juillet|"
+    r"ao[ûu]t|septembre|octobre|novembre|d[ée]cembre)\s+(\d{4})",
+    re.IGNORECASE,
+)
+_DATE_IT_RE = re.compile(
+    r"(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|"
+    r"luglio|agosto|settembre|ottobre|novembre|dicembre)\s+(\d{4})",
+    re.IGNORECASE,
+)
+_DATE_DDMMYYYY_RE = re.compile(r"\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b")
+_DATE_ANCHORS = (
+    "Urteil vom", "Urteil des", "Urteil der",
+    "Entscheid vom", "Entscheid des", "Endentscheid vom",
+    "Verfügung vom", "Verfügung des", "Beschluss vom", "Beschluss des",
+    "Arrêt du", "Décision du", "Jugement du", "Ordonnance du",
+    "Sentenza del", "Decisione del", "Decreto del",
+)
+_DATE_SAFE_COURTS = (
+    "zh_verwaltungsgericht", "gr_gerichte", "bl_gerichte",
+    "fr_gerichte", "be_verwaltungsgericht",
+)
+
+
+def _date_try_parse(d, m, y):
+    from datetime import date as _date_cls
+    if isinstance(m, str):
+        m = _DATE_ALL_MONTHS.get(m.lower())
+        if not m:
+            return None
+    if not (1 <= m <= 12 and 1 <= d <= 31):
+        return None
+    if not (1700 <= y <= _date_cls.today().year + 1):
+        return None
+    try:
+        return _date_cls(y, m, d)
+    except ValueError:
+        return None
+
+
+def _date_extract_first(text):
+    cands = []
+    for m in _DATE_DE_RE.finditer(text):
+        d = _date_try_parse(int(m.group(1)), m.group(2), int(m.group(3)))
+        if d:
+            cands.append((m.start(), d))
+    for m in _DATE_FR_RE.finditer(text):
+        d = _date_try_parse(int(m.group(1)), m.group(2), int(m.group(3)))
+        if d:
+            cands.append((m.start(), d))
+    for m in _DATE_IT_RE.finditer(text):
+        d = _date_try_parse(int(m.group(1)), m.group(2), int(m.group(3)))
+        if d:
+            cands.append((m.start(), d))
+    for m in _DATE_DDMMYYYY_RE.finditer(text):
+        d = _date_try_parse(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        if d:
+            cands.append((m.start(), d))
+    if not cands:
+        return None
+    cands.sort(key=lambda x: x[0])
+    return cands[0][1]
+
+
+def _date_recover_inline(court, full_text):
+    """König P4: recover decision_date from full_text (5 safe courts only).
+
+    Returns ISO date string ('YYYY-MM-DD') or None. Mirrors the logic of
+    the post-import _recover_decision_dates() pass — both share the same
+    anchor phrases and month-name regexes via the module-level helpers.
+    """
+    if court not in _DATE_SAFE_COURTS:
+        return None
+    if not full_text or len(full_text) < 50:
+        return None
+    head = full_text[:8000]
+    head_lower = head.lower()
+    for anchor in _DATE_ANCHORS:
+        idx = 0
+        anchor_lower = anchor.lower()
+        while True:
+            i = head_lower.find(anchor_lower, idx)
+            if i < 0:
+                break
+            window = head[i:i + 200]
+            d = _date_extract_first(window)
+            if d:
+                return d.isoformat()
+            idx = i + len(anchor)
+    d = _date_extract_first(full_text[:5000])
+    return d.isoformat() if d else None
+
+
 # Court code remapping: merge historical variants into canonical codes
 COURT_REMAP = {
     "bge_historical": "bge",
@@ -903,12 +1113,39 @@ ID_PREFIX_REMAP = {
 
 
 def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
-    """Insert a single decision. Returns True if inserted, False if skipped (duplicate)."""
+    """Insert a single decision. Returns True if inserted, False if
+    skipped (duplicate or stub).
+
+    Inline cleanups (2026-05-05): every per-row normalisation that the
+    publish pipeline used to run as a separate post-import UPDATE pass
+    is now applied at insert time:
+
+      * docket whitespace + internal newlines collapsed
+      * source_url host prefixed for bs/gl_gerichte
+      * year-0000 / far-future dates → NULL
+      * decision_date recovered from full_text where the scraper missed it
+        (5 safe courts, anchor-phrase + month-name regex)
+      * short full_text (10–99 chars) migrated to regeste
+      * oversized regeste (HUDOC duplication artefact) truncated at the
+        first body-boundary marker
+      * missing regeste extracted from full_text for BGer/BGE
+      * stub rows (text<10 AND regeste<10) dropped (return False)
+      * content_hash = SHA-256(regeste || full_text) computed inline
+
+    The post-import UPDATE passes (_normalize_dockets, _normalize_dates,
+    _truncate_oversized_regestes, _migrate_short_text_to_regeste,
+    _normalize_source_urls, _remove_stubs, _fill_missing_regeste,
+    _recover_decision_dates, _compute_content_hashes) still run as a
+    safety net — they're idempotent so on a clean rebuild they find
+    nothing to update and complete in seconds rather than the ~2h they
+    used to need on the post-import critical path.
+    """
     try:
         # Remap court codes and decision IDs (e.g. bge_historical → bge)
         court = row.get("court", "")
         if court in COURT_REMAP:
             row["court"] = COURT_REMAP[court]
+            court = row["court"]
         did = row.get("decision_id", "")
         for old_prefix, new_prefix in ID_PREFIX_REMAP.items():
             if did.startswith(old_prefix):
@@ -919,6 +1156,61 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
         for field in ("full_text", "regeste", "title"):
             if field in row and row[field]:
                 row[field] = _clean_text(row[field])
+
+        # ── Inline cleanups (post-pass UPDATEs are now mostly no-ops) ──
+
+        # docket whitespace + internal newline collapse
+        row["docket_number"] = _docket_normalize_inline(row.get("docket_number"))
+
+        # source_url host prefix for the bs/gl Tribuna platform
+        row["source_url"] = _source_url_normalize_inline(
+            court, row.get("source_url"),
+        )
+
+        # year-0000 / far-future date sanitisation
+        row["decision_date"] = _date_normalize_inline(row.get("decision_date"))
+
+        # date recovery from full_text where the scraper missed
+        if not row.get("decision_date"):
+            recovered = _date_recover_inline(court, row.get("full_text"))
+            if recovered:
+                row["decision_date"] = recovered
+
+        # short full_text → regeste migration (König P7)
+        if (
+            10 <= len(str(row.get("full_text") or "")) <= 99
+            and not (row.get("regeste") or "").strip()
+        ):
+            row["regeste"] = row["full_text"]
+            row["full_text"] = None
+
+        # oversized regeste truncation (HUDOC duplication)
+        row["regeste"] = _regeste_truncate_inline(
+            row.get("regeste"), row.get("full_text"),
+        )
+
+        # missing regeste extraction for BGer/BGE
+        if (
+            court in ("bger", "bge")
+            and not (row.get("regeste") or "").strip()
+            and len(str(row.get("full_text") or "")) > 200
+        ):
+            extracted = _extract_regeste_from_text(row.get("full_text") or "")
+            if extracted:
+                row["regeste"] = extracted
+
+        # stub filter — drop the row before insert
+        if (
+            len(str(row.get("full_text") or "")) < 10
+            and len(str(row.get("regeste") or "")) < 10
+        ):
+            return False
+
+        # SHA-256 content hash — computed inline so the post-pass
+        # _compute_content_hashes() finds nothing to update.
+        row["content_hash"] = _compute_row_content_hash_inline(
+            row.get("regeste"), row.get("full_text"),
+        )
 
         # Handle cited_decisions — could be list or JSON string
         cited = row.get("cited_decisions", [])
