@@ -120,15 +120,28 @@ class ActRecord:
 
 
 @dataclass
-class ConsultationRecord:
-    """A Consultation = Vernehmlassung entry on a draft law."""
-    eli_uri: str
-    sr_number: str | None = None
+class ConsultationRealization:
+    """Per-language Vernehmlassung event metadata."""
+    language: str                        # 'de' | 'fr' | 'it'
     title: str | None = None
     description: str | None = None
+
+
+@dataclass
+class ConsultationRecord:
+    """A Consultation = Vernehmlassung entry on a draft law.
+
+    Language-independent fields are at the top level; per-language
+    titles + descriptions live in `realizations`. Same dedup pattern
+    as ActRecord (one record per ELI URI, list of per-language rows
+    inside).
+    """
+    eli_uri: str
+    sr_number: str | None = None
+    impacts_work_uri: str | None = None  # the law it concerns
     status: str | None = None
     consultation_id: str | None = None
-    impacts_work_uri: str | None = None  # the law it concerns
+    realizations: list[ConsultationRealization] = field(default_factory=list)
 
 
 @dataclass
@@ -303,6 +316,32 @@ def discover_acts(sr_numbers: list[str] | None = None) -> Iterator[ActRecord]:
 # ── Consultations discovery (eli/dl/proj/... namespace) ─────────────
 
 
+def _detect_language(text: str | None) -> str | None:
+    """Heuristic language guess for Consultation titles/descriptions.
+
+    Fedlex returns multiple title rows per Consultation but does NOT tag
+    them with a language URI on the Consultation itself (unlike Acts,
+    where the Expression layer is explicitly per-language). So we detect
+    DE / FR / IT from text content. Crude but reliable for legal-domain
+    German, French, Italian — they have very different stopword sets.
+    """
+    if not text:
+        return None
+    sample = text[:300].lower()
+    de_score = sum(1 for w in (" der ", " die ", " und ", " für ", " ist ",
+                                " des ", " mit ", " ein ", " einer ", " im ",
+                                "ung ", "lich ") if w in sample)
+    fr_score = sum(1 for w in (" le ", " la ", " les ", " de ", " des ",
+                                " et ", " pour ", " une ", " sur ", " est ",
+                                "ent ", "tion ") if w in sample)
+    it_score = sum(1 for w in (" il ", " la ", " le ", " di ", " del ",
+                                " della ", " per ", " un ", " una ", " sui ",
+                                "zione", "mento") if w in sample)
+    scores = [("de", de_score), ("fr", fr_score), ("it", it_score)]
+    best = max(scores, key=lambda x: x[1])
+    return best[0] if best[1] >= 2 else None
+
+
 def discover_consultations(sr_numbers: list[str] | None = None) -> Iterator[ConsultationRecord]:
     """Yield ConsultationRecord entries for Vernehmlassungen.
 
@@ -312,6 +351,13 @@ def discover_consultations(sr_numbers: list[str] | None = None) -> Iterator[Cons
 
     Where ?work is an eli/cc/... ConsolidationAbstract. We optionally
     join through to its SR number for filtering.
+
+    v0.3: deduplicates rows by ELI URI and aggregates per-language titles
+    + descriptions into ConsultationRecord.realizations — same pattern as
+    discover_acts. Earlier versions returned one record per row, which
+    yielded ~9× duplication (eg. 288 SPARQL rows / 32 unique consultations
+    for OR alone) because Fedlex returns one row per (title, description)
+    Cartesian product over the multilingual events.
     """
     sr_filter = ""
     if sr_numbers:
@@ -321,7 +367,6 @@ def discover_consultations(sr_numbers: list[str] | None = None) -> Iterator[Cons
         FILTER(?srNumber IN ({sr_list}))
         """
     else:
-        # Still want srNumber when present, but don't filter
         sr_filter = "OPTIONAL { ?work jolux:historicalLegalId ?srNumber }"
 
     query = f"""
@@ -339,20 +384,164 @@ def discover_consultations(sr_numbers: list[str] | None = None) -> Iterator[Cons
     }}
     """
     rows = sparql_query(query, timeout=600)
-    log.info("Discovered %d Consultations via SPARQL", len(rows))
+
+    # Aggregate: one ConsultationRecord per ELI URI, with realizations
+    # inside. Same dedup pattern as discover_acts.
+    by_cons: dict[str, ConsultationRecord] = {}
+    seen_titles: dict[tuple[str, str], None] = {}  # (eli_uri, title)
     for r in rows:
         eli_uri = _val(r, "cons")
         if not eli_uri:
             continue
-        yield ConsultationRecord(
-            eli_uri=eli_uri,
-            sr_number=_val(r, "srNumber"),
-            impacts_work_uri=_val(r, "work"),
-            title=_val(r, "title"),
-            description=_val(r, "description"),
-            status=_val(r, "status"),
-            consultation_id=_val(r, "eventId"),
+        if eli_uri not in by_cons:
+            by_cons[eli_uri] = ConsultationRecord(
+                eli_uri=eli_uri,
+                sr_number=_val(r, "srNumber"),
+                impacts_work_uri=_val(r, "work"),
+                status=_val(r, "status"),
+                consultation_id=_val(r, "eventId"),
+            )
+        title = _val(r, "title")
+        description = _val(r, "description")
+        if not title:
+            continue
+        # Dedup on (eli_uri, title) — Fedlex returns one row per
+        # (title × description) cross-product.
+        key = (eli_uri, title)
+        if key in seen_titles:
+            continue
+        seen_titles[key] = None
+        lang = _detect_language(title) or _detect_language(description)
+        if lang is None:
+            continue
+        existing_langs = {rz.language for rz in by_cons[eli_uri].realizations}
+        if lang in existing_langs:
+            continue
+        by_cons[eli_uri].realizations.append(ConsultationRealization(
+            language=lang,
+            title=title,
+            description=description,
+        ))
+
+    log.info(
+        "Discovered %d Consultations via SPARQL (%d raw rows aggregated)",
+        len(by_cons), len(rows),
+    )
+    yield from by_cons.values()
+
+
+def discover_amendment_acts(
+    years: list[int] | None = None,
+    memorial_name: str = "AS",
+) -> Iterator[ActRecord]:
+    """Discover ALL Acts in the Fedlex Official Compilation, not just the
+    basicActs. These include amendment Acts — every revision of a federal
+    law had its own Botschaft/AS publication, and they live in the same
+    eli/oc/ namespace as the original enactment.
+
+    Strategy: walk the Expression layer (where memorial coordinates live)
+    rather than the Act layer (which has fewer attributes). Filter by
+    memorial_year so callers can scope by amendment date range.
+
+    NOTE: this returns Acts WITHOUT the SR-number link. The connection
+    "this amendment Act modified law SR X" comes from the existing
+    materialien.amendment_refs table — Phase 2's build script does that
+    cross-join. We don't try to resolve it here because no JOLUX predicate
+    exposes it directly.
+
+    Args:
+        years: optional list of memorial years to filter on. Default: all.
+        memorial_name: 'AS' (German), 'RO' (French), 'RU' (Italian).
+            Each Act has all three; filtering on one is enough since they
+            describe the same publication just in different languages.
+    """
+    # Note on the year filter: ?memYear is a typed literal (xsd:gYear) in
+    # Fedlex's RDF, so a plain ``?memYear IN ("2024")`` returns 0 rows.
+    # STR(?memYear) coerces to a plain string for the comparison.
+    year_filter = ""
+    if years:
+        year_list = ", ".join(f'"{y}"' for y in years)
+        year_filter = f"FILTER(STR(?memYear) IN ({year_list}))"
+
+    # Note on the resource-type filter: ``?act a jolux:Act`` over-filtered
+    # in production (some amendment publications carry only the inferred
+    # type). The strstarts on the eli/oc/ namespace is restrictive enough.
+    query = f"""
+    PREFIX jolux: <{JOLUX}>
+    SELECT
+        ?act ?dateDoc ?dateEif ?publicationDate ?processType
+        ?typeDoc ?genre ?isPartOf
+        ?expr ?lang ?title ?titleAlt ?identifier
+        ?memName ?memYear ?memNumber ?memPage
+    WHERE {{
+      ?expr jolux:memorialName "{memorial_name}" .
+      ?expr jolux:memorialYear ?memYear .
+      {year_filter}
+      OPTIONAL {{ ?expr jolux:memorialNumber ?memNumber }}
+      OPTIONAL {{ ?expr jolux:memorialPage ?memPage }}
+      ?act jolux:isRealizedBy ?expr .
+      OPTIONAL {{ ?expr jolux:language ?lang }}
+      OPTIONAL {{ ?expr jolux:title ?title }}
+      OPTIONAL {{ ?expr jolux:titleAlternative ?titleAlt }}
+      OPTIONAL {{ ?expr jolux:identifier ?identifier }}
+      OPTIONAL {{ ?act jolux:dateDocument ?dateDoc }}
+      OPTIONAL {{ ?act jolux:dateEntryInForce ?dateEif }}
+      OPTIONAL {{ ?act jolux:publicationDate ?publicationDate }}
+      OPTIONAL {{ ?act jolux:processType ?processType }}
+      OPTIONAL {{ ?act jolux:typeDocument ?typeDoc }}
+      OPTIONAL {{ ?act jolux:legalResourceGenre ?genre }}
+      OPTIONAL {{ ?act jolux:isPartOf ?isPartOf }}
+      FILTER(strstarts(str(?act), "https://fedlex.data.admin.ch/eli/oc/"))
+    }}
+    """
+    rows = sparql_query(query, timeout=600)
+
+    by_act: dict[str, ActRecord] = {}
+    for r in rows:
+        act_uri = _val(r, "act")
+        if not act_uri:
+            continue
+        if act_uri not in by_act:
+            by_act[act_uri] = ActRecord(
+                eli_uri=act_uri,
+                sr_number=None,        # NOT joined — see docstring
+                work_uri=None,
+                date_document=_val(r, "dateDoc"),
+                date_entry_in_force=_val(r, "dateEif"),
+                publication_date=_val(r, "publicationDate"),
+                process_type=_val(r, "processType"),
+                type_document=_val(r, "typeDoc"),
+                legal_resource_genre=_val(r, "genre"),
+                is_part_of=_val(r, "isPartOf"),
+            )
+        lang_uri = _val(r, "lang") or ""
+        lang_code = next(
+            (k for k, v in LANG_URIS.items() if v == lang_uri),
+            lang_uri.rsplit("/", 1)[-1].lower()[:3] if lang_uri else "",
         )
+        if not lang_code:
+            continue
+        existing_langs = {rz.language for rz in by_act[act_uri].realizations}
+        if lang_code in existing_langs:
+            continue
+        by_act[act_uri].realizations.append(ActRealization(
+            language=lang_code,
+            title=_val(r, "title"),
+            title_alternative=_val(r, "titleAlt"),
+            identifier=_val(r, "identifier"),
+            memorial_name=_val(r, "memName"),
+            memorial_year=_val(r, "memYear"),
+            memorial_number=_val(r, "memNumber"),
+            memorial_page=_val(r, "memPage"),
+            pdf_url=_canonical_act_pdf_url(act_uri, lang_code),
+        ))
+
+    log.info(
+        "Discovered %d amendment Acts via SPARQL (%d Expression rows; "
+        "filter: memorial_name=%s, years=%s)",
+        len(by_act), len(rows), memorial_name, years or "all",
+    )
+    yield from by_act.values()
 
 
 # ── Manifestations (downloadable files) ─────────────────────────────
@@ -440,6 +629,22 @@ def main(argv: list[str] | None = None) -> int:
         "--output", default="output/raw/materialien/consultations.jsonl",
     )
 
+    p_amend = sub.add_parser(
+        "discover-amendment-acts",
+        help="SPARQL → ALL Acts in eli/oc/ namespace (incl. amendments) with metadata",
+    )
+    p_amend.add_argument(
+        "--years", default=None,
+        help="Comma-separated memorial years to filter on (e.g. 2020,2021,2022). Default: all.",
+    )
+    p_amend.add_argument(
+        "--memorial-name", default="AS", choices=["AS", "RO", "RU"],
+        help="Filter by memorial language (default AS = German). One is enough since each Act has all three.",
+    )
+    p_amend.add_argument(
+        "--output", default="output/raw/materialien/amendment_acts.jsonl",
+    )
+
     p_man = sub.add_parser(
         "manifestations", help="Print downloadable file URLs for one ELI URI",
     )
@@ -457,6 +662,17 @@ def main(argv: list[str] | None = None) -> int:
         sr_list = [s.strip() for s in args.sr.split(",")] if args.sr else None
         n = write_jsonl(discover_consultations(sr_list), Path(args.output))
         log.info("Wrote %d Consultations → %s", n, args.output)
+        return 0
+
+    if args.cmd == "discover-amendment-acts":
+        years_list = (
+            [int(y.strip()) for y in args.years.split(",")] if args.years else None
+        )
+        n = write_jsonl(
+            discover_amendment_acts(years=years_list, memorial_name=args.memorial_name),
+            Path(args.output),
+        )
+        log.info("Wrote %d amendment Acts → %s", n, args.output)
         return 0
 
     if args.cmd == "manifestations":
