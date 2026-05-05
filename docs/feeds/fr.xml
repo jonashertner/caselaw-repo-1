@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 05 May 2026 00:32:44 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 05 May 2026 17:52:03 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -759,6 +759,37 @@ E______ et F______, G______ et H____…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesgericht 7B_567/2024 vom 2026-04-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_567_2024</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+7B_567/2024
+
+Arrêt du 22 avril 2026
+
+IIe Cour de droit pénal
+
+Composition
+
+MM. et Mme les Juges fédéraux Abrecht, Président,
+
+Koch et Hofmann.
+
+Greffière : Mme Nasel.
+
+Participant…</description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_567.2024</guid>
+      <category>bger</category>
+      <category>Procédure pénale</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-5160/2024 vom 2026-04-22</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5160_2024</link>
       <description>Asile (sans exécution du renvoi)</description>
@@ -856,26 +887,6 @@ A.________,
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2701.2026</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 608 2025 227 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_608%202025%20227</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-08 2025 227
-Arrêt du 21 avril 2026
-IIe Cour des assurances sociales
-Composition
-Pr…</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_608 2025 227</guid>
-      <category>fr_gerichte</category>
     </item>
   </channel>
 </rss>

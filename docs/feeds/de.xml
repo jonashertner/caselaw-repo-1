@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 05 May 2026 00:32:43 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 05 May 2026 17:52:02 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -84,6 +84,24 @@ Präs…</description>
       <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_602 2025 3</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2024 554 vom 2026-05-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202024%20554</link>
+      <description>EL 200 2024 554
+JAP/SHE/STA
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil des Einzelrichters vom 2. April 2026
+Verwaltungsrichter Jakob
+Gerichtsschreiber Schnyder
+A.________
+Beschwerdeführer
+gegen
+Ausgleichskasse …</description>
+      <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2024 554</guid>
+      <category>be_verwaltungsgericht</category>
     </item>
     <item>
       <title>fr_gerichte 106 2026 5 vom 2026-05-04</title>
@@ -230,6 +248,22 @@ Richter-Bal…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht A-9795/2025 vom 2026-04-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-9795_2025</link>
+      <description>Energie (Übriges)</description>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-9795.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-2880/2026 vom 2026-04-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2880_2026</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2880.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>gr_gerichte ZR1 2026 9 vom 2026-04-27</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202026%209</link>
       <description>Obergericht des Kantons Graubünden
@@ -263,11 +297,77 @@ spruch auf ein Notwegrecht hätten die zust…</description>
       <category>ai_gerichte</category>
     </item>
     <item>
+      <title>ag_handelsgericht HOR.2026.6 vom 2026-04-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HOR.2026.6</link>
+      <description>Handelsgericht
+2. Kammer
+HOR.2026.6 / dm
+Entscheid vom 23. April 2026
+Besetzung Oberrichter Vetter, Präsident
+Ersatzrichter Meichssner
+Handelsrichter Hauser
+Handelsrichter Meyer
+Handelsrichter Wieland
+Gerichtsschreiberin-Stv. Meyer
+Klägerin F. AG, __…</description>
+      <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_handelsgericht_HOR.2026.6</guid>
+      <category>ag_handelsgericht</category>
+    </item>
+    <item>
+      <title>ag_handelsgericht HOR.2026.8 vom 2026-04-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HOR.2026.8</link>
+      <description>Handelsgericht
+2. Kammer
+HOR.2026.8 / dm
+Entscheid vom 23. April 2026
+Besetzung Oberrichter Vetter, Präsident
+Ersatzrichter Meichssner
+Handelsrichterin Baumann
+Gerichtsschreiberin-Stv. Meyer
+Klägerin SUISA, Genossenschaft der Urheber und Verleger von…</description>
+      <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_handelsgericht_HOR.2026.8</guid>
+      <category>ag_handelsgericht</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-1649/2024 vom 2026-04-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1649_2024</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1649.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht F-2684/2026 vom 2026-04-23</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2684_2026</link>
       <description>Zuweisung der Asylsuchenden an die Kantone</description>
       <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2684.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-2812/2026 vom 2026-04-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2812_2026</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
+      <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2812.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-9544/2025 vom 2026-04-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-9544_2025</link>
+      <description>Schengen-Visum</description>
+      <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-9544.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-9895/2025 vom 2026-04-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-9895_2025</link>
+      <description>Polizeiliche Massnahmen zur Bekämpfung von Terrorismus</description>
+      <pubDate>Thu, 23 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-9895.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -315,6 +415,68 @@ A.________,
 Bes…</description>
       <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_246.2026</guid>
+      <category>bger</category>
+      <category>Schuldbetreibungs- und Konkursrecht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_277/2026 vom 2026-04-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_277_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_277/2026
+
+Urteil vom 22. April 2026
+
+II. zivilrechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Bovey, Präsident,
+
+Gerichtsschreiber Zingg.
+
+Verfahrensbeteiligte
+
+A.________,
+
+Bes…</description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_277.2026</guid>
+      <category>bger</category>
+      <category>Schuldbetreibungs- und Konkursrecht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5F_7/2026 vom 2026-04-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5F_7_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5F_7/2026
+
+Urteil vom 22. April 2026
+
+II. zivilrechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Bovey, Präsident,
+
+Bundesrichterin De Rossa, Bundesrichter Josi,
+
+Gerichtsschreiber Z…</description>
+      <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5F_7.2026</guid>
       <category>bger</category>
       <category>Schuldbetreibungs- und Konkursrecht</category>
     </item>
@@ -478,6 +640,25 @@ Gesuch…</description>
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ag_strafgericht_SST.2026.82</guid>
       <category>ag_strafgericht</category>
+    </item>
+    <item>
+      <title>ag_zivilgericht ZOR.2024.39 vom 2026-04-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_zivilgericht_ZOR.2024.39</link>
+      <description>Obergericht
+Zivilgericht, 2. Kammer
+ZOR.2024.39
+(OF.2021.57)
+Urteil vom 21. April 2026
+Besetzung Oberrichter Six, Präsident
+Oberrichterin Vasvary
+Oberrichter Giese
+Gerichtsschreiberin M. Stierli
+Kläger A._____,
+geboren am tt.mm.1984, von Oftringen,
+[…</description>
+      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_zivilgericht_ZOR.2024.39</guid>
+      <category>ag_zivilgericht</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 200 2025 879 vom 2026-04-21</title>
@@ -688,212 +869,6 @@ Besch…</description>
       <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2501.2026</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-6211/2023 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-6211_2023</link>
-      <description>Asyl und Wegweisung (beschleunigtes Verfahren)</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-6211.2023</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-7521/2025 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-7521_2025</link>
-      <description>Verweigerung vorübergehender Schutz</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-7521.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-8221/2025 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-8221_2025</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-8221.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-5125/2023 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5125_2023</link>
-      <description>Asyl und Wegweisung (Mehrfachgesuch)</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5125.2023</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-2520/2026 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2520_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2520.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-2627/2026 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2627_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2627.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 502 2025 410 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202025%20410</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Augustinergasse 3, Postfach 630, 1701 Freiburg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-502 2025 410
-Urteil vom 3. Februar 2026
-Strafkammer
-Besetzung
-Präsident:
-Laurent Schneuw…</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_502 2025 410</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 502 2026 69 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%2069</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Augustinergasse 3, Postfach 630, 1701 Freiburg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-502 2026 69
-Urteil vom 31. März 2026
-Strafkammer
-Besetzung
-Präsident:
-Laurent Schneuwly
-…</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_502 2026 69</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte SCBES.2026.36 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.36</link>
-      <description>Urteilvom21. April 2026
-
-Es wirken mit:
-
-Oberrichterin Obrecht Steiner
-
-Gerichtsschreiber Isch
-
-In Sachen
-
-A.___,
-
-Beschwerdeführer
-
-gegen
-
-Betreibungsamt Thal-Gäu,
-
-Beschwerdegegner
-
-betreffendBerechnung
-des Existenzminimums
-
-zieht die Aufsichtsbeh…</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_SCBES.2026.36</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte SCBES.2026.41 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.41</link>
-      <description>Urteilvom21. April 2026
-
-Es wirken mit:
-
-Oberrichterin Obrecht Steiner
-
-Gerichtsschreiber Isch
-
-In Sachen
-
-A.___,
-
-Beschwerdeführerin
-
-gegen
-
-Betreibungsamt Thal-Gäu,
-
-Beschwerdegegnerin
-
-betreffendBerechnung
-des Existenzminimums
-
-zieht die Aufsicht…</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_SCBES.2026.41</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte ZKBES.2026.113 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_ZKBES.2026.113</link>
-      <description>Urteilvom21. April 2026
-
-Es wirken mit:
-
-Präsidentin Kofmel
-
-Oberrichter Schibli
-
-Oberrichter Hagmann
-
-Gerichtsschreiberin Zimmermann
-
-In Sachen
-
-A.___ AG,
-
-Beschwerdeführerin
-
-gegen
-
-1.B.___,
-
-2.C.___,
-
-Beschwerdegegner
-
-betreffendAusweisung
-und Vo…</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_ZKBES.2026.113</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>ag_handelsgericht HOR.2025.42 vom 2026-04-20</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HOR.2025.42</link>
-      <description>Handelsgericht
-2. Kammer
-HOR.2025.42 / as / mv
-Entscheid vom 20. April 2026
-Besetzung Oberrichter Vetter, Präsident
-Ersatzrichter Wyss
-Handelsrichter Bäumlin
-Handelsrichter Friedli
-Handelsrichter Meyer
-Gerichtsschreiberin-Stv. Meyer
-Klägerin R. GmbH,…</description>
-      <pubDate>Mon, 20 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ag_handelsgericht_HOR.2025.42</guid>
-      <category>ag_handelsgericht</category>
     </item>
   </channel>
 </rss>
