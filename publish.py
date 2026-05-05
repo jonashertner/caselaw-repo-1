@@ -328,12 +328,18 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
     # download pushed the optimize step past the limit (process killed at
     # 18003.6s mid-optimize, no atomic swap, decisions.db left stale at
     # May 2 12:30). Bumped to 25200s (7h) — gives optimize a 2h cushion
-    # over the historical worst-case-but-completed runs (~5h 30m). The
-    # stall_timeout in run_cmd (default 5400s = 90 min between log lines)
-    # still catches the genuinely-wedged case.
+    # over the historical worst-case-but-completed runs (~5h 30m).
     timeout = 25200  # 7h hard cap; legitimate completion ranges 3.5–6h
 
-    return run_cmd(cmd, "Build FTS5 database", dry_run, timeout=timeout)
+    # Stall watchdog: the FTS5 'optimize' phase emits NO stdout while
+    # rewriting the index segments; on 2026-05-04 19:06 the run got 4h 51m
+    # in, entered optimize, sat silent for 90 min, and the default 5400s
+    # stall watchdog killed it (no atomic swap, decisions.db still stale).
+    # Bumped to 10800s (3h) — wide enough for the optimize silent window
+    # but still catches a genuinely-wedged process within one human
+    # working-day cycle.
+    return run_cmd(cmd, "Build FTS5 database", dry_run,
+                   timeout=timeout, stall_timeout=10800)
 
 
 def step_2b_quality_report(dry_run: bool = False, full_rebuild: bool = False) -> bool:
