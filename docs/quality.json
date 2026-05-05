@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-05-02T12:55:34+00:00",
+  "run_at": "2026-05-05T16:24:25+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 53.85,
+  "duration_seconds": 1714.15,
   "summary": {
     "total": 52,
     "passed": 52,
@@ -93,17 +93,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 971067,
-        "distinct": 971067
+        "total": 971203,
+        "distinct": 971203
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 971067,
+      "metric_value": 971203,
       "threshold": 950000,
-      "message": "corpus total: 971,067",
+      "message": "corpus total: 971,203",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -113,9 +113,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 365958,
+      "metric_value": 366017,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 365,958 hits",
+      "message": "FTS5 'Beschwerde' query: 366,017 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -169,9 +169,9 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 449361,
-          "fr": 441018,
-          "it": 80688
+          "de": 449422,
+          "fr": 441086,
+          "it": 80695
         }
       }
     },
@@ -179,16 +179,16 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.274973817460584,
+      "metric_value": 46.274774686651504,
       "threshold": 30.0,
       "message": "DE 46.3% / FR 45.4% / IT 8.3% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 449361,
-        "fr": 441018,
-        "it": 80688
+        "de": 449422,
+        "fr": 441086,
+        "it": 80695
       }
     },
     {
@@ -303,16 +303,10 @@
       "name": "dates.future_window",
       "severity": "critical",
       "passed": true,
-      "metric_value": 1,
+      "metric_value": 0,
       "threshold": 50,
-      "message": "1 future-dated rows (within tolerance)",
-      "sample_rows": [
-        {
-          "decision_id": "sz_gerichte_STK 2025 37",
-          "court": "sz_gerichte",
-          "decision_date": "2026-06-03"
-        }
-      ],
+      "message": "0 future-dated rows (within tolerance)",
+      "sample_rows": [],
       "fix_advice": "if >50, expect a scraper date-parsing regression",
       "court": null,
       "extra": {}
@@ -573,9 +567,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 92197,
+      "metric_value": 92207,
       "threshold": 1,
-      "message": "bvger: 92,197 decisions",
+      "message": "bvger: 92,207 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",
@@ -585,9 +579,9 @@
       "name": "courts.federal_present.bstger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 11432,
+      "metric_value": 11440,
       "threshold": 1,
-      "message": "bstger: 11,432 decisions",
+      "message": "bstger: 11,440 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bstger",
@@ -609,9 +603,9 @@
       "name": "courts.federal_present.bger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 175252,
+      "metric_value": 175264,
       "threshold": 1,
-      "message": "bger: 175,252 decisions",
+      "message": "bger: 175,264 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bger",

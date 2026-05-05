@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 02 May 2026 12:54:31 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 05 May 2026 15:50:51 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -410,6 +410,24 @@ Laurent S…</description>
       <pubDate>Tue, 05 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_502 2026 32</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2024 554 vom 2026-05-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202024%20554</link>
+      <description>EL 200 2024 554
+JAP/SHE/STA
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil des Einzelrichters vom 2. April 2026
+Verwaltungsrichter Jakob
+Gerichtsschreiber Schnyder
+A.________
+Beschwerdeführer
+gegen
+Ausgleichskasse …</description>
+      <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2024 554</guid>
+      <category>be_verwaltungsgericht</category>
     </item>
     <item>
       <title>fr_gerichte 105 2025 127 vom 2026-05-04</title>
@@ -844,6 +862,22 @@ Richter-Bal…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht A-9795/2025 vom 2026-04-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-9795_2025</link>
+      <description>Energie (Übriges)</description>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-9795.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-2880/2026 vom 2026-04-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2880_2026</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2880.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2025 163 vom 2026-04-27</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202025%20163</link>
       <description>Tribunal cantonal TC
@@ -862,67 +896,6 @@ Président :
 Jé…</description>
       <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_101 2025 163</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 102 2026 33 vom 2026-04-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2033</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-102 2026 33
-Arrêt du 27 février 2026
-IIe Cour d’appel civil
-Composition
-Présidente…</description>
-      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_102 2026 33</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 502 2025 73 vom 2026-04-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202025%2073</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-502 2025 73
-Arrêt du 10 mars 2026
-Chambre pénale
-Composition
-Président :
-Laurent S…</description>
-      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_502 2025 73</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 605 2024 207 vom 2026-04-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202024%20207</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-605 2024 207
-Arrêt du 3 mars 2026
-Ie Cour des assurances sociales
-Composition
-Prés…</description>
-      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_605 2024 207</guid>
       <category>fr_gerichte</category>
     </item>
   </channel>
