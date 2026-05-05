@@ -491,10 +491,10 @@ function render() {
     if (ageH != null && ageH > STALE_HOURS_THRESHOLD) {
         // Gate hasn't run recently → publish has been failing → data is ageing
         gate.className = "gate stale";
-        gateText.textContent = "Quality report stale — last gate run " + ageStr;
-        gateSub.textContent = "The nightly publish has not produced a fresh report in " +
-            Math.round(ageH) + " hours. The live MCP at mcp.opencaselaw.ch continues to " +
-            "serve the last successful build, which is correct but no longer growing.";
+        gateText.textContent = "Database structure improvements in progress — live updates returning shortly";
+        gateSub.textContent = "We are actively improving the database structure. " +
+            "Live updates will return shortly. The MCP at mcp.opencaselaw.ch " +
+            "continues to serve the last successful build in the meantime.";
     } else if (DATA.summary.publish_safe) {
         gate.className = "gate ok";
         gateText.textContent = "Publish safe — all " + DATA.summary.total +
