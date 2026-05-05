@@ -85,15 +85,25 @@ session.headers.update({
 @dataclass
 class ActRealization:
     """One per-language Expression of an Act. Holds the per-language title
-    and the memorial reference (the AS / BBl publication coordinates)."""
+    and the memorial reference (the AS / BBl publication coordinates).
+
+    Identifier note: ``identifier`` carries the canonical short citation
+    string ("AS 2025 615" / "RO 2025 615" / "RU 2025 615") and is
+    populated for ALL Acts (modern AND historical). For pre-1947 Acts
+    the legacy memorial coordinates (memorial_year + memorial_page)
+    also describe a unique location; for post-1947 Acts memorial_page
+    is no longer used by Fedlex — the ``identifier`` field is the
+    canonical reference.
+    """
     language: str                       # 'de' | 'fr' | 'it'
     title: str | None = None            # e.g. "Bundesgesetz vom 30. März 1911 …"
     title_alternative: str | None = None  # e.g. "OR" / "CO"
-    memorial_name: str | None = None    # e.g. "AS"
-    memorial_year: str | None = None    # e.g. "27"
-    memorial_number: str | None = None  # e.g. ""
-    memorial_page: str | None = None    # e.g. "317"
-    identifier: str | None = None
+    title_short: str | None = None      # e.g. "RLSV" / "OSITC"
+    memorial_name: str | None = None    # e.g. "AS" / "RO" / "RU"
+    memorial_year: str | None = None    # e.g. "27" (pre-1947 vol) or "2025" (calendar year)
+    memorial_number: str | None = None  # rarely populated
+    memorial_page: str | None = None    # populated for legacy Acts only
+    identifier: str | None = None       # canonical citation: "AS 2025 615"
     pdf_url: str | None = None          # constructed from ELI URI
 
 
@@ -253,6 +263,7 @@ def discover_acts(sr_numbers: list[str] | None = None) -> Iterator[ActRecord]:
         OPTIONAL {{ ?expr jolux:language ?lang }}
         OPTIONAL {{ ?expr jolux:title ?title }}
         OPTIONAL {{ ?expr jolux:titleAlternative ?titleAlt }}
+        OPTIONAL {{ ?expr jolux:titleShort ?titleShort }}
         OPTIONAL {{ ?expr jolux:identifier ?identifier }}
         OPTIONAL {{ ?expr jolux:memorialName ?memName }}
         OPTIONAL {{ ?expr jolux:memorialYear ?memYear }}
@@ -298,6 +309,7 @@ def discover_acts(sr_numbers: list[str] | None = None) -> Iterator[ActRecord]:
             language=lang_code,
             title=_val(r, "title"),
             title_alternative=_val(r, "titleAlt"),
+            title_short=_val(r, "titleShort"),
             identifier=_val(r, "identifier"),
             memorial_name=_val(r, "memName"),
             memorial_year=_val(r, "memYear"),
@@ -432,7 +444,7 @@ def discover_consultations(sr_numbers: list[str] | None = None) -> Iterator[Cons
 
 def discover_amendment_acts(
     years: list[int] | None = None,
-    memorial_name: str = "AS",
+    memorial_names: list[str] | None = None,
 ) -> Iterator[ActRecord]:
     """Discover ALL Acts in the Fedlex Official Compilation, not just the
     basicActs. These include amendment Acts — every revision of a federal
@@ -451,10 +463,12 @@ def discover_amendment_acts(
 
     Args:
         years: optional list of memorial years to filter on. Default: all.
-        memorial_name: 'AS' (German), 'RO' (French), 'RU' (Italian).
-            Each Act has all three; filtering on one is enough since they
-            describe the same publication just in different languages.
+        memorial_names: subset of ['AS', 'RO', 'RU']. Default: all three —
+            so each Act gets DE/FR/IT realizations. v0.3 defaulted to
+            'AS' only and missed FR + IT (~2/3 of per-language metadata).
     """
+    if memorial_names is None:
+        memorial_names = ["AS", "RO", "RU"]
     # Note on the year filter: ?memYear is a typed literal (xsd:gYear) in
     # Fedlex's RDF, so a plain ``?memYear IN ("2024")`` returns 0 rows.
     # STR(?memYear) coerces to a plain string for the comparison.
@@ -462,6 +476,9 @@ def discover_amendment_acts(
     if years:
         year_list = ", ".join(f'"{y}"' for y in years)
         year_filter = f"FILTER(STR(?memYear) IN ({year_list}))"
+
+    mem_list = ", ".join(f'"{m}"' for m in memorial_names)
+    mem_filter = f"FILTER(?memName IN ({mem_list}))"
 
     # Note on the resource-type filter: ``?act a jolux:Act`` over-filtered
     # in production (some amendment publications carry only the inferred
@@ -471,10 +488,11 @@ def discover_amendment_acts(
     SELECT
         ?act ?dateDoc ?dateEif ?publicationDate ?processType
         ?typeDoc ?genre ?isPartOf
-        ?expr ?lang ?title ?titleAlt ?identifier
+        ?expr ?lang ?title ?titleAlt ?titleShort ?identifier
         ?memName ?memYear ?memNumber ?memPage
     WHERE {{
-      ?expr jolux:memorialName "{memorial_name}" .
+      ?expr jolux:memorialName ?memName .
+      {mem_filter}
       ?expr jolux:memorialYear ?memYear .
       {year_filter}
       OPTIONAL {{ ?expr jolux:memorialNumber ?memNumber }}
@@ -483,6 +501,7 @@ def discover_amendment_acts(
       OPTIONAL {{ ?expr jolux:language ?lang }}
       OPTIONAL {{ ?expr jolux:title ?title }}
       OPTIONAL {{ ?expr jolux:titleAlternative ?titleAlt }}
+      OPTIONAL {{ ?expr jolux:titleShort ?titleShort }}
       OPTIONAL {{ ?expr jolux:identifier ?identifier }}
       OPTIONAL {{ ?act jolux:dateDocument ?dateDoc }}
       OPTIONAL {{ ?act jolux:dateEntryInForce ?dateEif }}
@@ -528,6 +547,7 @@ def discover_amendment_acts(
             language=lang_code,
             title=_val(r, "title"),
             title_alternative=_val(r, "titleAlt"),
+            title_short=_val(r, "titleShort"),
             identifier=_val(r, "identifier"),
             memorial_name=_val(r, "memName"),
             memorial_year=_val(r, "memYear"),
@@ -538,8 +558,8 @@ def discover_amendment_acts(
 
     log.info(
         "Discovered %d amendment Acts via SPARQL (%d Expression rows; "
-        "filter: memorial_name=%s, years=%s)",
-        len(by_act), len(rows), memorial_name, years or "all",
+        "memorial_names=%s years=%s)",
+        len(by_act), len(rows), memorial_names, years or "all",
     )
     yield from by_act.values()
 
@@ -638,8 +658,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Comma-separated memorial years to filter on (e.g. 2020,2021,2022). Default: all.",
     )
     p_amend.add_argument(
-        "--memorial-name", default="AS", choices=["AS", "RO", "RU"],
-        help="Filter by memorial language (default AS = German). One is enough since each Act has all three.",
+        "--memorial-names", default="AS,RO,RU",
+        help="Comma-separated subset of {AS, RO, RU} (default: all three) — "
+             "the memorial-language code of the Expression. v0.4 default "
+             "captures DE+FR+IT realizations per Act; restrict to one to "
+             "speed the SPARQL query at the cost of 2/3 of the metadata.",
     )
     p_amend.add_argument(
         "--output", default="output/raw/materialien/amendment_acts.jsonl",
@@ -668,8 +691,9 @@ def main(argv: list[str] | None = None) -> int:
         years_list = (
             [int(y.strip()) for y in args.years.split(",")] if args.years else None
         )
+        mem_list = [m.strip() for m in args.memorial_names.split(",") if m.strip()]
         n = write_jsonl(
-            discover_amendment_acts(years=years_list, memorial_name=args.memorial_name),
+            discover_amendment_acts(years=years_list, memorial_names=mem_list),
             Path(args.output),
         )
         log.info("Wrote %d amendment Acts → %s", n, args.output)
