@@ -83,24 +83,40 @@ session.headers.update({
 
 
 @dataclass
+class ActRealization:
+    """One per-language Expression of an Act. Holds the per-language title
+    and the memorial reference (the AS / BBl publication coordinates)."""
+    language: str                       # 'de' | 'fr' | 'it'
+    title: str | None = None            # e.g. "Bundesgesetz vom 30. März 1911 …"
+    title_alternative: str | None = None  # e.g. "OR" / "CO"
+    memorial_name: str | None = None    # e.g. "AS"
+    memorial_year: str | None = None    # e.g. "27"
+    memorial_number: str | None = None  # e.g. ""
+    memorial_page: str | None = None    # e.g. "317"
+    identifier: str | None = None
+    pdf_url: str | None = None          # constructed from ELI URI
+
+
+@dataclass
 class ActRecord:
     """An Act = Botschaft-enactment Official Compilation entry.
 
     Maps to ``materialien_doc`` rows with kind='act'. Multiple Acts can
-    target the same SR number (one per amendment cycle through history).
+    target the same SR number (one per amendment cycle through history) —
+    v0.2 currently only pulls the original ``basicAct``; per-amendment Acts
+    will arrive in v0.3 via the ``amendment_refs`` table join.
     """
     eli_uri: str
-    sr_number: str | None = None       # joined via the work URI
-    title: str | None = None
+    sr_number: str | None = None        # joined via the work URI
+    work_uri: str | None = None         # eli/cc/... the consolidated law
     date_document: str | None = None
     date_entry_in_force: str | None = None
     publication_date: str | None = None
-    historical_id: str | None = None    # often contains the BBl ref
     process_type: str | None = None
     type_document: str | None = None
     legal_resource_genre: str | None = None
-    work_uri: str | None = None         # eli/cc/... the consolidated law
-    languages: list[str] = field(default_factory=list)
+    is_part_of: str | None = None       # eli/collection/oc/<vol>/<...>
+    realizations: list[ActRealization] = field(default_factory=list)
 
 
 @dataclass
@@ -150,6 +166,28 @@ def _val(binding: dict, key: str) -> str | None:
 # ── Acts discovery (eli/oc/... namespace) ────────────────────────────
 
 
+def _canonical_act_pdf_url(act_eli_uri: str, language: str) -> str:
+    """Construct the canonical Fedlex PDF URL for an Act in a given language.
+
+    Fedlex serves Acts at a content-negotiation URL pattern; the archival
+    Type-A PDF (signed, long-term-preservation) is what citizens get from
+    the federal-law search. We don't ask SPARQL for these — the URL is
+    fully derivable from the ELI URI.
+
+    Example:
+      eli/oc/27/317_321_377  +  'de'
+      → https://www.fedlex.admin.ch/eli/oc/27/317_321_377/de/pdf-a
+    """
+    # Strip any language suffix the caller may have included
+    base = act_eli_uri.rstrip("/")
+    if base.endswith(f"/{language}"):
+        base = base[: -len(f"/{language}")]
+    base_user = base.replace(
+        "fedlex.data.admin.ch", "www.fedlex.admin.ch", 1
+    )
+    return f"{base_user}/{language}/pdf-a"
+
+
 def discover_acts(sr_numbers: list[str] | None = None) -> Iterator[ActRecord]:
     """Yield ActRecord entries for every Botschaft-enactment Act
     referenced by the given SR numbers (or ALL classified compilation
@@ -159,55 +197,107 @@ def discover_acts(sr_numbers: list[str] | None = None) -> Iterator[ActRecord]:
 
         ?work jolux:basicAct ?act .
 
-    Per-amendment Acts (each subsequent revision had its own message) are
-    NOT yet pulled here — the basicAct only points to the ORIGINAL act.
-    Amendment-level Acts will be added in Phase 1b once we map the JOLUX
-    predicate that links them (likely a chain through PublicationProcess).
+    Per-amendment Acts (each revision had its own message) are NOT yet
+    pulled here — the basicAct only points to the ORIGINAL act. v0.3 will
+    add amendment-level Acts via the existing ``materialien.amendment_refs``
+    table (which already has 83,958 BBl/AS pointers per article).
+
+    Implementation note: per-language metadata (title, memorial coords)
+    lives on the Act's Expressions, not the Act itself. Per the Fedlex
+    JOLUX schema, titles are language-dependent so they hang off the
+    Expression resource. We aggregate them under one ActRecord with a
+    list of ActRealization rows so the JSONL output is one-Act-per-line.
     """
     sr_filter = ""
     if sr_numbers:
         sr_list = ", ".join(f'"{sr}"' for sr in sr_numbers)
         sr_filter = f"FILTER(?srNumber IN ({sr_list}))"
 
+    # Single query that joins Acts with ALL their Expression metadata so
+    # we don't have to do N+1 round-trips. GROUP_CONCAT collapses the
+    # per-language rows into one Act row; we re-split client-side.
     query = f"""
     PREFIX jolux: <{JOLUX}>
-    SELECT DISTINCT
-        ?work ?srNumber ?act ?title ?dateDoc ?dateEif
-        ?publicationDate ?historicalId ?processType ?typeDoc ?genre
+    SELECT
+        ?work ?srNumber ?act ?dateDoc ?dateEif
+        ?publicationDate ?processType ?typeDoc ?genre ?isPartOf
+        ?expr ?lang ?title ?titleAlt ?identifier
+        ?memName ?memYear ?memNumber ?memPage
     WHERE {{
       ?work a jolux:ConsolidationAbstract .
       ?work jolux:historicalLegalId ?srNumber .
       ?work jolux:basicAct ?act .
       {sr_filter}
-      OPTIONAL {{ ?act jolux:title ?title }}
       OPTIONAL {{ ?act jolux:dateDocument ?dateDoc }}
       OPTIONAL {{ ?act jolux:dateEntryInForce ?dateEif }}
       OPTIONAL {{ ?act jolux:publicationDate ?publicationDate }}
-      OPTIONAL {{ ?act jolux:historicalId ?historicalId }}
       OPTIONAL {{ ?act jolux:processType ?processType }}
       OPTIONAL {{ ?act jolux:typeDocument ?typeDoc }}
       OPTIONAL {{ ?act jolux:legalResourceGenre ?genre }}
+      OPTIONAL {{ ?act jolux:isPartOf ?isPartOf }}
+      OPTIONAL {{
+        ?act jolux:isRealizedBy ?expr .
+        OPTIONAL {{ ?expr jolux:language ?lang }}
+        OPTIONAL {{ ?expr jolux:title ?title }}
+        OPTIONAL {{ ?expr jolux:titleAlternative ?titleAlt }}
+        OPTIONAL {{ ?expr jolux:identifier ?identifier }}
+        OPTIONAL {{ ?expr jolux:memorialName ?memName }}
+        OPTIONAL {{ ?expr jolux:memorialYear ?memYear }}
+        OPTIONAL {{ ?expr jolux:memorialNumber ?memNumber }}
+        OPTIONAL {{ ?expr jolux:memorialPage ?memPage }}
+      }}
     }}
     """
     rows = sparql_query(query, timeout=600)
-    log.info("Discovered %d Acts via SPARQL", len(rows))
+
+    # Group by Act ELI URI — multiple rows per Act (one per Expression).
+    by_act: dict[str, ActRecord] = {}
     for r in rows:
-        eli_uri = _val(r, "act")
-        if not eli_uri:
+        act_uri = _val(r, "act")
+        if not act_uri:
             continue
-        yield ActRecord(
-            eli_uri=eli_uri,
-            sr_number=_val(r, "srNumber"),
-            work_uri=_val(r, "work"),
-            title=_val(r, "title"),
-            date_document=_val(r, "dateDoc"),
-            date_entry_in_force=_val(r, "dateEif"),
-            publication_date=_val(r, "publicationDate"),
-            historical_id=_val(r, "historicalId"),
-            process_type=_val(r, "processType"),
-            type_document=_val(r, "typeDoc"),
-            legal_resource_genre=_val(r, "genre"),
+        if act_uri not in by_act:
+            by_act[act_uri] = ActRecord(
+                eli_uri=act_uri,
+                sr_number=_val(r, "srNumber"),
+                work_uri=_val(r, "work"),
+                date_document=_val(r, "dateDoc"),
+                date_entry_in_force=_val(r, "dateEif"),
+                publication_date=_val(r, "publicationDate"),
+                process_type=_val(r, "processType"),
+                type_document=_val(r, "typeDoc"),
+                legal_resource_genre=_val(r, "genre"),
+                is_part_of=_val(r, "isPartOf"),
+            )
+        # Collect per-Expression realization
+        lang_uri = _val(r, "lang") or ""
+        lang_code = next(
+            (k for k, v in LANG_URIS.items() if v == lang_uri),
+            lang_uri.rsplit("/", 1)[-1].lower()[:3] if lang_uri else "",
         )
+        if not lang_code:
+            continue
+        # Dedup on (act_uri, language) — same expression may appear once
+        existing_langs = {rz.language for rz in by_act[act_uri].realizations}
+        if lang_code in existing_langs:
+            continue
+        by_act[act_uri].realizations.append(ActRealization(
+            language=lang_code,
+            title=_val(r, "title"),
+            title_alternative=_val(r, "titleAlt"),
+            identifier=_val(r, "identifier"),
+            memorial_name=_val(r, "memName"),
+            memorial_year=_val(r, "memYear"),
+            memorial_number=_val(r, "memNumber"),
+            memorial_page=_val(r, "memPage"),
+            pdf_url=_canonical_act_pdf_url(act_uri, lang_code),
+        ))
+
+    log.info(
+        "Discovered %d Acts via SPARQL (%d Expression rows aggregated)",
+        len(by_act), len(rows),
+    )
+    yield from by_act.values()
 
 
 # ── Consultations discovery (eli/dl/proj/... namespace) ─────────────
@@ -307,7 +397,12 @@ def fetch_manifestations(eli_uri: str) -> list[Manifestation]:
 
 
 def write_jsonl(records: Iterator, path: Path) -> int:
-    """Write dataclass records as one-JSON-per-line. Returns count."""
+    """Write dataclass records as one-JSON-per-line. Returns count.
+
+    ActRecord.realizations is a list of ActRealization dataclasses;
+    asdict() recurses into them so the JSONL line carries full per-
+    language metadata (title, memorial coords, pdf_url) inline.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     n = 0
     with path.open("w", encoding="utf-8") as f:
