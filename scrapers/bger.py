@@ -611,32 +611,36 @@ class BgerScraper(BaseScraper):
 
     def _discover_via_neuheiten(self) -> Iterator[dict]:
         """
-        Check each of the last 7 days' Neuheiten pages for published decisions.
+        Check each of the last 14 days' Neuheiten pages for published decisions.
 
         Uses date-specific URL: index_aza.php?date=YYYYMMDD&lang=de&mode=news
-        Each page lists decisions published on that specific date.
+        Each page lists decisions published on that specific date — the
+        underlying decision_date is unrelated (BGer publishes weeks-to-
+        months after the actual ruling date), so this is the only path
+        that surfaces late-published older rulings.
 
-        Note: Scraping only German — all decisions appear regardless of
-        the interface language.
+        Lookback widened from 7 → 14 days on 2026-05-06 after we
+        discovered 18 dockets had escaped the previous 7-day window
+        because the parser was broken (see _parse_neuheiten_html).
         """
         today = date.today()
         total_published = 0
         total_new = 0
-        for days_ago in range(7):
+        for days_ago in range(14):
             check_date = today - timedelta(days=days_ago)
             date_str = check_date.strftime("%Y%m%d")
             url = NEUHEITEN_DATE_URL.format(lang="de", date=date_str)
             try:
                 resp = self._get_with_pow(url)
                 soup = BeautifulSoup(resp.text, "html.parser")
-                count = 0
                 new_count = 0
-                for stub in self._parse_search_results(soup, "de"):
-                    count += 1
+                published = 0
+                for stub in self._parse_neuheiten_html(soup, "de"):
+                    published += 1
+                    if self.state.is_known(stub["decision_id"]):
+                        continue
                     new_count += 1
                     yield stub
-                # Count known decisions that were parsed but filtered by is_known
-                published = self._count_search_results(soup)
                 known = published - new_count
                 total_published += published
                 total_new += new_count
@@ -648,8 +652,49 @@ class BgerScraper(BaseScraper):
                 logger.warning(f"Neuheiten {check_date}: {e}")
         logger.info(
             f"Neuheiten total: {total_published} published, "
-            f"{total_new} new across last 7 days"
+            f"{total_new} new across last 14 days"
         )
+
+    def _parse_neuheiten_html(
+        self, soup: BeautifulSoup, lang: str
+    ) -> Iterator[dict]:
+        """Parse the BGer Neuheiten (recently-published) page.
+
+        Layout differs from the AZA search-results page (which uses
+        ``<div class="ranklist_content"><ol><li>``) — Neuheiten uses
+        a flat ``<table>`` of rows, each with an ``<a>`` whose href
+        encodes both the decision date and the docket as
+        ``highlight_docid=aza://DD-MM-YYYY-DOCKET-DASHED``.
+
+        Yielded stubs match the schema of ``_parse_search_results``.
+        """
+        for a in soup.find_all("a", href=True):
+            href = a["href"]
+            m = re.search(
+                r"highlight_docid=aza://(\d{2})-(\d{2})-(\d{4})-([0-9A-Z_]+)-(\d{4})",
+                href,
+            )
+            if not m:
+                continue
+            try:
+                dd, mm, yyyy = int(m.group(1)), int(m.group(2)), int(m.group(3))
+                decision_date = date(yyyy, mm, dd)
+            except ValueError:
+                continue
+            chamber, year = m.group(4), m.group(5)
+            docket = f"{chamber}/{year}"
+            text = a.get_text(strip=True)
+            if text and self._extract_docket(text):
+                docket = self._extract_docket(text) or docket
+
+            decision_id = make_decision_id("bger", docket)
+            yield {
+                "docket_number": docket,
+                "decision_date": decision_date,
+                "url": self._abs_url(href),
+                "language": lang,
+                "decision_id": decision_id,
+            }
 
     # ───────────────────────────────────────────────────────────────────────
     # Discovery via AZA search (backfill)

@@ -8389,9 +8389,11 @@ def _handle_find_relevant_erwaegung(
                         bm25(erwaegungen_paragraph_fts) AS score,
                         snippet(erwaegungen_paragraph_fts,
                                 0, '<mark>', '</mark>', '…', 24) AS highlighted
-                    FROM erwaegungen_paragraph_fts fts
-                    JOIN erwaegungen_paragraph p ON p.rowid = fts.rowid
-                    WHERE fts MATCH ? AND p.decision_id = ?
+                    FROM erwaegungen_paragraph_fts
+                    JOIN erwaegungen_paragraph p
+                      ON p.rowid = erwaegungen_paragraph_fts.rowid
+                    WHERE erwaegungen_paragraph_fts MATCH ?
+                      AND p.decision_id = ?
                     ORDER BY score
                     LIMIT ?
                     """,
@@ -8411,9 +8413,11 @@ def _handle_find_relevant_erwaegung(
                             bm25(erwaegungen_paragraph_fts) AS score,
                             snippet(erwaegungen_paragraph_fts,
                                     0, '<mark>', '</mark>', '…', 24) AS highlighted
-                        FROM erwaegungen_paragraph_fts fts
-                        JOIN erwaegungen_paragraph p ON p.rowid = fts.rowid
-                        WHERE fts MATCH ? AND p.decision_id = ?
+                        FROM erwaegungen_paragraph_fts
+                        JOIN erwaegungen_paragraph p
+                          ON p.rowid = erwaegungen_paragraph_fts.rowid
+                        WHERE erwaegungen_paragraph_fts MATCH ?
+                          AND p.decision_id = ?
                         ORDER BY score
                         LIMIT ?
                         """,
