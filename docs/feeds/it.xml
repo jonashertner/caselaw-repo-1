@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 05 May 2026 17:52:03 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 06 May 2026 10:57:40 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -588,6 +588,24 @@ Partecipanti al pr…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>ge_gerichte AARP/112/2026 vom 2026-03-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_AARP_112_2026</link>
+      <description>Siégeant : Monsieur Fabrice ROCH, président ; Monsieur Vincent FOURNIER, 
+Madame Delphine GONSETH, juges ; Madame Chloé MAGNENAT, 
+greffière-juriste délibérante. 
+ 
+REPUBLIQUE ET 
+ 
+CANTON DE GENEVE 
+POUVOIR JUDICIAIRE 
+P/3124/2023 
+AARP/112/2026
+COU…</description>
+      <pubDate>Mon, 23 Mar 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ge_gerichte_AARP_112_2026</guid>
+      <category>ge_gerichte</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht F-635/2025 vom 2026-03-20</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-635_2025</link>
       <description>Espulsione Fedpol</description>
@@ -966,14 +984,6 @@ Partecipanti al proc…</description>
       <description>Diritto alla rendita</description>
       <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-9106.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-1598/2026 vom 2026-03-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-1598_2026</link>
-      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
-      <pubDate>Wed, 11 Mar 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-1598.2026</guid>
       <category>bvger</category>
     </item>
   </channel>
