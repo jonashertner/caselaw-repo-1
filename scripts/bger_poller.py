@@ -39,7 +39,11 @@ STATE_FILE = Path("/tmp/bger_poller_state.json")
 LOG_FILE = REPO_DIR / "logs" / "bger_poller.log"
 
 NEUHEITEN_URL = (
-    "https://www.bger.ch/ext/eurospider/live/de/php/aza/http/index_aza.php"
+    # search.bger.ch — confirmed working 2026-05-06.
+    # www.bger.ch silently returned an empty page on this date which made the
+    # poller log "0 decisions" all morning while 29 fresh dockets were live
+    # at search.bger.ch (the host the rest of the scraper already uses).
+    "https://search.bger.ch/ext/eurospider/live/de/php/aza/http/index_aza.php"
     "?date={date}&lang=de&mode=news"
 )
 
