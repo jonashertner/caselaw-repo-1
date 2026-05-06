@@ -4856,7 +4856,7 @@ function renderAll(data) {
     const d = new Date(data.generated_at);
     const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
     const updEl = document.getElementById('last-updated');
-    updEl.textContent = `${t('updated')} ${d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric' })}`;
+    updEl.textContent = `${t('updated')} ${d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric', timeZone:'UTC' })}`;
     updEl.classList.remove('hid');
   }
 
@@ -5015,7 +5015,7 @@ function renderAll(data) {
     if (sh.run_at) {
       const rd = new Date(sh.run_at);
       const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
-      statusParts.push(rd.toLocaleDateString(loc, { day:'numeric', month:'short' }));
+      statusParts.push(rd.toLocaleDateString(loc, { day:'numeric', month:'short', timeZone:'UTC' }));
     }
     document.getElementById('health-summary-status').textContent = statusParts.join(' \u2014 ');
 
@@ -5025,7 +5025,7 @@ function renderAll(data) {
       const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
       const durMin = sh.run_duration_s ? Math.round(sh.run_duration_s / 60) : 0;
       const metaEl = document.getElementById('health-meta');
-      metaEl.textContent = `${t('health_run_at')}: ${rd.toLocaleDateString(loc, { day:'numeric', month:'short', year:'numeric' })}, ${durMin} min`;
+      metaEl.textContent = `${t('health_run_at')}: ${rd.toLocaleDateString(loc, { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' })}, ${durMin} min`;
       metaEl.classList.remove('hid');
     }
 
@@ -5076,7 +5076,7 @@ function renderAll(data) {
     const d = new Date(data.generated_at);
     const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', en:'en-GB' }[curLang] || 'de-CH';
     document.getElementById('ts').textContent =
-      `${t('updated')} ${d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric' })}`;
+      `${t('updated')} ${d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric', timeZone:'UTC' })}`;
   }
 }
 
@@ -5214,7 +5214,7 @@ function renderHero(data) {
   if (data.generated_at) {
     const d = new Date(data.generated_at);
     const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', rm:'de-CH', en:'en-GB' }[curLang] || 'de-CH';
-    const dstr = d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric' });
+    const dstr = d.toLocaleDateString(loc, { day:'numeric', month:'long', year:'numeric', timeZone:'UTC' });
     const el = document.getElementById('hero-stamp-date');
     if (el) { el.setAttribute('datetime', data.generated_at); el.textContent = dstr; }
   }
@@ -5355,7 +5355,7 @@ function renderLatest(data) {
     if (!iso) return '';
     const d = new Date(iso);
     if (isNaN(d)) return iso;
-    return d.toLocaleDateString(locale, { day:'numeric', month:'short', year:'numeric' });
+    return d.toLocaleDateString(locale, { day:'numeric', month:'short', year:'numeric', timeZone:'UTC' });
   };
   const courtLabel = (court) => ({
     bger:'BGer', bge:'BGE', bvger:'BVGer', bstger:'BStGer', bpatger:'BPatGer',
@@ -5462,7 +5462,7 @@ function renderCorpusSnapshot(data) {
     const d = new Date(data.generated_at);
     const loc = { de:'de-CH', fr:'fr-CH', it:'it-CH', rm:'de-CH', en:'en-GB' }[curLang] || 'de-CH';
     const dstr = d.toLocaleDateString(loc, {
-      day:'numeric', month:'long', year:'numeric',
+      day:'numeric', month:'long', year:'numeric', timeZone:'UTC',
     }) + ' · ' + d.toLocaleTimeString(loc, {
       hour:'2-digit', minute:'2-digit', timeZone:'UTC', timeZoneName:'short',
     });

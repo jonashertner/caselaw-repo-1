@@ -334,7 +334,7 @@ function fmt(n) {
 function fmtDate(s) {
     if (!s) return "\u2014";
     const d = new Date(s);
-    return d.toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" });
+    return d.toLocaleString("en-US", { dateStyle: "long", timeStyle: "short", timeZone: "UTC" });
 }
 function fmtDur(s) {
     if (s === undefined || s === null) return "\u2014";
