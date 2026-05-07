@@ -766,6 +766,245 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
         except sqlite3.Error:
             pass
 
+    # ── 7. ECHR rulings concerning Switzerland ───────────────────────────
+    # Switzerland has been subject to the ECHR since ratification in 1974.
+    # Our corpus covers 5 surfaces: bge_egmr (Swiss BGE-published German
+    # translations), hudoc_ch (HUDOC tagged Switzerland), and the three
+    # ECtHR chambers (chamber, committee, grand_chamber). Headline number
+    # = total cases against Switzerland; richness = breakdown + recent
+    # activity.
+    if decisions_db.exists():
+        try:
+            d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
+            d.row_factory = sqlite3.Row
+            ECHR_COURTS = (
+                "bge_egmr", "hudoc_ch",
+                "ecthr_chamber", "ecthr_committee", "ecthr_grand_chamber",
+            )
+            placeholders = ",".join("?" * len(ECHR_COURTS))
+            total = d.execute(
+                f"SELECT COUNT(*) AS n FROM decisions WHERE court IN ({placeholders})",
+                ECHR_COURTS,
+            ).fetchone()["n"]
+            grand = d.execute(
+                "SELECT COUNT(*) AS n FROM decisions WHERE court='ecthr_grand_chamber'"
+            ).fetchone()["n"]
+            this_year = datetime.now(timezone.utc).year
+            current_year = d.execute(
+                f"SELECT COUNT(*) AS n FROM decisions "
+                f"WHERE court IN ({placeholders}) "
+                f"AND decision_date >= ?",
+                (*ECHR_COURTS, f"{this_year}-01-01"),
+            ).fetchone()["n"]
+            most_recent = d.execute(
+                f"SELECT decision_id, decision_date, docket_number, regeste "
+                f"FROM decisions "
+                f"WHERE court IN ({placeholders}) "
+                f"ORDER BY decision_date DESC LIMIT 1",
+                ECHR_COURTS,
+            ).fetchone()
+            out["echr_switzerland"] = {
+                "total": int(total),
+                "grand_chamber": int(grand),
+                f"in_{this_year}": int(current_year),
+                "most_recent": (
+                    {
+                        "decision_date": most_recent["decision_date"],
+                        "docket": most_recent["docket_number"],
+                        "regeste_excerpt": (
+                            (most_recent["regeste"] or "")[:140]
+                            if most_recent["regeste"] else None
+                        ),
+                        "url": (
+                            f"https://mcp.opencaselaw.ch/entscheid/"
+                            f"{most_recent['decision_id']}"
+                        ),
+                    }
+                    if most_recent else None
+                ),
+            }
+            d.close()
+        except sqlite3.Error:
+            pass
+
+    # ── 8. Top 5 most-cited decisions (the canonical Swiss case-law map) ─
+    # most_cited_decision shows just the #1; a top-5 list reveals the
+    # actual structure of legal authority — unsurprising but powerful
+    # storytelling fodder.
+    if graph_db.exists() and decisions_db.exists():
+        try:
+            g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=10)
+            g.row_factory = sqlite3.Row
+            top_rows = g.execute(
+                """
+                SELECT target_decision_id AS decision_id, COUNT(*) AS n
+                FROM citation_targets
+                WHERE target_decision_id IS NOT NULL
+                GROUP BY target_decision_id
+                ORDER BY n DESC
+                LIMIT 5
+                """
+            ).fetchall()
+            g.close()
+            d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
+            d.row_factory = sqlite3.Row
+            items = []
+            for r in top_rows:
+                row = d.execute(
+                    "SELECT docket_number, regeste FROM decisions "
+                    "WHERE decision_id=? LIMIT 1",
+                    (r["decision_id"],),
+                ).fetchone()
+                if not row:
+                    continue
+                items.append({
+                    "docket": row["docket_number"] or r["decision_id"],
+                    "citation_count": int(r["n"]),
+                    "regeste_excerpt": (
+                        (row["regeste"] or "")[:160]
+                        if row["regeste"] else None
+                    ),
+                    "url": (
+                        f"https://mcp.opencaselaw.ch/entscheid/"
+                        f"{r['decision_id']}"
+                    ),
+                })
+            d.close()
+            if items:
+                out["top_5_decisions"] = items
+        except sqlite3.Error:
+            pass
+
+    # ── 9. Top 5 most-cited statute articles ─────────────────────────────
+    # Same reasoning as #2 but expanded to top-5 with collapsed
+    # ABS/LIT/Ziff variants and per-row tallies.
+    if graph_db.exists():
+        try:
+            import re as _re
+            g = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True, timeout=10)
+            g.row_factory = sqlite3.Row
+            rows = g.execute(
+                """
+                SELECT statute_id, SUM(mention_count) AS n
+                FROM decision_statutes
+                WHERE statute_id IS NOT NULL AND TRIM(statute_id) != ''
+                GROUP BY statute_id
+                ORDER BY n DESC
+                LIMIT 200
+                """
+            ).fetchall()
+            g.close()
+            pat = _re.compile(
+                r"^ART\.([\dA-Za-z]+)(?:\.(?:ABS|LIT|CHIFF|ZIFF|N)\.[\dA-Za-z]+)*\.(.+)$"
+            )
+            tallies: dict[tuple[str, str], int] = {}
+            for r in rows:
+                m = pat.match(r["statute_id"])
+                if not m:
+                    continue
+                article, law_code = m.group(1), m.group(2)
+                key = (law_code, article)
+                tallies[key] = tallies.get(key, 0) + int(r["n"])
+            if tallies:
+                top5 = sorted(tallies.items(), key=lambda kv: kv[1], reverse=True)[:5]
+                out["top_5_statutes"] = [
+                    {"law_code": lc, "article": art, "ref_count": int(n)}
+                    for (lc, art), n in top5
+                ]
+        except sqlite3.Error:
+            pass
+        except Exception:
+            pass
+
+    # ── 10. Materialien (verbatim Federal Council Botschaft) coverage ────
+    materialien_db = repo_dir / "output" / "materialien.db"
+    if materialien_db.exists():
+        try:
+            m = sqlite3.connect(f"file:{materialien_db}?mode=ro", uri=True, timeout=10)
+            m.row_factory = sqlite3.Row
+            # Must guard: schema migration may not have run on every host.
+            tables = {r[0] for r in m.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()}
+            if "botschaft_documents" in tables:
+                total = m.execute(
+                    "SELECT COUNT(*) AS n FROM botschaft_documents"
+                ).fetchone()["n"]
+                paragraphs = m.execute(
+                    "SELECT COUNT(*) AS n FROM botschaft_paragraphs"
+                ).fetchone()["n"] if "botschaft_paragraphs" in tables else 0
+                links = m.execute(
+                    "SELECT COUNT(*) AS n FROM article_botschaft_links"
+                ).fetchone()["n"] if "article_botschaft_links" in tables else 0
+                by_lang = {
+                    r["language"]: int(r["n"]) for r in m.execute(
+                        "SELECT language, COUNT(*) AS n FROM botschaft_documents "
+                        "GROUP BY language"
+                    ).fetchall()
+                }
+                year_range = m.execute(
+                    "SELECT MIN(bbl_year) AS lo, MAX(bbl_year) AS hi "
+                    "FROM botschaft_documents"
+                ).fetchone()
+                out["materialien_coverage"] = {
+                    "total_documents": int(total),
+                    "paragraphs": int(paragraphs),
+                    "article_links": int(links),
+                    "by_language": by_lang,
+                    "year_range": (
+                        {"from": int(year_range["lo"]), "to": int(year_range["hi"])}
+                        if year_range and year_range["lo"] else None
+                    ),
+                }
+            m.close()
+        except sqlite3.Error:
+            pass
+
+    # ── 11. Temporal span — how far back the corpus reaches per court ────
+    # Adds richness to oldest_decision: which courts cover what era?
+    if decisions_db.exists():
+        try:
+            d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
+            d.row_factory = sqlite3.Row
+            today_year = datetime.now(timezone.utc).year
+            rows = d.execute(
+                """
+                SELECT court,
+                       MIN(decision_date) AS earliest,
+                       MAX(decision_date) AS latest,
+                       COUNT(*) AS n
+                FROM decisions
+                WHERE decision_date IS NOT NULL
+                  AND decision_date >= '1700-01-01'
+                  AND decision_date <= ?
+                GROUP BY court
+                HAVING n >= 100
+                ORDER BY earliest ASC
+                LIMIT 6
+                """,
+                (f"{today_year}-12-31",),
+            ).fetchall()
+            d.close()
+            if rows:
+                out["historical_depth"] = [
+                    {
+                        "court": r["court"],
+                        "earliest": r["earliest"],
+                        "latest": r["latest"],
+                        "span_years": (
+                            int(r["latest"][:4]) - int(r["earliest"][:4])
+                            if r["earliest"] and r["latest"]
+                                and r["earliest"][:4].isdigit()
+                                and r["latest"][:4].isdigit()
+                            else None
+                        ),
+                        "decision_count": int(r["n"]),
+                    }
+                    for r in rows
+                ]
+        except sqlite3.Error:
+            pass
+
     return out
 
 
