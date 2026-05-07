@@ -2234,8 +2234,12 @@ let themePref = _userOverride || (_mq.matches ? 'dark' : 'light');
 function applyTheme() {
   const isDark = themePref === 'dark';
   document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
-  document.getElementById('ico-sun').style.display = isDark ? 'none' : '';
-  document.getElementById('ico-moon').style.display = isDark ? '' : 'none';
+  // Some subpages (entscheide / gesetze / mcp / ueber) don't include the
+  // theme-icon DOM nodes; null-guard so the script doesn't throw and kill init().
+  const sun = document.getElementById('ico-sun');
+  const moon = document.getElementById('ico-moon');
+  if (sun) sun.style.display = isDark ? 'none' : '';
+  if (moon) moon.style.display = isDark ? '' : 'none';
   if (window._statsData) { destroyCharts(); renderCharts(window._statsData); }
 }
 applyTheme();
@@ -2243,12 +2247,15 @@ applyTheme();
 _mq.addEventListener('change', (e) => {
   if (!_userOverride) { themePref = e.matches ? 'dark' : 'light'; applyTheme(); }
 });
-document.getElementById('theme-btn').addEventListener('click', () => {
-  themePref = themePref === 'dark' ? 'light' : 'dark';
-  _userOverride = themePref;
-  localStorage.setItem('theme', themePref);
-  applyTheme();
-});
+const _themeBtn = document.getElementById('theme-btn');
+if (_themeBtn) {
+  _themeBtn.addEventListener('click', () => {
+    themePref = themePref === 'dark' ? 'light' : 'dark';
+    _userOverride = themePref;
+    localStorage.setItem('theme', themePref);
+    applyTheme();
+  });
+}
 
 /* ── Hamburger toggle ── */
 const hamburgerBtn = document.getElementById('hamburger-btn');
