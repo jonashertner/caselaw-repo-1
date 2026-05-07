@@ -151,14 +151,21 @@ def main() -> int:
     conn = sqlite3.connect(db_path)
     conn.execute("PRAGMA foreign_keys = ON")
 
-    # Map URI → botschaft_id (lookup in materialien.db).
-    bot_uri_to_id: dict[str, int] = dict(
-        (uri, bid)
-        for bid, uri in conn.execute(
-            "SELECT botschaft_id, eli_uri FROM botschaft_documents"
-        )
+    # Map URI → list[botschaft_id]. A Botschaft URI shares across DE/FR/IT
+    # language versions in materialien.db (eli_uri carries no language
+    # suffix), so each URI typically maps to up to 3 botschaft_ids. The
+    # parliament-chain SPARQL is language-agnostic — the (Botschaft → SR)
+    # mapping is true regardless of which expression we look at — so we
+    # insert a link for EACH language version, not just one.
+    bot_uri_to_ids: dict[str, list[int]] = {}
+    for bid, uri in conn.execute(
+        "SELECT botschaft_id, eli_uri FROM botschaft_documents"
+    ):
+        bot_uri_to_ids.setdefault(uri, []).append(bid)
+    log.info(
+        f"  → {sum(len(v) for v in bot_uri_to_ids.values())} Botschaft rows "
+        f"across {len(bot_uri_to_ids)} distinct URIs in materialien.db"
     )
-    log.info(f"  → {len(bot_uri_to_id)} Botschaften in materialien.db")
 
     # For each (bot_id, sr) pair, fetch distinct article_anchor values.
     before = conn.execute(
@@ -169,23 +176,24 @@ def main() -> int:
     skipped_no_id = 0
     skipped_no_anchors = 0
     for bot_uri, srs in bot_to_srs.items():
-        bid = bot_uri_to_id.get(bot_uri)
-        if bid is None:
+        bids = bot_uri_to_ids.get(bot_uri, [])
+        if not bids:
             skipped_no_id += 1
             continue
-        anchors = [
-            r[0] for r in conn.execute(
-                "SELECT DISTINCT article_anchor FROM botschaft_paragraphs "
-                "WHERE botschaft_id = ? AND article_anchor IS NOT NULL",
-                (bid,),
-            ).fetchall()
-        ]
-        if not anchors:
-            skipped_no_anchors += 1
-            continue
-        for sr in srs:
-            for art in anchors:
-                pending.append((sr, art, bid))
+        for bid in bids:
+            anchors = [
+                r[0] for r in conn.execute(
+                    "SELECT DISTINCT article_anchor FROM botschaft_paragraphs "
+                    "WHERE botschaft_id = ? AND article_anchor IS NOT NULL",
+                    (bid,),
+                ).fetchall()
+            ]
+            if not anchors:
+                skipped_no_anchors += 1
+                continue
+            for sr in srs:
+                for art in anchors:
+                    pending.append((sr, art, bid))
 
     log.info(
         f"  → candidate inserts: {len(pending)} "
