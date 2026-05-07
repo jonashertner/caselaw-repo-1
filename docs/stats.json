@@ -1,13 +1,13 @@
 {
-  "total": 971377,
+  "total": 971435,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175341,
+      "count": 175399,
       "earliest": "1986-10-06",
-      "latest": "2026-04-24",
-      "last_scraped": "2026-05-06T15:58:13.189988+00:00",
+      "latest": "2026-04-28",
+      "last_scraped": "2026-05-07T10:59:05.488032+00:00",
       "languages": [
         "de",
         "fr",
@@ -1714,9 +1714,9 @@
     }
   ],
   "by_language": {
-    "de": 449538,
-    "fr": 441140,
-    "it": 80699
+    "de": 449575,
+    "fr": 441156,
+    "it": 80704
   },
   "by_year": {
     "1875": 153,
@@ -1851,8 +1851,8 @@
     "2004": 17108,
     "2005": 19489,
     "2006": 20447,
-    "2007": 26490,
-    "2008": 27611,
+    "2007": 26494,
+    "2008": 27612,
     "2009": 31925,
     "2010": 33912,
     "2011": 35017,
@@ -1870,25 +1870,25 @@
     "2023": 47109,
     "2024": 47066,
     "2025": 44405,
-    "2026": 8740
+    "2026": 8793
   },
   "recent_daily": {
-    "2026-04-07": 76,
+    "2026-04-07": 79,
     "2026-04-08": 52,
-    "2026-04-09": 73,
-    "2026-04-10": 47,
-    "2026-04-13": 75,
-    "2026-04-14": 44,
-    "2026-04-15": 67,
-    "2026-04-16": 36,
+    "2026-04-09": 74,
+    "2026-04-10": 48,
+    "2026-04-13": 77,
+    "2026-04-14": 47,
+    "2026-04-15": 69,
+    "2026-04-16": 40,
     "2026-04-17": 66,
-    "2026-04-20": 51,
-    "2026-04-21": 37,
-    "2026-04-22": 32,
-    "2026-04-23": 24,
-    "2026-04-24": 10,
-    "2026-04-27": 16,
-    "2026-04-28": 7,
+    "2026-04-20": 55,
+    "2026-04-21": 39,
+    "2026-04-22": 35,
+    "2026-04-23": 27,
+    "2026-04-24": 14,
+    "2026-04-27": 19,
+    "2026-04-28": 9,
     "2026-04-29": 5,
     "2026-04-30": 12,
     "2026-05-04": 5,
@@ -1903,7 +1903,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175341
+      "count": 175399
     },
     {
       "court": "ge_gerichte",
@@ -2102,10 +2102,10 @@
     "2023": -1.1,
     "2024": -0.1,
     "2025": -5.7,
-    "2026": -80.3
+    "2026": -80.2
   },
   "federal_vs_cantonal": {
-    "federal": 346803,
+    "federal": 346861,
     "cantonal": 624574
   },
   "language_by_year": {
@@ -2120,12 +2120,12 @@
       "it": 3191
     },
     "2007": {
-      "de": 14740,
-      "fr": 8391,
+      "de": 14743,
+      "fr": 8392,
       "it": 3359
     },
     "2008": {
-      "de": 13973,
+      "de": 13974,
       "fr": 10518,
       "it": 3120
     },
@@ -2215,9 +2215,9 @@
       "it": 1437
     },
     "2026": {
-      "de": 4560,
-      "fr": 3709,
-      "it": 471
+      "de": 4593,
+      "fr": 3724,
+      "it": 476
     }
   },
   "by_month": {
@@ -2255,11 +2255,11 @@
     "2025-12": 3014,
     "2026-01": 2462,
     "2026-02": 2952,
-    "2026-03": 2401,
-    "2026-04": 895,
+    "2026-03": 2412,
+    "2026-04": 937,
     "2026-05": 11
   },
-  "generated_at": "2026-05-07T08:10:56.021454+00:00",
+  "generated_at": "2026-05-07T14:36:07.231176+00:00",
   "scraper_health": {
     "run_at": "2026-05-07T02:21:56.028147+00:00",
     "run_duration_s": 4915.7,
@@ -2342,12 +2342,12 @@
         "our_count": 174,
         "portal_count": null,
         "gap": null,
-        "duration_s": 5.3,
+        "duration_s": 4.2,
         "error": null,
         "note": null,
         "state_count": 174,
         "jsonl_size_mb": 10.4,
-        "jsonl_mtime": "2026-05-07T01:00:14.564745+00:00"
+        "jsonl_mtime": "2026-05-07T09:00:04.450225+00:00"
       },
       "be_zivilstraf": {
         "success": true,
@@ -2410,12 +2410,12 @@
         "our_count": 10860,
         "portal_count": null,
         "gap": null,
-        "duration_s": 94.1,
+        "duration_s": 111.5,
         "error": null,
         "note": null,
         "state_count": 10895,
         "jsonl_size_mb": 304.5,
-        "jsonl_mtime": "2026-05-07T01:02:00.114070+00:00"
+        "jsonl_mtime": "2026-05-07T09:01:51.780658+00:00"
       },
       "edoeb": {
         "success": true,
@@ -2600,9 +2600,9 @@
         "duration_s": 1104.9,
         "error": null,
         "note": null,
-        "state_count": 92488,
-        "jsonl_size_mb": 1383.1,
-        "jsonl_mtime": "2026-05-07T01:18:25.094450+00:00"
+        "state_count": 92541,
+        "jsonl_size_mb": 1383.9,
+        "jsonl_mtime": "2026-05-07T10:59:05.487309+00:00"
       },
       "bge": {
         "success": true,
@@ -2614,12 +2614,12 @@
         "our_count": 21244,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1109.8,
+        "duration_s": 1110.9,
         "error": null,
         "note": null,
         "state_count": 21244,
         "jsonl_size_mb": 483.8,
-        "jsonl_mtime": "2026-05-07T01:18:32.807457+00:00"
+        "jsonl_mtime": "2026-05-07T09:18:31.156014+00:00"
       },
       "bvger": {
         "success": true,
@@ -2628,15 +2628,15 @@
         "skip_count": 0,
         "error_count": 0,
         "none_count": 0,
-        "our_count": 92218,
+        "our_count": 92238,
         "portal_count": null,
         "gap": null,
-        "duration_s": 1037.3,
+        "duration_s": 853.0,
         "error": null,
         "note": null,
         "state_count": 92238,
         "jsonl_size_mb": 2656.7,
-        "jsonl_mtime": "2026-05-07T01:22:42.378788+00:00"
+        "jsonl_mtime": "2026-05-07T09:14:13.334170+00:00"
       },
       "mkg": {
         "success": true,
@@ -2670,7 +2670,7 @@
         "note": null,
         "state_count": 1090,
         "jsonl_size_mb": 37.3,
-        "jsonl_mtime": "2026-05-07T01:23:24.478856+00:00"
+        "jsonl_mtime": "2026-05-07T10:04:59.563338+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -3129,7 +3129,7 @@
         "note": null,
         "state_count": 7530,
         "jsonl_size_mb": 186.0,
-        "jsonl_mtime": "2026-05-07T01:59:34.761611+00:00"
+        "jsonl_mtime": "2026-05-07T10:31:47.672727+00:00"
       },
       "lu_gerichte": {
         "success": true,
@@ -3269,7 +3269,7 @@
       }
     },
     "run_at_daily": "2026-05-07T02:21:56.028147+00:00",
-    "run_at_federal": "2026-05-06T09:18:30.114975+00:00",
+    "run_at_federal": "2026-05-07T09:18:31.274838+00:00",
     "disk": {
       "data_volume": {
         "path": "/mnt/HC_Volume_104655575",
@@ -3650,6 +3650,62 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_7B_518_2026",
+        "docket": "7B_518/2026",
+        "date": "2026-04-28",
+        "court": "bger",
+        "language": "fr",
+        "summary": "Détention provisoire (refus de mise en liberté),"
+      },
+      {
+        "decision_id": "bger_7B_361_2026",
+        "docket": "7B_361/2026",
+        "date": "2026-04-28",
+        "court": "bger",
+        "language": "de",
+        "summary": "Ausstand; Nichteintreten,"
+      },
+      {
+        "decision_id": "bger_5A_325_2026",
+        "docket": "5A_325/2026",
+        "date": "2026-04-27",
+        "court": "bger",
+        "language": "de",
+        "summary": "Siegelungsgebühren,"
+      },
+      {
+        "decision_id": "bger_4A_159_2026",
+        "docket": "4A_159/2026",
+        "date": "2026-04-27",
+        "court": "bger",
+        "language": "fr",
+        "summary": "contrat de bail,"
+      },
+      {
+        "decision_id": "bger_2C_227_2026",
+        "docket": "2C_227/2026",
+        "date": "2026-04-27",
+        "court": "bger",
+        "language": "de",
+        "summary": "Schengen-Visum; Ausstandsbegehren,"
+      },
+      {
+        "decision_id": "bger_9C_219_2025",
+        "docket": "9C_219/2025",
+        "date": "2026-04-24",
+        "court": "bger",
+        "language": "de",
+        "summary": "Invalidenversicherung,"
+      },
+      {
+        "decision_id": "bger_7B_452_2026",
+        "docket": "7B_452/2026",
+        "date": "2026-04-24",
+        "court": "bger",
+        "language": "de",
+        "summary": "Anordnung Untersuchungshaft,"
+      },
+      {
         "decision_id": "bger_5A_343_2026",
         "docket": "5A_343/2026",
         "date": "2026-04-24",
@@ -3666,68 +3722,12 @@
         "summary": "Pachtvertrag,"
       },
       {
-        "decision_id": "bger_1C_66_2026",
-        "docket": "1C_66/2026",
+        "decision_id": "bger_2C_225_2026",
+        "docket": "2C_225/2026",
         "date": "2026-04-24",
         "court": "bger",
         "language": "de",
-        "summary": "Internationale Rechtshilfe in Strafsachen an Russland, Herausgabe zur Einziehung,"
-      },
-      {
-        "decision_id": "bger_8C_228_2026",
-        "docket": "8C_228/2026",
-        "date": "2026-04-23",
-        "court": "bger",
-        "language": "de",
-        "summary": "Sozialhilfe (Prozessvoraussetzung),"
-      },
-      {
-        "decision_id": "bger_5D_14_2026",
-        "docket": "5D_14/2026",
-        "date": "2026-04-23",
-        "court": "bger",
-        "language": "de",
-        "summary": "Klage im Zusammenhang mit Erbteilung,"
-      },
-      {
-        "decision_id": "bger_5A_342_2026",
-        "docket": "5A_342/2026",
-        "date": "2026-04-23",
-        "court": "bger",
-        "language": "de",
-        "summary": "Abänderung des Kindesunterhalts,"
-      },
-      {
-        "decision_id": "bger_5A_340_2026",
-        "docket": "5A_340/2026",
-        "date": "2026-04-23",
-        "court": "bger",
-        "language": "fr",
-        "summary": "changement de curateur provisoire,"
-      },
-      {
-        "decision_id": "bger_5A_335_2026",
-        "docket": "5A_335/2026",
-        "date": "2026-04-23",
-        "court": "bger",
-        "language": "de",
-        "summary": "Fürsorgerische Unterbringung,"
-      },
-      {
-        "decision_id": "bger_5A_332_2026",
-        "docket": "5A_332/2026",
-        "date": "2026-04-23",
-        "court": "bger",
-        "language": "de",
-        "summary": "Aufenthaltsbestimmungsrecht und Obhut,"
-      },
-      {
-        "decision_id": "bger_5A_330_2026",
-        "docket": "5A_330/2026",
-        "date": "2026-04-23",
-        "court": "bger",
-        "language": "de",
-        "summary": "Ausstand (Besuchsrecht),"
+        "summary": "Aufenthaltsbewilligung (Wiederwägung) /aufschiebende Wirkung,"
       }
     ],
     "cantonal": [
@@ -3865,6 +3865,14 @@
       "url": "https://www.fedlex.admin.ch/eli/cc/2017/812"
     },
     {
+      "sr_number": "142.31",
+      "in_force_date": "2026-06-01",
+      "title_de": "Asylgesetz vom 26. Juni 1998 (AsylG)",
+      "title_fr": "Loi du 26 juin 1998 sur l'asile (LAsi)",
+      "title_it": "Legge del 26 giugno 1998 sull'asilo (LAsi)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/1999/358"
+    },
+    {
       "sr_number": "519.2",
       "in_force_date": "2026-06-01",
       "title_de": "Verordnung vom 22. November 2017 über die Mobilmachung zu bestimmten Assistenz- und Aktivdiensten (VMob)",
@@ -3897,6 +3905,14 @@
       "url": "https://www.fedlex.admin.ch/eli/cc/2011/802"
     },
     {
+      "sr_number": "832.102.14",
+      "in_force_date": "2026-06-01",
+      "title_de": "Verordnung des EDI vom 20. November 2012 über die Datensätze für die Datenweitergabe zwischen Leistungserbringern und Versicherern",
+      "title_fr": "Ordonnance du DFI du 20 novembre 2012 sur les fichiers de données pour la transmission des données entre fournisseurs de prestations et assureurs",
+      "title_it": "Ordinanza del DFI del 20 novembre 2012 sugli insiemi di dati per la trasmissione dei dati tra fornitori di prestazioni e assicuratori",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2012/867"
+    },
+    {
       "sr_number": "451.12",
       "in_force_date": "2026-06-01",
       "title_de": "Verordnung vom 13. November 2019 über das Bundesinventar der schützenswerten Ortsbilder der Schweiz (VISOS)",
@@ -3927,28 +3943,12 @@
       "title_fr": "Règlement de service de l'armée du 22 juin 1994 (RSA)",
       "title_it": "Regolamento di servizio dell'esercito del 22  giugno 1994 (RSE)",
       "url": "https://www.fedlex.admin.ch/eli/cc/1995/170_170_170"
-    },
-    {
-      "sr_number": "321.0",
-      "in_force_date": "2026-06-01",
-      "title_de": "Militärstrafgesetz vom 13. Juni 1927 (MStG)",
-      "title_fr": "Code pénal militaire du 13 juin 1927 (CPM)",
-      "title_it": "Codice penale militare del 13 giugno 1927 (CPM)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/43/359_375_369"
-    },
-    {
-      "sr_number": "784.10",
-      "in_force_date": "2026-06-01",
-      "title_de": "Fernmeldegesetz vom 30. April 1997 (FMG)",
-      "title_fr": "Loi du 30 avril 1997 sur les télécommunications (LTC)",
-      "title_it": "Legge del 30 aprile 1997 sulle telecomunicazioni (LTC)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/1997/2187_2187_2187"
     }
   ],
   "delta": {
-    "total": 45,
+    "total": 103,
     "by_court": {
-      "bger": 45,
+      "bger": 103,
       "ecthr_chamber": 1089,
       "ecthr_committee": 224,
       "ecthr_grand_chamber": 81,
