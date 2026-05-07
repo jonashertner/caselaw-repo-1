@@ -3327,13 +3327,13 @@
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 60600,
+      "citation_count": 60650,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 179808
+      "ref_count": 179929
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3345,18 +3345,146 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 971067
+      "total": 971437
     },
     "regeste_coverage": {
       "pct": 34.9,
-      "with_regeste": 338961,
-      "total": 971067
+      "with_regeste": 338994,
+      "total": 971437
     },
     "graph_size": {
-      "decision_edges": 6486569,
-      "statute_edges": 11243363,
-      "total": 17729932
-    }
+      "decision_edges": 6496170,
+      "statute_edges": 11255077,
+      "total": 17751247
+    },
+    "echr_switzerland": {
+      "total": 2788,
+      "grand_chamber": 93,
+      "in_2026": 87,
+      "most_recent": {
+        "decision_date": "2026-05-07",
+        "docket": "30781/22",
+        "regeste_excerpt": "Violation de l'article 11 - Liberté de réunion et d'association (Article 11-1 - Liberté de réunion pacifique); Violation: 11;11-1",
+        "url": "https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_30781_22"
+      }
+    },
+    "top_5_decisions": [
+      {
+        "docket": "BGE 125 V 351",
+        "citation_count": 60650,
+        "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
+        "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
+      },
+      {
+        "docket": "BGE 134 V 231",
+        "citation_count": 35534,
+        "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
+        "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
+      },
+      {
+        "docket": "BGE 122 V 157",
+        "citation_count": 27748,
+        "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
+        "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
+      },
+      {
+        "docket": "BGE 130 V 343",
+        "citation_count": 21778,
+        "regeste_excerpt": "Regeste\n Art. 1 Abs. 1 IVG (in der seit 1. Januar 2003 geltenden Fassung) in Verbindung mit Art. 6, 7, 8 Abs. 1, Art. 16 und 17 ATSG; Art. 4 Abs. 1, Art. 28 Abs",
+        "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_130_V_343"
+      },
+      {
+        "docket": "BGE 137 V 210",
+        "citation_count": 20073,
+        "regeste_excerpt": "Regeste a\n Art. 29 Abs. 1 und 2, Art. 30 Abs. 1 BV; Art. 6 Ziff. 1 EMRK; Art. 43 Abs. 1 und Art. 61 lit. c ATSG; Art. 59 Abs. 3 IVG; Art. 72bis IVV (in Kraft bi",
+        "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_137_V_210"
+      }
+    ],
+    "top_5_statutes": [
+      {
+        "law_code": "LTF",
+        "article": "100",
+        "ref_count": 187326
+      },
+      {
+        "law_code": "LTF",
+        "article": "113",
+        "ref_count": 110475
+      },
+      {
+        "law_code": "LTF",
+        "article": "42",
+        "ref_count": 104833
+      },
+      {
+        "law_code": "BGG",
+        "article": "42",
+        "ref_count": 92158
+      },
+      {
+        "law_code": "BGG",
+        "article": "66",
+        "ref_count": 59216
+      }
+    ],
+    "materialien_coverage": {
+      "total_documents": 5292,
+      "paragraphs": 381711,
+      "article_links": 8124,
+      "by_language": {
+        "de": 1763,
+        "fr": 1765,
+        "it": 1764
+      },
+      "year_range": {
+        "from": 2003,
+        "to": 2026
+      }
+    },
+    "historical_depth": [
+      {
+        "court": "bge",
+        "earliest": "1875-01-01",
+        "latest": "2026-01-01",
+        "span_years": 151,
+        "decision_count": 35345
+      },
+      {
+        "court": "ch_vb",
+        "earliest": "1900-09-17",
+        "latest": "2016-12-29",
+        "span_years": 116,
+        "decision_count": 22884
+      },
+      {
+        "court": "ur_gerichte",
+        "earliest": "1901-01-01",
+        "latest": "2026-02-27",
+        "span_years": 125,
+        "decision_count": 1215
+      },
+      {
+        "court": "ar_gerichte",
+        "earliest": "1901-07-29",
+        "latest": "2025-11-12",
+        "span_years": 124,
+        "decision_count": 4447
+      },
+      {
+        "court": "tg_gerichte",
+        "earliest": "1907-12-10",
+        "latest": "2025-07-10",
+        "span_years": 118,
+        "decision_count": 1072
+      },
+      {
+        "court": "ge_gerichte",
+        "earliest": "1908-11-08",
+        "latest": "2026-04-28",
+        "span_years": 118,
+        "decision_count": 167791
+      }
+    ]
   },
   "traffic": {
     "window_days": 30,
