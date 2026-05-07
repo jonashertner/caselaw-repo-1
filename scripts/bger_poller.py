@@ -31,6 +31,7 @@ import logging
 import re
 import subprocess
 import sys
+import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -196,6 +197,7 @@ def _trigger_scraper():
 
     # Step 2: Quick-publish into FTS5 DB (so decisions are searchable immediately)
     quick_pub = REPO_DIR / "scripts" / "quick_publish.py"
+    inserted_count = 0
     if quick_pub.exists():
         cmd = [sys.executable, str(quick_pub), "--courts", "bger"]
         logger.info("Quick-publishing: %s", " ".join(cmd))
@@ -208,10 +210,120 @@ def _trigger_scraper():
         )
         if result.returncode == 0:
             for line in result.stdout.splitlines():
+                if "Inserted" in line:
+                    m = re.search(r"Inserted (\d+)/", line)
+                    if m:
+                        inserted_count = int(m.group(1))
                 if "Inserted" in line or "new decisions" in line:
                     logger.info("Quick-publish: %s", line.split("INFO")[-1].strip() if "INFO" in line else line)
         else:
             logger.error("Quick-publish failed (exit %d): %s", result.returncode, result.stderr[-300:])
+
+    # Step 3: refresh dashboard stats.json (only if we actually inserted
+    # decisions, since regen takes ~22 min). Without this, the
+    # opencaselaw.ch dashboard's "Neueste Einträge" section stays stale
+    # until the next 03:00 UTC nightly publish — even though the
+    # decisions are already searchable via /api and MCP.
+    _maybe_update_stats(inserted_count)
+
+
+def _maybe_update_stats(new_decisions: int) -> None:
+    """Regenerate stats.json + git push when quick_publish inserted rows."""
+    if new_decisions <= 0:
+        logger.info("No new decisions inserted — skipping stats.json refresh")
+        return
+
+    # Single-flight lock: a 22-min generate_stats can outlive the 15-min
+    # poll interval. The next poll's stats step would race with this
+    # one; flock makes it skip cleanly.
+    import fcntl
+    lock_path = Path("/tmp/opencaselaw-stats.lock")
+    lock_fd = open(lock_path, "w")
+    try:
+        try:
+            fcntl.flock(lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            logger.warning(
+                "Another stats.json refresh is in progress (lock held) — "
+                "skipping; the running instance will catch up our %d new rows",
+                new_decisions,
+            )
+            return
+
+        # Step 3a: regenerate stats.json. --no-interesting-stats keeps
+        # the heavy weekly block from the on-disk file (the weekly timer
+        # owns it) and re-runs only the daily/recent blocks.
+        gs = REPO_DIR / "generate_stats.py"
+        if not gs.exists():
+            logger.warning("generate_stats.py not found — cannot refresh stats.json")
+            return
+        gs_cmd = [sys.executable, str(gs), "--no-interesting-stats"]
+        logger.info("Regenerating stats.json (~22 min): %s", " ".join(gs_cmd))
+        gs_t0 = time.time()
+        gs_res = subprocess.run(
+            gs_cmd,
+            cwd=str(REPO_DIR),
+            capture_output=True,
+            text=True,
+            timeout=2700,  # 45 min cap (steady-state ~22 min)
+        )
+        if gs_res.returncode != 0:
+            logger.error(
+                "generate_stats failed (exit %d): %s",
+                gs_res.returncode, (gs_res.stderr or "")[-500:],
+            )
+            return
+        logger.info(
+            "stats.json regenerated in %.0fs",
+            time.time() - gs_t0,
+        )
+
+        # Step 3b: only push if there's actually a diff (the generator
+        # rewrites generated_at every run, so this is essentially always
+        # true after a content change — cheap to verify).
+        diff_check = subprocess.run(
+            ["git", "diff", "--quiet", "docs/stats.json"],
+            cwd=str(REPO_DIR), capture_output=True, text=True, timeout=30,
+        )
+        if diff_check.returncode == 0:
+            logger.info("No diff in docs/stats.json — nothing to push")
+            return
+
+        # Step 3c: commit + push to GitHub Pages.
+        for cmd in (
+            ["git", "add", "docs/stats.json"],
+            [
+                "git",
+                "-c", "user.name=opencaselaw-bot",
+                "-c", "user.email=bot@opencaselaw.ch",
+                "commit", "-m",
+                f"Update stats.json — BGer poller +{new_decisions} new decisions",
+            ],
+            ["git", "push", "origin", "main"],
+        ):
+            r = subprocess.run(
+                cmd,
+                cwd=str(REPO_DIR),
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+            if r.returncode != 0:
+                logger.error(
+                    "git step failed (%s): %s",
+                    " ".join(cmd[:3]), (r.stderr or "")[-300:],
+                )
+                return
+        logger.info(
+            "stats.json pushed (+%d decisions) — opencaselaw.ch refreshes in 1-2 min",
+            new_decisions,
+        )
+    finally:
+        try:
+            fcntl.flock(lock_fd.fileno(), fcntl.LOCK_UN)
+        except OSError:
+            pass
+        lock_fd.close()
 
 
 def main():
