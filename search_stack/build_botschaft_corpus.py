@@ -53,6 +53,17 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
+from xml.etree import ElementTree as ET
+
+# Reuse the existing Fedlex SPARQL manifestation resolver. v0.1 used a
+# naive URL builder that returned the SPA HTML wrapper; this resolver
+# returns actual filestore URLs. (Imported lazily so unit tests can
+# monkeypatch without spinning up the SPARQL endpoint.)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+try:
+    from scrapers.fedlex_materialien import fetch_manifestations  # noqa: E402
+except ImportError:
+    fetch_manifestations = None  # type: ignore[assignment]
 
 logging.basicConfig(
     level=logging.INFO,
@@ -139,14 +150,15 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
 
 # ── Fedlex BBl URL helpers ────────────────────────────────────────────
 
-# Canonical user-facing URL pattern for a Federal Gazette publication.
-#   year ≥ 1998 → eli/fga path (electronic publication)
-#   pre-1998   → eli/oc/cantons reference; few public scans, low priority
-def bbl_pdf_url(year: int, page: int, language: str = "de") -> str:
-    return (
-        f"https://www.fedlex.admin.ch/eli/fga/{year}/{page}/"
-        f"{language}/pdf-a"
-    )
+# v0.2 (2026-05-07): the v0.1 ``bbl_pdf_url`` returned the Fedlex SPA's
+# HTML wrapper, not the actual PDF. Real downloads live on the SPARQL-
+# resolved filestore URL (``https://fedlex.data.admin.ch/filestore/...``).
+# Use ``resolve_manifestation()`` below.
+
+# Format priority. Akoma Ntoso XML when available (clean, structured,
+# avoids pdfplumber column-detection issues); plain XML next; PDF/A as
+# the durable fallback. ``-an`` suffix marks Akoma Ntoso variants.
+_FORMAT_PRIORITY = ("xml-an", "xml", "pdf-a-an", "pdf-a", "pdf")
 
 
 def bbl_eli_uri(year: int, page: int) -> str:
@@ -155,6 +167,134 @@ def bbl_eli_uri(year: int, page: int) -> str:
 
 def bbl_citation(year: int, page: int) -> str:
     return f"BBl {year} {page}"
+
+
+def resolve_manifestation(
+    eli_uri: str,
+    language: str = "de",
+) -> tuple[str | None, str | None]:
+    """Return ``(file_url, format)`` for the best manifestation in
+    ``language``, or ``(None, None)`` if Fedlex SPARQL has no entry.
+
+    Coverage: post-~2003 BBl publications. Pre-2003 returns no
+    manifestations and callers must fall through to a different source
+    (amtsdruckschriften.bar.admin.ch — v0.3 work).
+    """
+    if fetch_manifestations is None:
+        return (None, None)
+    try:
+        mans = fetch_manifestations(eli_uri)
+    except Exception as e:
+        log.warning(f"  SPARQL manifestation lookup failed for {eli_uri}: {e}")
+        return (None, None)
+
+    # Filter to requested language; prefer best format.
+    same_lang = [m for m in mans if m.language == language]
+    pool = same_lang or mans  # fall back to any language if none match
+    by_format: dict[str, str] = {m.format: m.file_url for m in pool}
+    for fmt in _FORMAT_PRIORITY:
+        if fmt in by_format:
+            return (by_format[fmt], fmt)
+    # Otherwise return whatever's first (usually docx/html — last resort).
+    if pool:
+        return (pool[0].file_url, pool[0].format)
+    return (None, None)
+
+
+# ── Akoma Ntoso XML parser ────────────────────────────────────────────
+
+_AKN_NS = "{http://docs.oasis-open.org/legaldocml/ns/akn/3.0}"
+
+
+def _strip_ns(tag: str) -> str:
+    """Strip the Akoma Ntoso namespace from an element tag."""
+    return tag.rsplit("}", 1)[-1] if "}" in tag else tag
+
+
+def _akn_text(elem: ET.Element) -> str:
+    """Concatenate all text within an element, normalising whitespace."""
+    parts: list[str] = []
+    for x in elem.iter():
+        if x.text:
+            parts.append(x.text)
+        if x.tail:
+            parts.append(x.tail)
+    return re.sub(r"\s+", " ", " ".join(parts)).strip()
+
+
+def parse_akoma_ntoso_xml(xml_bytes: bytes) -> Iterator[dict]:
+    """Parse a Fedlex Akoma Ntoso BBl document into paragraph dicts.
+
+    Yielded shape matches ``parse_botschaft_text``:
+        {para_order, page_number, section_path, article_anchor, text, text_length}
+
+    Notes
+    -----
+    Akoma Ntoso uses ``<article eId="art_N">`` to anchor per-article
+    sections. Sections / chapters provide the breadcrumb. ``<p>`` and
+    ``<paragraph>`` carry the text. Many Fedlex FGA publications are
+    metadata-only wrappers (no ``<body>``) — yielding 0 paragraphs is
+    a valid signal to fall through to PDF.
+    """
+    try:
+        root = ET.fromstring(xml_bytes)
+    except ET.ParseError as e:
+        log.warning(f"  XML parse error: {e}")
+        return
+
+    # Walk the body. If there's no body, we yield nothing.
+    body = next(
+        (x for x in root.iter() if _strip_ns(x.tag) in ("body", "mainBody")),
+        None,
+    )
+    if body is None:
+        return
+
+    section_stack: list[str] = []
+    current_anchor: str | None = None
+    para_order = 0
+
+    def _emit(text: str) -> dict | None:
+        nonlocal para_order
+        text = text.strip()
+        if len(text) < 20:
+            return None
+        para_order += 1
+        return {
+            "para_order": para_order,
+            "page_number": None,  # XML doesn't carry pages
+            "section_path": " > ".join(section_stack) or None,
+            "article_anchor": current_anchor,
+            "text": text,
+            "text_length": len(text),
+        }
+
+    for elem in body.iter():
+        tag = _strip_ns(elem.tag)
+        if tag == "article":
+            # Anchor change. eId="art_41" → "41"
+            eid = elem.attrib.get("eId") or elem.attrib.get("id") or ""
+            m = re.match(r"art_(\d+[a-z]?)$", eid)
+            if m:
+                current_anchor = m.group(1)
+        elif tag in ("chapter", "section", "subsection", "part"):
+            heading_el = next(
+                (c for c in elem if _strip_ns(c.tag) == "heading"), None,
+            )
+            if heading_el is not None:
+                section_stack = [_akn_text(heading_el)[:80]]
+        elif tag in ("p", "paragraph", "blockList", "intro"):
+            # Skip nested paragraphs — outer iter() already visits them.
+            # Only emit when this element has no <p>/<paragraph> children
+            # (it's a leaf paragraph).
+            has_inner = any(
+                _strip_ns(c.tag) in ("p", "paragraph") for c in elem
+            )
+            if has_inner:
+                continue
+            row = _emit(_akn_text(elem))
+            if row is not None:
+                yield row
 
 
 # ── Article-anchor parsing ────────────────────────────────────────────
@@ -275,47 +415,80 @@ def ingest_one(
     sr_number: str | None = None,
     article: str | None = None,
     relation: str = "considered",
-) -> int:
-    """Fetch, parse, and store one Botschaft. Returns botschaft_id.
+) -> int | None:
+    """Fetch, parse, and store one Botschaft. Returns botschaft_id, or
+    None if Fedlex has no manifestation (pre-~2003 BBl).
 
-    Idempotent: if (year, page, language) already exists, the existing
-    document is returned and paragraphs are re-inserted only if the
-    text_hash differs.
+    v0.2 (2026-05-07):
+      - URL resolved via Fedlex SPARQL (``resolve_manifestation``);
+        previously a naive URL builder returned the SPA HTML wrapper.
+      - Format priority: xml-an > xml > pdf-a-an > pdf-a > pdf.
+      - XML path uses the Akoma Ntoso parser; PDF path uses pdfplumber.
+      - Idempotent: text_hash gates re-ingestion.
     """
     ensure_schema(conn)
 
     citation = bbl_citation(year, page)
     eli = bbl_eli_uri(year, page)
-    url = bbl_pdf_url(year, page, language)
-    log.info(f"Ingesting {citation} ({language}) for {sr_number}/{article}")
+    log.info(f"Ingesting {citation} ({language}) for sr={sr_number} art={article}")
 
-    # Check existing
+    url, fmt = resolve_manifestation(eli, language=language)
+    if url is None:
+        log.warning(
+            f"  no Fedlex manifestation for {citation} ({language}) — "
+            f"pre-2003 publications need v0.3 amtsdruckschriften adapter"
+        )
+        return None
+    log.info(f"  resolved → {fmt}: {url[:120]}")
+
+    raw = fetch_pdf_bytes(url)
+    text_hash = hashlib.sha256(raw).hexdigest()
+
     row = conn.execute(
         "SELECT botschaft_id, text_hash FROM botschaft_documents "
         "WHERE bbl_year=? AND bbl_page=? AND language=?",
         (year, page, language),
     ).fetchone()
 
-    pdf_bytes = fetch_pdf_bytes(url)
-    text_hash = hashlib.sha256(pdf_bytes).hexdigest()
-
     if row and row[1] == text_hash:
         log.info(f"  unchanged ({citation}) — keeping existing rows")
         botschaft_id = row[0]
     else:
-        pages = extract_pdf_pages(pdf_bytes)
-        log.info(f"  extracted {len(pages)} pages")
+        # Parse: prefer XML/Akoma Ntoso, fall back to PDF.
+        paragraphs: list[dict] = []
+        page_count = 0
+        if fmt and fmt.startswith(("xml", "pdf-a-an")):
+            # Try Akoma Ntoso XML. (The ``-an`` PDF variant carries
+            # Akoma Ntoso semantics in metadata; we can still parse it
+            # as PDF, but actual XML is preferred.)
+            if fmt.startswith("xml"):
+                paragraphs = list(parse_akoma_ntoso_xml(raw))
+                log.info(f"  XML parsed {len(paragraphs)} paragraphs")
+        if not paragraphs:
+            # PDF fallback — either fmt was pdf-a or the XML was an
+            # FRBR metadata wrapper (no body content).
+            try:
+                pdf_pages = extract_pdf_pages(raw)
+                page_count = len(pdf_pages)
+                paragraphs = list(parse_botschaft_text(pdf_pages, language=language))
+                log.info(f"  PDF parsed {page_count} pages → {len(paragraphs)} paragraphs")
+            except Exception as e:
+                log.warning(f"  PDF parse failed: {e}")
+                paragraphs = []
+
+        # Storage format label: keep XML if we successfully parsed XML,
+        # else mark PDF.
+        stored_format = "akoma-ntoso-xml" if fmt and fmt.startswith("xml") and paragraphs else "pdf"
 
         if row:
-            # Replace: delete existing paragraphs (cascade through trigger)
             conn.execute(
                 "DELETE FROM botschaft_paragraphs WHERE botschaft_id = ?",
                 (row[0],),
             )
             conn.execute(
-                "UPDATE botschaft_documents SET text_hash=?, page_count=?, ingested_at=? "
-                "WHERE botschaft_id=?",
-                (text_hash, len(pages),
+                "UPDATE botschaft_documents SET text_hash=?, page_count=?, "
+                "format=?, source_url=?, ingested_at=? WHERE botschaft_id=?",
+                (text_hash, page_count, stored_format, url,
                  datetime.now(timezone.utc).isoformat(), row[0]),
             )
             botschaft_id = row[0]
@@ -325,17 +498,16 @@ def ingest_one(
                 INSERT INTO botschaft_documents
                 (bbl_year, bbl_page, bbl_citation, eli_uri, source_url,
                  format, language, page_count, text_hash, ingested_at)
-                VALUES (?, ?, ?, ?, ?, 'pdf', ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (year, page, citation, eli, url, language,
-                 len(pages), text_hash,
+                (year, page, citation, eli, url, stored_format, language,
+                 page_count, text_hash,
                  datetime.now(timezone.utc).isoformat()),
             )
             botschaft_id = cur.lastrowid
 
-        # Insert paragraphs
         n_paras = 0
-        for para in parse_botschaft_text(pages, language=language):
+        for p in paragraphs:
             conn.execute(
                 """
                 INSERT INTO botschaft_paragraphs
@@ -343,12 +515,12 @@ def ingest_one(
                  article_anchor, text, text_length)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
-                (botschaft_id, para["para_order"], para["page_number"],
-                 para["section_path"], para["article_anchor"],
-                 para["text"], para["text_length"]),
+                (botschaft_id, p["para_order"], p["page_number"],
+                 p["section_path"], p["article_anchor"],
+                 p["text"], p["text_length"]),
             )
             n_paras += 1
-        log.info(f"  inserted {n_paras} paragraphs")
+        log.info(f"  inserted {n_paras} paragraphs into botschaft_paragraphs")
 
     if sr_number and article:
         conn.execute(
@@ -358,7 +530,7 @@ def ingest_one(
             VALUES (?, ?, ?, ?, ?)
             """,
             (sr_number, article, botschaft_id, relation,
-             "build_botschaft_corpus.ingest_one"),
+             "build_botschaft_corpus.ingest_one v0.2"),
         )
     conn.commit()
     return botschaft_id
