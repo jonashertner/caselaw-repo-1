@@ -16274,6 +16274,152 @@ render();setInterval(render,60000);
     async def api_openapi_v3():
         return rest_api.openapi()
 
+    # ── Microsoft Copilot Studio curated subset ───────────────────────
+    # Lalive (2026-04-24 onwards) is consuming the API via Copilot
+    # Studio custom connectors. The full /api/openapi.json has 24+
+    # operations — Microsoft's reliability guidance is 5-15 actions
+    # per agent for clean tool selection. This endpoint serves the
+    # ~15 highest-leverage operations with x-ms-summary + visibility
+    # annotations rendered as the user-facing action labels in
+    # Copilot Studio's UI.
+    _COPILOT_PATH_ALLOWLIST = {
+        "/decisions",
+        "/decisions/{decision_id}",
+        "/laws/search",
+        "/laws/{abbreviation}",
+        "/legislation/search",
+        "/legislation/{lexfind_id}",
+        "/doctrine",
+        "/structure/{decision_id}",
+        "/erwaegung/{decision_id}/{e_number}",
+        "/relevant-erwaegung/{decision_id}",
+        "/regeste/{decision_id}",
+        "/leading-cases",
+        "/citations/{decision_id}",
+        "/article-purpose/{sr_number}/{article}",
+        "/cite",
+    }
+    # Short, action-verb-first labels for the Copilot Studio button UI
+    # (max 30-40 chars renders best). Keys: (METHOD, path).
+    _COPILOT_X_MS_SUMMARY = {
+        ("GET", "/decisions"): "Search Swiss court decisions",
+        ("GET", "/decisions/{decision_id}"): "Get a Swiss court decision",
+        ("GET", "/laws/search"): "Search Swiss federal laws",
+        ("GET", "/laws/{abbreviation}"): "Get a Swiss law article",
+        ("GET", "/legislation/search"): "Search Swiss legislation",
+        ("GET", "/legislation/{lexfind_id}"): "Get legislation details",
+        ("GET", "/doctrine"): "Get statute + leading cases + commentary",
+        ("GET", "/structure/{decision_id}"): "Get structured decision",
+        ("GET", "/erwaegung/{decision_id}/{e_number}"): "Get a specific Erwägung",
+        ("GET", "/relevant-erwaegung/{decision_id}"): "Find Erwägung matching a claim",
+        ("GET", "/regeste/{decision_id}"): "Get the official Regeste",
+        ("GET", "/leading-cases"): "Find leading BGEs for a statute",
+        ("GET", "/citations/{decision_id}"): "Get the citation graph",
+        ("GET", "/article-purpose/{sr_number}/{article}"): (
+            "Get verbatim Botschaft for an article"
+        ),
+        ("GET", "/cite"): "Build canonical Swiss citation",
+    }
+
+    @rest_api.get("/openapi.copilot.json", include_in_schema=False)
+    async def api_openapi_copilot():
+        """Curated OpenAPI 3.0.3 subset for Microsoft Copilot Studio.
+
+        Filters the full /api/openapi.json down to ~15 high-leverage
+        operations and adds Microsoft Custom Connector extension fields:
+          - x-ms-summary: the action label rendered in Copilot Studio
+          - x-ms-visibility: 'important' for primary actions
+
+        Designed for Lalive's Copilot Studio assistant; works for any
+        Copilot Studio custom connector import. The full API stays
+        available at /api/openapi.json for clients that want every
+        operation.
+        """
+        import copy as _copy
+        full = rest_api.openapi()
+        spec = _copy.deepcopy(full)
+
+        spec["info"]["title"] = "OpenCaseLaw — Microsoft Copilot Studio actions"
+        spec["info"]["description"] = (
+            "Curated subset of the OpenCaseLaw REST API optimised for "
+            "Microsoft Copilot Studio custom connectors. ~15 high-leverage "
+            "actions covering Swiss federal + cantonal statutes, court "
+            "decisions, citation graph, structured Erwägungen, and "
+            "verbatim Federal Council Botschaft text per article. The "
+            "full API (24+ operations) is at /api/openapi.json."
+        )
+        # Bump version so Copilot Studio detects updates as a new revision
+        # of the connector rather than a silent change.
+        spec["info"]["version"] = (full.get("info", {}).get("version", "1.0.0")
+                                   + "+copilot")
+
+        paths_out: dict = {}
+        for path, methods in spec.get("paths", {}).items():
+            if path not in _COPILOT_PATH_ALLOWLIST:
+                continue
+            for method_name, op in methods.items():
+                method_upper = method_name.upper()
+                if method_upper not in ("GET", "POST"):
+                    continue
+                # Inject Microsoft-specific extension fields.
+                summary = _COPILOT_X_MS_SUMMARY.get(
+                    (method_upper, path),
+                    (op.get("summary") or "Action")[:80],
+                )
+                op["x-ms-summary"] = summary
+                op["x-ms-visibility"] = "important"
+                # Mark each path/query/header parameter as 'important' too
+                # so Copilot Studio renders them in the main action form
+                # (not the 'advanced' fold-out). Required params are
+                # always visible; this just promotes the optional ones
+                # we want shown by default.
+                for p in op.get("parameters", []) or []:
+                    if isinstance(p, dict):
+                        p.setdefault(
+                            "x-ms-summary",
+                            p.get("description", p.get("name", ""))[:80],
+                        )
+                        p.setdefault(
+                            "x-ms-visibility",
+                            "important" if p.get("required") else "advanced",
+                        )
+            paths_out[path] = methods
+        spec["paths"] = paths_out
+
+        # Trim components.schemas to only those still referenced after
+        # filtering — keeps the file lean for Copilot Studio's importer
+        # which has historically choked on large specs.
+        used_refs: set = set()
+        def _collect_refs(node):
+            if isinstance(node, dict):
+                ref = node.get("$ref")
+                if isinstance(ref, str) and ref.startswith("#/components/schemas/"):
+                    used_refs.add(ref.rsplit("/", 1)[-1])
+                for v in node.values():
+                    _collect_refs(v)
+            elif isinstance(node, list):
+                for v in node:
+                    _collect_refs(v)
+        _collect_refs(spec.get("paths"))
+        # Recursively expand: included schemas may reference others.
+        schemas = spec.get("components", {}).get("schemas", {}) or {}
+        frontier = list(used_refs)
+        while frontier:
+            name = frontier.pop()
+            sub = schemas.get(name)
+            if not sub:
+                continue
+            before = len(used_refs)
+            _collect_refs(sub)
+            if len(used_refs) > before:
+                frontier.extend(used_refs - set(frontier))
+        if "components" in spec and "schemas" in spec["components"]:
+            spec["components"]["schemas"] = {
+                k: v for k, v in schemas.items() if k in used_refs
+            }
+
+        return spec
+
     @rest_api.get("/decisions", tags=["Case Law"],
                   summary="Search court decisions",
                   description="Full-text search across 956k Swiss court decisions. "
