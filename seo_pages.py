@@ -62,10 +62,34 @@ def _split_paragraphs(text: str) -> list[str]:
       their own paragraph (preserves dispositiv-style enumerations).
     * Other single newlines collapse into spaces (joins PDF column
       wraps and dangling citations).
+
+    HUDOC fallback: ECHR decisions ingested via HUDOC have many
+    single-newlines but ZERO blank-line breaks (their source HTML's
+    block boundaries collapse to ``\\n`` under BeautifulSoup's
+    ``separator='\\n'``, never doubled). When we detect that pattern
+    — many ``\\n`` and no ``\\n\\n`` — we treat each ``\\n`` as a
+    paragraph boundary so the rendered page isn't one giant wall of
+    text. This kicks in only when the heuristic strongly applies, so
+    courts whose source HAS proper blank-line paragraph structure are
+    unaffected.
     """
     if not text:
         return []
     text = text.replace("\r\n", "\n").replace("\r", "\n")
+
+    # HUDOC fallback: many single newlines, no blank lines → each line
+    # IS a paragraph. Threshold of 30 protects against false-triggering
+    # on short single-paragraph regestes / dispositivs.
+    n_newlines = text.count("\n")
+    n_blank_breaks = len(re.findall(r"\n\s*\n", text))
+    if n_newlines >= 30 and n_blank_breaks == 0:
+        paragraphs = []
+        for raw_line in text.split("\n"):
+            line = raw_line.strip()
+            if line:
+                paragraphs.append(line)
+        return paragraphs
+
     paragraphs: list[str] = []
     for block in re.split(r"\n\s*\n+", text.strip()):
         if not block.strip():
