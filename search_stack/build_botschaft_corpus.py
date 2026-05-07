@@ -555,16 +555,15 @@ def ingest_one(
     sr_number: str | None = None,
     article: str | None = None,
     relation: str = "considered",
+    prefiltered: bool = False,
 ) -> int | None:
     """Fetch, parse, and store one Botschaft. Returns botschaft_id, or
-    None if Fedlex has no manifestation (pre-~2003 BBl).
+    None if Fedlex has no manifestation (pre-~2003 BBl) or the URI
+    isn't a real Botschaft.
 
-    v0.2 (2026-05-07):
-      - URL resolved via Fedlex SPARQL (``resolve_manifestation``);
-        previously a naive URL builder returned the SPA HTML wrapper.
-      - Format priority: xml-an > xml > pdf-a-an > pdf-a > pdf.
-      - XML path uses the Akoma Ntoso parser; PDF path uses pdfplumber.
-      - Idempotent: text_hash gates re-ingestion.
+    Pass ``prefiltered=True`` when the caller has already validated the
+    URI is a Botschaft (e.g. SPARQL discovery via typeDocument=23) — it
+    skips the per-URI is_botschaft ASK probe.
     """
     ensure_schema(conn)
 
@@ -576,12 +575,13 @@ def ingest_one(
     # publications whose typeDocument == resource-type/23 OR whose
     # title starts with 'Botschaft'. Drops Mitteilungen / decrees /
     # notices that the amendment_refs index pulls in as false matches.
-    if not is_botschaft(eli, language=language):
-        log.info(
-            f"  skipping {citation} ({language}) — not a Botschaft "
-            f"(typeDocument != 23 AND title doesn't start with 'Botschaft')"
-        )
-        return None
+    if not prefiltered:
+        if not is_botschaft(eli, language=language):
+            log.info(
+                f"  skipping {citation} ({language}) — not a Botschaft "
+                f"(typeDocument != 23 AND title doesn't start with 'Botschaft')"
+            )
+            return None
 
     url, fmt = resolve_manifestation(eli, language=language)
     if url is None:
@@ -827,6 +827,15 @@ def main() -> int:
         help="--ingest-all dry-run: list candidates without fetching.",
     )
     parser.add_argument(
+        "--discover-via-sparql", action="store_true",
+        help=(
+            "Use Fedlex SPARQL (typeDocument=23) as candidate source "
+            "instead of amendment_refs. Yields ~2000 real Botschaften "
+            "across post-2003 coverage; bypasses the per-URI is_botschaft "
+            "ASK probe since SPARQL pre-filters at query time."
+        ),
+    )
+    parser.add_argument(
         "--link-amendment-refs", action="store_true",
         help=(
             "Auto-populate article_botschaft_links from the existing "
@@ -870,28 +879,61 @@ def main() -> int:
         return 0
 
     if args.ingest_all:
-        rows = conn.execute(
-            """
-            SELECT DISTINCT ar.year, ar.page
-            FROM amendment_refs ar
-            LEFT JOIN botschaft_documents bd
-              ON bd.bbl_year = ar.year AND bd.bbl_page = ar.page
-              AND bd.language = ?
-            WHERE ar.ref_type = 'BBl'
-              AND ar.year IS NOT NULL AND ar.page IS NOT NULL
-              AND ar.year >= ?
-              AND bd.botschaft_id IS NULL
-            ORDER BY ar.year DESC, ar.page DESC
-            """,
-            (args.language, args.min_year),
-        ).fetchall()
-        candidates = [(int(r[0]), int(r[1])) for r in rows]
+        if args.discover_via_sparql:
+            # Pull every typeDocument=23 (Botschaft) FGA URI from Fedlex
+            # SPARQL, then dedupe against already-ingested rows in
+            # botschaft_documents.
+            try:
+                from scrapers.fedlex_materialien import discover_fga_botschaften
+            except ImportError as e:
+                log.error(f"Cannot import SPARQL discoverer: {e}")
+                return 3
+            log.info("Discovering Botschaften via Fedlex SPARQL (typeDocument=23)…")
+            sparql_rows = discover_fga_botschaften(language=args.language)
+            log.info(f"  SPARQL returned {len(sparql_rows)} Botschaften")
+
+            existing = {
+                (y, p) for (y, p) in conn.execute(
+                    "SELECT bbl_year, bbl_page FROM botschaft_documents "
+                    "WHERE language = ? AND bbl_year >= ?",
+                    (args.language, args.min_year),
+                ).fetchall()
+            }
+            candidates = [
+                (y, p) for (y, p, _t) in sparql_rows
+                if y >= args.min_year and (y, p) not in existing
+            ]
+            # Newest first — same convention as amendment_refs path.
+            candidates.sort(key=lambda yp: yp, reverse=True)
+            log.info(
+                f"--ingest-all (SPARQL): {len(candidates)} candidates "
+                f"≥ {args.min_year} not yet in materialien.db, "
+                f"lang={args.language} (skipped {len(existing)} already ingested)"
+            )
+        else:
+            rows = conn.execute(
+                """
+                SELECT DISTINCT ar.year, ar.page
+                FROM amendment_refs ar
+                LEFT JOIN botschaft_documents bd
+                  ON bd.bbl_year = ar.year AND bd.bbl_page = ar.page
+                  AND bd.language = ?
+                WHERE ar.ref_type = 'BBl'
+                  AND ar.year IS NOT NULL AND ar.page IS NOT NULL
+                  AND ar.year >= ?
+                  AND bd.botschaft_id IS NULL
+                ORDER BY ar.year DESC, ar.page DESC
+                """,
+                (args.language, args.min_year),
+            ).fetchall()
+            candidates = [(int(r[0]), int(r[1])) for r in rows]
+            log.info(
+                f"--ingest-all (amendment_refs): {len(candidates)} unique "
+                f"(year, page) candidates ≥ {args.min_year} not yet in "
+                f"materialien.db, lang={args.language}"
+            )
         if args.limit:
             candidates = candidates[: args.limit]
-        log.info(
-            f"--ingest-all: {len(candidates)} unique (year, page) candidates "
-            f"≥ {args.min_year} not yet in materialien.db, lang={args.language}"
-        )
         if args.dry_run:
             for year, page in candidates[:25]:
                 log.info(f"  candidate: BBl {year} {page}")
@@ -910,6 +952,7 @@ def main() -> int:
                     language=args.language,
                     sr_number=None, article=None,
                     relation="considered",
+                    prefiltered=args.discover_via_sparql,
                 )
                 if bid is None:
                     stats["rejected_by_filter"] += 1

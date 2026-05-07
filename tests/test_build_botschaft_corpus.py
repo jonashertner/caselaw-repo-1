@@ -290,6 +290,42 @@ def test_fetch_pdf_parts_stitches_multiple(monkeypatch) -> None:
     assert seen[1].endswith("-2.pdf")
 
 
+def test_discover_fga_botschaften_parses_sparql_rows(monkeypatch) -> None:
+    """The SPARQL discoverer must extract (year, page, title) from FGA URIs."""
+    from scrapers import fedlex_materialien
+
+    fake_rows = [
+        {
+            "act": {"value": "https://fedlex.data.admin.ch/eli/fga/2024/2945"},
+            "title": {"value": "Botschaft zum Bundesgesetz X"},
+        },
+        {
+            "act": {"value": "https://fedlex.data.admin.ch/eli/fga/2013/823"},
+            "title": {"value": "Botschaft zum Weiterbildungsgesetz"},
+        },
+        # Garbage row that should be skipped
+        {
+            "act": {"value": "https://fedlex.data.admin.ch/garbage"},
+            "title": {"value": "noise"},
+        },
+    ]
+    monkeypatch.setattr(
+        fedlex_materialien, "sparql_query", lambda q, timeout=120: fake_rows,
+    )
+    out = fedlex_materialien.discover_fga_botschaften(language="de")
+    # Two valid rows, one garbage filtered
+    assert len(out) == 2
+    assert (2024, 2945, "Botschaft zum Bundesgesetz X") in out
+    assert (2013, 823, "Botschaft zum Weiterbildungsgesetz") in out
+
+
+def test_discover_fga_botschaften_rejects_unsupported_language() -> None:
+    from scrapers import fedlex_materialien
+    import pytest
+    with pytest.raises(ValueError):
+        fedlex_materialien.discover_fga_botschaften(language="rm")
+
+
 def test_pdf_anchor_resets_at_section_boundary() -> None:
     """v0.3 fix: ``current_anchor`` must reset when a new top-level
     section header (``Übersicht``, ``Schlussbestimmungen``…) appears.

@@ -572,6 +572,72 @@ def discover_amendment_acts(
     yield from by_act.values()
 
 
+# ── Direct Botschaft discovery (typeDocument=23) ────────────────────
+
+
+# Fedlex internal vocabulary — ID 23 in the resource-type taxonomy
+# encodes a Botschaft / Message / Messaggio (Federal Council Message
+# accompanying a draft law). Other IDs are noise for our purposes:
+# 8 = Bundesbeschluss (decree), 33 = Mitteilung (notice), etc.
+BOTSCHAFT_TYPE_DOC_URI = (
+    "https://fedlex.data.admin.ch/vocabulary/resource-type/23"
+)
+
+
+def discover_fga_botschaften(
+    language: str = "de",
+    timeout: int = 120,
+) -> list[tuple[int, int, str]]:
+    """Enumerate every Bundesblatt-published Botschaft via Fedlex SPARQL.
+
+    Returns ``[(year, page, title), ...]`` for every FGA URI of
+    typeDocument=23 (Botschaft) that has an Expression in the requested
+    ``language``. The full SR vocabulary is post-2003; coverage gaps
+    pre-2003 need the v0.5 amtsdruckschriften adapter.
+
+    Why this beats amendment_refs as a candidate source:
+    amendment_refs reflects what statute footnotes cite — predominantly
+    Bundesbeschlüsse (the enacting decree), not the Botschaften that
+    explain them. Querying typeDocument directly returns ~2,000 real
+    Botschaften (DE) — an 18× expansion vs the 119 we got via
+    amendment_refs.
+    """
+    if language not in LANG_URIS:
+        raise ValueError(f"Unsupported language: {language!r}")
+
+    query = f"""
+    PREFIX jolux: <{JOLUX}>
+    SELECT DISTINCT ?act ?title WHERE {{
+      ?act jolux:typeDocument <{BOTSCHAFT_TYPE_DOC_URI}> .
+      ?act jolux:isRealizedBy ?expr .
+      ?expr jolux:language <{LANG_URIS[language]}> .
+      OPTIONAL {{ ?expr jolux:title ?title }}
+      FILTER(strstarts(STR(?act), "https://fedlex.data.admin.ch/eli/fga/"))
+    }}
+    ORDER BY DESC(?act)
+    """
+    rows = sparql_query(query, timeout=timeout)
+    out: list[tuple[int, int, str]] = []
+    for r in rows:
+        uri = _val(r, "act") or ""
+        title = _val(r, "title") or ""
+        # URI shape: https://fedlex.data.admin.ch/eli/fga/{year}/{page}
+        parts = uri.rsplit("/", 2)
+        if len(parts) < 3:
+            continue
+        try:
+            year = int(parts[-2])
+            page = int(parts[-1])
+        except ValueError:
+            continue
+        out.append((year, page, title))
+    log.info(
+        "discover_fga_botschaften(%s): %d Botschaften in Fedlex SPARQL",
+        language, len(out),
+    )
+    return out
+
+
 # ── Manifestations (downloadable files) ─────────────────────────────
 
 
