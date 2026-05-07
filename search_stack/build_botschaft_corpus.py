@@ -238,13 +238,20 @@ def is_botschaft(eli_uri: str, language: str = "de") -> bool:
 def resolve_manifestation(
     eli_uri: str,
     language: str = "de",
+    strict_language: bool = True,
 ) -> tuple[str | None, str | None]:
     """Return ``(file_url, format)`` for the best manifestation in
     ``language``, or ``(None, None)`` if Fedlex SPARQL has no entry.
 
+    With ``strict_language=True`` (the default since v0.3) we never fall
+    back to a different language — get_article_purpose returning a
+    French Botschaft to a German caller is a worse failure mode than
+    returning empty (the caller can retry with the canonical language).
+    Pass ``strict_language=False`` to opt back into v0.2 behaviour.
+
     Coverage: post-~2003 BBl publications. Pre-2003 returns no
     manifestations and callers must fall through to a different source
-    (amtsdruckschriften.bar.admin.ch — v0.3 work).
+    (amtsdruckschriften.bar.admin.ch — v0.5 work).
     """
     if fetch_manifestations is None:
         return (None, None)
@@ -256,7 +263,10 @@ def resolve_manifestation(
 
     # Filter to requested language; prefer best format.
     same_lang = [m for m in mans if m.language == language]
-    pool = same_lang or mans  # fall back to any language if none match
+    if strict_language:
+        pool = same_lang
+    else:
+        pool = same_lang or mans  # any-language fallback (legacy)
     by_format: dict[str, str] = {m.format: m.file_url for m in pool}
     for fmt in _FORMAT_PRIORITY:
         if fmt in by_format:
@@ -417,7 +427,12 @@ def parse_botschaft_text(
             sh = SECTION_HEADER_RE.match(chunk)
             if sh and len(chunk.split("\n")) == 1:
                 # Treat as section header — push and don't emit as paragraph.
+                # Reset article anchor: a top-level section ("Übersicht",
+                # "Schlussbestimmungen", …) ends the run of "Zu Art. N"
+                # paragraphs. Without this reset the previous anchor
+                # leaks into unrelated paragraphs of the next section.
                 section_path_stack = [chunk]
+                current_anchor = None
                 continue
 
             # Detect article anchor on the FIRST line of the chunk.
@@ -445,10 +460,60 @@ def fetch_pdf_bytes(url: str, timeout: int = 60) -> bytes:
     log.info(f"  fetching {url}")
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "opencaselaw-materialien/0.1"},
+        headers={"User-Agent": "opencaselaw-materialien/0.3"},
     )
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read()
+
+
+_PART_SUFFIX_RE = re.compile(r"-(\d+)\.pdf$", re.IGNORECASE)
+
+
+def _url_exists(url: str, timeout: int = 15) -> bool:
+    """HEAD-probe a URL; True if it returns 2xx."""
+    import urllib.request
+    req = urllib.request.Request(
+        url,
+        method="HEAD",
+        headers={"User-Agent": "opencaselaw-materialien/0.3"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return 200 <= r.status < 300
+    except Exception:
+        return False
+
+
+def fetch_pdf_parts(
+    first_url: str,
+    timeout: int = 60,
+    max_parts: int = 30,
+) -> list[bytes]:
+    """Fetch ``first_url`` and any sibling parts.
+
+    Fedlex splits big Botschaften into ``…-1.pdf``, ``…-2.pdf``, …
+    SPARQL only reports the first manifestation; we have to discover
+    ``-2.pdf``, ``-3.pdf`` etc. by HEAD-probing siblings until we hit a
+    404. Returns a list of raw bytes objects, one per part, in order.
+
+    For URLs that don't follow the ``-N.pdf`` Fedlex convention this
+    degrades to a single-element list (caller behaviour unchanged from
+    v0.2).
+    """
+    parts: list[bytes] = [fetch_pdf_bytes(first_url, timeout=timeout)]
+    m = _PART_SUFFIX_RE.search(first_url)
+    if not m or int(m.group(1)) != 1:
+        return parts  # not a multi-part URL we can extend
+    prefix = first_url[: m.start()]
+    for n in range(2, max_parts + 1):
+        url = f"{prefix}-{n}.pdf"
+        if not _url_exists(url, timeout=15):
+            break
+        log.info(f"  multi-part: discovered part {n}")
+        parts.append(fetch_pdf_bytes(url, timeout=timeout))
+    if len(parts) > 1:
+        log.info(f"  multi-part: stitched {len(parts)} parts total")
+    return parts
 
 
 def extract_pdf_pages(pdf_bytes: bytes) -> list[str]:
@@ -518,8 +583,16 @@ def ingest_one(
         return None
     log.info(f"  resolved → {fmt}: {url[:120]}")
 
-    raw = fetch_pdf_bytes(url)
-    text_hash = hashlib.sha256(raw).hexdigest()
+    # v0.3 (2026-05-07): for PDF formats we probe Fedlex's multi-part
+    # convention (``-1.pdf``/``-2.pdf``…) so big Botschaften aren't
+    # truncated to their first part. XML formats are single-file.
+    if fmt and fmt.startswith("pdf"):
+        parts = fetch_pdf_parts(url)
+    else:
+        parts = [fetch_pdf_bytes(url)]
+    # Hash the concatenation so a new part triggers re-ingest.
+    text_hash = hashlib.sha256(b"".join(parts)).hexdigest()
+    raw = parts[0]  # XML parser only needs the first (single) part
 
     row = conn.execute(
         "SELECT botschaft_id, text_hash FROM botschaft_documents "
@@ -545,10 +618,16 @@ def ingest_one(
             # PDF fallback — either fmt was pdf-a or the XML was an
             # FRBR metadata wrapper (no body content).
             try:
-                pdf_pages = extract_pdf_pages(raw)
+                pdf_pages: list[str] = []
+                for part_bytes in parts:
+                    pdf_pages.extend(extract_pdf_pages(part_bytes))
                 page_count = len(pdf_pages)
                 paragraphs = list(parse_botschaft_text(pdf_pages, language=language))
-                log.info(f"  PDF parsed {page_count} pages → {len(paragraphs)} paragraphs")
+                log.info(
+                    f"  PDF parsed {page_count} pages "
+                    f"({len(parts)} part{'s' if len(parts) != 1 else ''}) "
+                    f"→ {len(paragraphs)} paragraphs"
+                )
             except Exception as e:
                 log.warning(f"  PDF parse failed: {e}")
                 paragraphs = []

@@ -21,9 +21,11 @@ if str(REPO_ROOT) not in sys.path:
 from search_stack.build_botschaft_corpus import (  # noqa: E402
     SCHEMA_SQL,
     _FORMAT_PRIORITY,
+    _PART_SUFFIX_RE,
     bbl_citation,
     bbl_eli_uri,
     ensure_schema,
+    fetch_pdf_parts,
     parse_akoma_ntoso_xml,
     parse_botschaft_text,
 )
@@ -212,3 +214,106 @@ def test_schema_format_check_constraint(tmp_path: Path) -> None:
             "'h', '2026-05-07T00:00:00Z')",
         )
     conn.close()
+
+
+# ── v0.3 additions ────────────────────────────────────────────────────
+
+
+def test_part_suffix_regex_matches_dash_n_pdf() -> None:
+    """The ``-N.pdf`` suffix detector drives multi-part probing."""
+    m = _PART_SUFFIX_RE.search(
+        "https://fedlex.data.admin.ch/filestore/abc-pdf-a-an-1.pdf"
+    )
+    assert m is not None
+    assert int(m.group(1)) == 1
+    # Non-multipart URL: returns None
+    assert _PART_SUFFIX_RE.search(
+        "https://fedlex.data.admin.ch/filestore/abc-pdf-a.pdf"
+    ) is None
+    # XML extension: doesn't match
+    assert _PART_SUFFIX_RE.search(
+        "https://fedlex.data.admin.ch/filestore/abc-xml-an-1.xml"
+    ) is None
+
+
+def test_fetch_pdf_parts_single_when_no_part_suffix(monkeypatch) -> None:
+    """URLs not ending in ``-N.pdf`` produce a single-element list — no
+    HEAD probing happens."""
+    calls: dict[str, int] = {"head": 0, "get": 0}
+
+    def fake_get(url, timeout=60):
+        calls["get"] += 1
+        return b"FAKEPDF"
+
+    def fake_head(url, timeout=15):
+        calls["head"] += 1
+        return False
+
+    monkeypatch.setattr(
+        "search_stack.build_botschaft_corpus.fetch_pdf_bytes", fake_get,
+    )
+    monkeypatch.setattr(
+        "search_stack.build_botschaft_corpus._url_exists", fake_head,
+    )
+    out = fetch_pdf_parts(
+        "https://fedlex.data.admin.ch/filestore/single-pdf-a.pdf",
+    )
+    assert out == [b"FAKEPDF"]
+    assert calls["head"] == 0  # no probing on non-multipart URLs
+
+
+def test_fetch_pdf_parts_stitches_multiple(monkeypatch) -> None:
+    """When SPARQL returns -1.pdf and -2.pdf exists, both are fetched."""
+    seen: list[str] = []
+
+    def fake_get(url, timeout=60):
+        seen.append(url)
+        return f"PART:{url[-7:]}".encode()
+
+    def fake_head(url, timeout=15):
+        # Pretend -2.pdf exists but -3.pdf doesn't.
+        return url.endswith("-2.pdf")
+
+    monkeypatch.setattr(
+        "search_stack.build_botschaft_corpus.fetch_pdf_bytes", fake_get,
+    )
+    monkeypatch.setattr(
+        "search_stack.build_botschaft_corpus._url_exists", fake_head,
+    )
+    out = fetch_pdf_parts(
+        "https://fedlex.data.admin.ch/filestore/abc-pdf-a-an-1.pdf",
+    )
+    assert len(out) == 2
+    assert out[0].startswith(b"PART:")
+    assert out[1].startswith(b"PART:")
+    assert seen[0].endswith("-1.pdf")
+    assert seen[1].endswith("-2.pdf")
+
+
+def test_pdf_anchor_resets_at_section_boundary() -> None:
+    """v0.3 fix: ``current_anchor`` must reset when a new top-level
+    section header (``Übersicht``, ``Schlussbestimmungen``…) appears.
+
+    Setup: page contains 'Zu Art. 1' + paragraph, then a section header
+    'Schlussbestimmungen', then a generic paragraph. Without the fix
+    the generic paragraph inherits article_anchor='1'. With the fix
+    it carries None.
+    """
+    # Real Botschaft layout: article header is on the first line of a
+    # multi-line chunk. The parser filters chunks with len<20, so the
+    # header must run into body text without a blank-line break, and
+    # standalone section titles need to be ≥20 chars to even reach the
+    # SECTION_HEADER_RE branch.
+    pages = [
+        "Zu Art. 1\n"
+        "Diese Bestimmung legt den Geltungsbereich fest und gilt fuer alle.\n\n"
+        "SCHLUSSBESTIMMUNGEN UND ANHANG\n\n"
+        "Diese Botschaft ist anlaesslich der Beratung im Plenum vorgelegt worden."
+    ]
+    paras = list(parse_botschaft_text(pages, language="de"))
+    # First content paragraph anchored to article 1
+    art_para = next(p for p in paras if "Geltungsbereich" in p["text"])
+    assert art_para["article_anchor"] == "1"
+    # The post-section paragraph must not inherit '1'
+    post = next(p for p in paras if "anlaesslich der Beratung" in p["text"])
+    assert post["article_anchor"] is None
