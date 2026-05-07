@@ -470,7 +470,13 @@ _PART_SUFFIX_RE = re.compile(r"-(\d+)\.pdf$", re.IGNORECASE)
 
 
 def _url_exists(url: str, timeout: int = 15) -> bool:
-    """HEAD-probe a URL; True if it returns 2xx."""
+    """HEAD-probe a URL; True only if it returns 2xx AND the response
+    Content-Type is ``application/pdf``.
+
+    Fedlex sometimes responds 200 with an HTML SPA wrapper for missing
+    PDF parts; we don't want those treated as real parts. Checking the
+    declared Content-Type catches that case before we waste a GET.
+    """
     import urllib.request
     req = urllib.request.Request(
         url,
@@ -479,7 +485,10 @@ def _url_exists(url: str, timeout: int = 15) -> bool:
     )
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
-            return 200 <= r.status < 300
+            if not (200 <= r.status < 300):
+                return False
+            ct = (r.headers.get("Content-Type") or "").lower()
+            return "application/pdf" in ct
     except Exception:
         return False
 
@@ -487,7 +496,7 @@ def _url_exists(url: str, timeout: int = 15) -> bool:
 def fetch_pdf_parts(
     first_url: str,
     timeout: int = 60,
-    max_parts: int = 30,
+    max_parts: int = 200,
 ) -> list[bytes]:
     """Fetch ``first_url`` and any sibling parts.
 
