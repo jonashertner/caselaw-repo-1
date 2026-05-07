@@ -719,7 +719,23 @@ def main() -> int:
     )
     parser.add_argument(
         "--ingest-all", action="store_true",
-        help="discover BBl refs from amendment_refs and ingest all",
+        help="discover BBl refs from amendment_refs and ingest all Botschaften (live)",
+    )
+    parser.add_argument(
+        "--limit", type=int, default=None,
+        help="Cap the number of candidates processed in --ingest-all (smoke-test).",
+    )
+    parser.add_argument(
+        "--rate-limit", type=float, default=0.3,
+        help="Seconds to sleep between fetches in --ingest-all (default 0.3).",
+    )
+    parser.add_argument(
+        "--min-year", type=int, default=2003,
+        help="Lowest BBl year to consider in --ingest-all (Fedlex coverage starts ~2003).",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="--ingest-all dry-run: list candidates without fetching.",
     )
     parser.add_argument(
         "--link-amendment-refs", action="store_true",
@@ -765,9 +781,6 @@ def main() -> int:
         return 0
 
     if args.ingest_all:
-        # Pull unique (year, page) tuples whose ref_type='BBl' and that
-        # haven't already been ingested. Defaults to dry-run; pass
-        # --confirm to actually fetch.
         rows = conn.execute(
             """
             SELECT DISTINCT ar.year, ar.page
@@ -777,25 +790,64 @@ def main() -> int:
               AND bd.language = ?
             WHERE ar.ref_type = 'BBl'
               AND ar.year IS NOT NULL AND ar.page IS NOT NULL
-              AND ar.year >= 2003
+              AND ar.year >= ?
               AND bd.botschaft_id IS NULL
             ORDER BY ar.year DESC, ar.page DESC
             """,
-            (args.language,),
+            (args.language, args.min_year),
         ).fetchall()
+        candidates = [(int(r[0]), int(r[1])) for r in rows]
+        if args.limit:
+            candidates = candidates[: args.limit]
         log.info(
-            f"discovered {len(rows)} BBl publications since 2003 "
-            f"not yet ingested for language={args.language}"
+            f"--ingest-all: {len(candidates)} unique (year, page) candidates "
+            f"≥ {args.min_year} not yet in materialien.db, lang={args.language}"
         )
-        # Dry-run mode — log sample. Real bulk ingest is the v0.3
-        # systemd service that processes the pending queue with proper
-        # rate limiting.
-        for year, page in rows[:10]:
-            log.info(f"  candidate: BBl {year} {page}")
-        log.info(
-            "(dry-run; use --ingest-one for a real fetch+parse cycle, "
-            "or wait for the v0.3 ingest service)"
-        )
+        if args.dry_run:
+            for year, page in candidates[:25]:
+                log.info(f"  candidate: BBl {year} {page}")
+            if len(candidates) > 25:
+                log.info(f"  … and {len(candidates) - 25} more")
+            return 0
+
+        import time as _time
+        stats = {"accepted": 0, "rejected_by_filter": 0, "errors": 0,
+                 "total": len(candidates), "started_at": datetime.now(timezone.utc).isoformat()}
+        t0 = _time.time()
+        for i, (year, page) in enumerate(candidates, 1):
+            try:
+                bid = ingest_one(
+                    conn, year=year, page=page,
+                    language=args.language,
+                    sr_number=None, article=None,
+                    relation="considered",
+                )
+                if bid is None:
+                    stats["rejected_by_filter"] += 1
+                else:
+                    stats["accepted"] += 1
+            except Exception as e:
+                stats["errors"] += 1
+                log.warning(f"  BBl {year} {page} ({args.language}) failed: {e}")
+            _time.sleep(args.rate_limit)
+            if i % 25 == 0 or i == len(candidates):
+                elapsed = _time.time() - t0
+                rate = i / elapsed if elapsed > 0 else 0
+                eta = (len(candidates) - i) / rate if rate > 0 else 0
+                log.info(
+                    f"  progress {i}/{len(candidates)} "
+                    f"(accepted={stats['accepted']} "
+                    f"filtered={stats['rejected_by_filter']} "
+                    f"errors={stats['errors']}) "
+                    f"rate={rate:.2f}/s eta={int(eta/60)}min"
+                )
+
+        # Auto-link from amendment_refs after bulk ingest
+        log.info("Auto-linking from amendment_refs…")
+        link_stats = link_from_amendment_refs(conn)
+        stats["link_stats"] = link_stats
+        stats["elapsed_seconds"] = round(_time.time() - t0, 2)
+        print(json.dumps(stats, indent=2, ensure_ascii=False))
         return 0
 
     parser.print_help()
