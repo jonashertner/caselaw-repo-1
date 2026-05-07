@@ -366,13 +366,16 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
            sys.executable, str(script), "--output", str(OUTPUT_DIR),
            "--full-rebuild"]
 
-    # Wall-clock cap. Was 18000s (5h) — got hit on 2026-05-04 03:30 run when
-    # the König-cleanup phase + content-hash + concurrent entscheidsuche
-    # download pushed the optimize step past the limit (process killed at
-    # 18003.6s mid-optimize, no atomic swap, decisions.db left stale at
-    # May 2 12:30). Bumped to 25200s (7h) — gives optimize a 2h cushion
-    # over the historical worst-case-but-completed runs (~5h 30m).
-    timeout = 25200  # 7h hard cap; legitimate completion ranges 3.5–6h
+    # Wall-clock cap. History:
+    #   18000s (5h) — too tight; hit 2026-05-04 03:30 mid-optimize.
+    #   25200s (7h) — too tight; hit 2026-05-07 03:20 after 1.46M
+    #     wayback_queue + heavy König cleanup pushed total to 10h 20m.
+    #   43200s (12h) — current. Today's worst case (10h 20m) + 1h 40m
+    #     cushion. The 16h unit-level TimeoutStartSec is the outer cap.
+    # Note: with the 2026-05-07 process-group kill fix, even if this
+    # cap fires, the entire build_fts5 tree dies within ~6s — no more
+    # silent overrun + cascade-skip + post-mortem-class incidents.
+    timeout = 43200  # 12h hard cap; legitimate completion ranges 4–10h
 
     # Stall watchdog: the FTS5 'optimize' phase emits NO stdout while
     # rewriting the index segments; on 2026-05-04 19:06 the run got 4h 51m
