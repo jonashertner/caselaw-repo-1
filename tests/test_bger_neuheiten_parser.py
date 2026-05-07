@@ -120,3 +120,62 @@ def test_neuheiten_parser_skips_malformed_dates() -> None:
     scraper = _make_scraper()
     stubs = list(scraper._parse_neuheiten_html(soup, "de"))
     assert stubs == []
+
+
+def test_neuheiten_only_flag_skips_aza_search(monkeypatch) -> None:
+    """When neuheiten_only=True, discover_new() must not hit AZA search.
+
+    AZA search is the stall site under heavy Imperva challenge — the
+    poller sets this flag to bound the blast radius. We assert the
+    AZA path isn't even called when the flag is set.
+    """
+    scraper = _make_scraper()
+    # Stub the bits _init_session() reaches for; we don't want network.
+    scraper._init_session = lambda: None  # type: ignore[method-assign]
+    scraper.neuheiten_only = True
+
+    called: dict[str, int] = {"neuheiten": 0, "search": 0}
+
+    def fake_neuheiten():
+        called["neuheiten"] += 1
+        return iter([])
+
+    def fake_search(_since):
+        called["search"] += 1
+        return iter([])
+
+    monkeypatch.setattr(scraper, "_discover_via_neuheiten", fake_neuheiten)
+    monkeypatch.setattr(scraper, "_discover_via_search", fake_search)
+
+    list(scraper.discover_new(since_date=None))  # consume generator
+
+    assert called["neuheiten"] == 1, "Neuheiten path must run"
+    assert called["search"] == 0, (
+        "AZA search must NOT run when neuheiten_only=True"
+    )
+
+
+def test_default_calls_both_neuheiten_and_search(monkeypatch) -> None:
+    """Regression check: default behaviour (no flag) must keep walking
+    both Neuheiten and AZA search — neuheiten_only is opt-in only."""
+    scraper = _make_scraper()
+    scraper._init_session = lambda: None  # type: ignore[method-assign]
+    scraper.neuheiten_only = False  # explicit default
+
+    called: dict[str, int] = {"neuheiten": 0, "search": 0}
+
+    def fake_neuheiten():
+        called["neuheiten"] += 1
+        return iter([])
+
+    def fake_search(_since):
+        called["search"] += 1
+        return iter([])
+
+    monkeypatch.setattr(scraper, "_discover_via_neuheiten", fake_neuheiten)
+    monkeypatch.setattr(scraper, "_discover_via_search", fake_search)
+
+    list(scraper.discover_new(since_date=None))
+
+    assert called["neuheiten"] == 1
+    assert called["search"] == 1

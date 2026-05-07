@@ -508,6 +508,7 @@ def run_with_persistence(
     output_dir: Path = Path("output"),
     state_dir: Path = Path("state"),
     auto_coverage_snapshot: bool = True,
+    neuheiten_only: bool = False,
 ) -> int:
     """Run scraper and write each decision to JSONL incrementally.
 
@@ -540,6 +541,18 @@ def run_with_persistence(
 
     # Initialize scraper
     scraper = scraper_class(state_dir=state_dir)
+    # Opt-in fast-path flag: only bger today actually reads it, but other
+    # scrapers gain support for free if/when they add a `neuheiten_only`
+    # attribute. `setattr` instead of constructor-arg keeps every
+    # scraper class compatible with this entry point.
+    if neuheiten_only and hasattr(scraper, "neuheiten_only"):
+        scraper.neuheiten_only = True
+        logger.info(f"[{scraper_key}] neuheiten_only=True (poller-style fast path)")
+    elif neuheiten_only:
+        logger.warning(
+            f"[{scraper_key}] --neuheiten-only requested but scraper has "
+            "no such attribute; running normal discovery"
+        )
     run_id = f"{scraper_key}:{datetime.now().isoformat(timespec='seconds')}"
     event_writer = _RunEventWriter(
         output_dir=output_dir,
@@ -711,6 +724,16 @@ def main():
         action="store_true",
         help="Disable automatic source snapshot update after scrape run",
     )
+    parser.add_argument(
+        "--neuheiten-only",
+        action="store_true",
+        help=(
+            "Bger fast path: discover via Neuheiten only (last 14 days), "
+            "skip the AZA search backfill. Used by the BGer poller — the "
+            "AZA search has been the stall site under heavy Imperva "
+            "challenge state."
+        ),
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
 
     args = parser.parse_args()
@@ -746,6 +769,7 @@ def main():
             output_dir=Path(args.output),
             state_dir=Path(args.state),
             auto_coverage_snapshot=not args.no_coverage_snapshot,
+            neuheiten_only=args.neuheiten_only,
         )
     except Exception:
         # Capture the traceback in the per-scraper log file (orchestrator

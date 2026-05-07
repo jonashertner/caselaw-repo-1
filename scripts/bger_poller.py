@@ -144,7 +144,15 @@ def _trigger_scraper():
     # like camoufox's headless browser).
     import os
     import signal as _sig
-    cmd = [sys.executable, str(REPO_DIR / "run_scraper.py"), "bger"]
+    # --neuheiten-only: skip the AZA search backfill step, which was
+    # the stall site under heavy Imperva challenge today (3 sockets in
+    # CLOSE_WAIT, 16 min stuck). Neuheiten alone covers the daily delta
+    # the poller is responsible for; manual `run_scraper.py bger` (no
+    # flag) remains the path for backfill + nightly publish.
+    cmd = [
+        sys.executable, str(REPO_DIR / "run_scraper.py"),
+        "bger", "--neuheiten-only",
+    ]
     logger.info("Triggering BGer scraper: %s", " ".join(cmd))
     SCRAPER_TIMEOUT_S = 600
     proc = subprocess.Popen(

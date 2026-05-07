@@ -370,6 +370,15 @@ class BgerScraper(BaseScraper):
         self._session_cookies: dict = {}
         self._pow_required: bool = False  # Determined at runtime by probing
         self._incapsula = IncapsulaCookieManager(cache_dir=state_dir)
+        # When True, discover_new() yields only the Neuheiten (last 14
+        # days of recently-published) and skips the AZA search backfill.
+        # Used by the poller, where the AZA search has been the stall
+        # site under heavy Imperva challenge — it issues many requests
+        # to www.bger.ch's search endpoint, each subject to its own
+        # retry loop, and a single bad challenge state grinds the whole
+        # session for tens of minutes. Neuheiten alone hits 14 URLs at
+        # search.bger.ch and naturally caps the blast radius.
+        self.neuheiten_only: bool = False
 
     @property
     def court_code(self) -> str:
@@ -555,10 +564,30 @@ class BgerScraper(BaseScraper):
             logger.info("Checking Neuheiten for recently published decisions")
             yield from self._discover_via_neuheiten()
 
+            if self.neuheiten_only:
+                logger.info(
+                    "neuheiten_only=True — skipping AZA search "
+                    "(poller-style fast path)"
+                )
+                return
+
             search_from = since_date or (date.today() - timedelta(days=self.DAILY_LOOKBACK_DAYS))
             logger.info(f"Daily mode: AZA search from {search_from}")
             yield from self._discover_via_search(search_from)
         else:
+            if self.neuheiten_only:
+                # Backfill request with neuheiten_only doesn't make sense
+                # — Neuheiten only covers the last 14 days. Honour it
+                # anyway (yields what the last 14 days have) so the
+                # caller gets at least something rather than an error.
+                logger.warning(
+                    "neuheiten_only=True with backfill since_date=%s — "
+                    "yielding only last 14 days of Neuheiten; pass "
+                    "neuheiten_only=False to enable AZA backfill.",
+                    since_date,
+                )
+                yield from self._discover_via_neuheiten()
+                return
             logger.info(f"Backfill mode from {since_date}")
             yield from self._discover_via_search(since_date)
 
