@@ -60,19 +60,47 @@ def _get_pow_cookies() -> dict:
 
 
 def _fetch_neuheiten(date_str: str) -> set[str]:
-    """Fetch today's Neuheiten page and extract docket numbers."""
+    """Fetch today's Neuheiten page and extract docket numbers.
+
+    The endpoint sits behind Imperva/Incapsula on Hetzner IPs, so a
+    bare requests.Session gets a 838-byte iframe stub instead of the
+    real page. We harvest valid Incapsula cookies via the same
+    IncapsulaCookieManager bger.py uses (browser-automated, then
+    cached on disk), and detect block-pages on the response so we
+    raise loudly instead of silently logging "0 decisions".
+    """
     import requests
+    sys.path.insert(0, str(REPO_DIR))
+    from incapsula_bypass import IncapsulaCookieManager
 
     session = requests.Session()
     session.headers["User-Agent"] = (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     )
+    # Incapsula cookies first; PoW cookies on top.
+    incap_mgr = IncapsulaCookieManager(cache_dir=REPO_DIR / "state")
+    session.cookies.update(incap_mgr.get_cookies("search.bger.ch"))
     session.cookies.update(_get_pow_cookies())
 
     url = NEUHEITEN_URL.format(date=date_str)
-    r = session.get(url, timeout=15)
+    r = session.get(url, timeout=30)
     r.raise_for_status()
+
+    # Detect Incapsula block page. If we got one, force-refresh the
+    # cookies (re-runs the headless-browser challenge) and retry once.
+    if IncapsulaCookieManager.is_incapsula_blocked_response(r):
+        logger.warning("Incapsula block detected — refreshing cookies and retrying")
+        session.cookies.clear()
+        session.cookies.update(incap_mgr.refresh_cookies("search.bger.ch"))
+        session.cookies.update(_get_pow_cookies())
+        r = session.get(url, timeout=30)
+        r.raise_for_status()
+        if IncapsulaCookieManager.is_incapsula_blocked_response(r):
+            raise RuntimeError(
+                "Incapsula still blocking after cookie refresh — manual "
+                "intervention needed (browser automation not bypassing)"
+            )
 
     dockets = set(DOCKET_RE.findall(r.text))
     return dockets
