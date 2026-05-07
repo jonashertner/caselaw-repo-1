@@ -127,28 +127,72 @@ def _save_state(today: str, dockets: set[str]):
 
 
 def _trigger_scraper():
-    """Run the BGer scraper, then quick-publish new decisions into FTS5."""
-    # Step 1: Scrape
+    """Run the BGer scraper, then quick-publish new decisions into FTS5.
+
+    The scraper is allowed up to 10 minutes to run. If it stalls past
+    that (the typical failure mode is camoufox returning partial
+    Incapsula cookies under heavy challenge state, which then causes
+    bger.py's retry loop to grind without progress), we kill it and
+    still run quick_publish on whatever decisions it managed to write
+    to JSONL before stalling. This is essential because today's stall
+    showed the previous code path was: timeout → exception → poller
+    crashes → quick_publish never fires → decisions sit unpublished.
+    """
+    # Step 1: Scrape — capped at 10 min via Popen + process-group kill
+    # (subprocess.run with timeout doesn't reliably kill grandchildren
+    # like camoufox's headless browser).
+    import os
+    import signal as _sig
     cmd = [sys.executable, str(REPO_DIR / "run_scraper.py"), "bger"]
     logger.info("Triggering BGer scraper: %s", " ".join(cmd))
-    result = subprocess.run(
+    SCRAPER_TIMEOUT_S = 600
+    proc = subprocess.Popen(
         cmd,
         cwd=str(REPO_DIR),
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
-        timeout=3600,
+        start_new_session=True,
     )
-    if result.returncode == 0:
+    try:
+        out, err = proc.communicate(timeout=SCRAPER_TIMEOUT_S)
+        rc = proc.returncode
+        timed_out = False
+    except subprocess.TimeoutExpired:
+        logger.warning(
+            "BGer scraper exceeded %ds — process-group SIGKILL",
+            SCRAPER_TIMEOUT_S,
+        )
+        try:
+            os.killpg(os.getpgid(proc.pid), _sig.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            pass
+        try:
+            out, err = proc.communicate(timeout=15)
+        except subprocess.TimeoutExpired:
+            out, err = "", ""
+        rc = -1
+        timed_out = True
+
+    if rc == 0:
         new_count = 0
-        for line in result.stdout.splitlines():
+        for line in (out or "").splitlines():
             if "Done. New:" in line:
                 m = re.search(r"New: (\d+)", line)
                 if m:
                     new_count = int(m.group(1))
         logger.info("BGer scraper completed: %d new decisions", new_count)
+    elif timed_out:
+        logger.warning(
+            "BGer scraper killed after timeout — proceeding to quick-publish "
+            "on whatever data is in JSONL"
+        )
     else:
-        logger.error("BGer scraper failed (exit %d): %s", result.returncode, result.stderr[-500:])
-        return
+        logger.error(
+            "BGer scraper failed (exit %d): %s", rc, (err or "")[-500:],
+        )
+        # No `return` here — even on non-timeout failures, JSONL may
+        # contain decisions worth publishing.
 
     # Step 2: Quick-publish into FTS5 DB (so decisions are searchable immediately)
     quick_pub = REPO_DIR / "scripts" / "quick_publish.py"
@@ -160,7 +204,7 @@ def _trigger_scraper():
             cwd=str(REPO_DIR),
             capture_output=True,
             text=True,
-            timeout=600,
+            timeout=900,
         )
         if result.returncode == 0:
             for line in result.stdout.splitlines():
