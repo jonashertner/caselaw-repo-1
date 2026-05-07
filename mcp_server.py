@@ -16352,6 +16352,15 @@ render();setInterval(render,60000);
         # of the connector rather than a silent change.
         spec["info"]["version"] = (full.get("info", {}).get("version", "1.0.0")
                                    + "+copilot")
+        # Copilot Studio's WADL converter picks the FIRST servers entry and
+        # ignores the rest. Force a single absolute entry so there's no
+        # ambiguity — the relative '/api' fallback in the main spec is
+        # there for self-hosters, but Copilot Studio always knows the
+        # public URL is mcp.opencaselaw.ch.
+        spec["servers"] = [{
+            "url": "https://mcp.opencaselaw.ch/api",
+            "description": "OpenCaseLaw public REST API",
+        }]
 
         paths_out: dict = {}
         for path, methods in spec.get("paths", {}).items():
@@ -16417,6 +16426,36 @@ render();setInterval(render,60000);
             spec["components"]["schemas"] = {
                 k: v for k, v in schemas.items() if k in used_refs
             }
+
+        # Copilot Studio binds output variables to the response schema in
+        # its UI; an empty schema {} means no output variables get
+        # surfaced. FastAPI emits {} for handlers that return raw dicts
+        # (no Pydantic response_model). Filling them with a permissive
+        # object schema gives Copilot Studio enough shape to wire the
+        # action's output without claiming structure we don't enforce.
+        for path, methods in spec.get("paths", {}).items():
+            for method_name, op in methods.items():
+                if not isinstance(op, dict):
+                    continue
+                for status, resp in (op.get("responses") or {}).items():
+                    if not isinstance(resp, dict):
+                        continue
+                    content = resp.get("content") or {}
+                    for media_type, media in content.items():
+                        if not isinstance(media, dict):
+                            continue
+                        sch = media.get("schema")
+                        if not isinstance(sch, dict) or (
+                            not sch.get("type")
+                            and not sch.get("$ref")
+                            and not sch.get("oneOf")
+                            and not sch.get("anyOf")
+                            and not sch.get("allOf")
+                        ):
+                            media["schema"] = {
+                                "type": "object",
+                                "additionalProperties": True,
+                            }
 
         return spec
 
