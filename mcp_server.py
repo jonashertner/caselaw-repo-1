@@ -8624,12 +8624,24 @@ def _handle_get_article_purpose(
             # table only covers articles whose mapping is known via
             # amendment_refs. The SPARQL-discovered corpus has many
             # Botschaften that aren't in any link table yet. Search the
-            # entire FTS5 corpus for paragraphs that mention BOTH the SR
-            # number AND "Art. {article}" — Botschaften routinely cite
-            # statutes with "(SR N.NNN)" or "SR N.NNN" prefix when
-            # discussing specific provisions.
+            # entire FTS5 corpus for paragraphs that mention BOTH the
+            # statute identifier AND the article token in the caller's
+            # language — Botschaften routinely cite statutes inline as
+            # "(SR N.NNN)" / "(RS N.NNN)" / "(RS N.NNN)" when discussing
+            # specific provisions.
+            #
+            # Language-specific tokens:
+            #   DE → "SR" + "Art."   (Systematische Sammlung; Artikel)
+            #   FR → "RS" + "art."   (Recueil systématique; article)
+            #   IT → "RS" + "art."   (Raccolta sistematica; articolo)
+            _CITATION_TOKENS = {
+                "de": ("SR", "Art."),
+                "fr": ("RS", "art."),
+                "it": ("RS", "art."),
+            }
+            sr_token, art_token = _CITATION_TOKENS.get(language, ("SR", "Art."))
             try:
-                fts_q = f'"SR {sr_number}" "Art. {article}"'
+                fts_q = f'"{sr_token} {sr_number}" "{art_token} {article}"'
                 fb_rows = conn.execute(
                     """
                     SELECT bd.botschaft_id, bd.bbl_citation, bd.eli_uri,
