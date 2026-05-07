@@ -2708,7 +2708,7 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   <!-- ── Notable — intrinsic facts about the Swiss legal corpus ── -->
   <section class="section" id="didyou" aria-labelledby="didyou-heading">
     <h2 class="section-heading" id="didyou-heading" data-t="didyou_heading">Notable</h2>
-    <p class="didyou-intro" data-t="didyou_intro">Six facts intrinsic to the published Swiss legal corpus — independent of when we scraped them.</p>
+    <p class="didyou-intro" data-t="didyou_intro">Eight facts intrinsic to the published Swiss legal corpus — independent of when we scraped them.</p>
     <div class="didyou-grid">
       <article class="card" id="didyou-most-cited">
         <h3 data-t="didyou_most_cited_label">Most-cited decision</h3>
@@ -2718,9 +2718,17 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
         <h3 data-t="didyou_most_cited_statute_label">Most-cited statute article</h3>
         <p class="didyou-fact" id="didyou-most-cited-statute-text">—</p>
       </article>
+      <article class="card" id="didyou-echr">
+        <h3 data-t="didyou_echr_label">ECHR rulings on Switzerland</h3>
+        <p class="didyou-fact" id="didyou-echr-text">—</p>
+      </article>
       <article class="card" id="didyou-oldest">
         <h3 data-t="didyou_oldest_label">Oldest decision in the corpus</h3>
         <p class="didyou-fact" id="didyou-oldest-text">—</p>
+      </article>
+      <article class="card" id="didyou-materialien">
+        <h3 data-t="didyou_materialien_label">Verbatim Federal Council Botschaften</h3>
+        <p class="didyou-fact" id="didyou-materialien-text">—</p>
       </article>
       <article class="card" id="didyou-language">
         <h3 data-t="didyou_language_label">Three-language coverage</h3>
@@ -5346,6 +5354,47 @@ function renderDidYouKnow(data) {
       `${t('didyou_regeste_prefix') || 'of decisions carry an official head-note (Regeste)'} — ` +
       `${fmtN(r.with_regeste)} ${t('didyou_regeste_unit') || 'decisions with a court-authored summary'}.`);
   } else { setCell('didyou-regeste', ''); }
+
+  // 7. ECHR rulings concerning Switzerland — headline is total count.
+  if (s.echr_switzerland && typeof s.echr_switzerland.total === 'number') {
+    const e = s.echr_switzerland;
+    const yearKey = Object.keys(e).find(k => k.startsWith('in_'));
+    const year = yearKey ? yearKey.slice(3) : '';
+    const yearCount = yearKey ? e[yearKey] : null;
+    let extra = '';
+    if (e.most_recent && e.most_recent.decision_date) {
+      const url = e.most_recent.url;
+      const docket = e.most_recent.docket || '';
+      extra = ` ${t('didyou_echr_most_recent') || 'Most recent'}: ` +
+              `<a href="${url}">${docket}</a> (${e.most_recent.decision_date}).`;
+    }
+    const yearPart = (yearCount != null)
+      ? ` ${fmtN(yearCount)} ${t('didyou_echr_in_year') || 'in'} ${year}.`
+      : '';
+    setCell('didyou-echr',
+      `<span class="didyou-headline">${fmtN(e.total)}</span>` +
+      `${t('didyou_echr_prefix') || 'ECHR rulings concerning Switzerland — '}` +
+      `${fmtN(e.grand_chamber)} ${t('didyou_echr_grand') || 'from the Grand Chamber'}.` +
+      yearPart + extra);
+  } else { setCell('didyou-echr', ''); }
+
+  // 8. Materialien (verbatim Federal Council Botschaft) coverage —
+  //    headline is the document count.
+  if (s.materialien_coverage && typeof s.materialien_coverage.total_documents === 'number') {
+    const m = s.materialien_coverage;
+    const langs = m.by_language || {};
+    const langSummary = ['de','fr','it']
+      .filter(k => langs[k])
+      .map(k => `${fmtN(langs[k])} ${k.toUpperCase()}`)
+      .join(' · ');
+    const range = m.year_range
+      ? ` (${m.year_range.from}–${m.year_range.to})`
+      : '';
+    setCell('didyou-materialien',
+      `<span class="didyou-headline">${fmtN(m.total_documents)}</span>` +
+      `${t('didyou_materialien_prefix') || 'verbatim Federal Council Botschaften'}${range} — ` +
+      `${langSummary}, ${fmtN(m.paragraphs)} ${t('didyou_materialien_paragraphs') || 'paragraphs'}.`);
+  } else { setCell('didyou-materialien', ''); }
 }
 
 function renderLatest(data) {
