@@ -22,7 +22,10 @@ ExecStart=/bin/bash -c '\
         --rate-limit 0.5 --db /opt/caselaw/repo/output/materialien.db && \
     /usr/bin/python3 -m search_stack.build_botschaft_corpus \
         --ingest-all --discover-via-sparql --language it \
-        --rate-limit 0.5 --db /opt/caselaw/repo/output/materialien.db'
+        --rate-limit 0.5 --db /opt/caselaw/repo/output/materialien.db && \
+    /usr/bin/python3 /opt/caselaw/repo/scripts/enrich_botschaft_links.py \
+        --db /opt/caselaw/repo/output/materialien.db \
+        --statutes /opt/caselaw/repo/output/statutes.db'
 # 12 hours: 3-language bulk catch-up may take a few hours on first
 # run; steady-state delta finishes in minutes.
 TimeoutStartSec=43200
