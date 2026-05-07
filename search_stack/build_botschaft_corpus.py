@@ -539,6 +539,86 @@ def ingest_one(
 # ── CLI ────────────────────────────────────────────────────────────────
 
 
+def link_from_amendment_refs(conn: sqlite3.Connection) -> dict:
+    """Populate ``article_botschaft_links`` from ``amendment_refs``.
+
+    For every Botschaft already in ``botschaft_documents``, find every
+    matching ``amendment_refs`` row (same year + page) and create a link
+    row tying the Botschaft to that article. Idempotent — uses
+    ``INSERT OR IGNORE`` against the link table's PK.
+
+    The relation is set to ``considered`` because ``amendment_refs``
+    doesn't carry enacted-vs-amended semantics; a future enrichment can
+    upgrade specific links via Fedlex's history API.
+
+    Returns a stats dict.
+    """
+    ensure_schema(conn)
+    # Sanity: the existing materialien.db builder may not have created
+    # amendment_refs yet on a fresh checkout.
+    try:
+        conn.execute("SELECT 1 FROM amendment_refs LIMIT 1").fetchone()
+    except sqlite3.OperationalError:
+        log.warning(
+            "  amendment_refs table not present — run build_materialien_db "
+            "first to populate it from statute footnotes"
+        )
+        return {"linked": 0, "reason": "no_amendment_refs"}
+
+    before = conn.execute(
+        "SELECT COUNT(*) FROM article_botschaft_links"
+    ).fetchone()[0]
+
+    cur = conn.execute(
+        """
+        INSERT OR IGNORE INTO article_botschaft_links
+            (sr_number, article, botschaft_id, relation, evidence)
+        SELECT DISTINCT
+            ar.sr_number,
+            ar.article,
+            bd.botschaft_id,
+            'considered' AS relation,
+            'amendment_refs:' || ar.id AS evidence
+        FROM amendment_refs ar
+        JOIN botschaft_documents bd
+          ON bd.bbl_year = ar.year AND bd.bbl_page = ar.page
+        WHERE ar.ref_type = 'BBl'
+          AND ar.sr_number IS NOT NULL
+          AND ar.article IS NOT NULL
+          AND ar.year IS NOT NULL
+          AND ar.page IS NOT NULL
+        """
+    )
+    conn.commit()
+    after = conn.execute(
+        "SELECT COUNT(*) FROM article_botschaft_links"
+    ).fetchone()[0]
+    new_links = after - before
+    log.info(
+        f"  article_botschaft_links: {before} → {after} (+{new_links} new)"
+    )
+
+    # Coverage breakdown
+    by_sr = conn.execute(
+        """
+        SELECT sr_number, COUNT(*) AS n
+        FROM article_botschaft_links
+        GROUP BY sr_number
+        ORDER BY n DESC
+        LIMIT 5
+        """
+    ).fetchall()
+    if by_sr:
+        log.info("  top SR coverage: " + ", ".join(
+            f"{s}={n}" for s, n in by_sr
+        ))
+    return {
+        "linked": new_links,
+        "total_links": after,
+        "top_sr": [{"sr_number": s, "links": n} for s, n in by_sr],
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     parser.add_argument(
@@ -564,6 +644,13 @@ def main() -> int:
     parser.add_argument(
         "--ingest-all", action="store_true",
         help="discover BBl refs from amendment_refs and ingest all",
+    )
+    parser.add_argument(
+        "--link-amendment-refs", action="store_true",
+        help=(
+            "Auto-populate article_botschaft_links from the existing "
+            "amendment_refs table for every ingested Botschaft. Idempotent."
+        ),
     )
     args = parser.parse_args()
 
@@ -595,25 +682,43 @@ def main() -> int:
         log.info(f"botschaft_id = {bid}")
         return 0
 
+    if args.link_amendment_refs:
+        stats = link_from_amendment_refs(conn)
+        import json as _json
+        print(_json.dumps(stats, indent=2, ensure_ascii=False))
+        return 0
+
     if args.ingest_all:
-        # v0.1: pull unique (year, page) tuples whose ref_type='BBl'
+        # Pull unique (year, page) tuples whose ref_type='BBl' and that
+        # haven't already been ingested. Defaults to dry-run; pass
+        # --confirm to actually fetch.
         rows = conn.execute(
             """
-            SELECT DISTINCT year, page
-            FROM amendment_refs
-            WHERE ref_type='BBl'
-              AND year IS NOT NULL AND page IS NOT NULL
-              AND year >= 1998
-            ORDER BY year DESC, page DESC
-            """
+            SELECT DISTINCT ar.year, ar.page
+            FROM amendment_refs ar
+            LEFT JOIN botschaft_documents bd
+              ON bd.bbl_year = ar.year AND bd.bbl_page = ar.page
+              AND bd.language = ?
+            WHERE ar.ref_type = 'BBl'
+              AND ar.year IS NOT NULL AND ar.page IS NOT NULL
+              AND ar.year >= 2003
+              AND bd.botschaft_id IS NULL
+            ORDER BY ar.year DESC, ar.page DESC
+            """,
+            (args.language,),
         ).fetchall()
-        log.info(f"discovered {len(rows)} unique BBl refs since 1998")
-        # v0.1: dry-run by default — log sample and exit until we batch-fetch
-        for year, page in rows[:20]:
-            log.info(f"  candidate: BBl {year} {page} → {bbl_pdf_url(year, page)}")
         log.info(
-            "v0.1: --ingest-all is in dry-run mode; "
-            "use --ingest-one for a real fetch+parse cycle"
+            f"discovered {len(rows)} BBl publications since 2003 "
+            f"not yet ingested for language={args.language}"
+        )
+        # Dry-run mode — log sample. Real bulk ingest is the v0.3
+        # systemd service that processes the pending queue with proper
+        # rate limiting.
+        for year, page in rows[:10]:
+            log.info(f"  candidate: BBl {year} {page}")
+        log.info(
+            "(dry-run; use --ingest-one for a real fetch+parse cycle, "
+            "or wait for the v0.3 ingest service)"
         )
         return 0
 
