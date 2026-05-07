@@ -8620,16 +8620,79 @@ def _handle_get_article_purpose(
         ).fetchall()
 
         if not rows:
+            # Cross-corpus FTS5 fallback (v0.5+): the article_botschaft_links
+            # table only covers articles whose mapping is known via
+            # amendment_refs. The SPARQL-discovered corpus has many
+            # Botschaften that aren't in any link table yet. Search the
+            # entire FTS5 corpus for paragraphs that mention BOTH the SR
+            # number AND "Art. {article}" — Botschaften routinely cite
+            # statutes with "(SR N.NNN)" or "SR N.NNN" prefix when
+            # discussing specific provisions.
+            try:
+                fts_q = f'"SR {sr_number}" "Art. {article}"'
+                fb_rows = conn.execute(
+                    """
+                    SELECT bd.botschaft_id, bd.bbl_citation, bd.eli_uri,
+                           bd.format, bd.publication_date,
+                           bp.page_number, bp.section_path, bp.text
+                    FROM botschaft_paragraphs_fts
+                    JOIN botschaft_paragraphs bp
+                      ON bp.paragraph_id = botschaft_paragraphs_fts.rowid
+                    JOIN botschaft_documents bd
+                      ON bd.botschaft_id = bp.botschaft_id
+                    WHERE botschaft_paragraphs_fts MATCH ?
+                      AND bd.language = ?
+                    ORDER BY rank
+                    LIMIT ?
+                    """,
+                    (fts_q, language, max_paragraphs * 3),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                fb_rows = []
+
+            if fb_rows:
+                # Group paragraphs by botschaft_id so the response shape
+                # mirrors the linked path (sources[].paragraphs[]).
+                by_doc: dict = {}
+                for r in fb_rows:
+                    bid = r["botschaft_id"]
+                    if bid not in by_doc:
+                        by_doc[bid] = {
+                            "bbl_citation": r["bbl_citation"],
+                            "eli_uri": r["eli_uri"],
+                            "publication_date": r["publication_date"],
+                            "format": r["format"],
+                            "relation": "fts5_match",
+                            "paragraphs": [],
+                        }
+                    by_doc[bid]["paragraphs"].append({
+                        "page": r["page_number"],
+                        "section": r["section_path"],
+                        "text": r["text"],
+                    })
+                return {
+                    "sr_number": sr_number, "article": article,
+                    "language": language,
+                    "sources": list(by_doc.values()),
+                    "_hint": (
+                        "No direct article→Botschaft link available; "
+                        "matches are FTS5 co-occurrences of the SR number "
+                        "and article reference inside the verbatim corpus. "
+                        "Quote with care — verify the snippet is actually "
+                        "discussing the article in question, not just "
+                        "naming it in passing."
+                    ),
+                }
             return {
                 "sr_number": sr_number, "article": article,
                 "language": language,
                 "sources": [],
                 "_hint": (
-                    "No linked Botschaften for this article in the "
-                    "verbatim corpus yet. Coverage rolls out as the "
-                    "ingestion job processes the ~1500 BBl publications "
-                    "in amendment_refs. Use get_doctrine for the "
-                    "Sonnet-style digest layer in the meantime."
+                    "No Botschaften in the verbatim corpus mention this "
+                    "(SR, article) pair. Coverage spans post-2003 "
+                    "Federal Council Messages; pre-2003 needs the "
+                    "amtsdruckschriften adapter (v0.5+). Use "
+                    "get_doctrine for the digest layer in the meantime."
                 ),
             }
 
