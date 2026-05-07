@@ -1,0 +1,16 @@
+[Unit]
+Description=Daily ECtHR (HUDOC) incremental scrape
+
+[Timer]
+# 14:00 UTC daily — HUDOC publishes typical Chamber decisions on
+# Tuesdays / Thursdays, Grand Chamber rarely. Scraping every day at
+# 14:00 UTC catches the morning's publications (~07:00 UTC release)
+# with a few hours of settling time. Daily cadence vs the previous
+# Sunday-only timer drops the worst-case staleness from 7 days → 24h
+# for any ECHR ruling against Switzerland.
+OnCalendar=*-*-* 14:00:00 UTC
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

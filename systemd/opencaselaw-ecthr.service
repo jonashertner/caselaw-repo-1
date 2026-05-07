@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenCaseLaw daily ECtHR (HUDOC) incremental top-off
+After=network.target
+# Skip if the initial backfill transient unit is still running, or if
+# a previous run is somehow still active.
+ConditionPathExists=/opt/caselaw/repo/state/ecthr.jsonl
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Do nothing if the one-shot backfill is still active. The transient
+# `opencaselaw-ecthr-backfill.service` lives only while backfilling;
+# once it exits, this condition passes and the top-off runs.
+ExecStartPre=/bin/bash -c '! systemctl is-active --quiet opencaselaw-ecthr-backfill.service'
+ExecStart=/usr/bin/python3 run_scraper.py ecthr
+TimeoutStartSec=3600
+StandardOutput=append:/opt/caselaw/repo/logs/ecthr_daily.log
+StandardError=append:/opt/caselaw/repo/logs/ecthr_daily.log
