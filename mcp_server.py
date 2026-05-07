@@ -8539,6 +8539,164 @@ def _handle_find_relevant_erwaegung(
         conn.close()
 
 
+def _handle_get_article_purpose(
+    *,
+    sr_number: str,
+    article: str,
+    language: str = "de",
+    max_paragraphs: int = 8,
+) -> dict:
+    """Return verbatim Botschaft text explaining the legislative purpose
+    of a specific article.
+
+    Reads materialien.db's verbatim Botschaft corpus (Phase 2; v0.4 of
+    the Materialien commitment). Joins ``article_botschaft_links`` →
+    ``botschaft_documents`` → ``botschaft_paragraphs`` and filters by
+    ``article_anchor`` matching the requested article. If no anchor
+    matches, falls back to FTS5 search for "Art. {article}" inside the
+    same Botschaft.
+
+    Returns one entry per linked Botschaft (originating + amendments)
+    so the LLM can cite the specific BBl publication. All text is
+    verbatim — quote with `bbl_citation, page N` references.
+    """
+    sr_number = (sr_number or "").strip()
+    article = (article or "").strip()
+    if not sr_number or not article:
+        return {"error": "Provide both sr_number and article."}
+    language = (language or "de").lower()
+    max_paragraphs = max(1, min(int(max_paragraphs or 8), 20))
+
+    materialien_db = os.environ.get(
+        "SWISS_CASELAW_MATERIALIEN_DB",
+        str(Path(__file__).resolve().parent / "output" / "materialien.db"),
+    )
+    if not Path(materialien_db).exists():
+        return {
+            "error": "materialien.db not available on this server",
+            "sr_number": sr_number, "article": article,
+        }
+    try:
+        conn = sqlite3.connect(
+            f"file:{materialien_db}?mode=ro&immutable=1", uri=True,
+        )
+        conn.row_factory = sqlite3.Row
+    except sqlite3.OperationalError as e:
+        return {"error": f"Cannot open materialien.db: {e}"}
+
+    try:
+        # Confirm the verbatim corpus tables exist (the Phase 2 migration
+        # is opt-in; older builds don't have them).
+        try:
+            conn.execute(
+                "SELECT 1 FROM article_botschaft_links LIMIT 1"
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return {
+                "sr_number": sr_number, "article": article,
+                "language": language,
+                "sources": [],
+                "_hint": (
+                    "Verbatim Botschaft corpus not yet built on this "
+                    "server. Use get_doctrine for the digest layer until "
+                    "the Phase 2 ingestion completes."
+                ),
+            }
+
+        rows = conn.execute(
+            """
+            SELECT bd.botschaft_id, bd.bbl_citation, bd.eli_uri, bd.format,
+                   bd.publication_date, abl.relation
+            FROM article_botschaft_links abl
+            JOIN botschaft_documents bd ON bd.botschaft_id = abl.botschaft_id
+            WHERE abl.sr_number = ? AND abl.article = ? AND bd.language = ?
+            ORDER BY
+              CASE WHEN abl.relation = 'enacted' THEN 0
+                   WHEN abl.relation = 'amended' THEN 1
+                   ELSE 2 END,
+              bd.publication_date DESC
+            """,
+            (sr_number, article, language),
+        ).fetchall()
+
+        if not rows:
+            return {
+                "sr_number": sr_number, "article": article,
+                "language": language,
+                "sources": [],
+                "_hint": (
+                    "No linked Botschaften for this article in the "
+                    "verbatim corpus yet. Coverage rolls out as the "
+                    "ingestion job processes the ~1500 BBl publications "
+                    "in amendment_refs. Use get_doctrine for the "
+                    "Sonnet-style digest layer in the meantime."
+                ),
+            }
+
+        sources: list[dict] = []
+        for r in rows:
+            paras = conn.execute(
+                """
+                SELECT page_number, section_path, text
+                FROM botschaft_paragraphs
+                WHERE botschaft_id = ? AND article_anchor = ?
+                ORDER BY para_order
+                LIMIT ?
+                """,
+                (r["botschaft_id"], article, max_paragraphs),
+            ).fetchall()
+            if not paras:
+                # FTS5 fallback: phrase search for "Art. {article}" inside
+                # this Botschaft. Useful when the parser missed an anchor.
+                try:
+                    fts_q = f'"Art. {article}"'
+                    paras = conn.execute(
+                        """
+                        SELECT bp.page_number, bp.section_path, bp.text
+                        FROM botschaft_paragraphs_fts
+                        JOIN botschaft_paragraphs bp
+                          ON bp.paragraph_id = botschaft_paragraphs_fts.rowid
+                        WHERE botschaft_paragraphs_fts MATCH ?
+                          AND bp.botschaft_id = ?
+                        ORDER BY rank
+                        LIMIT ?
+                        """,
+                        (fts_q, r["botschaft_id"], max_paragraphs),
+                    ).fetchall()
+                except sqlite3.OperationalError:
+                    paras = []
+            sources.append({
+                "bbl_citation": r["bbl_citation"],
+                "eli_uri": r["eli_uri"],
+                "publication_date": r["publication_date"],
+                "format": r["format"],
+                "relation": r["relation"],
+                "paragraphs": [
+                    {
+                        "page": p["page_number"],
+                        "section": p["section_path"],
+                        "text": p["text"],
+                    }
+                    for p in paras
+                ],
+            })
+
+        return {
+            "sr_number": sr_number,
+            "article": article,
+            "language": language,
+            "sources": sources,
+            "_hint": (
+                "All text is verbatim from the Federal Council Botschaft. "
+                f"Cite as '{rows[0]['bbl_citation']}, S. {{page}}' or via "
+                "the eli_uri. Multiple sources = original Botschaft + any "
+                "amendment Botschaften that touched this article."
+            ),
+        }
+    finally:
+        conn.close()
+
+
 def _handle_get_regeste(*, decision_id: str) -> dict:
     """Return the official BGer-/BVGer-/BStGer-formulated Regeste (head-note)."""
     if not decision_id:
@@ -14042,6 +14200,59 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            name="get_article_purpose",
+            description=(
+                "Return verbatim text from the Federal Council Botschaft "
+                "(or Erläuterungsbericht) explaining the legislative purpose "
+                "of a specific article. Joins the verbatim Botschaft corpus "
+                "(post-2003 BBl publications, Akoma Ntoso XML where available, "
+                "PDF fallback otherwise) with the article-Botschaft link "
+                "table. Returns one entry per source — original Botschaft + "
+                "any amendment Botschaften. All paragraphs are verbatim text "
+                "the LLM can quote with `bbl_citation, S. {page}` references. "
+                "USE THIS when the user asks 'what was the purpose of Art. X' "
+                "or 'what did Parliament intend' or 'why does Art. X exist'. "
+                "Coverage is rolling — empty `sources` means the verbatim "
+                "corpus hasn't ingested that article's Botschaft yet; fall "
+                "back to get_doctrine for the digest layer."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sr_number": {
+                        "type": "string",
+                        "description": (
+                            "SR (Systematische Rechtssammlung) number of the law, "
+                            "e.g. '220' for OR (Obligationenrecht), '101' for BV, "
+                            "'311.0' for StGB."
+                        ),
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": (
+                            "Article number, e.g. '41' for Art. 41 OR. "
+                            "Letter-suffixed forms like '41a' supported."
+                        ),
+                    },
+                    "language": {
+                        "type": "string",
+                        "enum": ["de", "fr", "it"],
+                        "default": "de",
+                        "description": "Botschaft language (defaults to German).",
+                    },
+                    "max_paragraphs": {
+                        "type": "integer",
+                        "default": 8,
+                        "description": (
+                            "Maximum paragraphs per Botschaft (default 8, max 20)."
+                        ),
+                    },
+                },
+                "required": ["sr_number", "article"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="get_regeste",
             description=(
                 "Get the official Regeste (head-note) of a Swiss court decision. The Regeste is "
@@ -15126,6 +15337,16 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 decision_id=arguments.get("decision_id", ""),
                 claim=arguments.get("claim", ""),
                 top_k=int(arguments.get("top_k", 3) or 3),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "get_article_purpose":
+            result = await asyncio.to_thread(
+                _handle_get_article_purpose,
+                sr_number=arguments.get("sr_number", ""),
+                article=arguments.get("article", ""),
+                language=arguments.get("language", "de"),
+                max_paragraphs=int(arguments.get("max_paragraphs", 8) or 8),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
@@ -16718,6 +16939,27 @@ render();setInterval(render,60000);
         return await asyncio.to_thread(
             _handle_find_relevant_erwaegung,
             decision_id=decision_id, claim=claim, top_k=top_k,
+        )
+
+    @rest_api.get("/article-purpose/{sr_number}/{article}", tags=["Materialien"],
+                  summary="Get verbatim Botschaft text explaining an article's purpose",
+                  description="Joins the verbatim Federal Council Botschaft corpus "
+                              "(post-2003 BBl, Akoma Ntoso XML preferred) with the "
+                              "article-Botschaft link table. Returns one entry per "
+                              "Botschaft (originating + amendments) with verbatim "
+                              "paragraphs the LLM can quote with `bbl_citation, S. {page}` "
+                              "references. Coverage rolls out as the Phase 2 ingestion "
+                              "processes ~1500 BBl publications from amendment_refs.")
+    async def api_get_article_purpose(
+        sr_number: str = PathParam(description="SR number of the law (e.g. '220' for OR)"),
+        article: str = PathParam(description="Article number (e.g. '41', '41a')"),
+        language: str = Query("de", description="Botschaft language", regex="^(de|fr|it)$"),
+        max_paragraphs: int = Query(8, ge=1, le=20),
+    ):
+        return await asyncio.to_thread(
+            _handle_get_article_purpose,
+            sr_number=sr_number, article=article,
+            language=language, max_paragraphs=max_paragraphs,
         )
 
     @rest_api.get("/regeste/{decision_id}", tags=["Decision Structure"],
