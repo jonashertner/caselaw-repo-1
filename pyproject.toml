@@ -24,13 +24,36 @@ dependencies = [
 [project.optional-dependencies]
 crypto = ["pycryptodome>=3.20"]
 pdf = ["pymupdf>=1.27.2.2"]
-api = ["fastapi>=0.104", "uvicorn>=0.24"]
+# `api` covers the MCP server + FastAPI gateway. mcp_server.py and
+# web_api/main.py import these at module load, so anyone running them
+# off the wheel needs them present.
+api = [
+    "fastapi>=0.104",
+    "uvicorn>=0.24",
+    "mcp>=1.0",
+    "python-dotenv>=1.0",
+]
+# Provider SDKs for the FastAPI orchestrator (web_api/providers/*.py).
+# Each adapter imports its SDK lazily inside __init__, so installing
+# subset-of-providers is supported, but the umbrella `all` extra
+# should pull them all in.
+providers = [
+    "anthropic>=0.40",
+    "google-genai>=0.3",
+    "openai>=1.40",
+]
 semantic = ["sentence-transformers>=3.0", "sqlite-vec>=0.1.6", "onnxruntime>=1.24.3"]
 dev = ["pytest>=9.0.3", "pytest-asyncio>=1.3.0", "ruff>=0.1"]
-all = ["swiss-caselaw-scrapers[crypto,pdf,api,semantic,dev]"]
+all = ["swiss-caselaw-scrapers[crypto,pdf,api,providers,semantic,dev]"]
 
 [tool.setuptools.packages.find]
-include = ["scrapers*", "search_stack*"]
+include = [
+    "scrapers*",
+    "search_stack*",
+    "quality*",
+    "web_api*",
+    "study*",
+]
 
 [tool.setuptools]
 py-modules = ["pipeline", "base_scraper", "models", "db_schema", "run_scraper", "mcp_server", "fts5_server", "export_parquet", "build_fts5", "coverage_report"]

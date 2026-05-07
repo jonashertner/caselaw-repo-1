@@ -4,11 +4,45 @@ import pytest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-# Skip all tests if the production DB is not present (integration tests require live DB)
-_DB_PATH = Path(__file__).resolve().parent.parent / "output" / "decisions.db"
+
+# Skip the whole module if the integration target (the DB the handlers
+# actually resolve at import time) is missing OR doesn't carry the
+# anchor BGEs these tests use. This sidesteps the prior bug where the
+# gate checked ``output/decisions.db`` while the handlers read from
+# ``~/.swiss-caselaw/decisions.db`` — different paths, stale fixture,
+# false-positive run. We use a fast SQL probe (no graph traversal) so
+# module import stays under a second on a 58 GB DB.
+def _integration_db_ready() -> bool:
+    import sqlite3 as _sql
+
+    try:
+        from mcp_server import DB_PATH, GRAPH_DB_PATH  # noqa: WPS433
+    except Exception:
+        return False
+    if not DB_PATH.exists() or not GRAPH_DB_PATH.exists():
+        return False
+    try:
+        c = _sql.connect(f"file:{DB_PATH}?mode=ro", uri=True, timeout=2)
+        try:
+            row = c.execute(
+                "SELECT 1 FROM decisions "
+                "WHERE decision_id = ? OR docket_number = ? LIMIT 1",
+                ("bge_133_III_121", "BGE 133 III 121"),
+            ).fetchone()
+        finally:
+            c.close()
+        return row is not None
+    except Exception:
+        return False
+
+
 pytestmark = pytest.mark.skipif(
-    not _DB_PATH.exists(),
-    reason="Production DB not available — integration tests require live decisions.db",
+    not _integration_db_ready(),
+    reason=(
+        "Integration DB not available or missing BGE 133 III 121 — "
+        "these tests require a current production decisions.db + "
+        "reference_graph.db."
+    ),
 )
 
 

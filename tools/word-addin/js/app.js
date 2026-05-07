@@ -2772,8 +2772,12 @@ function renderStrengthen() {
   /* ── Argument-strength banner ── */
   var strengthClass = 'audit-summary-' + (r.argument_strength === 'strong' ? 'ok'
                        : r.argument_strength === 'medium' ? 'mixed' : 'mixed');
-  var strengthLabel = t('strength_' + (r.argument_strength || 'weak'), lang) ||
-                      r.argument_strength || '';
+  // Explicit key map (rather than concatenated keys) keeps the i18n
+  // static lint useful — see tests/web/test_word_addin_i18n_parity.py.
+  var strengthKey = r.argument_strength === 'strong' ? 'strength_strong'
+                  : r.argument_strength === 'medium' ? 'strength_medium'
+                  : 'strength_weak';
+  var strengthLabel = t(strengthKey, lang) || r.argument_strength || '';
   html += '<div class="audit-summary ' + strengthClass + '">' +
     '<span class="audit-summary-icon">\u2696</span>' +
     '<span class="audit-summary-text"><b>' + escHtml(strengthLabel) + '</b> &mdash; ' +
