@@ -1,0 +1,22 @@
+[Unit]
+Description=OpenCaseLaw daily verbatim Botschaft ingest (delta from amendment_refs)
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# --ingest-all is internally a delta: it LEFT JOINs amendment_refs against
+# botschaft_documents and processes only the rows not yet ingested. The
+# is_botschaft() SPARQL filter rejects Mitteilungen/notices, so each run
+# only spends time on real Federal Council Messages. Sequential at
+# rate-limit=0.5s — friendly to Fedlex even when the queue is fat.
+ExecStart=/usr/bin/python3 -m search_stack.build_botschaft_corpus \
+    --ingest-all \
+    --rate-limit 0.5 \
+    --db /opt/caselaw/repo/output/materialien.db
+# 6 hours: comfortably above the steady-state daily delta (handful of
+# new Botschaften → minutes) but covers a one-off catch-up burst if a
+# week's worth queued up.
+TimeoutStartSec=21600
+StandardOutput=append:/opt/caselaw/repo/logs/materialien_ingest.log
+StandardError=append:/opt/caselaw/repo/logs/materialien_ingest.log

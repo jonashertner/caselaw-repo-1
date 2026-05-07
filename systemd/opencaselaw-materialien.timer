@@ -1,0 +1,14 @@
+[Unit]
+Description=Daily OpenCaseLaw Botschaft ingest — independent of court-scrape pipeline
+
+[Timer]
+# 04:30 UTC: after the 03:00 UTC publish finishes its work and after the
+# Fedlex monthly resync slot at 04:00 UTC, but well before any human
+# traffic. Decoupled from court-scrape and publish so a Fedlex hiccup
+# doesn't block dataset publication and vice-versa.
+OnCalendar=*-*-* 04:30:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
