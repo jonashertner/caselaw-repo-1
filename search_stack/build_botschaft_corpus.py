@@ -169,6 +169,71 @@ def bbl_citation(year: int, page: int) -> str:
     return f"BBl {year} {page}"
 
 
+_LANG_URI_DEU = "http://publications.europa.eu/resource/authority/language/DEU"
+_LANG_URI_FRA = "http://publications.europa.eu/resource/authority/language/FRA"
+_LANG_URI_ITA = "http://publications.europa.eu/resource/authority/language/ITA"
+_LANG_URI = {"de": _LANG_URI_DEU, "fr": _LANG_URI_FRA, "it": _LANG_URI_ITA}
+
+# typeDocument vocabulary URIs that mark "this is a Federal Council
+# Message". Probed empirically on 2026-05-07 against the live SPARQL
+# endpoint:
+#   td=23 → Botschaft (~1,874 with German title 'Botschaft*' + td=23)
+#   td=21 → Bundesgesetz (law text — useless for purpose-of-article)
+#   td=8  → Bundesbeschluss (federal decree)
+#   td=33 → Mitteilung / Notifikation / Allgemeinverfügung (noise)
+#   td=40 → Vernehmlassungsverfahren
+# The Botschaft type is td=23. The other ~8,766 FGA URIs whose title
+# starts 'Botschaft*' but have no typeDocument are caught by the title
+# fallback below.
+_BOTSCHAFT_TYPE_URI = "https://fedlex.data.admin.ch/vocabulary/resource-type/23"
+_BOTSCHAFT_TITLE_PREFIX = {"de": "botschaft", "fr": "message", "it": "messaggio"}
+
+
+def is_botschaft(eli_uri: str, language: str = "de") -> bool:
+    """Two-pronged check: SPARQL ASK true if either the URI's
+    typeDocument is the Botschaft vocabulary URI OR its title in the
+    requested language starts with 'Botschaft' / 'Message' / 'Messaggio'.
+
+    Filters out the ~204K noise FGA URIs (Mitteilungen, Allgemein-
+    verfügungen, Notifikationen) before the expensive PDF/XML fetch.
+    """
+    if fetch_manifestations is None:  # SPARQL helper not importable
+        return True  # fail-open: keep v0.2's behavior
+    import urllib.parse
+    import urllib.request
+    import json as _json
+    lang_iri = _LANG_URI.get(language, _LANG_URI_DEU)
+    prefix = _BOTSCHAFT_TITLE_PREFIX.get(language, "botschaft")
+    ask_q = f"""
+    PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
+    ASK {{
+      <{eli_uri}> jolux:isRealizedBy ?expr .
+      ?expr jolux:language <{lang_iri}> .
+      {{ <{eli_uri}> jolux:typeDocument <{_BOTSCHAFT_TYPE_URI}> . }}
+      UNION
+      {{ ?expr jolux:title ?title .
+        FILTER(STRSTARTS(LCASE(STR(?title)), "{prefix}")) }}
+    }}
+    """
+    body = urllib.parse.urlencode({"query": ask_q}).encode()
+    req = urllib.request.Request(
+        "https://fedlex.data.admin.ch/sparqlendpoint",
+        data=body,
+        headers={
+            "Accept": "application/sparql-results+json",
+            "User-Agent": "opencaselaw-materialien/0.3",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            return bool(_json.loads(r.read()).get("boolean", False))
+    except Exception as e:
+        log.warning(f"  is_botschaft ASK failed for {eli_uri}: {e}")
+        # fail-open: don't lose data on a transient SPARQL error
+        return True
+
+
 def resolve_manifestation(
     eli_uri: str,
     language: str = "de",
@@ -431,6 +496,17 @@ def ingest_one(
     citation = bbl_citation(year, page)
     eli = bbl_eli_uri(year, page)
     log.info(f"Ingesting {citation} ({language}) for sr={sr_number} art={article}")
+
+    # v0.3 (2026-05-07): pre-filter via Fedlex SPARQL — only ingest
+    # publications whose typeDocument == resource-type/23 OR whose
+    # title starts with 'Botschaft'. Drops Mitteilungen / decrees /
+    # notices that the amendment_refs index pulls in as false matches.
+    if not is_botschaft(eli, language=language):
+        log.info(
+            f"  skipping {citation} ({language}) — not a Botschaft "
+            f"(typeDocument != 23 AND title doesn't start with 'Botschaft')"
+        )
+        return None
 
     url, fmt = resolve_manifestation(eli, language=language)
     if url is None:
