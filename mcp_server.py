@@ -7689,12 +7689,16 @@ server = Server(
     "swiss-caselaw",
     instructions=(
         "Swiss legal research platform: 969,000+ published decisions from "
-        "federal + cantonal courts, 5,510 federal laws (Fedlex SPARQL), "
-        "15,722 cantonal laws (direct portal scraping for 19 cantons + "
-        "LexFind PDF fallback for 7), 1,058 scholarly commentaries, "
-        "structured federal decisions (Sachverhalt/Erwägungen/Dispositiv), "
-        "and the citation graph (9.04M edges). Updated daily. Languages: "
-        "DE, FR, IT — tools handle cross-language matching automatically.\n\n"
+        "federal + cantonal courts, ~2,800 European Court of Human Rights "
+        "decisions concerning Switzerland (BGE-published EGMR translations, "
+        "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
+        "5,510 federal laws (Fedlex SPARQL), 15,722 cantonal laws (direct "
+        "portal scraping for 19 cantons + LexFind PDF fallback for 7), "
+        "1,058 scholarly commentaries, 5,200+ verbatim Federal Council "
+        "Botschaften (DE/FR/IT), structured federal decisions "
+        "(Sachverhalt/Erwägungen/Dispositiv), and the citation graph "
+        "(9.04M edges). Updated daily. Languages: DE, FR, IT — tools "
+        "handle cross-language matching automatically.\n\n"
 
         "══════════════════════════════════════════════════════════════\n"
         "ANTI-HALLUCINATION RULES — NON-NEGOTIABLE\n"
@@ -7842,7 +7846,17 @@ server = Server(
         "• 'What is BGE 140 III 86 E. 2.3?'        → get_erwaegung\n"
         "• 'Which E. supports [claim] in BGE X?'   → find_relevant_erwaegung\n"
         "• 'Summarise this case'                   → get_case_brief\n"
-        "• 'Format this citation for me'           → cite\n\n"
+        "• 'Format this citation for me'           → cite\n"
+        "• 'Has the ECHR ruled against CH on X?'   → search_decisions(court='ecthr_chamber') or court='hudoc_ch'\n"
+        "• 'BGE-published EGMR translation?'       → search_decisions(court='bge_egmr')\n\n"
+
+        "ECHR / EGMR coverage: ~2,800 decisions concerning Switzerland.\n"
+        "  - bge_egmr           — Swiss BGE-published German translations (477 decisions, since 1969)\n"
+        "  - hudoc_ch           — HUDOC ECHR cases tagged Switzerland (835 decisions)\n"
+        "  - ecthr_chamber      — ECtHR Chamber decisions (1,151)\n"
+        "  - ecthr_grand_chamber — Grand Chamber (93, the highest authority)\n"
+        "  - ecthr_committee    — Committee decisions (230)\n"
+        "All searchable via search_decisions with the court= filter.\n\n"
 
         "Colloquial terms work: search_laws('Vaterschaftsurlaub') finds "
         "Art. 329g OR even though the statute uses different wording.\n\n"
@@ -13776,7 +13790,10 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_decisions",
             description=(
-                "Search Swiss court decisions using full-text search. "
+                "Search Swiss court decisions AND European Court of Human "
+                "Rights decisions concerning Switzerland (~2,800 ECHR docs "
+                "across bge_egmr, hudoc_ch, ecthr_chamber, ecthr_committee, "
+                "ecthr_grand_chamber) using full-text search. "
                 "Supports keywords, phrases (in quotes), Boolean operators "
                 "(AND, OR, NOT), and prefix matching (word*). "
                 "Filter by court, canton, language, date range, chamber, and decision type. "
@@ -13813,7 +13830,11 @@ def _list_tools() -> list[Tool]:
                         "type": "string",
                         "description": (
                             "Filter by court code. "
-                            "Federal: bger, bge, bvger, bstger, bpatger. "
+                            "Federal: bger, bge, bvger, bstger, bpatger, mkg. "
+                            "European Court of Human Rights (Switzerland): "
+                            "bge_egmr (BGE-published DE translations), "
+                            "hudoc_ch (HUDOC Switzerland-tagged), "
+                            "ecthr_chamber, ecthr_grand_chamber, ecthr_committee. "
                             "Cantonal: zh_obergericht, be_verwaltungsgericht, etc."
                         ),
                     },
