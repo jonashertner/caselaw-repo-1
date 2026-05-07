@@ -20,7 +20,13 @@ ExecStartPre=/bin/bash -c '! systemctl is-active --quiet opencaselaw-ecthr-backf
 ExecStart=/bin/bash -c '\
     /usr/bin/python3 /opt/caselaw/repo/run_scraper.py ecthr && \
     /usr/bin/python3 /opt/caselaw/repo/scripts/quick_publish.py \
-        --courts ecthr_chamber,ecthr_committee,ecthr_grand_chamber,hudoc_ch'
+        --courts ecthr,hudoc_ch'
+# quick_publish.py keys courts off the JSONL FILENAME stem, not the
+# row's per-decision court field. The ECHR scrape produces
+# `decisions/ecthr.jsonl` (containing rows for ecthr_chamber,
+# ecthr_committee, ecthr_grand_chamber) and `decisions/hudoc_ch.jsonl`.
+# Passing the per-row court codes (e.g. ecthr_chamber) silently
+# matched 0 files and inserted 0 rows — bug caught 2026-05-07.
 TimeoutStartSec=5400
 StandardOutput=append:/opt/caselaw/repo/logs/ecthr_daily.log
 StandardError=append:/opt/caselaw/repo/logs/ecthr_daily.log
