@@ -239,6 +239,7 @@ def resolve_manifestation(
     eli_uri: str,
     language: str = "de",
     strict_language: bool = True,
+    skip_formats: tuple[str, ...] = (),
 ) -> tuple[str | None, str | None]:
     """Return ``(file_url, format)`` for the best manifestation in
     ``language``, or ``(None, None)`` if Fedlex SPARQL has no entry.
@@ -269,11 +270,15 @@ def resolve_manifestation(
         pool = same_lang or mans  # any-language fallback (legacy)
     by_format: dict[str, str] = {m.format: m.file_url for m in pool}
     for fmt in _FORMAT_PRIORITY:
+        if fmt in skip_formats:
+            continue
         if fmt in by_format:
             return (by_format[fmt], fmt)
     # Otherwise return whatever's first (usually docx/html — last resort).
     if pool:
-        return (pool[0].file_url, pool[0].format)
+        for m in pool:
+            if m.format not in skip_formats:
+                return (m.file_url, m.format)
     return (None, None)
 
 
@@ -616,16 +621,29 @@ def ingest_one(
         # Parse: prefer XML/Akoma Ntoso, fall back to PDF.
         paragraphs: list[dict] = []
         page_count = 0
-        if fmt and fmt.startswith(("xml", "pdf-a-an")):
-            # Try Akoma Ntoso XML. (The ``-an`` PDF variant carries
-            # Akoma Ntoso semantics in metadata; we can still parse it
-            # as PDF, but actual XML is preferred.)
-            if fmt.startswith("xml"):
-                paragraphs = list(parse_akoma_ntoso_xml(raw))
-                log.info(f"  XML parsed {len(paragraphs)} paragraphs")
+        if fmt and fmt.startswith("xml"):
+            paragraphs = list(parse_akoma_ntoso_xml(raw))
+            log.info(f"  XML parsed {len(paragraphs)} paragraphs")
+            if not paragraphs:
+                # XML was an FRBR metadata wrapper (common in Fedlex —
+                # no <body> content). Re-resolve with PDF format and
+                # try the PDF parser.
+                log.info("  XML had 0 paragraphs — retrying with PDF format")
+                pdf_url, pdf_fmt = resolve_manifestation(
+                    eli, language=language,
+                    skip_formats=("xml-an", "xml"),
+                )
+                if pdf_url and pdf_fmt and pdf_fmt.startswith("pdf"):
+                    parts = fetch_pdf_parts(pdf_url)
+                    text_hash = hashlib.sha256(b"".join(parts)).hexdigest()
+                    fmt = pdf_fmt
+                    url = pdf_url
+                else:
+                    parts = []  # nothing else to try
+
         if not paragraphs:
-            # PDF fallback — either fmt was pdf-a or the XML was an
-            # FRBR metadata wrapper (no body content).
+            # PDF path — either fmt was pdf-a from the start, or we
+            # just re-resolved to PDF after empty XML.
             try:
                 pdf_pages: list[str] = []
                 for part_bytes in parts:
