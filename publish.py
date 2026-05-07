@@ -32,6 +32,7 @@ import argparse
 import fcntl
 import json
 import os
+import signal
 import urllib.request
 import logging
 import subprocess
@@ -143,6 +144,14 @@ def run_cmd(
             stderr=subprocess.STDOUT,  # merge stderr into stdout to avoid pipe deadlock
             text=True,
             cwd=str(REPO_DIR),
+            # start_new_session=True makes the child a process-group leader
+            # (its PID == its PGID) so we can kill the WHOLE group via
+            # os.killpg, which catches grandchildren build_fts5 may spawn.
+            # 2026-05-07 incident: Step 2 wall-clock fired at 03:20:05 but
+            # build_fts5 kept running, swap happened 3h 20m later — the old
+            # proc.kill() only signalled the immediate child, missed the
+            # ionice→nice→python chain or a child SQLite worker still in D.
+            start_new_session=True,
         )
         # Watchdog timers: kill the process either on wall-clock timeout
         # OR on output-stall timeout. We can't rely on proc.wait(timeout=)
@@ -152,16 +161,50 @@ def run_cmd(
         stalled = threading.Event()
         last_output_at = [time.time()]
 
+        def _kill_pg(reason: str) -> None:
+            """Kill the entire process group: SIGTERM, 5s grace, then SIGKILL.
+            Belt-and-braces against children that survive a single SIGKILL
+            to the leader (the 2026-05-07 incident).
+            """
+            try:
+                pgid = os.getpgid(proc.pid)
+            except (ProcessLookupError, OSError):
+                # Process already dead.
+                return
+            try:
+                os.killpg(pgid, signal.SIGTERM)
+            except (ProcessLookupError, PermissionError, OSError):
+                pass
+            # Give it 5 seconds for atomic-swap / file-handle close to finish.
+            for _ in range(50):
+                if proc.poll() is not None:
+                    return
+                time.sleep(0.1)
+            try:
+                os.killpg(pgid, signal.SIGKILL)
+            except (ProcessLookupError, PermissionError, OSError):
+                pass
+            # SIGKILL queued — give kernel up to 30s to deliver
+            # (D-state syscalls may delay kill arrival).
+            for _ in range(300):
+                if proc.poll() is not None:
+                    return
+                time.sleep(0.1)
+            logger.warning(
+                f"  process group {pgid} still alive 30s after SIGKILL "
+                f"({reason}); subprocess may be wedged in D state"
+            )
+
         def _kill_on_timeout():
             timed_out.set()
-            proc.kill()
+            _kill_pg("wall-clock timeout")
 
         def _kill_on_stall():
             while proc.poll() is None and not timed_out.is_set():
                 idle = time.time() - last_output_at[0]
                 if stall_timeout is not None and idle > stall_timeout:
                     stalled.set()
-                    proc.kill()
+                    _kill_pg("stall watchdog")
                     return
                 time.sleep(min(60, max(5, (stall_timeout or 60) // 4)))
 
