@@ -6,19 +6,25 @@ After=network.target
 Type=oneshot
 WorkingDirectory=/opt/caselaw/repo
 # --discover-via-sparql is the canonical candidate source as of v0.5:
-# it queries Fedlex for every typeDocument=23 (Botschaft) FGA URI,
-# dedups against botschaft_documents, and ingests the delta. Steady-
-# state daily delta is a handful of new Botschaften (Federal Council
-# publishes weekly); the ingest pipeline is idempotent via text_hash.
-# amendment_refs (the v0.2/v0.3 source) is dropped because it
-# indexes Bundesbeschlüsse + Mitteilungen rather than the Botschaften
-# themselves — see materialien v0.3 status memory.
-ExecStart=/usr/bin/python3 -m search_stack.build_botschaft_corpus \
-    --ingest-all --discover-via-sparql \
-    --rate-limit 0.5 \
-    --db /opt/caselaw/repo/output/materialien.db
-# 6 hours: comfortably above the steady-state daily delta (minutes)
-# and covers a one-off catch-up burst if a week's worth queued up.
-TimeoutStartSec=21600
+# query Fedlex for every typeDocument=23 (Botschaft) FGA URI in each
+# language, dedup against botschaft_documents, ingest the delta. We
+# loop DE → FR → IT so all three multilingual versions stay in sync;
+# materialien.db is single-writer (journal_mode=delete) so they must
+# run sequentially. Steady-state delta is a handful per language.
+# amendment_refs (v0.2/v0.3 source) is dropped because it indexes
+# Bundesbeschlüsse + Mitteilungen rather than the Botschaften.
+ExecStart=/bin/bash -c '\
+    /usr/bin/python3 -m search_stack.build_botschaft_corpus \
+        --ingest-all --discover-via-sparql --language de \
+        --rate-limit 0.5 --db /opt/caselaw/repo/output/materialien.db && \
+    /usr/bin/python3 -m search_stack.build_botschaft_corpus \
+        --ingest-all --discover-via-sparql --language fr \
+        --rate-limit 0.5 --db /opt/caselaw/repo/output/materialien.db && \
+    /usr/bin/python3 -m search_stack.build_botschaft_corpus \
+        --ingest-all --discover-via-sparql --language it \
+        --rate-limit 0.5 --db /opt/caselaw/repo/output/materialien.db'
+# 12 hours: 3-language bulk catch-up may take a few hours on first
+# run; steady-state delta finishes in minutes.
+TimeoutStartSec=43200
 StandardOutput=append:/opt/caselaw/repo/logs/materialien_ingest.log
 StandardError=append:/opt/caselaw/repo/logs/materialien_ingest.log
