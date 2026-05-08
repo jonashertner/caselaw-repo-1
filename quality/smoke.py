@@ -3,7 +3,7 @@
 Hits the production server every 5 minutes via systemd timer. Verifies:
 
   1. /health                           → 200 + decisions count > 950k
-  2. /entscheid/<bge>                  → 200 + Times New Roman markup
+  2. /entscheid/<bge>                  → 200 + decision-body marker
   3. /api/decisions/<bge>/export.docx  → 200 + ZIP magic
   4. /api/decisions/<bge>/export.pdf   → 200 + %PDF magic (or text/plain)
   5. /api/decisions/<bge>/export.bib   → 200 + @misc{
@@ -113,8 +113,13 @@ def run_smoke(base_url: str = DEFAULT_BASE_URL) -> list[ProbeResult]:
     probes = [
         ("health", f"{base}/health",
          {"must_contain": b'"status":"ok"', "expected_mtype_prefix": "application/json"}),
+        # Marker: the decision-body class survives the design-system
+        # refactor (Move 3, 2026-04-25) where literal font names were
+        # replaced with `var(--f-serif)`. Looking for "decision-body" is
+        # more durable than "Times New Roman" — it's the anchor the
+        # serif-typography scope binds to in seo_pages.py.
         ("entscheid_html", f"{base}/entscheid/{ANCHOR_DECISION}",
-         {"must_contain": b"Times New Roman", "expected_mtype_prefix": "text/html"}),
+         {"must_contain": b"decision-body", "expected_mtype_prefix": "text/html"}),
         ("export_docx", f"{base}/api/decisions/{ANCHOR_DECISION}/export.docx",
          {"magic": b"PK", "min_bytes": 1500,
           "expected_mtype_prefix": "application/vnd.openxmlformats-officedocument"}),
