@@ -7688,12 +7688,12 @@ def update_from_huggingface() -> str:
 server = Server(
     "swiss-caselaw",
     instructions=(
-        "Swiss legal research platform: 969,000+ published decisions from "
+        "Swiss legal research platform: 971,700+ published decisions from "
         "federal + cantonal courts, ~2,800 European Court of Human Rights "
         "decisions concerning Switzerland (BGE-published EGMR translations, "
         "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
-        "5,510 federal laws (Fedlex SPARQL), 15,722 cantonal laws (direct "
-        "portal scraping for 19 cantons + LexFind PDF fallback for 7), "
+        "5,516 federal laws (Fedlex SPARQL), 15,722 cantonal laws (direct "
+        "portal scraping for 19 cantons + LexFind PDF fallback for 4 (JU, SZ, UR, VD)), "
         "1,058 scholarly commentaries, 5,200+ verbatim Federal Council "
         "Botschaften (DE/FR/IT), structured federal decisions "
         "(Sachverhalt/Erwägungen/Dispositiv), and the citation graph "

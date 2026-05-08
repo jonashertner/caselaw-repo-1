@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
 <title>OpenCaseLaw.ch — The Complete Open Dataset of Swiss Case Law</title>
-<meta name="description" content="971'000+ published Swiss court decisions, 5,510 federal laws, 15,722 cantonal acts. Searchable by humans, readable by AI. Now also as a Microsoft Word add-in. Open source, CC0, updated daily.">
+<meta name="description" content="971'000+ published Swiss court decisions, 5,516 federal laws, 15,722 cantonal acts. Searchable by humans, readable by AI. Now also as a Microsoft Word add-in. Open source, CC0, updated daily.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -20,7 +20,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
 <meta property="og:title" content="Swiss Case Law Open Dataset — 971,000+ Court Decisions">
-<meta property="og:description" content="OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.04 million extracted case-citation references. Free MCP endpoint, REST API, and Microsoft Word add-in.">
+<meta property="og:description" content="OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.64 million extracted case-citation references (6.50 M resolved). Free MCP endpoint, REST API, and Microsoft Word add-in.">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -32,7 +32,7 @@
 <meta property="og:locale:alternate" content="it_CH">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Swiss Case Law Open Dataset — 971,000+ Court Decisions">
-<meta name="twitter:description" content="971,000+ Swiss federal, cantonal, and regulatory decisions with full text and 9.04 million extracted case-citation references. Now also as a Microsoft Word add-in.">
+<meta name="twitter:description" content="971,000+ Swiss federal, cantonal, and regulatory decisions with full text and 8.64 million extracted case-citation references (6.50 M resolved). Now also as a Microsoft Word add-in.">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
@@ -42,7 +42,7 @@
     "@type": "Dataset",
     "name": "Swiss Case Law Open Dataset",
     "alternateName": "OpenCaseLaw",
-    "description": "OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.04 million extracted case-citation references. Updated daily. Searchable via MCP, REST, and a Microsoft Word add-in.",
+    "description": "OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.64 million extracted case-citation references (6.50 M resolved). Updated daily. Searchable via MCP, REST, and a Microsoft Word add-in.",
     "url": "https://opencaselaw.ch/",
     "license": "https://creativecommons.org/publicdomain/zero/1.0/",
     "isAccessibleForFree": true,
@@ -3057,7 +3057,7 @@ const I18N = {
     stats_not_loaded: 'Statistiken konnten nicht geladen werden.',
   
     gesetze_cantonal_heading: 'Kantonale Erlasse — direkter Portal-Spiegel + LexFind-Fallback',
-    gesetze_cantonal_intro: 'Die kantonale Gesetzgebung kommt aus zwei Quellen. <strong>Primär</strong>: 19 Kantone werden direkt aus ihren offiziellen Gesetzessammlungen gespiegelt — über die LexWork- und SIL-Plattformen, mit denen die Kantone selbst publizieren. Die Inhalte werden als HTML geparst (keine PDF-Extraktion, kein OCR) und ergeben saubere Artikel-Daten. <strong>Fallback</strong>: für die übrigen 7 Kantone (sowie für Erlasse, die nicht im direkten Spiegel landen) extrahiert OpenCaseLaw die PDFs von <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> mit PyMuPDF. Beides landet in <code style="font-size:13px">cantonal_laws.db</code> (15&rsquo;722 Erlasse / 353&rsquo;464 Artikel) und wird per SQLite-FTS5 mit der Bundesrechts-Tabelle föderiert.',
+    gesetze_cantonal_intro: 'Die kantonale Gesetzgebung kommt aus zwei Quellen. <strong>Primär</strong>: 22 Kantone werden direkt aus ihren offiziellen Gesetzessammlungen gespiegelt — über die LexWork- und SIL-Plattformen, mit denen die Kantone selbst publizieren. Die Inhalte werden als HTML geparst (keine PDF-Extraktion, kein OCR) und ergeben saubere Artikel-Daten. <strong>Fallback</strong>: für die übrigen 4 Kantone — JU, SZ, UR, VD — (sowie für Erlasse, die nicht im direkten Spiegel landen) extrahiert OpenCaseLaw die PDFs von <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> mit PyMuPDF. Beides landet in <code style="font-size:13px">cantonal_laws.db</code> (15&rsquo;722 Erlasse / 353&rsquo;437 Artikel) und wird per SQLite-FTS5 mit der Bundesrechts-Tabelle föderiert.',
     gesetze_cantonal_note: 'Für Anfragen an Erlasse, die noch nicht lokal gespiegelt sind — etwa ganz neu publizierte Fassungen zwischen zwei Refresh-Zyklen — fallen die MCP-Tools transparent auf die LexFind-Live-API zurück und cachen die Antwort persistent (SQLite, gestaffelte TTLs: Suche 24 h, SR-Auflösung 30 d, Volltext 7 d). Die <code style="font-size:13px">search_legislation</code>-Suche nutzt zusätzlich den LexFind-Katalog (33&rsquo;000+ Texte inkl. Verordnungen und interkantonaler Vereinbarungen).',
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> durchsucht den lokalen Spiegel sowohl bundes- als auch kantonalseitig und interleaved die Treffer. Ohne <code style="font-size:13px">canton</code>-Filter werden Bundes- und Kantonstreffer alternierend zurückgegeben; mit Filter wird auf den jeweiligen Rechtskreis beschränkt.',
     gesetze_cantonal_get: 'Liefert Art. 1 des Zürcher Hundegesetzes aus <code style="font-size:13px">cantonal_laws.db</code>. Die <code style="font-size:13px">canton</code>-Parameter akzeptieren alle 26 Kantons-Codes (ZH, BE, LU, …, GE, JU).',
@@ -3377,7 +3377,7 @@ const I18N = {
     stats_not_loaded: 'Impossible de charger les statistiques.',
   
     gesetze_cantonal_heading: 'Actes cantonaux — miroir direct des portails + repli LexFind',
-    gesetze_cantonal_intro: 'La législation cantonale vient de deux sources. <strong>Primaire</strong> : 19 cantons sont scrapés directement depuis leurs recueils officiels — via les plateformes LexWork et SIL que les cantons utilisent eux-mêmes pour publier. Le contenu est parsé en HTML natif (aucune extraction PDF, aucun OCR) et donne des données article-par-article propres. <strong>Repli</strong> : pour les 7 cantons restants (ainsi que pour les actes absents du miroir direct), OpenCaseLaw extrait les PDF de <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> avec PyMuPDF. L\'ensemble est stocké dans <code style="font-size:13px">cantonal_laws.db</code> (15&rsquo;722 actes / 353&rsquo;464 articles) et fédéré via SQLite-FTS5 avec la table du droit fédéral.',
+    gesetze_cantonal_intro: 'La législation cantonale vient de deux sources. <strong>Primaire</strong> : 22 cantons sont scrapés directement depuis leurs recueils officiels — via les plateformes LexWork et SIL que les cantons utilisent eux-mêmes pour publier. Le contenu est parsé en HTML natif (aucune extraction PDF, aucun OCR) et donne des données article-par-article propres. <strong>Repli</strong> : pour les 4 cantons restants (JU, SZ, UR, VD) (ainsi que pour les actes absents du miroir direct), OpenCaseLaw extrait les PDF de <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> avec PyMuPDF. L\'ensemble est stocké dans <code style="font-size:13px">cantonal_laws.db</code> (15&rsquo;722 actes / 353&rsquo;464 articles) et fédéré via SQLite-FTS5 avec la table du droit fédéral.',
     gesetze_cantonal_note: 'Pour les requêtes visant des actes pas encore présents dans le miroir local — par exemple des versions toutes récentes entre deux cycles de rafraîchissement — les outils MCP basculent de manière transparente sur l\'API live de LexFind et mettent la réponse en cache persistant (SQLite, TTL étagés : recherche 24 h, résolution SR 30 j, texte intégral 7 j). La recherche <code style="font-size:13px">search_legislation</code> utilise également le catalogue LexFind (33&rsquo;000+ textes incluant ordonnances et accords intercantonaux).',
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> interroge le miroir local tant au niveau fédéral que cantonal et entrelace les résultats. Sans filtre <code style="font-size:13px">canton</code>, les hits fédéraux et cantonaux sont renvoyés en alternance ; avec filtre, la recherche est limitée au périmètre choisi.',
     gesetze_cantonal_get: 'Renvoie l\'art. 1 de la loi zurichoise sur les chiens depuis <code style="font-size:13px">cantonal_laws.db</code>. Le paramètre <code style="font-size:13px">canton</code> accepte les 26 codes cantonaux (ZH, BE, LU, …, GE, JU).',
@@ -4159,7 +4159,7 @@ const I18N = {
   },
   en: {
     title:'Swiss Case Law Open Dataset',
-    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons \u2014 plus direct access to 5,510 federal laws and 15,722 cantonal enactments. Search instantly with AI or download the full dataset.',
+    subtitle:'The largest open dataset of Swiss court decisions from all federal courts and 26 cantons \u2014 plus direct access to 5,516 federal laws and 15,722 cantonal enactments. Search instantly with AI or download the full dataset.',
     loading:'Loading', kpi_decisions:'Decisions', kpi_courts:'Courts', kpi_cantons:'Cantons', kpi_languages:'Languages', kpi_coverage:'Coverage',
     federal:'Federal', cantonal:'Cantonal', cantons:'Cantons', access:'Access the Data',
     th_court:'Court', th_canton:'Canton', th_decisions:'Decisions', th_updated:'New Data', th_languages:'Languages',
@@ -4190,7 +4190,7 @@ const I18N = {
     landing_card_mcp_desc:'31 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. Configuration via MCP URL.',
     landing_card_mcp_cta:'MCP setup \u2192',
     landing_what_title:'What is OpenCaseLaw?',
-    landing_what_1:'Swiss legal research today is fragmented, mostly behind paywalls, and hard to reach for language models. Students can’t afford commercial databases, and LLMs hallucinate statute text because they have no authoritative source. OpenCaseLaw makes <strong>every publicly published Swiss court decision</strong> and the current text of ~5,000 federal laws and ~30,000 cantonal acts freely available in a searchable, citation-linked, machine-readable format — public-domain data (CC0), open-source infrastructure (MIT), no sign-up.',
+    landing_what_1:'Swiss legal research today is fragmented, mostly behind paywalls, and hard to reach for language models. Students can’t afford commercial databases, and LLMs hallucinate statute text because they have no authoritative source. OpenCaseLaw makes <strong>every publicly published Swiss court decision</strong> and the current text of ~5,500 federal laws and ~30,000 cantonal acts freely available in a searchable, citation-linked, machine-readable format — public-domain data (CC0), open-source infrastructure (MIT), no sign-up.',
     landing_what_2:'The same infrastructure powers a public MCP server that gives language models direct access to <strong>31 specialised tools</strong>: decision search, citation graph (8.64 M edges, 6.50 M resolved), leading-case ranking, appeal-chain resolution, federal and cantonal statute lookup, doctrine timelines, commentary search, and Fallbearbeitung exam questions generated from real BGE decisions. Reachable via Claude, ChatGPT, Cursor, Gemini, REST API, Word add-in or Parquet download.',
     landing_stat_decisions:'decisions', landing_stat_courts:'courts', landing_stat_laws:'federal laws', landing_stat_cantonal:'cantonal acts', landing_stat_citations:'citation edges', landing_stat_updated:'Updated daily',
     word_desc:'<strong>For lawyers drafting legal briefs.</strong> Search decisions and <strong>insert correctly-formatted Swiss legal citations straight into Word</strong> — no copy-paste, with correct Erwägung and article references. Pro features: verify quoted passages against the actual decision text, find support for a statement, and auto-scan an entire document for legal references.',
@@ -4220,7 +4220,7 @@ const I18N = {
     snapshot_span_label:'Date span', snapshot_courts:'courts', snapshot_cantons:'cantons',
     snapshot_movers:'New since yesterday',
     cap_entscheide_desc:'971,000+ Swiss court decisions from 1875 to today, covering every federal court and all 26 cantons — plus regulators (FINMA, ComCo, FDPIC, IndepBC). BM25 + LLM-reranked full-text search, resolved citation graph with 8.64 M edges, 6.50 M resolved, appeal-chain resolution, leading-case ranking. BGer decisions available within 15 min of publication.',
-    cap_gesetze_desc:'~5,000 federal laws (132,586 articles, DE/FR/IT) from Fedlex — plus ~26,000 cantonal and intercantonal acts from LexFind, locally mirrored. Federated FTS5 full-text search across both levels, sub-millisecond article lookup, monthly refresh. 11.3 M references from decisions to individual statute articles.',
+    cap_gesetze_desc:'~5,500 federal laws (~133,468 articles, DE/FR/IT) from Fedlex — plus ~26,000 cantonal and intercantonal acts from LexFind, locally mirrored. Federated FTS5 full-text search across both levels, sub-millisecond article lookup, monthly refresh. 11.3 M references from decisions to individual statute articles.',
     cap_mcp_desc:'31 specialised MCP tools for natural-language legal research: search, citation graph, leading cases, doctrine timelines, statute lookup, Fallbearbeitung exam questions generated from real BGE decisions. Works with Claude, ChatGPT, Cursor and Gemini — plus REST API and Parquet download. The Word add-in is a dedicated practitioner interface (see below). 30 s setup, no registration, no API keys.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislation \u2192', cap_cta_mcp:'MCP setup \u2192',
     capabilities_heading:'Three ways in',
@@ -4273,7 +4273,7 @@ const I18N = {
     verify_link_repo:'Repository',
     verify_link_contact:'Institutional collaboration',
     gesetze_h1:'Swiss federal and cantonal legislation',
-    gesetze_sub:'5,000+ Swiss federal laws (132,586 articles in three official languages, full amendment history) from the Fedlex SPARQL endpoint, mirrored locally each month. 15,722 cantonal and intercantonal acts locally mirrored from LexFind, monthly refresh. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
+    gesetze_sub:'5,000+ Swiss federal laws (~133,468 articles in three official languages, full amendment history) from the Fedlex SPARQL endpoint, mirrored locally each month. 15,722 cantonal and intercantonal acts locally mirrored from LexFind, monthly refresh. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
     mcp_h1:'Connect AI agents',
     mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 971,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 31 specialized tools, no sign-up, no API keys.',
     ueber_h1:'About OpenCaseLaw',
@@ -4299,10 +4299,10 @@ const I18N = {
     examples_heading:'What you can do after connecting:',
     cap_search:'Search decisions in natural language — by keyword, topic, statute, or legal concept',
     cap_lookup:'Look up any decision by docket number — with full text and metadata',
-    cap_laws:'Retrieve the current text of 5,510 federal laws (132,586 articles, DE/FR/IT) — and search 15,722 cantonal enactments',
+    cap_laws:'Retrieve the current text of 5,516 federal laws (~133,468 articles, DE/FR/IT) — and search 15,722 cantonal enactments',
     leg_title:'Federal & Cantonal Legislation',
     leg_badge:'via MCP',
-    leg_desc:'Fedlex SPARQL endpoint mirrored monthly and indexed in SQLite (FTS5): 5,510 federal laws, 132,586 articles in DE/FR/IT, full amendment history. Cantonal legislation locally mirrored from LexFind (~30,000 acts, monthly refresh, live API as fallback). Article lookup in <1 ms.',
+    leg_desc:'Fedlex SPARQL endpoint mirrored monthly and indexed in SQLite (FTS5): 5,516 federal laws, ~133,468 articles in DE/FR/IT, full amendment history. Cantonal legislation locally mirrored from LexFind (~30,000 acts, monthly refresh, live API as fallback). Article lookup in <1 ms.',
     leg_ex_label_law:'Federal law (local)',
     leg_ex_label_cantonal:'Cantonal (Portale + LexFind)',
     leg_ex_label_browse:'Recent amendments',
@@ -4337,7 +4337,7 @@ const I18N = {
     stats_not_loaded: 'Could not load statistics.',
   
     gesetze_cantonal_heading: 'Cantonal acts — direct portal mirror + LexFind fallback',
-    gesetze_cantonal_intro: 'Cantonal legislation comes from two layers. <strong>Primary</strong>: 19 cantons are scraped directly from their official Gesetzessammlungen — via the LexWork and SIL platforms the cantons themselves operate. Content is parsed as native HTML (no PDF extraction, no OCR), producing clean article-level data. <strong>Fallback</strong>: for the remaining 7 cantons (and any act not in the direct mirror), OpenCaseLaw extracts PDFs from <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> with PyMuPDF. Both feed <code style="font-size:13px">cantonal_laws.db</code> (15&rsquo;722 acts / 353&rsquo;464 articles), federated via SQLite FTS5 with the federal statute table.',
+    gesetze_cantonal_intro: 'Cantonal legislation comes from two layers. <strong>Primary</strong>: 22 cantons are scraped directly from their official Gesetzessammlungen — via the LexWork and SIL platforms the cantons themselves operate. Content is parsed as native HTML (no PDF extraction, no OCR), producing clean article-level data. <strong>Fallback</strong>: for the remaining 4 cantons — JU, SZ, UR, VD — (and any act not in the direct mirror), OpenCaseLaw extracts PDFs from <a href="https://www.lexfind.ch" style="color:var(--ac)">lexfind.ch</a> with PyMuPDF. Both feed <code style="font-size:13px">cantonal_laws.db</code> (15&rsquo;722 acts / 353&rsquo;437 articles), federated via SQLite FTS5 with the federal statute table.',
     gesetze_cantonal_note: 'For queries against acts not yet in the local mirror — e.g. versions published between two refresh cycles — the MCP tools transparently fall back to the live LexFind API and persist the response (SQLite cache, tiered TTLs: search 24 h, SR resolution 30 d, full text 7 d). The <code style="font-size:13px">search_legislation</code> tool also uses the LexFind catalog (33&rsquo;000+ texts including ordinances and intercantonal agreements).',
     gesetze_cantonal_search: '<code style="font-size:13px">search_laws</code> queries the local mirror at both the federal and cantonal level and interleaves the hits. Without a <code style="font-size:13px">canton</code> filter, federal and cantonal matches are returned in alternation; with a filter, the search is restricted to that scope.',
     gesetze_cantonal_get: 'Returns Art. 1 of the Zurich dog act from <code style="font-size:13px">cantonal_laws.db</code>. The <code style="font-size:13px">canton</code> parameter accepts all 26 canton codes (ZH, BE, LU, …, GE, JU).',
