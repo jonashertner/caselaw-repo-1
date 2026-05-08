@@ -1,19 +1,19 @@
 {
-  "total_decisions": 970649,
+  "total_decisions": 971437,
   "total_courts": 108,
   "total_cantons": 28,
   "languages": [
     {
       "lang": "de",
-      "n": 449159
+      "n": 449575
     },
     {
       "lang": "fr",
-      "n": 440822
+      "n": 441158
     },
     {
       "lang": "it",
-      "n": 80668
+      "n": 80704
     }
   ],
   "date_min": "1875-01-01",
@@ -21,15 +21,15 @@
   "top20_courts": [
     {
       "court": "bger",
-      "n": 175164
+      "n": 175399
     },
     {
       "court": "ge_gerichte",
-      "n": 167724
+      "n": 167791
     },
     {
       "court": "bvger",
-      "n": 92139
+      "n": 92234
     },
     {
       "court": "vd_findinfo",
@@ -37,19 +37,19 @@
     },
     {
       "court": "ti_gerichte",
-      "n": 59372
+      "n": 59392
     },
     {
       "court": "vd_gerichte",
-      "n": 52915
+      "n": 52997
     },
     {
       "court": "bge",
-      "n": 35341
+      "n": 35345
     },
     {
       "court": "zh_sozialversicherungsgericht",
-      "n": 33842
+      "n": 33875
     },
     {
       "court": "vd_omni",
@@ -57,7 +57,7 @@
     },
     {
       "court": "zh_obergericht",
-      "n": 27605
+      "n": 27624
     },
     {
       "court": "ch_vb",
@@ -65,97 +65,97 @@
     },
     {
       "court": "bl_gerichte",
-      "n": 17026
+      "n": 17039
     },
     {
       "court": "gr_gerichte",
-      "n": 14502
+      "n": 14524
     },
     {
       "court": "fr_gerichte",
-      "n": 14276
+      "n": 14314
     },
     {
       "court": "zh_verwaltungsgericht",
-      "n": 11589
+      "n": 11595
     },
     {
       "court": "bstger",
-      "n": 11431
+      "n": 11440
     },
     {
       "court": "be_verwaltungsgericht",
-      "n": 11299
+      "n": 11314
     },
     {
       "court": "so_gerichte",
-      "n": 9041
+      "n": 9058
     },
     {
       "court": "bs_appellationsgericht",
-      "n": 8090
+      "n": 8102
     },
     {
       "court": "ne_gerichte",
-      "n": 7543
+      "n": 7557
     }
   ],
   "per_canton": [
     {
       "canton": "CH",
-      "n": 346515
+      "n": 346862
     },
     {
       "canton": "GE",
-      "n": 167726
+      "n": 167793
     },
     {
       "canton": "VD",
-      "n": 155766
+      "n": 155848
     },
     {
       "canton": "ZH",
-      "n": 83342
+      "n": 83413
     },
     {
       "canton": "TI",
-      "n": 59372
+      "n": 59392
     },
     {
       "canton": "BE",
-      "n": 20319
+      "n": 20334
     },
     {
       "canton": "BL",
-      "n": 17026
+      "n": 17039
     },
     {
       "canton": "SG",
-      "n": 16223
+      "n": 16239
     },
     {
       "canton": "GR",
-      "n": 14502
+      "n": 14524
     },
     {
       "canton": "FR",
-      "n": 14276
+      "n": 14314
     },
     {
       "canton": "AG",
-      "n": 12332
+      "n": 12362
     },
     {
       "canton": "BS",
-      "n": 10182
+      "n": 10194
     },
     {
       "canton": "SO",
-      "n": 9041
+      "n": 9058
     },
     {
       "canton": "NE",
-      "n": 7543
+      "n": 7557
     },
     {
       "canton": "VS",
@@ -163,7 +163,7 @@
     },
     {
       "canton": "SZ",
-      "n": 5420
+      "n": 5422
     },
     {
       "canton": "AR",
@@ -179,7 +179,7 @@
     },
     {
       "canton": "ZG",
-      "n": 2578
+      "n": 2581
     },
     {
       "canton": "OW",
@@ -187,7 +187,7 @@
     },
     {
       "canton": "CE",
-      "n": 1424
+      "n": 1435
     },
     {
       "canton": "SH",
@@ -195,7 +195,7 @@
     },
     {
       "canton": "GL",
-      "n": 1406
+      "n": 1407
     },
     {
       "canton": "UR",
@@ -203,7 +203,7 @@
     },
     {
       "canton": "JU",
-      "n": 1083
+      "n": 1090
     },
     {
       "canton": "NW",
@@ -214,226 +214,273 @@
       "n": 178
     }
   ],
-  "rg_decisions": 970638,
-  "rg_citation_edges": 8631561,
-  "rg_resolved_citations": 6486541,
-  "rg_statute_edges": 11243266,
-  "rg_distinct_statutes": 282956,
-  "rg_citing_decisions": 789653,
-  "rg_distinct_targets": 210605,
+  "echr": {
+    "total": 2788,
+    "by_court": [
+      {
+        "court": "ecthr_chamber",
+        "n": 1153
+      },
+      {
+        "court": "hudoc_ch",
+        "n": 835
+      },
+      {
+        "court": "bge_egmr",
+        "n": 477
+      },
+      {
+        "court": "ecthr_committee",
+        "n": 230
+      },
+      {
+        "court": "ecthr_grand_chamber",
+        "n": 93
+      }
+    ],
+    "recent_years": [
+      {
+        "year": "2026",
+        "n": 87
+      },
+      {
+        "year": "2025",
+        "n": 145
+      },
+      {
+        "year": "2024",
+        "n": 106
+      },
+      {
+        "year": "2023",
+        "n": 63
+      },
+      {
+        "year": "2022",
+        "n": 59
+      }
+    ]
+  },
+  "rg_decisions": 971377,
+  "rg_citation_edges": 8643604,
+  "rg_resolved_citations": 6496170,
+  "rg_statute_edges": 11255077,
+  "rg_distinct_statutes": 283052,
+  "rg_citing_decisions": 673997,
+  "rg_distinct_targets": 210895,
   "top30_cited": [
     {
       "target_id": "bge_BGE_125_V_351",
-      "in_degree": 53251
+      "in_degree": 60650
     },
     {
       "target_id": "bge_BGE_134_V_231",
-      "in_degree": 35291
+      "in_degree": 35534
     },
     {
       "target_id": "bge_BGE_122_V_157",
-      "in_degree": 27054
+      "in_degree": 27748
     },
     {
       "target_id": "bge_BGE_130_V_343",
-      "in_degree": 21210
+      "in_degree": 21778
     },
     {
       "target_id": "bge_BGE_137_V_210",
-      "in_degree": 19465
+      "in_degree": 20073
     },
     {
       "target_id": "bge_BGE_135_V_465",
-      "in_degree": 18964
-    },
-    {
-      "target_id": "bge_BGE_138_III_374",
-      "in_degree": 18135
-    },
-    {
-      "target_id": "bge_BGE_133_II_249",
-      "in_degree": 16400
-    },
-    {
-      "target_id": "bge_BGE_125_V_256",
-      "in_degree": 15991
+      "in_degree": 20070
     },
     {
       "target_id": "bge_BGE_141_V_281",
-      "in_degree": 15953
+      "in_degree": 18760
+    },
+    {
+      "target_id": "bge_BGE_138_III_374",
+      "in_degree": 18214
     },
     {
       "target_id": "bge_BGE_126_V_75",
-      "in_degree": 15709
+      "in_degree": 17421
     },
     {
-      "target_id": "bge_BGE_133_V_108",
-      "in_degree": 15664
-    },
-    {
-      "target_id": "bge_BGE_126_V_353",
-      "in_degree": 15354
+      "target_id": "bge_BGE_133_II_249",
+      "in_degree": 17053
     },
     {
       "target_id": "bge_BGE_115_V_133",
-      "in_degree": 15273
+      "in_degree": 16028
+    },
+    {
+      "target_id": "bge_BGE_125_V_256",
+      "in_degree": 15997
+    },
+    {
+      "target_id": "bge_BGE_133_V_108",
+      "in_degree": 15962
+    },
+    {
+      "target_id": "bge_BGE_126_V_353",
+      "in_degree": 15377
     },
     {
       "target_id": "bge_BGE_125_V_413",
-      "in_degree": 14903
+      "in_degree": 15247
     },
     {
       "target_id": "bge_BGE_125_V_193",
-      "in_degree": 14667
+      "in_degree": 14926
     },
     {
       "target_id": "bge_BGE_136_I_229",
-      "in_degree": 14274
+      "in_degree": 14453
     },
     {
       "target_id": "bge_BGE_130_III_321",
-      "in_degree": 14062
+      "in_degree": 14159
     },
     {
       "target_id": "bge_BGE_132_V_93",
-      "in_degree": 13203
+      "in_degree": 13542
     },
     {
       "target_id": "bge_BGE_134_II_244",
-      "in_degree": 12669
+      "in_degree": 13187
     },
     {
       "target_id": "bge_BGE_134_I_140",
-      "in_degree": 12022
-    },
-    {
-      "target_id": "bge_BGE_127_I_38",
-      "in_degree": 11433
+      "in_degree": 12113
     },
     {
       "target_id": "bge_BGE_129_V_177",
-      "in_degree": 11321
+      "in_degree": 11868
+    },
+    {
+      "target_id": "bge_BGE_127_I_38",
+      "in_degree": 11636
     },
     {
       "target_id": "bge_BGE_140_III_86",
-      "in_degree": 10892
+      "in_degree": 11019
+    },
+    {
+      "target_id": "bge_BGE_134_V_322",
+      "in_degree": 10696
     },
     {
       "target_id": "bge_BGE_134_I_83",
-      "in_degree": 10453
+      "in_degree": 10565
     },
     {
       "target_id": "bge_BGE_129_V_222",
-      "in_degree": 10200
+      "in_degree": 10362
     },
     {
       "target_id": "bge_BGE_140_I_285",
-      "in_degree": 10101
+      "in_degree": 10123
     },
     {
-      "target_id": "bge_BGE_130_V_445",
-      "in_degree": 9994
+      "target_id": "bge_BGE_140_III_264",
+      "in_degree": 10113
     },
     {
       "target_id": "bge_BGE_131_V_164",
-      "in_degree": 9988
-    },
-    {
-      "target_id": "bge_BGE_137_I_195",
-      "in_degree": 9866
+      "in_degree": 10023
     }
   ],
   "in_degree_buckets": [
     {
       "bucket": "10000+",
-      "n": 27
+      "n": 32
     },
     {
       "bucket": "1000-9999",
-      "n": 854
+      "n": 856
     },
     {
       "bucket": "100-999",
-      "n": 7654
+      "n": 7713
     },
     {
       "bucket": "10-99",
-      "n": 49738
+      "n": 49802
     },
     {
       "bucket": "2-9",
-      "n": 87752
+      "n": 87863
     },
     {
       "bucket": "1",
-      "n": 64580
+      "n": 64629
     }
   ],
   "match_types": [
     {
       "type": "bge_bare",
-      "n": 2934536
+      "n": 2938626
     },
     {
       "type": "docket_norm",
-      "n": 2340826
+      "n": 2344588
     },
     {
       "type": "bge_norm",
-      "n": 1211179
+      "n": 1212956
     }
   ],
   "cross_lang_matrix": [
     {
       "src": "de",
       "tgt": "de",
-      "n": 2158054
+      "n": 2161704
     },
     {
       "src": "fr",
       "tgt": "fr",
-      "n": 1986377
+      "n": 1989062
     },
     {
       "src": "fr",
       "tgt": "de",
-      "n": 1653940
+      "n": 1656008
     },
     {
       "src": "de",
       "tgt": "fr",
-      "n": 374228
+      "n": 374869
     },
     {
       "src": "it",
       "tgt": "de",
-      "n": 128432
+      "n": 128707
     },
     {
       "src": "it",
       "tgt": "fr",
-      "n": 72639
+      "n": 72801
     },
     {
       "src": "fr",
       "tgt": "it",
-      "n": 52060
+      "n": 52123
     },
     {
       "src": "it",
       "tgt": "it",
-      "n": 35625
+      "n": 35682
     },
     {
       "src": "de",
       "tgt": "it",
-      "n": 25186
+      "n": 25214
     }
   ],
-  "fed_laws": 5510,
-  "fed_articles": 398397,
+  "fed_laws": 5516,
+  "fed_articles": 400405,
   "cantonal_laws": 15722,
-  "cantonal_articles": 353464,
+  "cantonal_articles": 353437,
   "cantonal_per_canton": [
     {
       "canton": "VD",
@@ -449,7 +496,7 @@
     },
     {
       "canton": "BS",
-      "n": 858
+      "n": 857
     },
     {
       "canton": "BL",
@@ -461,7 +508,7 @@
     },
     {
       "canton": "SG",
-      "n": 725
+      "n": 727
     },
     {
       "canton": "FR",
@@ -469,11 +516,11 @@
     },
     {
       "canton": "BE",
-      "n": 694
+      "n": 692
     },
     {
       "canton": "VS",
-      "n": 685
+      "n": 686
     },
     {
       "canton": "TI",
@@ -481,7 +528,7 @@
     },
     {
       "canton": "ZG",
-      "n": 616
+      "n": 617
     },
     {
       "canton": "SZ",
@@ -497,11 +544,11 @@
     },
     {
       "canton": "GL",
-      "n": 481
+      "n": 480
     },
     {
       "canton": "TG",
-      "n": 457
+      "n": 459
     },
     {
       "canton": "SH",
@@ -513,7 +560,7 @@
     },
     {
       "canton": "AG",
-      "n": 406
+      "n": 405
     },
     {
       "canton": "NW",
@@ -525,7 +572,7 @@
     },
     {
       "canton": "SO",
-      "n": 389
+      "n": 388
     },
     {
       "canton": "GR",
@@ -544,152 +591,152 @@
     {
       "law_code": "LTF",
       "article": "100",
-      "n": 191946
+      "n": 192524
+    },
+    {
+      "law_code": "LTF",
+      "article": "42",
+      "n": 112815
     },
     {
       "law_code": "LTF",
       "article": "113",
-      "n": 110418
-    },
-    {
-      "law_code": "LTF",
-      "article": "42",
-      "n": 106448
+      "n": 110490
     },
     {
       "law_code": "BGG",
       "article": "42",
-      "n": 95008
+      "n": 100182
     },
     {
       "law_code": "BGG",
       "article": "66",
-      "n": 64332
+      "n": 66188
     },
     {
       "law_code": "LTF",
       "article": "72",
-      "n": 56518
+      "n": 56916
     },
     {
       "law_code": "LPGA",
       "article": "61",
-      "n": 55215
-    },
-    {
-      "law_code": "LTF",
-      "article": "82",
-      "n": 52710
-    },
-    {
-      "law_code": "LTF",
-      "article": "74",
-      "n": 49930
+      "n": 55429
     },
     {
       "law_code": "VWVG",
       "article": "63",
-      "n": 45300
+      "n": 55327
+    },
+    {
+      "law_code": "LTF",
+      "article": "82",
+      "n": 52762
+    },
+    {
+      "law_code": "BGG",
+      "article": "106",
+      "n": 51365
+    },
+    {
+      "law_code": "ASYLG",
+      "article": "3",
+      "n": 51282
+    },
+    {
+      "law_code": "LTF",
+      "article": "74",
+      "n": 51056
     },
     {
       "law_code": "CST",
       "article": "29",
-      "n": 43116
+      "n": 48298
     },
     {
-      "law_code": "VWVG",
-      "article": "52",
-      "n": 41892
-    },
-    {
-      "law_code": "LPGA",
-      "article": "60",
-      "n": 41871
+      "law_code": "IVG",
+      "article": "28",
+      "n": 47092
     },
     {
       "law_code": "BGG",
-      "article": "106",
-      "n": 40508
-    },
-    {
-      "law_code": "CPP",
-      "article": "428",
-      "n": 40243
-    },
-    {
-      "law_code": "BGG",
-      "article": "95",
-      "n": 39592
-    },
-    {
-      "law_code": "LTF",
-      "article": "78",
-      "n": 37195
-    },
-    {
-      "law_code": "BGG",
-      "article": "90",
-      "n": 36194
-    },
-    {
-      "law_code": "BV",
-      "article": "29",
-      "n": 36021
-    },
-    {
-      "law_code": "VWVG",
-      "article": "5",
-      "n": 35277
-    },
-    {
-      "law_code": "ASYLG",
-      "article": "106",
-      "n": 35246
-    },
-    {
-      "law_code": "ASYLG",
       "article": "105",
-      "n": 34037
-    },
-    {
-      "law_code": "CPC",
-      "article": "106",
-      "n": 33245
-    },
-    {
-      "law_code": "BGG",
-      "article": "46",
-      "n": 33169
-    },
-    {
-      "law_code": "LTF",
-      "article": "66",
-      "n": 33096
-    },
-    {
-      "law_code": "VGG",
-      "article": "37",
-      "n": 32989
-    },
-    {
-      "law_code": "VWVG",
-      "article": "48",
-      "n": 32912
-    },
-    {
-      "law_code": "ATSG",
-      "article": "61",
-      "n": 29893
-    },
-    {
-      "law_code": "LPGA",
-      "article": "56",
-      "n": 29472
+      "n": 46018
     },
     {
       "law_code": "LPA",
       "article": "87",
-      "n": 28937
+      "n": 45467
+    },
+    {
+      "law_code": "ASYLG",
+      "article": "106",
+      "n": 45102
+    },
+    {
+      "law_code": "LPGA",
+      "article": "60",
+      "n": 43630
+    },
+    {
+      "law_code": "CPP",
+      "article": "428",
+      "n": 42725
+    },
+    {
+      "law_code": "VWVG",
+      "article": "52",
+      "n": 42637
+    },
+    {
+      "law_code": "CPC",
+      "article": "308",
+      "n": 42087
+    },
+    {
+      "law_code": "BV",
+      "article": "29",
+      "n": 41376
+    },
+    {
+      "law_code": "ATSG",
+      "article": "7",
+      "n": 41078
+    },
+    {
+      "law_code": "AUG",
+      "article": "83",
+      "n": 39932
+    },
+    {
+      "law_code": "BGG",
+      "article": "95",
+      "n": 39696
+    },
+    {
+      "law_code": "CPC",
+      "article": "106",
+      "n": 38054
+    },
+    {
+      "law_code": "LTF",
+      "article": "78",
+      "n": 37398
+    },
+    {
+      "law_code": "BGG",
+      "article": "90",
+      "n": 36248
+    },
+    {
+      "law_code": "VWVG",
+      "article": "5",
+      "n": 36176
+    },
+    {
+      "law_code": "LAI",
+      "article": "28",
+      "n": 36002
     }
   ],
   "commentaries_total": 362,
@@ -698,5 +745,93 @@
       "lang": "de",
       "n": 362
     }
+  ],
+  "materialien": {
+    "docs_total": 5292,
+    "docs_by_lang": [
+      {
+        "lang": "fr",
+        "n": 1765
+      },
+      {
+        "lang": "it",
+        "n": 1764
+      },
+      {
+        "lang": "de",
+        "n": 1763
+      }
+    ],
+    "year_min": 2003,
+    "year_max": 2026,
+    "paragraphs": 381711,
+    "article_links": 8124,
+    "article_links_by_lang": [
+      {
+        "lang": "de",
+        "n": 2798
+      },
+      {
+        "lang": "fr",
+        "n": 2742
+      },
+      {
+        "lang": "it",
+        "n": 2584
+      }
+    ],
+    "legacy_curated": 167
+  },
+  "cantonal_text_sources": [
+    {
+      "source": "lexwork",
+      "n": 9736
+    },
+    {
+      "source": "lexfind_pdf",
+      "n": 3545
+    },
+    {
+      "source": "sil",
+      "n": 1686
+    },
+    {
+      "source": "ti_rl",
+      "n": 620
+    },
+    {
+      "source": "zhlex_pdf",
+      "n": 135
+    }
+  ],
+  "cantonal_direct_cantons": [
+    "AG",
+    "AI",
+    "AR",
+    "BE",
+    "BL",
+    "BS",
+    "FR",
+    "GE",
+    "GL",
+    "GR",
+    "LU",
+    "NE",
+    "NW",
+    "OW",
+    "SG",
+    "SH",
+    "SO",
+    "TG",
+    "TI",
+    "VS",
+    "ZG",
+    "ZH"
+  ],
+  "cantonal_fallback_cantons": [
+    "JU",
+    "SZ",
+    "UR",
+    "VD"
   ]
 }
