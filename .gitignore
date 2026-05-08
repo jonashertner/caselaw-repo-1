@@ -48,3 +48,27 @@ desktop_extension/
 search_stack/finetune_embeddings.py
 test_publish_order.py
 tools/word-addin/screenshots/
+
+# Coding-agent metadata (per-machine, ephemeral)
+.claude/
+.superpowers/
+
+# Release artifacts (built locally, not source-of-truth)
+artifacts/
+docs/paper/v3/opencaselaw-arxiv-*.tar.gz
+docs/paper/v3/paper.aux
+docs/paper/v3/paper.bbl
+docs/paper/v3/paper.blg
+docs/paper/v3/paper.log
+docs/paper/v3/paper.out
+docs/paper/v3/.tectonic-cache/
+TECHNICAL_OVERVIEW.txt
+
+# Local platform-specific config (hard-coded user paths)
+scripts/ne-scraper-local.plist
+
+# Out-of-tree binaries (re-fetch via release tooling, do NOT commit)
+tools/mcp-publisher
+
+# Per-launch operational notes that don't belong in source-control
+tools/word-addin/partner-center-resubmission-*.txt

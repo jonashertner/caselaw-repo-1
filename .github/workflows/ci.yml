@@ -50,3 +50,58 @@ jobs:
 
       - name: Quality-control check discovery
         run: python -m quality.cli list
+
+      - name: Wheel build + content verification
+        run: |
+          pip install --quiet build
+          python -m build --wheel --no-isolation
+          python - <<'PY'
+          import sys, zipfile
+          z = zipfile.ZipFile('dist/swiss_caselaw_scrapers-0.1.0-py3-none-any.whl')
+          required = ('quality/', 'web_api/', 'study/', 'scrapers/', 'search_stack/', 'mcp_server.py')
+          missing = [r for r in required if not any(n.startswith(r) or n == r for n in z.namelist())]
+          if missing:
+              print('FAIL: wheel missing', missing)
+              sys.exit(1)
+          print('OK: wheel ships', len(required), 'required modules')
+          PY
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: web_ui exists?
+        id: web
+        run: |
+          if [ -f web_ui/package.json ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v5
+        if: steps.web.outputs.build == 'true'
+        with:
+          node-version: '20'
+      - name: web_ui build
+        if: steps.web.outputs.build == 'true'
+        working-directory: web_ui
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install Tectonic
+        # Tectonic is a hermetic LaTeX engine; one-binary install, fetches
+        # packages on demand. Catches regressions like the underscore-package
+        # / hyperref clash that broke the v3 paper compile in 2026-05.
+        run: |
+          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+          sudo mv tectonic /usr/local/bin/
+      - name: Compile docs/paper/v3/paper.tex
+        working-directory: docs/paper/v3
+        run: tectonic --keep-logs paper.tex
