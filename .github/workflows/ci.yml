@@ -53,7 +53,10 @@ jobs:
 
       - name: Wheel build + content verification
         run: |
-          pip install --quiet build
+          # `--no-isolation` reuses the runner's Python env, which is fast
+          # but means setuptools + wheel must be present (otherwise:
+          # "Backend 'setuptools.build_meta' is not available").
+          pip install --quiet build setuptools wheel
           python -m build --wheel --no-isolation
           python - <<'PY'
           import sys, zipfile
