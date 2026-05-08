@@ -1433,6 +1433,16 @@ def main():
 
     # Summary — distinguish OK / FAILED / SKIPPED so cascade-skipped
     # steps don't masquerade as outright failures.
+    #
+    # Stale-source caveat: when Step 2 (Build FTS5) fails, the linear
+    # path keeps going and Steps 2b-g / 3 / 7 / 5 may still complete
+    # successfully — but they ran against the *previous-good*
+    # decisions.db (atomic-swap didn't happen). Mark those "OK
+    # (stale source)" so the summary doesn't read green for a run
+    # whose data layer never refreshed.
+    fts5_failed = results.get(2) is False
+    STALE_DOWNSTREAM = {"2b", "2c", "2d", "2e", "2f", "2g", 3, 7, 5}
+
     total_elapsed = time.time() - start
     failed_steps = []
     non_fatal_failures = []
@@ -1442,7 +1452,10 @@ def main():
             continue
         outcome = results[num]
         if outcome is True:
-            status = "OK"
+            if fts5_failed and num in STALE_DOWNSTREAM:
+                status = "OK (stale source — Step 2 FAILED)"
+            else:
+                status = "OK"
         elif outcome == "skipped_cascade":
             status = "SKIPPED (cascade)"
         elif outcome is False:
