@@ -32,7 +32,7 @@ import re
 import subprocess
 import sys
 import time
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_DIR = Path(__file__).resolve().parents[1]
@@ -125,6 +125,65 @@ def _save_state(today: str, dockets: set[str]):
         "dockets": sorted(dockets),
         "checked_at": datetime.now(timezone.utc).isoformat(),
     }))
+
+
+def _recently_ingested_dockets(window_seconds: int = 3600) -> set[str]:
+    """Return docket_numbers in bger.jsonl whose ``scraped_at`` is within
+    the last ``window_seconds`` seconds.
+
+    The poller uses this to confirm that a triggered scraper actually
+    saved its targets to JSONL. Dockets that BGer's document-service
+    returns as error pages (the chronic failure mode 2026-05-08 onward)
+    never make it into JSONL — those should NOT be marked "seen" so
+    the next poll retries them. Naturally bounded: BGer rotates older
+    decisions off the Neuheiten feed, so a permanent doc-service
+    failure stops being retried within ~24h.
+
+    Reads the last ``tail_bytes`` of the file (default 8 MB). A typical
+    BGer decision JSONL row is 30–80 KB (full_text + metadata), so 8 MB
+    holds ~100–200 rows — comfortable for any plausible poller batch
+    (Neuheiten exposes ~30 dockets / day at peak). Earlier 256 KB cap
+    silently truncated batches with substantial text bodies and made
+    the success/fail accounting wrong (2026-05-08: 14 of 27 ingested
+    rows were misreported as 'not in JSONL').
+    """
+    p = REPO_DIR / "output" / "decisions" / "bger.jsonl"
+    if not p.exists():
+        return set()
+    cutoff = datetime.now(timezone.utc) - timedelta(seconds=window_seconds)
+    tail_bytes = 8 * 1024 * 1024  # 8 MB
+    out: set[str] = set()
+    try:
+        with open(p, "rb") as f:
+            f.seek(0, 2)
+            size = f.tell()
+            seek_back = min(tail_bytes, size)
+            f.seek(size - seek_back, 0)
+            chunk = f.read().decode("utf-8", errors="replace")
+        # Drop first partial line if we seeked into the middle of one.
+        if seek_back == tail_bytes and "\n" in chunk:
+            chunk = chunk.split("\n", 1)[1]
+        for line in chunk.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+            except Exception:
+                continue
+            sa = d.get("scraped_at")
+            dn = d.get("docket_number")
+            if not sa or not dn:
+                continue
+            try:
+                sa_dt = datetime.fromisoformat(sa.replace("Z", "+00:00"))
+            except Exception:
+                continue
+            if sa_dt >= cutoff:
+                out.add(dn)
+    except Exception as e:
+        logger.warning("could not scan bger.jsonl tail: %s", e)
+    return out
 
 
 def _trigger_scraper():
@@ -377,12 +436,33 @@ def main():
     new_dockets = current_dockets - prev_dockets
 
     if new_dockets:
-        logger.info("NEW decisions detected: %d (%s)", len(new_dockets), ", ".join(sorted(new_dockets)[:5]))
-        _save_state(today_iso, current_dockets)
-        if not args.dry_run:
-            _trigger_scraper()
-        else:
+        logger.info(
+            "NEW decisions detected: %d (%s)",
+            len(new_dockets), ", ".join(sorted(new_dockets)[:5]),
+        )
+        if args.dry_run:
             logger.info("[dry-run] Would trigger BGer scraper")
+            _save_state(today_iso, current_dockets)
+        else:
+            _trigger_scraper()
+            # Confirm which dockets ACTUALLY landed in JSONL (BGer's
+            # document-service intermittently returns error pages for
+            # freshly-Neuheiten'd dockets — those return None from the
+            # scraper and never reach JSONL). Mark only the ingested
+            # subset as "seen"; the rest stay un-seen so the next poll
+            # retries them. Naturally bounded by Neuheiten rotation.
+            ingested_recent = _recently_ingested_dockets(window_seconds=3600)
+            seen_state = prev_dockets | (current_dockets & ingested_recent)
+            _save_state(today_iso, seen_state)
+            unsaved = new_dockets - ingested_recent
+            if unsaved:
+                logger.warning(
+                    "%d/%d new dockets NOT in JSONL (likely BGer "
+                    "doc-service error pages); will retry next poll. "
+                    "First few: %s",
+                    len(unsaved), len(new_dockets),
+                    ", ".join(sorted(unsaved)[:5]),
+                )
     else:
         logger.info("No new decisions since last check")
         _save_state(today_iso, current_dockets)

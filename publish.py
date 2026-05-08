@@ -1407,6 +1407,31 @@ def main():
         try:
             if num == 2:
                 ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
+                # Once Step 2 (Build FTS5) completes — including the
+                # atomic swap inside build_fts5.py — the post-build
+                # steps (2b–2g, 3, 5, 6, 7) only READ decisions.db and
+                # WRITE to derived DBs (reference_graph.db,
+                # materialien.db, decision_structure.db, parquet/, …).
+                # Holding the publish lock for the full 5–10h post-
+                # build run blocks the BGer poller from inserting fresh
+                # decisions all day (2026-05-08 incident: 27 Neuheiten
+                # dockets stuck for hours because quick_publish
+                # observed the lock and skipped).
+                #
+                # Release here so quick_publish unblocks. The post-
+                # build readers use ``?immutable=1`` so any subsequent
+                # quick_publish atomic-swap is invisible to their open
+                # connections (Linux inode semantics: replaced file
+                # gets a new inode; existing fd keeps the old).
+                if ok and not args.dry_run:
+                    try:
+                        fcntl.flock(lock_file, fcntl.LOCK_UN)
+                        logger.info(
+                            "  publish lock released after Step 2 swap "
+                            "— quick_publish unblocked for post-build window"
+                        )
+                    except (OSError, ValueError):
+                        pass
             elif num in ("2b", "2c", "2d", "2e", "2f", "2g"):
                 ok = func(
                     dry_run=args.dry_run,
