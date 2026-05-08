@@ -157,10 +157,12 @@ Open commentaries (CC-BY) & {fmt_int(s['commentaries_total'])} \\\\
 rows = []
 for r in s["top30_cited"][:15]:
     tid = r["target_id"]
-    # bge_BGE_125_V_351 → BGE 125 V 351
+    # Render as BGE/ATF/DTF reporter form regardless of the underlying
+    # decision_id encoding ("bge_BGE_125_V_351" or "bge_125 V 351").
     if tid.startswith("bge_BGE_"):
-        parts = tid[len("bge_BGE_"):].split("_")
-        reporter = "BGE " + " ".join(parts)
+        reporter = "BGE " + " ".join(tid[len("bge_BGE_"):].split("_"))
+    elif tid.startswith("bge_"):
+        reporter = "BGE " + tid[len("bge_"):].replace("_", " ")
     else:
         reporter = tid
     tid_tex = tid.replace("_", "\\_")

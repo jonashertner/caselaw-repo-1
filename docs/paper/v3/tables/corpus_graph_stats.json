@@ -261,220 +261,224 @@
       }
     ]
   },
-  "rg_decisions": 971377,
-  "rg_citation_edges": 8643604,
-  "rg_resolved_citations": 6496170,
-  "rg_statute_edges": 11255077,
-  "rg_distinct_statutes": 283052,
-  "rg_citing_decisions": 673997,
-  "rg_distinct_targets": 210895,
+  "rg_decisions": 1142711,
+  "rg_citation_edges": 9859842,
+  "rg_resolved_citations": 9216226,
+  "rg_statute_edges": 12606786,
+  "rg_distinct_statutes": 295588,
+  "rg_citing_decisions": 836482,
+  "rg_distinct_targets": 292373,
   "top30_cited": [
     {
-      "target_id": "bge_BGE_125_V_351",
-      "in_degree": 60650
+      "target_id": "bge_125 V 351",
+      "in_degree": 76640
     },
     {
-      "target_id": "bge_BGE_134_V_231",
-      "in_degree": 35534
+      "target_id": "bge_122 V 157",
+      "in_degree": 48037
     },
     {
-      "target_id": "bge_BGE_122_V_157",
-      "in_degree": 27748
+      "target_id": "bge_134 V 231",
+      "in_degree": 41459
     },
     {
-      "target_id": "bge_BGE_130_V_343",
-      "in_degree": 21778
+      "target_id": "bge_130 V 343",
+      "in_degree": 31278
     },
     {
-      "target_id": "bge_BGE_137_V_210",
-      "in_degree": 20073
+      "target_id": "bge_125 V 256",
+      "in_degree": 26450
     },
     {
-      "target_id": "bge_BGE_135_V_465",
-      "in_degree": 20070
+      "target_id": "bge_115 V 133",
+      "in_degree": 25633
     },
     {
-      "target_id": "bge_BGE_141_V_281",
-      "in_degree": 18760
+      "target_id": "bge_125 V 193",
+      "in_degree": 25588
     },
     {
-      "target_id": "bge_BGE_138_III_374",
-      "in_degree": 18214
+      "target_id": "bge_126 V 353",
+      "in_degree": 24511
     },
     {
-      "target_id": "bge_BGE_126_V_75",
-      "in_degree": 17421
+      "target_id": "bge_135 V 465",
+      "in_degree": 23451
     },
     {
-      "target_id": "bge_BGE_133_II_249",
-      "in_degree": 17053
+      "target_id": "bge_137 V 210",
+      "in_degree": 23251
     },
     {
-      "target_id": "bge_BGE_115_V_133",
-      "in_degree": 16028
+      "target_id": "bge_126 V 75",
+      "in_degree": 22161
     },
     {
-      "target_id": "bge_BGE_125_V_256",
-      "in_degree": 15997
+      "target_id": "bge_138 III 374",
+      "in_degree": 19610
     },
     {
-      "target_id": "bge_BGE_133_V_108",
-      "in_degree": 15962
+      "target_id": "bge_130 III 321",
+      "in_degree": 19060
     },
     {
-      "target_id": "bge_BGE_126_V_353",
-      "in_degree": 15377
+      "target_id": "bge_125 V 413",
+      "in_degree": 18907
     },
     {
-      "target_id": "bge_BGE_125_V_413",
-      "in_degree": 15247
+      "target_id": "bge_141 V 281",
+      "in_degree": 18886
     },
     {
-      "target_id": "bge_BGE_125_V_193",
-      "in_degree": 14926
+      "target_id": "bge_133 V 108",
+      "in_degree": 18352
     },
     {
-      "target_id": "bge_BGE_136_I_229",
-      "in_degree": 14453
+      "target_id": "bge_132 V 93",
+      "in_degree": 18327
     },
     {
-      "target_id": "bge_BGE_130_III_321",
-      "in_degree": 14159
+      "target_id": "bge_133 II 249",
+      "in_degree": 16709
     },
     {
-      "target_id": "bge_BGE_132_V_93",
-      "in_degree": 13542
+      "target_id": "bge_129 V 177",
+      "in_degree": 16428
     },
     {
-      "target_id": "bge_BGE_134_II_244",
-      "in_degree": 13187
+      "target_id": "bge_119 V 335",
+      "in_degree": 16337
     },
     {
-      "target_id": "bge_BGE_134_I_140",
-      "in_degree": 12113
+      "target_id": "bge_127 V 466",
+      "in_degree": 16180
     },
     {
-      "target_id": "bge_BGE_129_V_177",
-      "in_degree": 11868
+      "target_id": "bge_136 I 229",
+      "in_degree": 15905
     },
     {
-      "target_id": "bge_BGE_127_I_38",
-      "in_degree": 11636
+      "target_id": "bge_127 V 294",
+      "in_degree": 15154
     },
     {
-      "target_id": "bge_BGE_140_III_86",
-      "in_degree": 11019
+      "target_id": "bge_114 V 310",
+      "in_degree": 15023
     },
     {
-      "target_id": "bge_BGE_134_V_322",
-      "in_degree": 10696
+      "target_id": "bge_129 V 222",
+      "in_degree": 14741
     },
     {
-      "target_id": "bge_BGE_134_I_83",
-      "in_degree": 10565
+      "target_id": "bge_121 V 362",
+      "in_degree": 13666
     },
     {
-      "target_id": "bge_BGE_129_V_222",
-      "in_degree": 10362
+      "target_id": "bge_129 V 1",
+      "in_degree": 13660
     },
     {
-      "target_id": "bge_BGE_140_I_285",
-      "in_degree": 10123
+      "target_id": "bge_128 V 29",
+      "in_degree": 13495
     },
     {
-      "target_id": "bge_BGE_140_III_264",
-      "in_degree": 10113
+      "target_id": "bge_134 I 140",
+      "in_degree": 13085
     },
     {
-      "target_id": "bge_BGE_131_V_164",
-      "in_degree": 10023
+      "target_id": "bge_124 V 90",
+      "in_degree": 13076
     }
   ],
   "in_degree_buckets": [
     {
       "bucket": "10000+",
-      "n": 32
+      "n": 49
     },
     {
       "bucket": "1000-9999",
-      "n": 856
+      "n": 1059
     },
     {
       "bucket": "100-999",
-      "n": 7713
+      "n": 11226
     },
     {
       "bucket": "10-99",
-      "n": 49802
+      "n": 76521
     },
     {
       "bucket": "2-9",
-      "n": 87863
+      "n": 116644
     },
     {
       "bucket": "1",
-      "n": 64629
+      "n": 86874
     }
   ],
   "match_types": [
     {
-      "type": "bge_bare",
-      "n": 2938626
-    },
-    {
       "type": "docket_norm",
-      "n": 2344588
+      "n": 7041179
     },
     {
       "type": "bge_norm",
-      "n": 1212956
+      "n": 2844706
+    },
+    {
+      "type": "bge_pincite",
+      "n": 859491
+    },
+    {
+      "type": "bge_bare",
+      "n": 17578
     }
   ],
   "cross_lang_matrix": [
     {
       "src": "de",
       "tgt": "de",
-      "n": 2161704
+      "n": 4563323
     },
     {
       "src": "fr",
       "tgt": "fr",
-      "n": 1989062
+      "n": 2576862
     },
     {
       "src": "fr",
       "tgt": "de",
-      "n": 1656008
+      "n": 2103276
     },
     {
       "src": "de",
       "tgt": "fr",
-      "n": 374869
+      "n": 708137
     },
     {
       "src": "it",
       "tgt": "de",
-      "n": 128707
+      "n": 419099
     },
     {
       "src": "it",
       "tgt": "fr",
-      "n": 72801
-    },
-    {
-      "src": "fr",
-      "tgt": "it",
-      "n": 52123
+      "n": 179125
     },
     {
       "src": "it",
       "tgt": "it",
-      "n": 35682
+      "n": 95912
+    },
+    {
+      "src": "fr",
+      "tgt": "it",
+      "n": 66240
     },
     {
       "src": "de",
       "tgt": "it",
-      "n": 25214
+      "n": 50980
     }
   ],
   "fed_laws": 5516,
@@ -833,5 +837,6 @@
     "SZ",
     "UR",
     "VD"
-  ]
+  ],
+  "rg_citation_target_links": 10762954
 }
