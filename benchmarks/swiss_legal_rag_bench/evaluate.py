@@ -130,23 +130,50 @@ def _mcp_get_statute_text(law_code: str, article: str, language: str = "de",
 
 # ── Generation (default: Claude) ───────────────────────────────────
 
+# Prior-only sentinel. When the bench runs with --prior-only the
+# generator never sees retrieved passages; the prompt is instead
+# crafted to prove the WORST-case condition: the LLM must answer
+# from training prior alone. Paper §8 reports the prior-only condition
+# as a stress test that maximises hallucinations.
+_PRIOR_ONLY_SENTINEL = "<PRIOR-ONLY: no passages provided>"
+
+
 def _claude_generate(query: str, retrieved_text: str,
                      model: str = "claude-sonnet-4-6",
                      api_key: str | None = None) -> str:
-    """Default generator. Strict instruction: answer using only the
-    retrieved passages. Returns the raw answer string."""
+    """Default generator. Two modes:
+
+    * Retrieval-augmented (default): system instructs the model to
+      answer using ONLY the retrieved passages. Citations attach to
+      passage labels (e.g. [P1]).
+    * Prior-only: ``retrieved_text`` is the ``_PRIOR_ONLY_SENTINEL``
+      and the system instructs the model to answer from its training
+      prior — the paper's stress condition. We do NOT add a 'cite the
+      passages' clause because there are none.
+    """
     import httpx
     api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return "[generator unavailable: ANTHROPIC_API_KEY not set]"
-    system = (
-        "You are a Swiss legal-research assistant. Answer the QUESTION "
-        "concisely using ONLY the RETRIEVED PASSAGES. If the passages "
-        "do not contain enough information, say so explicitly. Do not "
-        "rely on external knowledge. Cite the source(s) you used by "
-        "referencing the passage label (e.g. [P1])."
-    )
-    user = f"QUESTION:\n{query}\n\nRETRIEVED PASSAGES:\n{retrieved_text}"
+    if retrieved_text == _PRIOR_ONLY_SENTINEL:
+        system = (
+            "You are a Swiss legal-research assistant. Answer the "
+            "QUESTION concisely from your knowledge of Swiss law. "
+            "Cite the relevant statute article(s) and any leading "
+            "Swiss federal decisions you rely on (e.g. 'BGE 132 III "
+            "122'). If you are uncertain, say so explicitly rather "
+            "than guess."
+        )
+        user = f"QUESTION:\n{query}"
+    else:
+        system = (
+            "You are a Swiss legal-research assistant. Answer the QUESTION "
+            "concisely using ONLY the RETRIEVED PASSAGES. If the passages "
+            "do not contain enough information, say so explicitly. Do not "
+            "rely on external knowledge. Cite the source(s) you used by "
+            "referencing the passage label (e.g. [P1])."
+        )
+        user = f"QUESTION:\n{query}\n\nRETRIEVED PASSAGES:\n{retrieved_text}"
     with httpx.Client(timeout=60.0) as client:
         r = client.post(
             "https://api.anthropic.com/v1/messages",
@@ -242,44 +269,61 @@ def judge_groundedness(answer: str, retrieved_text: str) -> tuple[bool, str]:
 def evaluate_question(q: Question, *,
                       mcp_url: str,
                       top_k: int,
+                      prior_only: bool = False,
                       generator: Callable | None = None,
                       retriever: Callable | None = None) -> QuestionResult:
-    """Run the full pipeline on one question and decompose the error."""
+    """Run the full pipeline on one question and decompose the error.
+
+    Two conditions:
+      * Retrieval-augmented (default): retriever fetches top-K, statute
+        text is injected, generator answers grounded in passages.
+      * Prior-only (``prior_only=True``): retriever and statute lookup
+        are SKIPPED entirely; generator answers from training prior.
+        Paper §8 uses this as the worst-case stress test.
+    """
     retriever = retriever or _mcp_retrieve
     generator = generator or _claude_generate
 
-    # 1. Retrieval
-    t0 = time.perf_counter()
-    retrieved = retriever(q.question, q.language, top_k)
-    t_retrieve = (time.perf_counter() - t0) * 1000
+    if prior_only:
+        # Skip retrieval entirely — feed the generator only the question.
+        retrieved: list[dict] = []
+        retrieved_ids: list[str] = []
+        statute_passages: list[tuple[str, str]] = []
+        retrieved_text = _PRIOR_ONLY_SENTINEL
+        t_retrieve = 0.0
+    else:
+        # 1. Retrieval
+        t0 = time.perf_counter()
+        retrieved = retriever(q.question, q.language, top_k)
+        t_retrieve = (time.perf_counter() - t0) * 1000
 
-    retrieved_ids = [r["decision_id"] for r in retrieved if r.get("decision_id")]
+        retrieved_ids = [r["decision_id"] for r in retrieved if r.get("decision_id")]
 
-    # 2. For statute-bound questions we ALSO surface the named statute
-    #    text into the generator's context (the statute exists in the
-    #    Fedlex mirror; including it isolates "did the embedder retrieve
-    #    the right CASE" from "did the system have the right STATUTE").
-    statute_passages: list[tuple[str, str]] = []
-    for s in q.evidence.get("statutes", []) or []:
-        text = _mcp_get_statute_text(
-            s["law_code"], s["article"], s.get("language", q.language),
-            mcp_url=mcp_url,
-        )
-        if text:
-            statute_passages.append((
-                f"Art. {s['article']} {s['law_code']}", text[:1500]
-            ))
+        # 2. For statute-bound questions we ALSO surface the named statute
+        #    text into the generator's context (the statute exists in the
+        #    Fedlex mirror; including it isolates "did the embedder retrieve
+        #    the right CASE" from "did the system have the right STATUTE").
+        statute_passages = []
+        for s in q.evidence.get("statutes", []) or []:
+            text = _mcp_get_statute_text(
+                s["law_code"], s["article"], s.get("language", q.language),
+                mcp_url=mcp_url,
+            )
+            if text:
+                statute_passages.append((
+                    f"Art. {s['article']} {s['law_code']}", text[:1500]
+                ))
 
-    # 3. Build the LLM context
-    context_parts = []
-    for label, text in statute_passages:
-        context_parts.append(f"[STATUTE: {label}]\n{text}")
-    for i, hit in enumerate(retrieved):
-        body = hit.get("regeste") or hit.get("snippet") or ""
-        context_parts.append(
-            f"[P{i+1} {hit.get('decision_id','?')} — {hit.get('court','?')}]\n{body[:1000]}"
-        )
-    retrieved_text = "\n\n".join(context_parts) or "(no passages retrieved)"
+        # 3. Build the LLM context
+        context_parts = []
+        for label, text in statute_passages:
+            context_parts.append(f"[STATUTE: {label}]\n{text}")
+        for i, hit in enumerate(retrieved):
+            body = hit.get("regeste") or hit.get("snippet") or ""
+            context_parts.append(
+                f"[P{i+1} {hit.get('decision_id','?')} — {hit.get('court','?')}]\n{body[:1000]}"
+            )
+        retrieved_text = "\n\n".join(context_parts) or "(no passages retrieved)"
 
     # 4. Generation
     t0 = time.perf_counter()
@@ -288,7 +332,14 @@ def evaluate_question(q: Question, *,
 
     # 5. Judge dimensions
     correctness, c_reason = judge_correctness(answer, q.reference_answer)
-    groundedness, g_reason = judge_groundedness(answer, retrieved_text)
+    if prior_only:
+        # Prior-only has no retrieved context to ground against;
+        # groundedness is N/A. Mark False so the error decomposition
+        # routes wrong-but-uncited drafts into the 'hallucination' bin —
+        # which is the right framing for the worst-case stress test.
+        groundedness, g_reason = False, "(prior-only: no passages)"
+    else:
+        groundedness, g_reason = judge_groundedness(answer, retrieved_text)
 
     # 6. Retrieval accuracy: did at least one annotated decision land in top-K?
     annotated_decision_ids = set(q.evidence.get("decisions", []) or [])
@@ -297,9 +348,16 @@ def evaluate_question(q: Question, *,
     # treat retrieval_accuracy as N/A → True only if statute text was found.
     if not annotated_decision_ids:
         retrieval_accuracy = bool(statute_passages)
+    if prior_only:
+        # No retrieval happened. Mark accuracy as N/A → False.
+        retrieval_accuracy = False
 
     # 7. Error class (Butler & Butler Fig 1)
-    if correctness and groundedness:
+    if prior_only:
+        # Without retrieval, the only meaningful axis is correctness.
+        # Wrong answers are 'hallucination' regardless of groundedness.
+        error_class = "correct" if correctness else "hallucination"
+    elif correctness and groundedness:
         error_class = "correct"
     elif not groundedness:
         error_class = "hallucination"
@@ -308,11 +366,19 @@ def evaluate_question(q: Question, *,
     else:
         error_class = "reasoning"
 
+    # Surface the statutes we ACTUALLY injected, not the question's
+    # annotation. In prior-only mode this is empty; in retrieval-
+    # augmented mode it's populated from the Fedlex-mirror lookups
+    # that were threaded into the generator's context.
+    retrieved_statute_ids = [
+        label.replace("Art. ", "").replace(" ", "_")
+        for (label, _text) in statute_passages
+    ]
+
     return QuestionResult(
         question_id=q.id,
         retrieved_decision_ids=retrieved_ids,
-        retrieved_statute_ids=[f"{s['law_code']}_{s['article']}"
-                                for s in (q.evidence.get("statutes") or [])],
+        retrieved_statute_ids=retrieved_statute_ids,
         answer=answer,
         correctness=correctness,
         groundedness=groundedness,
@@ -362,6 +428,11 @@ def main():
         Path(__file__).parent / "questions.jsonl"))
     ap.add_argument("--mcp-url", default="https://mcp.opencaselaw.ch")
     ap.add_argument("--top-k", type=int, default=5)
+    ap.add_argument("--prior-only", action="store_true",
+                    help="Worst-case stress test: skip retrieval+statute "
+                         "injection; the generator answers from training "
+                         "prior. Paper §8 reports both prior-only and "
+                         "retrieval-augmented; this flag selects the former.")
     ap.add_argument("--output", default=None,
                     help="If given, write JSON results to this path.")
     ap.add_argument("--limit", type=int, default=None,
@@ -385,13 +456,22 @@ def main():
     if args.limit:
         questions = questions[: args.limit]
 
-    logger.info("Running %d questions...", len(questions))
+    logger.info(
+        "Running %d questions (%s)...",
+        len(questions),
+        "prior-only" if args.prior_only else "retrieval-augmented",
+    )
     results: list[QuestionResult] = []
     by_q_lang: dict[str, str] = {}
     for q in questions:
         logger.info("[%s] %s", q.id, q.question[:90])
         try:
-            r = evaluate_question(q, mcp_url=args.mcp_url, top_k=args.top_k)
+            r = evaluate_question(
+                q,
+                mcp_url=args.mcp_url,
+                top_k=args.top_k,
+                prior_only=args.prior_only,
+            )
         except Exception as e:
             logger.exception("[%s] crashed: %s", q.id, e)
             continue
@@ -409,10 +489,12 @@ def main():
 
     summary = {
         "version": "v0.1",
+        "condition": "prior-only" if args.prior_only else "retrieval-augmented",
         "corpus_snapshot_date": "2026-04-28",
         "evaluator": {
             "mcp_url": args.mcp_url,
-            "top_k": args.top_k,
+            "top_k": (0 if args.prior_only else args.top_k),
+            "prior_only": bool(args.prior_only),
             "generator_model": "claude-sonnet-4-6",
             "judge_model": "claude-sonnet-4-6",
         },
