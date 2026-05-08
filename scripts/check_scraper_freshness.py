@@ -9,23 +9,40 @@ when:
   - any court hasn't had a successful scrape in N days
   - the entscheidsuche cron timer has been failing for >2 weeks
 
-Designed to run after the daily scrape (e.g. 03:00 UTC). Exits 0 on
-healthy, 1 if any alert was emitted (so a wrapping cron can chain to
-notification channels if desired).
+Designed to run after the daily scrape (e.g. 03:00 UTC).
+
+**Notification semantics** (changed 2026-05-08):
+
+  - Always exits 0 on a successful run. Alerts are surfaced via
+    (a) the per-day log line at ``logs/scraper_alerts.log`` and
+    (b) ntfy.sh push at ``ntfy.sh/opencaselaw-scrapers`` when the
+    alert SET changes vs. the previous run.
+  - The previous behaviour (exit 1 on alerts, no notify) caused this
+    service to be journalled as ``failed`` daily for weeks while the
+    actual alerts rotted in a logfile nobody read. The dispatch is
+    now active.
 
 Usage:
     python3 scripts/check_scraper_freshness.py
     python3 scripts/check_scraper_freshness.py --max-stale-days 14
+    python3 scripts/check_scraper_freshness.py --no-ntfy   # local debug
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sqlite3
 import subprocess
 import sys
+import urllib.request
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+
+# ── ntfy push channel ─────────────────────────────────────────────
+# Topic is unique per-deployment; subscribe in the ntfy app to get
+# push alerts. Mirrors scripts/publish_failure_alert.py pattern.
+NTFY_URL = "https://ntfy.sh/opencaselaw-scrapers"
 
 REPO = Path(__file__).resolve().parent.parent
 
@@ -103,6 +120,120 @@ def check_es_cron_health() -> tuple[bool, str]:
         return True, f"ES check skipped: {e}"
 
 
+def _alert_set_digest(alerts: list[str]) -> str:
+    """Stable hash of the alert SET (order-independent). Used to skip
+    ntfy when today's alerts are byte-for-byte the same as yesterday's
+    — recurring portal warnings would otherwise spam the topic daily.
+    """
+    blob = "\n".join(sorted(alerts))
+    return hashlib.sha256(blob.encode("utf-8", errors="replace")).hexdigest()
+
+
+def _ascii_safe(s: str) -> str:
+    """ntfy.sh forwards Title/Tags as raw HTTP headers, which urllib
+    encodes as latin-1 by default. Strip non-latin-1 chars so an em-dash
+    in a translated court name doesn't raise UnicodeEncodeError."""
+    return s.encode("ascii", errors="replace").decode("ascii")
+
+
+def post_ntfy(alerts: list[str], today: str, *, priority: str, title: str) -> bool:
+    """Best-effort ntfy push. Never raises (mirrors
+    scripts/publish_failure_alert.py — alert path must not generate
+    further failure noise). Returns True on HTTP 2xx, False on any
+    failure; the caller uses this to decide whether to persist the
+    dedupe state file (a failed post should not look 'already
+    delivered' on the next run)."""
+    body = f"{today}  {len(alerts)} alert(s)\n\n" + "\n".join(alerts[:30])
+    if len(alerts) > 30:
+        body += f"\n\n...({len(alerts) - 30} more in scraper_alerts.log)"
+    try:
+        req = urllib.request.Request(
+            NTFY_URL,
+            data=body.encode("utf-8", errors="replace"),
+            headers={
+                "Title": _ascii_safe(title),
+                "Priority": priority,
+                "Tags": "warning",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return 200 <= resp.status < 300
+    except Exception as e:  # noqa: BLE001 — best-effort
+        print(f"ntfy post failed: {e}", file=sys.stderr)
+        return False
+
+
+def maybe_dispatch_ntfy(
+    alerts: list[str],
+    today: str,
+    state_dir: Path,
+) -> str:
+    """Dispatch via ntfy if today's alert set differs from the last
+    dispatched set.
+
+    Returns one of: ``posted``, ``unchanged``, ``skipped`` (no alerts).
+    """
+    state_dir.mkdir(parents=True, exist_ok=True)
+    state_file = state_dir / "scraper_alerts_last_dispatched.json"
+
+    if not alerts:
+        # On clear-up, post one all-clear if we previously dispatched.
+        # Drop the state file so the next regression re-notifies.
+        if state_file.exists():
+            try:
+                last = json.loads(state_file.read_text())
+                if last.get("digest"):
+                    post_ntfy(
+                        ["All previously-flagged scraper alerts have cleared."],
+                        today,
+                        priority="default",
+                        title="opencaselaw scrapers all clear",
+                    )
+            except Exception:
+                pass
+            try:
+                state_file.unlink()
+            except OSError:
+                pass
+        return "skipped"
+
+    digest = _alert_set_digest(alerts)
+    last_digest = None
+    if state_file.exists():
+        try:
+            last_digest = json.loads(state_file.read_text()).get("digest")
+        except Exception:
+            last_digest = None
+    if digest == last_digest:
+        return "unchanged"
+
+    has_fail_or_critical = any(
+        a.startswith(("FAIL ", "CRITICAL", "STALE "))
+        for a in alerts
+    )
+    priority = "high" if has_fail_or_critical else "default"
+    title = (
+        f"opencaselaw scrapers - {len(alerts)} alert(s)"
+        if not has_fail_or_critical
+        else f"opencaselaw scrapers - {len(alerts)} alert(s), action needed"
+    )
+    posted = post_ntfy(alerts, today, priority=priority, title=title)
+    if not posted:
+        # Don't persist dedupe state on a failed post — the next run
+        # should retry instead of declaring 'already delivered'.
+        return "post_failed"
+
+    try:
+        state_file.write_text(json.dumps({
+            "digest": digest,
+            "dispatched_at": datetime.now(timezone.utc).isoformat(),
+            "alert_count": len(alerts),
+        }, indent=2))
+    except OSError as e:
+        print(f"state write failed: {e}", file=sys.stderr)
+    return "posted"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-stale-days", type=int, default=14,
@@ -113,6 +244,12 @@ def main():
                         default=str(REPO / "logs" / "scraper_health.json"))
     parser.add_argument("--alert-log", type=str,
                         default=str(REPO / "logs" / "scraper_alerts.log"))
+    parser.add_argument("--state-dir", type=str,
+                        default=str(REPO / "state"),
+                        help="Where to remember the last-dispatched alert set "
+                             "(used to dedupe recurring ntfy posts).")
+    parser.add_argument("--no-ntfy", action="store_true",
+                        help="Skip ntfy dispatch (local debug).")
     parser.add_argument("--quiet", action="store_true",
                         help="Don't print to stdout, only write log")
     args = parser.parse_args()
@@ -210,11 +347,19 @@ def main():
             print(f"=== {len(alerts)} alert(s) at {today} ===")
             for line in line_set:
                 print(line)
-        sys.exit(1)
-    else:
+
+    if not args.no_ntfy:
+        verdict = maybe_dispatch_ntfy(alerts, today, Path(args.state_dir))
         if not args.quiet:
-            print(f"All checks passed at {today}")
-        sys.exit(0)
+            print(f"ntfy: {verdict}")
+    elif not alerts and not args.quiet:
+        print(f"All checks passed at {today}")
+
+    # Always exit 0 on a successful run. The exit-1-on-alert semantics
+    # were never wired to a notification path; the dispatch is now
+    # active via ntfy + state file. systemd no longer reports this
+    # service as failed daily.
+    sys.exit(0)
 
 
 if __name__ == "__main__":
