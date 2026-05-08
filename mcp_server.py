@@ -7776,6 +7776,23 @@ server = Server(
         "veracity in legal work — an unverifiable but correct answer "
         "is unprovable; a verifiable answer can always be checked.\n\n"
 
+        "R9. NEVER restrict search results to a particular language "
+        "unless the user EXPLICITLY asks for one. Swiss federal "
+        "decisions are issued in DE, FR, or IT depending on the case "
+        "language; cantons publish in their own official language "
+        "(FR/GE/JU/NE/VD use French, TI uses Italian, the rest use "
+        "German). Setting a `language` parameter on `search_decisions` "
+        "/ `search_laws` / `search_legislation` / `find_leading_cases` "
+        "/ `analyze_legal_trend` / `browse_legislation_changes` "
+        "silently drops the other two thirds of the corpus and "
+        "produces incomplete top-N lists. Do NOT auto-apply a "
+        "language filter based on the conversation's language — a "
+        "German conversation about \"die neuesten Bundesgerichts-"
+        "urteile\" should still surface French and Italian decisions "
+        "from BGer if they are the most recent. Set `language` ONLY "
+        "when the user writes something like \"französische Urteile "
+        "über X\" or \"only German rulings\".\n\n"
+
         "══════════════════════════════════════════════════════════════\n"
         "CITATION WORKFLOW — THE ONLY LEGITIMATE PATH\n"
         "══════════════════════════════════════════════════════════════\n"
@@ -13844,7 +13861,16 @@ def _list_tools() -> list[Tool]:
                     },
                     "language": {
                         "type": "string",
-                        "description": "Filter by language: de, fr, it, rm",
+                        "description": (
+                            "OPTIONAL filter. Restricts results to ONE language. "
+                            "Omit (recommended default) to search across all "
+                            "languages — Swiss federal decisions are issued in "
+                            "DE, FR, or IT depending on the case, so a "
+                            "language filter silently excludes valid hits in "
+                            "the other two. Set ONLY when the user explicitly "
+                            "asks for a single-language result; do NOT auto-"
+                            "apply based on the conversation's language."
+                        ),
                         "enum": ["de", "fr", "it", "rm"],
                     },
                     "date_from": {
@@ -14719,9 +14745,15 @@ def _list_tools() -> list[Tool]:
                     },
                     "language": {
                         "type": "string",
-                        "description": "Language to search in: de, fr, it.",
+                        "description": (
+                            "OPTIONAL filter. Restricts results to ONE "
+                            "language. Omit (recommended default) to search "
+                            "across all three official languages — most laws "
+                            "exist in DE/FR/IT and a filter silently hides "
+                            "valid hits in the others. Set ONLY when the "
+                            "user explicitly asks for one language."
+                        ),
                         "enum": ["de", "fr", "it"],
-                        "default": "de",
                     },
                     "limit": {
                         "type": "integer",
@@ -14786,7 +14818,13 @@ def _list_tools() -> list[Tool]:
                     },
                     "language": {
                         "type": "string",
-                        "description": "Filter by language: de, en, fr, it.",
+                        "description": (
+                            "OPTIONAL filter (de/fr/it/en). Omit "
+                            "(recommended default) to search across all "
+                            "languages. Set ONLY when the user explicitly "
+                            "asks for one-language results; do NOT auto-"
+                            "apply based on conversation language."
+                        ),
                     },
                     "limit": {
                         "type": "integer",
@@ -14910,12 +14948,16 @@ def _list_tools() -> list[Tool]:
                         "language": {
                             "type": "string",
                             "description": (
-                                "Result language: de, fr, it. Pick the language the "
-                                "canton publishes in: fr for FR/GE/JU/NE/VD, it for "
-                                "TI, de for the remaining cantons + federal."
+                                "OPTIONAL filter. Restricts results to ONE "
+                                "language version. Omit (recommended default) "
+                                "to return whichever language version the "
+                                "portal indexes — most cantons publish in a "
+                                "single official language anyway. Set ONLY "
+                                "when the user explicitly asks for one "
+                                "language. Hint when set: fr for FR/GE/JU/NE/"
+                                "VD, it for TI, de for the rest."
                             ),
                             "enum": ["de", "fr", "it"],
-                            "default": "de",
                         },
                         "limit": {
                             "type": "integer",
@@ -14999,9 +15041,14 @@ def _list_tools() -> list[Tool]:
                         },
                         "language": {
                             "type": "string",
-                            "description": "Result language: de, fr, it.",
+                            "description": (
+                                "OPTIONAL filter. Restricts results to ONE "
+                                "language version. Omit (recommended default) "
+                                "to return amendments in whichever language "
+                                "the canton indexes them. Set ONLY when the "
+                                "user explicitly asks for one language."
+                            ),
                             "enum": ["de", "fr", "it"],
-                            "default": "de",
                         },
                     },
                 },
@@ -15042,7 +15089,12 @@ def _list_tools() -> list[Tool]:
                         },
                         "language": {
                             "type": "string",
-                            "description": "Filter by language: de, fr, it.",
+                            "description": (
+                                "OPTIONAL filter (de/fr/it). Omit "
+                                "(recommended default) to search across all "
+                                "languages. Set ONLY when the user "
+                                "explicitly asks for one-language results."
+                            ),
                         },
                         "limit": {
                             "type": "integer",
@@ -16736,7 +16788,12 @@ render();setInterval(render,60000);
         sr_number: str = Query(None, description="Restrict to specific federal law by SR"),
         canton: str = Query(None, description="Restrict to canton (ZH, BE, …, CH=federal)"),
         jurisdiction: str = Query("all", description="all | federal | cantonal"),
-        language: str = Query("de", description="Language: de, fr, it"),
+        language: str = Query(None, description=(
+            "OPTIONAL filter (de/fr/it). Omit to search all three official "
+            "languages — most laws exist in DE/FR/IT and a filter silently "
+            "hides valid hits in the others. Set ONLY when the user "
+            "explicitly asks for one language."
+        )),
         limit: int = Query(10, ge=1, le=50, description="Max results"),
     ):
         return await asyncio.to_thread(
@@ -16855,7 +16912,11 @@ render();setInterval(render,60000);
     async def api_search_legislation(
         query: str = Query(..., description="Search query"),
         canton: str = Query(None, description="Filter by canton (CH, ZH, BE, etc.)"),
-        language: str = Query("de", description="Language: de, fr, it"),
+        language: str = Query(None, description=(
+            "OPTIONAL filter (de/fr/it). Omit to return whichever language "
+            "version the portal indexes — set ONLY when the user explicitly "
+            "asks for one language."
+        )),
         limit: int = Query(20, ge=1, le=60, description="Max results"),
         active_only: bool = Query(True, description="Only show laws currently in force"),
         search_in_content: bool = Query(False, description="Also search in law text content"),
@@ -16873,7 +16934,11 @@ render();setInterval(render,60000);
                   description="Browse recent legislation changes for a canton or federal level.")
     async def api_browse_legislation_changes(
         canton: str = Query("CH", description="Canton code (CH for federal, ZH, BE, etc.)"),
-        language: str = Query("de", description="Language: de, fr, it"),
+        language: str = Query(None, description=(
+            "OPTIONAL filter (de/fr/it). Omit to return amendments in "
+            "whichever language the canton indexes them. Set ONLY when the "
+            "user explicitly asks for one language."
+        )),
     ):
         return await asyncio.to_thread(
             _browse_legislation_changes, canton=canton, language=language,
