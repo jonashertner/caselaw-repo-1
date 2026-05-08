@@ -29,8 +29,10 @@ Files saved to: /opt/caselaw/entscheidsuche/<SPIDER>/
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import logging
 import re
+import threading
 import time
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -193,9 +195,19 @@ def download_spider(
     dest_dir: Path,
     dry_run: bool = False,
     delay: float = 0.02,
+    max_workers: int = 8,
 ) -> tuple[int, int, int]:
     """
     Download all files for a spider.
+
+    Tasks are dispatched through a thread pool of size ``max_workers``
+    so the per-file HTTP latency overlaps. The serial path with the
+    legacy 0.02 s sleep + per-file HTTP RTT is the bottleneck that
+    causes the weekly opencaselaw-entscheidsuche.service to time out
+    at the 18 h systemd cap (~600 K files = json + html companions
+    across all tiers); the pool runs the same workload in roughly
+    ``1 / max_workers`` of the wall-clock time.
+
     Returns (downloaded, skipped, errors).
     """
     logger.info(f"{'[DRY RUN] ' if dry_run else ''}Downloading {spider}...")
@@ -214,52 +226,67 @@ def download_spider(
         logger.info(f"  Would download {len(json_files)} JSON files + HTML companions")
         return 0, len(json_files), 0
 
-    downloaded = 0
-    skipped = 0
-    errors = 0
-
     # Build download tasks: for each JSON, also queue its HTML companion
-    tasks = []
+    tasks: list[tuple[str, Path]] = []
     for json_name in json_files:
         json_url = f"{BASE_URL}/{spider}/{json_name}"
         json_dest = dest_dir / spider / json_name
         tasks.append((json_url, json_dest))
 
-        # HTML companion
         html_name = json_name.rsplit(".", 1)[0] + ".html"
         html_url = f"{BASE_URL}/{spider}/{html_name}"
         html_dest = dest_dir / spider / html_name
         tasks.append((html_url, html_dest))
 
     total = len(tasks)
-    logger.info(f"  {len(json_files)} decisions, {total} files to check")
+    logger.info(
+        f"  {len(json_files)} decisions, {total} files to check "
+        f"(parallel={max_workers})"
+    )
 
-    for i, (url, dest) in enumerate(tasks):
+    # Counters guarded by lock so the workers can update them concurrently.
+    counters = {"downloaded": 0, "skipped": 0, "errors": 0}
+    lock = threading.Lock()
+
+    def _worker(task: tuple[str, Path]) -> None:
+        url, dest = task
         try:
             result = download_file(url, dest)
-            if result:
-                downloaded += 1
-            else:
-                if is_valid_file(dest):
-                    skipped += 1
+            with lock:
+                if result:
+                    counters["downloaded"] += 1
+                elif is_valid_file(dest):
+                    counters["skipped"] += 1
         except Exception as e:
-            errors += 1
+            with lock:
+                counters["errors"] += 1
             logger.debug(f"  Error: {url}: {e}")
-
+        # Politeness delay applied inside the worker so it scales per
+        # connection rather than per-task; effective rate stays under
+        # max_workers / delay requests/sec.
         if delay > 0:
             time.sleep(delay)
 
-        if (i + 1) % 2000 == 0:
-            logger.info(
-                f"  [{spider}] {i+1}/{total} "
-                f"(+{downloaded} new, {skipped} exist, {errors} err)"
-            )
+    progress_every = max(2000, total // 20)
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_workers,
+        thread_name_prefix=f"es-{spider}",
+    ) as pool:
+        for i, _ in enumerate(pool.map(_worker, tasks), start=1):
+            if i % progress_every == 0:
+                with lock:
+                    snapshot = dict(counters)
+                logger.info(
+                    f"  [{spider}] {i}/{total} "
+                    f"(+{snapshot['downloaded']} new, "
+                    f"{snapshot['skipped']} exist, {snapshot['errors']} err)"
+                )
 
     logger.info(
-        f"  {spider} done: +{downloaded} downloaded, "
-        f"{skipped} already existed, {errors} errors"
+        f"  {spider} done: +{counters['downloaded']} downloaded, "
+        f"{counters['skipped']} already existed, {counters['errors']} errors"
     )
-    return downloaded, skipped, errors
+    return counters["downloaded"], counters["skipped"], counters["errors"]
 
 
 def purge_corrupted(dest_dir: Path, spider: str) -> int:
@@ -301,7 +328,13 @@ def main():
     )
     parser.add_argument(
         "--delay", type=float, default=0.02,
-        help="Delay between requests in seconds (default: 0.02)"
+        help="Delay between requests in seconds, applied per worker "
+             "(default: 0.02)"
+    )
+    parser.add_argument(
+        "--max-workers", type=int, default=8,
+        help="Concurrent downloads per spider (default: 8). 1 reverts "
+             "to the historic serial path."
     )
     parser.add_argument(
         "--no-purge", action="store_true",
@@ -348,6 +381,7 @@ def main():
             spider, dest_dir,
             dry_run=args.dry_run,
             delay=args.delay,
+            max_workers=args.max_workers,
         )
         total_downloaded += dl
         total_skipped += skip

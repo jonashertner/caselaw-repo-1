@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import io
 import json
 import logging
@@ -35,6 +36,74 @@ from db_schema import COVERAGE_SCHEMA_SQL, INSERT_COLUMNS, INSERT_OR_IGNORE_SQL,
 from models import make_canonical_key
 
 logger = logging.getLogger("build_fts5")
+
+
+# ── Per-phase timing instrumentation ──────────────────────────
+#
+# Step 2 of publish.py is a 4–10 h black-box. Without per-phase
+# timings we can't tell whether the variance comes from FTS5 optimize,
+# wayback_queue provisioning, hash computation, or one of the 13
+# normalisation passes. The context manager below logs:
+#
+#     Phase: Deduplicating decisions...
+#       (existing inner logger.info lines from the phase body)
+#       -> Deduplicating decisions done in 27m 13s
+#
+# and ``_log_phase_summary()`` at end-of-build prints a sorted
+# breakdown like:
+#
+#     === build_fts5 phase summary ===
+#         45m 02s  ( 51.8%)  FTS5 optimize
+#         27m 13s  ( 31.3%)  Deduplicating decisions
+#         ...
+#
+# State is module-scoped (ok for a one-shot rebuild script). On a
+# crash, the surviving timings still print via the finally clause in
+# the context manager.
+_PHASE_TIMINGS: list[tuple[str, float]] = []
+
+
+def _fmt_dur(seconds: float) -> str:
+    """Human-friendly duration: '12.3s' / '4m 27s' / '1h 14m'."""
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    m, s = divmod(int(seconds), 60)
+    if m < 60:
+        return f"{m}m {s:02d}s"
+    h, m = divmod(m, 60)
+    return f"{h}h {m:02d}m"
+
+
+@contextlib.contextmanager
+def _phase_timer(name: str):
+    """Log start, append timing, log end. Use as `with _phase_timer("X"):`.
+
+    Existing `logger.info("X...")` calls inside phase bodies stay; the
+    context manager prefixes its own "Phase:" / "->" lines around them
+    so the trace remains readable both live and post-mortem.
+    """
+    t0 = time.monotonic()
+    logger.info(f"Phase: {name}...")
+    try:
+        yield
+    finally:
+        dt = time.monotonic() - t0
+        _PHASE_TIMINGS.append((name, dt))
+        logger.info(f"  -> {name} done in {_fmt_dur(dt)}")
+
+
+def _log_phase_summary() -> None:
+    """Sorted summary of every recorded phase. Cheap (<1ms)."""
+    if not _PHASE_TIMINGS:
+        return
+    total = sum(d for _, d in _PHASE_TIMINGS)
+    if total < 1:
+        return
+    logger.info("=== build_fts5 phase summary ===")
+    for name, dt in sorted(_PHASE_TIMINGS, key=lambda x: -x[1]):
+        pct = 100 * dt / total
+        logger.info(f"  {_fmt_dur(dt):>10}  ({pct:>5.1f}%)  {name}")
+    logger.info(f"  {_fmt_dur(total):>10}  (sum of phases)")
 
 # ── Text cleaning ────────────────────────────────────────────
 
@@ -1495,78 +1564,79 @@ def build_database(
 
     # ── Post-import data quality passes ──
     if total_imported > 0:
-        logger.info("Deduplicating decisions...")
-        deduped = _dedup_decisions(conn)
-        if deduped:
-            logger.info(f"  Removed {deduped} duplicate decisions")
+        with _phase_timer("dedup decisions"):
+            deduped = _dedup_decisions(conn)
+            if deduped:
+                logger.info(f"  Removed {deduped} duplicate decisions")
 
-        logger.info("Cross-court deduplication (overlapping court codes)...")
-        cross_deduped = _cross_court_dedup(conn)
-        if cross_deduped:
-            logger.info(f"  Removed {cross_deduped} cross-court duplicates")
+        with _phase_timer("cross-court dedup"):
+            cross_deduped = _cross_court_dedup(conn)
+            if cross_deduped:
+                logger.info(f"  Removed {cross_deduped} cross-court duplicates")
 
-        logger.info("EGMR dedup (König #1: bge with cedh URL covered by bge_egmr)...")
-        egmr_deduped = _dedup_egmr_in_bge(conn)
-        if egmr_deduped:
-            logger.info(f"  Removed {egmr_deduped} bge+cedh duplicates (canonical entries remain in bge_egmr)")
+        with _phase_timer("EGMR dedup"):
+            egmr_deduped = _dedup_egmr_in_bge(conn)
+            if egmr_deduped:
+                logger.info(f"  Removed {egmr_deduped} bge+cedh duplicates (canonical entries remain in bge_egmr)")
 
-        logger.info("Normalising docket whitespace + invalid dates (König audit 2026-04-30)...")
-        ws_fixed = _normalize_dockets(conn)
-        if ws_fixed:
-            logger.info(f"  Trimmed whitespace from {ws_fixed} docket_numbers")
-        n_zero, n_future = _normalize_dates(conn)
-        if n_zero or n_future:
-            logger.info(f"  Cleared {n_zero} year-0000 dates + {n_future} far-future (>today+365d) dates → NULL")
-        recovered = _recover_decision_dates(conn)
-        if recovered:
-            logger.info(f"  Recovered {recovered} decision_date values from full_text (zh_verwaltungsgericht/gr_gerichte/bl_gerichte)")
-        text_migrated = _migrate_short_text_to_regeste(conn)
-        if text_migrated:
-            logger.info(f"  Migrated {text_migrated} short full_text values → regeste (correct field for Art./§ references)")
+        with _phase_timer("normalise dockets + dates"):
+            ws_fixed = _normalize_dockets(conn)
+            if ws_fixed:
+                logger.info(f"  Trimmed whitespace from {ws_fixed} docket_numbers")
+            n_zero, n_future = _normalize_dates(conn)
+            if n_zero or n_future:
+                logger.info(f"  Cleared {n_zero} year-0000 dates + {n_future} far-future (>today+365d) dates → NULL")
+            recovered = _recover_decision_dates(conn)
+            if recovered:
+                logger.info(f"  Recovered {recovered} decision_date values from full_text (zh_verwaltungsgericht/gr_gerichte/bl_gerichte)")
+            text_migrated = _migrate_short_text_to_regeste(conn)
+            if text_migrated:
+                logger.info(f"  Migrated {text_migrated} short full_text values → regeste (correct field for Art./§ references)")
 
-        logger.info("Normalising relative source_urls (König P2 follow-up)...")
-        urls_fixed = _normalize_source_urls(conn)
-        if urls_fixed:
-            logger.info(f"  Prefixed host on {urls_fixed} relative source_urls (bs_gerichte / gl_gerichte Tribuna paths)")
+        with _phase_timer("normalise source_urls"):
+            urls_fixed = _normalize_source_urls(conn)
+            if urls_fixed:
+                logger.info(f"  Prefixed host on {urls_fixed} relative source_urls (bs_gerichte / gl_gerichte Tribuna paths)")
 
-        logger.info("Truncating oversized regestes (HUDOC scraper full_text leakage)...")
-        regestes_truncated = _truncate_oversized_regestes(conn)
-        if regestes_truncated:
-            logger.info(f"  Truncated {regestes_truncated} oversized regestes to head-note portion (full_text untouched)")
+        with _phase_timer("truncate oversized regestes"):
+            regestes_truncated = _truncate_oversized_regestes(conn)
+            if regestes_truncated:
+                logger.info(f"  Truncated {regestes_truncated} oversized regestes to head-note portion (full_text untouched)")
 
-        logger.info("Removing stub decisions (text <10 AND regeste <10 chars)...")
-        stubs_removed = _remove_stubs(conn)
-        if stubs_removed:
-            logger.info(f"  Removed {stubs_removed} stub decisions")
+        with _phase_timer("remove stub decisions"):
+            stubs_removed = _remove_stubs(conn)
+            if stubs_removed:
+                logger.info(f"  Removed {stubs_removed} stub decisions")
 
-        logger.info("Filling missing regeste for BGer/BGE decisions...")
-        filled = _fill_missing_regeste(conn)
-        if filled:
-            logger.info(f"  Extracted regeste for {filled} decisions")
+        with _phase_timer("fill missing regeste"):
+            filled = _fill_missing_regeste(conn)
+            if filled:
+                logger.info(f"  Extracted regeste for {filled} decisions")
 
         # Per-decision content hash — must run AFTER all _normalize_* /
         # _migrate_* / _truncate_* / _fill_* passes so the hash reflects
         # the canonical post-cleanup content the corpus serves.
-        logger.info("Computing per-decision content hashes (SHA-256 of regeste||full_text)...")
-        hashes = _compute_content_hashes(conn)
-        if hashes:
-            logger.info(f"  Hashed/refreshed {hashes} decisions")
+        with _phase_timer("content hashes (SHA-256 over regeste||full_text)"):
+            hashes = _compute_content_hashes(conn)
+            if hashes:
+                logger.info(f"  Hashed/refreshed {hashes} decisions")
 
         # Provision the wayback_queue table; populated as part of the
         # same step so scripts/wayback_archiver.py finds work to do.
-        logger.info("Provisioning wayback_queue (source_url + pdf_url)...")
-        _ensure_wayback_queue(conn)
-        wq_pending = conn.execute(
-            "SELECT COUNT(*) FROM wayback_queue WHERE attempted_at IS NULL"
-        ).fetchone()[0]
-        logger.info(f"  wayback_queue pending: {wq_pending:,} entries")
+        with _phase_timer("provision wayback_queue"):
+            _ensure_wayback_queue(conn)
+            wq_pending = conn.execute(
+                "SELECT COUNT(*) FROM wayback_queue WHERE attempted_at IS NULL"
+            ).fetchone()[0]
+            logger.info(f"  wayback_queue pending: {wq_pending:,} entries")
 
-        _log_quality_summary(conn)
+        with _phase_timer("log quality summary"):
+            _log_quality_summary(conn)
 
     if not no_optimize and total_imported > 0:
-        logger.info("Running FTS5 optimize...")
-        conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
-        conn.commit()
+        with _phase_timer("FTS5 optimize"):
+            conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
+            conn.commit()
     elif no_optimize and total_imported > 0:
         logger.info("Skipping FTS5 optimize (--no-optimize)")
         conn.commit()
@@ -1689,6 +1759,8 @@ def build_database(
     logger.info(f"  Total decisions: {total}")
     for court, n in courts:
         logger.info(f"    {court}: {n}")
+
+    _log_phase_summary()
 
     return db_path
 

@@ -1,0 +1,21 @@
+[Unit]
+Description=OpenCaseLaw weekly entscheidsuche bulk update
+# Runs Sunday 22:00 UTC. Two phases:
+#   1. download all spiders from entscheidsuche.ch into the staging dir
+#      (parallel: --max-workers=8, see scrapers/entscheidsuche_download.py)
+#   2. ingest the staged JSONs into output/decisions/ shards
+# History:
+#   - 32400s (9h)  shipped at v0 — too tight, frequently timed out.
+#   - 64800s (18h) bumped — still hit the cap on 2026-05-04 mid-download.
+#   - 108000s (30h) current. Pairs with the 8-worker pool: estimated
+#     wall-clock for a clean run is ~1-2 h download + ~3-4 h ingest;
+#     30h is a generous safety margin until we have repeated successes
+#     to tighten against.
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/bin/bash -c "/usr/bin/python3 scrapers/entscheidsuche_download.py --all --dest /opt/caselaw/entscheidsuche --max-workers 8 && /usr/bin/python3 scrapers/entscheidsuche_ingest.py --input /opt/caselaw/entscheidsuche --output output/decisions --existing output/decisions"
+TimeoutStartSec=108000
+StandardOutput=append:/opt/caselaw/repo/logs/es_weekly.log
+StandardError=append:/opt/caselaw/repo/logs/es_weekly.log
