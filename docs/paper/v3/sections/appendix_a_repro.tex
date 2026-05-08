@@ -68,6 +68,7 @@ huggingface-cli download voilaj/swiss-caselaw --local-dir output/
 python -m quality.cli run                    # 4-layer dataset health
 python benchmarks/run_search_benchmark.py    # Tab.~2 baseline
 python benchmarks/run_cross_lingual.py       # Tab.~3, Fig.~2 (cross-lang)
+python -m benchmarks.citation_resolution_analysis    # Sec.~4 unresolved breakdown
 \end{verbatim}
 
 \paragraph{Telemetry, costs, latency.} The MCP server exposes

@@ -94,17 +94,39 @@ CREATE INDEX IF NOT EXISTS idx_citation_targets_target_decision_id
 """
 
 
+_BGE_PREFIX_PAT = re.compile(
+    r"^(BGE|ATF|DTF)[\s_]+(\d{1,4})[\s_]+([IVX]{1,4})[\s_]+(\d{1,4})$"
+)
+
+
 def _docket_norm(value: str | None) -> str:
     if not value:
         return ""
-    out = value.strip().upper().replace("-", "_").replace(".", "_").replace("/", "_")
+    raw = value.strip().upper()
+    # Preserve canonical BGE/ATF/DTF citation form ("BGE 147 I 268", single
+    # spaces).  The citation extractor emits BGE/ATF/DTF refs in this form so
+    # decision docket_norms must match bytewise.
+    m = _BGE_PREFIX_PAT.match(raw)
+    if m:
+        return f"{m.group(1)} {m.group(2)} {m.group(3)} {m.group(4)}"
+    # Standard normalization: unify hyphens, periods, slashes, AND spaces to
+    # underscores.  Replacing spaces fixes a 2007-2009 BGer drift where the
+    # docket "8C 862/2008" was stored as docket_norm "8C 862_2008" (with a
+    # surviving space) while the citation extractor produced "8C_862_2008",
+    # so the JOIN always missed.
+    out = (
+        raw
+        .replace("-", "_")
+        .replace(".", "_")
+        .replace("/", "_")
+        .replace(" ", "_")
+    )
     while "__" in out:
         out = out.replace("__", "_")
     out = out.strip("_")
-    # Normalize BGE-style vol_div_page patterns (e.g. "79_IV_170") to use
-    # spaces ("79 IV 170") — consistent with how citation extraction normalizes
-    # BGE references.  Without this, bge_historical docket_norms won't match
-    # citation target_refs during resolution.
+    # Bare BGE-style vol_div_page (e.g. "79_IV_170") → "79 IV 170" (canonical
+    # space-separated BGE form), matching how the citation extractor emits
+    # bare BGE refs without a prefix.
     if re.match(r"^\d{1,3}_[IVX]{1,4}_\d{1,4}$", out):
         out = out.replace("_", " ")
     return out
@@ -428,6 +450,90 @@ def _resolve_citation_targets(conn: sqlite3.Connection) -> None:
             )
         conn.executemany(insert_sql, payload)
 
+    # Fourth pass: pin-cite resolution for BGE references.
+    # Swiss legal citations pinpoint into a case body: "BGE 125 V 352" references
+    # page 352 of the case starting at "BGE 125 V 351".  Exact-match passes 2-3
+    # miss these because no decision has first-page 352.  We resolve them to
+    # the nearest preceding first-page in the same volume+division within a
+    # bounded distance.
+    _PIN_DISTANCE = 30
+    _PIN_BGE_PAT = re.compile(r"^(?:BGE\s+)?(\d{1,4})\s+([IVX]{1,4})\s+(\d{1,4})$")
+    bge_index: dict[tuple[int, str], list[tuple]] = {}
+    for did, dn, court, canton, ddate in conn.execute(
+        "SELECT decision_id, docket_norm, court, canton, decision_date FROM decisions "
+        "WHERE court IN ('bge', 'bge_historical')"
+    ):
+        m = _PIN_BGE_PAT.match(dn or "")
+        if m:
+            vol, div, page = int(m.group(1)), m.group(2), int(m.group(3))
+            bge_index.setdefault((vol, div), []).append(
+                (page, did, court, canton, ddate)
+            )
+    for k in bge_index:
+        bge_index[k].sort()
+
+    cursor = conn.execute(
+        """
+        SELECT DISTINCT
+            dc.source_decision_id,
+            dc.target_ref,
+            sd.court AS source_court,
+            sd.canton AS source_canton,
+            sd.decision_date AS source_date
+        FROM decision_citations dc
+        LEFT JOIN citation_targets ct
+          ON ct.source_decision_id = dc.source_decision_id
+         AND ct.target_ref = dc.target_ref
+        LEFT JOIN decisions sd
+          ON sd.decision_id = dc.source_decision_id
+        WHERE ct.source_decision_id IS NULL
+          AND (
+                (dc.target_type = 'bge' AND dc.target_ref LIKE 'BGE %')
+             OR (dc.target_type = 'docket'
+                 AND dc.target_ref GLOB '[0-9]* [IVX]* [0-9]*')
+          )
+        """
+    )
+    payload = []
+    for row in cursor.fetchall():
+        src_id = row["source_decision_id"]
+        ref = row["target_ref"]
+        m = _PIN_BGE_PAT.match(ref)
+        if not m:
+            continue
+        vol, div, page = int(m.group(1)), m.group(2), int(m.group(3))
+        candidates = bge_index.get((vol, div))
+        if not candidates:
+            continue
+        best = None
+        for first_page, did, t_court, t_canton, t_date in candidates:
+            if first_page > page:
+                break
+            if first_page <= page and (page - first_page) <= _PIN_DISTANCE and did != src_id:
+                best = (first_page, did, t_court, t_canton, t_date)
+        if best is None:
+            continue
+        first_page, target_did, t_court, t_canton, t_date = best
+        confidence = _citation_confidence(
+            source_court=row["source_court"],
+            source_canton=row["source_canton"],
+            source_date=row["source_date"],
+            target_court=t_court,
+            target_canton=t_canton,
+            target_date=t_date,
+            target_ref=ref,
+            candidate_rank=1,
+            candidate_count=1,
+        )
+        # Discount: pin-cite is an inferred match, not exact docket equality.
+        confidence = max(0.50, round(confidence - 0.10, 4))
+        payload.append(
+            (src_id, ref, target_did, "bge_pincite", confidence)
+        )
+
+    for i in range(0, len(payload), batch_size):
+        conn.executemany(insert_sql, payload[i : i + batch_size])
+
 
 def build_graph(
     *,
@@ -587,6 +693,23 @@ def build_graph(
             tmp_path.unlink()
         raise
     else:
+        # Defensive guard: refuse atomic swap if resolved-citation count has
+        # regressed materially.  Catches resolver bugs that would silently
+        # erase live edges from the production graph.
+        if db_path.exists():
+            try:
+                with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True) as prev:
+                    prev_resolved = prev.execute(
+                        "SELECT COUNT(*) FROM citation_targets"
+                    ).fetchone()[0]
+                if resolved_links < prev_resolved * 0.95:
+                    raise RuntimeError(
+                        f"Resolution regression: new {resolved_links:,} < 0.95 * "
+                        f"prev {prev_resolved:,}; refusing atomic swap. "
+                        f"Inspect {tmp_path} manually."
+                    )
+            except sqlite3.OperationalError:
+                pass  # No previous DB or unreadable — first-build OK.
         conn.execute("PRAGMA journal_mode=DELETE")
         conn.close()
         os.replace(tmp_path, db_path)
