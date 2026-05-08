@@ -82,6 +82,23 @@ TUNNEL_DEPENDENT_SOURCES = {
     "ne_gerichte",
 }
 
+# Courts that legitimately publish rarely (small chamber, archival
+# series, historical-only). The "<30s + 0 new" heuristic is a
+# false-positive here — a clean caught-up exit looks identical to a
+# silent failure. Verified manually 2026-05-08: each is reachable and
+# the historical row count is current.
+SILENT_SKIP_EXEMPT_SOURCES = {
+    # ~1,244-row archival corpus (1915–2025); MKG publishes Bd. 1–16
+    # via alexandria.ch, no new volumes expected.
+    "mkg",
+    # Small civil/criminal-chamber series; portal occasionally returns
+    # 0 results when no new publications are pending (legitimate empty).
+    "be_zivilstraf",
+    # BL portal pre-poll bails out fast when we already have the last
+    # batch; large catch-up only in long-poll runs.
+    "bl_gerichte",
+}
+
 
 def get_last_scraped(court: str) -> str | None:
     """Return ISO date of last successful scrape from coverage_report DB."""
@@ -280,16 +297,28 @@ def main():
                 else:
                     alerts.append(f"FAIL {k}: {err}")
 
-            # Real silent-failure signal: success=true AND finished suspiciously
-            # fast for an active court (under 30s) AND new=0. Most legitimate
-            # zero-new scrapes take >60s because the portal must be traversed.
+            # Real silent-failure signal: success=true AND finished
+            # suspiciously fast for an active court (under 30s) AND new=0.
+            # Most legitimate zero-new scrapes take >60s because the portal
+            # must be traversed.
+            #
+            # Exemptions:
+            #   - portal_count == our_count: scraper actively confirmed
+            #     we are caught up (genuine empty, not a silent skip).
+            #   - SILENT_SKIP_EXEMPT_SOURCES: archival/small-chamber feeds
+            #     where a fast no-new exit is the normal weekday outcome.
             for k, v in scrapers.items():
-                if k in KNOWN_DEAD_SOURCES:
+                if k in KNOWN_DEAD_SOURCES or k in SILENT_SKIP_EXEMPT_SOURCES:
                     continue
                 if (v.get("success")
                         and v.get("new_count", 0) == 0
                         and v.get("our_count", 0) > 1000  # large active corpus
                         and v.get("duration_s", 0) < 30):
+                    portal_n = v.get("portal_count")
+                    our_n = v.get("our_count", 0)
+                    if portal_n is not None and portal_n == our_n:
+                        # Caught-up confirmation; not a silent skip.
+                        continue
                     alerts.append(
                         f"WARN {k}: scraped in {v.get('duration_s'):.0f}s with 0 new "
                         f"(corpus={v.get('our_count')}) — possible API outage with silent skip"
