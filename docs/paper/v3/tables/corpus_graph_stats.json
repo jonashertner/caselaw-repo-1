@@ -261,224 +261,224 @@
       }
     ]
   },
-  "rg_decisions": 1142711,
-  "rg_citation_edges": 9859842,
-  "rg_resolved_citations": 9216226,
-  "rg_statute_edges": 12606786,
-  "rg_distinct_statutes": 295588,
-  "rg_citing_decisions": 836482,
-  "rg_distinct_targets": 292373,
+  "rg_decisions": 971732,
+  "rg_citation_edges": 8648462,
+  "rg_resolved_citations": 8033289,
+  "rg_statute_edges": 11260080,
+  "rg_distinct_statutes": 283119,
+  "rg_citing_decisions": 721192,
+  "rg_distinct_targets": 261217,
   "top30_cited": [
     {
       "target_id": "bge_125 V 351",
-      "in_degree": 76640
+      "in_degree": 66809
     },
     {
       "target_id": "bge_122 V 157",
-      "in_degree": 48037
+      "in_degree": 40423
     },
     {
       "target_id": "bge_134 V 231",
-      "in_degree": 41459
+      "in_degree": 36566
     },
     {
       "target_id": "bge_130 V 343",
-      "in_degree": 31278
+      "in_degree": 26906
     },
     {
       "target_id": "bge_125 V 256",
-      "in_degree": 26450
-    },
-    {
-      "target_id": "bge_115 V 133",
-      "in_degree": 25633
+      "in_degree": 24157
     },
     {
       "target_id": "bge_125 V 193",
-      "in_degree": 25588
+      "in_degree": 22560
     },
     {
       "target_id": "bge_126 V 353",
-      "in_degree": 24511
+      "in_degree": 22407
+    },
+    {
+      "target_id": "bge_115 V 133",
+      "in_degree": 20899
     },
     {
       "target_id": "bge_135 V 465",
-      "in_degree": 23451
+      "in_degree": 19978
     },
     {
       "target_id": "bge_137 V 210",
-      "in_degree": 23251
+      "in_degree": 19795
     },
     {
       "target_id": "bge_126 V 75",
-      "in_degree": 22161
+      "in_degree": 19703
     },
     {
       "target_id": "bge_138 III 374",
-      "in_degree": 19610
+      "in_degree": 18292
     },
     {
       "target_id": "bge_130 III 321",
-      "in_degree": 19060
+      "in_degree": 18184
     },
     {
       "target_id": "bge_125 V 413",
-      "in_degree": 18907
-    },
-    {
-      "target_id": "bge_141 V 281",
-      "in_degree": 18886
-    },
-    {
-      "target_id": "bge_133 V 108",
-      "in_degree": 18352
-    },
-    {
-      "target_id": "bge_132 V 93",
-      "in_degree": 18327
+      "in_degree": 17559
     },
     {
       "target_id": "bge_133 II 249",
-      "in_degree": 16709
+      "in_degree": 16465
     },
     {
-      "target_id": "bge_129 V 177",
-      "in_degree": 16428
+      "target_id": "bge_141 V 281",
+      "in_degree": 16059
     },
     {
-      "target_id": "bge_119 V 335",
-      "in_degree": 16337
-    },
-    {
-      "target_id": "bge_127 V 466",
-      "in_degree": 16180
+      "target_id": "bge_133 V 108",
+      "in_degree": 15948
     },
     {
       "target_id": "bge_136 I 229",
-      "in_degree": 15905
+      "in_degree": 14446
+    },
+    {
+      "target_id": "bge_132 V 93",
+      "in_degree": 14298
+    },
+    {
+      "target_id": "bge_127 V 466",
+      "in_degree": 14248
+    },
+    {
+      "target_id": "bge_129 V 177",
+      "in_degree": 14241
+    },
+    {
+      "target_id": "bge_119 V 335",
+      "in_degree": 13739
+    },
+    {
+      "target_id": "bge_134 II 244",
+      "in_degree": 12703
+    },
+    {
+      "target_id": "bge_126 V 319",
+      "in_degree": 12270
     },
     {
       "target_id": "bge_127 V 294",
-      "in_degree": 15154
-    },
-    {
-      "target_id": "bge_114 V 310",
-      "in_degree": 15023
-    },
-    {
-      "target_id": "bge_129 V 222",
-      "in_degree": 14741
-    },
-    {
-      "target_id": "bge_121 V 362",
-      "in_degree": 13666
-    },
-    {
-      "target_id": "bge_129 V 1",
-      "in_degree": 13660
-    },
-    {
-      "target_id": "bge_128 V 29",
-      "in_degree": 13495
+      "in_degree": 12182
     },
     {
       "target_id": "bge_134 I 140",
-      "in_degree": 13085
+      "in_degree": 12163
     },
     {
-      "target_id": "bge_124 V 90",
-      "in_degree": 13076
+      "target_id": "bge_121 V 362",
+      "in_degree": 11906
+    },
+    {
+      "target_id": "bge_127 I 38",
+      "in_degree": 11862
+    },
+    {
+      "target_id": "bge_129 V 222",
+      "in_degree": 11695
+    },
+    {
+      "target_id": "bge_129 V 1",
+      "in_degree": 11540
     }
   ],
   "in_degree_buckets": [
     {
       "bucket": "10000+",
-      "n": 49
+      "n": 40
     },
     {
       "bucket": "1000-9999",
-      "n": 1059
+      "n": 933
     },
     {
       "bucket": "100-999",
-      "n": 11226
+      "n": 9758
     },
     {
       "bucket": "10-99",
-      "n": 76521
+      "n": 67064
     },
     {
       "bucket": "2-9",
-      "n": 116644
+      "n": 106619
     },
     {
       "bucket": "1",
-      "n": 86874
+      "n": 76803
     }
   ],
   "match_types": [
     {
       "type": "docket_norm",
-      "n": 7041179
-    },
-    {
-      "type": "bge_norm",
-      "n": 2844706
-    },
-    {
-      "type": "bge_pincite",
-      "n": 859491
+      "n": 3281573
     },
     {
       "type": "bge_bare",
-      "n": 17578
+      "n": 2940096
+    },
+    {
+      "type": "bge_norm",
+      "n": 1213866
+    },
+    {
+      "type": "bge_pincite",
+      "n": 652283
     }
   ],
   "cross_lang_matrix": [
     {
       "src": "de",
       "tgt": "de",
-      "n": 4563323
+      "n": 2772516
     },
     {
       "src": "fr",
       "tgt": "fr",
-      "n": 2576862
+      "n": 2519278
     },
     {
       "src": "fr",
       "tgt": "de",
-      "n": 2103276
+      "n": 1937750
     },
     {
       "src": "de",
       "tgt": "fr",
-      "n": 708137
+      "n": 458531
     },
     {
       "src": "it",
       "tgt": "de",
-      "n": 419099
+      "n": 168256
     },
     {
       "src": "it",
       "tgt": "fr",
-      "n": 179125
-    },
-    {
-      "src": "it",
-      "tgt": "it",
-      "n": 95912
+      "n": 89212
     },
     {
       "src": "fr",
       "tgt": "it",
-      "n": 66240
+      "n": 63429
+    },
+    {
+      "src": "it",
+      "tgt": "it",
+      "n": 46960
     },
     {
       "src": "de",
       "tgt": "it",
-      "n": 50980
+      "n": 31886
     }
   ],
   "fed_laws": 5516,
@@ -838,5 +838,5 @@
     "UR",
     "VD"
   ],
-  "rg_citation_target_links": 10762954
+  "rg_citation_target_links": 8087818
 }
