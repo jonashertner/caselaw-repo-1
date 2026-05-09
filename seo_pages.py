@@ -78,17 +78,31 @@ def _split_paragraphs(text: str) -> list[str]:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
 
     # HUDOC fallback: many single newlines, no blank lines → each line
-    # IS a paragraph. Threshold of 30 protects against false-triggering
-    # on short single-paragraph regestes / dispositivs.
+    # IS a paragraph. Threshold of 30 protects against short single-
+    # paragraph regestes / dispositivs.
+    #
+    # 2026-05-09 hardening: also gate on line-length distribution.
+    # PDF-extracted BGE Erwägungen (e.g. bge_BGE_133_III_121 E. 3.1)
+    # have 30+ newlines and 0 blank breaks too, but the newlines split
+    # mid-sentence around legal citations like "art. 394 ss CO" — those
+    # short citation-only lines should INLINE into the surrounding
+    # prose, not become standalone paragraphs. Real HUDOC paragraphs
+    # are legal-prose lines that average well over 30 characters; a
+    # majority-of-short-lines pattern indicates citation-broken inline
+    # text, in which case we fall through to the regular path that
+    # collapses single newlines into spaces.
     n_newlines = text.count("\n")
     n_blank_breaks = len(re.findall(r"\n\s*\n", text))
     if n_newlines >= 30 and n_blank_breaks == 0:
-        paragraphs = []
-        for raw_line in text.split("\n"):
-            line = raw_line.strip()
-            if line:
-                paragraphs.append(line)
-        return paragraphs
+        lines = [ln.strip() for ln in text.split("\n") if ln.strip()]
+        short_ratio = (
+            sum(1 for ln in lines if len(ln) < 30) / len(lines)
+            if lines else 0.0
+        )
+        if lines and short_ratio < 0.30:
+            return lines
+        # else: fall through — the regular newline-as-space collapse
+        # below produces correctly-flowed prose.
 
     paragraphs: list[str] = []
     for block in re.split(r"\n\s*\n+", text.strip()):
