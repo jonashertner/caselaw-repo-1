@@ -6,6 +6,89 @@
  * Views: search (default), detail, laws, verify, settings
  */
 
+// ── Live-update detection ──────────────────────────────────────────
+// Polls /version.txt every 60 s. When the deployed version changes,
+// shows a non-blocking banner inviting the user to refresh. The banner
+// uses Office's display language (or the user's saved choice from
+// roamingSettings if available) so it speaks the user's tongue.
+//
+// Server-side: a post-merge git hook on the VPS rsyncs the repo's
+// tools/word-addin/ → /var/www/word-addin/ and writes
+// /var/www/word-addin/version.txt with the current commit SHA.
+(function autoUpdateBootstrap() {
+  if (typeof window === 'undefined' || typeof fetch === 'undefined') return;
+  var POLL_MS = 60 * 1000;
+  var loaded = null;
+
+  function fetchVersion() {
+    return fetch('/version.txt', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (t) { return t ? t.trim() : null; })
+      .catch(function () { return null; });
+  }
+
+  function detectBannerLang() {
+    var raw = '';
+    try {
+      if (typeof Office !== 'undefined' && Office.context) {
+        var rs = Office.context.roamingSettings;
+        if (rs && rs.get) raw = rs.get('ocl_lang') || '';
+        if (!raw) raw = Office.context.displayLanguage || Office.context.contentLanguage || '';
+      }
+    } catch (e) {}
+    if (!raw && typeof navigator !== 'undefined') {
+      raw = navigator.language || (navigator.languages && navigator.languages[0]) || '';
+    }
+    raw = (raw || 'de').toLowerCase();
+    if (raw.indexOf('de') === 0) return 'de';
+    if (raw.indexOf('fr') === 0) return 'fr';
+    if (raw.indexOf('it') === 0) return 'it';
+    if (raw.indexOf('en') === 0) return 'en';
+    return 'de';
+  }
+
+  function showBanner() {
+    if (document.getElementById('ocl-update-banner')) return;
+    var msgs = {
+      de: 'Neue Version verfügbar — klicken zum Aktualisieren',
+      fr: 'Nouvelle version disponible — cliquer pour actualiser',
+      it: 'Nuova versione disponibile — clicca per aggiornare',
+      en: 'New version available — click to refresh'
+    };
+    var lang = detectBannerLang();
+    var div = document.createElement('div');
+    div.id = 'ocl-update-banner';
+    div.setAttribute('role', 'status');
+    div.style.cssText =
+      'position:fixed;left:0;right:0;bottom:0;z-index:99999;' +
+      'background:#0066cc;color:#fff;padding:10px 14px;' +
+      'text-align:center;cursor:pointer;font-size:13px;' +
+      'font-family:system-ui,-apple-system,Segoe UI,sans-serif;' +
+      'box-shadow:0 -2px 6px rgba(0,0,0,0.15)';
+    div.textContent = msgs[lang] || msgs.en;
+    div.onclick = function () { location.reload(); };
+    document.body.appendChild(div);
+  }
+
+  function startPolling() {
+    setInterval(function () {
+      fetchVersion().then(function (latest) {
+        if (latest && loaded && latest !== loaded) showBanner();
+      });
+    }, POLL_MS);
+  }
+
+  fetchVersion().then(function (v) {
+    if (!v) return;  // version.txt not deployed yet — skip silently
+    loaded = v;
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      startPolling();
+    } else {
+      window.addEventListener('DOMContentLoaded', startPolling);
+    }
+  });
+})();
+
 // State
 var state = {
   view: 'search',
