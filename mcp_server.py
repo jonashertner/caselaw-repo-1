@@ -12163,13 +12163,81 @@ def get_law(
 
 
 def _search_laws_federal(
-    query: str, sr_number: str | None, language: str, limit: int,
+    query: str,
+    sr_number: str | None,
+    language: str,
+    limit: int,
+    raw_query: str | None = None,
 ) -> list[dict]:
-    """Federal-only FTS5 search against statutes.db. Returns a ranked list."""
+    """Federal-only FTS5 search against statutes.db. Returns a ranked list.
+
+    When ``raw_query`` is supplied (the user's original input before FTS5
+    sanitisation/expansion), we first try to match it as a law-level
+    abbreviation (e.g. ``ERV`` → Eigenmittelverordnung, ``ZGB`` → ZGB).
+    Article-1 of any matching law is surfaced ahead of FTS5 article-body
+    matches, which otherwise rank articles in *other* laws that merely
+    mention the abbreviation (HBEV-FINMA mentions ERV, etc.).
+    """
     conn = _get_statutes_conn()
     if conn is None:
         return []
     try:
+        priority: list[dict] = []
+        seen_keys: set[tuple] = set()
+
+        # Abbreviation pre-match: only when no SR-scope and the raw query is
+        # a single short token (typical abbreviation pattern).
+        if not sr_number and raw_query:
+            q_clean = raw_query.strip().strip('"').lower()
+            if q_clean.endswith("*"):
+                q_clean = q_clean[:-1]
+            # Single token, ≤ 12 chars, alpha-prefix — looks like an abbreviation.
+            if (
+                q_clean
+                and " " not in q_clean
+                and len(q_clean) <= 12
+                and q_clean[0].isalpha()
+            ):
+                abbr_rows = conn.execute(
+                    """SELECT sr_number, abbr_de, abbr_fr, abbr_it,
+                              title_de, title_fr, title_it
+                       FROM laws
+                       WHERE LOWER(abbr_de) = ? OR LOWER(abbr_fr) = ?
+                          OR LOWER(abbr_it) = ?
+                       LIMIT 5""",
+                    (q_clean, q_clean, q_clean),
+                ).fetchall()
+                for ar in abbr_rows:
+                    abbr = ar[f"abbr_{language}"] or ar["abbr_de"] or "?"
+                    title = ar[f"title_{language}"] or ar["title_de"] or ""
+                    first_arts = conn.execute(
+                        """SELECT article_num, heading, text
+                           FROM articles
+                           WHERE sr_number = ? AND lang = ?
+                           ORDER BY CAST(article_num AS INTEGER), article_num
+                           LIMIT 1""",
+                        (ar["sr_number"], language),
+                    ).fetchall()
+                    for fa in first_arts:
+                        body = (fa["text"] or "")[:240].replace("\n", " ").strip()
+                        snippet = (
+                            f">>>{abbr}<<< (SR {ar['sr_number']}): {body}..."
+                            if body
+                            else f">>>{abbr}<<< (SR {ar['sr_number']})"
+                        )
+                        key = (ar["sr_number"], fa["article_num"])
+                        seen_keys.add(key)
+                        priority.append({
+                            "level": "federal",
+                            "canton": "CH",
+                            "sr_number": ar["sr_number"],
+                            "abbreviation": abbr,
+                            "title": title,
+                            "article_num": fa["article_num"],
+                            "heading": fa["heading"],
+                            "snippet": snippet,
+                        })
+
         if sr_number:
             rows = conn.execute(
                 """SELECT a.sr_number, a.article_num, a.heading,
@@ -12198,11 +12266,14 @@ def _search_laws_federal(
                    LIMIT ?""",
                 (query, language, limit),
             ).fetchall()
-        results = []
         for r in rows:
+            key = (r["sr_number"], r["article_num"])
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
             abbr = r[f"abbr_{language}"] or r["abbr_de"] or "?"
             title = r[f"title_{language}"] or r["title_de"] or ""
-            results.append({
+            priority.append({
                 "level": "federal",
                 "canton": "CH",
                 "sr_number": r["sr_number"],
@@ -12212,7 +12283,7 @@ def _search_laws_federal(
                 "heading": r["heading"],
                 "snippet": r["snippet"],
             })
-        return results
+        return priority[:limit]
     except sqlite3.Error as e:
         logger.error("Federal statute search error: %s", e)
         return []
@@ -12398,6 +12469,7 @@ def search_laws(
             callers who want explicit scoping without using sr_number/canton.
     """
     limit = min(max(1, limit), 50)
+    raw_query = query
     query = _sanitize_fts5(query)
     if not query:
         return {"query": query, "count": 0, "results": []}
@@ -12420,7 +12492,9 @@ def search_laws(
     federal_results: list[dict] = []
     cantonal_results: list[dict] = []
     if hit_federal:
-        federal_results = _search_laws_federal(query, sr_number, language, limit)
+        federal_results = _search_laws_federal(
+            query, sr_number, language, limit, raw_query=raw_query,
+        )
     if hit_cantonal:
         cantonal_results = _search_laws_cantonal(
             query, canton_u or None, language, limit,
