@@ -12502,18 +12502,22 @@ def search_laws(
     limit = min(max(1, limit), 50)
     raw_query = query
 
-    # Determine which corpora to hit
+    # Determine which corpora to hit.
+    # canton == "CH" is a legacy alias for federal. Explicit jurisdiction
+    # overrides; otherwise jurisdiction="all" routes to both unless canton
+    # narrows the scope. Parens are required: Python's `and` binds tighter
+    # than `or`, so the unparen'd form silently mis-routes
+    # `(jurisdiction="federal", canton="ZH")` to *neither* corpus.
     canton_u = (canton or "").upper()
     j = (jurisdiction or "all").lower()
     hit_federal = (
-        j != "cantonal"
-        and not canton_u  # an explicit canton filter implies cantonal only
-        or canton_u == "CH"
+        canton_u == "CH"
+        or j == "federal"
+        or (j == "all" and not canton_u)
     )
     hit_cantonal = (
-        j != "federal"
-        and not sr_number  # SR numbers are federal-scoped in statutes.db
-        and canton_u != "CH"
+        j == "cantonal"
+        or (j == "all" and not sr_number and canton_u != "CH")
     )
 
     # Abbreviation pre-match runs before FTS5 sanitisation so that lookups

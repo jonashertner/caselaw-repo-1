@@ -255,6 +255,40 @@ async function verifyAndStrengthenPro(licenseKey, paragraphText, lang) {
   return resp;
 }
 
+/* Find decisions that support a legal statement. Pro feature.
+   Server (POST /billing/find-support) parses the statement, runs
+   citation-graph + statute searches, and scores each candidate
+   decision by how well it supports the claim. Capped server-side
+   at 25/day per license. Like verify/strengthen, we redact PII
+   client-side before transmission and unredact response strings
+   client-side. */
+async function findSupportingDecisions(licenseKey, statementText, lang) {
+  var redaction = _requireRedact(statementText);
+  var resp = await apiPost('/billing/find-support', {
+    license_key: licenseKey,
+    statement: redaction.redacted,
+    lang: lang || 'de',
+    client_redactor_version: REDACTOR_VERSION,
+    client_redactor_summary: redaction.summary,
+  });
+  if (redaction.summary.total > 0 && resp) {
+    /* Un-redact known string fields in the response. */
+    ['claim', 'summary', 'analysis', 'explanation', 'legal_area'].forEach(function (k) {
+      if (typeof resp[k] === 'string') resp[k] = unredact(resp[k], redaction.replacements);
+    });
+    if (Array.isArray(resp.results)) {
+      resp.results.forEach(function (item) {
+        if (!item) return;
+        ['rationale', 'support_quote', 'relevance_explanation', 'excerpt'].forEach(function (f) {
+          if (typeof item[f] === 'string') item[f] = unredact(item[f], redaction.replacements);
+        });
+      });
+    }
+    resp._pii_summary = redaction.summary;
+  }
+  return resp;
+}
+
 /* Structural redaction — no opt-out. Throws if the redactor module
    isn't loaded so a Pro request can never silently leak un-redacted
    PII. The thrown error is shaped like other api errors so the existing
