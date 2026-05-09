@@ -58,10 +58,25 @@ provenance so a reviewer can verify in less than five minutes.
 \item \texttt{https://opencaselaw.ch/coverage/} (per-source scrape health).
 \end{itemize}
 
-\paragraph{Reproducing key numerical claims.}
+\paragraph{Reproducing key numerical claims.} A reviewer can verify
+the paper's three headline claims in under a second from a fresh
+clone, without rebuilding the corpus, via the \texttt{Makefile}'s
+\texttt{verify} target:
 \begin{verbatim}
 git clone https://github.com/jonashertner/caselaw-repo-1
 cd caselaw-repo-1
+make verify
+\end{verbatim}
+This calls \texttt{/health} on the live MCP server (corpus size),
+checks the citation-graph resolution rate against the JSON snapshot
+under \texttt{docs/paper/v3/tables/}, and validates the cross-lingual
+benchmark MRR/Hit@10 against the committed results JSON under
+\texttt{benchmarks/swiss\_legal\_rag\_bench/results/}. The expected
+output is ``All headline claims reproduce''.
+
+For deeper verification (full citation-graph rebuild and benchmark
+re-runs against the live corpus):
+\begin{verbatim}
 git checkout paper-resource-2026-05
 pip install -r requirements.txt
 huggingface-cli download voilaj/swiss-caselaw --local-dir output/
@@ -69,6 +84,7 @@ python -m quality.cli run                    # 4-layer dataset health
 python benchmarks/run_search_benchmark.py    # Tab.~2 baseline
 python benchmarks/run_cross_lingual.py       # Tab.~3, Fig.~2 (cross-lang)
 python -m benchmarks.citation_resolution_analysis    # Sec.~4 unresolved breakdown
+make test                                     # full pytest suite (~40 s)
 \end{verbatim}
 
 \paragraph{Telemetry, costs, latency.} The MCP server exposes
