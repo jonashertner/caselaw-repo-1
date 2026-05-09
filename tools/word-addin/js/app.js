@@ -64,11 +64,36 @@ var ICONS = {
 };
 function proLockSvg() { return localStorage.getItem('ocl_pro_key') ? '' : '<span class="pro-lock" title="Pro" aria-label="Pro">' + ICONS.lock + '</span>'; }
 
-// Pattern to detect law article queries like "Art. 41 OR", "Art. 8 BV", "OR 41", "ZGB 8"
+// Pattern to detect law article queries like "Art. 41 OR", "Art. 8 BV",
+// "Art. 29 ERV", "OR 41", "ZGB 8".
+//
+// Forward pattern ("Art. <N> <ABBR>") accepts ANY 2-15 char alpha
+// abbreviation — the backend's /laws/{abbr} endpoint validates against
+// statutes.db, and on miss the frontend falls through to keyword search.
+// This means new federal Verordnungen / Gesetze (e.g. ERV, FINMA-RS,
+// HBEV-FINMA) work without code changes.
+//
+// Reverse pattern ("<ABBR> <N>") keeps the curated list because a generic
+// match here would conflict with normal noun+number queries
+// ("Vertrag 5", "Klage 2024" etc.).
 var LAW_ABBREVS = 'OR|ZGB|StGB|BV|StPO|ZPO|SchKG|AHVG|AIG|AHVV|KVV|BGG|VwVG|ATSG|UVG|BVG|UWG|KG|MSchG|URG|PatG|DSG|FINMAG|GwG|BankG|FusG|IPRG|Lug\u00DC|KKG|CO|CC|CP|Cst\\.?|Cost\\.?|CPP|CPC|LP|LTF|LCD|LEtr|LDIP|LFus|LCart|LDA|LPM|LBI|LPD|LAJ|LAI|LATF|LPA|LPGA|LAA|LPP';
-// Matches: "Art. 41 OR", "Art 8 BV", "OR 41", "BV 8", "StGB 261bis", "art. 41 CO", "Cst. 8", "art. 2 al. 1 CC"
-var LAW_PATTERN = new RegExp('(?:[Aa]rt\\.?\\s*)(\\d+[a-z]?(?:bis|ter|quater)?(?:\\s*(?:Abs|al|cpv|let|ch|lit)\\.?\\s*\\d*[a-z]?)?)\\s+(' + LAW_ABBREVS + ')', 'i');
-var LAW_PATTERN_REVERSE = new RegExp('^(' + LAW_ABBREVS.replace(/\\\.\?/g, '\\.?') + ')\\s+(\\d+[a-z]?(?:bis|ter|quater)?)$', 'i');
+// First char is uppercase (case-sensitive) to avoid matching "Art. 5 vertrag"
+// false-positives. Tail allows hyphen + Latin-1 supplement letters so
+// "FINMA-RS", "LugÜ", "BG-NDB" etc. are captured. No \b at the end —
+// JS's \b doesn't treat Ü/ä/ö as word chars without the `u` flag, which
+// truncates unicode abbreviations. The character class already excludes
+// whitespace, so greedy matching naturally stops at the next token break.
+var GENERIC_LAW_ABBR = '[A-Z][A-Za-z\\-\\u00C0-\\u017F]{1,14}';
+var LAW_PATTERN = new RegExp(
+  '(?:[Aa]rt\\.?\\s*)' +
+  '(\\d+[a-z]?(?:bis|ter|quater)?(?:\\s*(?:Abs|al|cpv|let|ch|lit)\\.?\\s*\\d*[a-z]?)?)' +
+  '\\s+(' + GENERIC_LAW_ABBR + ')',
+  ''
+);
+var LAW_PATTERN_REVERSE = new RegExp(
+  '^(' + LAW_ABBREVS.replace(/\\\.\?/g, '\\.?') + ')\\s+(\\d+[a-z]?(?:bis|ter|quater)?)$',
+  'i'
+);
 
 // French/Italian abbreviation → German canonical form for API lookup
 var LAW_ALIAS = {
@@ -1945,15 +1970,17 @@ async function doSearch(query) {
       if (lawData && lawData.articles && lawData.articles.length > 0) {
         state.lawResult = lawData;
         addRecentLookup(query);
-      } else {
-        state.error = { type: 'not_found', message: t('lookup_not_found', state.lang) };
+        state.loading = false;
+        render();
+        return;
       }
+      // Empty result: with the generic LAW_PATTERN we accept any
+      // uppercase-leading short token, so non-law false-positives
+      // ("Art. 5 Vertrag") will land here. Fall through to keyword
+      // search instead of showing "not found".
     } catch (e) {
-      state.error = { type: 'not_found', message: t('lookup_not_found', state.lang) };
+      // 404 / network error → fall through to keyword search.
     }
-    state.loading = false;
-    render();
-    return;
   }
 
   // 2. Detect decision reference → direct decision lookup
