@@ -12166,6 +12166,7 @@ def _abbreviation_lookup_federal(
     raw_query: str,
     language: str,
     limit: int = 5,
+    conn: sqlite3.Connection | None = None,
 ) -> list[dict]:
     """Match a short abbreviation against laws.{abbr_de,abbr_fr,abbr_it}.
 
@@ -12175,6 +12176,11 @@ def _abbreviation_lookup_federal(
 
     Runs against the raw user query (before FTS5 sanitisation), so it
     works even when the query is an FTS5 reserved word like ``OR``.
+
+    If ``conn`` is supplied the caller owns the connection lifecycle
+    (used by ``_search_laws_federal`` to avoid opening a second SQLite
+    handle per request); otherwise the function opens and closes its
+    own connection.
     """
     if not raw_query:
         return []
@@ -12189,7 +12195,9 @@ def _abbreviation_lookup_federal(
         or not q_clean[0].isalpha()
     ):
         return []
-    conn = _get_statutes_conn()
+    owns_conn = conn is None
+    if conn is None:
+        conn = _get_statutes_conn()
     if conn is None:
         return []
     try:
@@ -12236,7 +12244,8 @@ def _abbreviation_lookup_federal(
         logger.error("Abbreviation lookup error: %s", e)
         return []
     finally:
-        conn.close()
+        if owns_conn:
+            conn.close()
 
 
 def _search_laws_federal(
@@ -12262,9 +12271,13 @@ def _search_laws_federal(
         priority: list[dict] = []
         seen_keys: set[tuple] = set()
 
-        # Abbreviation pre-match (federal-scope only).
+        # Abbreviation pre-match (federal-scope only). Reuse the conn we
+        # already hold — opening a second handle to the immutable=1
+        # statutes.db is wasteful (~0.5 ms × N RPS × 4 workers).
         if not sr_number and raw_query:
-            for entry in _abbreviation_lookup_federal(raw_query, language):
+            for entry in _abbreviation_lookup_federal(
+                raw_query, language, conn=conn,
+            ):
                 key = (entry["sr_number"], entry["article_num"])
                 seen_keys.add(key)
                 priority.append(entry)

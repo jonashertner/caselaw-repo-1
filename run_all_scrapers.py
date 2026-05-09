@@ -512,9 +512,44 @@ def main():
     health_path.write_text(json.dumps(health, indent=2))
     logger.info(f"Health data written to {health_path}")
 
-    # Only fail on real errors, not timeouts
-    if failed > 0:
+    # Soft-fail policy. The daily run aggregates 59 scrapers across federal
+    # courts, regulatory bodies, and 26 cantonal portals; a few cantonal
+    # portals are chronically flaky (JU/NE blocked from Hetzner IPs and
+    # rely on a SOCKS tunnel that drops; ECHR's portal periodically returns
+    # partial results). A handful of those failures should not red-light
+    # the daily systemd unit if the federal core succeeded, because the
+    # operational signal is "is the corpus fresh?", not "is every portal
+    # cooperating today?". Two gates:
+    #
+    #   1. CRITICAL_SCRAPERS — federal courts whose failure IS a real
+    #      ops issue. If any of these fail, exit 1.
+    #   2. failure_rate — the long-tail flaky cantonal scrapers. If
+    #      more than 15 % fail, something systemic is wrong and we
+    #      should exit 1; below that, log the failures but exit 0.
+    CRITICAL_SCRAPERS = {
+        "bger", "bvger", "bstger", "bpatger", "bge",
+    }
+    critical_failed = [
+        r for r in results
+        if not r["success"] and r["court"] in CRITICAL_SCRAPERS
+    ]
+    failure_rate = (failed / len(results)) if results else 0.0
+    if critical_failed:
+        logger.error(
+            f"  Exiting 1: {len(critical_failed)} CRITICAL scraper(s) failed: "
+            + ", ".join(sorted(r["court"] for r in critical_failed))
+        )
         sys.exit(1)
+    if failure_rate > 0.15:
+        logger.error(
+            f"  Exiting 1: failure rate {100 * failure_rate:.1f}% > 15 % threshold"
+        )
+        sys.exit(1)
+    if failed:
+        logger.info(
+            f"  {failed} non-critical failure(s) tolerated "
+            f"(failure rate {100 * failure_rate:.1f}% ≤ 15 %)"
+        )
 
 
 if __name__ == "__main__":

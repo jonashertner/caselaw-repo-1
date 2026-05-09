@@ -29,6 +29,37 @@ import sqlite3
 from pathlib import Path
 
 
+def _corpus_stats_from_fts5(fts_db_path: str) -> dict:
+    """Refresh the FTS5-derived corpus fields (total_decisions, total_courts,
+    languages). Skips silently if the FTS5 DB isn't accessible at the
+    given path — the script then preserves whatever values were in the
+    JSON before, so it is safe to run on hosts without the FTS5 DB.
+    """
+    try:
+        c = sqlite3.connect(f"file:{fts_db_path}?mode=ro", uri=True)
+    except sqlite3.OperationalError:
+        return {}
+    try:
+        out: dict = {}
+        out["total_decisions"] = c.execute(
+            "SELECT COUNT(*) FROM decisions"
+        ).fetchone()[0]
+        out["total_courts"] = c.execute(
+            "SELECT COUNT(DISTINCT court) FROM decisions"
+        ).fetchone()[0]
+        out["total_cantons"] = c.execute(
+            "SELECT COUNT(DISTINCT canton) FROM decisions"
+        ).fetchone()[0]
+        rows = c.execute(
+            "SELECT language, COUNT(*) FROM decisions "
+            "WHERE language IN ('de','fr','it') GROUP BY language"
+        ).fetchall()
+        out["languages"] = [{"lang": r[0], "n": r[1]} for r in rows]
+        return out
+    finally:
+        c.close()
+
+
 def _resolved_stats(cur: sqlite3.Cursor) -> dict:
     out: dict = {}
 
@@ -185,8 +216,20 @@ def _cross_lang_matrix(cur: sqlite3.Cursor) -> list:
     return [{"src": r[0], "tgt": r[1], "n": r[2]} for r in cur.fetchall()]
 
 
-def refresh(json_path: Path, graph_path: Path) -> dict:
+def refresh(json_path: Path, graph_path: Path, fts_db_path: str | None = None) -> dict:
     snapshot = json.loads(json_path.read_text())
+
+    # Refresh FTS5-derived fields (total_decisions, total_courts, languages)
+    # so the paper's corpus_overview matches the deployed search index.
+    # If fts_db_path isn't given, default to /opt/caselaw/repo path used in
+    # production; on a developer laptop without that DB the function is
+    # a no-op and the existing values are preserved.
+    if fts_db_path is None:
+        fts_db_path = "/opt/caselaw/repo/output/decisions.db"
+    fts_stats = _corpus_stats_from_fts5(fts_db_path)
+    if fts_stats:
+        snapshot.update(fts_stats)
+
     conn = sqlite3.connect(f"file:{graph_path}?mode=ro", uri=True)
     cur = conn.cursor()
 
@@ -217,6 +260,11 @@ def main() -> int:
         help="Path to reference_graph.db",
     )
     ap.add_argument(
+        "--fts",
+        default="/opt/caselaw/repo/output/decisions.db",
+        help="Path to FTS5 decisions.db (for total_decisions / total_courts)",
+    )
+    ap.add_argument(
         "--json",
         default=str(
             Path(__file__).resolve().parents[1]
@@ -227,7 +275,7 @@ def main() -> int:
     )
     args = ap.parse_args()
 
-    summary = refresh(Path(args.json), Path(args.graph))
+    summary = refresh(Path(args.json), Path(args.graph), args.fts)
     print(json.dumps(summary, indent=2))
     return 0
 
