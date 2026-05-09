@@ -12538,7 +12538,9 @@ def search_laws(
                 "federal_hits": len(federal_abbrev),
                 "cantonal_hits": 0,
             }
-        return {"query": query, "count": 0, "results": []}
+        # Echo the user's original input, not the sanitised empty string,
+        # so log lines and downstream telemetry record what was searched.
+        return {"query": raw_query, "count": 0, "results": []}
     query = _expand_law_query(query)
 
     federal_results: list[dict] = []

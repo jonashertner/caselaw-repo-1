@@ -70,8 +70,13 @@
     document.body.appendChild(div);
   }
 
+  var pollingTimer = null;
   function startPolling() {
-    setInterval(function () {
+    /* Idempotent: a DOM-load race could otherwise call us twice
+       (once from the readyState branch, once from the DOMContentLoaded
+       handler) and leak a second setInterval forever. */
+    if (pollingTimer !== null) return;
+    pollingTimer = setInterval(function () {
       fetchVersion().then(function (latest) {
         if (latest && loaded && latest !== loaded) showBanner();
       });
@@ -84,7 +89,7 @@
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
       startPolling();
     } else {
-      window.addEventListener('DOMContentLoaded', startPolling);
+      window.addEventListener('DOMContentLoaded', startPolling, { once: true });
     }
   });
 })();
@@ -717,6 +722,10 @@ function formatLawFootnotes(text) {
 }
 
 // Async: resolve AS/BBl refs in footnotes to clickable Fedlex links (called after render)
+//
+// URL validation uses the URL constructor + protocol comparison, not a
+// string-prefix check, so a server response like "https:javascript:..."
+// (no double-slash) or whitespace-prefixed scheme cannot bypass the guard.
 function resolveAmendmentRefs() {
   var footnotes = document.querySelectorAll('.law-footnote, .law-footnote-inline');
   footnotes.forEach(function (el) {
@@ -727,10 +736,15 @@ function resolveAmendmentRefs() {
       var m = ref.match(/(AS|BBl|RO|RU|FF)\s+(\d{4})\s+(\d+)/);
       if (!m) return;
       apiFetch('/amendment-ref', { ref_type: m[1], year: m[2], page: m[3] }).then(function (data) {
-        if (data && data.url && data.url.indexOf('https://') === 0) {
-          var link = '<a href="' + escHtml(data.url) + '" target="_blank" class="law-ref-link">' + escHtml(ref) + '</a>';
-          el.innerHTML = el.innerHTML.replace(escHtml(ref), link); // eslint-disable-line no-unsanitized/property
-        }
+        if (!data || !data.url || typeof data.url !== 'string') return;
+        var safe = false;
+        try {
+          var parsed = new URL(data.url);
+          safe = (parsed.protocol === 'https:' && parsed.hostname.length > 0);
+        } catch (_e) { safe = false; }
+        if (!safe) return;
+        var link = '<a href="' + escHtml(data.url) + '" target="_blank" rel="noopener noreferrer" class="law-ref-link">' + escHtml(ref) + '</a>';
+        el.innerHTML = el.innerHTML.replace(escHtml(ref), link); // eslint-disable-line no-unsanitized/property
       }).catch(function () {});
     });
   });
@@ -2546,12 +2560,15 @@ async function doActivatePro() {
   if (!keyInput) return;
   var key = keyInput.value.trim();
   if (!key || !key.startsWith('ocl_pro_')) {
+    state.error = { type: 'invalid_license', message: t('pro_key_invalid', state.lang) };
+    render();
     return;
   }
   try {
     var data = await validateLicense(key);
-    if (data.valid) {
+    if (data && data.valid) {
       localStorage.setItem('ocl_pro_key', key);
+      state.error = null;
       /* Mirror into roamingSettings so the activation follows the user
          across Word for Mac / Win / Online — they paste once, not once
          per device. saveAsync is fire-and-forget; failure here only
@@ -2563,9 +2580,17 @@ async function doActivatePro() {
         } catch (_e) { /* roaming unavailable — local activation still works */ }
       }
       render();
+    } else {
+      /* Server returned valid:false (or empty body). Show user-facing
+         feedback so the input doesn't appear to silently swallow the
+         click — previously this branch returned with no UI signal. */
+      state.error = { type: 'invalid_license', message: t('pro_key_invalid', state.lang) };
+      render();
     }
   } catch (e) {
     console.error('License validation error:', e);
+    state.error = { type: 'invalid_license', message: t('pro_key_invalid', state.lang) };
+    render();
   }
 }
 
