@@ -120,16 +120,17 @@ def run_smoke(base_url: str = DEFAULT_BASE_URL) -> list[ProbeResult]:
         # serif-typography scope binds to in seo_pages.py.
         ("entscheid_html", f"{base}/entscheid/{ANCHOR_DECISION}",
          {"must_contain": b"decision-body", "expected_mtype_prefix": "text/html"}),
-        ("export_docx", f"{base}/api/decisions/{ANCHOR_DECISION}/export.docx",
-         {"magic": b"PK", "min_bytes": 1500,
-          "expected_mtype_prefix": "application/vnd.openxmlformats-officedocument"}),
+        # 2026-05-09: trimmed from 4 export-format probes to 1. The previous
+        # set hammered all four formats every 5 min (~3,800 self-hits/day to
+        # the same canary), which (a) inflated and uniformised the export-
+        # format usage stats so we couldn't tell which format real users
+        # prefer, and (b) bombed the BGE 140 III 86 page hit count by an
+        # order of magnitude over real signal. .pdf is the most-used by
+        # real users so we keep that one; the other three formats are
+        # exercised by the publish pipeline's release-bundle build and by
+        # pytest, which is sufficient for regression coverage.
         ("export_pdf", f"{base}/api/decisions/{ANCHOR_DECISION}/export.pdf",
          {"min_bytes": 500, "expected_mtype_prefix": "application/"}),
-        ("export_bib", f"{base}/api/decisions/{ANCHOR_DECISION}/export.bib",
-         {"must_contain": b"@misc{", "expected_mtype_prefix": "application/x-bibtex"}),
-        ("export_ris", f"{base}/api/decisions/{ANCHOR_DECISION}/export.ris",
-         {"must_contain": b"TY  - CASE",
-          "expected_mtype_prefix": "application/x-research-info-systems"}),
     ]
     return [_probe(n, u, **kw) for n, u, kw in probes]
 
