@@ -693,21 +693,38 @@ def build_graph(
             tmp_path.unlink()
         raise
     else:
-        # Defensive guard: refuse atomic swap if resolved-citation count has
-        # regressed materially.  Catches resolver bugs that would silently
-        # erase live edges from the production graph.
-        if db_path.exists():
+        # Defensive guard: refuse atomic swap if the resolution RATE
+        # (resolved/raw) has regressed materially.  Comparing raw row
+        # counts is wrong when the input corpus changes size between
+        # builds (e.g. an FTS5 dedup pass shrinks the source by 15 %),
+        # because absolute row counts naturally drop with the corpus
+        # without indicating a resolver-quality regression. Rate is
+        # corpus-size-invariant.
+        if db_path.exists() and total_citations > 0:
             try:
                 with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True) as prev:
-                    prev_resolved = prev.execute(
-                        "SELECT COUNT(*) FROM citation_targets"
+                    prev_total = prev.execute(
+                        "SELECT COUNT(*) FROM decision_citations"
                     ).fetchone()[0]
-                if resolved_links < prev_resolved * 0.95:
-                    raise RuntimeError(
-                        f"Resolution regression: new {resolved_links:,} < 0.95 * "
-                        f"prev {prev_resolved:,}; refusing atomic swap. "
-                        f"Inspect {tmp_path} manually."
-                    )
+                    prev_resolved = prev.execute(
+                        "SELECT COUNT(*) FROM ("
+                        " SELECT 1 FROM citation_targets"
+                        " GROUP BY source_decision_id, target_ref"
+                        ")"
+                    ).fetchone()[0]
+                if prev_total > 0:
+                    prev_rate = prev_resolved / prev_total
+                    new_rate = resolved_refs / total_citations
+                    # Allow a 2pp drop before refusing — gives wiggle
+                    # room for normal fluctuations while still catching
+                    # serious resolver regressions.
+                    if new_rate < prev_rate - 0.02:
+                        raise RuntimeError(
+                            f"Resolution-rate regression: new "
+                            f"{100*new_rate:.2f}% < prev {100*prev_rate:.2f}% - "
+                            f"2pp; refusing atomic swap. Inspect {tmp_path} "
+                            f"manually."
+                        )
             except sqlite3.OperationalError:
                 pass  # No previous DB or unreadable — first-build OK.
         conn.execute("PRAGMA journal_mode=DELETE")
