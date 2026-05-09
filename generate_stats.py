@@ -141,8 +141,11 @@ def generate_stats(db_path: Path) -> dict:
         "latest": date_range["latest"],
     }
 
-    # Counts
-    stats["court_count"] = len(stats["by_court"])
+    # Counts. Count distinct courts (not court×canton pairs). Some federal-
+    # spanning scrapers produce multiple by_court entries with the same
+    # `court` key but different `canton`s, which would otherwise inflate
+    # court_count (108 distinct → 121 entries on the 2026-05 corpus).
+    stats["court_count"] = len({entry["court"] for entry in stats["by_court"]})
 
     # ── Derived fields (no new SQL) ──
 
