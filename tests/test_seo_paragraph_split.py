@@ -17,7 +17,49 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from seo_pages import _split_paragraphs
+from seo_pages import _split_paragraphs, _tighten_punctuation_spacing
+
+
+def test_punctuation_tightening_open_close_paren():
+    assert _tighten_punctuation_spacing("mandat ( art. 394 ss CO )") == \
+        "mandat (art. 394 ss CO)"
+
+
+def test_punctuation_tightening_semicolon_comma():
+    assert _tighten_punctuation_spacing("a ; b , c") == "a; b, c"
+
+
+def test_punctuation_tightening_french_elision():
+    cases = {
+        "L' art. 398 al. 2 CO": "L'art. 398 al. 2 CO",
+        "qu' il devait": "qu'il devait",
+        "lorsqu' il s'agit": "lorsqu'il s'agit",
+        "n' est pas": "n'est pas",
+    }
+    for inp, exp in cases.items():
+        assert _tighten_punctuation_spacing(inp) == exp, f"{inp!r}"
+
+
+def test_punctuation_tightening_italian_elision():
+    cases = {
+        "dell' art. 5": "dell'art. 5",
+        "all' art. 41": "all'art. 41",
+    }
+    for inp, exp in cases.items():
+        assert _tighten_punctuation_spacing(inp) == exp, f"{inp!r}"
+
+
+def test_punctuation_tightening_no_false_positives():
+    """English contractions / quotes / abbreviations must NOT be touched."""
+    safe_inputs = [
+        "Don't worry",                       # no space anyway
+        "She said 'Hello' and waved",        # closing quote followed by space
+        "Don't 'hello' me",                  # quoted lowercase word
+        "Bd. 5 S. 100",                      # abbreviations
+        "Art. 5 OR",                         # statute reference
+    ]
+    for s in safe_inputs:
+        assert _tighten_punctuation_spacing(s) == s, f"changed {s!r}"
 
 
 def test_citation_broken_text_collapses_to_one_paragraph():

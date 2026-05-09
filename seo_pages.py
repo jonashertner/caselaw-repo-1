@@ -42,6 +42,45 @@ BASE_URL = os.environ.get("SWISS_CASELAW_BASE_URL", "https://mcp.opencaselaw.ch"
 
 _LIST_MARKER_RE = re.compile(r"^([0-9]+[.)]|[a-z][.)]|[-*\u2013\u2022])\s")
 
+# Punctuation-spacing fixes for text that has been re-joined from
+# PDF-extracted lines (citation-broken inline text). Applied AFTER
+# newline-as-space collapse so we tighten artefacts like "( art." and
+# "L' art" without disturbing intentional whitespace inside the prose.
+#
+# Conservative: only the patterns that are *always* wrong in legal
+# DE/FR/IT typography. Skipped intentionally:
+#   * `:` — French typography uses a thin space before, hard to
+#     distinguish from the join artefact without a NBSP signal.
+#   * `.` — risk of breaking abbreviations like "Bd. " or "S. ".
+_PUNCT_OPEN_PAREN_RE = re.compile(r"\(\s+")
+_PUNCT_CLOSE_PAREN_RE = re.compile(r"\s+\)")
+_PUNCT_BEFORE_SEMI_COMMA_RE = re.compile(r"\s+([;,])")
+# Apostrophe elision (FR / IT): "L' art" → "L'art". Allow-list of
+# known elision prefixes — keeps the rule from gluing English closing
+# quotes (e.g. `She said 'Hello' and waved` would otherwise become
+# `Hello'and waved`). Longer alternatives ordered first so the regex
+# matches greedily.
+_PUNCT_ELISION_RE = re.compile(
+    r"\b("
+    r"jusqu|lorsqu|puisqu|presqu|quoiqu"     # FR compound w/ qu'
+    r"|dell|nell|sull|dall|all"              # IT compound w/ ll'
+    r"|gli"                                  # IT
+    r"|qu|ch"                                # FR / IT digraph
+    r"|[ldnscmtjv]"                          # FR / IT mono-letter
+    r")(['\u2019])\s+([a-zA-Z\u00C0-\u017F])",
+    re.IGNORECASE,
+)
+
+
+def _tighten_punctuation_spacing(text: str) -> str:
+    if not text:
+        return text
+    text = _PUNCT_OPEN_PAREN_RE.sub("(", text)
+    text = _PUNCT_CLOSE_PAREN_RE.sub(")", text)
+    text = _PUNCT_BEFORE_SEMI_COMMA_RE.sub(r"\1", text)
+    text = _PUNCT_ELISION_RE.sub(r"\1\2\3", text)
+    return text
+
 
 def _flow_paragraph(text: str) -> str:
     """Collapse a chunk of corpus text into a single re-flowable
@@ -51,6 +90,7 @@ def _flow_paragraph(text: str) -> str:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     text = re.sub(r"\s*\n\s*", " ", text)
     text = re.sub(r" {2,}", " ", text)
+    text = _tighten_punctuation_spacing(text)
     return text.strip()
 
 
@@ -100,7 +140,7 @@ def _split_paragraphs(text: str) -> list[str]:
             if lines else 0.0
         )
         if lines and short_ratio < 0.30:
-            return lines
+            return [_tighten_punctuation_spacing(ln) for ln in lines]
         # else: fall through — the regular newline-as-space collapse
         # below produces correctly-flowed prose.
 
@@ -120,7 +160,7 @@ def _split_paragraphs(text: str) -> list[str]:
                 items.append(line)
             else:
                 items[-1] = re.sub(r" {2,}", " ", items[-1].rstrip() + " " + line)
-        paragraphs.extend(items)
+        paragraphs.extend(_tighten_punctuation_spacing(p) for p in items)
     return paragraphs
 
 
