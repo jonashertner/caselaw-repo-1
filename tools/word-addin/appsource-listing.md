@@ -37,7 +37,7 @@ Search for "Art. 41 OR" or "Art. 8 BV" — the full article text appears directl
 
 **Find related decisions**
 
-Select a citation in your document and click "Find related" to discover decisions on the same topic. Built on a citation graph with 9.86 million cross-references between decisions (9.22 million resolved).
+Select a citation in your document and click "Find related" to discover decisions on the same topic. Built on a citation graph with 8.65 million cross-references between decisions (8.03 million resolved).
 
 **Free core features, optional Pro subscription**
 

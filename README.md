@@ -2,7 +2,7 @@
 
 **The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
-**971,000+ court decisions · 5,516 federal laws · 15,722 cantonal laws · 9.22 M resolved citation edges (9.86 M extracted) · 12.61 M statute references · 5,292 verbatim Federal Council Botschaften (DE/FR/IT-parallel)**
+**971,000+ court decisions · 5,516 federal laws · 15,722 cantonal laws · 8.03 M resolved citation edges (8.65 M extracted) · 11.26 M statute references · 5,292 verbatim Federal Council Botschaften (DE/FR/IT-parallel)**
 
 Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct-scraping 22 cantonal portals** (LexWork + SIL — the same publishing systems the cantons operate themselves) with **LexFind as a fallback** for the remaining 4 cantons (JU, SZ, UR, VD) and as the discovery catalog for 33,000+ legislative texts. Includes **Botschaft publication references for 5,293 verbatim Botschaft documents linked to 8,124 statute articles** (per-article Botschaft digests for BV/BGFA today; full per-law digested expansion to all federal laws is in active build), parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph** and **33 MCP tools (31 remote + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
@@ -37,11 +37,11 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - 15,722 cantonal laws / 353,437 articles, direct-scraped from 22 cantonal portals (LexWork + SIL + ZH OpenData + TI~RL); LexFind fallback for the remaining 4 cantons (JU, SZ, UR, VD)
 - Unified SQLite FTS5 search federates both corpora; sub-millisecond article lookup
 - Monthly refresh on the 2nd of each month (the day after laws enter into force)
-- 12.61 M resolved links from decisions to individual statute articles
+- 11.26 M resolved links from decisions to individual statute articles
 
 **Citation graph** — the **only public large-scale citation graph of the Swiss legal system**:
-- 9.22 M resolved decision-to-decision citation edges (from 9.86 M extracted, 93.5 % resolved) with confidence scores
-- 12.61 M decision-to-statute links resolved against the current consolidated text
+- 8.03 M resolved decision-to-decision citation edges (from 8.65 M extracted, 92.9 % resolved) with confidence scores
+- 11.26 M decision-to-statute links resolved against the current consolidated text
 - Bidirectional lookup, appeal-chain resolution (Instanzenzug), leading-case ranking by citation authority
 - Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend` (top: BGE 125 V 351 with 60,650 incoming citations)
 
@@ -78,7 +78,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 | Article lookup latency | < 1 ms (local FTS5) |
 | BGer publication → searchable | ~15 min (was 24 h pre-poller) |
 | Daily full-text rebuild | ~5 h, zero downtime (atomic swap) |
-| Citation-to-decision resolution rate | 93.5 % (9.22 M / 9.86 M raw refs) |
+| Citation-to-decision resolution rate | 92.9 % (8.03 M / 8.65 M raw refs) |
 
 ---
 
@@ -426,7 +426,7 @@ The AI calls the MCP tools automatically — you see the search results inline a
 
 ### Citation graph tools
 
-Four tools expose the **reference graph**: 9.22 million resolved decision-to-decision citation edges (from 9.86 M extracted) and 12.61 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+Four tools expose the **reference graph**: 8.03 million resolved decision-to-decision citation edges (from 8.65 M extracted) and 11.26 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
 
 **`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
 

@@ -52,7 +52,7 @@ Each case-citation reference is resolved against the corpus. We normalize the do
 
 | What | Count |
 |------|-------|
-| Extracted case-citation references | 9.86 million |
+| Extracted case-citation references | 8.65 million |
 | Resolved to in-corpus decisions | 6.46 million |
 | Statute-decision links | 11.3 million |
 | Distinct statute provisions | 281,391 |
@@ -167,7 +167,7 @@ The MCP server supports SSE transport (Claude) and Streamable HTTP (ChatGPT). No
 |---|---|
 | Decisions | 962,272 |
 | Courts and public bodies | 101 |
-| Case-citation references | 9.86 million extracted, 9.22 million resolved (93.5 %) |
+| Case-citation references | 8.65 million extracted, 8.03 million resolved (92.9 %) |
 | Resolved citation links | 6.46 million (73.8%) |
 | Statute-decision links | 11.3 million |
 | Federal laws indexed | 80 (39,000 articles) |

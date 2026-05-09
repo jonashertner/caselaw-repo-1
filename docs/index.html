@@ -20,7 +20,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
 <meta property="og:title" content="Swiss Case Law Open Dataset — 971,000+ Court Decisions">
-<meta property="og:description" content="OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.86 million extracted case-citation references (9.22 M resolved). Free MCP endpoint, REST API, and Microsoft Word add-in.">
+<meta property="og:description" content="OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.03 M resolved). Free MCP endpoint, REST API, and Microsoft Word add-in.">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -32,7 +32,7 @@
 <meta property="og:locale:alternate" content="it_CH">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Swiss Case Law Open Dataset — 971,000+ Court Decisions">
-<meta name="twitter:description" content="971,000+ Swiss federal, cantonal, and regulatory decisions with full text and 9.86 million extracted case-citation references (9.22 M resolved). Now also as a Microsoft Word add-in.">
+<meta name="twitter:description" content="971,000+ Swiss federal, cantonal, and regulatory decisions with full text and 8.65 million extracted case-citation references (8.03 M resolved). Now also as a Microsoft Word add-in.">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
@@ -42,7 +42,7 @@
     "@type": "Dataset",
     "name": "Swiss Case Law Open Dataset",
     "alternateName": "OpenCaseLaw",
-    "description": "OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 9.86 million extracted case-citation references (9.22 M resolved). Updated daily. Searchable via MCP, REST, and a Microsoft Word add-in.",
+    "description": "OpenCaseLaw publishes 971,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.03 M resolved). Updated daily. Searchable via MCP, REST, and a Microsoft Word add-in.",
     "url": "https://opencaselaw.ch/",
     "license": "https://creativecommons.org/publicdomain/zero/1.0/",
     "isAccessibleForFree": true,
@@ -4184,14 +4184,14 @@ const I18N = {
     landing_title:'Swiss case law &amp; legislation,<br>built for AI agents.',
     landing_sub:'An open dataset of published Swiss court decisions (971,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
     landing_card_entscheide_title:'Decisions',
-    landing_card_entscheide_desc:'971,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (9.86M edges), multilingual (DE/FR/IT).',
+    landing_card_entscheide_desc:'971,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (8.65M edges), multilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explore the dataset \u2192',
     landing_card_mcp_title:'Connect',
     landing_card_mcp_desc:'31 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. Configuration via MCP URL.',
     landing_card_mcp_cta:'MCP setup \u2192',
     landing_what_title:'What is OpenCaseLaw?',
     landing_what_1:'Swiss legal research today is fragmented, mostly behind paywalls, and hard to reach for language models. Students can’t afford commercial databases, and LLMs hallucinate statute text because they have no authoritative source. OpenCaseLaw makes <strong>every publicly published Swiss court decision</strong> and the current text of ~5,500 federal laws and ~30,000 cantonal acts freely available in a searchable, citation-linked, machine-readable format — public-domain data (CC0), open-source infrastructure (MIT), no sign-up.',
-    landing_what_2:'The same infrastructure powers a public MCP server that gives language models direct access to <strong>31 specialised tools</strong>: decision search, citation graph (9.86 M edges, 9.22 M resolved), leading-case ranking, appeal-chain resolution, federal and cantonal statute lookup, doctrine timelines, commentary search, and Fallbearbeitung exam questions generated from real BGE decisions. Reachable via Claude, ChatGPT, Cursor, Gemini, REST API, Word add-in or Parquet download.',
+    landing_what_2:'The same infrastructure powers a public MCP server that gives language models direct access to <strong>31 specialised tools</strong>: decision search, citation graph (8.65 M edges, 8.03 M resolved), leading-case ranking, appeal-chain resolution, federal and cantonal statute lookup, doctrine timelines, commentary search, and Fallbearbeitung exam questions generated from real BGE decisions. Reachable via Claude, ChatGPT, Cursor, Gemini, REST API, Word add-in or Parquet download.',
     landing_stat_decisions:'decisions', landing_stat_courts:'courts', landing_stat_laws:'federal laws', landing_stat_cantonal:'cantonal acts', landing_stat_citations:'citation edges', landing_stat_updated:'Updated daily',
     word_desc:'<strong>For lawyers drafting legal briefs.</strong> Search decisions and <strong>insert correctly-formatted Swiss legal citations straight into Word</strong> — no copy-paste, with correct Erwägung and article references. Pro features: verify quoted passages against the actual decision text, find support for a statement, and auto-scan an entire document for legal references.',
     word_cta:'Install \u2192',
@@ -4219,7 +4219,7 @@ const I18N = {
     snapshot_languages:'Languages', snapshot_graph_meta:'OnlineKommentar.ch',
     snapshot_span_label:'Date span', snapshot_courts:'courts', snapshot_cantons:'cantons',
     snapshot_movers:'New since yesterday',
-    cap_entscheide_desc:'971,000+ Swiss court decisions from 1875 to today, covering every federal court and all 26 cantons — plus regulators (FINMA, ComCo, FDPIC, IndepBC). BM25 + LLM-reranked full-text search, resolved citation graph with 9.86 M edges, 9.22 M resolved, appeal-chain resolution, leading-case ranking. BGer decisions available within 15 min of publication.',
+    cap_entscheide_desc:'971,000+ Swiss court decisions from 1875 to today, covering every federal court and all 26 cantons — plus regulators (FINMA, ComCo, FDPIC, IndepBC). BM25 + LLM-reranked full-text search, resolved citation graph with 8.65 M edges, 8.03 M resolved, appeal-chain resolution, leading-case ranking. BGer decisions available within 15 min of publication.',
     cap_gesetze_desc:'~5,500 federal laws (~133,468 articles, DE/FR/IT) from Fedlex — plus ~26,000 cantonal and intercantonal acts from LexFind, locally mirrored. Federated FTS5 full-text search across both levels, sub-millisecond article lookup, monthly refresh. 11.3 M references from decisions to individual statute articles.',
     cap_mcp_desc:'31 specialised MCP tools for natural-language legal research: search, citation graph, leading cases, doctrine timelines, statute lookup, Fallbearbeitung exam questions generated from real BGE decisions. Works with Claude, ChatGPT, Cursor and Gemini — plus REST API and Parquet download. The Word add-in is a dedicated practitioner interface (see below). 30 s setup, no registration, no API keys.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislation \u2192', cap_cta_mcp:'MCP setup \u2192',

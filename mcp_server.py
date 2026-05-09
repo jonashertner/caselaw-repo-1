@@ -58,7 +58,7 @@ Tools exposed:
     get_statistics    — Aggregate statistics by court, canton, year,
                         language.
     find_citations    — Show what a decision cites and what cites it.
-                        Uses the reference graph (9.86M citation edges).
+                        Uses the reference graph (8.65M citation edges).
     find_leading_cases — Find most-cited decisions for a topic or statute.
     analyze_legal_trend — Year-by-year decision counts for jurisprudence
                         evolution analysis.
@@ -7697,7 +7697,7 @@ server = Server(
         "1,058 scholarly commentaries, 5,200+ verbatim Federal Council "
         "Botschaften (DE/FR/IT), structured federal decisions "
         "(Sachverhalt/Erwägungen/Dispositiv), and the citation graph "
-        "(9.86M edges). Updated daily. Languages: DE, FR, IT — tools "
+        "(8.65M edges). Updated daily. Languages: DE, FR, IT — tools "
         "handle cross-language matching automatically.\n\n"
 
         "══════════════════════════════════════════════════════════════\n"

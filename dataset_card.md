@@ -51,7 +51,7 @@ The largest open collection of Swiss court decisions: 969,000+ decisions from 10
 - **ECHR/EGMR**: 834 Swiss-respondent judgments (HUDOC) + general ECtHR Grand Chamber / Chamber / Committee (1,421 judgments live; full-corpus backfill in progress)
 - **Current decision languages**: German (447,783; 46.2%), French (441,094; 45.5%), Italian (80,696; 8.3%); the export schema also reserves `rm`
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
-- **9.86 million extracted case-citation references** (9.22 million resolved, 93.5 %, with confidence scores)
+- **8.65 million extracted case-citation references** (8.03 million resolved, 92.9 %, with confidence scores)
 - **11.63 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
 - **5,510 federal laws indexed** with 132,586 articles in 3 languages (from Fedlex SPARQL)
 - **15,722 cantonal laws** with 353,464 articles (direct-scraped from 19 cantonal portals; LexFind fallback for the rest)
@@ -157,7 +157,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | Average decision length | 22,775 characters |
 | Full text coverage | 100% |
 | Regeste (headnote) coverage | 38.7% |
-| Case-citation references | 9.86 million extracted, 9.22 million resolved (93.5 %) |
+| Case-citation references | 8.65 million extracted, 8.03 million resolved (92.9 %) |
 | Statute-decision links | 11.63 million |
 | Federal laws indexed | 5,510 (132,586 articles in DE/FR/IT) |
 | Cantonal laws indexed | 15,722 (353,464 articles, direct-scraped + LexFind) |
@@ -174,7 +174,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | French (fr) | 441,094 | 45.5% |
 | Italian (it) | 80,696 | 8.3% |
 
-**Reference graph:** 9.86 million extracted citation edges, 9.22 million resolved (93.5 %), and 12.61 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 76,640 incoming citations.
+**Reference graph:** 8.65 million extracted citation edges, 8.03 million resolved (92.9 %), and 11.26 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 66,809 incoming citations.
 
 **Search benchmark (frozen offline baseline):** `benchmarks/search_benchmark_2026-03-19_offline_full.json` records a 100-query run against a 1,078,177-row local `decisions.db`, with MRR@10 = 0.4697, Recall@10 = 0.4958, nDCG@10 = 0.5250, and Hit@1 = 0.33. This is a reproducible offline baseline, not a fully provisioned hosted-system score.
 

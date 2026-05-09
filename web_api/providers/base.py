@@ -120,7 +120,7 @@ MCP_TOOLS = [
         "name": "find_citations",
         "description": (
             "Given a decision_id, show what it cites and what cites it. "
-            "Uses the reference graph (9.86M citation edges)."
+            "Uses the reference graph (8.65M citation edges)."
         ),
         "parameters": {
             "type": "object",
