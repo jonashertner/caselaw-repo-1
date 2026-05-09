@@ -12162,6 +12162,83 @@ def get_law(
         conn.close()
 
 
+def _abbreviation_lookup_federal(
+    raw_query: str,
+    language: str,
+    limit: int = 5,
+) -> list[dict]:
+    """Match a short abbreviation against laws.{abbr_de,abbr_fr,abbr_it}.
+
+    Returns a list of synthetic article-1 results that surface the law
+    matching the abbreviation. Empty list if the query doesn't look like
+    an abbreviation or no law matches.
+
+    Runs against the raw user query (before FTS5 sanitisation), so it
+    works even when the query is an FTS5 reserved word like ``OR``.
+    """
+    if not raw_query:
+        return []
+    q_clean = raw_query.strip().strip('"').lower()
+    if q_clean.endswith("*"):
+        q_clean = q_clean[:-1]
+    # Single token, ≤ 12 chars, alpha-prefix — typical abbreviation shape.
+    if (
+        not q_clean
+        or " " in q_clean
+        or len(q_clean) > 12
+        or not q_clean[0].isalpha()
+    ):
+        return []
+    conn = _get_statutes_conn()
+    if conn is None:
+        return []
+    try:
+        abbr_rows = conn.execute(
+            """SELECT sr_number, abbr_de, abbr_fr, abbr_it,
+                      title_de, title_fr, title_it
+               FROM laws
+               WHERE LOWER(abbr_de) = ? OR LOWER(abbr_fr) = ?
+                  OR LOWER(abbr_it) = ?
+               LIMIT ?""",
+            (q_clean, q_clean, q_clean, limit),
+        ).fetchall()
+        out: list[dict] = []
+        for ar in abbr_rows:
+            abbr = ar[f"abbr_{language}"] or ar["abbr_de"] or "?"
+            title = ar[f"title_{language}"] or ar["title_de"] or ""
+            first_arts = conn.execute(
+                """SELECT article_num, heading, text
+                   FROM articles
+                   WHERE sr_number = ? AND lang = ?
+                   ORDER BY CAST(article_num AS INTEGER), article_num
+                   LIMIT 1""",
+                (ar["sr_number"], language),
+            ).fetchall()
+            for fa in first_arts:
+                body = (fa["text"] or "")[:240].replace("\n", " ").strip()
+                snippet = (
+                    f">>>{abbr}<<< (SR {ar['sr_number']}): {body}..."
+                    if body
+                    else f">>>{abbr}<<< (SR {ar['sr_number']})"
+                )
+                out.append({
+                    "level": "federal",
+                    "canton": "CH",
+                    "sr_number": ar["sr_number"],
+                    "abbreviation": abbr,
+                    "title": title,
+                    "article_num": fa["article_num"],
+                    "heading": fa["heading"],
+                    "snippet": snippet,
+                })
+        return out
+    except sqlite3.Error as e:
+        logger.error("Abbreviation lookup error: %s", e)
+        return []
+    finally:
+        conn.close()
+
+
 def _search_laws_federal(
     query: str,
     sr_number: str | None,
@@ -12185,58 +12262,12 @@ def _search_laws_federal(
         priority: list[dict] = []
         seen_keys: set[tuple] = set()
 
-        # Abbreviation pre-match: only when no SR-scope and the raw query is
-        # a single short token (typical abbreviation pattern).
+        # Abbreviation pre-match (federal-scope only).
         if not sr_number and raw_query:
-            q_clean = raw_query.strip().strip('"').lower()
-            if q_clean.endswith("*"):
-                q_clean = q_clean[:-1]
-            # Single token, ≤ 12 chars, alpha-prefix — looks like an abbreviation.
-            if (
-                q_clean
-                and " " not in q_clean
-                and len(q_clean) <= 12
-                and q_clean[0].isalpha()
-            ):
-                abbr_rows = conn.execute(
-                    """SELECT sr_number, abbr_de, abbr_fr, abbr_it,
-                              title_de, title_fr, title_it
-                       FROM laws
-                       WHERE LOWER(abbr_de) = ? OR LOWER(abbr_fr) = ?
-                          OR LOWER(abbr_it) = ?
-                       LIMIT 5""",
-                    (q_clean, q_clean, q_clean),
-                ).fetchall()
-                for ar in abbr_rows:
-                    abbr = ar[f"abbr_{language}"] or ar["abbr_de"] or "?"
-                    title = ar[f"title_{language}"] or ar["title_de"] or ""
-                    first_arts = conn.execute(
-                        """SELECT article_num, heading, text
-                           FROM articles
-                           WHERE sr_number = ? AND lang = ?
-                           ORDER BY CAST(article_num AS INTEGER), article_num
-                           LIMIT 1""",
-                        (ar["sr_number"], language),
-                    ).fetchall()
-                    for fa in first_arts:
-                        body = (fa["text"] or "")[:240].replace("\n", " ").strip()
-                        snippet = (
-                            f">>>{abbr}<<< (SR {ar['sr_number']}): {body}..."
-                            if body
-                            else f">>>{abbr}<<< (SR {ar['sr_number']})"
-                        )
-                        key = (ar["sr_number"], fa["article_num"])
-                        seen_keys.add(key)
-                        priority.append({
-                            "level": "federal",
-                            "canton": "CH",
-                            "sr_number": ar["sr_number"],
-                            "abbreviation": abbr,
-                            "title": title,
-                            "article_num": fa["article_num"],
-                            "heading": fa["heading"],
-                            "snippet": snippet,
-                        })
+            for entry in _abbreviation_lookup_federal(raw_query, language):
+                key = (entry["sr_number"], entry["article_num"])
+                seen_keys.add(key)
+                priority.append(entry)
 
         if sr_number:
             rows = conn.execute(
@@ -12470,10 +12501,6 @@ def search_laws(
     """
     limit = min(max(1, limit), 50)
     raw_query = query
-    query = _sanitize_fts5(query)
-    if not query:
-        return {"query": query, "count": 0, "results": []}
-    query = _expand_law_query(query)
 
     # Determine which corpora to hit
     canton_u = (canton or "").upper()
@@ -12488,6 +12515,27 @@ def search_laws(
         and not sr_number  # SR numbers are federal-scoped in statutes.db
         and canton_u != "CH"
     )
+
+    # Abbreviation pre-match runs before FTS5 sanitisation so that lookups
+    # for FTS5-reserved tokens like "OR" (Obligationenrecht) still surface
+    # the correct law.
+    federal_abbrev: list[dict] = []
+    if hit_federal and not sr_number:
+        federal_abbrev = _abbreviation_lookup_federal(raw_query, language)
+
+    query = _sanitize_fts5(query)
+    if not query:
+        if federal_abbrev:
+            results = federal_abbrev[:limit]
+            return {
+                "query": raw_query,
+                "count": len(results),
+                "results": results,
+                "federal_hits": len(federal_abbrev),
+                "cantonal_hits": 0,
+            }
+        return {"query": query, "count": 0, "results": []}
+    query = _expand_law_query(query)
 
     federal_results: list[dict] = []
     cantonal_results: list[dict] = []
