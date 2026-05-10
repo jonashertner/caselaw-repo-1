@@ -74,6 +74,62 @@ def _fmt_dur(seconds: float) -> str:
     return f"{h}h {m:02d}m"
 
 
+def _spawn_early_stats_push(swapped_db: Path) -> None:
+    """Fire-and-forget: regenerate docs/stats.json + git push so the
+    public dashboard reflects the freshly-swapped FTS5 DB within ~5 min
+    of the atomic swap, instead of waiting for the post-swap
+    integrity check (60 GB DB → ~3 h under ionice idle) and the rest
+    of the slow tier (graph rebuild, materialien, parquet, HF upload)
+    to complete.
+
+    The dashboard is a static GitHub Pages site that reads
+    docs/stats.json from the main branch. As soon as we push, GitHub
+    Pages picks up the change in ~30–90 s.
+
+    Failure is non-fatal: the publish.py final Step 5/6 always runs
+    at the end with full graph aggregations and will overwrite this
+    early commit's stats.json.
+    """
+    import subprocess
+    import sys
+    repo_dir = Path(__file__).resolve().parent
+    stats_script = repo_dir / "generate_stats.py"
+    stats_out = repo_dir / "docs" / "stats.json"
+    log_path = "/var/log/early_stats_push.log"
+    # Bash: regen → stage → commit (--allow-empty so a no-op stats run
+    # doesn't fail) → push. Each step gates the next via &&. Output
+    # goes to a dedicated log so it doesn't interleave with publish.log.
+    bash_cmd = (
+        f"set -e; "
+        f"echo '[' $(date -u +%FT%TZ) '] early-stats-push: starting'; "
+        f"{sys.executable} {stats_script} "
+        f"  --db {swapped_db} "
+        f"  --output {stats_out} "
+        f"  --no-interesting-stats; "
+        f"cd {repo_dir}; "
+        f"git pull --rebase origin main 2>&1 | tail -3 || true; "
+        f"git add {stats_out}; "
+        f"git diff --cached --quiet && {{ echo 'no stats.json change'; exit 0; }}; "
+        f"git commit -m 'chore: stats.json refresh (post-swap, pre-finalization)'; "
+        f"git push origin main; "
+        f"echo '[' $(date -u +%FT%TZ) '] early-stats-push: done'"
+    )
+    try:
+        log_fd = open(log_path, "ab")
+    except OSError:
+        # Fall back to /tmp if /var/log isn't writable (e.g. dev machine)
+        log_fd = open("/tmp/early_stats_push.log", "ab")
+    subprocess.Popen(
+        ["bash", "-c", bash_cmd],
+        stdout=log_fd, stderr=subprocess.STDOUT,
+        start_new_session=True,  # detach from build_fts5's process group
+    )
+    logger.info(
+        "  Spawned early-stats-push (fire-and-forget, log: %s) — "
+        "dashboard will reflect new DB in ~5 min", log_path
+    )
+
+
 @contextlib.contextmanager
 def _phase_timer(name: str):
     """Log start, append timing, log end. Use as `with _phase_timer("X"):`.
@@ -1683,6 +1739,26 @@ def build_database(
                     stale_path.unlink()
                     logger.info(f"  Removed stale sidecar {stale_path.name}")
         db_path = final_db_path
+
+        # Fire-and-forget early dashboard refresh — spawn a subprocess that
+        # regenerates docs/stats.json (minimal, no graph aggregations) +
+        # git pushes, so opencaselaw.ch reflects the freshly-swapped
+        # decisions.db within minutes instead of ~3 h. Empirically (today's
+        # 2026-05-10 publish): integrity_check on the 60 GB DB took 2h 55m
+        # under ionice idle + encoder I/O contention. The MCP starts
+        # serving new data the instant we os.replace above; the dashboard
+        # was lagging entirely on this one process.
+        # The subprocess runs in parallel with our own post-swap integrity
+        # check below — they don't share resources beyond disk I/O. The
+        # final Step 5/6 in publish.py still runs at the end (with full
+        # graph aggregations) so this is purely an early-update; no data
+        # is lost if the subprocess fails.
+        # Disable with OCL_EARLY_STATS_PUSH=0.
+        if os.environ.get("OCL_EARLY_STATS_PUSH", "1") not in {"0", "false", "no"}:
+            try:
+                _spawn_early_stats_push(final_db_path)
+            except Exception as _e:
+                logger.warning(f"  early-stats-push spawn failed: {_e}")
 
         # Post-swap integrity check (added 2026-05-05 after WAL-corruption
         # incident). Open the freshly-swapped DB with a PLAIN connection
