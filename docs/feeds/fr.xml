@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 08 May 2026 12:00:38 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 10 May 2026 13:12:12 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -449,6 +449,14 @@ IIe Cour des assurances sociales
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-2896/2026 vom 2026-04-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2896_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (Etat tiers sûr - art. 31a al. 1 let. a LAsi)</description>
+      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2896.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ecthr_chamber 30049/23 vom 2026-04-30</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_30049_23</link>
       <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art. 35-3-a) Manifestement mal fondé;Non-violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Procès équitable); No violation: 6;6-1</description>
@@ -581,6 +589,14 @@ Greffière : Mme de Pore…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-2051/2026 vom 2026-04-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2051_2026</link>
+      <description>Exécution du renvoi</description>
+      <pubDate>Wed, 29 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2051.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-2578/2026 vom 2026-04-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2578_2026</link>
       <description>Asile (sans exécution du renvoi)</description>
@@ -602,6 +618,14 @@ Greffière : Mme de Pore…</description>
       <description>Asile (non-entrée en matière) et renvoi (Etat tiers sûr - art. 31a al. 1 let. a LAsi)</description>
       <pubDate>Wed, 29 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-836.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-898/2025 vom 2026-04-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-898_2025</link>
+      <description>Asile (non-entrée en matière) et renvoi (procédure Dublin - art. 31a al. 1 let. b LAsi)</description>
+      <pubDate>Wed, 29 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-898.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -830,81 +854,6 @@ A/432…</description>
       <pubDate>Tue, 28 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ge_gerichte_ACST_23_2026</guid>
       <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ne_gerichte CDP.2025.29 vom 2026-04-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2025.29</link>
-      <description>A.La société B.________ SA (ci-après aussi :
-la société ; lemployeur), inscrite au registre du commerce le 22 octobre 2008
-et radiée le 14 avril 2020, avait notamment pour but linstallation de
-câblage électrique et informatique, ainsi que de fib…</description>
-      <pubDate>Tue, 28 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ne_gerichte_CDP.2025.29</guid>
-      <category>ne_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 4A_159/2026 vom 2026-04-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_159_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-4A_159/2026
-
-Arrêt du 27 avril 2026
-
-Ire Cour de droit civil
-
-Composition
-
-M. le Juge fédéral
-
-Hurni, président.
-
-Greffier: M. Carruzzo.
-
-Participants à la procédure
-
-1. A._______…</description>
-      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_159.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 6B_992/2025 vom 2026-04-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_6B_992_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-6B_992/2025
-
-Arrêt du 27 avril 2026
-
-Ire Cour de droit pénal
-
-Composition
-
-M. et Mmes les Juges fédéraux
-
-Muschietti, Président,
-
-Heine et Wohlhauser.
-
-Greffière : Mme Rettby.
-
-Pa…</description>
-      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_992.2025</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>
