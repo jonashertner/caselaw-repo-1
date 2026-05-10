@@ -8357,15 +8357,20 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
 
 
 def _claim_token_coverage(claim: str, text: str) -> tuple[int, int]:
-    """Count claim tokens (> 2 chars, lowercased) that appear as whole
-    words in ``text``.
+    """Count distinct claim tokens (> 2 chars, lowercased) that appear
+    as whole words in ``text``.
 
     Returned as ``(matched, total)``. Used as an anti-spurious-match
     guard: BM25 ``gap_ratio`` alone can promote a thin lexical overlap
     (e.g. one of three claim terms hit via the OR fallback) to high
     confidence — the coverage signal catches that.
+
+    Tokens are deduplicated (set semantics) so a claim like "Mietrecht
+    Mietrecht Kündigung" is treated as 2 distinct tokens, not 3 — this
+    blocks an attacker (or a careless client) from inflating coverage
+    by repeating tokens.
     """
-    claim_tokens = [t.lower() for t in re.findall(r"\w+", claim or "") if len(t) > 2]
+    claim_tokens = {t.lower() for t in re.findall(r"\w+", claim or "") if len(t) > 2}
     if not claim_tokens:
         return (0, 0)
     text_tokens = {t.lower() for t in re.findall(r"\w+", text or "")}

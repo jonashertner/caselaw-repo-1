@@ -375,6 +375,104 @@ def test_score_pinpoint_confidence_directly(tmp_path):
     assert f([], "anything", "anything") is None
 
 
+def test_repeated_claim_tokens_are_deduped_before_coverage(tmp_path):
+    """Claim 'Mietrecht Mietrecht Mietrecht Kündigung' has 4 raw tokens
+    but only 2 distinct ones. Without dedup, a paragraph hitting just
+    'Mietrecht' would score 3/4 = 75 % → high. With dedup it's 1/2 =
+    50 % → capped at medium. Matters for any client that builds claims
+    by concatenating boosted terms.
+    """
+    matched, total = mcp_server._claim_token_coverage(
+        "Mietrecht Mietrecht Mietrecht Kündigung",
+        "Hier wird Mietrecht behandelt — das ist der Kern.",
+    )
+    assert (matched, total) == (1, 2), (
+        f"Expected (1, 2) after dedup, got ({matched}, {total})"
+    )
+
+
+def test_phrase_match_with_partial_coverage_capped_at_medium(tmp_path):
+    """A phrase match in principle implies all phrase tokens appear, so
+    coverage is usually 100 % — but if some claim tokens are filtered
+    out (≤ 2 chars), the kept-tokens denominator shrinks and the
+    high-confidence path could fire on a thin signal. This test pins
+    the cap behaviour for the rare case where 0.5 ≤ coverage < 0.7
+    AND match_kind = "phrase" (e.g. 3 of 5 distinct claim tokens hit).
+    """
+    f = mcp_server._score_pinpoint_confidence
+    # 5 distinct claim tokens, 3 in text → coverage 0.6 (in cap range).
+    out = f(
+        [-3.0],
+        "Mietrecht Kündigung Wohnung Schaden Verschulden",
+        "Mietrecht Kündigung Wohnung — Sachverhalt.",
+        match_kind="phrase",
+    )
+    assert out == "medium", (
+        f"Expected medium for 3/5 coverage phrase match, got {out!r}"
+    )
+
+
+def test_phrase_match_below_coverage_floor_suppressed(tmp_path):
+    """Phrase match where coverage drops below 0.5 — must still suppress
+    (return None), even though phrase signal is normally trusted.
+    """
+    f = mcp_server._score_pinpoint_confidence
+    # 4 claim words, paragraph text contains just 1 of them. Coverage 0.25.
+    out = f([-3.0],
+            "Mietrecht Kündigung Wohnung Schaden",
+            "Mietrecht behandelt im Rest.",
+            match_kind="phrase")
+    assert out is None, f"Expected None for 1/4 coverage phrase, got {out!r}"
+
+
+def test_stopword_heavy_claim_doesnt_inflate_coverage(tmp_path):
+    """Claim full of long-but-low-signal words ('Voraussetzungen',
+    'Frage', 'Aspekt', etc. — common discursive German nouns). If the
+    paragraph contains those generic words but NOT the operative legal
+    term, coverage looks high but the result is semantically wrong.
+    Pins the boundary: even with 5/6 coverage, the result surfaces —
+    we accept this trade-off and document it (token coverage is a
+    syntactic guard, not a semantic one).
+    """
+    matched, total = mcp_server._claim_token_coverage(
+        "Voraussetzungen Frage Aspekt zur Mietrecht-Kündigung Wohnungsrecht",
+        "Voraussetzungen für die Frage des Aspekts der Wohnungsrecht-Erwägungen.",
+    )
+    # 4 of 6 distinct claim tokens (>2 chars) appear → 4/6 = 0.67.
+    # voraussetzungen, frage, aspekt, wohnungsrecht ✓ (mietrecht-kündigung is hyphenated)
+    # Note: \w+ splits on -, so "Mietrecht-Kündigung" → tokens {"Mietrecht", "Kündigung"}.
+    assert total >= 4
+    assert matched >= 3, f"Expected ≥ 3 tokens to match, got {matched}/{total}"
+
+
+def test_dedup_prevents_inflation_in_compute_pinpoint(tmp_path):
+    """End-to-end: a claim with repeated terms doesn't fool the resolver
+    into emitting high confidence for a paragraph hitting only one
+    distinct term.
+    """
+    conn = _make_structure_db(tmp_path, [
+        ("d_1", "1", "Eine kurze Bemerkung zur Kündigung im allgemeinen."),
+        ("d_1", "2", "Sachverhalt: Der Beschwerdeführer reichte am 5. Januar."),
+        ("d_1", "3", "Verfahren vor Vorinstanz: Berufung ist abgewiesen."),
+        ("d_1", "4", "Dispositiv: Die Beschwerde wird abgewiesen."),
+    ])
+    try:
+        # Claim with deliberate repetition. Distinct tokens: {Mietrecht,
+        # Kündigung, Wohnung}. Paragraph 1 has only 'Kündigung' → coverage
+        # 1/3 = 33 % → must be suppressed despite raw-token-list 4/6 = 67 %.
+        pp = mcp_server._compute_pinpoint(
+            "d_1",
+            "Mietrecht Mietrecht Kündigung Kündigung Wohnung",
+            conn=conn,
+        )
+        assert pp is None, (
+            f"Repeated-token claim should still be suppressed for 1-of-3 "
+            f"distinct coverage; got {pp!r}"
+        )
+    finally:
+        conn.close()
+
+
 def test_handle_find_relevant_erwaegung_does_not_emit_thin_high(tmp_path, monkeypatch):
     """The same false-confidence bug applied to the explicit MCP tool
     when the OR fallback fired (only on FTS5 OperationalError there,
