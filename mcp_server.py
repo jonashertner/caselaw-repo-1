@@ -8767,14 +8767,20 @@ def _compute_pinpoint(
         matched = re.sub(r"</?mark>", "", (top["highlighted"] or "")).strip().strip("…").strip()
 
         canonical = _canonical_decision_url(decision_id)
+        # The seo_pages.py /entscheid/<id> handler renders each Erwägung
+        # with id="e-X-Y-Z" (dots → hyphens). Append the hash fragment so
+        # the browser auto-scrolls on load (Playwright 2026-05-10 caught
+        # that ?e= alone leaves the user at y=0 with the anchor 2176px
+        # below). Server-side highlight + e= still come via query string.
+        e_hash = "#e-" + top["e_number"].replace(".", "-")
         if canonical and matched:
             sep = "&" if "?" in canonical else "?"
             url = (
                 f"{canonical}{sep}highlight={urllib.parse.quote(matched[:200])}"
-                f"&e={urllib.parse.quote(top['e_number'])}"
+                f"&e={urllib.parse.quote(top['e_number'])}{e_hash}"
             )
         elif canonical:
-            url = f"{canonical}#E{top['e_number']}"
+            url = f"{canonical}{e_hash}"
         else:
             url = ""
 
@@ -8930,11 +8936,16 @@ def _compute_pinpoint_semantic_rescue(
         matched_sentence = (paragraph_text_lookup.get(top_e) or "")[:250]
 
     canonical = _canonical_decision_url(decision_id)
+    # Hash fragment so the browser auto-scrolls to the Erwägung anchor
+    # — Playwright 2026-05-10 caught that ?e= alone left users at y=0
+    # with the anchor far below the viewport.
+    e_hash = "#e-" + top_e.replace(".", "-")
     if canonical:
         sep = "&" if "?" in canonical else "?"
         url = f"{canonical}{sep}e={urllib.parse.quote(top_e)}"
         if matched_sentence:
             url = f"{url}&highlight={urllib.parse.quote(matched_sentence[:200])}"
+        url = f"{url}{e_hash}"
     else:
         url = ""
 
@@ -9136,9 +9147,14 @@ def _handle_find_relevant_erwaegung(
                 # match within the focused Erwägung.
                 hl_value = matched_sentence[:200]
                 sep = "&" if "?" in base_url else "?"
+                # Hash fragment so the browser auto-scrolls to the right
+                # Erwägung anchor (Playwright caught that ?e= alone leaves
+                # the user at viewport top; the seo_pages anchor is
+                # id="e-X-Y-Z" with hyphens).
+                e_hash = "#e-" + r["e_number"].replace(".", "-")
                 display_url = (
                     f"{base_url}{sep}highlight={urllib.parse.quote(hl_value)}"
-                    f"&e={urllib.parse.quote(r['e_number'])}"
+                    f"&e={urllib.parse.quote(r['e_number'])}{e_hash}"
                 )
             matches.append({
                 "e_number": r["e_number"],
