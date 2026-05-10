@@ -8727,53 +8727,44 @@ def _handle_find_relevant_erwaegung(
         # which is a reasonable default for a multi-word claim.
         fts_query = '"' + claim.replace('"', '""') + '"'
 
+        # Two-pass FTS5 (matches _compute_pinpoint): phrase first for
+        # precision, OR fallback when phrase returns nothing for recall.
+        # Until 2026-05-10 the OR fallback only fired on OperationalError —
+        # which made this tool return no_match for ~100 % of Regeste-as-claim
+        # probes (empirical bench: 5/5). The shared scorer (v4) keeps the
+        # OR fallback honest: stopwords stripped, coverage gate, gap-aware
+        # confidence, single-row OR requires abs(score) > 1.0.
+        sql = """
+            SELECT
+                p.decision_id, p.e_number, p.depth, p.parent, p.text,
+                bm25(erwaegungen_paragraph_fts) AS score,
+                snippet(erwaegungen_paragraph_fts,
+                        0, '<mark>', '</mark>', '…', 24) AS highlighted
+            FROM erwaegungen_paragraph_fts
+            JOIN erwaegungen_paragraph p
+              ON p.rowid = erwaegungen_paragraph_fts.rowid
+            WHERE erwaegungen_paragraph_fts MATCH ?
+              AND p.decision_id = ?
+            ORDER BY score
+            LIMIT ?
+        """
+        tokens = [t for t in re.findall(r"\w+", claim) if len(t) > 2]
+        or_query = " OR ".join(tokens) if tokens else None
+
         rows: list[sqlite3.Row] = []
-        match_kind = "phrase"  # default: phrase pass; flipped on OR fallback
+        match_kind = "phrase"
+        limit_n = max(1, min(top_k, 10))
         for did_variant in _decision_id_variants(resolved) or [resolved]:
-            try:
-                rows = conn.execute(
-                    """
-                    SELECT
-                        p.decision_id, p.e_number, p.depth, p.parent, p.text,
-                        bm25(erwaegungen_paragraph_fts) AS score,
-                        snippet(erwaegungen_paragraph_fts,
-                                0, '<mark>', '</mark>', '…', 24) AS highlighted
-                    FROM erwaegungen_paragraph_fts
-                    JOIN erwaegungen_paragraph p
-                      ON p.rowid = erwaegungen_paragraph_fts.rowid
-                    WHERE erwaegungen_paragraph_fts MATCH ?
-                      AND p.decision_id = ?
-                    ORDER BY score
-                    LIMIT ?
-                    """,
-                    (fts_query, did_variant, max(1, min(top_k, 10))),
-                ).fetchall()
-            except sqlite3.OperationalError:
-                # FTS5 syntax error on the user's claim — retry with a
-                # plain bag-of-words query (less precise but robust). Confidence
-                # scoring downgrades single-row OR matches accordingly.
-                match_kind = "or"
-                tokens = [t for t in re.findall(r"\w+", claim) if len(t) > 2]
-                if not tokens:
+            for q, kind in ((fts_query, "phrase"), (or_query, "or")):
+                if not q:
+                    continue
+                try:
+                    rows = conn.execute(sql, (q, did_variant, limit_n)).fetchall()
+                except sqlite3.OperationalError:
                     rows = []
-                else:
-                    rows = conn.execute(
-                        """
-                        SELECT
-                            p.decision_id, p.e_number, p.depth, p.parent, p.text,
-                            bm25(erwaegungen_paragraph_fts) AS score,
-                            snippet(erwaegungen_paragraph_fts,
-                                    0, '<mark>', '</mark>', '…', 24) AS highlighted
-                        FROM erwaegungen_paragraph_fts
-                        JOIN erwaegungen_paragraph p
-                          ON p.rowid = erwaegungen_paragraph_fts.rowid
-                        WHERE erwaegungen_paragraph_fts MATCH ?
-                          AND p.decision_id = ?
-                        ORDER BY score
-                        LIMIT ?
-                        """,
-                        (" OR ".join(tokens), did_variant, max(1, min(top_k, 10))),
-                    ).fetchall()
+                if rows:
+                    match_kind = kind
+                    break
             if rows:
                 break
 

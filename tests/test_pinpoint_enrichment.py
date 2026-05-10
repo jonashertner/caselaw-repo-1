@@ -554,6 +554,51 @@ def test_high_coverage_rescue_does_not_fire_below_threshold(tmp_path):
     )
 
 
+def test_handle_find_relevant_erwaegung_uses_or_fallback_for_recall(tmp_path, monkeypatch):
+    """Symmetric fallback: the explicit MCP tool now mirrors
+    _compute_pinpoint's two-pass behavior. When the FTS5 phrase pass
+    returns no matches (typical for Regeste-style claims that don't
+    appear verbatim in any single Erwägung), the OR fallback fires
+    so legitimate semantic matches surface. Empirical mini-bench
+    (5 BGE Regestes via /api/relevant-erwaegung, 2026-05-10) was
+    0/5 before this fix.
+    """
+    conn = _make_structure_db(tmp_path, [
+        # Multi-paragraph corpus so BM25 IDF works. Target paragraph has
+        # all 3 claim tokens but in different word order than the phrase.
+        ("d_1", "1", "Sachverhalt: Beklagte hat am 5. Januar einen Mietvertrag."),
+        ("d_1", "2", "Erwägungen über die Sperrfrist nach Mietrecht-Kündigung "
+                     "und die Wohnung der Familie."),
+        ("d_1", "3", "Schlussfolgerung: Die Beschwerde wird gutgeheissen."),
+        ("d_1", "4", "Dispositiv: Aufhebung des angefochtenen Urteils."),
+    ])
+    monkeypatch.setattr(mcp_server, "_get_structure_conn", lambda: conn)
+    monkeypatch.setattr(mcp_server, "_resolve_decision_id", lambda x: x)
+    monkeypatch.setattr(mcp_server, "_fetch_structure_row", lambda x: None)
+    monkeypatch.setattr(mcp_server, "get_decision_by_id", lambda x: None)
+    try:
+        # Phrase "Mietrecht Kündigung Wohnung Familie" doesn't match exactly
+        # (paragraph has "Mietrecht-Kündigung" hyphenated and "Wohnung der
+        # Familie") — pre-fix this returned no_match. Post-fix the OR
+        # fallback fires and finds E.2.
+        out = mcp_server._handle_find_relevant_erwaegung(
+            decision_id="d_1",
+            claim="Mietrecht Kündigung Wohnung Familie",
+            top_k=2,
+        )
+        assert out.get("no_match") is False, (
+            f"OR fallback should rescue Regeste-style claims; got {out}"
+        )
+        assert (out.get("matches") or [{}])[0].get("e_number") == "2", (
+            f"Expected rank-1 to be E.2, got {out.get('matches')}"
+        )
+        assert out.get("confidence") in {"high", "medium"}, (
+            f"Confidence should be high/medium, got {out.get('confidence')!r}"
+        )
+    finally:
+        conn.close()
+
+
 def test_handle_find_relevant_erwaegung_does_not_emit_thin_high(tmp_path, monkeypatch):
     """The same false-confidence bug applied to the explicit MCP tool
     when the OR fallback fired (only on FTS5 OperationalError there,
