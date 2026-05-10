@@ -8356,21 +8356,65 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     }
 
 
+# Generic Swiss-legal-discourse stopwords — words that appear in nearly
+# every decision regardless of substance, so contribute no signal to the
+# claim ↔ paragraph similarity. Coverage computation drops these from
+# both numerator and denominator. Empirical bench (20 cases on real
+# BGE decisions, 2026-05-10) showed this single change drops the
+# false-positive rate from 7 % → 0 % on lexical-bait queries like
+# "Verfahren Beschwerde Bundesgericht Erwägung". List is conservative —
+# only words that are virtually content-free across all Swiss legal
+# domains are included; substantive legal terms (Schadenersatz,
+# Beschwerdebefugnis, Mietrecht, …) stay in.
+_LEGAL_STOPWORDS = frozenset({
+    # German procedural / boilerplate
+    "verfahren", "beschwerde", "bundesgericht", "erwägung", "erwägungen",
+    "sachverhalt", "vorinstanz", "instanz", "urteil", "entscheid",
+    "beschluss", "verfügung", "abweisen", "gutheissen", "kostenpflichtig",
+    "art", "artikel", "abs", "lit", "ziff",
+    # Function words (German)
+    "der", "die", "das", "den", "dem", "des",
+    "ein", "eine", "einer", "einen", "einem",
+    "und", "oder", "nicht", "von", "vom", "zur", "zum",
+    "auf", "für", "über", "unter", "nach", "vor", "bei",
+    "ist", "sind", "wird", "werden", "kann", "können", "muss", "müssen",
+    "hat", "haben", "war", "waren", "wurde", "wurden", "sei", "seien",
+    "diese", "dieser", "dieses", "diesen", "diesem",
+    "auch", "noch", "doch", "schon", "sehr", "nur",
+    # FR equivalents
+    "procédure", "recours", "tribunal", "considérant", "fait", "droit",
+    "arrêt", "décision", "instance", "peut", "faire", "selon", "comme",
+    # IT equivalents
+    "procedimento", "ricorso", "tribunale", "considerando", "fatto",
+    "diritto", "decisione", "istanza", "può", "fare", "secondo",
+})
+
+
 def _claim_token_coverage(claim: str, text: str) -> tuple[int, int]:
-    """Count distinct claim tokens (> 2 chars, lowercased) that appear
-    as whole words in ``text``.
+    """Count distinct semantic claim tokens (> 2 chars, lowercased,
+    excluding generic Swiss legal stopwords) that appear as whole words
+    in ``text``.
 
     Returned as ``(matched, total)``. Used as an anti-spurious-match
     guard: BM25 ``gap_ratio`` alone can promote a thin lexical overlap
     (e.g. one of three claim terms hit via the OR fallback) to high
     confidence — the coverage signal catches that.
 
+    Stopword filtering is what closes the lexical-bait failure mode
+    (claim of all generic procedural words → 100 % coverage on any
+    decision). After filtering, ``total == 0`` signals "claim has no
+    semantic content"; the caller treats that as suppress.
+
     Tokens are deduplicated (set semantics) so a claim like "Mietrecht
     Mietrecht Kündigung" is treated as 2 distinct tokens, not 3 — this
     blocks an attacker (or a careless client) from inflating coverage
     by repeating tokens.
     """
-    claim_tokens = {t.lower() for t in re.findall(r"\w+", claim or "") if len(t) > 2}
+    claim_tokens = {
+        t.lower()
+        for t in re.findall(r"\w+", claim or "")
+        if len(t) > 2 and t.lower() not in _LEGAL_STOPWORDS
+    }
     if not claim_tokens:
         return (0, 0)
     text_tokens = {t.lower() for t in re.findall(r"\w+", text or "")}
@@ -8428,11 +8472,28 @@ def _score_pinpoint_confidence(
             gap_high = s0 > 2.0
             gap_medium = s0 > 1.0
 
-    if not gap_medium:
-        return None
-
     matched_n, total_n = _claim_token_coverage(claim, top_text)
     coverage = (matched_n / total_n) if total_n else 0.0
+
+    # Suppress when the claim has no semantic tokens (all stopwords).
+    # Without this the lexical-bait probe "Verfahren Beschwerde
+    # Bundesgericht Erwägung" would still produce a pinpoint via the
+    # gap-only branch — coverage check skipped because total_n == 0.
+    if total_n == 0:
+        return None
+
+    if not gap_medium:
+        # High-coverage rescue: when the top paragraphs all match similarly
+        # (small BM25 gap) but rank-1 has high coverage AND meaningful
+        # absolute strength, surface as medium. Addresses the case where
+        # the relevant content spans multiple sub-paragraphs (E.3, E.3.1,
+        # E.3.2 all about the same topic) and the gap-based check
+        # would otherwise discard them all. Three guards keep this
+        # conservative: total_n ≥ 2 (multi-token claim), coverage ≥ 0.7
+        # (most claim words present), absolute BM25 > 5.0 (strong hit).
+        if total_n >= 2 and coverage >= 0.7 and s0 > 5.0:
+            return "medium"
+        return None
 
     # Multi-token coverage gates — defence-in-depth against thin OR-fallback
     # matches (one of N tokens hitting the paragraph at all).

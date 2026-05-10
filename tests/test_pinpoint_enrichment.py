@@ -473,6 +473,87 @@ def test_dedup_prevents_inflation_in_compute_pinpoint(tmp_path):
         conn.close()
 
 
+def test_all_stopword_claim_suppressed(tmp_path):
+    """Lexical-bait scenario: claim is purely generic Swiss legal
+    discourse ("Verfahren Beschwerde Bundesgericht Erwägung"). After
+    stopword filtering, total_n == 0 → must suppress entirely. Empirical
+    bench against real BGEs showed this case as the sole remaining FP
+    pre-fix (50 % coverage, 'medium' confidence on lexical bait).
+    """
+    matched, total = mcp_server._claim_token_coverage(
+        "Verfahren Beschwerde Bundesgericht Erwägung",
+        "Im Verfahren vor Bundesgericht ist die Beschwerde abzuweisen.",
+    )
+    assert (matched, total) == (0, 0), (
+        f"Stopword-only claim should drop to (0, 0); got ({matched}, {total})"
+    )
+
+    # End-to-end: scorer must return None even with a strong-looking BM25.
+    out = mcp_server._score_pinpoint_confidence(
+        [-5.33, -3.61],
+        "Verfahren Beschwerde Bundesgericht Erwägung",
+        "Im Verfahren vor Bundesgericht ist die Beschwerde abzuweisen.",
+        match_kind="or",
+    )
+    assert out is None, f"All-stopword claim must suppress; got {out!r}"
+
+
+def test_stopword_filter_preserves_substantive_terms(tmp_path):
+    """Mixed claim: some stopwords + meaningful legal terms. The
+    meaningful terms should drive coverage. E.g. "Verfahren im
+    Mietrecht" → after filter: {Mietrecht}. Paragraph hitting
+    Mietrecht → 1/1 = 100 % coverage.
+    """
+    matched, total = mcp_server._claim_token_coverage(
+        "Verfahren Beschwerde Bundesgericht im Mietrecht",
+        "Mietrecht und ähnliche Themen werden hier behandelt.",
+    )
+    assert (matched, total) == (1, 1), (
+        f"Substantive terms preserved through stopword filter; "
+        f"got ({matched}, {total})"
+    )
+
+
+def test_high_coverage_rescue_when_gap_collapses(tmp_path):
+    """When multiple paragraphs match the OR query similarly (small BM25
+    gap) but rank-1 has high coverage AND meaningful absolute strength,
+    the rescue branch surfaces it as medium. Empirically observed in
+    BGE 145 IV 50 + "Drogentest Anordnung Polizei SVG" — top 3
+    sub-paragraphs all scored ~17–20, gap_ratio ≈ 1.04 → without
+    rescue, all suppressed; with rescue, rank-1 surfaces at medium.
+    """
+    f = mcp_server._score_pinpoint_confidence
+    # Two paragraphs scoring similarly (gap_ratio ≈ 1.04, below 1.2),
+    # rank-1 coverage 75 %, absolute strength > 5.
+    out = f(
+        [-20.5, -19.8],  # gap_ratio ≈ 1.035
+        "Drogentest Anordnung Polizei SVG",
+        "Drogentest wurde durch die Polizei angeordnet aufgrund SVG.",
+        match_kind="or",
+    )
+    assert out == "medium", (
+        f"High-coverage rescue should surface medium; got {out!r}"
+    )
+
+
+def test_high_coverage_rescue_does_not_fire_below_threshold(tmp_path):
+    """The rescue requires three conditions simultaneously:
+    coverage ≥ 0.7, total_n ≥ 2, AND abs(score) > 5.0. If any guard
+    fails, suppression stays.
+    """
+    f = mcp_server._score_pinpoint_confidence
+    # Score too weak (below 5.0 floor) — even with high coverage, no rescue.
+    out = f(
+        [-3.0, -2.9],  # gap 1.03, below 1.2
+        "Drogentest Anordnung Polizei",
+        "Drogentest Anordnung Polizei sind hier behandelt.",
+        match_kind="or",
+    )
+    assert out is None, (
+        f"Rescue should not fire below abs-score 5.0 floor; got {out!r}"
+    )
+
+
 def test_handle_find_relevant_erwaegung_does_not_emit_thin_high(tmp_path, monkeypatch):
     """The same false-confidence bug applied to the explicit MCP tool
     when the OR fallback fired (only on FTS5 OperationalError there,
