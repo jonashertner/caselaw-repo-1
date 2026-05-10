@@ -7054,6 +7054,13 @@ def _format_leading_cases_response(result: dict) -> str:
         )
         if r.get("regeste"):
             text += f"   Regeste: {_auto_link_citations(r['regeste'])}\n"
+        pp = r.get("pinpoint")
+        if pp:
+            pp_link = _md_link(f"E. {pp['e_number']}", pp.get("url") or "")
+            sentence = (pp.get("matched_sentence") or "").strip()
+            if len(sentence) > 220:
+                sentence = sentence[:217].rstrip() + "…"
+            text += f"   📍 {pp_link} ({pp['confidence']}): {sentence}\n"
         text += "\n"
 
     return text
@@ -8347,6 +8354,167 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         "rule_statement": _rule_statement(decision_for_citation, pinpoint_text=target["text"]),
         "_citation_format": citation["citation_string_de"],  # kept for backwards compat
     }
+
+
+def _compute_pinpoint(
+    decision_id: str,
+    claim: str,
+    *,
+    conn: "sqlite3.Connection | None" = None,
+) -> dict | None:
+    """Resolve the most-relevant Erwägung for a (decision, claim) pair.
+
+    Lightweight wrapper for batch enrichment of search-style results —
+    returns just the rank-1 match with confidence + URL anchor, or None
+    when no confident match exists. Callers needing top-k or full
+    citation metadata should use ``find_relevant_erwaegung`` directly.
+
+    Returns ``None`` when:
+      * claim is missing or shorter than 3 chars after strip
+      * structure DB is unavailable or lacks the FTS5 paragraph index
+      * decision has no structure entries
+      * no Erwägung matches the claim
+      * BM25 confidence is "low" (gap below 1.2× rank-2)
+
+    A returned match always has high or medium confidence — the
+    discipline encoded in ``_handle_find_relevant_erwaegung`` (do not
+    cite low-confidence pinpoints) carries through.
+
+    Pass ``conn`` for batch enrichment to avoid reopening the DB per
+    call. The caller closes the connection.
+    """
+    if not claim or not claim.strip():
+        return None
+    claim = claim.strip()
+    if len(claim) < 3 or not decision_id:
+        return None
+
+    own_conn = False
+    if conn is None:
+        conn = _get_structure_conn()
+        own_conn = True
+    if not conn:
+        return None
+
+    try:
+        try:
+            has_fts = conn.execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type='table' AND name='erwaegungen_paragraph_fts'"
+            ).fetchone() is not None
+        except sqlite3.Error:
+            return None
+        if not has_fts:
+            return None
+
+        # Two-pass FTS5: phrase first (high precision when caller's words
+        # appear in order), then bag-of-words OR (broader recall, catches
+        # topical match in any order). Search-query callers usually win
+        # with the OR pass — find_relevant_erwaegung's stricter discipline
+        # still relies on the gap-confidence floor below to suppress noise.
+        phrase_query = '"' + claim.replace('"', '""') + '"'
+        tokens = [t for t in re.findall(r"\w+", claim) if len(t) > 2]
+        or_query = " OR ".join(tokens) if tokens else None
+
+        sql = """
+            SELECT
+                p.e_number, p.text,
+                bm25(erwaegungen_paragraph_fts) AS score,
+                snippet(erwaegungen_paragraph_fts,
+                        0, '<mark>', '</mark>', '…', 24) AS highlighted
+            FROM erwaegungen_paragraph_fts
+            JOIN erwaegungen_paragraph p
+              ON p.rowid = erwaegungen_paragraph_fts.rowid
+            WHERE erwaegungen_paragraph_fts MATCH ?
+              AND p.decision_id = ?
+            ORDER BY score
+            LIMIT 2
+        """
+
+        rows: list = []
+        for did_variant in _decision_id_variants(decision_id) or [decision_id]:
+            for q in (phrase_query, or_query):
+                if not q:
+                    continue
+                try:
+                    rows = conn.execute(sql, (q, did_variant)).fetchall()
+                except sqlite3.OperationalError:
+                    rows = []
+                if rows:
+                    break
+            if rows:
+                break
+
+        if not rows:
+            return None
+
+        scores = [float(r["score"]) for r in rows]
+        if len(scores) >= 2 and scores[1] != 0:
+            gap_ratio = abs(scores[0]) / max(abs(scores[1]), 1e-6)
+        else:
+            gap_ratio = 999.0
+        if gap_ratio > 1.5 or (len(scores) == 1 and abs(scores[0]) > 2.0):
+            confidence = "high"
+        elif gap_ratio > 1.2 or (len(scores) == 1 and abs(scores[0]) > 1.0):
+            confidence = "medium"
+        else:
+            return None  # low → suppress (matches find_relevant_erwaegung discipline)
+
+        top = rows[0]
+        matched = re.sub(r"</?mark>", "", (top["highlighted"] or "")).strip().strip("…").strip()
+
+        canonical = _canonical_decision_url(decision_id)
+        if canonical and matched:
+            sep = "&" if "?" in canonical else "?"
+            url = (
+                f"{canonical}{sep}highlight={urllib.parse.quote(matched[:200])}"
+                f"&e={urllib.parse.quote(top['e_number'])}"
+            )
+        elif canonical:
+            url = f"{canonical}#E{top['e_number']}"
+        else:
+            url = ""
+
+        return {
+            "e_number": top["e_number"],
+            "matched_sentence": matched,
+            "confidence": confidence,
+            "url": url,
+            "score": -float(top["score"]),  # flip sign so higher = better
+        }
+    finally:
+        if own_conn:
+            conn.close()
+
+
+def _pinpoint_enrich_results(
+    results: list[dict],
+    claim: str,
+    *,
+    top_n: int = 5,
+) -> None:
+    """Mutate ``results`` in place: attach a ``pinpoint`` field to top-N
+    entries (others get no field — keeps payloads small).
+
+    No-op when ``claim`` is empty/too short, results is empty, or the
+    structure DB isn't available. Decisions without a confident match
+    silently get ``pinpoint=None`` so downstream renderers can branch
+    on presence. Opens one structure-DB connection for the whole batch.
+    """
+    if not results or not claim or len(claim.strip()) < 3:
+        return
+    conn = _get_structure_conn()
+    if not conn:
+        return
+    try:
+        for r in results[:top_n]:
+            did = r.get("decision_id")
+            if not did:
+                r["pinpoint"] = None
+                continue
+            r["pinpoint"] = _compute_pinpoint(did, claim, conn=conn)
+    finally:
+        conn.close()
 
 
 def _handle_find_relevant_erwaegung(
@@ -14067,6 +14235,18 @@ def _list_tools() -> list[Tool]:
                         "description": "Response detail level: 'full' (default) includes snippet/regeste/URL, 'compact' returns only docket, date, court, language, decision_id.",
                         "enum": ["full", "compact"],
                     },
+                    "include_pinpoint": {
+                        "type": "boolean",
+                        "description": (
+                            "Attach a pinpoint Erwägung citation to the top "
+                            "results when a confident match exists "
+                            "(BM25 over the per-decision Erwägungen FTS5 "
+                            "index, gap-confidence ≥ medium). Defaults true; "
+                            "set false to skip the per-result lookup "
+                            "(saves ~30–150 ms on the top 5 results)."
+                        ),
+                        "default": True,
+                    },
                 },
                 "required": [],
             },
@@ -14224,6 +14404,15 @@ def _list_tools() -> list[Tool]:
                         "type": "integer",
                         "description": "Max results (default 20, max 100)",
                         "default": 20,
+                    },
+                    "include_pinpoint": {
+                        "type": "boolean",
+                        "description": (
+                            "Attach a pinpoint Erwägung citation to the top "
+                            "3 leading cases when a confident match exists. "
+                            "Defaults true."
+                        ),
+                        "default": True,
                     },
                 },
             },
@@ -15395,6 +15584,20 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                         deduped.append(r)
                 results = deduped
 
+                # Pinpoint enrichment: attach the most-relevant Erwägung
+                # to top-N results so downstream renderers can quote a
+                # specific paragraph instead of just naming the decision.
+                # Default ON for full-fields output; opt-out per call via
+                # include_pinpoint=false. Compact mode skips it (no room).
+                include_pp = bool(arguments.get("include_pinpoint", True))
+                if include_pp and fields_arg != "compact":
+                    await asyncio.to_thread(
+                        _pinpoint_enrich_results,
+                        results,
+                        arguments.get("query", ""),
+                        top_n=5,
+                    )
+
                 end = req_offset + len(results)
                 _record_query(arguments.get("query", ""))
                 text = f"Found {total_count} decisions (showing {req_offset + 1}\u2013{end}):\n\n"
@@ -15416,6 +15619,18 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                             text += f"   Regeste: {_auto_link_citations(r['regeste'])}\n"
                         if r.get("snippet"):
                             text += f"   ...{_auto_link_citations(r['snippet'])}...\n"
+                        pp = r.get("pinpoint")
+                        if pp:
+                            pp_link = _md_link(
+                                f"E. {pp['e_number']}", pp.get("url") or ""
+                            )
+                            sentence = (pp.get("matched_sentence") or "").strip()
+                            if len(sentence) > 220:
+                                sentence = sentence[:217].rstrip() + "…"
+                            text += (
+                                f"   📍 {pp_link} ({pp['confidence']}): "
+                                f"{sentence}\n"
+                            )
                         text += "\n"
 
             return [TextContent(type="text", text=text)]
@@ -15567,6 +15782,24 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 date_to=arguments.get("date_to"),
                 limit=int(arguments.get("limit", 20)),
             )
+            # Pinpoint top-3 leading cases against an effective claim built
+            # from (Art./law_code) + free-text query. Skipped for global
+            # mode where there's no claim to anchor against.
+            if bool(arguments.get("include_pinpoint", True)):
+                claim_parts = []
+                if arguments.get("article") and arguments.get("law_code"):
+                    claim_parts.append(
+                        f"Art. {arguments['article']} {arguments['law_code']}"
+                    )
+                if arguments.get("query"):
+                    claim_parts.append(str(arguments["query"]))
+                claim = " ".join(claim_parts).strip()
+                if claim and isinstance(result, dict):
+                    items = result.get("results") or []
+                    if items:
+                        await asyncio.to_thread(
+                            _pinpoint_enrich_results, items, claim, top_n=3
+                        )
             return [TextContent(type="text", text=_format_leading_cases_response(result))]
 
         elif name == "analyze_legal_trend":
