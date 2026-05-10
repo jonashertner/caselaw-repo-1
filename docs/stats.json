@@ -3427,14 +3427,16 @@
       }
     ],
     "materialien_coverage": {
-      "total_documents": 548,
-      "paragraphs": 79662,
-      "article_links": 0,
+      "total_documents": 5296,
+      "paragraphs": 381967,
+      "article_links": 8124,
       "by_language": {
-        "de": 548
+        "de": 1765,
+        "fr": 1766,
+        "it": 1765
       },
       "year_range": {
-        "from": 2018,
+        "from": 2003,
         "to": 2026
       }
     },
