@@ -326,6 +326,30 @@ VECTOR_WEIGHT = float(os.environ.get("SWISS_CASELAW_VECTOR_WEIGHT", "1.0"))
 VECTOR_K = int(os.environ.get("SWISS_CASELAW_VECTOR_K", "50"))
 VECTOR_SIGNAL_WEIGHT = float(os.environ.get("SWISS_CASELAW_VECTOR_SIGNAL_WEIGHT", "3.0"))
 
+# ── Pinpoint semantic-rescue (paragraph-level embeddings) ──────
+# Per-paragraph embedding DB built by search_stack/build_paragraph_embeddings.py.
+# Acts as a *semantic rescue* for the pinpoint resolver: only consulted
+# when lexical (BM25) fails to find a confident match. Default OFF until
+# the corpus is fully encoded — see docs/pinpoint_semantic_rollout.md.
+PARAGRAPH_EMBEDDINGS_DB_PATH = Path(os.environ.get(
+    "SWISS_CASELAW_PARAGRAPH_EMBEDDINGS_DB",
+    str(DATA_DIR / "paragraph_embeddings.db"),
+))
+PINPOINT_SEMANTIC_ENABLED = os.environ.get(
+    "PINPOINT_SEMANTIC_ENABLED", "false"
+).lower() in {"1", "true", "yes"}
+PINPOINT_SEMANTIC_MODEL = os.environ.get(
+    "PINPOINT_SEMANTIC_MODEL",
+    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+)
+# Cosine thresholds (paragraph-level) — used only by the semantic rescue
+# branch, not by lexical scoring. Conservative bar: 0.55 = medium,
+# 0.70 = high. Calibrated against MiniLM-L12-v2 multilingual scores.
+PINPOINT_SEMANTIC_HIGH = float(os.environ.get("PINPOINT_SEMANTIC_HIGH", "0.70"))
+PINPOINT_SEMANTIC_MEDIUM = float(os.environ.get("PINPOINT_SEMANTIC_MEDIUM", "0.55"))
+_SEMANTIC_MODEL = None  # lazy-loaded on first use
+_SEMANTIC_MODEL_TRIED = False
+
 # ── Sparse search ────────────────────────────────────────────
 SPARSE_SEARCH_ENABLED = os.environ.get("SPARSE_SEARCH_ENABLED", "auto").lower()
 SPARSE_SIGNAL_WEIGHT = float(os.environ.get("SWISS_CASELAW_SPARSE_SIGNAL_WEIGHT", "2.5"))
@@ -8600,7 +8624,9 @@ def _compute_pinpoint(
                 break
 
         if not rows:
-            return None
+            # Lexical found nothing. Try the semantic rescue (no-op
+            # when feature flag is off or embeddings aren't loaded).
+            return _compute_pinpoint_semantic_rescue(decision_id, claim)
 
         top = rows[0]
         scores = [float(r["score"]) for r in rows]
@@ -8608,7 +8634,13 @@ def _compute_pinpoint(
             scores, claim, top["text"], match_kind=match_kind
         )
         if confidence is None:
-            return None  # low / spurious — suppress entirely
+            # Lexical match too weak to surface — try semantic rescue.
+            # Pass paragraph text so the rescue can populate the snippet.
+            text_lookup = {r["e_number"]: r["text"] for r in rows}
+            return _compute_pinpoint_semantic_rescue(
+                decision_id, claim,
+                paragraph_text_lookup=text_lookup,
+            )
 
         matched = re.sub(r"</?mark>", "", (top["highlighted"] or "")).strip().strip("…").strip()
 
@@ -8630,10 +8662,168 @@ def _compute_pinpoint(
             "confidence": confidence,
             "url": url,
             "score": -float(top["score"]),  # flip sign so higher = better
+            "source": "lexical",
         }
     finally:
         if own_conn:
             conn.close()
+
+
+def _get_semantic_model():
+    """Return the lazy-loaded sentence-transformer model, or None if
+    semantic rescue is disabled / model load failed.
+
+    First call is slow (~3 s on CPU). Subsequent calls return the
+    cached instance. Failures are silent (logged once) — semantic is
+    a rescue, not a hard dependency.
+    """
+    global _SEMANTIC_MODEL, _SEMANTIC_MODEL_TRIED
+    if not PINPOINT_SEMANTIC_ENABLED:
+        return None
+    if _SEMANTIC_MODEL is not None:
+        return _SEMANTIC_MODEL
+    if _SEMANTIC_MODEL_TRIED:
+        return None
+    _SEMANTIC_MODEL_TRIED = True
+    try:
+        from sentence_transformers import SentenceTransformer
+        _SEMANTIC_MODEL = SentenceTransformer(PINPOINT_SEMANTIC_MODEL)
+        logger.info("loaded pinpoint semantic model %s (dim=%d)",
+                    PINPOINT_SEMANTIC_MODEL,
+                    _SEMANTIC_MODEL.get_sentence_embedding_dimension())
+    except Exception as e:
+        logger.warning("pinpoint semantic model load failed: %s — rescue disabled", e)
+        _SEMANTIC_MODEL = None
+    return _SEMANTIC_MODEL
+
+
+def _get_paragraph_embeddings_conn() -> "sqlite3.Connection | None":
+    """Open the per-paragraph embeddings DB read-only, or None if missing."""
+    if not PINPOINT_SEMANTIC_ENABLED:
+        return None
+    if not PARAGRAPH_EMBEDDINGS_DB_PATH.exists():
+        return None
+    try:
+        conn = sqlite3.connect(
+            f"file:{PARAGRAPH_EMBEDDINGS_DB_PATH}?immutable=1",
+            uri=True, timeout=1.0,
+        )
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("paragraph_embeddings DB open failed: %s", e)
+        return None
+
+
+def _fetch_paragraph_embeddings(decision_id: str, conn=None) -> list[tuple]:
+    """Return [(e_number, embedding_array), ...] for one decision.
+
+    Empty list when no embeddings stored. Tries all decision-id
+    variants (FTS5 vs structure-DB id formats).
+    """
+    own_conn = False
+    if conn is None:
+        conn = _get_paragraph_embeddings_conn()
+        own_conn = True
+    if conn is None:
+        return []
+    try:
+        import numpy as np
+        for did_v in _decision_id_variants(decision_id) or [decision_id]:
+            rows = conn.execute(
+                "SELECT e_number, embedding FROM paragraph_embeddings "
+                "WHERE decision_id = ?",
+                (did_v,),
+            ).fetchall()
+            if rows:
+                return [
+                    (r["e_number"], np.frombuffer(r["embedding"], dtype=np.float32))
+                    for r in rows
+                ]
+        return []
+    finally:
+        if own_conn:
+            conn.close()
+
+
+def _compute_pinpoint_semantic_rescue(
+    decision_id: str,
+    claim: str,
+    *,
+    paragraph_text_lookup: dict | None = None,
+) -> dict | None:
+    """Try a semantic rescue when the lexical resolver returned None.
+
+    Encodes the claim, fetches precomputed paragraph embeddings for the
+    decision, picks the highest-cosine paragraph. Confidence labels:
+      cosine ≥ PINPOINT_SEMANTIC_HIGH (0.70)   → "high"
+      cosine ≥ PINPOINT_SEMANTIC_MEDIUM (0.55) → "medium"
+      below                                    → None (suppress)
+
+    Returns the same shape as ``_compute_pinpoint`` plus ``source:
+    "semantic"`` so callers can distinguish lexical vs semantic
+    matches. ``paragraph_text_lookup`` is optional — when provided,
+    used to populate ``matched_sentence`` (otherwise empty).
+
+    Designed as a pure rescue: never overrides a confident lexical
+    match — wired into ``_compute_pinpoint`` to fire only when the
+    lexical pass returned None.
+    """
+    if not PINPOINT_SEMANTIC_ENABLED:
+        return None
+    if not claim or len(claim.strip()) < 3 or not decision_id:
+        return None
+    model = _get_semantic_model()
+    if model is None:
+        return None
+    embeddings = _fetch_paragraph_embeddings(decision_id)
+    if not embeddings:
+        return None
+    try:
+        import numpy as np
+        claim_vec = model.encode(
+            claim.strip(),
+            normalize_embeddings=True,
+            show_progress_bar=False,
+        )
+        # Stack and dot — cosine since both sides are normalised.
+        para_matrix = np.vstack([vec for _, vec in embeddings])
+        cos_scores = para_matrix @ np.asarray(claim_vec, dtype=np.float32)
+        top_idx = int(np.argmax(cos_scores))
+        top_score = float(cos_scores[top_idx])
+        top_e = embeddings[top_idx][0]
+    except Exception as e:
+        logger.warning("semantic rescue failed for %s: %s", decision_id, e)
+        return None
+
+    if top_score >= PINPOINT_SEMANTIC_HIGH:
+        confidence = "high"
+    elif top_score >= PINPOINT_SEMANTIC_MEDIUM:
+        confidence = "medium"
+    else:
+        return None
+
+    matched_sentence = ""
+    if paragraph_text_lookup:
+        matched_sentence = (paragraph_text_lookup.get(top_e) or "")[:250]
+
+    canonical = _canonical_decision_url(decision_id)
+    if canonical:
+        sep = "&" if "?" in canonical else "?"
+        url = f"{canonical}{sep}e={urllib.parse.quote(top_e)}"
+        if matched_sentence:
+            url = f"{url}&highlight={urllib.parse.quote(matched_sentence[:200])}"
+    else:
+        url = ""
+
+    return {
+        "e_number": top_e,
+        "matched_sentence": matched_sentence,
+        "confidence": confidence,
+        "url": url,
+        "score": top_score,
+        "source": "semantic",
+    }
 
 
 def _pinpoint_enrich_results(
