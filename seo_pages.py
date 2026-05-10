@@ -759,6 +759,16 @@ def _render_decision(
 <meta property="og:url" content="{_esc(canonical)}">
 <meta property="og:site_name" content="OpenCaseLaw.ch">
 <meta property="og:locale" content="{_esc(language)}_CH">
+<meta property="og:image" content="https://opencaselaw.ch/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="OpenCaseLaw — Swiss legal research">
+<meta property="article:published_time" content="{_esc(date)}T00:00:00Z">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{_esc(docket)}, {_esc(court_name)}">
+<meta name="twitter:description" content="{_esc(meta_desc)}">
+<meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
+<meta name="twitter:image:alt" content="OpenCaseLaw — Swiss legal research">
 <script type="application/ld+json">{schema_str}</script>
 <link rel="stylesheet" href="https://opencaselaw.ch/static/css/design-system.css?v=21">
 <link rel="icon" type="image/svg+xml" href="https://opencaselaw.ch/favicon.svg">
