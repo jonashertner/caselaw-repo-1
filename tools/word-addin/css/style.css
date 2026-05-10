@@ -490,6 +490,65 @@ html, body {
   line-height: 1.55;
 }
 
+/* Pinpoint chip — surfaces the per-result Erwägung anchor returned by
+ * search_decisions / find_leading_cases. The link goes to the SEO
+ * /entscheid/<id>?…&e=…#e-… URL which auto-scrolls to and highlights
+ * the matched paragraph. Subtle by default; hover indicates clickable.
+ *
+ * Visual hierarchy (low → high prominence):
+ *   regeste (3-line summary)
+ *   pinpoint chip (focused location of relevance — italic excerpt)
+ *   action buttons (insert)
+ */
+.result-pinpoint {
+  display: block;
+  margin-top: var(--s-2);
+  padding: 6px 10px;
+  background: var(--accent-subtle, #f1f6ff);
+  border-left: 3px solid var(--accent, #2563eb);
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+.result-pinpoint:hover,
+.result-pinpoint:focus-visible {
+  background: var(--accent-subtle-hover, #e3eefe);
+  outline: none;
+}
+.result-pinpoint-icon {
+  margin-right: 4px;
+  opacity: 0.85;
+}
+.result-pinpoint-loc {
+  font-weight: 600;
+}
+.result-pinpoint-conf {
+  font-size: 11px;
+  color: var(--text-2);
+  margin-left: 4px;
+  text-transform: lowercase;
+}
+.result-pinpoint-text {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-2);
+  font-style: italic;
+  /* clamp at 2 lines so the card height stays predictable */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Semantic-source matches are topical, not lexically exact — hint that
+ * with a dotted left rule so users know to read the matched sentence
+ * before quoting (per system prompt U3). */
+.result-pinpoint--semantic {
+  border-left-style: dotted;
+}
+
 .result-actions {
   display: flex;
   gap: var(--s-2);

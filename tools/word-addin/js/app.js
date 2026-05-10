@@ -906,10 +906,45 @@ function renderResultCard(r, idx) {
     '<div class="result-meta">' + escHtml(date) + ' \u00B7 ' + escHtml(courtName) + '</div>' +
     '</div><div>' + badges + '</div></div></div>' +
     (regeste ? '<div class="result-regeste">' + escHtml(regeste) + '</div>' : '') +
+    pinpointChipHtml(r.pinpoint, lang) +
     '<div class="result-actions">' +
     '<button class="btn btn-insert btn-insert-card" data-action="insert" data-idx="' + idx + '" title="' + escHtml(t('btn_insert', lang)) + '">' +
     ICONS.insert + ' ' + escHtml(t('btn_insert', lang)) + '</button>' +
     '</div></div>';
+}
+
+// Render the pinpoint chip for a result card. Returns '' when no
+// pinpoint present (graceful no-op for cantonal decisions without
+// decision_structure entries, OR for results where the lexical
+// resolver couldn't find a confident anchor — these are still
+// valid search hits, the card just doesn't get the chip).
+//
+// The chip's link uses pp.url which now includes the hash fragment
+// (#e-X-Y) so the browser auto-scrolls to the right Erwägung on
+// landing — verified end-to-end via Playwright 2026-05-10. Click
+// stops propagation to avoid the card's outer "detail" handler also
+// firing (which would open the in-pane detail view instead of the
+// external SEO page where the highlight markup lives).
+function pinpointChipHtml(pp, lang) {
+  if (!pp || !pp.e_number) return '';
+  var label = pinpointLabel(lang);
+  var url = pp.url || '';
+  var sentence = pp.matched_sentence || '';
+  var conf = pp.confidence || '';
+  var source = pp.source || 'lexical';
+  // Truncate matched_sentence for compact display; full text is on
+  // the linked SEO page.
+  var sentenceTrim = sentence.length > 180 ? sentence.slice(0, 177) + '\u2026' : sentence;
+  var sourceClass = source === 'semantic' ? ' result-pinpoint--semantic' : '';
+  return '<a href="' + escHtml(url) + '" target="_blank" rel="noopener" ' +
+    'class="result-pinpoint' + sourceClass + '" ' +
+    'title="\u00d6ffnet die Erw\u00e4gung in einem neuen Tab" ' +
+    'onclick="event.stopPropagation();">' +
+    '<span class="result-pinpoint-icon" aria-hidden="true">\uD83D\uDCCD</span>' +
+    '<span class="result-pinpoint-loc">' + escHtml(label + ' ' + pp.e_number) + '</span>' +
+    (conf ? '<span class="result-pinpoint-conf">(' + escHtml(conf) + ')</span>' : '') +
+    (sentenceTrim ? '<span class="result-pinpoint-text">' + escHtml(sentenceTrim) + '</span>' : '') +
+    '</a>';
 }
 
 // Floating multi-select bar — only rendered when ≥1 card is selected.
