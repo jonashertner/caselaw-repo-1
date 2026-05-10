@@ -211,10 +211,17 @@ def test_pinpoint_enrich_results_noop_when_db_unavailable(tmp_path, monkeypatch)
 
 
 def test_url_includes_highlight_and_e_anchor(tmp_path):
+    # Need a corpus with multiple paragraphs so BM25 IDF is non-trivial;
+    # single-row tables collapse all terms to log(1) ≈ 0 weights.
     conn = _make_structure_db(tmp_path, [
+        ("bge_BGE_140_III_86", "1", "Sachverhalt der Streitsache hier."),
+        ("bge_BGE_140_III_86", "2.1", "Erwägung über andere Themen."),
+        ("bge_BGE_140_III_86", "2.2", "Etwas zum Strafrecht ohne Bezug."),
         ("bge_BGE_140_III_86", "2.3",
          "Die Beschwerdelegitimation nach Art. 76 BGG verlangt ein "
          "schutzwürdiges Interesse."),
+        ("bge_BGE_140_III_86", "3", "Schadenersatz nach Art. 41 OR."),
+        ("bge_BGE_140_III_86", "4", "Dispositiv des Bundesgerichts."),
     ])
     try:
         pp = mcp_server._compute_pinpoint(
@@ -223,10 +230,188 @@ def test_url_includes_highlight_and_e_anchor(tmp_path):
             conn=conn,
         )
         assert pp is not None
+        assert pp["e_number"] == "2.3"
         # URL gets ?highlight=<urlencoded sentence>&e=2.3 — both must be present.
         assert "highlight=" in pp["url"]
         assert "e=2.3" in pp["url"]
         # The matched sentence (used as ?highlight= source) is preserved.
         assert "Beschwerdelegitimation" in pp["matched_sentence"]
+    finally:
+        conn.close()
+
+
+# ───────────────────────── False-confidence regression tests ─────────────────
+
+
+def test_or_fallback_does_not_promote_thin_overlap_to_high(tmp_path):
+    """REGRESSION: 3-token claim, paragraph matches only 1 of the 3 terms.
+
+    Previously: phrase pass empty → OR pass returns single row →
+    ``gap_ratio = 999.0`` short-circuited the gap-based confidence
+    branch → spurious "high" pinpoint emitted to the user. Coverage
+    guard now suppresses entirely (only 33% of claim tokens hit).
+    """
+    conn = _make_structure_db(tmp_path, [
+        # Single paragraph contains "Kündigung" but not "Mietrecht" or
+        # "Wohnung". The OR fallback ("Mietrecht OR Kündigung OR
+        # Wohnung") matches it at very low BM25 (only 1 of 3 tokens).
+        ("d_1", "1", "Eine kurze Bemerkung zur Kündigung im allgemeinen."),
+    ])
+    try:
+        pp = mcp_server._compute_pinpoint(
+            "d_1", "Mietrecht Kündigung Wohnung", conn=conn
+        )
+        assert pp is None, (
+            f"Expected None for thin OR-coverage match (1 of 3 claim "
+            f"tokens), got {pp!r} — false-high-confidence regression."
+        )
+    finally:
+        conn.close()
+
+
+def test_or_fallback_caps_partial_coverage_at_medium(tmp_path):
+    """4-token claim, 2 of 4 in matched paragraph (coverage 50 %).
+
+    Hits the lower coverage bound (≥ 0.5) so the result is *not*
+    suppressed, but is capped at ``medium`` — high requires ≥ 70 %
+    coverage on multi-token claims. Multi-paragraph corpus so BM25
+    IDF doesn't collapse to ~0.
+    """
+    conn = _make_structure_db(tmp_path, [
+        # 2 of 4 claim tokens (Schadenersatz, Verschulden) appear here.
+        ("d_1", "1",
+         "Der Schadenersatz setzt ein Verschulden voraus — Grundsatz "
+         "des ausservertraglichen Haftungsrechts gemäss Art. 41 OR."),
+        # Distractors so IDF gives matching tokens meaningful weight.
+        ("d_1", "2", "Sachverhalt: Der Beschwerdeführer reichte am 5. Januar."),
+        ("d_1", "3", "Verfahren vor Vorinstanz: Berufungsinstanz hat abgewiesen."),
+        ("d_1", "4", "Kostenfolgen werden nach Massgabe des Obsiegens verteilt."),
+        ("d_1", "5", "Dispositiv: Die Beschwerde wird abgewiesen."),
+    ])
+    try:
+        pp = mcp_server._compute_pinpoint(
+            "d_1",
+            "Schadenersatz Verschulden Mietrecht Wohnung",
+            conn=conn,
+        )
+        assert pp is not None, "Expected a medium-confidence pinpoint, not None"
+        assert pp["confidence"] == "medium", (
+            f"Expected 'medium' for 2-of-4 coverage, got "
+            f"{pp['confidence']!r}"
+        )
+    finally:
+        conn.close()
+
+
+def test_full_coverage_keeps_high_confidence(tmp_path):
+    """Sanity check: when all multi-token claim words appear in the
+    matched paragraph (and only there), the high-confidence path still
+    works. Multi-paragraph corpus needed for non-trivial BM25.
+    """
+    conn = _make_structure_db(tmp_path, [
+        ("d_1", "1",
+         "Mietrecht Kündigung Wohnung — alle drei Schlüsselwörter kommen vor "
+         "und zwar sehr explizit zur Demonstration der vollen Token-Coverage."),
+        ("d_1", "2", "Etwas ganz anderes über Strafrecht ohne Bezug."),
+        ("d_1", "3", "Sachverhalt: Der Beschwerdeführer reichte am 5. Januar."),
+        ("d_1", "4", "Verfahren vor Vorinstanz: Berufung ist abgewiesen."),
+        ("d_1", "5", "Dispositiv: Die Beschwerde wird abgewiesen."),
+        ("d_1", "6", "Kostenfolgen verteilt nach Massgabe des Obsiegens."),
+    ])
+    try:
+        pp = mcp_server._compute_pinpoint(
+            "d_1", "Mietrecht Kündigung Wohnung", conn=conn
+        )
+        assert pp is not None
+        assert pp["e_number"] == "1"
+        assert pp["confidence"] == "high"
+    finally:
+        conn.close()
+
+
+def test_single_row_with_weak_bm25_returns_none(tmp_path):
+    """Direct guard for the original bug: single-row OR match with very
+    low absolute BM25 score (e.g. ~ 1e-6) was treated as ``gap_ratio =
+    999.0`` and promoted to high. Now the absolute-strength branch
+    rejects it correctly.
+    """
+    conn = _make_structure_db(tmp_path, [
+        # Long paragraph diluting BM25 of any single token hit. Only
+        # "Kündigung" of the claim's tokens appears.
+        ("d_1", "1",
+         "Im vorliegenden Fall geht es um zahlreiche Sachverhalte und "
+         "Erwägungen zu unterschiedlichen Rechtsfragen, die das Gericht "
+         "abschliessend zu beurteilen hatte. Die Kündigung wird hier "
+         "nur am Rande erwähnt unter vielen anderen Aspekten des "
+         "Verfahrens, das eine umfangreiche Beweisaufnahme verlangte. "
+         "Diese Erwägungen sind allgemeiner Natur."),
+    ])
+    try:
+        pp = mcp_server._compute_pinpoint(
+            "d_1", "Mietvertrag Wohnungswechsel Vertragsbruch", conn=conn
+        )
+        # None of the claim's actual tokens appear → OR fallback finds 0 rows
+        # → returns None. (If a substring partially matched, coverage check
+        # would still suppress.) This documents the strict-by-default policy.
+        assert pp is None
+    finally:
+        conn.close()
+
+
+def test_score_pinpoint_confidence_directly(tmp_path):
+    """Unit-level coverage of the shared scorer (independent of the FTS5
+    layer) — fixes regressions in confidence semantics quickly."""
+    f = mcp_server._score_pinpoint_confidence
+
+    # Clear gap, full coverage → high
+    assert f([-3.0, -1.0], "Mietrecht Kündigung", "Mietrecht Kündigung Wohnung") == "high"
+    # Marginal gap, full coverage → medium
+    assert f([-1.5, -1.2], "Mietrecht Kündigung", "Mietrecht Kündigung") == "medium"
+    # Strong single-row absolute → high (sanity)
+    assert f([-3.0], "Mietrecht", "Mietrecht ist hier zentral.") == "high"
+    # Weak single-row absolute (the original bug) → None
+    assert f([-1e-6], "Mietrecht Kündigung Wohnung", "Eine kurze Bemerkung zur Kündigung.") is None
+    # Empty / no scores → None
+    assert f([], "anything", "anything") is None
+
+
+def test_handle_find_relevant_erwaegung_does_not_emit_thin_high(tmp_path, monkeypatch):
+    """The same false-confidence bug applied to the explicit MCP tool
+    when the OR fallback fired (only on FTS5 OperationalError there,
+    but the inflated ``gap_ratio = 999.0`` for single-row matches still
+    bit). Verify the shared scorer fixes the explicit handler too.
+    """
+    conn = _make_structure_db(tmp_path, [
+        ("d_1", "1", "Eine kurze Bemerkung zur Kündigung im allgemeinen."),
+    ])
+    monkeypatch.setattr(mcp_server, "_get_structure_conn", lambda: conn)
+    monkeypatch.setattr(
+        mcp_server,
+        "_resolve_decision_id",
+        lambda x: x,
+    )
+    monkeypatch.setattr(
+        mcp_server,
+        "_fetch_structure_row",
+        lambda x: None,
+    )
+    monkeypatch.setattr(
+        mcp_server,
+        "get_decision_by_id",
+        lambda x: None,
+    )
+    try:
+        out = mcp_server._handle_find_relevant_erwaegung(
+            decision_id="d_1",
+            claim="Mietrecht Kündigung Wohnung",
+            top_k=3,
+        )
+        # Either no_match or all matches downgraded — but never a "high"
+        # confidence pinpoint surfaced for thin lexical overlap.
+        if out.get("no_match") is True:
+            return
+        assert out.get("confidence") != "high", (
+            f"Explicit handler still emits high-confidence thin match: {out}"
+        )
     finally:
         conn.close()

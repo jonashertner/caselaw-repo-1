@@ -8356,6 +8356,92 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     }
 
 
+def _claim_token_coverage(claim: str, text: str) -> tuple[int, int]:
+    """Count claim tokens (> 2 chars, lowercased) that appear as whole
+    words in ``text``.
+
+    Returned as ``(matched, total)``. Used as an anti-spurious-match
+    guard: BM25 ``gap_ratio`` alone can promote a thin lexical overlap
+    (e.g. one of three claim terms hit via the OR fallback) to high
+    confidence — the coverage signal catches that.
+    """
+    claim_tokens = [t.lower() for t in re.findall(r"\w+", claim or "") if len(t) > 2]
+    if not claim_tokens:
+        return (0, 0)
+    text_tokens = {t.lower() for t in re.findall(r"\w+", text or "")}
+    matched = sum(1 for t in claim_tokens if t in text_tokens)
+    return (matched, len(claim_tokens))
+
+
+def _score_pinpoint_confidence(
+    scores: list[float],
+    claim: str,
+    top_text: str,
+    *,
+    match_kind: str = "or",
+) -> str | None:
+    """Return "high" | "medium" | None for the top-1 BM25 row.
+
+    Combines three signals:
+
+    * **BM25 gap_ratio** (rank-1 vs rank-2) — when there's a rank-2 to
+      compare.
+    * **Single-row strength**: when only one paragraph matched, the
+      decision splits on ``match_kind``:
+        - ``"phrase"``: the FTS5 phrase constraint already filters out
+          spurious matches (exact word order required), so a single hit
+          is itself strong evidence — gap_high is True.
+        - ``"or"`` (default): no phrase guarantee, so we require absolute
+          BM25 strength (``abs(score)`` > 2.0 for high, > 1.0 for medium).
+      The prior code used ``gap_ratio = 999.0`` here, which silently
+      promoted every single-row match (including OR-fallback hits at
+      score ≈ 1e-6) to high — that was the false-confidence bug.
+    * **Token coverage** — fraction of multi-token claim words appearing
+      as whole words in the matched paragraph. Multi-token claims with
+      coverage < 0.5 are suppressed entirely; with coverage < 0.7 the
+      label is capped at "medium". Single-token claims rely on the BM25
+      signal alone (coverage is trivially 1.0 when FTS5 matched).
+
+    Returns ``None`` to suppress (caller treats as low / no_match).
+    """
+    if not scores:
+        return None
+    s0 = abs(float(scores[0]))
+    if len(scores) >= 2 and float(scores[1]) != 0.0:
+        gap_ratio = s0 / max(abs(float(scores[1])), 1e-6)
+        gap_high = gap_ratio > 1.5
+        gap_medium = gap_ratio > 1.2
+    else:
+        # Single-row: no rank-2 baseline.
+        if match_kind == "phrase":
+            # Phrase match is itself a strong signal — exact word order
+            # filters out chance overlaps. Don't impose an absolute floor.
+            gap_high = True
+            gap_medium = True
+        else:
+            # OR match: require absolute BM25 strength.
+            gap_high = s0 > 2.0
+            gap_medium = s0 > 1.0
+
+    if not gap_medium:
+        return None
+
+    matched_n, total_n = _claim_token_coverage(claim, top_text)
+    coverage = (matched_n / total_n) if total_n else 0.0
+
+    # Multi-token coverage gates — defence-in-depth against thin OR-fallback
+    # matches (one of N tokens hitting the paragraph at all).
+    if total_n >= 2:
+        if coverage < 0.5:
+            return None
+        if coverage < 0.7:
+            # Cap at medium: gap may look strong but only because most
+            # paragraphs in the decision didn't match the OR clause at all.
+            return "medium"
+
+    return "high" if gap_high else "medium"
+
+
 def _compute_pinpoint(
     decision_id: str,
     claim: str,
@@ -8432,8 +8518,9 @@ def _compute_pinpoint(
         """
 
         rows: list = []
+        match_kind = "or"  # default; overwritten when phrase pass produces rows
         for did_variant in _decision_id_variants(decision_id) or [decision_id]:
-            for q in (phrase_query, or_query):
+            for q, kind in ((phrase_query, "phrase"), (or_query, "or")):
                 if not q:
                     continue
                 try:
@@ -8441,6 +8528,7 @@ def _compute_pinpoint(
                 except sqlite3.OperationalError:
                     rows = []
                 if rows:
+                    match_kind = kind
                     break
             if rows:
                 break
@@ -8448,19 +8536,14 @@ def _compute_pinpoint(
         if not rows:
             return None
 
-        scores = [float(r["score"]) for r in rows]
-        if len(scores) >= 2 and scores[1] != 0:
-            gap_ratio = abs(scores[0]) / max(abs(scores[1]), 1e-6)
-        else:
-            gap_ratio = 999.0
-        if gap_ratio > 1.5 or (len(scores) == 1 and abs(scores[0]) > 2.0):
-            confidence = "high"
-        elif gap_ratio > 1.2 or (len(scores) == 1 and abs(scores[0]) > 1.0):
-            confidence = "medium"
-        else:
-            return None  # low → suppress (matches find_relevant_erwaegung discipline)
-
         top = rows[0]
+        scores = [float(r["score"]) for r in rows]
+        confidence = _score_pinpoint_confidence(
+            scores, claim, top["text"], match_kind=match_kind
+        )
+        if confidence is None:
+            return None  # low / spurious — suppress entirely
+
         matched = re.sub(r"</?mark>", "", (top["highlighted"] or "")).strip().strip("…").strip()
 
         canonical = _canonical_decision_url(decision_id)
@@ -8579,6 +8662,7 @@ def _handle_find_relevant_erwaegung(
         fts_query = '"' + claim.replace('"', '""') + '"'
 
         rows: list[sqlite3.Row] = []
+        match_kind = "phrase"  # default: phrase pass; flipped on OR fallback
         for did_variant in _decision_id_variants(resolved) or [resolved]:
             try:
                 rows = conn.execute(
@@ -8600,7 +8684,9 @@ def _handle_find_relevant_erwaegung(
                 ).fetchall()
             except sqlite3.OperationalError:
                 # FTS5 syntax error on the user's claim — retry with a
-                # plain bag-of-words query (less precise but robust).
+                # plain bag-of-words query (less precise but robust). Confidence
+                # scoring downgrades single-row OR matches accordingly.
+                match_kind = "or"
                 tokens = [t for t in re.findall(r"\w+", claim) if len(t) > 2]
                 if not tokens:
                     rows = []
@@ -8652,19 +8738,15 @@ def _handle_find_relevant_erwaegung(
             "regeste": (row or {}).get("regeste"),
         }
 
-        # Confidence from BM25 score-gap between rank 1 and rank 2.
-        # bm25() returns negative numbers; smaller (more negative) = better.
+        # Confidence: shared with _compute_pinpoint. Combines BM25 score-gap
+        # (or absolute strength for single-row) with token-coverage. The
+        # prior gap_ratio = 999.0 sentinel for single-row matches caused
+        # any single result — including OR-fallback matches at score ≈ 1e-6 —
+        # to be promoted to "high"; the shared scorer fixes that.
         scores = [float(r["score"]) for r in rows]
-        if len(scores) >= 2 and scores[1] != 0:
-            gap_ratio = abs(scores[0]) / max(abs(scores[1]), 1e-6)
-        else:
-            gap_ratio = 999.0  # only one match: defer to absolute strength
-        if gap_ratio > 1.5 or (len(scores) == 1 and abs(scores[0]) > 2.0):
-            confidence = "high"
-        elif gap_ratio > 1.2 or (len(scores) == 1 and abs(scores[0]) > 1.0):
-            confidence = "medium"
-        else:
-            confidence = "low"
+        confidence = _score_pinpoint_confidence(
+            scores, claim, rows[0]["text"], match_kind=match_kind
+        ) or "low"
 
         matches: list[dict] = []
         for r in rows:
