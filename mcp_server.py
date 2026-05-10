@@ -17015,6 +17015,11 @@ render();setInterval(render,60000);
             results = [{k: r[k] for k in compact_keys if k in r} for r in results]
         else:
             results = [_enrich_with_citation(r) for r in results]
+            # Auto-pinpoint top-5 results so the JSON payload carries a
+            # paragraph-level citation alongside the decision-level metadata.
+            await asyncio.to_thread(
+                _pinpoint_enrich_results, results, query or "", top_n=5
+            )
         return {"total": total, "results": results, "limit": limit, "offset": offset}
 
     @rest_api.get("/decisions/{decision_id}", tags=["Case Law"],
@@ -17119,6 +17124,20 @@ render();setInterval(render,60000);
                 if isinstance(inner, list):
                     for item in inner:
                         _enrich_with_citation(item)
+            # Auto-pinpoint top-3 leading cases against the effective claim.
+            claim_parts = []
+            if law_code and article:
+                claim_parts.append(f"Art. {article} {law_code}")
+            if query:
+                claim_parts.append(query)
+            claim = " ".join(claim_parts).strip()
+            if claim:
+                inner = (result.get("results") or result.get("cases")
+                         or result.get("leading_cases") or [])
+                if inner:
+                    await asyncio.to_thread(
+                        _pinpoint_enrich_results, inner, claim, top_n=3
+                    )
         return result
 
     # ── Analysis endpoints ─────────────────────────────────────
