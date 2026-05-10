@@ -338,6 +338,15 @@ PARAGRAPH_EMBEDDINGS_DB_PATH = Path(os.environ.get(
 PINPOINT_SEMANTIC_ENABLED = os.environ.get(
     "PINPOINT_SEMANTIC_ENABLED", "false"
 ).lower() in {"1", "true", "yes"}
+# Hybrid mode: when both PINPOINT_SEMANTIC_ENABLED AND _HYBRID are on,
+# the resolver runs BOTH lexical and semantic on every confident-lexical
+# match, and uses cross-signal agreement to boost confidence (or flag
+# disagreement). When off (default), semantic only fires as a rescue
+# (existing behaviour). Adds ~30-50 ms per call (one extra encode + cosine
+# vs the small set of decision paragraphs).
+PINPOINT_SEMANTIC_HYBRID = os.environ.get(
+    "PINPOINT_SEMANTIC_HYBRID", "false"
+).lower() in {"1", "true", "yes"}
 PINPOINT_SEMANTIC_MODEL = os.environ.get(
     "PINPOINT_SEMANTIC_MODEL",
     "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -8784,7 +8793,7 @@ def _compute_pinpoint(
         else:
             url = ""
 
-        return {
+        result = {
             "e_number": top["e_number"],
             "matched_sentence": matched,
             "confidence": confidence,
@@ -8792,6 +8801,45 @@ def _compute_pinpoint(
             "score": -float(top["score"]),  # flip sign so higher = better
             "source": "lexical",
         }
+
+        # Hybrid mode: when enabled, also run semantic and use
+        # cross-signal agreement as additional evidence. Two independent
+        # signals pointing at the SAME Erwägung is much stronger than
+        # either alone — boost to "high". Disagreement → keep lexical
+        # (more interpretable + auditable) but flag the alternative for
+        # downstream decisions. Costs ~30-50 ms per call (encode +
+        # cosine vs the decision's < 300 paragraphs).
+        if PINPOINT_SEMANTIC_HYBRID and PINPOINT_SEMANTIC_ENABLED:
+            try:
+                text_lookup = {r["e_number"]: r["text"] for r in rows}
+                sem = _compute_pinpoint_semantic_rescue(
+                    decision_id, claim,
+                    paragraph_text_lookup=text_lookup,
+                )
+                if sem:
+                    if sem["e_number"] == result["e_number"]:
+                        # Two independent signals agree → strong evidence.
+                        result["confidence"] = "high"
+                        result["source"] = "hybrid_agreement"
+                        result["semantic_score"] = sem["score"]
+                    else:
+                        # Disagreement: stay with lexical but expose the
+                        # alternative so callers (and the audit) can see
+                        # both candidates. The semantic alt is informational —
+                        # callers shouldn't flip pinpoint without further
+                        # evidence (e.g. an LLM judge call).
+                        result["source"] = "lexical_semantic_disagree"
+                        result["semantic_alternative"] = {
+                            "e_number": sem["e_number"],
+                            "score": sem["score"],
+                            "confidence": sem["confidence"],
+                        }
+            except Exception as _e:
+                # Hybrid is enrichment, never blocking — fall through to
+                # the unmodified lexical result on any failure.
+                logger.debug("hybrid merge failed: %s", _e)
+
+        return result
     finally:
         if own_conn:
             conn.close()
