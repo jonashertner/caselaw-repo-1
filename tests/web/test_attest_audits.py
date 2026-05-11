@@ -194,6 +194,18 @@ def test_statute_audit_noop_without_db(m, monkeypatch, tmp_path):
     # Italian subdivision chain (capoverso/lettera/numero/frase)
     ("art. 4 cpv. 1 lett. a CC",               "4",       "CC"),
     ("articolo 5 cpv. 2 lett. b CO",           "5",       "CO"),
+    # Hyphenated law abbreviations — ordinances, specialised acts,
+    # newer instruments. The original failure case was PLB-NVO
+    # (Public Liquidity Backstop Notverordnung); the pre-fix law
+    # slot stopped at the first hyphen, treating only the leading
+    # chunk as the law and missing the rest.
+    ("Art. 5 PLB-NVO",                         "5",       "PLB-NVO"),
+    ("Art. 3 Abs. 1 PLB-NVO",                  "3",       "PLB-NVO"),
+    ("Art. 5 GwV-Banken",                      "5",       "GwV-Banken"),
+    ("Art. 8 DSG-V",                           "8",       "DSG-V"),
+    ("Art. 12 Abs. 1 Bst. a AHV-IV",           "12",      "AHV-IV"),
+    # Cantonal suffix preserved alongside hyphenated base
+    ("Art. 5 OR/ZH",                           "5",       "OR/ZH"),
 ])
 def test_statute_pattern_parses_all_subdivisions(m, inp, exp_article, exp_law):
     matches = list(m._STATUTE_AUDIT_PATTERN.finditer(inp))

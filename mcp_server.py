@@ -10514,7 +10514,18 @@ _STATUTE_AUDIT_PATTERN = re.compile(
         |Satz|phrase|frase|sent
       )\.?\s*(?:\d+[a-z]?|[ivxIVX]{1,5}|[a-z])\b
     )*
-    \s+(?P<law>[A-Z][A-Za-zÄÖÜ0-9]{1,11}(?:/[A-Z0-9]{2,6})?)\b
+    # Law slot accepts:
+    #   • 2–12 char base abbreviation (OR, ZGB, BV, StGB, …)
+    #   • Optional hyphen-separated chunks for ordinance shortforms
+    #     and specialised acts (PLB-NVO, GwV-Banken, DSG-V, FinmaG-V,
+    #     AHV-IV, …). Each chunk after a hyphen must start uppercase
+    #     or digit so we don't drift into lowercase prose.
+    #   • Optional cantonal suffix (/ZH, /BE).
+    \s+(?P<law>
+        [A-Z][A-Za-zÄÖÜ0-9]{1,11}
+        (?:-[A-Z0-9][A-Za-zÄÖÜ0-9]{0,11})*
+        (?:/[A-Z0-9]{2,6})?
+    )\b
     """,
     flags=re.VERBOSE,
 )
