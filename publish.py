@@ -112,12 +112,20 @@ def run_cmd(
     dry_run: bool = False,
     timeout: int = 3600,
     stall_timeout: int | None = 5400,
+    on_line=None,
 ) -> bool:
     """Run a command, return True on success.
 
     Streams stdout/stderr line-by-line to the logger instead of buffering
     the full output in memory (avoids OOM on long-running steps like
     build_fts5 or graph build that can produce hundreds of MB of output).
+
+    on_line: optional callback invoked once per stdout line BEFORE it
+    reaches the logger. Used by Step 2 to release the publish lock the
+    instant build_fts5 prints its OCL_SWAP_DONE sentinel, without
+    waiting for the rest of the integrity-check tail. Callback
+    exceptions are caught and logged so a faulty hook can't crash the
+    publish.
 
     Two independent kill-switches:
       - ``timeout``: hard wall-clock cap (default 3600 s). The wall-clock
@@ -220,6 +228,14 @@ def run_cmd(
                 last_output_at[0] = time.time()
                 line = line.rstrip("\n")
                 if line:
+                    if on_line is not None:
+                        try:
+                            on_line(line)
+                        except Exception as _hook_err:
+                            logger.warning(
+                                f"  on_line callback raised "
+                                f"{type(_hook_err).__name__}: {_hook_err}"
+                            )
                     logger.info(f"  | {line}")
             proc.wait()
         finally:
@@ -341,11 +357,22 @@ def _preflight_disk_check() -> bool:
     return True
 
 
-def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+def step_2_build_fts5(
+    dry_run: bool = False,
+    full_rebuild: bool = False,
+    on_line=None,
+) -> bool:
     """Step 2: Build/update FTS5 search database.
 
     Always uses full rebuild: builds to .db.tmp then atomic os.replace().
     This avoids DB locks with live MCP workers (immutable=1 connections).
+
+    on_line: optional per-stdout-line callback. The publish driver
+    passes a hook that releases the publish lock when build_fts5
+    prints its ``OCL_SWAP_DONE`` sentinel — so the lock isn't held
+    through the post-swap integrity_check tail (1–3 h on the 60 GB
+    DB) and quick_publish can fold fresh BGer poller scrapes into
+    the live DB during that window.
     """
     script = REPO_DIR / "build_fts5.py"
     if not script.exists():
@@ -385,7 +412,8 @@ def step_2_build_fts5(dry_run: bool = False, full_rebuild: bool = False) -> bool
     # but still catches a genuinely-wedged process within one human
     # working-day cycle.
     return run_cmd(cmd, "Build FTS5 database", dry_run,
-                   timeout=timeout, stall_timeout=10800)
+                   timeout=timeout, stall_timeout=10800,
+                   on_line=on_line)
 
 
 def step_2b_quality_report(dry_run: bool = False, full_rebuild: bool = False) -> bool:
@@ -1406,29 +1434,54 @@ def main():
         step_start = time.time()
         try:
             if num == 2:
-                ok = func(dry_run=args.dry_run, full_rebuild=args.full_rebuild)
-                # Once Step 2 (Build FTS5) completes — including the
-                # atomic swap inside build_fts5.py — the post-build
-                # steps (2b–2g, 3, 5, 6, 7) only READ decisions.db and
-                # WRITE to derived DBs (reference_graph.db,
-                # materialien.db, decision_structure.db, parquet/, …).
-                # Holding the publish lock for the full 5–10h post-
-                # build run blocks the BGer poller from inserting fresh
-                # decisions all day (2026-05-08 incident: 27 Neuheiten
-                # dockets stuck for hours because quick_publish
-                # observed the lock and skipped).
-                #
-                # Release here so quick_publish unblocks. The post-
-                # build readers use ``?immutable=1`` so any subsequent
-                # quick_publish atomic-swap is invisible to their open
-                # connections (Linux inode semantics: replaced file
-                # gets a new inode; existing fd keeps the old).
-                if ok and not args.dry_run:
+                # Release the publish lock the INSTANT build_fts5
+                # prints OCL_SWAP_DONE — not when Step 2 returns. The
+                # 2026-05-11 incident: the 10:40 UTC atomic swap landed
+                # cleanly, but build_fts5's post-swap PRAGMA integrity_
+                # check on the 60 GB DB took ~3 h. During that 3 h the
+                # publish lock stayed held, so every bger_poller fire
+                # silently skipped quick_publish — 13 fresh BGer dockets
+                # were stranded in bger.jsonl all day. The "Neueste
+                # Bundesgerichtsentscheide" feed must reflect bger.ch's
+                # AZA index ASAP; we cannot afford a 3 h dead zone after
+                # every nightly swap. Integrity_check operates on the
+                # old inode (held by build_fts5's open fd), so it stays
+                # consistent even if quick_publish writes a newer inode
+                # to the same path.
+                _swap_done = {"released": False}
+
+                def _release_on_swap_done(line: str) -> None:
+                    if _swap_done["released"]:
+                        return
+                    if "OCL_SWAP_DONE" not in line:
+                        return
                     try:
                         fcntl.flock(lock_file, fcntl.LOCK_UN)
                         logger.info(
-                            "  publish lock released after Step 2 swap "
-                            "— quick_publish unblocked for post-build window"
+                            "  publish lock released on OCL_SWAP_DONE "
+                            "— quick_publish unblocked for the rest of "
+                            "the post-build window (integrity_check etc.)"
+                        )
+                        _swap_done["released"] = True
+                    except (OSError, ValueError):
+                        pass
+
+                ok = func(
+                    dry_run=args.dry_run,
+                    full_rebuild=args.full_rebuild,
+                    on_line=_release_on_swap_done,
+                )
+                # Fallback for the (uncommon) path where build_fts5
+                # returned ok without ever printing the sentinel — e.g.
+                # --incremental mode, manual invocations from a older
+                # build_fts5 binary, etc. No-op if already released.
+                if ok and not args.dry_run and not _swap_done["released"]:
+                    try:
+                        fcntl.flock(lock_file, fcntl.LOCK_UN)
+                        logger.info(
+                            "  publish lock released after Step 2 return "
+                            "(OCL_SWAP_DONE sentinel not seen — older "
+                            "build_fts5 or --incremental path)"
                         )
                     except (OSError, ValueError):
                         pass

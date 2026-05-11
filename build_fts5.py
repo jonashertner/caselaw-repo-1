@@ -1740,6 +1740,20 @@ def build_database(
                     logger.info(f"  Removed stale sidecar {stale_path.name}")
         db_path = final_db_path
 
+        # MISSION-CRITICAL: tell the parent (publish.py) the swap is
+        # committed so it can release the publish lock NOW, instead of
+        # waiting for the 1–3 h post-swap integrity_check tail. While
+        # we still hold the lock, quick_publish skips silently, which
+        # means fresh BGer poller scrapes (the "Neueste Bundesgerichts-
+        # entscheide" feed) get stranded in bger.jsonl until tomorrow.
+        # The integrity_check below operates on the OLD inode (held
+        # alive by our open SQLite connection); quick_publish writes to
+        # a new inode that becomes the new live `decisions.db`. The two
+        # don't share state. publish.py greps stdout for this exact
+        # token to fire fcntl.LOCK_UN — see publish.py's run_cmd on_line
+        # callback. Token chosen to be unambiguous and grep-stable.
+        logger.info("OCL_SWAP_DONE — publish lock releasable; integrity_check continues")
+
         # Fire-and-forget early dashboard refresh — spawn a subprocess that
         # regenerates docs/stats.json (minimal, no graph aggregations) +
         # git pushes, so opencaselaw.ch reflects the freshly-swapped
