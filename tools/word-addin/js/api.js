@@ -255,6 +255,44 @@ async function verifyAndStrengthenPro(licenseKey, paragraphText, lang) {
   return resp;
 }
 
+/* Reflect — Pro literary-mirror on the whole document.
+   Whole-document scope: the add-in reads the current draft, runs
+   js/redact.js to strip PII, and sends the redacted text to
+   POST /billing/reflect. The server identifies the central legal
+   issue and draws ONE literary parallel (Shakespeare / Dürrenmatt /
+   Frisch / Goethe / Kafka / etc.) that mirrors the same human
+   dilemma, returning a 200-400 word markdown summary plus a
+   single question for the lawyer to bring back to the case.
+   Cap: 25/day per license (shared with verify + strengthen).
+   The summary is purposely reflective — explicitly NOT legal advice. */
+async function reflectOnDocumentPro(licenseKey, documentText, lang) {
+  var redaction = _requireRedact(documentText);
+  var resp = await apiPost('/billing/reflect', {
+    license_key: licenseKey,
+    redacted_text: redaction.redacted,
+    lang: lang || 'de',
+    client_redactor_version: REDACTOR_VERSION,
+    client_redactor_summary: redaction.summary,
+  });
+  if (redaction.summary.total > 0 && resp) {
+    /* Un-redact the user-visible strings the LLM may have echoed back.
+       The Reflect prompt instructs the model to phrase the issue
+       generically (no party names), but redacted tokens like
+       __DOCKET_N__ can still appear if the LLM quotes the document
+       verbatim. Reversing the redaction client-side restores the
+       original text for the lawyer's own viewing. */
+    ['legal_issue', 'summary_markdown', 'question_for_reflection'].forEach(
+      function (k) {
+        if (typeof resp[k] === 'string') {
+          resp[k] = unredact(resp[k], redaction.replacements);
+        }
+      }
+    );
+    resp._pii_summary = redaction.summary;
+  }
+  return resp;
+}
+
 /* Find decisions that support a legal statement. Pro feature.
    Server (POST /billing/find-support) parses the statement, runs
    citation-graph + statute searches, and scores each candidate

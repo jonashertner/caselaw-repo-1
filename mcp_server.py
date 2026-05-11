@@ -179,6 +179,28 @@ class FindSupportRequest(BaseModel):
     lang: str = "de"
 
 
+class ReflectRequest(BaseModel):
+    """Request body for the Pro "Reflect" feature.
+
+    Whole-document scope: the lawyer points the add-in at their full
+    draft (motion, brief, memo, opinion) and gets back a brief
+    literary-philosophical mirror of the core legal issue. The Word
+    add-in's client-side redactor (>=v3) MUST run before sending —
+    the server-side guard refuses any payload whose structural-PII
+    scan comes back non-empty.
+
+    The redacted whole-document budget is intentionally larger than
+    the per-paragraph Strengthen/Verify budgets: the Reflect prompt
+    needs enough context to identify the central issue, but is still
+    bounded so a 60-page contract doesn't get sent verbatim.
+    """
+    license_key: str
+    redacted_text: str = Field(..., max_length=30000)
+    lang: str = "de"
+    client_redactor_version: str | None = None
+    client_redactor_summary: dict | None = None
+
+
 # Add repo root to path so db_schema can be imported when run from any directory
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
@@ -11271,6 +11293,181 @@ def _handle_strengthen(*, redacted_text: str, lang: str = "de") -> dict:
     }
 
 
+# ── REFLECT (Pro feature): literary mirror on a redacted document ──
+
+# Recognised target languages and their disclaimer strings. The
+# language a Swiss lawyer drafts in is one of these four — Romansh
+# is excluded only because the prompt-side literary canon is sparse
+# enough in RM that the LLM would fall back to DE/FR/IT anyway.
+_REFLECT_DISCLAIMERS = {
+    "de": "*Reflexionswerkzeug, nicht juristische Beratung.*",
+    "fr": "*Outil de réflexion, pas un conseil juridique.*",
+    "it": "*Strumento di riflessione, non consulenza legale.*",
+    "en": "*Reflective tool, not legal advice.*",
+}
+
+_REFLECT_SYSTEM_PROMPT = (
+    "You are a literary-minded scholar helping a Swiss lawyer step "
+    "back from a case to reflect on the human dilemma beneath the "
+    "doctrinal frame.\n\n"
+    "You receive a REDACTED Swiss legal document (PII removed). "
+    "Your task:\n\n"
+    "1. Identify ONE central legal issue in the document — keep it "
+    "tight and non-trivial. Phrase it generically (do NOT name any "
+    "party, the doc is redacted by design).\n"
+    "2. Find ONE literary work that dramatises the same human "
+    "dilemma. Shakespeare is welcome when fitting (Hamlet, Lear, "
+    "Merchant, Measure, Othello); Swiss literature works too "
+    "(Dürrenmatt's Der Richter und sein Henker, Frisch's Andorra, "
+    "Keller's Romeo und Julia auf dem Dorfe); and Goethe, Kafka, "
+    "Camus, Ibsen, Brecht, Hesse, Sophocles, Dostoyevsky are all "
+    "fair game when the parallel is genuine.\n"
+    "3. Compose a 200-400 word reflective summary that:\n"
+    "   - States the legal issue cleanly in 1-2 sentences\n"
+    "   - Draws the literary parallel via a specific scene or theme\n"
+    "   - Poses ONE question for the lawyer to bring back to the "
+    "case — something the literature illuminates that the doctrinal "
+    "frame might miss\n"
+    "   - Stays slightly tongue-in-cheek but never frivolous\n\n"
+    "Output as MARKDOWN in the target language. End with the "
+    "disclaimer line provided. Do NOT add headers beyond what flows "
+    "naturally. ONE literary reference (depth over breadth).\n\n"
+    "Return ONLY a JSON object with this exact shape:\n"
+    "{\n"
+    '  "legal_issue": "<short generic statement of the issue, 1 sentence>",\n'
+    '  "literary_reference": {\n'
+    '    "work": "<title>",\n'
+    '    "author": "<author>",\n'
+    '    "scene_or_theme": "<scene/theme used as the mirror>"\n'
+    '  },\n'
+    '  "summary_markdown": "<the 200-400 word reflective summary as markdown>",\n'
+    '  "question_for_reflection": "<the single question, one sentence>"\n'
+    "}"
+)
+
+
+def _handle_reflect(*, redacted_text: str, lang: str = "de") -> dict:
+    """Pro "Reflect" — give the lawyer a literary mirror on the legal
+    issue in their (redacted) document.
+
+    Cast as a reflective tool: takes a whole-document scope (motion,
+    brief, memo, contract draft), identifies the central issue, draws
+    ONE literary parallel that dramatises the same human dilemma,
+    and returns a 200-400 word markdown summary plus a single
+    question for the lawyer to take back to the case.
+
+    The caller (api_billing_reflect) handles:
+      • PII-redaction enforcement (structural — no opt-out)
+      • License validation
+      • Daily usage cap (shared with Verify/Strengthen, 25/day)
+
+    No domain-specific search calls — this is purely an LLM
+    composition step against the redacted text. Sonnet 4.6 keeps
+    output quality high while keeping per-call cost ~$0.02. Haiku
+    isn't enough for the literary-canon recall; opus is overkill.
+    """
+    text = (redacted_text or "").strip()
+    if not text:
+        return {"error": "empty_text",
+                "message": "Document is empty after redaction."}
+    if len(text) < 80:
+        return {"error": "too_short",
+                "message": (
+                    "Document is too short for a meaningful reflection — "
+                    "Reflect needs ~80 chars of substantive content."
+                )}
+    lang = (lang or "de").lower()
+    if lang not in _REFLECT_DISCLAIMERS:
+        lang = "de"
+    disclaimer = _REFLECT_DISCLAIMERS[lang]
+
+    if not ANTHROPIC_API_KEY:
+        return {
+            "error": "llm_unavailable",
+            "message": (
+                "Reflect requires ANTHROPIC_API_KEY on the server. "
+                "Set it in /opt/caselaw/repo/.env.mcp and restart workers."
+            ),
+        }
+
+    try:
+        import httpx
+    except ImportError:
+        return {"error": "httpx_missing",
+                "message": "httpx is required to call the Claude API."}
+
+    user_prompt = (
+        f"Target language: {lang.upper()}\n"
+        f"Disclaimer to append verbatim: {disclaimer}\n\n"
+        f"DOCUMENT (redacted):\n{text}"
+    )
+
+    try:
+        with httpx.Client(timeout=60.0) as client:
+            resp = client.post(
+                "https://api.anthropic.com/v1/messages",
+                headers={
+                    "x-api-key": ANTHROPIC_API_KEY,
+                    "anthropic-version": "2023-06-01",
+                    "content-type": "application/json",
+                },
+                json={
+                    "model": "claude-sonnet-4-6",
+                    "max_tokens": 1400,
+                    "system": _REFLECT_SYSTEM_PROMPT,
+                    "messages": [{"role": "user", "content": user_prompt}],
+                },
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            try:
+                _llm_usage_log(model="claude-sonnet-4-6",
+                               feature="reflect", response_json=data)
+            except Exception:
+                pass
+            raw = data["content"][0]["text"].strip()
+    except Exception as e:
+        return {
+            "error": "llm_request_failed",
+            "message": f"Claude API call failed: {type(e).__name__}: {str(e)[:200]}",
+        }
+
+    # Strip markdown fences if Sonnet wrapped the JSON.
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+    try:
+        import json as _json
+        parsed = _json.loads(raw)
+    except Exception as e:
+        # Graceful fallback: surface the raw text so the lawyer still
+        # gets value even if the model didn't follow the JSON contract.
+        return {
+            "legal_issue": "",
+            "literary_reference": {"work": "", "author": "",
+                                    "scene_or_theme": ""},
+            "summary_markdown": raw,
+            "question_for_reflection": "",
+            "disclaimer": disclaimer,
+            "language": lang,
+            "_parse_error": f"{type(e).__name__}: {str(e)[:120]}",
+        }
+
+    return {
+        "legal_issue":             str(parsed.get("legal_issue") or "").strip(),
+        "literary_reference": {
+            "work":            str((parsed.get("literary_reference") or {}).get("work") or "").strip(),
+            "author":          str((parsed.get("literary_reference") or {}).get("author") or "").strip(),
+            "scene_or_theme":  str((parsed.get("literary_reference") or {}).get("scene_or_theme") or "").strip(),
+        },
+        "summary_markdown":        str(parsed.get("summary_markdown") or "").strip(),
+        "question_for_reflection": str(parsed.get("question_for_reflection") or "").strip(),
+        "disclaimer":              disclaimer,
+        "language":                lang,
+        "_document_chars":         len(text),
+    }
+
+
 def _handle_attest_response(*, draft_text: str,
                              audit_grounding: bool = False) -> dict:
     """Post-draft audit: parse every Swiss-case citation in the LLM's
@@ -19396,6 +19593,63 @@ render();setInterval(render,60000);
             _handle_strengthen, redacted_text=text, lang=req.lang or "de",
         )
         if "error" in result:
+            return JSONResponse(result, status_code=400)
+        return result
+
+    @rest_api.post("/billing/reflect", tags=["Billing"],
+                   summary="Pro literary-reflection on the legal issue",
+                   description=(
+                       "Whole-document scope. The Word add-in scans the "
+                       "current draft, runs js/redact.js to strip PII, and "
+                       "sends the redacted text here. The server: "
+                       "(1) refuses any payload with structurally-"
+                       "identifiable PII; (2) validates the license + daily "
+                       "cap; (3) asks Claude Sonnet to identify the central "
+                       "legal issue and draw ONE literary parallel "
+                       "(Shakespeare / Dürrenmatt / Frisch / Goethe / Kafka / "
+                       "etc.) that mirrors the same human dilemma. "
+                       "Returns a 200-400 word reflective markdown summary "
+                       "plus one question for the lawyer to bring back to "
+                       "the case. Reflective tool — explicitly NOT legal "
+                       "advice. Daily cap shared with /verify and "
+                       "/strengthen (25/day per license)."
+                   ))
+    async def api_billing_reflect(req: ReflectRequest):
+        from stripe_billing import log_pro_usage
+        from quality.redact import is_likely_unredacted, redact as _server_redact
+        text = req.redacted_text or ""
+        guard = is_likely_unredacted(text)
+        if not guard.clean:
+            return JSONResponse(
+                {
+                    "error": "client_redaction_incomplete",
+                    "message": (
+                        "Request rejected: text contains structurally-"
+                        "identifiable PII. The Word add-in must run "
+                        "js/redact.js before sending Pro requests."
+                    ),
+                    "patterns_detected": guard.patterns_found,
+                    "client_redactor_version": req.client_redactor_version,
+                },
+                status_code=400,
+            )
+        text = _server_redact(text).redacted
+
+        license_info = await asyncio.to_thread(validate_license, req.license_key)
+        if not license_info:
+            return JSONResponse({"error": "Invalid or expired license key"},
+                                status_code=401)
+
+        allowed = await asyncio.to_thread(increment_usage, req.license_key)
+        if not allowed:
+            return JSONResponse({"error": "Daily limit reached (25/day)"},
+                                status_code=429)
+        await asyncio.to_thread(log_pro_usage, req.license_key, "reflect")
+
+        result = await asyncio.to_thread(
+            _handle_reflect, redacted_text=text, lang=req.lang or "de",
+        )
+        if "error" in result and "summary_markdown" not in result:
             return JSONResponse(result, status_code=400)
         return result
 
