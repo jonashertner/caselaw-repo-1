@@ -784,6 +784,69 @@ var UI_STRINGS = {
     en: '{n} sensitive items redacted before upload',
   },
 
+  /* Reflect — Pro feature #4 (literary mirror on the whole document) */
+  btn_reflect: {
+    de: 'Spiegeln', fr: 'Miroir', it: 'Specchio', en: 'Reflect',
+  },
+  reflect_title: {
+    de: 'Literarischer Spiegel',
+    fr: 'Miroir littéraire',
+    it: 'Specchio letterario',
+    en: 'Literary mirror',
+  },
+  reflect_intro: {
+    de: 'Das Dokument wird (nach PII-Schwärzung) durch das Prisma der Weltliteratur reflektiert: ein zentrales Rechtsproblem, eine literarische Parallele, eine Frage zum Mitnehmen. Reflexionswerkzeug, nicht juristische Beratung.',
+    fr: "Le document est mis en miroir (après caviardage PII) à travers le prisme de la littérature : une question juridique centrale, un parallèle littéraire, une question à emporter. Outil de réflexion, pas de conseil juridique.",
+    it: 'Il documento viene messo in specchio (dopo l\'oscuramento dei dati personali) attraverso il prisma della letteratura: una questione giuridica centrale, un parallelo letterario, una domanda da portare con sé. Strumento di riflessione, non consulenza legale.',
+    en: 'The document is mirrored (after PII redaction) through the lens of literature: one central legal issue, one literary parallel, one question to take back to the case. Reflective tool, not legal advice.',
+  },
+  reflect_start: {
+    de: 'Dokument reflektieren',
+    fr: 'Refléter le document',
+    it: 'Rifletti il documento',
+    en: 'Reflect on document',
+  },
+  reflect_running: {
+    de: 'Reflexion wird erstellt …',
+    fr: 'Création du miroir …',
+    it: 'Generazione dello specchio …',
+    en: 'Composing the reflection …',
+  },
+  reflect_again: {
+    de: 'Nochmals reflektieren',
+    fr: 'Refaire le miroir',
+    it: 'Rifai lo specchio',
+    en: 'Reflect again',
+  },
+  reflect_retry: {
+    de: 'Nochmals versuchen', fr: 'Réessayer',
+    it: 'Riprova', en: 'Retry',
+  },
+  reflect_too_short: {
+    de: 'Das Dokument ist zu kurz für eine sinnvolle Reflexion (mindestens ~80 Zeichen).',
+    fr: 'Le document est trop court pour une réflexion utile (au moins ~80 caractères).',
+    it: 'Il documento è troppo breve per una riflessione significativa (almeno ~80 caratteri).',
+    en: 'Document is too short for a meaningful reflection (at least ~80 chars).',
+  },
+  reflect_error: {
+    de: 'Reflexion fehlgeschlagen. Bitte erneut versuchen.',
+    fr: 'Le miroir a échoué. Réessayez.',
+    it: 'Specchio non riuscito. Riprova.',
+    en: 'Reflection failed. Please retry.',
+  },
+  reflect_issue_label: {
+    de: 'Rechtsproblem', fr: 'Question juridique',
+    it: 'Questione giuridica', en: 'Legal issue',
+  },
+  reflect_lit_label: {
+    de: 'Literarischer Bezug', fr: 'Référence littéraire',
+    it: 'Riferimento letterario', en: 'Literary reference',
+  },
+  reflect_question_label: {
+    de: 'Frage zum Mitnehmen', fr: 'Question à emporter',
+    it: 'Domanda da portare con sé', en: 'Question to take back',
+  },
+
   /* Strengthen — Pro feature #2 (paragraph review) */
   btn_strengthen: {
     de: 'Stärken', fr: 'Renforcer', it: 'Rafforzare', en: 'Strengthen',

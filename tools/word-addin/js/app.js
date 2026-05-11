@@ -110,6 +110,8 @@ var state = {
   strengthenResult: null,
   strengthenText: '',
   verifyText: '',
+  reflectResult: null,
+  reflectRunning: false,
   courts: [],
   lawResult: null,
   supportText: '',
@@ -307,7 +309,7 @@ function initApp() {
         render();
         return;
       }
-      var subViews = { detail: 1, verify: 1, support: 1, related: 1, guide: 1, settings: 1, scan: 1 };
+      var subViews = { detail: 1, verify: 1, support: 1, related: 1, guide: 1, settings: 1, scan: 1, reflect: 1, strengthen: 1 };
       if (subViews[state.view]) {
         // Reuse the existing 'back' action via the handleAppClick switch
         // so cleanup logic stays in one place.
@@ -577,6 +579,7 @@ function render() {
     else if (view === 'related') html += renderRelated();
     else if (view === 'scan') html += renderScan();
     else if (view === 'strengthen') html += renderStrengthen();
+    else if (view === 'reflect') html += renderReflect();
     else if (view === 'guide') html += renderGuide();
     else if (view === 'help') html += renderHelp();
     else if (view === 'settings') html += renderSettings();
@@ -1871,6 +1874,7 @@ async function handleAppClick(e) {
       case 'find-related':  await findRelated(); break;
       case 'find-support': await findSupport(); break;
       case 'scan-doc':     await scanDocument(); break;
+      case 'reflect':      await reflectOnDocument(); break;
       case 'audit-open-summary':
         state.view = 'scan';
         state.error = null;
@@ -2900,9 +2904,159 @@ function renderScan() {
     '<span class="audit-secondary-label">' + escHtml(t('tool_support', lang)) + '</span></button>' +
     '<button class="btn btn-detail audit-secondary-btn" data-action="find-related">' +
     '<span class="audit-secondary-label">' + escHtml(t('btn_find_related', lang)) + '</span></button>' +
+    '<button class="btn btn-detail audit-secondary-btn" data-action="reflect">' +
+    '<span class="audit-secondary-label">' + escHtml(t('btn_reflect', lang)) + '</span></button>' +
     '</div>';
 
   return html;
+}
+
+// ── Reflect view (Pro feature #4) ────────────────────────────────────
+// Whole-document literary mirror. Renders the JSON response from
+// /api/billing/reflect (legal_issue + literary_reference + summary
+// markdown + question_for_reflection + disclaimer) as a single
+// readable card the lawyer can skim in 30-60 seconds.
+function renderReflect() {
+  var lang = state.lang;
+  var html = '<h3 class="verify-heading">' + escHtml(t('reflect_title', lang)) + '</h3>';
+
+  if (state.reflectRunning) {
+    html += '<div class="verify-loading"><div class="spinner"></div>' +
+      '<span>' + escHtml(t('reflect_running', lang)) + '</span></div>';
+    return html;
+  }
+
+  if (state.error && state.view === 'reflect') {
+    html += '<div class="verify-error">' + escHtml(state.error.message || t('reflect_error', lang)) + '</div>' +
+      '<button class="btn btn-detail" data-action="reflect">' + escHtml(t('reflect_retry', lang)) + '</button>';
+    return html;
+  }
+
+  var r = state.reflectResult;
+  if (!r) {
+    html += '<div class="verify-help">' + escHtml(t('reflect_intro', lang)) + '</div>' +
+      '<button class="btn btn-pro-primary btn-full" data-action="reflect">' +
+      escHtml(t('reflect_start', lang)) + '</button>';
+    return html;
+  }
+
+  // Result card.
+  if (r.legal_issue) {
+    html += '<div class="reflect-issue">' +
+      '<div class="section-label">' + escHtml(t('reflect_issue_label', lang)) + '</div>' +
+      '<div class="section-body">' + escHtml(r.legal_issue) + '</div></div>';
+  }
+  if (r.literary_reference && (r.literary_reference.work || r.literary_reference.author)) {
+    var lit = r.literary_reference;
+    html += '<div class="reflect-literary">' +
+      '<div class="section-label">' + escHtml(t('reflect_lit_label', lang)) + '</div>' +
+      '<div class="section-body"><em>' + escHtml(lit.work || '') + '</em>' +
+      (lit.author ? ' &middot; ' + escHtml(lit.author) : '') +
+      (lit.scene_or_theme ? '<br><span class="text-muted">' + escHtml(lit.scene_or_theme) + '</span>' : '') +
+      '</div></div>';
+  }
+  if (r.summary_markdown) {
+    // Light markdown→HTML: headers, paragraphs, emphasis. Anything else
+    // gets escaped. Reflect output is short, controlled by our prompt;
+    // a full markdown renderer is overkill.
+    html += '<div class="reflect-summary">' + _renderLightMarkdown(r.summary_markdown) + '</div>';
+  }
+  if (r.question_for_reflection) {
+    html += '<div class="reflect-question">' +
+      '<div class="section-label">' + escHtml(t('reflect_question_label', lang)) + '</div>' +
+      '<div class="section-body"><strong>' + escHtml(r.question_for_reflection) + '</strong></div></div>';
+  }
+  if (r.disclaimer) {
+    html += '<div class="reflect-disclaimer">' + escHtml(r.disclaimer.replace(/[*]/g, '')) + '</div>';
+  }
+  html += '<div style="display:flex;gap:6px;margin-top:12px;">' +
+    '<button class="btn btn-detail" data-action="reflect">\u21BB ' + escHtml(t('reflect_again', lang)) + '</button></div>';
+  return html;
+}
+
+// Minimal markdown renderer used by renderReflect — handles headers
+// (## / ###), paragraphs, emphasis (*x* and **x**), and inline code.
+// Anything outside this list passes through as plain text (escaped).
+function _renderLightMarkdown(md) {
+  if (!md) return '';
+  var lines = String(md).split(/\r?\n/);
+  var out = [];
+  var paraBuf = [];
+  function flushPara() {
+    if (paraBuf.length === 0) return;
+    var p = paraBuf.join(' ');
+    out.push('<p>' + _renderInlineMd(p) + '</p>');
+    paraBuf = [];
+  }
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    if (/^\s*$/.test(line)) { flushPara(); continue; }
+    var h = /^(#{2,3})\s+(.+)$/.exec(line);
+    if (h) {
+      flushPara();
+      var level = h[1].length;
+      out.push('<h' + level + '>' + _renderInlineMd(h[2]) + '</h' + level + '>');
+      continue;
+    }
+    paraBuf.push(line.trim());
+  }
+  flushPara();
+  return out.join('');
+}
+
+function _renderInlineMd(s) {
+  // Escape first, then re-introduce only the inline marks we allow.
+  var esc = escHtml(s);
+  // **bold** before *italic* to avoid greedy collision.
+  esc = esc.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  esc = esc.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  esc = esc.replace(/`([^`]+)`/g, '<code>$1</code>');
+  return esc;
+}
+
+// Reflect — Pro feature. Runs against the WHOLE document, redacts
+// client-side, then calls /api/billing/reflect. The redact path is
+// the same as Strengthen + Verify; un-redaction happens inside
+// api.js::reflectOnDocumentPro before the result reaches here.
+async function reflectOnDocument() {
+  var lang = state.lang;
+  var proKey = localStorage.getItem('ocl_pro_key');
+  if (!proKey) { state.view = 'settings'; render(); return; }
+
+  state.view = 'reflect';
+  state.error = null;
+  state.reflectResult = null;
+  state.reflectRunning = true;
+  render();
+
+  var docText;
+  try {
+    docText = await getDocumentText();
+  } catch (e) {
+    docText = '';
+  }
+  if (!docText || docText.trim().length < 80) {
+    state.reflectRunning = false;
+    state.error = { type: 'too_short', message: t('reflect_too_short', lang) };
+    render();
+    return;
+  }
+
+  try {
+    var data = await reflectOnDocumentPro(proKey, docText, lang);
+    state.reflectRunning = false;
+    if (data && data.error && !data.summary_markdown) {
+      state.error = { type: data.error, message: data.message || t('reflect_error', lang) };
+    } else {
+      state.reflectResult = data;
+    }
+    render();
+  } catch (e) {
+    state.reflectRunning = false;
+    var msg = (e && e.message) ? e.message : t('reflect_error', lang);
+    state.error = { type: 'reflect_failed', message: msg };
+    render();
+  }
 }
 
 // ── Verify-and-Strengthen view (Pro feature #2) ──────────────────────
