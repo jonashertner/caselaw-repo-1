@@ -17377,30 +17377,36 @@ render();setInterval(render,60000);
     # restrict additionalProperties — the wire response always carries
     # more than this; Copilot Studio just won't bind to the extras
     # unless we name them.
-    _COPILOT_DECISION_ITEM_SCHEMA = {
+    # SEARCH-RESULT shape — for items inside results[] of /decisions and
+    # /leading-cases. Carries the FTS5 + pinpoint enrichment fields that
+    # /decisions/{id} (single fetch) does NOT include. Properties are the
+    # actual fields the wire returns (verified live 2026-05-11 via
+    # /tmp/copilot_validation_harness.py); additionalProperties:true keeps
+    # us forward-compatible with new metadata.
+    _COPILOT_SEARCH_ITEM_SCHEMA = {
         "type": "object",
         "additionalProperties": True,
         "properties": {
             "decision_id":         {"type": "string"},
-            "court":               {"type": "string"},
-            "court_name":          {"type": "string"},
-            "court_level":         {"type": "string"},
-            "canton":              {"type": "string"},
-            "chamber":             {"type": "string", "nullable": True},
-            "docket_number":       {"type": "string"},
-            "decision_date":       {"type": "string"},
-            "language":            {"type": "string"},
-            "title":               {"type": "string", "nullable": True},
-            "regeste":             {"type": "string", "nullable": True},
-            "snippet":             {"type": "string", "nullable": True},
-            "legal_area":          {"type": "string", "nullable": True},
-            "citation_count":      {"type": "integer"},
-            "is_leading_case":     {"type": "boolean"},
-            "citation_string_de":  {"type": "string"},
-            "citation_string_fr":  {"type": "string"},
-            "citation_string_it":  {"type": "string"},
-            "canonical_url":       {"type": "string"},
-            "rule_statement":      {"type": "string", "nullable": True},
+            "court":                {"type": "string"},
+            "court_name":           {"type": "string"},
+            "court_level":          {"type": "string"},
+            "canton":               {"type": "string"},
+            "chamber":              {"type": "string", "nullable": True},
+            "docket_number":        {"type": "string"},
+            "decision_date":        {"type": "string"},
+            "language":             {"type": "string"},
+            "title":                {"type": "string", "nullable": True},
+            "regeste":              {"type": "string", "nullable": True},
+            "snippet":              {"type": "string", "nullable": True},
+            "legal_area":           {"type": "string", "nullable": True},
+            "citation_count":       {"type": "integer"},
+            "is_leading_case":      {"type": "boolean"},
+            "citation_string_de":   {"type": "string"},
+            "citation_string_fr":   {"type": "string"},
+            "citation_string_it":   {"type": "string"},
+            "canonical_url":        {"type": "string"},
+            "rule_statement":       {"type": "string", "nullable": True},
             "pinpoint": {
                 "type": "object",
                 "nullable": True,
@@ -17409,11 +17415,46 @@ render();setInterval(render,60000);
                     "e_number":         {"type": "string"},
                     "matched_sentence": {"type": "string"},
                     "confidence":       {"type": "string"},
-                    "url":              {"type": "string"},
-                    "score":            {"type": "number"},
-                    "source":           {"type": "string"},
+                    "url":               {"type": "string"},
+                    "score":             {"type": "number"},
+                    "source":            {"type": "string"},
                 },
             },
+        },
+    }
+
+    # SINGLE-DECISION shape — for /decisions/{id} and per-decision graph
+    # endpoints. The wire DOES NOT include title/regeste/snippet/pinpoint
+    # /rule_statement at this endpoint (caught 2026-05-11). It DOES include
+    # abstract_de/fr/it + decision_type + outcome + cited_decisions etc.
+    _COPILOT_DECISION_FULL_SCHEMA = {
+        "type": "object",
+        "additionalProperties": True,
+        "properties": {
+            "decision_id":         {"type": "string"},
+            "court":                {"type": "string"},
+            "court_name":           {"type": "string"},
+            "court_level":          {"type": "string"},
+            "canton":                {"type": "string"},
+            "chamber":               {"type": "string", "nullable": True},
+            "docket_number":         {"type": "string"},
+            "docket_number_2":       {"type": "string", "nullable": True},
+            "decision_date":         {"type": "string"},
+            "decision_type":         {"type": "string", "nullable": True},
+            "language":              {"type": "string"},
+            "legal_area":            {"type": "string", "nullable": True},
+            "outcome":               {"type": "string", "nullable": True},
+            "citation_count":        {"type": "integer"},
+            "is_leading_case":       {"type": "boolean"},
+            "abstract_de":           {"type": "string", "nullable": True},
+            "abstract_fr":           {"type": "string", "nullable": True},
+            "abstract_it":           {"type": "string", "nullable": True},
+            "citation_string_de":    {"type": "string"},
+            "citation_string_fr":    {"type": "string"},
+            "citation_string_it":    {"type": "string"},
+            "canonical_url":         {"type": "string"},
+            "canonical_key":         {"type": "string", "nullable": True},
+            "content_hash":          {"type": "string", "nullable": True},
         },
     }
     _COPILOT_RESPONSE_SCHEMAS = {
@@ -17426,11 +17467,14 @@ render();setInterval(render,60000);
                 "offset":  {"type": "integer"},
                 "results": {
                     "type": "array",
-                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                    "items": _COPILOT_SEARCH_ITEM_SCHEMA,
                 },
             },
         },
-        ("GET", "/decisions/{decision_id}"): _COPILOT_DECISION_ITEM_SCHEMA,
+        # Single-decision endpoint returns a DIFFERENT shape than the
+        # per-item-in-results shape — no pinpoint/snippet/regeste/title,
+        # but has abstracts + decision_type + outcome.
+        ("GET", "/decisions/{decision_id}"): _COPILOT_DECISION_FULL_SCHEMA,
         ("GET", "/leading-cases"): {
             "type": "object",
             "additionalProperties": True,
@@ -17441,10 +17485,13 @@ render();setInterval(render,60000);
                 "total":    {"type": "integer"},
                 "results": {
                     "type": "array",
-                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                    "items": _COPILOT_SEARCH_ITEM_SCHEMA,
                 },
             },
         },
+        # /citations/<id> returns ONLY the requested direction (either
+        # `incoming` or `outgoing`, never both). Schema makes both
+        # nullable so binding works for either direction.
         ("GET", "/citations/{decision_id}"): {
             "type": "object",
             "additionalProperties": True,
@@ -17453,24 +17500,30 @@ render();setInterval(render,60000);
                 "direction":    {"type": "string"},
                 "incoming": {
                     "type": "array",
-                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                    "nullable": True,
+                    "items": _COPILOT_SEARCH_ITEM_SCHEMA,
                 },
                 "outgoing": {
                     "type": "array",
-                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                    "nullable": True,
+                    "items": _COPILOT_SEARCH_ITEM_SCHEMA,
                 },
             },
         },
+        # /laws/<abbr> wire fields (verified live): abbreviation,
+        # sr_number, title, language, canton, articles[], consolidation_date,
+        # level. NO article_count.
         ("GET", "/laws/{abbreviation}"): {
             "type": "object",
             "additionalProperties": True,
             "properties": {
-                "abbreviation":  {"type": "string"},
-                "sr_number":     {"type": "string"},
-                "title":         {"type": "string"},
-                "language":      {"type": "string"},
-                "canton":        {"type": "string"},
-                "article_count": {"type": "integer"},
+                "abbreviation":      {"type": "string"},
+                "sr_number":         {"type": "string"},
+                "title":             {"type": "string"},
+                "language":          {"type": "string"},
+                "canton":            {"type": "string"},
+                "level":             {"type": "string", "nullable": True},
+                "consolidation_date":{"type": "string", "nullable": True},
                 "articles": {
                     "type": "array",
                     "items": {
@@ -17485,12 +17538,16 @@ render();setInterval(render,60000);
                 },
             },
         },
+        # /laws/search wire fields: query, count (not total),
+        # cantonal_hits, federal_hits, results[]
         ("GET", "/laws/search"): {
             "type": "object",
             "additionalProperties": True,
             "properties": {
-                "query": {"type": "string"},
-                "total": {"type": "integer"},
+                "query":          {"type": "string"},
+                "count":          {"type": "integer"},
+                "federal_hits":   {"type": "integer"},
+                "cantonal_hits":  {"type": "integer"},
                 "results": {
                     "type": "array",
                     "items": {
@@ -17516,15 +17573,22 @@ render();setInterval(render,60000);
                 "language":     {"type": "string"},
             },
         },
+        # /structure wire fields (verified live): decision_id, regeste,
+        # sachverhalt_excerpt (NOT sachverhalt), sachverhalt_chars,
+        # erwaegungen_paragraphs (NOT erwaegungen), erwaegungen_paragraph_count,
+        # dispositiv, dispositiv_orders, court, decision_date, canonical_url,
+        # language, extraction_methods, _note.
         ("GET", "/structure/{decision_id}"): {
             "type": "object",
             "additionalProperties": True,
             "properties": {
-                "decision_id":  {"type": "string"},
-                "regeste":      {"type": "string", "nullable": True},
-                "sachverhalt":  {"type": "string", "nullable": True},
-                "dispositiv":   {"type": "string", "nullable": True},
-                "erwaegungen": {
+                "decision_id":                  {"type": "string"},
+                "regeste":                      {"type": "string", "nullable": True},
+                "sachverhalt_excerpt":          {"type": "string", "nullable": True},
+                "sachverhalt_chars":            {"type": "integer", "nullable": True},
+                "dispositiv":                   {"type": "string", "nullable": True},
+                "erwaegungen_paragraph_count":  {"type": "integer"},
+                "erwaegungen_paragraphs": {
                     "type": "array",
                     "items": {
                         "type": "object",
@@ -17561,7 +17625,7 @@ render();setInterval(render,60000);
             "properties": {
                 "decision_id": {"type": "string"},
                 "claim":       {"type": "string"},
-                "confidence":  {"type": "string"},
+                "confidence":  {"type": "string", "nullable": True},
                 "no_match":    {"type": "boolean"},
                 "matches": {
                     "type": "array",
@@ -17582,21 +17646,25 @@ render();setInterval(render,60000);
                 },
             },
         },
+        # /cite wire fields (verified live): exists, citation_string,
+        # citation_string_{de,fr,it}, canonical_url, decision_id,
+        # court, decision_date, language, rule_statement, _note.
+        # No `reference` or `close_matches` returned by the wire.
         ("GET", "/cite"): {
             "type": "object",
             "additionalProperties": True,
             "properties": {
                 "exists":              {"type": "boolean"},
-                "reference":           {"type": "string"},
+                "decision_id":         {"type": "string", "nullable": True},
+                "court":               {"type": "string", "nullable": True},
+                "decision_date":       {"type": "string", "nullable": True},
+                "language":            {"type": "string", "nullable": True},
+                "citation_string":     {"type": "string", "nullable": True},
                 "citation_string_de":  {"type": "string", "nullable": True},
                 "citation_string_fr":  {"type": "string", "nullable": True},
                 "citation_string_it":  {"type": "string", "nullable": True},
                 "canonical_url":       {"type": "string", "nullable": True},
                 "rule_statement":      {"type": "string", "nullable": True},
-                "close_matches": {
-                    "type": "array",
-                    "items": {"type": "string"},
-                },
             },
         },
     }
