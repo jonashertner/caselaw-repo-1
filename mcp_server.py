@@ -7728,17 +7728,19 @@ def update_from_huggingface() -> str:
 server = Server(
     "swiss-caselaw",
     instructions=(
-        "Swiss legal research platform: 971,700+ published decisions from "
+        "Swiss legal research platform: 971,000+ published decisions from "
         "federal + cantonal courts, ~2,800 European Court of Human Rights "
         "decisions concerning Switzerland (BGE-published EGMR translations, "
         "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
         "5,516 federal laws (Fedlex SPARQL), 15,722 cantonal laws (direct "
-        "portal scraping for 19 cantons + LexFind PDF fallback for 4 (JU, SZ, UR, VD)), "
-        "1,058 scholarly commentaries, 5,200+ verbatim Federal Council "
-        "Botschaften (DE/FR/IT), structured federal decisions "
-        "(Sachverhalt/Erwägungen/Dispositiv), and the citation graph "
-        "(8.65M edges). Updated daily. Languages: DE, FR, IT — tools "
-        "handle cross-language matching automatically.\n\n"
+        "portal scraping for 19 cantons + LexFind fallback for the rest), "
+        "1,104 scholarly commentaries, a verbatim Federal Council Botschaft "
+        "corpus (Phase 2 ingestion in progress; 459 documents and 76K "
+        "FTS5-indexed paragraphs at 2026-05-11, scaling toward ~25K), "
+        "structured federal decisions (Sachverhalt/Erwägungen/Dispositiv), "
+        "and the citation graph (8.09M resolved edges). Updated daily. "
+        "Languages: DE, FR, IT — tools handle cross-language matching "
+        "automatically.\n\n"
 
         "══════════════════════════════════════════════════════════════\n"
         "ANTI-HALLUCINATION RULES — NON-NEGOTIABLE\n"
