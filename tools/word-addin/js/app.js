@@ -524,10 +524,22 @@ function renderAuditStrip() {
   }
 
   if (state.error && state.view === 'scan') {
-    return '<button class="audit-strip audit-strip-error" data-action="scan-doc">' +
-      '<span class="audit-strip-icon">\u2717</span>' +
-      '<span class="audit-strip-label">' + escHtml(t('strip_error', lang)) + '</span>' +
-      '</button>';
+    // Differentiate precondition errors (empty doc, not in Word) from
+    // genuine audit failures. The former are NOT failures — the user
+    // just needs to add content first — so the strip stays in the
+    // neutral idle state and lets the inline body message do the
+    // explaining. The red "Audit failed — try again" strip is reserved
+    // for actual server / network / parser failures.
+    var precondition = state.error.type === 'doc_empty' ||
+                       state.error.type === 'not_in_word' ||
+                       state.error.type === 'no_selection';
+    if (!precondition) {
+      return '<button class="audit-strip audit-strip-error" data-action="scan-doc">' +
+        '<span class="audit-strip-icon">\u2717</span>' +
+        '<span class="audit-strip-label">' + escHtml(t('strip_error', lang)) + '</span>' +
+        '</button>';
+    }
+    // fall through to idle rendering below
   }
 
   // Idle (never audited this session).
@@ -2950,7 +2962,13 @@ function renderScan() {
 // readable card the lawyer can skim in 30-60 seconds.
 function renderReflect() {
   var lang = state.lang;
-  var html = '<h3 class="verify-heading">' + escHtml(t('reflect_title', lang)) + '</h3>';
+  // Back-link at the top — mirrors the pattern used by every other
+  // sub-view (renderSettings, renderVerify, renderStrengthen, …).
+  // Without this the user has no obvious way back to the main view
+  // once the literary mirror is on screen.
+  var html = '<a class="back-link" data-action="back">\u2190 ' +
+    escHtml(t('back_short', lang)) + '</a>';
+  html += '<h3 class="verify-heading">' + escHtml(t('reflect_title', lang)) + '</h3>';
 
   if (state.reflectRunning) {
     html += '<div class="verify-loading"><div class="spinner"></div>' +
