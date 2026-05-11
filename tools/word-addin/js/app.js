@@ -540,6 +540,24 @@ function renderAuditStrip() {
     '</button>';
 }
 
+// Reflect strip — second whole-document Pro feature, visible on the
+// search view alongside the audit strip so the user sees more than
+// one Pro action at a glance. Selection-based Pro tools (Verify /
+// Strengthen / Find-support / Find-related) stay inside the
+// scan-results view because they only make sense when there's a
+// Word selection or cursor context to operate on.
+function renderReflectStrip() {
+  var lang = state.lang;
+  var hasPro = !!localStorage.getItem('ocl_pro_key');
+  var action = hasPro ? 'reflect' : 'open-settings';
+  return '<button class="audit-strip audit-strip-idle reflect-strip" data-action="' + action + '">' +
+    '<span class="audit-strip-icon">' + (ICONS.sparkles || ICONS.shieldCheck) + '</span>' +
+    '<span class="audit-strip-label">' + escHtml(t('reflect_strip_idle', lang)) + '</span>' +
+    (hasPro ? '' : proLockSvg()) +
+    '<span class="audit-strip-cta">' + ICONS.chevron + '</span>' +
+    '</button>';
+}
+
 // Format a past timestamp as "just now" / "N min ago" / "HH:mm" / date.
 function _relativeTime(iso, lang) {
   if (!iso) return '';
@@ -571,6 +589,12 @@ function render() {
     // and use the full panel.
     var showStrip = (state.view === 'search' || state.view === 'scan');
     var html = showStrip ? renderAuditStrip() : '';
+    // The Reflect strip is a sibling whole-document Pro action; only
+    // shown on the main search view, not inside the scan-results
+    // view (where it would compete for attention with the audit
+    // outcome). Adding it here makes the Pro tier visibly more than
+    // a single button without requiring users to first run an audit.
+    if (state.view === 'search') html += renderReflectStrip();
     var view = state.view;
     if (view === 'search') html += renderSearch();
     else if (view === 'detail') html += renderDetail();

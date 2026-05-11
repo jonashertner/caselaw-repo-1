@@ -788,6 +788,13 @@ var UI_STRINGS = {
   btn_reflect: {
     de: 'Spiegeln', fr: 'Miroir', it: 'Specchio', en: 'Reflect',
   },
+  /* Label on the search-view strip that exposes Reflect alongside Audit */
+  reflect_strip_idle: {
+    de: 'Dokument literarisch reflektieren',
+    fr: 'Refléter le document via la littérature',
+    it: 'Rifletti il documento attraverso la letteratura',
+    en: 'Reflect document through literature',
+  },
   reflect_title: {
     de: 'Literarischer Spiegel',
     fr: 'Miroir littéraire',
