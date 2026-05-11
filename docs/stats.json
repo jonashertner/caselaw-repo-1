@@ -1,13 +1,13 @@
 {
-  "total": 971834,
+  "total": 971852,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175421,
+      "count": 175439,
       "earliest": "1986-10-06",
-      "latest": "2026-04-29",
-      "last_scraped": "2026-05-08T10:55:09.626461+00:00",
+      "latest": "2026-04-30",
+      "last_scraped": "2026-05-11T10:15:39.685950+00:00",
       "languages": [
         "de",
         "fr",
@@ -1714,8 +1714,8 @@
     }
   ],
   "by_language": {
-    "de": 449836,
-    "fr": 441281,
+    "de": 449847,
+    "fr": 441288,
     "it": 80717
   },
   "by_year": {
@@ -1851,8 +1851,8 @@
     "2004": 17108,
     "2005": 19489,
     "2006": 20447,
-    "2007": 26490,
-    "2008": 27611,
+    "2007": 26494,
+    "2008": 27612,
     "2009": 31925,
     "2010": 33913,
     "2011": 35017,
@@ -1870,23 +1870,23 @@
     "2023": 47127,
     "2024": 47068,
     "2025": 44475,
-    "2026": 9099
+    "2026": 9112
   },
   "recent_daily": {
     "2026-04-13": 88,
-    "2026-04-14": 62,
-    "2026-04-15": 74,
-    "2026-04-16": 54,
+    "2026-04-14": 64,
+    "2026-04-15": 77,
+    "2026-04-16": 56,
     "2026-04-17": 70,
     "2026-04-20": 66,
     "2026-04-21": 49,
     "2026-04-22": 43,
-    "2026-04-23": 32,
+    "2026-04-23": 34,
     "2026-04-24": 20,
     "2026-04-27": 31,
-    "2026-04-28": 23,
-    "2026-04-29": 18,
-    "2026-04-30": 18,
+    "2026-04-28": 25,
+    "2026-04-29": 19,
+    "2026-04-30": 19,
     "2026-05-01": 2,
     "2026-05-04": 7,
     "2026-05-05": 6,
@@ -1903,7 +1903,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175421
+      "count": 175439
     },
     {
       "court": "ge_gerichte",
@@ -2105,7 +2105,7 @@
     "2026": -79.5
   },
   "federal_vs_cantonal": {
-    "federal": 346951,
+    "federal": 346969,
     "cantonal": 624883
   },
   "language_by_year": {
@@ -2120,12 +2120,12 @@
       "it": 3191
     },
     "2007": {
-      "de": 14740,
-      "fr": 8391,
+      "de": 14743,
+      "fr": 8392,
       "it": 3359
     },
     "2008": {
-      "de": 13973,
+      "de": 13974,
       "fr": 10518,
       "it": 3120
     },
@@ -2215,8 +2215,8 @@
       "it": 1437
     },
     "2026": {
-      "de": 4769,
-      "fr": 3844,
+      "de": 4776,
+      "fr": 3850,
       "it": 486
     }
   },
@@ -2256,10 +2256,10 @@
     "2026-01": 2477,
     "2026-02": 2993,
     "2026-03": 2485,
-    "2026-04": 1103,
+    "2026-04": 1116,
     "2026-05": 23
   },
-  "generated_at": "2026-05-11T11:12:26.010875+00:00",
+  "generated_at": "2026-05-11T14:08:56.485359+00:00",
   "scraper_health": {
     "run_at": "2026-05-11T01:57:15.692173+00:00",
     "run_duration_s": 3435.1,
@@ -2687,7 +2687,7 @@
         "note": null,
         "state_count": 92581,
         "jsonl_size_mb": 1384.7,
-        "jsonl_mtime": "2026-05-11T10:19:47.197624+00:00"
+        "jsonl_mtime": "2026-05-11T12:36:13.178798+00:00"
       },
       "bge": {
         "success": true,
@@ -3778,6 +3778,22 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_9C_210_2026",
+        "docket": "9C_210/2026",
+        "date": "2026-04-30",
+        "court": "bger",
+        "language": "de",
+        "summary": "Staats- und Gemeindesteuern des Kantons Solothurn und direkte Bundessteuer, Steuerperioden 2022-2023,"
+      },
+      {
+        "decision_id": "bger_7B_328_2026",
+        "docket": "7B_328/2026",
+        "date": "2026-04-29",
+        "court": "bger",
+        "language": "fr",
+        "summary": "Détention pour des motifs de sûreté; refus de mise en liberté,"
+      },
+      {
         "decision_id": "bger_5A_348_2026",
         "docket": "5A_348/2026",
         "date": "2026-04-29",
@@ -3818,6 +3834,14 @@
         "summary": "Ausstand; Nichteintreten,"
       },
       {
+        "decision_id": "bger_7B_1271_2025",
+        "docket": "7B_1271/2025",
+        "date": "2026-04-28",
+        "court": "bger",
+        "language": "fr",
+        "summary": "Ordonnance de refus de reprise de la procédure préliminaire; irrecevabilité du"
+      },
+      {
         "decision_id": "bger_6B_2_2026",
         "docket": "6B_2/2026",
         "date": "2026-04-28",
@@ -3832,30 +3856,6 @@
         "court": "bger",
         "language": "fr",
         "summary": "mesures protectrices de l'union conjugale,"
-      },
-      {
-        "decision_id": "bger_7B_426_2026",
-        "docket": "7B_426/2026",
-        "date": "2026-04-27",
-        "court": "bger",
-        "language": "de",
-        "summary": "Verlängerung Untersuchungshaft,"
-      },
-      {
-        "decision_id": "bger_6B_992_2025",
-        "docket": "6B_992/2025",
-        "date": "2026-04-27",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Faux dans les titres; présomption d'innocence; droit d'être entendu; arbitraire; déni de justice,"
-      },
-      {
-        "decision_id": "bger_5A_325_2026",
-        "docket": "5A_325/2026",
-        "date": "2026-04-27",
-        "court": "bger",
-        "language": "de",
-        "summary": "Siegelungsgebühren,"
       }
     ],
     "cantonal": [
@@ -4074,12 +4074,9 @@
     }
   ],
   "delta": {
-    "total": 0,
+    "total": 18,
     "by_court": {
-      "ecthr_chamber": 1089,
-      "ecthr_committee": 224,
-      "ecthr_grand_chamber": 81,
-      "sav_kantone": 1
+      "bger": 18
     },
     "by_canton": {},
     "corpus": {},
