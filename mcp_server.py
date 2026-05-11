@@ -17775,10 +17775,37 @@ render();setInterval(render,60000);
                         },
                     },
                 },
-                "doctrine_summary":   {"type": "string", "nullable": True},
-                "doctrine_timeline":  {"type": "array", "nullable": True,
-                                       "items": {"type": "object",
-                                                 "additionalProperties": True}},
+                # doctrine_summary is an OBJECT with rollup fields
+                # (principal_rule, established_by, authority,
+                # total_leading_cases, total_citations, coverage_decades,
+                # note) — NOT a string. Verified live 2026-05-11.
+                "doctrine_summary": {
+                    "type": "object", "nullable": True,
+                    "additionalProperties": True,
+                    "properties": {
+                        "principal_rule":       {"type": "string"},
+                        "established_by":       {"type": "string"},
+                        "authority":            {"type": "string"},
+                        "total_leading_cases":  {"type": "integer"},
+                        "total_citations":      {"type": "integer"},
+                        "coverage_decades":     {"type": "object",
+                                                 "additionalProperties": True},
+                        "note":                 {"type": "string", "nullable": True},
+                    },
+                },
+                # Timeline items have year/bge_ref/rule_added.
+                "doctrine_timeline": {
+                    "type": "array", "nullable": True,
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "year":       {"type": "string"},
+                            "bge_ref":    {"type": "string"},
+                            "rule_added": {"type": "string"},
+                        },
+                    },
+                },
                 "commentary":         {"type": "object", "nullable": True,
                                        "additionalProperties": True},
                 "materialien":        {"type": "object", "nullable": True,
