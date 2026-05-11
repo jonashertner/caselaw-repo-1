@@ -870,8 +870,14 @@ def main() -> int:
     conn = sqlite3.connect(db_path)
     conn.execute("PRAGMA foreign_keys = ON")
 
+    # ALWAYS ensure schema before any operation. The 2026-05-11 incident:
+    # --ingest-all was run on a materialien.db that pre-dated the Phase 2
+    # tables, threw `no such table: botschaft_documents`, and the bulk
+    # ingest never started. ensure_schema is idempotent (CREATE TABLE
+    # IF NOT EXISTS) — calling it unconditionally costs <1 ms.
+    ensure_schema(conn)
+
     if args.schema_only:
-        ensure_schema(conn)
         log.info("schema migrated")
         return 0
 
