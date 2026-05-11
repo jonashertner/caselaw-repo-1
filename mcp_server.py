@@ -9486,6 +9486,301 @@ def _handle_get_article_purpose(
         conn.close()
 
 
+def _handle_search_botschaft(
+    *,
+    query: str,
+    language: str | None = None,
+    limit: int = 20,
+) -> dict:
+    """Topical FTS5 search across the verbatim Botschaft corpus.
+
+    Where ``get_article_purpose`` answers "why does Art. X exist?",
+    this handler answers "show me every Botschaft passage that talks
+    about TOPIC X". Useful when the caller doesn't know which SR/
+    article to ask for — e.g. legislative-history research starting
+    from a concept like "Vaterschaftsurlaub" or "Klimaschutz".
+
+    Backed by ``botschaft_paragraphs_fts`` (FTS5) over the v0.2
+    verbatim corpus. Returns top-N paragraphs ranked by BM25,
+    grouped by source Botschaft.
+
+    ``language`` defaults to None (search all three official
+    languages). Set explicitly only when the caller wants a single-
+    language scope — silently defaulting would hide FR/IT matches
+    once those corpora come online.
+    """
+    q = (query or "").strip()
+    if not q:
+        return {"error": "Provide a search query."}
+    language = (language or "").lower().strip() or None
+    limit = max(1, min(int(limit or 20), 50))
+
+    materialien_db = os.environ.get(
+        "SWISS_CASELAW_MATERIALIEN_DB",
+        str(Path(__file__).resolve().parent / "output" / "materialien.db"),
+    )
+    if not Path(materialien_db).exists():
+        return {"error": "materialien.db not available on this server"}
+
+    try:
+        conn = sqlite3.connect(
+            f"file:{materialien_db}?mode=ro&immutable=1", uri=True,
+        )
+        conn.row_factory = sqlite3.Row
+    except sqlite3.OperationalError as e:
+        return {"error": f"Cannot open materialien.db: {e}"}
+
+    try:
+        # Confirm Phase 2 corpus exists.
+        try:
+            conn.execute(
+                "SELECT 1 FROM botschaft_paragraphs_fts LIMIT 1"
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return {
+                "query": q, "language_filter": language,
+                "total": 0, "results": [],
+                "_hint": (
+                    "Verbatim Botschaft FTS5 index not built yet on this "
+                    "server. Use search_legislation for amendment-reference "
+                    "search until Phase 2 ingestion completes."
+                ),
+            }
+
+        sql = """
+            SELECT bd.botschaft_id, bd.bbl_citation, bd.eli_uri,
+                   bd.language, bd.publication_date,
+                   bp.paragraph_id, bp.page_number, bp.section_path,
+                   bp.article_anchor,
+                   snippet(botschaft_paragraphs_fts, 0,
+                           '<<<', '>>>', '…', 24) AS snippet
+            FROM botschaft_paragraphs_fts
+            JOIN botschaft_paragraphs bp
+              ON bp.paragraph_id = botschaft_paragraphs_fts.rowid
+            JOIN botschaft_documents bd
+              ON bd.botschaft_id = bp.botschaft_id
+            WHERE botschaft_paragraphs_fts MATCH ?
+        """
+        params: list = [q]
+        if language:
+            sql += " AND bd.language = ? "
+            params.append(language)
+        sql += " ORDER BY rank LIMIT ? "
+        params.append(limit)
+        rows = conn.execute(sql, params).fetchall()
+    finally:
+        conn.close()
+
+    if not rows:
+        return {
+            "query": q, "language": language, "total": 0, "results": [],
+            "_hint": (
+                "No matches in the verbatim Botschaft corpus. Try simpler "
+                "phrases or quoted exact strings (FTS5 syntax). Coverage "
+                "currently focuses on recent Botschaften; older years are "
+                "being back-filled."
+            ),
+        }
+
+    results = [
+        {
+            "bbl_citation":     r["bbl_citation"],
+            "eli_uri":          r["eli_uri"],
+            "language":         r["language"],
+            "publication_date": r["publication_date"],
+            "page":             r["page_number"],
+            "section":          r["section_path"],
+            "article_anchor":   r["article_anchor"],
+            "snippet":          r["snippet"],
+        }
+        for r in rows
+    ]
+    return {
+        "query": q,
+        "language_filter": language,
+        "total": len(results),
+        "results": results,
+    }
+
+
+def _handle_get_article_history(
+    *,
+    sr_number: str,
+    article: str,
+    language: str = "de",
+    leading_cases_limit: int = 5,
+) -> dict:
+    """Chronological story of a single statute article.
+
+    Composes a timeline view from existing data sources:
+      • current article text (statutes.db / cantonal_laws.db)
+      • every linked Botschaft (enacted + amendments), sorted by date
+      • top leading cases that cite this article, by authority
+      • OK commentary excerpt if available
+
+    Returns a structured object the caller can render directly OR feed
+    to an LLM for synthesis. Each timeline entry is dated, sourced,
+    and references the canonical URI so the user can drill in.
+    """
+    sr_number = (sr_number or "").strip()
+    article = (article or "").strip()
+    if not sr_number or not article:
+        return {"error": "Provide both sr_number and article."}
+    language = (language or "de").lower()
+    leading_cases_limit = max(1, min(int(leading_cases_limit or 5), 15))
+
+    timeline: list[dict] = []
+
+    # 1. Current article text — federal statutes first.
+    statute_text: dict | None = None
+    try:
+        stat = _get_legislation_local(
+            sr_number=sr_number, article=article, language=language,
+        )
+        if stat and "error" not in stat:
+            statute_text = {
+                "law_abbreviation":   stat.get("law_abbreviation") or stat.get("abbreviation"),
+                "title":              stat.get("title") or stat.get("law_title"),
+                "article":            article,
+                "language":           language,
+                "current_text":       stat.get("text"),
+                "consolidation_date": stat.get("consolidation_date"),
+            }
+    except Exception as e:
+        logger.debug("get_article_history statute lookup failed: %s", e)
+
+    # 2. Linked Botschaften from materialien.db.
+    materialien_db = os.environ.get(
+        "SWISS_CASELAW_MATERIALIEN_DB",
+        str(Path(__file__).resolve().parent / "output" / "materialien.db"),
+    )
+    botschaften: list[dict] = []
+    if Path(materialien_db).exists():
+        try:
+            mc = sqlite3.connect(
+                f"file:{materialien_db}?mode=ro&immutable=1", uri=True,
+            )
+            mc.row_factory = sqlite3.Row
+            try:
+                mc.execute(
+                    "SELECT 1 FROM article_botschaft_links LIMIT 1"
+                ).fetchone()
+                rows = mc.execute(
+                    """
+                    SELECT bd.bbl_citation, bd.eli_uri, bd.publication_date,
+                           bd.format, abl.relation
+                    FROM article_botschaft_links abl
+                    JOIN botschaft_documents bd
+                      ON bd.botschaft_id = abl.botschaft_id
+                    WHERE abl.sr_number = ? AND abl.article = ?
+                      AND bd.language = ?
+                    ORDER BY bd.publication_date ASC
+                    """,
+                    (sr_number, article, language),
+                ).fetchall()
+                for r in rows:
+                    entry = {
+                        "kind":             "botschaft",
+                        "relation":         r["relation"],
+                        "date":             r["publication_date"],
+                        "bbl_citation":     r["bbl_citation"],
+                        "eli_uri":          r["eli_uri"],
+                        "format":           r["format"],
+                    }
+                    botschaften.append(entry)
+                    timeline.append(entry)
+            except sqlite3.OperationalError:
+                pass
+            mc.close()
+        except Exception as e:
+            logger.debug("get_article_history materialien lookup failed: %s", e)
+
+    # 3. Top leading cases citing this article (from reference graph).
+    leading_cases: list[dict] = []
+    try:
+        # _find_leading_cases needs law_code (abbreviation). If statute
+        # lookup produced one, use it; else attempt a SR→abbr resolution.
+        law_code = (statute_text or {}).get("law_abbreviation") or ""
+        if law_code:
+            lc = _find_leading_cases(
+                law_code=law_code, article=article, court=None,
+                limit=leading_cases_limit,
+            )
+            for case in (lc.get("results") or []):
+                entry = {
+                    "kind":         "court_decision",
+                    "date":         case.get("decision_date"),
+                    "decision_id":  case.get("decision_id"),
+                    "bge_ref":      case.get("bge_ref"),
+                    "court":        case.get("court"),
+                    "regeste":      (case.get("regeste") or "")[:240],
+                    "incoming_citations": case.get("incoming_citations"),
+                }
+                leading_cases.append(entry)
+                timeline.append(entry)
+    except Exception as e:
+        logger.debug("get_article_history leading-cases lookup failed: %s", e)
+
+    # 4. Doctrinal commentary (OK / OLC).
+    commentary: dict | None = None
+    try:
+        if statute_text:
+            law_abbr = statute_text.get("law_abbreviation") or ""
+            if law_abbr:
+                c = get_commentary(
+                    abbreviation=law_abbr,
+                    article=article,
+                    language=language,
+                )
+                if c and not c.get("error"):
+                    excerpt = (c.get("excerpt")
+                               or c.get("text")
+                               or c.get("content")
+                               or "")
+                    commentary = {
+                        "source":  c.get("source") or "OnlineKommentar.ch",
+                        "author":  c.get("author"),
+                        "year":    c.get("year") or c.get("date"),
+                        "url":     c.get("url"),
+                        "excerpt": excerpt[:400] if excerpt else "",
+                    }
+                    if commentary["excerpt"]:
+                        timeline.append({
+                            "kind":     "commentary",
+                            **{k: v for k, v in commentary.items() if k != "excerpt"},
+                            "excerpt":  commentary["excerpt"],
+                        })
+    except Exception as e:
+        logger.debug("get_article_history commentary lookup failed: %s", e)
+
+    # Sort timeline by date asc (None last so current commentary doesn't
+    # rotate into 1879).
+    def _sort_key(entry: dict):
+        d = entry.get("date") or entry.get("year") or "9999"
+        return str(d)
+    timeline.sort(key=_sort_key)
+
+    return {
+        "sr_number": sr_number,
+        "article":   article,
+        "language":  language,
+        "statute":   statute_text,
+        "timeline":  timeline,
+        "summary": {
+            "botschaft_count":     len(botschaften),
+            "leading_cases_count": len(leading_cases),
+            "has_commentary":      commentary is not None,
+        },
+        "_hint": (
+            "Timeline is ordered chronologically. Each entry has a `kind` "
+            "field (botschaft | court_decision | commentary) and a stable "
+            "URI. Use get_article_purpose for verbatim Botschaft text, "
+            "find_citations for the full citation network of a court "
+            "decision in the timeline."
+        ),
+    }
+
+
 def _handle_get_regeste(*, decision_id: str) -> dict:
     """Return the official BGer-/BVGer-/BStGer-formulated Regeste (head-note)."""
     if not decision_id:
@@ -15227,6 +15522,95 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            name="search_botschaft",
+            description=(
+                "Full-text search across the verbatim Federal Council "
+                "Botschaft corpus. Where get_article_purpose answers "
+                "'why does Art. X exist?', this tool answers 'show me "
+                "every Botschaft passage about TOPIC X'. Useful when the "
+                "caller doesn't know which SR/article to ask for — e.g. "
+                "starting from a concept like 'Vaterschaftsurlaub' or "
+                "'Klimaschutz'. Returns ranked passages (FTS5 BM25) with "
+                "bbl_citation, page, section path, and an article anchor "
+                "where the parser could identify one. Quote verbatim; "
+                "every snippet has a stable Fedlex ELI URI."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": (
+                            "Search terms. FTS5 syntax supported — use "
+                            "quoted phrases for exact matches "
+                            "('\"Vaterschaftsurlaub\"'), Boolean operators "
+                            "('Klimaschutz AND Kanton'), and prefix queries "
+                            "('Versicherungs*'). Stopwords are ignored."
+                        ),
+                    },
+                    "language": {
+                        "type": "string",
+                        "enum": ["de", "fr", "it"],
+                        "description": (
+                            "OPTIONAL — only set when the user explicitly "
+                            "limits the search to one language. Leave "
+                            "unset to search the corpus the caller has "
+                            "(currently de only). Setting this without "
+                            "the user asking will hide all non-matching "
+                            "Botschaft passages."
+                        ),
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Max passages to return (default 20, max 50).",
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="get_article_history",
+            description=(
+                "Chronological story of a single statute article: current "
+                "text + every linked Botschaft (enacted + amendments) + "
+                "leading court interpretations + doctrinal commentary, all "
+                "ordered by date. Combines statutes.db, materialien.db, "
+                "reference_graph.db, and ok_commentaries.db into one "
+                "timeline. USE THIS when the user asks 'how did Art. X "
+                "evolve' or 'what's the full picture on Art. X' — a single "
+                "call returns the legislative + judicial + doctrinal arc."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sr_number": {
+                        "type": "string",
+                        "description": (
+                            "SR number of the federal law, e.g. '220' for OR."
+                        ),
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": "Article number, e.g. '41' for Art. 41 OR.",
+                    },
+                    "language": {
+                        "type": "string",
+                        "enum": ["de", "fr", "it"],
+                        "default": "de",
+                    },
+                    "leading_cases_limit": {
+                        "type": "integer",
+                        "default": 5,
+                        "description": "Max leading cases (default 5, max 15).",
+                    },
+                },
+                "required": ["sr_number", "article"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="get_regeste",
             description=(
                 "Get the official Regeste (head-note) of a Swiss court decision. The Regeste is "
@@ -16391,6 +16775,27 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 article=arguments.get("article", ""),
                 language=arguments.get("language", "de"),
                 max_paragraphs=int(arguments.get("max_paragraphs", 8) or 8),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "search_botschaft":
+            # language: pass through only when the caller set it; default
+            # None = search all languages (per the search-tool contract).
+            result = await asyncio.to_thread(
+                _handle_search_botschaft,
+                query=arguments.get("query", ""),
+                language=arguments.get("language") or None,
+                limit=int(arguments.get("limit", 20) or 20),
+            )
+            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+
+        elif name == "get_article_history":
+            result = await asyncio.to_thread(
+                _handle_get_article_history,
+                sr_number=arguments.get("sr_number", ""),
+                article=arguments.get("article", ""),
+                language=arguments.get("language", "de"),
+                leading_cases_limit=int(arguments.get("leading_cases_limit", 5) or 5),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
@@ -18713,6 +19118,50 @@ render();setInterval(render,60000);
             _handle_get_article_purpose,
             sr_number=sr_number, article=article,
             language=language, max_paragraphs=max_paragraphs,
+        )
+
+    @rest_api.get("/search-botschaft", tags=["Materialien"],
+                  summary="Topical FTS5 search over the verbatim Botschaft corpus",
+                  description="Where /article-purpose answers 'why does Art. X exist?', "
+                              "/search-botschaft answers 'show me every Botschaft passage "
+                              "about TOPIC X'. Returns BM25-ranked paragraphs with "
+                              "bbl_citation, page, section path, and an article anchor "
+                              "where the parser could identify one. FTS5 syntax supported: "
+                              "quoted phrases, AND/OR/NOT operators, prefix queries.")
+    async def api_search_botschaft(
+        query: str = Query(..., description="Search terms (FTS5 syntax)"),
+        language: str = Query(
+            None, regex="^(de|fr|it)$",
+            description=(
+                "Optional language filter — leave unset to search all "
+                "three official languages of the verbatim Botschaft corpus."
+            ),
+        ),
+        limit: int = Query(20, ge=1, le=50),
+    ):
+        return await asyncio.to_thread(
+            _handle_search_botschaft,
+            query=query, language=language, limit=limit,
+        )
+
+    @rest_api.get("/article-history/{sr_number}/{article}", tags=["Materialien"],
+                  summary="Chronological story of a statute article",
+                  description="Combines current article text + every linked Botschaft "
+                              "(enacted + amendments) + leading court interpretations + "
+                              "doctrinal commentary into a single dated timeline. One call "
+                              "returns the full legislative + judicial + doctrinal arc of "
+                              "an article. Each timeline entry has a `kind` field "
+                              "(botschaft | court_decision | commentary) and a stable URI.")
+    async def api_get_article_history(
+        sr_number: str = PathParam(description="SR number of the federal law"),
+        article: str = PathParam(description="Article number"),
+        language: str = Query("de", regex="^(de|fr|it)$"),
+        leading_cases_limit: int = Query(5, ge=1, le=15),
+    ):
+        return await asyncio.to_thread(
+            _handle_get_article_history,
+            sr_number=sr_number, article=article,
+            language=language, leading_cases_limit=leading_cases_limit,
         )
 
     @rest_api.get("/regeste/{decision_id}", tags=["Decision Structure"],
