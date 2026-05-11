@@ -17667,6 +17667,145 @@ render();setInterval(render,60000);
                 "rule_statement":      {"type": "string", "nullable": True},
             },
         },
+        # /legislation/search wire (verified live 2026-05-11):
+        # returns LexFind-mirrored federal+cantonal hits with the
+        # canonical metadata fields each law carries.
+        ("GET", "/legislation/search"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "query":     {"type": "string"},
+                "language":  {"type": "string"},
+                "total":     {"type": "integer"},
+                "laws": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "lexfind_id":            {"type": "integer"},
+                            "title":                 {"type": "string"},
+                            "systematic_number":     {"type": "string"},
+                            "entity":                {"type": "string"},
+                            "entity_name":           {"type": "string"},
+                            "category":              {"type": "string", "nullable": True},
+                            "keywords":              {"type": "string", "nullable": True},
+                            "snippet":               {"type": "string", "nullable": True},
+                            "original_url":          {"type": "string", "nullable": True},
+                            "is_active":             {"type": "boolean"},
+                            "version_active_since":  {"type": "string", "nullable": True},
+                        },
+                    },
+                },
+            },
+        },
+        # /legislation/{lexfind_id} returns the full LexFind record:
+        # metadata + parsed articles + the current-version sub-object.
+        ("GET", "/legislation/{lexfind_id}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "lexfind_id":        {"type": "integer"},
+                "title":             {"type": "string"},
+                "systematic_number": {"type": "string"},
+                "entity":            {"type": "string"},
+                "entity_name":       {"type": "string"},
+                "is_active":         {"type": "boolean"},
+                "language":          {"type": "string"},
+                "source":            {"type": "string"},
+                "text_source":       {"type": "string", "nullable": True},
+                "text_length":       {"type": "integer", "nullable": True},
+                "article_count":     {"type": "integer"},
+                "full_text":         {"type": "string", "nullable": True},
+                "current_version": {
+                    "type": "object",
+                    "additionalProperties": True,
+                    "properties": {
+                        "version_id":      {"type": "integer"},
+                        "title":           {"type": "string"},
+                        "keywords":        {"type": "string", "nullable": True},
+                        "status":          {"type": "string", "nullable": True},
+                        "active_since":    {"type": "string", "nullable": True},
+                        "inactive_since":  {"type": "string", "nullable": True},
+                        "is_active":       {"type": "boolean"},
+                        "category":        {"type": "string", "nullable": True},
+                    },
+                },
+                "urls": {
+                    "type": "object",
+                    "additionalProperties": True,
+                },
+                "articles": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "article_num": {"type": "string"},
+                            "heading":     {"type": "string", "nullable": True},
+                            "text":        {"type": "string"},
+                        },
+                    },
+                },
+            },
+        },
+        # /doctrine returns statute + leading cases + commentary +
+        # legislative-intent (Materialien) for a Swiss law article.
+        # leading_cases[] items use the doctrine-specific shape
+        # (not the FTS5 search-item shape).
+        ("GET", "/doctrine"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "query":    {"type": "string"},
+                "statute":  {"type": "object", "nullable": True,
+                             "additionalProperties": True},
+                "leading_cases": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "decision_id":         {"type": "string"},
+                            "bge_ref":             {"type": "string", "nullable": True},
+                            "date":                {"type": "string"},
+                            "regeste":             {"type": "string", "nullable": True},
+                            "rule_summary":        {"type": "string", "nullable": True},
+                            "incoming_citations":  {"type": "integer"},
+                        },
+                    },
+                },
+                "doctrine_summary":   {"type": "string", "nullable": True},
+                "doctrine_timeline":  {"type": "array", "nullable": True,
+                                       "items": {"type": "object",
+                                                 "additionalProperties": True}},
+                "commentary":         {"type": "object", "nullable": True,
+                                       "additionalProperties": True},
+                "materialien":        {"type": "object", "nullable": True,
+                                       "additionalProperties": True},
+            },
+        },
+        # /article-purpose returns Federal Council Botschaft text (when
+        # available) for a specific statute article. `sources` may be
+        # empty for laws not yet covered by Phase 2 ingestion; the
+        # `_hint` field carries the operator message.
+        ("GET", "/article-purpose/{sr_number}/{article}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "sr_number": {"type": "string"},
+                "article":   {"type": "string"},
+                "language":  {"type": "string"},
+                "sources": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                    },
+                },
+                "_hint": {"type": "string", "nullable": True},
+            },
+        },
     }
 
     @rest_api.get("/openapi.copilot.json", include_in_schema=False)
