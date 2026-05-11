@@ -233,22 +233,27 @@ query for the session lifetime.
 </p>
 
 <p>
-Three lexical normalizations are applied before the index sees the
-query:
+Three normalizations make Swiss legal vocabulary searchable across
+its stylistic, orthographic and cross-language variants:
 </p>
 
 <ul>
-<li><strong>Umlaut bridge.</strong> <code>ä↔ae</code>,
-<code>ö↔oe</code>, <code>ü↔ue</code> — so "Prüfung" finds documents
-written "Pruefung" (common in older judgments).</li>
-<li><strong>Synonym expansion.</strong> A hand-curated multilingual
-legal-term map (Mietrecht ↔ <i>droit du bail</i> ↔ <i>diritto della
-locazione</i>; Beschwerdebefugnis ↔ <i>qualité pour recourir</i>; …)
-opens search across the three official languages.</li>
-<li><strong>Compound decomposition.</strong> Swiss legal German is
-notorious for long compound nouns
-("Bundesverwaltungsgerichtsentscheidung"); these are split on
-hyphens and tokenized as both compound and component parts.</li>
+<li><strong>Diacritic-insensitive tokenization.</strong> The FTS5
+<code>unicode61 remove_diacritics 2</code> tokenizer strips
+diacritics on both index and query side — so "Prüfung", "PRÜFUNG"
+and a query for "Prufung" all hit the same posting list.</li>
+<li><strong>Umlaut-spelling collapse.</strong> The
+<code>ae/oe/ue</code> diacritic-less spelling (common in older
+judgments and in any pre-Unicode environment) is collapsed to
+<code>a/o/u</code>, which the tokenizer then unifies with the
+diacritic-stripped <code>ä/ö/ü</code>. So "Pruefung" finds
+"Prüfung" too.</li>
+<li><strong>LLM synonym expansion.</strong> Claude Haiku's
+structured parse generates 2–4 alternative legal terms in DE/FR/IT
+<em>per query</em>, on the fly — not from a static table. So
+"qualité pour recourir" cross-links to "Beschwerdebefugnis" /
+"Beschwerdelegitimation" / "legittimazione" even if your query
+contained only one of them.</li>
 </ul>
 
 <!-- ─────────────────────────────────── 4 ─────────────────────────────────── -->
@@ -395,7 +400,7 @@ that appear in the matched paragraph. Multi-token claims with
 
 <p>
 <strong>Semantic rescue</strong>
-<span class="tag tag-pilot">infrastructure deployed, corpus encoding in progress</span>
+<span class="tag tag-pilot">infrastructure deployed · corpus ~33 % encoded</span>
 fires when the lexical pass returns nothing. The claim is encoded
 with <code>sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</code>
 (117 M params, 384-dim normalized vectors, multilingual DE/FR/IT/RM
@@ -451,36 +456,46 @@ the inference.</li>
 </ol>
 
 <p>
-Top-cited authorities by incoming-citation count (computed live):
-BGE 125 V 351 (60,650 incoming citations), BGE 134 V 231 (~28 K),
-BGE 122 V 157 (~27 K). These citation counts feed back into search
-reranking as the <em>authority</em> signal.
+Top-cited authority (computed live from
+<code>reference_graph.db</code> on 2026-05-11): <strong>BGE 125 V 351
+with 85,108 incoming citations</strong>, followed by
+BGE 134 V 231 and BGE 122 V 157 each at the tens-of-thousands order.
+These counts feed back into search reranking as the <em>authority</em>
+signal (weight 0.03 per citation, capped at 1.0) — which is why
+classic Leitentscheide float to the top even when their language
+hits are no stronger than other candidates'.
 </p>
 
 <!-- ─────────────────────────────────── 8 ─────────────────────────────────── -->
 <h2 id="qc">8. Quality assurance</h2>
 
 <p>
-Every nightly publish is gated by a 4-layer QC framework. A
-critical regression in any layer blocks the publish; users keep
-yesterday's corpus until investigation.
+Every nightly publish is gated by a 4-layer QC framework. L4 (the
+publish gate, runs L1's CRITICAL subset) is the hard blocker: if it
+fails, the swap is refused and users keep yesterday's corpus until
+the issue is investigated. The other layers are continuous
+backstops — L2 fires on every commit in CI, L3 every 5 min on the
+live server.
 </p>
 
 <ul>
-<li><strong>L1 — dataset checks (61).</strong> Per-court drift,
-duplicate detection, short-text / OCR detection, citation graph
-resolution rate, statute-link coverage, missing-field counts.</li>
-<li><strong>L2 — pytest suite (516 currently passing).</strong>
-Unit tests cover every parsing, dedup and ranking primitive; new
+<li><strong>L1 — dataset checks (63 across 20 modules).</strong>
+Per-court drift, duplicate detection, short-text / OCR detection,
+citation-graph resolution rate, statute-link coverage, date / docket
+sanity, missing-field counts, plus LLM spot-verification on a
+rotating sample.</li>
+<li><strong>L2 — pytest suite (516 currently passing).</strong> Unit
+tests cover every parsing, dedup and ranking primitive; new
 regressions land as new tests via the "incident → regression test"
 pattern.</li>
 <li><strong>L3 — smoke test (every 5 min).</strong> Production
-health probe: <code>/health</code>, an anchor decision page, and
-the export pipeline. Three consecutive failures escalate to an
+health probe: <code>/health</code>, an anchor decision page, and the
+PDF export pipeline. Three consecutive failures escalate to an
 INVESTIGATE alert.</li>
-<li><strong>L4 — publish gate.</strong> Before <code>git push</code>
-of the new stats and feeds, the CRITICAL-severity check subset must
-pass. The dashboard at <a href="/quality.html">/quality.html</a>
+<li><strong>L4 — publish gate.</strong> Of L1's checks, those
+labelled CRITICAL must pass before the new corpus is committed and
+pushed; if any fail, the publish refuses to swap and yesterday's
+data stays live. The dashboard at <a href="/quality.html">/quality.html</a>
 shows each check's last status and history.</li>
 </ul>
 
@@ -504,13 +519,15 @@ set as the rest and did not earn their place:
 </p>
 
 <ul>
-<li><strong>Cross-encoder reranker</strong>
-(<code>cross-encoder/mmarco-mMiniLMv2-L12-H384-v1</code>)
+<li><strong>Cross-encoder reranking</strong>
+(<code>cross-encoder/mmarco-mMiniLMv2-L12-H384-v1</code> as the
+current placeholder)
 <span class="tag tag-rejected">rejected</span>
-Tested on top-15/top-50 pools at every reasonable weight. Hurt
-MRR at all settings; the multilingual cross-encoder's training data
-doesn't transfer cleanly to Swiss legal vocabulary. Code remains
-in place behind a flag but is never invoked.</li>
+Multilingual cross-encoders trained on generic web QA didn't
+transfer cleanly to Swiss legal vocabulary on the golden set —
+hurt MRR rather than helping. The helper is still in the code
+behind <code>_apply_cross_encoder_boosts</code> for future
+fine-tuning experiments but is not invoked in production.</li>
 
 <li><strong>Off-the-shelf BGE-M3 dense vectors</strong>
 <span class="tag tag-rejected">rejected</span>
@@ -554,9 +571,9 @@ Programmatic access:
 <ul>
 <li><strong>REST API.</strong>
 <a href="https://mcp.opencaselaw.ch/docs">mcp.opencaselaw.ch/docs</a> —
-OpenAPI 3.0.3 with 30+ endpoints (search, get, leading cases,
-trends, citation graph, statutes, commentaries, Botschaft,
-exports).</li>
+OpenAPI 3.0.3 with 47 endpoints (search, get, leading cases, trends,
+citation graph, statutes, commentaries, Botschaft, exports, pinpoint,
+attestation).</li>
 <li><strong>MCP server.</strong>
 <a href="https://mcp.opencaselaw.ch/sse">mcp.opencaselaw.ch/sse</a> —
 Server-Sent Events transport, exposing 31 tools.
