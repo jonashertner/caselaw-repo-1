@@ -114,6 +114,7 @@ class _AttestBody(BaseModel):
     redacted_text: str | None = None
     draft_text: str | None = None  # legacy field, accepted but deprecated
     audit_grounding: bool = False
+    audit_quotes: bool = False
     client_redactor_version: str | None = None
     client_redactor_summary: dict | None = None
 
@@ -11554,13 +11555,23 @@ def _handle_reflect(*, redacted_text: str, lang: str = "de") -> dict:
 
 
 def _handle_attest_response(*, draft_text: str,
-                             audit_grounding: bool = False) -> dict:
+                             audit_grounding: bool = False,
+                             audit_quotes: bool = False) -> dict:
     """Post-draft audit: parse every Swiss-case citation in the LLM's
     response and verify existence + pinpoint validity.
 
     The LLM is instructed (at server level) to call this before finalizing
     an answer containing any citation. Returns an annotated text with each
     citation marked OK or ISSUE, plus a structured issues list.
+
+    ``audit_quotes`` defaults to FALSE as of 2026-05-11: even with the
+    nearby-citation scoping, the quote audit produced too many false
+    positives for legitimate non-legal-source quotations (witness
+    statements, contract excerpts, scholarly commentary, defined
+    terms). Quote-verification is now opt-in via the per-selection
+    Verify Pro feature, where the user has explicitly marked the
+    span as needing source-grounding. Callers that still want the
+    whole-document quote audit can pass ``audit_quotes=True``.
     """
     if not draft_text or not draft_text.strip():
         return {"error": "Provide draft_text to audit."}
@@ -11572,7 +11583,12 @@ def _handle_attest_response(*, draft_text: str,
         # verbatim Art. X quote (with no accompanying case citation)
         # is not falsely flagged as unsourced.
         statute_issues = _audit_statutes(draft_text)
-        quote_issues = _audit_quotes(draft_text, _statute_source_pool(draft_text))
+        # Quote-audit is opt-in (audit_quotes=True) as of 2026-05-11 —
+        # default scan leaves user-supplied quotes alone because they
+        # are routinely NOT legal-source claims (party narrative,
+        # commentary, witness statements, defined terms, …).
+        quote_issues = (_audit_quotes(draft_text, _statute_source_pool(draft_text))
+                        if audit_quotes else [])
         empty_issues = statute_issues + quote_issues
         empty_issues.sort(key=lambda i: i.get("position", 0))
         return {
@@ -11760,12 +11776,14 @@ def _handle_attest_response(*, draft_text: str,
     # list without rebuilding annotated_text (markers attach only to
     # case citations because their spans are unambiguous).
     statute_issues = _audit_statutes(draft_text)
-    # Augment the quote source pool with text from any statute reference
-    # the LLM included in the draft. This eliminates the false-positive
-    # class where a draft correctly quotes Art. X verbatim but is flagged
-    # as unsourced because no case happens to be cited alongside it.
-    cited_sources.extend(_statute_source_pool(draft_text))
-    quote_issues = _audit_quotes(draft_text, cited_sources)
+    # Quote-audit is opt-in (audit_quotes=True) as of 2026-05-11.
+    # When enabled, we still augment the source pool with statute
+    # texts so verbatim Art. X quotes don't trip the audit.
+    if audit_quotes:
+        cited_sources.extend(_statute_source_pool(draft_text))
+        quote_issues = _audit_quotes(draft_text, cited_sources)
+    else:
+        quote_issues = []
     date_issues = _audit_dates(draft_text, citations)
     issues.extend(statute_issues)
     issues.extend(quote_issues)
@@ -16914,6 +16932,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 _handle_attest_response,
                 draft_text=arguments["draft_text"],
                 audit_grounding=bool(arguments.get("audit_grounding", False)),
+                audit_quotes=bool(arguments.get("audit_quotes", False)),
             )
             return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
 
@@ -19162,6 +19181,7 @@ render();setInterval(render,60000);
             _handle_attest_response,
             draft_text=text,
             audit_grounding=body.audit_grounding,
+            audit_quotes=body.audit_quotes,
         )
 
     @rest_api.post("/verify-claim", tags=["Citation Integrity"],

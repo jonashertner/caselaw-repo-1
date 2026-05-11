@@ -185,29 +185,45 @@ def test_attest_empty_draft_clean(m):
 
 
 def test_attest_no_case_but_unsourced_quote_flagged(m):
-    """Quote near a citation anchor + not in any cited source → flagged.
+    """Quote near a citation anchor + not in any cited source → flagged
+    ONLY when the caller opts in with audit_quotes=True.
 
-    Updated 2026-05-11: previously this used a standalone quote, but
-    the refined quote-audit scope now leaves standalone quotes alone
-    (they could be party narrative, dialogue, defined terms — the
-    writer isn't claiming a verifiable source). Add a citation
-    anchor to keep the test exercising the unsourced-quote path."""
+    Updated 2026-05-11 (second pass): the document-wide scan now
+    leaves all quotes alone by default — quotes that aren't legal-
+    source claims (party narrative, contract text, foreign-law
+    extract, witness statement) routinely trip the audit even with
+    the nearby-citation guard. Quote verification is opt-in via the
+    per-selection Verify Pro feature."""
     draft = ('BGE 140 III 86 E. 2: '
              '\u201eDies ist ein erfundenes Zitat von mehr als sechzig '
              'Zeichen, das so im Urteil gar nicht vorkommt.\u201c')
+    # Default: opt-out, no quote issues raised.
     res = m._handle_attest_response(draft_text=draft)
-    assert res["ok"] is False
-    assert res["issues_by_category"]["quote"] == 1
+    assert res["issues_by_category"]["quote"] == 0
+    # Explicit opt-in: the same draft now flags the quote.
+    res2 = m._handle_attest_response(draft_text=draft, audit_quotes=True)
+    assert res2["issues_by_category"]["quote"] == 1
 
 
 def test_attest_standalone_unsourced_quote_NOT_flagged(m):
-    """New 2026-05-11: a long quote with NO citation/statute anchor in
-    its vicinity stays unflagged. The user didn't claim it comes from
-    a Swiss legal source, so we don't audit it."""
+    """A long quote with NO citation/statute anchor stays unflagged
+    even when audit_quotes=True — the nearby-authority guard is
+    still in effect; an unanchored quote is not asserting a
+    verifiable source."""
     draft = ('Der Zeuge sagte aus: '
              '\u201eIch war an jenem Abend nicht zu Hause, sondern '
              'unterwegs im Tessin bei meiner Schwester.\u201c '
              'Diese Aussage wurde protokolliert.')
+    res = m._handle_attest_response(draft_text=draft, audit_quotes=True)
+    assert res["issues_by_category"]["quote"] == 0
+
+
+def test_attest_quotes_off_by_default(m):
+    """The whole-document scan path no longer audits quotes by
+    default. Citation + statute + date audits still run."""
+    draft = ('BGE 140 III 86 E. 2.3 hielt fest: '
+             '\u201eDas ist ein langer Satz von mehr als sechzig Zeichen '
+             'und steht so im Urteil gar nicht.\u201c')
     res = m._handle_attest_response(draft_text=draft)
     assert res["issues_by_category"]["quote"] == 0
 
