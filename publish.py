@@ -404,15 +404,24 @@ def step_2_build_fts5(
     # silent overrun + cascade-skip + post-mortem-class incidents.
     timeout = 43200  # 12h hard cap; legitimate completion ranges 4–10h
 
-    # Stall watchdog: the FTS5 'optimize' phase emits NO stdout while
-    # rewriting the index segments; on 2026-05-04 19:06 the run got 4h 51m
-    # in, entered optimize, sat silent for 90 min, and the default 5400s
-    # stall watchdog killed it (no atomic swap, decisions.db still stale).
-    # Bumped to 10800s (3h) — wide enough for the optimize silent window
-    # but still catches a genuinely-wedged process within one human
-    # working-day cycle.
+    # Stall watchdog: the FTS5 'optimize' phase + post-swap
+    # PRAGMA integrity_check both emit NO stdout for ~1–3 h each.
+    # History:
+    #   5400s (1.5h) — too tight; killed mid-optimize 2026-05-04.
+    #   10800s (3h)  — bumped 2026-05-04; tripped today (2026-05-11)
+    #                  because integrity_check on the post-swap 60 GB DB
+    #                  ran exactly 3h under disk contention. The 13:41
+    #                  watchdog kill cascade-skipped Steps 4/6 even
+    #                  though the swap had succeeded at 10:40.
+    #   14400s (4h)  — current. Empirical post-swap integrity_check
+    #                  ranges 2h 55m – 3h 20m on this hardware. 4h
+    #                  gives a ~40-min cushion. The new
+    #                  OCL_SWAP_DONE handshake (commit b4ba734) means
+    #                  quick_publish can run DURING this window, which
+    #                  adds disk contention and is the reason the
+    #                  previous cap got hit.
     return run_cmd(cmd, "Build FTS5 database", dry_run,
-                   timeout=timeout, stall_timeout=10800,
+                   timeout=timeout, stall_timeout=14400,
                    on_line=on_line)
 
 
