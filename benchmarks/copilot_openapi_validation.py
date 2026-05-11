@@ -254,7 +254,27 @@ def main() -> int:
         ("/relevant-erwaegung/{decision_id}",
          "/api/relevant-erwaegung/emark_EMARK-2004-28"
          "?claim=Test%20Alltagswissen&top_k=1"),
+        # The 4 endpoints typed in commit 023a190 — defend against schema
+        # drift on the curated subset's full 15-action coverage.
+        ("/legislation/search",
+         "/api/legislation/search?query=Vaterschaftsurlaub&limit=3"),
+        ("/legislation/{lexfind_id}",
+         "/api/legificiation/13"),  # placeholder, overridden below
+        ("/doctrine",
+         "/api/doctrine?query=Art.%20271a%20OR"),
+        ("/article-purpose/{sr_number}/{article}",
+         "/api/article-purpose/220/41"),
     ]
+    # /legislation/{lexfind_id} probe needs a real id — pull one from the
+    # search probe so the bench is self-contained across portal refreshes.
+    _ls, _lb, _ = fetch("/api/legislation/search?query=Obligationenrecht"
+                        "&limit=1")
+    if (isinstance(_lb, dict)
+        and _lb.get("laws") and _lb["laws"][0].get("lexfind_id")):
+        sample_endpoints = [(p, p2.replace(
+            "/api/legificiation/13",
+            f"/api/legislation/{_lb['laws'][0]['lexfind_id']}"))
+            for p, p2 in sample_endpoints]
     completeness_ok = True
     skipped_paths = 0
     for path, probe in sample_endpoints:
