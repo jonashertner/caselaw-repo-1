@@ -245,10 +245,15 @@ def _trigger_scraper():
     if rc == 0:
         new_count = 0
         for line in (out or "").splitlines():
-            if "Done. New:" in line:
-                m = re.search(r"New: (\d+)", line)
-                if m:
-                    new_count = int(m.group(1))
+            # run_scraper actually emits "[bger] Done. +13 new, 92581, ..."
+            # (not "Done. New: 13"). The old regex never matched, so the
+            # poller has been logging "0 new decisions" since the
+            # 2026-05-07 run_scraper output-format refactor — misleading
+            # because the scraper genuinely DID get the dockets.
+            m = re.search(r"Done\.\s*\+(\d+)\s+new\b", line)
+            if m:
+                new_count = int(m.group(1))
+                break
         logger.info("BGer scraper completed: %d new decisions", new_count)
     elif timed_out:
         logger.warning(
@@ -276,6 +281,7 @@ def _trigger_scraper():
             timeout=900,
         )
         if result.returncode == 0:
+            skipped_due_to_lock = False
             for line in result.stdout.splitlines():
                 if "Inserted" in line:
                     m = re.search(r"Inserted (\d+)/", line)
@@ -283,6 +289,19 @@ def _trigger_scraper():
                         inserted_count = int(m.group(1))
                 if "Inserted" in line or "new decisions" in line:
                     logger.info("Quick-publish: %s", line.split("INFO")[-1].strip() if "INFO" in line else line)
+                # quick_publish exits with rc=0 + this exact string when
+                # publish.py holds the lock. Surface it loudly so the
+                # operator can see that pending JSONL rows are waiting
+                # on the running full publish, not just "nothing new".
+                if "skipping quick_publish" in line or "Full publish.py is running" in line:
+                    skipped_due_to_lock = True
+            if skipped_due_to_lock:
+                logger.warning(
+                    "Quick-publish SKIPPED: full publish.py holds the lock "
+                    "— freshly-scraped BGer dockets remain in bger.jsonl "
+                    "and will be inserted on the next poll once the lock "
+                    "releases (after Step 2 swap + integrity check)"
+                )
         else:
             logger.error("Quick-publish failed (exit %d): %s", result.returncode, result.stderr[-300:])
 
