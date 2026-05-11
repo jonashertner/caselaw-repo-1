@@ -10627,9 +10627,25 @@ def _audit_quotes(
     draft_text: str,
     cited_decisions: list[dict],
 ) -> list[dict]:
-    """For each `"..."`-quoted substring of length ≥ 30 in the draft,
-    check that it appears verbatim (after whitespace + quote-mark
-    normalisation) in the source text of at least one cited decision.
+    """Audit quoted spans that PURPORT to come from a Swiss legal
+    source — verify each appears verbatim in the cited decision /
+    statute it claims to come from.
+
+    SCOPING (refined 2026-05-11 after user feedback that every quoted
+    span was being flagged):
+
+      A quote is only audited when it has clear authority context —
+      either a case citation (BGE / BGer / Bger / BVGer / …) or a
+      statute reference (Art. X LAW) within ~250 characters before or
+      after the quote. Standalone quotes (party statements in a
+      Sachverhalt narrative, defined terms, idioms, dialogue) are NOT
+      checked because the writer is not asserting they come from a
+      legal source.
+
+      Minimum length raised 30 → 60 chars: defined terms like
+      "Treuepflicht" or "guter Glaube" are routinely quoted in Swiss
+      legal writing without implying a verbatim citation, and 30
+      chars caught too many false positives.
 
     `cited_decisions` is a list of {decision_id, regeste, full_text,
     paragraphs} dicts collected by `_handle_attest_response` while it
@@ -10638,7 +10654,7 @@ def _audit_quotes(
     if not draft_text:
         return []
 
-    # Pre-build a single normalised source pool once
+    # Build the verification source pool (cited decisions + statutes).
     source_pool_parts: list[str] = []
     for cd in cited_decisions:
         if cd.get("regeste"):
@@ -10652,12 +10668,50 @@ def _audit_quotes(
             source_pool_parts.append(cd["full_text"][:8000])
     source_pool = _normalise_for_quote_match(" ".join(source_pool_parts))
 
+    # Build authority-context anchors: positions in the draft where a
+    # case citation or statute reference sits. A quote within
+    # _QUOTE_AUTHORITY_RADIUS chars of any anchor is considered to be
+    # claiming a verifiable source and qualifies for the audit; quotes
+    # outside that window are left alone.
+    anchor_positions: list[int] = []
+    try:
+        for cit in _parse_citations_in_text(draft_text) or []:
+            span = cit.get("span")
+            if isinstance(span, (list, tuple)) and len(span) >= 1:
+                anchor_positions.append(int(span[0]))
+            elif isinstance(cit.get("start"), int):
+                anchor_positions.append(int(cit["start"]))
+    except Exception:
+        pass
+    try:
+        for sm in _STATUTE_AUDIT_PATTERN.finditer(draft_text):
+            anchor_positions.append(sm.start())
+    except Exception:
+        pass
+    anchor_positions.sort()
+    AUTHORITY_RADIUS = 250
+    MIN_QUOTE_CHARS = 60
+
+    def _has_nearby_authority(qpos: int) -> bool:
+        # Binary-search-equivalent linear walk is fine — the anchor
+        # list is short (dozens, not thousands).
+        for ap in anchor_positions:
+            if abs(ap - qpos) <= AUTHORITY_RADIUS:
+                return True
+            if ap - qpos > AUTHORITY_RADIUS:
+                break  # sorted; no further anchor can match
+        return False
+
     issues: list[dict] = []
     seen_inner: set[str] = set()
     for pat in _QUOTE_AUDIT_PATTERNS:
         for m in pat.finditer(draft_text):
             inner = m.group("inner")
-            if not inner or len(inner.strip()) < 30:
+            if not inner or len(inner.strip()) < MIN_QUOTE_CHARS:
+                continue
+            # Standalone quote (no nearby legal-source authority) →
+            # the writer isn't claiming a source, skip.
+            if not _has_nearby_authority(m.start()):
                 continue
             inner_norm = _normalise_for_quote_match(inner)
             if inner_norm in seen_inner:
@@ -11418,7 +11472,38 @@ def _handle_reflect(*, redacted_text: str, lang: str = "de") -> dict:
                     "messages": [{"role": "user", "content": user_prompt}],
                 },
             )
-            resp.raise_for_status()
+            # Surface the specific Anthropic error category before
+            # raise_for_status loses the response body. Most operationally
+            # interesting case: "credit balance too low" — that's not a
+            # bug, it's a billing issue the operator needs to top up.
+            if resp.status_code >= 400:
+                try:
+                    err_body = resp.json().get("error", {}) or {}
+                except Exception:
+                    err_body = {}
+                err_msg = (err_body.get("message") or "")[:300]
+                low_credit = ("credit balance" in err_msg.lower()
+                              or "purchase credits" in err_msg.lower()
+                              or "insufficient" in err_msg.lower())
+                if low_credit:
+                    return {
+                        "error": "llm_quota_exhausted",
+                        "message": (
+                            "Die Reflect-Funktion ist vorübergehend nicht "
+                            "verfügbar: das Sprachmodell-Guthaben ist "
+                            "aufgebraucht. Bitte einen Moment später erneut "
+                            "versuchen oder beim Betreiber melden."
+                        ),
+                        "_upstream_status": resp.status_code,
+                        "_upstream_msg": err_msg,
+                    }
+                return {
+                    "error": "llm_request_failed",
+                    "message": (
+                        f"Claude API returned {resp.status_code}: "
+                        f"{err_msg or '(no body)'}"
+                    ),
+                }
             data = resp.json()
             try:
                 _llm_usage_log(model="claude-sonnet-4-6",

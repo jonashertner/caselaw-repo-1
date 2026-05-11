@@ -110,6 +110,7 @@ def test_reflect_unknown_language_defaults_to_de(monkeypatch):
 
         def post(self, *a, **kw):
             class _R:
+                status_code = 200
                 def raise_for_status(self): pass
                 def json(self_inner):
                     return {"content": [{"text": json.dumps({
@@ -154,6 +155,7 @@ def test_reflect_returns_structured_shape(monkeypatch):
 
         def post(self, *a, **kw):
             class _R:
+                status_code = 200
                 def raise_for_status(self): pass
                 def json(self_inner):
                     return {"content": [{"text": json.dumps(payload)}]}
@@ -187,6 +189,7 @@ def test_reflect_falls_back_when_llm_returns_non_json(monkeypatch):
 
         def post(self, *a, **kw):
             class _R:
+                status_code = 200
                 def raise_for_status(self): pass
                 def json(self_inner):
                     return {"content": [{"text": "## Just markdown, no JSON."}]}
@@ -225,6 +228,7 @@ def test_reflect_strips_markdown_fences(monkeypatch):
 
         def post(self, *a, **kw):
             class _R:
+                status_code = 200
                 def raise_for_status(self): pass
                 def json(self_inner):
                     return {"content": [{"text": fenced}]}
@@ -236,6 +240,74 @@ def test_reflect_strips_markdown_fences(monkeypatch):
         )
     assert r["literary_reference"]["work"] == "Antigone"
     assert "_parse_error" not in r
+
+
+# ── Anthropic billing error surfacing ───────────────────────────────────
+
+
+def test_reflect_low_credit_balance_surfaces_friendly_message(monkeypatch):
+    """When Anthropic returns 400 with 'credit balance too low', the
+    handler must NOT bubble the raw HTTPStatusError. The operator
+    needs to top up credits; the end-user needs a friendly message.
+    """
+    monkeypatch.setattr(mcp_server, "ANTHROPIC_API_KEY", "fake")
+
+    class _FakeClient:
+        def __init__(self, *a, **kw): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): pass
+
+        def post(self, *a, **kw):
+            class _R:
+                status_code = 400
+                def raise_for_status(self):
+                    raise RuntimeError("should not be called when 400 handled")
+                def json(self_inner):
+                    return {
+                        "type": "error",
+                        "error": {
+                            "type": "invalid_request_error",
+                            "message": "Your credit balance is too low to access the Anthropic API.",
+                        },
+                    }
+            return _R()
+
+    with mock.patch("httpx.Client", _FakeClient):
+        r = mcp_server._handle_reflect(
+            redacted_text=("A document worth reflecting on. " * 5),
+        )
+    assert r["error"] == "llm_quota_exhausted"
+    assert "guthaben" in r["message"].lower() or "credit" in r["message"].lower()
+    assert r["_upstream_status"] == 400
+
+
+def test_reflect_other_4xx_falls_through_to_generic_error(monkeypatch):
+    """Non-credit-balance 4xx (e.g., rate limit, malformed) goes
+    through the generic llm_request_failed path with the upstream
+    message preserved for debugging."""
+    monkeypatch.setattr(mcp_server, "ANTHROPIC_API_KEY", "fake")
+
+    class _FakeClient:
+        def __init__(self, *a, **kw): pass
+        def __enter__(self): return self
+        def __exit__(self, *a): pass
+
+        def post(self, *a, **kw):
+            class _R:
+                status_code = 429
+                def raise_for_status(self): raise RuntimeError("unused")
+                def json(self_inner):
+                    return {"error": {"type": "rate_limit_error",
+                                       "message": "Rate limit exceeded."}}
+            return _R()
+
+    with mock.patch("httpx.Client", _FakeClient):
+        r = mcp_server._handle_reflect(
+            redacted_text=("A document worth reflecting on. " * 5),
+        )
+    assert r["error"] == "llm_request_failed"
+    assert "429" in r["message"]
+    assert "rate limit" in r["message"].lower()
 
 
 # ── Network failure handling ────────────────────────────────────────────

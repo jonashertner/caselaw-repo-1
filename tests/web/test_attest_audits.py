@@ -25,51 +25,97 @@ def m():
 # ── Quote audit ────────────────────────────────────────────────────
 
 def test_quote_in_source_passes(m):
+    """Quote present verbatim in the cited source — no issue. The
+    citation anchor (BGE 140 III 86) qualifies the quote for the
+    audit; the source-pool match then clears it."""
     src = [{
-        "regeste": "Der Vermieter haftet für Mängel an der Sache.",
+        "regeste": "Der Vermieter haftet für Mängel an der Sache, soweit dies vereinbart wurde.",
         "full_text": "",
         "paragraphs": [],
     }]
     draft = (
-        'Das Bundesgericht hielt fest: '
-        '\u201eDer Vermieter haftet f\u00fcr M\u00e4ngel an der Sache.\u201c'
+        'BGE 140 III 86 E. 2.3: '
+        '\u201eDer Vermieter haftet f\u00fcr M\u00e4ngel an der Sache, '
+        'soweit dies vereinbart wurde.\u201c'
     )
     issues = m._audit_quotes(draft, src)
     assert issues == []
 
 
 def test_quote_not_in_source_flagged(m):
+    """Quote that's NEAR a Swiss case citation but NOT in the cited
+    source must be flagged — that's the original hallucination case."""
     src = [{"regeste": "Etwas ganz anderes.", "full_text": "", "paragraphs": []}]
-    draft = '\u201eDieser Satz steht so nicht im Entscheid und ist erfunden.\u201c'
+    # Embed a BGE citation near the quote so the audit qualifies it
+    # as a verifiable-source claim. Without this, after the
+    # 2026-05-11 scoping refinement, a standalone quote is left alone.
+    draft = ('BGE 140 III 86 E. 2.3: '
+             '\u201eDieser Satz steht so nicht im Entscheid und ist '
+             'tats\u00e4chlich frei erfunden.\u201c')
     issues = m._audit_quotes(draft, src)
     assert len(issues) == 1
     assert issues[0]["category"] == "quote"
     assert issues[0]["problem"] == "quote_not_in_cited_sources"
 
 
+def test_standalone_quote_without_authority_context_skipped(m):
+    """After 2026-05-11: a quote that has NO nearby Swiss-case citation
+    or statute reference is left alone — the writer isn't claiming a
+    legal source, so the audit doesn't fire (party narrative,
+    defined terms, idioms, dialogue all live here)."""
+    src = []  # no cited decisions
+    draft = ('Der Beklagte sagte am Verhandlungstermin: '
+             '\u201eIch werde liefern, sobald die Zahlung eingeht.\u201c '
+             'Diese Aussage wurde protokolliert.')
+    assert m._audit_quotes(draft, src) == []
+
+
 def test_short_quote_skipped(m):
-    """Quotes under 30 chars are noise (article labels, names) — not audited."""
+    """Quotes under 60 chars (raised from 30 on 2026-05-11) are noise:
+    defined legal terms ('Treuepflicht', 'guter Glaube'), article
+    labels, names — not actual verbatim source quotations."""
     src = []
-    draft = '\u201ekurz\u201c und ein anderes \u201eauch zu kurz\u201c'
+    draft = ('BGE 140 III 86: \u201eTreuepflicht\u201c und '
+             '\u201eguter Glaube\u201c')  # short defined terms near a citation
     assert m._audit_quotes(draft, src) == []
 
 
 def test_french_quotes_handled(m):
+    """French «...» quotes with adjacent ATF/BGer citation behave the
+    same as German „..." quotes — match against the cited source."""
     src = [{
-        "regeste": "Le bailleur est responsable des d\u00e9fauts de la chose lou\u00e9e.",
+        "regeste": "Le bailleur est responsable des d\u00e9fauts de la chose lou\u00e9e, sauf clause contraire.",
         "full_text": "", "paragraphs": [],
     }]
-    draft = '\u00abLe bailleur est responsable des d\u00e9fauts de la chose lou\u00e9e.\u00bb'
+    draft = ('ATF 140 III 86 c. 2.3: '
+             '\u00abLe bailleur est responsable des d\u00e9fauts de la chose '
+             'lou\u00e9e, sauf clause contraire.\u00bb')
     assert m._audit_quotes(draft, src) == []
 
 
 def test_whitespace_normalisation_in_quote_match(m):
-    """Source has line breaks; draft has the same text with single spaces."""
+    """Source has line breaks; draft has the same text with single
+    spaces, alongside a citation anchor."""
     src = [{
-        "regeste": "Der Vermieter haftet \n\n  f\u00fcr M\u00e4ngel\n  an der Sache.",
+        "regeste": "Der Vermieter haftet \n\n  f\u00fcr M\u00e4ngel\n  an der Sache, soweit dies vereinbart wurde.",
         "full_text": "", "paragraphs": [],
     }]
-    draft = '\u201eDer Vermieter haftet f\u00fcr M\u00e4ngel an der Sache.\u201c'
+    draft = ('BGE 140 III 86 E. 2.3: '
+             '\u201eDer Vermieter haftet f\u00fcr M\u00e4ngel an der Sache, '
+             'soweit dies vereinbart wurde.\u201c')
+    assert m._audit_quotes(draft, src) == []
+
+
+def test_quote_anchored_to_statute_reference(m):
+    """A quote near an Art. X LAW reference also qualifies (the
+    statute audit's source pool ends up in the same path)."""
+    src = [{
+        "regeste": "Definierte Treuepflichten zwischen den Parteien greifen erst nach Vertragsabschluss.",
+        "full_text": "", "paragraphs": [],
+    }]
+    draft = ('Im Anwendungsbereich von Art. 2 ZGB gilt: '
+             '\u201eDefinierte Treuepflichten zwischen den Parteien greifen '
+             'erst nach Vertragsabschluss.\u201c')
     assert m._audit_quotes(draft, src) == []
 
 
@@ -139,10 +185,31 @@ def test_attest_empty_draft_clean(m):
 
 
 def test_attest_no_case_but_unsourced_quote_flagged(m):
-    draft = '\u201eDies ist ein erfundenes Zitat von mehr als drei\u00dfig Zeichen.\u201c'
+    """Quote near a citation anchor + not in any cited source → flagged.
+
+    Updated 2026-05-11: previously this used a standalone quote, but
+    the refined quote-audit scope now leaves standalone quotes alone
+    (they could be party narrative, dialogue, defined terms — the
+    writer isn't claiming a verifiable source). Add a citation
+    anchor to keep the test exercising the unsourced-quote path."""
+    draft = ('BGE 140 III 86 E. 2: '
+             '\u201eDies ist ein erfundenes Zitat von mehr als sechzig '
+             'Zeichen, das so im Urteil gar nicht vorkommt.\u201c')
     res = m._handle_attest_response(draft_text=draft)
     assert res["ok"] is False
     assert res["issues_by_category"]["quote"] == 1
+
+
+def test_attest_standalone_unsourced_quote_NOT_flagged(m):
+    """New 2026-05-11: a long quote with NO citation/statute anchor in
+    its vicinity stays unflagged. The user didn't claim it comes from
+    a Swiss legal source, so we don't audit it."""
+    draft = ('Der Zeuge sagte aus: '
+             '\u201eIch war an jenem Abend nicht zu Hause, sondern '
+             'unterwegs im Tessin bei meiner Schwester.\u201c '
+             'Diese Aussage wurde protokolliert.')
+    res = m._handle_attest_response(draft_text=draft)
+    assert res["issues_by_category"]["quote"] == 0
 
 
 def test_attest_returns_required_keys(m):
