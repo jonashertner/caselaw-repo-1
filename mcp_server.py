@@ -17386,23 +17386,24 @@ render();setInterval(render,60000);
             "court_name":          {"type": "string"},
             "court_level":         {"type": "string"},
             "canton":              {"type": "string"},
-            "chamber":             {"type": ["string", "null"]},
+            "chamber":             {"type": "string", "nullable": True},
             "docket_number":       {"type": "string"},
             "decision_date":       {"type": "string"},
             "language":            {"type": "string"},
-            "title":               {"type": ["string", "null"]},
-            "regeste":             {"type": ["string", "null"]},
-            "snippet":             {"type": ["string", "null"]},
-            "legal_area":          {"type": ["string", "null"]},
+            "title":               {"type": "string", "nullable": True},
+            "regeste":             {"type": "string", "nullable": True},
+            "snippet":             {"type": "string", "nullable": True},
+            "legal_area":          {"type": "string", "nullable": True},
             "citation_count":      {"type": "integer"},
             "is_leading_case":     {"type": "boolean"},
             "citation_string_de":  {"type": "string"},
             "citation_string_fr":  {"type": "string"},
             "citation_string_it":  {"type": "string"},
             "canonical_url":       {"type": "string"},
-            "rule_statement":      {"type": ["string", "null"]},
+            "rule_statement":      {"type": "string", "nullable": True},
             "pinpoint": {
-                "type": ["object", "null"],
+                "type": "object",
+                "nullable": True,
                 "additionalProperties": True,
                 "properties": {
                     "e_number":         {"type": "string"},
@@ -17434,9 +17435,9 @@ render();setInterval(render,60000);
             "type": "object",
             "additionalProperties": True,
             "properties": {
-                "law_code": {"type": ["string", "null"]},
-                "article":  {"type": ["string", "null"]},
-                "query":    {"type": ["string", "null"]},
+                "law_code": {"type": "string", "nullable": True},
+                "article":  {"type": "string", "nullable": True},
+                "query":    {"type": "string", "nullable": True},
                 "total":    {"type": "integer"},
                 "results": {
                     "type": "array",
@@ -17477,7 +17478,7 @@ render();setInterval(render,60000);
                         "additionalProperties": True,
                         "properties": {
                             "article_num": {"type": "string"},
-                            "heading":     {"type": ["string", "null"]},
+                            "heading":     {"type": "string", "nullable": True},
                             "text":        {"type": "string"},
                         },
                     },
@@ -17496,11 +17497,11 @@ render();setInterval(render,60000);
                         "type": "object",
                         "additionalProperties": True,
                         "properties": {
-                            "abbreviation": {"type": ["string", "null"]},
-                            "sr_number":    {"type": ["string", "null"]},
+                            "abbreviation": {"type": "string", "nullable": True},
+                            "sr_number":    {"type": "string", "nullable": True},
                             "title":        {"type": "string"},
-                            "article":      {"type": ["string", "null"]},
-                            "snippet":      {"type": ["string", "null"]},
+                            "article":      {"type": "string", "nullable": True},
+                            "snippet":      {"type": "string", "nullable": True},
                         },
                     },
                 },
@@ -17520,9 +17521,9 @@ render();setInterval(render,60000);
             "additionalProperties": True,
             "properties": {
                 "decision_id":  {"type": "string"},
-                "regeste":      {"type": ["string", "null"]},
-                "sachverhalt":  {"type": ["string", "null"]},
-                "dispositiv":   {"type": ["string", "null"]},
+                "regeste":      {"type": "string", "nullable": True},
+                "sachverhalt":  {"type": "string", "nullable": True},
+                "dispositiv":   {"type": "string", "nullable": True},
                 "erwaegungen": {
                     "type": "array",
                     "items": {
@@ -17531,7 +17532,7 @@ render();setInterval(render,60000);
                         "properties": {
                             "e_number": {"type": "string"},
                             "depth":    {"type": "integer"},
-                            "parent":   {"type": ["string", "null"]},
+                            "parent":   {"type": "string", "nullable": True},
                             "text":     {"type": "string"},
                         },
                     },
@@ -17545,13 +17546,13 @@ render();setInterval(render,60000);
                 "decision_id":         {"type": "string"},
                 "e_number":            {"type": "string"},
                 "text":                {"type": "string"},
-                "regeste":             {"type": ["string", "null"]},
+                "regeste":             {"type": "string", "nullable": True},
                 "citation_string_de":  {"type": "string"},
                 "citation_string_fr":  {"type": "string"},
                 "citation_string_it":  {"type": "string"},
                 "canonical_url":       {"type": "string"},
                 "markdown_link":       {"type": "string"},
-                "rule_statement":      {"type": ["string", "null"]},
+                "rule_statement":      {"type": "string", "nullable": True},
             },
         },
         ("GET", "/relevant-erwaegung/{decision_id}"): {
@@ -17587,11 +17588,11 @@ render();setInterval(render,60000);
             "properties": {
                 "exists":              {"type": "boolean"},
                 "reference":           {"type": "string"},
-                "citation_string_de":  {"type": ["string", "null"]},
-                "citation_string_fr":  {"type": ["string", "null"]},
-                "citation_string_it":  {"type": ["string", "null"]},
-                "canonical_url":       {"type": ["string", "null"]},
-                "rule_statement":      {"type": ["string", "null"]},
+                "citation_string_de":  {"type": "string", "nullable": True},
+                "citation_string_fr":  {"type": "string", "nullable": True},
+                "citation_string_it":  {"type": "string", "nullable": True},
+                "canonical_url":       {"type": "string", "nullable": True},
+                "rule_statement":      {"type": "string", "nullable": True},
                 "close_matches": {
                     "type": "array",
                     "items": {"type": "string"},
@@ -17748,6 +17749,15 @@ render();setInterval(render,60000);
                                 "type": "object",
                                 "additionalProperties": True,
                             }
+
+        # Belt-and-braces: re-run the 3.0.3 sanitizer over the injected
+        # schemas. Caught 2026-05-11 — the typed Copilot schemas had been
+        # authored with JSON-Schema-2020-12 idioms (`type: [X, null]`)
+        # which openapi-spec-validator rejects as not-3.0.x. Running the
+        # sanitizer post-injection converts any remaining 3.1 fragments
+        # to OpenAPI 3.0 form (`nullable: true`) before Copilot Studio
+        # sees them.
+        _sanitize_for_3_0(spec)
 
         return spec
 
