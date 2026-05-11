@@ -2,9 +2,9 @@
 
 **The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
-**971,000+ court decisions · 5,516 federal laws · 15,722 cantonal laws · 8.03 M resolved citation edges (8.65 M extracted) · 11.26 M statute references · 5,292 verbatim Federal Council Botschaften (DE/FR/IT-parallel)**
+**971,000+ court decisions · 5,516 federal laws · 15,722 cantonal laws · 8.09 M resolved citation edges · 11.26 M statute references · 83,958 Botschaft amendment references (459 verbatim Botschaften ingested, scaling)**
 
-Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct-scraping 22 cantonal portals** (LexWork + SIL — the same publishing systems the cantons operate themselves) with **LexFind as a fallback** for the remaining 4 cantons (JU, SZ, UR, VD) and as the discovery catalog for 33,000+ legislative texts. Includes **Botschaft publication references for 5,293 verbatim Botschaft documents linked to 8,124 statute articles** (per-article Botschaft digests for BV/BGFA today; full per-law digested expansion to all federal laws is in active build), parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph** and **33 MCP tools (31 remote + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
+Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct-scraping 19 cantonal portals** (LexWork + SIL — the same publishing systems the cantons operate themselves) with **LexFind as a fallback** for the remaining 7 cantons and as the discovery catalog for 33,000+ legislative texts. Includes **83,958 Botschaft amendment references across 9,139 BBl publications**, a **Phase 2 verbatim Botschaft corpus** (459 documents, 76K FTS5-indexed paragraphs as of 2026-05-11, scaling toward ~25K via Fedlex SPARQL discovery), per-article Botschaft digests for BV/BGFA, parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph**, and **33 MCP tools (31 remote + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
 [![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
@@ -34,23 +34,23 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 
 **Legislation** — every Swiss law, federal and cantonal, locally mirrored with article-level indexing:
 - 5,516 federal laws / ~133,468 articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
-- 15,722 cantonal laws / 353,437 articles, direct-scraped from 22 cantonal portals (LexWork + SIL + ZH OpenData + TI~RL); LexFind fallback for the remaining 4 cantons (JU, SZ, UR, VD)
+- 15,722 cantonal laws / 353,437 articles, direct-scraped from 19 cantonal portals (LexWork + SIL + ZH OpenData + TI~RL); LexFind fallback for the remaining 7 cantons
 - Unified SQLite FTS5 search federates both corpora; sub-millisecond article lookup
 - Monthly refresh on the 2nd of each month (the day after laws enter into force)
 - 11.26 M resolved links from decisions to individual statute articles
 
 **Citation graph** — the **only public large-scale citation graph of the Swiss legal system**:
-- 8.03 M resolved decision-to-decision citation edges (from 8.65 M extracted, 92.9 % resolved) with confidence scores
+- 8.09 M resolved decision-to-decision citation edges with confidence scores
 - 11.26 M decision-to-statute links resolved against the current consolidated text
 - Bidirectional lookup, appeal-chain resolution (Instanzenzug), leading-case ranking by citation authority
-- Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend` (top: BGE 125 V 351 with 60,650 incoming citations)
+- Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend` (top: BGE 125 V 351 with 85,108 incoming citations)
 
 **33 MCP tools (31 remote + 2 local-only)** — specialised research tools that run in your LLM of choice:
 - Natural-language decision search (BM25 + synonym expansion + Haiku reranking, **MRR@10 = 0.647** on a 100-query golden set)
 - Leading-case discovery, citation networks, appeal chains, jurisprudence evolution
 - Federal + cantonal law article lookup, full-text search across both — with **colloquial→legal vocabulary expansion** (searching "Vaterschaftsurlaub" finds the statute even though it says "Urlaub des andern Elternteils") and **cross-language cantonal search** (German query finds French/Italian cantonal laws)
 - Doctrine overviews (statute + authority-ranked BGEs + timeline + Botschaft reference)
-- **Legislative history (Materialien)** — Botschaft publication references for 8,124 statute articles across 5,293 verbatim Botschaften (DE/FR/IT); per-article digests (legislative intent, key arguments, design choices, rejected alternatives) for BV and BGFA; parliamentary debate transcripts for the BV. **Full digested expansion to every federal law (Botschaft + Vernehmlassung + AmtlBull + committee reports, per-article) is in active build.**
+- **Legislative history (Materialien)** — 83,958 Botschaft amendment references across 9,139 BBl publications and 33,465 distinct (statute, article) pairs; **Phase 2 verbatim Botschaft corpus** (459 documents, 76K FTS5-indexed paragraphs as of 2026-05-11) accessible via `search_botschaft` (topical FTS5 across the verbatim corpus), `get_article_purpose` (verbatim Botschaft text for a specific article), and `get_article_history` (chronological timeline composing statute + Botschaft + leading cases + commentary); per-article digests (legislative intent, key arguments, design choices, rejected alternatives) for BV and BGFA; parliamentary debate transcripts for the BV. **Full verbatim ingest to ~25K Botschaften via Fedlex SPARQL discovery is scaling.**
 - **Decision-structure access** — `get_decision_structure` (Sachverhalt + Erwägungen + Dispositiv + Regeste split), `get_erwaegung` (verbatim Schweizer-citation Einheit, e.g. `get_erwaegung("BGE 140 III 86", "2.3")`), `get_regeste` (official BGer/BVGer/BStGer head-note)
 - Scholarly commentary lookup from OnlineKommentar.ch + OpenLegalCommentary.ch (1,058 commentaries)
 - **Fallbearbeitung exam questions** generated from real BGE fact patterns, with hidden analysis for practice
@@ -78,7 +78,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 | Article lookup latency | < 1 ms (local FTS5) |
 | BGer publication → searchable | ~15 min (was 24 h pre-poller) |
 | Daily full-text rebuild | ~5 h, zero downtime (atomic swap) |
-| Citation-to-decision resolution rate | 92.9 % (8.03 M / 8.65 M raw refs) |
+| Citation-to-decision resolution | 8.09 M edges resolved (post-build 2026-05-11) |
 
 ---
 
@@ -426,7 +426,7 @@ The AI calls the MCP tools automatically — you see the search results inline a
 
 ### Citation graph tools
 
-Four tools expose the **reference graph**: 8.03 million resolved decision-to-decision citation edges (from 8.65 M extracted) and 11.26 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+Four tools expose the **reference graph**: 8.09 million resolved decision-to-decision citation edges and 11.26 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
 
 **`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
 

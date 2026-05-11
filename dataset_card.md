@@ -114,7 +114,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 969,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 31 tools (27 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Stanford RegLab, 2024 / Journal of Legal Analysis — 58–82 % of legal queries to general-purpose LLMs produced fabricated authority; the follow-up Magesh et al. *Hallucination-Free?* study of commercial legal-RAG tools, 2024, measured 17–33 %) and **reasoning error** (Butler & Butler, Isaacus, *Legal RAG Bench*, Mar 2026 — citation real, source retrieved, proposition unsupported).
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 971,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 33 tools (31 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Stanford RegLab, 2024 / Journal of Legal Analysis — 58–82 % of legal queries to general-purpose LLMs produced fabricated authority; the follow-up Magesh et al. *Hallucination-Free?* study of commercial legal-RAG tools, 2024, measured 17–33 %) and **reasoning error** (Butler & Butler, Isaacus, *Legal RAG Bench*, Mar 2026 — citation real, source retrieved, proposition unsupported).
 
 **Remote (no download needed):**
 
@@ -157,14 +157,15 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | Average decision length | 22,775 characters |
 | Full text coverage | 100% |
 | Regeste (headnote) coverage | 38.7% |
-| Case-citation references | 8.65 million extracted, 8.03 million resolved (92.9 %) |
-| Statute-decision links | 11.63 million |
-| Federal laws indexed | 5,510 (132,586 articles in DE/FR/IT) |
-| Cantonal laws indexed | 15,722 (353,464 articles, direct-scraped + LexFind) |
-| Laws with Botschaft refs | 2,500 (33,000 articles) |
+| Case-citation references | 8.09 million resolved (post-build 2026-05-11) |
+| Statute-decision links | 11.26 million |
+| Federal laws indexed | 5,516 (400,405 articles total / ~133,468 per DE/FR/IT) |
+| Cantonal laws indexed | 15,722 (353,437 articles, direct-scraped + LexFind) |
+| Laws with Botschaft refs | 2,615 (33,465 articles) |
+| Verbatim Botschaft corpus | 459 documents / 76,210 FTS5-indexed paragraphs (Phase 2, scaling) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
-| Scholarly commentaries | 1,058 (OnlineKommentar.ch + OpenLegalCommentary.ch) |
-| MCP tools | 31 (29 remote / 31 local) |
+| Scholarly commentaries | 1,104 (OnlineKommentar.ch + OpenLegalCommentary.ch) |
+| MCP tools | 33 (31 remote / 33 local) |
 
 **Language distribution:**
 
@@ -174,7 +175,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | French (fr) | 441,094 | 45.5% |
 | Italian (it) | 80,696 | 8.3% |
 
-**Reference graph:** 8.65 million extracted citation edges, 8.03 million resolved (92.9 %), and 11.26 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 66,809 incoming citations.
+**Reference graph:** 8.09 million resolved citation edges and 11.26 million statute-to-decision links (post-build 2026-05-11). The most-cited decision is BGE 125 V 351 with 85,108 incoming citations.
 
 **Search benchmark (frozen offline baseline):** `benchmarks/search_benchmark_2026-03-19_offline_full.json` records a 100-query run against a 1,078,177-row local `decisions.db`, with MRR@10 = 0.4697, Recall@10 = 0.4958, nDCG@10 = 0.5250, and Hit@1 = 0.33. This is a reproducible offline baseline, not a fully provisioned hosted-system score.
 
@@ -317,11 +318,12 @@ See the governance policy for source withdrawals, re-anonymization, and verified
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={969,000+ Swiss federal, cantonal, and regulatory decisions with full text,
-        structured metadata, 8.85M citation edges, 11.34M statute links,
-        5,500+ federal laws, 26,043 cantonal legislative texts,
-        and legislative history for 2,500 laws.
-        Searchable via 31 MCP tools (29 remote + 2 local-only) (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
+  note={971,000+ Swiss federal, cantonal, and regulatory decisions with full text,
+        structured metadata, 8.09M resolved citation edges, 11.26M statute links,
+        5,516 federal laws, 15,722 cantonal laws,
+        and legislative history (83,958 Botschaft amendment references; 459
+        verbatim Botschaften, scaling).
+        Searchable via 33 MCP tools (31 remote + 2 local-only) (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
 }
 ```
 
