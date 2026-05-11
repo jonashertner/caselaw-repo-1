@@ -2657,8 +2657,16 @@ async function scanDocument() {
   if (!proKey) { state.view = 'settings'; render(); return; }
 
   var docText = await getDocumentText();
+  // Two distinct failure modes — surface them separately so the user
+  // gets actionable feedback instead of the previous catch-all
+  // "only available inside Word" message that fired even when they
+  // *were* in Word but the document happened to be empty.
   if (!docText) {
-    state.error = { type: 'no_selection', message: t('audit_no_word', lang) };
+    if (!_insideWord) {
+      state.error = { type: 'not_in_word', message: t('audit_no_word', lang) };
+    } else {
+      state.error = { type: 'doc_empty', message: t('audit_doc_empty', lang) };
+    }
     state.view = 'scan';
     render();
     return;
@@ -3035,7 +3043,20 @@ async function reflectOnDocument() {
   } catch (e) {
     docText = '';
   }
-  if (!docText || docText.trim().length < 80) {
+  // Differentiate the three failure modes so the user knows what to
+  // fix: not running inside Word vs. empty document vs. too short
+  // for a meaningful reflection.
+  if (!docText) {
+    state.reflectRunning = false;
+    if (!_insideWord) {
+      state.error = { type: 'not_in_word', message: t('audit_no_word', lang) };
+    } else {
+      state.error = { type: 'doc_empty', message: t('audit_doc_empty', lang) };
+    }
+    render();
+    return;
+  }
+  if (docText.trim().length < 80) {
     state.reflectRunning = false;
     state.error = { type: 'too_short', message: t('reflect_too_short', lang) };
     render();

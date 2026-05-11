@@ -946,6 +946,12 @@ var UI_STRINGS = {
     it: 'Inserisci tutti i problemi come commenti',
     en: 'Insert all issues as comments',
   },
+  audit_doc_empty: {
+    de: 'Das Word-Dokument ist leer. Bitte zuerst Text einfügen oder schreiben — dann erneut prüfen.',
+    fr: 'Le document Word est vide. Veuillez d\'abord ajouter ou rédiger du texte, puis relancer la vérification.',
+    it: 'Il documento Word è vuoto. Inserisci o scrivi del testo prima di rieseguire la verifica.',
+    en: 'The Word document is empty. Please add or write some text first, then re-run the check.',
+  },
   audit_no_word: {
     de: 'Diese Funktion ist nur in Word verfügbar.',
     fr: 'Cette fonction n\'est disponible que dans Word.',
