@@ -10485,9 +10485,35 @@ def _pinpoint_in_text(full_text: str, pinpoint: str) -> bool:
 # in an inline (?i:...) so it still matches in any case form.
 _STATUTE_AUDIT_PATTERN = re.compile(
     r"""
-    \b(?i:Art\.?|Artikel|articolo)\s*
+    \b(?i:Art\.?|Artikel|articolo|article)\s*
     (?P<article>\d+(?:\s*(?:bis|ter|quater|quinquies|sexies)|[a-z](?![a-z]))?)
-    (?:\s*(?i:Abs\.?|Absatz|al\.?|alin(?:ea)?\.?|cpv\.?|co\.?|para\.?)\s*\d+[a-z]?)?
+    # Optional chain of subdivision markers — Swiss legal citations
+    # commonly read "Art. 4 Abs. 1 Bst. a Ziff. 2 Satz 3 OR" and the
+    # same chain in FR/IT/Latin. Each marker is paired with a value
+    # (digit, single letter, or digit+letter). Zero-or-more chained
+    # markers, so "Art. 4 OR" still matches.
+    #
+    # Markers covered (case-insensitive):
+    #   Paragraph: Abs./Absatz | al./alinea/alinéa | cpv./capoverso |
+    #              co. | para./par.
+    #   Letter:    Bst./Buchstabe | lit. | let./lettre | lett./lettera
+    #   Numeral:   Ziff./Ziffer | ch./chiffre | n./num./numero |
+    #              Nr./Nummer
+    #   Sentence:  Satz | phrase | frase | sent.
+    #
+    # Subdivision values accept digits ("1", "10", "1a"), single
+    # letters ("a", "b"), or Roman numerals ("ii", "iv", "VII") —
+    # the Roman branch comes before [a-z] so multi-letter Romans
+    # don't get clipped to a single char.
+    (?:
+      \s*
+      (?i:
+        Abs|Absatz|al|alin(?:ea|\u00e9a)?|cpv|capoverso|co|para|par
+        |Bst|Buchstabe|lit|let|lettre|lett|lettera
+        |Ziff|Ziffer|ch|chiffre|Nr|Nummer|num|numero|n
+        |Satz|phrase|frase|sent
+      )\.?\s*(?:\d+[a-z]?|[ivxIVX]{1,5}|[a-z])\b
+    )*
     \s+(?P<law>[A-Z][A-Za-zÄÖÜ0-9]{1,11}(?:/[A-Z0-9]{2,6})?)\b
     """,
     flags=re.VERBOSE,
@@ -10496,10 +10522,23 @@ _STATUTE_AUDIT_PATTERN = re.compile(
 # Defence-in-depth: even with case-sensitive matching, all-caps words
 # that look like a law slot but never are.
 _STATUTE_AUDIT_INVALID_LAWS = {
-    "ABS", "ABSATZ", "AL", "ALIN", "ALINEA", "CPV", "PARA", "CO",
+    # Paragraph markers
+    "ABS", "ABSATZ", "AL", "ALIN", "ALINEA", "ALINEA", "CPV",
+    "CAPOVERSO", "PARA", "PAR", "CO",
+    # Letter markers
+    "BST", "BUCHSTABE", "LIT", "LET", "LETTRE", "LETT", "LETTERA",
+    # Numeral markers
+    "ZIFF", "ZIFFER", "CHIFFRE", "NUMMER", "NUMERO",
+    "NR",  # "Nr." numbering (not a Swiss law abbreviation)
+    # Sentence markers
+    "SATZ", "PHRASE", "FRASE", "SENT",
+    # Article suffixes (only valid as suffix to an article number)
     "BIS", "TER", "QUATER", "QUINQUIES", "SEXIES",
+    # Court / instance prefixes accidentally matched as laws
     "OG", "OGER", "BG", "BGE", "BGER", "BGB",
-    "EG", "IG", "VG", "RR", "EN", "DE", "FR", "IT",
+    "EG", "IG", "VG", "RR",
+    # Language codes
+    "EN", "DE", "FR", "IT",
     # German / French / Italian connectives that can appear all-caps
     # in headings or list items
     "UND", "ODER", "BZW", "USW", "ET", "OU", "EE", "OD",

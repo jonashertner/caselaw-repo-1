@@ -169,6 +169,56 @@ def test_statute_audit_noop_without_db(m, monkeypatch, tmp_path):
     assert m._audit_statutes(draft) == []
 
 
+# ── Statute pattern: full Swiss subdivision-chain support ──────────
+# These exercise the regex directly so we lock in the (article, law)
+# tuple regardless of statutes.db presence. Bug fixed 2026-05-11:
+# the audit broke when references included Bst./lit./let./Ziff./Nr./
+# Satz markers between Art. and the law abbreviation.
+
+@pytest.mark.parametrize("inp,exp_article,exp_law", [
+    # Base case
+    ("Art. 4 OR",                              "4",       "OR"),
+    ("Art. 41 OR",                             "41",      "OR"),
+    # Article suffixes
+    ("Art. 10a Abs. 2 ZGB",                    "10a",     "ZGB"),
+    ("Art. 41bis OR",                          "41bis",   "OR"),
+    # German subdivision chain
+    ("Art. 4 Abs. 1 OR",                       "4",       "OR"),
+    ("Art. 4 Abs. 1 Bst. a OR",                "4",       "OR"),
+    ("Art. 4 Abs. 1 Bst. a Ziff. 2 OR",        "4",       "OR"),
+    ("Art. 4 Abs. 1 Bst. a Ziff. 2 Satz 3 OR", "4",       "OR"),
+    ("Art. 5 Nr. 3 IPRG",                      "5",       "IPRG"),
+    # French subdivision chain (alinea/lettre/chiffre/phrase)
+    ("art. 4 al. 1 let. a CO",                 "4",       "CO"),
+    ("Article 4 alinea 1 CO",                  "4",       "CO"),
+    # Italian subdivision chain (capoverso/lettera/numero/frase)
+    ("art. 4 cpv. 1 lett. a CC",               "4",       "CC"),
+    ("articolo 5 cpv. 2 lett. b CO",           "5",       "CO"),
+])
+def test_statute_pattern_parses_all_subdivisions(m, inp, exp_article, exp_law):
+    matches = list(m._STATUTE_AUDIT_PATTERN.finditer(inp))
+    assert matches, f"pattern failed to match: {inp!r}"
+    g = matches[0]
+    assert (g.group("article") or "").strip() == exp_article, inp
+    assert (g.group("law") or "").strip() == exp_law, inp
+
+
+def test_statute_pattern_does_not_mistake_subdivision_marker_for_law(m):
+    """Pre-fix bug: 'Art. 4 Abs. 1 Bst. a OR' would either fail to
+    match, or worse, match 'Bst' as the law slot. Confirm that all
+    matches in such a string land on the real law abbreviation."""
+    text = ("Vgl. Art. 4 Abs. 1 Bst. a OR; ebenso Art. 5 Abs. 2 ZGB "
+            "und Art. 6 Bst. b lit. ii BGG.")
+    laws = [m_.group("law") for m_ in m._STATUTE_AUDIT_PATTERN.finditer(text)]
+    # The matched laws should be the real ones, not 'Bst', 'Lit', 'Ziff' etc.
+    assert "OR" in laws
+    assert "ZGB" in laws
+    assert "BGG" in laws
+    # And none of the bogus ones should sneak through.
+    for bogus in ("BST", "LIT", "ZIFF", "ABS", "LET", "LETT"):
+        assert bogus not in laws, f"{bogus} leaked into law slot for: {text!r}"
+
+
 # ── Top-level handler shape ────────────────────────────────────────
 
 def test_attest_empty_draft_clean(m):
