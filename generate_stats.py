@@ -1452,25 +1452,45 @@ def main():
         prev_total = prev.get("total", 0)
         delta_total = stats["total"] - prev_total
 
-        # by_court delta (only where delta > 0)
-        prev_court_counts = {}
+        # by_court delta (only where delta > 0).
+        # by_court is a list of {court, canton, count, ...} dicts where
+        # the SAME court can appear under multiple cantons (e.g.,
+        # ecthr_chamber × CE = 1121 AND ecthr_chamber × CH = 32).
+        # The previous version of this code built `prev_court_counts`
+        # by repeated dict assignment, which silently overwrote earlier
+        # rows — leaving only the LAST canton's count per court as the
+        # baseline. Result: the 2026-05-11 dashboard showed
+        # ecthr_chamber +1089 (vs the true +32), because yesterday's
+        # baseline was clipped from 1121 → 32 by the overwrite. Same
+        # pattern for ecthr_committee, ecthr_grand_chamber, sav_kantone.
+        # Now: aggregate by court NAME on both sides before diffing.
+        from collections import defaultdict
+        prev_court_counts: dict = defaultdict(int)
         for c in prev.get("by_court", []):
-            prev_court_counts[c["court"]] = c["count"]
-        delta_by_court = {}
+            prev_court_counts[c["court"]] += c.get("count", 0)
+        cur_court_counts: dict = defaultdict(int)
         for c in stats["by_court"]:
-            d = c["count"] - prev_court_counts.get(c["court"], 0)
+            cur_court_counts[c["court"]] += c.get("count", 0)
+        delta_by_court = {}
+        for court, cur_n in cur_court_counts.items():
+            d = cur_n - prev_court_counts.get(court, 0)
             if d > 0:
-                delta_by_court[c["court"]] = d
+                delta_by_court[court] = d
 
-        # by_canton delta (only where delta > 0)
-        prev_canton_counts = {}
+        # by_canton delta (only where delta > 0). Defensive aggregation
+        # too, since the same canton may appear via multiple courts'
+        # rollups in some codepaths.
+        prev_canton_counts: dict = defaultdict(int)
         for c in prev.get("by_canton", []):
-            prev_canton_counts[c["canton"]] = c["count"]
-        delta_by_canton = {}
+            prev_canton_counts[c["canton"]] += c.get("count", 0)
+        cur_canton_counts: dict = defaultdict(int)
         for c in stats["by_canton"]:
-            d = c["count"] - prev_canton_counts.get(c["canton"], 0)
+            cur_canton_counts[c["canton"]] += c.get("count", 0)
+        delta_by_canton = {}
+        for canton, cur_n in cur_canton_counts.items():
+            d = cur_n - prev_canton_counts.get(canton, 0)
             if d > 0:
-                delta_by_canton[c["canton"]] = d
+                delta_by_canton[canton] = d
 
         # Corpus delta (federal laws, cantonal laws, commentaries, citations)
         prev_corpus = prev.get("corpus", {}) or {}
