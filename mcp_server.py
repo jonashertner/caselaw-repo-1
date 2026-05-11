@@ -17365,6 +17365,241 @@ render();setInterval(render,60000);
         ("GET", "/cite"): "Build canonical Swiss citation",
     }
 
+    # Typed response schemas for the Copilot Studio variant. The default
+    # FastAPI behaviour emits an empty {} response schema for handlers
+    # that return raw dicts (no Pydantic response_model); Copilot Studio's
+    # PowerFx data layer then sees no named properties and binds nothing —
+    # exactly the "API antwortet erfolgreich, liefert aber null Treffer"
+    # Lalive bug reported 2026-05-11.
+    #
+    # These describe only the fields a Copilot Studio action typically
+    # surfaces (top-level metadata + per-result key fields). We don't
+    # restrict additionalProperties — the wire response always carries
+    # more than this; Copilot Studio just won't bind to the extras
+    # unless we name them.
+    _COPILOT_DECISION_ITEM_SCHEMA = {
+        "type": "object",
+        "additionalProperties": True,
+        "properties": {
+            "decision_id":         {"type": "string"},
+            "court":               {"type": "string"},
+            "court_name":          {"type": "string"},
+            "court_level":         {"type": "string"},
+            "canton":              {"type": "string"},
+            "chamber":             {"type": ["string", "null"]},
+            "docket_number":       {"type": "string"},
+            "decision_date":       {"type": "string"},
+            "language":            {"type": "string"},
+            "title":               {"type": ["string", "null"]},
+            "regeste":             {"type": ["string", "null"]},
+            "snippet":             {"type": ["string", "null"]},
+            "legal_area":          {"type": ["string", "null"]},
+            "citation_count":      {"type": "integer"},
+            "is_leading_case":     {"type": "boolean"},
+            "citation_string_de":  {"type": "string"},
+            "citation_string_fr":  {"type": "string"},
+            "citation_string_it":  {"type": "string"},
+            "canonical_url":       {"type": "string"},
+            "rule_statement":      {"type": ["string", "null"]},
+            "pinpoint": {
+                "type": ["object", "null"],
+                "additionalProperties": True,
+                "properties": {
+                    "e_number":         {"type": "string"},
+                    "matched_sentence": {"type": "string"},
+                    "confidence":       {"type": "string"},
+                    "url":              {"type": "string"},
+                    "score":            {"type": "number"},
+                    "source":           {"type": "string"},
+                },
+            },
+        },
+    }
+    _COPILOT_RESPONSE_SCHEMAS = {
+        ("GET", "/decisions"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "total":   {"type": "integer"},
+                "limit":   {"type": "integer"},
+                "offset":  {"type": "integer"},
+                "results": {
+                    "type": "array",
+                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                },
+            },
+        },
+        ("GET", "/decisions/{decision_id}"): _COPILOT_DECISION_ITEM_SCHEMA,
+        ("GET", "/leading-cases"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "law_code": {"type": ["string", "null"]},
+                "article":  {"type": ["string", "null"]},
+                "query":    {"type": ["string", "null"]},
+                "total":    {"type": "integer"},
+                "results": {
+                    "type": "array",
+                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                },
+            },
+        },
+        ("GET", "/citations/{decision_id}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "decision_id":  {"type": "string"},
+                "direction":    {"type": "string"},
+                "incoming": {
+                    "type": "array",
+                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                },
+                "outgoing": {
+                    "type": "array",
+                    "items": _COPILOT_DECISION_ITEM_SCHEMA,
+                },
+            },
+        },
+        ("GET", "/laws/{abbreviation}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "abbreviation":  {"type": "string"},
+                "sr_number":     {"type": "string"},
+                "title":         {"type": "string"},
+                "language":      {"type": "string"},
+                "canton":        {"type": "string"},
+                "article_count": {"type": "integer"},
+                "articles": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "article_num": {"type": "string"},
+                            "heading":     {"type": ["string", "null"]},
+                            "text":        {"type": "string"},
+                        },
+                    },
+                },
+            },
+        },
+        ("GET", "/laws/search"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "query": {"type": "string"},
+                "total": {"type": "integer"},
+                "results": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "abbreviation": {"type": ["string", "null"]},
+                            "sr_number":    {"type": ["string", "null"]},
+                            "title":        {"type": "string"},
+                            "article":      {"type": ["string", "null"]},
+                            "snippet":      {"type": ["string", "null"]},
+                        },
+                    },
+                },
+            },
+        },
+        ("GET", "/regeste/{decision_id}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "decision_id":  {"type": "string"},
+                "regeste":      {"type": "string"},
+                "language":     {"type": "string"},
+            },
+        },
+        ("GET", "/structure/{decision_id}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "decision_id":  {"type": "string"},
+                "regeste":      {"type": ["string", "null"]},
+                "sachverhalt":  {"type": ["string", "null"]},
+                "dispositiv":   {"type": ["string", "null"]},
+                "erwaegungen": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "e_number": {"type": "string"},
+                            "depth":    {"type": "integer"},
+                            "parent":   {"type": ["string", "null"]},
+                            "text":     {"type": "string"},
+                        },
+                    },
+                },
+            },
+        },
+        ("GET", "/erwaegung/{decision_id}/{e_number}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "decision_id":         {"type": "string"},
+                "e_number":            {"type": "string"},
+                "text":                {"type": "string"},
+                "regeste":             {"type": ["string", "null"]},
+                "citation_string_de":  {"type": "string"},
+                "citation_string_fr":  {"type": "string"},
+                "citation_string_it":  {"type": "string"},
+                "canonical_url":       {"type": "string"},
+                "markdown_link":       {"type": "string"},
+                "rule_statement":      {"type": ["string", "null"]},
+            },
+        },
+        ("GET", "/relevant-erwaegung/{decision_id}"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "decision_id": {"type": "string"},
+                "claim":       {"type": "string"},
+                "confidence":  {"type": "string"},
+                "no_match":    {"type": "boolean"},
+                "matches": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "properties": {
+                            "e_number":             {"type": "string"},
+                            "text":                 {"type": "string"},
+                            "matched_sentence":     {"type": "string"},
+                            "highlighted_snippet":  {"type": "string"},
+                            "score":                {"type": "number"},
+                            "citation_string_de":   {"type": "string"},
+                            "url":                  {"type": "string"},
+                            "display_url":          {"type": "string"},
+                        },
+                    },
+                },
+            },
+        },
+        ("GET", "/cite"): {
+            "type": "object",
+            "additionalProperties": True,
+            "properties": {
+                "exists":              {"type": "boolean"},
+                "reference":           {"type": "string"},
+                "citation_string_de":  {"type": ["string", "null"]},
+                "citation_string_fr":  {"type": ["string", "null"]},
+                "citation_string_it":  {"type": ["string", "null"]},
+                "canonical_url":       {"type": ["string", "null"]},
+                "rule_statement":      {"type": ["string", "null"]},
+                "close_matches": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                },
+            },
+        },
+    }
+
     @rest_api.get("/openapi.copilot.json", include_in_schema=False)
     async def api_openapi_copilot():
         """Curated OpenAPI 3.0.3 subset for Microsoft Copilot Studio.
@@ -17474,13 +17709,22 @@ render();setInterval(render,60000);
         # Copilot Studio binds output variables to the response schema in
         # its UI; an empty schema {} means no output variables get
         # surfaced. FastAPI emits {} for handlers that return raw dicts
-        # (no Pydantic response_model). Filling them with a permissive
-        # object schema gives Copilot Studio enough shape to wire the
-        # action's output without claiming structure we don't enforce.
+        # (no Pydantic response_model). The previous permissive fallback
+        # `{type: object, additionalProperties: true}` was *technically*
+        # valid OpenAPI but invisible to Copilot Studio's PowerFx data
+        # binding — it needs NAMED properties to surface output variables,
+        # which is why the Lalive integration reported "API antwortet
+        # erfolgreich, liefert aber null Treffer" (2026-05-11): the
+        # /decisions response shape was correct on the wire, but
+        # Copilot Studio's binding layer couldn't see results/total.
+        # Typed schemas below describe just enough shape to wire the
+        # main fields (results[], total, per-decision metadata) without
+        # over-constraining what the API can return.
         for path, methods in spec.get("paths", {}).items():
             for method_name, op in methods.items():
                 if not isinstance(op, dict):
                     continue
+                method_up = method_name.upper()
                 for status, resp in (op.get("responses") or {}).items():
                     if not isinstance(resp, dict):
                         continue
@@ -17496,7 +17740,11 @@ render();setInterval(render,60000);
                             and not sch.get("anyOf")
                             and not sch.get("allOf")
                         ):
-                            media["schema"] = {
+                            # Look up a typed response schema for this
+                            # exact endpoint; fall back to the permissive
+                            # object so any new endpoint still imports.
+                            typed = _COPILOT_RESPONSE_SCHEMAS.get((method_up, path))
+                            media["schema"] = typed or {
                                 "type": "object",
                                 "additionalProperties": True,
                             }
