@@ -9635,15 +9635,21 @@ def _handle_get_article_history(
     statute_text: dict | None = None
     try:
         stat = _get_legislation_local(
-            sr_number=sr_number, article=article, language=language,
+            systematic_number=sr_number, language=language,
         )
         if stat and "error" not in stat:
+            # The whole-law payload returns articles[]; pick the requested one.
+            target_art = None
+            for a in (stat.get("articles") or []):
+                if str(a.get("article_num") or "").strip() == article:
+                    target_art = a
+                    break
             statute_text = {
-                "law_abbreviation":   stat.get("law_abbreviation") or stat.get("abbreviation"),
-                "title":              stat.get("title") or stat.get("law_title"),
+                "law_abbreviation":   stat.get("abbreviation"),
+                "title":              stat.get("title"),
                 "article":            article,
                 "language":           language,
-                "current_text":       stat.get("text"),
+                "current_text":       (target_art or {}).get("text"),
                 "consolidation_date": stat.get("consolidation_date"),
             }
     except Exception as e:
