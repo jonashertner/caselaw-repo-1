@@ -1791,6 +1791,30 @@ def build_database(
         # The atomic-swap stays — a swap-then-fail path is safer than
         # a swap-then-pretend-it-worked path, because the post-mortem
         # diagnosis is much easier when the new file is on disk.
+        # Heartbeat thread: PRAGMA integrity_check on the 60 GB DB is a
+        # single silent SQL call that runs 2h 55m – 4h+ under disk
+        # contention. Parent's stall watchdog (publish.py run_cmd,
+        # currently 14400s = 4h) kills the whole process if it sees no
+        # stdout for that long. Yesterday (2026-05-11) we tripped it at
+        # 10800s; today (2026-05-12) tripped again at 14400s under
+        # contention from the paragraph_embeddings encoder + active
+        # quick_publishes. Emitting a heartbeat line every 5 min keeps
+        # the watchdog satisfied indefinitely while still letting it
+        # catch a truly-wedged process (heartbeats would also stop).
+        import threading as _threading
+        _hb_stop = _threading.Event()
+
+        def _hb_pulse():
+            i = 0
+            while not _hb_stop.wait(300):
+                i += 5
+                logger.info(
+                    f"  Post-swap integrity_check still running "
+                    f"({i} min elapsed) — silent PRAGMA, no progress signal"
+                )
+
+        _hb_thread = _threading.Thread(target=_hb_pulse, daemon=True)
+        _hb_thread.start()
         try:
             check_conn = sqlite3.connect(str(final_db_path))
             check_conn.execute("SELECT 1").fetchone()  # warm-up
@@ -1824,6 +1848,9 @@ def build_database(
                 f"are present, remove them and retry."
             )
             raise
+        finally:
+            _hb_stop.set()
+            _hb_thread.join(timeout=2)
 
     # Save checkpoint
     if incremental or full_rebuild:
