@@ -1,13 +1,13 @@
 {
-  "total": 971961,
+  "total": 971992,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175434,
+      "count": 175465,
       "earliest": "1986-10-06",
-      "latest": "2026-04-30",
-      "last_scraped": "2026-05-11T10:15:39.685950+00:00",
+      "latest": "2026-05-01",
+      "last_scraped": "2026-05-12T10:31:00.012582+00:00",
       "languages": [
         "de",
         "fr",
@@ -1714,9 +1714,9 @@
     }
   ],
   "by_language": {
-    "de": 449894,
-    "fr": 441345,
-    "it": 80722
+    "de": 449920,
+    "fr": 441347,
+    "it": 80725
   },
   "by_year": {
     "1875": 153,
@@ -1851,8 +1851,8 @@
     "2004": 17108,
     "2005": 19489,
     "2006": 20447,
-    "2007": 26490,
-    "2008": 27611,
+    "2007": 26494,
+    "2008": 27612,
     "2009": 31925,
     "2010": 33913,
     "2011": 35017,
@@ -1870,24 +1870,24 @@
     "2023": 47128,
     "2024": 47069,
     "2025": 44484,
-    "2026": 9210
+    "2026": 9236
   },
   "recent_daily": {
-    "2026-04-13": 88,
+    "2026-04-13": 89,
     "2026-04-14": 66,
     "2026-04-15": 77,
-    "2026-04-16": 63,
-    "2026-04-17": 70,
+    "2026-04-16": 67,
+    "2026-04-17": 71,
     "2026-04-20": 68,
     "2026-04-21": 58,
-    "2026-04-22": 48,
-    "2026-04-23": 38,
+    "2026-04-22": 49,
+    "2026-04-23": 39,
     "2026-04-24": 24,
-    "2026-04-27": 34,
-    "2026-04-28": 29,
-    "2026-04-29": 21,
+    "2026-04-27": 37,
+    "2026-04-28": 36,
+    "2026-04-29": 22,
     "2026-04-30": 21,
-    "2026-05-01": 3,
+    "2026-05-01": 5,
     "2026-05-04": 8,
     "2026-05-05": 6,
     "2026-05-07": 4,
@@ -1904,7 +1904,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175434
+      "count": 175465
     },
     {
       "court": "ge_gerichte",
@@ -2103,10 +2103,10 @@
     "2023": -1.1,
     "2024": -0.1,
     "2025": -5.5,
-    "2026": -79.3
+    "2026": -79.2
   },
   "federal_vs_cantonal": {
-    "federal": 346993,
+    "federal": 347024,
     "cantonal": 624968
   },
   "language_by_year": {
@@ -2121,12 +2121,12 @@
       "it": 3191
     },
     "2007": {
-      "de": 14740,
-      "fr": 8391,
+      "de": 14743,
+      "fr": 8392,
       "it": 3359
     },
     "2008": {
-      "de": 13973,
+      "de": 13974,
       "fr": 10518,
       "it": 3120
     },
@@ -2216,9 +2216,9 @@
       "it": 1438
     },
     "2026": {
-      "de": 4818,
-      "fr": 3906,
-      "it": 486
+      "de": 4840,
+      "fr": 3907,
+      "it": 489
     }
   },
   "by_month": {
@@ -2256,11 +2256,11 @@
     "2025-12": 3034,
     "2026-01": 2481,
     "2026-02": 2997,
-    "2026-03": 2508,
-    "2026-04": 1181,
-    "2026-05": 26
+    "2026-03": 2512,
+    "2026-04": 1201,
+    "2026-05": 28
   },
-  "generated_at": "2026-05-12T11:48:15.156066+00:00",
+  "generated_at": "2026-05-12T15:46:19.514457+00:00",
   "scraper_health": {
     "run_at": "2026-05-12T02:36:31.906080+00:00",
     "run_duration_s": 5791.3,
@@ -2620,7 +2620,7 @@
         "note": null,
         "state_count": 92607,
         "jsonl_size_mb": 1385.1,
-        "jsonl_mtime": "2026-05-12T11:29:18.089540+00:00"
+        "jsonl_mtime": "2026-05-12T15:33:11.233356+00:00"
       },
       "bge": {
         "success": true,
@@ -3264,9 +3264,9 @@
         "duration_s": 5735.4,
         "error": "1758 unavailable decisions (possible portal issue)",
         "note": null,
-        "state_count": 1476,
-        "jsonl_size_mb": 88.0,
-        "jsonl_mtime": "2026-05-12T02:36:31.848529+00:00"
+        "state_count": 1478,
+        "jsonl_size_mb": 88.2,
+        "jsonl_mtime": "2026-05-12T14:55:16.657835+00:00"
       }
     },
     "run_at_daily": "2026-05-12T02:36:31.906080+00:00",
@@ -3784,6 +3784,22 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_5A_346_2026",
+        "docket": "5A_346/2026",
+        "date": "2026-05-01",
+        "court": "bger",
+        "language": "de",
+        "summary": "Aufhebung des Steigerungszuschlags,"
+      },
+      {
+        "decision_id": "bger_5A_256_2026",
+        "docket": "5A_256/2026",
+        "date": "2026-05-01",
+        "court": "bger",
+        "language": "de",
+        "summary": "Konkurseröffnung,"
+      },
+      {
         "decision_id": "bger_9C_210_2026",
         "docket": "9C_210/2026",
         "date": "2026-04-30",
@@ -3798,6 +3814,14 @@
         "court": "bger",
         "language": "fr",
         "summary": "Détention pour des motifs de sûreté; refus de mise en liberté,"
+      },
+      {
+        "decision_id": "bger_5A_350_2026",
+        "docket": "5A_350/2026",
+        "date": "2026-04-29",
+        "court": "bger",
+        "language": "de",
+        "summary": "Abänderung Unterhalt,"
       },
       {
         "decision_id": "bger_5A_348_2026",
@@ -3824,44 +3848,20 @@
         "summary": "Impôts cantonaux et communaux du canton du Valais et impôt fédéral direct, périodes fiscales 2021 et 2022,"
       },
       {
-        "decision_id": "bger_7B_518_2026",
-        "docket": "7B_518/2026",
-        "date": "2026-04-28",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Détention provisoire (refus de mise en liberté),"
-      },
-      {
-        "decision_id": "bger_7B_361_2026",
-        "docket": "7B_361/2026",
+        "decision_id": "bger_9C_228_2026",
+        "docket": "9C_228/2026",
         "date": "2026-04-28",
         "court": "bger",
         "language": "de",
-        "summary": "Ausstand; Nichteintreten,"
+        "summary": "Staats- und Gemeindesteuern des Kantons Zürich sowie direkte Bundessteuer, Steuerperioden 2021-2025,"
       },
       {
-        "decision_id": "bger_7B_1271_2025",
-        "docket": "7B_1271/2025",
+        "decision_id": "bger_8C_261_2025",
+        "docket": "8C_261/2025",
         "date": "2026-04-28",
         "court": "bger",
-        "language": "fr",
-        "summary": "Ordonnance de refus de reprise de la procédure préliminaire; irrecevabilité du"
-      },
-      {
-        "decision_id": "bger_6B_2_2026",
-        "docket": "6B_2/2026",
-        "date": "2026-04-28",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Séjour illégal (LEI); principe in dubio pro reo; refus de l'assistance judiciaire,"
-      },
-      {
-        "decision_id": "bger_5A_801_2024",
-        "docket": "5A_801/2024",
-        "date": "2026-04-28",
-        "court": "bger",
-        "language": "fr",
-        "summary": "mesures protectrices de l'union conjugale,"
+        "language": "de",
+        "summary": "Invalidenversicherung (Neuanmeldung; Invalidenrente),"
       }
     ],
     "cantonal": [
@@ -4080,8 +4080,9 @@
     }
   ],
   "delta": {
-    "total": 109,
+    "total": 140,
     "by_court": {
+      "bger": 26,
       "ge_gerichte": 35,
       "bvger": 20,
       "ti_gerichte": 4,
