@@ -232,7 +232,12 @@ def _harvest_via_camoufox(
 
     with Camoufox(headless=headless) as browser:
         page = browser.new_page()
-        page.goto(url, wait_until="domcontentloaded", timeout=30000)
+        # 60-s page.goto timeout (bumped 2026-05-13 from 30 s after
+        # BGer's Incapsula was tuned up: camoufox started timing out
+        # on Page.goto while playwright-plain fallback still solved
+        # in 73 s). 60 s gives the heavier challenge enough head-room
+        # without blocking the request thread indefinitely.
+        page.goto(url, wait_until="domcontentloaded", timeout=60000)
         _simulate_human_behavior(page)
         _wait_for_challenge(page, timeout_seconds, t0)
         cookies = _extract_cookies(page.context)
