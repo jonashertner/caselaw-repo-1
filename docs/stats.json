@@ -2261,7 +2261,7 @@
     "2026-04": 1359,
     "2026-05": 75
   },
-  "generated_at": "2026-05-14T13:53:51.168056+00:00",
+  "generated_at": "2026-05-14T19:24:35.904001+00:00",
   "scraper_health": {
     "run_at": "2026-05-14T02:25:41.752844+00:00",
     "run_duration_s": 5141.2,
@@ -2910,7 +2910,7 @@
         "note": null,
         "state_count": 1479,
         "jsonl_size_mb": 88.2,
-        "jsonl_mtime": "2026-05-14T01:50:19.544963+00:00"
+        "jsonl_mtime": "2026-05-14T14:51:42.339555+00:00"
       },
       "ubi": {
         "success": true,
@@ -3323,8 +3323,8 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "citation_edges": 8649879,
-    "statute_edges": 11261717
+    "citation_edges": 8656843,
+    "statute_edges": 11269185
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -4131,7 +4131,10 @@
       "SH": 1,
       "GL": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 6964,
+      "statute_edges": 7468
+    },
     "previous_generated_at": "2026-05-13T11:18:11.662945+00:00"
   }
 }
