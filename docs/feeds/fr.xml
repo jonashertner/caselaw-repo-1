@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 14 May 2026 14:04:26 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2026 13:38:01 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -675,6 +675,37 @@ IIe Cour des assurances sociales
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesgericht 5A_347/2026 vom 2026-04-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_347_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_347/2026
+
+Arrêt du 30 avril 2026
+
+IIe Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Bovey, Président.
+
+Greffière : Mme Mairot.
+
+Participants à la procédure
+
+A.________,
+…</description>
+      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_347.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht D-1785/2026 vom 2026-04-30</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-1785_2026</link>
       <description>Asile (non-entrée en matière) et renvoi (réexamen)</description>
@@ -730,15 +761,6 @@ IIe Cour des assurances sociales
       <description>Violation de l'article 3 - Interdiction de la torture (Article 3 - Enquête effective) (Volet procédural); Violation: 3</description>
       <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ecthr_committee_23293_21</guid>
-      <category>ecthr_committee</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_committee 52031/21 vom 2026-04-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_52031_21</link>
-      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie familiale); Violation: 8;8-1</description>
-      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_committee_52031_21</guid>
       <category>ecthr_committee</category>
       <category>CEDH / Droits humains</category>
     </item>

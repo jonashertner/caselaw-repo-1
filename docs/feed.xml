@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 14 May 2026 14:00:33 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2026 13:37:48 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -736,6 +736,35 @@ Gerichtsschreiberi…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>bs_appellationsgericht AUS.2026.40 vom 2026-05-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.40</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.40
+
+URTEIL
+
+vom8.
+Mai 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+Base…</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.40</guid>
+      <category>bs_appellationsgericht</category>
+    </item>
+    <item>
       <title>sh_gerichte Nr. 51/2025/53 vom 2026-05-08</title>
       <link>https://mcp.opencaselaw.ch/entscheid/sh_gerichte_Nr.%2051_2025_53</link>
       <description>Bei einer nach Art. 91 Abs. 4 StPO weitergeleiteten Eingabe entscheidet allein die zuständige Behörde über die Eintretensvoraussetzungen (E. 3.1.3).
@@ -888,34 +917,6 @@ Beschw…</description>
       <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">so_gerichte_VWBES.2026.31</guid>
       <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_427/2026 vom 2026-05-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_427_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_427/2026
-
-Urteil vom 5. Mai 2026
-
-II. strafrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Abrecht, Präsident,
-
-Bundesrichterin Koch, Bundesrichter Kölz,
-
-Gerichtsschreiber Schu…</description>
-      <pubDate>Tue, 05 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_427.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>

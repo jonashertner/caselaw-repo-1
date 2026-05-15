@@ -1,13 +1,13 @@
 {
-  "total": 972366,
+  "total": 972426,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175503,
+      "count": 175563,
       "earliest": "1986-10-06",
       "latest": "2026-05-05",
-      "last_scraped": "2026-05-13T11:01:55.424990+00:00",
+      "last_scraped": "2026-05-15T11:02:26.593183+00:00",
       "languages": [
         "de",
         "fr",
@@ -1714,9 +1714,9 @@
     }
   ],
   "by_language": {
-    "de": 450135,
-    "fr": 441476,
-    "it": 80755
+    "de": 450172,
+    "fr": 441496,
+    "it": 80758
   },
   "by_year": {
     "1875": 153,
@@ -1851,8 +1851,8 @@
     "2004": 17108,
     "2005": 19489,
     "2006": 20447,
-    "2007": 26490,
-    "2008": 27611,
+    "2007": 26494,
+    "2008": 27612,
     "2009": 31925,
     "2010": 33913,
     "2011": 35017,
@@ -1870,24 +1870,25 @@
     "2023": 47129,
     "2024": 47076,
     "2025": 44533,
-    "2026": 9538
+    "2026": 9593
   },
   "recent_daily": {
     "2026-04-15": 87,
-    "2026-04-16": 75,
-    "2026-04-17": 76,
-    "2026-04-20": 76,
+    "2026-04-16": 80,
+    "2026-04-17": 78,
+    "2026-04-20": 81,
     "2026-04-21": 67,
-    "2026-04-22": 61,
+    "2026-04-22": 65,
     "2026-04-23": 50,
-    "2026-04-24": 37,
-    "2026-04-27": 46,
-    "2026-04-28": 53,
-    "2026-04-29": 34,
-    "2026-04-30": 32,
+    "2026-04-24": 44,
+    "2026-04-26": 1,
+    "2026-04-27": 50,
+    "2026-04-28": 56,
+    "2026-04-29": 41,
+    "2026-04-30": 38,
     "2026-05-01": 15,
-    "2026-05-04": 19,
-    "2026-05-05": 12,
+    "2026-05-04": 21,
+    "2026-05-05": 14,
     "2026-05-06": 4,
     "2026-05-07": 5,
     "2026-05-08": 3,
@@ -1905,7 +1906,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175503
+      "count": 175563
     },
     {
       "court": "ge_gerichte",
@@ -2104,10 +2105,10 @@
     "2023": -1.1,
     "2024": -0.1,
     "2025": -5.4,
-    "2026": -78.6
+    "2026": -78.5
   },
   "federal_vs_cantonal": {
-    "federal": 347118,
+    "federal": 347178,
     "cantonal": 625248
   },
   "language_by_year": {
@@ -2122,12 +2123,12 @@
       "it": 3191
     },
     "2007": {
-      "de": 14740,
-      "fr": 8391,
+      "de": 14743,
+      "fr": 8392,
       "it": 3359
     },
     "2008": {
-      "de": 13973,
+      "de": 13974,
       "fr": 10518,
       "it": 3120
     },
@@ -2217,9 +2218,9 @@
       "it": 1438
     },
     "2026": {
-      "de": 5001,
-      "fr": 4037,
-      "it": 500
+      "de": 5034,
+      "fr": 4056,
+      "it": 503
     }
   },
   "by_month": {
@@ -2257,11 +2258,11 @@
     "2025-12": 3045,
     "2026-01": 2502,
     "2026-02": 3013,
-    "2026-03": 2556,
-    "2026-04": 1371,
-    "2026-05": 80
+    "2026-03": 2558,
+    "2026-04": 1420,
+    "2026-05": 84
   },
-  "generated_at": "2026-05-15T11:17:07.751507+00:00",
+  "generated_at": "2026-05-15T13:32:54.686597+00:00",
   "scraper_health": {
     "run_at": "2026-05-15T02:04:03.852363+00:00",
     "run_duration_s": 3843.3,
@@ -2672,7 +2673,7 @@
         "note": null,
         "state_count": 92705,
         "jsonl_size_mb": 1386.8,
-        "jsonl_mtime": "2026-05-15T11:06:33.076306+00:00"
+        "jsonl_mtime": "2026-05-15T13:04:38.348567+00:00"
       },
       "bge": {
         "success": true,
@@ -3789,6 +3790,14 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_8C_74_2026",
+        "docket": "8C_74/2026",
+        "date": "2026-05-05",
+        "court": "bger",
+        "language": "de",
+        "summary": "Sozialhilfe,"
+      },
+      {
         "decision_id": "bger_7B_427_2026",
         "docket": "7B_427/2026",
         "date": "2026-05-05",
@@ -3797,12 +3806,36 @@
         "summary": "Sicherheitshaft,"
       },
       {
+        "decision_id": "bger_5A_382_2026",
+        "docket": "5A_382/2026",
+        "date": "2026-05-05",
+        "court": "bger",
+        "language": "de",
+        "summary": "Berechnung des Existenzminimums,"
+      },
+      {
+        "decision_id": "bger_5A_374_2026",
+        "docket": "5A_374/2026",
+        "date": "2026-05-04",
+        "court": "bger",
+        "language": "de",
+        "summary": "Grundpfandverwertungsverfahren,"
+      },
+      {
         "decision_id": "bger_2C_243_2026",
         "docket": "2C_243/2026",
         "date": "2026-05-04",
         "court": "bger",
         "language": "de",
         "summary": "Aufenthaltsbewilligung,"
+      },
+      {
+        "decision_id": "bger_1C_228_2026",
+        "docket": "1C_228/2026",
+        "date": "2026-05-04",
+        "court": "bger",
+        "language": "de",
+        "summary": "Internationale Rechtshilfe in Strafsachen an Lettland; Herausgabe zur Einziehung,"
       },
       {
         "decision_id": "bger_5A_370_2026",
@@ -3829,44 +3862,12 @@
         "summary": "Konkurseröffnung,"
       },
       {
-        "decision_id": "bger_9C_210_2026",
-        "docket": "9C_210/2026",
+        "decision_id": "bger_9C_211_2026",
+        "docket": "9C_211/2026",
         "date": "2026-04-30",
         "court": "bger",
         "language": "de",
-        "summary": "Staats- und Gemeindesteuern des Kantons Solothurn und direkte Bundessteuer, Steuerperioden 2022-2023,"
-      },
-      {
-        "decision_id": "bger_7B_449_2026",
-        "docket": "7B_449/2026",
-        "date": "2026-04-30",
-        "court": "bger",
-        "language": "de",
-        "summary": "Untersuchungshaft,"
-      },
-      {
-        "decision_id": "bger_5A_366_2026",
-        "docket": "5A_366/2026",
-        "date": "2026-04-30",
-        "court": "bger",
-        "language": "de",
-        "summary": "Unentgeltliche Rechtspflege (Rechenschaftsbericht),"
-      },
-      {
-        "decision_id": "bger_5A_365_2026",
-        "docket": "5A_365/2026",
-        "date": "2026-04-30",
-        "court": "bger",
-        "language": "de",
-        "summary": "Sistierung (Erbteilung),"
-      },
-      {
-        "decision_id": "bger_7B_328_2026",
-        "docket": "7B_328/2026",
-        "date": "2026-04-29",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Détention pour des motifs de sûreté; refus de mise en liberté,"
+        "summary": "Staats- und Gemeindesteuern des Kantons Zürich und direkte Bundessteuer, Steuerperiode 2023, Quellensteuer,"
       }
     ],
     "cantonal": [
@@ -4085,8 +4086,9 @@
     }
   ],
   "delta": {
-    "total": 17,
+    "total": 77,
     "by_court": {
+      "bger": 60,
       "bvger": 2,
       "vd_gerichte": 13,
       "bs_appellationsgericht": 1,
