@@ -1070,7 +1070,6 @@ STEP_TO_DAG_TARGET: dict[int | str, str] = {
     "5d": "release_manifest",
     "6a": "git_push_early",
     7: "publish_delta",
-    5: "stats_final",
     6: "git_push_final",
     "6b": "health_check",
 }
@@ -1099,8 +1098,12 @@ STEPS = [
     (4, "Upload HuggingFace", step_4_upload_hf),
     # ── Delta publish (env-gated; empty no-op until OCL_PUBLISH_DELTA=1) ──
     (7, "Publish Delta", step_7_publish_delta),
-    # ── Final stats refresh (includes graph counts) ──
-    (5, "Generate Stats (final)", step_5_generate_stats),
+    # ── Final git push (catches any docs/ changes from the slow tier:
+    #    anwaltsrecht_tags, quality_report, etc.). stats_final removed
+    #    2026-05-15: with --no-interesting-stats it produced output
+    #    byte-identical to stats_early (decisions.db is frozen post-swap),
+    #    burning ~34 min/night for zero delta. The Step 6 diff-check
+    #    short-circuits cleanly when nothing changed. ──
     (6, "Git Push (final)", step_6_git_push),
     # ── Auto-validate (FAIL → systemd OnFailure → alert) ──
     ("6b", "Health Check", step_6b_health_check),
@@ -1136,7 +1139,6 @@ def _build_dag_builder_map() -> dict:
         "upload_hf":          _wrap(step_4_upload_hf,                    accepts_rebuild=False),
         "publish_delta":      _wrap(step_7_publish_delta,                accepts_rebuild=False),
         "stats_early":        _wrap(step_5_generate_stats,               accepts_rebuild=False),
-        "stats_final":        _wrap(step_5_generate_stats,               accepts_rebuild=False),
         "rss_feeds":          _wrap(step_5b_generate_feeds,              accepts_rebuild=False),
         "qc_gate":            _wrap(step_5c_quality_gate,                accepts_rebuild=False),
         "release_manifest":   _wrap(step_5d_release_manifest,            accepts_rebuild=False),

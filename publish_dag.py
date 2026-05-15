@@ -213,15 +213,9 @@ _register(Target(
 ))
 
 _register(Target(
-    name="stats_final",
-    deps=["reference_graph"],
-    description="Step 5 — final stats (includes citation-graph counts)",
-))
-
-_register(Target(
     name="git_push_final",
-    deps=["stats_final", "qc_gate"],
-    description="Step 6 — final git push of stats + dashboard",
+    deps=["qc_gate"],
+    description="Step 6 — final git push of stats + dashboard (catches docs/ changes from slow-tier steps; built-in diff-check short-circuits when nothing changed)",
 ))
 
 _register(Target(
