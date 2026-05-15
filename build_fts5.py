@@ -1780,16 +1780,9 @@ def build_database(
         # would corrupt non-immutable readers is caught HERE, not 30 min
         # later when generate_stats.py / generate_feeds.py crash.
         # Three cheap probes:
-        #   1. PRAGMA quick_check — verifies B-tree page consistency
+        #   1. PRAGMA integrity_check — verifies B-tree page consistency
         #      and FTS5 index well-formedness. Returns 'ok' or a list of
-        #      structural problems. Substituted for integrity_check
-        #      2026-05-15: quick_check covers every corruption class
-        #      that would crash a downstream reader (B-tree, FTS5
-        #      vocab, malformed pages) and skips only UNIQUE/PK
-        #      constraint verification, which is enforced at write
-        #      time by SQLite itself on an INSERT OR IGNORE atomic
-        #      rebuild. Empirical speedup observed: ~10× faster than
-        #      the full integrity_check (4 h → ~25 min on the 60 GB DB).
+        #      structural problems.
         #   2. SELECT COUNT(*) — flushes the page cache, runs an index
         #      scan, would surface "database disk image is malformed"
         #      from any orphan WAL.
@@ -1798,16 +1791,16 @@ def build_database(
         # The atomic-swap stays — a swap-then-fail path is safer than
         # a swap-then-pretend-it-worked path, because the post-mortem
         # diagnosis is much easier when the new file is on disk.
-        # Heartbeat thread: PRAGMA quick_check on the 60 GB DB still
-        # runs as a single silent SQL call that takes 20–40 min under
-        # normal load (was 2h 55m – 4h+ with integrity_check). Parent's
-        # stall watchdog (publish.py run_cmd, currently 14400s = 4h)
-        # kills the whole process if it sees no stdout for that long.
-        # Earlier integrity_check-era tripped at 10800s (2026-05-11)
-        # and again at 14400s (2026-05-12). Emitting a heartbeat line
-        # every 5 min keeps the watchdog satisfied indefinitely while
-        # still letting it catch a truly-wedged process (heartbeats
-        # would also stop).
+        # Heartbeat thread: PRAGMA integrity_check on the 60 GB DB is a
+        # single silent SQL call that runs 2h 55m – 4h+ under disk
+        # contention. Parent's stall watchdog (publish.py run_cmd,
+        # currently 14400s = 4h) kills the whole process if it sees no
+        # stdout for that long. Yesterday (2026-05-11) we tripped it at
+        # 10800s; today (2026-05-12) tripped again at 14400s under
+        # contention from the paragraph_embeddings encoder + active
+        # quick_publishes. Emitting a heartbeat line every 5 min keeps
+        # the watchdog satisfied indefinitely while still letting it
+        # catch a truly-wedged process (heartbeats would also stop).
         import threading as _threading
         _hb_stop = _threading.Event()
 
@@ -1816,7 +1809,7 @@ def build_database(
             while not _hb_stop.wait(300):
                 i += 5
                 logger.info(
-                    f"  Post-swap quick_check still running "
+                    f"  Post-swap integrity_check still running "
                     f"({i} min elapsed) — silent PRAGMA, no progress signal"
                 )
 
@@ -1825,10 +1818,10 @@ def build_database(
         try:
             check_conn = sqlite3.connect(str(final_db_path))
             check_conn.execute("SELECT 1").fetchone()  # warm-up
-            integrity = check_conn.execute("PRAGMA quick_check").fetchone()
+            integrity = check_conn.execute("PRAGMA integrity_check").fetchone()
             if not integrity or integrity[0] != "ok":
                 raise RuntimeError(
-                    f"post-swap quick_check failed: {integrity}"
+                    f"post-swap integrity_check failed: {integrity}"
                 )
             n_rows = check_conn.execute(
                 "SELECT COUNT(*) FROM decisions"
