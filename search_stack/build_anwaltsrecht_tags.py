@@ -55,12 +55,49 @@ BUND_PERIODS = [
     "2024-2025",
 ]
 
+# Period → explicit URL override. Used when the period's PDF lives at
+# a URL the `_BUND_BASE` template can't reconstruct (post-2026 CMS
+# migration on the SAV-FSA side). Periods absent from this map fall
+# back to the template. Audited 2026-05-15 against
+# https://www.sav-fsa.ch/bund-weiteres-anwaltsrecht.
+_BUND_URL_OVERRIDES = {
+    "2016-2018": (
+        "https://www.sav-fsa.ch/documents/672183/2096091/"
+        "Rechtsprechung_Bund_und_weiteres_Anwaltsrecht_2016%20-%202018.pdf"
+        "/8808f703-11e9-9805-d4d8-104296a5365f?t=1675690468317"
+    ),
+    "2019-2021": (
+        "https://www.sav-fsa.ch/documents/672183/2096091/"
+        "Rechtsprechung_Bund_und_weiteres_Anwaltsrecht_2019%20-%202021.pdf"
+        "/9cc210cc-44de-9456-c379-ecd2054c0091?t=1675689763760"
+    ),
+    "2022-2023": (
+        "https://www.sav-fsa.ch/documents/672183/2096091/"
+        "Rechtsprechung_Bund_und_weiteres_Anwaltsrecht_2022_2023.pdf"
+        "/d8647e1f-50bc-f8d5-a5f7-d9546c9b69d6?t=1720690966618"
+    ),
+    "2024-2025": (
+        "https://www.sav-fsa.ch/documents/672183/2096091/"
+        "Rechtsprechung_Bund_und_weiteres_Anwaltsrecht_2024_2025%20%281%29.pdf"
+        "/2416f15b-5105-c3d8-4199-77808a7bae51?t=1765808820729"
+    ),
+}
+
 # Base URLs for SAV PDFs
 # BGFA article PDFs — two variants: plain and with " (1)" suffix for updated versions
 _BGFA_BASE = "https://www.sav-fsa.ch/documents/672183/2059208/Art{n}.pdf"
 _BGFA_BASE_ALT = "https://www.sav-fsa.ch/documents/672183/2059208/Art{n}%20(1).pdf"
 
-# Bundesrechtsprechung period PDFs
+# Bundesrechtsprechung period PDFs.
+#
+# SAV-FSA migrated their CMS in 2026 — periods up to 2014-2015 still
+# resolve via the simple `_BUND_BASE.format(period=...)` template, but
+# 2016 onwards now require URL-encoded separators (" - " → "%20-%20" or
+# "_" instead of "-") and a content-addressed UUID + timestamp suffix
+# that we can't reconstruct from period alone. The override map below
+# pins the current SAV-FSA CMS URLs for the affected periods. Source:
+# https://www.sav-fsa.ch/bund-weiteres-anwaltsrecht (audited 2026-05-15).
+# Re-audit when a new period gets added or the index page restructures.
 _BUND_BASE = (
     "https://www.sav-fsa.ch/documents/672183/2096091/"
     "Rechtsprechung_Bund_und_weiteres_Anwaltsrecht_{period}.pdf"
@@ -280,7 +317,7 @@ def build_tags_db(fts5_db: str, output_db: str):
     # --- Bund period PDFs ---
     log.info("Downloading Bund period PDFs (%d periods)...", len(BUND_PERIODS))
     for period in BUND_PERIODS:
-        url = _BUND_BASE.format(period=period)
+        url = _BUND_URL_OVERRIDES.get(period) or _BUND_BASE.format(period=period)
         content = _download_pdf(url, session)
 
         if content is None:
