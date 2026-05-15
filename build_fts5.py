@@ -1774,32 +1774,62 @@ def build_database(
             except Exception as _e:
                 logger.warning(f"  early-stats-push spawn failed: {_e}")
 
-        # Post-swap verification (originally added 2026-05-05 after the
-        # WAL-corruption incident, refactored 2026-05-15 to split
-        # synchronous sanity from async deep-check). See block below.
-        # Safety architecture (2026-05-15 refactor):
-        #   • SYNCHRONOUS sanity (must pass before we return): SELECT 1,
-        #     SELECT COUNT(*), SELECT a row. Catches the WAL/SHM corruption
-        #     class that was the original motivation (2026-05-05 incident
-        #     where generate_stats / generate_feeds crashed 30 min later).
-        #     These take <1s and CANNOT be skipped — they gate the return.
-        #   • ASYNC quick_check (fires-and-forgets in a daemon thread):
-        #     catches deeper B-tree page corruption that wouldn't manifest
-        #     in a SELECT-by-rowid path. Takes 20-90 min wall-clock on the
-        #     60 GB DB. Previously this BLOCKED Steps 3 / 4 / 6 for that
-        #     entire duration; now it overlaps with parquet export, HF
-        #     upload, sidecar rebuilds, etc.
-        #     Failure mode: logs ERROR with full corruption details. The
-        #     systemd journal picks it up; downstream monitoring (ntfy on
-        #     OnFailure, or journalctl --priority=err in cron) catches it.
-        #     If quick_check fails, the data may have already been pushed
-        #     to HF / git — manual recovery is required. The probability
-        #     of this is near-zero in practice (no failures since the
-        #     2026-05-05 fix shipped), and the daily wall-clock cost of
-        #     blocking was high (~90 min / nightly).
+        # Post-swap integrity check (added 2026-05-05 after WAL-corruption
+        # incident). Open the freshly-swapped DB with a PLAIN connection
+        # — i.e. without ?immutable=1 — so any leftover WAL/SHM that
+        # would corrupt non-immutable readers is caught HERE, not 30 min
+        # later when generate_stats.py / generate_feeds.py crash.
+        # Three cheap probes:
+        #   1. PRAGMA quick_check — verifies B-tree page consistency
+        #      and FTS5 index well-formedness. Returns 'ok' or a list of
+        #      structural problems. Substituted for integrity_check
+        #      2026-05-15: quick_check covers every corruption class
+        #      that would crash a downstream reader (B-tree, FTS5
+        #      vocab, malformed pages) and skips only UNIQUE/PK
+        #      constraint verification, which is enforced at write
+        #      time by SQLite itself on an INSERT OR IGNORE atomic
+        #      rebuild. Empirical speedup observed: ~10× faster than
+        #      the full integrity_check (4 h → ~25 min on the 60 GB DB).
+        #   2. SELECT COUNT(*) — flushes the page cache, runs an index
+        #      scan, would surface "database disk image is malformed"
+        #      from any orphan WAL.
+        #   3. SELECT a single row — exercises the read path end-to-end.
+        # If any check fails, raise so the caller marks Step 2 FAILED.
+        # The atomic-swap stays — a swap-then-fail path is safer than
+        # a swap-then-pretend-it-worked path, because the post-mortem
+        # diagnosis is much easier when the new file is on disk.
+        # Heartbeat thread: PRAGMA quick_check on the 60 GB DB still
+        # runs as a single silent SQL call that takes 20–40 min under
+        # normal load (was 2h 55m – 4h+ with integrity_check). Parent's
+        # stall watchdog (publish.py run_cmd, currently 14400s = 4h)
+        # kills the whole process if it sees no stdout for that long.
+        # Earlier integrity_check-era tripped at 10800s (2026-05-11)
+        # and again at 14400s (2026-05-12). Emitting a heartbeat line
+        # every 5 min keeps the watchdog satisfied indefinitely while
+        # still letting it catch a truly-wedged process (heartbeats
+        # would also stop).
+        import threading as _threading
+        _hb_stop = _threading.Event()
+
+        def _hb_pulse():
+            i = 0
+            while not _hb_stop.wait(300):
+                i += 5
+                logger.info(
+                    f"  Post-swap quick_check still running "
+                    f"({i} min elapsed) — silent PRAGMA, no progress signal"
+                )
+
+        _hb_thread = _threading.Thread(target=_hb_pulse, daemon=True)
+        _hb_thread.start()
         try:
             check_conn = sqlite3.connect(str(final_db_path))
             check_conn.execute("SELECT 1").fetchone()  # warm-up
+            integrity = check_conn.execute("PRAGMA quick_check").fetchone()
+            if not integrity or integrity[0] != "ok":
+                raise RuntimeError(
+                    f"post-swap quick_check failed: {integrity}"
+                )
             n_rows = check_conn.execute(
                 "SELECT COUNT(*) FROM decisions"
             ).fetchone()[0]
@@ -1812,12 +1842,11 @@ def build_database(
             if sample is None:
                 raise RuntimeError("post-swap sample SELECT returned NULL")
             logger.info(
-                f"  Post-swap sanity OK: {n_rows} rows, sample id={sample[0]!r}. "
-                f"quick_check spawned in background (non-blocking)."
+                f"  Post-swap integrity OK: {n_rows} rows, sample id={sample[0]!r}"
             )
         except Exception as e:
             logger.error(
-                f"  Post-swap sanity FAILED: {e}. "
+                f"  Post-swap integrity check FAILED: {e}. "
                 f"The new {final_db_path.name} exists but is unreadable. "
                 f"Workers using ?immutable=1 may be unaffected, but "
                 f"generate_stats / generate_feeds / quality.cli without "
@@ -1826,59 +1855,9 @@ def build_database(
                 f"are present, remove them and retry."
             )
             raise
-
-        # Now fire the long quick_check in a daemon thread. Outlives this
-        # function but dies when publish.py exits (which it will, in
-        # ~5-6 h, well after quick_check would finish).
-        import threading as _threading
-
-        def _quick_check_background(db_path):
-            stop = _threading.Event()
-
-            def _heartbeat():
-                i = 0
-                while not stop.wait(300):
-                    i += 5
-                    logger.info(
-                        f"  Background quick_check still running "
-                        f"({i} min elapsed) — silent PRAGMA, no progress signal"
-                    )
-
-            hb = _threading.Thread(target=_heartbeat, daemon=True,
-                                   name="qc_heartbeat")
-            hb.start()
-            try:
-                t0 = time.time()
-                qc_conn = sqlite3.connect(str(db_path))
-                result = qc_conn.execute("PRAGMA quick_check").fetchone()
-                qc_conn.close()
-                elapsed = time.time() - t0
-                if result and result[0] == "ok":
-                    logger.info(
-                        f"  Background quick_check: OK ({elapsed/60:.1f} min)"
-                    )
-                else:
-                    logger.error(
-                        f"  Background quick_check: FAILED after "
-                        f"{elapsed/60:.1f} min — {result}. The published "
-                        f"DB has structural corruption; downstream HF / "
-                        f"git artifacts may have already shipped. Manual "
-                        f"review of the FTS5 DB required."
-                    )
-            except Exception as e:
-                logger.error(
-                    f"  Background quick_check crashed: {e}"
-                )
-            finally:
-                stop.set()
-
-        qc_thread = _threading.Thread(
-            target=_quick_check_background,
-            args=(final_db_path,),
-            daemon=True,
-            name="quick_check_bg",
-        )
-        qc_thread.start()
+        finally:
+            _hb_stop.set()
+            _hb_thread.join(timeout=2)
 
     # Save checkpoint
     if incremental or full_rebuild:
