@@ -3104,6 +3104,15 @@ async function reflectOnDocument() {
     render();
     return;
   }
+  // Server cap is 60 000 chars on the redacted payload (mcp_server.py
+  // ReflectRequest). Redaction usually shrinks text, but check raw
+  // length first so we never burn an LLM call we know will 422.
+  if (docText.length > 60000) {
+    state.reflectRunning = false;
+    state.error = { type: 'too_long', message: t('reflect_too_long', lang) };
+    render();
+    return;
+  }
 
   try {
     var data = await reflectOnDocumentPro(proKey, docText, lang);
@@ -3117,7 +3126,15 @@ async function reflectOnDocument() {
   } catch (e) {
     state.reflectRunning = false;
     var msg = (e && e.message) ? e.message : t('reflect_error', lang);
-    state.error = { type: 'reflect_failed', message: msg };
+    // Server-side cap (60k after redaction) — surface the same
+    // explanatory message as the pre-check above so the user knows
+    // what to fix instead of seeing the generic "Reflection failed".
+    var errType = 'reflect_failed';
+    if (e && (e.code === 'too_long' || (e.message && /at most 60000/.test(e.message)))) {
+      msg = t('reflect_too_long', lang);
+      errType = 'too_long';
+    }
+    state.error = { type: errType, message: msg };
     render();
   }
 }

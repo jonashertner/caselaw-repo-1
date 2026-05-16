@@ -369,7 +369,20 @@ async function apiPost(path, body) {
   if (!resp.ok) {
     var errData = {};
     try { errData = await resp.json(); } catch (e) {}
-    throw { type: 'http_error', status: resp.status, message: errData.error || resp.statusText };
+    // FastAPI validation errors (422) return {detail: [{type, loc, msg, ...}]}
+    // rather than {error: "..."}; surface the first detail message and the
+    // structured `type` so the caller can map to a localized hint
+    // (e.g. string_too_long → reflect_too_long).
+    var msg = errData.error || resp.statusText;
+    var code = null;
+    if (Array.isArray(errData.detail) && errData.detail.length) {
+      var d0 = errData.detail[0];
+      if (d0 && d0.msg) msg = d0.msg;
+      if (d0 && d0.type) code = d0.type === 'string_too_long' ? 'too_long' : d0.type;
+    } else if (typeof errData.detail === 'string') {
+      msg = errData.detail;
+    }
+    throw { type: 'http_error', status: resp.status, message: msg, code: code };
   }
   return resp.json();
 }

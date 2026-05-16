@@ -835,6 +835,12 @@ var UI_STRINGS = {
     it: 'Il documento è troppo breve per una riflessione significativa (almeno ~80 caratteri).',
     en: 'Document is too short for a meaningful reflection (at least ~80 chars).',
   },
+  reflect_too_long: {
+    de: 'Das Dokument ist zu lang für die Reflexion (max. 60 000 Zeichen nach PII-Redaktion). Bitte auf den Kerntext kürzen oder einen Auszug markieren.',
+    fr: 'Le document est trop long pour la réflexion (max. 60 000 caractères après caviardage PII). Veuillez réduire au texte essentiel ou sélectionner un extrait.',
+    it: 'Il documento è troppo lungo per la riflessione (max. 60 000 caratteri dopo la redazione PII). Si prega di ridurre al testo essenziale o selezionare un estratto.',
+    en: 'Document is too long for reflection (max 60,000 chars after PII redaction). Please trim to the core text or select an excerpt.',
+  },
   reflect_error: {
     de: 'Reflexion fehlgeschlagen. Bitte erneut versuchen.',
     fr: 'Le miroir a échoué. Réessayez.',
