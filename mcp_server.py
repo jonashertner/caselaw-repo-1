@@ -196,7 +196,12 @@ class ReflectRequest(BaseModel):
     bounded so a 60-page contract doesn't get sent verbatim.
     """
     license_key: str
-    redacted_text: str = Field(..., max_length=30000)
+    # Bumped 30000 → 60000 (2026-05-16): real-world briefs are 20-50 k
+    # chars after PII redaction (typical 60-page motion). The 30 k cap
+    # was sending users a 422 with no helpful UI message. Sonnet 4.6
+    # input cost at 60 k chars ≈ 15 k tokens × $3/M = $0.045 per call —
+    # still well under the 25/day per-license cap.
+    redacted_text: str = Field(..., max_length=60000)
     lang: str = "de"
     client_redactor_version: str | None = None
     client_redactor_summary: dict | None = None
