@@ -281,26 +281,77 @@ def export_from_db(db_path: Path, output_dir: Path) -> dict[str, int]:
         logger.info(f"Exporting {total} decisions from {len(courts)} courts")
 
         for court in courts:
-            cursor = conn.execute(
-                "SELECT * FROM decisions WHERE court = ?", (court,)
-            )
-            col_names = [desc[0] for desc in cursor.description]
+            try:
+                cursor = conn.execute(
+                    "SELECT * FROM decisions WHERE court = ?", (court,)
+                )
+                col_names = [desc[0] for desc in cursor.description]
 
-            batch: list[dict] = []
-            for row_tuple in cursor:
-                d = dict(zip(col_names, row_tuple))
-                batch.append(d)
+                batch: list[dict] = []
+                for row_tuple in cursor:
+                    d = dict(zip(col_names, row_tuple))
+                    batch.append(d)
 
-                if len(batch) >= BATCH_SIZE:
+                    if len(batch) >= BATCH_SIZE:
+                        _write_rows(batch, court, output_dir, writers, schema_fields)
+                        results[court] = results.get(court, 0) + len(batch)
+                        batch = []
+
+                if batch:
                     _write_rows(batch, court, output_dir, writers, schema_fields)
                     results[court] = results.get(court, 0) + len(batch)
-                    batch = []
 
-            if batch:
-                _write_rows(batch, court, output_dir, writers, schema_fields)
-                results[court] = results.get(court, 0) + len(batch)
-
-            logger.info(f"  {court}: {results.get(court, 0)} decisions")
+                logger.info(f"  {court}: {results.get(court, 0)} decisions")
+            except sqlite3.DatabaseError as e:
+                # Batched cursor died mid-court. Defensive against single-row
+                # page corruption (2026-05-16 incident, ecthr_chamber_29447_17):
+                # fall back to per-rowid fetches for THIS court, skipping only
+                # the rows whose individual SELECT also raises. Avoids losing
+                # an entire court's parquet when one row's overflow chain is
+                # broken. Skipped rows get re-fetched on the next full FTS5
+                # rebuild from JSONL which writes fresh pages.
+                logger.warning(
+                    f"  {court}: batched cursor hit DatabaseError "
+                    f"(yielded ~{results.get(court, 0)} rows); "
+                    f"falling back to per-rowid: {e}"
+                )
+                # rowids of this court via the court index — cheap, no overflow read
+                rowids = [r[0] for r in conn.execute(
+                    "SELECT rowid FROM decisions WHERE court = ?", (court,)
+                )]
+                retry_batch: list[dict] = []
+                skipped = 0
+                col_names = None
+                for rowid in rowids:
+                    try:
+                        cur2 = conn.execute(
+                            "SELECT * FROM decisions WHERE rowid = ?", (rowid,)
+                        )
+                        row = cur2.fetchone()
+                        if row is None:
+                            continue
+                        if col_names is None:
+                            col_names = [desc[0] for desc in cur2.description]
+                        d = dict(zip(col_names, row))
+                        retry_batch.append(d)
+                        if len(retry_batch) >= BATCH_SIZE:
+                            _write_rows(retry_batch, court, output_dir, writers, schema_fields)
+                            results[court] = results.get(court, 0) + len(retry_batch)
+                            retry_batch = []
+                    except sqlite3.DatabaseError as e2:
+                        skipped += 1
+                        logger.error(
+                            f"  {court}: SKIPPING rowid={rowid} — page "
+                            f"corruption (likely overflow chain): {e2}"
+                        )
+                        continue
+                if retry_batch:
+                    _write_rows(retry_batch, court, output_dir, writers, schema_fields)
+                    results[court] = results.get(court, 0) + len(retry_batch)
+                logger.info(
+                    f"  {court}: {results.get(court, 0)} decisions "
+                    f"(recovered via per-rowid, skipped {skipped})"
+                )
 
     finally:
         conn.close()
