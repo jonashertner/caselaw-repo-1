@@ -17193,12 +17193,15 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=_format_get_law_response(result))]
 
         elif name == "search_laws":
+            # language: optional — when omitted, search all languages
+            # (do NOT default to "de" here; that quietly drops FR/IT results
+            # for users who left the field empty). See 2026-05-16 code review.
             result = await asyncio.to_thread(
                 search_laws,
                 query=arguments["query"],
                 sr_number=arguments.get("sr_number"),
                 canton=arguments.get("canton"),
-                language=arguments.get("language", "de"),
+                language=arguments.get("language"),
                 limit=int(arguments.get("limit", 10)),
                 jurisdiction=arguments.get("jurisdiction", "all"),
             )
@@ -17242,13 +17245,14 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
         elif name == "search_legislation":
+            # language: optional — see search_laws note above.
             result = await asyncio.to_thread(
                 _search_legislation,
                 query=arguments.get("query", ""),
                 canton=arguments.get("canton"),
                 active_only=arguments.get("active_only", True),
                 search_in_content=arguments.get("search_in_content", False),
-                language=arguments.get("language", "de"),
+                language=arguments.get("language"),
                 limit=int(arguments.get("limit", 20)),
                 fetch_top_n_texts=int(arguments.get("fetch_top_n_texts", 0)),
             )
@@ -17266,10 +17270,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=_format_get_legislation_response(result))]
 
         elif name == "browse_legislation_changes":
+            # language: optional — see search_laws note above.
             result = await asyncio.to_thread(
                 _browse_legislation_changes,
                 canton=arguments.get("canton", "CH"),
-                language=arguments.get("language", "de"),
+                language=arguments.get("language"),
             )
             return [TextContent(type="text", text=_format_legislation_changes_response(result))]
 

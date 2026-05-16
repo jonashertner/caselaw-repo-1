@@ -1740,18 +1740,30 @@ def build_database(
                     logger.info(f"  Removed stale sidecar {stale_path.name}")
         db_path = final_db_path
 
-        # MISSION-CRITICAL: tell the parent (publish.py) the swap is
-        # committed so it can release the publish lock NOW, instead of
-        # waiting for the 1–3 h post-swap integrity_check tail. While
-        # we still hold the lock, quick_publish skips silently, which
-        # means fresh BGer poller scrapes (the "Neueste Bundesgerichts-
-        # entscheide" feed) get stranded in bger.jsonl until tomorrow.
-        # The integrity_check below operates on the OLD inode (held
-        # alive by our open SQLite connection); quick_publish writes to
-        # a new inode that becomes the new live `decisions.db`. The two
-        # don't share state. publish.py greps stdout for this exact
-        # token to fire fcntl.LOCK_UN — see publish.py's run_cmd on_line
-        # callback. Token chosen to be unambiguous and grep-stable.
+        # MISSION-CRITICAL ordering: open the integrity-check connection
+        # to the just-swapped DB BEFORE emitting OCL_SWAP_DONE. The
+        # connection's open file descriptor pins the inode we just
+        # built — if quick_publish (or any other writer) os.replace's
+        # the path AFTER OCL_SWAP_DONE, the path points at the new
+        # inode but our check_conn still reads the just-built inode
+        # (POSIX semantics: an FD survives the path being replaced).
+        # Without this ordering, the post-swap integrity check could
+        # silently validate a quick-publish DB instead of our own
+        # build (caught in 2026-05-16 code review). Held until the
+        # finally: at the end of the integrity block.
+        check_conn = sqlite3.connect(str(final_db_path))
+        # Touch the DB to force fd materialisation (defensive — sqlite3
+        # may defer the open until first query in some build options).
+        check_conn.execute("SELECT 1").fetchone()
+
+        # Tell the parent (publish.py) the swap is committed so it can
+        # release the publish lock NOW, instead of waiting for the 1–3 h
+        # post-swap integrity_check tail. While we still hold the lock,
+        # quick_publish skips silently, stranding fresh BGer poller
+        # scrapes in bger.jsonl until tomorrow. publish.py greps stdout
+        # for this exact token to fire fcntl.LOCK_UN — see publish.py's
+        # run_cmd on_line callback. Token chosen to be unambiguous and
+        # grep-stable.
         logger.info("OCL_SWAP_DONE — publish lock releasable; integrity_check continues")
 
         # Fire-and-forget early dashboard refresh — spawn a subprocess that
@@ -1816,8 +1828,10 @@ def build_database(
         _hb_thread = _threading.Thread(target=_hb_pulse, daemon=True)
         _hb_thread.start()
         try:
-            check_conn = sqlite3.connect(str(final_db_path))
-            check_conn.execute("SELECT 1").fetchone()  # warm-up
+            # NOTE: check_conn was opened above, BEFORE OCL_SWAP_DONE,
+            # to pin the build's inode before quick_publish can replace
+            # the path. Do not re-open here — that would defeat the race
+            # fix.
             integrity = check_conn.execute("PRAGMA integrity_check").fetchone()
             if not integrity or integrity[0] != "ok":
                 raise RuntimeError(

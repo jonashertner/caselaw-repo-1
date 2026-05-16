@@ -214,19 +214,21 @@ _register(Target(
 
 _register(Target(
     name="git_push_final",
-    # Deps include every slow-tier + delivery target so that the final
-    # push runs strictly after all artifacts that could update docs/, push
-    # to HF, or affect the dashboard. git_push_early covers fast-tier docs
-    # changes; this one is the barrier for slow-tier + delivery. Earlier
-    # this only depended on qc_gate, which let DAG mode topologically
-    # schedule the final push BEFORE the slow-tier docs writers (caught
-    # in 2026-05-16 code review).
-    deps=[
-        "qc_gate", "git_push_early", "enrich_quality", "anwaltsrecht_tags",
-        "quality_report", "reference_graph", "materialien_build",
-        "decision_structure", "export_parquet", "upload_hf", "publish_delta",
-    ],
-    description="Step 6 — final git push of stats + dashboard (catches docs/ changes from slow-tier steps; built-in diff-check short-circuits when nothing changed)",
+    # Deps minimised to qc_gate + git_push_early: those are the ONLY
+    # upstream targets that produce docs/ artifacts this final push
+    # would commit. The slow-tier targets (enrich_quality, reference_
+    # graph, materialien_build, decision_structure, export_parquet,
+    # upload_hf, publish_delta) write to their own DBs / parquet /
+    # external HF — none touch docs/. Including them as deps in an
+    # earlier fix introduced a regression versus linear mode: in
+    # linear mode, a publish_delta or upload_hf failure does NOT
+    # cascade-skip git_push_final (they're not in GUARDED_STEPS); in
+    # DAG mode with those as deps, their failure would cascade-skip
+    # the final push and the health check. The pre-existing concern
+    # — that git_push_final could topologically run before git_push_
+    # early — is addressed by the explicit git_push_early dep here.
+    deps=["qc_gate", "git_push_early"],
+    description="Step 6 — final git push of stats + dashboard. Diff-check short-circuits when nothing changed.",
 ))
 
 _register(Target(
