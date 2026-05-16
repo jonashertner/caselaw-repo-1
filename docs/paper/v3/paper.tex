@@ -52,7 +52,7 @@ We present \textbf{OpenCaseLaw}, an open infrastructure that fills these gaps. W
 
 \paragraph{C2 --- Benchmark.} We introduce a \emph{cross-lingual leading-case retrieval} task. Our headline result (Section~\ref{sec:crosslang}) shows that the BM25+RRF baseline scores MRR@10$=$0.630 averaged across 150 queries (50 leading cases$\times$3 languages), with directional asymmetry: IT$\to$DE retrieves at MRR$=$0.776, exceeding DE$\to$DE on the same targets (0.617), while DE$\to$FR is the hardest cell at 0.333. We disclose that queries are extracted from each language's official regeste, which makes the absolute numbers an upper bound on realistic legal-research queries (Section~\ref{sec:limit}).
 
-\paragraph{C3 --- Verification.} We deploy and evaluate a five-rail closing audit pipeline (Section~\ref{sec:audit}) that decomposes legal-RAG hallucination into named error classes, plus a four-layer dataset-health framework (Section~\ref{sec:qc}) that codifies 61 dataset invariants with drift detection. The framework blocks the production publish on a critical regression.
+\paragraph{C3 --- Verification.} We deploy and evaluate a five-rail closing audit pipeline (Section~\ref{sec:audit}) that decomposes legal-RAG hallucination into named error classes, plus a four-layer dataset-health framework (Section~\ref{sec:qc}) that codifies 63 dataset invariants with drift detection. The framework blocks the production publish on a critical regression.
 
 %==================================================================
 \section{Related work}\label{sec:related}

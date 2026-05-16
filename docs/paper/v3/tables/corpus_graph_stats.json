@@ -1,5 +1,5 @@
 {
-  "total_decisions": 971437,
+  "total_decisions": 971992,
   "total_courts": 108,
   "total_cantons": 28,
   "languages": [
@@ -271,63 +271,63 @@
   "top30_cited": [
     {
       "target_id": "bge_125 V 351",
-      "in_degree": 66809
+      "in_degree": 85108
     },
     {
       "target_id": "bge_122 V 157",
-      "in_degree": 40423
+      "in_degree": 44233
     },
     {
       "target_id": "bge_134 V 231",
-      "in_degree": 36566
+      "in_degree": 36943
     },
     {
       "target_id": "bge_130 V 343",
-      "in_degree": 26906
-    },
-    {
-      "target_id": "bge_125 V 256",
-      "in_degree": 24157
-    },
-    {
-      "target_id": "bge_125 V 193",
-      "in_degree": 22560
-    },
-    {
-      "target_id": "bge_126 V 353",
-      "in_degree": 22407
-    },
-    {
-      "target_id": "bge_115 V 133",
-      "in_degree": 20899
-    },
-    {
-      "target_id": "bge_135 V 465",
-      "in_degree": 19978
-    },
-    {
-      "target_id": "bge_137 V 210",
-      "in_degree": 19795
+      "in_degree": 29625
     },
     {
       "target_id": "bge_126 V 75",
-      "in_degree": 19703
+      "in_degree": 27703
     },
     {
-      "target_id": "bge_138 III 374",
-      "in_degree": 18292
+      "target_id": "bge_115 V 133",
+      "in_degree": 26308
     },
     {
-      "target_id": "bge_130 III 321",
-      "in_degree": 18184
+      "target_id": "bge_125 V 256",
+      "in_degree": 25171
+    },
+    {
+      "target_id": "bge_125 V 193",
+      "in_degree": 24057
+    },
+    {
+      "target_id": "bge_126 V 353",
+      "in_degree": 23025
+    },
+    {
+      "target_id": "bge_135 V 465",
+      "in_degree": 21653
+    },
+    {
+      "target_id": "bge_137 V 210",
+      "in_degree": 20421
+    },
+    {
+      "target_id": "bge_141 V 281",
+      "in_degree": 19189
     },
     {
       "target_id": "bge_125 V 413",
-      "in_degree": 17559
+      "in_degree": 18598
     },
     {
-      "target_id": "bge_133 II 249",
-      "in_degree": 16465
+      "target_id": "bge_130 III 321",
+      "in_degree": 18421
+    },
+    {
+      "target_id": "bge_138 III 374",
+      "in_degree": 18372
     },
     {
       "target_id": "bge_141 V 281",
@@ -393,15 +393,15 @@
   "in_degree_buckets": [
     {
       "bucket": "10000+",
-      "n": 40
+      "n": 47
     },
     {
       "bucket": "1000-9999",
-      "n": 933
+      "n": 952
     },
     {
       "bucket": "100-999",
-      "n": 9758
+      "n": 9875
     },
     {
       "bucket": "10-99",
