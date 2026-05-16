@@ -156,9 +156,27 @@ def snapshot_all_ids(db_path: _Path) -> set[str]:
         conn.close()
 
 
+_SELECT_COLS = (
+    "decision_id, court, canton, chamber, docket_number, docket_number_2, "
+    "decision_date, publication_date, language, title, regeste, "
+    "full_text, source_url, pdf_url, scraped_at, source, source_id, "
+    "source_spider, content_hash"
+)
+
+
 def iter_decisions_by_ids(db_path: _Path, ids: Iterable[str], chunk: int = 500) -> Iterator[Dict[str, Any]]:
     """Stream full decision rows for the given decision_ids. Chunks the IN
-    clause to keep SQLite parameter count sane."""
+    clause to keep SQLite parameter count sane.
+
+    Defensive against single-row page corruption (2026-05-16 incident):
+    if a batch read raises ``DatabaseError`` mid-cursor (typically caused
+    by a corrupt overflow page holding ``full_text`` for one specific
+    row — e.g. ``ecthr_chamber_29447_17``), the function falls back to
+    fetching the remaining IDs in the batch one-by-one and skips just
+    the rows whose individual SELECT raises. Skipped rows are logged at
+    ERROR level so monitoring picks them up. They get re-attempted on the
+    next full FTS5 rebuild from JSONL, which writes fresh pages.
+    """
     id_list = list(ids)
     if not id_list:
         return
@@ -168,19 +186,45 @@ def iter_decisions_by_ids(db_path: _Path, ids: Iterable[str], chunk: int = 500) 
     try:
         for i in range(0, len(id_list), chunk):
             batch_ids = id_list[i : i + chunk]
+            yielded: set[str] = set()
             placeholders = ",".join(["?"] * len(batch_ids))
-            cur = conn.execute(
-                f"""
-                SELECT decision_id, court, canton, chamber, docket_number, docket_number_2,
-                       decision_date, publication_date, language, title, regeste,
-                       full_text, source_url, pdf_url, scraped_at, source, source_id,
-                       source_spider, content_hash
-                FROM decisions WHERE decision_id IN ({placeholders})
-                """,
-                batch_ids,
-            )
-            for row in cur:
-                yield _row_to_decision(dict(row))
+            try:
+                cur = conn.execute(
+                    f"SELECT {_SELECT_COLS} FROM decisions "
+                    f"WHERE decision_id IN ({placeholders})",
+                    batch_ids,
+                )
+                for row in cur:
+                    yielded.add(row["decision_id"])
+                    yield _row_to_decision(dict(row))
+            except _sqlite3.DatabaseError as e:
+                # Batched cursor died mid-iteration (almost always means
+                # one specific row's overflow chain is corrupt). Retry the
+                # remaining IDs one-at-a-time, skipping per-row failures.
+                remaining = [did for did in batch_ids if did not in yielded]
+                log.warning(
+                    "iter_decisions_by_ids: batch of %d hit DatabaseError "
+                    "(yielded %d, retrying %d per-ID): %s",
+                    len(batch_ids), len(yielded), len(remaining), e,
+                )
+                for did in remaining:
+                    try:
+                        row = conn.execute(
+                            f"SELECT {_SELECT_COLS} FROM decisions "
+                            f"WHERE decision_id = ?",
+                            [did],
+                        ).fetchone()
+                        if row:
+                            yield _row_to_decision(dict(row))
+                    except _sqlite3.DatabaseError as e2:
+                        log.error(
+                            "iter_decisions_by_ids: SKIPPING %s — "
+                            "page corruption (likely overflow chain). "
+                            "Will be re-fetched on next full rebuild from "
+                            "JSONL: %s",
+                            did, e2,
+                        )
+                        continue
     finally:
         conn.close()
 
