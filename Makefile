@@ -66,7 +66,7 @@ s=json.loads(pathlib.Path('docs/paper/v3/tables/corpus_graph_stats.json').read_t
 raw=s['rg_citation_edges']; resolved=s['rg_resolved_citations']; pct=100.0*resolved/raw; \
 print(f'  rg_citation_edges = {raw:,}'); \
 print(f'  rg_resolved_citations = {resolved:,}'); \
-print(f'  resolution rate = {pct:.2f}% (paper §4 headline: 92.9%)'); \
+print(f'  resolution rate = {pct:.2f}% (paper §4 headline: 93.5%)'); \
 assert pct > 90.0, f'resolution regressed below 90% floor: {pct}%'; \
 print('  ✓ matches paper §4 within 1pp')" ; \
 	fi
