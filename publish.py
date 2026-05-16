@@ -703,11 +703,47 @@ def step_5_generate_stats(dry_run: bool = False) -> bool:
          "--db", str(DB_PATH),
          "--output", str(DOCS_DIR / "stats.json"),
          # interesting_stats is heavy (full scans on decisions.db +
-         # reference_graph.db). Daily publish preserves the last weekly
-         # value; opencaselaw-interesting-stats.timer recomputes it.
+         # reference_graph.db). The early-tier run skips it; Step 5e
+         # below recomputes JUST the interesting_stats block AFTER
+         # Step 2c rebuilds reference_graph, so the dashboard isn't
+         # showing fresh corpus counts paired with last-week's graph
+         # numbers (caught in 2026-05-16 code review).
          "--no-interesting-stats"],
         "Generate stats",
         dry_run,
+    )
+
+
+def step_5e_interesting_stats(dry_run: bool = False) -> bool:
+    """Step 5e: Recompute the interesting_stats block (graph + top-cited)
+    AFTER Step 2c has refreshed reference_graph.db, then merge it into the
+    existing docs/stats.json. Without this step the dashboard combines a
+    fresh decisions.db count (from Step 5a) with the previous build's
+    graph counts (read from reference_graph.db whenever this script last
+    ran with the interesting_stats block enabled). Step 6 (final git
+    push) commits the merged stats.json so the dashboard reflects the
+    same snapshot the corpus does.
+
+    Non-fatal: if it fails, the dashboard just keeps last week's graph
+    block (existing behaviour before this step was added).
+    """
+    logger.info("Step 5e: Recompute interesting_stats block (post-graph)")
+    script = REPO_DIR / "generate_stats.py"
+    if not script.exists():
+        logger.warning("  generate_stats.py not found, skipping")
+        return True
+    graph_db = OUTPUT_DIR / "reference_graph.db"
+    if not graph_db.exists():
+        logger.warning("  reference_graph.db not found, skipping (Step 2c didn't run)")
+        return True
+    return run_cmd(
+        [sys.executable, str(script),
+         "--db", str(DB_PATH),
+         "--output", str(DOCS_DIR / "stats.json"),
+         "--interesting-stats-only"],
+        "Refresh interesting_stats block",
+        dry_run,
+        timeout=1800,  # interesting_stats has ~15-30 min worst case
     )
 
 
@@ -1068,6 +1104,7 @@ STEP_TO_DAG_TARGET: dict[int | str, str] = {
     "5b": "rss_feeds",
     "5c": "qc_gate",
     "5d": "release_manifest",
+    "5e": "stats_interesting",
     "6a": "git_push_early",
     7: "publish_delta",
     6: "git_push_final",
@@ -1098,12 +1135,17 @@ STEPS = [
     (4, "Upload HuggingFace", step_4_upload_hf),
     # ── Delta publish (env-gated; empty no-op until OCL_PUBLISH_DELTA=1) ──
     (7, "Publish Delta", step_7_publish_delta),
+    # ── Refresh interesting_stats (graph + top-cited block of stats.json)
+    #    AFTER reference_graph has been rebuilt by Step 2c. Without this,
+    #    docs/stats.json combines fresh corpus counts with the previous
+    #    build's graph numbers (caught in 2026-05-16 review). Merges into
+    #    the existing stats.json so step 6 picks up the change. ──
+    ("5e", "Stats Interesting (post-graph)", step_5e_interesting_stats),
     # ── Final git push (catches any docs/ changes from the slow tier:
-    #    anwaltsrecht_tags, quality_report, etc.). stats_final removed
-    #    2026-05-15: with --no-interesting-stats it produced output
-    #    byte-identical to stats_early (decisions.db is frozen post-swap),
-    #    burning ~34 min/night for zero delta. The Step 6 diff-check
-    #    short-circuits cleanly when nothing changed. ──
+    #    anwaltsrecht_tags, quality_report, Step 5e interesting_stats,
+    #    etc.). Step 5 final (the old duplicate full stats run) was
+    #    removed 2026-05-15. The Step 6 diff-check short-circuits
+    #    cleanly when nothing changed. ──
     (6, "Git Push (final)", step_6_git_push),
     # ── Auto-validate (FAIL → systemd OnFailure → alert) ──
     ("6b", "Health Check", step_6b_health_check),
@@ -1142,6 +1184,7 @@ def _build_dag_builder_map() -> dict:
         "rss_feeds":          _wrap(step_5b_generate_feeds,              accepts_rebuild=False),
         "qc_gate":            _wrap(step_5c_quality_gate,                accepts_rebuild=False),
         "release_manifest":   _wrap(step_5d_release_manifest,            accepts_rebuild=False),
+        "stats_interesting":  _wrap(step_5e_interesting_stats,           accepts_rebuild=False),
         "git_push_early":     _wrap(step_6_git_push,                     accepts_rebuild=False),
         "git_push_final":     _wrap(step_6_git_push,                     accepts_rebuild=False),
         "health_check":       _wrap(step_6b_health_check,                accepts_rebuild=False),

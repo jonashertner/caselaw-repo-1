@@ -213,8 +213,21 @@ _register(Target(
 ))
 
 _register(Target(
+    name="stats_interesting",
+    # Recompute the interesting_stats block (graph + top-cited fields
+    # of docs/stats.json) AFTER reference_graph is rebuilt. Without
+    # this, docs/stats.json would show fresh corpus counts paired with
+    # last-week's graph numbers — caught in 2026-05-16 review.
+    # Non-fatal: if it fails, prior interesting_stats block is kept.
+    deps=["reference_graph", "stats_early"],
+    non_fatal=True,
+    description="Step 5e — refresh interesting_stats block of stats.json after graph rebuild",
+))
+
+_register(Target(
     name="git_push_final",
-    # Deps minimised to qc_gate + git_push_early: those are the ONLY
+    # Deps minimised to qc_gate + git_push_early + stats_interesting:
+    # those are the ONLY
     # upstream targets that produce docs/ artifacts this final push
     # would commit. The slow-tier targets (enrich_quality, reference_
     # graph, materialien_build, decision_structure, export_parquet,
@@ -227,7 +240,9 @@ _register(Target(
     # the final push and the health check. The pre-existing concern
     # — that git_push_final could topologically run before git_push_
     # early — is addressed by the explicit git_push_early dep here.
-    deps=["qc_gate", "git_push_early"],
+    # stats_interesting added 2026-05-16 so the final push includes
+    # the freshly-recomputed graph block of stats.json.
+    deps=["qc_gate", "git_push_early", "stats_interesting"],
     description="Step 6 — final git push of stats + dashboard. Diff-check short-circuits when nothing changed.",
 ))
 
