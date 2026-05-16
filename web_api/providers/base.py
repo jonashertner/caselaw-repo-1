@@ -283,7 +283,7 @@ MCP_TOOLS = [
                 "canton": {"type": "string", "description": "Two-letter canton code or 'CH'"},
                 "active_only": {"type": "boolean", "default": True},
                 "search_in_content": {"type": "boolean", "default": False},
-                "language": {"type": "string", "enum": ["de", "fr", "it"], "default": "de", "description": "LexFind API is single-language; one of de/fr/it must be chosen at call time"},
+                "language": {"type": "string", "enum": ["de", "fr", "it"], "description": "Optional; omit to fan out across DE/FR/IT and merge results"},
                 "limit": {"type": "integer", "default": 20},
                 "fetch_top_n_texts": {"type": "integer", "description": "Inline parsed full-text for top N (max 10)", "default": 0},
             },

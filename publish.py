@@ -715,19 +715,27 @@ def step_5_generate_stats(dry_run: bool = False) -> bool:
 
 
 def step_5e_interesting_stats(dry_run: bool = False) -> bool:
-    """Step 5e: Recompute the interesting_stats block (graph + top-cited)
-    AFTER Step 2c has refreshed reference_graph.db, then merge it into the
-    existing docs/stats.json. Without this step the dashboard combines a
-    fresh decisions.db count (from Step 5a) with the previous build's
-    graph counts (read from reference_graph.db whenever this script last
-    ran with the interesting_stats block enabled). Step 6 (final git
-    push) commits the merged stats.json so the dashboard reflects the
-    same snapshot the corpus does.
+    """Step 5e: Recompute stats.json with FRESH reference_graph counts
+    AFTER Step 2c rebuilds reference_graph.db.
 
-    Non-fatal: if it fails, the dashboard just keeps last week's graph
-    block (existing behaviour before this step was added).
+    The early Step 5a runs BEFORE reference_graph rebuild and writes
+    docs/stats.json with the previous build's citation/statute edges
+    in the *corpus* block (collect_corpus_stats reads reference_graph.db).
+    The dashboard reads ``stats.corpus.citation_edges`` and
+    ``stats.corpus.statute_edges`` for the "Graph & doctrine" card —
+    so until this step runs, those numbers can lag a full nightly.
+
+    A FULL re-run (no --interesting-stats-only / --no-interesting-stats
+    flags) recomputes BOTH the corpus block (with fresh graph counts)
+    AND the interesting_stats block (top-cited / most-cited statute /
+    graph_size). The 2026-05-16-evening fix using --interesting-stats-only
+    refreshed the wrong block — caught in code review same day.
+
+    Non-fatal: on failure the dashboard keeps whatever Step 5a wrote
+    (early-tier counts + previous build's graph). Step 6 commits the
+    merged result regardless.
     """
-    logger.info("Step 5e: Recompute interesting_stats block (post-graph)")
+    logger.info("Step 5e: Full stats regenerate (post-graph refresh)")
     script = REPO_DIR / "generate_stats.py"
     if not script.exists():
         logger.warning("  generate_stats.py not found, skipping")
@@ -739,11 +747,10 @@ def step_5e_interesting_stats(dry_run: bool = False) -> bool:
     return run_cmd(
         [sys.executable, str(script),
          "--db", str(DB_PATH),
-         "--output", str(DOCS_DIR / "stats.json"),
-         "--interesting-stats-only"],
-        "Refresh interesting_stats block",
+         "--output", str(DOCS_DIR / "stats.json")],
+        "Refresh stats.json with fresh graph counts",
         dry_run,
-        timeout=1800,  # interesting_stats has ~15-30 min worst case
+        timeout=3600,  # full stats incl. interesting_stats: 30-60 min worst case
     )
 
 

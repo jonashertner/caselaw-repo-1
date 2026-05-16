@@ -248,8 +248,16 @@ _register(Target(
 
 _register(Target(
     name="health_check",
-    deps=["git_push_final"],
-    description="Step 6b — post-publish smoke check (alerts on failure)",
+    # Must depend on EVERY delivery target so it truly is the terminal
+    # step in DAG mode. git_push_final alone is insufficient — in DAG
+    # topological order, upload_hf and publish_delta have no path to
+    # health_check via git_push_final (final push deps are minimised
+    # to avoid cascade failures, see comment there) and would otherwise
+    # schedule AFTER health_check. The docstring "at the very end"
+    # was a lie in DAG mode (caught in 2026-05-16 review).
+    deps=["git_push_final", "upload_hf", "publish_delta"],
+    non_fatal=True,
+    description="Step 6b — post-publish smoke check (alerts on failure). Truly terminal.",
 ))
 
 

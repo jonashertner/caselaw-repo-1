@@ -14221,7 +14221,37 @@ def _search_legislation(
 
     limit = max(1, min(60, limit))
     fetch_top_n_texts = max(0, min(10, fetch_top_n_texts))
-    language = language if language in ("de", "fr", "it") else "de"
+
+    # 3-way language fan-out when caller omits language. LexFind's API
+    # is single-language per request; the schema's "optional" contract
+    # is honored here by issuing 3 sequential calls and merging by law
+    # ID. The first call to populate an ID wins; later languages add
+    # only new entries. Caught in 2026-05-16 review.
+    if language not in ("de", "fr", "it"):
+        merged_laws: list[dict] = []
+        seen_ids: set = set()
+        merged_count = 0
+        for lang in ("de", "fr", "it"):
+            single = _search_legislation(
+                query=query, canton=canton, active_only=active_only,
+                search_in_content=search_in_content, language=lang,
+                limit=limit, fetch_top_n_texts=fetch_top_n_texts,
+            )
+            if not isinstance(single, dict):
+                continue
+            for law in (single.get("laws") or []):
+                lid = law.get("id") or law.get("systematic_number") or law.get("title")
+                if lid in seen_ids:
+                    continue
+                seen_ids.add(lid)
+                merged_laws.append(law)
+            merged_count += (single.get("count") or 0)
+        merged_laws = merged_laws[:limit]
+        return {
+            "query": query, "canton": canton, "language": "all (DE+FR+IT)",
+            "count": len(merged_laws), "laws": merged_laws,
+            "merged_from_per_lang_total": merged_count,
+        }
 
     # Local-first for cantonal queries: when a canton filter is set and
     # the local mirror has content, serve from cantonal_laws.db FTS5 —
@@ -15107,7 +15137,25 @@ def _browse_legislation_changes(
     if not LEXFIND_ENABLED:
         return {"error": "Legislation browsing is disabled (LEXFIND_ENABLED=false)."}
 
-    language = language if language in ("de", "fr", "it") else "de"
+    # 3-way language fan-out when omitted (see _search_legislation).
+    if language not in ("de", "fr", "it"):
+        merged_changes: list[dict] = []
+        seen_ids: set = set()
+        for lang in ("de", "fr", "it"):
+            single = _browse_legislation_changes(canton=canton, language=lang)
+            if not isinstance(single, dict):
+                continue
+            for change in (single.get("changes") or []):
+                cid = change.get("id") or change.get("uri") or change.get("title")
+                if cid in seen_ids:
+                    continue
+                seen_ids.add(cid)
+                merged_changes.append(change)
+        return {
+            "canton": canton, "language": "all (DE+FR+IT)",
+            "count": len(merged_changes), "changes": merged_changes,
+        }
+
     entity_id = LEXFIND_ENTITY_IDS.get(canton.upper())
     if entity_id is None:
         valid = ", ".join(sorted(LEXFIND_ENTITY_IDS.keys()))
@@ -16596,9 +16644,10 @@ def _list_tools() -> list[Tool]:
                             "description": (
                                 "OPTIONAL filter. Restricts results to ONE "
                                 "language version. Omit (recommended default) "
-                                "to return whichever language version the "
-                                "portal indexes — most cantons publish in a "
-                                "single official language anyway. Set ONLY "
+                                "to fan out across DE/FR/IT and merge "
+                                "results — LexFind's API is single-language "
+                                "per request, so omission triggers a 3-way "
+                                "parallel call with deduplication. Set ONLY "
                                 "when the user explicitly asks for one "
                                 "language. Hint when set: fr for FR/GE/JU/NE/"
                                 "VD, it for TI, de for the rest."
@@ -16690,9 +16739,12 @@ def _list_tools() -> list[Tool]:
                             "description": (
                                 "OPTIONAL filter. Restricts results to ONE "
                                 "language version. Omit (recommended default) "
-                                "to return amendments in whichever language "
-                                "the canton indexes them. Set ONLY when the "
-                                "user explicitly asks for one language."
+                                "to fan out across DE/FR/IT and merge "
+                                "results — LexFind's API is single-language "
+                                "per request, so omission triggers a 3-way "
+                                "parallel call with deduplication. Set ONLY "
+                                "when the user explicitly asks for one "
+                                "language."
                             ),
                             "enum": ["de", "fr", "it"],
                         },
@@ -17297,19 +17349,19 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
         elif name == "search_legislation":
-            # language defaults to "de": the LexFind API is single-language
-            # (no per-document multi-lingual content), so we MUST pick one
-            # at call time. Keep the explicit default here so the schema
-            # advertising "default: de" matches runtime behaviour. A
-            # multi-language fan-out (3 API calls, merge) is the
-            # architecturally right fix but deferred.
+            # language=None triggers a 3-way fan-out (DE/FR/IT) inside
+            # _search_legislation — the LexFind API is single-language
+            # per request so we issue 3 parallel calls and merge. Schema
+            # declares language OPTIONAL; the test
+            # tests/test_mcp_search_no_lang_default.py pins this contract
+            # (defence against the 2026-05-08 silent-de-filter incident).
             result = await asyncio.to_thread(
                 _search_legislation,
                 query=arguments.get("query", ""),
                 canton=arguments.get("canton"),
                 active_only=arguments.get("active_only", True),
                 search_in_content=arguments.get("search_in_content", False),
-                language=arguments.get("language", "de"),
+                language=arguments.get("language"),
                 limit=int(arguments.get("limit", 20)),
                 fetch_top_n_texts=int(arguments.get("fetch_top_n_texts", 0)),
             )
@@ -17327,12 +17379,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=_format_get_legislation_response(result))]
 
         elif name == "browse_legislation_changes":
-            # language defaults to "de": see search_legislation note above
-            # (LexFind is single-language).
+            # language=None → 3-way fan-out + merge (see search_legislation).
             result = await asyncio.to_thread(
                 _browse_legislation_changes,
                 canton=arguments.get("canton", "CH"),
-                language=arguments.get("language", "de"),
+                language=arguments.get("language"),
             )
             return [TextContent(type="text", text=_format_legislation_changes_response(result))]
 
