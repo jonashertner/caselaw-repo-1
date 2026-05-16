@@ -13546,18 +13546,37 @@ def _abbreviation_lookup_federal(
                LIMIT ?""",
             (q_clean, q_clean, q_clean, limit),
         ).fetchall()
+        # When language is omitted (None), fall back to "de" for the display
+        # columns AND fetch article 1 in any available language (no lang
+        # filter on the article fetch). Without this, `abbr_None` raises
+        # IndexError on the row lookups below — caught in 2026-05-16 review.
+        display_lang = language if language in ("de", "fr", "it") else "de"
         out: list[dict] = []
         for ar in abbr_rows:
-            abbr = ar[f"abbr_{language}"] or ar["abbr_de"] or "?"
-            title = ar[f"title_{language}"] or ar["title_de"] or ""
-            first_arts = conn.execute(
-                """SELECT article_num, heading, text
-                   FROM articles
-                   WHERE sr_number = ? AND lang = ?
-                   ORDER BY CAST(article_num AS INTEGER), article_num
-                   LIMIT 1""",
-                (ar["sr_number"], language),
-            ).fetchall()
+            abbr = ar[f"abbr_{display_lang}"] or ar["abbr_de"] or "?"
+            title = ar[f"title_{display_lang}"] or ar["title_de"] or ""
+            if language:
+                first_arts = conn.execute(
+                    """SELECT article_num, heading, text
+                       FROM articles
+                       WHERE sr_number = ? AND lang = ?
+                       ORDER BY CAST(article_num AS INTEGER), article_num
+                       LIMIT 1""",
+                    (ar["sr_number"], language),
+                ).fetchall()
+            else:
+                # language not specified: take whatever article 1 exists
+                # (any of the 3 parallel languages). Prefer DE if available.
+                first_arts = conn.execute(
+                    """SELECT article_num, heading, text
+                       FROM articles
+                       WHERE sr_number = ?
+                       ORDER BY (lang = 'de') DESC,
+                                CAST(article_num AS INTEGER),
+                                article_num
+                       LIMIT 1""",
+                    (ar["sr_number"],),
+                ).fetchall()
             for fa in first_arts:
                 body = (fa["text"] or "")[:240].replace("\n", " ").strip()
                 snippet = (
@@ -13618,7 +13637,12 @@ def _search_laws_federal(
                 seen_keys.add(key)
                 priority.append(entry)
 
-        if sr_number:
+        # When language is omitted (None), drop the a.lang filter so the FTS
+        # query returns matches in ALL 3 languages (otherwise the bound
+        # NULL value matches zero rows). Use display_lang for the result
+        # row's column selection. Caught in 2026-05-16 review.
+        display_lang = language if language in ("de", "fr", "it") else "de"
+        if language and sr_number:
             rows = conn.execute(
                 """SELECT a.sr_number, a.article_num, a.heading,
                           snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
@@ -13632,7 +13656,21 @@ def _search_laws_federal(
                    LIMIT ?""",
                 (query, sr_number, language, limit),
             ).fetchall()
-        else:
+        elif sr_number:
+            rows = conn.execute(
+                """SELECT a.sr_number, a.article_num, a.heading,
+                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
+                          l.abbr_de, l.abbr_fr, l.abbr_it,
+                          l.title_de, l.title_fr, l.title_it
+                   FROM articles_fts f
+                   JOIN articles a ON a.id = f.rowid
+                   LEFT JOIN laws l ON a.sr_number = l.sr_number
+                   WHERE articles_fts MATCH ? AND a.sr_number = ?
+                   ORDER BY f.rank
+                   LIMIT ?""",
+                (query, sr_number, limit),
+            ).fetchall()
+        elif language:
             rows = conn.execute(
                 """SELECT a.sr_number, a.article_num, a.heading,
                           snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
@@ -13646,13 +13684,27 @@ def _search_laws_federal(
                    LIMIT ?""",
                 (query, language, limit),
             ).fetchall()
+        else:
+            rows = conn.execute(
+                """SELECT a.sr_number, a.article_num, a.heading,
+                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
+                          l.abbr_de, l.abbr_fr, l.abbr_it,
+                          l.title_de, l.title_fr, l.title_it
+                   FROM articles_fts f
+                   JOIN articles a ON a.id = f.rowid
+                   LEFT JOIN laws l ON a.sr_number = l.sr_number
+                   WHERE articles_fts MATCH ?
+                   ORDER BY f.rank
+                   LIMIT ?""",
+                (query, limit),
+            ).fetchall()
         for r in rows:
             key = (r["sr_number"], r["article_num"])
             if key in seen_keys:
                 continue
             seen_keys.add(key)
-            abbr = r[f"abbr_{language}"] or r["abbr_de"] or "?"
-            title = r[f"title_{language}"] or r["title_de"] or ""
+            abbr = r[f"abbr_{display_lang}"] or r["abbr_de"] or "?"
+            title = r[f"title_{display_lang}"] or r["title_de"] or ""
             priority.append({
                 "level": "federal",
                 "canton": "CH",
@@ -17245,14 +17297,19 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
 
         elif name == "search_legislation":
-            # language: optional — see search_laws note above.
+            # language defaults to "de": the LexFind API is single-language
+            # (no per-document multi-lingual content), so we MUST pick one
+            # at call time. Keep the explicit default here so the schema
+            # advertising "default: de" matches runtime behaviour. A
+            # multi-language fan-out (3 API calls, merge) is the
+            # architecturally right fix but deferred.
             result = await asyncio.to_thread(
                 _search_legislation,
                 query=arguments.get("query", ""),
                 canton=arguments.get("canton"),
                 active_only=arguments.get("active_only", True),
                 search_in_content=arguments.get("search_in_content", False),
-                language=arguments.get("language"),
+                language=arguments.get("language", "de"),
                 limit=int(arguments.get("limit", 20)),
                 fetch_top_n_texts=int(arguments.get("fetch_top_n_texts", 0)),
             )
@@ -17270,11 +17327,12 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=_format_get_legislation_response(result))]
 
         elif name == "browse_legislation_changes":
-            # language: optional — see search_laws note above.
+            # language defaults to "de": see search_legislation note above
+            # (LexFind is single-language).
             result = await asyncio.to_thread(
                 _browse_legislation_changes,
                 canton=arguments.get("canton", "CH"),
-                language=arguments.get("language"),
+                language=arguments.get("language", "de"),
             )
             return [TextContent(type="text", text=_format_legislation_changes_response(result))]
 
