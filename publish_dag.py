@@ -203,12 +203,24 @@ _register(Target(
 _register(Target(
     name="upload_hf",
     deps=["export_parquet", "qc_gate"],
+    # non_fatal: a failed HF upload does NOT mean the publish failed —
+    # the corpus is on disk, the dashboard is fresh, MCP serves OK. The
+    # only consumer that loses is downstream HF parquet pullers (next
+    # nightly catches them up). Marking non_fatal also lets the terminal
+    # health_check (which depends on upload_hf for ordering) run even
+    # when HF rejected the push. Caught in 2026-05-16 review (cascade-
+    # skip of health_check on upload_hf failure).
+    non_fatal=True,
     description="Step 4 — push parquet shards to HuggingFace dataset mirror",
 ))
 
 _register(Target(
     name="publish_delta",
     deps=["build_fts5"],
+    # non_fatal: env-gated step (OCL_PUBLISH_DELTA), and even when on,
+    # delta publish is best-effort vs the full Step 4 upload. Same
+    # reasoning as upload_hf above re: terminal health_check.
+    non_fatal=True,
     description="Step 7 — publish delta JSONL bundle (env-gated)",
 ))
 

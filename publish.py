@@ -1400,7 +1400,11 @@ def main():
     # Non-fatal steps: still logged as FAILED in summary, but don't trigger
     # systemd exit-code=1. These depend on flaky external sources (e.g. sav-fsa.ch
     # PDFs) and their failure doesn't degrade the published dataset.
-    NON_FATAL_STEPS = {"2e", "5d"}
+    # 5e (stats_interesting) is non-fatal: on failure the dashboard
+    # keeps Step 5a's already-written stats.json (early-tier counts +
+    # previous build's graph block). The DAG marks stats_interesting
+    # non_fatal too — keep in sync.
+    NON_FATAL_STEPS = {"2e", "5d", "5e"}
     # Steps after the fast tier — skipped with --fast-only
     SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", "2g", 3, 4, 5, 6}
 

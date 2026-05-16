@@ -14240,16 +14240,32 @@ def _search_legislation(
             if not isinstance(single, dict):
                 continue
             for law in (single.get("laws") or []):
-                lid = law.get("id") or law.get("systematic_number") or law.get("title")
-                if lid in seen_ids:
+                # Dedupe by lexfind_id (the canonical per-law identifier
+                # that the LexFind API returns), with id / systematic_number /
+                # title as fallbacks. The previous priority chain missed
+                # lexfind_id entirely so cross-language duplicates slipped
+                # through — caught in 2026-05-16 review.
+                lid = (
+                    law.get("lexfind_id")
+                    or law.get("id")
+                    or law.get("systematic_number")
+                    or law.get("title")
+                )
+                if lid is None or lid in seen_ids:
                     continue
                 seen_ids.add(lid)
                 merged_laws.append(law)
-            merged_count += (single.get("count") or 0)
+            merged_count += (single.get("total") or single.get("count") or 0)
         merged_laws = merged_laws[:limit]
+        # Result shape MUST mirror the single-language path
+        # ({"query", "total", "laws", "language"}) — the formatter
+        # _format_search_legislation_response reads `total`, not `count`.
         return {
-            "query": query, "canton": canton, "language": "all (DE+FR+IT)",
-            "count": len(merged_laws), "laws": merged_laws,
+            "query": query,
+            "canton": canton,
+            "language": "all (DE+FR+IT)",
+            "total": len(merged_laws),
+            "laws": merged_laws,
             "merged_from_per_lang_total": merged_count,
         }
 
