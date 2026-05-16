@@ -214,7 +214,18 @@ _register(Target(
 
 _register(Target(
     name="git_push_final",
-    deps=["qc_gate"],
+    # Deps include every slow-tier + delivery target so that the final
+    # push runs strictly after all artifacts that could update docs/, push
+    # to HF, or affect the dashboard. git_push_early covers fast-tier docs
+    # changes; this one is the barrier for slow-tier + delivery. Earlier
+    # this only depended on qc_gate, which let DAG mode topologically
+    # schedule the final push BEFORE the slow-tier docs writers (caught
+    # in 2026-05-16 code review).
+    deps=[
+        "qc_gate", "git_push_early", "enrich_quality", "anwaltsrecht_tags",
+        "quality_report", "reference_graph", "materialien_build",
+        "decision_structure", "export_parquet", "upload_hf", "publish_delta",
+    ],
     description="Step 6 — final git push of stats + dashboard (catches docs/ changes from slow-tier steps; built-in diff-check short-circuits when nothing changed)",
 ))
 
