@@ -296,7 +296,8 @@ CREATE TABLE IF NOT EXISTS daily_tool_calls (
     client_class     TEXT    NOT NULL,
     endpoint_class   TEXT    NOT NULL,
     n_exact          INTEGER NOT NULL,       -- internal: exact count
-    n_public         INTEGER,                -- public: DP-noised, NULL if suppressed
+    n_public         INTEGER,                -- legacy: DP-noised, NULL if < K_ANON
+    n_dp             INTEGER,                -- new: DP-noised, always populated (no K_ANON gate)
     p50_ms           REAL,
     p95_ms           REAL,
     err_4xx          INTEGER NOT NULL,
@@ -310,7 +311,8 @@ CREATE TABLE IF NOT EXISTS daily_reach (
     client_class            TEXT    NOT NULL,
     n_cohorts_exact         INTEGER,
     n_cohorts_hll_estimate  INTEGER,
-    n_cohorts_public        INTEGER,        -- DP-noised, suppressed if < K_ANON
+    n_cohorts_public        INTEGER,        -- legacy: DP-noised, NULL if < K_ANON
+    n_cohorts_dp            INTEGER,        -- new: DP-noised, always populated
     PRIMARY KEY (day, client_class)
 );
 
@@ -319,6 +321,7 @@ CREATE TABLE IF NOT EXISTS daily_status (
     status_bucket TEXT    NOT NULL,
     n_exact       INTEGER NOT NULL,
     n_public      INTEGER,
+    n_dp          INTEGER,
     PRIMARY KEY (day, status_bucket)
 );
 
@@ -332,11 +335,31 @@ CREATE TABLE IF NOT EXISTS run_metadata (
 """
 
 
+def _maybe_alter_for_n_dp(conn: sqlite3.Connection) -> None:
+    """Add the n_dp column to legacy tables that pre-date it.
+
+    Pre-existing analytics.db installations have daily_tool_calls /
+    daily_reach / daily_status without the n_dp column. SQLite refuses
+    to add a column twice, so we ignore "duplicate column" errors.
+    """
+    for sql in (
+        "ALTER TABLE daily_tool_calls ADD COLUMN n_dp INTEGER",
+        "ALTER TABLE daily_reach ADD COLUMN n_cohorts_dp INTEGER",
+        "ALTER TABLE daily_status ADD COLUMN n_dp INTEGER",
+    ):
+        try:
+            conn.execute(sql)
+        except sqlite3.OperationalError as e:
+            if "duplicate column" not in str(e):
+                raise
+
+
 def write_results(db_path: Path, agg: DayAggregate, rng: random.Random) -> None:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path))
     try:
         conn.executescript(SCHEMA)
+        _maybe_alter_for_n_dp(conn)
         day = agg.day.isoformat()
 
         # Daily tool calls
@@ -347,13 +370,14 @@ def write_results(db_path: Path, agg: DayAggregate, rng: random.Random) -> None:
             p50 = percentile(lats, 0.50) if lats else None
             p95 = percentile(lats, 0.95) if lats else None
             n_public = dp_count(n, rng) if n >= K_ANON else None
+            n_dp = dp_count(n, rng)  # always populated, no K_ANON gate
             conn.execute(
                 """INSERT INTO daily_tool_calls
                    (day, client_class, endpoint_class,
-                    n_exact, n_public, p50_ms, p95_ms,
+                    n_exact, n_public, n_dp, p50_ms, p95_ms,
                     err_4xx, err_5xx, bytes_total)
-                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
-                (day, client, endpoint, n, n_public, p50, p95,
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+                (day, client, endpoint, n, n_public, n_dp, p50, p95,
                  cell["err_4xx"], cell["err_5xx"], cell["bytes"]),
             )
 
@@ -370,23 +394,25 @@ def write_results(db_path: Path, agg: DayAggregate, rng: random.Random) -> None:
             n_public = (
                 dp_count(n_hll, rng) if n_hll >= K_ANON else None
             )
+            n_dp = dp_count(n_hll, rng)
             conn.execute(
                 """INSERT INTO daily_reach
                    (day, client_class, n_cohorts_exact,
-                    n_cohorts_hll_estimate, n_cohorts_public)
-                   VALUES (?,?,?,?,?)""",
-                (day, client, n_exact, n_hll, n_public),
+                    n_cohorts_hll_estimate, n_cohorts_public, n_cohorts_dp)
+                   VALUES (?,?,?,?,?,?)""",
+                (day, client, n_exact, n_hll, n_public, n_dp),
             )
 
         # Status histogram
         conn.execute("DELETE FROM daily_status WHERE day = ?", (day,))
         for bucket, n in agg.status_hist.items():
             n_public = dp_count(n, rng) if n >= K_ANON else None
+            n_dp = dp_count(n, rng)
             conn.execute(
                 """INSERT INTO daily_status
-                   (day, status_bucket, n_exact, n_public)
-                   VALUES (?,?,?,?)""",
-                (day, bucket, n, n_public),
+                   (day, status_bucket, n_exact, n_public, n_dp)
+                   VALUES (?,?,?,?,?)""",
+                (day, bucket, n, n_public, n_dp),
             )
 
         # Run metadata
