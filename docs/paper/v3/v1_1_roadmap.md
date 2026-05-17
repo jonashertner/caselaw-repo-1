@@ -67,8 +67,20 @@ two fields:
 - Per-stratum precision (especially pin-cite — the main risk).
 - Per-stratum confusion vignettes (1–2 per stratum) in the paper appendix.
 
-**Adjudicator profile:** lawyer or law student with Swiss federal procedure
-familiarity. Budget: ~8 hours at ~CHF 80-100/hour ≈ **CHF 600-800**.
+**Adjudicator:** user-owned. Estimated ~8 hours.
+
+**Adjudication tool shipped:** `benchmarks/citation_precision_audit_tui.py` —
+single-keystroke decisions (c=correct / w=wrong / u=uncertain / n=note),
+auto-saves after every row, resumable from where you left off.
+
+Run:
+```bash
+python3 -m benchmarks.citation_precision_audit_tui \
+  --sample benchmarks/citation_precision_sample_400.jsonl
+```
+
+Decisions write straight back to the sample JSONL (no separate file
+to merge). On restart, jumps to the first un-adjudicated row.
 
 **Exit criterion:** 400/400 adjudicated; overall precision and per-stratum
 precision (with CIs) reported in paper §4. If pincite precision < 85%,
@@ -138,13 +150,35 @@ meaningful).
 3. Report Δ-MRR (lawyer-authored vs regeste-derived) per cell. The
    delta is the realism cost of the v1 methodology.
 
-**Budget:** ~6-8 hours of lawyer time at typical legal-research billing
-≈ **CHF 600-1,200**. Or: collaborator donation (e.g. a partner at a Swiss
-firm willing to donate the time in exchange for paper acknowledgement).
+**Author:** user-owned (lawyer or recruited collaborator). Estimated
+~6-8 hours.
 
-**Exit criterion:** 30 lawyer-authored queries; §7 reports the realism
-gap and the resulting MRR floor. Paper claim moves from "upper bound" to
-"upper bound, with measured realism gap of Δ".
+**Brief shipped:** `benchmarks/build_lawyer_query_brief.py` selects 30
+v1 cases stratified by legal area; produces:
+
+- `benchmarks/swiss_legal_rag_bench/lawyer_query_brief.md` —
+  one section per case; shows ONLY docket + legal area + primary law
+  (no regeste, no holding vocabulary); leaves a fenced code block for
+  the authored query. The lawyer reads top-to-bottom and fills 30
+  queries in their preferred language(s).
+- `benchmarks/swiss_legal_rag_bench/lawyer_queries_template.jsonl` —
+  30 rows with empty `q_text` / `q_lang`, ready for the maintainer to
+  populate from the completed Markdown.
+
+Run:
+```bash
+python3 -m benchmarks.build_lawyer_query_brief \
+  --v1    benchmarks/swiss_legal_rag_bench/cross_lingual_v1.jsonl \
+  --md    benchmarks/swiss_legal_rag_bench/lawyer_query_brief.md \
+  --jsonl benchmarks/swiss_legal_rag_bench/lawyer_queries_template.jsonl \
+  --n 30 --seed 42
+```
+
+**Exit criterion:** 30 lawyer-authored queries transcribed into
+`lawyer_queries.jsonl`; re-run the cross-lingual harness with that file
+as a second condition; §7 reports the realism gap (Δ-MRR vs v1 for the
+same 30 targets). Paper claim moves from "upper bound" to "upper bound,
+with measured realism gap of Δ".
 
 ---
 
@@ -263,13 +297,14 @@ If submission target is **2026-06-01** (15 days from 2026-05-17):
 
 | Day | Item | Owner |
 |----:|------|-------|
-| 1   | Run citation-precision-audit script on VPS → produce sample JSONL | Claude |
-| 1-2 | Recruit lawyer / adjudicator (1 person can do both items 1 and 3) | User |
-| 1   | Frozen-artifact code: Dockerfile + offline `make verify` | Claude |
+| 1   | Run citation-precision-audit script on VPS → produce sample JSONL | Claude ✓ done |
+| 1   | Adjudication TUI + lawyer query brief | Claude ✓ done |
+| 1-8 | User personally adjudicates 400-sample audit (~8h, TUI) | User |
+| 1-8 | User personally authors 30 lawyer queries (~6-8h, Markdown brief) | User |
+| 2-4 | Frozen-artifact code: Dockerfile + offline `make verify` | Claude |
 | 2-4 | Retrieval-augmented bench re-run | Claude |
 | 2-4 | Italian-original BGE identification + 45-trial v1.1 extension | Claude |
 | 2-4 | Statute alias table + temporal-validity proof of concept | Claude |
-| 3-8 | Adjudicator works on 400-sample audit (~8h) + 30 lawyer queries (~6h) | Adjudicator |
 | 5-7 | Legal/licensing appendix drafting | User (+ Claude assist) |
 | 8-9 | Integrate audit results + lawyer-query Δ-MRR into paper sections | Claude |
 | 9-10| Zenodo upload (corpus snapshot + manifests) | User |
