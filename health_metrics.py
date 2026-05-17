@@ -128,9 +128,12 @@ def freshness_seconds_by_court(
                 out[court] = now - ts
     except sqlite3.Error:
         # Most likely: progress-handler abort (sqlite3.OperationalError
-        # "interrupted"), or the DB is being heavily written. Return the
-        # last good cached value (may be empty on first attempt).
-        return cached[1] if cached else {}
+        # "interrupted"), or the DB is being heavily written. Cache the
+        # abort outcome too so we don't re-hit the slow query on every
+        # subsequent /metrics/health poll; will retry after TTL.
+        fallback = cached[1] if cached else {}
+        _freshness_cache[key] = (now, fallback)
+        return fallback
 
     _freshness_cache[key] = (now, out)
     return out
