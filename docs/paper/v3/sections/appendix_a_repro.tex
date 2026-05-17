@@ -58,21 +58,39 @@ provenance so a reviewer can verify in less than five minutes.
 \item \texttt{https://opencaselaw.ch/coverage/} (per-source scrape health).
 \end{itemize}
 
-\paragraph{Reproducing key numerical claims.} A reviewer can verify
-the paper's three headline claims in under a second from a fresh
-clone, without rebuilding the corpus, via the \texttt{Makefile}'s
-\texttt{verify} target:
+\paragraph{Reproducing key numerical claims.} Two modes:
+
+\textbf{Offline (recommended for archival reproducibility):}
 \begin{verbatim}
 git clone https://github.com/jonashertner/caselaw-repo-1
 cd caselaw-repo-1
+make verify-offline
+\end{verbatim}
+Reads only from JSON snapshots committed at the paper-resource tag:
+the corpus-size, citation-graph resolution rate, and cross-lingual
+MRR/Hit@10 all come from files under \path{docs/paper/v3/tables/} and
+\path{benchmarks/swiss_legal_rag_bench/results/}. No network access
+required. Runs in $\sim$5\,s. Expected output: ``All headline claims
+reproduce against committed snapshots''.
+
+\textbf{Live (additionally verifies the deployed system still serves
+the same data):}
+\begin{verbatim}
 make verify
 \end{verbatim}
-This calls \texttt{/health} on the live MCP server (corpus size),
-checks the citation-graph resolution rate against the JSON snapshot
-	under \path{docs/paper/v3/tables/}, and validates the cross-lingual
-benchmark MRR/Hit@10 against the committed results JSON under
-	\path{benchmarks/swiss_legal_rag_bench/results/}. The expected
-output is ``All headline claims reproduce''.
+Same as \texttt{verify-offline} except corpus size is read from
+\texttt{/health} on the live MCP endpoint. Floors a corpus-shrink
+regression.
+
+\textbf{Containerised reviewer image:}
+\begin{verbatim}
+make docker-build
+docker run --rm opencaselaw-reviewer:<date> make verify-offline
+\end{verbatim}
+Builds a $\sim$200\,MB Python 3.12 + SQLite image (see
+\path{Dockerfile.reviewer}) that contains only the committed snapshots
+and audit scripts. Confirms the headline numbers reproduce in a clean
+sandbox without depending on the reviewer's local Python toolchain.
 
 For deeper verification (full citation-graph rebuild and benchmark
 re-runs against the live corpus):

@@ -1,0 +1,49 @@
+# Minimal reviewer-reproducibility image.
+#
+# Purpose: a NeurIPS D&B reviewer (or anyone auditing the paper) can:
+#
+#   docker build -f Dockerfile.reviewer -t opencaselaw-reviewer .
+#   docker run --rm opencaselaw-reviewer make verify-offline
+#
+# and confirm every headline numerical claim in the paper without
+# network access and without rebuilding the corpus.
+#
+# We pin a stable Python + SQLite combo. The reviewer doesn't need
+# tectonic (the paper PDF ships in the repo); they only need a working
+# Python + the committed JSON snapshots.
+#
+# Image size target: < 250 MB.
+
+FROM python:3.12-slim-bookworm
+
+# Pin the SQLite library that ships with this image; verify-offline does
+# not touch the live DB but we still want a known sqlite3 module for the
+# audit and stats scripts.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        make \
+        ca-certificates \
+        sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /paper
+
+# Only copy the bits a reviewer needs to reproduce the headline claims
+# offline. We deliberately do NOT copy the 60 GB FTS5 DB, the scrapers,
+# or the production server code — that's all reproducible from the
+# committed snapshot JSONs.
+COPY Makefile ./
+COPY docs/paper/v3/tables/corpus_graph_stats.json \
+     docs/paper/v3/tables/corpus_graph_stats.json
+COPY benchmarks/swiss_legal_rag_bench/results/cross_lingual_v1.json \
+     benchmarks/swiss_legal_rag_bench/results/cross_lingual_v1.json
+COPY benchmarks/citation_precision_sample_400.jsonl \
+     benchmarks/citation_precision_sample_400.jsonl
+COPY benchmarks/citation_precision_audit_tui.py \
+     benchmarks/citation_precision_audit_tui.py
+COPY benchmarks/citation_precision_audit.py \
+     benchmarks/citation_precision_audit.py
+COPY benchmarks/__init__.py \
+     benchmarks/__init__.py
+
+# The default command shows the reviewer what they can do.
+CMD ["make", "help"]

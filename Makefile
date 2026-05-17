@@ -15,18 +15,22 @@
 PYTHON ?= python3
 PAPER_DIR := docs/paper/v3
 RELEASE_DATE := $(shell date +%Y-%m-%d)
+STATS_JSON := $(PAPER_DIR)/tables/corpus_graph_stats.json
 
 .PHONY: help
 help:
 	@echo "OpenCaseLaw build targets:"
 	@echo
-	@echo "  verify         Reproduce the paper's headline numerical claims"
-	@echo "                 (corpus size, citation-graph resolution rate,"
-	@echo "                 cross-lingual MRR) against the deployed graph."
-	@echo "                 Reads only — no DB writes. ~60 s."
+	@echo "  verify          Default. Reproduce paper headline numbers"
+	@echo "                  against the live deployed graph. Needs network."
+	@echo "                  ~60 s."
+	@echo "  verify-offline  Reproduce against committed JSON snapshots only."
+	@echo "                  No network, no live MCP. ~5 s. Use this for"
+	@echo "                  archival reproducibility (NeurIPS D&B reviewers)."
 	@echo
-	@echo "  verify-corpus  Just the corpus-stats verification (~5 s)."
-	@echo "  verify-graph   Just the citation-graph breakdown (~30 s)."
+	@echo "  verify-corpus           Live corpus-size probe (~5 s, needs network)."
+	@echo "  verify-corpus-offline   Same, from corpus_graph_stats.json snapshot."
+	@echo "  verify-graph            Citation-graph breakdown (offline-capable)."
 	@echo
 	@echo "  test           Run the full pytest suite (~40 s)."
 	@echo
@@ -35,6 +39,7 @@ help:
 	@echo "  tarball        Package the paper as an arXiv tar.gz."
 	@echo
 	@echo "  smoke          Hit production MCP endpoints to confirm uptime."
+	@echo "  docker-build   Build the reviewer-reproducibility image."
 	@echo
 
 .PHONY: verify
@@ -42,15 +47,33 @@ verify: verify-corpus verify-graph verify-cross-lingual
 	@echo
 	@echo "✓ All headline claims reproduce against the deployed graph."
 
+.PHONY: verify-offline
+verify-offline: verify-corpus-offline verify-graph verify-cross-lingual
+	@echo
+	@echo "✓ All headline claims reproduce against committed snapshots"
+	@echo "  (no network access required)."
+
 .PHONY: verify-corpus
 verify-corpus:
-	@echo "── Corpus size verification ────────────────────────────────"
+	@echo "── Corpus size verification (live) ─────────────────────────"
 	@$(PYTHON) -c "import urllib.request, json; \
 r=json.loads(urllib.request.urlopen('https://mcp.opencaselaw.ch/health', timeout=10).read()); \
 n=r.get('decisions', 0); \
 print(f'  /health.decisions = {n:,}'); \
 assert n > 950_000, f'corpus shrunk: {n} < 950k floor'; \
 assert n < 1_500_000, f'corpus suspiciously large: {n}'; \
+print('  ✓ within expected band [950k, 1.5M]')"
+
+.PHONY: verify-corpus-offline
+verify-corpus-offline:
+	@echo "── Corpus size verification (offline snapshot) ─────────────"
+	@$(PYTHON) -c "import json, pathlib; \
+s=json.loads(pathlib.Path('$(STATS_JSON)').read_text()); \
+n=s['total_decisions']; d=s['snapshot_date']; \
+print(f'  snapshot_date     = {d}'); \
+print(f'  total_decisions   = {n:,}'); \
+assert n > 950_000, f'snapshot corpus suspiciously small: {n}'; \
+assert n < 1_500_000, f'snapshot corpus suspiciously large: {n}'; \
 print('  ✓ within expected band [950k, 1.5M]')"
 
 .PHONY: verify-graph
@@ -105,6 +128,13 @@ tarball: paper
 	@cd $(PAPER_DIR) && tar czf opencaselaw-arxiv-$(RELEASE_DATE).tar.gz \
 		paper.tex paper.pdf bib/ figures/ sections/ tables/
 	@ls -la $(PAPER_DIR)/opencaselaw-arxiv-$(RELEASE_DATE).tar.gz
+
+.PHONY: docker-build
+docker-build:
+	@echo "── Building reviewer-reproducibility image ─────────────────"
+	@docker build -f Dockerfile.reviewer -t opencaselaw-reviewer:$(RELEASE_DATE) .
+	@echo
+	@echo "  Run: docker run --rm opencaselaw-reviewer:$(RELEASE_DATE) make verify-offline"
 
 .PHONY: smoke
 smoke:
