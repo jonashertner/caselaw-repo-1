@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Early MCP adoption signal from tier-1 server logs. Window: 12 April--9 May 2026. Counts are descriptive usage telemetry, not a quality metric.}
+\label{tab:adoption_signal}
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.8cm} r >{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{4.7cm}}
+\toprule
+\textbf{Client / deployment} & \textbf{Volume} & \textbf{Surface} & \textbf{Pattern} \\
+\midrule
+Anthropic Claude Code & $\sim$2.3k requests & CLI MCP client & Agentic legal-research sessions via \texttt{claude-code/2.1.x}. \\
+OpenAI MCP & $\sim$2.0k requests & MCP client & General MCP front-end traffic via \texttt{openai-mcp/1.0.0}. \\
+Cursor & $\sim$2.6k requests & IDE client & macOS IDE integration via \texttt{Cursor/3.x}. \\
+Swiss-French law firm & 740 tool calls & Copilot Studio & Production legal workflow via \texttt{CopilotStudio PowerFx}. \\
+Cantonal-government legal department & 3.4k calls & Custom MCP client & Internal legal-research workflow over the public endpoint. \\
+\bottomrule
+\end{tabular}
+\end{table}

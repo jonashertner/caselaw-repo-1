@@ -68,6 +68,7 @@ ge100 = (
     + buckets.get("100-999", 0)
 )
 ge1000 = buckets.get("10000+", 0) + buckets.get("1000-9999", 0)
+ge10000 = buckets.get("10000+", 0)
 res_pct = 100 * s["rg_resolved_citations"] / s["rg_citation_edges"]
 
 write(
@@ -87,6 +88,7 @@ Edges with target resolved to a corpus decision & {fmt_int(s['rg_resolved_citati
 Distinct decisions cited at least once & {fmt_int(s['rg_distinct_targets'])} \\\\
 Decisions cited $\\geq$ 100 times & {fmt_int(ge100)} \\\\
 Decisions cited $\\geq$ 1{{,}}000 times & {fmt_int(ge1000)} \\\\
+Decisions cited $\\geq$ 10{{,}}000 times & {fmt_int(ge10000)} \\\\
 \\bottomrule
 \\end{{tabular}}
 \\end{{table}}
@@ -108,7 +110,7 @@ write(
     "cross_lang_citation_matrix.tex",
     f"""\\begin{{table}}[t]
 \\centering
-\\caption{{Cross-lingual citation matrix. Rows are source decision languages; columns are cited (target) decision languages. Cells give resolved citation edges. Off-diagonal = {fmt_int(total_m - diag)} / {fmt_int(total_m)} = {off_pct:.1f}\\% of all resolved citations.}}
+\\caption{{Cross-lingual citation matrix. Rows are source decision languages; columns are cited (target) decision languages. Cells give resolved citation edges. Off-diagonal = {fmt_int(total_m - diag)} / {fmt_int(total_m)} = {off_pct:.1f}\\% of resolved citations with identified source and target language.}}
 \\label{{tab:cross_lang_citation}}
 \\small
 \\begin{{tabular}}{{l r r r}}
