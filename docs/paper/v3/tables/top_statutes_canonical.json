@@ -1,0 +1,311 @@
+{
+  "alias_groups": [
+    {
+      "display": "BGG/LTF",
+      "variants": [
+        "BGG",
+        "LTF"
+      ]
+    },
+    {
+      "display": "BV/Cst./Cost.",
+      "variants": [
+        "BV",
+        "CST",
+        "Cost"
+      ]
+    },
+    {
+      "display": "ZGB/CC",
+      "variants": [
+        "ZGB",
+        "CC"
+      ]
+    },
+    {
+      "display": "OR/CO",
+      "variants": [
+        "OR",
+        "CO"
+      ]
+    },
+    {
+      "display": "StGB/CP",
+      "variants": [
+        "STGB",
+        "StGB",
+        "CP"
+      ]
+    },
+    {
+      "display": "StPO/CPP",
+      "variants": [
+        "STPO",
+        "StPO",
+        "CPP"
+      ]
+    },
+    {
+      "display": "ZPO/CPC",
+      "variants": [
+        "ZPO",
+        "CPC"
+      ]
+    },
+    {
+      "display": "VwVG/PA",
+      "variants": [
+        "VWVG",
+        "VwVG",
+        "PA"
+      ]
+    },
+    {
+      "display": "ATSG/LPGA",
+      "variants": [
+        "ATSG",
+        "LPGA"
+      ]
+    },
+    {
+      "display": "AsylG/LAsi",
+      "variants": [
+        "ASYLG",
+        "AsylG",
+        "LASI",
+        "LAsi"
+      ]
+    },
+    {
+      "display": "AIG/LEI",
+      "variants": [
+        "AIG",
+        "AUG",
+        "AuG",
+        "LEI"
+      ]
+    },
+    {
+      "display": "UVG/LAA",
+      "variants": [
+        "UVG",
+        "LAA",
+        "LAINF"
+      ]
+    },
+    {
+      "display": "IVG/LAI",
+      "variants": [
+        "IVG",
+        "LAI"
+      ]
+    },
+    {
+      "display": "AHVG/LAVS",
+      "variants": [
+        "AHVG",
+        "LAVS"
+      ]
+    },
+    {
+      "display": "AVIG/LACI",
+      "variants": [
+        "AVIG",
+        "LACI",
+        "LADI"
+      ]
+    },
+    {
+      "display": "KVG/LAMal",
+      "variants": [
+        "KVG",
+        "LAMal"
+      ]
+    },
+    {
+      "display": "EMRK/CEDH",
+      "variants": [
+        "EMRK",
+        "CEDH",
+        "CEDU"
+      ]
+    },
+    {
+      "display": "SchKG/LP",
+      "variants": [
+        "SchKG",
+        "LP",
+        "LEF"
+      ]
+    },
+    {
+      "display": "BVG/LPP",
+      "variants": [
+        "BVG",
+        "LPP"
+      ]
+    },
+    {
+      "display": "VGG/LTAF",
+      "variants": [
+        "VGG",
+        "LTAF"
+      ]
+    }
+  ],
+  "schema_version": "canonical_top_statutes/v1",
+  "n_alias_groups": 20,
+  "top": 30,
+  "rows": [
+    {
+      "law_code": "BGG/LTF",
+      "article": "100",
+      "n": 205725
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "42",
+      "n": 201897
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "113",
+      "n": 122514
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "66",
+      "n": 97701
+    },
+    {
+      "law_code": "ATSG/LPGA",
+      "article": "61",
+      "n": 85207
+    },
+    {
+      "law_code": "BV/Cst./Cost.",
+      "article": "29",
+      "n": 79115
+    },
+    {
+      "law_code": "VwVG/PA",
+      "article": "63",
+      "n": 70498
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "106",
+      "n": 65798
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "72",
+      "n": 64793
+    },
+    {
+      "law_code": "VwVG/PA",
+      "article": "52",
+      "n": 64246
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "82",
+      "n": 62398
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "74",
+      "n": 62217
+    },
+    {
+      "law_code": "StPO/CPP",
+      "article": "428",
+      "n": 59567
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "95",
+      "n": 58055
+    },
+    {
+      "law_code": "ZPO/CPC",
+      "article": "106",
+      "n": 56092
+    },
+    {
+      "law_code": "VwVG/PA",
+      "article": "48",
+      "n": 55232
+    },
+    {
+      "law_code": "VGG/LTAF",
+      "article": "33",
+      "n": 53778
+    },
+    {
+      "law_code": "ATSG/LPGA",
+      "article": "60",
+      "n": 53730
+    },
+    {
+      "law_code": "IVG/LAI",
+      "article": "69",
+      "n": 53416
+    },
+    {
+      "law_code": "VwVG/PA",
+      "article": "5",
+      "n": 52144
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "90",
+      "n": 51731
+    },
+    {
+      "law_code": "BGG/LTF",
+      "article": "105",
+      "n": 51080
+    },
+    {
+      "law_code": "IVG/LAI",
+      "article": "28",
+      "n": 50838
+    },
+    {
+      "law_code": "VGG/LTAF",
+      "article": "37",
+      "n": 48785
+    },
+    {
+      "law_code": "AsylG/LAsi",
+      "article": "105",
+      "n": 47254
+    },
+    {
+      "law_code": "VGG/LTAF",
+      "article": "31",
+      "n": 46879
+    },
+    {
+      "law_code": "ATSG/LPGA",
+      "article": "8",
+      "n": 46847
+    },
+    {
+      "law_code": "ATSG/LPGA",
+      "article": "7",
+      "n": 44268
+    },
+    {
+      "law_code": "AsylG/LAsi",
+      "article": "106",
+      "n": 43294
+    },
+    {
+      "law_code": "BV/Cst./Cost.",
+      "article": "9",
+      "n": 42616
+    }
+  ]
+}

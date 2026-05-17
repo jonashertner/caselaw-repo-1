@@ -239,15 +239,40 @@ write(
 )
 
 # ─── top_statutes.tex ────────────────────────────────────────────
+# Prefer the alias-canonicalized JSON when present (collapses
+# DE/FR/IT variants of the same statute — e.g. BGG + LTF → BGG/LTF —
+# under a single canonical name, deduplicated via COUNT(DISTINCT
+# decision_id) so a decision citing both forms is counted once).
+# Falls back to the raw top30_statutes from corpus_graph_stats.json
+# if the canonicalized JSON is missing.
+CANONICAL_STATUTES_PATH = TAB_DIR / "top_statutes_canonical.json"
+if CANONICAL_STATUTES_PATH.exists():
+    canonical = json.loads(CANONICAL_STATUTES_PATH.read_text())
+    src_rows = canonical["rows"][:15]
+    n_alias_groups = canonical["n_alias_groups"]
+    caption_extra = (
+        f" Alias-canonicalised across DE/FR/IT abbreviations of {n_alias_groups} major"
+        " Swiss federal statutes; decisions citing multiple language forms of the same"
+        " provision in one document are counted once. The five v1.0 \\emph{BGG}/\\emph{LTF}"
+        " rows now correctly aggregate as a single statute."
+    )
+else:
+    src_rows = s["top30_statutes"][:15]
+    caption_extra = (
+        " \\emph{LTF} (French) and \\emph{BGG} (German) refer to the same"
+        " Bundesgerichtsgesetz / Loi sur le Tribunal f\\'ed\\'eral; v1.1"
+        " canonicalisation pending."
+    )
+
 rows = []
-for r in s["top30_statutes"][:15]:
+for r in src_rows:
     rows.append(f"{r['law_code']} & Art.\\ {r['article']} & {fmt_int(r['n'])} \\\\")
 
 write(
     "top_statutes.tex",
     f"""\\begin{{table}}[t]
 \\centering
-\\caption{{Top 15 most-referenced statutory provisions. \\emph{{LTF}} (French) and \\emph{{BGG}} (German) refer to the same Bundesgerichtsgesetz / Loi sur le Tribunal f\\'ed\\'eral.}}
+\\caption{{Top 15 most-referenced statutory provisions.{caption_extra}}}
 \\label{{tab:top_statutes}}
 \\small
 \\begin{{tabular}}{{l l r}}

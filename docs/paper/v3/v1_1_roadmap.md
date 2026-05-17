@@ -215,7 +215,7 @@ rail; the difference is reported and discussed.
 
 ---
 
-## 5. Statute graph: LTF/BGG canonicalization + temporal validity
+## 5. Statute graph: LTF/BGG canonicalization (**SHIPPED**) + temporal validity (deferred)
 
 **Why it's needed (review).** Top-statutes table lists LTF Art. 42 and
 BGG Art. 42 as separate rows even though the caption says they refer to
@@ -223,22 +223,35 @@ the same statute. Statute resolution is also currently snapshot-only —
 a 1998 decision citing "OG Art. X" gets resolved against the current SR
 mirror, which may not have OG (now superseded by BGG/LTF).
 
-**Method:**
+**v1.1 status (decided 2026-05-17):**
 
-1. Build an alias table: `{LTF→BGG, CO→OR, CC→ZGB, ...}`. Resolve all
-   statute references through aliases before counting.
-2. For temporal validity: for each statute reference, look up the SR
-   version active at the source decision's `decision_date`. If the
-   provision was renumbered or repealed between decision and snapshot,
-   record the temporal-link metadata.
-3. Update top-statutes table to use canonical (post-alias) provisions.
+- **Alias canonicalisation: SHIPPED.** `benchmarks/build_canonical_top_statutes.py`
+  emits `top_statutes_canonical.json` from `reference_graph.db` with
+  20 alias groups (BGG/LTF, BV/Cst./Cost., ZGB/CC, OR/CO, StGB/CP,
+  StPO/CPP, ZPO/CPC, VwVG/PA, ATSG/LPGA, AsylG/LAsi, AIG/LEI, UVG/LAA,
+  IVG/LAI, AHVG/LAVS, AVIG/LACI, KVG/LAMal, EMRK/CEDH, SchKG/LP,
+  BVG/LPP, VGG/LTAF). Aggregation uses `COUNT(DISTINCT decision_id)`
+  under SQL `CASE WHEN`, so a decision citing both BGG Art. 42 and
+  LTF Art. 42 in one document is counted once.
+- Result: the v1.0 table's five split BGG/LTF rows collapse to a
+  single canonical statute; BGG/LTF Art. 42 jumps to #2 at 201,897
+  (vs naive 212,997 sum — 5% double-count avoided).
+- `build_tables.py` consumes the canonical JSON when present; falls
+  back to raw `top30_statutes` otherwise.
+- §4 prose rewritten: explicit that canonicalisation is *lexical only*;
+  temporal handling deferred.
 
-**Effort:** ~1 day code (alias table) + ~2-3 days for proper temporal
-handling (requires SR version archive — may need partial Fedlex re-scrape).
+- **Temporal validity: DEFERRED to v2.0.** Mapping a 1998 \emph{OG}
+  reference (Bundesrechtspflegegesetz, repealed 2007 in favour of BGG/LTF)
+  to its current SR location, or distinguishing repealed-vs-current
+  article versions, requires an SR-version archive and possibly partial
+  Fedlex re-scrape; out of scope for v1.1. Paper §4 explicitly states
+  the gap.
 
-**Exit criterion:** Top-statutes table has no duplicate provisions across
-abbreviation languages. §4 statute-graph prose explicitly states whether
-resolution is snapshot-only or temporal.
+**Exit criterion (v1.1, met):** ✓ Top-statutes table has no duplicate
+provisions across abbreviation languages. ✓ §4 statute-graph prose
+explicitly distinguishes lexical canonicalisation (shipped) from
+temporal handling (deferred to v2.0).
 
 ---
 
