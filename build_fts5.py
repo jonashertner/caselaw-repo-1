@@ -1707,6 +1707,15 @@ def build_database(
     # Switch from WAL to DELETE mode before closing (immutable=1 compat)
     conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
     conn.execute("PRAGMA journal_mode=DELETE")
+    # Bump db_generation so MCP workers' _query_cache invalidates on next
+    # get_db call. See docs/db_contract.md. Must run AFTER the final
+    # durable write (journal_mode=DELETE folds WAL into main) and BEFORE
+    # close, so the new value is persisted into the file that os.replace
+    # will rename into the live path. Value is unix epoch seconds —
+    # fits the 32-bit signed user_version field until 2038.
+    _db_generation = int(time.time())
+    conn.execute(f"PRAGMA user_version = {_db_generation}")
+    logger.info(f"db_generation set to {_db_generation}")
     conn.close()
 
     # Full rebuild: atomically swap temp DB into place

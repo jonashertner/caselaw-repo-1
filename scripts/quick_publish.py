@@ -207,6 +207,16 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
         conn.commit()
 
         total_after = conn.execute("SELECT count(*) FROM decisions").fetchone()[0]
+
+        # Bump db_generation so MCP workers' _query_cache invalidates on
+        # next get_db call. See docs/db_contract.md. Runs AFTER commit
+        # and BEFORE close + os.replace, so the new value is persisted
+        # into the file that gets atomically swapped into the live path.
+        # Value is unix epoch seconds.
+        _db_generation = int(time.time())
+        conn.execute(f"PRAGMA user_version = {_db_generation}")
+        logger.info("db_generation set to %d", _db_generation)
+
         conn.close()
         conn = None
 

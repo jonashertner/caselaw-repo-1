@@ -1400,6 +1400,14 @@ def _expand_query_with_llm(query: str) -> list[str]:
 
 # ── Database ──────────────────────────────────────────────────
 
+# db_generation cache-invalidation tracking. See docs/db_contract.md.
+# Module-level: each worker process maintains its own last-seen generation.
+# Updated in get_db() whenever a fresh connection reports a different
+# PRAGMA user_version than we last saw — triggers _cache_clear() so stale
+# aggregation results (list_courts, get_statistics) don't outlive a swap.
+_last_seen_db_generation: int = 0
+
+
 def get_db() -> sqlite3.Connection:
     """Get a read-only connection to the local SQLite database.
 
@@ -1423,6 +1431,26 @@ def get_db() -> sqlite3.Connection:
             )
             conn.row_factory = sqlite3.Row
             conn.execute("PRAGMA query_only = ON")  # read-only for safety
+
+            # Cache-invalidation check: a writer (build_fts5 / quick_publish)
+            # sets PRAGMA user_version after each durable write. If we see
+            # a value different from what we cached last, the on-disk DB
+            # has been swapped under us — clear _query_cache so aggregation
+            # results don't outlive the swap. Bare try/except so a failed
+            # PRAGMA never breaks request serving.
+            global _last_seen_db_generation
+            try:
+                gen = conn.execute("PRAGMA user_version").fetchone()[0]
+                if gen != _last_seen_db_generation:
+                    logger.info(
+                        "db_generation transitioned %d → %d (clearing _query_cache)",
+                        _last_seen_db_generation, gen,
+                    )
+                    _cache_clear()
+                    _last_seen_db_generation = gen
+            except Exception as _gen_err:
+                logger.warning("db_generation check failed: %s", _gen_err)
+
             return conn
         except sqlite3.OperationalError as e:
             last_error = e
@@ -1431,6 +1459,15 @@ def get_db() -> sqlite3.Connection:
     raise sqlite3.OperationalError(
         f"Unable to open SQLite database at {DB_PATH}: {last_error}"
     )
+
+
+def get_db_generation() -> int:
+    """Return the last-seen db_generation as recorded by get_db().
+
+    Used by /health and operator diagnostics. Returns 0 if no get_db()
+    call has occurred yet (worker just started).
+    """
+    return _last_seen_db_generation
 
 
 def get_db_stats() -> dict:
@@ -17709,7 +17746,14 @@ def main_remote(host: str, port: int):
             conn = get_db()
             row = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()
             conn.close()
-            return JSONResponse({"status": "ok", "decisions": row[0]})
+            # db_generation reflects the value get_db() last observed via
+            # PRAGMA user_version — see docs/db_contract.md. Lets operators
+            # detect stuck workers without a separate diagnostic endpoint.
+            return JSONResponse({
+                "status": "ok",
+                "decisions": row[0],
+                "db_generation": get_db_generation(),
+            })
         except Exception as e:
             return JSONResponse(
                 {"status": "error", "detail": str(e)}, status_code=503,
