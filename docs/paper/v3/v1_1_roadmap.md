@@ -115,85 +115,56 @@ but the rest of the IT candidates sit much lower than the v1
 distribution (median ~250 vs v1 median 8,180); paper must explicitly
 acknowledge this asymmetry.
 
-**Regeste-language caveat (new methodology decision required).** The
-identified IT-original BGEs have *German* regestes (BGE publishes
-German headnotes regardless of the case's working language). This
-means the v1 regeste-derived query construction cannot directly
-produce Italian queries for them. Three options for v1.1:
+**Regeste-language constraint (closed-by-deferral).** The identified
+IT-original BGEs have *German* regestes (BGE publishes German headnotes
+regardless of the case's working language). The v1 regeste-derived
+query construction therefore cannot directly produce Italian queries
+for them.
 
-1. **(preferred) Unify with item 3** — let the lawyer author Italian
-   queries for the IT-original cases as part of the lawyer-query
-   pilot. This converts the methodological problem into a feature:
-   the IT-target column is *only* lawyer-authored, making it the
-   benchmark's most-realistic stratum and a natural comparison
-   against the regeste-derived DE/FR cells.
-2. Translate the German regeste to Italian per case (manual,
-   ~30 min/case = ~7.5 hours total).
-3. Extract Italian keyword terms from the case body (the dispositiv
-   or first 2 paragraphs of the Erwägungen); risk of drift from the
-   keyword-derived methodology.
+With item 3 (lawyer-authored queries) deferred to v2.0, the IT-target
+column also stays empty in v1.1. The shipped artifacts
+(`build_it_target_candidates.py` + `it_target_candidates.jsonl`)
+remain in the repo as v2.0 infrastructure: when lawyer-authored queries
+land, the candidate pool is already identified and ranked.
 
-**Recommended path: option 1.** Update lawyer brief to include 15 of
-these IT-candidates with Italian-only query instruction.
+**§7 paper edit (v1.1):** add one sentence acknowledging that the
+IT-target gap has been investigated and that the identifier
+methodology + 30 ranked candidates ship in the repo, while query
+construction for them awaits the v2.0 multi-annotator pilot.
 
-**Exit criterion:** 15 IT-targets in `cross_lingual_v1_1.jsonl` with
-queries (Italian-authored, plus optional DE/FR queries from the same
-lawyer for full 45 trials); §7 table gains a non-empty IT column;
-prose addresses the in-degree-band gap and the construction
-asymmetry.
+**Exit criterion (v1.1, narrowed):** §7 prose addresses that
+IT-original cases were identified and remain available for v2.0; the
+table itself stays unchanged from v1.0.
 
 ---
 
-## 3. Lawyer-authored query pilot (the realism check)
+## 3. Lawyer-authored query pilot — **DEFERRED to v2.0**
 
-**Why it's needed (Fatal #1).** The v1 queries are regeste-derived; the
-critique says this is "lexical self-retrieval", not realistic legal
-research. The paper post-reframe owns the upper-bound caveat, but the
-gap remains: *we don't know* how MRR drops on real research questions.
+**Status:** out of v1.1 scope (decided 2026-05-17). The realism Δ-MRR
+experiment is not measured in v1.1; §7 retains the upper-bound caveat
+as the honest framing without an empirical delta number.
 
-**Target:** 30 fact-pattern-style queries authored by a practicing Swiss
-lawyer without sight of the target case's regeste. Stratify by legal
-area to match the v1 stratification (so per-area comparisons are
-meaningful).
+**Reasoning:** the human cost (one Swiss lawyer × ~6–8 hours of careful
+fact-pattern query authoring) is not justified for the realism
+improvement this single experiment would buy, given that:
 
-**Protocol:**
+- v1.0 already owns the upper-bound caveat explicitly in §7 and §11.
+- The asymmetric cross-cell ranking (which the paper now foregrounds
+  as the interpretable signal) is robust to the construction
+  methodology.
+- v2.0 of the benchmark will introduce lawyer-authored queries as
+  part of a broader multi-annotator design (proper IAA, larger
+  sample), not as a one-off pilot.
 
-1. Lawyer is told the legal area (e.g. accident insurance, federal
-   court procedure) and the fact pattern (1-2 sentences of hypothetical
-   facts). Lawyer formulates the search query they would actually run.
-2. We then evaluate retrieval against the same 50 targets used in v1.
-3. Report Δ-MRR (lawyer-authored vs regeste-derived) per cell. The
-   delta is the realism cost of the v1 methodology.
+**Side-effect on item 2 (IT-target coverage):** the IT-target column
+remains empty in v1.1 (it was the lawyer-query path that would have
+filled it). The IT-candidate identifier still ships as v2.0 infrastructure
+(see item 2 below).
 
-**Author:** user-owned (lawyer or recruited collaborator). Estimated
-~6-8 hours.
-
-**Brief shipped:** `benchmarks/build_lawyer_query_brief.py` selects 30
-v1 cases stratified by legal area; produces:
-
-- `benchmarks/swiss_legal_rag_bench/lawyer_query_brief.md` —
-  one section per case; shows ONLY docket + legal area + primary law
-  (no regeste, no holding vocabulary); leaves a fenced code block for
-  the authored query. The lawyer reads top-to-bottom and fills 30
-  queries in their preferred language(s).
-- `benchmarks/swiss_legal_rag_bench/lawyer_queries_template.jsonl` —
-  30 rows with empty `q_text` / `q_lang`, ready for the maintainer to
-  populate from the completed Markdown.
-
-Run:
-```bash
-python3 -m benchmarks.build_lawyer_query_brief \
-  --v1    benchmarks/swiss_legal_rag_bench/cross_lingual_v1.jsonl \
-  --md    benchmarks/swiss_legal_rag_bench/lawyer_query_brief.md \
-  --jsonl benchmarks/swiss_legal_rag_bench/lawyer_queries_template.jsonl \
-  --n 30 --seed 42
-```
-
-**Exit criterion:** 30 lawyer-authored queries transcribed into
-`lawyer_queries.jsonl`; re-run the cross-lingual harness with that file
-as a second condition; §7 reports the realism gap (Δ-MRR vs v1 for the
-same 30 targets). Paper claim moves from "upper bound" to "upper bound,
-with measured realism gap of Δ".
+**Removed artifacts:** the lawyer brief generator
+(`benchmarks/build_lawyer_query_brief.py`) and its outputs were removed
+from the repo when this item was deferred. Regenerable from git history
+if v2.0 needs them.
 
 ---
 
@@ -313,20 +284,23 @@ If submission target is **2026-06-01** (15 days from 2026-05-17):
 | Day | Item | Owner |
 |----:|------|-------|
 | 1   | Run citation-precision-audit script on VPS → produce sample JSONL | Claude ✓ done |
-| 1   | Adjudication TUI + lawyer query brief | Claude ✓ done |
+| 1   | Adjudication TUI | Claude ✓ done |
+| 1   | Offline `make verify` + Dockerfile.reviewer | Claude ✓ done |
+| 1   | IT-original BGE identifier + 30 candidate JSONL | Claude ✓ done |
 | 1-8 | User personally adjudicates 400-sample audit (~8h, TUI) | User |
-| 1-8 | User personally authors 30 lawyer queries (~6-8h, Markdown brief) | User |
-| 2-4 | Frozen-artifact code: Dockerfile + offline `make verify` | Claude |
 | 2-4 | Retrieval-augmented bench re-run | Claude |
-| 2-4 | Italian-original BGE identification + 45-trial v1.1 extension | Claude |
 | 2-4 | Statute alias table + temporal-validity proof of concept | Claude |
 | 5-7 | Legal/licensing appendix drafting | User (+ Claude assist) |
-| 8-9 | Integrate audit results + lawyer-query Δ-MRR into paper sections | Claude |
+| 8-9 | Integrate audit results into paper §4 (precision table) | Claude |
 | 9-10| Zenodo upload (corpus snapshot + manifests) | User |
 | 10-12 | Internal cold-read pass; pre-submission revision | User |
 | 13  | Git tag `paper-resource-2026-05` | User |
 | 14  | arXiv submission | User |
 | 15  | (buffer) | — |
+
+*Lawyer-query realism Δ-MRR (item 3) and IT-target column (item 2)
+deferred to v2.0; both items can be picked up post-arXiv without
+blocking the v1.1 submission.*
 
 Items not on the critical path (Docker, legal-review polish, IT-original
 in-degree band justification) can slip without blocking submission.
@@ -337,15 +311,16 @@ in-degree band justification) can slip without blocking submission.
 
 Once items 1-4 land:
 
-| Section | v1.0 (today) | v1.1 (post-backlog) |
+| Section | v1.0 (today) | v1.1 (submission) |
 |---|---|---|
 | §4 citation graph | 93.5% coverage | + per-stratum precision with CIs (item 1) |
-| §7 cross-lingual table | no IT target column | + IT column with 15 IT-original cases (item 2) |
-| §7 prose | "upper bound" caveat only | + measured realism gap from lawyer queries (item 3) |
+| §7 cross-lingual table | no IT target column | unchanged in table; prose notes IT-target identifier shipped, queries deferred to v2.0 (items 2+3) |
 | §8 audit | prior-only per-rail | + retrieval-augmented column per-rail (item 4) |
-| Repro | live MCP + commit-pinned JSON | + offline `make verify` + Zenodo DOI (item 6) |
+| Repro | live MCP + commit-pinned JSON | + offline `make verify` + Docker + Zenodo DOI (item 6) ✓ |
 | Legal | half-page | full legal appendix (item 7) |
 | Statute graph | snapshot-only, dual-counted | canonicalized, temporal-aware (item 5) |
 
 That is the version submitted to arXiv (and subsequently to NeurIPS D&B
-2026, deadline late May / early June).
+2026, deadline late May / early June). The realism Δ-MRR (item 3) and
+IT-target column (item 2) move to v2.0 alongside multi-annotator IAA
+work.
