@@ -3329,13 +3329,13 @@
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 85103,
+      "citation_count": 85174,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 179984
+      "ref_count": 180095
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3347,57 +3347,57 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 971732
+      "total": 972484
     },
     "regeste_coverage": {
       "pct": 34.9,
-      "with_regeste": 339019,
-      "total": 971732
+      "with_regeste": 339119,
+      "total": 972484
     },
     "graph_size": {
-      "decision_edges": 8087818,
-      "statute_edges": 11260080,
-      "total": 19347898
+      "decision_edges": 8097538,
+      "statute_edges": 11271216,
+      "total": 19368754
     },
     "echr_switzerland": {
-      "total": 2789,
+      "total": 2796,
       "grand_chamber": 93,
-      "in_2026": 88,
+      "in_2026": 94,
       "most_recent": {
-        "decision_date": "2026-05-07",
-        "docket": "30781/22",
-        "regeste_excerpt": "Violation de l'article 11 - Liberté de réunion et d'association (Article 11-1 - Liberté de réunion pacifique); Violation: 11;11-1",
-        "url": "https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_30781_22"
+        "decision_date": "2026-05-13",
+        "docket": "27200/24_27203/24_30050/24_34558/24",
+        "regeste_excerpt": "Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure d'exécution;Article 6-1 - Accès à un tribunal);Violation de l'",
+        "url": "https://mcp.opencaselaw.ch/entscheid/ecthr_committee_27200_24_27203_24_30050_24_34558_24"
       }
     },
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 85103,
+        "citation_count": 85174,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 44227,
+        "citation_count": 44253,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 36940,
+        "citation_count": 36980,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 130 V 343",
-        "citation_count": 29623,
+        "citation_count": 29631,
         "regeste_excerpt": "Regeste\n Art. 1 Abs. 1 IVG (in der seit 1. Januar 2003 geltenden Fassung) in Verbindung mit Art. 6, 7, 8 Abs. 1, Art. 16 und 17 ATSG; Art. 4 Abs. 1, Art. 28 Abs",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_130_V_343"
       },
       {
         "docket": "BGE 126 V 75",
-        "citation_count": 27701,
+        "citation_count": 27708,
         "regeste_excerpt": "Regeste\n Art. 28 Abs. 2 IVG: Kürzung von Tabellenlöhnen. - Für die Bestimmung des Invalideneinkommens ist primär von der beruflich-erwerblichen Situation auszug",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_126_V_75"
       }
@@ -3406,40 +3406,38 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 187383
+        "ref_count": 187497
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110498
+        "ref_count": 110563
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 104853
+        "ref_count": 104888
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92218
+        "ref_count": 92348
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59254
+        "ref_count": 59317
       }
     ],
     "materialien_coverage": {
-      "total_documents": 5296,
-      "paragraphs": 381967,
-      "article_links": 8124,
+      "total_documents": 240,
+      "paragraphs": 60778,
+      "article_links": 0,
       "by_language": {
-        "de": 1765,
-        "fr": 1766,
-        "it": 1765
+        "de": 240
       },
       "year_range": {
-        "from": 2003,
+        "from": 2023,
         "to": 2026
       }
     },
@@ -3449,7 +3447,7 @@
         "earliest": "1875-01-01",
         "latest": "2026-01-01",
         "span_years": 151,
-        "decision_count": 35350
+        "decision_count": 35358
       },
       {
         "court": "ch_vb",
@@ -3484,7 +3482,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-04-28",
         "span_years": 118,
-        "decision_count": 167830
+        "decision_count": 167918
       }
     ]
   },
