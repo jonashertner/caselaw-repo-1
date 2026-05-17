@@ -1,0 +1,192 @@
+"""Pure-read health metric collectors for the OpenCaseLaw observability layer.
+
+Every function in this module:
+
+- Returns ``None`` or an empty data structure on missing/inaccessible input.
+- Performs no writes (no logs, no DB mutations, no file creation).
+- Is unit-testable against synthetic inputs (paths are parameters).
+
+Consumed by ``mcp_server.py``'s ``/metrics/health`` endpoint and the
+``/dev/health`` dashboard. Adding a new freshness or pipeline signal:
+write a reader here, add it to ``collect_health()``, render it in the
+dashboard, optionally add an alert rule in ``health_alerts``.
+
+The defaults assume the production layout (``/opt/caselaw/repo``) but
+every function accepts an explicit path argument so tests can run
+against tempdirs.
+"""
+from __future__ import annotations
+
+import json
+import sqlite3
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
+
+REPO_DIR = Path(__file__).resolve().parent
+DEFAULT_DB_PATH = REPO_DIR / "output" / "decisions.db"
+DEFAULT_BGER_POLLER_LOG = REPO_DIR / "logs" / "bger_poller.log"
+DEFAULT_LLM_USAGE_LOG = REPO_DIR / "logs" / "llm_usage.jsonl"
+
+
+def _now() -> int:
+    """Wall clock, separated so tests can monkeypatch."""
+    return int(time.time())
+
+
+def _parse_iso(s: str) -> Optional[int]:
+    """Parse ISO-8601 (with 'Z' or +00:00) to unix epoch seconds.
+
+    Returns None for malformed input — never raises.
+    """
+    if not s or not isinstance(s, str):
+        return None
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return int(dt.timestamp())
+    except (ValueError, TypeError):
+        return None
+
+
+def freshness_seconds_by_court(
+    db_path: Optional[Path] = None,
+) -> dict[str, int]:
+    """Per-court seconds-since-most-recent ``scraped_at``.
+
+    Uses ``scraped_at`` because no ``ingest_ts`` column exists yet
+    (planned for the A6 schema deploy). ``scraped_at`` is when the
+    scraper grabbed the row, not when it landed in the published DB —
+    this is documented in ``docs/observability.md``.
+
+    Returns ``{}`` on any DB error so the consumer never crashes on
+    partial outages.
+    """
+    if db_path is None:
+        db_path = DEFAULT_DB_PATH
+    if not db_path.exists():
+        return {}
+    try:
+        conn = sqlite3.connect(
+            f"file:{db_path}?immutable=1", uri=True, timeout=1.0,
+        )
+        rows = conn.execute(
+            "SELECT court, MAX(scraped_at) FROM decisions "
+            "WHERE scraped_at IS NOT NULL AND court IS NOT NULL "
+            "GROUP BY court"
+        ).fetchall()
+        conn.close()
+    except sqlite3.Error:
+        return {}
+
+    now = _now()
+    out: dict[str, int] = {}
+    for court, ts_str in rows:
+        ts = _parse_iso(ts_str)
+        if ts is not None:
+            out[court] = now - ts
+    return out
+
+
+def pipeline_last_success_ts(
+    db_path: Optional[Path] = None,
+) -> Optional[int]:
+    """Unix ts when ``decisions.db`` was last successfully swapped.
+
+    Uses the file's ``mtime`` — atomic ``os.replace`` updates it on
+    every full rebuild and every ``quick_publish`` swap. None if the
+    file doesn't exist (DB never built / symlink broken).
+    """
+    if db_path is None:
+        db_path = DEFAULT_DB_PATH
+    try:
+        return int(db_path.stat().st_mtime)
+    except OSError:
+        return None
+
+
+def quick_publish_last_run_ts(
+    log_path: Optional[Path] = None,
+) -> Optional[int]:
+    """Unix ts when ``bger_poller`` (which invokes ``quick_publish``) last ran.
+
+    v1 uses the log file's ``mtime`` — when A1 lands a dedicated
+    ``quick_publish_metrics.jsonl`` writer, this function should switch
+    to reading the last entry's timestamp instead.
+    """
+    if log_path is None:
+        log_path = DEFAULT_BGER_POLLER_LOG
+    try:
+        return int(log_path.stat().st_mtime)
+    except OSError:
+        return None
+
+
+def bger_poller_last_run_ts(
+    log_path: Optional[Path] = None,
+) -> Optional[int]:
+    """Alias of ``quick_publish_last_run_ts`` — same log today.
+
+    Will diverge after A1 when ``quick_publish`` gets its own metrics
+    file independent of the invoking poller.
+    """
+    return quick_publish_last_run_ts(log_path)
+
+
+def daily_cost_usd(
+    hours: int = 24,
+    log_path: Optional[Path] = None,
+    now_ts: Optional[int] = None,
+) -> float:
+    """Sum of ``cost_usd`` from ``llm_usage.jsonl`` within the last ``hours``.
+
+    Returns 0.0 if the file doesn't exist or has no in-window rows.
+    Reads the whole file each call — fine at the current ~10 MB size;
+    if it grows past ~100 MB consider a tail+seek index.
+
+    ``now_ts`` is injectable for tests; production passes None and
+    uses wall clock.
+    """
+    if log_path is None:
+        log_path = DEFAULT_LLM_USAGE_LOG
+    if not log_path.exists():
+        return 0.0
+    now = now_ts if now_ts is not None else _now()
+    cutoff = now - hours * 3600
+    total = 0.0
+    try:
+        with open(log_path) as f:
+            for line in f:
+                try:
+                    row = json.loads(line)
+                except ValueError:
+                    continue
+                ts = _parse_iso(row.get("ts", ""))
+                if ts is None or ts < cutoff:
+                    continue
+                try:
+                    total += float(row.get("cost_usd", 0))
+                except (TypeError, ValueError):
+                    continue
+    except OSError:
+        return 0.0
+    return total
+
+
+def collect_health() -> dict:
+    """One-shot collector — returns a fresh health dict.
+
+    Never raises; each reader is independently defensive. Caller (the
+    ``/metrics/health`` endpoint) augments with ``db_generation`` and
+    alert dry-run results.
+    """
+    return {
+        "ts": _now(),
+        "pipeline_last_success_ts": pipeline_last_success_ts(),
+        "quick_publish_last_run_ts": quick_publish_last_run_ts(),
+        "bger_poller_last_run_ts": bger_poller_last_run_ts(),
+        "freshness_seconds_by_court": freshness_seconds_by_court(),
+        "daily_cost_usd_24h": round(daily_cost_usd(24), 4),
+    }

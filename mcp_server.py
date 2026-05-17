@@ -17899,6 +17899,188 @@ render();setInterval(render,60000);
     async def handle_metrics(request):
         return JSONResponse(_get_metrics())
 
+    _DEV_HEALTH_HTML = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ocl / health</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#111;--fg:#ddd;--mute:#666;--mute2:#444;--card:#181818;--border:#252525;--ok:#34d399;--warn:#fb7185;--crit:#ef4444}
+@media(prefers-color-scheme:light){:root{--bg:#f8f8f8;--fg:#1a1a1a;--mute:#888;--mute2:#bbb;--card:#fff;--border:#eaeaea;--ok:#059669;--warn:#e11d48;--crit:#dc2626}}
+body{font-family:'Inter',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--fg);padding:clamp(1.5rem,4vw,3rem);max-width:900px;margin:0 auto;font-size:14px;line-height:1.5}
+.brand{font-size:.65rem;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--mute);margin-bottom:.5rem}
+.brand b{color:var(--fg)}
+h1{font-size:1rem;font-weight:500;margin-bottom:2rem}
+.banner{background:color-mix(in srgb,var(--warn) 8%,transparent);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);padding:.6rem .9rem;border-radius:6px;font-size:.7rem;margin-bottom:1.5rem}
+.banner a{color:inherit}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.k{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem}
+.k .n{font-size:1.4rem;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.2}
+.k .l{font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-top:.4rem}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1rem}
+.panel-h{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:1rem;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{font-size:.55rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mute2);text-align:left;padding:.4rem 0;font-weight:500}
+td{padding:.5rem 0;border-top:1px solid var(--border);font-variant-numeric:tabular-nums;font-size:.78rem}
+tr:first-child td{border-top:none}
+th.r,td.r{text-align:right}
+.mono{font-family:'JetBrains Mono','SF Mono',monospace;font-size:.72rem}
+.tag{display:inline-block;font-size:.55rem;font-weight:600;padding:.18rem .55rem;border-radius:5px;letter-spacing:.04em;margin-right:.45rem}
+.tag-w{background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--warn)}
+.tag-c{background:color-mix(in srgb,var(--crit) 14%,transparent);color:var(--crit)}
+.tag-g{background:color-mix(in srgb,var(--ok) 12%,transparent);color:var(--ok)}
+.empty{color:var(--mute);font-size:.75rem;padding:.5rem 0}
+.row-alert{margin-bottom:.55rem}
+footer{font-size:.55rem;color:var(--mute2);margin-top:2rem}
+footer a{color:var(--mute);text-decoration:none}
+</style></head><body>
+<div class="brand">open<b>caselaw</b> · health</div>
+<h1>Pipeline + freshness</h1>
+<div class="banner">Alerts are in dry-run. No external notifications fire — see <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/observability.md">docs/observability.md</a>.</div>
+<div class="kpi" id="kpi"></div>
+<div class="panel"><div class="panel-h">Synthetic alerts (would-fire)</div><div id="alerts"></div></div>
+<div class="panel"><div class="panel-h">Freshness by court</div><table><thead><tr><th>court</th><th class="r">most recent</th></tr></thead><tbody id="freshness-body"><tr><td colspan="2" class="empty">loading...</td></tr></tbody></table></div>
+<footer><span id="ts"></span> · <a href="/dev">/dev</a> · <a href="/metrics/health">JSON</a></footer>
+<script>
+// Build everything with createElement + textContent. Never set innerHTML
+// on strings that came from the server response — values like court
+// names come from the DB and are well-formed today, but defending here
+// removes a whole class of future-XSS regressions.
+function $(s){return document.querySelector(s)}
+function el(tag, cls, text){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(text != null) e.textContent = text;
+  return e;
+}
+function fmtAgo(secs){
+  if(secs == null) return '\u2014';
+  const m = Math.round(secs/60);
+  if(m < 60) return m + 'm';
+  const h = Math.round(secs/3600);
+  if(h < 48) return h + 'h';
+  return Math.round(h/24) + 'd';
+}
+function kpiCard(label, valueText, isWarnTag){
+  const card = el('div', 'k');
+  const n = el('div', 'n');
+  if(isWarnTag){
+    n.appendChild(el('span', 'tag tag-w', valueText));
+  } else {
+    n.textContent = valueText;
+  }
+  card.appendChild(n);
+  card.appendChild(el('div', 'l', label));
+  return card;
+}
+function renderAlerts(alerts){
+  const root = $('#alerts');
+  root.replaceChildren();
+  if(!alerts || !alerts.length){
+    root.appendChild(el('div', 'empty', 'all clear'));
+    return;
+  }
+  for(const a of alerts){
+    const row = el('div', 'row-alert');
+    row.appendChild(el('span', 'tag tag-' + (a.level === 'critical' ? 'c' : 'w'), a.level));
+    row.appendChild(el('span', 'mono', a.key));
+    row.appendChild(document.createTextNode(' \u2014 ' + (a.message || '')));
+    root.appendChild(row);
+  }
+}
+function renderFreshness(freshness){
+  const tbody = $('#freshness-body');
+  tbody.replaceChildren();
+  const entries = Object.entries(freshness || {}).sort((a, b) => a[1] - b[1]).slice(0, 20);
+  if(!entries.length){
+    const tr = el('tr');
+    const td = el('td', 'empty', 'no data');
+    td.colSpan = 2;
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
+  for(const [court, secs] of entries){
+    const tr = el('tr');
+    tr.appendChild(el('td', null, court));
+    tr.appendChild(el('td', 'r mono', fmtAgo(secs) + ' ago'));
+    tbody.appendChild(tr);
+  }
+}
+async function load(){
+  try{
+    const r = await fetch('/metrics/health', { cache: 'no-store' });
+    const h = await r.json();
+    const now = Math.floor(Date.now() / 1000);
+    const kpi = $('#kpi');
+    kpi.replaceChildren();
+    if(h.db_generation === 0){
+      kpi.appendChild(kpiCard('db_generation', 'never bumped', true));
+    } else {
+      kpi.appendChild(kpiCard('db_generation', String(h.db_generation)));
+    }
+    kpi.appendChild(kpiCard(
+      'pipeline last swap',
+      fmtAgo(h.pipeline_last_success_ts ? now - h.pipeline_last_success_ts : null) + ' ago',
+    ));
+    kpi.appendChild(kpiCard(
+      'quick_publish last run',
+      fmtAgo(h.quick_publish_last_run_ts ? now - h.quick_publish_last_run_ts : null) + ' ago',
+    ));
+    kpi.appendChild(kpiCard(
+      'llm cost (24h)',
+      '$' + (h.daily_cost_usd_24h || 0).toFixed(2),
+    ));
+    renderAlerts(h.alerts_dry_run);
+    renderFreshness(h.freshness_seconds_by_court);
+    $('#ts').textContent = 'updated ' + new Date().toISOString().slice(11, 19) + 'Z';
+  } catch(e){
+    const kpi = $('#kpi');
+    kpi.replaceChildren();
+    kpi.appendChild(kpiCard('error', e.message || String(e)));
+  }
+}
+load();
+setInterval(load, 30000);
+</script></body></html>"""
+
+    async def handle_dev_health(request):
+        """Read-only health dashboard.
+
+        Pulls /metrics/health every 30 s. Renders db_generation,
+        pipeline + quick_publish recency, daily LLM cost, top-20 court
+        freshness, and the synthetic-alerts dry-run list. No notifier
+        wiring — see docs/observability.md.
+        """
+        return Response(_DEV_HEALTH_HTML, media_type="text/html")
+
+    async def handle_metrics_health(request):
+        """Structured health metrics + synthetic alert evaluation.
+
+        Reads only — never mutates state. Designed to be polled by the
+        /dev/health dashboard and (after the PR 1 Monday gate passes)
+        an external notifier. ``alerts_dry_run`` returns the list of
+        alerts that *would* fire; no notification is sent today.
+        See docs/observability.md for the wiring plan.
+        """
+        try:
+            import health_metrics
+            import health_alerts
+            health = health_metrics.collect_health()
+            health["db_generation"] = get_db_generation()
+            try:
+                health["alerts_dry_run"] = health_alerts.check_all(
+                    health, metrics=_metrics,
+                )
+            except Exception as e:
+                logger.warning("alerts_dry_run failed: %s", e)
+                health["alerts_dry_run"] = []
+                health["alerts_dry_run_error"] = str(e)
+            return JSONResponse(health)
+        except Exception as e:
+            logger.error("metrics/health failed: %s", e)
+            return JSONResponse({"error": str(e)}, status_code=500)
+
     async def handle_metrics_history(request):
         """Return accurate lifetime metrics from persistent SQLite store."""
         try:
@@ -20205,7 +20387,9 @@ render();setInterval(render,60000);
         routes=[
             Route("/health", endpoint=handle_health),
             Route("/dev", endpoint=handle_dev_dashboard),
+            Route("/dev/health", endpoint=handle_dev_health),
             Route("/metrics", endpoint=handle_metrics),
+            Route("/metrics/health", endpoint=handle_metrics_health),
             Route("/metrics/history", endpoint=handle_metrics_history),
             Route("/metrics/all", endpoint=handle_metrics_all),
             Route("/metrics/sessions", endpoint=handle_sessions_local),
