@@ -188,7 +188,7 @@ if v2.0 needs them.
 
 ---
 
-## 4. Retrieval-augmented hallucination condition
+## 4. Retrieval-augmented hallucination condition — **SHIPPED**
 
 **Why it's needed (Fatal #4).** The audit-pipeline §8 reports only the
 prior-only condition. The "fabrication rate" framing was demoted in

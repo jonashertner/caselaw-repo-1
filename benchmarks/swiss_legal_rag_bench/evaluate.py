@@ -73,7 +73,7 @@ def _mcp_retrieve(query: str, language: str, top_k: int = 5,
     """Call MCP search_decisions via the /api/decisions REST endpoint."""
     import httpx
     params = {"query": query, "limit": top_k, "language": language}
-    with httpx.Client(timeout=30.0) as client:
+    with httpx.Client(timeout=90.0) as client:
         r = client.get(f"{mcp_url}/api/decisions", params=params)
         r.raise_for_status()
         body = r.json()
@@ -94,7 +94,7 @@ def _mcp_get_decision_text(decision_id: str,
                            max_chars: int = 4000) -> str:
     """Fetch a decision's regeste + first chunk of full_text."""
     import httpx
-    with httpx.Client(timeout=30.0) as client:
+    with httpx.Client(timeout=90.0) as client:
         r = client.get(f"{mcp_url}/api/decisions/{decision_id}")
         if r.status_code != 200:
             return ""
@@ -112,7 +112,7 @@ def _mcp_get_statute_text(law_code: str, article: str, language: str = "de",
     """Fetch a statute article's text via /api/laws/{abbr}?article=N."""
     import httpx
     params = {"article": article, "language": language}
-    with httpx.Client(timeout=30.0) as client:
+    with httpx.Client(timeout=90.0) as client:
         r = client.get(f"{mcp_url}/api/laws/{law_code}", params=params)
         if r.status_code != 200:
             return ""
@@ -203,7 +203,7 @@ def _claude_judge(system_prompt: str, user_prompt: str,
     api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return {}
-    with httpx.Client(timeout=30.0) as client:
+    with httpx.Client(timeout=90.0) as client:
         r = client.post(
             "https://api.anthropic.com/v1/messages",
             headers={

@@ -97,6 +97,43 @@ Decisions cited $\\geq$ 10{{,}}000 times & {fmt_int(ge10000)} \\\\
 """,
 )
 
+# ─── audit_bench_results.tex (optional — needs both v1_1 run JSONs) ──
+PRIOR_PATH = REPO_ROOT / "benchmarks" / "swiss_legal_rag_bench" / "results" / "v1_1_prior_only.json"
+RAG_PATH   = REPO_ROOT / "benchmarks" / "swiss_legal_rag_bench" / "results" / "v1_1_rag_aug.json"
+if PRIOR_PATH.exists() and RAG_PATH.exists():
+    prior = json.loads(PRIOR_PATH.read_text())["aggregate"]
+    rag   = json.loads(RAG_PATH.read_text())["aggregate"]
+    pn = prior["n_questions"]
+    rn = rag["n_questions"]
+    pd_ = prior["error_decomposition"]
+    rd_ = rag["error_decomposition"]
+    write(
+        "audit_bench_results.tex",
+        f"""\\begin{{table}}[t]
+\\centering
+\\caption{{Swiss Legal RAG bench results, both conditions, side-by-side. {pn} questions (DE\\,{{=}}\\,18, FR\\,{{=}}\\,8, IT\\,{{=}}\\,4). Generator and judges: Claude Sonnet 4.6. Retriever: live MCP \\texttt{{/api/decisions}}, top-K\\,{{=}}\\,5 with annotated statute text injected. Outcome classes follow Butler\\,\\&\\,Butler 2026: \\emph{{correct}} (correctness $\\wedge$ groundedness $\\wedge$ retrieval); \\emph{{hallucination}} ($\\neg$ groundedness); \\emph{{retrieval}} (grounded $\\wedge$ $\\neg$ retrieval $\\wedge$ $\\neg$ correctness); \\emph{{reasoning}} (grounded $\\wedge$ retrieval $\\wedge$ $\\neg$ correctness). In prior-only mode the retriever is skipped, so only \\emph{{correct}} / \\emph{{hallucination}} apply.}}
+\\label{{tab:audit_bench_results}}
+\\small
+\\begin{{tabular}}{{l r r}}
+\\toprule
+\\textbf{{Metric}} & \\textbf{{Prior-only}} & \\textbf{{RAG-aug}} \\\\
+\\midrule
+n questions & {pn} & {rn} \\\\
+Correctness (entailment judge) & {prior['correctness_pct']:.1f}\\% & {rag['correctness_pct']:.1f}\\% \\\\
+Groundedness (passage-support judge) & --- & {rag['groundedness_pct']:.1f}\\% \\\\
+Retrieval accuracy (annotated case in top-5) & --- & {rag['retrieval_accuracy_pct']:.1f}\\% \\\\
+\\midrule
+\\multicolumn{{3}}{{l}}{{\\emph{{Error-class decomposition (n decisions per class)}}}} \\\\
+\\quad correct          & {pd_['correct']} & {rd_['correct']} \\\\
+\\quad hallucination    & {pd_['hallucination']} & {rd_['hallucination']} \\\\
+\\quad retrieval        & ---           & {rd_['retrieval']} \\\\
+\\quad reasoning        & ---           & {rd_['reasoning']} \\\\
+\\bottomrule
+\\end{{tabular}}
+\\end{{table}}
+""",
+    )
+
 # ─── precision_proxies.tex (optional — needs benchmarks/citation_precision_proxies.json) ──
 if PROXY_PATH.exists():
     pp = json.loads(PROXY_PATH.read_text())

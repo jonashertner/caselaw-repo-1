@@ -1,0 +1,874 @@
+{
+  "version": "v0.1",
+  "condition": "retrieval-augmented",
+  "corpus_snapshot_date": "2026-04-28",
+  "evaluator": {
+    "mcp_url": "https://mcp.opencaselaw.ch",
+    "top_k": 5,
+    "prior_only": false,
+    "generator_model": "claude-sonnet-4-6",
+    "judge_model": "claude-sonnet-4-6"
+  },
+  "aggregate": {
+    "n_questions": 30,
+    "correctness_pct": 63.3,
+    "groundedness_pct": 93.3,
+    "retrieval_accuracy_pct": 53.3,
+    "error_decomposition": {
+      "correct": 17,
+      "hallucination": 2,
+      "retrieval": 9,
+      "reasoning": 2
+    },
+    "by_language": {
+      "de": {
+        "n": 18,
+        "correct_pct": 61.1,
+        "grounded_pct": 88.9,
+        "retrieval_pct": 50.0
+      },
+      "fr": {
+        "n": 8,
+        "correct_pct": 62.5,
+        "grounded_pct": 100.0,
+        "retrieval_pct": 50.0
+      },
+      "it": {
+        "n": 4,
+        "correct_pct": 75.0,
+        "grounded_pct": 100.0,
+        "retrieval_pct": 75.0
+      }
+    }
+  },
+  "per_question": [
+    {
+      "question_id": "q-001",
+      "retrieved_decision_ids": [
+        "so_gerichte_STBER.2017.56",
+        "sg_gerichte_IV-2020_88",
+        "sg_gerichte_IV-2013_167",
+        "zh_verwaltungsgericht__VB.2021.00624",
+        "sg_gerichte_B_2013_169"
+      ],
+      "retrieved_statute_ids": [
+        "41_OR"
+      ],
+      "answer": "## Voraussetzungen der ausservertraglichen Haftung nach Art. 41 OR\n\nGestützt auf den Wortlaut von **Art. 41 OR** müssen folgende vier Voraussetzungen **kumulativ** erfüllt sein:\n\n1. **Schaden**: Es muss ein (finanzieller) Schaden beim Geschädigten eingetreten sein.\n\n2. **Widerrechtlichkeit**: Der Schaden muss widerrechtlich zugefügt worden sein (Abs. 1), d.h. durch Verletzung einer Rechtsnorm oder eines absolut geschützten Rechtsguts – oder gemäss Abs. 2 alternativ durch eine gegen die **guten Sitten** verstossende absichtliche Schädigung.\n\n3. **Verschulden (Absicht oder Fahrlässigkeit)**: Der Schädiger muss den Schaden entweder **absichtlich** oder **fahrlässig** verursacht haben (Abs. 1), bzw. bei der Generalklausel des Abs. 2 mit **Absicht** gehandelt haben.\n\n4. **Kausalzusammenhang**: Zwischen dem schädigenden Verhalten und dem eingetretenen Schaden muss ein (natürlicher und adäquater) **Kausalzusammenhang** bestehen.\n\n> *Quelle: Art. 41 OR (direkt)*\n\n**Hinweis**: Die abgerufenen Passagen [P1]–[P5] enthalten keine einschlägigen Ausführungen zu Art. 41 OR. Die Antwort stützt sich ausschliesslich auf den zitierten Gesetzestext [Art. 41 OR].",
+      "correctness": true,
+      "groundedness": false,
+      "retrieval_accuracy": false,
+      "error_class": "hallucination",
+      "latency_ms": {
+        "retrieve": 48435.5,
+        "generate": 7915.0
+      },
+      "judge_notes": {
+        "correctness": "Answer lists all four elements (Schaden, Widerrechtlichkeit, Verschulden, Kausalzusammenhang) and notes they must be cumulative, matching the reference.",
+        "groundedness": "Art. 41 OR text mentions no causation requirement; the answer adds this element not found in retrieved passages.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-002",
+      "retrieved_decision_ids": [
+        "bger_4A_13_2017",
+        "bger_4A_337_2018",
+        "ge_gerichte_4A_219_2020",
+        "ge_gerichte_4A_401_2021",
+        "bger_4C.422_2004"
+      ],
+      "retrieved_statute_ids": [
+        "41_CO"
+      ],
+      "answer": "En se fondant sur l'art. 41 CO, les conditions cumulatives de la responsabilité aquilienne sont les suivantes :\n\n1. **Un dommage** : une atteinte au patrimoine d'autrui.\n2. **L'illicéité** : le comportement doit être illicite.\n3. **Un lien de causalité** entre le comportement illicite et le dommage.\n4. **Une faute** : soit intentionnelle, soit par négligence ou imprudence (art. 41 al. 1 CO) ; ou, pour l'art. 41 al. 2 CO, un comportement intentionnel contraire aux mœurs.\n\nCes éléments ressortent directement du texte de **l'art. 41 CO** lui-même. Les passages récupérés ne développent pas davantage ces conditions dans leur contenu accessible, mais le texte légal cité est suffisant pour les identifier.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 38753.1,
+        "generate": 4954.1
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all four cumulative elements (damage, illicéité, causal link, fault) matching the reference, with natural/adequate causality implied in 'lien de causalité'.",
+        "groundedness": "All four conditions listed derive directly from Art. 41 CO text provided. No extraneous factual claims added beyond the statute.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-003",
+      "retrieved_decision_ids": [
+        "ti_gerichte_INC.2008.40804",
+        "ti_gerichte_TI-100558",
+        "ti_gerichte_INC.2007.703",
+        "ti_gerichte_TI-93502",
+        "ti_gerichte_TI-95506"
+      ],
+      "retrieved_statute_ids": [
+        "111_CP"
+      ],
+      "answer": "In base all'**art. 111 CP**, chiunque intenzionalmente uccide una persona è punito con una **pena detentiva non inferiore a cinque anni**, sempreché non ricorrano le condizioni previste negli articoli seguenti (ossia le fattispecie qualificate o privilegiate).",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 37232.4,
+        "generate": 2959.6
+      },
+      "judge_notes": {
+        "correctness": "The answer matches the reference exactly: intentional killing, minimum 5 years detention, unless conditions of following articles apply.",
+        "groundedness": "Art. 111 CP passage explicitly states 'pena detentiva non inferiore a cinque anni' and 'in quanto non ricorrano le condizioni previste negli articoli seguenti', matching the answer exactly.",
+        "language": "it"
+      }
+    },
+    {
+      "question_id": "q-004",
+      "retrieved_decision_ids": [
+        "zh_verwaltungsgericht__VB.2006.00222",
+        "bge_BGE_129_I_173",
+        "zh_verwaltungsgericht__VB.2004.00230",
+        "bge_BGE_140_I_176",
+        "bstger_CN.2024.16"
+      ],
+      "retrieved_statute_ids": [
+        "36_BV"
+      ],
+      "answer": "Gemäss Art. 36 BV sind für die Einschränkung von Grundrechten kumulativ folgende vier Voraussetzungen erforderlich:\n\n1. **Gesetzliche Grundlage** (Abs. 1): Die Einschränkung bedarf einer gesetzlichen Grundlage; schwerwiegende Einschränkungen müssen im Gesetz selbst vorgesehen sein (ausgenommen bei ernster, unmittelbarer und nicht anders abwendbarer Gefahr).\n\n2. **Öffentliches Interesse oder Schutz von Grundrechten Dritter** (Abs. 2): Die Einschränkung muss durch ein öffentliches Interesse oder durch den Schutz von Grundrechten Dritter gerechtfertigt sein.\n\n3. **Verhältnismässigkeit** (Abs. 3): Die Einschränkung muss verhältnismässig sein.\n\n4. **Wahrung des Kerngehalts** (Abs. 4): Der Kerngehalt der Grundrechte ist unantastbar.\n\n[Art. 36 BV]",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 41107.0,
+        "generate": 4140.0
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all four elements: legal basis (formal law for severe restrictions), public interest/third-party rights, proportionality, and core essence protection.",
+        "groundedness": "All four conditions stated in the answer are directly and accurately quoted from Art. 36 BV in the retrieved passages.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-005",
+      "retrieved_decision_ids": [
+        "bger_5F_30_2023",
+        "bger_5A_605_2013",
+        "bger_5F_13_2024",
+        "bger_5F_29_2023",
+        "bger_1B_218_2016"
+      ],
+      "retrieved_statute_ids": [
+        "42_BGG"
+      ],
+      "answer": "Nach Art. 42 Abs. 2 BGG verlangt das Bundesgericht, dass in der Beschwerdebegründung **in gedrängter Form darzulegen ist, inwiefern der angefochtene Akt Recht verletzt**. Das Bundesgericht befasst sich dabei nur mit **formell ausreichend begründeten Rügen** [P2]. Es genügt also nicht, die Rechtslage bloss zu diskutieren oder eine inhaltliche Wiedererwägung zu verlangen; der Beschwerdeführer muss konkret aufzeigen, worin die Rechtsverletzung des angefochtenen Entscheids besteht [P1, P2].",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 63380.0,
+        "generate": 3925.8
+      },
+      "judge_notes": {
+        "correctness": "Answer covers the core requirements: concise showing of legal violation, no mere assertion, concrete demonstration—matching the reference's substance.",
+        "groundedness": "All claims trace directly to Art. 42 Abs. 2 BGG, P1, and P2. No unsupported specific propositions found.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-006",
+      "retrieved_decision_ids": [
+        "vd_findinfo_ML___2013___274",
+        "ge_gerichte_A_939_2007",
+        "vd_findinfo_AP___2011___81",
+        "vd_gerichte_KC13.011452",
+        "vd_findinfo_ML___2017___78"
+      ],
+      "retrieved_statute_ids": [
+        "257e_CO"
+      ],
+      "answer": "## Conditions pour s'opposer à la libération de la garantie locative\n\nSelon **l'art. 257e al. 3 CO**, le bailleur peut s'opposer à la libération de la garantie locative déposée par le locataire aux conditions suivantes :\n\n**Principe général :** La banque ne peut restituer les sûretés qu'avec **l'accord des deux parties** ou sur la base :\n- d'un **commandement de payer non frappé d'opposition**, ou\n- d'un **jugement exécutoire**.\n\n**Droit du locataire à la restitution :** Si le bailleur n'a fait valoir **aucune prétention** contre le locataire — dans le cadre d'une procédure judiciaire, d'une poursuite pour dettes ou d'une faillite — **dans l'année qui suit la fin du bail**, le locataire peut exiger de la banque la restitution des sûretés.\n\nEn d'autres termes, pour bloquer valablement la libération de la garantie, le bailleur doit :\n1. **refuser son accord** à la restitution, **et**\n2. avoir **engagé une procédure** (judiciaire, de poursuite ou de faillite) pour faire valoir ses prétentions **dans le délai d'un an** suivant la fin du bail.\n\nÀ défaut d'une telle démarche dans ce délai, le locataire est en droit d'obtenir la restitution des sûretés directement auprès de la banque, sans l'accord du bailleur.\n\n**Source :** Art. 257e al. 3 CO (statut légal cité).",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 41110.9,
+        "generate": 8668.3
+      },
+      "judge_notes": {
+        "correctness": "Answer covers the 1-year deadline, need for judicial/enforcement action, and dual-consent/judge order requirement, matching the reference.",
+        "groundedness": "All claims in the answer are directly drawn from Art. 257e al. 3 CO as reproduced in the retrieved statute passage.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-007",
+      "retrieved_decision_ids": [
+        "bge_BGE_143_III_297",
+        "bger_5A_658_2014",
+        "bger_5A_256_2016",
+        "gl_gerichte_VG.2021.00072",
+        "gl_gerichte_GL-1534"
+      ],
+      "retrieved_statute_ids": [
+        "28_ZGB"
+      ],
+      "answer": "## Persönlichkeitsschutz im schweizerischen Privatrecht\n\n### Normgrundlage\n\nDer Schutz der Persönlichkeit gegen Verletzungen durch Dritte beruht im schweizerischen Privatrecht auf **Art. 28 ZGB**. Gemäss Abs. 1 dieser Bestimmung kann, wer in seiner Persönlichkeit widerrechtlich verletzt wird, zu seinem Schutz **gegen jeden, der an der Verletzung mitwirkt**, das Gericht anrufen [STATUTE: Art. 28 ZGB].\n\n### Widerrechtlichkeit\n\nEine Verletzung ist widerrechtlich, wenn sie nicht gerechtfertigt ist durch:\n- die **Einwilligung des Verletzten**,\n- ein **überwiegendes privates oder öffentliches Interesse**, oder\n- das **Gesetz**\n\n[STATUTE: Art. 28 ZGB, Abs. 2].\n\n### Verfügbare Klagen\n\nGemäss **Art. 28a ZGB** stehen der verletzten Person mehrere Klagen zur Verfügung. Aus den Passagen ergibt sich insbesondere, dass Art. 28a Abs. 1 Ziff. 3 ZGB sowie Art. 28a Abs. 3 ZGB (in Verbindung mit Art. 42 Abs. 2 und Art. 423 OR bzw. Art. 49 OR) anwendbar sind, namentlich:\n\n- ein **Gewinnherausgabeanspruch** (Art. 28a Abs. 3 ZGB i.V.m. Art. 42 Abs. 2 und Art. 423 OR), sowie\n- ein **Anspruch auf Genugtuung** bei erlittener seelischer Unbill (Art. 28a Abs. 3 ZGB i.V.m. Art. 49 OR)\n\n[P1: BGE 143 III 297].\n\n> **Hinweis:** Die Passagen enthalten keine vollständige Auflistung aller Klagen nach Art. 28a ZGB (z. B. Unterlassungs-, Beseitigungs- oder Feststellungsklage). Für eine abschliessende Darstellung wären zusätzliche Quellen erforderlich.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 30472.6,
+        "generate": 8914.3
+      },
+      "judge_notes": {
+        "correctness": "Answer covers Art. 28 ZGB basis, Art. 28a ZGB claims including Unterlassung/Beseitigung/Feststellung gaps noted, plus Schadenersatz, Genugtuung, Gewinnherausgabe per Art. 28a Abs. 3. All load-bearing elements present.",
+        "groundedness": "All specific claims (Art. 28 ZGB text, Art. 28a references, BGE 143 III 297 holdings on profit disgorgement and tort satisfaction) are directly supported by the retrieved passages.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-008",
+      "retrieved_decision_ids": [
+        "zh_obergericht_LF140013",
+        "zh_obergericht_LF130077",
+        "zh_gerichte_LF140013",
+        "zh_obergericht_LF130075",
+        "zh_obergericht_LF130076"
+      ],
+      "retrieved_statute_ids": [
+        "74_BGG"
+      ],
+      "answer": "## Streitwertgrenzen nach Art. 74 BGG\n\n### Mindest-Streitwerte (Art. 74 Abs. 1 BGG)\n\nIn **vermögensrechtlichen Angelegenheiten** ist die Beschwerde in Zivilsachen nur zulässig, wenn der Streitwert mindestens beträgt:\n\n- **CHF 15 000** in arbeits- und mietrechtlichen Fällen (lit. a)\n- **CHF 30 000** in allen übrigen Fällen (lit. b)\n\n### Ausnahmen unabhängig vom Streitwert (Art. 74 Abs. 2 BGG)\n\nWird der massgebende Betrag **nicht erreicht**, ist die Beschwerde dennoch zulässig:\n\n- bei einer **Rechtsfrage von grundsätzlicher Bedeutung** (lit. a)\n- wenn ein Bundesgesetz eine einzige kantonale Instanz vorsieht (lit. b)\n- gegen Entscheide kantonaler Aufsichtsbehörden in Schuldbetreibungs- und Konkurssachen (lit. c)\n- gegen Entscheide des Konkurs- und Nachlassrichters (lit. d)\n- gegen Entscheide des Bundespatentgerichts (lit. e)\n\nDie **wichtigste streitwertunabhängige Ausnahme** ist damit die Rechtsfrage von grundsätzlicher Bedeutung gemäss Art. 74 Abs. 2 lit. a BGG.\n\n**Quelle:** [STATUTE: Art. 74 BGG]",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 42498.6,
+        "generate": 5548.5
+      },
+      "judge_notes": {
+        "correctness": "Answer covers the 30k/15k thresholds and the fundamental legal question exception, matching all load-bearing elements of the reference.",
+        "groundedness": "All factual claims (CHF 15000/30000 thresholds, lit. a-e exceptions) are directly supported by Art. 74 BGG passage.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-009",
+      "retrieved_decision_ids": [
+        "bge_BGE_147_III_419",
+        "be_zivilstraf_ZK_2022_176",
+        "zh_obergericht_SB140102",
+        "bger_4A_554_2013",
+        "bger_6B_82_2009"
+      ],
+      "retrieved_statute_ids": [
+        "60_OR"
+      ],
+      "answer": "Seit der Revision des Verjährungsrechts (in Kraft seit 1. Januar 2020) gilt für Forderungen aus Personenschäden (Tötung eines Menschen oder Körperverletzung) gemäss Art. 60 Abs. 1bis OR eine neue **absolute Verjährungsfrist von zwanzig Jahren**, gerechnet vom Tag des schädigenden Verhaltens an. Die relative Frist beträgt weiterhin drei Jahre ab Kenntnis des Schadens und der ersatzpflichtigen Person.\n\n[STATUTE: Art. 60 OR]",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 51747.2,
+        "generate": 4083.1
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all key elements: 3-year relative from knowledge, 20-year absolute from harmful act, replacing prior shorter period, matching reference conclusions.",
+        "groundedness": "All claims (20-year absolute, 3-year relative, Art. 60 Abs. 1bis OR, in force 1 Jan 2020) are directly supported by the retrieved Art. 60 OR passage.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-010",
+      "retrieved_decision_ids": [
+        "bger_2C_990_2012",
+        "bger_2P.134_2003",
+        "vd_omni_GE.2005.0206",
+        "bge_BGE_145_I_73",
+        "bger_1P.457_2000"
+      ],
+      "retrieved_statute_ids": [
+        "27_BV"
+      ],
+      "answer": "## Liberté économique (art. 27 Cst.)\n\n### Titulaires du droit\n\nD'après l'**art. 27 Cst.**, la liberté économique est garantie sans précision explicite quant aux titulaires dans le texte de la disposition elle-même.\n\n### Activités protégées\n\nL'art. 27 al. 2 Cst. énumère notamment les activités suivantes :\n\n- Le **libre choix de la profession**\n- Le **libre accès à une activité économique lucrative privée**\n- Le **libre exercice** de cette activité\n\n### Application concrète\n\nLa jurisprudence illustre la portée de cette liberté notamment dans le domaine des **services de taxis** : un système de répartition des autorisations de stationnement sur le domaine public qui empêche tout nouveau chauffeur d'obtenir une autorisation dans un délai raisonnable ne respecte pas le principe de la liberté économique ni celui de l'égalité de traitement entre concurrents [P3].\n\n---\n\n**Limite des sources disponibles** : Les passages fournis ne contiennent pas d'information détaillée sur le cercle précis des titulaires (personnes physiques, morales, étrangers, etc.). Pour cette question, les passages ne permettent pas de répondre de manière exhaustive.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "reasoning",
+      "latency_ms": {
+        "retrieve": 39760.7,
+        "generate": 6320.5
+      },
+      "judge_notes": {
+        "correctness": "Answer omits titulaires (physical/legal persons, Swiss/foreign) and limits (art. 36 Cst.), both load-bearing elements of the reference.",
+        "groundedness": "All specific claims trace directly to Art. 27 BV text and P3 holding; limitations noted by answer itself.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-011",
+      "retrieved_decision_ids": [
+        "bger_5A_81_2016",
+        "ow_gerichte_AbR 2002_03 Nr. 1",
+        "zh_verwaltungsgericht__AN.2012.00004",
+        "zh_verwaltungsgericht__VB.2004.00157",
+        "zh_verwaltungsgericht__VB.2021.00656"
+      ],
+      "retrieved_statute_ids": [
+        "296_ZGB",
+        "298_ZGB",
+        "298a_ZGB"
+      ],
+      "answer": "## Gemeinsame elterliche Sorge nach Schweizer Recht\n\n### Grundsatz: Gemeinsame Sorge als Regelfall\n\nNach **Art. 296 Abs. 2 ZGB** stehen minderjährige Kinder grundsätzlich unter der **gemeinsamen elterlichen Sorge beider Elternteile** — unabhängig davon, ob diese verheiratet sind oder nicht.\n\n---\n\n### Voraussetzungen und Ausnahmen\n\n#### 1. Persönliche Eignung der Eltern\nGemäss **Art. 296 Abs. 3 ZGB** ist die gemeinsame elterliche Sorge **ausgeschlossen**, wenn:\n- ein Elternteil **minderjährig** ist, oder\n- ein Elternteil unter **umfassender Beistandschaft** steht.\n\nSobald diese Hindernisse wegfallen (Volljährigkeit, Aufhebung der Beistandschaft), lebt die elterliche Sorge wieder auf bzw. entscheidet die Kindesschutzbehörde nach dem Kindeswohl.\n\n#### 2. Nach Scheidung (Art. 298 ZGB)\nIm Scheidungsverfahren bleibt die **gemeinsame elterliche Sorge der Regelfall**. Das Gericht überträgt einem Elternteil die **alleinige Sorge nur**, wenn dies zur **Wahrung des Kindeswohls nötig** ist [Art. 298 Abs. 1 ZGB]. Bei gemeinsamer Sorge prüft das Gericht zudem auf Antrag die Möglichkeit einer **alternierenden Obhut** [Art. 298 Abs. 2ter ZGB].\n\n#### 3. Unverheiratete Eltern (Art. 298a ZGB)\nBei nicht verheirateten Eltern entsteht die gemeinsame elterliche Sorge **nicht automatisch**. Erforderlich sind:\n- eine **gemeinsame Erklärung** der Eltern, in der sie bestätigen:\n  1. bereit zu sein, **gemeinsam Verantwortung** für das Kind zu übernehmen,\n  2. sich über **Obhut, persönlichen Verkehr/Betreuungsanteile und Unterhalt** geeinigt zu haben.\n- Bis zur Abgabe dieser Erklärung steht die Sorge **allein der Mutter** zu.\n\n---\n\n### Zusammenfassung\n\n| Situation | Voraussetzung für gemeinsame Sorge |\n|---|---|\n| Verheiratete Eltern | Automatisch (Art. 296 Abs. 2 ZGB) |\n| Nach Scheidung | Bleibt bestehen, ausser Kindeswohl erfordert Alleinsorge (Art. 298 ZGB) |\n| Unverheiratete Eltern | Gemeinsame Erklärung mit Einigung über Obhut/Unterhalt (Art. 298a ZGB) |\n| Minderjährige/bevormundete Eltern | Keine gemeinsame Sorge möglich (Art. 296 Abs.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 37311.5,
+        "generate": 11236.5
+      },
+      "judge_notes": {
+        "correctness": "Answer covers same core points: gemeinsame Sorge as Regelfall, Art.296 Abs.2, Alleinsorge only if Kindeswohl requires, ledige Mutter has sole custody initially, common declaration needed.",
+        "groundedness": "All specific claims map directly to Art. 296, 298, 298a ZGB as retrieved. No unsupported factual assertions found.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-012",
+      "retrieved_decision_ids": [
+        "so_gerichte_STBER.2017.56",
+        "ag_gerichte_EB.2000.50014",
+        "sg_gerichte_IV_2024_98",
+        "ag_gerichte_1-BE.2005.49",
+        "vs_gerichte_A1 16 174"
+      ],
+      "retrieved_statute_ids": [
+        "471_ZGB"
+      ],
+      "answer": "## Antwort\n\n### Heutiger Pflichtteil nach Art. 471 ZGB\n\nGemäss dem retrieved Gesetzestext lautet **Art. 471 ZGB** in seiner aktuellen Fassung:\n\n> *„Der Pflichtteil beträgt die Hälfte des gesetzlichen Erbanspruchs.\"*\n\nDas bedeutet: Der Pflichtteil **jedes Pflichtteilsberechtigten** – also auch der Nachkommen – beträgt einheitlich **½ des gesetzlichen Erbteils**.\n\n### Änderung durch die Erbrechtsrevision per 1. Januar 2023\n\nDer aktuelle Wortlaut von Art. 471 ZGB spiegelt die **vereinfachte Regelung** der Erbrechtsrevision wider: Es gibt nur noch **einen einheitlichen Pflichtteilssatz von ½**, der für alle Berechtigten gilt.\n\nVor der Revision (altes Recht) waren die Pflichtteilsquoten nach Verwandtschaftsgrad gestaffelt (z. B. ¾ für Nachkommen, ½ für Eltern). Mit der Revision wurde der Pflichtteil der Nachkommen von **¾ auf ½** des gesetzlichen Erbteils **gesenkt** und ein einheitlicher Satz eingeführt.\n\n### Hinweis\n\nDie Aussage zur konkreten Änderung (Absenkung von ¾ auf ½ für Nachkommen) ergibt sich aus dem Vergleich mit dem bekannten alten Recht; die **retrieved passages stützen direkt** nur den aktuellen Wortlaut von Art. 471 ZGB [STATUTE: Art. 471 ZGB]. Die übrigen Passagen [P1]–[P5] sind für diese Frage **nicht einschlägig**. Für eine vollständige Darstellung der Revisionsgeschichte wären zusätzliche Quellen nötig.",
+      "correctness": true,
+      "groundedness": false,
+      "retrieval_accuracy": true,
+      "error_class": "hallucination",
+      "latency_ms": {
+        "retrieve": 64064.6,
+        "generate": 9896.3
+      },
+      "judge_notes": {
+        "correctness": "Answer correctly states: Nachkommen reduced from ¾ to ½, unified rate of ½ for all. Misses explicit mention of spouse's ½ and abolition of parents' share, but core elements match.",
+        "groundedness": "The retrieved passages contain only the current Art. 471 ZGB text; no passage supports the historical ¾ rate or the revision details.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-013",
+      "retrieved_decision_ids": [
+        "ge_gerichte_C_11319_2006",
+        "ge_gerichte_CAPH_83_2007",
+        "ge_gerichte_A_83_1998",
+        "bger_4C.413_2004",
+        "ge_gerichte_ATA_378_1999"
+      ],
+      "retrieved_statute_ids": [
+        "336c_CO"
+      ],
+      "answer": "Selon l'art. 336c CO, après le temps d'essai, l'employeur ne peut pas résilier le contrat de travail d'un employé en arrêt-maladie **pendant une incapacité de travail totale ou partielle résultant d'une maladie ou d'un accident non imputables à la faute du travailleur**, et ce durant les périodes suivantes [STATUTE: Art. 336c CO] :\n\n- **30 jours** au cours de la **première année de service**\n- **90 jours** de la **deuxième à la cinquième année de service**\n- **180 jours** à partir de la **sixième année de service**\n\nCes délais de protection s'appliquent également pendant le délai de congé si l'incapacité de travail survient après que le licenciement a été notifié [P3, P5].",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 39222.7,
+        "generate": 4056.0
+      },
+      "judge_notes": {
+        "correctness": "Answer covers the core protection periods (30/90/180 days), the no-fault condition, and suspension effect, matching reference's load-bearing elements.",
+        "groundedness": "All specific figures (30/90/180 days, year thresholds) match Art. 336c CO; application during notice period supported by P3/P5.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-014",
+      "retrieved_decision_ids": [
+        "bger_6B_82_2013",
+        "ge_gerichte_P_18430_2016",
+        "ge_gerichte_P_3767_2015",
+        "ge_gerichte_P_2918_2012",
+        "ge_gerichte_P_9465_2013"
+      ],
+      "retrieved_statute_ids": [
+        "15_CP",
+        "16_CP"
+      ],
+      "answer": "## Conditions de la légitime défense selon l'art. 15 CP\n\nD'après l'art. 15 CP, la légitime défense est soumise aux conditions suivantes :\n\n### 1. Une attaque ou une menace d'attaque imminente\n- Il doit exister une **attaque actuelle ou imminente** contre la personne qui se défend (ou contre un tiers).\n\n### 2. Le caractère contraire au droit de l'attaque\n- L'attaque doit être **contraire au droit** (*de manière contraire au droit*).\n\n### 3. La proportionnalité des moyens utilisés\n- Les moyens employés pour repousser l'attaque doivent être **proportionnés aux circonstances**.\n\n### 4. Le droit appartient également aux tiers\n- La légitime défense peut être invoquée non seulement par la personne directement attaquée, mais aussi par **des tiers** qui interviennent pour repousser l'attaque.\n\n---\n\n**À noter** : Si ces limites sont dépassées, on entre dans le domaine de l'**excès de légitime défense** prévu à l'art. 16 CP, qui peut entraîner une atténuation de la peine, voire une absence de culpabilité si l'excès résulte d'un état excusable d'excitation ou de saisissement causé par l'attaque [Art. 15 CP ; Art. 16 CP].",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 49823.8,
+        "generate": 6915.6
+      },
+      "judge_notes": {
+        "correctness": "Answer covers unlawful attack, imminence, proportionality, and art.16 al.2 excusable excess excluding punishment — all key elements of the reference.",
+        "groundedness": "All claims directly mirror Art. 15 and 16 CP text provided; no unsupported specific propositions.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-015",
+      "retrieved_decision_ids": [
+        "vs_gerichte_P1 11 37",
+        "ge_gerichte_4A_401_2021",
+        "ge_gerichte_4A_545_2011",
+        "ge_gerichte_4A_281_2009",
+        "ge_gerichte_4A_719_2016"
+      ],
+      "retrieved_statute_ids": [
+        "56_CO"
+      ],
+      "answer": "Les passages récupérés ne contiennent pas d'informations suffisantes pour répondre à cette question. Seul le texte légal de l'art. 56 CO est disponible, mais aucun des passages [P1] à [P5] ne contient de jurisprudence du Tribunal fédéral précisant les éléments constitutifs de la responsabilité du détenteur d'animal.\n\nSur la seule base de l'art. 56 CO tel que fourni, on peut identifier les éléments suivants :\n\n1. **Un animal** causant le dommage\n2. **La qualité de détenteur** de l'animal chez le responsable\n3. **Un dommage** subi par la victime\n4. **Un lien de causalité** entre l'animal et le dommage\n5. **Une présomption de responsabilité**, renversable si le détenteur prouve qu'il a gardé et surveillé l'animal avec toute l'attention commandée par les circonstances, ou que sa diligence n'eût pas empêché le dommage\n\nToutefois, la jurisprudence du Tribunal fédéral précisant et développant ces éléments n'est pas contenue dans les passages fournis. Je ne peux donc pas répondre plus précisément à la question sans risquer de recourir à des connaissances externes.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 43709.3,
+        "generate": 6126.0
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all 3 required elements (damage, holder, exoneration proof) and correctly characterizes the strict causal liability, matching the reference.",
+        "groundedness": "All factual claims in the answer derive directly from Art. 56 CO as reproduced. The answer correctly notes absence of TF case law in passages.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-016",
+      "retrieved_decision_ids": [
+        "bger_4C.266_2001",
+        "bger_4A_244_2017",
+        "bger_8C_453_2018",
+        "bger_5C.137_2000",
+        "bger_4C.365_2004"
+      ],
+      "retrieved_statute_ids": [
+        "1_CO",
+        "11_CO"
+      ],
+      "answer": "Secondo l'**art. 1 CO**, un contratto si conclude validamente nel diritto svizzero quando **i contraenti abbiano manifestato concordemente la loro reciproca volontà**. Tale manifestazione può essere **espressa o tacita** [art. 1 CO].\n\nIn aggiunta, l'**art. 11 CO** precisa che, in linea generale, per la validità dei contratti non si richiede alcuna forma speciale, salvo che questa sia espressamente prescritta dalla legge.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 37520.8,
+        "generate": 3445.5
+      },
+      "judge_notes": {
+        "correctness": "Answer covers mutual assent (express/tacit), meeting of offer and acceptance, and no special form required absent legal exception — all key elements of the reference.",
+        "groundedness": "All factual claims in the answer are directly quoted or paraphrased from Art. 1 CO and Art. 11 CO, which are present in the retrieved passages.",
+        "language": "it"
+      }
+    },
+    {
+      "question_id": "q-017",
+      "retrieved_decision_ids": [
+        "ti_gerichte_16.2021.1",
+        "bger_4C.145_2004",
+        "bger_4A_472_2008",
+        "bger_4A_92_2008",
+        "bge_BGE_89_I_547"
+      ],
+      "retrieved_statute_ids": [
+        "264_CO"
+      ],
+      "answer": "Secondo l'**art. 264 CO**, il conduttore può recedere anticipatamente dal contratto di locazione di un'abitazione (restituendo la cosa senza osservare i termini di preavviso o le scadenze) a condizione che:\n\n1. **Proponga un nuovo conduttore solvibile** al locatore;\n2. Il nuovo conduttore **non possa essere ragionevolmente rifiutato** dal locatore;\n3. Il nuovo conduttore sia **disposto a riprendere il contratto alle medesime condizioni**.\n\nSe il conduttore non propone un sostituto con tali requisiti, rimane tenuto al pagamento del corrispettivo fino alla naturale scadenza del contratto o fino al momento in cui la locazione può essere sciolta per legge o per contratto (art. 264 cpv. 2 CO).\n\nVa inoltre precisato che il locatore deve imputare nel corrispettivo: le spese risparmiate e ciò che ha guadagnato (o omesso intenzionalmente di guadagnare) con una diversa utilizzazione della cosa (art. 264 cpv. 3 CO).\n\n**Fonte:** [STATUTE: Art. 264 CO]",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 26468.2,
+        "generate": 5016.8
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all key elements: propose solvent substitute, same conditions, locator cannot reasonably refuse, liability until contract end, deduction of savings. Substantively equivalent.",
+        "groundedness": "All claims mirror Art. 264 CO verbatim: solvible substitute, reasonable refusal, same conditions, cpv.2 payment obligation, cpv.3 deductions.",
+        "language": "it"
+      }
+    },
+    {
+      "question_id": "q-018",
+      "retrieved_decision_ids": [
+        "bger_8C_105_2014",
+        "bvger_C-3327_2017",
+        "bger_I_275_02",
+        "bvger_C-7830_2008",
+        "zh_sozialversicherungsgericht_IV.2013.00756"
+      ],
+      "retrieved_statute_ids": [
+        "28_IVG",
+        "28b_IVG"
+      ],
+      "answer": "## Anspruch auf Invalidenrente nach Art. 28 IVG\n\n### Voraussetzungen (Art. 28 Abs. 1 IVG)\n\nEin Anspruch auf eine Invalidenrente besteht, wenn die versicherte Person **kumulativ** folgende Voraussetzungen erfüllt:\n\n1. **Keine zumutbaren Eingliederungsmassnahmen** (lit. a): Die Erwerbsfähigkeit oder die Fähigkeit zur Betätigung im Aufgabenbereich kann nicht durch zumutbare Eingliederungsmassnahmen wiederhergestellt, erhalten oder verbessert werden.\n\n2. **Einjährige Wartezeit** (lit. b): Die versicherte Person war während eines Jahres ohne wesentlichen Unterbruch durchschnittlich mindestens **40 % arbeitsunfähig** (Art. 6 ATSG).\n\n3. **Invaliditätsgrad** (lit. c): Nach Ablauf dieses Jahres besteht eine Invalidität von mindestens **40 %** (Art. 8 ATSG).\n\nZusätzlich gilt gemäss **Art. 28 Abs. 1bis IVG**, dass keine Rente zugesprochen wird, solange die Eingliederungsmöglichkeiten nach Art. 8 Abs. 1bis und 1ter IVG nicht ausgeschöpft sind.\n\n---\n\n### Rentenhöhe (Art. 28b IVG)\n\nDie Höhe der Rente wird als prozentualer Anteil einer ganzen Rente bestimmt:\n\n| Invaliditätsgrad | Rentenanspruch |\n|---|---|\n| **Ab 70 %** | Ganze Rente (100 %) |\n| **50–69 %** | Prozentualer Anteil = Invaliditätsgrad |\n| **40–49 %** | Abgestufte Teilrente (z. B. 40 % Invalidität → 25 % einer ganzen Rente; 49 % → 47,5 %) |",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 55467.2,
+        "generate": 8862.9
+      },
+      "judge_notes": {
+        "correctness": "Answer covers all three cumulative conditions, the stufenlose/linear rent scale 40-70%, and full rent at 70%+. Minor table detail differences are non-material.",
+        "groundedness": "All claims match Art. 28 and Art. 28b IVG passages exactly, including thresholds, waiting period, and graduated scale values.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-019",
+      "retrieved_decision_ids": [
+        "zh_verwaltungsgericht__SB.2013.00059",
+        "bvger_C-7061_2013",
+        "zh_steuerrekursgericht_DB.2011.133",
+        "bvger_B-1650_2017",
+        "sg_publikationen_B 2019_132"
+      ],
+      "retrieved_statute_ids": [
+        "9_BV"
+      ],
+      "answer": "## Vertrauensschutz bei unrichtiger behördlicher Auskunft nach Art. 9 BV\n\n### Grundlage\n\nArt. 9 BV gewährt jeder Person den Anspruch, von staatlichen Organen **ohne Willkür und nach Treu und Glauben** behandelt zu werden [STATUTE: Art. 9 BV]. Aus dem Grundsatz von Treu und Glauben leitet sich der verfassungsrechtliche Vertrauensschutz ab.\n\n### Zur Frage der Voraussetzungen und BGE 137 I 69\n\nDie vorliegenden Passagen enthalten **keine hinreichenden Informationen**, um die klassischen Voraussetzungen des Vertrauensschutzes bei unrichtiger behördlicher Auskunft vollständig darzulegen. Insbesondere:\n\n- **BGE 137 I 69** wird in keiner der abgerufenen Passagen zitiert oder inhaltlich wiedergegeben.\n- Die Passage [P3] deutet zwar an, dass **Rulinganfragen einen klaren Antrag enthalten müssen**, damit die Steuerbehörden erkennen können, welchen Tatbestand sie prüfen sollen – was indirekt mit den Anforderungen an eine auskunftsfähige Grundlage zusammenhängt – enthält aber keine systematische Darstellung der Vertrauensschutzvoraussetzungen.\n\n### Fazit\n\nDie abgerufenen Passagen reichen **nicht aus**, um die Frage vollständig zu beantworten. Auf Basis der vorliegenden Quellen lässt sich lediglich festhalten, dass Art. 9 BV die Grundlage für den Vertrauensschutz bildet [STATUTE: Art. 9 BV]. Für die konkreten Voraussetzungen (z. B. Existenz einer klaren Auskunft, Vertrauensbetätigung, kausaler Schaden, keine Erkennbarkeit der Unrichtigkeit) sowie die spezifische Rolle von BGE 137 I 69 müssten weitere einschlägige Quellen beigezogen werden.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 55205.4,
+        "generate": 9751.7
+      },
+      "judge_notes": {
+        "correctness": "Answer explicitly states it cannot provide the prerequisites or BGE 137 I 69 content, missing all load-bearing elements of the reference.",
+        "groundedness": "The answer only claims Art. 9 BV text and acknowledges gaps; the Art. 9 BV content is confirmed by the statute passage. No unsupported specific claims.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-020",
+      "retrieved_decision_ids": [
+        "zh_verwaltungsgericht__VB.2009.00083",
+        "bge_BGE_117_Ib_64",
+        "bge_BGE_117_Ib_481",
+        "sg_publikationen_B 2019_31",
+        "bvger_A-6175_2013"
+      ],
+      "retrieved_statute_ids": [
+        "35_VwVG",
+        "29_BV"
+      ],
+      "answer": "# Formelle Anforderungen an Verfügungen nach Art. 35 VwVG und Heilung von Begründungsmängeln\n\n## 1. Formelle Anforderungen nach Art. 35 VwVG\n\nNach **Art. 35 VwVG** müssen schriftliche Verfügungen drei formelle Anforderungen erfüllen:\n\n1. **Bezeichnung** als Verfügung (auch bei Eröffnung in Briefform)\n2. **Begründung** der Verfügung\n3. **Rechtsmittelbelehrung**, die das zulässige ordentliche Rechtsmittel, die Rechtsmittelinstanz und die Rechtsmittelfrist nennt (Art. 35 Abs. 2 VwVG)\n\n**Ausnahme:** Auf Begründung und Rechtsmittelbelehrung kann verzichtet werden, wenn die Behörde den Begehren der Parteien voll entspricht und keine Partei eine Begründung verlangt (Art. 35 Abs. 3 VwVG).\n\n## 2. Heilung von Begründungsmängeln im Beschwerdeverfahren\n\nZu den Voraussetzungen einer Heilung nach **BGE 132 V 387** enthalten die abgerufenen Passagen keine direkten Informationen. Aus den vorliegenden Quellen lässt sich lediglich entnehmen, dass:\n\n- Verletzungen des rechtlichen Gehörs (Art. 29 Abs. 2 BV) grundsätzlich heilbar sein können [P1]\n- Eine Verletzung des Replikrechts «nicht so schwer wiegt, dass eine Heilung ausgeschlossen wäre» [P1]\n\n**Die spezifischen Voraussetzungen einer Heilung von Begründungsmängeln gemäss BGE 132 V 387 können anhand der vorliegenden Passagen nicht beantwortet werden.** Die abgerufenen Quellen enthalten diesen Entscheid nicht. Für eine präzise Antwort zu den Heilungsvoraussetzungen nach BGE 132 V 387 wären die entsprechenden Passagen dieses Bundesgerichtsentscheids erforderlich.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 85975.2,
+        "generate": 8081.7
+      },
+      "judge_notes": {
+        "correctness": "Answer explicitly states it cannot answer the BGE 132 V 387 healing conditions, which are load-bearing elements of the reference answer.",
+        "groundedness": "All factual claims in the answer are either directly from Art. 35 VwVG, Art. 29 BV, P1, or explicitly disclaimed as unsupported.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-021",
+      "retrieved_decision_ids": [
+        "sg_gerichte_BZ.2004.40",
+        "bge_BGE_103_V_113",
+        "bge_BGE_149_IV_161",
+        "bge_BGE_127_V_119",
+        "bge_BGE_81_III_61"
+      ],
+      "retrieved_statute_ids": [
+        "58_SVG",
+        "65_SVG"
+      ],
+      "answer": "Die abgerufenen Passagen enthalten **keine ausreichenden Informationen**, um die Frage zum Angehörigenschaden (Reflexschaden) im Schweizer Verkehrsrecht und zur Präzisierung durch BGE 142 III 433 zu beantworten.\n\nAus den Passagen ergibt sich lediglich:\n\n- **Art. 58 SVG [STATUTE]** regelt die Halterhaftung bei Betrieb eines Motorfahrzeugs (Tod, Körperverletzung, Sachschaden), enthält aber keine spezifischen Regelungen zum Angehörigenschaden.\n- **Art. 65 SVG [STATUTE]** betrifft das Direktforderungsrecht des Geschädigten gegen den Versicherer.\n- **[P1]** behandelt allgemeine SVG-Haftpflichtfragen (Erwerbsunfähigkeit, Haushaltschaden, Haftungsquote), aber nicht den Angehörigenschaden im Sinne eines Reflexschadens.\n\nDie übrigen Passagen [P2]–[P5] sind thematisch nicht einschlägig.\n\n**BGE 142 III 433 und die spezifischen Anforderungen an den Angehörigenschaden/Reflexschaden** sind in den vorliegenden Passagen nicht enthalten. Eine fundierte Antwort auf der Grundlage der abgerufenen Dokumente ist daher nicht möglich.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 60557.5,
+        "generate": 8007.5
+      },
+      "judge_notes": {
+        "correctness": "The answer explicitly states it cannot answer the question and provides no substantive conclusions matching the reference on BGE 142 III 433 requirements.",
+        "groundedness": "The answer only states what the passages contain and explicitly says BGE 142 III 433 is not in the passages. All factual claims match the retrieved statutes and passages.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-022",
+      "retrieved_decision_ids": [
+        "bge_BGE_139_V_442",
+        "bge_BGE_132_II_117",
+        "ow_gerichte_AbR 2008_09 Nr. 20",
+        "bger_1A.181_2005",
+        "zh_sozialversicherungsgericht_OH.2006.00004"
+      ],
+      "retrieved_statute_ids": [
+        "47_OR"
+      ],
+      "answer": "# Bemessungsfaktoren der Genugtuung nach Art. 47 OR und Rolle des Prozessverhaltens\n\n## Gesetzliche Grundlage\n\nNach **Art. 47 OR** kann der Richter bei Tötung oder Körperverletzung **„unter Würdigung der besonderen Umstände\"** eine angemessene Geldsumme als Genugtuung zusprechen. [STATUTE: Art. 47 OR]\n\n## Bemessungskriterien\n\nGemäss den vorliegenden Passagen sind die massgeblichen Bemessungskriterien **vor allem die Art und Schwere** der erlittenen Beeinträchtigung. Die Genugtuung bezweckt den **Ausgleich für erlittene Unbill**, indem das Wohlbefinden anderweitig gesteigert oder die Beeinträchtigung erträglicher gemacht wird (BGE 123 III 10 E. 4c/bb S. 15). [P5]\n\n## Täterbezogene Kriterien / Prozessverhalten\n\nZur spezifischen Frage des **Prozessverhaltens des Schädigers nach BGE 141 III 97** enthalten die vorliegenden Passagen **keine einschlägigen Informationen**.\n\nErgänzend ist festzuhalten: Im **Opferhilferecht** werden ausdrücklich **keine täterbezogenen Bemessungskriterien** berücksichtigt [P2]. Ob und inwieweit dies auch für den zivilrechtlichen Anspruch nach Art. 47 OR gilt und welche Rolle das Prozessverhalten des Schädigers dabei spielt, lässt sich anhand der vorliegenden Passagen **nicht beantworten**.\n\n---\n> ⚠️ Die Frage zu BGE 141 III 97 kann auf Basis der vorliegenden Passagen **nicht beantwortet werden**. Für eine vollständige Antwort wäre der Entscheid BGE 141 III 97 selbst heranzuziehen.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 48408.5,
+        "generate": 8122.9
+      },
+      "judge_notes": {
+        "correctness": "Answer explicitly states it cannot answer the BGE 141 III 97 question and omits key elements: offender's fault, parties' financial situation, and the court's ability to consider obstructive litigation behaviour.",
+        "groundedness": "All factual claims trace directly to retrieved passages: Art.47 OR text from STATUTE, Genugtuung purpose and criteria from P5, no täterbezogene criteria in OHG from P2.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-023",
+      "retrieved_decision_ids": [
+        "bvger_B-798_2012",
+        "bstger_SK.2020.59",
+        "zh_bezirksgericht_zuerich_DG170259-L",
+        "bger_8C_405_2011",
+        "bger_2C_110_2017"
+      ],
+      "retrieved_statute_ids": [
+        "717_OR",
+        "321a_OR",
+        "754_OR"
+      ],
+      "answer": "## Treuepflichten nach Art. 717 OR und Verhältnis zu Art. 321a OR\n\n### Treuepflichten nach Art. 717 OR\n\nGemäss **Art. 717 Abs. 1 OR** müssen die Mitglieder des Verwaltungsrates sowie Dritte, die mit der Geschäftsführung befasst sind, zwei Kernpflichten erfüllen:\n\n1. **Sorgfaltspflicht**: Ihre Aufgaben mit aller Sorgfalt erfüllen\n2. **Treuepflicht**: Die Interessen der Gesellschaft in guten Treuen wahren\n\nZusätzlich statuiert **Art. 717 Abs. 2 OR** eine **Gleichbehandlungspflicht** gegenüber den Aktionären unter gleichen Voraussetzungen.\n\nDiese Pflichten gelten nach dem Wortlaut ausdrücklich nicht nur für Verwaltungsratsmitglieder, sondern auch für **Dritte, die mit der Geschäftsführung befasst sind** – also auch für Mitglieder der Geschäftsleitung [Art. 717 OR; P3].\n\n### Treuepflicht nach Art. 321a OR\n\nDie arbeitsrechtliche Treuepflicht nach **Art. 321a OR** verpflichtet den Arbeitnehmer ebenfalls, die berechtigten Interessen des Arbeitgebers in guten Treuen zu wahren. Sie umfasst konkret:\n- Sorgfältige Ausführung der Arbeit (Abs. 1)\n- Verbot der entgeltlichen Konkurrenztätigkeit (Abs. 3)\n- Schweigepflicht über Geschäftsgeheimnisse, auch nach Beendigung des Arbeitsverhältnisses (Abs. 4)\n\n### Verhältnis der beiden Normen\n\nDie retrieved passages enthalten **keinen direkten Hinweis auf BGE 130 III 213** und keine explizite Aussage zum Verhältnis der beiden Normen zueinander. Gestützt auf die Gesetzestexte lässt sich jedoch festhalten:\n\n- **Art. 717 OR** ist gesellschaftsrechtlicher Natur und schützt primär die **Gesellschaftsinteressen**; Verletzungen können gesellschaftsrechtliche Verantwortlichkeitsansprüche nach **Art. 754 OR** auslösen [Art. 754 OR].\n- **Art. 321a OR** ist arbeitsrechtlicher Natur und schützt die **Interessen des Arbeitgebers** im Rahmen des Arbeitsverhältnisses.\n\nFür Geschäftsleitungsmitglieder, die gleichzeitig in einem Arbeitsverhältnis stehen, können **beide Normen parallel** anwendbar sein.\n\n> **Hinweis**: Für eine vollständige Beantwortung der Frage zum BGE 130 III 213 reichen die vorliegenden Passagen nicht aus. Die zitierten Retrievals enthalten keine ausreichenden Informationen zu diesem spezifischen Bundesgerichtsentsc",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 46021.3,
+        "generate": 12216.5
+      },
+      "judge_notes": {
+        "correctness": "Answer covers Art.717 OR duties, Art.321a OR, cumulative application, and Art.754 OR liability. Lacks BGE citation but reaches same substantive conclusions.",
+        "groundedness": "All specific claims trace directly to the statutory texts (Art. 717, 321a, 754 OR) or are explicitly flagged as beyond the passages.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-024",
+      "retrieved_decision_ids": [
+        "vd_findinfo_D_cision___2012___959",
+        "vd_findinfo_D_cision___2013___106",
+        "vd_findinfo_D_cision___2019___236",
+        "vd_findinfo_D_cision___2018___292",
+        "vd_findinfo_D_cision___2015___660"
+      ],
+      "retrieved_statute_ids": [
+        "221_CPP",
+        "237_CPP"
+      ],
+      "answer": "## Analyse de l'art. 221 al. 2 CPP et de l'ATF 137 IV 122\n\n### Conditions du motif de détention « risque de passage à l'acte » (art. 221 al. 2 CPP)\n\nSelon le texte légal fourni, **l'art. 221 al. 2 CPP** (dans sa teneur en vigueur depuis le 1er janvier 2024) dispose que :\n\n> *« La détention peut aussi être ordonnée s'il y a un danger sérieux et imminent qu'une personne passe à l'acte après avoir menacé de commettre un crime grave. »*\n\nLes conditions cumulatives qui ressortent du texte légal sont donc :\n1. **Une menace** d'commettre un crime grave formulée par la personne concernée ;\n2. Un **danger sérieux et imminent** de passage à l'acte.\n\nCe motif se distingue des motifs de l'art. 221 al. 1 CPP notamment en ce qu'il ne requiert pas nécessairement que le prévenu soit fortement soupçonné d'avoir *déjà commis* une infraction du même genre (contrairement au risque de récidive au sens de l'al. 1 let. c).\n\nLes passages [P2] et [P5] confirment la pertinence combinée des art. 221 al. 1 let. c et **221 al. 2 CPP** dans des affaires de détention préventive liées à des menaces et risques de commission.\n\n### Sur la portée de l'ATF 137 IV 122\n\nLes passages récupérés **ne contiennent pas** le texte de l'ATF 137 IV 122 ni de références directes à cet arrêt. Il m'est donc impossible, en me fondant exclusivement sur les passages fournis, de vous renseigner sur la portée précise de cet arrêt du Tribunal fédéral.\n\n> ⚠️ **Les passages récupérés ne permettent pas de répondre à la question relative à l'ATF 137 IV 122.** Pour cette partie, il conviendrait de consulter directement la base de données du Tribunal fédéral (www.bger.ch).",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 38044.8,
+        "generate": 10317.9
+      },
+      "judge_notes": {
+        "correctness": "Answer lacks ATF 137 IV 122 content (objective facts, verbal threats insufficient) and omits substitution measures (art. 237 al. 2 CPP) as preference over detention.",
+        "groundedness": "All factual claims in the ANSWER derive directly from Art. 221 CPP text and the passage citations; the answer explicitly disclaims knowledge of ATF 137 IV 122.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-025",
+      "retrieved_decision_ids": [
+        "bge_BGE_144_III_481",
+        "bger_5A_311_2019",
+        "bger_5A_668_2021",
+        "bge_BGE_147_III_293",
+        "bge_BGE_149_III_441"
+      ],
+      "retrieved_statute_ids": [
+        "276_ZGB",
+        "285_ZGB"
+      ],
+      "answer": "## BGE 144 III 481 – Methodenfrage beim Betreuungsunterhalt\n\n### Kernentscheid: Abkehr vom Methodenpluralismus\n\nDas Bundesgericht hat in BGE 144 III 481 eine grundlegende methodische Klärung zur Festsetzung des Betreuungsunterhalts nach Art. 285 Abs. 2 ZGB vorgenommen. Gemäss [P1] entschied das Gericht ausdrücklich die **Abkehr vom Methodenpluralismus** (E. 4.1).\n\n### Inhaltliche Leitlinien\n\nDas Bundesgericht legte in diesem Entscheid folgende Grundsätze fest [P1]:\n\n- **Inhalt und Ziele der Unterhaltsrechtsrevision** sowie die Hierarchie der Unterhaltsarten wurden geklärt (E. 4.3)\n- Die **Leitlinien der Botschaft** wurden als massgeblich anerkannt (E. 4.4)\n- Als Ausgangspunkt gilt das **Kontinuitätsprinzip** (Elternautonomie), d.h. die gelebte Aufgabenteilung der Eltern ist der Ausgangspunkt (E. 4.5)\n- Es wurden Regeln für den Fall aufgestellt, dass **keine gelebte Aufgabenteilung** besteht, sowie Übergangsfristen beim Kontinuitätsprinzip (E. 4.6)\n\n### Verbindliche Methode seither\n\nDer in BGE 144 III 481 eingeleitete Bruch mit dem Methodenpluralismus wurde in der Folge weiterentwickelt. Gemäss [P5] (BGE 149 III 441) gilt seither die **zweistufig-konkrete Methode mit Überschussverteilung** als verbindliche Methode für den Kindesunterhalt (Art. 276 und 285 ZGB), wobei ein nach Deckung des familienrechtlichen Existenzminimums verbleibender Überschuss auf den unterhaltspflichtigen Elternteil und die Kinder verteilt wird.\n\n### Hinweis\n\nDie Passages enthalten zu den detaillierten Einzelerwägungen von BGE 144 III 481 nur die Regeste, nicht den vollständigen Entscheidungstext. Für vertiefte Fragen zu spezifischen Untererwägungen wäre der Volltext heranzuziehen.",
+      "correctness": true,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "correct",
+      "latency_ms": {
+        "retrieve": 54463.3,
+        "generate": 11126.6
+      },
+      "judge_notes": {
+        "correctness": "Answer covers: Abkehr vom Methodenpluralismus in BGE 144 III 481, zweistufige Methode mit Überschussverteilung, Existenzminimum als Basis, Kindesunterhalt inkl. Betreuungsunterhalt Art. 285 Abs. 2 ZGB. Minor extra detail tolerable.",
+        "groundedness": "All specific claims (Abkehr vom Methodenpluralismus E.4.1, Kontinuitätsprinzip E.4.5, zweistufig-konkrete Methode BGE 149 III 441) are directly supported by P1 and P5.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-026",
+      "retrieved_decision_ids": [
+        "zh_sozialversicherungsgericht_IV.2018.00689",
+        "zh_sozialversicherungsgericht_IV.2015.00900",
+        "zh_sozialversicherungsgericht_IV.2013.00346",
+        "sg_publikationen_IV 2017_156",
+        "zh_sozialversicherungsgericht_IV.2012.01168"
+      ],
+      "retrieved_statute_ids": [
+        "16_ATSG",
+        "7_ATSG",
+        "8_ATSG",
+        "28_IVG"
+      ],
+      "answer": "## Invaliditätsgrad nach Art. 16 ATSG\n\n### Gesetzliche Grundlage\n\nNach **Art. 16 ATSG** wird der Invaliditätsgrad durch einen **Einkommensvergleich** bestimmt: Das Erwerbseinkommen, das die versicherte Person nach Eintritt der Invalidität und nach Durchführung der medizinischen Behandlung und allfälliger Eingliederungsmassnahmen durch eine ihr zumutbare Tätigkeit bei ausgeglichener Arbeitsmarktlage erzielen könnte, wird in Beziehung gesetzt zum Erwerbseinkommen, das sie erzielen könnte, wenn sie nicht invalid geworden wäre [STATUTE: Art. 16 ATSG].\n\n### Methodik (Einkommensvergleich)\n\nWie mehrere kantonale Gerichte übereinstimmend festhalten, wird bei erwerbstätigen Versicherten der Invaliditätsgrad gemäss Art. 16 ATSG i.V.m. Art. 28a Abs. 1 IVG aufgrund dieses Einkommensvergleichs bestimmt, wobei:\n- das **Invalideneinkommen** (zumutbares Einkommen nach Invalidität) dem\n- **Valideneinkommen** (hypothetisches Einkommen ohne Invalidität) gegenübergestellt wird [P1], [P2], [P3], [P5].\n\n### Bemessung der Vergleichseinkommen\n\nWenn die versicherte Person vor dem Eintritt des Gesundheitsschadens nur kurzfristig oder unterdurchschnittlich verdient hat, sind sowohl Validen- als auch Invalideneinkommen ausgehend vom **durchschnittlichen Tabellenlohn** (Kompetenzniveau 1) zu bemessen [P4].\n\n### Hinweis zu BGE 130 V 343\n\nDie abgerufenen Passagen enthalten **keine direkten Ausführungen** zu den spezifischen Vorgaben des Bundesgerichts in BGE 130 V 343. Eine präzise Antwort zu diesem Leitentscheid kann auf Basis der vorliegenden Passagen nicht gegeben werden.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 67008.7,
+        "generate": 9139.4
+      },
+      "judge_notes": {
+        "correctness": "Answer correctly explains Art.16 ATSG income comparison but explicitly states it cannot address BGE 130 V 343, missing the reference's key element about that ruling and Art.28 IVG 40% threshold.",
+        "groundedness": "All specific claims in the answer are directly supported by the retrieved statutory texts and case passages. No unsupported factual assertions found.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-027",
+      "retrieved_decision_ids": [
+        "bge_BGE_140_III_591",
+        "vd_findinfo_HC___2022___116",
+        "vd_findinfo_HC___2025___215",
+        "vd_findinfo_HC___2016___638",
+        "bger_4A_429_2022"
+      ],
+      "retrieved_statute_ids": [
+        "257d_CO",
+        "266l_CO"
+      ],
+      "answer": "## Conditions de résiliation pour défaut de paiement selon l'art. 257d CO\n\n### Conditions matérielles\n\nSelon **l'art. 257d al. 1 CO**, les conditions suivantes doivent être réunies :\n\n1. **Retard de paiement** : Le locataire doit être en retard pour s'acquitter d'un terme ou de frais accessoires échus, **après la réception de la chose**.\n2. **Mise en demeure écrite** : Le bailleur doit fixer par écrit un délai de paiement au locataire.\n3. **Comminution** : La mise en demeure doit signifier au locataire qu'à défaut de paiement dans ce délai, le bail sera résilié.\n4. **Délai minimal** :\n   - **10 jours** au moins en général\n   - **30 jours** au moins pour les baux d'habitations ou de locaux commerciaux\n\n> Il convient de noter que l'art. 257d CO **ne requiert pas que la créance de loyer ou de frais accessoires soit incontestée ou judiciairement établie** [P1].\n\n### Effets du non-paiement (al. 2)\n\nFaute de paiement dans le délai fixé, le bailleur peut :\n- Résilier **avec effet immédiat** (en général)\n- Pour les baux d'habitations et locaux commerciaux : résiliation avec un **délai de congé minimum de 30 jours** pour la fin d'un mois\n\n### Exigences formelles de la résiliation\n\nConformément à **l'art. 266l CO**, pour les baux d'habitations et de locaux commerciaux :\n- Le congé doit être donné **par écrit**\n- Le bailleur doit utiliser une **formule agréée par le canton**, indiquant au locataire comment contester le congé ou demander une prolongation de bail\n\n### Remarque sur la bonne foi\n\nMême une résiliation conforme aux exigences de l'art. 257d CO peut être contestée si elle **contrevient aux règles de la bonne foi** (art. 271 CO) [P1]. Par ailleurs, un arriéré de **164 fr. n'est pas considéré comme insignifiant** au sens de cette disposition [P1].\n\n---\n*Sources : Art. 257d CO, Art. 266l CO, [P1] BGE 140 III 591, [P5] 4A_429/2022*",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 33983.5,
+        "generate": 10573.1
+      },
+      "judge_notes": {
+        "correctness": "Answer inverts the delay periods: states 10 days general and 30 days for dwellings/commercial, but CO art.257d gives 30 days general and 10 days for furnished rooms.",
+        "groundedness": "All specific claims (délais 10/30j, écrit, formule cantonale, résiliation immédiate vs 30j, Fr.164 non insignifiant, pas besoin créance incontestée, bonne foi) are directly supported by the retrieved passages.",
+        "language": "fr"
+      }
+    },
+    {
+      "question_id": "q-028",
+      "retrieved_decision_ids": [
+        "bge_BGE_88_II_516",
+        "bge_BGE_81_II_547",
+        "bger_8C_353_2024",
+        "bger_2C_257_2022",
+        "bge_BGE_104_IV_96"
+      ],
+      "retrieved_statute_ids": [
+        "41_CO",
+        "58_CO",
+        "97_CO"
+      ],
+      "answer": "## Risposta\n\nI passi recuperati **non contengono** la DTF 126 III 113 né passaggi che descrivano specificamente il regime di responsabilità delle imprese di funivia/sciovia o il concorso tra art. 41 CO, art. 58 CO e art. 97 CO come affrontato in quella decisione.\n\nI passi disponibili riguardano:\n- [P1] e [P2]: responsabilità ferroviaria secondo la LResp.C e limitazioni del CO per infortuni di operai\n- [P3] e [P4]: assicurazione contro gli infortuni e procedura davanti al Tribunale federale\n- [P5]: responsabilità penale in cantieri edili\n\nGli statuti citati (art. 41, 58 e 97 CO) riproducono solo il testo normativo, senza alcuna interpretazione giurisprudenziale relativa alle funivie o sciovie.\n\n**Non è possibile rispondere alla domanda sulla base dei soli passaggi recuperati.** Per un'analisi accurata della DTF 126 III 113, sarebbe necessario consultare direttamente il testo integrale di quella decisione.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 44314.6,
+        "generate": 6690.8
+      },
+      "judge_notes": {
+        "correctness": "The answer explicitly states it cannot respond and lacks the DTF content; it does not reproduce any of the reference's substantive conclusions.",
+        "groundedness": "The answer only states what the passages contain/lack and declines to answer the question. All characterizations of the passages are accurate.",
+        "language": "it"
+      }
+    },
+    {
+      "question_id": "q-029",
+      "retrieved_decision_ids": [
+        "bge_BGE_138_II_346",
+        "bger_1C_230_2011",
+        "bvger_A-7040_2009",
+        "edoeb_google-street-view-weiterzug-an-das-bundesverwaltungsgericht-2009rechtskraeftige-2011-04-30",
+        "zh_bezirksgericht_zuerich_CG160047-L"
+      ],
+      "retrieved_statute_ids": [
+        "28_ZGB",
+        "6_DSG"
+      ],
+      "answer": "# BGE 138 II 346 – Massstäbe zur Abwägung zwischen Persönlichkeitsschutz und Datenbearbeitung\n\n## Überblick\n\nAus den vorliegenden Passagen lässt sich der **Regeste von BGE 138 II 346** [P1] entnehmen, der die wesentlichen vom Bundesgericht aufgestellten Massstäbe zusammenfasst:\n\n## Zentrale Massstäbe\n\n### 1. Verhältnis DSG und Art. 28 ZGB\nDas Bundesgericht hielt fest, dass das **Datenschutzrecht Art. 28 ZGB konkretisiert** [P1]. Es besteht demnach kein vollständig getrenntes Prüfungsregime – das DSG präzisiert den zivilrechtlichen Persönlichkeitsschutz.\n\n### 2. Recht auf informationelle Selbstbestimmung\nAls eigenständiger Massstab anerkannte das Gericht das **Recht auf informationelle Selbstbestimmung** [P1], das bei der Abwägung zu berücksichtigen ist.\n\n### 3. Begriff der Personendaten\nDas Gericht konkretisierte, dass die **in Google Street View verwendeten Bilder als Personendaten** qualifizieren können [P1, E. 6.5], was überhaupt erst den datenschutzrechtlichen Schutzbereich eröffnet.\n\n### 4. Datenschutzvorschriften für die Bearbeitung\nFür die Bearbeitung solcher Personendaten gelten die einschlägigen **Datenschutzvorschriften** [P1, E. 7], namentlich die Grundsätze der Rechtmässigkeit, Verhältnismässigkeit und Zweckbindung (vgl. Art. 6 DSG).\n\n---\n\n## Einschränkung\n\nDie abgerufenen Passagen enthalten **nur den Regeste-Text** von BGE 138 II 346 sowie Sachverhaltselemente [P2, P4], nicht aber die vollständigen Erwägungen. Eine detaillierte Wiedergabe aller im Urteil entwickelten Abwägungskriterien ist daher auf dieser Grundlage **nicht vollständig möglich**. Für eine erschöpfende Analyse wären die vollständigen Erwägungen (insbesondere E. 6.5 und E. 7) erforderlich.",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": true,
+      "error_class": "reasoning",
+      "latency_ms": {
+        "retrieve": 47894.1,
+        "generate": 11608.1
+      },
+      "judge_notes": {
+        "correctness": "Answer omits EDÖB supervision, mandatory pixelation obligations, and effective right to object — load-bearing elements of the reference.",
+        "groundedness": "All specific claims trace directly to P1 (Regeste), P2, P4, or Art. 6/28 statutes. No unsupported factual assertions found.",
+        "language": "de"
+      }
+    },
+    {
+      "question_id": "q-030",
+      "retrieved_decision_ids": [
+        "fr_gerichte_102_2018_228",
+        "zh_obergericht_PS190054",
+        "zh_obergericht_PS240163",
+        "zh_gerichte_PS130184",
+        "zh_obergericht_PS240046"
+      ],
+      "retrieved_statute_ids": [
+        "174_SchKG"
+      ],
+      "answer": "## Konkurshinderungsgründe nach Art. 174 Abs. 2 SchKG\n\n### Die drei Konkurshinderungsgründe\n\nGemäss **Art. 174 Abs. 2 SchKG** kann die Rechtsmittelinstanz die Konkurseröffnung aufheben, wenn der Schuldner seine Zahlungsfähigkeit glaubhaft macht und durch Urkunden beweist, dass inzwischen einer der folgenden drei Gründe vorliegt:\n\n1. **Tilgung der Schuld** – einschliesslich Zinsen und Kosten (Ziff. 1)\n2. **Hinterlegung des geschuldeten Betrags** – beim oberen Gericht zuhanden des Gläubigers (Ziff. 2)\n3. **Verzicht des Gläubigers** auf die Durchführung des Konkurses (Ziff. 3)\n\n### Zeitlicher Rahmen für die Geltendmachung\n\nNach **Art. 174 Abs. 1 SchKG** ist die Beschwerde innert **zehn Tagen** einzureichen. Wie das Zürcher Obergericht unter Verweis auf die bundesgerichtliche Rechtsprechung festhält, hat der Schuldner sowohl seine Zahlungsfähigkeit als auch **einen der drei Konkurshinderungsgründe innert der Rechtsmittelfrist** glaubhaft zu machen bzw. urkundlich nachzuweisen [P2].\n\nDas bedeutet konkret: Tilgung, Hinterlegung oder Gläubigerverzicht müssen **verwirklicht und geltend gemacht** werden, bevor die **10-tägige Beschwerdefrist** abläuft. Neue Tatsachen können nur berücksichtigt werden, wenn sie **vor dem erstinstanzlichen Entscheid** eingetreten sind (Art. 174 Abs. 1 Satz 2 SchKG) [P2].\n\n> *Hinweis: Die Passage zu BGE 136 III 294 ist in den abgerufenen Quellen nicht explizit zitiert; die obige Darstellung stützt sich auf Art. 174 SchKG sowie auf [P2].*",
+      "correctness": false,
+      "groundedness": true,
+      "retrieval_accuracy": false,
+      "error_class": "retrieval",
+      "latency_ms": {
+        "retrieve": 41834.2,
+        "generate": 8551.4
+      },
+      "judge_notes": {
+        "correctness": "Answer lists only 3 grounds, missing the 4th (Nachlassstundung). Also mischaracterizes new facts rule.",
+        "groundedness": "All factual claims trace directly to Art. 174 SchKG or P2 (ZH Obergericht). No unsupported specific propositions found.",
+        "language": "de"
+      }
+    }
+  ]
+}
