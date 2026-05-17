@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[4]
 JSON_PATH = ROOT / "tables" / "corpus_graph_stats.json"
+PROXY_PATH = REPO_ROOT / "benchmarks" / "citation_precision_proxies.json"
 TAB_DIR = ROOT / "tables"
 
 s = json.loads(JSON_PATH.read_text())
@@ -94,6 +96,47 @@ Decisions cited $\\geq$ 10{{,}}000 times & {fmt_int(ge10000)} \\\\
 \\end{{table}}
 """,
 )
+
+# ─── precision_proxies.tex (optional — needs benchmarks/citation_precision_proxies.json) ──
+if PROXY_PATH.exists():
+    pp = json.loads(PROXY_PATH.read_text())
+    rows = []
+    # Order matches the in-paper presentation: most-trusted first
+    for mt in ["docket_norm", "bge_bare", "bge_norm", "bge_pincite"]:
+        r = pp["by_match_type"].get(mt)
+        if not r:
+            continue
+        rows.append((
+            mt.replace("_", r"\_"),
+            fmt_int(r["total"]),
+            f"{r['date_sanity_pass_pct']:.2f}\\%",
+            fmt_int(r["self_citations"]),
+            f"{r['confidence_percentiles']['p50']:.2f}",
+        ))
+    overall = pp["overall"]
+    body = "\n".join(
+        f"\\texttt{{{a}}} & {b} & {c} & {d} & {e} \\\\"
+        for (a, b, c, d, e) in rows
+    )
+    write(
+        "precision_proxies.tex",
+        f"""\\begin{{table}}[t]
+\\centering
+\\caption{{Citation-resolution precision proxies (computed over all {fmt_int(overall['total'])} resolved pairs). Date-sanity pass = \\% of pairs where target decision date precedes the source's; violations are logical impossibilities and thus a hard floor on false-positive count. Self-cite = pairs where source = target. Conf.\\,p50 = median resolver confidence per stratum. Full per-stratum manual precision adjudication is deferred to v2.0 (see \\texttt{{benchmarks/citation\\_precision\\_audit.py}}).}}
+\\label{{tab:precision_proxies}}
+\\small
+\\begin{{tabular}}{{l r r r r}}
+\\toprule
+\\textbf{{match\\_type}} & \\textbf{{n}} & \\textbf{{date sanity}} & \\textbf{{self-cite}} & \\textbf{{conf p50}} \\\\
+\\midrule
+{body}
+\\midrule
+\\textbf{{Overall}} & {fmt_int(overall['total'])} & {overall['date_sanity_pass_pct']:.2f}\\% & {fmt_int(overall['self_citations'])} & --- \\\\
+\\bottomrule
+\\end{{tabular}}
+\\end{{table}}
+""",
+    )
 
 # ─── cross_lang_citation_matrix.tex ──────────────────────────────
 m = {(r["src"], r["tgt"]): r["n"] for r in s["cross_lang_matrix"]}
