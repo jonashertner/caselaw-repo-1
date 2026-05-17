@@ -1,17 +1,18 @@
-\begin{table}[t]
+\begin{table}[h]
 \centering
-\caption{Early MCP adoption signal from tier-1 server logs. Window: 12 April--9 May 2026. Counts are descriptive usage telemetry, not a quality metric.}
+\caption{Aggregate MCP liveness signal from tier-1 server logs. Window: 12 April--9 May 2026. We log the user-agent string and request volume only; we do not log query payloads or downstream client-matter facts. Adoption is descriptive evidence the resource is exercised by external clients; it is not an evaluation claim about quality, correctness, or professional reliance.}
 \label{tab:adoption_signal}
 \small
-\begin{tabular}{>{\raggedright\arraybackslash}p{3.8cm} r >{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{4.7cm}}
+\begin{tabular}{l r}
 \toprule
-\textbf{Client / deployment} & \textbf{Volume} & \textbf{Surface} & \textbf{Pattern} \\
+\textbf{Client category (identified by user-agent)} & \textbf{Requests} \\
 \midrule
-Anthropic Claude Code & $\sim$2.3k requests & CLI MCP client & Agentic legal-research sessions via \texttt{claude-code/2.1.x}. \\
-OpenAI MCP & $\sim$2.0k requests & MCP client & General MCP front-end traffic via \texttt{openai-mcp/1.0.0}. \\
-Cursor & $\sim$2.6k requests & IDE client & macOS IDE integration via \texttt{Cursor/3.x}. \\
-Swiss-French law firm & 740 tool calls & Copilot Studio & Production legal workflow via \texttt{CopilotStudio PowerFx}. \\
-Cantonal-government legal department & 3.4k calls & Custom MCP client & Internal legal-research workflow over the public endpoint. \\
+Agentic-coding CLI integrations & $\sim$2{,}300 \\
+MCP-front-end integrations from major LLM vendors & $\sim$2{,}000 \\
+IDE-based integrations & $\sim$2{,}600 \\
+Workflow-platform integrations (anonymised) & $\sim$4{,}100 \\
+Generic MCP-discovery probes (77 distinct IPs) & varied \\
+Search-engine and LLM-crawler indexing & --- \\
 \bottomrule
 \end{tabular}
 \end{table}

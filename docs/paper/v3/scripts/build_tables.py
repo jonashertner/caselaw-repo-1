@@ -75,7 +75,7 @@ write(
     "citation_graph.tex",
     f"""\\begin{{table}}[t]
 \\centering
-\\caption{{Citation graph. Edges extracted from federal-court decisions; resolved means the cited target is identified in the corpus. Snapshot {SNAPSHOT_DATE}.}}
+\\caption{{Citation graph. Edges extracted by full-text scanning every decision in the corpus; resolved means the cited target is identified in the corpus. Snapshot {SNAPSHOT_DATE}.}}
 \\label{{tab:citation_graph}}
 \\small
 \\begin{{tabular}}{{l r}}
