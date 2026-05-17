@@ -114,7 +114,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 971,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes 33 tools (31 in remote mode — 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True). Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Stanford RegLab, 2024 / Journal of Legal Analysis — 58–82 % of legal queries to general-purpose LLMs produced fabricated authority; the follow-up Magesh et al. *Hallucination-Free?* study of commercial legal-RAG tools, 2024, measured 17–33 %) and **reasoning error** (Butler & Butler, Isaacus, *Legal RAG Bench*, Mar 2026 — citation real, source retrieved, proposition unsupported).
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 972,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes **35 tools total — 33 in remote (public) mode**; the 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True. Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Journal of Legal Analysis 16(1) 2024 — 58–88 % of legal queries to general-purpose LLMs produced fabricated authority, range across ChatGPT-4 to Llama-2; the follow-up Magesh et al. *Hallucination-Free?* study, Journal of Empirical Legal Studies 22 (2025), measured 17–33 % on commercial legal-RAG tools) and **reasoning error** (Butler & Butler, *Legal RAG Bench*, arXiv:2603.01710, 2026 — citation real, source retrieved, proposition unsupported).
 
 **Remote (no download needed):**
 
@@ -165,7 +165,7 @@ On first search, the server downloads the Parquet files (~7 GB) from this datase
 | Verbatim Botschaft corpus | 459 documents / 76,210 FTS5-indexed paragraphs (Phase 2, scaling) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
 | Scholarly commentaries | 1,104 (OnlineKommentar.ch + OpenLegalCommentary.ch) |
-| MCP tools | 33 (31 remote / 33 local) |
+| MCP tools | 35 total (33 remote in public mode + 2 local-only) |
 
 **Language distribution:**
 
@@ -286,7 +286,7 @@ Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
 
 ## Data Sources
 
-**Court decisions** — 59 scrapers targeting official court platforms directly (federal court APIs, Weblaw, Tribuna, FindInfo, Omnis, plus custom portals for the smaller cantons). No third-party aggregator in the case-law pipeline; we go to the source.
+**Court decisions** — source-specific scrapers targeting official court platforms directly (federal court APIs, Weblaw, Tribuna, FindInfo, Omnis, plus custom portals for the smaller cantons). Federation includes federal courts (BGer, BVGer, BStGer, BPatGer), every Swiss cantonal court system, the Swiss-relevant European Court of Human Rights subset, and the federal regulators (FINMA, WEKO, EDÖB, UBI, ELCom, PostCom, ComCom). No third-party aggregator in the case-law pipeline; we go to the source.
 
 **Federal legislation** — Fedlex SPARQL endpoint (Bundeskanzlei). Mirrored monthly into `statutes.db`; covers every consolidated federal act in DE/FR/IT.
 
@@ -323,7 +323,7 @@ See the governance policy for source withdrawals, re-anonymization, and verified
         5,516 federal laws, 15,722 cantonal laws,
         and legislative history (83,958 Botschaft amendment references; 459
         verbatim Botschaften, scaling).
-        Searchable via 33 MCP tools (31 remote + 2 local-only) (Claude, ChatGPT, Cursor, Gemini, Grok). Updated daily.}
+        Searchable via 35 MCP tools (33 remote in public mode + 2 local-only) from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. Updated daily.}
 }
 ```
 
