@@ -96,36 +96,51 @@ cases, zero IT-original — so Table 3's IT-target column is empty. The
 paper now (post-reframe) calls this a sampling limitation, but
 "limitation acknowledged" is weaker than "limitation closed".
 
-**Methodology challenge.** A naive `WHERE language = 'it'` filter on the
-decisions table returns Italian *translation* rows, not Italian-*original*
-cases. Need either:
+**Methodology challenge solved.** A naive `WHERE language = 'it'` filter
+returns 955 BGE rows of which only ~30% have Italian *body text* — the
+rest are Italian-tagged rows whose actual content is German or French.
+The reliable signal is full-text body language, not the metadata
+`language` column.
 
-- a `regeste` language-detection pass (Italian regestes start with
-  "Regesto"; German with "Regeste"; French with "Régeste" / "Regeste"),
-  scored on confidence;
-- or the explicit original-language metadata that the bench-construction
-  code presumably already had (re-derive from the source code).
+**Tooling shipped:** `benchmarks/swiss_legal_rag_bench/build_it_target_candidates.py`
+runs a function-word heuristic on a mid-body text slice (offset
+800–2300, skipping the standard header preamble); a case counts as
+Italian-original when `it_hits >= 5 AND it > max(de, fr)`. Output is a
+ranked candidate JSONL.
 
-**Target:** 15 IT-original BGEs at the highest in-degree available
-(probably 200–2,000 range, well below the 4,412 floor of the v1 set).
-Acknowledge the in-degree band difference explicitly in §7.
+**Candidates produced:** `it_target_candidates.jsonl` — top 30 by
+in-degree. Range: BGE 128 V 174 (n=5,483) down to BGE 150 IV 169
+(n=142). Note: 5,483 is comparable to the v1 in-degree floor (4,412),
+but the rest of the IT candidates sit much lower than the v1
+distribution (median ~250 vs v1 median 8,180); paper must explicitly
+acknowledge this asymmetry.
 
-**Method:**
+**Regeste-language caveat (new methodology decision required).** The
+identified IT-original BGEs have *German* regestes (BGE publishes
+German headnotes regardless of the case's working language). This
+means the v1 regeste-derived query construction cannot directly
+produce Italian queries for them. Three options for v1.1:
 
-1. Audit the v1 bench-construction code path for the original-language
-   determination. Document it.
-2. Apply that determination to all BGE rows; rank by in-degree; take top
-   15 IT-original.
-3. Author one query per language (DE/FR/IT) per case → 45 new trials.
-4. Re-run the bench harness; produce a v1.1 cross-lingual table with a
-   real IT-target column.
+1. **(preferred) Unify with item 3** — let the lawyer author Italian
+   queries for the IT-original cases as part of the lawyer-query
+   pilot. This converts the methodological problem into a feature:
+   the IT-target column is *only* lawyer-authored, making it the
+   benchmark's most-realistic stratum and a natural comparison
+   against the regeste-derived DE/FR cells.
+2. Translate the German regeste to Italian per case (manual,
+   ~30 min/case = ~7.5 hours total).
+3. Extract Italian keyword terms from the case body (the dispositiv
+   or first 2 paragraphs of the Erwägungen); risk of drift from the
+   keyword-derived methodology.
 
-**Effort:** ~1 day code + ~1 day query authoring (the construction
-methodology mirrors v1, so the labor is per-case).
+**Recommended path: option 1.** Update lawyer brief to include 15 of
+these IT-candidates with Italian-only query instruction.
 
-**Exit criterion:** 45 new trials in `cross_lingual_v1_1.jsonl`; §7 table
-gains a non-empty IT column; the prose addresses how the lower in-degree
-band affects comparability with the DE/FR cells.
+**Exit criterion:** 15 IT-targets in `cross_lingual_v1_1.jsonl` with
+queries (Italian-authored, plus optional DE/FR queries from the same
+lawyer for full 45 trials); §7 table gains a non-empty IT column;
+prose addresses the in-degree-band gap and the construction
+asymmetry.
 
 ---
 
