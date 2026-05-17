@@ -2260,7 +2260,7 @@
     "2026-04": 1438,
     "2026-05": 100
   },
-  "generated_at": "2026-05-17T10:16:09.044437+00:00",
+  "generated_at": "2026-05-17T13:10:17.400221+00:00",
   "scraper_health": {
     "run_at": "2026-05-17T02:05:01.465190+00:00",
     "run_duration_s": 3900.9,
@@ -3164,7 +3164,7 @@
         "note": null,
         "state_count": 7545,
         "jsonl_size_mb": 186.4,
-        "jsonl_mtime": "2026-05-17T01:47:42.872776+00:00"
+        "jsonl_mtime": "2026-05-17T10:32:59.827908+00:00"
       },
       "zh_verwaltungsgericht": {
         "success": true,

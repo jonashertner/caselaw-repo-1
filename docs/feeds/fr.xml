@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 15 May 2026 13:38:01 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 17 May 2026 13:20:55 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -492,6 +492,14 @@ Pr…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-4186/2025 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4186_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4186.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ecthr_chamber 30781/22 vom 2026-05-07</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_30781_22</link>
       <description>Violation de l'article 11 - Liberté de réunion et d'association (Article 11-1 - Liberté de réunion pacifique); Violation: 11;11-1</description>
@@ -508,6 +516,14 @@ Pr…</description>
       <guid isPermaLink="false">hudoc_ch_30781_22</guid>
       <category>hudoc_ch</category>
       <category>EMRK / Menschenrechte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-2839/2026 vom 2026-05-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2839_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (Etat tiers sûr - art. 31a al. 1 let. a LAsi)</description>
+      <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2839.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht E-1877/2023 vom 2026-05-05</title>
@@ -596,6 +612,14 @@ Laurent S…</description>
       <description>Interdiction d'entrée</description>
       <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-525.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-9034/2025 vom 2026-05-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-9034_2025</link>
+      <description>Visa Schengen</description>
+      <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-9034.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -736,33 +760,6 @@ A.________,
       <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2897.2026</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 30049/23 vom 2026-04-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_30049_23</link>
-      <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art. 35-3-a) Manifestement mal fondé;Non-violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Procès équitable); No violation: 6;6-1</description>
-      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_30049_23</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 5414/22 vom 2026-04-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_5414_22</link>
-      <description>Non-violation de l'article 2 - Droit à la vie (Article 2-1 - Vie;Article 2-2 - Recours à la force) (Volet matériel); No violation: 2;2-1;2-2</description>
-      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_5414_22</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_committee 23293/21 vom 2026-04-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_23293_21</link>
-      <description>Violation de l'article 3 - Interdiction de la torture (Article 3 - Enquête effective) (Volet procédural); Violation: 3</description>
-      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_committee_23293_21</guid>
-      <category>ecthr_committee</category>
-      <category>CEDH / Droits humains</category>
     </item>
   </channel>
 </rss>

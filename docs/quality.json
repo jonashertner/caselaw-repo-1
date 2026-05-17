@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-05-16T21:59:52+00:00",
+  "run_at": "2026-05-17T13:37:59+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 224.49,
+  "duration_seconds": 1023.7,
   "summary": {
     "total": 52,
     "passed": 52,

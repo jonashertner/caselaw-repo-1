@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 15 May 2026 13:37:48 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 17 May 2026 13:17:36 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -792,6 +792,38 @@ Steuerverwaltung d…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-7425/2025 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-7425_2025</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-7425.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-2825/2026 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2825_2026</link>
+      <description>Familienzusammenführung (Asyl)</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2825.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-4186/2025 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4186_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4186.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-3080/2026 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3080_2026</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3080.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ecthr_chamber 30781/22 vom 2026-05-07</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_30781_22</link>
       <description>Violation de l'article 11 - Liberté de réunion et d'association (Article 11-1 - Liberté de réunion pacifique); Violation: 11;11-1</description>
@@ -844,79 +876,6 @@ Sei…</description>
       <guid isPermaLink="false">hudoc_ch_30781_22</guid>
       <category>hudoc_ch</category>
       <category>EMRK / Menschenrechte</category>
-    </item>
-    <item>
-      <title>ag_strafgericht SST.2026.30 vom 2026-05-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ag_strafgericht_SST.2026.30</link>
-      <description>Obergericht
-Strafgericht, 3. Kammer
-SST.2026.30
-(ST.2023.29; STA.2023.412)
-Urteil vom 6. Mai 2026
-Besetzung Oberrichterin Möckli, Präsidentin
-Oberrichter Fedier
-Oberrichterin Jacober
-Gerichtsschreiberin Wanner
-Anklägerin Staatsanwaltschaft Rheinfelde…</description>
-      <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ag_strafgericht_SST.2026.30</guid>
-      <category>ag_strafgericht</category>
-    </item>
-    <item>
-      <title>ag_strafgericht SST.2026.35 vom 2026-05-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ag_strafgericht_SST.2026.35</link>
-      <description>Obergericht
-Strafgericht, 3. Kammer
-SST.2026.35
-(ST.2025.9: STA.2024.8288)
-Urteil vom 6. Mai 2026
-Besetzung Oberrichterin Möckli, Präsidentin
-Oberrichter Fedier
-Oberrichterin Jacober
-Gerichtsschreiberin Wanner
-Anklägerin Staatsanwaltschaft Baden,
-Mel…</description>
-      <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ag_strafgericht_SST.2026.35</guid>
-      <category>ag_strafgericht</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-9184/2025 vom 2026-05-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-9184_2025</link>
-      <description>Öffentliches Beschaffungswesen</description>
-      <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-9184.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>so_gerichte VWBES.2026.31 vom 2026-05-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_VWBES.2026.31</link>
-      <description>Urteilvom6. Mai 2026
-
-Es wirken mit:
-
-VizepräsidentThomann
-
-Oberrichter Hagmann
-
-a.o. Ersatzrichter Frey
-
-Gerichtsschreiberin Ramseier
-
-In Sachen
-
-A.___,vertreten durch Rechtsanwalt Jürg Krumm,
-
-Beschwerdeführer
-
-gegen
-
-Amt für Justizvollzug,
-
-Beschw…</description>
-      <pubDate>Wed, 06 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_VWBES.2026.31</guid>
-      <category>so_gerichte</category>
     </item>
   </channel>
 </rss>
