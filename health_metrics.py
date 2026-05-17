@@ -29,6 +29,22 @@ DEFAULT_DB_PATH = REPO_DIR / "output" / "decisions.db"
 DEFAULT_BGER_POLLER_LOG = REPO_DIR / "logs" / "bger_poller.log"
 DEFAULT_LLM_USAGE_LOG = REPO_DIR / "logs" / "llm_usage.jsonl"
 
+# Module-level cache for freshness_seconds_by_court (keyed by str(db_path),
+# value is (computed_at_ts, result_dict)). The query is GROUP BY court with
+# MAX(scraped_at) — without an index on scraped_at it can take 30+s on the
+# 61 GB production DB, which would wedge MCP workers if /metrics/health is
+# polled at 30s cadence. Index will land in the Saturday A6 deploy; until
+# then we cap the query time and cache the result.
+_FRESHNESS_CACHE_TTL = 300  # 5 minutes
+_FRESHNESS_MAX_QUERY_MS = 500
+_freshness_cache: dict = {}
+
+
+def _freshness_cache_clear() -> None:
+    """Test-only helper to reset module state between runs."""
+    global _freshness_cache
+    _freshness_cache = {}
+
 
 def _now() -> int:
     """Wall clock, separated so tests can monkeypatch."""
@@ -61,32 +77,62 @@ def freshness_seconds_by_court(
     scraper grabbed the row, not when it landed in the published DB —
     this is documented in ``docs/observability.md``.
 
+    Cached for 5 minutes per DB path. Hard-bounded to ~500 ms per
+    query via a SQLite progress handler — without an index on
+    ``scraped_at`` the GROUP BY would otherwise scan the full 61 GB
+    table and wedge the calling worker. If the query is aborted, the
+    last good cached value is returned (empty dict on first abort).
+
     Returns ``{}`` on any DB error so the consumer never crashes on
     partial outages.
     """
     if db_path is None:
         db_path = DEFAULT_DB_PATH
+    key = str(db_path)
+    now = _now()
+    cached = _freshness_cache.get(key)
+    if cached is not None and now - cached[0] < _FRESHNESS_CACHE_TTL:
+        return cached[1]
     if not db_path.exists():
         return {}
+
+    out: dict[str, int] = {}
     try:
         conn = sqlite3.connect(
             f"file:{db_path}?immutable=1", uri=True, timeout=1.0,
         )
+        # Abort the query if it takes too long. progress_handler fires
+        # every N opcodes; returning non-zero raises OperationalError
+        # ("interrupted"). Keeps us off the critical path on a 61 GB DB
+        # without scraped_at index. The 10_000 opcode interval is a
+        # rough balance between responsiveness and overhead.
+        start = time.monotonic()
+        def _abort_if_slow() -> int:
+            return 1 if (time.monotonic() - start) * 1000 > _FRESHNESS_MAX_QUERY_MS else 0
+        try:
+            conn.set_progress_handler(_abort_if_slow, 10_000)
+        except AttributeError:
+            # Older sqlite3 without set_progress_handler — proceed
+            # without the cap (only a concern in dev / non-prod).
+            pass
+
         rows = conn.execute(
             "SELECT court, MAX(scraped_at) FROM decisions "
             "WHERE scraped_at IS NOT NULL AND court IS NOT NULL "
             "GROUP BY court"
         ).fetchall()
         conn.close()
+        for court, ts_str in rows:
+            ts = _parse_iso(ts_str)
+            if ts is not None:
+                out[court] = now - ts
     except sqlite3.Error:
-        return {}
+        # Most likely: progress-handler abort (sqlite3.OperationalError
+        # "interrupted"), or the DB is being heavily written. Return the
+        # last good cached value (may be empty on first attempt).
+        return cached[1] if cached else {}
 
-    now = _now()
-    out: dict[str, int] = {}
-    for court, ts_str in rows:
-        ts = _parse_iso(ts_str)
-        if ts is not None:
-            out[court] = now - ts
+    _freshness_cache[key] = (now, out)
     return out
 
 

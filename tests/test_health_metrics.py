@@ -42,6 +42,7 @@ def _make_decisions_db(path: Path, rows: list[tuple[str, str]]) -> None:
 
 
 def test_freshness_returns_empty_when_db_missing(tmp_path):
+    health_metrics._freshness_cache_clear()
     out = health_metrics.freshness_seconds_by_court(
         tmp_path / "nope.db"
     )
@@ -49,6 +50,7 @@ def test_freshness_returns_empty_when_db_missing(tmp_path):
 
 
 def test_freshness_per_court(tmp_path, monkeypatch):
+    health_metrics._freshness_cache_clear()
     # 2026-05-17 12:00:00 UTC
     monkeypatch.setattr(health_metrics, "_now", lambda: 1_779_019_200)
     p = tmp_path / "decisions.db"
@@ -64,7 +66,55 @@ def test_freshness_per_court(tmp_path, monkeypatch):
     assert out == {"BGer": 14_400, "BVGer": 86_400}
 
 
+def test_freshness_cached_between_calls(tmp_path, monkeypatch):
+    """Two successive calls within TTL hit the cache (no re-query).
+
+    Verified by: change the DB after the first call; the second call
+    should still return the first-call result.
+    """
+    monkeypatch.setattr(health_metrics, "_now", lambda: 1_779_019_200)
+    health_metrics._freshness_cache_clear()
+    p = tmp_path / "decisions.db"
+    _make_decisions_db(p, [("BGer", "2026-05-17T08:00:00Z")])
+    first = health_metrics.freshness_seconds_by_court(p)
+    assert "BGer" in first
+
+    # Wipe rows; cached result should still be returned
+    conn = sqlite3.connect(str(p))
+    conn.execute("DELETE FROM decisions")
+    conn.commit()
+    conn.close()
+
+    second = health_metrics.freshness_seconds_by_court(p)
+    assert second == first  # cache hit, even though DB now empty
+
+
+def test_freshness_cache_expires(tmp_path, monkeypatch):
+    """After TTL elapses, cache is bypassed and DB re-read."""
+    health_metrics._freshness_cache_clear()
+    monkeypatch.setattr(health_metrics, "_now", lambda: 1_779_019_200)
+    p = tmp_path / "decisions.db"
+    _make_decisions_db(p, [("BGer", "2026-05-17T08:00:00Z")])
+    first = health_metrics.freshness_seconds_by_court(p)
+    assert "BGer" in first
+
+    # Wipe rows
+    conn = sqlite3.connect(str(p))
+    conn.execute("DELETE FROM decisions")
+    conn.commit()
+    conn.close()
+
+    # Advance the clock past TTL
+    monkeypatch.setattr(
+        health_metrics, "_now",
+        lambda: 1_779_019_200 + health_metrics._FRESHNESS_CACHE_TTL + 10,
+    )
+    second = health_metrics.freshness_seconds_by_court(p)
+    assert second == {}  # cache expired, fresh read sees empty
+
+
 def test_freshness_skips_unparseable_timestamps(tmp_path, monkeypatch):
+    health_metrics._freshness_cache_clear()
     monkeypatch.setattr(health_metrics, "_now", lambda: 1_779_019_200)
     p = tmp_path / "decisions.db"
     _make_decisions_db(p, [
@@ -136,6 +186,7 @@ def test_daily_cost_zero_when_missing(tmp_path):
 
 def test_collect_health_structure(tmp_path, monkeypatch):
     """collect_health() returns the expected keys even when inputs missing."""
+    health_metrics._freshness_cache_clear()
     monkeypatch.setattr(
         health_metrics, "DEFAULT_DB_PATH", tmp_path / "no_db",
     )
