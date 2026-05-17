@@ -2260,7 +2260,7 @@
     "2026-04": 1438,
     "2026-05": 100
   },
-  "generated_at": "2026-05-17T13:10:17.400221+00:00",
+  "generated_at": "2026-05-17T16:29:39.163435+00:00",
   "scraper_health": {
     "run_at": "2026-05-17T02:05:01.465190+00:00",
     "run_duration_s": 3900.9,
@@ -3232,7 +3232,7 @@
         "note": null,
         "state_count": 1480,
         "jsonl_size_mb": 88.4,
-        "jsonl_mtime": "2026-05-17T01:54:12.262332+00:00"
+        "jsonl_mtime": "2026-05-17T14:55:12.193147+00:00"
       },
       "lu_gerichte": {
         "success": true,
@@ -3428,18 +3428,6 @@
         "ref_count": 59317
       }
     ],
-    "materialien_coverage": {
-      "total_documents": 240,
-      "paragraphs": 60778,
-      "article_links": 0,
-      "by_language": {
-        "de": 240
-      },
-      "year_range": {
-        "from": 2023,
-        "to": 2026
-      }
-    },
     "historical_depth": [
       {
         "court": "bge",
