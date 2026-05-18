@@ -50,11 +50,20 @@ logger = logging.getLogger("wayback_archiver")
 
 def _open_rw(db_path: Path) -> sqlite3.Connection:
     """Open the decisions DB for read+write of the wayback_queue table.
-    Other connections (mcp-server, gate) keep their immutable=1 RO
-    handles to decisions/decisions_fts; SQLite WAL handles the write
-    contention transparently."""
+
+    Critical: do NOT set ``PRAGMA journal_mode=WAL`` here. The DB is
+    intentionally in DELETE journal mode (set by build_fts5 at the end
+    of every nightly rebuild — required for ``immutable=1`` compat in
+    the mcp-server worker pool). Attempting to switch to WAL fails with
+    "database is locked" whenever a reader connection is open
+    (post-mortem 2026-05-18 — silent failure had bricked link-rot
+    protection: 1.46M URLs pending, 0 attempted).
+
+    The default mode is fine: UPDATE statements work transparently in
+    both DELETE and WAL. ``busy_timeout`` handles the brief reader
+    contention while archiver writes a status row back.
+    """
     conn = sqlite3.connect(str(db_path), timeout=30.0)
-    conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA busy_timeout=10000")
     return conn
 
