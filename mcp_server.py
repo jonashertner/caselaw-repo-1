@@ -11575,15 +11575,14 @@ def _handle_reflect(*, redacted_text: str, lang: str = "de") -> dict:
                 json={
                     "model": "claude-sonnet-4-6",
                     "max_tokens": 1400,
-                    # Explicit temperature/top_p so the model has sampling
-                    # headroom for genuine literary variety. Two real users
-                    # both received "Der Richter und sein Henker" (2026-05-18);
-                    # the prompt anchor was the dominant cause, but at the
-                    # default temperature even a corrected prompt can collapse
-                    # to a modal answer. 1.0 + 0.95 is the standard "creative
-                    # but coherent" pair.
+                    # Explicit temperature for genuine literary variety.
+                    # Two real users both received "Der Richter und sein
+                    # Henker" (2026-05-18); the prompt-anchor was the
+                    # dominant cause (fixed above), but maximum temperature
+                    # leaves Sonnet room to wander the canon. Anthropic
+                    # accepts temperature ONLY OR top_p ONLY, not both —
+                    # we use temperature.
                     "temperature": 1.0,
-                    "top_p": 0.95,
                     "system": _REFLECT_SYSTEM_PROMPT,
                     "messages": [{"role": "user", "content": user_prompt}],
                 },
