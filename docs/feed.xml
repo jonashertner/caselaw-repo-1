@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 17 May 2026 13:17:36 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 18 May 2026 14:42:42 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -736,6 +736,38 @@ Gerichtsschreiberi…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>Bundesgericht 5A_208/2026 vom 2026-05-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_208_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_208/2026
+
+Arrêt du 8 mai 2026
+
+IIe Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Bovey, Président.
+
+Greffière : Mme Mairot.
+
+Participants à la procédure
+
+A.________,
+
+re…</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_208.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>bs_appellationsgericht AUS.2026.40 vom 2026-05-08</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.40</link>
       <description>Appellationsgericht
@@ -790,6 +822,36 @@ Steuerverwaltung d…</description>
       <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_verwaltungsgericht_100 2024 400</guid>
       <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_257/2026 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_257_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_257/2026
+
+Urteil vom 7. Mai 2026
+
+II. zivilrechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Bovey, Präsident,
+
+Gerichtsschreiber Zingg.
+
+Verfahrensbeteiligte
+
+A.________ GmbH in …</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_257.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht D-7425/2025 vom 2026-05-07</title>
@@ -849,33 +911,6 @@ Moses, Vo…</description>
       <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SR1 2025 25</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>gr_gerichte VR2 2025 65 vom 2026-05-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR2%202025%2065</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Urteil vom 8. April 2026
-mitgeteilt am 29. April 2026
-Referenz
-VR2 25 65
-Instanz
-Zweite verwaltungsrechtliche Kammer
-Besetzung
-Sei…</description>
-      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_VR2 2025 65</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>hudoc_ch 30781/22 vom 2026-05-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/hudoc_ch_30781_22</link>
-      <description>Violation de l'article 11 - Liberté de réunion et d'association (Article 11-1 - Liberté de réunion pacifique); Violation: 11;11-1</description>
-      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">hudoc_ch_30781_22</guid>
-      <category>hudoc_ch</category>
-      <category>EMRK / Menschenrechte</category>
     </item>
   </channel>
 </rss>
