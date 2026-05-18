@@ -11463,43 +11463,118 @@ _REFLECT_SYSTEM_PROMPT = (
     "tight and non-trivial. Phrase it generically (do NOT name any "
     "party, the doc is redacted by design).\n"
     "2. Find ONE literary work that genuinely dramatises the same "
-    "human dilemma. Draw from a deliberately broad canon — variety "
-    "of choice matters as much as fit:\n"
-    "   • Shakespeare: any tragedy, comedy, history or romance\n"
-    "   • Swiss authors: Dürrenmatt, Frisch, Keller, Gotthelf, "
-    "Walser, Bichsel, Glauser, Hohl, von Matt, Hürlimann, Loetscher\n"
-    "   • German-language classics: Goethe, Schiller, Kleist, "
-    "Lessing, Kafka, Brecht, Mann, Hesse, Böll, Grass, Bernhard\n"
-    "   • European voices: Camus, Sartre, Ibsen, Strindberg, "
-    "Dostoyevsky, Tolstoy, Chekhov, Cervantes, Pessoa, Borges, "
-    "Calvino, Eco, Pirandello, Saramago, Houellebecq\n"
-    "   • Ancients: Sophocles, Euripides, Aeschylus, Aristophanes, "
-    "Plato, Plautus, Seneca, Ovid\n"
-    "   • Anglophone moderns: Conrad, Melville, Faulkner, McCarthy, "
-    "Orwell, Atwood, McEwan, Coetzee, DeLillo, Toni Morrison\n\n"
-    "CRITICAL: pick the work that best illuminates *this specific* "
-    "dilemma. Avoid the obvious-Swiss-legal-novel default. Different "
-    "documents must yield different literary mirrors; do not return "
-    "the same author or work twice across distinct documents in the "
-    "same session. A second-tier parallel that genuinely fits beats "
-    "a canonical pick that doesn't.\n"
+    "human dilemma. Range freely across world literature — surprise "
+    "matters as much as fit. Authors you may draw from include but "
+    "are NOT limited to:\n"
+    "   • Greek & Roman: Sophocles, Euripides, Aeschylus, "
+    "Aristophanes, Plato, Plautus, Seneca, Ovid, Virgil, Lucretius\n"
+    "   • Medieval & Renaissance: Dante, Boccaccio, Chaucer, "
+    "Cervantes, Shakespeare, Marlowe, Webster, Montaigne, More, "
+    "Erasmus\n"
+    "   • 18th–19th c. continental: Voltaire, Rousseau, Diderot, "
+    "Lessing, Schiller, Goethe, Kleist, Hoffmann, Büchner, Hebbel, "
+    "Stifter, Storm, Fontane, Balzac, Hugo, Stendhal, Flaubert, "
+    "Zola, Maupassant, Pushkin, Gogol, Turgenev, Dostoyevsky, "
+    "Tolstoy, Chekhov, Leskov, Ibsen, Strindberg, Hamsun, Hardy, "
+    "Dickens, Eliot, Hawthorne, Melville, Conrad, James, Twain\n"
+    "   • 19th–20th c. Swiss: Keller, Gotthelf, C.F. Meyer, "
+    "Spitteler, Walser, Glauser, Hohl, Dürrenmatt, Frisch, Bichsel, "
+    "Hürlimann, Loetscher, von Matt, Capus, Suter, Lewinsky\n"
+    "   • 20th c. German-language: Kafka, T. Mann, H. Mann, Hesse, "
+    "Brecht, Musil, Roth, Broch, Zweig, Canetti, Böll, Grass, "
+    "Bernhard, Handke, Jelinek, Sebald, Bachmann, Christa Wolf\n"
+    "   • 20th c. French: Camus, Sartre, Beauvoir, Proust, Gide, "
+    "Malraux, Ionesco, Beckett, Yourcenar, Modiano, Houellebecq, "
+    "Cixous, Ernaux\n"
+    "   • 20th c. Italian & Iberian: Pirandello, Calvino, Eco, "
+    "Primo Levi, Pavese, Sciascia, Buzzati, Lampedusa, Tabucchi, "
+    "Ferrante, Pessoa, Saramago, Lobo Antunes, Lorca, Cela\n"
+    "   • Latin American: Borges, García Márquez, Vargas Llosa, "
+    "Bolaño, Cortázar, Lispector, Allende, Donoso, Onetti, Rulfo, "
+    "Castellanos, Aira\n"
+    "   • 20th c. Russian & East European: Bulgakov, Babel, "
+    "Solzhenitsyn, Pasternak, Grossman, Platonov, Shalamov, "
+    "Akhmatova, Mandelstam, Brodsky, Kundera, Hrabal, Klíma, "
+    "Schulz, Gombrowicz, Lem, Krasznahorkai, Kertész, Müller\n"
+    "   • 20th c. Anglophone: Faulkner, Hemingway, Fitzgerald, "
+    "McCarthy, Morrison, Atwood, McEwan, Coetzee, Naipaul, "
+    "DeLillo, Pynchon, Munro, Lessing, Le Guin, Bradbury, Dick, "
+    "Achebe, Soyinka, Adichie, Dangarembga, Gordimer, Heaney, "
+    "Auden, Yeats\n"
+    "   • East & South Asian: Murasaki Shikibu, Bashō, Sōseki, "
+    "Tanizaki, Kawabata, Mishima, Endō, Ōe, Murakami, Yoshimoto, "
+    "Han Kang, Lu Xun, Eileen Chang, Mo Yan, Yu Hua, Cao Xueqin, "
+    "Tagore, Premchand, Anita Desai, Rushdie, Roy, Adiga, Ghosh\n"
+    "   • Arabic/Persian/Turkish: Mahfouz, ibn Tufayl, Rumi, Hafez, "
+    "Khayyam, Pamuk, Hanan al-Shaykh, Tayeb Salih, Adonis\n"
+    "   • Drama (beyond Shakespeare/Brecht): Webster, Ford, Racine, "
+    "Corneille, Molière, Ibsen, Strindberg, Pirandello, Beckett, "
+    "Ionesco, Pinter, Stoppard, Mamet, Albee, Tennessee Williams, "
+    "Arthur Miller, Sarah Kane, Jon Fosse\n"
+    "   • Sacred-as-literary canon: the Book of Job, the Solomonic "
+    "judgment (1 Kings 3), Ecclesiastes, Augustine's Confessions, "
+    "the Bhagavad Gītā, the Mahābhārata's law sections, the "
+    "Confucian Analects, the Tao Te Ching, the Qur'anic story of "
+    "Yusuf, the Talmudic Aggadah\n"
+    "   • Essay & philosophy as literature: Montaigne, Pascal, "
+    "Erasmus, Voltaire (Candide), Hannah Arendt (Eichmann in "
+    "Jerusalem; Origins of Totalitarianism), Walter Benjamin, "
+    "Adorno, Sontag, Simone Weil\n"
+    "   • Poetry: Dante (Inferno/Purgatorio/Paradiso), Milton "
+    "(Paradise Lost; Areopagitica), Hopkins, Yeats, Auden, Heaney, "
+    "Hofmannsthal, Celan, Brodsky, Akhmatova, Whitman, Dickinson\n"
+    "   • Speculative/sci-fi as moral fable: Le Guin (The Ones Who "
+    "Walk Away from Omelas; The Dispossessed), Asimov, Bradbury, "
+    "Dick, Atwood (Handmaid's Tale; Oryx & Crake), Lessing (Memoirs "
+    "of a Survivor), Calvino (Invisible Cities; Cosmicomics), "
+    "Saramago (Blindness; Death With Interruptions)\n"
+    "   • Folk & fairy tale (when the parallel is sharp): the "
+    "Grimm legal-tales (e.g. Bremen Town Musicians, The Fisherman "
+    "and His Wife), Andersen, Calvino's Italian Folktales, the "
+    "Arabian Nights frame, Aesop's fables.\n\n"
+    "CRITICAL — accuracy and surprise rules:\n"
+    "   (a) Prefer a SURPRISING-BUT-GENUINE parallel over the "
+    "canonical-and-obvious one. If the document hints at "
+    "'judge investigates crime' the WORST choice is Dürrenmatt's "
+    "Der Richter und sein Henker (the modal default); a sharper "
+    "choice might be the Book of Job (innocent suffering before a "
+    "tribunal), Sciascia's Il giorno della civetta (procedural "
+    "rigor vs. enmeshed society), or Borges' La Lotería en "
+    "Babilonia (procedural arbitrariness as a worldview).\n"
+    "   (b) Pick a work whose specific SCENE, ACT, or CHAPTER you "
+    "can name with confidence. If you cannot recall a precise "
+    "anchor, switch to a different work you CAN cite precisely.\n"
+    "   (c) Do NOT invent quotations. Paraphrase rather than "
+    "quote; if you must quote, only do so when you are certain the "
+    "phrasing is correct.\n"
+    "   (d) Do NOT misattribute. Confirm the author of the work "
+    "before naming them. Confirm the work's approximate publication "
+    "year (decade-level accuracy is fine).\n"
+    "   (e) Different documents must yield different literary "
+    "mirrors. Within the same conversation/session do not return "
+    "the same author or work twice.\n"
     "3. Compose a 200-400 word reflective summary that:\n"
-    "   - States the legal issue cleanly in 1-2 sentences\n"
-    "   - Draws the literary parallel via a specific scene or theme\n"
+    "   - States the legal issue cleanly in 1-2 sentences.\n"
+    "   - Draws the literary parallel via the specific scene / act "
+    "/ chapter you named, not via the work as a whole. Be concrete.\n"
     "   - Poses ONE question for the lawyer to bring back to the "
     "case — something the literature illuminates that the doctrinal "
-    "frame might miss\n"
-    "   - Stays slightly tongue-in-cheek but never frivolous\n\n"
-    "Output as MARKDOWN in the target language. End with the "
-    "disclaimer line provided. Do NOT add headers beyond what flows "
-    "naturally. ONE literary reference (depth over breadth).\n\n"
+    "frame might miss.\n"
+    "   - Stays slightly tongue-in-cheek but never frivolous.\n\n"
+    "Output as MARKDOWN in the target language (DE / FR / IT / EN). "
+    "End with the disclaimer line provided. Do NOT add headers "
+    "beyond what flows naturally. ONE literary reference (depth "
+    "over breadth).\n\n"
     "Return ONLY a JSON object with this exact shape:\n"
     "{\n"
     '  "legal_issue": "<short generic statement of the issue, 1 sentence>",\n'
     '  "literary_reference": {\n'
-    '    "work": "<title>",\n'
-    '    "author": "<author>",\n'
-    '    "scene_or_theme": "<scene/theme used as the mirror>"\n'
+    '    "work": "<title in its original or most-recognised language>",\n'
+    '    "author": "<author full name>",\n'
+    '    "work_year_or_era": "<e.g. \\"1880\\" or \\"c. 1601\\" or \\"5th c. BCE\\">",\n'
+    '    "scene_or_chapter": "<precise pointer: e.g. \\"Act III, scene 2\\", \\"Chapter 14\\", \\"Job 38\\"; not just the work title>",\n'
+    '    "scene_or_theme": "<the scene/theme used as the mirror, 1-2 sentences>",\n'
+    '    "why_it_fits": "<the parallel to the legal dilemma, 1-2 sentences>"\n'
     '  },\n'
     '  "summary_markdown": "<the 200-400 word reflective summary as markdown>",\n'
     '  "question_for_reflection": "<the single question, one sentence>"\n'
@@ -11653,12 +11728,16 @@ def _handle_reflect(*, redacted_text: str, lang: str = "de") -> dict:
             "_parse_error": f"{type(e).__name__}: {str(e)[:120]}",
         }
 
+    lit = parsed.get("literary_reference") or {}
     return {
         "legal_issue":             str(parsed.get("legal_issue") or "").strip(),
         "literary_reference": {
-            "work":            str((parsed.get("literary_reference") or {}).get("work") or "").strip(),
-            "author":          str((parsed.get("literary_reference") or {}).get("author") or "").strip(),
-            "scene_or_theme":  str((parsed.get("literary_reference") or {}).get("scene_or_theme") or "").strip(),
+            "work":             str(lit.get("work") or "").strip(),
+            "author":           str(lit.get("author") or "").strip(),
+            "work_year_or_era": str(lit.get("work_year_or_era") or "").strip(),
+            "scene_or_chapter": str(lit.get("scene_or_chapter") or "").strip(),
+            "scene_or_theme":   str(lit.get("scene_or_theme") or "").strip(),
+            "why_it_fits":      str(lit.get("why_it_fits") or "").strip(),
         },
         "summary_markdown":        str(parsed.get("summary_markdown") or "").strip(),
         "question_for_reflection": str(parsed.get("question_for_reflection") or "").strip(),
