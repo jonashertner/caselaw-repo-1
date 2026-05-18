@@ -626,6 +626,12 @@ class BgerScraper(BaseScraper):
                 yield {
                     "docket_number": docket,
                     "decision_date": decision_date,
+                    # RSS pubDate is when BGer announced the decision —
+                    # semantically the publication_date. We preserve the
+                    # legacy decision_date alias for compatibility but
+                    # now also carry it on the dedicated field so the
+                    # dashboard's "Latest" view can sort by pub_date.
+                    "publication_date": decision_date,
                     "url": link,
                     "language": "de",
                     "decision_id": decision_id,
@@ -669,6 +675,15 @@ class BgerScraper(BaseScraper):
                     if self.state.is_known(stub["decision_id"]):
                         continue
                     new_count += 1
+                    # The Neuheiten page for ``check_date`` lists exactly
+                    # the decisions that BGer made public on that date —
+                    # decision_date itself can be weeks/months earlier
+                    # (BGer often publishes late). Stamp the
+                    # publication_date here so downstream consumers
+                    # (dashboard, RSS, drift checks) can distinguish
+                    # "when was this published?" from "when was it
+                    # decided?".
+                    stub["publication_date"] = check_date
                     yield stub
                 known = published - new_count
                 total_published += published
@@ -1073,6 +1088,12 @@ class BgerScraper(BaseScraper):
             chamber=chamber,
             docket_number=docket,
             decision_date=decision_date,
+            # publication_date populated by Neuheiten/RSS discovery paths
+            # (check_date / RSS pubDate). The AZA backfill search path
+            # leaves it None — that's fine because backfilled decisions
+            # were published in the past anyway and don't need a
+            # freshness signal in the Latest dashboard.
+            publication_date=stub.get("publication_date"),
             language=language,
             title=meta.get("title"),
             legal_area=meta.get("legal_area"),
