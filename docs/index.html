@@ -2330,6 +2330,14 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
         <span>+<span id="hero-stamp-delta">0</span></span>
         <span data-t="hero_v3_since">since yesterday</span>
       </p>
+      <p class="hero-v3-stamp" aria-label="Live database freshness — auto-refreshes every minute">
+        <!-- Fetched cross-origin from mcp.opencaselaw.ch/health (CORS *).
+             Shows when the live FTS5 DB was last swapped (db_generation,
+             a unix ts). Updates after every quick_publish (bger-poller)
+             or full rebuild. Falls back gracefully to a hidden state on
+             fetch error. -->
+        <span id="hero-live-db"><span class="skel skel--date"></span></span>
+      </p>
       <!-- Hidden compatibility IDs (legacy stats.json updater targets).
            Kept so renderHero / renderSnapshot in <script> never throw on
            missing elements after the 2026-04-25 visual cleanup. -->
@@ -5422,6 +5430,66 @@ function renderHero(data) {
   renderCorpusSnapshot(data);
   renderLatest(data);
   renderDidYouKnow(data);
+
+  // Live DB freshness stamp (mcp.opencaselaw.ch/health) — runs once
+  // here so it lands at the same moment as the stats hydration, then
+  // re-polls every 60s to stay current after a quick_publish swap.
+  updateLiveDbStamp();
+  if (!window._liveDbInterval) {
+    window._liveDbInterval = setInterval(updateLiveDbStamp, 60000);
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Live DB freshness stamp — fetches /health from the MCP server and
+// renders "Database updated 47 min ago" in the active language. CORS
+// allows opencaselaw.ch → mcp.opencaselaw.ch cross-origin GET.
+// Hides the stamp on any fetch error rather than showing a broken
+// placeholder. Re-runs on the locale switcher (renderHero re-fires).
+// ────────────────────────────────────────────────────────────────────────
+function _humanAge(sec, lang) {
+  const units = ({
+    de: ['Sek', 'Min', 'Std', 'Tg'],
+    fr: ['s',   'min', 'h',   'j'],
+    it: ['sec', 'min', 'ore', 'g'],
+    en: ['sec', 'min', 'h',   'd'],
+    rm: ['Sek', 'Min', 'Std', 'Tg'],
+  })[lang] || ['Sek', 'Min', 'Std', 'Tg'];
+  if (sec < 60)    return `${sec} ${units[0]}`;
+  if (sec < 3600)  return `${Math.round(sec / 60)} ${units[1]}`;
+  if (sec < 86400) return `${Math.round(sec / 3600)} ${units[2]}`;
+  return `${Math.round(sec / 86400)} ${units[3]}`;
+}
+
+function updateLiveDbStamp() {
+  const el = document.getElementById('hero-live-db');
+  if (!el) return;
+  fetch('https://mcp.opencaselaw.ch/health', { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (data) {
+      if (!data || !data.db_generation) {
+        if (el.parentElement) el.parentElement.hidden = true;
+        return;
+      }
+      const ts = data.db_generation * 1000;  // unix sec → ms
+      const ageSec = Math.max(0, Math.round((Date.now() - ts) / 1000));
+      const age = _humanAge(ageSec, curLang);
+      const phrases = {
+        de: `Datenbank vor ${age} aktualisiert`,
+        fr: `Base de données mise à jour il y a ${age}`,
+        it: `Database aggiornato ${age} fa`,
+        en: `Database updated ${age} ago`,
+        rm: `Datenbank vor ${age} aktualisiert`,
+      };
+      el.textContent = phrases[curLang] || phrases.de;
+      // Hover/tap reveals the absolute UTC swap moment (good for
+      // operators triaging "is the swap really 14:33?" questions).
+      const iso = new Date(ts).toISOString().replace('T', ' ').slice(0, 19);
+      el.setAttribute('title', `db_generation=${data.db_generation} → ${iso} UTC · live decisions: ${data.decisions || '?'}`);
+    })
+    .catch(function () {
+      if (el.parentElement) el.parentElement.hidden = true;
+    });
 }
 
 // ────────────────────────────────────────────────────────────────────────
