@@ -11462,13 +11462,27 @@ _REFLECT_SYSTEM_PROMPT = (
     "1. Identify ONE central legal issue in the document — keep it "
     "tight and non-trivial. Phrase it generically (do NOT name any "
     "party, the doc is redacted by design).\n"
-    "2. Find ONE literary work that dramatises the same human "
-    "dilemma. Shakespeare is welcome when fitting (Hamlet, Lear, "
-    "Merchant, Measure, Othello); Swiss literature works too "
-    "(Dürrenmatt's Der Richter und sein Henker, Frisch's Andorra, "
-    "Keller's Romeo und Julia auf dem Dorfe); and Goethe, Kafka, "
-    "Camus, Ibsen, Brecht, Hesse, Sophocles, Dostoyevsky are all "
-    "fair game when the parallel is genuine.\n"
+    "2. Find ONE literary work that genuinely dramatises the same "
+    "human dilemma. Draw from a deliberately broad canon — variety "
+    "of choice matters as much as fit:\n"
+    "   • Shakespeare: any tragedy, comedy, history or romance\n"
+    "   • Swiss authors: Dürrenmatt, Frisch, Keller, Gotthelf, "
+    "Walser, Bichsel, Glauser, Hohl, von Matt, Hürlimann, Loetscher\n"
+    "   • German-language classics: Goethe, Schiller, Kleist, "
+    "Lessing, Kafka, Brecht, Mann, Hesse, Böll, Grass, Bernhard\n"
+    "   • European voices: Camus, Sartre, Ibsen, Strindberg, "
+    "Dostoyevsky, Tolstoy, Chekhov, Cervantes, Pessoa, Borges, "
+    "Calvino, Eco, Pirandello, Saramago, Houellebecq\n"
+    "   • Ancients: Sophocles, Euripides, Aeschylus, Aristophanes, "
+    "Plato, Plautus, Seneca, Ovid\n"
+    "   • Anglophone moderns: Conrad, Melville, Faulkner, McCarthy, "
+    "Orwell, Atwood, McEwan, Coetzee, DeLillo, Toni Morrison\n\n"
+    "CRITICAL: pick the work that best illuminates *this specific* "
+    "dilemma. Avoid the obvious-Swiss-legal-novel default. Different "
+    "documents must yield different literary mirrors; do not return "
+    "the same author or work twice across distinct documents in the "
+    "same session. A second-tier parallel that genuinely fits beats "
+    "a canonical pick that doesn't.\n"
     "3. Compose a 200-400 word reflective summary that:\n"
     "   - States the legal issue cleanly in 1-2 sentences\n"
     "   - Draws the literary parallel via a specific scene or theme\n"
@@ -11561,6 +11575,15 @@ def _handle_reflect(*, redacted_text: str, lang: str = "de") -> dict:
                 json={
                     "model": "claude-sonnet-4-6",
                     "max_tokens": 1400,
+                    # Explicit temperature/top_p so the model has sampling
+                    # headroom for genuine literary variety. Two real users
+                    # both received "Der Richter und sein Henker" (2026-05-18);
+                    # the prompt anchor was the dominant cause, but at the
+                    # default temperature even a corrected prompt can collapse
+                    # to a modal answer. 1.0 + 0.95 is the standard "creative
+                    # but coherent" pair.
+                    "temperature": 1.0,
+                    "top_p": 0.95,
                     "system": _REFLECT_SYSTEM_PROMPT,
                     "messages": [{"role": "user", "content": user_prompt}],
                 },
