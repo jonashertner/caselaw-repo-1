@@ -1,0 +1,122 @@
+OpenCaseLaw Copilot Studio integration — bug + fix
+For anyone affected (not just the original reporter)
+====================================================
+
+THE SYMPTOM
+-----------
+Anyone who imported
+  https://mcp.opencaselaw.ch/api/openapi.copilot.json
+into Microsoft Copilot Studio (Lalive flagged it 2026-05-11; the German
+report was "die API antwortet erfolgreich, liefert aber null Treffer")
+saw the same thing on EVERY action — BVGer searches, BGE lookups,
+leading-cases, citation graph, statutes, doctrine:
+
+  • Action returns HTTP 200 OK.
+  • Response body is populated JSON (kilobytes of data).
+  • The Copilot agent renders NOTHING. Output variables come back blank.
+
+curl says the API works. openapi-spec-validator says the spec is valid.
+Network logs look healthy. Yet bound variables stay null. From outside
+Copilot Studio, this is indistinguishable from "no results found."
+
+
+ROOT CAUSE
+----------
+Copilot Studio's PowerFx data-binding reads NAMED JSON-Schema properties
+to decide what fields to expose. The auto-generated openapi.copilot.json
+was emitting the most permissive schema possible for every action:
+
+  {"type": "object", "additionalProperties": true}
+
+Valid OpenAPI. Valid against the wire body. ZERO named properties for
+the binder to attach to. The agent saw an opaque blob — populated, but
+unrenderable.
+
+The same bug affects Power Automate (same parser stack) and any code-
+generation tool that relies on declared types.
+
+
+WHAT CHANGED (chronological — each commit fixes a distinct class of break)
+--------------------------------------------------------------------------
+
+b7dca9d  Add named-property schemas to 11 of the 15 curated actions.
+
+4954ae7  Switch {"type": ["X","null"]} (OpenAPI 3.1) →
+         {"type": "X", "nullable": true} (3.0.3). Spec was being
+         rejected as malformed otherwise.
+
+17f1fe5  Correct 6 schemas that DECLARED FIELDS THE API DOESN'T
+         ACTUALLY RETURN — that's the bound-but-null trap. Failure
+         mode looks identical to the original bug. The endpoints
+         affected:
+           /decisions/{id}         declared pinpoint/snippet/title/regeste
+                                   (those live on search-result ITEMS,
+                                   not on single-decision responses)
+           /laws/{abbreviation}    declared article_count → wire has
+                                   level + consolidation_date
+           /laws/search            declared total → wire has count +
+                                   federal_hits + cantonal_hits
+           /structure/{id}         declared erwaegungen → wire has
+                                   erwaegungen_paragraphs
+           /cite                   declared close_matches + reference
+                                   — neither exists in the wire
+
+2c622ff  Six-angle adversarial validation harness: spec syntax +
+         wire-vs-schema + edge cases + stability + full-spec
+         regression + schema completeness — all against live API.
+
+023a190  Type the last 4 actions:
+           /legislation/search
+           /legislation/{lexfind_id}
+           /doctrine
+           /article-purpose/{sr_number}/{article}
+         → 15/15 typed coverage. No fallback to permissive
+         additionalProperties:true anywhere.
+
+e64798f  /doctrine.doctrine_summary is an OBJECT (with principal_rule,
+         established_by, authority, total_leading_cases,
+         total_citations, coverage_decades, note), not a string.
+         Caught by the harness mid-deploy.
+
+0f61312  Extend the harness's ANGLE 6 (schema completeness) to defend
+         the 4 newly-typed paths against future drift.
+
+
+HOW TO VERIFY IN YOUR OWN COPILOT STUDIO ENVIRONMENT
+----------------------------------------------------
+1. Re-import the connector from
+     https://mcp.opencaselaw.ch/api/openapi.copilot.json
+   Version is bumped (+copilot suffix on every change), so Copilot
+   detects this as a new revision rather than a silent update.
+
+2. Run any action — for example Search-Decisions with
+     court=bvger, query=Asyl
+   Bound variables should now populate: total, results[], and per-item
+   decision_id, title, court, decision_date, language, snippet,
+   regeste, pinpoint, url.
+
+3. If anything still binds null, please report it — the harness
+   should have caught it but a path-specific shape may have slipped
+   through.
+
+
+SCOPE
+-----
+Fixed for everyone using:
+  • Microsoft Copilot Studio custom connectors
+  • Microsoft Power Automate
+  • OpenAPI code-generation tools (TypeScript / C# / Go / etc.)
+
+Was never broken:
+  • The full REST API at /api/openapi.json (24+ operations)
+  • All 31 MCP tools at https://mcp.opencaselaw.ch/
+  • Direct curl / Python / HTTP consumers
+  • The wire responses themselves
+
+This was strictly a SPEC METADATA fix — no API behaviour changed.
+
+The harness now runs against production and re-validates 7 angles ×
+11 endpoints on every change; future regressions to the connector-
+binding contract will fail loudly instead of silently.
+
+— Generated 2026-05-11

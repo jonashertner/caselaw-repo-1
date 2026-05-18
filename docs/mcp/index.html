@@ -17,8 +17,8 @@
 <link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
-<meta property="og:title" content="Swiss Case Law Open Dataset — 971,700+ Court Decisions">
-<meta property="og:description" content="OpenCaseLaw publishes 971,700+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.03 M resolved).">
+<meta property="og:title" content="Swiss Case Law Open Dataset — 972,000+ Court Decisions">
+<meta property="og:description" content="OpenCaseLaw publishes 972,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.09 M resolved).">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,8 +29,8 @@
 <meta property="og:locale:alternate" content="fr_CH">
 <meta property="og:locale:alternate" content="it_CH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Swiss Case Law Open Dataset — 971,700+ Court Decisions">
-<meta name="twitter:description" content="971,700+ Swiss federal, cantonal, and regulatory decisions with full text and 8.65 million extracted case-citation references (8.03 M resolved).">
+<meta name="twitter:title" content="Swiss Case Law Open Dataset — 972,000+ Court Decisions">
+<meta name="twitter:description" content="972,000+ Swiss federal, cantonal, and regulatory decisions with full text and 8.65 million extracted case-citation references (8.09 M resolved).">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
@@ -40,7 +40,7 @@
     "@type": "Dataset",
     "name": "Swiss Case Law Open Dataset",
     "alternateName": "OpenCaseLaw",
-    "description": "OpenCaseLaw publishes 971,700+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.03 M resolved). Updated daily. Searchable via MCP.",
+    "description": "OpenCaseLaw publishes 972,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.09 M resolved). Updated daily. Searchable via MCP.",
     "url": "https://opencaselaw.ch/",
     "license": "https://creativecommons.org/publicdomain/zero/1.0/",
     "isAccessibleForFree": true,
@@ -1313,7 +1313,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
 <main id="main" class="container" style="padding-top: var(--s-6); padding-bottom: var(--s-7);">
   <p class="eyebrow" data-i18n="hero.eyebrow">AI · MCP server</p>
   <h1 data-t="mcp_h1">KI-Agenten verbinden</h1>
-  <p class="lede" data-t="mcp_sub">Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 971'700+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 31 spezialisierte Tools, keine Anmeldung, keine API-Keys.</p>
+  <p class="lede" data-t="mcp_sub">Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 972'000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 33 spezialisierte Tools, keine Anmeldung, keine API-Keys.</p>
 
   <nav class="page-toc" aria-label="On this page">
     <span class="page-toc-label" data-t="page_toc">On this page</span>
@@ -1490,7 +1490,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
         <li data-t="mcp_tech_transport">Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients</li>
         <li data-t="mcp_tech_tls">TLS via Let's Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a></li>
         <li data-t="mcp_tech_workers">4× uvicorn-Worker hinter Load-Balancer, automatisches Failover</li>
-        <li data-t="mcp_tech_backend">Backend: 971'700+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,64 Mio Zitationskanten (6,50 Mio aufgelöst)</li>
+        <li data-t="mcp_tech_backend">Backend: 972'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,64 Mio Zitationskanten (6,50 Mio aufgelöst)</li>
         <li data-t="mcp_tech_data">Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert</li>
       </ul>
     </div>
@@ -1572,7 +1572,7 @@ const I18N = {
     landing_card_mcp_cta:'MCP-Setup \u2192',
     landing_what_title:'Was ist OpenCaseLaw?',
     landing_what_1:'OpenCaseLaw sammelt, dedupliziert und publiziert <strong>jeden ver\u00f6ffentlichten Schweizer Gerichtsentscheid</strong> sowie den aktuellen Text aller einschl\u00e4gigen Bundesgesetze und der 26\u2019000+ kantonalen Erlasse. Der Datensatz wird t\u00e4glich aktualisiert und steht unter CC0 (Daten) und MIT (Code) zur freien Verf\u00fcgung.',
-    landing_what_2:'Die gleiche Infrastruktur treibt einen \u00f6ffentlichen MCP-Server an, der Sprachmodellen 31 spezialisierte Tools f\u00fcr Schweizer Rechtsrecherche bereitstellt \u2014 von der Volltextsuche \u00fcber die Zitationsanalyse bis zum Abruf von Gesetzesartikeln. Keine Anmeldung, keine API-Keys, keine Paywall.',
+    landing_what_2:'Die gleiche Infrastruktur treibt einen \u00f6ffentlichen MCP-Server an, der Sprachmodellen 33 spezialisierte Tools f\u00fcr Schweizer Rechtsrecherche bereitstellt \u2014 von der Volltextsuche \u00fcber die Zitationsanalyse bis zum Abruf von Gesetzesartikeln. Keine Anmeldung, keine API-Keys, keine Paywall.',
     landing_stat_decisions:'Entscheide', landing_stat_courts:'Gerichte', landing_stat_laws:'Bundesgesetze', landing_stat_cantonal:'kantonale Erlasse', landing_stat_citations:'Zitationsgraph', landing_stat_updated:'T\u00e4glich aktualisiert',
     word_desc:'Schweizer Rechtsprechung direkt in Ihrem Word-Dokument. Suchen, zitieren und einf\u00fcgen ohne Copy-Paste aus dem Browser \u2014 mit automatischer Quellenangabe.',
     word_cta:'Installation \u2192',
@@ -1606,7 +1606,7 @@ const I18N = {
     gesetze_h1:'Schweizer Bundes- und kantonale Gesetzgebung',
     gesetze_sub:'~5\u2019000 Schweizer Bundesgesetze (125\u2019000+ Artikel in drei Amtssprachen, vollst\u00e4ndige \u00c4nderungshistorie) aus dem Fedlex-SPARQL-Endpunkt, monatlich lokal gespiegelt. 26\u2019000+ kantonale und interkantonale Erlasse, lokal aus LexFind gespiegelt, monatlich refreshed. Stateless MCP-Calls f\u00fcr Artikel-Lookup, Volltextsuche, Versionsgeschichte und \u00c4nderungsverlauf.',
     mcp_h1:'KI-Agenten verbinden',
-    mcp_sub:'Der \u00f6ffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 968\u2019000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 31 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
+    mcp_sub:'Der \u00f6ffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 968\u2019000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 33 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
     ueber_h1:'\u00dcber OpenCaseLaw',
     ueber_sub:'OpenCaseLaw ist der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar, t\u00e4glich aktualisiert, unabh\u00e4ngig finanziert.',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
@@ -2139,9 +2139,9 @@ const I18N = {
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
     nav_entscheide:'Decisions', nav_gesetze:'Legislation', nav_mcp:'Connect', nav_ueber:'About',
     landing_title:'Swiss case law &amp; legislation,<br>built for AI agents.',
-    landing_sub:'An open dataset of published Swiss court decisions (971,700+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
+    landing_sub:'An open dataset of published Swiss court decisions (972,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
     landing_card_entscheide_title:'Decisions',
-    landing_card_entscheide_desc:'971,700+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (8.65M edges), multilingual (DE/FR/IT).',
+    landing_card_entscheide_desc:'972,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (8.65M edges), multilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explore the dataset \u2192',
     landing_card_mcp_title:'Connect',
     landing_card_mcp_desc:'31 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. Configuration via MCP URL.',
@@ -2182,7 +2182,7 @@ const I18N = {
     gesetze_h1:'Swiss federal and cantonal legislation',
     gesetze_sub:'5,000+ Swiss federal laws (~133,468 articles in three official languages, full amendment history) from the Fedlex SPARQL endpoint, mirrored locally each month. 15,722 cantonal and intercantonal acts locally mirrored from LexFind, monthly refresh. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
     mcp_h1:'Connect AI agents',
-    mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 971,700+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 31 specialized tools, no sign-up, no API keys.',
+    mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 972,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 33 specialized tools, no sign-up, no API keys.',
     ueber_h1:'About OpenCaseLaw',
     ueber_sub:'OpenCaseLaw is the largest open dataset of Swiss case law and the first LLM-ready interface to federal and cantonal legislation. Free to use, updated daily, independently funded.',
     search_placeholder:'Search courts...', csv_export:'CSV',
@@ -2252,7 +2252,7 @@ const I18N = {
     mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client',
     mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx rate limiting, health endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
     mcp_tech_workers: '4× uvicorn workers behind a load balancer, automatic failover',
-    mcp_tech_backend: 'Backend: 971,700+ decisions in SQLite FTS5 with BM25+RRF ranking, citation graph of 9.0M edges',
+    mcp_tech_backend: 'Backend: 972,000+ decisions in SQLite FTS5 with BM25+RRF ranking, citation graph of 9.0M edges',
     mcp_tech_data: 'Data from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily',
   
     copy: 'Copy',

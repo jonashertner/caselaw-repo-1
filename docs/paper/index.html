@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpenCaseLaw — research paper · Jonas Hertner · March 2026</title>
-<meta name="description" content="OpenCaseLaw: an open corpus and retrieval stack for Swiss case law. 971,000+ decisions, 6.5M citation edges, multilingual benchmark, MIT-licensed. arXiv preprint, March 2026.">
+<meta name="description" content="OpenCaseLaw: an open corpus and retrieval stack for Swiss case law. 972,000+ decisions, 6.5M citation edges, multilingual benchmark, MIT-licensed. arXiv preprint, March 2026.">
 <link rel="canonical" href="https://opencaselaw.ch/paper/">
 <meta name="robots" content="index, follow">
 <meta property="og:title" content="OpenCaseLaw — research paper · March 2026">
-<meta property="og:description" content="An open corpus and retrieval stack for Swiss case law. 971,000+ decisions, 6.5M citation edges, multilingual benchmark, MIT-licensed.">
+<meta property="og:description" content="An open corpus and retrieval stack for Swiss case law. 972,000+ decisions, 6.5M citation edges, multilingual benchmark, MIT-licensed.">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:url" content="https://opencaselaw.ch/paper/">
 <meta property="og:type" content="article">
@@ -138,7 +138,7 @@
 
   <h2>Contributions</h2>
   <ul class="contrib">
-    <li><strong>Open corpus.</strong> 971,067 published Swiss court decisions (snapshot 2026-05-02) across 121 federal, regulatory, international, and cantonal courts. Released as a 34-field Parquet export under CC0 — the largest open dataset of Swiss case law.</li>
+    <li><strong>Open corpus.</strong> 971,992 published Swiss court decisions (snapshot 2026-05-13) across 121 federal, regulatory, international, and cantonal courts. Released as a 34-field Parquet export under CC0 — the largest open dataset of Swiss case law.</li>
     <li><strong>Open retrieval stack.</strong> SQLite FTS5 index + atomic-rebuild pipeline. BM25 + RRF + structured-LLM parse + Haiku reranking. Frozen offline baseline (March 19, 2026) at MRR&nbsp;0.470, online with LLM at 0.647 — both reproducible from <code>benchmarks/</code>.</li>
     <li><strong>Citation graph.</strong> 8.76&nbsp;M extracted case-citation references; 6.42&nbsp;M resolved to in-corpus decisions (73.8&thinsp;% link rate). 11.23&nbsp;M extracted decision-statute links across 281&nbsp;K distinct provisions.</li>
     <li><strong>Open MCP surface.</strong> 29 specialised tools at <code>mcp.opencaselaw.ch</code> — search, citation graph, statute lookup, doctrine timelines, multilingual commentary, exam-question generation. Free, no API keys, OpenAPI 3.0.3.</li>
@@ -154,7 +154,7 @@
   year         = {2026},
   howpublished = {Preprint, March 2026},
   url          = {https://opencaselaw.ch/paper/opencaselaw-arxiv-final.pdf},
-  note         = {Snapshot 2026-03-20: 962,724 decisions; current corpus 971,067 (May 2026)}
+  note         = {Snapshot 2026-05-13: 971,992 decisions; live corpus ~972,000+}
 }</pre>
 
   <h2>Materials</h2>
