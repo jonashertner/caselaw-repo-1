@@ -264,6 +264,14 @@ def _apply_extraction(
 
         # Replace this decision's paragraphs (delete then insert; trigger
         # keeps FTS5 in sync). Skip the synthetic depth=0 fallback.
+        # Use INSERT OR REPLACE to match extract_decision_structure.py's
+        # full-builder semantics — the extractor can emit two paragraphs
+        # with the same e_number for a single decision when the regex
+        # backtracks across nested numbering (e.g., "2." inside an
+        # "Erwägung 2"). The full builder silently last-wins on those;
+        # the incremental builder was crashing with UNIQUE constraint
+        # violations on the first-real-run today 2026-05-18 16:51 UTC
+        # (decision_structure_incremental.py:273).
         conn.execute(
             "DELETE FROM erwaegungen_paragraph WHERE decision_id = ?", (did,),
         )
@@ -272,7 +280,7 @@ def _apply_extraction(
                 continue
             conn.execute(
                 """
-                INSERT INTO erwaegungen_paragraph
+                INSERT OR REPLACE INTO erwaegungen_paragraph
                 (decision_id, e_number, depth, parent, text)
                 VALUES (?, ?, ?, ?, ?)
                 """,
