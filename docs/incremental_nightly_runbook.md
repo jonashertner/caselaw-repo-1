@@ -39,11 +39,14 @@ sudo systemctl enable --now opencaselaw-publish-incremental.timer
 systemctl list-timers opencaselaw-publish-incremental --no-pager
 ```
 
-Mon-Sat 03:30 UTC the orchestrator fires. Both pipelines run in
-parallel — the legacy `opencaselaw-publish.timer` keeps doing its
-full rebuild every night, and the incremental orchestrator does its
-shadow run alongside. **Live data is served from the full rebuild's
-output as today.**
+Mon-Sat **12:00 UTC** the orchestrator fires — well after the legacy
+03:30 UTC full rebuild has typically completed. The Phase 1 service
+also runs with `--skip-quick-publish` so it doesn't race the legacy
+publish's lock on `decisions.db` (quick_publish itself keeps firing
+hourly via `bger-poller`). Only the graph + structure incremental
+builders run, writing to sibling .db files for drift validation.
+
+**Live data is served from the full rebuild's output as today.**
 
 ### Phase 2 — Drift validation (during the shadow week)
 

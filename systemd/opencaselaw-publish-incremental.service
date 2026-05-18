@@ -8,13 +8,18 @@ ConditionPathExists=!/tmp/opencaselaw-publish.lock
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/caselaw/repo
-# Default mode is --shadow: the incremental builders write to sibling
-# .db files, leaving live data untouched. After one week of green drift
-# checks (see scripts/publish_drift_check.py), edit this line to add
-# `--in-place` and the incremental DBs become primary; the legacy full
-# rebuild (Sunday) remains the safety-net.
+# PHASE 1 (shadow validation, current): --skip-quick-publish so we don't
+# race the legacy full-rebuild's lock on decisions.db (quick_publish
+# already runs every hour via bger-poller — it's covered). Only the
+# graph + structure incremental builders run here, writing to sibling
+# .db files that the drift-check compares against the live (post-full-
+# rebuild) DBs. Live data is untouched.
+#
+# PHASE 3 (cutover, after 1 wk green drift): drop --skip-quick-publish
+# and add --in-place; this then becomes the primary ingestion path
+# and the legacy full rebuild moves to Sunday only.
 Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
-ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish
 # Generous timeout — the incremental run is targeted at ~10-25 min but
 # allow up to 2h for first-run state-table bootstrap.
 TimeoutStartSec=7200

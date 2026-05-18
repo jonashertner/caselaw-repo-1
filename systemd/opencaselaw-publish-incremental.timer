@@ -2,10 +2,15 @@
 Description=Incremental nightly publish — Mon-Sat 03:30 UTC
 
 [Timer]
-# Mon-Sat at 03:30 UTC; Sunday is reserved for the legacy full rebuild
-# (opencaselaw-publish.timer, which keeps writing wayback_queue +
-# running FTS5 optimize as a weekly safety net).
-OnCalendar=Mon..Sat *-*-* 03:30:00 UTC
+# PHASE 1 (shadow validation): Mon-Sat at 12:00 UTC — well after the
+# legacy 03:30 UTC full rebuild has typically completed (today it took
+# 7h 22min, finishing at 10:52 UTC). Avoids any lock contention while
+# we validate the incremental builders' shadow outputs against the
+# freshly-rebuilt live DBs.
+#
+# PHASE 3 (cutover): move to 03:30 UTC Mon-Sat and shift the legacy
+# opencaselaw-publish.timer to Sunday-only.
+OnCalendar=Mon..Sat *-*-* 12:00:00 UTC
 Persistent=true
 RandomizedDelaySec=120
 
