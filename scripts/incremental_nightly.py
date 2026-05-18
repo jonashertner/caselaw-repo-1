@@ -56,6 +56,16 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LOG_FILE = REPO_ROOT / "logs" / "incremental_nightly.jsonl"
 
+# DB paths follow the SWISS_CASELAW_DIR convention used everywhere in the
+# codebase (mcp_server.py, build_fts5.py, the legacy publish steps). On
+# the VPS this resolves to /opt/caselaw/repo/output. The actual files
+# may be symlinks to /mnt/HC_Volume_104655575/... — both builders open
+# them via _resolve_real_path so that's transparent.
+DATA_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(REPO_ROOT / "output")))
+DECISIONS_DB = DATA_DIR / "decisions.db"
+REFERENCE_GRAPH_DB = DATA_DIR / "reference_graph.db"
+DECISION_STRUCTURE_DB = DATA_DIR / "decision_structure.db"
+
 logger = logging.getLogger("incremental_nightly")
 
 
@@ -196,8 +206,12 @@ def main() -> int:
 
     # ── Step 2: reference_graph_incremental
     if not args.skip_graph:
-        graph_argv = [sys.executable,
-                      "search_stack/build_reference_graph_incremental.py"]
+        graph_argv = [
+            sys.executable,
+            "search_stack/build_reference_graph_incremental.py",
+            "--decisions-db", str(DECISIONS_DB),
+            "--graph-db", str(REFERENCE_GRAPH_DB),
+        ]
         if args.in_place:
             graph_argv.append("--in-place")
         rec = _run_step("reference_graph", graph_argv, args.dry_run)
@@ -214,8 +228,12 @@ def main() -> int:
 
     # ── Step 3: decision_structure_incremental
     if not args.skip_structure:
-        struct_argv = [sys.executable,
-                       "search_stack/extract_decision_structure_incremental.py"]
+        struct_argv = [
+            sys.executable,
+            "search_stack/extract_decision_structure_incremental.py",
+            "--decisions-db", str(DECISIONS_DB),
+            "--structure-db", str(DECISION_STRUCTURE_DB),
+        ]
         if args.in_place:
             struct_argv.append("--in-place")
         rec = _run_step("decision_structure", struct_argv, args.dry_run)
