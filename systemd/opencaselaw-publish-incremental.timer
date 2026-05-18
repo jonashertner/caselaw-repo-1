@@ -1,0 +1,13 @@
+[Unit]
+Description=Incremental nightly publish — Mon-Sat 03:30 UTC
+
+[Timer]
+# Mon-Sat at 03:30 UTC; Sunday is reserved for the legacy full rebuild
+# (opencaselaw-publish.timer, which keeps writing wayback_queue +
+# running FTS5 optimize as a weekly safety net).
+OnCalendar=Mon..Sat *-*-* 03:30:00 UTC
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target

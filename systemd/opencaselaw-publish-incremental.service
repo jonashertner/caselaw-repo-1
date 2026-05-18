@@ -1,0 +1,31 @@
+[Unit]
+Description=OpenCaseLaw incremental nightly publish (Mon-Sat, shadow→in-place)
+After=network.target opencaselaw-scrape.service
+Wants=network.target
+# Don't double-fire with the legacy full-rebuild publish (Sun 03:30 UTC)
+ConditionPathExists=!/tmp/opencaselaw-publish.lock
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Default mode is --shadow: the incremental builders write to sibling
+# .db files, leaving live data untouched. After one week of green drift
+# checks (see scripts/publish_drift_check.py), edit this line to add
+# `--in-place` and the incremental DBs become primary; the legacy full
+# rebuild (Sunday) remains the safety-net.
+Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py
+# Generous timeout — the incremental run is targeted at ~10-25 min but
+# allow up to 2h for first-run state-table bootstrap.
+TimeoutStartSec=7200
+StandardOutput=append:/opt/caselaw/repo/logs/incremental_nightly.log
+StandardError=append:/opt/caselaw/repo/logs/incremental_nightly.log
+
+# Hardening — same envelope as the legacy publish service.
+ProtectSystem=strict
+ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs /mnt /tmp
+PrivateTmp=false
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
