@@ -1,5 +1,5 @@
 {
-  "total": 972521,
+  "total": 972522,
   "by_court": [
     {
       "court": "bger",
@@ -586,10 +586,10 @@
     {
       "court": "ecthr_chamber",
       "canton": "CE",
-      "count": 1123,
-      "earliest": "1983-12-08",
+      "count": 1124,
+      "earliest": "1961-07-01",
       "latest": "2026-05-12",
-      "last_scraped": "2026-05-15T14:00:23.347759+00:00",
+      "last_scraped": "2026-05-18T14:03:54.699216+00:00",
       "languages": [
         "fr"
       ]
@@ -1635,9 +1635,9 @@
     {
       "canton": "CE",
       "name": "CE",
-      "count": 1438,
+      "count": 1439,
       "court_count": 3,
-      "earliest": "1983-12-08",
+      "earliest": "1961-07-01",
       "latest": "2026-05-13",
       "languages": [
         "fr"
@@ -1715,7 +1715,7 @@
   ],
   "by_language": {
     "de": 450220,
-    "fr": 441541,
+    "fr": 441542,
     "it": 80760
   },
   "by_year": {
@@ -1805,7 +1805,7 @@
     "1958": 227,
     "1959": 257,
     "1960": 228,
-    "1961": 231,
+    "1961": 232,
     "1962": 222,
     "1963": 214,
     "1964": 213,
@@ -2038,8 +2038,8 @@
     "1958": -5.0,
     "1959": 13.2,
     "1960": -11.3,
-    "1961": 1.3,
-    "1962": -3.9,
+    "1961": 1.8,
+    "1962": -4.3,
     "1963": -3.6,
     "1964": -0.5,
     "1965": 13.6,
@@ -2107,7 +2107,7 @@
   },
   "federal_vs_cantonal": {
     "federal": 347229,
-    "cantonal": 625292
+    "cantonal": 625293
   },
   "language_by_year": {
     "2005": {
@@ -2260,7 +2260,7 @@
     "2026-04": 1460,
     "2026-05": 110
   },
-  "generated_at": "2026-05-18T14:36:41.196025+00:00",
+  "generated_at": "2026-05-18T19:07:19.983285+00:00",
   "scraper_health": {
     "run_at": "2026-05-18T02:31:25.507443+00:00",
     "run_duration_s": 5484.9,
@@ -2620,7 +2620,7 @@
         "note": null,
         "state_count": 92736,
         "jsonl_size_mb": 1387.3,
-        "jsonl_mtime": "2026-05-18T14:04:34.020540+00:00"
+        "jsonl_mtime": "2026-05-18T16:04:39.626839+00:00"
       },
       "bge": {
         "success": true,
@@ -3062,7 +3062,7 @@
         "note": null,
         "state_count": 1481,
         "jsonl_size_mb": 88.5,
-        "jsonl_mtime": "2026-05-18T14:03:54.700383+00:00"
+        "jsonl_mtime": "2026-05-18T14:48:36.509858+00:00"
       },
       "zh_sozialversicherungsgericht": {
         "success": true,
@@ -3322,19 +3322,19 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "citation_edges": 8659041,
-    "statute_edges": 11271216
+    "citation_edges": 8659509,
+    "statute_edges": 11271627
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 85174,
+      "citation_count": 85175,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 180095
+      "ref_count": 180100
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3346,20 +3346,20 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 972484
+      "total": 972522
     },
     "regeste_coverage": {
       "pct": 34.9,
-      "with_regeste": 339119,
-      "total": 972484
+      "with_regeste": 339121,
+      "total": 972522
     },
     "graph_size": {
-      "decision_edges": 8097538,
-      "statute_edges": 11271216,
-      "total": 19368754
+      "decision_edges": 8098130,
+      "statute_edges": 11271627,
+      "total": 19369757
     },
     "echr_switzerland": {
-      "total": 2796,
+      "total": 2797,
       "grand_chamber": 93,
       "in_2026": 94,
       "most_recent": {
@@ -3372,7 +3372,7 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 85174,
+        "citation_count": 85175,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
@@ -3384,7 +3384,7 @@
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 36980,
+        "citation_count": 36982,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3405,27 +3405,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 187497
+        "ref_count": 187502
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110563
+        "ref_count": 110565
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 104888
+        "ref_count": 104895
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92348
+        "ref_count": 92356
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59317
+        "ref_count": 59335
       }
     ],
     "historical_depth": [
@@ -4070,15 +4070,20 @@
     }
   ],
   "delta": {
-    "total": 37,
+    "total": 38,
     "by_court": {
       "bger": 36,
-      "sg_gerichte": 1
+      "sg_gerichte": 1,
+      "ecthr_chamber": 1
     },
     "by_canton": {
-      "SG": 1
+      "SG": 1,
+      "CE": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 468,
+      "statute_edges": 411
+    },
     "previous_generated_at": "2026-05-17T16:29:39.163435+00:00"
   }
 }
