@@ -5472,14 +5472,25 @@ function updateLiveDbStamp() {
         return;
       }
       const ts = data.db_generation * 1000;  // unix sec → ms
+      const dt = new Date(ts);
       const ageSec = Math.max(0, Math.round((Date.now() - ts) / 1000));
       const age = _humanAge(ageSec, curLang);
+      // Localised absolute date+time in UTC — same locale conventions
+      // as the existing hero-stamp-date renderer above for visual
+      // consistency. Time is HH:MM (seconds add noise without value).
+      const loc = ({de:'de-CH', fr:'fr-CH', it:'it-CH', rm:'de-CH', en:'en-GB'})[curLang] || 'de-CH';
+      const dateStr = dt.toLocaleDateString(loc, {
+        day:'numeric', month:'short', year:'numeric', timeZone:'UTC',
+      });
+      const timeStr = dt.toLocaleTimeString(loc, {
+        hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC',
+      });
       const phrases = {
-        de: `Datenbank vor ${age} aktualisiert`,
-        fr: `Base de données mise à jour il y a ${age}`,
-        it: `Database aggiornato ${age} fa`,
-        en: `Database updated ${age} ago`,
-        rm: `Datenbank vor ${age} aktualisiert`,
+        de: `Datenbank · ${dateStr} ${timeStr} UTC · vor ${age}`,
+        fr: `Base de données · ${dateStr} ${timeStr} UTC · il y a ${age}`,
+        it: `Database · ${dateStr} ${timeStr} UTC · ${age} fa`,
+        en: `Database · ${dateStr} ${timeStr} UTC · ${age} ago`,
+        rm: `Datenbank · ${dateStr} ${timeStr} UTC · vor ${age}`,
       };
       el.textContent = phrases[curLang] || phrases.de;
       // Hover/tap reveals the absolute UTC swap moment (good for
