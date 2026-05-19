@@ -1,0 +1,16 @@
+[Unit]
+Description=Nightly cohort derivation from tier-1 log (04:35 UTC, after analytics rollup)
+
+[Timer]
+# 04:35 UTC — 5 minutes after opencaselaw-analytics (04:30 UTC), so the
+# daily rollup creates the daily_reach rows first and this script then
+# upserts the HLL cohort estimates for every client_class. Tier-1 logs
+# auto-shred at 72h, so this MUST run nightly or recent days lose cohort
+# data permanently. Default window is the last 3 days (script's --days
+# default) which is well inside the 72h retention.
+OnCalendar=*-*-* 04:35:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
