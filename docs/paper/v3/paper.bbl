@@ -1,0 +1,136 @@
+\begin{thebibliography}{16}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Asai et~al.(2024)Asai, Wu, Wang, Sil, and Hajishirzi]{asai2023}
+Akari Asai, Zeqiu Wu, Yizhong Wang, Avirup Sil, and Hannaneh Hajishirzi.
+\newblock Self-rag: Learning to retrieve, generate, and critique through
+  self-reflection.
+\newblock In \emph{International Conference on Learning Representations}, 2024.
+
+\bibitem[Butler and Butler(2026)]{butler2026}
+Abdur-Rahman Butler and Umar Butler.
+\newblock Legal {RAG} bench: an end-to-end benchmark for legal {RAG}.
+\newblock \emph{arXiv preprint}, 2026.
+\newblock arXiv:2603.01710.
+
+\bibitem[Dahl et~al.(2024)Dahl, Magesh, Suzgun, and Ho]{dahl2024}
+Matthew Dahl, Varun Magesh, Mirac Suzgun, and Daniel~E. Ho.
+\newblock Large legal fictions: Profiling legal hallucinations in large
+  language models.
+\newblock \emph{Journal of Legal Analysis}, 16\penalty0 (1):\penalty0 64--93,
+  2024.
+\newblock arXiv:2401.01301.
+
+\bibitem[Harde et~al.(2025)Harde, Jain, and Jain]{lecnet2025}
+Pooja Harde, Bhavya Jain, and Sarika Jain.
+\newblock Lecnet: A legal citation network benchmark dataset.
+\newblock In \emph{Proceedings of the 1st Workshop on NLP for Empowering
+  Justice (JUST-NLP 2025)}, pages 18--28. Association for Computational
+  Linguistics, 2025.
+\newblock \doi{10.18653/v1/2025.justnlp-main.4}.
+
+\bibitem[{Harvard Law School Library}(2018)]{cap2018}
+{Harvard Law School Library}.
+\newblock Caselaw access project.
+\newblock \url{https://case.law/}, 2018.
+
+\bibitem[Henderson et~al.(2022)Henderson, Krass, Zheng, Guha, Manning,
+  Jurafsky, and Ho]{pile2022}
+Peter Henderson, Mark Krass, Lucia Zheng, Neel Guha, Christopher~D. Manning,
+  Daniel Jurafsky, and Daniel~E. Ho.
+\newblock Pile of law: Learning responsible data filtering from the law and a
+  256gb open-source legal dataset.
+\newblock \emph{Advances in Neural Information Processing Systems 35, Datasets
+  and Benchmarks Track}, 2022.
+
+\bibitem[Magesh et~al.(2025)Magesh, Surani, Dahl, Suzgun, Manning, and
+  Ho]{magesh2024}
+Varun Magesh, Faiz Surani, Matthew Dahl, Mirac Suzgun, Christopher~D. Manning,
+  and Daniel~E. Ho.
+\newblock Hallucination-free? assessing the reliability of leading ai legal
+  research tools.
+\newblock \emph{Journal of Empirical Legal Studies}, 22:\penalty0 216--242,
+  2025.
+\newblock \doi{10.1111/jels.12413}.
+\newblock arXiv:2405.20362.
+
+\bibitem[Niklaus et~al.(2021)Niklaus, Chalkidis, and St{\"u}rmer]{niklaus2021}
+Joel Niklaus, Ilias Chalkidis, and Matthias St{\"u}rmer.
+\newblock Swiss-judgment-prediction: A multilingual legal judgment prediction
+  benchmark.
+\newblock In \emph{Proceedings of the Natural Legal Language Processing
+  Workshop 2021}, pages 19--35. Association for Computational Linguistics,
+  2021.
+\newblock \doi{10.18653/v1/2021.nllp-1.3}.
+
+\bibitem[Niklaus et~al.(2024)Niklaus, Matoshi, St{\"u}rmer, Chalkidis, and
+  Ho]{niklaus2023}
+Joel Niklaus, Veton Matoshi, Matthias St{\"u}rmer, Ilias Chalkidis, and
+  Daniel~E. Ho.
+\newblock Multilegalpile: A 689gb multilingual legal corpus.
+\newblock In \emph{Proceedings of the 62nd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 15077--15094.
+  Association for Computational Linguistics, 2024.
+\newblock \doi{10.18653/v1/2024.acl-long.805}.
+
+\bibitem[{Open-Source-Justiz e.V.}(2025)]{entscheidsuche}
+{Open-Source-Justiz e.V.}
+\newblock entscheidsuche.ch: Open aggregator for swiss court decisions.
+\newblock \url{https://entscheidsuche.ch}, 2025.
+\newblock Accessed 2026-05-13; aggregated raw HTML/PDF feeds from Swiss court
+  portals, CC BY 4.0.
+
+\bibitem[Ostendorff et~al.(2020)Ostendorff, Blume, and
+  Ostendorff]{ostendorff2020}
+Malte Ostendorff, Till Blume, and Saskia Ostendorff.
+\newblock Towards an open platform for legal information.
+\newblock In \emph{Proceedings of the ACM/IEEE Joint Conference on Digital
+  Libraries (JCDL)}, 2020.
+\newblock Open Legal Data platform; arXiv:2005.13342.
+
+\bibitem[Pipitone and Houir~Alami(2024)]{pipitone2024}
+Nicholas Pipitone and Ghita Houir~Alami.
+\newblock Legalbench-rag: A benchmark for retrieval-augmented generation in the
+  legal domain.
+\newblock \emph{arXiv preprint}, 2024.
+\newblock arXiv:2408.10343.
+
+\bibitem[Rolshoven et~al.(2025)Rolshoven, Rasiah, Br{\"u}gger~Bose, Hostettler,
+  Burkhalter, St{\"u}rmer, and Niklaus]{rolshoven2025}
+Luca Rolshoven, Vishvaksenan Rasiah, Srinanda Br{\"u}gger~Bose, Sarah
+  Hostettler, Lara Burkhalter, Matthias St{\"u}rmer, and Joel Niklaus.
+\newblock Unlocking legal knowledge: A multilingual dataset for judicial
+  summarization in switzerland.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  EMNLP 2025}, 2025.
+\newblock arXiv:2410.13456.
+
+\bibitem[Stern et~al.(2024)Stern, Rasiah, Matoshi, Br{\"u}gger~Bose,
+  St{\"u}rmer, Chalkidis, Ho, and Niklaus]{stern2024}
+Ronja Stern, Vishvaksenan Rasiah, Veton Matoshi, Srinanda Br{\"u}gger~Bose,
+  Matthias St{\"u}rmer, Ilias Chalkidis, Daniel~E. Ho, and Joel Niklaus.
+\newblock One law, many languages: Benchmarking multilingual legal reasoning
+  for judicial support.
+\newblock \emph{arXiv preprint arXiv:2306.09237}, 2024.
+
+\bibitem[Yan et~al.(2024)Yan, Gu, Zhu, and Ling]{yan2024}
+Shi-Qi Yan, Jia-Chen Gu, Yun Zhu, and Zhen-Hua Ling.
+\newblock Corrective retrieval augmented generation.
+\newblock \emph{arXiv preprint arXiv:2401.15884}, 2024.
+
+\bibitem[Zheng et~al.(2025)Zheng, Guha, Arifov, Zhang, Skreta, Manning,
+  Henderson, and Ho]{zheng2025}
+Lucia Zheng, Neel Guha, Javokhir Arifov, Sarah Zhang, Michal Skreta,
+  Christopher~D. Manning, Peter Henderson, and Daniel~E. Ho.
+\newblock A reasoning-focused legal retrieval benchmark.
+\newblock In \emph{CS and LAW 2025 - Proceedings of the 2025 Symposium on
+  Computer Science and Law}, pages 169--193. Association for Computing
+  Machinery, 2025.
+\newblock \doi{10.1145/3709025.3712219}.
+\newblock arXiv:2505.03970.
+
+\end{thebibliography}
