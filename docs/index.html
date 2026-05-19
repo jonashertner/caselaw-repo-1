@@ -5382,13 +5382,15 @@ function renderHero(data) {
   const shouldAnimate = !window._heroAnimated;
   window._heroAnimated = true;
 
-  // Main hero number — 2700 ms total: ~900 ms visible climb + ~1800 ms
-  // odometer settle. Quicker overall than the 3000 ms original, with a
-  // longer relative slow tail so the final digits resolve deliberately.
-  if (data.total) {
-    if (shouldAnimate) animateCount('hero-decisions', data.total, 2700);
-    else setText('hero-decisions', fmt(data.total));
-  }
+  // Main hero number — sourced LIVE from updateLiveDbStamp() below
+  // (via mcp.opencaselaw.ch/health). 2026-05-19 cleanup: previously
+  // animated from stats.json data.total, which lagged the live count
+  // by up to a day. We now skip the stats.json path entirely so the
+  // big visible number always matches what the MCP workers actually
+  // serve. The animation flourish moves to updateLiveDbStamp's first
+  // invocation. data.total is still used for the language-share
+  // percentage breakdowns below (those track an aggregate snapshot
+  // and would distort if the denominator drifted live).
   // Courts
   if (data.court_count) {
     setText('hero-courts', data.court_count);
@@ -5507,6 +5509,22 @@ function updateLiveDbStamp() {
       // ago that was (relative). This is the source of truth — the
       // MCP workers, REST API, and Word add-in all serve from this
       // exact DB at this exact moment.
+      // Set the BIG hero number live (the moved-from-renderHero source
+      // of truth). First call animates 0 → live for the visual flourish;
+      // subsequent 60s refreshes setText so it doesn't re-animate from
+      // zero every minute. Uses fmt(...) for thousand-separator parity
+      // with the rest of the page; the per-locale toLocaleString below
+      // is for the in-stamp count which lives inside a fully-translated
+      // phrase and benefits from per-locale punctuation.
+      if (typeof data.decisions === 'number') {
+        if (!window._heroDecisionsLiveAnimated) {
+          window._heroDecisionsLiveAnimated = true;
+          try { animateCount('hero-decisions', data.decisions, 2700); }
+          catch (e) { setText('hero-decisions', fmt(data.decisions)); }
+        } else {
+          setText('hero-decisions', fmt(data.decisions));
+        }
+      }
       const count = (data.decisions || 0).toLocaleString(
         ({de:'de-CH',fr:'fr-CH',it:'it-CH',rm:'de-CH',en:'en-GB'})[curLang] || 'de-CH'
       );
