@@ -2260,7 +2260,7 @@
     "2026-04": 1513,
     "2026-05": 135
   },
-  "generated_at": "2026-05-19T14:03:55.712300+00:00",
+  "generated_at": "2026-05-19T17:33:54.075513+00:00",
   "scraper_health": {
     "run_at": "2026-05-19T03:09:02.936202+00:00",
     "run_duration_s": 7742.6,
@@ -3232,7 +3232,7 @@
         "note": null,
         "state_count": 1481,
         "jsonl_size_mb": 88.5,
-        "jsonl_mtime": "2026-05-19T02:10:42.075834+00:00"
+        "jsonl_mtime": "2026-05-19T14:49:18.367951+00:00"
       },
       "emark": {
         "success": true,
@@ -3322,19 +3322,19 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "citation_edges": 8659509,
-    "statute_edges": 11271627
+    "citation_edges": 8661650,
+    "statute_edges": 11273781
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 85175,
+      "citation_count": 85191,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 180100
+      "ref_count": 180115
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3346,17 +3346,17 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 972522
+      "total": 972650
     },
     "regeste_coverage": {
       "pct": 34.9,
-      "with_regeste": 339121,
-      "total": 972522
+      "with_regeste": 339134,
+      "total": 972650
     },
     "graph_size": {
-      "decision_edges": 8098130,
-      "statute_edges": 11271627,
-      "total": 19369757
+      "decision_edges": 8100141,
+      "statute_edges": 11273781,
+      "total": 19373922
     },
     "echr_switzerland": {
       "total": 2797,
@@ -3372,31 +3372,31 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 85175,
+        "citation_count": 85191,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 44253,
+        "citation_count": 44258,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 36982,
+        "citation_count": 36991,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 130 V 343",
-        "citation_count": 29631,
+        "citation_count": 29635,
         "regeste_excerpt": "Regeste\n Art. 1 Abs. 1 IVG (in der seit 1. Januar 2003 geltenden Fassung) in Verbindung mit Art. 6, 7, 8 Abs. 1, Art. 16 und 17 ATSG; Art. 4 Abs. 1, Art. 28 Abs",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_130_V_343"
       },
       {
         "docket": "BGE 126 V 75",
-        "citation_count": 27708,
+        "citation_count": 27711,
         "regeste_excerpt": "Regeste\n Art. 28 Abs. 2 IVG: Kürzung von Tabellenlöhnen. - Für die Bestimmung des Invalideneinkommens ist primär von der beruflich-erwerblichen Situation auszug",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_126_V_75"
       }
@@ -3405,27 +3405,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 187502
+        "ref_count": 187518
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110565
+        "ref_count": 110567
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 104895
+        "ref_count": 104901
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92356
+        "ref_count": 92394
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59335
+        "ref_count": 59347
       }
     ],
     "historical_depth": [
@@ -3469,7 +3469,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-04-28",
         "span_years": 118,
-        "decision_count": 167918
+        "decision_count": 167934
       }
     ]
   },
@@ -4093,7 +4093,10 @@
       "FR": 6,
       "AG": 21
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 2141,
+      "statute_edges": 2154
+    },
     "previous_generated_at": "2026-05-18T19:07:19.983285+00:00"
   }
 }
