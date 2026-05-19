@@ -1355,34 +1355,86 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
   <!-- Setup per client -->
   <section id="mcp-setup" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 16px; font-size:22px">Einrichtung nach Client</h2>
+      <h2 style="margin:0 0 8px; font-size:22px" data-t="mcp_setup_heading">Einrichtung nach Client</h2>
+      <p style="font-size:13px; color:var(--tx3); margin:0 0 24px" data-t="mcp_setup_intro">
+        Endpunkt <code style="font-size:12px">https://mcp.opencaselaw.ch</code> · Streamable HTTP (empfohlen) und SSE · keine Authentifizierung · Werkzeuge sind nur-lesend.
+      </p>
 
       <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Claude Desktop</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_claude_desktop_step">Settings → Connectors → Add → URL eintragen:</p>
+        <h3 style="font-size:15px; margin:0 0 8px">Claude.ai (Web)</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_claudeai_step">
+          Settings → Connectors → „Add custom connector" → Name „Swiss Caselaw" + URL eintragen. Erfordert Pro, Max, Team oder Enterprise.
+        </p>
         <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
           <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
         </div>
       </div>
 
       <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Claude Code</h3>
+        <h3 style="font-size:15px; margin:0 0 8px">Claude Desktop</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_claude_desktop_step">
+          Settings → Connectors → „Add custom connector" → Name + URL. Streamable HTTP, OAuth optional. Pro / Max / Team / Enterprise.
+        </p>
         <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
-          <code style="font-family:var(--f-mono); font-size:13px">claude mcp add --transport sse swiss-caselaw https://mcp.opencaselaw.ch</code>
+          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
         </div>
       </div>
 
       <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">ChatGPT (Custom GPT / Actions)</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0" data-t="mcp_chatgpt_note">
-          Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:12px">readOnlyHint</code>-Annotations. Kompatibel mit GPT-5.3 (Anleitung im README).
-        </p>
+        <h3 style="font-size:15px; margin:0 0 8px">Claude Code (CLI)</h3>
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
+          <code style="font-family:var(--f-mono); font-size:13px">claude mcp add --transport http swiss-caselaw https://mcp.opencaselaw.ch</code>
+        </div>
       </div>
 
       <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Cursor / Gemini / andere</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0" data-t="mcp_other_note">
-          Funktioniert mit jedem MCP-fähigen Client über Standard-SSE-Transport. Endpunkt: <code style="font-size:13px">https://mcp.opencaselaw.ch</code>
+        <h3 style="font-size:15px; margin:0 0 8px">ChatGPT (Business / Enterprise / Edu)</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_chatgpt_step">
+          Settings → Connectors → „Create" (ggf. Advanced settings → Developer mode aktivieren). Name „Swiss Caselaw" + URL einfügen, Auth: None. Nur ChatGPT-Web auf Business / Enterprise / Edu; Modell muss MCP-Tool-Calls unterstützen.
+        </p>
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
+          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px; margin:0 0 8px">Cursor</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_cursor_step">
+          Settings → Features → MCP → „+ Add new MCP server", oder in <code style="font-size:12px">~/.cursor/mcp.json</code>:
+        </p>
+        <pre style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px; margin:0; overflow-x:auto"><code style="font-family:var(--f-mono); font-size:12px">{
+  "mcpServers": {
+    "swiss-caselaw": {
+      "url": "https://mcp.opencaselaw.ch"
+    }
+  }
+}</code></pre>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px; margin:0 0 8px">Gemini CLI</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_gemini_step">
+          CLI-Befehl oder <code style="font-size:12px">~/.gemini/settings.json</code>. Die Web-App gemini.google.com unterstützt aktuell keine eigenen MCP-Server — nur Gemini CLI, Gemini Enterprise, Android Studio und Firebase Studio.
+        </p>
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
+          <code style="font-family:var(--f-mono); font-size:13px">gemini mcp add --transport http swiss-caselaw https://mcp.opencaselaw.ch</code>
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <h3 style="font-size:15px; margin:0 0 8px">Microsoft Copilot Studio</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_copilot_step">
+          Agent → Tools → Add a tool → New tool → „Model Context Protocol". Server-Name „Swiss Caselaw" + URL eintragen, Auth: None. Nur Streamable HTTP (SSE seit August 2025 nicht mehr unterstützt).
+        </p>
+        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
+          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px">
+        <h3 style="font-size:15px; margin:0 0 8px" data-t="mcp_other_heading">Andere MCP-Clients</h3>
+        <p style="font-size:14px; color:var(--tx2); margin:0" data-t="mcp_other_step">
+          Funktioniert mit jedem MCP-fähigen Client (Continue, Zed, Cody, Windsurf, …) über Streamable HTTP an <code style="font-size:13px">https://mcp.opencaselaw.ch</code>. SSE ist ebenfalls unter <code style="font-size:13px">/sse</code> erreichbar, aber MCP-spec-seitig veraltet.
         </p>
       </div>
     </div>
@@ -1664,14 +1716,20 @@ const I18N = {
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   
     mcp_remote_desc: 'Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:',
-    mcp_chatgpt_note: 'Unterstützt via Streamable HTTP + CORS. Nutzt <code style="font-size:11px">readOnlyHint</code>-Annotations. Kompatibel mit <strong>GPT-5.3</strong>; bei GPT-5.4 siehe Workaround oben.',
-    mcp_other_note: 'Funktioniert mit jedem MCP-fähigen Client über Standard-SSE-Transport. Endpunkt: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
+    mcp_setup_heading: 'Einrichtung nach Client',
+    mcp_setup_intro: 'Endpunkt <code style="font-size:12px">https://mcp.opencaselaw.ch</code> · Streamable HTTP (empfohlen) und SSE · keine Authentifizierung · Werkzeuge sind nur-lesend.',
+    mcp_claudeai_step: 'Settings → Connectors → „Add custom connector" → Name „Swiss Caselaw" + URL eintragen. Erfordert Pro, Max, Team oder Enterprise.',
+    mcp_claude_desktop_step: 'Settings → Connectors → „Add custom connector" → Name + URL. Streamable HTTP, OAuth optional. Pro / Max / Team / Enterprise.',
+    mcp_chatgpt_step: 'Settings → Connectors → „Create" (ggf. Advanced settings → Developer mode aktivieren). Name „Swiss Caselaw" + URL einfügen, Auth: None. Nur ChatGPT-Web auf Business / Enterprise / Edu; Modell muss MCP-Tool-Calls unterstützen.',
+    mcp_cursor_step: 'Settings → Features → MCP → „+ Add new MCP server", oder in <code style="font-size:12px">~/.cursor/mcp.json</code>:',
+    mcp_gemini_step: 'CLI-Befehl oder <code style="font-size:12px">~/.gemini/settings.json</code>. Die Web-App gemini.google.com unterstützt aktuell keine eigenen MCP-Server — nur Gemini CLI, Gemini Enterprise, Android Studio und Firebase Studio.',
+    mcp_copilot_step: 'Agent → Tools → Add a tool → New tool → „Model Context Protocol". Server-Name „Swiss Caselaw" + URL eintragen, Auth: None. Nur Streamable HTTP (SSE seit August 2025 nicht mehr unterstützt).',
+    mcp_other_heading: 'Andere MCP-Clients',
+    mcp_other_step: 'Funktioniert mit jedem MCP-fähigen Client (Continue, Zed, Cody, Windsurf, …) über Streamable HTTP an <code style="font-size:13px">https://mcp.opencaselaw.ch</code>. SSE ist ebenfalls unter <code style="font-size:13px">/sse</code> erreichbar, aber MCP-spec-seitig veraltet.',
     mcp_tools_heading: '33 Tools im Überblick (27 remote + 2 lokal)',
     mcp_tools_desc: 'Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code>, hier gruppiert nach Funktion.',
-    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients (Claude Desktop, ChatGPT, Cursor, Gemini).',
+    mcp_arch_transport: '<strong>Transport:</strong> Streamable HTTP (empfohlen) + Server-Sent Events (SSE, deprecated), kompatibel mit Claude, ChatGPT, Cursor, Gemini CLI, Copilot Studio.',
     mcp_arch_data: '<strong>Daten:</strong> Aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert.',
-  
-    mcp_claude_desktop_step: 'Settings → Connectors → Add → URL eintragen:',
     mcp_tech_heading: 'Technisches',
     mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients',
     mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
@@ -1810,7 +1868,7 @@ const I18N = {
     mcp_remote_desc: 'Immédiatement disponible, toujours à jour. Aucun téléchargement requis. Endpoint serveur :',
     mcp_chatgpt_note: 'Pris en charge via Streamable HTTP + CORS. Utilise les annotations <code style="font-size:11px">readOnlyHint</code>. Compatible avec <strong>GPT-5.3</strong> ; pour GPT-5.4, voir la solution de contournement ci-dessus.',
     mcp_other_note: 'Fonctionne avec tout client compatible MCP via le transport SSE standard. Endpoint : <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: 'Aperçu des 33 outils publics (+ 2 outils locaux d'administration)',
+    mcp_tools_heading: 'Aperçu des 33 outils publics (+ 2 outils locaux d\'administration)',
     mcp_tools_desc: 'Chaque outil est optimisé pour un cas d\'usage de recherche spécifique. Schémas complets via <code>tools/list</code> du protocole MCP, regroupés ici par fonction.',
     mcp_arch_transport: '<strong>Transport :</strong> Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants (Claude Desktop, ChatGPT, Cursor, Gemini).',
     mcp_arch_data: '<strong>Données :</strong> sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement.',
@@ -2240,14 +2298,20 @@ const I18N = {
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   
     mcp_remote_desc: 'Immediately available, always up to date. No download required. Server endpoint:',
-    mcp_chatgpt_note: 'Supported via Streamable HTTP + CORS. Uses <code style="font-size:11px">readOnlyHint</code> annotations. Compatible with <strong>GPT-5.3</strong>; for GPT-5.4 see the workaround above.',
-    mcp_other_note: 'Works with any MCP-capable client via standard SSE transport. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
+    mcp_setup_heading: 'Setup per client',
+    mcp_setup_intro: 'Endpoint <code style="font-size:12px">https://mcp.opencaselaw.ch</code> · Streamable HTTP (recommended) and SSE · no authentication · tools are read-only.',
+    mcp_claudeai_step: 'Settings → Connectors → "Add custom connector" → name "Swiss Caselaw" and paste the URL. Requires Pro, Max, Team or Enterprise.',
+    mcp_claude_desktop_step: 'Settings → Connectors → "Add custom connector" → name and URL. Streamable HTTP, OAuth optional. Pro / Max / Team / Enterprise.',
+    mcp_chatgpt_step: 'Settings → Connectors → "Create" (if needed: Advanced settings → enable Developer mode). Name "Swiss Caselaw" and paste the URL, auth: None. ChatGPT Web on Business / Enterprise / Edu only; the model must support MCP tool calls.',
+    mcp_cursor_step: 'Settings → Features → MCP → "+ Add new MCP server", or in <code style="font-size:12px">~/.cursor/mcp.json</code>:',
+    mcp_gemini_step: 'CLI command or <code style="font-size:12px">~/.gemini/settings.json</code>. The web app gemini.google.com does not currently support custom MCP servers — only Gemini CLI, Gemini Enterprise, Android Studio and Firebase Studio do.',
+    mcp_copilot_step: 'Agent → Tools → Add a tool → New tool → "Model Context Protocol". Server name "Swiss Caselaw" and URL, auth: None. Streamable HTTP only (SSE no longer supported since August 2025).',
+    mcp_other_heading: 'Other MCP clients',
+    mcp_other_step: 'Works with any MCP-capable client (Continue, Zed, Cody, Windsurf, …) over Streamable HTTP at <code style="font-size:13px">https://mcp.opencaselaw.ch</code>. SSE is also reachable at <code style="font-size:13px">/sse</code> but is deprecated by the MCP spec.',
     mcp_tools_heading: '33 public tools at a glance (+ 2 local admin tools)',
     mcp_tools_desc: 'Each tool is optimised for a specific research use case. Full schemas via the MCP protocol <code>tools/list</code>, grouped here by function.',
-    mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client (Claude Desktop, ChatGPT, Cursor, Gemini).',
+    mcp_arch_transport: '<strong>Transport:</strong> Streamable HTTP (recommended) + Server-Sent Events (SSE, deprecated), compatible with Claude, ChatGPT, Cursor, Gemini CLI, Copilot Studio.',
     mcp_arch_data: '<strong>Data:</strong> from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily.',
-  
-    mcp_claude_desktop_step: 'Settings → Connectors → Add → enter URL:',
     mcp_tech_heading: 'Technical details',
     mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client',
     mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx rate limiting, health endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
