@@ -50,6 +50,13 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(REPO_ROOT / "output")))
 LOG_FILE = REPO_ROOT / "logs" / "publish_drift_check.jsonl"
 
+# Canonical decisions.db — used as the orphan reference. Any table with
+# a decision_id column gets compared on the subset whose decision_id
+# still exists in this DB, not on the raw row count. Without this, live
+# DBs accumulate orphan rows over months (from sg_gerichte deletion,
+# EGMR dedup, stub removal, ...) that look like drift but aren't.
+DECISIONS_DB = DATA_DIR / "decisions.db"
+
 # Each (display_name, live_path, shadow_path) triple. Add more here as
 # the orchestrator grows new shadow targets.
 PAIRS = [
@@ -116,8 +123,45 @@ def _count(conn: sqlite3.Connection, table: str) -> int:
     return conn.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
 
 
+def _has_decision_id_column(conn: sqlite3.Connection, table: str) -> bool:
+    """True if the table has a column literally named ``decision_id``."""
+    try:
+        cols = [r[1] for r in conn.execute(f"PRAGMA table_info({table})")]
+    except sqlite3.Error:
+        return False
+    return "decision_id" in cols
+
+
+def _useful_count(conn: sqlite3.Connection, table: str,
+                  decisions_db_path: Path) -> int:
+    """Count rows in ``table`` whose ``decision_id`` exists in the
+    canonical decisions.db. Avoids the orphan inflation that polluted
+    drift_check before 2026-05-19: live decision_structure.db had
+    120,757 orphan rows from decisions removed in earlier dedup runs
+    (sg_gerichte deletion, EGMR dedup, etc.). Raw counts then drifted
+    11 % vs. a fresh sibling rebuild, even though per-decision
+    extraction was identical (verified with 20-sample diff).
+
+    ATTACHes the decisions.db read-only on the same connection so the
+    query stays inside SQLite (~10s for 8M-row joins given the PK
+    index on decisions.decision_id).
+    """
+    uri = f"file:{decisions_db_path}?mode=ro"
+    conn.execute(f"ATTACH '{uri}' AS _dec_ref")
+    try:
+        return conn.execute(
+            f"SELECT COUNT(*) FROM {table} t "
+            f"WHERE t.decision_id IN ("
+            f"  SELECT decision_id FROM _dec_ref.decisions"
+            f")"
+        ).fetchone()[0]
+    finally:
+        conn.execute("DETACH _dec_ref")
+
+
 def _compare_pair(display_name: str, live: Path, shadow: Path,
-                  row_tolerance_pct: float) -> dict:
+                  row_tolerance_pct: float,
+                  decisions_db: Path | None = None) -> dict:
     """Compare one (live, shadow) DB pair. Returns a record suitable
     for both stdout and JSONL append. Sets ``ok=False`` if any shared
     table's row count drifts beyond tolerance."""
@@ -169,27 +213,76 @@ def _compare_pair(display_name: str, live: Path, shadow: Path,
                 record["errors"].append(f"{table}: SQL error: {e}")
                 record["ok"] = False
                 continue
-            dt = round(time.monotonic() - t0, 2)
-            delta = shadow_n - live_n
-            if live_n == 0:
-                pct = 0.0 if shadow_n == 0 else float("inf")
+
+            # Orphan-aware comparison: if both DBs carry a decision_id
+            # column on this table AND we have the canonical decisions.db
+            # path, compute the "useful" subset (rows whose decision_id
+            # still exists in decisions.db). Tolerance applies to that
+            # number, not the raw count. Raw counts stay in the record
+            # for visibility. See the comment on _useful_count above.
+            use_orphan_aware = (
+                decisions_db is not None and decisions_db.exists() and
+                _has_decision_id_column(live_conn, table) and
+                _has_decision_id_column(shadow_conn, table)
+            )
+            live_useful = shadow_useful = None
+            if use_orphan_aware:
+                try:
+                    live_useful = _useful_count(live_conn, table, decisions_db)
+                    shadow_useful = _useful_count(shadow_conn, table, decisions_db)
+                except sqlite3.Error as e:
+                    record["errors"].append(
+                        f"{table}: orphan-aware count failed ({e}); "
+                        f"falling back to raw count"
+                    )
+                    use_orphan_aware = False
+
+            cmp_live = live_useful if use_orphan_aware else live_n
+            cmp_shadow = shadow_useful if use_orphan_aware else shadow_n
+            delta_raw = shadow_n - live_n
+            delta_cmp = cmp_shadow - cmp_live
+            if cmp_live == 0:
+                pct = 0.0 if cmp_shadow == 0 else float("inf")
             else:
-                pct = abs(delta) / live_n * 100.0
-            entry = {
+                pct = abs(delta_cmp) / cmp_live * 100.0
+
+            dt = round(time.monotonic() - t0, 2)
+            entry: dict = {
                 "live": live_n,
                 "shadow": shadow_n,
-                "delta": delta,
-                "delta_pct": round(pct, 3),
+                "delta": delta_raw,
+                "delta_pct_raw": round(
+                    abs(delta_raw) / live_n * 100.0, 3
+                ) if live_n else 0.0,
                 "duration_s": dt,
                 "within_tolerance": pct <= row_tolerance_pct,
+                "compare_mode": "orphan_aware" if use_orphan_aware else "raw",
             }
+            if use_orphan_aware:
+                entry.update({
+                    "live_useful": live_useful,
+                    "shadow_useful": shadow_useful,
+                    "delta_useful": delta_cmp,
+                    "delta_pct_useful": round(pct, 3),
+                    "live_orphans": live_n - live_useful,
+                    "shadow_orphans": shadow_n - shadow_useful,
+                })
+            else:
+                entry["delta_pct"] = round(pct, 3)
             record["tables"][table] = entry
             if not entry["within_tolerance"]:
                 record["ok"] = False
-                record["errors"].append(
-                    f"{table}: drift {delta:+,} rows ({pct:.2f} %) "
-                    f"exceeds {row_tolerance_pct} %"
-                )
+                if use_orphan_aware:
+                    record["errors"].append(
+                        f"{table}: useful drift {delta_cmp:+,} rows "
+                        f"({pct:.2f} %) exceeds {row_tolerance_pct} % "
+                        f"(raw delta {delta_raw:+,})"
+                    )
+                else:
+                    record["errors"].append(
+                        f"{table}: drift {delta_raw:+,} rows ({pct:.2f} %) "
+                        f"exceeds {row_tolerance_pct} %"
+                    )
     finally:
         live_conn.close()
         shadow_conn.close()
@@ -212,8 +305,17 @@ def main() -> int:
         help=f"Per-table row-count drift tolerance in percent "
              f"(default: {DEFAULT_ROW_TOLERANCE_PCT}).",
     )
+    p.add_argument(
+        "--decisions-db",
+        type=Path,
+        default=DECISIONS_DB,
+        help=f"Canonical decisions.db for orphan-aware comparison "
+             f"(default: {DECISIONS_DB}). Pass an empty string to "
+             f"disable orphan-aware mode and use raw counts.",
+    )
     p.add_argument("-v", "--verbose", action="store_true")
     args = p.parse_args()
+    decisions_db = args.decisions_db if str(args.decisions_db) else None
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -231,8 +333,11 @@ def main() -> int:
 
     any_missing = False
     for display_name, live, shadow in PAIRS:
-        logger.info("Checking pair: %s", display_name)
-        rec = _compare_pair(display_name, live, shadow, args.tolerance_pct)
+        logger.info("Checking pair: %s (decisions_db=%s)",
+                    display_name,
+                    decisions_db if decisions_db else "OFF (raw mode)")
+        rec = _compare_pair(display_name, live, shadow, args.tolerance_pct,
+                            decisions_db=decisions_db)
         run["pairs"].append(rec)
         if rec.get("errors"):
             run["ok"] = False
@@ -245,14 +350,28 @@ def main() -> int:
         elif not rec["ok"]:
             run["drift_pairs"] += 1
 
-        # Per-table summary line
+        # Per-table summary line — emit both raw and useful counts
+        # whenever orphan-aware mode is active, so the operator can
+        # see at a glance that drift came from orphans not extraction.
         for table, entry in sorted(rec.get("tables", {}).items()):
             marker = "✓" if entry["within_tolerance"] else "✗"
-            logger.info(
-                "  %s %s: live=%d shadow=%d delta=%+d (%.3f %%)",
-                marker, table, entry["live"], entry["shadow"],
-                entry["delta"], entry["delta_pct"],
-            )
+            if entry.get("compare_mode") == "orphan_aware":
+                logger.info(
+                    "  %s %s: live=%d (useful=%d, orphans=%d)  "
+                    "shadow=%d (useful=%d, orphans=%d)  "
+                    "useful Δ=%+d (%.3f %%)",
+                    marker, table,
+                    entry["live"], entry["live_useful"], entry["live_orphans"],
+                    entry["shadow"], entry["shadow_useful"],
+                    entry["shadow_orphans"],
+                    entry["delta_useful"], entry["delta_pct_useful"],
+                )
+            else:
+                logger.info(
+                    "  %s %s: live=%d shadow=%d delta=%+d (%.3f %%) [raw]",
+                    marker, table, entry["live"], entry["shadow"],
+                    entry["delta"], entry["delta_pct"],
+                )
 
     run["ended_at"] = datetime.now(timezone.utc).isoformat()
     _append_summary(run)
