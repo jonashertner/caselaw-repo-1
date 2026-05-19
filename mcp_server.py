@@ -1573,12 +1573,18 @@ def _record_tool_call(name: str, duration_ms: float, *, error: bool = False):
 
 
 def _record_query(query: str):
-    """Track search query text (for top queries, no user info)."""
-    q = query.strip()[:150]
-    if q:
-        _metrics["recent_queries"].append(q)
-        if len(_metrics["recent_queries"]) > 1000:
-            _metrics["recent_queries"] = _metrics["recent_queries"][-1000:]
+    """No-op (privacy contract: query content is never logged).
+
+    Previously appended the query string to an in-memory buffer that was
+    then persisted to metrics.db.daily_queries and emitted via the live
+    metrics endpoint's ``top_queries`` field. That contradicted the
+    /datenschutz/ promise that "Search query content is never logged at
+    any tier." Aggregate search totals still flow through
+    daily_summary.search_total without retaining the strings.
+
+    Kept as a signature-compatible stub so existing call sites work
+    untouched; safe to remove the call sites in a follow-up cleanup."""
+    return
 
 
 # ── Research telemetry (JSON lines, no PII) ──────────────────
@@ -1723,14 +1729,12 @@ def _flush_metrics_to_disk():
                          max(d_sessions, 0), max(d_haiku_fired, 0), max(d_haiku_skipped, 0),
                          max(d_haiku_changed, 0), max(d_search_total, 0), max(d_search_followups, 0)),
                     )
-                # Top queries (from recent_queries buffer)
-                query_counter = collections.Counter(_metrics["recent_queries"])
-                for q, n in query_counter.most_common(50):
-                    conn.execute(
-                        "INSERT INTO daily_queries (date, query, count) VALUES (?, ?, ?) "
-                        "ON CONFLICT(date, query) DO UPDATE SET count = MAX(count, ?)",
-                        (today, q, n, n),
-                    )
+                # No-op: query content is never persisted (privacy
+                # contract). The previous block wrote the top-50
+                # cleartext queries into daily_queries on every flush;
+                # that table is being phased out and is wiped on the
+                # next deploy. Aggregate "how many searches today" is
+                # already in daily_summary.search_total above.
                 conn.commit()
             finally:
                 conn.close()
@@ -1800,12 +1804,12 @@ def _get_lifetime_metrics(range_param: str = "all") -> dict:
             f"SELECT MIN(date) as first, MAX(date) as last, COUNT(DISTINCT date) as days FROM daily_summary {date_clause}", date_params
         ).fetchone()
 
-        # Top queries (across all days in range)
+        # Top queries: never surfaced — privacy contract forbids logging
+        # query content. The daily_queries table is phased out (wiped at
+        # the same deploy that landed this change). Returning [] keeps
+        # downstream consumers (admin dashboard) rendering an empty
+        # panel rather than erroring on a missing key.
         top_queries = []
-        for row in conn.execute(
-            f"SELECT query, SUM(count) as total FROM daily_queries {date_clause} GROUP BY query ORDER BY total DESC LIMIT 20", date_params
-        ):
-            top_queries.append({"query": row["query"], "count": row["total"]})
 
         # Daily breakdown
         daily = []
@@ -1868,15 +1872,18 @@ def _log_search_trace(trace: dict):
 
 
 def _record_zero_result(tool: str, query: str):
-    """Log queries that returned no results (for quality improvement)."""
-    _metrics["zero_results"].append({
-        "tool": tool,
-        "query": query[:200],
-        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-    })
-    # Keep only last 500 to bound memory
-    if len(_metrics["zero_results"]) > 500:
-        _metrics["zero_results"] = _metrics["zero_results"][-500:]
+    """No-op (privacy contract: query content is never logged).
+
+    Previously stored the failing query string in an in-memory buffer
+    and surfaced it via the live metrics endpoint's
+    ``zero_result_queries`` field — useful for quality work but
+    inconsistent with the no-query-content guarantee at /datenschutz/.
+    The aggregate "how many calls returned zero results" can be
+    reconstructed from daily_tool_calls error/return counts if needed.
+
+    Kept as a signature-compatible stub so existing call sites work
+    untouched; safe to remove the call sites in a follow-up cleanup."""
+    return
 
 
 def _get_metrics() -> dict:
@@ -1893,14 +1900,12 @@ def _get_metrics() -> dict:
             "errors": _metrics["tool_errors"].get(name, 0),
         }
 
-    # Top queries
-    query_counter = collections.Counter(_metrics["recent_queries"])
-    top_queries = [{"query": q, "count": n} for q, n in query_counter.most_common(15)]
-
-    # Aggregate zero-result queries by query text
-    zero_agg = collections.Counter()
-    for zr in _metrics["zero_results"]:
-        zero_agg[zr["query"]] += 1
+    # Query content never surfaced (privacy contract — see
+    # _record_query / _record_zero_result above). recent_queries +
+    # zero_results buffers are no-op stubs; both lists are empty and
+    # exist only to keep downstream code that references them happy.
+    top_queries: list = []
+    zero_agg: collections.Counter = collections.Counter()
 
     sessions = max(_metrics["sessions"], 1)
     total_calls = sum(s["calls"] for s in tool_stats.values())
