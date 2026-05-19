@@ -5,9 +5,27 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 18 May 2026 14:46:36 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 19 May 2026 14:14:06 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>gr_gerichte ZR2 2024 105 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR2%202024%20105</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 18 marzo 2026
+comunicata il 20°marzo 2026
+N. d'incarto
+ZR2 24 105
+Istanza
+Seconda Camera civile
+Composizione
+Richter-…</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR2 2024 105</guid>
+      <category>gr_gerichte</category>
+    </item>
     <item>
       <title>Bundesverwaltungsgericht D-5314/2024 vom 2026-04-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5314_2024</link>
@@ -93,6 +111,36 @@ Cancelliere Gadoni…</description>
       <pubDate>Tue, 28 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-992.2026</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4D_69/2026 vom 2026-04-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4D_69_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4D_69/2026
+
+Sentenza del 27 aprile 2026
+
+I Corte di diritto civile
+
+Composizione
+
+Giudice federale Hurni, Presidente,
+
+Cancelliere G. Piatti.
+
+Partecipanti al procedimento
+
+A.____…</description>
+      <pubDate>Mon, 27 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_69.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesgericht 6G_1/2026 vom 2026-04-27</title>
@@ -992,68 +1040,6 @@ Partecipanti …</description>
       <pubDate>Wed, 01 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BStGer:2026:BB.2026.27</guid>
       <category>bstger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 2C_174/2025 vom 2026-03-31</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_174_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-2C_174/2025
-
-Sentenza del 31 marzo 2026
-
-II Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Aubry Girardin, Presidente,
-
-Ryter, Kradolfer,
-
-Cancelliere Savoldelli.
-
-Part…</description>
-      <pubDate>Tue, 31 Mar 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_174.2025</guid>
-      <category>bger</category>
-      <category>Cittadinanza e diritto degli stranieri</category>
-    </item>
-    <item>
-      <title>Bundesgericht 2C_175/2025 vom 2026-03-31</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_175_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-2C_175/2025
-
-Sentenza del 31 marzo 2026
-
-II Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Aubry Girardin, Presidente,
-
-Ryter, Kradolfer,
-
-Cancelliere Savoldelli.
-
-Part…</description>
-      <pubDate>Tue, 31 Mar 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_175.2025</guid>
-      <category>bger</category>
-      <category>Cittadinanza e diritto degli stranieri</category>
     </item>
   </channel>
 </rss>

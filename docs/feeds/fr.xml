@@ -5,9 +5,30 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 18 May 2026 14:46:36 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 19 May 2026 14:14:06 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>fr_gerichte 101 2026 95 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2095</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+101 2026 95
+Arrêt du 4 mai 2026
+Ie Cour d’appel civil
+Composition
+Président :
+Jérô…</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_101 2026 95</guid>
+      <category>fr_gerichte</category>
+    </item>
     <item>
       <title>fr_gerichte 102 2026 78 vom 2026-06-05</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2078</link>
@@ -251,6 +272,27 @@ Mich…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>fr_gerichte 604 2025 42 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_604%202025%2042</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+604 2025 42
+604 2025 43
+Arrêt du 1er mai 2026
+Cour fiscale
+Composition
+Président :…</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_604 2025 42</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2025 101 vom 2026-05-15</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202025%20101</link>
       <description>Tribunal cantonal TC
@@ -452,6 +494,36 @@ J…</description>
       <category>EMRK / Menschenrechte</category>
     </item>
     <item>
+      <title>Bundesgericht 7B_465/2026 vom 2026-05-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_465_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+7B_465/2026
+
+Arrêt du 11 mai 2026
+
+IIe Cour de droit pénal
+
+Composition
+
+MM. et Mme les Juges fédéraux Abrecht, Président,
+
+Koch et Hofmann.
+
+Greffière : Mme Nasel.
+
+Participants …</description>
+      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_465.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>fr_gerichte 605 2025 19 vom 2026-05-11</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202025%2019</link>
       <description>Tribunal cantonal TC
@@ -524,11 +596,43 @@ re…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-1848/2026 vom 2026-05-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1848_2026</link>
+      <description>Asile et renvoi (procédure accélérée)</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1848.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-6036/2023 vom 2026-05-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-6036_2023</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-6036.2023</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-8074/2024 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-8074_2024</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-8074.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-4186/2025 vom 2026-05-07</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4186_2025</link>
       <description>Refus de la protection provisoire</description>
       <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4186.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-3139/2026 vom 2026-05-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3139_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (procédure Dublin - art. 31a al. 1 let. b LAsi)</description>
+      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3139.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -711,143 +815,6 @@ Participants à la procédure…</description>
       <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-9034.2025</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-9476/2025 vom 2026-05-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-9476_2025</link>
-      <description>Visa Schengen</description>
-      <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-9476.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 105 2025 127 vom 2026-05-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_105%202025%20127</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-105 2025 127
-105 2026 35
-105 2026 36
-Arrêt du 16 mars 2026
-Chambre des poursuites …</description>
-      <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_105 2025 127</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 605 2025 35 vom 2026-05-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202025%2035</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-605 2025 35
-Arrêt du 18 mars 2026
-Ie Cour des assurances sociales
-Composition
-Prés…</description>
-      <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_605 2025 35</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 608 2025 38 vom 2026-05-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_608%202025%2038</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-608 2025 38
-608 2025 39
-Arrêt du 25 février 2026
-IIe Cour des assurances sociales
-…</description>
-      <pubDate>Mon, 04 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_608 2025 38</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-2875/2026 vom 2026-05-01</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2875_2026</link>
-      <description>Asile (non-entrée en matière) et renvoi (procédure Dublin - art. 31a al. 1 let. b LAsi)</description>
-      <pubDate>Fri, 01 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2875.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_347/2026 vom 2026-04-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_347_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_347/2026
-
-Arrêt du 30 avril 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-A.________,
-…</description>
-      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_347.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_360/2026 vom 2026-04-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_360_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_360/2026
-
-Arrêt du 30 avril 2026
-
-IIe Cour de droit pénal
-
-Composition
-
-MM. et Mme les Juges fédéraux Abrecht, Président,
-
-Koch et Hofmann.
-
-Greffier : M. Porchet.
-
-Participant…</description>
-      <pubDate>Thu, 30 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_360.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>
