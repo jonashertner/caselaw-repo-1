@@ -1361,19 +1361,11 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
       </p>
 
       <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Claude.ai (Web)</h3>
+        <h3 style="font-size:15px; margin:0 0 8px">Claude.ai (Web) &amp; Claude Desktop</h3>
         <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_claudeai_step">
-          Settings → Connectors → „Add custom connector" → Name „Swiss Caselaw" + URL eintragen. Erfordert Pro, Max, Team oder Enterprise.
-        </p>
-        <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
-          <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
-        </div>
-      </div>
-
-      <div style="margin-bottom:20px">
-        <h3 style="font-size:15px; margin:0 0 8px">Claude Desktop</h3>
-        <p style="font-size:14px; color:var(--tx2); margin:0 0 8px" data-t="mcp_claude_desktop_step">
-          Settings → Connectors → „Add custom connector" → Name + URL. Streamable HTTP, OAuth optional. Pro / Max / Team / Enterprise.
+          <strong>Customize</strong> (Anpassen · Personnaliser · Personalizza) → <strong>Connectors</strong> → „+" → „Add custom connector" → URL einfügen.
+          Alternativ direkt: <a href="https://claude.ai/settings/connectors?modal=add-custom-connector" style="color:var(--ac)">claude.ai/settings/connectors</a>.
+          Verfügbar in Free (max. 1 Connector), Pro, Max, Team, Enterprise. Bei Team/Enterprise muss zuerst der Owner unter <em>Organization Settings → Connectors → Add → Custom → Web</em> freischalten.
         </p>
         <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:10px 14px">
           <code style="font-family:var(--f-mono); font-size:13px">https://mcp.opencaselaw.ch</code>
@@ -1718,8 +1710,7 @@ const I18N = {
     mcp_remote_desc: 'Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:',
     mcp_setup_heading: 'Einrichtung nach Client',
     mcp_setup_intro: 'Endpunkt <code style="font-size:12px">https://mcp.opencaselaw.ch</code> · Streamable HTTP (empfohlen) und SSE · keine Authentifizierung · Werkzeuge sind nur-lesend.',
-    mcp_claudeai_step: 'Settings → Connectors → „Add custom connector" → Name „Swiss Caselaw" + URL eintragen. Erfordert Pro, Max, Team oder Enterprise.',
-    mcp_claude_desktop_step: 'Settings → Connectors → „Add custom connector" → Name + URL. Streamable HTTP, OAuth optional. Pro / Max / Team / Enterprise.',
+    mcp_claudeai_step: '<strong>Customize</strong> (Anpassen · Personnaliser · Personalizza) → <strong>Connectors</strong> → „+" → „Add custom connector" → URL einfügen. Alternativ direkt: <a href="https://claude.ai/settings/connectors?modal=add-custom-connector" style="color:var(--ac)">claude.ai/settings/connectors</a>. Verfügbar in Free (max. 1 Connector), Pro, Max, Team, Enterprise. Bei Team/Enterprise muss zuerst der Owner unter <em>Organization Settings → Connectors → Add → Custom → Web</em> freischalten.',
     mcp_chatgpt_step: 'Settings → Connectors → „Create" (ggf. Advanced settings → Developer mode aktivieren). Name „Swiss Caselaw" + URL einfügen, Auth: None. Nur ChatGPT-Web auf Business / Enterprise / Edu; Modell muss MCP-Tool-Calls unterstützen.',
     mcp_cursor_step: 'Settings → Features → MCP → „+ Add new MCP server", oder in <code style="font-size:12px">~/.cursor/mcp.json</code>:',
     mcp_gemini_step: 'CLI-Befehl oder <code style="font-size:12px">~/.gemini/settings.json</code>. Die Web-App gemini.google.com unterstützt aktuell keine eigenen MCP-Server — nur Gemini CLI, Gemini Enterprise, Android Studio und Firebase Studio.',
@@ -2300,8 +2291,7 @@ const I18N = {
     mcp_remote_desc: 'Immediately available, always up to date. No download required. Server endpoint:',
     mcp_setup_heading: 'Setup per client',
     mcp_setup_intro: 'Endpoint <code style="font-size:12px">https://mcp.opencaselaw.ch</code> · Streamable HTTP (recommended) and SSE · no authentication · tools are read-only.',
-    mcp_claudeai_step: 'Settings → Connectors → "Add custom connector" → name "Swiss Caselaw" and paste the URL. Requires Pro, Max, Team or Enterprise.',
-    mcp_claude_desktop_step: 'Settings → Connectors → "Add custom connector" → name and URL. Streamable HTTP, OAuth optional. Pro / Max / Team / Enterprise.',
+    mcp_claudeai_step: '<strong>Customize</strong> (Anpassen · Personnaliser · Personalizza) → <strong>Connectors</strong> → "+" → "Add custom connector" → paste the URL. Or direct: <a href="https://claude.ai/settings/connectors?modal=add-custom-connector" style="color:var(--ac)">claude.ai/settings/connectors</a>. Available on Free (max. 1 connector), Pro, Max, Team, Enterprise. On Team/Enterprise the Owner must first enable it via <em>Organization Settings → Connectors → Add → Custom → Web</em>.',
     mcp_chatgpt_step: 'Settings → Connectors → "Create" (if needed: Advanced settings → enable Developer mode). Name "Swiss Caselaw" and paste the URL, auth: None. ChatGPT Web on Business / Enterprise / Edu only; the model must support MCP tool calls.',
     mcp_cursor_step: 'Settings → Features → MCP → "+ Add new MCP server", or in <code style="font-size:12px">~/.cursor/mcp.json</code>:',
     mcp_gemini_step: 'CLI command or <code style="font-size:12px">~/.gemini/settings.json</code>. The web app gemini.google.com does not currently support custom MCP servers — only Gemini CLI, Gemini Enterprise, Android Studio and Firebase Studio do.',
