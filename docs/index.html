@@ -2314,7 +2314,7 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
 <header class="hero-v3" id="top">
     <div class="hero-v3-content">
       <div class="hero-v3-stat">
-        <span class="hero-v3-num" id="hero-decisions">971&rsquo;067</span>
+        <span class="hero-v3-num" id="hero-decisions">972&rsquo;650</span>
         <span class="hero-v3-label" data-t="hero_v3_label">published Swiss court decisions</span>
       </div>
       <p class="hero-v3-function" data-t="hero_v3_function">Every published Swiss court decision, every federal article, every cited authority — accessible to AI in one URL.</p>
@@ -5382,15 +5382,22 @@ function renderHero(data) {
   const shouldAnimate = !window._heroAnimated;
   window._heroAnimated = true;
 
-  // Main hero number — sourced LIVE from updateLiveDbStamp() below
-  // (via mcp.opencaselaw.ch/health). 2026-05-19 cleanup: previously
-  // animated from stats.json data.total, which lagged the live count
-  // by up to a day. We now skip the stats.json path entirely so the
-  // big visible number always matches what the MCP workers actually
-  // serve. The animation flourish moves to updateLiveDbStamp's first
-  // invocation. data.total is still used for the language-share
-  // percentage breakdowns below (those track an aggregate snapshot
-  // and would distort if the denominator drifted live).
+  // Main hero number — primary live source is updateLiveDbStamp()
+  // below (mcp.opencaselaw.ch/health), which overwrites this with an
+  // animated 0→live climb on first arrival. data.total is the
+  // ≤24h-stale stats.json snapshot; cache it as _lastStatsTotal so
+  // updateLiveDbStamp's catch handler can fall back to it if /health
+  // is unreachable, instead of leaving the hero stuck on the multi-
+  // day-stale baked-in HTML value. If /health already failed before
+  // stats.json arrived, repair the hero here too. data.total also
+  // drives the language-share percentages below (aggregate snapshot
+  // denominator — must not drift live without numerator).
+  if (typeof data.total === 'number') {
+    window._lastStatsTotal = data.total;
+    if (window._heroDecisionsHealthFailed && !window._heroDecisionsLiveAnimated) {
+      setText('hero-decisions', fmt(data.total));
+    }
+  }
   // Courts
   if (data.court_count) {
     setText('hero-courts', data.court_count);
@@ -5543,6 +5550,15 @@ function updateLiveDbStamp() {
     })
     .catch(function () {
       if (el.parentElement) el.parentElement.hidden = true;
+      // /health unreachable — fall back to the stats.json snapshot
+      // (≤24h stale) so the hero number doesn't get stuck on the
+      // multi-day-stale baked-in HTML fallback. _lastStatsTotal is
+      // set by renderHero; both race orderings are handled (renderHero
+      // also re-applies this if it runs after a failed /health).
+      window._heroDecisionsHealthFailed = true;
+      if (window._lastStatsTotal != null && !window._heroDecisionsLiveAnimated) {
+        setText('hero-decisions', fmt(window._lastStatsTotal));
+      }
     });
 }
 
