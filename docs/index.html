@@ -2323,39 +2323,30 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
         <a href="/mcp/" class="hero-v3-link"><span data-t="hero_cta_connect_v3">Connect</span> <span class="hero-v3-arrow">→</span></a>
         <a href="/search/" class="hero-v3-link"><span data-t="hero_cta_browse_v3">Browse</span> <span class="hero-v3-arrow">→</span></a>
       </nav>
-      <!-- Two stamps, two concepts (often confusing if not labelled).
-           Stamp 1 = the *daily summary on this page* (regenerated once
-           per nightly rebuild — that's why "yesterday" + a fixed delta).
-           Stamp 2 = the *live searchable database* (updates whenever a
-           new decision lands in production, typically within 15 minutes
-           for BGer). Without the prefix labels users assume the two
-           timestamps describe the same thing and ask why they disagree.
-           See 2026-05-19 UX iteration. -->
-      <p class="hero-v3-stamp" aria-label="Daily summary on this page — refreshed once per night with the corpus rebuild">
-        <strong data-t="hero_v3_kind_daily">Daily summary</strong>
-        <span class="sep">·</span>
-        <span data-t="hero_v3_asof">As of</span>
-        <time id="hero-stamp-date"><span class="skel skel--date"></span></time>
-        <span class="sep">·</span>
-        <span>+<span id="hero-stamp-delta">0</span></span>
-        <span data-t="hero_v3_since">since yesterday</span>
-      </p>
-      <p class="hero-v3-stamp" aria-label="Live database — updates whenever a new decision lands in production">
-        <!-- Fetched cross-origin from mcp.opencaselaw.ch/health (CORS *).
-             Shows when the live FTS5 DB was last swapped (db_generation,
-             a unix ts). Updates after every quick_publish (bger-poller)
-             or full rebuild. The JS prepends a "Live database · " label
-             per locale so layperson readers see that this number is the
-             real-time search corpus, not the page's daily summary. -->
+      <!-- Single freshness stamp reflecting the LIVE database (the one
+           the MCP workers serve). Updates after every quick_publish
+           (bger-poller) or full rebuild. We removed the second
+           "daily summary · as of yesterday" stamp on 2026-05-19 —
+           it caused confusion because users couldn't tell why two
+           timestamps disagreed. The single source of truth is now the
+           live DB, fetched from mcp.opencaselaw.ch/health (CORS *)
+           and refreshed every 60s. The legacy stats.json delta and
+           snapshot timestamp still exist in stats.json itself for the
+           historical record but no longer surface here in the hero.
+           Hidden elements below keep renderHero/setText calls from
+           NPE'ing now that the stamp paragraph is gone. -->
+      <p class="hero-v3-stamp" aria-label="Live database — what the MCP workers serve right now">
         <span id="hero-live-db"><span class="skel skel--date"></span></span>
-      </p>
-      <p class="hero-v3-stamp" style="color: var(--text-3); font-size: 0.85em; max-width: 60ch;" data-t="hero_v3_stamps_explainer">
-        The page's <em>daily summary</em> refreshes once per night during the corpus rebuild. The <em>live database</em> picks up new decisions throughout the day — Federal Court rulings typically appear within 15 minutes of publication.
       </p>
       <!-- Hidden compatibility IDs (legacy stats.json updater targets).
            Kept so renderHero / renderSnapshot in <script> never throw on
-           missing elements after the 2026-04-25 visual cleanup. -->
+           missing elements after the 2026-04-25 visual cleanup.
+           hero-stamp-date / hero-stamp-delta were promoted to hidden in
+           the 2026-05-19 single-stamp cleanup so the renderHero JS that
+           still sets them doesn't NPE. -->
       <div aria-hidden="true" style="display:none">
+        <time id="hero-stamp-date"></time>
+        <span id="hero-stamp-delta">0</span>
         <span id="hero-courts"></span>
         <span id="hero-earliest"></span><span id="hero-latest"></span>
         <span id="hero-lang-de-num"></span><span id="hero-lang-de-bar"></span><span id="hero-lang-de-pct"></span>
@@ -5509,17 +5500,22 @@ function updateLiveDbStamp() {
       const timeStr = dt.toLocaleTimeString(loc, {
         hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC',
       });
-      // Prefix label disambiguates from the "Daily summary" stamp
-      // above (which only refreshes once per nightly rebuild). The
-      // word "live" / "in direct" / "in tempo reale" is the
-      // layperson hook — readers see immediately that this number
-      // is the real-time search corpus, not the page's summary.
+      // Single freshness stamp post-2026-05-19 cleanup. The phrase
+      // bundles the three pieces of information a reader actually
+      // wants: how many decisions are searchable RIGHT NOW, when
+      // the database was last updated (absolute UTC), and how long
+      // ago that was (relative). This is the source of truth — the
+      // MCP workers, REST API, and Word add-in all serve from this
+      // exact DB at this exact moment.
+      const count = (data.decisions || 0).toLocaleString(
+        ({de:'de-CH',fr:'fr-CH',it:'it-CH',rm:'de-CH',en:'en-GB'})[curLang] || 'de-CH'
+      );
       const phrases = {
-        de: `Live-Datenbank · ${dateStr} ${timeStr} UTC · vor ${age}`,
-        fr: `Base de données en direct · ${dateStr} ${timeStr} UTC · il y a ${age}`,
-        it: `Database in tempo reale · ${dateStr} ${timeStr} UTC · ${age} fa`,
-        en: `Live database · ${dateStr} ${timeStr} UTC · ${age} ago`,
-        rm: `Banca da datas en direct · ${dateStr} ${timeStr} UTC · ${age} ago`,
+        de: `Live-Datenbank · ${count} Entscheide · zuletzt aktualisiert ${dateStr} ${timeStr} UTC (vor ${age})`,
+        fr: `Base de données en direct · ${count} décisions · dernière mise à jour ${dateStr} ${timeStr} UTC (il y a ${age})`,
+        it: `Database in tempo reale · ${count} decisioni · ultimo aggiornamento ${dateStr} ${timeStr} UTC (${age} fa)`,
+        en: `Live database · ${count} decisions · last refreshed ${dateStr} ${timeStr} UTC (${age} ago)`,
+        rm: `Banca da datas en direct · ${count} decisiuns · ultima actualisaziun ${dateStr} ${timeStr} UTC (avant ${age})`,
       };
       el.textContent = phrases[curLang] || phrases.de;
       // Hover/tap reveals the absolute UTC swap moment (good for
