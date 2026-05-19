@@ -80,7 +80,7 @@ The OpenCaseLaw corpus comprises \textbf{971{,}992 decisions} from \textbf{108 d
 
 \paragraph{Completeness.} Some source portals impose access restrictions (geographic, rate, or contractual). We document affected sources in the per-source coverage report, do not claim full coverage where access is restricted, and use only legally authorized collection methods. For closed historical archives where contemporaneous collection is no longer possible, we recover from publicly archived snapshots (e.g.\ Wayback Machine; $\sim$903 BL ALS judgments).
 
-\paragraph{Licensing.} Court decisions in Switzerland are official published acts; the corpus packaging and added metadata are released CC0 to the extent rights exist. Upstream sources retain their own terms: scholarly commentaries are CC-BY-4.0 (OnlineKommentar.ch) and CC-BY-SA-4.0 (OpenLegalCommentary.ch); the cantonal-level mirror entscheidsuche.ch~\cite{entscheidsuche} which we federate as one input source is CC-BY-4.0. Decision IDs are stable across daily refreshes barring documented corrections (see \S\ref{sec:qc} case studies).
+\paragraph{Licensing.} Court decisions in Switzerland are official published acts under URG/CopA Art.~5 (excluded from copyright); the corpus packaging and added metadata are released CC0 to the extent rights subsist. Upstream sources retain their own terms: scholarly commentaries are CC-BY-4.0 (OnlineKommentar.ch) and CC-BY-SA-4.0 (OpenLegalCommentary.ch); the cantonal-level mirror entscheidsuche.ch~\cite{entscheidsuche} which we federate as one input source is CC-BY-4.0. Per-record license categories, the URG Art.~5 posture, the FADP (Swiss data protection) treatment of personal data, and the takedown procedure are documented in Appendix~\ref{app:licensing}. Decision IDs are stable across daily refreshes barring documented corrections (see \S\ref{sec:qc} case studies).
 
 %==================================================================
 \section{Resource: knowledge graph}\label{sec:graph}
@@ -212,7 +212,7 @@ The early-adoption signal --- a Swiss-French law firm and a cantonal-government 
 
 \paragraph{Italian-target coverage.} No top-50 case is originally Italian (top-50 is dominated by social-insurance and procedural BGEs that originate in the German-language stream). This is consistent with the corpus distribution among most-cited decisions but is a coverage gap; v2.0 will explicitly include Italian-original cases sampled at lower citation centrality.
 
-\paragraph{Privacy.} Court decisions in Switzerland are public acts. Pseudonymisation practice varies across cantons and even across the same court's chambers; the corpus inherits whatever pseudonymisation the source decision carries. We do not de-pseudonymise, and we also do not re-pseudonymise material that the issuing court already published un-pseudonymised. We support take-down requests through the contact channel listed on the public dashboard.
+\paragraph{Privacy.} Court decisions in Switzerland are public acts. Pseudonymisation practice varies across cantons and even across the same court's chambers; the corpus inherits whatever pseudonymisation the source decision carries. We do not de-pseudonymise, and we also do not re-pseudonymise material that the issuing court already published un-pseudonymised. We support take-down requests through the contact channel listed on the public dashboard. The Pro features of the Word add-in apply client-side structural PII redaction before any LLM round-trip; the full FADP posture and takedown SLA are documented in Appendix~\ref{app:licensing}.
 
 \paragraph{Calibration.} The grounding-judge rail (R5) is a judge-mediated LLM call; we report a 41.7\,\% false-positive rate on correct drafts (the figure cited consistently in Section~\ref{sec:audit} and \path{sections/audit_pipeline.tex}). Full-binary deployment would over-flag; we recommend the rail be used in advisory mode pending v2.0 calibration work.
 
@@ -247,5 +247,8 @@ All artifacts are publicly available:
 \section{MCP liveness telemetry (aggregate)}\label{app:adoption}
 We log only request user-agent and request volume on the public MCP endpoint. We do not log query payloads, response payloads, or any client-matter facts. The aggregate counts in Table~\ref{tab:adoption_signal} cover the window 12 April--9 May 2026 (four weeks). Per the licence and privacy posture in Sec.~\ref{sec:limit}, this telemetry is not a measure of correctness or professional reliance --- only of liveness.
 \input{tables/adoption_signal.tex}
+
+\section{Legal posture, licensing, FADP}\label{app:licensing}
+\input{sections/appendix_e_licensing.tex}
 
 \end{document}

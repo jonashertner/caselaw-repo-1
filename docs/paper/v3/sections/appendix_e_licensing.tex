@@ -1,0 +1,140 @@
+% =====================================================================
+% Appendix E — Legal posture, licensing per record category, FADP
+%
+% Self-contained legal-posture statement for the OpenCaseLaw resource.
+% Section~\ref{sec:corpus} ("Licensing") gives the high-level summary;
+% this appendix is the full machine-actionable license matrix plus the
+% Swiss-law specifics (copyright posture under URG Art.~5, personal-data
+% treatment under FADP). Cited by Sec.~\ref{sec:corpus} and
+% Sec.~\ref{sec:limit}.
+% =====================================================================
+
+\paragraph{Scope.} This appendix documents the legal posture of the
+released resource. It is an operator statement, not a legal opinion;
+no Swiss data-protection lawyer has yet reviewed it. A formal
+adversarial review is part of the v2.0 release plan.
+
+\paragraph{Record-level license categories.} The corpus is a federation
+of materials with heterogeneous upstream provenance. Table~\ref{tab:license_matrix}
+gives the per-source breakdown.
+
+\begin{table}[h!]
+\centering
+\caption{Per-source license category. ``Native'' columns identify the
+upstream rights regime; ``Our addition'' columns isolate the
+incremental metadata our pipeline produces. Aggregations and derived
+graphs combine both layers; see prose below.}
+\label{tab:license_matrix}
+\begin{tabular}{l l l l}
+\toprule
+Material & Native rights & Native licence & Our addition \\
+\midrule
+Federal court decisions (BGer, BVGer, BStGer, \dots) & official act, URG Art.~5 excl. & --- & CC0 \\
+Cantonal court decisions & official act, URG Art.~5 excl. & --- & CC0 \\
+Federal statutes (Fedlex SR) & official act, URG Art.~5 excl. & --- & CC0 \\
+Cantonal statutes (LexWork, SIL, ZH OpenData, \dots) & official act, URG Art.~5 excl. & --- & CC0 \\
+Federal Council Botschaften (Fedlex JOLUX) & official act, URG Art.~5 excl. & --- & CC0 \\
+entscheidsuche.ch (federation source) & aggregator & CC-BY-4.0 & CC0 (our diff) \\
+OnlineKommentar.ch (commentary) & scholarship & CC-BY-4.0 & CC0 (anchor only) \\
+OpenLegalCommentary.ch (commentary) & scholarship & CC-BY-SA-4.0 & CC-BY-SA-4.0 (propagated) \\
+Citation graph (extracted edges) & derived from URG~5 + our extractor & --- & CC0 \\
+Statute graph (extracted edges) & derived from URG~5 + our extractor & --- & CC0 \\
+QC ground-truth tables (curator notes) & --- & --- & CC0 \\
+Search-quality benchmarks & --- & --- & CC0 \\
+Cross-lingual question set & --- & --- & CC0 \\
+Code (scrapers, MCP server, builders) & --- & --- & MIT \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Swiss copyright posture (URG Art.~5).} The Swiss Federal Act
+on Copyright (\emph{Urheberrechtsgesetz}, URG / SR 231.1), Art.~5,
+excludes from copyright protection ``official acts'' including laws,
+decisions, and reports of public authorities. The published text of
+court decisions and statutes thus carries no underlying rights restriction.
+Our packaging (deterministic identifiers, normalised metadata,
+deduplication tables, citation/statute graphs) is an independent work
+which we release CC0 to the extent any rights subsist. No portion of
+the corpus relies on an asserted database right (\emph{sui generis}
+database protection, which Switzerland does not recognise).
+
+\paragraph{Federation and propagation.} Two upstream sources carry
+their own licences which we honour:
+
+\begin{itemize}
+\item \emph{entscheidsuche.ch} (CC-BY-4.0) is one of our federation
+inputs at the per-shard level. Where a decision is sourced from
+entscheidsuche we preserve the attribution chain in
+\path{decision_source} metadata; downstream redistribution should
+honour the upstream attribution requirement.
+
+\item \emph{OpenLegalCommentary.ch} (CC-BY-SA-4.0) commentary text,
+when surfaced in the \texttt{get\_commentary} tool, propagates the
+share-alike obligation to any derivative work that incorporates the
+commentary text verbatim. Our metadata anchors (statute reference,
+URL, commentary title, author, license tag) are CC0; the commentary
+\emph{body text} retains its CC-BY-SA status. Users who include
+verbatim commentary text in a derived corpus must redistribute under
+CC-BY-SA-4.0.
+\end{itemize}
+
+\paragraph{Personal data treatment (FADP).} Swiss court decisions are
+made public by the issuing court; our pipeline does not introduce
+personal data that was not already present in the source. We adhere
+to the following principles under the revised Federal Act on Data
+Protection (FADP, in force since 2023-09-01, RS 235.1):
+
+\begin{itemize}
+\item \emph{Source pseudonymisation is inherited unchanged.} Most
+federal decisions are pseudonymised by the issuing court (parties
+appear as \emph{A.}, \emph{X.\ AG}, etc.); some cantonal decisions
+are published in unredacted form by the issuing court itself. We
+neither re-pseudonymise material the court chose to publish nor
+de-pseudonymise material the court chose to redact.
+
+\item \emph{Takedown procedure.} Removal requests reach us via
+\path{team@jonashertner.com} or through the contact link on
+\url{https://opencaselaw.ch}. Our standard response is to verify that
+the request matches an indexed decision, apply the redaction within
+five working days, propagate the change through the nightly publish
+pipeline, and append a public note to \path{docs/governance-and-removal-policy.md}
+documenting the action (date, decision ID, redaction class).
+Verified court-side takedown notifications (where the issuing court
+itself withdraws the decision) are honoured the same way without
+counter-verification.
+
+\item \emph{No query logging.} The deployed MCP endpoint does not
+log query payloads or response payloads. The nginx access log
+captures only request user-agent and request volume (Appendix~\ref{app:adoption});
+no client matter, document content, or natural-language search
+string is retained. Differential-privacy noise is applied to the
+public adoption-signal aggregates before publication.
+
+\item \emph{Pro-feature client-side PII redaction.} The Word add-in's
+Pro feature set (\emph{Verify}, \emph{Strengthen}, \emph{Find~Support},
+\emph{Reflect}) operates on lawyer-drafted text that may contain
+client matters. Before any LLM round-trip the add-in applies
+client-side structural redaction (e.g.\ AHV numbers, IBANs, AVS/AVS
+identifiers, email addresses, phone numbers, dates of birth) and
+ships only the redacted payload. The server reapplies the same
+redactor as a defence-in-depth layer and rejects requests that still
+contain structurally-detectable PII with HTTP~400. We do not log Pro
+requests beyond a per-license daily counter (25 calls/day cap).
+\end{itemize}
+
+\paragraph{Liability and contact.} The resource is provided
+``as-is''. The corpus is a research and analysis substrate, not a
+substitute for qualified legal counsel; outputs of any tool built on
+the corpus should be verified against the original published
+decision. Operational contact for takedown requests, licensing
+questions, and incident reports is \path{team@jonashertner.com}; the
+governance policy is at
+\path{docs/governance-and-removal-policy.md} in the source
+repository.
+
+\paragraph{Open items for v2.0.} A formal review by a Swiss
+data-protection practitioner is on the v2.0 backlog, as is publication
+of a per-record license-tag field in the Parquet export (currently
+implicit in the source-court mapping). Aggregating commentary text
+into derived models would also require an explicit CC-BY-SA
+compliance regime which our current release does not need.
