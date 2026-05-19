@@ -1101,7 +1101,7 @@ def _render_decision(
     <div>
       <a class="brand" href="https://opencaselaw.ch/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
       <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
-        Open Swiss case law. CC-BY-4.0. Public-good infrastructure.
+        Open Swiss case law. Dataset packaging CC0 · Code MIT. Public-good infrastructure.
       </p>
     </div>
     <div>
@@ -1133,7 +1133,7 @@ def _render_decision(
     </div>
   </div>
   <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
-    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC-BY-4.0 · Code MIT
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC0 · Code MIT
   </div>
 </footer>
 
