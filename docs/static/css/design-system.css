@@ -112,6 +112,36 @@
   }
 }
 
+/* Explicit data-theme='dark' — page-level JS (docs/index.html line 4549
+   and similar across other pages) sets this attribute based on
+   prefers-color-scheme. The @media block above gated the dark tokens on
+   data-theme='auto' or no-attribute only, so once JS flipped the value
+   to 'dark' the dark token overrides stopped applying. Result: pieces
+   that referenced design-system tokens (--bg-soft, --text, --text-3,
+   --border) like the .lang-sw language pills in the mobile nav drawer
+   rendered with light-mode colors (white background, dark text) on top
+   of dark backgrounds. Keep these values byte-identical to the @media
+   block above. */
+:root[data-theme='dark'] {
+  --bg: #0f0f10;
+  --bg-muted: #161618;
+  --bg-soft: #1c1c20;
+  --surface: #1c1c1f;
+  --surface-2: #232327;
+  --border: #2e2e34;
+  --border-strong: #44444c;
+  --text: #fafafa;
+  --text-2: #c4c4c8;
+  --text-3: #8b8b92;
+  --accent: #f87171;
+  --accent-soft: #2c1014;
+  --green: #4ade80;
+  --green-soft: #102019;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-3: 0 16px 40px rgba(0, 0, 0, 0.7), 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
 /* ── Base ──────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
 html { background: var(--bg); }
