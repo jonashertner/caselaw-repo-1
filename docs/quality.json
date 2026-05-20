@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-05-19T14:32:11+00:00",
+  "run_at": "2026-05-20T14:41:02+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 1084.91,
+  "duration_seconds": 1207.67,
   "summary": {
     "total": 52,
     "passed": 52,
@@ -93,17 +93,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 972650,
-        "distinct": 972650
+        "total": 972880,
+        "distinct": 972880
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 972650,
+      "metric_value": 972880,
       "threshold": 950000,
-      "message": "corpus total: 972,650",
+      "message": "corpus total: 972,880",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -113,9 +113,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 366829,
+      "metric_value": 366881,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 366,829 hits",
+      "message": "FTS5 'Beschwerde' query: 366,881 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -169,9 +169,9 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 450301,
-          "fr": 441585,
-          "it": 80764
+          "de": 450435,
+          "fr": 441671,
+          "it": 80774
         }
       }
     },
@@ -179,16 +179,16 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.29630391199301,
+      "metric_value": 46.2991324726585,
       "threshold": 30.0,
       "message": "DE 46.3% / FR 45.4% / IT 8.3% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 450301,
-        "fr": 441585,
-        "it": 80764
+        "de": 450435,
+        "fr": 441671,
+        "it": 80774
       }
     },
     {
@@ -567,9 +567,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 92389,
+      "metric_value": 92405,
       "threshold": 1,
-      "message": "bvger: 92,389 decisions",
+      "message": "bvger: 92,405 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",
@@ -579,9 +579,9 @@
       "name": "courts.federal_present.bstger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 11463,
+      "metric_value": 11470,
       "threshold": 1,
-      "message": "bstger: 11,463 decisions",
+      "message": "bstger: 11,470 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bstger",
@@ -603,9 +603,9 @@
       "name": "courts.federal_present.bger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 175625,
+      "metric_value": 175650,
       "threshold": 1,
-      "message": "bger: 175,625 decisions",
+      "message": "bger: 175,650 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bger",
@@ -641,12 +641,12 @@
       "passed": true,
       "metric_value": 0,
       "threshold": 0,
-      "message": "all 108 court codes look canonical",
+      "message": "all 109 court codes look canonical",
       "sample_rows": [],
       "fix_advice": "court ids must match `[a-z][a-z0-9_]*`. Investigate the scraper writing this row's court value.",
       "court": null,
       "extra": {
-        "distinct_courts": 108
+        "distinct_courts": 109
       }
     }
   ]

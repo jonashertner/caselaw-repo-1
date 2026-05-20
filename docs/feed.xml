@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 19 May 2026 14:10:13 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 May 2026 14:17:16 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -27,6 +27,26 @@ Président :
 Jérô…</description>
       <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_101 2026 95</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>fr_gerichte 602 2025 117 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_602%202025%20117</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+602 2025 117
+Arrêt du 29 avril 2026
+IIe Cour administrative
+Composition
+Présidente…</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_602 2025 117</guid>
       <category>fr_gerichte</category>
     </item>
     <item>
@@ -319,6 +339,27 @@ Présidente :…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>fr_gerichte 101 2026 55 vom 2026-05-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2055</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+101 2026 55
+101 2026 56
+Arrêt du 30 avril 2026
+Ie Cour d’appel civil
+Composition
+P…</description>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_101 2026 55</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
       <title>be_verwaltungsgericht 200 2025 811 vom 2026-05-18</title>
       <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20811</link>
       <description>IV 200 2025 811
@@ -372,6 +413,27 @@ Président :
 Mich…</description>
       <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_501 2026 39</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>fr_gerichte 604 2024 152 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_604%202024%20152</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+604 2024 152
+604 2024 153
+Arrêt du 6 mai 2026
+Cour fiscale
+Composition
+Président :…</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_604 2024 152</guid>
       <category>fr_gerichte</category>
     </item>
     <item>
@@ -768,6 +830,52 @@ Participants …</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesgericht 7B_480/2026 vom 2026-05-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_480_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+7B_480/2026
+
+Urteil vom 11. Mai 2026
+
+II. strafrechtliche Abteilung
+
+Besetzung
+
+Bundesrichterin Koch, als Einzelrichterin,
+
+Gerichtsschreiber Hahn.
+
+Verfahrensbeteiligte
+
+A.______…</description>
+      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_480.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-988/2026 vom 2026-05-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-988_2026</link>
+      <description>Ecoles polytechniques fédérales (sans le personnel)</description>
+      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-988.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-3117/2026 vom 2026-05-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3117_2026</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
+      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3117.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 605 2025 19 vom 2026-05-11</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202025%2019</link>
       <description>Tribunal cantonal TC
@@ -826,123 +934,15 @@ Moses, Vors…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
-      <title>be_verwaltungsgericht 100 2024 267 vom 2026-05-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202024%20267</link>
-      <description>100.2024.267U
-HER/LLA/SRE
-Verwaltungsgericht des Kantons Bern
-Verwaltungsrechtliche Abteilung
-Urteil vom 16. April 2026
-Verwaltungsrichterin Herzog, präsidierendes Mitglied
-Verwaltungsrichter Häberli, Verwaltungsrichterin Steinmann
-Gerichtsschreiberi…</description>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_100 2024 267</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_208/2026 vom 2026-05-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_208_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_208/2026
-
-Arrêt du 8 mai 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-A.________,
-
-re…</description>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_208.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>bs_appellationsgericht AUS.2026.40 vom 2026-05-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.40</link>
-      <description>Appellationsgericht
-
-des Kantons Basel-Stadt
-
-als Verwaltungsgericht
-
-Einzelrichterfür Zwangsmassnahmen imAusländerrecht
-
-AUS.2026.40
-
-URTEIL
-
-vom8.
-Mai 2026
-
-Beteiligte
-
-Migrationsamt des Kantons
-Basel-Stadt,
-
-Spiegelgasse 12, Postfach, 4001
-Base…</description>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.40</guid>
-      <category>bs_appellationsgericht</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-1848/2026 vom 2026-05-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1848_2026</link>
-      <description>Asile et renvoi (procédure accélérée)</description>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1848.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-6036/2023 vom 2026-05-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-6036_2023</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-6036.2023</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>sh_gerichte Nr. 51/2025/53 vom 2026-05-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/sh_gerichte_Nr.%2051_2025_53</link>
-      <description>Bei einer nach Art. 91 Abs. 4 StPO weitergeleiteten Eingabe entscheidet allein die zuständige Behörde über die Eintretensvoraussetzungen (E. 3.1.3).
-Wurde die unzuständige Behörde nicht in rechtsmissbräuchlicher Weise bewusst angerufen (E. 3.2.2–3.2.…</description>
-      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">sh_gerichte_Nr. 51_2025_53</guid>
-      <category>sh_gerichte</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 100 2024 400 vom 2026-05-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202024%20400</link>
-      <description>100.2024.400/401U
-HAT/COS/SRE
-Verwaltungsgericht des Kantons Bern
-Verwaltungsrechtliche Abteilung
-Urteil des Einzelrichters vom 15. April 2026
-Verwaltungsrichter Häberli
-Gerichtsschreiberin Corazza
-A.________
-Beschwerdeführer
-gegen
-Steuerverwaltung d…</description>
-      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_100 2024 400</guid>
-      <category>be_verwaltungsgericht</category>
+      <title>ne_gerichte CDP.2025.192 vom 2026-05-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2025.192</link>
+      <description>A.A.________,né en 1969, a
+été engagé par B.________ SA dès le 18 septembre 2023 pour un contrat de
+mission en qualité de manutentionnaire.A ce titre, il était assuré contre le risque
+d'accidents auprès de la Caisse nationale suisse d'assurance en…</description>
+      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ne_gerichte_CDP.2025.192</guid>
+      <category>ne_gerichte</category>
     </item>
   </channel>
 </rss>
