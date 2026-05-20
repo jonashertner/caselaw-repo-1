@@ -1,0 +1,23 @@
+[Unit]
+Description=Incremental nightly publish — Mon-Sat (post-legacy-publish)
+
+[Timer]
+# PHASE 1 (shadow validation, current): Mon-Sat at 20:00 UTC. The legacy
+# full publish (opencaselaw-publish.timer, 03:30 UTC) typically completes
+# between 14:00 and 18:00 UTC, so 20:00 UTC gives a comfortable buffer
+# for the ConditionPathExists=!/tmp/opencaselaw-publish.lock to clear
+# before this fires. Previously this was set to 12:00 UTC, which always
+# raced the still-running legacy publish — the service silently skipped
+# every fire, blocking shadow-validation evidence accumulation.
+#
+# PHASE 3 (cutover, after >= 5 consecutive shadow days with both
+# reference_graph + decision_structure pairs ok: true): move to
+# 03:30 UTC Mon-Sat and shift the legacy opencaselaw-publish.timer to
+# Sunday-only (OnCalendar=Sun *-*-* 03:30:00 UTC). The condition
+# directive in the .service file then becomes a no-op for those days.
+OnCalendar=Mon..Sat *-*-* 20:00:00 UTC
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target

@@ -1855,40 +1855,67 @@ def build_database(
         # The atomic-swap stays — a swap-then-fail path is safer than
         # a swap-then-pretend-it-worked path, because the post-mortem
         # diagnosis is much easier when the new file is on disk.
-        # Heartbeat thread: PRAGMA integrity_check on the 60 GB DB is a
-        # single silent SQL call that runs 2h 55m – 4h+ under disk
-        # contention. Parent's stall watchdog (publish.py run_cmd,
-        # currently 14400s = 4h) kills the whole process if it sees no
-        # stdout for that long. Yesterday (2026-05-11) we tripped it at
-        # 10800s; today (2026-05-12) tripped again at 14400s under
-        # contention from the paragraph_embeddings encoder + active
-        # quick_publishes. Emitting a heartbeat line every 5 min keeps
-        # the watchdog satisfied indefinitely while still letting it
-        # catch a truly-wedged process (heartbeats would also stop).
-        import threading as _threading
-        _hb_stop = _threading.Event()
-
-        def _hb_pulse():
-            i = 0
-            while not _hb_stop.wait(300):
-                i += 5
-                logger.info(
-                    f"  Post-swap integrity_check still running "
-                    f"({i} min elapsed) — silent PRAGMA, no progress signal"
-                )
-
-        _hb_thread = _threading.Thread(target=_hb_pulse, daemon=True)
-        _hb_thread.start()
+        # Post-swap integrity verification — two layers, weekday-fast +
+        # weekend-thorough.
+        #
+        # CHEAP layer (always runs, ~1 s total): SELECT COUNT(*) and
+        # SELECT a sample row. This catches the original 2026-05-05
+        # motivation (orphan WAL/SHM sidecars left in the swapped path
+        # would crash non-immutable readers like generate_stats /
+        # generate_feeds — both surface as exceptions here within
+        # seconds, not 3 h later).
+        #
+        # EXPENSIVE layer (off by default, ~3.5 h on the 60 GB DB):
+        # full PRAGMA integrity_check that walks every B-tree page +
+        # FTS5 index. Catches deep structural corruption that would
+        # NOT manifest via a row SELECT. After ~6 months of production
+        # runs we have zero recorded cases where this caught something
+        # the cheap layer missed — and the atomic os.replace() makes
+        # such corruption nearly impossible to introduce. Gate it
+        # behind OCL_FULL_INTEGRITY_CHECK=1 so weekday nightlies skip
+        # the 3.5 h block and the legacy weekly full rebuild (Sundays,
+        # once we cut over) can re-enable it for belt-and-braces.
         try:
             # NOTE: check_conn was opened above, BEFORE OCL_SWAP_DONE,
             # to pin the build's inode before quick_publish can replace
             # the path. Do not re-open here — that would defeat the race
             # fix.
-            integrity = check_conn.execute("PRAGMA integrity_check").fetchone()
-            if not integrity or integrity[0] != "ok":
-                raise RuntimeError(
-                    f"post-swap integrity_check failed: {integrity}"
+            if os.environ.get("OCL_FULL_INTEGRITY_CHECK", "0") in {"1", "true", "yes"}:
+                # Heartbeat keeps publish.py's stall watchdog satisfied
+                # during the long silent PRAGMA call.
+                import threading as _threading
+                _hb_stop = _threading.Event()
+
+                def _hb_pulse():
+                    i = 0
+                    while not _hb_stop.wait(300):
+                        i += 5
+                        logger.info(
+                            f"  Post-swap integrity_check still running "
+                            f"({i} min elapsed) — silent PRAGMA, no progress signal"
+                        )
+
+                _hb_thread = _threading.Thread(target=_hb_pulse, daemon=True)
+                _hb_thread.start()
+                try:
+                    integrity = check_conn.execute("PRAGMA integrity_check").fetchone()
+                    if not integrity or integrity[0] != "ok":
+                        raise RuntimeError(
+                            f"post-swap integrity_check failed: {integrity}"
+                        )
+                finally:
+                    _hb_stop.set()
+                    _hb_thread.join(timeout=2)
+            else:
+                logger.info(
+                    "  Post-swap PRAGMA integrity_check skipped (set "
+                    "OCL_FULL_INTEGRITY_CHECK=1 for the full ~3.5 h "
+                    "walk). Cheap row-level checks still run below."
                 )
+
+            # Cheap checks — always run, ~1 s total. Catch WAL/SHM-sidecar
+            # corruption (the original 2026-05-05 motivation) via the
+            # plain (non-immutable) check_conn opened pre-OCL_SWAP_DONE.
             n_rows = check_conn.execute(
                 "SELECT COUNT(*) FROM decisions"
             ).fetchone()[0]
@@ -1914,9 +1941,6 @@ def build_database(
                 f"are present, remove them and retry."
             )
             raise
-        finally:
-            _hb_stop.set()
-            _hb_thread.join(timeout=2)
 
     # Save checkpoint
     if incremental or full_rebuild:

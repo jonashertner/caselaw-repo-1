@@ -1,0 +1,37 @@
+[Unit]
+Description=OpenCaseLaw incremental nightly publish (Mon-Sat, shadow→in-place)
+After=network.target opencaselaw-scrape.service
+Wants=network.target
+# Don't double-fire with the legacy full-rebuild publish (currently runs
+# daily 03:30 UTC; in Phase 3 it moves to Sundays only).
+ConditionPathExists=!/tmp/opencaselaw-publish.lock
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# PHASE 1 (shadow validation, current): --skip-quick-publish so we don't
+# race the legacy full-rebuild's lock on decisions.db (quick_publish
+# already runs every hour via bger-poller — it's covered). Only the
+# graph + structure incremental builders run here, writing to sibling
+# .db files that the drift-check compares against the live (post-full-
+# rebuild) DBs. Live data is untouched.
+#
+# PHASE 3 (cutover, after 1 wk green drift): drop --skip-quick-publish
+# and add --in-place; this then becomes the primary ingestion path
+# and the legacy full rebuild moves to Sunday only.
+Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish
+# Generous timeout — the incremental run is targeted at ~10-25 min but
+# allow up to 2h for first-run state-table bootstrap.
+TimeoutStartSec=7200
+StandardOutput=append:/opt/caselaw/repo/logs/incremental_nightly.log
+StandardError=append:/opt/caselaw/repo/logs/incremental_nightly.log
+
+# Hardening — same envelope as the legacy publish service.
+ProtectSystem=strict
+ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs /mnt /tmp
+PrivateTmp=false
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
