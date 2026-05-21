@@ -181,6 +181,7 @@ main.container { max-width: var(--max-w); padding: 0 24px; }
       <a href="/mcp/">MCP</a>
       <a href="/api/">API</a>
       <a href="/standards/" aria-current="page">Standards</a>
+      <a href="/integrity/">Integrity</a>
       <a href="/quality.html">Quality</a>
     </nav>
   </div>
@@ -358,18 +359,18 @@ Die zentrale Aussage steht hier...
     <div class="num">06</div>
     <div class="body">
       <h3>Provenienz</h3>
-      <span class="label">Kryptografischer Merkle-Anker + OpenTimestamps</span>
-      <p>Bei jeder Publikation des Korpus wird ein <strong>Merkle-Baum</strong> über alle <code>{decision_id → SHA-256(canonical_full_text)}</code>-Paare berechnet. Die <strong>Wurzelhash</strong> wird</p>
+      <span class="label">RFC-6962-Merkle-Anker · OpenTimestamps · Live ab 2026-05-21</span>
+      <p>Bei jedem Publish des Korpus wird ein <strong>RFC-6962-Merkle-Baum</strong> über alle Entscheide berechnet. Jedes Blatt commitet sich zu <code>(decision_id, cli:ch, ECLI, content_hash, decision_date)</code>. Die Wurzel wird</p>
       <ul>
-        <li>in das öffentliche Git-Repository commitet (<code>docs/integrity/&lt;YYYY-MM-DD&gt;.root</code>),</li>
-        <li>via <a href="https://opentimestamps.org/">OpenTimestamps</a> auf der Bitcoin-Blockchain verankert (kostenfrei, in ~1 Stunde bestätigt),</li>
-        <li>per API als Beweispfad pro Entscheid bereitgestellt.</li>
+        <li>im öffentlichen Git-Repository committet (<code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>) — täglich, ~700 Bytes pro Publish,</li>
+        <li>via <a href="https://opentimestamps.org/">OpenTimestamps</a> auf der Bitcoin-Blockchain verankert (kostenfrei, in ~1 Stunde bestätigt) — sobald der <code>ots</code>-Client aktiv ist,</li>
+        <li>als Inklusions-Beweispfad pro Entscheid via API verfügbar (Roadmap).</li>
       </ul>
       <p>
-        Jeder KI-Agent, der eine Entscheid-Aussage zitiert, kann den zitierten Text bit-genau gegen die Publikationszeit-Hash verifizieren. Halluzination wird <strong>nicht durch Versprechen verhindert, sondern durch Mathematik nachgewiesen</strong>. Erste Implementation: 2026 Q3, mit OpenCaseLaw als Pilot-Referenz.
+        Damit kann jede zitierte Entscheid-Aussage bit-genau gegen die Publikations-Wurzel verifiziert werden — ohne opencaselaw.ch zu vertrauen. Halluzinationen werden nicht durch Versprechen verhindert, sondern durch Mathematik nachgewiesen.
       </p>
       <p>
-        <em>Status</em>: Vorschlag in Konsultation. Dies ist der einzige der sechs Standards, der nicht auf einer bereits existierenden Spezifikation aufbaut — die Konvention selbst soll auf <a href="https://openlawstandards.ch">openlawstandards.ch</a> öffentlich konsolidiert werden.
+        <em>Status</em>: produktiv ab 2026-05-21. Die Hashing-Konvention (RFC 6962, gleich wie Certificate Transparency) und das Blatt-Schema sind dokumentiert auf <a href="/integrity/">opencaselaw.ch/integrity/</a>. Dies ist der einzige der sechs Standards, der nicht ein bestehendes Schema profiliert — die Konvention soll auf <a href="https://openlawstandards.ch">openlawstandards.ch</a> öffentlich konsolidiert werden.
       </p>
     </div>
 
@@ -381,7 +382,7 @@ Die zentrale Aussage steht hier...
   <p class="sub">OpenCaseLaw.ch</p>
 
   <p>
-    Die sechs Standards sind nicht hypothetisch. <strong>Fünf von sechs sind in OpenCaseLaw.ch bereits live</strong>:
+    Die sechs Standards sind nicht hypothetisch. <strong>Alle sechs sind in OpenCaseLaw.ch bereits produktiv</strong> (Akoma Ntoso für Materialien bereits live, für Gerichtsentscheide auf der Roadmap):
   </p>
   <ul>
     <li><strong>01 Identifikation</strong>: cli:ch (Schweizer Form, primär) plus ECLI (europäische Projektion) für alle 972'880 Entscheide; beide deterministisch gemintet beim Aufruf, sichtbar in jeder API-Antwort und jeder <code>/entscheid/&lt;id&gt;</code>-Seite.</li>
@@ -389,7 +390,7 @@ Die zentrale Aussage steht hier...
     <li><strong>03 Struktur</strong>: Akoma Ntoso für Materialien (Botschaften) bereits produktiv. Für Gerichtsentscheide: Roadmap Q3 2026.</li>
     <li><strong>04 Volltext</strong>: Markdown mit Erwägungs-Ankern, Schweizer-Citation-konform. Pinpoint-Links wie <code>/entscheid/bge_BGE_140_III_86#e-2-3</code> funktionieren.</li>
     <li><strong>05 Zitationen</strong>: 6,46 Mio. aufgelöste Fall-Kanten + 11,3 Mio. Gesetzeszitate, täglich neu generiert, bidirektional verfügbar.</li>
-    <li><strong>06 Provenienz</strong>: Roadmap Q3 2026 — Merkle-Baum-Berechnung als zusätzlicher Publish-Step, OpenTimestamps-Anker und API-Endpoint für Beweispfade.</li>
+    <li><strong>06 Provenienz</strong>: produktiv ab 2026-05-21 — tägliche RFC-6962-Merkle-Wurzel über alle Entscheide unter <code>docs/integrity/&lt;datum&gt;.root</code>, dokumentiert auf <a href="/integrity/">opencaselaw.ch/integrity/</a>. OpenTimestamps-Anker und API-Endpoint für Inklusions-Beweispfade als nächste Schritte.</li>
   </ul>
 
   <p>

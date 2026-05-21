@@ -987,6 +987,37 @@ def step_5c_quality_gate(dry_run: bool = False) -> bool:
     return ok
 
 
+def step_5f_integrity_root(dry_run: bool = False) -> bool:
+    """Step 5f: Compute the daily Merkle root over the full corpus.
+
+    Bestimmung 06 of the Open Law Standards. RFC-6962 Merkle tree over
+    every decision's (decision_id, cli:ch, ECLI, content_hash,
+    decision_date). Writes ``docs/integrity/<YYYY-MM-DD>.{root,json}``
+    so the daily commit (Step 6) anchors the corpus state to a
+    verifiable Merkle root.
+
+    Non-fatal: a build failure does not block git push. The publish
+    still ships; only the day's integrity anchor is missing.
+
+    Stamps via OpenTimestamps automatically if the ``ots`` CLI is
+    available (pip install opentimestamps-client).
+    """
+    logger.info("Step 5f: Compute integrity Merkle root (Bestimmung 06)")
+    script = REPO_DIR / "scripts" / "build_integrity_root.py"
+    if not script.exists():
+        logger.warning("  build_integrity_root.py not found, skipping")
+        return True
+    cmd = [
+        sys.executable,
+        str(script),
+        "--db", str(REPO_DIR / "output" / "decisions.db"),
+        "--out-dir", str(DOCS_DIR / "integrity"),
+    ]
+    # ~14 min on the production VPS for 972k decisions (SQL iteration
+    # dominates). 30 min cap leaves headroom for growth.
+    return run_cmd(cmd, "integrity root", dry_run, timeout=1800)
+
+
 def step_5d_release_manifest(dry_run: bool = False) -> bool:
     """Step 5d: Append-only release manifest.
 
@@ -1140,6 +1171,11 @@ STEPS = [
     ("2g", "Decision Structure", step_2g_build_decision_structure),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
+    # ── Integrity Merkle root (Bestimmung 06 — Provenienz).
+    #    Runs at the end of the slow tier so content_hash is stable
+    #    (computed inside Step 2). The root file ships with the final
+    #    git push at Step 6. ~14 min for 972k decisions. ──
+    ("5f", "Integrity Root", step_5f_integrity_root),
     # ── Delta publish (env-gated; empty no-op until OCL_PUBLISH_DELTA=1) ──
     (7, "Publish Delta", step_7_publish_delta),
     # ── Refresh interesting_stats (graph + top-cited block of stats.json)
@@ -1191,6 +1227,7 @@ def _build_dag_builder_map() -> dict:
         "rss_feeds":          _wrap(step_5b_generate_feeds,              accepts_rebuild=False),
         "qc_gate":            _wrap(step_5c_quality_gate,                accepts_rebuild=False),
         "release_manifest":   _wrap(step_5d_release_manifest,            accepts_rebuild=False),
+        "integrity_root":     _wrap(step_5f_integrity_root,              accepts_rebuild=False),
         "stats_interesting":  _wrap(step_5e_interesting_stats,           accepts_rebuild=False),
         "git_push_early":     _wrap(step_6_git_push,                     accepts_rebuild=False),
         "git_push_final":     _wrap(step_6_git_push,                     accepts_rebuild=False),
