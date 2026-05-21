@@ -1,20 +1,20 @@
 {
-  "snapshot_date": "2026-05-13",
-  "total_decisions": 971992,
-  "total_courts": 108,
+  "snapshot_date": "2026-05-21",
+  "total_decisions": 972882,
+  "total_courts": 109,
   "total_cantons": 28,
   "languages": [
     {
       "lang": "de",
-      "n": 449575
+      "n": 450435
     },
     {
       "lang": "fr",
-      "n": 441158
+      "n": 441673
     },
     {
       "lang": "it",
-      "n": 80704
+      "n": 80774
     }
   ],
   "date_min": "1875-01-01",
@@ -262,129 +262,129 @@
       }
     ]
   },
-  "rg_decisions": 971852,
-  "rg_citation_edges": 8649879,
-  "rg_resolved_citations": 8089112,
-  "rg_statute_edges": 11261717,
-  "rg_distinct_statutes": 283119,
-  "rg_citing_decisions": 721303,
-  "rg_distinct_targets": 261278,
+  "rg_decisions": 972880,
+  "rg_citation_edges": 8663860,
+  "rg_resolved_citations": 8047620,
+  "rg_statute_edges": 11276187,
+  "rg_distinct_statutes": 283330,
+  "rg_citing_decisions": 722164,
+  "rg_distinct_targets": 261677,
   "top30_cited": [
     {
       "target_id": "bge_125 V 351",
-      "in_degree": 85108
+      "in_degree": 66883
     },
     {
       "target_id": "bge_122 V 157",
-      "in_degree": 44233
+      "in_degree": 40452
     },
     {
       "target_id": "bge_134 V 231",
-      "in_degree": 36943
+      "in_degree": 36622
     },
     {
       "target_id": "bge_130 V 343",
-      "in_degree": 29625
-    },
-    {
-      "target_id": "bge_126 V 75",
-      "in_degree": 27703
-    },
-    {
-      "target_id": "bge_115 V 133",
-      "in_degree": 26308
+      "in_degree": 26917
     },
     {
       "target_id": "bge_125 V 256",
-      "in_degree": 25171
+      "in_degree": 24168
     },
     {
       "target_id": "bge_125 V 193",
-      "in_degree": 24057
+      "in_degree": 22577
     },
     {
       "target_id": "bge_126 V 353",
-      "in_degree": 23025
+      "in_degree": 22415
+    },
+    {
+      "target_id": "bge_115 V 133",
+      "in_degree": 20904
     },
     {
       "target_id": "bge_135 V 465",
-      "in_degree": 21653
+      "in_degree": 20025
     },
     {
       "target_id": "bge_137 V 210",
-      "in_degree": 20421
+      "in_degree": 19829
     },
     {
-      "target_id": "bge_141 V 281",
-      "in_degree": 19189
-    },
-    {
-      "target_id": "bge_125 V 413",
-      "in_degree": 18598
-    },
-    {
-      "target_id": "bge_130 III 321",
-      "in_degree": 18421
+      "target_id": "bge_126 V 75",
+      "in_degree": 19713
     },
     {
       "target_id": "bge_138 III 374",
-      "in_degree": 18372
+      "in_degree": 18314
+    },
+    {
+      "target_id": "bge_130 III 321",
+      "in_degree": 18191
+    },
+    {
+      "target_id": "bge_125 V 413",
+      "in_degree": 17566
+    },
+    {
+      "target_id": "bge_133 II 249",
+      "in_degree": 16470
     },
     {
       "target_id": "bge_141 V 281",
-      "in_degree": 16059
+      "in_degree": 16086
     },
     {
       "target_id": "bge_133 V 108",
-      "in_degree": 15948
+      "in_degree": 15968
     },
     {
       "target_id": "bge_136 I 229",
-      "in_degree": 14446
+      "in_degree": 14471
     },
     {
       "target_id": "bge_132 V 93",
-      "in_degree": 14298
-    },
-    {
-      "target_id": "bge_127 V 466",
-      "in_degree": 14248
+      "in_degree": 14328
     },
     {
       "target_id": "bge_129 V 177",
-      "in_degree": 14241
+      "in_degree": 14255
+    },
+    {
+      "target_id": "bge_127 V 466",
+      "in_degree": 14249
     },
     {
       "target_id": "bge_119 V 335",
-      "in_degree": 13739
+      "in_degree": 13745
     },
     {
       "target_id": "bge_134 II 244",
-      "in_degree": 12703
+      "in_degree": 12717
     },
     {
       "target_id": "bge_126 V 319",
-      "in_degree": 12270
+      "in_degree": 12271
     },
     {
       "target_id": "bge_127 V 294",
-      "in_degree": 12182
+      "in_degree": 12188
     },
     {
       "target_id": "bge_134 I 140",
-      "in_degree": 12163
+      "in_degree": 12176
     },
     {
       "target_id": "bge_121 V 362",
-      "in_degree": 11906
+      "in_degree": 11914
     },
     {
       "target_id": "bge_127 I 38",
-      "in_degree": 11862
+      "in_degree": 11868
     },
     {
       "target_id": "bge_129 V 222",
-      "in_degree": 11695
+      "in_degree": 11700
     },
     {
       "target_id": "bge_129 V 1",
@@ -394,92 +394,92 @@
   "in_degree_buckets": [
     {
       "bucket": "10000+",
-      "n": 47
+      "n": 40
     },
     {
       "bucket": "1000-9999",
-      "n": 952
+      "n": 935
     },
     {
       "bucket": "100-999",
-      "n": 9875
+      "n": 9775
     },
     {
       "bucket": "10-99",
-      "n": 67064
+      "n": 67152
     },
     {
       "bucket": "2-9",
-      "n": 106619
+      "n": 106825
     },
     {
       "bucket": "1",
-      "n": 76803
+      "n": 76950
     }
   ],
   "match_types": [
     {
       "type": "docket_norm",
-      "n": 3281573
+      "n": 3288460
     },
     {
       "type": "bge_bare",
-      "n": 2940096
+      "n": 2944527
     },
     {
       "type": "bge_norm",
-      "n": 1213866
+      "n": 1216702
     },
     {
       "type": "bge_pincite",
-      "n": 652283
+      "n": 652547
     }
   ],
   "cross_lang_matrix": [
     {
       "src": "de",
       "tgt": "de",
-      "n": 2772516
+      "n": 2779288
     },
     {
       "src": "fr",
       "tgt": "fr",
-      "n": 2519278
+      "n": 2522708
     },
     {
       "src": "fr",
       "tgt": "de",
-      "n": 1937750
+      "n": 1939860
     },
     {
       "src": "de",
       "tgt": "fr",
-      "n": 458531
+      "n": 459563
     },
     {
       "src": "it",
       "tgt": "de",
-      "n": 168256
+      "n": 168741
     },
     {
       "src": "it",
       "tgt": "fr",
-      "n": 89212
+      "n": 89533
     },
     {
       "src": "fr",
       "tgt": "it",
-      "n": 63429
+      "n": 63497
     },
     {
       "src": "it",
       "tgt": "it",
-      "n": 46960
+      "n": 47106
     },
     {
       "src": "de",
       "tgt": "it",
-      "n": 31886
+      "n": 31940
     }
   ],
   "fed_laws": 5516,
@@ -839,5 +839,5 @@
     "UR",
     "VD"
   ],
-  "rg_citation_target_links": 8087818
+  "rg_citation_target_links": 8102236
 }
