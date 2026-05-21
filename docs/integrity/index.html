@@ -99,7 +99,7 @@ decision_date</pre>
   <ul>
     <li><strong>Live</strong>: tägliche Merkle-Wurzel + Manifest publiziert als <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.</li>
     <li><strong>Live</strong>: <a href="https://opentimestamps.org/">OpenTimestamps</a>-Anker via <code>ots stamp</code>. Die <code>.root.ots</code>-Datei wird täglich neben dem Root abgelegt und kann nach ~1 Bitcoin-Block (1–6 Std.) zu einem voll Bitcoin-verankerten Beweis aufgewertet werden (<code>ots upgrade</code>).</li>
-    <li><strong>Folgeschritt</strong>: API-Endpunkt <code>/api/integrity/&lt;decision_id&gt;</code> liefert den Inklusions-Beweispfad einer Entscheidung gegen die heutige Wurzel. Code ist in <code>integrity.py</code> (<code>merkle_proof</code>); fehlt nur die HTTP-Route.</li>
+    <li><strong>Live</strong>: API-Endpunkt <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> liefert den RFC-6962 Inklusions-Beweispfad einer Entscheidung gegen die aktuellste Wurzel. Lazy-geladene Sub-Tree-Memoisierung (~3 s First-Call, danach &lt;1 ms pro Beweis).</li>
     <li><strong>Optional</strong>: Cross-Anchoring zu weiteren Zeitstempel-Diensten (Sigsum, RFC 3161 TSA) für Defense-in-Depth.</li>
   </ul>
   <p>Das ist Teil der <a href="/standards/">Open Law Standards</a> (Bestimmung 06 · Provenienz).</p>
