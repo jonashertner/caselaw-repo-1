@@ -1,6 +1,7 @@
 # arXiv submission metadata — Paper 1 (Resource)
 
-**Status**: ready for arXiv submission as v1.0 of the resource paper.
+**Status**: pre-submission ready; final arXiv upload should wait for the
+Zenodo DOI, submission git tag, and final TeX Live rebuild.
 This is the split from the v3 monolithic draft (2026-05-21). Companion
 evaluation paper (`p2-eval/`) is in preparation.
 
@@ -21,7 +22,7 @@ Single author. Affiliation: OpenCaseLaw. Contact: jonashertner@protonmail.ch.
 ## Abstract
 
 ```
-34.0% of resolved decision-to-decision citations in Swiss jurisprudence span two different official languages. The row-normalised pattern is strongly asymmetric: Italian-language decisions cite outside Italian 84.6% of the time, French-language decisions 44.3%, and German-language decisions 15.0%. We measure this over the released resolved graph, and release the substrate. OpenCaseLaw is an open multilingual citation graph for Swiss jurisprudence: 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved cross-court citation references (92.9% coverage), 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY/CC-BY-SA commentaries, and 8,124 article-level links from federal statutes to the Federal Council messages (Botschaften) that explain them. Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD. Every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
+34.0% of resolved decision-to-decision citations in Swiss jurisprudence span two different official languages. The row-normalised pattern is strongly asymmetric: Italian-language decisions cite outside Italian 84.6% of the time, French-language decisions 44.3%, and German-language decisions 15.0%. We measure this over the released resolved graph, and release the substrate. OpenCaseLaw is an open multilingual citation graph for Swiss jurisprudence: 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved cross-court citation references (92.9% coverage), 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY/CC-BY-SA commentaries, and 8,124 article-level links from federal statutes to the Federal Council messages (Botschaften) that explain them. The paper reports quality-control precision proxies, ships a 400-sample stratified citation-audit set for manual adjudication, and explicitly treats per-language resolution-rate bias as the main measurement confounder. Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD. Every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
 ```
 
 ## Comments line
@@ -74,6 +75,9 @@ of the LLM judge, and n ≥ 200 for the audit bench.
 - [x] Cross-references resolve (\ref, \cite all defined)
 - [x] Honest scope: no eval claims, no audit claims, no benchmark
   claims that don't fit the resource frame
+- [x] Manuscript now includes citation-flow figure generated from the
+  frozen matrix and a reproducibility capsule with the 2026-05-21
+  integrity root
 - [ ] **User-side**: Zenodo DOI minted for corpus + integrity snapshot
 - [ ] **User-side**: Git tag `paper-p1-resource-v1.0` at submission commit
 - [ ] **User-side**: TeX Live rebuild to regenerate paper.bbl
