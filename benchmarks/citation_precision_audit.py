@@ -63,16 +63,33 @@ DEFAULT_STRATA = {
 CONTEXT_CHARS = 80
 
 
+_re = __import__("re")
+# Match separators flexibly: resolver stores dockets with underscores
+# (e.g., "9C_340_2013", "E_1866_2015", "SK_2023_21") but the source body
+# uses any of dash, slash, dot, or space (e.g., "9C 340/2013",
+# "E-1866/2015", "SK.2023.21"). The harness searches the body for the
+# components separated by any non-alphanumeric run.
+_DOCKET_SEP = _re.compile(r"[_/\-\.\s]+")
+
+
+def _candidate_pattern(target_ref: str) -> _re.Pattern:
+    """Build a regex from target_ref that matches the same components
+    separated by any of underscore / slash / dash / dot / whitespace.
+    """
+    parts = _DOCKET_SEP.split(target_ref)
+    escaped = [_re.escape(p) for p in parts if p]
+    return _re.compile(r"[_/\-\.\s]+".join(escaped))
+
+
 def _source_snippet(
     decisions_conn: sqlite3.Connection,
     source_decision_id: str,
     target_ref: str,
 ) -> tuple[str, str]:
     """Return (before, after) text surrounding the first occurrence of
-    target_ref in the source decision's full_text. Empty strings when the
-    snippet can't be located (source not in DB, target_ref missing in
-    body, etc.). The 80-char window on each side is enough for an
-    adjudicator to see the sentence the citation lives in.
+    target_ref in the source decision's full_text, matching components
+    flexibly across separator variants. Empty strings when the snippet
+    can't be located.
     """
     row = decisions_conn.execute(
         "SELECT COALESCE(full_text, '') FROM decisions WHERE decision_id = ?",
@@ -81,13 +98,14 @@ def _source_snippet(
     if not row or not row[0] or not target_ref:
         return ("", "")
     text = row[0]
-    idx = text.find(target_ref)
-    if idx < 0:
+    pat = _candidate_pattern(target_ref)
+    m = pat.search(text)
+    if not m:
         return ("", "")
-    start = max(0, idx - CONTEXT_CHARS)
-    end = min(len(text), idx + len(target_ref) + CONTEXT_CHARS)
-    before = text[start:idx].replace("\n", " ").strip()
-    after = text[idx + len(target_ref):end].replace("\n", " ").strip()
+    start = max(0, m.start() - CONTEXT_CHARS)
+    end = min(len(text), m.end() + CONTEXT_CHARS)
+    before = text[start:m.start()].replace("\n", " ").strip()
+    after = text[m.end():end].replace("\n", " ").strip()
     return (before, after)
 
 
