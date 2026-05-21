@@ -211,7 +211,7 @@ main.container { max-width: var(--max-w); padding: 0 24px; }
   </ul>
 
   <p>
-    Sechs der hier vorgeschlagenen Standards existieren bereits — als internationale Spezifikationen oder als de-facto-Standards. Wir profilieren sie für den Schweizer Kontext, dokumentieren die Konvention und liefern eine Referenzimplementierung in OpenCaseLaw. Ein Standard ist <strong>Provenienz</strong>, der bisher in der Rechtsdatenwelt fehlt. Den möchten wir hiermit zur Diskussion stellen.
+    Vier der sechs vorgeschlagenen Standards profilieren bestehende internationale Spezifikationen für den Schweizer Kontext (Schema.org/LegalCase, Akoma Ntoso, Markdown, ELI). Zwei sind Schweizer-eigene Vorschläge: der <strong>cli:ch Caselaw Identifier</strong> (mit ECLI als deterministischer europäischer Projektion), weil bestehende Identifier-Schemata die Schweizer Spezifika — Dreisprachigkeit, kantonale Souveränität, Pinpoint-Adressierung — flachklopfen; und ein <strong>Provenienz-Layer</strong> (Merkle-Wurzel über jede Publikation, Bitcoin-verankert), den die Rechtsdatenwelt bisher nicht hat.
   </p>
 
   <p class="callout">
@@ -228,18 +228,43 @@ main.container { max-width: var(--max-w); padding: 0 24px; }
     <div class="num">01</div>
     <div class="body">
       <h3>Identifikation</h3>
-      <span class="label">European Case Law Identifier (ECLI) · Council of EU 2011/C 127/01</span>
-      <p>Jeder Entscheid erhält eine eindeutige, dauerhaft stabile <strong>ECLI-URI</strong> nach dem Council-of-EU-Schema.</p>
-      <pre>ECLI:CH:BGE:2014:140.III.86
-ECLI:CH:BGER:2025:6B_1234.2025
-ECLI:CH:BVGER:2024:A-1234.2024
-ECLI:CH:ZHO:2023:LB230012        (Kanton Zürich, Obergericht)
-ECLI:CH:TIG:2025:34.2025.27      (Kanton Tessin, Gerichte)</pre>
+      <span class="label">cli:ch — Schweizer Caselaw Identifier (primär) · ECLI als europäische Projektion</span>
+      <p>Jeder Entscheid trägt zwei deterministisch verknüpfte Identifikatoren: <strong>cli:ch</strong> als kanonische Schweizer Form und <strong>ECLI</strong> als verlustbehaftete Projektion für europäische Interoperabilität.</p>
+      <p>cli:ch macht fünf Eigenschaften der Schweizer Rechtsprechung erstklassig, die ECLI flachklopft:</p>
+      <ul>
+        <li><strong>Dreisprachigkeit</strong> — DE/FR/IT-Versionen eines BGE sind rechtlich gleichwertige authentische Texte (Art. 14 PublG). cli:ch behandelt Sprache als erste Achse via <code>?lang=</code>.</li>
+        <li><strong>Kantonale Souveränität</strong> — 26 eigenständige Justizsysteme bleiben sichtbar (<code>cli:ch:zh:…</code>, <code>cli:ch:ti:…</code>), nicht in einen opaken Court-Code kollabiert.</li>
+        <li><strong>Pinpoint-Adressierung</strong> — Erwägungs-Ebene erstklassig via <code>#e-2.3</code> (Schweizer-Zitations-Konvention).</li>
+        <li><strong>Kammer-Granularität</strong> — Obergericht, Verwaltungsgericht, Sozialversicherungsgericht etc. bleiben explizit benannt statt in einem 3-Buchstaben-Code zu verschwinden.</li>
+        <li><strong>Versionierung</strong> — <code>@YYYY-MM-DD</code> adressiert eine spezifische Anonymisierungs-Version; selten, aber rechtlich relevant wenn nötig.</li>
+      </ul>
+      <pre>cli:ch:bge:140-III-86
+cli:ch:bge:140-III-86?lang=fr             (französische Fassung desselben BGE)
+cli:ch:bge:140-III-86#e-2.3               (Pinpoint auf Erwägung 2.3)
+cli:ch:bger:6B_1234/2025
+cli:ch:bvger:A-1234/2024
+cli:ch:zh:obergericht:LB230012            (Kanton Zürich, Obergericht)
+cli:ch:ti:tribunale-appello:34.2025.27    (Kanton Tessin, Tribunale d'appello)
+cli:ch:finma:2024-12345                   (FINMA-Verfügung)</pre>
       <p>
-        Sprachvarianten desselben Entscheids (DE/FR/IT bei den Bundesgerichten) teilen sich eine ECLI; die Sprache wird via Schema.org-<code>inLanguage</code> separat geführt. Bestehende interne Identifier (Geschäftsnummern, Dossier-Nummern) bleiben unverändert — die ECLI ist eine zusätzliche, standardisierte Schicht.
+        <strong>Form</strong>: <code>cli:ch:&lt;court&gt;[:&lt;chamber&gt;]:&lt;docket&gt;[@&lt;version&gt;][?lang=&lt;l&gt;][#&lt;pinpoint&gt;]</code>. Bundesgerichte ohne Kanton-Prefix, kantonale Gerichte mit ISO-3166-2-Kantonscode plus kantonseigener Gerichts-Bezeichnung. Identifier-Modell parallelisiert die FRBR-Schichten von <em>Akoma Ntoso</em> (Work / Expression / Manifestation) — wir erfinden nicht, wir wenden ein etabliertes Modell mit Schweizer Beschriftung an.
       </p>
       <p>
-        <em>Referenz</em>: <code>ecli.py</code> mintet ECLI-URIs deterministisch aus Gericht + Geschäftsnummer + Datum. <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py auf GitHub</a>.
+        <strong>ECLI als Projektion</strong> für europäische Resolver: aus jedem cli:ch wird ein ECLI deterministisch abgeleitet (reine Funktion <code>cli_ch_to_ecli</code>). Die Projektion ist many-to-one — Sprache, Pinpoint, Version und Kammer-Detail gehen verloren.
+      </p>
+      <pre>cli:ch:bge:140-III-86             →  ECLI:CH:BGE:2014:140.III.86
+cli:ch:bger:6B_1234/2025          →  ECLI:CH:BGER:2025:6B_1234.2025
+cli:ch:zh:obergericht:LB230012    →  ECLI:CH:ZHO:2023:LB230012</pre>
+      <p>
+        Warum primär eine eigene Schweizer Form? Weil die Schweizer Rechtsprechung Eigenschaften hat — Dreisprachigkeit als gleichwertige authentische Texte, 26 souveräne kantonale Justizsysteme, Pinpoint-Zitation auf Erwägungs-Ebene — die in einem allgemeinen europäischen Schema zwangsläufig auf eine flache Achse zusammenfallen. cli:ch macht sie erstklassig; ECLI sorgt für europäische Anschlussfähigkeit. Beides zusammen ist mehr als die Wahl zwischen einem.
+      </p>
+      <p>
+        Bestehende interne Identifier (Geschäftsnummern, Dossier-Nummern) bleiben unverändert — cli:ch und ECLI sind zusätzliche, standardisierte Schichten.
+      </p>
+      <p>
+        <em>Referenz-Implementierung</em>: <code>cli_ch.py</code> mintet cli:ch-URIs deterministisch; <code>cli_ch_to_ecli()</code> projiziert auf ECLI.
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/cli_ch.py">cli_ch.py auf GitHub</a> ·
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py auf GitHub</a>.
       </p>
     </div>
 
@@ -247,15 +272,22 @@ ECLI:CH:TIG:2025:34.2025.27      (Kanton Tessin, Gerichte)</pre>
     <div class="body">
       <h3>Metadaten</h3>
       <span class="label">Schema.org / LegalCase (JSON-LD)</span>
-      <p>Jede Entscheid-Webseite trägt im <code>&lt;head&gt;</code> einen <strong>Schema.org-/LegalCase-Block als JSON-LD</strong> mit ECLI, Gericht, Datum, Sprache, Regeste, ausgehenden Fall- und Gesetzeszitaten.</p>
+      <p>Jede Entscheid-Webseite trägt im <code>&lt;head&gt;</code> einen <strong>Schema.org-/LegalCase-Block als JSON-LD</strong> mit beiden Identifikatoren (cli:ch + ECLI), Gericht, Datum, Sprache, Regeste, ausgehenden Fall- und Gesetzeszitaten.</p>
       <pre>{
   "@context": "https://schema.org",
   "@type": "LegalCase",
-  "identifier": {
-    "@type": "PropertyValue",
-    "propertyID": "ECLI",
-    "value": "ECLI:CH:BGE:2014:140.III.86"
-  },
+  "identifier": [
+    {
+      "@type": "PropertyValue",
+      "propertyID": "cli:ch",
+      "value": "cli:ch:bge:140-III-86"
+    },
+    {
+      "@type": "PropertyValue",
+      "propertyID": "ECLI",
+      "value": "ECLI:CH:BGE:2014:140.III.86"
+    }
+  ],
   "name": "BGE 140 III 86",
   "datePublished": "2014-04-15",
   "inLanguage": "de",
@@ -314,7 +346,7 @@ Die zentrale Aussage steht hier...
     <div class="body">
       <h3>Zitationen</h3>
       <span class="label">Aufgelöst, maschinenlesbar, bidirektional</span>
-      <p>Jede Zitation eines anderen Entscheids oder Gesetzesartikels wird <strong>aufgelöst</strong>: nicht nur als Klartext-String, sondern verknüpft mit einer konkreten ECLI (Fall) oder ELI-URI (Gesetz). Bidirektional — sowohl ausgehend (was zitiert dieser Entscheid) als auch eingehend (wer zitiert diesen Entscheid).</p>
+      <p>Jede Zitation eines anderen Entscheids oder Gesetzesartikels wird <strong>aufgelöst</strong>: nicht nur als Klartext-String, sondern verknüpft mit einer konkreten cli:ch (Fall, primär — ECLI als Projektion verfügbar) oder ELI-URI (Gesetz). Bidirektional — sowohl ausgehend (was zitiert dieser Entscheid) als auch eingehend (wer zitiert diesen Entscheid).</p>
       <p>
         Damit wird der Schweizer Zitationsgraph zum gemeinsamen Substrat für Doktrin-Tracking, Leading-Case-Erkennung, Instanzenzug-Verfolgung. Genau das Material, das KI-Tools brauchen, um <em>zu prüfen</em>, was zitiert wird — statt zu halluzinieren.
       </p>
@@ -352,8 +384,8 @@ Die zentrale Aussage steht hier...
     Die sechs Standards sind nicht hypothetisch. <strong>Fünf von sechs sind in OpenCaseLaw.ch bereits live</strong>:
   </p>
   <ul>
-    <li><strong>01 Identifikation</strong>: ECLI für alle 972'880 Entscheide; gemintet beim Aufruf, sichtbar in jeder API-Antwort und jeder <code>/entscheid/&lt;id&gt;</code>-Seite.</li>
-    <li><strong>02 Metadaten</strong>: Schema.org/LegalCase-JSON-LD auf jeder Entscheid-Seite, mit ECLI-Identifier, Zitations- und Gesetzesgraph.</li>
+    <li><strong>01 Identifikation</strong>: cli:ch (Schweizer Form, primär) plus ECLI (europäische Projektion) für alle 972'880 Entscheide; beide deterministisch gemintet beim Aufruf, sichtbar in jeder API-Antwort und jeder <code>/entscheid/&lt;id&gt;</code>-Seite.</li>
+    <li><strong>02 Metadaten</strong>: Schema.org/LegalCase-JSON-LD auf jeder Entscheid-Seite, mit cli:ch + ECLI im <code>identifier</code>-Array, Zitations- und Gesetzesgraph.</li>
     <li><strong>03 Struktur</strong>: Akoma Ntoso für Materialien (Botschaften) bereits produktiv. Für Gerichtsentscheide: Roadmap Q3 2026.</li>
     <li><strong>04 Volltext</strong>: Markdown mit Erwägungs-Ankern, Schweizer-Citation-konform. Pinpoint-Links wie <code>/entscheid/bge_BGE_140_III_86#e-2-3</code> funktionieren.</li>
     <li><strong>05 Zitationen</strong>: 6,46 Mio. aufgelöste Fall-Kanten + 11,3 Mio. Gesetzeszitate, täglich neu generiert, bidirektional verfügbar.</li>

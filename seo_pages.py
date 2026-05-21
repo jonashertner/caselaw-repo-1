@@ -595,11 +595,20 @@ def _render_decision(
 
     canonical = f"{BASE_URL}/entscheid/{did}"
 
-    # Mint a Swiss ECLI URI for the decision so the Schema.org LegalCase
-    # block carries the canonical European Case Law Identifier in the
-    # `identifier` field. ECLI is the standards-track way to address a
-    # decision across European legal-data systems; until 2026 the Swiss
-    # corpus had no public ECLI minting. See ecli.py for the convention.
+    # Mint both identifiers for the Schema.org LegalCase block:
+    #   - cli:ch (Swiss-native, primary): captures cantonal sovereignty,
+    #     trilingualism, pinpoint and version as first-class axes.
+    #   - ECLI (European projection): deterministic many-to-one
+    #     projection used for cross-border interop. See cli_ch.py.
+    try:
+        from cli_ch import mint_cli_ch
+        cli_ch_uri = mint_cli_ch(
+            decision_id=did,
+            court=court,
+            docket_number=docket,
+        )
+    except Exception:
+        cli_ch_uri = None
     try:
         from ecli import mint_ecli
         ecli_uri = mint_ecli(
@@ -640,12 +649,21 @@ def _render_decision(
             "url": "https://opencaselaw.ch",
         },
     }
+    identifiers = []
+    if cli_ch_uri:
+        identifiers.append({
+            "@type": "PropertyValue",
+            "propertyID": "cli:ch",
+            "value": cli_ch_uri,
+        })
     if ecli_uri:
-        schema_json["identifier"] = {
+        identifiers.append({
             "@type": "PropertyValue",
             "propertyID": "ECLI",
             "value": ecli_uri,
-        }
+        })
+    if identifiers:
+        schema_json["identifier"] = identifiers if len(identifiers) > 1 else identifiers[0]
     if source_url:
         schema_json["sameAs"] = source_url
 

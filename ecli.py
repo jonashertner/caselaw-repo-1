@@ -6,13 +6,23 @@ country-prefixed identifier:
 
     ECLI:<CC>:<COURT>:<YEAR>:<ID>
 
-For Switzerland, the federal Bundesgericht has published partial ECLI
-support for BGE decisions following the form:
+For Swiss decisions, this module produces ECLIs as the European
+projection of the Swiss-native cli:ch identifier (see cli_ch.py).
+The projection makes Swiss caselaw addressable from European legal
+data systems and cross-border resolvers via a single uniform
+identifier format.
+
+For BGE leading decisions we use:
 
     ECLI:CH:BGE:<YEAR>:<vol>.<part>.<page>
 
-This module extends that convention to all Swiss decisions in the
-OpenCaseLaw corpus using a small set of deterministic rules:
+which is the form the ECLI spec generates from the BGE citation
+`BGE 140 III 86` (vol/part/page).
+
+This is a convention proposed by OpenCaseLaw as part of the
+open-law-standards proposal at docs/standards/. The same approach
+extends to all Swiss decisions in the corpus using a small set of
+deterministic rules:
 
   - BGE leading decisions:   ECLI:CH:BGE:<year>:<vol>.<part>.<page>
   - Federal Supreme Court:   ECLI:CH:BGER:<year>:<docket-normalized>
