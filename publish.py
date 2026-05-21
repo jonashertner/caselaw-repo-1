@@ -70,12 +70,20 @@ def _save_checkpoint(step_num, results: dict):
 
 
 def _load_checkpoint() -> dict | None:
-    """Load checkpoint from prior crashed run (if any)."""
+    """Load checkpoint from prior crashed run (if any).
+
+    TTL is 4h (was 12h). The daily timer fires every ~24h, so a 12h TTL
+    leaves a wide window where yesterday's checkpoint can be re-used by
+    today's timer-triggered run if even one step failed (defeating the
+    refresh purpose of the daily publish). 4h is short enough to never
+    bleed into the next daily run, yet long enough for a manual resume
+    after a crash within the same publish window.
+    """
     if CHECKPOINT_PATH.exists():
         try:
             data = json.loads(CHECKPOINT_PATH.read_text())
             age_hours = (datetime.now(timezone.utc) - datetime.fromisoformat(data["timestamp"])).total_seconds() / 3600
-            if age_hours < 12:  # only resume if < 12h old
+            if age_hours < 4:
                 return data
         except Exception:
             pass
@@ -1463,7 +1471,16 @@ def main():
     # keeps Step 5a's already-written stats.json (early-tier counts +
     # previous build's graph block). The DAG marks stats_interesting
     # non_fatal too — keep in sync.
-    NON_FATAL_STEPS = {"2e", "5d", "5e"}
+    #
+    # 2g (decision_structure) is non-fatal because it's an enrichment
+    # sidecar, not part of the served corpus. 2026-05-20 incident: 2g hit
+    # its 2h timeout, which left ``failed_steps`` non-empty → the success
+    # branch (which calls _clear_checkpoint) was skipped → today's 03:30
+    # UTC publish loaded the 9.5h-old checkpoint (within the 12h TTL),
+    # saw every step except 2g marked True, and skipped stats regeneration
+    # entirely. Marking 2g non-fatal lets the checkpoint clear on
+    # completion so the next daily timer starts clean.
+    NON_FATAL_STEPS = {"2e", "5d", "5e", "2g"}
     # Steps after the fast tier — skipped with --fast-only
     SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", "2g", 3, 4, 5, 6}
 

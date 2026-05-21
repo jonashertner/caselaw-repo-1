@@ -2369,13 +2369,17 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   <section class="corpus-snapshot" id="corpus" aria-labelledby="snapshot-heading">
     <div class="snapshot-header">
       <h2 id="snapshot-heading" data-t="snapshot_heading">Corpus snapshot</h2>
-      <p class="snapshot-stamp">
-        <span data-t="snapshot_asof">As of</span>
-        <time id="snapshot-date"><span class="skel skel--date"></span></time>
-        <span class="sep">·</span>
-        <strong>+<span id="snapshot-delta-total">0</span></strong>
-        <span data-t="snapshot_since">since yesterday</span>
-      </p>
+      <!-- 2026-05-21 cleanup: the "Stand <date> · +N seit gestern" stamp
+           was the second freshness stamp on the page and could disagree
+           with the live hero stamp (which reads /health). The hero is
+           now the single source of truth for "when was the DB last
+           updated". The legacy targets stay as hidden compatibility
+           shims so the stats.json updater that still writes to them
+           doesn't NPE. -->
+      <div aria-hidden="true" style="display:none">
+        <time id="snapshot-date"></time>
+        <span id="snapshot-delta-total">0</span>
+      </div>
     </div>
 
     <div class="snapshot-grid snapshot-grid--two">
