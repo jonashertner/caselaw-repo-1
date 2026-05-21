@@ -19298,6 +19298,106 @@ setInterval(load, 30000);
     async def api_list_courts():
         return await asyncio.to_thread(list_courts)
 
+    # Inclusion-proof API (Bestimmung 06 of Open Law Standards).
+    # GET /api/integrity/<decision_id> → RFC-6962 Merkle inclusion proof
+    # of the decision against today's published root. Lazy-loads the
+    # leaves SQLite + subtree cache on first call per worker.
+    _integrity_leaves_lock = threading.Lock()
+    _integrity_state = {
+        "leaves": None,       # list[bytes] in idx order
+        "id_to_idx": None,    # dict[str, int]
+        "cache": None,        # subtree memoization dict
+        "manifest": None,     # latest.json contents
+    }
+
+    def _load_integrity_state():
+        """Read leaves.db + manifest, build subtree cache. ~3s on 972k rows.
+        Returns dict with leaves/id_to_idx/cache/manifest, or None if the
+        index file is missing (graceful 503)."""
+        from pathlib import Path as _P
+        import sqlite3 as _sql, json as _j
+        repo = _P(__file__).resolve().parent
+        leaves_db = _P(os.environ.get("OCL_INTEGRITY_LEAVES_DB", "")) \
+            if os.environ.get("OCL_INTEGRITY_LEAVES_DB") else \
+            repo / "output" / "integrity" / "latest.leaves.db"
+        manifest_path = repo / "docs" / "integrity" / "latest.json"
+        if not leaves_db.exists() or not manifest_path.exists():
+            return None
+        conn = _sql.connect(f"file:{leaves_db}?mode=ro&immutable=1", uri=True)
+        rows = conn.execute(
+            "SELECT idx, decision_id, leaf_hash FROM leaves ORDER BY idx"
+        ).fetchall()
+        conn.close()
+        leaves = [r[2] for r in rows]
+        id_to_idx = {r[1]: r[0] for r in rows}
+        from integrity import build_subtree_cache
+        cache = build_subtree_cache(leaves)
+        manifest = _j.loads(manifest_path.read_text())
+        return {
+            "leaves": leaves,
+            "id_to_idx": id_to_idx,
+            "cache": cache,
+            "manifest": manifest,
+        }
+
+    def _get_integrity_state():
+        if _integrity_state["leaves"] is not None:
+            return _integrity_state
+        with _integrity_leaves_lock:
+            if _integrity_state["leaves"] is None:
+                loaded = _load_integrity_state()
+                if loaded is None:
+                    return None
+                _integrity_state.update(loaded)
+        return _integrity_state
+
+    @rest_api.get("/integrity/{decision_id}", tags=["Coverage"],
+                  summary="RFC-6962 Merkle inclusion proof",
+                  description="Cryptographic proof that the given decision_id "
+                              "is included in today's published Merkle root "
+                              "(Bestimmung 06, OpenTimestamps-Bitcoin-anchored). "
+                              "Returns the leaf hash, the proof path (~20 "
+                              "siblings for 972k leaves), and the root. "
+                              "Verifier reconstructs the root by walking the "
+                              "proof and compares to docs/integrity/<date>.root. "
+                              "Reference implementation in integrity.py.")
+    async def api_integrity_proof(decision_id: str):
+        state = _get_integrity_state()
+        if state is None:
+            raise HTTPException(503,
+                "integrity leaves index not yet built; "
+                "the next nightly publish will populate it")
+        idx = state["id_to_idx"].get(decision_id)
+        if idx is None:
+            raise HTTPException(404,
+                f"decision_id '{decision_id}' not in latest integrity index "
+                f"(date {state['manifest'].get('date')}); if the corpus was "
+                f"updated after the index, re-fetch tomorrow.")
+        from integrity import merkle_proof_cached
+        proof = merkle_proof_cached(state["leaves"], idx, state["cache"])
+        leaf = state["leaves"][idx]
+        m = state["manifest"]
+        return {
+            "decision_id": decision_id,
+            "date": m.get("date"),
+            "root": m.get("root"),
+            "algorithm": m.get("algorithm"),
+            "leaf_encoding": m.get("leaf_encoding"),
+            "leaf_hash": leaf.hex(),
+            "leaf_index": idx,
+            "proof": [{"sibling_hash": s.hex(), "position": p}
+                      for s, p in proof],
+            "verification": (
+                "Walk the proof: start with leaf_hash; at each step, if "
+                "position='R', new_hash = SHA-256(0x01 || current || "
+                "sibling_hash); if 'L', SHA-256(0x01 || sibling_hash || "
+                "current). After all steps, hex(current) must equal root. "
+                "Reference: integrity.py:verify_inclusion."
+            ),
+            "ots_proof_url": f"/integrity/{m.get('date')}.root.ots"
+                             if m.get("ots_stamp") else None,
+        }
+
     @rest_api.get("/scraper-health", tags=["Coverage"],
                   summary="Per-court scraper health (last daily run)",
                   description="Returns the latest scraper_health.json — one entry per "

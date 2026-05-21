@@ -258,6 +258,8 @@ def main():
                         help="Skip OpenTimestamps anchoring")
     parser.add_argument("--no-leaves-db", action="store_true",
                         help="Skip writing the leaves SQLite index")
+    parser.add_argument("--leaves-only", action="store_true",
+                        help="Only write the leaves DB; don't touch root/manifest/ots")
     args = parser.parse_args()
 
     db_path = args.db or _default_db_path()
@@ -284,6 +286,10 @@ def main():
             # Fall back to copy on filesystems that don't support symlinks.
             import shutil as _sh
             _sh.copy(leaves_db, latest_db)
+
+    if args.leaves_only:
+        print("done (leaves-only).")
+        return
 
     root_file = write_outputs(manifest, args.out_dir)
 

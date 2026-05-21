@@ -121,6 +121,69 @@ def merkle_proof(leaf_hashes: List[bytes], index: int) -> List[Tuple[bytes, str]
         return sub + [(sibling, "L")]
 
 
+def build_subtree_cache(leaf_hashes: List[bytes]) -> dict:
+    """Pre-compute every subtree root and memoize by (start, end).
+
+    Single O(n) pass — n−1 internal hashes computed and stored. After
+    this, ``merkle_proof_cached`` is O(log n) per leaf because every
+    sibling needed by a proof is a precomputed subtree root.
+
+    Memory: ~2n entries × ~80 bytes (Python tuple key + bytes value) ≈
+    160 MB for 972k leaves. For lower memory at the cost of slower
+    proofs, skip the cache and use ``merkle_proof`` directly.
+    """
+    cache: dict = {}
+    _memoized_subtree(leaf_hashes, 0, len(leaf_hashes), cache)
+    return cache
+
+
+def _memoized_subtree(leaf_hashes: List[bytes], start: int, end: int,
+                      cache: dict) -> bytes:
+    key = (start, end)
+    if key in cache:
+        return cache[key]
+    n = end - start
+    if n == 1:
+        h = leaf_hashes[start]
+        cache[key] = h
+        return h
+    k = _largest_pow2_below(n)
+    left = _memoized_subtree(leaf_hashes, start, start + k, cache)
+    right = _memoized_subtree(leaf_hashes, start + k, end, cache)
+    h = node_hash(left, right)
+    cache[key] = h
+    return h
+
+
+def merkle_proof_cached(leaf_hashes: List[bytes], index: int,
+                        cache: dict) -> List[Tuple[bytes, str]]:
+    """Inclusion proof in O(log n) using a precomputed subtree cache.
+
+    ``cache`` must have been produced by ``build_subtree_cache(leaf_hashes)``
+    over the same leaf list.
+    """
+    n = len(leaf_hashes)
+    if not 0 <= index < n:
+        raise IndexError(f"index {index} out of range for {n} leaves")
+    return _proof_walk(index, 0, n, cache)
+
+
+def _proof_walk(index: int, start: int, end: int,
+                cache: dict) -> List[Tuple[bytes, str]]:
+    n = end - start
+    if n == 1:
+        return []
+    k = _largest_pow2_below(n)
+    if index < start + k:
+        sub = _proof_walk(index, start, start + k, cache)
+        sibling = cache[(start + k, end)]
+        return sub + [(sibling, "R")]
+    else:
+        sub = _proof_walk(index, start + k, end, cache)
+        sibling = cache[(start, start + k)]
+        return sub + [(sibling, "L")]
+
+
 def verify_inclusion(
     leaf: bytes,
     proof: List[Tuple[bytes, str]],
