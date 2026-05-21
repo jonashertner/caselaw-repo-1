@@ -5494,6 +5494,17 @@ function _humanAge(sec, lang) {
 function updateLiveDbStamp() {
   const el = document.getElementById('hero-live-db');
   if (!el) return;
+  // Local setText: ``setText`` / ``animateCount`` are defined as closures
+  // inside renderHero() and aren't visible from this module-scope function.
+  // Calling them by name was throwing ReferenceError → the outer fetch's
+  // .catch hid the hero-v3-stamp paragraph entirely (the 2026-05-21 evening
+  // regression). Inline what we actually need; the hero-decisions number
+  // is already animated once on first paint by renderHero, so live refreshes
+  // just need a silent setText.
+  const _setText = (id, val) => {
+    const e = document.getElementById(id);
+    if (e && val != null) e.textContent = val;
+  };
   fetch('https://mcp.opencaselaw.ch/health', { cache: 'no-store' })
     .then(function (r) { return r.ok ? r.json() : null; })
     .then(function (data) {
@@ -5530,13 +5541,7 @@ function updateLiveDbStamp() {
       // is for the in-stamp count which lives inside a fully-translated
       // phrase and benefits from per-locale punctuation.
       if (typeof data.decisions === 'number') {
-        if (!window._heroDecisionsLiveAnimated) {
-          window._heroDecisionsLiveAnimated = true;
-          try { animateCount('hero-decisions', data.decisions, 2700); }
-          catch (e) { setText('hero-decisions', fmt(data.decisions)); }
-        } else {
-          setText('hero-decisions', fmt(data.decisions));
-        }
+        _setText('hero-decisions', fmt(data.decisions));
       }
       const count = (data.decisions || 0).toLocaleString(
         ({de:'de-CH',fr:'fr-CH',it:'it-CH',rm:'de-CH',en:'en-GB'})[curLang] || 'de-CH'
@@ -5562,8 +5567,8 @@ function updateLiveDbStamp() {
       // set by renderHero; both race orderings are handled (renderHero
       // also re-applies this if it runs after a failed /health).
       window._heroDecisionsHealthFailed = true;
-      if (window._lastStatsTotal != null && !window._heroDecisionsLiveAnimated) {
-        setText('hero-decisions', fmt(window._lastStatsTotal));
+      if (window._lastStatsTotal != null) {
+        _setText('hero-decisions', fmt(window._lastStatsTotal));
       }
     });
 }
