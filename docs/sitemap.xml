@@ -92,4 +92,32 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
+  <url>
+    <loc>https://opencaselaw.ch/standards/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://opencaselaw.ch/standards/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://opencaselaw.ch/standards/en/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/standards/" />
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/standards/en/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/integrity/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/methodology.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://opencaselaw.ch/datenschutz/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
 </urlset>
