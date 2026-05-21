@@ -1437,7 +1437,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
   <!-- Tool list -->
   <section id="mcp-tools" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tools_heading">33 Tools im Überblick (27 remote + 2 lokal)</h2>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tools_heading">33 öffentliche Tools (+ 2 lokale Admin-Tools)</h2>
       <p style="font-size:14px; color:var(--tx2); margin:0 0 20px; max-width:68ch" data-t="mcp_tools_desc">
         Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code> abrufbar. Lokal-Modus zusätzlich mit <code>update_database</code> und <code>check_update_status</code> für Datenbank-Wartung.
       </p>
@@ -1719,7 +1719,7 @@ const I18N = {
     mcp_copilot_step: 'Agent → Tools → Add a tool → New tool → „Model Context Protocol". Server-Name „Swiss Caselaw" + URL eintragen, Auth: None. Nur Streamable HTTP (SSE seit August 2025 nicht mehr unterstützt).',
     mcp_other_heading: 'Andere MCP-Clients',
     mcp_other_step: 'Funktioniert mit jedem MCP-fähigen Client (Continue, Zed, Cody, Windsurf, …) über Streamable HTTP an <code style="font-size:13px">https://mcp.opencaselaw.ch</code>. SSE ist ebenfalls unter <code style="font-size:13px">/sse</code> erreichbar, aber MCP-spec-seitig veraltet.',
-    mcp_tools_heading: '33 Tools im Überblick (27 remote + 2 lokal)',
+    mcp_tools_heading: '33 öffentliche Tools (+ 2 lokale Admin-Tools)',
     mcp_tools_desc: 'Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code>, hier gruppiert nach Funktion.',
     mcp_arch_transport: '<strong>Transport:</strong> Streamable HTTP (empfohlen) + Server-Sent Events (SSE, deprecated), kompatibel mit Claude, ChatGPT, Cursor, Gemini CLI, Copilot Studio.',
     mcp_arch_data: '<strong>Daten:</strong> Aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert.',
@@ -2149,7 +2149,7 @@ const I18N = {
     mcp_remote_desc: 'Immediat disponibel, adina actual. Nagin download necessari. Endpoint dal server:',
     mcp_chatgpt_note: 'Sustegnì via Streamable HTTP + CORS. Utilisescha annotaziuns <code style="font-size:11px">readOnlyHint</code>. Cumpatibel cun <strong>GPT-5.3</strong>; per GPT-5.4 guarda il workaround survart.',
     mcp_other_note: 'Funcziuna cun mintga client cumpatibel MCP via il transport SSE standard. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: '33 utensils en survista (31 remote + 2 locals)',
+    mcp_tools_heading: '33 utensils publics (+ 2 utensils locals d'administraziun)',
     mcp_tools_desc: 'Mintga utensil è optimà per in cas spezific da retschertga. Schemas cumplets via <code>tools/list</code> dal protocol MCP, qua gruppads tenor funcziun.',
     mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads (Claude Desktop, ChatGPT, Cursor, Gemini).',
     mcp_arch_data: '<strong>Datas:</strong> da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di.',
