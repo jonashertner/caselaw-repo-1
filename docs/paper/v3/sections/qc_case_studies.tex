@@ -8,17 +8,17 @@ On 2026-04-29 a routine total-count check fired: the \texttt{sg\_publikationen}
 court had lost 1{,}450 rows ($\approx$\,90\,\% loss) on the nightly rebuild without
 any scraper failure. The diagnostic chain was: (a) the \texttt{INSERT OR
 IGNORE} dedup pattern in \texttt{build\_fts5.py} processes JSONL shards in
-alphabetical order; (b) the \texttt{entscheidsuche} side-feed
-(\texttt{es\_sg\_publikationen.jsonl}) processes \emph{before} the direct
-shard (\texttt{sg\_publikationen.jsonl}) because `e' precedes `s'; (c) the two
-shards happen to construct identical decision-id prefixes
-(\texttt{sg\_publikationen\_<docket>}); (d) the earlier-processed shard wins
-all dedups, silently dropping the chamber-correct rows from the direct shard.
+alphabetical order; (b) a legacy import shard processed \emph{before} the
+direct portal shard (\texttt{sg\_publikationen.jsonl}) and the two
+constructed identical decision-id prefixes
+(\texttt{sg\_publikationen\_<docket>}); (c) the earlier-processed shard
+silently won all dedups, dropping the chamber-correct rows from the
+direct-portal shard.
 Reproducer scripts (\texttt{scripts/sg\_anomaly\_*.py}) confirmed the
 hypothesis on a fresh database. Two fixes shipped on 2026-04-30: (i) the
-problematic \texttt{es\_sg\_publikationen} feed was retired (commit
-\texttt{f249f1f}); (ii) an architectural fix forced direct shards to process
-before \texttt{es\_*} shards (commit \texttt{713afe3}, gated by
+problematic legacy import shard was retired (commit
+\texttt{f249f1f}); (ii) an architectural fix forced direct-portal shards
+to process before any legacy import (commit \texttt{713afe3}, gated by
 \texttt{BUILD\_FTS5\_DIRECT\_FIRST=1}). The pattern check across all
 multi-chamber cantons confirmed only SG was affected. The fix added two
 permanent regression checks to the L3 audit: per-court row-count drift
@@ -26,14 +26,14 @@ $>$10\,\% (warning) and per-court row-count drop $>$50\,\% (critical, blocks
 publish).
 
 \paragraph{Case study 2 --- the EGMR re-regression class (cross-source double-coverage).}
-The \texttt{entscheidsuche} \texttt{CH\_BGE} feed includes \texttt{cedh} (ECHR)
-decisions that should land under our \texttt{bge\_egmr} court rather than
-\texttt{bge}. Without an override, 474 ECHR cases were duplicated with
-divergent metadata (BGE side carried the full text but no chamber labels,
-the BGE-EGMR side carried chamber and regeste but truncated text). External
+A legacy import shard had been depositing ECHR (\texttt{cedh})
+decisions under our \texttt{bge} (BGE) court code rather than the dedicated
+\texttt{bge\_egmr} court. Without an override, 474 ECHR cases were duplicated with
+divergent metadata (the misrouted side carried the full text but no chamber labels,
+the correctly-routed side carried chamber and regeste but truncated text). External
 audit on 2026-04-29 surfaced this; we backfilled production with a
-best-of-both merge (preserve full text from BGE side, preserve chamber and
-regeste from BGE-EGMR side) and deleted the BGE side. The L3 audit now
+best-of-both merge (preserve full text from the misrouted side, preserve chamber and
+regeste from the correctly-routed side) and deleted the misrouted side. The L3 audit now
 includes a hard-zero check on (\texttt{court='bge'} AND
 \texttt{source\_url} contains \texttt{cedh}): \emph{any} positive count
 blocks the next publish.

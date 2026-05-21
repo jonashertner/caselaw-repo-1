@@ -34,7 +34,6 @@ Cantonal court decisions & official act, URG Art.~5 excl. & --- & CC0 \\
 Federal statutes (Fedlex SR) & official act, URG Art.~5 excl. & --- & CC0 \\
 Cantonal statutes (LexWork, SIL, ZH OpenData, \dots) & official act, URG Art.~5 excl. & --- & CC0 \\
 Federal Council Botschaften (Fedlex JOLUX) & official act, URG Art.~5 excl. & --- & CC0 \\
-entscheidsuche.ch (federation source) & aggregator & CC-BY-4.0 & CC0 (our diff) \\
 OnlineKommentar.ch (commentary) & scholarship & CC-BY-4.0 & CC0 (anchor only) \\
 OpenLegalCommentary.ch (commentary) & scholarship & CC-BY-SA-4.0 & CC-BY-SA-4.0 (propagated) \\
 Citation graph (extracted edges) & derived from URG~5 + our extractor & --- & CC0 \\
@@ -58,25 +57,9 @@ which we release CC0 to the extent any rights subsist. No portion of
 the corpus relies on an asserted database right (\emph{sui generis}
 database protection, which Switzerland does not recognise).
 
-\paragraph{Federation and propagation.} Two upstream sources carry
-their own licences which we honour:
+\paragraph{Commentary licence propagation.}
 
-\begin{itemize}
-\item \emph{entscheidsuche.ch} (CC-BY-4.0) is one of our federation
-inputs at the per-shard level. Where a decision is sourced from
-entscheidsuche we preserve the attribution chain in
-\path{decision_source} metadata; downstream redistribution should
-honour the upstream attribution requirement.
-
-\item \emph{OpenLegalCommentary.ch} (CC-BY-SA-4.0) commentary text,
-when surfaced in the \texttt{get\_commentary} tool, propagates the
-share-alike obligation to any derivative work that incorporates the
-commentary text verbatim. Our metadata anchors (statute reference,
-URL, commentary title, author, license tag) are CC0; the commentary
-\emph{body text} retains its CC-BY-SA status. Users who include
-verbatim commentary text in a derived corpus must redistribute under
-CC-BY-SA-4.0.
-\end{itemize}
+\emph{OpenLegalCommentary.ch} (CC-BY-SA-4.0) commentary text, when surfaced in the \texttt{get\_commentary} tool, propagates the share-alike obligation to any derivative work that incorporates the commentary text verbatim. Our metadata anchors (statute reference, URL, commentary title, author, license tag) are CC0; the commentary \emph{body text} retains its CC-BY-SA status. Users who include verbatim commentary text in a derived corpus must redistribute under CC-BY-SA-4.0.
 
 \paragraph{Personal data treatment (FADP).} Swiss court decisions are
 made public by the issuing court; our pipeline does not introduce
