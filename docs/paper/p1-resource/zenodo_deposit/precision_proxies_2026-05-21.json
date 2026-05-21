@@ -1,0 +1,88 @@
+{
+  "by_match_type": {
+    "docket_norm": {
+      "total": 3288460,
+      "date_coverage_pct": 99.96,
+      "date_sanity_pass_pct": 97.2494,
+      "date_violations": 90419,
+      "self_citations": 0,
+      "self_cite_violation_pct": 0.0,
+      "missing_source_date": 1246,
+      "missing_target_date": 16,
+      "confidence_percentiles": {
+        "p0": 0.19,
+        "p10": 0.95,
+        "p25": 0.95,
+        "p50": 0.99,
+        "p75": 0.99,
+        "p90": 0.99,
+        "p100": 0.99
+      }
+    },
+    "bge_norm": {
+      "total": 1216702,
+      "date_coverage_pct": 99.99,
+      "date_sanity_pass_pct": 99.2626,
+      "date_violations": 8971,
+      "self_citations": 0,
+      "self_cite_violation_pct": 0.0,
+      "missing_source_date": 155,
+      "missing_target_date": 0,
+      "confidence_percentiles": {
+        "p0": 0.45,
+        "p10": 0.75,
+        "p25": 0.75,
+        "p50": 0.75,
+        "p75": 0.85,
+        "p90": 0.93,
+        "p100": 0.99
+      }
+    },
+    "bge_bare": {
+      "total": 2944527,
+      "date_coverage_pct": 99.98,
+      "date_sanity_pass_pct": 99.752,
+      "date_violations": 7302,
+      "self_citations": 0,
+      "self_cite_violation_pct": 0.0,
+      "missing_source_date": 485,
+      "missing_target_date": 0,
+      "confidence_percentiles": {
+        "p0": 0.45,
+        "p10": 0.75,
+        "p25": 0.75,
+        "p50": 0.85,
+        "p75": 0.85,
+        "p90": 0.9,
+        "p100": 0.99
+      }
+    },
+    "bge_pincite": {
+      "total": 652547,
+      "date_coverage_pct": 99.92,
+      "date_sanity_pass_pct": 97.3508,
+      "date_violations": 17273,
+      "self_citations": 0,
+      "self_cite_violation_pct": 0.0,
+      "missing_source_date": 530,
+      "missing_target_date": 0,
+      "confidence_percentiles": {
+        "p0": 0.5,
+        "p10": 0.65,
+        "p25": 0.75,
+        "p50": 0.75,
+        "p75": 0.83,
+        "p90": 0.89,
+        "p100": 0.89
+      }
+    }
+  },
+  "overall": {
+    "total": 8102236,
+    "date_coverage_pct": 99.97,
+    "date_sanity_pass_pct": 98.4695,
+    "date_violations": 123965,
+    "self_citations": 0,
+    "self_cite_violation_pct": 0.0
+  }
+}

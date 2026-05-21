@@ -1,0 +1,82 @@
+{
+  "title": "OpenCaseLaw: A Verifiable Multilingual Citation Graph for Swiss Jurisprudence (paper companion, 2026-05-21 snapshot)",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "description": "Companion deposit for the OpenCaseLaw paper-1 (Resource) release. Contains the compiled paper PDF, the frozen 2026-05-21 corpus/graph statistics, the citation-precision proxy run aligned with the released E_link denominator, and the RFC-6962 integrity root with its OpenTimestamps Bitcoin anchor. OpenCaseLaw is an open, verifiable Swiss legal graph that joins 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT, 1875-2026), 8,047,620 resolved case citations (8,102,236 link-edge rows, 92.9% coverage), 11.28M decision-to-statute edges over 283,330 provisions, 8,124 article-level Materialien (Federal Council Botschaft) anchors, 362 CC-BY/CC-BY-SA scholarly commentaries, a Swiss-native cli:ch identifier with ECLI projection, and per-decision Merkle inclusion-proof verification against the Bitcoin-anchored root. Snapshot: 2026-05-21. Corpus is released separately under CC0 on Hugging Face; code is MIT on GitHub.",
+  "creators": [
+    {
+      "name": "Hertner, Jonas",
+      "affiliation": "OpenCaseLaw",
+      "orcid": ""
+    }
+  ],
+  "access_right": "open",
+  "license": "CC-BY-4.0",
+  "keywords": [
+    "Swiss law",
+    "legal NLP",
+    "citation graph",
+    "multilingual",
+    "Bundesgericht",
+    "ECLI",
+    "cli:ch",
+    "Materialien",
+    "Botschaft",
+    "RFC-6962",
+    "OpenTimestamps",
+    "Merkle tree",
+    "retrieval-augmented generation",
+    "legal RAG",
+    "open legal data"
+  ],
+  "language": "eng",
+  "communities": [
+    {
+      "identifier": "zenodo"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://huggingface.co/datasets/voilaj/swiss-caselaw",
+      "relation": "isSupplementedBy",
+      "resource_type": "dataset",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/jonashertner/caselaw-repo-1",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://mcp.opencaselaw.ch",
+      "relation": "isSupplementedBy",
+      "resource_type": "other",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://opencaselaw.ch/integrity/2026-05-21",
+      "relation": "isSupplementedBy",
+      "resource_type": "other",
+      "scheme": "url"
+    }
+  ],
+  "subjects": [
+    {
+      "term": "Computation and Language",
+      "identifier": "https://arxiv.org/list/cs.CL/recent",
+      "scheme": "url"
+    },
+    {
+      "term": "Information Retrieval",
+      "identifier": "https://arxiv.org/list/cs.IR/recent",
+      "scheme": "url"
+    },
+    {
+      "term": "Digital Libraries",
+      "identifier": "https://arxiv.org/list/cs.DL/recent",
+      "scheme": "url"
+    }
+  ],
+  "notes": "Snapshot 2026-05-21. RFC-6962 root over 972,882 decisions: 1b597b9279334d2d2c91d03d200d3964a9825d7b6c1e200a4781b32fee81f599. OpenTimestamps Bitcoin anchor: see integrity_root_2026-05-21.bin.ots. Per-decision inclusion proofs available via https://mcp.opencaselaw.ch/api/integrity/<decision_id>. Companion evaluation paper (audit-rail diagnostics, cross-lingual retrieval, multi-annotator IAA) in preparation."
+}
