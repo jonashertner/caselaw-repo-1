@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Open Law Standards — Proposal v0.1 · OpenCaseLaw</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Six open standards proposal for Swiss court decisions: identification, metadata, structure, full text, citations, and cryptographic provenance. Discussion draft with reference implementation at opencaselaw.ch.">
+<meta property="og:title" content="Open Law Standards — Six bullets for Swiss court-decision publishing">
+<meta property="og:description" content="cli:ch + ECLI · Schema.org/LegalCase · Akoma Ntoso · Markdown · resolved citations · RFC-6962 Merkle root + OpenTimestamps. All six demonstrable in production.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://opencaselaw.ch/standards/en/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/static/css/design-system.css?v=22">
+<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/standards/">
+<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/standards/en/">
+<style>
+  .section-card { padding: clamp(32px, 5vw, 56px) 0; max-width: 880px; margin: 0 auto; border-bottom: 1px solid var(--bd); }
+  .section-card:last-child { border-bottom: 0; }
+  .sub { color: var(--tx3); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 12px; }
+  .standard-grid { display: grid; grid-template-columns: 56px 1fr; gap: clamp(16px, 3vw, 32px); margin-top: 24px; }
+  .standard-grid .num { font-size: clamp(28px, 4vw, 40px); font-weight: 600; color: var(--tx3); line-height: 1; }
+  .standard-grid .body { padding-bottom: 32px; border-bottom: 1px solid var(--bd); }
+  .standard-grid .body:last-child { border-bottom: 0; }
+  .standard-grid h3 { font-size: clamp(20px, 2.4vw, 26px); margin: 0 0 6px; }
+  .standard-grid .label { font-size: 0.85rem; color: var(--tx3); margin-bottom: 12px; display: block; }
+  .standard-grid pre { font-size: 12.5px; background: var(--surface-2, #f4f4f5); padding: 12px 16px; border-radius: 6px; overflow-x: auto; }
+  .callout { padding: 16px 20px; background: var(--surface-2, #f4f4f5); border-radius: 8px; margin-top: 16px; font-size: 0.92rem; }
+  .lead { font-size: 18px; line-height: 1.5; color: var(--tx2); }
+  .kicker { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tx3); margin-bottom: 8px; }
+  .hero-standards { padding: clamp(48px, 8vw, 96px) 0 clamp(32px, 5vw, 56px); max-width: 880px; margin: 0 auto; }
+  .hero-standards h1 { font-size: clamp(36px, 5vw, 56px); line-height: 1.1; margin: 0 0 16px; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="container row">
+    <a href="/" class="brand">
+      <span class="brand-mark">+</span>
+      <span class="brand-text">opencaselaw.ch</span>
+    </a>
+    <nav id="primary-nav" aria-label="Primary">
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
+      <a href="/word/">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/standards/en/" aria-current="page">Standards</a>
+      <a href="/integrity/">Integrity</a>
+      <a href="/quality.html">Quality</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+<section class="hero-standards">
+  <p class="kicker">Proposal · v0.1 discussion draft · 2026-05-21 · <a href="/standards/">Deutsch</a></p>
+  <h1>Open Law Standards</h1>
+  <p class="lead">
+    Six open standards for the identification, structuring, publication and verification of Swiss court decisions. Where international standards exist — don't reinvent. Where they don't — make a simple, documented proposal and ship the reference implementation alongside.
+  </p>
+</section>
+
+<section class="section-card">
+  <h2>Why open standards</h2>
+  <p class="sub">Rationale</p>
+
+  <p>
+    Swiss court decisions are <strong>public works</strong> (URG Art. 5 para. 1) and therefore in the public domain. Yet seamless machine access is not a given today:
+  </p>
+  <ul>
+    <li>Every source mints identifiers by its own convention. The same BGE decision has five different URLs in five different databases.</li>
+    <li>Most cantonal portals serve PDFs or HTML with no machine-readable structure — every consumer reconstructs the Sachverhalt / Erwägungen / Dispositiv from scratch.</li>
+    <li>Citations between decisions are plain-text strings (<code>BGE 140 III 86</code>) — every consuming application has to resolve them itself, with varying precision.</li>
+    <li>There's no cryptographically verifiable proof that a cited decision-text is the one actually published. In the age of hallucinating AI tools, that's the central trust question.</li>
+  </ul>
+
+  <p>
+    Four of the six proposed standards profile existing international specifications for the Swiss context (Schema.org/LegalCase, Akoma Ntoso, Markdown, ELI). Two are Swiss-native proposals: the <strong>cli:ch Caselaw Identifier</strong> (with ECLI as a deterministic European projection), because existing identifier schemes flatten Swiss specifics — trilingualism, cantonal sovereignty, pinpoint addressing; and a <strong>provenance layer</strong> (Merkle root per publish, Bitcoin-anchored) that the legal-data world doesn't yet have.
+  </p>
+
+  <p class="callout">
+    This is <strong>not a manifesto</strong>, not a demand on federal courts or cantons. It's an open discussion draft. The proposal is intentionally small and compatible: each Bestimmung can be adopted independently without blocking the others.
+  </p>
+</section>
+
+<section class="section-card">
+  <h2>The six standards</h2>
+  <p class="sub">Summary</p>
+
+  <div class="standard-grid">
+
+    <div class="num">01</div>
+    <div class="body">
+      <h3>Identification</h3>
+      <span class="label">cli:ch — Swiss Caselaw Identifier (primary) · ECLI as European projection</span>
+      <p>Every decision carries two deterministically linked identifiers: <strong>cli:ch</strong> as the canonical Swiss form and <strong>ECLI</strong> as the lossy projection for European interoperability.</p>
+      <p>cli:ch makes five features of Swiss jurisprudence first-class that ECLI flattens:</p>
+      <ul>
+        <li><strong>Trilingualism</strong> — DE/FR/IT versions of a BGE are legally equally authentic texts (Art. 14 PublG). cli:ch treats language as a first-class axis via <code>?lang=</code>.</li>
+        <li><strong>Cantonal sovereignty</strong> — 26 distinct judicial systems remain visible (<code>cli:ch:zh:…</code>, <code>cli:ch:ti:…</code>), not collapsed into an opaque court code.</li>
+        <li><strong>Pinpoint addressing</strong> — Erwägung-level citation is first-class via <code>#e-2.3</code> (Swiss citation convention).</li>
+        <li><strong>Chamber granularity</strong> — Obergericht, Verwaltungsgericht, Sozialversicherungsgericht etc. remain explicitly named instead of disappearing into a three-letter code.</li>
+        <li><strong>Versioning</strong> — <code>@YYYY-MM-DD</code> addresses a specific anonymization version; rare but legally relevant when needed.</li>
+      </ul>
+      <pre>cli:ch:bge:140-III-86
+cli:ch:bge:140-III-86?lang=fr             (French version of the same BGE)
+cli:ch:bge:140-III-86#e-2.3               (pinpoint to Erwägung 2.3)
+cli:ch:bger:6B_1234/2025
+cli:ch:bvger:A-1234/2024
+cli:ch:zh:obergericht:LB230012            (canton of Zurich, Obergericht)
+cli:ch:ti:tribunale-appello:34.2025.27    (canton of Ticino, Tribunale d'appello)
+cli:ch:finma:2024-12345                   (FINMA decision)</pre>
+      <p>
+        <strong>Form</strong>: <code>cli:ch:&lt;court&gt;[:&lt;chamber&gt;]:&lt;docket&gt;[@&lt;version&gt;][?lang=&lt;l&gt;][#&lt;pinpoint&gt;]</code>. Federal courts without a canton prefix; cantonal courts with the ISO 3166-2 canton code plus the canton-native court designation. The identifier model parallels the FRBR layers of <em>Akoma Ntoso</em> (Work / Expression / Manifestation) — we're not inventing, we're applying an established model with Swiss labels.
+      </p>
+      <p>
+        <strong>ECLI as projection</strong> for European resolvers: an ECLI is deterministically derived from every cli:ch (pure function <code>cli_ch_to_ecli</code>). The projection is many-to-one — language, pinpoint, version and chamber detail are not preserved.
+      </p>
+      <pre>cli:ch:bge:140-III-86             →  ECLI:CH:BGE:2014:140.III.86
+cli:ch:bger:6B_1234/2025          →  ECLI:CH:BGER:2025:6B_1234.2025
+cli:ch:zh:obergericht:LB230012    →  ECLI:CH:ZHO:2023:LB230012</pre>
+      <p>
+        Why a Swiss-native form as primary? Because Swiss jurisprudence has features — trilingual authentic texts, 26 sovereign cantonal judicial systems, pinpoint citation at Erwägung level — that necessarily collapse into a single flat axis in any general European scheme. cli:ch makes them first-class; ECLI provides European compatibility. Both together are more than either alone.
+      </p>
+      <p>
+        Existing internal identifiers (Geschäftsnummern, dossier numbers) remain unchanged — cli:ch and ECLI are additional, standardised layers.
+      </p>
+      <p>
+        <strong>HTTP resolver</strong>: <code>https://opencaselaw.ch/cli/ch/&lt;court&gt;[/&lt;chamber&gt;]/&lt;docket&gt;</code> resolves any cli:ch URI to the canonical decision page in one HTTP hop (302 redirect). URL fragments (<code>#e-N-M</code> pinpoints) are preserved by browsers across the redirect.
+      </p>
+      <p>
+        <em>Reference implementation</em>: <code>cli_ch.py</code> mints cli:ch URIs deterministically; <code>cli_ch_to_ecli()</code> is the projection function; <code>cli_ch_to_decision_id()</code> is the inverse used by the resolver.
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/cli_ch.py">cli_ch.py on GitHub</a> ·
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py on GitHub</a>.
+      </p>
+    </div>
+
+    <div class="num">02</div>
+    <div class="body">
+      <h3>Metadata</h3>
+      <span class="label">Schema.org / LegalCase (JSON-LD)</span>
+      <p>Every decision page carries a <strong>Schema.org LegalCase block as JSON-LD</strong> in its <code>&lt;head&gt;</code> with both identifiers (cli:ch + ECLI), court, date, language, regeste, outbound case and statute citations.</p>
+      <pre>{
+  "@context": "https://schema.org",
+  "@type": "LegalCase",
+  "identifier": [
+    {"@type": "PropertyValue", "propertyID": "cli:ch", "value": "cli:ch:bge:140-III-86"},
+    {"@type": "PropertyValue", "propertyID": "ECLI",   "value": "ECLI:CH:BGE:2014:140.III.86"}
+  ],
+  "name": "BGE 140 III 86",
+  "datePublished": "2014-04-15",
+  "inLanguage": "de",
+  "court": {"@type": "GovernmentOrganization", "name": "Bundesgericht"},
+  "citation": [...],          // outbound case citations
+  "legislationCited": [...]   // outbound statute citations
+}</pre>
+      <p>
+        This does two things: search engines index the decision with rich-result support, and AI agents get a machine-readable record without web scraping.
+      </p>
+      <p>
+        <em>Reference</em>: every page at <code>opencaselaw.ch/entscheid/&lt;id&gt;</code> serves this block. Implementation in <code>seo_pages.py</code>.
+      </p>
+    </div>
+
+    <div class="num">03</div>
+    <div class="body">
+      <h3>Structure</h3>
+      <span class="label">Akoma Ntoso 3.0 (XML)</span>
+      <p>Where an XML representation of the decision is required, follow <strong>Akoma Ntoso 3.0</strong> (the UN/OASIS standard for legislative and judicial documents). Sachverhalt, Erwägungen, Dispositiv and Regeste in the standard elements — don't invent a new XML language.</p>
+      <p>
+        Akoma Ntoso is the least painful path: already in production in Italy, Brazil, the European Union and the UN. Swiss specifics (Schweizer Citation, cantonal Geschäftsnummern, multilingualism) embed as optional metadata attributes without warping the core schema.
+      </p>
+      <p>
+        <em>Status</em>: partially live in OpenCaseLaw (Materialien v0.2 uses Akoma Ntoso for Botschaften). Full XML output for court decisions is roadmap item 2026 Q3.
+      </p>
+    </div>
+
+    <div class="num">04</div>
+    <div class="body">
+      <h3>Full text</h3>
+      <span class="label">Markdown with Erwägung anchors (Schweizer Citation)</span>
+      <p>For the machine-readable full-text representation: <strong>Markdown</strong> with <strong>HTML anchors on every Erwägung</strong>, named after the Schweizer Citation convention (<code>E. 2.3</code> → <code>#e-2-3</code>).</p>
+      <pre># BGE 140 III 86
+
+## Sachverhalt {#sachverhalt}
+...
+
+## Erwägungen
+### E. 2.1 {#e-2-1}
+...
+### E. 2.3 {#e-2-3}
+The central holding goes here...
+
+## Dispositiv {#dispositiv}
+1. Die Beschwerde wird abgewiesen.</pre>
+      <p>
+        This lets you pinpoint-link to any Erwägung — the lifeblood of legal citation practice. Tools can cite and verify individual Erwägungen without reparsing the full decision.
+      </p>
+      <p>
+        <em>Reference</em>: <code>opencaselaw.ch/entscheid/bge_BGE_140_III_86#e-2-3</code> jumps directly to Erwägung 2.3.
+      </p>
+    </div>
+
+    <div class="num">05</div>
+    <div class="body">
+      <h3>Citations</h3>
+      <span class="label">Resolved, machine-readable, bidirectional</span>
+      <p>Every citation of another decision or statute is <strong>resolved</strong>: not just as a plain-text string, but linked to a concrete cli:ch (case, primary — ECLI projection available) or ELI URI (statute). Bidirectional — both outbound (what this decision cites) and inbound (who cites this decision).</p>
+      <p>
+        This makes the Swiss citation graph a shared substrate for doctrine tracking, leading-case detection, appeal-chain tracing. Exactly the material AI tools need to <em>verify</em> what's cited — instead of hallucinating.
+      </p>
+      <p>
+        <em>Status</em>: 6.46 M case-citation edges + 11.3 M statute-citation edges, regenerated daily, queryable via the <code>find_citations</code> / <code>find_appeal_chain</code> / <code>find_leading_cases</code> MCP tools and the REST API.
+      </p>
+    </div>
+
+    <div class="num">06</div>
+    <div class="body">
+      <h3>Provenance</h3>
+      <span class="label">RFC-6962 Merkle anchor · OpenTimestamps-Bitcoin · live since 2026-05-21</span>
+      <p>Every publish of the corpus computes an <strong>RFC-6962 Merkle tree</strong> over all decisions. Each leaf commits to <code>(decision_id, cli:ch, ECLI, content_hash, decision_date)</code>. The root is:</p>
+      <ul>
+        <li>committed to the public Git repository (<code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>) — daily, ~700 bytes per publish,</li>
+        <li>anchored to the Bitcoin blockchain via <a href="https://opentimestamps.org/">OpenTimestamps</a> (<code>.root.ots</code> file, ~945 bytes per publish, free, upgraded to fully Bitcoin-anchored after ~1 block).</li>
+        <li>served as a per-decision inclusion proof via API: <code>GET /api/integrity/&lt;decision_id&gt;</code> returns the RFC-6962 inclusion proof against today's root.</li>
+      </ul>
+      <p>
+        Any cited decision-text can be bit-exactly verified against the publish-root — without trusting opencaselaw.ch. Hallucinations aren't prevented by promises but proven absent by mathematics.
+      </p>
+      <p>
+        <em>Status</em>: in production since 2026-05-21. The hashing convention (RFC 6962, the same as Certificate Transparency) and the leaf schema are documented at <a href="/integrity/">opencaselaw.ch/integrity/</a>. This is the only one of the six standards that doesn't profile an existing scheme — the convention itself will be consolidated publicly at <a href="https://openlawstandards.ch">openlawstandards.ch</a>.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<section class="section-card">
+  <h2>Reference implementation</h2>
+  <p class="sub">OpenCaseLaw.ch</p>
+
+  <p>
+    The six standards are not hypothetical. <strong>All six are in production at OpenCaseLaw.ch</strong> (Akoma Ntoso for Materialien is live, for court decisions it's on the roadmap):
+  </p>
+  <ul>
+    <li><strong>01 Identification</strong>: cli:ch (Swiss form, primary) plus ECLI (European projection) for all 972,000+ decisions; both deterministically minted on demand, visible in every API response and every <code>/entscheid/&lt;id&gt;</code> page. HTTP resolver at <code>/cli/ch/...</code>.</li>
+    <li><strong>02 Metadata</strong>: Schema.org/LegalCase JSON-LD on every decision page, with cli:ch + ECLI in the <code>identifier</code> array, citation and statute graph.</li>
+    <li><strong>03 Structure</strong>: Akoma Ntoso for Materialien (Botschaften) already in production. For court decisions: roadmap Q3 2026.</li>
+    <li><strong>04 Full text</strong>: Markdown with Erwägung anchors, Schweizer-Citation-conformant. Pinpoint links like <code>/entscheid/bge_BGE_140_III_86#e-2-3</code> work today.</li>
+    <li><strong>05 Citations</strong>: 6.46 M resolved case edges + 11.3 M statute citations, regenerated daily, bidirectional.</li>
+    <li><strong>06 Provenance</strong>: in production since 2026-05-21 — daily RFC-6962 Merkle root over all decisions at <code>docs/integrity/&lt;date&gt;.root</code>, OpenTimestamps-Bitcoin-anchored (<code>.root.ots</code>), per-decision inclusion proof via <code>/api/integrity/&lt;decision_id&gt;</code>. Documented at <a href="/integrity/">opencaselaw.ch/integrity/</a>.</li>
+  </ul>
+</section>
+
+<section class="section-card">
+  <h2>Roadmap</h2>
+  <p class="sub">Open Law Standards as a separate site</p>
+  <ul>
+    <li><strong>Q3 2026</strong>: <a href="https://openlawstandards.ch">openlawstandards.ch</a> launches as a dedicated site. RFC-format per Bestimmung. Open public comment phase.</li>
+    <li><strong>Q3 2026</strong>: Akoma Ntoso XML output for court decisions (extending the Materialien pipeline).</li>
+    <li><strong>Q4 2026</strong>: Outreach to Verein Entscheidsuche.ch, Bundesgericht, University of Berne Institute for Legal Informatics, ETH AI Center, other Swiss legal-data providers. Goal: shared adoption of selected Bestimmungen.</li>
+    <li><strong>2027</strong>: Extension to Liechtenstein, Austria, Germany if interest exists — the standards aren't Switzerland-specific.</li>
+  </ul>
+</section>
+
+<section class="section-card">
+  <h2>Contact</h2>
+  <p class="sub">Discussion + collaboration</p>
+  <p>
+    This is a discussion draft. Comments, corrections, alternative proposals welcome via:
+  </p>
+  <ul>
+    <li>GitHub Issues at <a href="https://github.com/jonashertner/caselaw-repo-1/issues">github.com/jonashertner/caselaw-repo-1</a></li>
+    <li>Email: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a></li>
+  </ul>
+  <p>
+    German version: <a href="/standards/">opencaselaw.ch/standards/</a>
+  </p>
+</section>
+
+</main>
+</body>
+</html>
