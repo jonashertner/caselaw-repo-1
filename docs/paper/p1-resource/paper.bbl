@@ -1,0 +1,107 @@
+\begin{thebibliography}{11}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Geering and Merane(2024)]{geering2024scd}
+Florian Geering and Jakob Merane.
+\newblock Swiss federal supreme court dataset ({SCD}), 2024.
+\newblock Version 2023-5.
+
+\bibitem[Harde et~al.(2025)Harde, Jain, and Jain]{lecnet2025}
+Pooja Harde, Bhavya Jain, and Sarika Jain.
+\newblock Lecnet: A legal citation network benchmark dataset.
+\newblock In \emph{Proceedings of the 1st Workshop on NLP for Empowering
+  Justice (JUST-NLP 2025)}, pages 18--28. Association for Computational
+  Linguistics, 2025.
+\newblock \doi{10.18653/v1/2025.justnlp-main.4}.
+
+\bibitem[{Harvard Law School Library}(2018)]{cap2018}
+{Harvard Law School Library}.
+\newblock Caselaw access project.
+\newblock \url{https://case.law/}, 2018.
+
+\bibitem[Henderson et~al.(2022)Henderson, Krass, Zheng, Guha, Manning,
+  Jurafsky, and Ho]{pile2022}
+Peter Henderson, Mark Krass, Lucia Zheng, Neel Guha, Christopher~D. Manning,
+  Daniel Jurafsky, and Daniel~E. Ho.
+\newblock Pile of law: Learning responsible data filtering from the law and a
+  256gb open-source legal dataset.
+\newblock \emph{Advances in Neural Information Processing Systems 35, Datasets
+  and Benchmarks Track}, 2022.
+
+\bibitem[Niklaus et~al.(2021)Niklaus, Chalkidis, and St{\"u}rmer]{niklaus2021}
+Joel Niklaus, Ilias Chalkidis, and Matthias St{\"u}rmer.
+\newblock Swiss-judgment-prediction: A multilingual legal judgment prediction
+  benchmark.
+\newblock In \emph{Proceedings of the Natural Legal Language Processing
+  Workshop 2021}, pages 19--35. Association for Computational Linguistics,
+  2021.
+\newblock \doi{10.18653/v1/2021.nllp-1.3}.
+
+\bibitem[Niklaus et~al.(2024)Niklaus, Matoshi, St{\"u}rmer, Chalkidis, and
+  Ho]{niklaus2023}
+Joel Niklaus, Veton Matoshi, Matthias St{\"u}rmer, Ilias Chalkidis, and
+  Daniel~E. Ho.
+\newblock Multilegalpile: A 689gb multilingual legal corpus.
+\newblock In \emph{Proceedings of the 62nd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 15077--15094.
+  Association for Computational Linguistics, 2024.
+\newblock \doi{10.18653/v1/2024.acl-long.805}.
+
+\bibitem[Niklaus et~al.(2025)Niklaus, Merane, Nenadic, Ahmadi, Gao, Chevalley,
+  Humbel, G{\"o}sken, Tanzi, L{\"u}thi, Palombo, Poff, Yang, Wu, Guillod,
+  Mamic, Brunner, Pereyra, and Grupen]{niklaus2025swiltra}
+Joel Niklaus, Jakob Merane, Luka Nenadic, Sina Ahmadi, Yingqiang Gao, Cyrill
+  A.~H. Chevalley, Claude Humbel, Christophe G{\"o}sken, Lorenzo Tanzi, Thomas
+  L{\"u}thi, Stefan Palombo, Spencer Poff, Boling Yang, Nan Wu, Matthew
+  Guillod, Robin Mamic, Daniel Brunner, Julio Pereyra, and Niko Grupen.
+\newblock {SwiLTra-Bench}: The {S}wiss legal translation benchmark.
+\newblock In \emph{Proceedings of the 63rd Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 14894--14916.
+  Association for Computational Linguistics, 2025.
+\newblock URL \url{https://aclanthology.org/2025.acl-long.725/}.
+\newblock 180k aligned Swiss legal translation pairs across DE/FR/IT/RM/EN
+  spanning laws, BGE headnotes, and Federal Supreme Court press releases;
+  introduces SwiLTra-Judge for LLM-based eval aligned with human experts.
+
+\bibitem[Ostendorff et~al.(2020)Ostendorff, Blume, and
+  Ostendorff]{ostendorff2020}
+Malte Ostendorff, Till Blume, and Saskia Ostendorff.
+\newblock Towards an open platform for legal information.
+\newblock In \emph{Proceedings of the ACM/IEEE Joint Conference on Digital
+  Libraries (JCDL)}, 2020.
+\newblock Open Legal Data platform; arXiv:2005.13342.
+
+\bibitem[Ovcharov(2026)]{ovcharov2026ukraine}
+Volodymyr Ovcharov.
+\newblock Automatic construction of a legal citation graph from 100 million
+  ukrainian court decisions: Large-scale extraction, topological analysis, and
+  ontology-driven clustering.
+\newblock \emph{arXiv preprint arXiv:2605.15362}, 2026.
+\newblock \doi{10.48550/arXiv.2605.15362}.
+
+\bibitem[Rolshoven et~al.(2025)Rolshoven, Rasiah, Br{\"u}gger~Bose, Hostettler,
+  Burkhalter, St{\"u}rmer, and Niklaus]{rolshoven2025}
+Luca Rolshoven, Vishvaksenan Rasiah, Srinanda Br{\"u}gger~Bose, Sarah
+  Hostettler, Lara Burkhalter, Matthias St{\"u}rmer, and Joel Niklaus.
+\newblock Unlocking legal knowledge: A multilingual dataset for judicial
+  summarization in switzerland.
+\newblock In \emph{Findings of the Association for Computational Linguistics:
+  EMNLP 2025}, pages 15382--15411. Association for Computational Linguistics,
+  2025.
+\newblock URL \url{https://aclanthology.org/2025.findings-emnlp.832/}.
+\newblock SLDS dataset: 20{,}000 Swiss Federal Supreme Court rulings with
+  DE/FR/IT headnotes, CC-BY-4.0, https://huggingface.co/datasets/ipst/slds.
+
+\bibitem[Stern et~al.(2024)Stern, Rasiah, Matoshi, Br{\"u}gger~Bose,
+  St{\"u}rmer, Chalkidis, Ho, and Niklaus]{stern2024}
+Ronja Stern, Vishvaksenan Rasiah, Veton Matoshi, Srinanda Br{\"u}gger~Bose,
+  Matthias St{\"u}rmer, Ilias Chalkidis, Daniel~E. Ho, and Joel Niklaus.
+\newblock One law, many languages: Benchmarking multilingual legal reasoning
+  for judicial support.
+\newblock \emph{arXiv preprint arXiv:2306.09237}, 2024.
+
+\end{thebibliography}

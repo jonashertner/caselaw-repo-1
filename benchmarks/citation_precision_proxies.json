@@ -1,10 +1,10 @@
 {
   "by_match_type": {
     "docket_norm": {
-      "total": 3286234,
+      "total": 3288460,
       "date_coverage_pct": 99.96,
-      "date_sanity_pass_pct": 97.2483,
-      "date_violations": 90394,
+      "date_sanity_pass_pct": 97.2494,
+      "date_violations": 90419,
       "self_citations": 0,
       "self_cite_violation_pct": 0.0,
       "missing_source_date": 1246,
@@ -20,9 +20,9 @@
       }
     },
     "bge_norm": {
-      "total": 1215768,
+      "total": 1216702,
       "date_coverage_pct": 99.99,
-      "date_sanity_pass_pct": 99.262,
+      "date_sanity_pass_pct": 99.2626,
       "date_violations": 8971,
       "self_citations": 0,
       "self_cite_violation_pct": 0.0,
@@ -39,9 +39,9 @@
       }
     },
     "bge_bare": {
-      "total": 2943028,
+      "total": 2944527,
       "date_coverage_pct": 99.98,
-      "date_sanity_pass_pct": 99.7518,
+      "date_sanity_pass_pct": 99.752,
       "date_violations": 7302,
       "self_citations": 0,
       "self_cite_violation_pct": 0.0,
@@ -58,9 +58,9 @@
       }
     },
     "bge_pincite": {
-      "total": 652508,
+      "total": 652547,
       "date_coverage_pct": 99.92,
-      "date_sanity_pass_pct": 97.3507,
+      "date_sanity_pass_pct": 97.3508,
       "date_violations": 17273,
       "self_citations": 0,
       "self_cite_violation_pct": 0.0,
@@ -78,10 +78,10 @@
     }
   },
   "overall": {
-    "total": 8097538,
+    "total": 8102236,
     "date_coverage_pct": 99.97,
-    "date_sanity_pass_pct": 98.469,
-    "date_violations": 123940,
+    "date_sanity_pass_pct": 98.4695,
+    "date_violations": 123965,
     "self_citations": 0,
     "self_cite_violation_pct": 0.0
   }

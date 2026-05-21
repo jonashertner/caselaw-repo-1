@@ -68,8 +68,9 @@ of the LLM judge, and n ≥ 200 for the audit bench.
 ## Pre-submission checklist
 
 - [x] Main corpus/graph numbers are from the 2026-05-21 snapshot
-  (`tables/corpus_graph_stats.json`); citation-precision proxies are
-  explicitly labelled as a separate quality-control run
+  (`tables/corpus_graph_stats.json`); citation-precision proxies were
+  re-run against the same 2026-05-21 frozen graph and now match the
+  released E_link denominator (8,102,236 rows)
 - [x] All cited works present in `bib/refs.bib`
 - [x] Cross-references resolve (\ref, \cite all defined)
 - [x] Honest scope: no eval claims, no audit claims, no benchmark
