@@ -11,7 +11,7 @@ which is metadata) plus paste in the `zenodo_metadata.json` fields.
 
 | File | Purpose | SHA-256 (in `checksums.sha256`) |
 |---|---|---|
-| `paper.pdf` | Compiled paper, 14 pages | `b69ff594…8fba5` |
+| `paper.pdf` | Compiled paper, 14 pages | `8007caf2…990f9` |
 | `corpus_graph_stats_2026-05-21.json` | Frozen corpus + graph statistics; single source of truth for every count in the paper | `87566b50…44fc1` |
 | `precision_proxies_2026-05-21.json` | Re-run of `benchmarks/citation_precision_proxies.py` against the 2026-05-21 graph; matches the released E_link denominator (8,102,236 link-edge rows) exactly | `190ec47c…dc661` |
 | `integrity_manifest_2026-05-21.json` | RFC-6962 build manifest: root hex, leaf encoding, decision count, build timing | `6e74438c…0968bc` |
