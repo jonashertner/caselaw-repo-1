@@ -159,7 +159,7 @@ if PROXY_PATH.exists():
         "precision_proxies.tex",
         f"""\\begin{{table}}[t]
 \\centering
-\\caption{{Citation-resolution precision proxies from a quality-control run over {fmt_int(overall['total'])} resolved pairs. Date-sanity pass = \\% of pairs where target decision date precedes the source's; violations are logical impossibilities and thus a hard floor on false-positive count, not a lower bound on precision. Self-cite = pairs where source = target. Conf.\\,p50 = median resolver confidence per stratum. Full per-stratum manual precision adjudication is deferred to v2.0 (see \\texttt{{benchmarks/citation\\_precision\\_audit.py}}).}}
+\\caption{{Citation-resolution precision proxies from a quality-control run over {fmt_int(overall['total'])} resolved pairs. Date-sanity pass = \\% of pairs where target decision date is not after the source's; violations are logical impossibilities and thus a hard floor on false-positive count, not a lower bound on precision. Self-cite = pairs where source = target. Conf.\\,p50 = median resolver confidence per stratum. Full per-stratum manual precision adjudication is deferred to v2.0 (see \\texttt{{benchmarks/citation\\_precision\\_audit.py}}).}}
 \\label{{tab:precision_proxies}}
 \\small
 \\begin{{tabular}}{{l r r r r}}

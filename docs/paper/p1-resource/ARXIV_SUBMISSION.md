@@ -8,7 +8,7 @@ evaluation paper (`p2-eval/`) is in preparation.
 ## Title
 
 ```
-OpenCaseLaw: An Open Multilingual Citation Graph for Swiss Jurisprudence
+OpenCaseLaw: A Verifiable Multilingual Citation Graph for Swiss Jurisprudence
 ```
 
 ## Authors
@@ -22,7 +22,7 @@ Single author. Affiliation: OpenCaseLaw. Contact: jonashertner@protonmail.ch.
 ## Abstract
 
 ```
-34.0% of resolved decision-to-decision citations in Swiss jurisprudence span two different official languages. The row-normalised pattern is strongly asymmetric: Italian-language decisions cite outside Italian 84.6% of the time, French-language decisions 44.3%, and German-language decisions 15.0%. We measure this over the released resolved graph, and release the substrate. OpenCaseLaw is an open multilingual citation graph for Swiss jurisprudence: 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved cross-court citation references (92.9% coverage), 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY/CC-BY-SA commentaries, and 8,124 article-level links from federal statutes to the Federal Council messages (Botschaften) that explain them. The paper reports quality-control precision proxies, ships a 400-sample stratified citation-audit set for manual adjudication, and explicitly treats per-language resolution-rate bias as the main measurement confounder. Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD. Every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
+OpenCaseLaw is an open, verifiable Swiss legal graph that joins court decisions, resolved case citations, statute references, legislative-history materials, scholarly commentaries, stable identifiers, and cryptographic provenance. The release contains 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved cross-court citation references (92.9% coverage), 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY/CC-BY-SA commentaries, and 8,124 article-level links from federal statutes to the Federal Council messages (Botschaften) that explain them. Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD, and every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. As descriptive characterization of the released graph, we report row-normalised cross-language citation flow: Italian-language decisions cite outside Italian 84.6% of the time, French-language decisions 44.3%, and German-language decisions 15.0%; the aggregate cross-language share is 34.0%. The paper reports quality-control precision proxies, ships a 400-sample stratified citation-audit set for manual adjudication, and explicitly treats per-language resolution-rate bias as the main measurement confounder. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
 ```
 
 ## Comments line
@@ -48,13 +48,12 @@ cs.CR  (Cryptography and Security)  — for the Merkle/OpenTimestamps layer
 
 ## What this paper is
 
-A focused resource release. The main empirical measurement is the
-**34.0% cross-lingual citation share** and, more importantly, the
-row-normalised source-language asymmetry. The supporting structure is
-the cross-court resolved citation graph that made the measurement
-possible, the statute graph and Materialien bridge that anchor the
-citations to their legislative source, the cli:ch + ECLI identifier
-layer, and the cryptographic provenance layer.
+A focused resource release. The contribution is the cross-court
+resolved citation graph, the statute graph and Materialien bridge, the
+cli:ch + ECLI identifier layer, and the cryptographic provenance layer.
+The 34.0% cross-lingual citation share and row-normalised
+source-language asymmetry are descriptive corpus characterizations,
+not the primary contribution.
 
 ## What this paper is NOT
 
