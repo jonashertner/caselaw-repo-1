@@ -74,6 +74,21 @@ SKIP_BY_DEFAULT: set[str] = {
     "be_steuerrekurs",  # Portal DB disconnected (Feb 2026), returns 0 results
 }
 
+# Scrapers where a high none_count (>=200) is expected and not a portal failure.
+#
+# ecthr (HUDOC): the listing exposes ~88k judgments across all Council of
+# Europe member states; the scraper's discovery skips entries without an
+# authoritative-language version (German / French / Italian) at the listing
+# stage (~6k+/day "skipped_translations" — these never enter the fetch
+# pipeline). On top of that, fetch_decision routinely returns None for
+# judgments whose authoritative text isn't downloadable (commercial-only
+# translations, in-progress publications, etc.). These NoneReturns are
+# expected behaviour, not a portal outage; the trustworthy failure signal
+# for ecthr is the Errors: count in the per-run summary, not none_count.
+NONE_RETURN_TOLERANT_SCRAPERS: set[str] = {
+    "ecthr",
+}
+
 # Disk usage thresholds (percent)
 DISK_WARN_PERCENT = 85
 DISK_CRITICAL_PERCENT = 95
@@ -257,9 +272,16 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             )
 
         # NoneReturns are expected for portals with a few broken entries.
-        # Only flag as a note, not an error, unless excessive.
+        # Only flag as a note, not an error, unless excessive — and never for
+        # scrapers listed in NONE_RETURN_TOLERANT_SCRAPERS where high none_count
+        # is normal behaviour (e.g. ecthr / HUDOC, where many judgments lack a
+        # downloadable authoritative-language text by design). For those, even
+        # large none_counts collapse to an informational note so the daily
+        # health dashboard doesn't fire a false-positive "possible portal
+        # issue" alert. Real ecthr breakage still surfaces via the Errors:
+        # count in the per-run summary, which feeds error_count above.
         if none_count > 0:
-            if none_count >= 200:
+            if none_count >= 200 and court not in NONE_RETURN_TOLERANT_SCRAPERS:
                 error = f"{none_count} unavailable decisions (possible portal issue)"
                 failed = True
             else:
