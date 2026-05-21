@@ -1,6 +1,6 @@
 \begin{table}[t]
 \centering
-\caption{Citation-resolution precision proxies computed over the 8,102,236 link-edge rows of the released graph (matching $E_{\textrm{link}}$, Section~\ref{sec:graph}; re-run on the 2026-05-21 frozen snapshot). Date-sanity pass = \% of pairs where target decision date is not after the source's; violations are logical impossibilities and thus a hard floor on false-positive count, not a lower bound on precision. Self-cite = pairs where source = target. Conf.\,p50 = median resolver confidence per stratum. Full per-stratum manual precision adjudication is deferred to v2.0 (see \texttt{benchmarks/citation\_precision\_audit.py}).}
+\caption{Citation-resolution precision proxies computed over the 8,102,236 link-edge rows of the released graph (matching $E_{\textrm{link}}$, Section~\ref{sec:graph}; re-run on the 2026-05-21 frozen snapshot). Date-sanity pass = \% of pairs where target decision date is not after the source's; violations are recorded-date chronology inconsistencies and indicate likely false-positive resolutions (conditional on the recorded source/target dates themselves being correct; we preserve source-portal-provided dates, see Limitations), not a lower bound on precision. Self-cite = pairs where source = target. Conf.\,p50 = median resolver confidence per stratum. Full per-stratum manual precision adjudication is deferred to v2.0 (see \texttt{benchmarks/citation\_precision\_audit.py}).}
 \label{tab:precision_proxies}
 \small
 \begin{tabular}{l r r r r}
