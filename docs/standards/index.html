@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="auto">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Law Standards — OpenCaseLaw</title>
+<meta name="description" content="Vorschlag für offene Standards zur Identifikation, Strukturierung, Veröffentlichung und Verifikation von Schweizer Gerichtsentscheiden. Eine Diskussionsgrundlage mit Referenzimplementierung in OpenCaseLaw.">
+<meta property="og:title" content="Open Law Standards — Vorschlag">
+<meta property="og:description" content="Offene Standards für Identifikation, Metadaten, Struktur, Volltext, Zitationen und kryptografische Provenienz von Gerichtsentscheiden.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://opencaselaw.ch/standards/">
+<meta property="og:site_name" content="OpenCaseLaw.ch">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Open Law Standards — Vorschlag">
+<meta name="twitter:description" content="Offene Standards für Identifikation, Metadaten, Struktur, Volltext, Zitationen und kryptografische Provenienz von Gerichtsentscheiden.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/design-system.css?v=22">
+<style>
+:root {
+  --f-sans: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+  --max-w: 980px;
+}
+main.container { max-width: var(--max-w); padding: 0 24px; }
+.hero-standards {
+  padding: 80px 0 56px;
+  text-align: left;
+}
+.hero-standards h1 {
+  font-family: var(--f-serif, Georgia, serif);
+  font-weight: 300;
+  font-size: clamp(38px, 6vw, 64px);
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  margin: 0 0 24px;
+  color: var(--text);
+}
+.hero-standards .kicker {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 0 0 24px;
+}
+.hero-standards .lead {
+  font-size: 20px;
+  line-height: 1.55;
+  color: var(--text-2);
+  max-width: 60ch;
+  margin: 0;
+}
+.section-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 8px);
+  padding: 36px 40px;
+  margin-bottom: 24px;
+}
+.section-card h2 {
+  font-family: var(--f-serif, Georgia, serif);
+  font-weight: 300;
+  font-size: 28px;
+  letter-spacing: -0.015em;
+  margin: 0 0 8px;
+  color: var(--text);
+}
+.section-card .sub {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 0 0 24px;
+}
+.section-card p { font-size: 15px; line-height: 1.65; color: var(--text-2); margin: 0 0 14px; max-width: 70ch; }
+.section-card ul { font-size: 15px; line-height: 1.7; color: var(--text-2); padding-left: 1.4em; margin: 0 0 14px; }
+.section-card code {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  color: var(--text);
+}
+.section-card pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 18px;
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  overflow-x: auto;
+  color: var(--text);
+  margin: 12px 0 18px;
+}
+.standard-grid {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 24px 28px;
+  align-items: baseline;
+}
+.standard-grid .num {
+  font-family: var(--f-mono);
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--text-3);
+  letter-spacing: -0.02em;
+}
+.standard-grid .body h3 {
+  font-family: var(--f-sans);
+  font-weight: 500;
+  font-size: 19px;
+  margin: 0 0 4px;
+  color: var(--text);
+}
+.standard-grid .body .label {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 12px;
+  display: block;
+}
+.cta-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+.cta-row a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cta-row a:hover { border-color: var(--text); background: var(--bg-soft); }
+.callout {
+  border-left: 3px solid var(--accent, #3a3a3a);
+  padding: 4px 0 4px 18px;
+  margin: 18px 0 24px;
+  color: var(--text-2);
+  font-size: 14.5px;
+  font-style: italic;
+}
+@media (max-width: 640px) {
+  .standard-grid { grid-template-columns: 60px 1fr; gap: 16px 16px; }
+  .standard-grid .num { font-size: 24px; }
+  .section-card { padding: 24px 22px; }
+  main.container { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container row">
+    <a href="/" class="brand">
+      <span class="brand-mark">+</span>
+      <span class="brand-text">opencaselaw.ch</span>
+    </a>
+    <nav id="primary-nav" aria-label="Primary">
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
+      <a href="/word/">Word</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/api/">API</a>
+      <a href="/standards/" aria-current="page">Standards</a>
+      <a href="/quality.html">Quality</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+<section class="hero-standards">
+  <p class="kicker">Vorschlag · Diskussionsentwurf v0.1 · 2026-05-21</p>
+  <h1>Open Law Standards</h1>
+  <p class="lead">
+    Sechs offene Standards für die Identifikation, Strukturierung, Veröffentlichung und Verifikation von Schweizer Gerichtsentscheiden. Wo internationale Standards existieren — nicht neu erfinden. Wo sie fehlen — einen einfachen, dokumentierten Vorschlag machen und in der Referenzimplementierung sichtbar liefern.
+  </p>
+</section>
+
+<section class="section-card">
+  <h2>Warum offene Standards</h2>
+  <p class="sub">Begründung</p>
+
+  <p>
+    Schweizer Gerichtsentscheide sind <strong>öffentliche Werke</strong> (URG Art. 5 Abs. 1) und damit gemeinfrei. Trotzdem ist heute der reibungsfreie maschinelle Zugriff darauf nicht selbstverständlich:
+  </p>
+  <ul>
+    <li>Jede Quelle vergibt Identifikatoren nach eigener Konvention. Der gleiche BGE-Entscheid hat fünf verschiedene URLs in fünf Datenbanken.</li>
+    <li>Die meisten kantonalen Portale liefern PDFs oder HTML ohne maschinenlesbare Struktur — Sachverhalt, Erwägungen und Dispositiv müssen jeder von Hand wieder rekonstruieren.</li>
+    <li>Zitationen zwischen Entscheiden sind Klartextstrings (<code>BGE 140 III 86</code>) — jede konsumierende Anwendung muss sie selber auflösen, mit unterschiedlicher Genauigkeit.</li>
+    <li>Es gibt keinen kryptografisch nachprüfbaren Beweis, dass ein zitierter Entscheidtext tatsächlich der amtlich publizierte ist. Im Zeitalter halluzinierender KI-Tools ist das die zentrale Vertrauensfrage.</li>
+  </ul>
+
+  <p>
+    Sechs der hier vorgeschlagenen Standards existieren bereits — als internationale Spezifikationen oder als de-facto-Standards. Wir profilieren sie für den Schweizer Kontext, dokumentieren die Konvention und liefern eine Referenzimplementierung in OpenCaseLaw. Ein Standard ist <strong>Provenienz</strong>, der bisher in der Rechtsdatenwelt fehlt. Den möchten wir hiermit zur Diskussion stellen.
+  </p>
+
+  <p class="callout">
+    Das ist <strong>kein Manifest</strong> und keine Forderung an die Bundesgerichte oder Kantone, sondern eine offene Diskussionsgrundlage. Der Vorschlag ist absichtlich klein und kompatibel: jede Bestimmung lässt sich einzeln adoptieren, ohne andere zu blockieren.
+  </p>
+</section>
+
+<section class="section-card">
+  <h2>Die sechs Standards</h2>
+  <p class="sub">Zusammenfassung</p>
+
+  <div class="standard-grid">
+
+    <div class="num">01</div>
+    <div class="body">
+      <h3>Identifikation</h3>
+      <span class="label">European Case Law Identifier (ECLI) · Council of EU 2011/C 127/01</span>
+      <p>Jeder Entscheid erhält eine eindeutige, dauerhaft stabile <strong>ECLI-URI</strong> nach dem Council-of-EU-Schema.</p>
+      <pre>ECLI:CH:BGE:2014:140.III.86
+ECLI:CH:BGER:2025:6B_1234.2025
+ECLI:CH:BVGER:2024:A-1234.2024
+ECLI:CH:ZHO:2023:LB230012        (Kanton Zürich, Obergericht)
+ECLI:CH:TIG:2025:34.2025.27      (Kanton Tessin, Gerichte)</pre>
+      <p>
+        Sprachvarianten desselben Entscheids (DE/FR/IT bei den Bundesgerichten) teilen sich eine ECLI; die Sprache wird via Schema.org-<code>inLanguage</code> separat geführt. Bestehende interne Identifier (Geschäftsnummern, Dossier-Nummern) bleiben unverändert — die ECLI ist eine zusätzliche, standardisierte Schicht.
+      </p>
+      <p>
+        <em>Referenz</em>: <code>ecli.py</code> mintet ECLI-URIs deterministisch aus Gericht + Geschäftsnummer + Datum. <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py auf GitHub</a>.
+      </p>
+    </div>
+
+    <div class="num">02</div>
+    <div class="body">
+      <h3>Metadaten</h3>
+      <span class="label">Schema.org / LegalCase (JSON-LD)</span>
+      <p>Jede Entscheid-Webseite trägt im <code>&lt;head&gt;</code> einen <strong>Schema.org-/LegalCase-Block als JSON-LD</strong> mit ECLI, Gericht, Datum, Sprache, Regeste, ausgehenden Fall- und Gesetzeszitaten.</p>
+      <pre>{
+  "@context": "https://schema.org",
+  "@type": "LegalCase",
+  "identifier": {
+    "@type": "PropertyValue",
+    "propertyID": "ECLI",
+    "value": "ECLI:CH:BGE:2014:140.III.86"
+  },
+  "name": "BGE 140 III 86",
+  "datePublished": "2014-04-15",
+  "inLanguage": "de",
+  "court": {"@type": "GovernmentOrganization", "name": "Bundesgericht"},
+  "citation": [...],          // ausgehende Fall-Zitationen
+  "legislationCited": [...]   // ausgehende Gesetzeszitate
+}</pre>
+      <p>
+        Bewirkt zweierlei: Suchmaschinen indexieren den Entscheid mit Rich-Result-Unterstützung, und KI-Agenten erhalten ein maschinenlesbares Record ohne Web-Scraping.
+      </p>
+      <p>
+        <em>Referenz</em>: jede Entscheid-Seite unter <code>opencaselaw.ch/entscheid/&lt;id&gt;</code> liefert diesen Block aus. Implementierung in <code>seo_pages.py</code>.
+      </p>
+    </div>
+
+    <div class="num">03</div>
+    <div class="body">
+      <h3>Struktur</h3>
+      <span class="label">Akoma Ntoso 3.0 (XML)</span>
+      <p>Wenn eine XML-Darstellung des Entscheids verlangt wird, dann nach <strong>Akoma Ntoso 3.0</strong> (UN-/OASIS-Standard für legislative und judizielle Dokumente). Sachverhalt, Erwägungen, Dispositiv und Regeste in den vorgesehenen Elementen — keine eigene XML-Sprache erfinden.</p>
+      <p>
+        Akoma Ntoso ist eindeutig der wenigst-schmerzhafte Pfad: bereits in Italien, Brasilien, der Europäischen Union und der UN im Einsatz. Schweizer Spezifika (Schweizer Citation, kantonale Geschäftsnummern, Mehrsprachigkeit) lassen sich als optionale Metadaten-Attribute einbetten ohne den Kernschema zu verbiegen.
+      </p>
+      <p>
+        <em>Status</em>: in OpenCaseLaw teilweise produktiv (Materialien v0.2 nutzt Akoma Ntoso für Botschaften). Vollständige XML-Ausgabe für Gerichtsentscheide ist Roadmap-Item 2026 Q3.
+      </p>
+    </div>
+
+    <div class="num">04</div>
+    <div class="body">
+      <h3>Volltext</h3>
+      <span class="label">Markdown mit Erwägungs-Ankern (Schweizer Citation)</span>
+      <p>Für die maschinenlesbare Volltext-Darstellung: <strong>Markdown</strong> mit <strong>HTML-Ankern auf jeder Erwägung</strong>, benannt nach Schweizer Citation (<code>E. 2.3</code> → <code>#e-2-3</code>).</p>
+      <pre># BGE 140 III 86
+
+## Sachverhalt {#sachverhalt}
+...
+
+## Erwägungen
+### E. 2.1 {#e-2-1}
+...
+### E. 2.3 {#e-2-3}
+Die zentrale Aussage steht hier...
+
+## Dispositiv {#dispositiv}
+1. Die Beschwerde wird abgewiesen.</pre>
+      <p>
+        So lässt sich auf jede Erwägung pinpoint-genau verlinken — der Lebensnerv juristischer Zitierpraxis. Tools können Erwägungen einzeln zitieren und prüfen, ohne den Gesamt-Entscheid neu zu parsen.
+      </p>
+      <p>
+        <em>Referenz</em>: <code>opencaselaw.ch/entscheid/bge_BGE_140_III_86#e-2-3</code> springt direkt zur Erwägung 2.3.
+      </p>
+    </div>
+
+    <div class="num">05</div>
+    <div class="body">
+      <h3>Zitationen</h3>
+      <span class="label">Aufgelöst, maschinenlesbar, bidirektional</span>
+      <p>Jede Zitation eines anderen Entscheids oder Gesetzesartikels wird <strong>aufgelöst</strong>: nicht nur als Klartext-String, sondern verknüpft mit einer konkreten ECLI (Fall) oder ELI-URI (Gesetz). Bidirektional — sowohl ausgehend (was zitiert dieser Entscheid) als auch eingehend (wer zitiert diesen Entscheid).</p>
+      <p>
+        Damit wird der Schweizer Zitationsgraph zum gemeinsamen Substrat für Doktrin-Tracking, Leading-Case-Erkennung, Instanzenzug-Verfolgung. Genau das Material, das KI-Tools brauchen, um <em>zu prüfen</em>, was zitiert wird — statt zu halluzinieren.
+      </p>
+      <p>
+        <em>Referenz</em>: OpenCaseLaw löst aktuell 6,46 Mio. Fall-Zitationskanten und 11,3 Mio. Gesetzeszitate auf, täglich neu verifiziert. Verfügbar via <a href="/mcp/">MCP</a>-Tools <code>find_citations</code>, <code>find_appeal_chain</code>, <code>find_leading_cases</code>.
+      </p>
+    </div>
+
+    <div class="num">06</div>
+    <div class="body">
+      <h3>Provenienz</h3>
+      <span class="label">Kryptografischer Merkle-Anker + OpenTimestamps</span>
+      <p>Bei jeder Publikation des Korpus wird ein <strong>Merkle-Baum</strong> über alle <code>{decision_id → SHA-256(canonical_full_text)}</code>-Paare berechnet. Die <strong>Wurzelhash</strong> wird</p>
+      <ul>
+        <li>in das öffentliche Git-Repository commitet (<code>docs/integrity/&lt;YYYY-MM-DD&gt;.root</code>),</li>
+        <li>via <a href="https://opentimestamps.org/">OpenTimestamps</a> auf der Bitcoin-Blockchain verankert (kostenfrei, in ~1 Stunde bestätigt),</li>
+        <li>per API als Beweispfad pro Entscheid bereitgestellt.</li>
+      </ul>
+      <p>
+        Jeder KI-Agent, der eine Entscheid-Aussage zitiert, kann den zitierten Text bit-genau gegen die Publikationszeit-Hash verifizieren. Halluzination wird <strong>nicht durch Versprechen verhindert, sondern durch Mathematik nachgewiesen</strong>. Erste Implementation: 2026 Q3, mit OpenCaseLaw als Pilot-Referenz.
+      </p>
+      <p>
+        <em>Status</em>: Vorschlag in Konsultation. Dies ist der einzige der sechs Standards, der nicht auf einer bereits existierenden Spezifikation aufbaut — die Konvention selbst soll auf <a href="https://openlawstandards.ch">openlawstandards.ch</a> öffentlich konsolidiert werden.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<section class="section-card">
+  <h2>Referenzimplementierung</h2>
+  <p class="sub">OpenCaseLaw.ch</p>
+
+  <p>
+    Die sechs Standards sind nicht hypothetisch. <strong>Fünf von sechs sind in OpenCaseLaw.ch bereits live</strong>:
+  </p>
+  <ul>
+    <li><strong>01 Identifikation</strong>: ECLI für alle 972'880 Entscheide; gemintet beim Aufruf, sichtbar in jeder API-Antwort und jeder <code>/entscheid/&lt;id&gt;</code>-Seite.</li>
+    <li><strong>02 Metadaten</strong>: Schema.org/LegalCase-JSON-LD auf jeder Entscheid-Seite, mit ECLI-Identifier, Zitations- und Gesetzesgraph.</li>
+    <li><strong>03 Struktur</strong>: Akoma Ntoso für Materialien (Botschaften) bereits produktiv. Für Gerichtsentscheide: Roadmap Q3 2026.</li>
+    <li><strong>04 Volltext</strong>: Markdown mit Erwägungs-Ankern, Schweizer-Citation-konform. Pinpoint-Links wie <code>/entscheid/bge_BGE_140_III_86#e-2-3</code> funktionieren.</li>
+    <li><strong>05 Zitationen</strong>: 6,46 Mio. aufgelöste Fall-Kanten + 11,3 Mio. Gesetzeszitate, täglich neu generiert, bidirektional verfügbar.</li>
+    <li><strong>06 Provenienz</strong>: Roadmap Q3 2026 — Merkle-Baum-Berechnung als zusätzlicher Publish-Step, OpenTimestamps-Anker und API-Endpoint für Beweispfade.</li>
+  </ul>
+
+  <p>
+    Alles offen, alles CC0 für die Daten und MIT für den Code. Andere Anbieter können einzelne Bestimmungen adoptieren oder die ganze Konvention übernehmen — die Spezifikation gehört keinem einzelnen Anbieter.
+  </p>
+
+  <div class="cta-row">
+    <a href="https://github.com/jonashertner/caselaw-repo-1">Code (GitHub)</a>
+    <a href="https://huggingface.co/datasets/voilaj/swiss-caselaw">Dataset (CC0)</a>
+    <a href="/mcp/">MCP-Server</a>
+    <a href="https://openlawstandards.ch">openlawstandards.ch (in Entwicklung)</a>
+  </div>
+</section>
+
+<section class="section-card">
+  <h2>Weg vorwärts</h2>
+  <p class="sub">Konsultation, Konsolidierung, Übernahme</p>
+
+  <p>
+    Dies ist Diskussionsentwurf <strong>v0.1</strong>. Es ist absichtlich klein gehalten — eine kanonische Liste, sechs Bestimmungen, jede separat adoptierbar.
+  </p>
+  <p>
+    Geplant für 2026/2027:
+  </p>
+  <ul>
+    <li><strong>Q3 2026</strong>: <a href="https://openlawstandards.ch">openlawstandards.ch</a> als eigene Site freischalten. RFC-Format pro Bestimmung. Öffentliche Kommentarphase.</li>
+    <li><strong>Q3 2026</strong>: Provenienz-Pilot (Bestimmung 06) produktiv in OpenCaseLaw, inkl. erstem OpenTimestamps-verifiziertem Merkle-Anker.</li>
+    <li><strong>Q4 2026</strong>: Outreach an Verein Entscheidsuche.ch, Bundesgericht, Universität Bern Institute for Legal Informatics, ETH AI Center, andere Schweizer Rechtsdaten-Anbieter. Ziel: gemeinsame Adoption ausgewählter Bestimmungen.</li>
+    <li><strong>2027</strong>: Erweiterung auf Liechtenstein, Österreich, Deutschland sofern Interesse besteht — die Standards sind nicht Schweiz-spezifisch.</li>
+  </ul>
+
+  <p>
+    Mitarbeit und Kritik sind ausdrücklich gewünscht. Direkter Kontakt: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Diskussion auch via GitHub-Issues auf dem <a href="https://github.com/jonashertner/caselaw-repo-1">OpenCaseLaw-Repository</a>.
+  </p>
+
+  <p>
+    Wenn ein Schweizer Gericht oder Datenanbieter eine der Bestimmungen ganz oder teilweise übernimmt, ist die Welt der Schweizer Rechtsdaten besser. Wenn nicht, behält OpenCaseLaw die Referenzimplementierung — und die Spezifikation steht der nächsten Generation offen.
+  </p>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="container">
+    <p style="font-size: 12px; color: var(--text-3); text-align: center; margin: 32px 0;">
+      OpenCaseLaw.ch · Open dataset of Swiss court decisions · Code MIT, Data CC0
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
