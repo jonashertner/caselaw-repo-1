@@ -159,7 +159,7 @@ if PROXY_PATH.exists():
         "precision_proxies.tex",
         f"""\\begin{{table}}[t]
 \\centering
-\\caption{{Citation-resolution precision proxies (computed over all {fmt_int(overall['total'])} resolved pairs). Date-sanity pass = \\% of pairs where target decision date precedes the source's; violations are logical impossibilities and thus a hard floor on false-positive count. Self-cite = pairs where source = target. Conf.\\,p50 = median resolver confidence per stratum. Full per-stratum manual precision adjudication is deferred to v2.0 (see \\texttt{{benchmarks/citation\\_precision\\_audit.py}}).}}
+\\caption{{Citation-resolution precision proxies from a quality-control run over {fmt_int(overall['total'])} resolved pairs. Date-sanity pass = \\% of pairs where target decision date precedes the source's; violations are logical impossibilities and thus a hard floor on false-positive count, not a lower bound on precision. Self-cite = pairs where source = target. Conf.\\,p50 = median resolver confidence per stratum. Full per-stratum manual precision adjudication is deferred to v2.0 (see \\texttt{{benchmarks/citation\\_precision\\_audit.py}}).}}
 \\label{{tab:precision_proxies}}
 \\small
 \\begin{{tabular}}{{l r r r r}}
@@ -216,7 +216,7 @@ write(
     "statute_graph.tex",
     f"""\\begin{{table}}[t]
 \\centering
-\\caption{{Statute and doctrinal graph layers. Decision-to-statute edges plus federal/cantonal mirrors plus Materialien (Federal Council Botschaften) and CC-BY commentaries.}}
+\\caption{{Statute and doctrinal graph layers. Decision-to-statute edges plus federal/cantonal mirrors plus Materialien (Federal Council Botschaften) and open commentaries.}}
 \\label{{tab:statute_graph}}
 \\small
 \\begin{{tabular}}{{l r}}
@@ -235,7 +235,7 @@ Materialien (Botschaft documents, DE/FR/IT) & {fmt_int(mat_docs)} \\\\
 Materialien paragraphs (full-text) & {fmt_int(mat_paras)} \\\\
 Article-anchored Materialien links & {fmt_int(mat_links)} \\\\
 \\addlinespace
-Open commentaries (CC-BY) & {fmt_int(s['commentaries_total'])} \\\\
+Open commentaries (CC-BY/CC-BY-SA) & {fmt_int(s['commentaries_total'])} \\\\
 \\bottomrule
 \\end{{tabular}}
 \\end{{table}}
@@ -261,7 +261,7 @@ write(
     "top_cited.tex",
     f"""\\begin{{table}}[t]
 \\centering
-\\caption{{Top 15 most-cited decisions in the corpus. Subject area inferred from the decision regeste; in-degree counts citing decisions (with multi-citing pairs counted once per source). Snapshot {SNAPSHOT_DATE}.}}
+\\caption{{Top 15 most-cited decisions in the corpus. In-degree counts citing decisions (with multi-citing pairs counted once per source). Snapshot {SNAPSHOT_DATE}.}}
 \\label{{tab:top_cited}}
 \\small
 \\begin{{tabular}}{{l l r}}
@@ -290,8 +290,7 @@ if CANONICAL_STATUTES_PATH.exists():
     caption_extra = (
         f" Alias-canonicalised across DE/FR/IT abbreviations of {n_alias_groups} major"
         " Swiss federal statutes; decisions citing multiple language forms of the same"
-        " provision in one document are counted once. The five v1.0 \\emph{BGG}/\\emph{LTF}"
-        " rows now correctly aggregate as a single statute."
+        " provision in one document are counted once."
     )
 else:
     src_rows = s["top30_statutes"][:15]

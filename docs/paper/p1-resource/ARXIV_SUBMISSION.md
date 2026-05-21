@@ -21,7 +21,7 @@ Single author. Affiliation: OpenCaseLaw. Contact: jonashertner@protonmail.ch.
 ## Abstract
 
 ```
-34.0% of resolved decision-to-decision citations in Swiss jurisprudence span two different official languages. This is a structural property of multilingual civil-law jurisdictions that no English-language legal-NLP resource captures, and it has not been measured before because no resolved cross-court Swiss citation graph existed. We measure it, and release the substrate. OpenCaseLaw is the first open multilingual citation graph for Swiss jurisprudence: 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved cross-court citation edges (92.9% coverage), 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY commentaries, and 8,124 article-level links from federal statutes to the Federal Council messages (Botschaften) that explain them — the first open programmatic bridge from Swiss case law to its legislative-history substrate. Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD. Every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
+34.0% of resolved decision-to-decision citations in Swiss jurisprudence span two different official languages. The row-normalised pattern is strongly asymmetric: Italian-language decisions cite outside Italian 84.6% of the time, French-language decisions 44.3%, and German-language decisions 15.0%. We measure this over the released resolved graph, and release the substrate. OpenCaseLaw is an open multilingual citation graph for Swiss jurisprudence: 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved cross-court citation references (92.9% coverage), 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY/CC-BY-SA commentaries, and 8,124 article-level links from federal statutes to the Federal Council messages (Botschaften) that explain them. Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD. Every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
 ```
 
 ## Comments line
@@ -47,10 +47,10 @@ cs.CR  (Cryptography and Security)  — for the Merkle/OpenTimestamps layer
 
 ## What this paper is
 
-A focused resource release. The killer empirical contribution is the
-**34.0% cross-lingual citation share** — a structural property of Swiss
-jurisprudence measured here for the first time. The supporting structure
-is the cross-court resolved citation graph that made the measurement
+A focused resource release. The main empirical measurement is the
+**34.0% cross-lingual citation share** and, more importantly, the
+row-normalised source-language asymmetry. The supporting structure is
+the cross-court resolved citation graph that made the measurement
 possible, the statute graph and Materialien bridge that anchor the
 citations to their legislative source, the cli:ch + ECLI identifier
 layer, and the cryptographic provenance layer.
@@ -67,8 +67,9 @@ of the LLM judge, and n ≥ 200 for the audit bench.
 
 ## Pre-submission checklist
 
-- [x] Numbers are from the 2026-05-21 snapshot (single source of truth:
-  `tables/corpus_graph_stats.json`)
+- [x] Main corpus/graph numbers are from the 2026-05-21 snapshot
+  (`tables/corpus_graph_stats.json`); citation-precision proxies are
+  explicitly labelled as a separate quality-control run
 - [x] All cited works present in `bib/refs.bib`
 - [x] Cross-references resolve (\ref, \cite all defined)
 - [x] Honest scope: no eval claims, no audit claims, no benchmark
