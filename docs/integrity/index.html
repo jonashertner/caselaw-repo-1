@@ -55,7 +55,7 @@
     <span class="label">latest.root</span>
     <code class="pre-root" id="latest-root">— wird beim Aufruf geladen —</code>
     <p class="meta" id="root-meta"></p>
-    <p style="margin-top: 0.75rem; opacity: 0.8;"><a href="/integrity/latest.json">latest.json (Manifest)</a> · <a href="/integrity/latest.root">latest.root (nur Hex)</a></p>
+    <p style="margin-top: 0.75rem; opacity: 0.8;"><a href="/integrity/latest.json">latest.json (Manifest)</a> · <a href="/integrity/latest.root">latest.root (nur Hex)</a> · <a href="/integrity/latest.root.ots">latest.root.ots (OpenTimestamps-Anker)</a></p>
   </div>
   <script>
     fetch('/integrity/latest.json').then(r => r.json()).then(d => {
@@ -97,9 +97,9 @@ decision_date</pre>
 <section class="section-card">
   <h2>Roadmap</h2>
   <ul>
-    <li><strong>Live heute</strong>: tägliche Merkle-Wurzel + Manifest publiziert als <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.</li>
-    <li><strong>Nächster Schritt</strong>: OpenTimestamps-Anker via <code>ots stamp</code>. Sobald der <code>opentimestamps-client</code> auf dem Publisher installiert ist, wird automatisch eine <code>.root.ots</code>-Datei beigelegt.</li>
-    <li><strong>Folgeschritt</strong>: API-Endpunkt <code>/api/integrity/&lt;decision_id&gt;</code> liefert den Inklusions-Beweispfad einer Entscheidung für ein gewähltes Datum.</li>
+    <li><strong>Live</strong>: tägliche Merkle-Wurzel + Manifest publiziert als <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.</li>
+    <li><strong>Live</strong>: <a href="https://opentimestamps.org/">OpenTimestamps</a>-Anker via <code>ots stamp</code>. Die <code>.root.ots</code>-Datei wird täglich neben dem Root abgelegt und kann nach ~1 Bitcoin-Block (1–6 Std.) zu einem voll Bitcoin-verankerten Beweis aufgewertet werden (<code>ots upgrade</code>).</li>
+    <li><strong>Folgeschritt</strong>: API-Endpunkt <code>/api/integrity/&lt;decision_id&gt;</code> liefert den Inklusions-Beweispfad einer Entscheidung gegen die heutige Wurzel. Code ist in <code>integrity.py</code> (<code>merkle_proof</code>); fehlt nur die HTTP-Route.</li>
     <li><strong>Optional</strong>: Cross-Anchoring zu weiteren Zeitstempel-Diensten (Sigsum, RFC 3161 TSA) für Defense-in-Depth.</li>
   </ul>
   <p>Das ist Teil der <a href="/standards/">Open Law Standards</a> (Bestimmung 06 · Provenienz).</p>

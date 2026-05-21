@@ -342,6 +342,48 @@ def cli_ch_to_ecli(cli_ch: str, decision_date=None) -> Optional[str]:
     )
 
 
+def cli_ch_to_decision_id(cli_ch: str) -> Optional[str]:
+    """Reconstruct the internal decision_id that a cli:ch identifier
+    refers to.
+
+    Approximate inverse of ``mint_cli_ch``. The caller should verify the
+    returned id exists in the corpus — this function reconstructs the
+    *expected* id without consulting the DB.
+
+    Returns None if the cli:ch is malformed or refers to a non-Swiss
+    body (since non-Swiss courts don't get cli:ch ids).
+    """
+    parts = parse_cli_ch(cli_ch)
+    if not parts:
+        return None
+    court = parts["court"]
+    chamber = parts["chamber"]
+    docket = parts["docket"]
+
+    # BGE special form: cli:ch:bge:140-III-86 → bge_BGE_140_III_86
+    if court == "bge" and not chamber:
+        m = docket.split("-")
+        if len(m) == 3 and m[0].isdigit() and m[2].isdigit():
+            return f"bge_BGE_{m[0]}_{m[1]}_{m[2]}"
+        # Fall through to generic handling.
+
+    # Federal courts and regulators: <court>_<docket-with-slash-as-underscore>
+    if not chamber:
+        # Federal cli:ch court segment → internal court key (mostly identity).
+        # finma-versicherungsrecht / bundesrat are renamed in mint_cli_ch.
+        internal_court = {
+            "bundesrat": "ch_bundesrat",
+            "finma-versicherungsrecht": "finma_versicherungsrecht",
+        }.get(court, court)
+        docket_internal = docket.replace("/", "_")
+        return f"{internal_court}_{docket_internal}"
+
+    # Cantonal: cli:ch:<canton>:<chamber>:<docket> → <canton>_<chamber_with_-_as_>_<docket>
+    chamber_internal = chamber.replace("-", "_")
+    docket_internal = docket.replace("/", "_")
+    return f"{court}_{chamber_internal}_{docket_internal}"
+
+
 def cli_ch_to_url(cli_ch: str,
                   base: str = "https://opencaselaw.ch") -> Optional[str]:
     """Project a cli:ch identifier to its HTTP-resolvable URL form.

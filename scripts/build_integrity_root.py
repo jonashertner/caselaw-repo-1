@@ -89,6 +89,9 @@ def build_root(db_path: Path) -> dict:
     )
 
     leaves: list[bytes] = []
+    # Also collect (decision_id, leaf_hash) in the same order so we can
+    # persist a queryable index for the inclusion-proof API endpoint.
+    leaf_index: list[tuple[str, bytes]] = []
     first_id: str | None = None
     last_id: str | None = None
     skipped_no_content_hash = 0
@@ -120,7 +123,9 @@ def build_root(db_path: Path) -> dict:
                              decision_date=dec_date or None)
 
         leaf_bytes = canonical_leaf(did, cli_ch_uri, ecli_uri, ch, dec_date)
-        leaves.append(leaf_hash(leaf_bytes))
+        lh = leaf_hash(leaf_bytes)
+        leaves.append(lh)
+        leaf_index.append((did, lh))
         n += 1
 
     t_iter = time.monotonic() - t0
@@ -134,6 +139,7 @@ def build_root(db_path: Path) -> dict:
 
     finished_at = dt.datetime.now(dt.timezone.utc)
     return {
+        "leaf_index": leaf_index,  # consumed by write_leaves_db; popped before serializing manifest
         "date": finished_at.strftime("%Y-%m-%d"),
         "root": hex_root(root),
         "algorithm": "RFC6962-SHA256",
@@ -175,6 +181,44 @@ def _ots_stamp(root_file: Path) -> str | None:
         return None
 
 
+def write_leaves_db(leaf_index: list[tuple[str, bytes]], db_path: Path) -> None:
+    """Write the (decision_id → idx, leaf_hash) mapping to a SQLite file.
+
+    Used by the /api/integrity/<decision_id> endpoint to look up a leaf
+    in O(1) and then compute the inclusion proof. Indexed on decision_id
+    for fast point lookups; idx is the primary key so iteration over leaf
+    order is sequential.
+
+    ~80 MB for 972k decisions; lives outside docs/ so it doesn't bloat git.
+    """
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    # Replace atomically — write to .tmp, rename.
+    tmp_path = db_path.with_suffix(db_path.suffix + ".tmp")
+    if tmp_path.exists():
+        tmp_path.unlink()
+    conn = sqlite3.connect(tmp_path)
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE leaves (
+            idx          INTEGER PRIMARY KEY,
+            decision_id  TEXT NOT NULL,
+            leaf_hash    BLOB NOT NULL
+        )
+    """)
+    cur.execute("CREATE UNIQUE INDEX idx_decision_id ON leaves(decision_id)")
+    cur.executemany(
+        "INSERT INTO leaves(idx, decision_id, leaf_hash) VALUES (?, ?, ?)",
+        ((i, did, lh) for i, (did, lh) in enumerate(leaf_index)),
+    )
+    conn.commit()
+    cur.execute("PRAGMA optimize")
+    conn.close()
+    if db_path.exists():
+        db_path.unlink()
+    tmp_path.rename(db_path)
+    print(f"  wrote {db_path} ({len(leaf_index)} rows)")
+
+
 def write_outputs(manifest: dict, out_dir: Path) -> Path:
     """Write the root file + manifest JSON + optional OTS proof.
 
@@ -207,8 +251,13 @@ def main():
     parser.add_argument("--out-dir", type=Path,
                         default=REPO_ROOT / "docs" / "integrity",
                         help="Output directory (default: docs/integrity/)")
+    parser.add_argument("--leaves-dir", type=Path,
+                        default=REPO_ROOT / "output" / "integrity",
+                        help="Where to write <date>.leaves.db (default: output/integrity/, not in git)")
     parser.add_argument("--no-ots", action="store_true",
                         help="Skip OpenTimestamps anchoring")
+    parser.add_argument("--no-leaves-db", action="store_true",
+                        help="Skip writing the leaves SQLite index")
     args = parser.parse_args()
 
     db_path = args.db or _default_db_path()
@@ -218,6 +267,23 @@ def main():
     print(f"computing Merkle root over {db_path}")
     manifest = build_root(db_path)
     print(f"  root: {manifest['root']}")
+
+    # Pop the leaf_index off the manifest before it's serialised to JSON.
+    leaf_index = manifest.pop("leaf_index")
+    if not args.no_leaves_db:
+        leaves_db = args.leaves_dir / f"{manifest['date']}.leaves.db"
+        write_leaves_db(leaf_index, leaves_db)
+        # Symlink (or copy) latest.leaves.db → today's file so the API
+        # endpoint can always find the freshest index.
+        latest_db = args.leaves_dir / "latest.leaves.db"
+        if latest_db.exists() or latest_db.is_symlink():
+            latest_db.unlink()
+        try:
+            latest_db.symlink_to(leaves_db.name)
+        except OSError:
+            # Fall back to copy on filesystems that don't support symlinks.
+            import shutil as _sh
+            _sh.copy(leaves_db, latest_db)
 
     root_file = write_outputs(manifest, args.out_dir)
 

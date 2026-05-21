@@ -20416,6 +20416,42 @@ setInterval(load, 30000);
     # ── SEO decision pages + sitemaps ───────────────────────────
     from seo_pages import render_decision_page, render_sitemap_index, render_court_sitemap, BASE_URL
 
+    # cli:ch HTTP resolver (Bestimmung 01 of the Open Law Standards).
+    # https://opencaselaw.ch/cli/ch/<court>[/<chamber>]/<docket>[?lang=]
+    # The fragment (#e-N-M) is preserved by browsers across 302 redirects.
+    _CANTONS = {"zh","be","lu","ur","sz","ow","nw","gl","zg","fr","so","bs",
+                "bl","sh","ar","ai","sg","gr","ag","tg","ti","vd","vs","ne",
+                "ge","ju"}
+
+    async def handle_cli_resolver(request):
+        from cli_ch import cli_ch_to_decision_id
+        path = request.path_params["path"] or ""
+        parts = path.split("/")
+        if len(parts) < 2 or not parts[0]:
+            return Response("cli:ch resolver: path must be /cli/ch/<court>[/<chamber>]/<docket>",
+                            status_code=400, media_type="text/plain")
+        if parts[0] in _CANTONS:
+            if len(parts) < 3:
+                return Response("cli:ch resolver: cantonal form requires /canton/chamber/docket",
+                                status_code=400, media_type="text/plain")
+            canton, chamber = parts[0], parts[1]
+            docket = "/".join(parts[2:])
+            cli_ch = f"cli:ch:{canton}:{chamber}:{docket}"
+        else:
+            court = parts[0]
+            docket = "/".join(parts[1:])
+            cli_ch = f"cli:ch:{court}:{docket}"
+        decision_id = cli_ch_to_decision_id(cli_ch)
+        if not decision_id:
+            return Response(f"cli:ch resolver: could not parse '{cli_ch}'",
+                            status_code=400, media_type="text/plain")
+        qs = str(request.url.query)
+        target = f"/entscheid/{decision_id}"
+        if qs:
+            target += f"?{qs}"
+        from starlette.responses import RedirectResponse
+        return RedirectResponse(target, status_code=302)
+
     async def handle_decision_page(request):
         decision_id = request.path_params["decision_id"]
         # ?highlight=<verbatim substring> tags one Erwägung sentence with
@@ -20519,6 +20555,7 @@ setInterval(load, 30000);
                 media_type="text/html",
             )),
             Route("/entscheid/{decision_id:path}", endpoint=handle_decision_page),
+            Route("/cli/ch/{path:path}", endpoint=handle_cli_resolver),
             Route("/sse", endpoint=handle_sse),
             Mount("/messages", app=sse.handle_post_message),
             Mount("/api", app=rest_api),

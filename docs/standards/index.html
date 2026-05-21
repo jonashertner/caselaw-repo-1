@@ -359,11 +359,11 @@ Die zentrale Aussage steht hier...
     <div class="num">06</div>
     <div class="body">
       <h3>Provenienz</h3>
-      <span class="label">RFC-6962-Merkle-Anker · OpenTimestamps · Live ab 2026-05-21</span>
+      <span class="label">RFC-6962-Merkle-Anker · OpenTimestamps-Bitcoin · Live ab 2026-05-21</span>
       <p>Bei jedem Publish des Korpus wird ein <strong>RFC-6962-Merkle-Baum</strong> über alle Entscheide berechnet. Jedes Blatt commitet sich zu <code>(decision_id, cli:ch, ECLI, content_hash, decision_date)</code>. Die Wurzel wird</p>
       <ul>
         <li>im öffentlichen Git-Repository committet (<code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>) — täglich, ~700 Bytes pro Publish,</li>
-        <li>via <a href="https://opentimestamps.org/">OpenTimestamps</a> auf der Bitcoin-Blockchain verankert (kostenfrei, in ~1 Stunde bestätigt) — sobald der <code>ots</code>-Client aktiv ist,</li>
+        <li>via <a href="https://opentimestamps.org/">OpenTimestamps</a> auf der Bitcoin-Blockchain verankert (<code>.root.ots</code>-Datei, ~945 Bytes pro Publish, kostenlos, in ~1 Bitcoin-Block aufgewertet).</li>
         <li>als Inklusions-Beweispfad pro Entscheid via API verfügbar (Roadmap).</li>
       </ul>
       <p>

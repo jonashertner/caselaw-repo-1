@@ -11,5 +11,13 @@
   "build_finished_at": "2026-05-21T13:09:09.123732+00:00",
   "build_duration_s": 826.1,
   "iter_duration_s": 825.3,
-  "merkle_duration_s": 0.8
+  "merkle_duration_s": 0.8,
+  "ots_stamp": "2026-05-21.root.ots",
+  "ots_calendars": [
+    "https://a.pool.opentimestamps.org",
+    "https://b.pool.opentimestamps.org",
+    "https://a.pool.eternitywall.com",
+    "https://ots.btc.catallaxy.com"
+  ],
+  "ots_status": "pending"
 }
