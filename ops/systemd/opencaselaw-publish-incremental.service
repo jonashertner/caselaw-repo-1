@@ -21,9 +21,15 @@ WorkingDirectory=/opt/caselaw/repo
 # and the legacy full rebuild moves to Sunday only.
 Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
 ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish
-# Generous timeout — the incremental run is targeted at ~10-25 min but
-# allow up to 2h for first-run state-table bootstrap.
-TimeoutStartSec=7200
+# Generous timeout — the incremental run is targeted at ~10-25 min once
+# bootstrapped, but the FIRST run (no prior incremental state) does the
+# equivalent of a full reference_graph + decision_structure rebuild over
+# all ~972k decisions. That takes ~2h 15m for reference_graph alone
+# (observed 2026-05-21: hit a 2h cap at 940k/972k, 97% done, 5-10min
+# short). Bumped to 4h to give that first-run bootstrap headroom.
+# Subsequent runs only process delta-since-checkpoint and finish in
+# under 30 min, well within this generous cap.
+TimeoutStartSec=14400
 StandardOutput=append:/opt/caselaw/repo/logs/incremental_nightly.log
 StandardError=append:/opt/caselaw/repo/logs/incremental_nightly.log
 

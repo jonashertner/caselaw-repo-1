@@ -1375,6 +1375,28 @@ def main():
         return
     logger.info("Acquired publish lock")
 
+    # Remove the lock file on any normal exit so the systemd-level
+    # ConditionPathExists=!/tmp/opencaselaw-publish.lock check in the
+    # incremental shadow service (and any other consumer of the
+    # *existence* of the file) doesn't keep blocking subsequent runs.
+    # Empirically (2026-05-20 → 2026-05-21): the publish flock was
+    # correctly released at OCL_SWAP_DONE and again on step 2 return,
+    # but the file itself persisted on disk past process exit. That
+    # left the 20:00 UTC incremental shadow service in a permanent
+    # "skipped" state. atexit fires on any clean exit (normal return,
+    # sys.exit, uncaught exception) — only SIGKILL evades it, which
+    # is fine because SIGKILL implies an operator intervention that
+    # would already touch /tmp by hand.
+    import atexit
+
+    def _cleanup_lock_file():
+        try:
+            os.unlink(LOCK_FILE_PATH)
+        except OSError:
+            pass
+
+    atexit.register(_cleanup_lock_file)
+
     if args.dry_run:
         logger.info("DRY RUN — no changes will be made")
 
