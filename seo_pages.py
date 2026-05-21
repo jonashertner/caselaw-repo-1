@@ -595,7 +595,29 @@ def _render_decision(
 
     canonical = f"{BASE_URL}/entscheid/{did}"
 
-    # Schema.org LegalCase
+    # Mint a Swiss ECLI URI for the decision so the Schema.org LegalCase
+    # block carries the canonical European Case Law Identifier in the
+    # `identifier` field. ECLI is the standards-track way to address a
+    # decision across European legal-data systems; until 2026 the Swiss
+    # corpus had no public ECLI minting. See ecli.py for the convention.
+    try:
+        from ecli import mint_ecli
+        ecli_uri = mint_ecli(
+            decision_id=did,
+            court=court,
+            docket_number=docket,
+            decision_date=date,
+            language=language,
+        )
+    except Exception:
+        ecli_uri = None
+
+    # Schema.org LegalCase — enriched 2026-05-21 with identifier (ECLI),
+    # citation (case-citation graph), and legislationCited (statute graph).
+    # These three fields are what turns a Schema.org LegalCase from "page
+    # title + date" into a machine-readable legal record. The arrays are
+    # capped (100 / 100) so the per-decision payload stays well under
+    # 100 KB even for the most citation-heavy BGE.
     schema_json = {
         "@context": "https://schema.org",
         "@type": "LegalCase",
@@ -618,8 +640,46 @@ def _render_decision(
             "url": "https://opencaselaw.ch",
         },
     }
+    if ecli_uri:
+        schema_json["identifier"] = {
+            "@type": "PropertyValue",
+            "propertyID": "ECLI",
+            "value": ecli_uri,
+        }
     if source_url:
         schema_json["sameAs"] = source_url
+
+    # Enrich with outbound case + statute citations from the reference
+    # graph. _fetch_citations returns {"out": [(target_id, ref, count)],
+    # "in": [...], "statutes": [(law_code, article, version, count)]}.
+    # We cap at 100 each so the per-decision payload stays under 100 KB
+    # even on citation-heavy BGEs.
+    try:
+        _citations = _fetch_citations(did)
+    except Exception:
+        _citations = None
+    if _citations:
+        out_cases = _citations.get("out") or []
+        if out_cases:
+            schema_json["citation"] = [
+                {
+                    "@type": "LegalCase",
+                    "name": (ref or target_id),
+                    "url": f"{BASE_URL}/entscheid/{target_id}",
+                }
+                for (target_id, ref, _count) in out_cases[:100]
+                if target_id
+            ]
+        cited_statutes = _citations.get("statutes") or []
+        if cited_statutes:
+            schema_json["legislationCited"] = [
+                {
+                    "@type": "Legislation",
+                    "name": f"Art. {article} {law_code}".strip(),
+                }
+                for (law_code, article, _version, _count) in cited_statutes[:100]
+                if law_code and article
+            ]
 
     import json
     schema_str = json.dumps(schema_json, ensure_ascii=False)
