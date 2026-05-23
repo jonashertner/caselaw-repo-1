@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 20 May 2026 14:17:16 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 23 May 2026 11:47:14 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -319,6 +319,16 @@ Prä…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>sh_gerichte Nr. 60/2026/21 vom 2026-05-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/sh_gerichte_Nr.%2060_2026_21</link>
+      <description>Einem Anzeiger in einem Disziplinarverfahren gegen einen Rechtsanwalt fehlt das Recht zur Beschwerdeerhebung gegen die infolge der Anzeige getroffene Entscheidung (E. 2.3).
+OGE 60/2026/21 vom 12. Mai 2026
+Keine Veröffentlichung im Amtsbericht</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">sh_gerichte_Nr. 60_2026_21</guid>
+      <category>sh_gerichte</category>
+    </item>
+    <item>
       <title>fr_gerichte 601 2025 83 vom 2026-05-21</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_601%202025%2083</link>
       <description>Tribunal cantonal TC
@@ -337,6 +347,41 @@ Présidente :…</description>
       <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_601 2025 83</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SR2 2025 68 vom 2026-05-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2068</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Beschluss vom 13. Mai 2026
+mitgeteilt am 19. Mai 2026
+Referenz
+SR2 25 68
+Instanz
+Zweite strafrechtliche Kammer
+Besetzung
+Hubert, V…</description>
+      <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SR2 2025 68</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2024 819 vom 2026-05-20</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202024%20819</link>
+      <description>IV 200 2024 819
+FUE/PES/SEE
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil vom 15. Januar 2026
+Verwaltungsrichter Furrer, Kammerpräsident
+Verwaltungsrichterin Mauerhofer
+Gerichtsschreiber Peter
+A.________
+vertreten…</description>
+      <pubDate>Wed, 20 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2024 819</guid>
+      <category>be_verwaltungsgericht</category>
     </item>
     <item>
       <title>fr_gerichte 101 2026 55 vom 2026-05-19</title>
@@ -538,6 +583,38 @@ Präside…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht C-2527/2026 vom 2026-05-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2527_2026</link>
+      <description>Marktüberwachung</description>
+      <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2527.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-3799/2024 vom 2026-05-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3799_2024</link>
+      <description>Rente</description>
+      <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3799.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3011/2026 vom 2026-05-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3011_2026</link>
+      <description>Flughafenverfahren (Asyl und Wegweisung)</description>
+      <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3011.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-9894/2025 vom 2026-05-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-9894_2025</link>
+      <description>Regroupement familial (asile)</description>
+      <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-9894.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ecthr_committee 27200/24_27203/24_30050/24_34558/24 vom 2026-05-13</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_27200_24_27203_24_30050_24_34558_24</link>
       <description>Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure d'exécution;Article 6-1 - Accès à un tribunal);Violation de l'article 1 du Protocole n° 1 - Protection de la propriété (Article 1 al. 1 du Protocole n° 1 - Respect des biens); Violation: 6;6-1;P1-1;P1-1-1</description>
@@ -692,6 +769,24 @@ C…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>gr_gerichte SR2 2025 47 vom 2026-05-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2047</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Beschluss vom 8. Mai 2026
+mitgeteilt am 19. Mai 2026
+Referenz
+SR2 25 47
+Instanz
+Zweite strafrechtliche Kammer
+Besetzung
+Hubert, Vo…</description>
+      <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SR2 2025 47</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>gr_gerichte VR2 2026 3 vom 2026-05-13</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR2%202026%203</link>
       <description>Obergericht des Kantons Graubünden
@@ -734,215 +829,65 @@ Gerichtsschrei…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
-      <title>ecthr_chamber 47090/22_17780/23_30148/23_33044/23_33049/23_33061/23_33076/23_33080/23_33104/23_33106/23 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_47090_22_17780_23_30148_23_33044_23_33049_23_33061_23_33076_23_33080_23_33104_23_33106_23</link>
-      <description>Non-violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure administrative;Article 6-1 - Délai raisonnable); No violation: 6;6-1</description>
+      <title>bs_appellationsgericht ZB.2025.7 vom 2026-05-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_ZB.2025.7</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+Dreiergericht
+
+ZB.2025.7
+
+ENTSCHEID
+
+vom12. Mai 2026
+
+Mitwirkende
+
+Dr. Olivier Steiner, lic. iur.André Equey, Prof. Dr. Ramon Mabillard
+
+und
+Gerichtsschreiber MLaw Thomas Inoue
+
+Parteien
+
+A____Klägerin 1…</description>
       <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_47090_22_17780_23_30148_23_33044_23_33049_23_33061_23_33076_23_33080_23_33104_23_33106_23</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
+      <guid isPermaLink="false">bs_appellationsgericht_ZB.2025.7</guid>
+      <category>bs_appellationsgericht</category>
     </item>
     <item>
-      <title>ecthr_chamber 50227/21 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_50227_21</link>
-      <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;(Art. 35-3-a) Manifestement mal fondé;Non-violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Article 5-1-a - Après condamnation);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-4 - Garanties procédurales du contrôle;Contrôle de la légalité de la détention);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 5;5-4; No violation: 5;5-1;5-1-a</description>
+      <title>Bundesverwaltungsgericht B-594/2024 vom 2026-05-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-594_2024</link>
+      <description>Surveillance des fondations</description>
       <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_50227_21</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>fr_gerichte 101 2025 340 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202025%20340</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-101 2025 340
-Arrêt du 25 mars 2026
-Ie Cour d’appel civil
-Composition
-Président :
-J…</description>
-      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_101 2025 340</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>gr_gerichte SR2 2026 15 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202026%2015</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Verfügung vom 21. April 2026
-mitgeteilt am 23. April 2026
-Referenz
-SR2 26 15
-Instanz
-Zweite strafrechtliche Kammer
-Besetzung
-Huber…</description>
-      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SR2 2026 15</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>hudoc_ch 50227/21 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/hudoc_ch_50227_21</link>
-      <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;(Art. 35-3-a) Manifestement mal fondé;Non-violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Article 5-1-a - Après condamnation);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-4 - Garanties procédurales du contrôle;Contrôle de la légalité de la détention);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 5;5-4; No violation: 5;5-1;5-1-a</description>
-      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">hudoc_ch_50227_21</guid>
-      <category>hudoc_ch</category>
-      <category>EMRK / Menschenrechte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_465/2026 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_465_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_465/2026
-
-Arrêt du 11 mai 2026
-
-IIe Cour de droit pénal
-
-Composition
-
-MM. et Mme les Juges fédéraux Abrecht, Président,
-
-Koch et Hofmann.
-
-Greffière : Mme Nasel.
-
-Participants …</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_465.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_480/2026 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_480_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_480/2026
-
-Urteil vom 11. Mai 2026
-
-II. strafrechtliche Abteilung
-
-Besetzung
-
-Bundesrichterin Koch, als Einzelrichterin,
-
-Gerichtsschreiber Hahn.
-
-Verfahrensbeteiligte
-
-A.______…</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_480.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-988/2026 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-988_2026</link>
-      <description>Ecoles polytechniques fédérales (sans le personnel)</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-988.2026</guid>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-594.2024</guid>
       <category>bvger</category>
     </item>
     <item>
-      <title>Bundesverwaltungsgericht F-3117/2026 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3117_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3117.2026</guid>
+      <title>Bundesverwaltungsgericht E-1400/2025 vom 2026-05-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1400_2025</link>
+      <description>Verweigerung vorübergehender Schutz</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1400.2025</guid>
       <category>bvger</category>
     </item>
     <item>
-      <title>fr_gerichte 605 2025 19 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202025%2019</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-605 2025 19
-Arrêt du 11 mars 2026
-Ie Cour des assurances sociales
-Composition
-Prés…</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_605 2025 19</guid>
-      <category>fr_gerichte</category>
+      <title>Bundesverwaltungsgericht E-1755/2026 vom 2026-05-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1755_2026</link>
+      <description>Asile et renvoi (procédure accélérée)</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1755.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
-      <title>fr_gerichte 608 2025 219 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_608%202025%20219</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-608 2025 219
-Arrêt du 18 mars 2026
-IIe Cour des assurances sociales
-Composition
-Pr…</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_608 2025 219</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>gr_gerichte SR1 2025 35 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR1%202025%2035</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Urteil vom 23. März 2026
-mitgeteilt am 24. März 2026
-Referenz
-SR1 25 35
-Instanz
-Erste strafrechtliche Kammer
-Besetzung
-Moses, Vors…</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SR1 2025 35</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>ne_gerichte CDP.2025.192 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2025.192</link>
-      <description>A.A.________,né en 1969, a
-été engagé par B.________ SA dès le 18 septembre 2023 pour un contrat de
-mission en qualité de manutentionnaire.A ce titre, il était assuré contre le risque
-d'accidents auprès de la Caisse nationale suisse d'assurance en…</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ne_gerichte_CDP.2025.192</guid>
-      <category>ne_gerichte</category>
+      <title>Bundesverwaltungsgericht E-1891/2021 vom 2026-05-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1891_2021</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1891.2021</guid>
+      <category>bvger</category>
     </item>
   </channel>
 </rss>
