@@ -2274,7 +2274,7 @@
     "2026-04": 1707,
     "2026-05": 262
   },
-  "generated_at": "2026-05-23T11:39:57.076672+00:00",
+  "generated_at": "2026-05-23T15:38:34.848574+00:00",
   "scraper_health": {
     "run_at": "2026-05-23T02:44:14.126615+00:00",
     "run_duration_s": 6253.8,
@@ -3229,7 +3229,7 @@
         "note": "1615 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1481,
         "jsonl_size_mb": 88.5,
-        "jsonl_mtime": "2026-05-23T02:00:45.549760+00:00"
+        "jsonl_mtime": "2026-05-23T14:49:52.968875+00:00"
       },
       "hudoc_ch": {
         "success": true,
@@ -3353,19 +3353,19 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "citation_edges": 8667788,
-    "statute_edges": 11279929
+    "citation_edges": 8668550,
+    "statute_edges": 11280765
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 85225,
+      "citation_count": 85226,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 180199
+      "ref_count": 180217
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3377,17 +3377,17 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 973122
+      "total": 973174
     },
     "regeste_coverage": {
       "pct": 34.9,
-      "with_regeste": 339166,
-      "total": 973122
+      "with_regeste": 339169,
+      "total": 973174
     },
     "graph_size": {
-      "decision_edges": 8105960,
-      "statute_edges": 11279929,
-      "total": 19385889
+      "decision_edges": 8106515,
+      "statute_edges": 11280765,
+      "total": 19387280
     },
     "echr_switzerland": {
       "total": 2797,
@@ -3403,7 +3403,7 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 85225,
+        "citation_count": 85226,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
@@ -3415,7 +3415,7 @@
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37011,
+        "citation_count": 37012,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3436,12 +3436,12 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 187607
+        "ref_count": 187625
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110598
+        "ref_count": 110604
       },
       {
         "law_code": "LTF",
@@ -3451,12 +3451,12 @@
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92465
+        "ref_count": 92479
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59373
+        "ref_count": 59371
       }
     ],
     "historical_depth": [
@@ -3500,7 +3500,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-04-28",
         "span_years": 118,
-        "decision_count": 168009
+        "decision_count": 168026
       }
     ]
   },
@@ -4117,8 +4117,8 @@
       "SH": 1
     },
     "corpus": {
-      "citation_edges": 3928,
-      "statute_edges": 3742
+      "citation_edges": 4690,
+      "statute_edges": 4578
     },
     "previous_generated_at": "2026-05-22T10:45:46.848996+00:00"
   }
