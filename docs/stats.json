@@ -3459,6 +3459,18 @@
         "ref_count": 59371
       }
     ],
+    "materialien_coverage": {
+      "total_documents": 84,
+      "paragraphs": 23242,
+      "article_links": 0,
+      "by_language": {
+        "de": 84
+      },
+      "year_range": {
+        "from": 2025,
+        "to": 2026
+      }
+    },
     "historical_depth": [
       {
         "court": "bge",
