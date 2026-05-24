@@ -2273,7 +2273,7 @@
     "2026-04": 1707,
     "2026-05": 262
   },
-  "generated_at": "2026-05-24T10:37:06.865866+00:00",
+  "generated_at": "2026-05-24T14:37:31.131702+00:00",
   "scraper_health": {
     "run_at": "2026-05-24T02:11:56.557015+00:00",
     "run_duration_s": 4316.2,
@@ -3352,8 +3352,8 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "citation_edges": 8668550,
-    "statute_edges": 11280765
+    "citation_edges": 8668571,
+    "statute_edges": 11280795
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3376,17 +3376,17 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 973174
+      "total": 973177
     },
     "regeste_coverage": {
       "pct": 34.9,
       "with_regeste": 339169,
-      "total": 973174
+      "total": 973177
     },
     "graph_size": {
-      "decision_edges": 8106515,
-      "statute_edges": 11280765,
-      "total": 19387280
+      "decision_edges": 8106533,
+      "statute_edges": 11280795,
+      "total": 19387328
     },
     "echr_switzerland": {
       "total": 2797,
@@ -3450,7 +3450,7 @@
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92479
+        "ref_count": 92481
       },
       {
         "law_code": "BGG",
@@ -3458,18 +3458,6 @@
         "ref_count": 59371
       }
     ],
-    "materialien_coverage": {
-      "total_documents": 84,
-      "paragraphs": 23242,
-      "article_links": 0,
-      "by_language": {
-        "de": 84
-      },
-      "year_range": {
-        "from": 2025,
-        "to": 2026
-      }
-    },
     "historical_depth": [
       {
         "court": "bge",
@@ -4107,7 +4095,10 @@
       "AG": 1,
       "BS": 2
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 21,
+      "statute_edges": 30
+    },
     "previous_generated_at": "2026-05-23T15:38:34.848574+00:00"
   }
 }
