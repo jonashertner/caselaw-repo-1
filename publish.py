@@ -1021,9 +1021,14 @@ def step_5f_integrity_root(dry_run: bool = False) -> bool:
         "--db", str(REPO_DIR / "output" / "decisions.db"),
         "--out-dir", str(DOCS_DIR / "integrity"),
     ]
-    # ~14 min on the production VPS for 972k decisions (SQL iteration
-    # dominates). 30 min cap leaves headroom for growth.
-    return run_cmd(cmd, "integrity root", dry_run, timeout=1800)
+    # Observed runtimes on production VPS for ~973k decisions:
+    # 2026-05-21 → 14 min, 2026-05-22 → 22 min, 2026-05-23 → 30 min,
+    # 2026-05-24 → >30 min (hit the prior 1800s cap). Growth of ~7
+    # min/day driven by BGer-poller lock contention overlapping the
+    # 13:30–14:00 UTC integrity window. 60 min cap absorbs the trend;
+    # if 5f starts exceeding this, profile the SQL iteration or move
+    # the integrity step outside the poller's business-hours window.
+    return run_cmd(cmd, "integrity root", dry_run, timeout=3600)
 
 
 def step_5d_release_manifest(dry_run: bool = False) -> bool:

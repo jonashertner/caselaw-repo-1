@@ -302,6 +302,13 @@ def main():
                 json.dumps(manifest, indent=2) + "\n")
             (args.out_dir / "latest.json").write_text(
                 json.dumps(manifest, indent=2) + "\n")
+            # Also keep latest.root.ots in sync with latest.json /
+            # latest.root. Previously skipped, so the "latest" OTS
+            # proof drifted to whatever stamp was first written.
+            import shutil as _sh
+            dated_ots = args.out_dir / f"{manifest['date']}.root.ots"
+            if dated_ots.exists():
+                _sh.copy(dated_ots, args.out_dir / "latest.root.ots")
 
     print("done.")
 
