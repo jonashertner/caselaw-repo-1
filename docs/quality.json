@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-05-23T12:07:18+00:00",
+  "run_at": "2026-05-24T11:05:52+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 1082.72,
+  "duration_seconds": 1063.47,
   "summary": {
     "total": 52,
     "passed": 52,
@@ -93,17 +93,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 973174,
-        "distinct": 973174
+        "total": 973177,
+        "distinct": 973177
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 973174,
+      "metric_value": 973177,
       "threshold": 950000,
-      "message": "corpus total: 973,174",
+      "message": "corpus total: 973,177",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -113,9 +113,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 367034,
+      "metric_value": 367037,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 367,034 hits",
+      "message": "FTS5 'Beschwerde' query: 367,037 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -169,7 +169,7 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 450594,
+          "de": 450597,
           "fr": 441796,
           "it": 80784
         }
@@ -179,14 +179,14 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.30148359902751,
+      "metric_value": 46.30164913474116,
       "threshold": 30.0,
       "message": "DE 46.3% / FR 45.4% / IT 8.3% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 450594,
+        "de": 450597,
         "fr": 441796,
         "it": 80784
       }
