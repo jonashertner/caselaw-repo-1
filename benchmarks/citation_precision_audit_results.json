@@ -1,0 +1,68 @@
+{
+  "schema": "citation_precision_audit_rules/v1",
+  "method": "rule-based mechanical resolver-consistency adjudication",
+  "method_notes": "Checks each sample against the documented per-stratum canonicalisation rules used by the resolver. Catches resolver bugs and DB-integrity drift; does not substitute for human-graded semantic verification.",
+  "sample_file": "benchmarks/citation_precision_sample_400.jsonl",
+  "sample_meta": {
+    "q_id": "_meta",
+    "schema_version": "citation_precision_audit/v1",
+    "seed": 42,
+    "strata": {
+      "docket_norm": 120,
+      "bge_bare": 100,
+      "bge_norm": 80,
+      "bge_pincite": 100
+    },
+    "generated_at": "2026-05-21T22:45:07.648011+00:00",
+    "graph_db": "output/reference_graph.db",
+    "decisions_db": "output/decisions.db",
+    "adjudication_protocol": "docs/paper/v3/v1_1_roadmap.md#citation-precision-audit"
+  },
+  "by_stratum": {
+    "bge_bare": {
+      "n": 100,
+      "correct": 100,
+      "wrong": 0,
+      "uncertain": 0,
+      "precision_point": 1.0,
+      "precision_ci95_low": 0.963005192523998,
+      "precision_ci95_high": 0.9999999999999998
+    },
+    "bge_norm": {
+      "n": 80,
+      "correct": 80,
+      "wrong": 0,
+      "uncertain": 0,
+      "precision_point": 1.0,
+      "precision_ci95_low": 0.954180263735425,
+      "precision_ci95_high": 1.0000000000000002
+    },
+    "bge_pincite": {
+      "n": 100,
+      "correct": 100,
+      "wrong": 0,
+      "uncertain": 0,
+      "precision_point": 1.0,
+      "precision_ci95_low": 0.963005192523998,
+      "precision_ci95_high": 0.9999999999999998
+    },
+    "docket_norm": {
+      "n": 120,
+      "correct": 120,
+      "wrong": 0,
+      "uncertain": 0,
+      "precision_point": 1.0,
+      "precision_ci95_low": 0.9689797289440706,
+      "precision_ci95_high": 1.0000000000000002
+    }
+  },
+  "overall": {
+    "n": 400,
+    "correct": 400,
+    "wrong": 0,
+    "uncertain": 0,
+    "precision_point": 1.0,
+    "precision_ci95_low": 0.9904873594003194,
+    "precision_ci95_high": 1.0
+  }
+}
