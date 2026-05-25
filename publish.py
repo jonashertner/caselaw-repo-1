@@ -833,11 +833,16 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
     if dry_run:
         cmd += ["--dry-run"]
 
+    # 60-min cap absorbs the full-SQLite snapshot path: zstd level=10
+    # compression of the ~61 GB DB plus HF upload of the ~15-20 GB
+    # compressed artifact can easily exceed 30 min on typical bandwidth.
+    # Delta-only runs finish in seconds; the timeout only matters when
+    # OCL_PUBLISH_SQLITE_SNAPSHOT=1.
     return run_cmd(
         cmd,
         "Publish artifacts",
         dry_run,
-        timeout=1800,
+        timeout=3600,
     )
 
 

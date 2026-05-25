@@ -389,10 +389,13 @@ def _add_delta_to_manifest(m: Dict[str, Any], date: str, sqlite_zst: Dict, parqu
 
 
 def _set_snapshot_in_manifest(m: Dict[str, Any], snapshot: Dict[str, Any]) -> Dict[str, Any]:
+    import copy as _copy
     m = dict(m)
     m["schema"] = MANIFEST_SCHEMA
     m["generated_at"] = _utc_now_iso()
-    m["snapshot"] = snapshot
+    # Deep-copy so post-call mutation of `snapshot` by the caller can't
+    # silently rewrite the manifest we just constructed.
+    m["snapshot"] = _copy.deepcopy(snapshot)
     if "deltas" not in m or m["deltas"] is None:
         m["deltas"] = []
     return m
@@ -455,6 +458,9 @@ def _producer_commit() -> str | None:
         return None
 
 
+_REQUIRED_TABLES = ("decisions", "decisions_fts")
+
+
 def _validate_snapshot_source(db_path: _Path) -> Dict[str, Any]:
     if not db_path.exists():
         raise FileNotFoundError(f"SQLite DB not found: {db_path}")
@@ -463,6 +469,19 @@ def _validate_snapshot_source(db_path: _Path) -> Dict[str, Any]:
     uri = f"file:{db_path}?mode=ro"
     conn = _sqlite3.connect(uri, uri=True)
     try:
+        # Verify the FTS5-rebuild schema is present (catches a snapshot
+        # taken against a half-built or non-FTS5 DB before we compress
+        # 61 GB and ship it to consumers).
+        present = {
+            r[0] for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view')"
+            )
+        }
+        missing = [t for t in _REQUIRED_TABLES if t not in present]
+        if missing:
+            raise RuntimeError(
+                f"snapshot source missing expected table(s) {missing}: {db_path}"
+            )
         rows = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
         sample = conn.execute("SELECT decision_id FROM decisions LIMIT 1").fetchone()
         db_generation = conn.execute("PRAGMA user_version").fetchone()[0]

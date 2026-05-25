@@ -14,6 +14,10 @@ def _make_db(path: Path, *, rows: int = 2, user_version: int = 123) -> None:
     conn = sqlite3.connect(path)
     try:
         conn.execute("CREATE TABLE decisions (decision_id TEXT PRIMARY KEY)")
+        # Stand-in for the production FTS5 virtual table; the
+        # _validate_snapshot_source check verifies its presence by name
+        # via sqlite_master.
+        conn.execute("CREATE TABLE decisions_fts (rowid INTEGER PRIMARY KEY)")
         for i in range(rows):
             conn.execute("INSERT INTO decisions (decision_id) VALUES (?)", (f"did-{i}",))
         conn.execute(f"PRAGMA user_version = {user_version}")
@@ -67,6 +71,24 @@ def test_build_sqlite_snapshot_compresses_and_records_metadata(tmp_path, monkeyp
     assert info["sqlite_zst"].name == "2026-05-25.decisions.sqlite.zst"
     assert info["sqlite_zst_sha256"] == pd._sha256_file(info["sqlite_zst"])
     assert info["checksum"].read_text(encoding="utf-8").startswith(info["sqlite_zst_sha256"])
+
+
+def test_validate_snapshot_source_rejects_missing_fts_table(tmp_path) -> None:
+    """A DB without the FTS5 virtual table must be rejected before we
+    compress + upload ~15-20 GB of useless artifact."""
+    db = tmp_path / "decisions.db"
+    conn = sqlite3.connect(db)
+    try:
+        conn.execute("CREATE TABLE decisions (decision_id TEXT PRIMARY KEY)")
+        conn.execute("INSERT INTO decisions (decision_id) VALUES ('x')")
+        # NB: no decisions_fts — should trip the schema check
+        conn.execute("PRAGMA user_version = 7")
+        conn.commit()
+    finally:
+        conn.close()
+
+    with pytest.raises(RuntimeError, match="missing expected table"):
+        pd._validate_snapshot_source(db)
 
 
 def test_build_sqlite_snapshot_rejects_source_change_during_compress(tmp_path, monkeypatch) -> None:
