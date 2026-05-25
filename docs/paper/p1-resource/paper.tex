@@ -46,26 +46,7 @@ Swiss legal NLP has lacked a public substrate joining the objects legal practiti
 
 The resource is deployed infrastructure, not a one-shot dataset dump. The corpus is served as a live MCP/REST endpoint at \url{https://mcp.opencaselaw.ch}. Daily dataset-health audits, integrity proofs, and per-decision inclusion-proof verification are published alongside the corpus for any consumer to verify independently.
 
-Given Switzerland's multilingual legal order, cross-language citation is expected: federal supreme-court decisions are authoritative in German, French, or Italian, and practitioners cite across those boundaries. The contribution is therefore the released graph that makes citation flow measurable, inspectable, and reusable at edge level across 109 courts and adjacent statute/Materialien layers. As one corpus characterization, the released resolved graph shows the following row-normalised language pattern:
-
-\medskip
-\begin{center}
-\small
-\begin{tabular}{l r r r r}
-\toprule
-Source language & Total resolved links & Same-lang & Cross-lang & Cross-lang share \\
-\midrule
-German (de)   & 3{,}270{,}791 & 2{,}779{,}288 & 491{,}503   & 15.0\,\% \\
-French (fr)   & 4{,}526{,}065 & 2{,}522{,}708 & 2{,}003{,}357 & 44.3\,\% \\
-Italian (it)  & 305{,}380   & 47{,}106    & 258{,}274   & \textbf{84.6\,\%} \\
-\midrule
-Aggregate     & 8{,}102{,}236 & 5{,}349{,}102 & 2{,}753{,}134 & 34.0\,\% \\
-\bottomrule
-\end{tabular}
-\end{center}
-\medskip
-
-\noindent We treat this matrix as descriptive corpus telemetry rather than a standalone result. It is still useful because it quantifies the resolved graph's language mix, exposes where per-language precision audit matters most, and gives downstream retrieval systems an edge-level map of the multilingual citation substrate. We do not claim a structural cause from this observation alone; per-source-language resolution-rate differentials remain a measurement-artefact concern (Section~\ref{sec:limit}).
+Given Switzerland's multilingual legal order, cross-language citation is expected: federal supreme-court decisions are authoritative in German, French, or Italian, and practitioners cite across those boundaries. The contribution is therefore the released graph that makes citation flow measurable, inspectable, and reusable at edge level across 109 courts and adjacent statute/Materialien layers. As a single descriptive characterization of the released graph: DE-language decisions cite cross-language in 15.0\,\% of resolved links, FR in 44.3\,\%, IT in 84.6\,\%; aggregate 34.0\,\% (full matrix in Section~\ref{sec:graph}). We treat this matrix as descriptive corpus telemetry, not a standalone result --- per-source-language resolution-rate differentials remain a measurement-artefact concern (Section~\ref{sec:limit}).
 
 \paragraph{Why this substrate was missing.} The existing open Swiss-law resources are either pretraining text \citep{niklaus2023}, task benchmarks \citep{niklaus2021,stern2024,rolshoven2025,niklaus2025swiltra}, or court-specific metadata datasets such as the Swiss Federal Supreme Court Dataset (SCD) \citep{geering2024scd}. These resources are valuable, but they do not resolve a cross-court citation graph at scale, and they do not link case law to the Federal Council Botschaften that drive teleological statutory interpretation under Swiss civil-law doctrine. The infrastructure required for a reusable Swiss legal graph --- federated cantonal-level decision coverage, multilingual docket normalisation, BGE/ATF/DTF prefix-form aliasing, pin-cite-aware resolution, article-level statute anchoring, and integrity proofs --- did not exist as an open release.
 
@@ -152,7 +133,7 @@ The OpenCaseLaw corpus comprises \textbf{972{,}882 decisions} from \textbf{109 d
 
 \paragraph{Completeness.} Some source portals impose access restrictions (geographic, rate, or contractual). We document affected sources in the per-source coverage report, do not claim full coverage where access is restricted, and use only legally authorised collection methods. For closed historical archives where contemporaneous collection is no longer possible, we recover from publicly archived snapshots (e.g.\ Wayback Machine; $\sim$903 BL ALS judgments).
 
-\paragraph{Licensing.} Court decisions in Switzerland are official published acts under URG/CopA Art.~5 (excluded from copyright). The corpus packaging and added metadata are released CC0 to the extent rights subsist. Scholarly commentaries retain their upstream terms (CC-BY-4.0 from OnlineKommentar.ch; CC-BY-SA-4.0 from OpenLegalCommentary.ch). The URG~Art.~5 posture, the FADP (Swiss data protection) treatment of personal data, and the correction/removal-request procedure are documented in the public governance-and-removal policy at \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/governance-and-removal-policy.md}.
+\paragraph{Licensing and governance.} Court decisions in Switzerland are official acts under URG/CopA Art.~5 (excluded from copyright). Corpus packaging is CC0; commentaries retain their upstream CC-BY-4.0 / CC-BY-SA-4.0 terms; code is MIT. Per-record licenses, the FADP (Swiss data protection) posture, and the correction/removal procedure are in the Data Card (Section~\ref{sec:datacard}) and the public governance policy.
 
 %==================================================================
 \section{Multilingual citation graph}\label{sec:graph}
@@ -193,19 +174,16 @@ The pin-cite stratum scores lowest (2.65\,\% violation rate), consistent with it
 \end{figure}
 \FloatBarrier
 
-\input{tables/top_cited.tex}
-\FloatBarrier
 
 %==================================================================
 \section{Statute graph and Materialien bridge}\label{sec:statutes}
 
-\paragraph{Statute graph.} We resolve \textbf{11{,}276{,}187 decision-to-statute edges} touching \textbf{283{,}330 distinct provisions}. The statute layer is grounded in two parallel mirrors: a federal layer of \textbf{5{,}516 SR-numbered Fedlex laws} (400{,}405 article rows summed across the parallel DE/FR/IT versions; $\sim$133\,k articles per language) and a cantonal layer of \textbf{15{,}722 laws} (353{,}437 articles) covering all 26 cantons via direct portal scraping (LexWork, 18 cantons; SIL, 2 cantons; ZH OpenData, ZH; TI~RL, TI), with LexFind PDF fallback supplementing 4 cantons for laws missing from their primary portals. Top-referenced provisions (Table~\ref{tab:top_statutes}, after alias canonicalisation across 20 major DE/FR/IT statute-abbreviation pairs) are dominated by federal-court procedural code: \emph{BGG/LTF} Art.~100 (\textbf{205{,}725} decisions, 30-day appeal deadline), Art.~42 (\textbf{201{,}897}, statement-of-grounds requirement), and Art.~113 (\textbf{122{,}514}, subsidiary constitutional complaint). Beyond procedural code, \emph{ATSG/LPGA} Art.~61 (social-insurance procedure, 85{,}207) and \emph{BV/Cst./Cost.} Art.~29 (procedural fundamental rights, 79{,}115) lead the non-BGG/LTF substantive provisions. Alias canonicalisation is lexical only; temporal validity --- mapping a 1998 \emph{OG} reference to its current SR location, or distinguishing repealed-vs-current article versions --- is left for future work.
+\paragraph{Statute graph.} We resolve \textbf{11{,}276{,}187 decision-to-statute edges} touching \textbf{283{,}330 distinct provisions}. The statute layer is grounded in two parallel mirrors: a federal layer of \textbf{5{,}516 SR-numbered Fedlex laws} (400{,}405 article rows summed across the parallel DE/FR/IT versions; $\sim$133\,k articles per language) and a cantonal layer of \textbf{15{,}722 laws} (353{,}437 articles) covering all 26 cantons via direct portal scraping (LexWork, 18 cantons; SIL, 2 cantons; ZH OpenData, ZH; TI~RL, TI), with LexFind PDF fallback supplementing 4 cantons for laws missing from their primary portals. After alias canonicalisation across 20 major DE/FR/IT statute-abbreviation pairs, the top-referenced provisions are dominated by federal-court procedural code: \emph{BGG/LTF} Art.~100 (\textbf{205{,}725} decisions, 30-day appeal deadline), Art.~42 (\textbf{201{,}897}, statement-of-grounds), and Art.~113 (\textbf{122{,}514}, subsidiary constitutional complaint). Beyond procedural code, \emph{ATSG/LPGA} Art.~61 (social-insurance procedure, 85{,}207) and \emph{BV/Cst./Cost.} Art.~29 (procedural fundamental rights, 79{,}115) lead the non-BGG/LTF substantive provisions. Alias canonicalisation is lexical only; temporal validity --- mapping a 1998 \emph{OG} reference to its current SR location, or distinguishing repealed-vs-current article versions --- is left for future work.
 
 \input{tables/statute_graph.tex}
-\input{tables/top_statutes.tex}
 \FloatBarrier
 
-\paragraph{Materialien graph: candidate discovery.} A distinguishing feature of Swiss civil-law interpretation is the \emph{teleological} reading of statutes via \emph{Materialien} --- legislative-history documents (Federal Council messages, parliamentary debates) that record legislative intent. We discover Materialien via the Fedlex JOLUX SPARQL endpoint with filter \texttt{typeDocument} = 23 (Federal Council Botschaft). The endpoint returned candidate documents from 2003 (the earliest year for which Fedlex JOLUX exposes a parliamentary-chain anchor) to the 2026-05-21 snapshot date. We ingest \textbf{5{,}292} Botschaft documents at paragraph granularity (\textbf{381{,}711 paragraphs total}) from Akoma Ntoso XML where available, with PDF fallback for older issues. Per-language coverage reflects the upstream Botschaft's own publication: not all Botschaften are translated into all three official languages by the Federal Council.
+\paragraph{Materialien graph.} A distinguishing feature of Swiss civil-law interpretation is the \emph{teleological} reading of statutes via \emph{Materialien} --- legislative-history documents (Federal Council messages, parliamentary debates) that record legislative intent. We discover Botschaft documents via the Fedlex JOLUX SPARQL endpoint (\texttt{typeDocument}=23) from 2003 (earliest year with a parliamentary-chain anchor) to the 2026-05-21 snapshot date, ingesting \textbf{5{,}292} documents at paragraph granularity (\textbf{381{,}711 paragraphs}) from Akoma Ntoso XML where available, PDF fallback otherwise. Per-language coverage reflects the upstream Botschaft's own publication (not all are translated into all three official languages).
 
 \paragraph{Materialien graph: anchoring.} We anchor Botschaft documents to specific \texttt{(SR, article)} pairs by traversing the official parliament chain: \texttt{parliamentDraftId} $\to$ enacted \texttt{oc} (Official Compilation) $\to$ codified \texttt{cc} (consolidated codification) $\to$ \texttt{SR} (Systematic Register). This yields \textbf{8{,}124} article-to-Botschaft anchors (DE 2{,}798, FR 2{,}742, IT 2{,}584). The link is at the Botschaft-document$\to$SR-article level (not paragraph$\to$article); finer-grained paragraph-to-article anchoring is left for future work. Known failure modes: (i) Botschaften that propose amendments which were rejected by Parliament have no enacted-\texttt{oc} side and therefore no SR anchor; (ii) Botschaften that bundle amendments to multiple statutes generate one link per affected statute, which inflates the link count relative to the document count; (iii) article-renumbering events in the codification step (rare but observed) currently anchor the Materialien link to the post-renumbering article identifier only. We have not yet computed an end-to-end precision audit for the article-to-Botschaft anchoring, so the present release treats this layer as a high-recall legislative-history discovery index rather than as an adjudicated alignment benchmark. The layer is queryable via \texttt{search\_materialien} / \texttt{get\_materialien} retrieval interfaces and surfaces verbatim legislative-history text under anchored statute articles.
 
@@ -214,7 +192,7 @@ The pin-cite stratum scores lowest (2.65\,\% violation rate), consistent with it
 %==================================================================
 \section{Identifier and provenance layer}\label{sec:provenance}
 
-\paragraph{Layered identifier (cli:ch + ECLI).} Every decision carries a Swiss-native canonical identifier \texttt{cli:ch} with a Council-of-EU ECLI projection, both surfaced in the per-decision Schema.org/LegalCase JSON-LD. cli:ch makes five features of Swiss jurisprudence first-class that an ECLI-only scheme flattens: (i)~\emph{trilingualism} --- DE/FR/IT versions of a BGE are legally equally authentic texts (Art.~14 PublG), and cli:ch treats language as a first-class axis via \texttt{?lang=}; (ii)~\emph{cantonal sovereignty} --- 26 distinct judicial systems remain visible (\texttt{cli:ch:zh:obergericht:...}) rather than collapsing into an opaque three-letter court code; (iii)~\emph{pinpoint addressing} --- Erwägung-level citation as a first-class fragment (\texttt{\#e-2.3}), matching the Schweizer-Citation convention; (iv)~\emph{chamber granularity} --- Obergericht, Verwaltungsgericht, etc.\ remain explicitly named; (v)~\emph{versioning} --- \texttt{@YYYY-MM-DD} addresses a specific anonymisation version when needed. The compact form is
+\paragraph{Layered identifier (cli:ch + ECLI).} Every decision carries a Swiss-native canonical identifier \texttt{cli:ch} with a Council-of-EU ECLI projection, both surfaced in the per-decision Schema.org/LegalCase JSON-LD. cli:ch makes three features first-class that an ECLI-only scheme flattens: (i)~\emph{trilingualism} (DE/FR/IT versions of a BGE are legally equally authentic per Art.~14 PublG; cli:ch treats language as a first-class axis via \texttt{?lang=}); (ii)~\emph{cantonal + chamber granularity} (\texttt{cli:ch:zh:obergericht:...} preserves the 26 cantonal systems and their chambers rather than collapsing to an opaque court code); (iii)~\emph{pinpoint addressing} (Erwägung-level fragments like \texttt{\#e-2.3}, matching the Schweizer-Citation convention). An optional \texttt{@YYYY-MM-DD} suffix addresses a specific anonymisation version when needed. The compact form is
 \begin{center}
 \texttt{cli:ch:<court>[:<chamber>]:<docket>[@<version>][?lang=<l>][\#<pinpoint>]}.
 \end{center}
@@ -248,35 +226,28 @@ L4 & production smoke         & 6 endpoint probes ($p_{95}<2$\,s)               
 }
 \end{table}
 
-Per-check JSON for the L3 audit is published at \url{https://opencaselaw.ch/quality.json} with a human-readable visualisation at \url{https://opencaselaw.ch/quality.html}, refreshed every nightly rebuild. Critical conditions (those that block publish) include a total-count cliff $>$1\,\%, schema break, court not in registry, future-date count $>$50, and cross-DB row-count mismatch $>$0.5\,\%. Production incidents detected by L3 are codified as permanent regression tests in the source repository.
+Per-check JSON for L3 is published at \url{https://opencaselaw.ch/quality.json} (refreshed every nightly rebuild). Critical conditions that block publish: total-count cliff $>$1\,\%, schema break, court not in registry, future-date count $>$50, cross-DB row-count mismatch $>$0.5\,\%. Production incidents are codified as permanent regression tests in the source repository.
 
 %==================================================================
 \section{Data card}\label{sec:datacard}
 
 \begin{table}[h!]
 \centering
-\caption{Data card (Mitchell et al., 2019-style summary of the 2026-05-21 release).}
+\caption{Data card. Frozen 2026-05-21 release; live state always at \url{https://opencaselaw.ch}.}
 \label{tab:datacard}
 \small
-\begin{tabular}{p{0.27\textwidth} p{0.66\textwidth}}
+\begin{tabular}{p{0.24\textwidth} p{0.69\textwidth}}
 \toprule
 \textbf{Field} & \textbf{Value} \\
 \midrule
-Snapshot date              & 2026-05-21 (frozen) \\
-Decisions                  & 972{,}882 across 109 courts, 28 jurisdictional layers \\
-Languages                  & DE 46.3\,\%, FR 45.4\,\%, IT 8.3\,\% (no manual translation; official versions only) \\
-Date range                 & 1875--2026 \\
-Sources                    & Federal courts (BGer, BGE, BVGer, BStGer, BPatGer); cantonal portals (26 cantons); ECHR Swiss subset; historical archives (Wayback for closed portals); federal regulatory authorities (FINMA, WEKO, et al.) \\
-Coverage gaps              & Geographic / rate-limited / contractually restricted portals documented in per-source coverage report; closed historical archives recovered from public Wayback snapshots only \\
-Personal-data posture      & FADP (Swiss data protection); inherit upstream pseudonymisation; do not re-pseudonymise material the court chose to publish; do not de-pseudonymise material the court chose to redact \\
-Refresh                    & BGer hourly (Mon--Fri 05:00--16:00 UTC, Neuheiten poller); all other federations nightly at 03:00 UTC \\
-Known noise classes        & Encoding drift, HTML-entity contamination, OCR artefacts in historical archives, control-character leakage from PDF extraction, near-duplicate cross-portal content (see Limitations) \\
-License (data)             & CC0 on the corpus packaging and added metadata; URG/CopA Art.~5 (Swiss official-acts exclusion from copyright) on the underlying decision texts \\
-License (commentaries)     & CC-BY-4.0 (OnlineKommentar.ch); CC-BY-SA-4.0 (OpenLegalCommentary.ch) \\
-License (code)             & MIT \\
-Governance \& removal      & Public policy at \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/governance-and-removal-policy.md} \\
-Quality reports            & \url{https://opencaselaw.ch/quality.json} (per-check, daily), \url{https://opencaselaw.ch/quality.html} (visualisation) \\
-Integrity proofs           & \url{https://opencaselaw.ch/integrity/} (daily Merkle root + per-decision inclusion API) \\
+Sources              & Federal courts (BGer, BGE, BVGer, BStGer, BPatGer); 26 cantonal portals; ECHR Swiss subset; federal regulatory authorities (FINMA, WEKO, ED\"OB, UBI, ELCom, PostCom, ComCom); Wayback for closed historical archives \\
+Languages            & DE 46.3\,\%, FR 45.4\,\%, IT 8.3\,\% (official versions only; no machine translation) \\
+Coverage gaps        & Access-restricted portals documented in per-source coverage report; closed historical archives recovered from public Wayback snapshots only \\
+Refresh              & BGer hourly (Mon--Fri 05:00--16:00 UTC); all other federations nightly at 03:00 UTC \\
+Personal-data posture & FADP; inherit upstream pseudonymisation; no re-pseudonymisation, no de-pseudonymisation \\
+Known noise classes  & Encoding drift, HTML-entity contamination, OCR artefacts in historical archives, control-character leakage from PDF extraction, near-duplicate cross-portal content (Section~\ref{sec:limit}) \\
+Licensing            & Corpus CC0; commentaries CC-BY-4.0 / CC-BY-SA-4.0; code MIT; decision texts under URG/CopA Art.~5 official-acts exclusion \\
+Removal / correction & Public policy at \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/governance-and-removal-policy.md}; verified requests honoured per documented procedure \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -284,21 +255,15 @@ Integrity proofs           & \url{https://opencaselaw.ch/integrity/} (daily Merk
 %==================================================================
 \section{Limitations}\label{sec:limit}
 
-\paragraph{Citation precision.} The 92.9\,\% \emph{resolution} number is a coverage metric, not a precision bound. The three automated proxies (date sanity 98.47\,\%, self-citation 0\,\%, confidence-percentile distributions per \texttt{match\_type}) give a recorded-date-chronology-violation floor and an upper bound on date-sanity-visible precision \emph{conditional on the recorded decision dates being correct}; they do \emph{not} give a lower bound on precision. The rule-based consistency adjudication reported in Section~\ref{sec:graph} found no rule-visible malformed identifiers or pin-cite range overflows on the 400-sample audit set (400/400 pass), but mechanical-rule consistency is not equivalent to human semantic adjudication: a multi-annotator pass over the same set (covering disambiguation among same-docket candidates, rule-consistent pin-cite false positives, and source-text accuracy) is companion-paper scope.
+\paragraph{Citation precision is bounded, not measured.} The 92.9\,\% resolution rate is a coverage metric, not a precision bound. The automated date-sanity proxy gives an upper bound of $\sim$98.47\,\% on the share of resolutions whose recorded dates are chronologically consistent --- conditional on the recorded source and target dates being correct themselves --- and the rule-based consistency adjudication (Section~\ref{sec:graph}) finds no rule-visible malformed identifiers or pin-cite range overflows on the 400-sample audit set. Neither establishes a \emph{lower} bound on precision. Multi-annotator human adjudication of the same audit set --- covering same-docket disambiguation, rule-consistent pin-cite false positives, and source-text accuracy --- is companion-paper scope. The 92.9\,\% rate itself is a 17.7\,pp lift over an internal pre-fix baseline but a 0.6\,pp regression from the previous snapshot's 93.5\,\%, reflecting citations to recently-added decisions whose targets have not yet been ingested.
 
-\paragraph{Temporal validity of statute references.} The statute graph maps decision references to the \emph{current} statute text. A 1998 decision referencing \emph{OG} (the pre-2007 Federal Justice Act, since superseded by BGG/LTF) currently resolves to the current SR location of the surviving content but does not distinguish the original-vs-superseded version. Versioned statute resolution is future work.
+\paragraph{Temporal validity, source pseudonymisation, snapshot-date semantics.} (i) The statute graph maps references to the \emph{current} SR location; a 1998 \emph{OG} reference resolves to the surviving content without distinguishing the original-vs-superseded version. Versioned statute resolution is future work. (ii) Source pseudonymisation is inherited: federal decisions are typically pseudonymised by the issuing court; some cantonal decisions are published unredacted. We neither re-pseudonymise nor de-pseudonymise; removal requests are honoured per the documented governance policy. (iii) Some source portals expose near-future publication dates; we preserve source-provided dates rather than rewriting them, and the dataset-health gate treats large future-date spikes as critical scraper regressions.
 
-\paragraph{Source pseudonymisation is inherited.} Most federal decisions are pseudonymised by the issuing court (parties appear as \emph{A.}, \emph{X.\ AG}, etc.); some cantonal decisions are published in unredacted form by the issuing court itself. We neither re-pseudonymise material the court chose to publish nor de-pseudonymise material the court chose to redact. Removal requests are honoured per the documented governance policy.
+\paragraph{Per-language resolution-rate confounder for the cross-language matrix.} The 34\,\% aggregate is computed over the released resolved graph (8.10\,M language-known edges). If resolution rates differ systematically by language pair --- and the pin-cite-aware resolver was tuned on BGE-form citations, disproportionately DE-original --- the share could be biased. Conditional on such bias, our hypothesised direction is attenuation of same-language diagonals and amplification of cross-DE flows; the 34\,\% would then be an upper bound rather than an underestimate. Magnitude and direction await the language-pair precision audit (companion paper).
 
-\paragraph{Resolution rate.} The 92.9\,\% resolution rate represents a 17.7\,pp lift over the prior release's 75.2\,\% but a 0.6\,pp regression from the previous snapshot's 93.5\,\%; the regression is real and reflects citations to recently-added decisions whose targets are not yet in the corpus. Future v2.0 resolver work will narrow this.
+\paragraph{Source-text fidelity is upstream-bound.} Decision text quality is inherited from the originating portal: encoding drift, residual HTML-entity contamination, OCR artefacts in historical archives (BGE 1875--1953, Wayback-recovered BL ALS, MKG), control-character leakage from PDF extraction, near-duplicate cross-portal content. Build-time normalisation passes catch the common cases; an exports-side control-character sanitiser was added after a 2026-05 production incident. The corpus claims fidelity to what each source portal published, with documented normalisation applied --- not to a hypothetical canonical text.
 
-\paragraph{Per-language resolution-rate confounder for the citation-flow matrix.} The 34\,\% cross-lingual share is computed over the released resolved graph (8.10\,M edges with both source and target languages known). If resolution rates differ systematically by language pair --- for example, if FR-source decisions citing DE-targets resolve at higher rates than FR-source decisions citing FR-targets --- the share could be biased relative to the (unobserved) ground-truth citation distribution. Our pin-cite-aware resolver was designed and tuned on BGE-form citations (which are disproportionately DE-original), so a residual bias toward higher DE-target resolution is plausible. A language-pair-controlled human precision audit is the route to a correction. Conditional on such a bias being present, our hypothesised direction is attenuation of the FR-to-FR and IT-to-IT diagonals and amplification of cross-DE flows; in that case the 34\,\% aggregate could be an upper bound rather than an underestimate. Both the magnitude and the direction await the language-pair precision audit, which the companion paper will report.
-
-\paragraph{Snapshot-date semantics.} Source portals sometimes expose scheduled or near-future publication dates. We preserve source-provided decision dates rather than rewriting them to the snapshot date. The dataset-health gate therefore treats large future-date spikes as critical scraper regressions but does not drop otherwise plausible near-future rows automatically.
-
-\paragraph{Source-text fidelity is upstream-bound.} Decision body text quality is inherited from the originating portal. Known classes of upstream noise the corpus carries: encoding drift (mixed UTF-8 / Latin-1 leakage from some cantonal portals), residual HTML-entity contamination in scraped text, OCR artefacts in historical archives (BGE 1875--1953, Wayback-recovered BL ALS, MKG), control-character contamination from PDF extraction, and near-duplicate cross-portal content with whitespace or line-break differences. Build-time normalisation passes (\texttt{\_normalize\_*} in \texttt{build\_fts5.py}) catch the most common cases, and an exports-side render-time control-character sanitiser was added after a 2026-05 production incident. The corpus does not claim character-level fidelity to a hypothetical canonical text --- only to what each source portal published, with documented normalisation applied.
-
-\paragraph{Scope of this paper.} We separate \emph{resource release} (this paper) from \emph{evaluation diagnostics} (companion paper). The cross-lingual citation-flow matrix reported here characterizes the released resolved graph; it is not the resource contribution itself. The cross-lingual retrieval diagnostic, the audit-rail framework, and the prior-only-vs-RAG-augmented bench are evaluation contributions that depend on this resource and will be reported once their multi-annotator and human-judge-calibration components are complete.
+\paragraph{Scope.} The cross-language citation-flow matrix is descriptive characterization of the released graph, not the resource contribution. The cross-lingual retrieval diagnostic, audit-rail framework, and prior-only-vs-RAG-augmented bench are evaluation contributions that depend on this resource and will be reported in the companion paper once their multi-annotator and human-judge-calibration components are complete.
 
 %==================================================================
 \section{Discussion}\label{sec:disc}
@@ -322,8 +287,6 @@ Normalise Swiss citations across systems   & \texttt{cli:ch} $\leftrightarrow$ E
 \bottomrule
 \end{tabular}
 \end{table}
-
-\paragraph{Generalisation.} The architecture (cross-court federation, pin-cite-aware resolver, cli:ch + ECLI identifier layer, RFC-6962 + OpenTimestamps provenance) is jurisdiction-agnostic. Adaptation to other multilingual civil-law systems (e.g.\ Belgium, Quebec, South Africa) would require local citation grammars, statute-version semantics, source-access policy, and legislative-history normalisation; the Swiss specifics in this release are localisation, not architecture.
 
 \paragraph{Open questions.} Three lines of follow-up work motivated by the resource: (i) precision-controlled measurement of the cross-lingual citation share with a multi-annotator stratified audit; (ii) versioned statute resolution so a 1998 \emph{OG} reference resolves to the contemporaneous statute text rather than the current SR location; (iii) cross-lingual retrieval evaluation with lawyer-authored held-out queries (companion paper).
 
