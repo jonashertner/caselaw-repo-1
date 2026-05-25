@@ -17,12 +17,12 @@ OpenCaseLaw: A Verifiable Multilingual Citation Graph for Swiss Jurisprudence
 Jonas Hertner
 ```
 
-Single author. Affiliation: OpenCaseLaw. Contact: jonashertner@protonmail.ch.
+Single author. Affiliation: OpenCaseLaw. Contact: jh@jonashertner.com.
 
 ## Abstract
 
 ```
-OpenCaseLaw is an open, verifiable Swiss legal graph that joins court decisions, resolved case citations, statute references, legislative-history materials, scholarly commentaries, stable identifiers, and cryptographic provenance. The release contains 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved cross-court citation references (92.9% coverage), 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY/CC-BY-SA commentaries, and 8,124 article-level Materialien anchors from federal statutes to Federal Council messages (Botschaften). Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD, and every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. As descriptive characterization of the released graph, we report row-normalised cross-language citation flow: Italian-language decisions cite outside Italian 84.6% of the time, French-language decisions 44.3%, and German-language decisions 15.0%; the aggregate cross-language share is 34.0%. The paper reports quality-control precision proxies, ships a 400-sample stratified citation-audit set for manual adjudication, and explicitly treats per-language resolution-rate bias as the main measurement confounder. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
+OpenCaseLaw is an open, verifiable Swiss legal graph that joins court decisions, resolved case citations, statute references, legislative-history materials, scholarly commentaries, stable identifiers, and cryptographic provenance. The release contains 972,882 court decisions across 109 courts in 28 jurisdictional layers (DE/FR/IT), paired with 8.05M resolved citation tokens (92.9% coverage of 8.66M extracted tokens) expanded to 8.10M decision-to-decision link edges, 11.28M decision-to-statute edges spanning 283,330 provisions, bridges to 5,516 federal and 15,722 cantonal laws, 362 CC-BY/CC-BY-SA commentaries, and 8,124 article-level Materialien anchors from federal statutes to Federal Council messages (Botschaften). Every decision carries a Swiss-native cli:ch identifier with a Council-of-EU ECLI projection in Schema.org/LegalCase JSON-LD, and every daily publish commits an RFC-6962 Merkle root anchored on Bitcoin via OpenTimestamps, with a per-decision inclusion-proof API. As descriptive characterization of the released graph, we report row-normalised cross-language citation flow: Italian-language decisions cite outside Italian 84.6% of the time, French-language decisions 44.3%, and German-language decisions 15.0%; the aggregate cross-language share is 34.0%. The paper reports quality-control precision proxies, a 400-sample rule-based mechanical consistency check (400/400 pass for the checked resolver property), and explicitly treats per-language resolution-rate bias as the main measurement confounder. Live at mcp.opencaselaw.ch; corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
 ```
 
 ## Comments line
@@ -73,8 +73,9 @@ of the LLM judge, and n ≥ 200 for the audit bench.
   released E_link denominator (8,102,236 rows)
 - [x] All cited works present in `bib/refs.bib`
 - [x] Cross-references resolve (\ref, \cite all defined)
-- [x] Honest scope: no eval claims, no audit claims, no benchmark
-  claims that don't fit the resource frame
+- [x] Honest scope: no evaluation claims, no human-precision claims, and
+  the 400-sample audit result is labelled as rule-based mechanical
+  consistency rather than semantic precision
 - [x] Manuscript now includes citation-flow figure generated from the
   frozen matrix and a reproducibility capsule with the 2026-05-21
   integrity root
