@@ -18,11 +18,17 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{amsmath,amssymb}
 \usepackage{authblk}
 \usepackage[section]{placeins}
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta,fit,backgrounds}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+% Breathing room around [H]-positioned floats (default 12pt is too tight
+% when the surrounding paragraph ends right before the table).
+\setlength{\intextsep}{16pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{18pt plus 2pt minus 4pt}
 
 \title{OpenCaseLaw: A Verifiable Multilingual Citation Graph for Swiss Jurisprudence}
 
@@ -36,7 +42,7 @@
 \maketitle
 
 \begin{abstract}
-We release \textbf{OpenCaseLaw}, an open, verifiable retrieval substrate for Swiss case law: a resolved cross-court citation graph bridged to statute articles, Federal Council legislative-history materials, and scholarly commentaries, with a Swiss-native identifier scheme and cryptographic provenance. The release contains \textbf{972{,}882} court decisions across \textbf{109 courts} in 28 jurisdictional layers (DE/FR/IT, 1875--2026), \textbf{8.05\,M} resolved citation tokens (92.9\,\% coverage of 8.66\,M extracted tokens) expanded to \textbf{8.10\,M} (source-decision, target-decision) link edges, \textbf{11.28\,M} decision-to-statute edges across \textbf{5{,}516} federal and \textbf{15{,}722} cantonal laws, \textbf{362} CC-BY/CC-BY-SA commentaries, and \textbf{8{,}124} article-level Materialien anchors. Every decision carries a Swiss-native \texttt{cli:ch} identifier with an ECLI projection and a cryptographic membership proof against a 2026-05-21 RFC-6962/OpenTimestamps integrity root. The corpus runs as a live MCP/REST endpoint at \texttt{mcp.opencaselaw.ch}. Quality controls: recorded-date chronology violations on 1.53\,\% of edges (an upper bound on precision, not a lower one); a 400-sample rule-based consistency check (400/400 pass; Wilson 95\,\% CI [99.0\,\%, 100.0\,\%] for the checked property). Corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
+We release \textbf{OpenCaseLaw}, an open, verifiable retrieval substrate for Swiss case law: a resolved cross-court citation graph bridged to statute articles, Federal Council legislative-history materials, and scholarly commentaries, with a Swiss-native identifier scheme and cryptographic provenance. The release contains \textbf{972{,}882} court decisions across \textbf{109 courts} in 28 jurisdictional layers (DE/FR/IT, 1875--2026), \textbf{8.05\,M} resolved citation tokens (92.9\,\% coverage of 8.66\,M extracted tokens) expanded to \textbf{8.10\,M} (source-decision, target-decision) link edges, \textbf{11.28\,M} decision-to-statute edges across \textbf{5{,}516} federal and \textbf{15{,}722} cantonal laws, \textbf{362} CC-BY/CC-BY-SA commentaries, and \textbf{8{,}124} article-level Materialien anchors. Every decision carries a Swiss-native \texttt{cli:ch} identifier with an ECLI projection and a cryptographic membership proof against a 2026-05-21 RFC-6962/OpenTimestamps integrity root. The corpus runs as a live MCP/REST endpoint at \texttt{mcp.opencaselaw.ch}. Quality controls: recorded-date chronology violations on 1.53\,\% of edges, implying a date-sanity-visible precision ceiling of 98.47\,\% rather than a lower bound; a 400-sample rule-based consistency check (400/400 pass; Wilson 95\,\% CI [99.0\,\%, 100.0\,\%] for the checked property). Corpus CC0 on Hugging Face; code MIT. Snapshot 2026-05-21.
 \end{abstract}
 
 %==================================================================
@@ -61,7 +67,7 @@ The companion evaluation paper covers cross-lingual retrieval diagnostics with m
 
 \paragraph{Resource shape (one-figure overview).} Figure~\ref{fig:schema} sketches what is joined into what. Every decision is the centre node; the surrounding layers (citation graph, statute graph, Materialien, identifier, provenance) are the five orthogonal axes the resource lets a downstream user pivot on.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
@@ -74,7 +80,7 @@ The companion evaluation paper covers cross-lingual retrieval diagnostics with m
   >={Stealth[length=2.5mm]},
 ]
 \node[decision] (d) {Decision\\\scriptsize \texttt{cli:ch} + ECLI};
-\node[layer, above=of d] (c) {Decision $\to$ Decision\\\scriptsize 8.10\,M edges, 92.9\,\% resolved};
+\node[layer, above=of d] (c) {Decision $\to$ Decision\\\scriptsize 8.10\,M edges; 92.9\,\% token coverage};
 \node[layer, right=of d] (s) {Statute article\\\scriptsize 11.28\,M edges, 283\,k provisions};
 \node[layer, below=of d] (i) {Merkle inclusion proof\\\scriptsize RFC-6962 + OpenTimestamps};
 \node[layer, left=of d] (k) {Identifier layer\\\scriptsize \texttt{cli:ch} $\leftrightarrow$ ECLI, JSON-LD};
@@ -101,7 +107,7 @@ The companion evaluation paper covers cross-lingual retrieval diagnostics with m
 
 \paragraph{Comparison.} Table~\ref{tab:comparison} positions OpenCaseLaw against these prior releases. Inclusion criterion: open releases that publish a retrieval substrate over court-decision text --- a citation graph, a statute-decision link layer, or a live retrieval endpoint --- against which downstream RAG and legal-research pipelines can be built. Excluded: task benchmarks (SwiLTra, SLDS, OLML, SJP) and pretraining corpora (Pile of Law, MultiLegalPile), which publish task data or large text dumps rather than retrieval substrates; these are discussed in the prose above. SCD is a borderline case (it ships structured metadata over BGer but not a graph layer); we include it to make the criterion transparent.
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Comparison of selected open legal-data resources along dimensions relevant for retrieval-augmented Swiss legal research. ``Citation graph'' = resolved citation network (case-to-case unless noted); ``Statute graph'' = decision-to-statute-article edges with resolved targets; ``Leg.\ history'' = statute-article-to-legislative-history links (e.g.\ Botschaften, Hansard, committee reports) at article granularity; ``Live API'' = continuously served retrieval endpoint; ``Cross-lang links'' = the resource publishes a link layer where edges span $\geq$2 official languages (independent of whether the underlying corpus is multilingual). SCD covers DE/FR/IT Federal Supreme Court text but ships metadata variables, not a cross-language link layer. The table foregrounds retrieval-substrate features rather than task-benchmark coverage; pretraining corpora such as Pile of Law and MultiLegalPile, and Swiss task datasets such as SwiLTra/SLDS/OLML/SJP, are discussed in text.}
 \label{tab:comparison}
@@ -131,7 +137,7 @@ The OpenCaseLaw corpus comprises \textbf{972{,}882 decisions} from \textbf{109 d
 
 \paragraph{Completeness.} Some source portals impose access restrictions (geographic, rate, or contractual). We document affected sources in the per-source coverage report, do not claim full coverage where access is restricted, and use only legally authorised collection methods. For closed historical archives where contemporaneous collection is no longer possible, we recover from publicly archived snapshots (e.g.\ Wayback Machine; $\sim$903 BL ALS judgments).
 
-\paragraph{Licensing and governance.} Court decisions in Switzerland are official acts under URG/CopA Art.~5 (excluded from copyright). Corpus packaging is CC0; commentaries retain their upstream CC-BY-4.0 / CC-BY-SA-4.0 terms; code is MIT. Per-record licenses, the FADP (Swiss data protection) posture, and the correction/removal procedure are in the Data Card (Section~\ref{sec:datacard}) and the public governance policy.
+\paragraph{Licensing.} Court decisions in Switzerland are official acts under URG/CopA Art.~5 (excluded from copyright). Corpus packaging is CC0; code is MIT; commentaries retain their upstream CC-BY-4.0 and CC-BY-SA-4.0 terms. Per-record licenses, the FADP (Swiss data protection) posture, and the correction/removal procedure are documented in the Data Card (Section~\ref{sec:datacard}) and the public governance policy.
 
 %==================================================================
 \section{Multilingual citation graph}\label{sec:graph}
@@ -153,7 +159,7 @@ The cross-lingual share (34.0\,\%, Section~\ref{sec:intro}) is computed over $E_
 
 \paragraph{Heavy-tailed centrality.} The citation graph is heavy-tailed (Table~\ref{tab:citation_graph}): 40 decisions are cited 10{,}000+ times, 935 are cited 1{,}000--9{,}999 times, and most cited decisions sit in the long tail. The single most-cited decision is BGE 125 V 351 (66{,}883 incoming citations after canonical-form aggregation across BGE id variants). Of the 50 most-cited decisions, 38 are DE-originals, 12 are FR, and none are IT --- a distinct cut of the graph (citation reception, not direction).
 
-\paragraph{Precision proxies.} The 92.9\,\% resolution number is a \emph{coverage} metric and does not bound precision. To characterise precision risk we compute three automated proxies (Table~\ref{tab:precision_proxies}). The proxies surface \emph{recorded-date chronology violations}: each detected case is a logical inconsistency \emph{conditional on the source and target decision dates being themselves correct}. We preserve source-portal-provided dates (Section~\ref{sec:limit}), so a violation is a strong but not infallible indicator of a false-positive resolution. Date-consistent, non-self pairs may still be false positives for reasons our automated proxies do not see (e.g., a docket-form citation that resolves to the wrong case with the same docket pattern). \emph{Date-order sanity} (target decision not dated after source) finds violations in 1.53\,\% of $E_{\textrm{link}}$ rows with both dates known (weighted across match types). This bounds precision on the released graph at \emph{at most} 98.47\,\% on date-covered pairs conditional on the recorded dates; it does \emph{not} establish a lower bound on precision.
+\paragraph{Precision proxies.} The 92.9\,\% resolution number is a \emph{coverage} metric and does not bound precision. To characterise precision risk we compute three automated proxies (Table~\ref{tab:precision_proxies}). The proxies surface \emph{recorded-date chronology violations}: each detected case is a logical inconsistency \emph{conditional on the source and target decision dates being themselves correct}. We preserve source-portal-provided dates (Section~\ref{sec:limit}), so a violation is a strong but not infallible indicator of a false-positive resolution. Date-consistent, non-self pairs may still be false positives for reasons our automated proxies do not see (e.g., a docket-form citation that resolves to the wrong case with the same docket pattern). \emph{Date-order sanity} (target decision not dated after source) finds violations in 1.53\,\% of $E_{\textrm{link}}$ rows with both dates known (weighted across match types). This places the date-sanity-visible precision ceiling at 98.47\,\% on date-covered pairs conditional on the recorded dates; it does \emph{not} establish a lower bound on precision.
 
 \input{tables/precision_proxies.tex}
 \FloatBarrier
@@ -196,7 +202,7 @@ The mapping to ECLI is a pure function (\texttt{cli\_ch\_to\_ecli}); the project
 
 Four layers guard the release (Table~\ref{tab:qa_layers}).
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Quality assurance, by layer. L1--L3 are publish-blocking on a critical regression (the orchestrator refuses to advance to the git-push step). L4 is alerting-only.}
 \label{tab:qa_layers}
@@ -220,12 +226,12 @@ L3 publishes per-check JSON at \url{https://opencaselaw.ch/quality.json}, refres
 %==================================================================
 \section{Data card}\label{sec:datacard}
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \caption{Data card. Frozen 2026-05-21 release; live state always at \url{https://opencaselaw.ch}.}
 \label{tab:datacard}
 \small
-\begin{tabular}{p{0.24\textwidth} p{0.69\textwidth}}
+\begin{tabular}{L{0.24\textwidth} L{0.69\textwidth}}
 \toprule
 \textbf{Field} & \textbf{Value} \\
 \midrule
@@ -236,7 +242,7 @@ Refresh              & BGer hourly (Mon--Fri 05:00--16:00 UTC); all other federa
 Personal-data posture & FADP; inherit upstream pseudonymisation; no re-pseudonymisation, no de-pseudonymisation \\
 Known noise classes  & Encoding drift, HTML-entity contamination, OCR artefacts in historical archives, control-character leakage from PDF extraction, near-duplicate cross-portal content (Section~\ref{sec:limit}) \\
 Licensing            & Corpus CC0; commentaries CC-BY-4.0 / CC-BY-SA-4.0; code MIT; decision texts under URG/CopA Art.~5 official-acts exclusion \\
-Removal / correction & Public policy at \url{https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/governance-and-removal-policy.md}; verified requests honoured per documented procedure \\
+Removal / correction & \href{https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/governance-and-removal-policy.md}{Public governance-and-removal policy}; verified requests honoured per documented procedure \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -244,7 +250,7 @@ Removal / correction & Public policy at \url{https://github.com/jonashertner/cas
 %==================================================================
 \section{Limitations}\label{sec:limit}
 
-\paragraph{Citation precision is bounded, not measured.} The 92.9\,\% resolution rate is a coverage metric, not a precision bound. The date-sanity proxy gives at most $\sim$98.47\,\% precision on date-covered pairs, conditional on the recorded source and target dates being correct themselves. The rule-based consistency adjudication (Section~\ref{sec:graph}) finds no rule-visible malformed identifiers or pin-cite range overflows in the 400-sample audit set. Neither establishes a \emph{lower} bound on precision. Multi-annotator human adjudication of the same set --- covering same-docket disambiguation, rule-consistent pin-cite false positives, and source-text accuracy --- is companion-paper scope. The 92.9\,\% rate itself is a 17.7\,pp lift over an internal pre-fix baseline but a 0.6\,pp regression from the previous snapshot's 93.5\,\%, reflecting citations to recently-added decisions whose targets have not yet been ingested.
+\paragraph{Citation precision is bounded, not measured.} The 92.9\,\% resolution rate is a coverage metric, not a precision bound. The date-sanity proxy gives a $\sim$98.47\,\% ceiling for date-sanity-visible precision on date-covered pairs, conditional on the recorded source and target dates being correct themselves. The rule-based consistency adjudication (Section~\ref{sec:graph}) finds no rule-visible malformed identifiers or pin-cite range overflows in the 400-sample audit set. Neither establishes a \emph{lower} bound on precision. Multi-annotator human adjudication of the same set --- covering same-docket disambiguation, rule-consistent pin-cite false positives, and source-text accuracy --- is companion-paper scope. The 92.9\,\% rate itself is a 17.7\,pp lift over an internal pre-fix baseline but a 0.6\,pp regression from the previous snapshot's 93.5\,\%, reflecting citations to recently-added decisions whose targets have not yet been ingested.
 
 \paragraph{Temporal validity, source pseudonymisation, snapshot-date semantics.} (i) The statute graph maps references to the \emph{current} SR location; a 1998 \emph{OG} reference resolves to surviving content without distinguishing the original from the superseded version. Versioned statute resolution remains future work. (ii) Source pseudonymisation is inherited. Federal decisions typically arrive pre-pseudonymised; some cantonal decisions arrive unredacted. We neither re-pseudonymise nor de-pseudonymise; removal requests follow the documented governance policy. (iii) Some source portals expose near-future publication dates. We preserve source-provided dates rather than rewriting them, and the dataset-health gate treats large future-date spikes as critical scraper regressions.
 
@@ -259,12 +265,12 @@ Removal / correction & Public policy at \url{https://github.com/jonashertner/cas
 
 \paragraph{What the resource enables, and for whom.} The substrate serves three audiences. For \emph{legal-NLP researchers}: every resolved citation has a stable target identifier and every statute reference is article-anchored, so retrievers, generators, and legal-RAG systems can build on a substrate whose outputs verify against a Bitcoin-anchored snapshot. For \emph{Swiss legal practitioners}: the live MCP/REST endpoint at \url{https://mcp.opencaselaw.ch} supports decision lookup, Erwägung-level pinpoint citation, and cross-court reference walks with provenance-anchored data --- capabilities not available as open infrastructure in the resources compared above. For \emph{Swiss courts and public bodies}: the same data products they publish flow back as a federated, identifier-stable corpus with inclusion-proof verification, supporting referential integrity across systems and offering a public auditing surface for the official record. The Materialien bridge opens teleological-interpretation research: article-level Botschaft documents become programmatically accessible, subject to the anchoring limitations above.
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
-\caption{Five concrete tasks the released substrate makes one-call cheap. The right column is the smallest query against the live MCP/REST endpoint or the static corpus snapshot.}
+\caption{Five concrete tasks supported by the released substrate. The right column gives the minimal object or query against the live MCP/REST endpoint or the static corpus snapshot.}
 \label{tab:reuse}
 \small
-\begin{tabular}{p{0.32\textwidth} p{0.26\textwidth} p{0.34\textwidth}}
+\begin{tabular}{L{0.32\textwidth} L{0.26\textwidth} L{0.34\textwidth}}
 \toprule
 \textbf{Task} & \textbf{Resource object} & \textbf{Example} \\
 \midrule
@@ -298,8 +304,11 @@ All artefacts are publicly available:
 \begin{quote}\small
 \begin{verbatim}
 $ curl https://mcp.opencaselaw.ch/api/decisions/bge_BGE_125_V_351
-  -> { decision_id, cli_ch, ecli, citation_de, citation_fr,
-       citation_it, incoming_citations: 66883, cited_statutes: [...] }
+  -> { decision_id, citation_string_de, citation_string_fr,
+       citation_string_it, canonical_url, full_text, ... }
+
+$ curl https://mcp.opencaselaw.ch/api/citations/bge_BGE_125_V_351
+  -> { decision_id, direction, incoming: [...], outgoing: [...] }
 
 $ curl https://mcp.opencaselaw.ch/api/integrity/bge_BGE_125_V_351
   -> { decision_id, root_date: "2026-05-21",
@@ -308,7 +317,7 @@ $ curl https://mcp.opencaselaw.ch/api/integrity/bge_BGE_125_V_351
 \end{verbatim}
 \end{quote}
 
-\noindent The first call returns the canonical record plus its position in the citation graph and the statute graph. The second returns a cryptographic membership proof that lets any client verify the decision was in the 2026-05-21 release snapshot without trusting the server: traverse the inclusion proof, recover the daily Merkle root, then verify that root against the OpenTimestamps Bitcoin anchor.
+\noindent The first call returns the canonical decision record and citation strings; the second exposes its citation-graph neighbourhood; the third returns a cryptographic membership proof that lets any client verify the decision was in the 2026-05-21 release snapshot without trusting the server: traverse the inclusion proof, recover the daily Merkle root, then verify that root against the OpenTimestamps Bitcoin anchor.
 
 \paragraph{Reproducibility capsule.} All numerical claims derive from the frozen table snapshot at \path{docs/paper/p1-resource/tables/corpus_graph_stats.json}; \path{docs/paper/v3/scripts/build_tables.py} regenerates the tables. Citation-precision proxies live at \path{benchmarks/citation_precision_proxies.json}; the mechanically adjudicated 400-row audit sample at \path{benchmarks/citation_precision_sample_400.jsonl}, with aggregate rule-check results at \path{benchmarks/citation_precision_audit_results.json}. The 2026-05-21 integrity manifest is \path{docs/integrity/2026-05-21.json}; the full RFC-6962-SHA-256 root sits in \path{docs/integrity/2026-05-21.root} and begins \texttt{1b597b92}. We mint the archival DOI and submission git tag at submission, after this manuscript and the release artifacts are frozen.
 
