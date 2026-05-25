@@ -475,6 +475,10 @@ Returns a real BGE fact pattern adapted as a Fallbearbeitung scenario. The appli
 
 This downloads only the changed files and updates the index. Much faster than the initial build.
 
+Some deployments may also use the HuggingFace `artifacts/manifest.json` file when it advertises a full SQLite snapshot under `snapshot.sqlite_zst`. That snapshot is a bootstrap artifact for external tools; the current local MCP `update_database` tool still uses the Parquet download/rebuild path.
+
+For a manual snapshot bootstrap recipe, see the "SQLite snapshot artifacts" section in the repository README.
+
 ---
 
 ## Troubleshooting

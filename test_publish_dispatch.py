@@ -70,3 +70,26 @@ def test_publish_runs_ingest_with_flag(monkeypatch):
     publish.main()
 
     assert called["ingest"] is True
+
+
+def test_publish_sqlite_snapshot_can_run_without_delta_state(monkeypatch):
+    """A one-off SQLite snapshot should not require hf_delta_snapshot.json."""
+    called: dict[str, object] = {}
+
+    def _fake_run_cmd(cmd, desc, dry_run=False, **kwargs):
+        called["cmd"] = cmd
+        called["desc"] = desc
+        called["dry_run"] = dry_run
+        return True
+
+    monkeypatch.delenv("OCL_PUBLISH_DELTA", raising=False)
+    monkeypatch.setenv("OCL_PUBLISH_SQLITE_SNAPSHOT", "1")
+    monkeypatch.setattr(publish, "run_cmd", _fake_run_cmd)
+
+    assert publish.step_7_publish_delta(dry_run=True) is True
+
+    cmd = called["cmd"]
+    assert "--snapshot-only" in cmd
+    assert "--publish-snapshot" in cmd
+    assert "--dry-run" in cmd
+    assert called["desc"] == "Publish artifacts"

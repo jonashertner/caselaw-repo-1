@@ -218,10 +218,10 @@ _register(Target(
     name="publish_delta",
     deps=["build_fts5"],
     # non_fatal: env-gated step (OCL_PUBLISH_DELTA), and even when on,
-    # delta publish is best-effort vs the full Step 4 upload. Same
-    # reasoning as upload_hf above re: terminal health_check.
+    # delta/snapshot artifact publish is best-effort vs the full Step 4
+    # upload. Same reasoning as upload_hf above re: terminal health_check.
     non_fatal=True,
-    description="Step 7 — publish delta JSONL bundle (env-gated)",
+    description="Step 7 — publish delta bundle / SQLite snapshot (env-gated)",
 ))
 
 _register(Target(

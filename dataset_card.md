@@ -147,6 +147,12 @@ claude mcp add swiss-caselaw -- /path/to/.venv/bin/python3 /path/to/mcp_server.p
 
 On first search, the server downloads the Parquet files (~7 GB) from this dataset and builds a local SQLite FTS5 index (~58 GB). This takes 30–60 minutes and only happens once. After that, searches are instant.
 
+### Artifact manifest and SQLite snapshot
+
+The dataset may include machine-readable artifact metadata at `artifacts/manifest.json`. The manifest lists daily delta artifacts and may point to an optional full compressed SQLite base snapshot under `snapshot.sqlite_zst`, for example `artifacts/sqlite/snapshots/<date>.decisions.sqlite.zst`.
+
+This snapshot is intended for local MCP/server bootstrap tools that want to avoid rebuilding the SQLite FTS5 database from Parquet. Consumers should verify the advertised SHA-256, decompress to a temporary database path, run a quick SQLite row/schema check, then atomically move it into place. If `snapshot` is `null`, use the Parquet rebuild path.
+
 ## Dataset Statistics
 
 | Metric | Value |

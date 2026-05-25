@@ -178,6 +178,11 @@ All large DBs live on the data volume and are symlinked from `output/`:
 
 The publish pipeline does `git pull --rebase` before push to handle conflicts from development commits.
 
+Optional HuggingFace artifact publishing is controlled by environment variables:
+
+- `OCL_PUBLISH_DELTA=1` publishes daily SQLite/Parquet delta artifacts and updates `artifacts/manifest.json`.
+- `OCL_PUBLISH_SQLITE_SNAPSHOT=1` publishes a full compressed SQLite base snapshot and sets `manifest.snapshot`. This can run independently for one-off bootstrap snapshots.
+
 ---
 
 ## 8. SOCKS Tunnel (Neuchâtel Proxy)
