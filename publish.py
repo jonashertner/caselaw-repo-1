@@ -785,11 +785,15 @@ def step_5b_generate_feeds(dry_run: bool = False) -> bool:
 
 
 def step_7_publish_delta(dry_run: bool = False) -> bool:
-    """Step 7: Publish daily delta (SQLite + parquet + manifest) to HuggingFace.
+    """Step 7: Publish delta artifacts and optional SQLite snapshot to HuggingFace.
 
     Env-gated by `OCL_PUBLISH_DELTA=1` — off by default until the new
     pipeline has been validated end-to-end. When OFF, the step logs
     "skipped" and returns True (non-fatal).
+
+    A full compressed SQLite base snapshot can be published independently
+    with `OCL_PUBLISH_SQLITE_SNAPSHOT=1`. This is intended for occasional
+    bootstrap snapshots, not necessarily every daily delta run.
 
     Requires a seeded snapshot at state/hf_delta_snapshot.json. Seed once
     with `python3 -m search_stack.publish_delta --seed` BEFORE enabling.
@@ -800,23 +804,38 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
     federal-less deltas for 30+ days. Keep that workflow disabled while
     this is on — two pipelines racing will corrupt artifacts/manifest.json.
     """
-    if os.environ.get("OCL_PUBLISH_DELTA") != "1":
-        logger.info("Step 7: Publish Delta — DISABLED (set OCL_PUBLISH_DELTA=1 to enable)")
+    publish_delta_enabled = os.environ.get("OCL_PUBLISH_DELTA") == "1"
+    publish_snapshot_enabled = os.environ.get("OCL_PUBLISH_SQLITE_SNAPSHOT") == "1"
+    if not publish_delta_enabled and not publish_snapshot_enabled:
+        logger.info(
+            "Step 7: Publish artifacts — DISABLED "
+            "(set OCL_PUBLISH_DELTA=1 and/or OCL_PUBLISH_SQLITE_SNAPSHOT=1 to enable)"
+        )
         return True
 
-    logger.info("Step 7: Publish Delta to HuggingFace")
+    logger.info("Step 7: Publish artifacts to HuggingFace")
     snapshot_path = REPO_DIR / "state" / "hf_delta_snapshot.json"
-    if not snapshot_path.exists():
+    if publish_delta_enabled and not snapshot_path.exists():
         logger.error("  state/hf_delta_snapshot.json missing — run with --seed first")
         return False
 
+    cmd = [
+        sys.executable, "-m", "search_stack.publish_delta",
+        "--db", str(DB_PATH),
+        "--build-dir", "/tmp/caselaw_delta_build",
+    ]
+    if publish_delta_enabled:
+        cmd += ["--snapshot", str(snapshot_path)]
+    else:
+        cmd += ["--snapshot-only"]
+    if publish_snapshot_enabled:
+        cmd += ["--publish-snapshot"]
+    if dry_run:
+        cmd += ["--dry-run"]
+
     return run_cmd(
-        [sys.executable, "-m", "search_stack.publish_delta",
-         "--db", str(DB_PATH),
-         "--snapshot", str(snapshot_path),
-         "--build-dir", "/tmp/caselaw_delta_build"]
-        + (["--dry-run"] if dry_run else []),
-        "Publish Delta",
+        cmd,
+        "Publish artifacts",
         dry_run,
         timeout=1800,
     )

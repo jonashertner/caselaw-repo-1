@@ -8,6 +8,7 @@ pydantic>=2.0
 # Data pipeline
 pyarrow>=14.0
 huggingface-hub>=0.20
+zstandard>=0.22
 
 # API server (optional)
 fastapi>=0.104

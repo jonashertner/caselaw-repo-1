@@ -292,6 +292,76 @@ Any MCP-compatible client works with the same `command` + `args` pattern.
 
 The dataset is updated daily. To get the latest decisions, ask Claude to run the `update_database` tool, or call it explicitly. This re-downloads the Parquet files from HuggingFace and rebuilds the local database.
 
+#### SQLite snapshot artifacts
+
+The HuggingFace dataset may also publish a full compressed SQLite base snapshot for bootstrap tools under `artifacts/sqlite/snapshots/`. Its metadata lives in `artifacts/manifest.json` as `snapshot`; if that value is `null`, consumers should fall back to the Parquet rebuild path above.
+
+The snapshot is intended for local MCP/server bootstrapping: download `artifacts/manifest.json`, fetch `snapshot.sqlite_zst.path`, verify `snapshot.sqlite_zst.sha256`, decompress to `decisions.db.tmp`, run a quick SQLite row/schema check, then atomically move it to `decisions.db`. Newer `artifacts/sqlite/deltas/*.sqlite.zst` entries can then be applied by tools that support delta updates.
+
+Manual snapshot bootstrap:
+
+```bash
+pip install zstandard
+
+python - <<'PY'
+import hashlib
+import json
+import os
+import sqlite3
+import urllib.request
+from pathlib import Path
+
+import zstandard as zstd
+
+base = "https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main"
+data_dir = Path(os.environ.get("SWISS_CASELAW_DIR", Path.home() / ".swiss-caselaw")).expanduser()
+data_dir.mkdir(parents=True, exist_ok=True)
+
+with urllib.request.urlopen(f"{base}/artifacts/manifest.json") as r:
+    manifest = json.load(r)
+
+snapshot = manifest.get("snapshot")
+if not snapshot:
+    raise SystemExit("No SQLite snapshot is advertised; use update_database instead.")
+
+meta = snapshot["sqlite_zst"]
+tmp_db = data_dir / "decisions.db.tmp"
+final_db = data_dir / "decisions.db"
+
+class HashingReader:
+    def __init__(self, raw, digest):
+        self.raw = raw
+        self.digest = digest
+
+    def read(self, size=-1):
+        data = self.raw.read(size)
+        if data:
+            self.digest.update(data)
+        return data
+
+h = hashlib.sha256()
+with urllib.request.urlopen(f"{base}/{meta['path']}") as src, tmp_db.open("wb") as dst:
+    zstd.ZstdDecompressor().copy_stream(HashingReader(src, h), dst)
+if h.hexdigest() != meta["sha256"]:
+    tmp_db.unlink(missing_ok=True)
+    raise SystemExit("SHA-256 verification failed")
+
+con = sqlite3.connect(tmp_db)
+try:
+    rows = con.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+    con.execute("SELECT decision_id FROM decisions LIMIT 1").fetchone()
+finally:
+    con.close()
+
+expected = snapshot.get("rows")
+if expected is not None and rows != expected:
+    raise SystemExit(f"Row-count check failed: got {rows}, expected {expected}")
+
+tmp_db.replace(final_db)
+print(f"Installed {final_db} with {rows:,} decisions")
+PY
+```
+
 #### How the local database works
 
 ```
@@ -654,6 +724,8 @@ export SWISS_CASELAW_STATUTES_DB=output/statutes.db
 ## 2. Download the dataset
 
 The full dataset is on [HuggingFace](https://huggingface.co/datasets/voilaj/swiss-caselaw) as Parquet files — one file per court, 34 fields per decision including complete decision text.
+
+Machine-consumable artifact metadata is published at `artifacts/manifest.json`. Besides daily Parquet/SQLite deltas, the manifest may point to an optional full compressed SQLite snapshot at `artifacts/sqlite/snapshots/<date>.decisions.sqlite.zst` for tools that want to bootstrap a local FTS5 database without rebuilding from Parquet.
 
 ### With Python (datasets library)
 
@@ -1027,7 +1099,7 @@ Fedlex (SPARQL) ───────►│  Fedlex scraper ──► XML ──
 
 3. **Export** — JSONL files are converted to Parquet (one file per court) with a fixed 34-field schema.
 
-4. **Upload** — Parquet files are pushed to HuggingFace. The MCP server and `datasets` library pick up the new data automatically.
+4. **Upload** — Parquet files are pushed to HuggingFace. The MCP server and `datasets` library pick up the new data automatically. Optional artifact publishing can also update `artifacts/manifest.json` with daily deltas and a full compressed SQLite snapshot for external bootstrap tools.
 
 5. **Update dashboard** — `stats.json` is regenerated (including scraper health status from the last run) and pushed to GitHub Pages.
 

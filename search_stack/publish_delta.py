@@ -35,6 +35,7 @@ import logging as _logging
 import os as _os
 import shutil as _shutil
 import sqlite3 as _sqlite3
+import subprocess as _subprocess
 from pathlib import Path as _Path
 from typing import Any, Dict, Iterable, Iterator, List, Optional
 
@@ -45,6 +46,7 @@ log = _logging.getLogger(__name__)
 HF_REPO_ID = "voilaj/swiss-caselaw"
 MANIFEST_PATH_IN_REPO = "artifacts/manifest.json"
 MANIFEST_SCHEMA = "swiss-caselaw-artifacts-v1"
+SQLITE_SNAPSHOT_SCHEMA_VERSION = 1
 
 # Courts classified as federal-level for the `level` column.
 FEDERAL_COURTS = frozenset({
@@ -386,6 +388,16 @@ def _add_delta_to_manifest(m: Dict[str, Any], date: str, sqlite_zst: Dict, parqu
     return m
 
 
+def _set_snapshot_in_manifest(m: Dict[str, Any], snapshot: Dict[str, Any]) -> Dict[str, Any]:
+    m = dict(m)
+    m["schema"] = MANIFEST_SCHEMA
+    m["generated_at"] = _utc_now_iso()
+    m["snapshot"] = snapshot
+    if "deltas" not in m or m["deltas"] is None:
+        m["deltas"] = []
+    return m
+
+
 def _download_manifest(hf_repo: str) -> Dict[str, Any]:
     import httpx
     url = f"https://huggingface.co/datasets/{hf_repo}/resolve/main/{MANIFEST_PATH_IN_REPO}"
@@ -413,6 +425,223 @@ def _upload_file(local: _Path, repo: str, path_in_repo: str, token: str, commit_
         repo_type="dataset",
         commit_message=commit_message,
     )
+
+
+def _delete_file(repo: str, path_in_repo: str, token: str, commit_message: str) -> None:
+    from huggingface_hub import HfApi
+    api = HfApi(token=token)
+    api.delete_file(
+        path_in_repo=path_in_repo,
+        repo_id=repo,
+        repo_type="dataset",
+        commit_message=commit_message,
+    )
+
+
+def _producer_commit() -> str | None:
+    try:
+        repo_root = _Path(__file__).resolve().parents[1]
+        r = _subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(repo_root),
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        commit = r.stdout.strip()
+        return commit or None
+    except Exception:
+        return None
+
+
+def _validate_snapshot_source(db_path: _Path) -> Dict[str, Any]:
+    if not db_path.exists():
+        raise FileNotFoundError(f"SQLite DB not found: {db_path}")
+
+    stat_before = db_path.stat()
+    uri = f"file:{db_path}?mode=ro"
+    conn = _sqlite3.connect(uri, uri=True)
+    try:
+        rows = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+        sample = conn.execute("SELECT decision_id FROM decisions LIMIT 1").fetchone()
+        db_generation = conn.execute("PRAGMA user_version").fetchone()[0]
+    finally:
+        conn.close()
+
+    if rows <= 0:
+        raise RuntimeError(f"snapshot source has no decisions: {db_path}")
+    if sample is None or not sample[0]:
+        raise RuntimeError(f"snapshot source sample SELECT failed: {db_path}")
+
+    return {
+        "rows": rows,
+        "sample_decision_id": sample[0],
+        "db_generation": db_generation,
+        "source_stat": stat_before,
+    }
+
+
+def _assert_snapshot_source_unchanged(db_path: _Path, source_stat: _os.stat_result) -> None:
+    current = db_path.stat()
+    before = (
+        source_stat.st_dev,
+        source_stat.st_ino,
+        source_stat.st_size,
+        source_stat.st_mtime_ns,
+    )
+    after = (
+        current.st_dev,
+        current.st_ino,
+        current.st_size,
+        current.st_mtime_ns,
+    )
+    if before != after:
+        raise RuntimeError(
+            f"snapshot source changed while compressing: {db_path}. "
+            "Re-run snapshot publish so manifest metadata matches the compressed DB."
+        )
+
+
+def build_sqlite_snapshot(
+    *,
+    db_path: _Path,
+    date: str,
+    build_dir: _Path,
+    zstd_level: int = 10,
+) -> Dict[str, Any]:
+    """Compress the full FTS5 SQLite DB as a bootstrap snapshot.
+
+    This intentionally snapshots the live SQLite DB directly instead of
+    rebuilding from Parquet. The whole point is to publish the already
+    validated DB so local MCP users can avoid repeating that build.
+    """
+    source_meta = _validate_snapshot_source(db_path)
+
+    work = build_dir / "snapshot" / date
+    if work.exists():
+        _shutil.rmtree(work)
+    work.mkdir(parents=True)
+
+    snapshot_zst = work / f"{date}.decisions.sqlite.zst"
+    _compress_zst(db_path, snapshot_zst, level=zstd_level)
+    _assert_snapshot_source_unchanged(db_path, source_meta["source_stat"])
+    sha256 = _sha256_file(snapshot_zst)
+
+    checksum = work / f"{snapshot_zst.name}.sha256"
+    checksum.write_text(f"{sha256}  {snapshot_zst.name}\n", encoding="utf-8")
+
+    info = {
+        "date": date,
+        "sqlite_zst": snapshot_zst,
+        "sqlite_zst_bytes": snapshot_zst.stat().st_size,
+        "sqlite_zst_sha256": sha256,
+        "checksum": checksum,
+        "checksum_bytes": checksum.stat().st_size,
+        "rows": source_meta["rows"],
+        "sample_decision_id": source_meta["sample_decision_id"],
+        "db_generation": source_meta["db_generation"],
+        "schema_version": SQLITE_SNAPSHOT_SCHEMA_VERSION,
+        "producer_commit": _producer_commit(),
+        "work_dir": work,
+    }
+    log.info(
+        "build_sqlite_snapshot: %s rows=%d bytes=%d sha256=%s",
+        date, info["rows"], info["sqlite_zst_bytes"], info["sqlite_zst_sha256"],
+    )
+    return info
+
+
+def publish_sqlite_snapshot(
+    *,
+    build_info: Dict[str, Any],
+    hf_repo: str = HF_REPO_ID,
+    hf_token: str | None = None,
+    dry_run: bool = False,
+    prune_previous: bool = True,
+) -> None:
+    """Upload full SQLite snapshot and update manifest.snapshot.
+
+    Upload order is snapshot first, checksum second, manifest last. That
+    keeps consumers from seeing a manifest that references missing files.
+    """
+    date = build_info["date"]
+    hf_token = hf_token or _os.environ.get("HF_TOKEN")
+    if not hf_token and not dry_run:
+        raise RuntimeError("HF_TOKEN not set")
+
+    sqlite_path_in_repo = f"artifacts/sqlite/snapshots/{date}.decisions.sqlite.zst"
+    checksum_path_in_repo = f"{sqlite_path_in_repo}.sha256"
+
+    if dry_run:
+        log.info("[dry-run] would upload full SQLite snapshot:")
+        log.info("  → %s (%d bytes)", sqlite_path_in_repo, build_info["sqlite_zst_bytes"])
+        log.info("  → %s (%d bytes)", checksum_path_in_repo, build_info["checksum_bytes"])
+        log.info("  → artifacts/manifest.json (set snapshot entry)")
+        return
+
+    manifest = _download_manifest(hf_repo)
+    previous_snapshot = manifest.get("snapshot") if isinstance(manifest, dict) else None
+
+    _upload_file(
+        build_info["sqlite_zst"],
+        hf_repo,
+        sqlite_path_in_repo,
+        hf_token,
+        commit_message=f"snapshot {date} (sqlite)",
+    )
+    _upload_file(
+        build_info["checksum"],
+        hf_repo,
+        checksum_path_in_repo,
+        hf_token,
+        commit_message=f"snapshot {date} checksum",
+    )
+
+    sqlite_meta = {
+        "path": sqlite_path_in_repo,
+        "sha256": build_info["sqlite_zst_sha256"],
+        "bytes": build_info["sqlite_zst_bytes"],
+    }
+    snapshot_entry = {
+        "date": date,
+        "sqlite_zst": sqlite_meta,
+        "rows": build_info["rows"],
+        "schema_version": build_info["schema_version"],
+        "db_generation": build_info["db_generation"],
+    }
+    if build_info.get("producer_commit"):
+        snapshot_entry["producer_commit"] = build_info["producer_commit"]
+
+    manifest = _set_snapshot_in_manifest(manifest, snapshot_entry)
+    manifest_local = build_info["work_dir"] / "manifest.json"
+    manifest_local.write_text(
+        _json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    _upload_file(
+        manifest_local,
+        hf_repo,
+        MANIFEST_PATH_IN_REPO,
+        hf_token,
+        commit_message=f"manifest: set snapshot {date}",
+    )
+
+    if prune_previous and isinstance(previous_snapshot, dict):
+        previous_sqlite = (previous_snapshot.get("sqlite_zst") or {}).get("path")
+        if previous_sqlite and previous_sqlite != sqlite_path_in_repo:
+            for old_path in (previous_sqlite, f"{previous_sqlite}.sha256"):
+                try:
+                    _delete_file(
+                        hf_repo,
+                        old_path,
+                        hf_token,
+                        commit_message=f"snapshot retention: remove {old_path}",
+                    )
+                except Exception as e:
+                    log.warning("snapshot retention failed for %s: %s", old_path, e)
+
+    log.info("publish_sqlite_snapshot: %s published (%d rows)", date, build_info["rows"])
 
 
 # ── Top-level build + publish ───────────────────────────────────────────
@@ -454,7 +683,7 @@ def build_delta(
     _compress_zst(delta_sqlite, delta_zst, level=zstd_level)
 
     delta_parquet = work / f"delta-{date}.parquet"
-    pq_rows = _export_parquet(delta_sqlite, delta_parquet)
+    _export_parquet(delta_sqlite, delta_parquet)
 
     data_parquet = work / f"delta-{date}-data.parquet"
     _export_parquet(delta_sqlite, data_parquet, columns=BASE_COLS)
@@ -573,6 +802,15 @@ def _cli() -> None:
                    help="Path to local id-snapshot state file")
     p.add_argument("--dry-run", action="store_true",
                    help="Build locally; do NOT upload to HF, do NOT update snapshot")
+    p.add_argument("--publish-snapshot", action="store_true",
+                   help="Also publish a full compressed SQLite base snapshot "
+                        "and set manifest.snapshot.")
+    p.add_argument("--snapshot-only", action="store_true",
+                   help="Publish only the full SQLite snapshot; skip daily delta build. "
+                        "Useful for a one-off base snapshot.")
+    p.add_argument("--keep-previous-snapshot", action="store_true",
+                   help="Do not delete the previously referenced full SQLite snapshot "
+                        "after manifest has been updated.")
     p.add_argument("--seed", action="store_true",
                    help="Save current FTS5 id-set as snapshot and exit — no delta build, no HF upload. "
                         "Run this ONCE before enabling the pipeline so the first real delta is a "
@@ -591,18 +829,37 @@ def _cli() -> None:
         log.info("seed complete (%d ids). Next real run will diff against this.", n)
         return
 
-    info = build_delta(
-        db_path=args.db,
-        date=args.date,
-        build_dir=args.build_dir,
-        snapshot_path=args.snapshot,
-        update_snapshot=not args.dry_run,
-    )
-    summary = {k: v for k, v in info.items()
-               if k in ("date", "rows", "sqlite_zst_bytes", "parquet_bytes", "data_parquet_bytes")}
-    summary["current_ids"] = len(info["current_ids"])
-    log.info("build summary: %s", summary)
-    publish_delta(build_info=info, hf_repo=args.hf_repo, dry_run=args.dry_run)
+    if not args.snapshot_only:
+        info = build_delta(
+            db_path=args.db,
+            date=args.date,
+            build_dir=args.build_dir,
+            snapshot_path=args.snapshot,
+            update_snapshot=not args.dry_run,
+        )
+        summary = {k: v for k, v in info.items()
+                   if k in ("date", "rows", "sqlite_zst_bytes", "parquet_bytes", "data_parquet_bytes")}
+        summary["current_ids"] = len(info["current_ids"])
+        log.info("build summary: %s", summary)
+        publish_delta(build_info=info, hf_repo=args.hf_repo, dry_run=args.dry_run)
+
+    if args.publish_snapshot or args.snapshot_only:
+        snap = build_sqlite_snapshot(
+            db_path=args.db,
+            date=args.date,
+            build_dir=args.build_dir,
+        )
+        snap_summary = {
+            k: v for k, v in snap.items()
+            if k in ("date", "rows", "sqlite_zst_bytes", "sqlite_zst_sha256", "db_generation")
+        }
+        log.info("snapshot build summary: %s", snap_summary)
+        publish_sqlite_snapshot(
+            build_info=snap,
+            hf_repo=args.hf_repo,
+            dry_run=args.dry_run,
+            prune_previous=not args.keep_previous_snapshot,
+        )
 
 
 if __name__ == "__main__":
