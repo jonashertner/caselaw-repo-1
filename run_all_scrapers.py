@@ -548,8 +548,15 @@ def main():
     #   2. failure_rate — the long-tail flaky cantonal scrapers. If
     #      more than 15 % fail, something systemic is wrong and we
     #      should exit 1; below that, log the failures but exit 0.
+    # bstger removed: the Weblaw-backed portal is intermittently unreachable
+    # (4 days in May 2026 with "discovery-phase connection failures") and
+    # those outages don't reflect a real corpus-freshness regression. Real
+    # bstger problems still surface via the failure_rate gate below (any
+    # repeated discovery-phase fail count > 15 % of scrapers will still
+    # exit 1). bpatger kept — it's hosted by the Federal Patent Court
+    # itself, not Weblaw, and its connectivity is reliable.
     CRITICAL_SCRAPERS = {
-        "bger", "bvger", "bstger", "bpatger", "bge",
+        "bger", "bvger", "bpatger", "bge",
     }
     critical_failed = [
         r for r in results

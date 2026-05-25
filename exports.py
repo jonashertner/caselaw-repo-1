@@ -36,6 +36,29 @@ CANONICAL_BASE = "https://mcp.opencaselaw.ch"
 
 # ── Common helpers ─────────────────────────────────────────────────
 
+# XML 1.0 forbids most C0 control characters except \t \n \r. python-docx
+# writes through lxml and raises ValueError("All strings must be XML
+# compatible: Unicode or ASCII, no NULL bytes or control characters") if
+# the body of a decision contains any of these. Scraped Swiss court PDFs
+# occasionally leak NULL bytes / form-feeds from the underlying extractor;
+# we strip them at render-time so the export endpoint never 500s.
+_XML_FORBIDDEN_CTRL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _xml_safe(s):
+    """Return s with XML-incompatible C0 control characters removed."""
+    if not isinstance(s, str):
+        return s
+    return _XML_FORBIDDEN_CTRL.sub("", s)
+
+
+def _xml_safe_decision(decision: dict) -> dict:
+    """Return a shallow copy of `decision` with every string value
+    sanitized of XML-forbidden control characters. Non-string values
+    pass through unchanged."""
+    return {k: _xml_safe(v) for k, v in decision.items()}
+
+
 def _decision_url(decision_id: str) -> str:
     return f"{CANONICAL_BASE}/entscheid/{decision_id}"
 
@@ -222,6 +245,17 @@ def render_docx(decision: dict, paragraphs: list[dict] | None = None) -> tuple[b
     """
     decision_id = decision.get("decision_id", "decision")
     suggested_name = f"{decision_id}.docx"
+
+    # Strip XML-forbidden control characters from every string field so
+    # python-docx (lxml under the hood) doesn't raise ValueError on the
+    # ~rare scraped decision with stray NULL/form-feed bytes from PDF
+    # extraction. See _xml_safe / _xml_safe_decision at top of module.
+    decision = _xml_safe_decision(decision)
+    if paragraphs:
+        paragraphs = [
+            {**p, "text": _xml_safe(p.get("text", ""))}
+            for p in paragraphs
+        ]
 
     try:
         from docx import Document  # type: ignore
