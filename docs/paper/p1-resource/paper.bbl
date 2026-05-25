@@ -1,9 +1,18 @@
-\begin{thebibliography}{11}
+\begin{thebibliography}{13}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Floro et~al.(2026)Floro, Dhorasoo, Pellez, and
+  Holzenberger]{floro2026}
+Avrile Floro, Tamara Dhorasoo, Soline Pellez, and Nils Holzenberger.
+\newblock Where experts disagree, models fail: Detecting implicit legal
+  citations in french court decisions.
+\newblock \emph{arXiv preprint arXiv:2603.22973}, 2026.
+\newblock 1{,}015 annotated passage-article pairs from French court decisions;
+  benchmark for implicit-citation detection.
 
 \bibitem[Geering and Merane(2024)]{geering2024scd}
 Florian Geering and Jakob Merane.
@@ -103,5 +112,17 @@ Ronja Stern, Vishvaksenan Rasiah, Veton Matoshi, Srinanda Br{\"u}gger~Bose,
 \newblock One law, many languages: Benchmarking multilingual legal reasoning
   for judicial support.
 \newblock \emph{arXiv preprint arXiv:2306.09237}, 2024.
+
+\bibitem[Stern et~al.(2025)Stern, Kawamura, St{\"u}rmer, Chalkidis, and
+  Niklaus]{stern2025criticality}
+Ronja Stern, Ken Kawamura, Matthias St{\"u}rmer, Ilias Chalkidis, and Joel
+  Niklaus.
+\newblock From citations to criticality: Predicting legal decision influence in
+  the multilingual swiss jurisprudence.
+\newblock In \emph{Proceedings of the 63rd Annual Meeting of the Association
+  for Computational Linguistics}. Association for Computational Linguistics,
+  2025.
+\newblock arXiv:2410.13460; uses BGE citation patterns (frequency, recency) to
+  label Swiss decisions for case-prioritisation prediction.
 
 \end{thebibliography}
