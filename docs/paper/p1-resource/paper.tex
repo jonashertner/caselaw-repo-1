@@ -25,10 +25,16 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta,fit,backgrounds}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
-% Breathing room around [H]-positioned floats (default 12pt is too tight
-% when the surrounding paragraph ends right before the table).
-\setlength{\intextsep}{16pt plus 2pt minus 2pt}
-\setlength{\textfloatsep}{18pt plus 2pt minus 4pt}
+% Visible breathing room around floats:
+%   \intextsep   — space above/below an [H] float in mid-page
+%   \textfloatsep — space between a top/bottom-placed float and text
+%   \abovecaptionskip — space above the caption (top of float to caption)
+%   \belowcaptionskip — space between caption text and tabular content
+%     (default 0pt makes the caption touch the \toprule; we lift it)
+\setlength{\intextsep}{22pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{22pt plus 2pt minus 4pt}
+\setlength{\abovecaptionskip}{12pt}
+\setlength{\belowcaptionskip}{6pt}
 
 \title{OpenCaseLaw: A Verifiable Multilingual Citation Graph for Swiss Jurisprudence}
 
