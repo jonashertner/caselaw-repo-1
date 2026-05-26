@@ -793,7 +793,12 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
 
     A full compressed SQLite base snapshot can be published independently
     with `OCL_PUBLISH_SQLITE_SNAPSHOT=1`. This is intended for occasional
-    bootstrap snapshots, not necessarily every daily delta run.
+    bootstrap snapshots, not every daily delta run — so even when the env
+    var is set, the snapshot path only fires on the configured weekday
+    (default Sunday). Override the day via
+    `OCL_PUBLISH_SQLITE_SNAPSHOT_WEEKDAY=N` (0=Mon … 6=Sun; -1 = any day,
+    for ad-hoc forced runs). The PR-supplied auto-prune-previous default
+    keeps HF working-tree storage flat at one snapshot (~14 GB).
 
     Requires a seeded snapshot at state/hf_delta_snapshot.json. Seed once
     with `python3 -m search_stack.publish_delta --seed` BEFORE enabling.
@@ -805,7 +810,29 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
     this is on — two pipelines racing will corrupt artifacts/manifest.json.
     """
     publish_delta_enabled = os.environ.get("OCL_PUBLISH_DELTA") == "1"
-    publish_snapshot_enabled = os.environ.get("OCL_PUBLISH_SQLITE_SNAPSHOT") == "1"
+    snapshot_env_set = os.environ.get("OCL_PUBLISH_SQLITE_SNAPSHOT") == "1"
+    # Cadence gate: default to Sunday (weekday()==6) so we honour the PR's
+    # "occasional bootstrap snapshot" intent and HF LFS history doesn't
+    # bloat by ~14 GB/day. Override with OCL_PUBLISH_SQLITE_SNAPSHOT_WEEKDAY:
+    # set to an int 0-6 to pick a different day, or -1 to force any day
+    # (useful for one-off catch-up snapshots).
+    try:
+        snapshot_weekday = int(
+            os.environ.get("OCL_PUBLISH_SQLITE_SNAPSHOT_WEEKDAY", "6")
+        )
+    except ValueError:
+        snapshot_weekday = 6
+    today_weekday = datetime.utcnow().weekday()
+    snapshot_day_matches = (
+        snapshot_weekday == -1 or today_weekday == snapshot_weekday
+    )
+    publish_snapshot_enabled = snapshot_env_set and snapshot_day_matches
+    if snapshot_env_set and not snapshot_day_matches:
+        logger.info(
+            "Step 7: snapshot env set but today (weekday=%d) != "
+            "configured snapshot day (%d) — skipping snapshot, delta only",
+            today_weekday, snapshot_weekday,
+        )
     if not publish_delta_enabled and not publish_snapshot_enabled:
         logger.info(
             "Step 7: Publish artifacts — DISABLED "
