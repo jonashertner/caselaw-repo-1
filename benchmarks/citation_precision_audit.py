@@ -1,14 +1,14 @@
 """Stratified-sample citation resolutions for manual precision audit.
 
-Background. The paper currently reports 93.5% citation-graph "resolution
+Background. The paper currently reports a 92.9% citation-graph "resolution
 rate" — a coverage metric: the share of extracted citation tokens that
 match some decision in our corpus. Per the reviewer critique (Fatal #3),
 this is not a precision metric: a match can be silently *wrong*, especially
 in the pin-cite fallback (30-page heuristic) and in the BGE bare-form
 class where many decisions share docket prefixes.
 
-This script produces a stratified 400-row JSONL ready for manual
-adjudication. Each row carries enough context for an adjudicator to
+This script produces a stratified 400-row JSONL ready for rule-based and
+manual adjudication. Each row carries enough context for an adjudicator to
 decide whether the resolution is correct, wrong, or uncertain, without
 opening a separate browser tab.
 
@@ -25,9 +25,10 @@ Output schema (one JSON object per line):
     source_context_after, target_decision_id, target_regeste_head,
     match_type, confidence_score, adjudication, notes
 
-The `adjudication` and `notes` fields ship empty. Adjudicators fill in
-{correct, wrong, uncertain} per the protocol in
-docs/paper/v3/v1_1_roadmap.md.
+On initial generation, the `adjudication` and `notes` fields ship empty.
+The rule-based adjudicator (`citation_precision_audit_rules.py`) writes
+mechanical verdicts back into those fields; human adjudicators can later
+replace or extend them per the protocol in docs/paper/v3/v1_1_roadmap.md.
 
 Run on the VPS where reference_graph.db and decisions.db live:
 
