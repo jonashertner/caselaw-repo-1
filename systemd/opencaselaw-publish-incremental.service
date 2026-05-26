@@ -2,7 +2,8 @@
 Description=OpenCaseLaw incremental nightly publish (Mon-Sat, shadow→in-place)
 After=network.target opencaselaw-scrape.service
 Wants=network.target
-# Don't double-fire with the legacy full-rebuild publish (Sun 03:30 UTC)
+# Don't double-fire with the legacy full-rebuild publish (currently runs
+# daily 03:30 UTC; in Phase 3 it moves to Sundays only).
 ConditionPathExists=!/tmp/opencaselaw-publish.lock
 
 [Service]
@@ -20,9 +21,15 @@ WorkingDirectory=/opt/caselaw/repo
 # and the legacy full rebuild moves to Sunday only.
 Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
 ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish
-# Generous timeout — the incremental run is targeted at ~10-25 min but
-# allow up to 2h for first-run state-table bootstrap.
-TimeoutStartSec=7200
+# Generous timeout — the incremental run is targeted at ~10-25 min once
+# bootstrapped, but the FIRST run (no prior incremental state) does the
+# equivalent of a full reference_graph + decision_structure rebuild over
+# all ~972k decisions. Sequential bootstrap of both builders observed
+# 2026-05-25: reference_graph 2h 36m (completed) + decision_structure
+# interrupted at the prior 4h cap. 6h cap accommodates back-to-back
+# bootstraps with headroom; subsequent runs only process delta-since-
+# checkpoint and finish in under 30 min.
+TimeoutStartSec=21600
 StandardOutput=append:/opt/caselaw/repo/logs/incremental_nightly.log
 StandardError=append:/opt/caselaw/repo/logs/incremental_nightly.log
 
