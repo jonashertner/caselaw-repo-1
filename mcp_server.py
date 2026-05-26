@@ -17059,9 +17059,31 @@ async def _handle_call_tool_wrapper(name: str, arguments: dict) -> list[TextCont
     return result
 
 
+# Tool-name aliases: legacy / short / non-canonical names some clients
+# still send (observed in 30-day metrics with high error rates). Mapping
+# them to the canonical handler eliminates the 4xx leak while keeping
+# the dispatcher's if/elif chain readable.
+#
+# Only high-confidence renames are listed here. Tools that DO route
+# correctly but happen to have non-zero error rates from arg-validation
+# (case-brief, relevant-erwaegung, leading-cases, citations, regeste,
+# doctrine, commentaries) are NOT aliased — adding them would silently
+# swallow client mistakes that should surface.
+_TOOL_NAME_ALIASES = {
+    "search":     "search_decisions",   # 249 calls / 87% err → legacy short name
+    "courts":     "list_courts",         # 258 calls / 0.4% err → kebab/short form
+    "statistics": "get_statistics",      # 260 calls / 0% err → drop the get_ prefix
+    "attest":     "attest_response",     # 269 calls / 11.5% err → Word add-in short name
+}
+
+
 async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextContent]:
     _tool_start = time.monotonic()
     _tool_error = False
+    # Normalise legacy / short / kebab-case tool names → canonical form
+    # BEFORE recording metrics, so the canonical name accumulates calls
+    # going forward. Legacy names stop appearing in daily_tools entirely.
+    name = _TOOL_NAME_ALIASES.get(name, name)
     # Log tool call with client context for usage analysis
     _call_ip = _ctx_client_ip.get("")
     _call_ua = _ctx_client_ua.get("")
