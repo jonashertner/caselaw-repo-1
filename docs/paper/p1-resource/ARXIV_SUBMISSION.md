@@ -79,6 +79,33 @@ of the LLM judge, and n ≥ 200 for the audit bench.
 - [x] Manuscript now includes citation-flow figure generated from the
   frozen matrix and a reproducibility capsule with the 2026-05-21
   integrity root
+- [x] Git tag `paper-p1-resource-v1.0` advanced to the final-pass commit
+  `3940a54` (Figure-1 edge fix + em-dashes + [H] table positioning); both
+  local and `origin` updated 2026-05-26
+- [x] paper.bbl committed (built via tectonic; 13 entries cover all
+  13 unique \cite{} keys in paper.tex)
+- [x] Zenodo deposit bundle refreshed (paper.pdf SHA-256
+  `cadae8260e2f352f21702c4bf4508567f66e2c11cb806f29286de145f79b1d5f`,
+  matches root paper.pdf and `zenodo_deposit/checksums.sha256`)
 - [ ] **User-side**: Zenodo DOI minted for corpus + integrity snapshot
-- [ ] **User-side**: Git tag `paper-p1-resource-v1.0` at submission commit
-- [ ] **User-side**: TeX Live rebuild to regenerate paper.bbl
+- [ ] **User-side (optional)**: TeX Live rebuild to regenerate paper.bbl
+  for ultra-portable arXiv submission (tectonic-built `.bbl` already
+  works; only redo if arXiv complains)
+
+## Submission handoff — 3 steps
+
+1. **Mint Zenodo DOI** — upload the six files in
+   `docs/paper/p1-resource/zenodo_deposit/` (paper.pdf + 4 integrity
+   files + corpus_graph_stats + precision_proxies) per the recipe in
+   `zenodo_deposit/README.md`. Capture both the version-specific DOI
+   and the concept DOI.
+
+2. **Add DOI to arXiv comments line** (optional, can also leave for v2):
+   append `; archived at https://doi.org/10.5281/zenodo.<N>` to the
+   Comments line in the section above.
+
+3. **Upload to arXiv**: use `paper.pdf` (or zip of source if arXiv
+   prefers — `paper.tex`, `paper.bbl`, `bib/refs.bib`,
+   `tables/*.tex` are all in `docs/paper/p1-resource/`). Set primary
+   `cs.CL`, cross-list `cs.IR cs.DL cs.DB cs.CR`. Paste the title,
+   abstract, and Comments line from this document.
