@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 24 May 2026 10:48:06 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 26 May 2026 11:36:43 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -302,6 +302,34 @@ Gerichtsschrei…</description>
       <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_verwaltungsgericht_200 2026 73</guid>
       <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 1C_205/2026 vom 2026-05-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_205_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+1C_205/2026
+
+Urteil vom 12. Mai 2026
+
+I. öffentlich-rechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Kneubühler, präsidierendes Mitglied,
+
+Gerichtsschreiber Baur.
+
+Verfahrensbeteili…</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_205.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>bs_appellationsgericht ZB.2025.7 vom 2026-05-12</title>
@@ -748,36 +776,6 @@ A.________,
 Beschw…</description>
       <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_47.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_257/2026 vom 2026-05-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_257_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_257/2026
-
-Urteil vom 7. Mai 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Zingg.
-
-Verfahrensbeteiligte
-
-A.________ GmbH in …</description>
-      <pubDate>Thu, 07 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_257.2026</guid>
       <category>bger</category>
     </item>
   </channel>

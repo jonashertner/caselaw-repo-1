@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 24 May 2026 10:44:19 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 26 May 2026 11:32:53 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -829,6 +829,34 @@ Gerichtsschrei…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>Bundesgericht 1C_205/2026 vom 2026-05-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_205_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+1C_205/2026
+
+Urteil vom 12. Mai 2026
+
+I. öffentlich-rechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Kneubühler, präsidierendes Mitglied,
+
+Gerichtsschreiber Baur.
+
+Verfahrensbeteili…</description>
+      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_205.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>bs_appellationsgericht ZB.2025.7 vom 2026-05-12</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_ZB.2025.7</link>
       <description>Appellationsgericht
@@ -879,14 +907,6 @@ A____Klägerin 1…</description>
       <description>Asile et renvoi (procédure accélérée)</description>
       <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1755.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-1891/2021 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1891_2021</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1891.2021</guid>
       <category>bvger</category>
     </item>
   </channel>
