@@ -36,17 +36,27 @@ CANONICAL_BASE = "https://mcp.opencaselaw.ch"
 
 # ── Common helpers ─────────────────────────────────────────────────
 
-# XML 1.0 forbids most C0 control characters except \t \n \r. python-docx
-# writes through lxml and raises ValueError("All strings must be XML
-# compatible: Unicode or ASCII, no NULL bytes or control characters") if
-# the body of a decision contains any of these. Scraped Swiss court PDFs
-# occasionally leak NULL bytes / form-feeds from the underlying extractor;
-# we strip them at render-time so the export endpoint never 500s.
-_XML_FORBIDDEN_CTRL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+# XML 1.0 Char production:
+#   #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+# Anything outside that set makes python-docx (lxml) raise
+#   ValueError: All strings must be XML compatible: Unicode or ASCII,
+#   no NULL bytes or control characters
+# Scraped Swiss court PDFs leak three classes of these:
+#  (1) C0 controls — NULL/form-feed/etc. from PDF extraction
+#  (2) lone surrogates (\ud800-\udfff) — broken UTF-16 reconstruction
+#  (3) Unicode non-characters \ufffe / \uffff — observed in
+#      e.g. vd_gerichte_FA13.055244 (4 \uffff in full_text) tripping
+#      the L3 export-render QC gate on 2026-05-26.
+# We strip all three at render-time so the export endpoint never 500s
+# and the QC gate stays green on a clean corpus.
+_XML_FORBIDDEN_CTRL = re.compile(
+    "[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]"
+)
 
 
 def _xml_safe(s):
-    """Return s with XML-incompatible C0 control characters removed."""
+    """Return s with XML-incompatible characters removed (C0 controls,
+    lone surrogates, and the \\ufffe/\\uffff non-characters)."""
     if not isinstance(s, str):
         return s
     return _XML_FORBIDDEN_CTRL.sub("", s)
