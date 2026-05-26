@@ -85,7 +85,7 @@ of the LLM judge, and n ≥ 200 for the audit bench.
 - [x] paper.bbl committed (built via tectonic; 13 entries cover all
   13 unique \cite{} keys in paper.tex)
 - [x] Zenodo deposit bundle refreshed (paper.pdf SHA-256
-  `127985ecaca948b2301bca9cef4cee617e3291f8abd4c3725cbc63ee6e0d6ec5`,
+  `812fd976ed4f5985694d93285d8169ef5b54d957c5627ee23fd1d57633bc60b7`,
   matches root paper.pdf and `zenodo_deposit/checksums.sha256`)
 - [ ] **User-side**: Zenodo DOI minted for corpus + integrity snapshot
 - [ ] **User-side (optional)**: TeX Live rebuild to regenerate paper.bbl
