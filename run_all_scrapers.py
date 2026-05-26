@@ -240,11 +240,24 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                             pass
                     if " ERROR " in line or "Traceback" in line:
                         error_tail.append(line.strip())
-                    if (
-                        "ConnectTimeoutError" in line
-                        or "ConnectionError" in line
-                        or "Max retries exceeded" in line
+                    # Count *terminal* discovery failures only. urllib3 emits
+                    # "WARNING Retrying (...) after connection broken by
+                    # 'ConnectTimeoutError(...)'" for every transient retry;
+                    # if the request then succeeds (as it does for bstger,
+                    # which has a flaky upstream but recovers within the
+                    # urllib3 retry budget), there is no real failure. Old
+                    # logic counted those retries and falsely flagged bstger
+                    # as failed nightly. Only count lines that signal an
+                    # exhausted retry budget — "Max retries exceeded"
+                    # (urllib3's terminal message) or the scraper's own
+                    # ERROR-level "Search page X failed" / "... search failed".
+                    if "Retrying" not in line and (
+                        "Max retries exceeded" in line
                         or ("Search page" in line and "failed" in line)
+                        or (
+                            " ERROR " in line
+                            and "search failed" in line.lower()
+                        )
                     ):
                         discovery_errors += 1
 
