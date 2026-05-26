@@ -25,6 +25,7 @@ Key differences from base_tribuna.py:
 from __future__ import annotations
 
 import logging
+import os
 import re
 from datetime import date
 from typing import Iterator
@@ -130,8 +131,13 @@ class SZGerichteScraper(BaseScraper):
             "X-GWT-Module-Base": self.GWT_MODULE_BASE,
         }
 
-    # Stop scanning after this many consecutive already-known decisions
-    CONSECUTIVE_KNOWN_LIMIT = 200
+    # Stop scanning after this many consecutive already-known decisions.
+    # Set OCL_SCRAPER_RESCAN_ALL=1 to disable the early-stop and force a
+    # full portal scan — useful for one-off catch-ups after extended
+    # downtime (e.g., tunnel outages on JU/NE that left historical gaps).
+    CONSECUTIVE_KNOWN_LIMIT = (
+        999_999 if os.environ.get("OCL_SCRAPER_RESCAN_ALL") else 200
+    )
 
     def discover_new(self, since_date=None) -> Iterator[dict]:
         if since_date and isinstance(since_date, str):
