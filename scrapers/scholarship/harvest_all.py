@@ -28,6 +28,9 @@ def run_source(src, *, max_records: int | None = None) -> dict:
     if src.kind == "oai_pmh":
         if not src.base_url:
             return {"source": src.key, "skipped": "no base_url"}
+        license_override = None
+        if src.license_authoritative and src.license_default:
+            license_override = (src.license_default, src.license_url_default or "")
         return oai_pmh.harvest(
             src.base_url,
             src.key,
@@ -36,6 +39,7 @@ def run_source(src, *, max_records: int | None = None) -> dict:
             rate_limit=src.rate_limit,
             max_records=max_records,
             subject_filter=list(src.subject_filter) if src.subject_filter else None,
+            license_override=license_override,
         )
     if src.kind == "custom":
         if not src.custom_module:

@@ -32,6 +32,11 @@ class ScholarshipSource:
     # license info. The CC license URL we display in attribution.
     license_default: Optional[str] = None
     license_url_default: Optional[str] = None
+    # If True, treat the source-default license as authoritative and apply
+    # it to every record whose dc:rights doesn't surface a CC license
+    # (e.g. ex-ante.ch which only emits a per-author copyright line via
+    # OAI but publishes its CC-BY-NC-ND-4.0 license on the homepage).
+    license_authoritative: bool = False
     # Free-form attribution text shown alongside every result served from
     # this source — required by CC-BY / CC-BY-SA / CC-BY-NC-SA / "free to
     # read" upstream terms.
@@ -400,6 +405,7 @@ SOURCES: list[ScholarshipSource] = [
         set_spec="exante",
         license_default="CC-BY-NC-ND-4.0",
         license_url_default="https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        license_authoritative=True,  # OAI dc:rights only has copyright line
         attribution=(
             "© respective authors. Published in ex/ante — Zeitschrift der "
             "juristischen Nachwuchsforschung (ex-ante.ch), peer-reviewed OA, "

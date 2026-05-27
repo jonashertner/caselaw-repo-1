@@ -272,6 +272,12 @@ def harvest(
     max_records: int | None = None,
     subject_filter: list[str] | None = None,
     fetch_timeout: int = 180,
+    # If set, applied to records where dc:rights does NOT contain a CC URL
+    # (i.e. the per-record license parse falls back to a copyright string).
+    # Used for sources whose editorial license is documented externally
+    # (e.g. ex-ante.ch publishes CC-BY-NC-ND on the journal homepage but
+    # only emits a per-author copyright line in OAI dc:rights).
+    license_override: tuple[str, str] | None = None,
     user_agent: str = "OpenCaseLaw-scholarship/0.1 (+https://opencaselaw.ch)",
 ) -> dict:
     """Stream OAI-PMH ListRecords into a JSONL file.
@@ -368,6 +374,16 @@ def harvest(
                 if subject_filter and not _record_matches_subject(d, subject_filter):
                     page_filtered += 1
                     continue
+                # Apply source-level license override when dc:rights didn't
+                # surface a CC license. Sources where the editorial license
+                # is documented externally use this to assert the correct
+                # per-record license.
+                if license_override and (
+                    not d.get("license")
+                    or not d["license"].upper().startswith("CC-")
+                ):
+                    d["license"] = license_override[0]
+                    d["license_url"] = license_override[1]
                 fh.write(json.dumps(d, ensure_ascii=False) + "\n")
                 total += 1
                 page_real += 1

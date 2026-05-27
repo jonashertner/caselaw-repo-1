@@ -1976,9 +1976,14 @@ def _sanitize_fts5(query: str) -> str:
     # " : bar", "::". Colons preceded by a word char are kept only if the
     # preceding token was whitelisted above.
     q = re.sub(r"(?<!\w):", " ", q)
-    # Remove other FTS5 problematic characters
+    # Remove other FTS5 problematic characters. The slash "/" is treated
+    # by FTS5's syntax parser like punctuation in some positions
+    # (DOI "10.21257/sg.288" → "syntax error near \"/\""), so we strip
+    # it to spaces. unicode61 tokenizer treats it as a word separator
+    # anyway, so semantic meaning is preserved.
     q = q.replace("(", " ").replace(")", " ").replace("{", " ").replace("}", " ")
     q = q.replace("[", " ").replace("]", " ").replace("^", " ").replace("~", " ")
+    q = q.replace("/", " ").replace("\\", " ")
     # Collapse multiple spaces
     q = re.sub(r'\s+', ' ', q).strip()
     if not q:
