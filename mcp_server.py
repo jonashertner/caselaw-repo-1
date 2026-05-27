@@ -19660,67 +19660,69 @@ setInterval(load, 30000);
                     (ref_type, year, page),
                 ).fetchone()
                 db.close()
-                if row and row[0]:
-                    # Validate the constructed URL is a real first-page
-                    # publication in Fedlex's graph. Many footnote citations
-                    # like "BBl 2019 6697" point INSIDE a multi-page
-                    # publication; Fedlex has no direct URL for inner
-                    # pages and its SPA serves a page-not-found.
-                    if _check_fedlex_uri_exists(ref_type, year, page):
-                        return {"eli_uri": row[0], "url": row[0]}
-                    # Inner-page citation. Try to resolve to the
-                    # CONTAINING document's first-page via the
-                    # fedlex_first_pages index (built by
-                    # scripts/build_fedlex_first_pages_index.py). If the
-                    # index is present and has data for this year, we
-                    # find max(first_page) <= cited_page in the same
-                    # family.
-                    family = "fga" if ref_type in ("BBl", "FF") else "oc"
+                if row:
+                    # The fedlex_url stored in amendment_refs is a
+                    # CONSTRUCTED URL of the form eli/fga/{year}/{page}
+                    # which (mis)treats the BBl page number as a Fedlex
+                    # document-index — they are NOT the same scheme.
+                    # The historicalId-based fedlex_first_pages.db is
+                    # the source of truth: it maps the real
+                    # (ref_type, year, BBl_page) → Fedlex Work URI.
                     ffp_path = os.path.join(_dir, "fedlex_first_pages.db")
-                    container = None
-                    if os.path.exists(ffp_path):
-                        try:
-                            ffp = sqlite3.connect(
-                                f"file:{ffp_path}?mode=ro&immutable=1",
-                                uri=True, timeout=1,
-                            )
-                            r2 = ffp.execute(
-                                "SELECT MAX(page) FROM fedlex_first_pages "
-                                "WHERE family=? AND year=? AND page<=?",
-                                (family, year, page),
-                            ).fetchone()
-                            ffp.close()
-                            if r2 and r2[0]:
-                                container = int(r2[0])
-                        except sqlite3.Error:
-                            container = None
-                    if container is not None and container != page:
-                        container_url = (
-                            f"https://www.fedlex.admin.ch/eli/"
-                            f"{family}/{year}/{container}"
+                    if not os.path.exists(ffp_path):
+                        # Fall back to legacy behavior if the index
+                        # isn't built yet (graceful degradation).
+                        return {"eli_uri": None}
+                    try:
+                        ffp = sqlite3.connect(
+                            f"file:{ffp_path}?mode=ro&immutable=1",
+                            uri=True, timeout=1,
                         )
+                        # Exact match first: is this BBl page itself the
+                        # start of a Fedlex publication?
+                        exact = ffp.execute(
+                            "SELECT uri FROM fedlex_first_pages "
+                            "WHERE ref_type=? AND year=? AND page=?",
+                            (ref_type, year, page),
+                        ).fetchone()
+                        if exact and exact[0]:
+                            ffp.close()
+                            return {"eli_uri": exact[0], "url": exact[0]}
+                        # No exact match — find the publication that
+                        # contains this page: largest first_page ≤ cited.
+                        contains = ffp.execute(
+                            "SELECT page, uri FROM fedlex_first_pages "
+                            "WHERE ref_type=? AND year=? AND page<=? "
+                            "ORDER BY page DESC LIMIT 1",
+                            (ref_type, year, page),
+                        ).fetchone()
+                        ffp.close()
+                    except sqlite3.Error:
+                        contains = None
+                    if contains and contains[1]:
+                        container_first_page, container_url = contains
                         return {
                             "eli_uri": container_url,
                             "url": container_url,
                             "fedlex_status": "containing_document",
                             "cited_page": page,
-                            "container_first_page": container,
+                            "container_first_page": container_first_page,
                             "note": (
                                 f"{ref_type} {year} {page} is an inner-page "
                                 f"citation; the linked URL points to the "
                                 f"containing publication, which starts at "
-                                f"{ref_type} {year} {container}."
+                                f"{ref_type} {year} {container_first_page}."
                             ),
                         }
                     return {
                         "eli_uri": None,
-                        "fedlex_status": "inner_page_no_direct_url",
+                        "fedlex_status": "no_matching_publication",
                         "note": (
-                            f"{ref_type} {year} {page} is an inner-page citation. "
-                            f"Fedlex has no direct URL for individual pages within "
-                            f"a publication; only first-page works are addressable. "
-                            f"Search at https://www.fedlex.admin.ch/de/search?text="
-                            f"{ref_type}+{year}+{page} to find the containing document."
+                            f"No Fedlex publication found whose historicalId "
+                            f"page range covers {ref_type} {year} {page}. The "
+                            f"reference may pre-date Fedlex's indexed coverage "
+                            f"(starts ~1999). Search at https://www.fedlex."
+                            f"admin.ch/de/search?text={ref_type}+{year}+{page}."
                         ),
                     }
                 return {"eli_uri": None}

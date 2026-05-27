@@ -45,12 +45,20 @@ SPARQL_ENDPOINT = "https://fedlex.data.admin.ch/sparqlendpoint"
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS fedlex_first_pages (
-    family TEXT NOT NULL,        -- 'fga' (BBl/FF) or 'oc' (AS/RO/RU)
+    -- ref_type as it appears in the Fedlex historicalId predicate
+    -- (BBl, FF, AS, RO, RU). NOT the URI family code.
+    ref_type TEXT NOT NULL,
     year INTEGER NOT NULL,
+    -- The actual BBl/AS/etc. page number where this publication
+    -- starts, as recorded in historicalId. Multiple Fedlex works
+    -- (one per language) may share the same page; the URI is the
+    -- abstract Work, which serves as base for the language-specific
+    -- expressions Fedlex's web UI navigates to.
     page INTEGER NOT NULL,
-    PRIMARY KEY (family, year, page)
+    uri TEXT NOT NULL,
+    PRIMARY KEY (ref_type, year, page)
 );
-CREATE INDEX IF NOT EXISTS idx_ffp_lookup ON fedlex_first_pages(family, year, page);
+CREATE INDEX IF NOT EXISTS idx_ffp_lookup ON fedlex_first_pages(ref_type, year, page);
 
 CREATE TABLE IF NOT EXISTS meta (
     key TEXT PRIMARY KEY,
@@ -58,16 +66,29 @@ CREATE TABLE IF NOT EXISTS meta (
 );
 """
 
-_PAGE_RE = re.compile(r"/eli/(?:fga|oc)/\d+/(\d+)$")
+# Parse Fedlex historicalId values like "BBl 2019 6645", "FF 2014 3988",
+# "AS 2009 3067". The space-separated 3-part form is universal.
+_HISTORICAL_ID_RE = re.compile(
+    r"^\s*(BBl|FF|AS|RO|RU)\s+(\d{4})\s+(\d+)\s*$"
+)
 
 
-def fetch_first_pages(family: str, year: int, timeout: int = 30) -> list[int]:
-    """SPARQL-enumerate every first-page work in Fedlex for (family, year)."""
+def fetch_first_pages(
+    family: str, year: int, timeout: int = 30,
+) -> list[tuple[str, int, int, str]]:
+    """SPARQL-enumerate every Fedlex work in (family, year) AND parse its
+    historicalId to recover the actual BBl/AS page number.
+
+    Returns list of (ref_type, year, page, uri) tuples. Multiple works
+    may share the same page across languages — we keep just one URI
+    per (ref_type, year, page) at the SQL INSERT OR IGNORE level.
+    """
     q = f"""
     PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
-    SELECT DISTINCT ?work WHERE {{
+    SELECT DISTINCT ?work ?historicalId WHERE {{
       ?work jolux:legalResourceFamilyType
             <https://fedlex.data.admin.ch/vocabulary/resource-family/{family}> .
+      ?work jolux:historicalId ?historicalId .
       FILTER(STRSTARTS(STR(?work),
              "https://fedlex.data.admin.ch/eli/{family}/{year}/"))
     }}
@@ -77,18 +98,24 @@ def fetch_first_pages(family: str, year: int, timeout: int = 30) -> list[int]:
         data=urllib.parse.urlencode({"query": q}).encode(),
         headers={"Accept": "application/sparql-results+json"},
     )
-    pages: list[int] = []
+    out: list[tuple[str, int, int, str]] = []
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             data = _json.loads(r.read())
         for b in data.get("results", {}).get("bindings", []):
             uri = b.get("work", {}).get("value", "")
-            m = _PAGE_RE.search(uri)
-            if m:
-                pages.append(int(m.group(1)))
+            hist = b.get("historicalId", {}).get("value", "")
+            m = _HISTORICAL_ID_RE.match(hist)
+            if not m:
+                continue
+            rt, yr_str, pg_str = m.groups()
+            try:
+                out.append((rt, int(yr_str), int(pg_str), uri))
+            except ValueError:
+                continue
     except Exception as e:
         log.warning("SPARQL failed for %s/%d: %s", family, year, e)
-    return pages
+    return out
 
 
 def build_index(
@@ -123,18 +150,18 @@ def build_index(
     summary = {"fga_total": 0, "oc_total": 0, "years_with_data": 0}
     for family in ("fga", "oc"):
         for year in range(year_min, year_max + 1):
-            pages = fetch_first_pages(family, year)
-            if not pages:
+            rows = fetch_first_pages(family, year)
+            if not rows:
                 continue
             summary["years_with_data"] += 1
             with conn:
                 conn.executemany(
-                    "INSERT OR IGNORE INTO fedlex_first_pages(family, year, page) "
-                    "VALUES (?, ?, ?)",
-                    [(family, year, p) for p in pages],
+                    "INSERT OR IGNORE INTO fedlex_first_pages"
+                    "(ref_type, year, page, uri) VALUES (?, ?, ?, ?)",
+                    rows,
                 )
-            summary[f"{family}_total"] += len(pages)
-            log.info("%s %d: %d first-pages", family, year, len(pages))
+            summary[f"{family}_total"] += len(rows)
+            log.info("%s %d: %d historicalId rows", family, year, len(rows))
             time.sleep(rate_limit)
 
     conn.execute(
