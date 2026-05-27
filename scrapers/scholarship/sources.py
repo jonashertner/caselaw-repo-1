@@ -362,12 +362,12 @@ SOURCES: list[ScholarshipSource] = [
         kind="oai_pmh",
         base_url="https://www.cognitio-zeitschrift.ch/index.php/index/oai",
         set_spec="cognitio",
-        license_default="CC-BY-SA-4.0",
-        license_url_default="https://creativecommons.org/licenses/by-sa/4.0/",
+        license_default="CC-BY-NC-SA-4.0",
+        license_url_default="https://creativecommons.org/licenses/by-nc-sa/4.0/",
         attribution=(
             "© respective authors. Published in cognitio — Studentisches "
             "Forum für Recht und Gesellschaft (cognitio-zeitschrift.ch), "
-            "CC-BY-SA-4.0."
+            "CC-BY-NC-SA-4.0 (non-commercial, share-alike)."
         ),
         homepage="https://www.cognitio-zeitschrift.ch/",
         notes="Swiss student law journal, hosted on SOAP2 (Shared Open Access "

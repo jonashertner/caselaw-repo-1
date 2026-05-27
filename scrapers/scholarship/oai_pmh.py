@@ -73,28 +73,36 @@ def _normalize_lang(raw: str | None) -> str | None:
 def _normalize_license(raw_list: list[str]) -> tuple[str | None, str | None]:
     """Return (license-code, license-url) from a list of dc:rights values.
 
-    Recognizes the standard CC license URLs; falls back to free-form text.
+    Strategy: ALL dc:rights values are scanned FIRST for a CC license URL.
+    If one is found anywhere in the list, it wins regardless of position.
+    Only when no CC URL is present do we fall back to the first non-empty
+    free-form value (typically a copyright statement).
+
+    Why: many OJS sources (ex-ante.ch, OpenLegalCommentary, …) emit two
+    dc:rights — the copyright statement first, the CC URL second. Earlier
+    logic took the first value it saw and stored "Copyright (c) 2024 …"
+    as the license; we'd lose the CC code. Now CC wins.
     """
-    code = None
-    url = None
-    for r in raw_list:
-        r = (r or "").strip()
-        if not r:
-            continue
-        m = re.search(
-            r"creativecommons\.org/licenses/([a-z\-]+)/(\d+\.\d+)", r, re.I,
-        )
+    cc_re = re.compile(
+        r"creativecommons\.org/licenses/([a-z\-]+)/(\d+\.\d+)", re.I,
+    )
+    cleaned = [(r or "").strip() for r in raw_list if (r or "").strip()]
+    # Pass 1: prefer any CC URL match
+    for r in cleaned:
+        m = cc_re.search(r)
         if m:
             kind = m.group(1).upper()
             ver = m.group(2)
             code = f"CC-{kind}-{ver}"
-            url = r if _HTTP_RE.match(r) else f"https://{r.lstrip('/')}" if "creativecommons" in r else None
-            break
-        if _HTTP_RE.match(r) and "creativecommons" in r:
-            url = r
-        elif code is None:
-            code = r[:120]
-    return code, url
+            url = r if _HTTP_RE.match(r) else None
+            if not url:
+                # Reconstruct canonical CC URL when only the path is given
+                url = f"https://creativecommons.org/licenses/{m.group(1).lower()}/{ver}/"
+            return code, url
+    # Pass 2: fall back to first non-empty free-form value
+    for r in cleaned:
+        return r[:120], None
+    return None, None
 
 
 def _split_identifiers(ids: list[str]) -> dict:

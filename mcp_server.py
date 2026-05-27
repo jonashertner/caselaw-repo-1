@@ -1940,12 +1940,14 @@ def _sanitize_fts5(query: str) -> str:
     q = query.strip()
     # Replace apostrophes (French: l'obligation)
     q = q.replace("\u2019", " ").replace("'", " ")
-    # Strip dots not followed by a word character. This covers "Art." + space
-    # (FTS5 query parser rejects bare trailing punctuation), end-of-sentence
-    # dots, and ellipses, while preserving in-token dots like "10.2" or
-    # "Art.172" that have word chars on both sides.
+    # Replace ALL dots with spaces — FTS5 query parser rejects bare
+    # punctuation, AND treats in-token dots as syntax errors in some
+    # contexts (e.g. "10.21257/sg.288" → "fts5: syntax error near \".\""
+    # reported 2026-05-27). Since the unicode61 tokenizer treats dots as
+    # token separators anyway, replacing them preserves semantic meaning:
+    # "Art.172" indexes as ["art", "172"] either way.
     import re
-    q = re.sub(r'\.(?!\w)', ' ', q)
+    q = q.replace('.', ' ')
     # Strip double quotes — LLM-generated queries use them sporadically and
     # "" (empty phrase) triggers FTS5 "syntax error near \"\"". Rare legit
     # use of "phrase" search is outweighed by reliability gain here.
