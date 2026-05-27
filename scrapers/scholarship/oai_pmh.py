@@ -256,6 +256,7 @@ def harvest(
     rate_limit: float = 1.0,
     max_records: int | None = None,
     subject_filter: list[str] | None = None,
+    fetch_timeout: int = 180,
     user_agent: str = "OpenCaseLaw-scholarship/0.1 (+https://opencaselaw.ch)",
 ) -> dict:
     """Stream OAI-PMH ListRecords into a JSONL file.
@@ -295,7 +296,7 @@ def harvest(
                 req = urllib.request.Request(
                     url, headers={"User-Agent": user_agent, "Accept": "application/xml"},
                 )
-                with urllib.request.urlopen(req, timeout=60) as r:
+                with urllib.request.urlopen(req, timeout=fetch_timeout) as r:
                     raw = r.read()
             except Exception as e:
                 log.error("OAI fetch failed (%s, page %d): %s", source, pages, e)
