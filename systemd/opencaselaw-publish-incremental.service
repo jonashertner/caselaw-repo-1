@@ -35,7 +35,7 @@ StandardError=append:/opt/caselaw/repo/logs/incremental_nightly.log
 
 # Hardening — same envelope as the legacy publish service.
 ProtectSystem=strict
-ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs /mnt /tmp
+ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs /opt/caselaw/repo/docs /opt/caselaw/repo/state /mnt /tmp
 PrivateTmp=false
 NoNewPrivileges=true
 
