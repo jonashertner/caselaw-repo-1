@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 26 May 2026 11:36:44 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 27 May 2026 10:51:55 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -25,6 +25,14 @@ Richter-…</description>
       <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_ZR2 2024 105</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-3236/2026 vom 2026-05-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3236_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Fri, 15 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3236.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht F-3205/2026 vom 2026-05-11</title>
@@ -991,37 +999,6 @@ Moses, …</description>
       <pubDate>Mon, 13 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SR1 2023 36</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_787/2025 vom 2026-04-10</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_787_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_787/2025
-
-Sentenza del 10 aprile 2026
-
-II Corte di diritto penale
-
-Composizione
-
-Giudici federali Abrecht, Presidente,
-
-Koch, Hofmann,
-
-Cancelliere Caprara.
-
-Partecipanti al pr…</description>
-      <pubDate>Fri, 10 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_787.2025</guid>
-      <category>bger</category>
-      <category>Procedura penale</category>
     </item>
   </channel>
 </rss>
