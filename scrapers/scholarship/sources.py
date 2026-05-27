@@ -174,6 +174,55 @@ SOURCES: list[ScholarshipSource] = [
         active=True,
     ),
 
+    # ── Custom-scraper OA Swiss law journals (Tier 2) ────────────────────
+    ScholarshipSource(
+        key="medialex",
+        name="medialex — Zeitschrift für Medienrecht",
+        kind="custom",
+        custom_module="scrapers.scholarship.medialex",
+        license_default="CC-BY-SA-4.0",
+        license_url_default="https://creativecommons.org/licenses/by-sa/4.0/",
+        attribution=(
+            "© respective authors. Published in medialex — Zeitschrift "
+            "für Medienrecht (medialex.ch), CC-BY-SA-4.0."
+        ),
+        homepage="https://medialex.ch/",
+        notes="WordPress site. REST API at /wp-json/wp/v2/posts. ~268 posts.",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="eizpublishing",
+        name="EuZ — Zeitschrift für Europarecht (eizpublishing.ch)",
+        kind="custom",
+        custom_module="scrapers.scholarship.eizpublishing",
+        license_default="CC-BY-NC-ND-4.0",
+        license_url_default="https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        attribution=(
+            "© respective authors. Published by EIZ Publishing "
+            "(eizpublishing.ch); EuZ — Zeitschrift für Europarecht. "
+            "CC-BY-NC-ND-4.0."
+        ),
+        homepage="https://eizpublishing.ch/",
+        notes="WordPress site with custom post types 'publikationen' (161) "
+              "+ 'artikel' (87). Standard /posts is empty.",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="anci_ch",
+        name="Ancilla Iuris — Lagen des Rechts",
+        kind="custom",
+        custom_module="scrapers.scholarship.anci_ch",
+        license_default="CC-BY-4.0",
+        license_url_default="https://creativecommons.org/licenses/by/4.0/",
+        attribution=(
+            "© respective authors. Published in Ancilla Iuris — Lagen des "
+            "Rechts (anci.ch), CC-BY-4.0, OA legal-theory journal since 2006."
+        ),
+        homepage="https://www.anci.ch/",
+        notes="Static PDFs + per-article landing pages. ~100 articles total.",
+        active=True,
+    ),
+
     # ── Authored OA reference works ─────────────────────────────────────
     ScholarshipSource(
         key="thegoodboard",
