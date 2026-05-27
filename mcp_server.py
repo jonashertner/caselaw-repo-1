@@ -341,6 +341,7 @@ MATERIALIEN_DB_PATH = Path(os.environ.get("SWISS_CASELAW_MATERIALIEN_DB", str(DA
 ANWALTSRECHT_TAGS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_ANWALTSRECHT_DB", str(DATA_DIR / "anwaltsrecht_tags.db")))
 DECISION_STRUCTURE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STRUCTURE_DB", str(DATA_DIR / "decision_structure.db")))
 PRACTICE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_PRACTICE_DB", str(DATA_DIR / "practice.db")))
+LEGAL_SCHOLARSHIP_DB_PATH = Path(os.environ.get("SWISS_CASELAW_SCHOLARSHIP_DB", str(DATA_DIR / "legal_scholarship.db")))
 GRAPH_SIGNALS_ENABLED = os.environ.get("SWISS_CASELAW_GRAPH_SIGNALS", "1").lower() not in {
     "0",
     "false",
@@ -13055,6 +13056,337 @@ def search_commentaries(
         conn.close()
 
 
+# ── Legal scholarship (OA Swiss law publications) ─────────────────────
+
+_scholarship_warned = False
+
+
+def _get_scholarship_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the legal_scholarship DB, or None.
+
+    Backed by output/legal_scholarship.db — unified OA Swiss legal publications
+    index (journal articles, dissertations, books, commentaries) harvested
+    from OAI-PMH endpoints and re-exported from ok_commentaries.db.
+    """
+    global _scholarship_warned
+    if not LEGAL_SCHOLARSHIP_DB_PATH.exists():
+        if not _scholarship_warned:
+            logger.info(
+                "Legal scholarship DB not found at %s — scholarship tools disabled",
+                LEGAL_SCHOLARSHIP_DB_PATH,
+            )
+            _scholarship_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(
+            f"file:{LEGAL_SCHOLARSHIP_DB_PATH}?immutable=1",
+            uri=True, timeout=0.5,
+        )
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open legal scholarship DB: %s", e)
+        return None
+
+
+def search_scholarship(
+    query: str,
+    *,
+    source: str | None = None,
+    pub_type: str | None = None,
+    language: str | None = None,
+    year_min: int | None = None,
+    year_max: int | None = None,
+    limit: int = 10,
+) -> dict:
+    """Full-text search across Swiss OA legal scholarship.
+
+    Covers: peer-reviewed OA journal articles (sui-generis et al.), OA legal
+    commentaries (OnlineKommentar, OpenLegalCommentary), dissertations and
+    theses from Swiss university IRs, federal legal-policy reports.
+
+    Filters:
+      source       — 'sui_generis', 'onlinekommentar', 'openlegalcommentary',
+                     'zora_law', 'boris_law', …
+      pub_type     — 'article', 'commentary', 'dissertation', 'book', 'chapter',
+                     'working_paper', 'report', 'master_thesis', …
+      language     — 'de', 'fr', 'it', 'en', 'rm'
+      year_min / year_max — inclusive bounds on publication year
+    """
+    conn = _get_scholarship_conn()
+    if conn is None:
+        return {"error": "Legal scholarship database not available."}
+    limit = min(max(1, limit), 50)
+    try:
+        query = _sanitize_fts5(query or "")
+        if not query:
+            return {"query": query, "count": 0, "results": []}
+        conditions = ["f.publications_fts MATCH ?"]
+        params: list = [query]
+        if source:
+            conditions.append("p.source = ?")
+            params.append(source)
+        if pub_type:
+            conditions.append("p.pub_type = ?")
+            params.append(pub_type)
+        if language:
+            conditions.append("p.language = ?")
+            params.append(language)
+        if year_min is not None:
+            conditions.append("p.year >= ?")
+            params.append(int(year_min))
+        if year_max is not None:
+            conditions.append("p.year <= ?")
+            params.append(int(year_max))
+        where = " AND ".join(conditions)
+        params.append(limit)
+        rows = conn.execute(
+            f"""SELECT p.pub_id, p.source, p.pub_type, p.title, p.authors,
+                       p.language, p.year, p.journal, p.doi, p.url,
+                       p.pdf_url, p.license,
+                       snippet(publications_fts, 2, '>>>', '<<<', '...', 30) AS snippet
+                FROM publications_fts f
+                JOIN publications p ON p.id = f.rowid
+                WHERE {where}
+                ORDER BY f.rank
+                LIMIT ?""",
+            params,
+        ).fetchall()
+        results = []
+        for r in rows:
+            results.append({
+                "pub_id": r["pub_id"],
+                "source": r["source"],
+                "pub_type": r["pub_type"],
+                "title": r["title"],
+                "authors": r["authors"],
+                "language": r["language"],
+                "year": r["year"],
+                "journal": r["journal"],
+                "doi": r["doi"],
+                "url": r["url"],
+                "pdf_url": r["pdf_url"],
+                "license": r["license"],
+                "snippet": r["snippet"],
+            })
+        return {"query": query, "count": len(results), "results": results}
+    except sqlite3.Error as e:
+        logger.error("scholarship search error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def get_scholarship(pub_id: str) -> dict:
+    """Fetch a single OA legal publication by its pub_id."""
+    conn = _get_scholarship_conn()
+    if conn is None:
+        return {"error": "Legal scholarship database not available."}
+    try:
+        r = conn.execute(
+            """SELECT pub_id, source, pub_type, title, authors, abstract,
+                      language, publication_date, year, journal, volume, issue,
+                      pages, publisher, institution, doi, isbn, issn, url,
+                      pdf_url, full_text, has_full_text, license, license_url,
+                      keywords, subjects, ingested_at
+               FROM publications WHERE pub_id = ?""",
+            (pub_id,),
+        ).fetchone()
+        if not r:
+            return {"error": f"Publication not found: {pub_id}"}
+        d = dict(r)
+        # Attach statute and decision cross-citations.
+        d["cites_statutes"] = [
+            {"sr_number": s["sr_number"], "article": s["article"] or None}
+            for s in conn.execute(
+                """SELECT sr_number, article FROM pub_citations_statutes
+                   WHERE pub_id = (SELECT id FROM publications WHERE pub_id=?)""",
+                (pub_id,),
+            ).fetchall()
+        ]
+        d["cites_decisions"] = [
+            s["decision_id"] for s in conn.execute(
+                """SELECT decision_id FROM pub_citations_decisions
+                   WHERE pub_id = (SELECT id FROM publications WHERE pub_id=?)""",
+                (pub_id,),
+            ).fetchall()
+        ]
+        return d
+    except sqlite3.Error as e:
+        logger.error("scholarship get error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def find_scholarship_citing_statute(
+    sr_number: str, article: str | None = None, limit: int = 20,
+) -> dict:
+    """Find OA legal scholarship that cites a given statute article.
+
+    Currently sourced from re-exported commentaries (OnlineKommentar /
+    OpenLegalCommentary) which are intrinsically article-anchored. Will
+    grow as the citation-extraction layer is applied to journal full-texts.
+    """
+    conn = _get_scholarship_conn()
+    if conn is None:
+        return {"error": "Legal scholarship database not available."}
+    limit = min(max(1, limit), 100)
+    try:
+        if article:
+            rows = conn.execute(
+                """SELECT p.pub_id, p.source, p.pub_type, p.title, p.authors,
+                          p.language, p.year, p.url, pcs.article
+                   FROM pub_citations_statutes pcs
+                   JOIN publications p ON p.id = pcs.pub_id
+                   WHERE pcs.sr_number = ? AND pcs.article = ?
+                   ORDER BY p.year DESC NULLS LAST
+                   LIMIT ?""",
+                (sr_number, str(article), limit),
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                """SELECT p.pub_id, p.source, p.pub_type, p.title, p.authors,
+                          p.language, p.year, p.url, pcs.article
+                   FROM pub_citations_statutes pcs
+                   JOIN publications p ON p.id = pcs.pub_id
+                   WHERE pcs.sr_number = ?
+                   ORDER BY p.year DESC NULLS LAST
+                   LIMIT ?""",
+                (sr_number, limit),
+            ).fetchall()
+        return {
+            "sr_number": sr_number,
+            "article": article,
+            "count": len(rows),
+            "results": [dict(r) for r in rows],
+        }
+    except sqlite3.Error as e:
+        logger.error("find_scholarship_citing_statute error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def list_scholarship_sources() -> dict:
+    """List the OA scholarship sources indexed, with counts per source/type."""
+    conn = _get_scholarship_conn()
+    if conn is None:
+        return {"error": "Legal scholarship database not available."}
+    try:
+        total = conn.execute("SELECT COUNT(*) FROM publications").fetchone()[0]
+        by_source = [
+            {"source": r["source"], "count": r["n"]}
+            for r in conn.execute(
+                "SELECT source, COUNT(*) AS n FROM publications "
+                "GROUP BY source ORDER BY n DESC"
+            ).fetchall()
+        ]
+        by_type = [
+            {"pub_type": r["pub_type"], "count": r["n"]}
+            for r in conn.execute(
+                "SELECT pub_type, COUNT(*) AS n FROM publications "
+                "GROUP BY pub_type ORDER BY n DESC"
+            ).fetchall()
+        ]
+        by_language = [
+            {"language": r["language"], "count": r["n"]}
+            for r in conn.execute(
+                "SELECT language, COUNT(*) AS n FROM publications "
+                "GROUP BY language ORDER BY n DESC"
+            ).fetchall()
+        ]
+        return {
+            "total_publications": total,
+            "by_source": by_source,
+            "by_type": by_type,
+            "by_language": by_language,
+        }
+    except sqlite3.Error as e:
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
+def _format_search_scholarship_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+    rs = result.get("results", [])
+    text = f"# Scholarship Search: \"{result['query']}\"\n"
+    text += f"Found {result['count']} results.\n\n"
+    for i, r in enumerate(rs, 1):
+        text += f"**{i}.** [{r['source']}/{r.get('year') or '?'}] {r['title']}\n"
+        if r.get("authors"):
+            text += f"   *{r['authors']}*\n"
+        if r.get("snippet"):
+            text += f"   …{r['snippet']}…\n"
+        if r.get("url"):
+            text += f"   {r['url']}\n"
+        text += "\n"
+    return text
+
+
+def _format_get_scholarship_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+    text = f"# {result['title']}\n"
+    if result.get("authors"):
+        text += f"**Authors:** {result['authors']}\n"
+    text += f"**Source:** {result['source']} | **Type:** {result['pub_type']}\n"
+    if result.get("year"):
+        text += f"**Year:** {result['year']}\n"
+    if result.get("journal"):
+        text += f"**Journal:** {result['journal']}\n"
+    if result.get("doi"):
+        text += f"**DOI:** {result['doi']}\n"
+    if result.get("url"):
+        text += f"**URL:** {result['url']}\n"
+    if result.get("license"):
+        text += f"**License:** {result['license']}\n"
+    text += "\n"
+    if result.get("abstract"):
+        text += f"## Abstract\n\n{result['abstract']}\n\n"
+    if result.get("full_text"):
+        text += f"## Full text\n\n{result['full_text']}\n"
+    if result.get("cites_statutes"):
+        text += "\n## Cites statutes\n"
+        for s in result["cites_statutes"][:50]:
+            text += f"- SR {s['sr_number']} Art. {s['article'] or '?'}\n"
+    return text
+
+
+def _format_find_scholarship_citing_statute_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+    art = result.get("article") or "(any article)"
+    text = f"# Scholarship citing SR {result['sr_number']} Art. {art}\n"
+    text += f"Found {result['count']} result(s).\n\n"
+    for r in result.get("results", []):
+        text += f"- [{r['source']}/{r.get('year') or '?'}] **{r['title']}**\n"
+        if r.get("authors"):
+            text += f"  *{r['authors']}*\n"
+        if r.get("url"):
+            text += f"  {r['url']}\n"
+    return text
+
+
+def _format_list_scholarship_sources_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+    text = f"# OA Swiss legal scholarship — corpus overview\n\n"
+    text += f"**Total publications: {result['total_publications']:,}**\n\n"
+    text += "## By source\n"
+    for r in result["by_source"]:
+        text += f"- **{r['source']}**: {r['count']:,}\n"
+    text += "\n## By type\n"
+    for r in result["by_type"]:
+        text += f"- {r['pub_type']}: {r['count']:,}\n"
+    text += "\n## By language\n"
+    for r in result["by_language"]:
+        text += f"- {r['language'] or '(none)'}: {r['count']:,}\n"
+    return text
+
+
 def _format_get_commentary_response(result: dict) -> str:
     """Format get_commentary result as markdown."""
     if result.get("error"):
@@ -16703,6 +17035,99 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            name="search_scholarship",
+            description=(
+                "Full-text search across Swiss open-access legal scholarship: "
+                "OA journal articles (sui generis et al.), OA legal commentaries "
+                "(OnlineKommentar, OpenLegalCommentary), dissertations and theses "
+                "from Swiss university repositories, and federal legal-policy "
+                "reports. Returns ranked results with snippets, authors, DOI, "
+                "and direct links. Filters by source, publication type, language, "
+                "and year range."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives).",
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Filter by source slug (e.g. 'sui_generis', 'onlinekommentar', 'openlegalcommentary', 'zora_law').",
+                    },
+                    "pub_type": {
+                        "type": "string",
+                        "description": "Filter by type: 'article', 'commentary', 'dissertation', 'book', 'chapter', 'master_thesis', 'working_paper', 'report'.",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": "Filter by language (de/fr/it/en). Omit to search across all.",
+                    },
+                    "year_min": {"type": "integer", "description": "Earliest publication year."},
+                    "year_max": {"type": "integer", "description": "Latest publication year."},
+                    "limit": {"type": "integer", "description": "Maximum results (1-50, default 10).", "default": 10},
+                },
+                "required": ["query"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="get_scholarship",
+            description=(
+                "Fetch a single OA legal publication (article, dissertation, "
+                "commentary, etc.) by its pub_id. Returns full metadata + "
+                "abstract + full text if available + cross-citations to "
+                "statutes and decisions."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "pub_id": {
+                        "type": "string",
+                        "description": "Canonical pub_id, e.g. 'sui_generis:article-1382' or 'onlinekommentar:<uuid>'.",
+                    },
+                },
+                "required": ["pub_id"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="find_scholarship_citing_statute",
+            description=(
+                "Find OA legal scholarship that cites a given Swiss statute article. "
+                "Sourced from re-exported article-anchored commentaries (OnlineKommentar / "
+                "OpenLegalCommentary); will expand as citation extraction is applied to "
+                "journal full-texts."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sr_number": {
+                        "type": "string",
+                        "description": "Swiss SR number (e.g. '220' for OR, '210' for ZGB).",
+                    },
+                    "article": {
+                        "type": "string",
+                        "description": "Article number (e.g. '41'). Omit for all articles of the law.",
+                    },
+                    "limit": {"type": "integer", "description": "Maximum results (1-100, default 20).", "default": 20},
+                },
+                "required": ["sr_number"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="list_scholarship_sources",
+            description=(
+                "List the open-access legal scholarship sources currently "
+                "indexed, with publication counts by source, type, and language. "
+                "Use this to discover what corpora are available before searching."
+            ),
+            inputSchema={"type": "object", "properties": {}},
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="get_materialien",
             description=(
                 "Look up Materialien for a Swiss federal law article: Botschaft (legislative "
@@ -17524,6 +17949,38 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=int(arguments.get("limit", 10)),
             )
             return [TextContent(type="text", text=_format_search_commentaries_response(result))]
+
+        elif name == "search_scholarship":
+            result = await asyncio.to_thread(
+                search_scholarship,
+                query=arguments["query"],
+                source=arguments.get("source"),
+                pub_type=arguments.get("pub_type"),
+                language=arguments.get("language"),
+                year_min=arguments.get("year_min"),
+                year_max=arguments.get("year_max"),
+                limit=int(arguments.get("limit", 10)),
+            )
+            return [TextContent(type="text", text=_format_search_scholarship_response(result))]
+
+        elif name == "get_scholarship":
+            result = await asyncio.to_thread(
+                get_scholarship, pub_id=arguments["pub_id"],
+            )
+            return [TextContent(type="text", text=_format_get_scholarship_response(result))]
+
+        elif name == "find_scholarship_citing_statute":
+            result = await asyncio.to_thread(
+                find_scholarship_citing_statute,
+                sr_number=arguments["sr_number"],
+                article=arguments.get("article"),
+                limit=int(arguments.get("limit", 20)),
+            )
+            return [TextContent(type="text", text=_format_find_scholarship_citing_statute_response(result))]
+
+        elif name == "list_scholarship_sources":
+            result = await asyncio.to_thread(list_scholarship_sources)
+            return [TextContent(type="text", text=_format_list_scholarship_sources_response(result))]
 
         elif name == "get_materialien":
             result = await asyncio.to_thread(

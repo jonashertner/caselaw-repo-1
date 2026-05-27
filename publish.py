@@ -697,6 +697,43 @@ def step_2f_build_materialien(dry_run: bool = False, full_rebuild: bool = False)
     )
 
 
+def step_2h_build_legal_scholarship(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    """Step 2h: Rebuild legal_scholarship.db (OA Swiss legal publications).
+
+    1. Harvest all active OA scholarship sources via OAI-PMH (sui-generis +
+       any university IRs / journals that have been activated in
+       scrapers/scholarship/sources.py).
+    2. Build the unified FTS5 DB, re-exporting OnlineKommentar +
+       OpenLegalCommentary commentaries as ``pub_type='commentary'`` rows
+       so a single search covers articles + commentaries + dissertations.
+
+    Idempotent and atomic-swap; safe to retry. Bounded harvest time + build
+    time both fit within 30 min for the current corpus shape.
+    """
+    logger.info("Step 2h: Build legal_scholarship.db")
+
+    builder = REPO_DIR / "search_stack" / "build_legal_scholarship.py"
+    if not builder.exists():
+        logger.info("  build_legal_scholarship.py not found, skipping")
+        return True
+
+    harvest_ok = run_cmd(
+        [sys.executable, "-m", "scrapers.scholarship.harvest_all"],
+        "Harvest OA legal scholarship sources",
+        dry_run,
+        timeout=1800,
+    )
+    if not harvest_ok:
+        logger.warning("  scholarship harvest failed; building from existing JSONL only")
+
+    return run_cmd(
+        [sys.executable, "-m", "search_stack.build_legal_scholarship"],
+        "Build legal_scholarship.db",
+        dry_run,
+        timeout=600,
+    )
+
+
 def step_5_generate_stats(dry_run: bool = False) -> bool:
     """Step 5: Generate stats.json from database."""
     logger.info("Step 5: Generate stats.json")
@@ -1233,6 +1270,7 @@ STEPS = [
     ("2c", "Reference Graph", step_2c_build_reference_graph),
     ("2f", "Materialien", step_2f_build_materialien),
     ("2g", "Decision Structure", step_2g_build_decision_structure),
+    ("2h", "Legal Scholarship", step_2h_build_legal_scholarship),
     (3, "Export Parquet", step_3_export_parquet),
     (4, "Upload HuggingFace", step_4_upload_hf),
     # ── Integrity Merkle root (Bestimmung 06 — Provenienz).
@@ -1284,6 +1322,7 @@ def _build_dag_builder_map() -> dict:
         "reference_graph":    _wrap(step_2c_build_reference_graph,       accepts_rebuild=True),
         "materialien_build":  _wrap(step_2f_build_materialien,           accepts_rebuild=True),
         "decision_structure": _wrap(step_2g_build_decision_structure,    accepts_rebuild=True),
+        "legal_scholarship":  _wrap(step_2h_build_legal_scholarship,     accepts_rebuild=True),
         "export_parquet":     _wrap(step_3_export_parquet,               accepts_rebuild=False),
         "upload_hf":          _wrap(step_4_upload_hf,                    accepts_rebuild=False),
         "publish_delta":      _wrap(step_7_publish_delta,                accepts_rebuild=False),
