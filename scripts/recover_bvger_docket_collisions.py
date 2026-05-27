@@ -140,6 +140,20 @@ def parse_language_from_panel(panels: list) -> str:
     return "de"
 
 
+def _iter_windows(ab: date, bis: date, days: int = 30):
+    """Yield (start, end) date pairs of length ~`days` covering [ab, bis].
+
+    Weblaw caps total returnable results per query at ~101, so the BVGer
+    scraper splits searches by date. We do the same here: 30-day windows
+    keep BVGer's ~16/day volume well under the cap.
+    """
+    cur = ab
+    while cur <= bis:
+        end = min(cur + timedelta(days=days - 1), bis)
+        yield cur, end
+        cur = end + timedelta(days=1)
+
+
 def find_missing_decisions(
     db_conn: sqlite3.Connection,
     ab: date,
@@ -155,103 +169,107 @@ def find_missing_decisions(
     new_rows: list[dict] = []
     seen_leids: set[str] = set()  # in case of duplicate hits across pages
 
-    offset = 0
-    page_size = 100
-    while True:
-        try:
-            resp = weblaw_search(ab, bis, offset=offset, size=page_size)
-        except Exception as e:
-            log.error("weblaw_search(%s..%s, offset=%d) failed: %s", ab, bis, offset, e)
-            break
-
-        docs = resp.get("documents", [])
-        total = resp.get("totalNumberOfDocuments", 0)
-        if not docs:
-            break
-
-        for doc in docs:
-            leid = doc.get("leid")
-            if not leid or leid in seen_leids:
-                continue
-            seen_leids.add(leid)
-
-            kw = doc.get("metadataKeywordTextMap", {})
-            titles = kw.get("title", [])
-            panels = kw.get("panel", [])
-            docket = parse_docket_from_title(titles)
-            if not docket:
-                continue
-            if docket_filter and docket != docket_filter:
-                continue
-
-            ruling_date_str = doc.get("metadataDateMap", {}).get("rulingDate", "")
+    for w_ab, w_bis in _iter_windows(ab, bis, days=30):
+        offset = 0
+        page_size = 100
+        while True:
             try:
-                ruling_date = datetime.fromisoformat(
-                    ruling_date_str.replace("Z", "+00:00")
-                ).date()
-            except (ValueError, AttributeError):
-                continue
+                resp = weblaw_search(w_ab, w_bis, offset=offset, size=page_size)
+            except Exception as e:
+                log.error("weblaw_search(%s..%s, offset=%d) failed: %s",
+                          w_ab, w_bis, offset, e)
+                break
 
-            base_id = make_decision_id("bvger", docket)
-            row = db_conn.execute(
-                "SELECT decision_date FROM decisions WHERE decision_id = ?", (base_id,)
-            ).fetchone()
-            if not row:
-                # We don't have ANY decision under this docket — different bug class
-                # (genuine miss, not collision). Skip; the main scraper handles those.
-                continue
-            our_date = str(row[0]) if row[0] else ""
+            docs = resp.get("documents", [])
+            total = resp.get("totalNumberOfDocuments", 0)
+            if not docs:
+                break
+            if offset == 0 and total > 0:
+                log.debug("Window %s..%s: total=%d", w_ab, w_bis, total)
 
-            if our_date == ruling_date_str[:10]:
-                continue  # We have THIS exact decision
-
-            # COLLISION: same docket, different date. Recover this leid.
-            disambig_id = f"{base_id}_d{ruling_date.strftime('%Y%m%d')}"
-            # Skip if we've already recovered this one
-            existing = db_conn.execute(
-                "SELECT 1 FROM decisions WHERE decision_id = ?", (disambig_id,)
-            ).fetchone()
-            if existing:
-                continue
-
-            log.info(
-                "MISSING: %s (docket=%s, date=%s, our_date=%s, leid=%s) → %s",
-                base_id, docket, ruling_date, our_date, leid, disambig_id,
-            )
-
-            if dry_run:
-                new_rows.append({"decision_id": disambig_id, "_dry_run": True})
-            else:
-                full_text = weblaw_content(leid)
-                if not full_text:
-                    log.warning("  could not fetch content for %s; skipping", leid)
+            for doc in docs:
+                leid = doc.get("leid")
+                if not leid or leid in seen_leids:
                     continue
-                language = parse_language_from_panel(panels)
-                title = titles[0].split(";;")[0] if titles else docket
-                new_rows.append({
-                    "decision_id": disambig_id,
-                    "court": "bvger",
-                    "canton": "CH",
-                    "docket_number": docket,
-                    "decision_date": ruling_date.strftime("%Y-%m-%d"),
-                    "language": language,
-                    "title": title,
-                    "full_text": full_text,
-                    "regeste": None,
-                    "source_url": f"https://bvger.weblaw.ch/cache?id={leid}&guiLanguage={language}",
-                    "cited_decisions": [],
-                    "scraped_at": datetime.utcnow().isoformat() + "Z",
-                    "_recovery_source": "recover_bvger_docket_collisions.py",
-                    "_recovery_leid": leid,
-                })
-                time.sleep(0.5)  # gentle rate-limit
+                seen_leids.add(leid)
 
-            if len(new_rows) >= max_recover:
-                return new_rows
+                kw = doc.get("metadataKeywordTextMap", {})
+                titles = kw.get("title", [])
+                panels = kw.get("panel", [])
+                docket = parse_docket_from_title(titles)
+                if not docket:
+                    continue
+                if docket_filter and docket != docket_filter:
+                    continue
 
-        offset += len(docs)
-        if offset >= total:
-            break
+                ruling_date_str = doc.get("metadataDateMap", {}).get("rulingDate", "")
+                try:
+                    ruling_date = datetime.fromisoformat(
+                        ruling_date_str.replace("Z", "+00:00")
+                    ).date()
+                except (ValueError, AttributeError):
+                    continue
+
+                base_id = make_decision_id("bvger", docket)
+                row = db_conn.execute(
+                    "SELECT decision_date FROM decisions WHERE decision_id = ?", (base_id,)
+                ).fetchone()
+                if not row:
+                    # We don't have ANY decision under this docket — different bug class
+                    # (genuine miss, not collision). Skip; the main scraper handles those.
+                    continue
+                our_date = str(row[0]) if row[0] else ""
+
+                if our_date == ruling_date_str[:10]:
+                    continue  # We have THIS exact decision
+
+                # COLLISION: same docket, different date. Recover this leid.
+                disambig_id = f"{base_id}_d{ruling_date.strftime('%Y%m%d')}"
+                # Skip if we've already recovered this one
+                existing = db_conn.execute(
+                    "SELECT 1 FROM decisions WHERE decision_id = ?", (disambig_id,)
+                ).fetchone()
+                if existing:
+                    continue
+
+                log.info(
+                    "MISSING: %s (docket=%s, date=%s, our_date=%s, leid=%s) → %s",
+                    base_id, docket, ruling_date, our_date, leid, disambig_id,
+                )
+
+                if dry_run:
+                    new_rows.append({"decision_id": disambig_id, "_dry_run": True})
+                else:
+                    full_text = weblaw_content(leid)
+                    if not full_text:
+                        log.warning("  could not fetch content for %s; skipping", leid)
+                        continue
+                    language = parse_language_from_panel(panels)
+                    title = titles[0].split(";;")[0] if titles else docket
+                    new_rows.append({
+                        "decision_id": disambig_id,
+                        "court": "bvger",
+                        "canton": "CH",
+                        "docket_number": docket,
+                        "decision_date": ruling_date.strftime("%Y-%m-%d"),
+                        "language": language,
+                        "title": title,
+                        "full_text": full_text,
+                        "regeste": None,
+                        "source_url": f"https://bvger.weblaw.ch/cache?id={leid}&guiLanguage={language}",
+                        "cited_decisions": [],
+                        "scraped_at": datetime.utcnow().isoformat() + "Z",
+                        "_recovery_source": "recover_bvger_docket_collisions.py",
+                        "_recovery_leid": leid,
+                    })
+                    time.sleep(0.5)  # gentle rate-limit
+
+                if len(new_rows) >= max_recover:
+                    return new_rows
+
+            offset += len(docs)
+            if offset >= total:
+                break
 
     return new_rows
 
