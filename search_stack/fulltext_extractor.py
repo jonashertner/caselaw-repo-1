@@ -347,10 +347,15 @@ PDF_RESOLVERS = {
     "cfs":                  _ojs_pdf,
     "ex_ante":              _ojs_pdf,
     "sui_generis":          _ojs_pdf,  # may return None (HTML-only fulltext)
+    # UNIGE Archive ouverte uses the same academic citation_pdf_url
+    # meta convention even though it's NOT OJS. Custom non-DSpace URL
+    # format (`archive-ouverte.unige.ch/unige:N`) → fetch landing →
+    # citation_pdf_url points at access.archive-ouverte.unige.ch.
+    "unige_law":            _ojs_pdf,
     # DSpace 7 IRs: REST /server/api/core/items/<uuid>/bundles
     "edoc_unibas_law":      _dspace7_pdf,
     "boris_law":            _dspace7_pdf,
-    "unige_law":            _dspace7_pdf,
+    # unige_law is OJS-style (uses citation_pdf_url), mapped above
     "zhaw_digitalcollection": _dspace7_pdf,
     "fhnw_irf":             _dspace7_pdf,
     "libra_unine":          _dspace7_pdf,
