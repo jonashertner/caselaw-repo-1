@@ -1407,7 +1407,55 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
         values = tuple(_val(col) for col in INSERT_COLUMNS)
 
         cursor = conn.execute(INSERT_OR_IGNORE_SQL, values)
-        return cursor.rowcount > 0
+        if cursor.rowcount > 0:
+            return True
+
+        # ── Collision disambiguation ───────────────────────────────────
+        # INSERT OR IGNORE dropped the row because decision_id already
+        # exists. Distinguish two cases:
+        #   (i)  TRUE duplicate — same canonical_key (court, docket, date)
+        #         → genuinely the same decision, skip.
+        #   (ii) Same docket but DIFFERENT date — admin courts (BVGer,
+        #         BGer, etc.) often have multiple decisions under one
+        #         docket (Zwischenverfügung, Teilurteil, Endurteil,
+        #         Revision …). User-reported example: BVGer B-1092/2009
+        #         has decisions dated both 2009-02-20 and 2010-01-05;
+        #         the second was silently dropped historically.
+        #         → re-id the new row with a `_d{YYYYMMDD}` date suffix
+        #           and retry the insert. ~200 BVGer historical cases
+        #           plus +5-50/year going forward.
+        existing = conn.execute(
+            "SELECT canonical_key FROM decisions WHERE decision_id = ?",
+            (row["decision_id"],),
+        ).fetchone()
+        if existing is None:
+            return False  # defensive: shouldn't happen on real collisions
+        if existing[0] == row.get("canonical_key"):
+            return False  # case (i): true duplicate, by design
+        # case (ii): same id but different (court, docket, date) tuple
+        date_str = str(row.get("decision_date") or "").replace("-", "")
+        if not date_str or len(date_str) != 8:
+            # Can't disambiguate without a clean YYYYMMDD date — accept the
+            # drop, log so we have visibility on the rate.
+            logger.warning(
+                "docket-collision drop (no clean date): %s vs existing",
+                row.get("decision_id"),
+            )
+            return False
+        new_id = f"{row['decision_id']}_d{date_str}"
+        row["decision_id"] = new_id
+        # rebuild json_data so the embedded id matches
+        row["json_data"] = json.dumps(row, default=str)
+        values = tuple(_val(col) for col in INSERT_COLUMNS)
+        cursor = conn.execute(INSERT_OR_IGNORE_SQL, values)
+        if cursor.rowcount > 0:
+            logger.info(
+                "docket-collision disambiguated: court=%s docket=%s date=%s -> id=%s",
+                row.get("court"), row.get("docket_number"),
+                row.get("decision_date"), new_id,
+            )
+            return True
+        return False
     except Exception as e:
         logger.warning(f"Failed to import {row.get('decision_id', '?')}: {e}")
         return False
