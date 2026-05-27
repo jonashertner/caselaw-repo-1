@@ -530,6 +530,37 @@ def collect_corpus_snapshot(repo_dir: Path) -> dict:
         finally:
             conn.close()
 
+    # OA Swiss legal scholarship — legal_scholarship.db
+    schol_path = repo_dir / "output" / "legal_scholarship.db"
+    conn = _open_ro(schol_path)
+    if conn is not None:
+        try:
+            n = _count(conn, "SELECT COUNT(*) FROM publications")
+            if n is not None:
+                out["scholarship_publications"] = n
+            by_source = {
+                r[0]: r[1]
+                for r in conn.execute(
+                    "SELECT source, COUNT(*) FROM publications "
+                    "GROUP BY source ORDER BY 2 DESC"
+                )
+            }
+            if by_source:
+                out["scholarship_by_source"] = by_source
+            by_type = {
+                r[0]: r[1]
+                for r in conn.execute(
+                    "SELECT pub_type, COUNT(*) FROM publications "
+                    "GROUP BY pub_type ORDER BY 2 DESC"
+                )
+            }
+            if by_type:
+                out["scholarship_by_type"] = by_type
+        except sqlite3.Error:
+            pass
+        finally:
+            conn.close()
+
     # Citation graph — reference_graph.db
     graph_path = repo_dir / "output" / "reference_graph.db"
     conn = _open_ro(graph_path)

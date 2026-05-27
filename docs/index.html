@@ -1917,6 +1917,101 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   .toolkit-tile { padding: 18px; }
 }
 
+/* ── Scholarship section ─────────────────────────────────────────── */
+.scholarship-block {
+  padding: clamp(48px, 6vw, 72px) 16px clamp(56px, 7vw, 80px);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.scholarship-intro {
+  font-size: 15px;
+  color: var(--tx2);
+  font-weight: 300;
+  line-height: 1.55;
+  margin: 0 auto 28px;
+  max-width: 720px;
+  text-align: center;
+  text-wrap: balance;
+}
+.scholarship-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.scholarship-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px;
+  background: var(--surf);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+}
+.scholarship-card h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tx2);
+  font-weight: 500;
+  margin: 0;
+}
+.scholarship-big {
+  font-size: clamp(36px, 5vw, 48px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--tx);
+  line-height: 1;
+}
+.scholarship-big-sub {
+  font-size: 13px;
+  color: var(--tx2);
+  font-weight: 300;
+}
+.scholarship-sources, .scholarship-licenses {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--tx);
+  font-weight: 300;
+  line-height: 1.7;
+}
+.scholarship-license-blurb {
+  font-size: 12.5px;
+  color: var(--tx2);
+  font-weight: 300;
+  line-height: 1.5;
+  margin: 0;
+}
+.scholarship-roadmap {
+  margin-top: 24px;
+  padding: 18px 22px;
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: var(--tx2);
+}
+.scholarship-roadmap summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--tx);
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.scholarship-roadmap ul {
+  margin: 12px 0;
+  padding-left: 22px;
+}
+.scholarship-roadmap li {
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+@media (max-width: 880px) {
+  .scholarship-grid { grid-template-columns: 1fr; }
+}
+
 /* Did you know section — number-forward editorial cards ───────────────── */
 #didyou {
   padding: clamp(48px, 6vw, 72px) 16px;
@@ -2366,6 +2461,76 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
       <span class="snapshot-movers-label" data-t="snapshot_movers">New since yesterday</span>
       <span id="snapshot-movers-list"><span class="skel skel--list"></span></span>
     </div>
+  </section>
+
+  <!-- ── Open-access legal scholarship — third pillar of the corpus ────
+       Added 2026-05-27. Alongside case law (963k decisions) and statutes
+       (5k+ federal + 10k+ cantonal laws), the third pillar is OA Swiss
+       legal scholarship: peer-reviewed journal articles, open commentaries,
+       dissertations, and federal legal-policy reports. License attribution
+       is mandatory (CC-BY / CC-BY-SA upstream terms) — surfaced both in
+       MCP tool responses and on this dashboard. -->
+  <section class="section scholarship-block" id="scholarship" aria-labelledby="scholarship-heading">
+    <h2 class="section-heading" id="scholarship-heading">Open-access legal scholarship</h2>
+    <p class="scholarship-intro">
+      Beyond decisions and statutes: a unified, daily-rebuilt index of every Swiss legal publication that's licensed for free reuse — peer-reviewed journal articles, open commentaries, dissertations, and federal legal-policy reports. Every record carries explicit attribution + CC license, so LLMs grounded on this corpus respect the upstream authors' terms.
+    </p>
+
+    <div class="scholarship-grid">
+      <article class="scholarship-card">
+        <header>
+          <h3>Total indexed</h3>
+        </header>
+        <div class="scholarship-big" id="sch-total"><span class="skel skel--big"></span></div>
+        <div class="scholarship-big-sub">publications across all sources</div>
+      </article>
+      <article class="scholarship-card">
+        <header><h3>Sources live today</h3></header>
+        <ul class="scholarship-sources" id="sch-sources">
+          <li class="skel skel--list"></li>
+        </ul>
+      </article>
+      <article class="scholarship-card">
+        <header><h3>Licensing</h3></header>
+        <p class="scholarship-license-blurb">
+          All publications are open-access. Per-source license terms below:
+        </p>
+        <ul class="scholarship-licenses">
+          <li>
+            <a href="https://sui-generis.ch/" target="_blank" rel="noopener">sui generis</a>:
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC-BY-SA 4.0</a>
+          </li>
+          <li>
+            <a href="https://onlinekommentar.ch/" target="_blank" rel="noopener">OnlineKommentar.ch</a>:
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY 4.0</a>
+          </li>
+          <li>
+            <a href="https://openlegalcommentary.ch/" target="_blank" rel="noopener">OpenLegalCommentary.ch</a>:
+            <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC-BY-SA 4.0</a>
+          </li>
+        </ul>
+        <p class="scholarship-license-blurb">
+          Full attribution catalog: <a href="https://mcp.opencaselaw.ch/api/scholarship/licenses">/api/scholarship/licenses</a>
+        </p>
+      </article>
+    </div>
+
+    <details class="scholarship-roadmap">
+      <summary>Sources scaffolded for activation (corpus-completeness backlog)</summary>
+      <p>Generic OAI-PMH harvester is already in place; each item below becomes one entry in the source registry once verified:</p>
+      <ul>
+        <li><strong>e-periodica.ch historical periodicals</strong> — ZBJV (from 1872), ZSR historical, SJZ historical, RDS, and ~25 other Swiss law journals. Free to read; ETH Library hosts. Highest single-source yield.</li>
+        <li><strong>9 university institutional repositories</strong> filtered to law faculty — UZH ZORA, UniBE BORIS, UNIL SERVAL, UNIGE Archive ouverte, UniBas edoc, UniFR FOLIA, UniSG Alexandria, UniNE LIBRA, UniLU. Generic OAI-PMH; needs per-repository set-spec discovery.</li>
+        <li><strong>LeGes</strong> (Bundeskanzlei) — federal quarterly on legislation &amp; evaluation. Free PDFs on bk.admin.ch.</li>
+        <li><strong>BJ Studien</strong> (Bundesamt für Justiz) — federal-commissioned legal research. Free PDFs on admin.ch.</li>
+        <li><strong>e-Helvetica</strong> federal deposits — theses + government reports at the Swiss National Library.</li>
+        <li><strong>Justice-Justiz-Giustizia</strong> — Swiss judges' association journal (OA portion only).</li>
+      </ul>
+      <p>
+        Honest framing: the most-cited recent commercial Swiss legal scholarship (AJP, ZSR new volumes, SJZ, forumpoenale) remains paywalled and will not be indexed. This corpus is the
+        <em>free index of OA Swiss legal scholarship</em>, complementing — not replacing — paid aggregators.
+      </p>
+    </details>
   </section>
 
   <!-- ── Verification — anti-hallucination architecture ────────────────
@@ -5759,6 +5924,52 @@ function renderCorpusSnapshot(data) {
     // Hide the "+X 24h" wrapper entirely if delta is zero — avoid noise
     const w = document.getElementById('sn-s-delta-wrap');
     if (w && graphDelta === 0) w.style.display = 'none';
+  }
+
+  // Scholarship section — total + sources list (safe DOM construction)
+  if (c.scholarship_publications) {
+    setText('sch-total', fmt(c.scholarship_publications));
+  }
+  if (c.scholarship_by_source) {
+    const SRC_NAMES = {
+      sui_generis: 'sui generis (peer-reviewed OA articles)',
+      onlinekommentar: 'OnlineKommentar.ch',
+      openlegalcommentary: 'OpenLegalCommentary.ch',
+      leges: 'LeGes (Bundeskanzlei)',
+      justice: 'Justice-Justiz-Giustizia',
+      zora_law: 'UZH ZORA (law)',
+      boris_law: 'UniBE BORIS (law)',
+      serval_law: 'UNIL SERVAL (law)',
+      unige_law: 'UNIGE Archive ouverte (law)',
+      edoc_unibas_law: 'UniBas edoc (law)',
+      folia_law: 'UniFR FOLIA (law)',
+      alexandria_law: 'UniSG Alexandria (law)',
+      libra_law: 'UniNE LIBRA (law)',
+      unilu_law: 'UniLU (law)',
+      e_periodica_law: 'e-periodica historical legal periodicals',
+      e_helvetica_law: 'e-Helvetica (NB)',
+      bj_studien: 'BJ studies',
+    };
+    const list = document.getElementById('sch-sources');
+    if (list) {
+      while (list.firstChild) list.removeChild(list.firstChild);
+      const entries = Object.entries(c.scholarship_by_source)
+        .sort((a, b) => b[1] - a[1]);
+      if (entries.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = '(none)';
+        list.appendChild(li);
+      } else {
+        for (const [src, n] of entries) {
+          const li = document.createElement('li');
+          const strong = document.createElement('strong');
+          strong.textContent = fmt(n);
+          li.appendChild(strong);
+          li.appendChild(document.createTextNode(' — ' + (SRC_NAMES[src] || src)));
+          list.appendChild(li);
+        }
+      }
+    }
   }
 
   // Top movers — top 5 courts by 24h delta

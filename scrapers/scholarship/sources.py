@@ -22,7 +22,16 @@ class ScholarshipSource:
     set_spec: Optional[str] = None
     metadata_prefix: str = "oai_dc"
     rate_limit: float = 1.0
+    # Default-license metadata applied when individual records don't carry
+    # license info. The CC license URL we display in attribution.
     license_default: Optional[str] = None
+    license_url_default: Optional[str] = None
+    # Free-form attribution text shown alongside every result served from
+    # this source — required by CC-BY / CC-BY-SA / CC-BY-NC-SA / "free to
+    # read" upstream terms.
+    attribution: str = ""
+    # User-facing homepage (linked from /docs/scholarship-licenses.html)
+    homepage: Optional[str] = None
     notes: str = ""
     active: bool = True
     # For 'custom' kind: module path (e.g. "scrapers.scholarship.leges")
@@ -38,6 +47,13 @@ SOURCES: list[ScholarshipSource] = [
         base_url="https://sui-generis.ch/oai",
         set_spec="suigeneris",
         license_default="CC-BY-SA-4.0",
+        license_url_default="https://creativecommons.org/licenses/by-sa/4.0/",
+        attribution=(
+            "© respective authors. Published in sui generis "
+            "(sui-generis.ch), CC-BY-SA-4.0. A small minority of articles "
+            "carry CC-BY-NC-SA-4.0 — check the per-record license field."
+        ),
+        homepage="https://sui-generis.ch/",
         rate_limit=1.0,
         notes="Peer-reviewed OA Swiss law journal since 2014. Set 'suigeneris' "
               "groups all sub-sets (ART, INFO, MIGRAT, OEFF, PRIVAT, STRAF).",
@@ -48,7 +64,14 @@ SOURCES: list[ScholarshipSource] = [
         name="LeGes — Gesetzgebung & Evaluation (Bundeskanzlei)",
         kind="custom",
         custom_module="scrapers.scholarship.leges",
-        license_default="OA-public-domain",
+        license_default="OA-Swiss-federal",
+        license_url_default="https://www.bk.admin.ch/bk/de/home/dokumentation/zeitschrift--leges-.html",
+        attribution=(
+            "Published by the Federal Chancellery of Switzerland (Bundeskanzlei). "
+            "Federal publication: free of copyright (Art. 5 al. 1 lit. a URG) — "
+            "may be reproduced without permission."
+        ),
+        homepage="https://www.bk.admin.ch/bk/de/home/dokumentation/zeitschrift--leges-.html",
         notes="Federal Chancellery's quarterly journal on legislation and "
               "evaluation. Free PDFs on bk.admin.ch/leges. No OAI-PMH; needs "
               "custom HTML+PDF scraper.",
@@ -60,8 +83,14 @@ SOURCES: list[ScholarshipSource] = [
         kind="custom",
         custom_module="scrapers.scholarship.justice",
         license_default="OA-no-redistribution",
+        attribution=(
+            "© respective authors and Schweizerische Vereinigung der "
+            "Richterinnen und Richter (SVR-ASM). Reproduction beyond fair use "
+            "requires permission from the publisher."
+        ),
+        homepage="https://richterzeitung.weblaw.ch/",
         notes="OA portion of the Swiss judges' association journal. Custom "
-              "HTML scrape from justice-justiz-giustizia.ch.",
+              "HTML scrape from justice-justiz-giustizia.ch / richterzeitung.weblaw.ch.",
         active=False,
     ),
 
@@ -75,6 +104,12 @@ SOURCES: list[ScholarshipSource] = [
         kind="oai_pmh",
         base_url="https://www.zora.uzh.ch/cgi/oai2",
         set_spec=None,   # ZORA sets are per-DDC; needs discovery + multi-set merge
+        attribution=(
+            "© respective authors. Deposited in the Zurich Open Repository and "
+            "Archive (ZORA), University of Zurich. License per record — typically "
+            "the author's CC-BY or 'free to read' grant; check each item."
+        ),
+        homepage="https://www.zora.uzh.ch/",
         notes="University of Zurich's repository. Filter to Faculty of Law "
               "via DDC 340 or organisational set.",
         active=False,
@@ -191,3 +226,110 @@ def by_key(key: str) -> ScholarshipSource | None:
         if s.key == key:
             return s
     return None
+
+
+# ── Re-exported corpora (not in SOURCES, but served as scholarship) ──────
+# These come from ok_commentaries.db via the build_legal_scholarship
+# re-export step. They aren't OAI-PMH-harvested, but they ARE served from
+# the scholarship corpus, so the licensing layer needs to know about them.
+_REEXPORTED = {
+    "onlinekommentar": {
+        "name": "OnlineKommentar.ch",
+        "license_default": "CC-BY-4.0",
+        "license_url_default": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": (
+            "© respective authors. Published on OnlineKommentar.ch under "
+            "CC-BY-4.0. Re-use must credit author + journal + license."
+        ),
+        "homepage": "https://onlinekommentar.ch/",
+        "notes": "Scholarly commentary on Swiss federal law. CC-BY-4.0.",
+    },
+    "openlegalcommentary": {
+        "name": "OpenLegalCommentary.ch",
+        "license_default": "CC-BY-SA-4.0",
+        "license_url_default": "https://creativecommons.org/licenses/by-sa/4.0/",
+        "attribution": (
+            "© respective authors. Published on OpenLegalCommentary.ch under "
+            "CC-BY-SA-4.0. Re-use must credit author + journal + license; "
+            "derivatives must be licensed CC-BY-SA-4.0."
+        ),
+        "homepage": "https://openlegalcommentary.ch/",
+        "notes": "OA commentaries on the Swiss Federal Constitution (BV).",
+    },
+}
+
+
+def attribution_for_source(source_key: str) -> dict:
+    """Return a dict with attribution / license / homepage for a source key.
+
+    Falls back to a generic attribution string for sources without explicit
+    metadata so we never serve an unattributed publication. The returned
+    dict is safe to dump in MCP responses.
+    """
+    s = by_key(source_key)
+    if s is not None:
+        return {
+            "source": s.key,
+            "name": s.name,
+            "license": s.license_default,
+            "license_url": s.license_url_default,
+            "attribution": s.attribution or (
+                f"© respective authors. Indexed from {s.name}. "
+                "License per record — check each item."
+            ),
+            "homepage": s.homepage,
+        }
+    if source_key in _REEXPORTED:
+        r = _REEXPORTED[source_key]
+        return {
+            "source": source_key,
+            "name": r["name"],
+            "license": r["license_default"],
+            "license_url": r["license_url_default"],
+            "attribution": r["attribution"],
+            "homepage": r["homepage"],
+        }
+    return {
+        "source": source_key,
+        "name": source_key,
+        "license": None,
+        "license_url": None,
+        "attribution": (
+            f"© respective authors. Source: {source_key}. License per record."
+        ),
+        "homepage": None,
+    }
+
+
+def licenses_catalog() -> list[dict]:
+    """Full source/license catalog including re-exported corpora.
+
+    Used by:
+      - `list_scholarship_sources` MCP tool (license summary block)
+      - `/api/scholarship/licenses` REST endpoint
+      - `/scholarship-licenses.html` static dashboard page
+    """
+    rows = []
+    for s in SOURCES:
+        rows.append({
+            "source": s.key,
+            "name": s.name,
+            "kind": s.kind,
+            "license": s.license_default,
+            "license_url": s.license_url_default,
+            "attribution": s.attribution,
+            "homepage": s.homepage,
+            "active": s.active,
+        })
+    for k, r in _REEXPORTED.items():
+        rows.append({
+            "source": k,
+            "name": r["name"],
+            "kind": "re-export",
+            "license": r["license_default"],
+            "license_url": r["license_url_default"],
+            "attribution": r["attribution"],
+            "homepage": r["homepage"],
+            "active": True,
+        })
+    return rows

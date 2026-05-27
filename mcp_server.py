@@ -13089,6 +13089,15 @@ def _get_scholarship_conn() -> sqlite3.Connection | None:
         return None
 
 
+def _scholarship_attribution(source_key: str) -> dict:
+    """Defer-import + memoize the per-source attribution lookup."""
+    try:
+        from scrapers.scholarship.sources import attribution_for_source
+    except Exception:
+        return {"source": source_key, "attribution": None}
+    return attribution_for_source(source_key)
+
+
 def search_scholarship(
     query: str,
     *,
@@ -13153,6 +13162,7 @@ def search_scholarship(
             params,
         ).fetchall()
         results = []
+        sources_seen: set[str] = set()
         for r in rows:
             results.append({
                 "pub_id": r["pub_id"],
@@ -13169,7 +13179,16 @@ def search_scholarship(
                 "license": r["license"],
                 "snippet": r["snippet"],
             })
-        return {"query": query, "count": len(results), "results": results}
+            sources_seen.add(r["source"])
+        attributions = [_scholarship_attribution(s) for s in sorted(sources_seen)]
+        return {
+            "query": query,
+            "count": len(results),
+            "results": results,
+            # CC-BY / CC-BY-SA attribution requirement — every consumer of
+            # this corpus (LLM, REST client, web UI) MUST surface this block.
+            "attributions": attributions,
+        }
     except sqlite3.Error as e:
         logger.error("scholarship search error: %s", e)
         return {"error": f"Database error: {e}"}
@@ -13211,6 +13230,8 @@ def get_scholarship(pub_id: str) -> dict:
                 (pub_id,),
             ).fetchall()
         ]
+        # CC-BY / CC-BY-SA: must surface attribution alongside the work.
+        d["attribution"] = _scholarship_attribution(d["source"])
         return d
     except sqlite3.Error as e:
         logger.error("scholarship get error: %s", e)
@@ -13269,19 +13290,22 @@ def find_scholarship_citing_statute(
 
 
 def list_scholarship_sources() -> dict:
-    """List the OA scholarship sources indexed, with counts per source/type."""
+    """List the OA scholarship sources indexed, with counts per source/type
+    and the per-source license attribution catalog.
+    """
     conn = _get_scholarship_conn()
     if conn is None:
         return {"error": "Legal scholarship database not available."}
     try:
         total = conn.execute("SELECT COUNT(*) FROM publications").fetchone()[0]
-        by_source = [
-            {"source": r["source"], "count": r["n"]}
-            for r in conn.execute(
-                "SELECT source, COUNT(*) AS n FROM publications "
-                "GROUP BY source ORDER BY n DESC"
-            ).fetchall()
-        ]
+        by_source = []
+        for r in conn.execute(
+            "SELECT source, COUNT(*) AS n FROM publications "
+            "GROUP BY source ORDER BY n DESC"
+        ).fetchall():
+            entry = {"source": r["source"], "count": r["n"]}
+            entry.update(_scholarship_attribution(r["source"]))
+            by_source.append(entry)
         by_type = [
             {"pub_type": r["pub_type"], "count": r["n"]}
             for r in conn.execute(
@@ -13296,11 +13320,25 @@ def list_scholarship_sources() -> dict:
                 "GROUP BY language ORDER BY n DESC"
             ).fetchall()
         ]
+        by_license = [
+            {"license": r["license"], "count": r["n"]}
+            for r in conn.execute(
+                "SELECT license, COUNT(*) AS n FROM publications "
+                "GROUP BY license ORDER BY n DESC"
+            ).fetchall()
+        ]
         return {
             "total_publications": total,
             "by_source": by_source,
             "by_type": by_type,
             "by_language": by_language,
+            "by_license": by_license,
+            "notice": (
+                "All publications are open-access. Per-source attribution "
+                "and license terms in `by_source[].attribution / .license / "
+                ".license_url`. Re-use must preserve attribution per CC terms; "
+                "CC-BY-SA derivatives must be released under the same license."
+            ),
         }
     except sqlite3.Error as e:
         return {"error": f"Database error: {e}"}
@@ -13318,11 +13356,26 @@ def _format_search_scholarship_response(result: dict) -> str:
         text += f"**{i}.** [{r['source']}/{r.get('year') or '?'}] {r['title']}\n"
         if r.get("authors"):
             text += f"   *{r['authors']}*\n"
+        if r.get("license"):
+            text += f"   License: {r['license']}\n"
         if r.get("snippet"):
             text += f"   …{r['snippet']}…\n"
         if r.get("url"):
             text += f"   {r['url']}\n"
         text += "\n"
+    # Attribution required by CC-BY / CC-BY-SA upstream licenses.
+    attrs = result.get("attributions") or []
+    if attrs:
+        text += "---\n**Attribution:**\n"
+        for a in attrs:
+            line = f"- {a.get('name', a.get('source'))}"
+            if a.get("license"):
+                line += f" — {a['license']}"
+            if a.get("license_url"):
+                line += f" ({a['license_url']})"
+            text += line + "\n"
+            if a.get("attribution"):
+                text += f"  {a['attribution']}\n"
     return text
 
 
@@ -13342,7 +13395,10 @@ def _format_get_scholarship_response(result: dict) -> str:
     if result.get("url"):
         text += f"**URL:** {result['url']}\n"
     if result.get("license"):
-        text += f"**License:** {result['license']}\n"
+        text += f"**License:** {result['license']}"
+        if result.get("license_url"):
+            text += f" ({result['license_url']})"
+        text += "\n"
     text += "\n"
     if result.get("abstract"):
         text += f"## Abstract\n\n{result['abstract']}\n\n"
@@ -13352,6 +13408,18 @@ def _format_get_scholarship_response(result: dict) -> str:
         text += "\n## Cites statutes\n"
         for s in result["cites_statutes"][:50]:
             text += f"- SR {s['sr_number']} Art. {s['article'] or '?'}\n"
+    a = result.get("attribution") or {}
+    if a.get("attribution") or a.get("name"):
+        text += "\n---\n**Attribution:** "
+        if a.get("name"):
+            text += a["name"]
+        if a.get("license"):
+            text += f" — {a['license']}"
+        if a.get("homepage"):
+            text += f" — {a['homepage']}"
+        text += "\n"
+        if a.get("attribution"):
+            text += a["attribution"] + "\n"
     return text
 
 
@@ -13375,15 +13443,30 @@ def _format_list_scholarship_sources_response(result: dict) -> str:
         return result["error"]
     text = f"# OA Swiss legal scholarship — corpus overview\n\n"
     text += f"**Total publications: {result['total_publications']:,}**\n\n"
-    text += "## By source\n"
+    text += "## By source (with license + attribution)\n"
     for r in result["by_source"]:
-        text += f"- **{r['source']}**: {r['count']:,}\n"
+        text += f"- **{r.get('name') or r['source']}** ({r['count']:,})\n"
+        if r.get("license"):
+            text += f"   License: {r['license']}"
+            if r.get("license_url"):
+                text += f" — {r['license_url']}"
+            text += "\n"
+        if r.get("homepage"):
+            text += f"   Homepage: {r['homepage']}\n"
+        if r.get("attribution"):
+            text += f"   {r['attribution']}\n"
     text += "\n## By type\n"
     for r in result["by_type"]:
         text += f"- {r['pub_type']}: {r['count']:,}\n"
     text += "\n## By language\n"
     for r in result["by_language"]:
         text += f"- {r['language'] or '(none)'}: {r['count']:,}\n"
+    if result.get("by_license"):
+        text += "\n## By license\n"
+        for r in result["by_license"]:
+            text += f"- {r['license'] or '(unset)'}: {r['count']:,}\n"
+    if result.get("notice"):
+        text += f"\n---\n{result['notice']}\n"
     return text
 
 
@@ -20243,6 +20326,71 @@ setInterval(load, 30000);
             get_commentary, abbreviation=abbreviation, sr_number=sr_number,
             article=article, language=language,
         )
+
+    # ── OA legal scholarship endpoints ─────────────────────────
+
+    @rest_api.get("/scholarship/search", tags=["Scholarship"],
+                  summary="Search OA Swiss legal scholarship",
+                  description=(
+                      "Full-text search across the unified scholarship corpus "
+                      "(OA journal articles + commentaries + dissertations + "
+                      "books + reports). Returns ranked results with snippets "
+                      "and per-source attribution (required by CC-BY / CC-BY-SA "
+                      "license terms — preserve when re-using)."
+                  ))
+    async def api_search_scholarship(
+        query: str = Query(..., description="Search query (FTS5 syntax)"),
+        source: str = Query(None, description="Filter by source slug"),
+        pub_type: str = Query(None, description="Filter by publication type"),
+        language: str = Query(None, description="Language filter (de/fr/it/en)"),
+        year_min: int = Query(None, description="Earliest publication year"),
+        year_max: int = Query(None, description="Latest publication year"),
+        limit: int = Query(10, ge=1, le=50, description="Max results"),
+    ):
+        return await asyncio.to_thread(
+            search_scholarship, query=query, source=source, pub_type=pub_type,
+            language=language, year_min=year_min, year_max=year_max, limit=limit,
+        )
+
+    @rest_api.get("/scholarship/sources", tags=["Scholarship"],
+                  summary="List indexed scholarship sources + license catalog",
+                  description=(
+                      "Returns counts per source + license + attribution. "
+                      "Always available even when the scholarship DB is empty."
+                  ))
+    async def api_list_scholarship_sources():
+        return await asyncio.to_thread(list_scholarship_sources)
+
+    @rest_api.get("/scholarship/licenses", tags=["Scholarship"],
+                  summary="Full license + attribution catalog for all sources",
+                  description=(
+                      "Source-by-source license terms, license URLs, "
+                      "homepages, and attribution text. Includes active "
+                      "and scaffolded-but-inactive sources so the catalog "
+                      "lists everything that will eventually be served."
+                  ))
+    async def api_scholarship_licenses():
+        from scrapers.scholarship.sources import licenses_catalog
+        return {"catalog": licenses_catalog()}
+
+    @rest_api.get("/scholarship/cited-by-statute", tags=["Scholarship"],
+                  summary="Scholarship citing a statute article")
+    async def api_scholarship_cited_by_statute(
+        sr_number: str = Query(..., description="SR number (e.g. '220')"),
+        article: str = Query(None, description="Article number (e.g. '41')"),
+        limit: int = Query(20, ge=1, le=100),
+    ):
+        return await asyncio.to_thread(
+            find_scholarship_citing_statute,
+            sr_number=sr_number, article=article, limit=limit,
+        )
+
+    @rest_api.get("/scholarship/{pub_id:path}", tags=["Scholarship"],
+                  summary="Get a single publication by pub_id")
+    async def api_get_scholarship(
+        pub_id: str = PathParam(description="Canonical pub_id"),
+    ):
+        return await asyncio.to_thread(get_scholarship, pub_id=pub_id)
 
     # ── Materialien endpoints ─────────────────────────────────
 
