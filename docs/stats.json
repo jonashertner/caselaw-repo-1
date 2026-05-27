@@ -1,13 +1,13 @@
 {
-  "total": 973422,
+  "total": 973475,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175728,
+      "count": 175781,
       "earliest": "1986-10-06",
-      "latest": "2026-05-12",
-      "last_scraped": "2026-05-26T11:01:59.858194+00:00",
+      "latest": "2026-05-15",
+      "last_scraped": "2026-05-27T11:02:10.330974+00:00",
       "languages": [
         "de",
         "fr",
@@ -1726,9 +1726,9 @@
     }
   ],
   "by_language": {
-    "de": 450698,
-    "fr": 441931,
-    "it": 80793
+    "de": 450733,
+    "fr": 441941,
+    "it": 80801
   },
   "by_year": {
     "1875": 153,
@@ -1863,8 +1863,8 @@
     "2004": 17107,
     "2005": 19490,
     "2006": 20447,
-    "2007": 26489,
-    "2008": 27612,
+    "2007": 26493,
+    "2008": 27613,
     "2009": 31926,
     "2010": 33914,
     "2011": 35017,
@@ -1882,24 +1882,24 @@
     "2023": 47143,
     "2024": 47092,
     "2025": 44643,
-    "2026": 10409
+    "2026": 10457
   },
   "recent_daily": {
-    "2026-04-27": 74,
+    "2026-04-27": 76,
     "2026-04-28": 87,
     "2026-04-29": 79,
-    "2026-04-30": 61,
-    "2026-05-01": 45,
-    "2026-05-04": 60,
-    "2026-05-05": 38,
-    "2026-05-06": 32,
-    "2026-05-07": 40,
-    "2026-05-08": 20,
+    "2026-04-30": 68,
+    "2026-05-01": 48,
+    "2026-05-04": 66,
+    "2026-05-05": 40,
+    "2026-05-06": 34,
+    "2026-05-07": 45,
+    "2026-05-08": 21,
     "2026-05-10": 2,
-    "2026-05-11": 23,
-    "2026-05-12": 21,
-    "2026-05-13": 17,
-    "2026-05-15": 6,
+    "2026-05-11": 24,
+    "2026-05-12": 24,
+    "2026-05-13": 20,
+    "2026-05-15": 10,
     "2026-05-18": 10,
     "2026-05-19": 2,
     "2026-05-20": 1,
@@ -1917,7 +1917,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 175728
+      "count": 175781
     },
     {
       "court": "ge_gerichte",
@@ -2097,7 +2097,7 @@
     "2004": 8.2,
     "2005": 13.9,
     "2006": 4.9,
-    "2007": 29.5,
+    "2007": 29.6,
     "2008": 4.2,
     "2009": 15.6,
     "2010": 6.2,
@@ -2116,10 +2116,10 @@
     "2023": -1.1,
     "2024": -0.1,
     "2025": -5.2,
-    "2026": -76.7
+    "2026": -76.6
   },
   "federal_vs_cantonal": {
-    "federal": 347574,
+    "federal": 347627,
     "cantonal": 625848
   },
   "language_by_year": {
@@ -2134,12 +2134,12 @@
       "it": 3191
     },
     "2007": {
-      "de": 14739,
-      "fr": 8391,
+      "de": 14742,
+      "fr": 8392,
       "it": 3359
     },
     "2008": {
-      "de": 13974,
+      "de": 13975,
       "fr": 10518,
       "it": 3120
     },
@@ -2229,9 +2229,9 @@
       "it": 1439
     },
     "2026": {
-      "de": 5402,
-      "fr": 4480,
-      "it": 527
+      "de": 5433,
+      "fr": 4489,
+      "it": 535
     }
   },
   "by_month": {
@@ -2270,10 +2270,10 @@
     "2026-01": 2535,
     "2026-02": 3028,
     "2026-03": 2670,
-    "2026-04": 1837,
-    "2026-05": 330
+    "2026-04": 1855,
+    "2026-05": 360
   },
-  "generated_at": "2026-05-27T10:48:18.074485+00:00",
+  "generated_at": "2026-05-27T14:08:24.636762+00:00",
   "scraper_health": {
     "run_at": "2026-05-27T02:30:48.514158+00:00",
     "run_duration_s": 5387.8,
@@ -2631,9 +2631,9 @@
         "duration_s": 1069.7,
         "error": null,
         "note": null,
-        "state_count": 92875,
-        "jsonl_size_mb": 1390.0,
-        "jsonl_mtime": "2026-05-27T10:07:23.257857+00:00"
+        "state_count": 92923,
+        "jsonl_size_mb": 1390.6,
+        "jsonl_mtime": "2026-05-27T11:06:18.899951+00:00"
       },
       "bge": {
         "success": true,
@@ -3352,8 +3352,20 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "citation_edges": 8669555,
-    "statute_edges": 11281518
+    "scholarship_publications": 796,
+    "scholarship_by_source": {
+      "onlinekommentar": 368,
+      "sui_generis": 288,
+      "thegoodboard": 140
+    },
+    "scholarship_by_type": {
+      "commentary": 398,
+      "article": 288,
+      "guidance": 70,
+      "reference_article": 40
+    },
+    "citation_edges": 8672219,
+    "statute_edges": 11284515
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3789,84 +3801,84 @@
   "recent": {
     "bge": [
       {
-        "decision_id": "bger_1C_205_2026",
-        "docket": "1C_205/2026",
+        "decision_id": "bger_5A_402_2026",
+        "docket": "5A_402/2026",
+        "date": "2026-05-15",
+        "court": "bger",
+        "language": "de",
+        "summary": "Unentgeltlichen Rechtspflege (Kindesschutz),"
+      },
+      {
+        "decision_id": "bger_5A_379_2026",
+        "docket": "5A_379/2026",
+        "date": "2026-05-15",
+        "court": "bger",
+        "language": "de",
+        "summary": "Pfändungsurkunde,"
+      },
+      {
+        "decision_id": "bger_5A_377_2026",
+        "docket": "5A_377/2026",
+        "date": "2026-05-15",
+        "court": "bger",
+        "language": "de",
+        "summary": "Superprovisorische Massnahmen (Pfändungsurkunde),"
+      },
+      {
+        "decision_id": "bger_5A_231_2026",
+        "docket": "5A_231/2026",
+        "date": "2026-05-15",
+        "court": "bger",
+        "language": "de",
+        "summary": "Pfändungsankündigung,"
+      },
+      {
+        "decision_id": "bger_7B_472_2026",
+        "docket": "7B_472/2026",
+        "date": "2026-05-13",
+        "court": "bger",
+        "language": "de",
+        "summary": "Verlängerung Untersuchungshaft,"
+      },
+      {
+        "decision_id": "bger_4A_186_2026",
+        "docket": "4A_186/2026",
+        "date": "2026-05-13",
+        "court": "bger",
+        "language": "de",
+        "summary": "Mietvertrag,"
+      },
+      {
+        "decision_id": "bger_4A_158_2026",
+        "docket": "4A_158/2026",
+        "date": "2026-05-13",
+        "court": "bger",
+        "language": "de",
+        "summary": "Mietvertrag,"
+      },
+      {
+        "decision_id": "bger_9C_98_2026",
+        "docket": "9C_98/2026",
+        "date": "2026-05-12",
+        "court": "bger",
+        "language": "fr",
+        "summary": "Assurance-invalidité,"
+      },
+      {
+        "decision_id": "bger_9C_276_2026",
+        "docket": "9C_276/2026",
         "date": "2026-05-12",
         "court": "bger",
         "language": "de",
-        "summary": "Nichteintreten,"
+        "summary": "Alters- und Hinterlassenenversicherung,"
       },
       {
-        "decision_id": "bger_7B_480_2026",
-        "docket": "7B_480/2026",
-        "date": "2026-05-11",
+        "decision_id": "bger_7B_517_2026",
+        "docket": "7B_517/2026",
+        "date": "2026-05-12",
         "court": "bger",
         "language": "de",
-        "summary": "Verlängerung Sicherheitshaft; Nichteintreten,"
-      },
-      {
-        "decision_id": "bger_7B_465_2026",
-        "docket": "7B_465/2026",
-        "date": "2026-05-11",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Détention provisoire,"
-      },
-      {
-        "decision_id": "bger_5A_386_2026",
-        "docket": "5A_386/2026",
-        "date": "2026-05-08",
-        "court": "bger",
-        "language": "de",
-        "summary": "Rechtsverweigerung."
-      },
-      {
-        "decision_id": "bger_5A_208_2026",
-        "docket": "5A_208/2026",
-        "date": "2026-05-08",
-        "court": "bger",
-        "language": "fr",
-        "summary": "placement à des fins d'assistance,"
-      },
-      {
-        "decision_id": "bger_8C_220_2026",
-        "docket": "8C_220/2026",
-        "date": "2026-05-07",
-        "court": "bger",
-        "language": "de",
-        "summary": "Invalidenversicherung (Prozessvoraussetzung),"
-      },
-      {
-        "decision_id": "bger_7B_531_2026",
-        "docket": "7B_531/2026",
-        "date": "2026-05-07",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Qualité de partie plaignante; récusation (retrait de"
-      },
-      {
-        "decision_id": "bger_7B_501_2026",
-        "docket": "7B_501/2026",
-        "date": "2026-05-07",
-        "court": "bger",
-        "language": "de",
-        "summary": "Verlängerung der Sicherheitshaft,"
-      },
-      {
-        "decision_id": "bger_7B_488_2026",
-        "docket": "7B_488/2026",
-        "date": "2026-05-07",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Opposition tardive à une ordonnance pénale; restitution de délai; irrecevabilité du"
-      },
-      {
-        "decision_id": "bger_7B_312_2026",
-        "docket": "7B_312/2026",
-        "date": "2026-05-07",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Tardiveté de la déclaration d'appel; irrecevabilité du"
+        "summary": "Haftentlassung; Nichteintreten,"
       }
     ],
     "cantonal": [
@@ -4085,8 +4097,9 @@
     }
   ],
   "delta": {
-    "total": 188,
+    "total": 241,
     "by_court": {
+      "bger": 48,
       "ge_gerichte": 88,
       "bvger": 17,
       "vd_gerichte": 21,
@@ -4116,7 +4129,10 @@
       "SO": 14,
       "CE": 4
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 2664,
+      "statute_edges": 2997
+    },
     "previous_generated_at": "2026-05-26T15:53:44.663583+00:00"
   }
 }
