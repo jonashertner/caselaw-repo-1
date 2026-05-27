@@ -64,10 +64,14 @@ def fetch_pending(
 
     where = (
         "(full_text IS NULL OR LENGTH(full_text) < 200) "
-        "AND license IS NOT NULL "
-        "AND (license LIKE 'CC-BY%' "
-        "  OR license LIKE 'OA-Swiss-federal' "
-        "  OR license LIKE 'OA-author-permitted-reuse')"
+        "AND ("
+        "     license LIKE 'CC-BY%' "
+        "  OR license = 'OA-Swiss-federal' "
+        "  OR license = 'OA-author-permitted-reuse' "
+        "  OR license = 'info:eu-repo/semantics/openAccess' "
+        "  OR LOWER(license) IN ('openaccess','open access','open_access','free access') "
+        "  OR (license IS NULL AND source IN ('edoc_unibas_law','libra_unine'))"
+        ")"
     )
     params: list = []
     if source_filter:
