@@ -83,12 +83,19 @@ def fetch_first_pages(
     may share the same page across languages — we keep just one URI
     per (ref_type, year, page) at the SQL INSERT OR IGNORE level.
     """
+    # NOTE: historicalId is in the Cogni-internal namespace, NOT jolux.
+    # Discovered 2026-05-27 via predicate dump on eli/fga/2014/1001:
+    #   http://cogni.internal.system/model#historicalId -> "FF 2014 3988"
+    # This is the only way to map a Fedlex Work URI to its actual
+    # BBl/FF/AS page reference; the jolux:sequenceInTheYearOfPublication
+    # is a doc-index that does NOT match the BBl page.
     q = f"""
     PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
+    PREFIX cogni: <http://cogni.internal.system/model#>
     SELECT DISTINCT ?work ?historicalId WHERE {{
       ?work jolux:legalResourceFamilyType
             <https://fedlex.data.admin.ch/vocabulary/resource-family/{family}> .
-      ?work jolux:historicalId ?historicalId .
+      ?work cogni:historicalId ?historicalId .
       FILTER(STRSTARTS(STR(?work),
              "https://fedlex.data.admin.ch/eli/{family}/{year}/"))
     }}
