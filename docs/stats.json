@@ -2273,7 +2273,7 @@
     "2026-04": 1855,
     "2026-05": 360
   },
-  "generated_at": "2026-05-27T14:10:26.133136+00:00",
+  "generated_at": "2026-05-27T14:17:09.990167+00:00",
   "scraper_health": {
     "run_at": "2026-05-27T02:30:48.514158+00:00",
     "run_duration_s": 5387.8,
@@ -3352,15 +3352,16 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "scholarship_publications": 796,
+    "scholarship_publications": 840,
     "scholarship_by_source": {
       "onlinekommentar": 368,
       "sui_generis": 288,
-      "thegoodboard": 140
+      "thegoodboard": 140,
+      "leoh": 44
     },
     "scholarship_by_type": {
       "commentary": 398,
-      "article": 288,
+      "article": 332,
       "guidance": 70,
       "reference_article": 40
     },
