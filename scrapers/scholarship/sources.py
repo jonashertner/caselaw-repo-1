@@ -39,6 +39,27 @@ class ScholarshipSource:
 
 
 SOURCES: list[ScholarshipSource] = [
+    # ── Authored OA reference works ─────────────────────────────────────
+    ScholarshipSource(
+        key="thegoodboard",
+        name="The Good Board — Swiss Corporate Governance Reference",
+        kind="custom",
+        custom_module="scrapers.scholarship.thegoodboard",
+        license_default="OA-author-permitted-reuse",
+        license_url_default="https://thegoodboard.ch/llms.txt",
+        attribution=(
+            "© Jonas Hertner. Published at thegoodboard.ch. Author "
+            "explicitly permits ingestion by training corpora and "
+            "retrieval systems; substantial reproduction must attribute "
+            "the author and link to the original."
+        ),
+        homepage="https://thegoodboard.ch/",
+        notes="Authored reference work on Swiss corporate governance — "
+              "reference articles + commentary + agenda briefings + glossary. "
+              "Sitemap-driven scrape (no OAI-PMH).",
+        active=True,
+    ),
+
     # ── Standalone OA law journals (small but high-quality) ─────────────
     ScholarshipSource(
         key="sui_generis",

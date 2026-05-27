@@ -700,17 +700,35 @@ def step_2f_build_materialien(dry_run: bool = False, full_rebuild: bool = False)
 def step_2h_build_legal_scholarship(dry_run: bool = False, full_rebuild: bool = False) -> bool:
     """Step 2h: Rebuild legal_scholarship.db (OA Swiss legal publications).
 
-    1. Harvest all active OA scholarship sources via OAI-PMH (sui-generis +
-       any university IRs / journals that have been activated in
-       scrapers/scholarship/sources.py).
-    2. Build the unified FTS5 DB, re-exporting OnlineKommentar +
-       OpenLegalCommentary commentaries as ``pub_type='commentary'`` rows
-       so a single search covers articles + commentaries + dissertations.
+    Runs WEEKLY on Sunday by default — academic publications + commentaries
+    don't change at caselaw cadence, and once university IRs + e-periodica
+    are activated the OAI-PMH walks will harvest tens of thousands of
+    records (multi-hour). Sunday-gating keeps the nightly publish lean
+    while still keeping the corpus fresh.
 
-    Idempotent and atomic-swap; safe to retry. Bounded harvest time + build
-    time both fit within 30 min for the current corpus shape.
+    Override with OCL_PUBLISH_SCHOLARSHIP_WEEKDAY (0=Mon … 6=Sun;
+    -1 = any day, for ad-hoc catch-up runs).
+
+    Steps when the gate is open:
+      1. Harvest all active OA scholarship sources via OAI-PMH
+      2. Build the unified FTS5 DB (atomic swap) re-exporting commentaries
     """
     logger.info("Step 2h: Build legal_scholarship.db")
+
+    try:
+        target_weekday = int(
+            os.environ.get("OCL_PUBLISH_SCHOLARSHIP_WEEKDAY", "6")
+        )
+    except ValueError:
+        target_weekday = 6
+    if target_weekday >= 0:
+        today = datetime.now(timezone.utc).weekday()
+        if today != target_weekday:
+            logger.info(
+                "  weekday=%d ≠ target=%d; skipping (scholarship rebuilds weekly on Sunday)",
+                today, target_weekday,
+            )
+            return True
 
     builder = REPO_DIR / "search_stack" / "build_legal_scholarship.py"
     if not builder.exists():
@@ -721,7 +739,7 @@ def step_2h_build_legal_scholarship(dry_run: bool = False, full_rebuild: bool = 
         [sys.executable, "-m", "scrapers.scholarship.harvest_all"],
         "Harvest OA legal scholarship sources",
         dry_run,
-        timeout=1800,
+        timeout=3600,
     )
     if not harvest_ok:
         logger.warning("  scholarship harvest failed; building from existing JSONL only")
@@ -730,7 +748,7 @@ def step_2h_build_legal_scholarship(dry_run: bool = False, full_rebuild: bool = 
         [sys.executable, "-m", "search_stack.build_legal_scholarship"],
         "Build legal_scholarship.db",
         dry_run,
-        timeout=600,
+        timeout=900,
     )
 
 
