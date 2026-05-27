@@ -13098,6 +13098,15 @@ def _scholarship_attribution(source_key: str) -> dict:
     return attribution_for_source(source_key)
 
 
+def _scholarship_license_hint(license_code: str | None) -> dict:
+    """Defer-import the per-license usage-rights hint."""
+    try:
+        from scrapers.scholarship.sources import license_usage_hint
+    except Exception:
+        return {"license": license_code}
+    return license_usage_hint(license_code)
+
+
 def search_scholarship(
     query: str,
     *,
@@ -13163,6 +13172,7 @@ def search_scholarship(
         ).fetchall()
         results = []
         sources_seen: set[str] = set()
+        licenses_seen: set[str] = set()
         for r in rows:
             results.append({
                 "pub_id": r["pub_id"],
@@ -13180,7 +13190,10 @@ def search_scholarship(
                 "snippet": r["snippet"],
             })
             sources_seen.add(r["source"])
+            if r["license"]:
+                licenses_seen.add(r["license"])
         attributions = [_scholarship_attribution(s) for s in sorted(sources_seen)]
+        license_usage = [_scholarship_license_hint(l) for l in sorted(licenses_seen)]
         return {
             "query": query,
             "count": len(results),
@@ -13188,6 +13201,11 @@ def search_scholarship(
             # CC-BY / CC-BY-SA attribution requirement — every consumer of
             # this corpus (LLM, REST client, web UI) MUST surface this block.
             "attributions": attributions,
+            # Machine-readable downstream-use guidance per license code
+            # present in the result set. Consumers should respect these
+            # flags (e.g. an LLM should not paraphrase CC-BY-ND content,
+            # and commercial products should not re-distribute CC-BY-NC).
+            "license_usage": license_usage,
         }
     except sqlite3.Error as e:
         logger.error("scholarship search error: %s", e)
@@ -13232,6 +13250,8 @@ def get_scholarship(pub_id: str) -> dict:
         ]
         # CC-BY / CC-BY-SA: must surface attribution alongside the work.
         d["attribution"] = _scholarship_attribution(d["source"])
+        # Machine-readable downstream-use guidance for THIS record's license.
+        d["license_usage"] = _scholarship_license_hint(d.get("license"))
         return d
     except sqlite3.Error as e:
         logger.error("scholarship get error: %s", e)
@@ -13376,6 +13396,12 @@ def _format_search_scholarship_response(result: dict) -> str:
             text += line + "\n"
             if a.get("attribution"):
                 text += f"  {a['attribution']}\n"
+    # Per-license downstream-use guidance.
+    licenses_present = result.get("license_usage") or []
+    if licenses_present:
+        text += "\n**License usage guidance (per license code in this result set):**\n"
+        for L in licenses_present:
+            text += f"- **{L.get('license', '(none)')}**: {L.get('note', '')}\n"
     return text
 
 

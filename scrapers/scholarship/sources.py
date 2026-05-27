@@ -342,6 +342,130 @@ def attribution_for_source(source_key: str) -> dict:
     }
 
 
+def license_usage_hint(license_code: str | None) -> dict:
+    """Return machine-readable downstream-use guidance for a license code.
+
+    Surfaced in MCP responses so LLMs / consumers know what they can do
+    with the content. Keyed by upstream CC code + our internal labels.
+    """
+    if not license_code:
+        return {
+            "license": None,
+            "may_attribute": True,
+            "may_quote_verbatim": True,
+            "may_summarize_or_paraphrase": "unknown",
+            "may_redistribute": "unknown",
+            "may_use_commercially": "unknown",
+            "share_alike_required": False,
+            "note": (
+                "License not declared by the source. Default to fair-use "
+                "quotation with attribution; do not redistribute without "
+                "verifying the upstream rights statement."
+            ),
+        }
+    code = license_code.upper()
+    base = {
+        "license": code,
+        "may_attribute": True,
+        "may_quote_verbatim": True,
+        "may_summarize_or_paraphrase": True,
+        "may_redistribute": True,
+        "may_use_commercially": True,
+        "share_alike_required": False,
+        "note": "",
+    }
+    if code == "CC-BY-4.0":
+        base["note"] = (
+            "CC-BY-4.0: attribution required (author + license + link). "
+            "Derivatives, commercial use, and redistribution are permitted."
+        )
+        return base
+    if code == "CC-BY-SA-4.0":
+        base["share_alike_required"] = True
+        base["note"] = (
+            "CC-BY-SA-4.0: attribution required. Derivatives MUST be "
+            "released under CC-BY-SA-4.0 (Share-Alike). Indexing/search "
+            "is a §3(b) collection — not a derivative — so the index "
+            "itself need not be CC-BY-SA. Quotation downstream is fine."
+        )
+        return base
+    if code == "CC-BY-ND-4.0":
+        base["may_summarize_or_paraphrase"] = False
+        base["note"] = (
+            "CC-BY-ND-4.0: attribution required, NoDerivatives. You may "
+            "quote verbatim with attribution; you may NOT publish a "
+            "modified, paraphrased, abridged, or transformed version. "
+            "LLM-generated summaries that re-publish modified content "
+            "violate the ND clause."
+        )
+        return base
+    if code == "CC-BY-NC-4.0":
+        base["may_use_commercially"] = False
+        base["note"] = (
+            "CC-BY-NC-4.0: attribution required; non-commercial use only. "
+            "Re-use in a commercial product or service requires separate "
+            "permission from the rightsholder."
+        )
+        return base
+    if code == "CC-BY-NC-SA-4.0":
+        base["may_use_commercially"] = False
+        base["share_alike_required"] = True
+        base["note"] = (
+            "CC-BY-NC-SA-4.0: attribution required, non-commercial only, "
+            "Share-Alike. Derivatives must be CC-BY-NC-SA-4.0. Commercial "
+            "use requires separate permission from the rightsholder."
+        )
+        return base
+    if code == "CC-BY-NC-ND-4.0":
+        base["may_use_commercially"] = False
+        base["may_summarize_or_paraphrase"] = False
+        base["note"] = (
+            "CC-BY-NC-ND-4.0: attribution required, non-commercial, "
+            "NoDerivatives. Verbatim quotation with attribution only; "
+            "no modification; no commercial use."
+        )
+        return base
+    if code == "OA-AUTHOR-PERMITTED-REUSE":
+        base["note"] = (
+            "OA-author-permitted-reuse: author has explicitly invited "
+            "training corpora and retrieval systems to ingest the work. "
+            "Substantial reproduction must attribute the author and link "
+            "to the original."
+        )
+        return base
+    if code == "OA-SWISS-FEDERAL":
+        base["note"] = (
+            "Federal Swiss publication: no copyright under Art. 5(1)(a) URG. "
+            "Reproduction permitted without permission; attribution courteous."
+        )
+        return base
+    if code == "ETH-LIBRARY-FREE-TO-READ":
+        base["may_redistribute"] = "see-source"
+        base["note"] = (
+            "ETH Library 'free to read' grant: full text accessible; "
+            "redistribution rights vary by upstream publisher. Check the "
+            "original record before redistributing."
+        )
+        return base
+    if code == "OA-NO-REDISTRIBUTION":
+        base["may_redistribute"] = False
+        base["note"] = (
+            "Open access for reading; redistribution beyond fair use "
+            "requires permission from the publisher."
+        )
+        return base
+    # Unknown / vendor-specific
+    base["note"] = (
+        f"License '{license_code}' is not a recognized CC variant. Treat "
+        "as 'all rights reserved' for derivative work and redistribution; "
+        "fair-use quotation with attribution should still be safe."
+    )
+    base["may_summarize_or_paraphrase"] = "unknown"
+    base["may_redistribute"] = "unknown"
+    base["may_use_commercially"] = "unknown"
+    return base
+
+
 def licenses_catalog() -> list[dict]:
     """Full source/license catalog including re-exported corpora.
 
