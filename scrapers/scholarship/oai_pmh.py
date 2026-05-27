@@ -223,6 +223,27 @@ def _record_to_dict(rec: ET.Element, source: str) -> dict | None:
     }
 
 
+def _record_matches_subject(record_dict: dict, subject_keywords: list[str]) -> bool:
+    """Return True if any of the record's dc:subject values contain any
+    keyword (case-insensitive).
+
+    Used to post-hoc filter big multi-faculty IRs to law content only.
+    Tests against:
+      - dc:subject strings (typically Dewey codes, keywords, MeSH terms)
+      - record types (for DDC-style 'info:eu-repo/classification/ddc/340')
+      - title (some IRs put DDC code in subject as plain '340')
+    """
+    if not subject_keywords:
+        return True
+    haystack = " ".join([
+        " | ".join(record_dict.get("subjects") or []),
+        " | ".join(record_dict.get("types_raw") or []),
+        record_dict.get("title") or "",
+        " | ".join(record_dict.get("languages_raw") or []),
+    ]).lower()
+    return any(k.lower() in haystack for k in subject_keywords)
+
+
 def harvest(
     base_url: str,
     source: str,
@@ -234,6 +255,7 @@ def harvest(
     output_dir: Path = DEFAULT_OUT,
     rate_limit: float = 1.0,
     max_records: int | None = None,
+    subject_filter: list[str] | None = None,
     user_agent: str = "OpenCaseLaw-scholarship/0.1 (+https://opencaselaw.ch)",
 ) -> dict:
     """Stream OAI-PMH ListRecords into a JSONL file.
@@ -303,6 +325,7 @@ def harvest(
                 break
 
             page_real = 0
+            page_filtered = 0
             for rec in list_recs.findall(f"{{{OAI_NS}}}record"):
                 # Surface deleted-record stats without writing them out
                 hdr = rec.find(f"{{{OAI_NS}}}header")
@@ -312,6 +335,9 @@ def harvest(
                 d = _record_to_dict(rec, source)
                 if d is None:
                     continue
+                if subject_filter and not _record_matches_subject(d, subject_filter):
+                    page_filtered += 1
+                    continue
                 fh.write(json.dumps(d, ensure_ascii=False) + "\n")
                 total += 1
                 page_real += 1
@@ -319,8 +345,8 @@ def harvest(
                     break
 
             log.info(
-                "%s page %d: %d records (running total: %d, deleted: %d)",
-                source, pages, page_real, total, deleted,
+                "%s page %d: %d records (running total: %d, deleted: %d, subject-filtered: %d)",
+                source, pages, page_real, total, deleted, page_filtered,
             )
 
             if max_records and total >= max_records:

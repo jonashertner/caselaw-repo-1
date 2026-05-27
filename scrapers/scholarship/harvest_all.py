@@ -35,6 +35,7 @@ def run_source(src, *, max_records: int | None = None) -> dict:
             metadata_prefix=src.metadata_prefix,
             rate_limit=src.rate_limit,
             max_records=max_records,
+            subject_filter=list(src.subject_filter) if src.subject_filter else None,
         )
     if src.kind == "custom":
         if not src.custom_module:

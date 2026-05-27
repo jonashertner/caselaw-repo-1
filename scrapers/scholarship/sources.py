@@ -22,6 +22,12 @@ class ScholarshipSource:
     set_spec: Optional[str] = None
     metadata_prefix: str = "oai_dc"
     rate_limit: float = 1.0
+    # Post-hoc subject-keyword filter applied during OAI ingest. When set,
+    # only records whose dc:subject (or DDC classification, types, title,
+    # language metadata) contains at least one of these keywords (case-
+    # insensitive) are kept. Used to filter big multi-faculty IRs to law.
+    # Example: ["340", "law", "Recht", "droit", "diritto", "Rechtswissenschaft"]
+    subject_filter: tuple[str, ...] = ()
     # Default-license metadata applied when individual records don't carry
     # license info. The CC license URL we display in attribution.
     license_default: Optional[str] = None
@@ -139,85 +145,156 @@ SOURCES: list[ScholarshipSource] = [
     # All Swiss IRs expose OAI-PMH. Set specs vary; "law"-filter discovery is
     # per-IR (some use faculty codes, some Dewey 340, some custom). Listed
     # here as scaffolding; activate as set-spec is verified.
+    # Law-keyword subject filter applied to multi-faculty IRs. Catches:
+    #   - Dewey "340" code in dc:subject or DDC URI
+    #   - German "Recht" / "Rechtswissenschaft" / "Jura"
+    #   - French "droit" / "jurisprudence"
+    #   - Italian "diritto" / "giurisprudenza"
+    #   - English "law" (LEGAL_KEYWORDS reused below)
+    # _LAW_KEYWORDS exposed as a module-level tuple in case downstream
+    # tooling needs to query the same filter.
+
+    # --- multi-faculty IRs (broad harvest + subject filter to law) ---
+    ScholarshipSource(
+        key="unige_law",
+        name="UNIGE Archive ouverte — law content",
+        kind="oai_pmh",
+        base_url="https://archive-ouverte.unige.ch/oai",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence", "ddc/340", "ddc:340",
+        ),
+        rate_limit=1.0,
+        license_default=None,
+        attribution=(
+            "© respective authors. Deposited at Archive ouverte UNIGE "
+            "(University of Geneva). License per record — typically CC-BY or "
+            "'free to read'; check the per-record license field."
+        ),
+        homepage="https://archive-ouverte.unige.ch/",
+        notes="UNIGE full-text + metadata. Filtered post-hoc to law-keyword "
+              "subjects (~124k total records).",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="alexandria_law",
+        name="UniSG Alexandria — law + business law content",
+        kind="oai_pmh",
+        base_url="https://www.alexandria.unisg.ch/server/oai/request",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in Alexandria, University of "
+            "St Gallen's research portal. License per record."
+        ),
+        homepage="https://www.alexandria.unisg.ch/",
+        notes="UniSG repository (DSpace). Filtered post-hoc to law-keyword "
+              "subjects (~61k total records).",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="eth_research_collection",
+        name="ETH Research Collection — law content",
+        kind="oai_pmh",
+        base_url="https://www.research-collection.ethz.ch/oai/request",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence", "Rechtsökonomie", "Rechts",
+            "Regulierung", "regulation",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in ETH Research Collection, "
+            "ETH Zurich. License per record."
+        ),
+        homepage="https://www.research-collection.ethz.ch/",
+        notes="ETH RC (DSpace). Mostly STEM; filtered to law-relevant subjects "
+              "to catch legal-tech, regulation, ethics, governance research "
+              "(~113k total records, expect ~1-3% match rate).",
+        active=True,
+    ),
+
+    # --- IRs we couldn't reach via OAI-PMH from probe (left scaffolded) ---
     ScholarshipSource(
         key="zora_law",
-        name="UZH ZORA — law faculty",
+        name="UZH ZORA — law faculty (endpoint TBD)",
         kind="oai_pmh",
         base_url="https://www.zora.uzh.ch/cgi/oai2",
-        set_spec=None,   # ZORA sets are per-DDC; needs discovery + multi-set merge
+        set_spec=None,
         attribution=(
             "© respective authors. Deposited in the Zurich Open Repository and "
-            "Archive (ZORA), University of Zurich. License per record — typically "
-            "the author's CC-BY or 'free to read' grant; check each item."
+            "Archive (ZORA), University of Zurich. License per record."
         ),
         homepage="https://www.zora.uzh.ch/",
-        notes="University of Zurich's repository. Filter to Faculty of Law "
-              "via DDC 340 or organisational set.",
+        notes="UZH repository. OAI endpoint URL unverified — probe returned "
+              "404 from both local + VPS. May have migrated; needs research.",
         active=False,
     ),
     ScholarshipSource(
         key="boris_law",
-        name="UniBE BORIS — law faculty",
+        name="UniBE BORIS — law faculty (endpoint TBD)",
         kind="oai_pmh",
         base_url="https://boris.unibe.ch/cgi/oai2",
-        notes="University of Bern's EPrints-based repository.",
+        notes="UniBE migrated to BORIS Portal; OAI endpoint URL changed. "
+              "Probe returned 400/HTML; needs research.",
         active=False,
     ),
     ScholarshipSource(
         key="serval_law",
-        name="UNIL SERVAL — law faculty",
+        name="UNIL SERVAL — law faculty (endpoint TBD)",
         kind="oai_pmh",
         base_url="https://serval.unil.ch/oai2",
-        notes="University of Lausanne. Filter to Faculté de droit.",
-        active=False,
-    ),
-    ScholarshipSource(
-        key="unige_law",
-        name="UNIGE Archive ouverte — law faculty",
-        kind="oai_pmh",
-        base_url="https://archive-ouverte.unige.ch/oai2",
-        notes="University of Geneva. Filter to Faculté de droit.",
+        notes="OAI endpoint URL returns HTML, not XML. Needs research.",
         active=False,
     ),
     ScholarshipSource(
         key="edoc_unibas_law",
-        name="UniBas edoc — law faculty",
+        name="UniBas edoc — law faculty (endpoint TBD)",
         kind="oai_pmh",
         base_url="https://edoc.unibas.ch/cgi/oai2",
-        notes="University of Basel. EPrints. Filter to Rechtswissenschaft.",
+        notes="Probe returned 404; needs research.",
         active=False,
     ),
     ScholarshipSource(
         key="folia_law",
-        name="UniFR FOLIA — law faculty",
+        name="UniFR FOLIA — law faculty (endpoint TBD)",
         kind="oai_pmh",
         base_url="https://folia.unifr.ch/oai2",
-        notes="University of Fribourg, bilingual (de/fr). Filter to law.",
-        active=False,
-    ),
-    ScholarshipSource(
-        key="alexandria_law",
-        name="UniSG Alexandria — law + business law",
-        kind="oai_pmh",
-        base_url="https://www.alexandria.unisg.ch/cgi/oai2",
-        notes="University of St Gallen. Filter to law subject set.",
+        notes="University of Fribourg, bilingual (de/fr). Endpoint URL TBD.",
         active=False,
     ),
     ScholarshipSource(
         key="libra_law",
-        name="UniNE LIBRA — law faculty",
+        name="UniNE LIBRA — law faculty (endpoint TBD)",
         kind="oai_pmh",
         base_url="https://libra.unine.ch/oai2",
-        notes="University of Neuchâtel.",
+        notes="University of Neuchâtel. Probe returned 404; needs research.",
         active=False,
     ),
     ScholarshipSource(
         key="unilu_law",
-        name="UniLU — law faculty",
+        name="UniLU — law faculty (endpoint TBD)",
         kind="oai_pmh",
-        base_url="https://zenodo.org/oai2d",  # tentative
-        notes="University of Lucerne deposits to Zenodo + own portal. "
-              "Endpoint TBD.",
+        base_url="https://zenodo.org/oai2d",
+        notes="UniLU may deposit to Zenodo. Endpoint TBD.",
+        active=False,
+    ),
+    ScholarshipSource(
+        key="infoscience_epfl",
+        name="EPFL Infoscience — law content (deferred)",
+        kind="oai_pmh",
+        base_url="https://infoscience.epfl.ch/oai2d",
+        subject_filter=(
+            "340", "law", "Recht", "droit", "diritto", "ethics", "policy",
+        ),
+        notes="EPFL is STEM-focused; law content is minimal (regulatory "
+              "tech, ethics policy). Active only if first three IRs settle.",
         active=False,
     ),
 
