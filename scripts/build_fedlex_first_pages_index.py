@@ -101,13 +101,24 @@ def build_index(
     """Build the fedlex_first_pages index, atomic-swap on completion."""
     year_max = year_max or datetime.now(timezone.utc).year
     tmp_path = db_path.with_suffix(".db.tmp")
-    if tmp_path.exists():
-        tmp_path.unlink()
+    # Also remove leftover WAL/SHM auxiliary files from a prior failed run.
+    for aux in (
+        tmp_path,
+        tmp_path.with_name(tmp_path.name + "-wal"),
+        tmp_path.with_name(tmp_path.name + "-shm"),
+        tmp_path.with_name(tmp_path.name + "-journal"),
+    ):
+        if aux.exists():
+            aux.unlink()
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # NOTE: keep DELETE journal mode (default) — the index is small
+    # and the build is single-writer one-shot. Using WAL here previously
+    # left the main .db.tmp file in an undefined state after the
+    # WAL→DELETE switch, causing os.replace to fail with FileNotFound.
     conn = sqlite3.connect(str(tmp_path))
+    conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA_SQL)
-    conn.execute("PRAGMA journal_mode=WAL")
 
     summary = {"fga_total": 0, "oc_total": 0, "years_with_data": 0}
     for family in ("fga", "oc"):
@@ -142,7 +153,6 @@ def build_index(
         "INSERT OR REPLACE INTO meta(key, value) VALUES ('summary', ?)",
         (_json.dumps(summary),),
     )
-    conn.execute("PRAGMA journal_mode=DELETE")
     conn.commit()
     conn.close()
 
