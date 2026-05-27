@@ -81,6 +81,26 @@ SOURCES: list[ScholarshipSource] = [
         active=True,
     ),
     ScholarshipSource(
+        key="leoh",
+        name="LEOH — Journal of Animal Law, Ethics and One Health",
+        kind="oai_pmh",
+        base_url="https://leoh.ch/oai",
+        set_spec="leoh",
+        license_default="CC-BY-ND-4.0",
+        license_url_default="https://creativecommons.org/licenses/by-nd/4.0/",
+        attribution=(
+            "© respective authors. Published in LEOH — Journal of Animal Law, "
+            "Ethics and One Health (leoh.ch), peer-reviewed OA. Per-record "
+            "license is typically CC-BY-ND-4.0 (no derivative works); some "
+            "articles may carry CC-BY-4.0 — always check the per-record "
+            "license field before deriving or remixing."
+        ),
+        homepage="https://leoh.ch/",
+        notes="OJS, hosted on hope.uzh.ch like sui-generis. Sub-sets cover "
+              "articles, legal education, jurisprudence, legislation, book reviews.",
+        active=True,
+    ),
+    ScholarshipSource(
         key="leges",
         name="LeGes — Gesetzgebung & Evaluation (Bundeskanzlei)",
         kind="custom",
