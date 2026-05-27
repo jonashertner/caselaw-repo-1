@@ -95,6 +95,8 @@ def harvest(*, max_records: int | None = None,
     started = time.time()
 
     # First fetch author profiles so we can resolve UUID→name.
+    # Real schema (discovered 2026-05-27): id, username, full_name,
+    # avatar_url, website, about, linkedin, updated_at.
     log.info("fetching profiles map…")
     profiles_by_id: dict[str, str] = {}
     try:
@@ -103,7 +105,7 @@ def harvest(*, max_records: int | None = None,
             batch = _fetch_json(
                 "/profiles",
                 {
-                    "select": "id,vorname,nachname,academic_title,user_name",
+                    "select": "id,username,full_name",
                     "limit": "1000",
                     "offset": str(offset),
                 },
@@ -114,14 +116,7 @@ def harvest(*, max_records: int | None = None,
                 pid = p.get("id")
                 if not pid:
                     continue
-                name = ", ".join(
-                    x for x in [p.get("nachname"), p.get("vorname")]
-                    if x
-                )
-                if not name:
-                    name = p.get("user_name") or pid
-                if p.get("academic_title"):
-                    name = f"{p['academic_title']} {name}"
+                name = p.get("full_name") or p.get("username") or pid
                 profiles_by_id[pid] = name.strip()
             if len(batch) < 1000:
                 break

@@ -51,6 +51,60 @@ class ScholarshipSource:
 
 SOURCES: list[ScholarshipSource] = [
     # ── Historical Swiss legal periodicals via e-periodica (ETH Library) ─
+    # Strategy: harvest the primary law set (ddc:340) AND adjacent DDC sets
+    # that often contain law-relevant content (political science 320, public
+    # admin 350) with a law-keyword subject filter to catch border-line
+    # records that ETH didn't classify primarily as Law. Each set returns
+    # ~3,000-30,000 records on full walk.
+    ScholarshipSource(
+        key="e_periodica_polsci",
+        name="e-periodica — political science (law-filtered)",
+        kind="oai_pmh",
+        base_url="https://www.e-periodica.ch/oai",
+        set_spec="ddc:320",
+        subject_filter=(
+            "Recht", "Verfassung", "Bundesgericht", "Bundesrecht",
+            "Strafrecht", "Staatsrecht", "Verwaltungsrecht", "Völkerrecht",
+            "droit", "constitution", "Gesetz", "law", "diritto",
+            "jurisprudence", "Rechts",
+        ),
+        rate_limit=1.0,
+        license_default="rightsstatements-in-copyright",
+        license_url_default="https://rightsstatements.org/vocab/InC/1.0/",
+        attribution=(
+            "© respective rightsholders. Digitized by ETH Library "
+            "(e-periodica.ch). Set ddc:320 (Political science) filtered "
+            "post-hoc to law-relevant subjects."
+        ),
+        homepage="https://www.e-periodica.ch/",
+        notes="Catches law-adjacent records ETH classified under DDC 320 "
+              "(constitutional law, public-law journals).",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="e_periodica_pubadmin",
+        name="e-periodica — public administration (law-filtered)",
+        kind="oai_pmh",
+        base_url="https://www.e-periodica.ch/oai",
+        set_spec="ddc:350",
+        subject_filter=(
+            "Recht", "Verfassung", "Bundesrecht", "Verwaltungsrecht",
+            "Verwaltung", "Gesetz", "droit", "law", "diritto",
+            "amtlich", "Behörde", "Polizei", "police", "Justiz",
+        ),
+        rate_limit=1.0,
+        license_default="rightsstatements-in-copyright",
+        license_url_default="https://rightsstatements.org/vocab/InC/1.0/",
+        attribution=(
+            "© respective rightsholders. Digitized by ETH Library "
+            "(e-periodica.ch). Set ddc:350 (Public administration) "
+            "filtered post-hoc to law-relevant subjects."
+        ),
+        homepage="https://www.e-periodica.ch/",
+        notes="Catches admin-law journals and police/justice ministry "
+              "publications under DDC 350.",
+        active=True,
+    ),
     ScholarshipSource(
         key="e_periodica_law",
         name="e-periodica — Swiss historical law journals (ETH Library)",
