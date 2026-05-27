@@ -2683,10 +2683,6 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
         <li><strong>e-Helvetica</strong> federal deposits — theses + government reports at the Swiss National Library.</li>
         <li><strong>Justice-Justiz-Giustizia</strong> — Swiss judges' association journal (OA portion only).</li>
       </ul>
-      <p>
-        Honest framing: the most-cited recent commercial Swiss legal scholarship (AJP, ZSR new volumes, SJZ, forumpoenale) remains paywalled and will not be indexed. This corpus is the
-        <em>free index of OA Swiss legal scholarship</em>, complementing — not replacing — paid aggregators.
-      </p>
     </details>
   </section>
 
@@ -6354,10 +6350,8 @@ init();
       var empty = document.createElement('div');
       empty.className = 'scholarship-results-empty';
       empty.textContent = 'No results for "' + query + '". '
-        + 'The corpus only indexes open-access publications — paywalled '
-        + 'titles (AJP, ZSR new volumes, SJZ, forumpoenale, …) are not '
-        + 'included. Try a less specific query, or a different '
-        + 'spelling of an author name.';
+        + 'Try a less specific query, or a different spelling of '
+        + 'an author name.';
       resultsEl.appendChild(empty);
       return;
     }
