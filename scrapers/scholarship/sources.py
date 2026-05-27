@@ -45,6 +45,76 @@ class ScholarshipSource:
 
 
 SOURCES: list[ScholarshipSource] = [
+    # ── Historical Swiss legal periodicals via e-periodica (ETH Library) ─
+    ScholarshipSource(
+        key="e_periodica_law",
+        name="e-periodica — Swiss historical law journals (ETH Library)",
+        kind="oai_pmh",
+        base_url="https://www.e-periodica.ch/oai",
+        set_spec="ddc:340",
+        rate_limit=1.0,
+        license_default="rightsstatements-in-copyright",
+        license_url_default="https://rightsstatements.org/vocab/InC/1.0/",
+        attribution=(
+            "© respective rightsholders. Digitized and made freely available "
+            "by ETH Library (e-periodica.ch). Each record links to its "
+            "ETH-hosted PDF/HTML view. Re-use beyond fair-use private/non-"
+            "commercial reading requires checking the per-issue rights "
+            "statement on e-periodica.ch."
+        ),
+        homepage="https://www.e-periodica.ch/",
+        notes="ETH Library's digitization of Swiss periodicals. Set 'ddc:340' "
+              "filters all 400+ journals to law (Dewey 340). Records include "
+              "legal texts from 1708 onwards (e.g. Berner Sammlung der "
+              "Kantonsgesetze, ZSR/ZBJV/SJZ/RDS historical issues). OAI "
+              "identifier format: 'oai:agora.ch:<journal>:YYYY:<issue>::<page>'.",
+        active=True,
+    ),
+
+    # ── Repositorium.ch — Swiss-law disciplinary repository ──────────────
+    ScholarshipSource(
+        key="repositorium_ch",
+        name="Repositorium.ch — Swiss-law disciplinary repository",
+        kind="custom",
+        custom_module="scrapers.scholarship.repositorium_ch",
+        license_default="OA-author-deposited",
+        license_url_default="https://repositorium.ch/",
+        attribution=(
+            "© respective authors. Self-deposited on Repositorium.ch — a "
+            "Swiss-law-focused disciplinary repository run by a non-profit "
+            "association, supported by the UZH Faculty of Law. License per "
+            "record."
+        ),
+        homepage="https://repositorium.ch/",
+        notes="Supabase-backed PostgREST API at api.repositorium.ch with the "
+              "public anonymous JWT key. Currently small (~31 publications) "
+              "but high-quality Swiss law content with rich metadata.",
+        active=True,
+    ),
+
+    # ── UniNE LIBRA — discovered as working DSpace 7 OAI 2026-05-27 ──────
+    ScholarshipSource(
+        key="libra_unine",
+        name="UniNE LIBRA — law content",
+        kind="oai_pmh",
+        base_url="https://libra.unine.ch/server/oai/request",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in LIBRA, the institutional "
+            "repository of the University of Neuchâtel (DSpace 7). License "
+            "per record."
+        ),
+        homepage="https://libra.unine.ch/",
+        notes="UniNE repository (DSpace 7). ~31k records (earliest 2025-09 — "
+              "newly launched repo). Filtered to law-keyword subjects.",
+        active=True,
+    ),
+
     # ── Authored OA reference works ─────────────────────────────────────
     ScholarshipSource(
         key="thegoodboard",
@@ -452,21 +522,7 @@ SOURCES: list[ScholarshipSource] = [
         active=False,
     ),
 
-    # ── Historical legal periodicals via e-periodica.ch (ETH Library) ──
-    # e-periodica hosts ~30 Swiss law journals with full-text OCR + PDFs,
-    # mostly with moving wall ~5-10 years. Tremendous historical coverage
-    # (ZBJV from 1872, ZSR from 1881, etc.).
-    ScholarshipSource(
-        key="e_periodica_law",
-        name="e-periodica law journals (ETH Library)",
-        kind="custom",
-        custom_module="scrapers.scholarship.e_periodica",
-        license_default="ETH-Library-free-to-read",
-        notes="ZBJV (1872–), ZSR historical, SJZ historical, RDS, Revue de "
-              "droit administratif et de droit fiscal, plus ~25 other "
-              "journals. No OAI-PMH on e-periodica; per-issue HTML scrape.",
-        active=False,
-    ),
+    # (e_periodica_law is now ACTIVE via OAI-PMH near the top — set ddc:340)
 ]
 
 
