@@ -390,6 +390,86 @@ def build_db(
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA_SQL)
 
+    # ── PRESERVE: bulk-ingest tables from any prior materialien.db ──
+    # Other pipelines write tables into materialien.db that this script
+    # does not know about:
+    #   * build_botschaft_corpus.py → botschaft_documents,
+    #     botschaft_paragraphs (multi-hour SPARQL+PDF ingest)
+    #   * enrich_botschaft_links.py → article_botschaft_links
+    # Before 2026-05-27 the atomic-swap pattern below silently wiped
+    # these tables every publish (Step 2f rebuilt a fresh .tmp from
+    # SCHEMA_SQL only, then os.replace'd over the live DB). The daily
+    # materialien.service then re-built them from scratch the next
+    # morning — a ~5h round trip lost each day. Bug discovered when
+    # Simon Betschmann's amendment-ref report triggered an audit
+    # (2026-05-27); the same audit then traced the 12% coverage hit
+    # in /article-purpose to this wipe-and-rebuild cycle.
+    #
+    # Fix: open the live DB read-only, attach it to the .tmp, and
+    # copy any tables that are NOT in our SCHEMA_SQL before swap.
+    _real_path = Path(os.path.realpath(str(output_path)))
+    if _real_path.exists() and _real_path.stat().st_size > 4096:
+        conn.execute(f"ATTACH DATABASE '{_real_path}' AS live")
+        # Tables OUR schema owns — never preserve these from live
+        # (they're being rebuilt from authoritative source data).
+        _OWN_TABLES = {
+            "materialien", "parliamentary_modifications", "meta",
+            "amendment_refs", "debate_pages",
+            "materialien_fts", "materialien_fts_data",
+            "materialien_fts_idx", "materialien_fts_docsize",
+            "materialien_fts_config",
+            "debate_fts", "debate_fts_data", "debate_fts_idx",
+            "debate_fts_docsize", "debate_fts_config",
+            "sqlite_sequence",
+        }
+        preserved: list[tuple[str, int]] = []
+        for (live_name,) in conn.execute(
+            "SELECT name FROM live.sqlite_master WHERE type='table'"
+        ).fetchall():
+            if live_name in _OWN_TABLES:
+                continue
+            # Recreate the table schema in the .tmp from the live
+            # sqlite_master.sql definition, then INSERT … SELECT *.
+            schema_row = conn.execute(
+                "SELECT sql FROM live.sqlite_master WHERE name=?",
+                (live_name,),
+            ).fetchone()
+            if not schema_row or not schema_row[0]:
+                continue
+            try:
+                conn.execute(schema_row[0])
+                cur = conn.execute(
+                    f"INSERT INTO \"{live_name}\" SELECT * FROM live.\"{live_name}\""
+                )
+                n = conn.execute(
+                    f"SELECT COUNT(*) FROM \"{live_name}\""
+                ).fetchone()[0]
+                preserved.append((live_name, n))
+            except sqlite3.Error as e:
+                logger.warning(
+                    "Could not preserve table %s: %s", live_name, e,
+                )
+                continue
+            # Re-create any indexes/triggers on that table from live
+            for (idx_sql,) in conn.execute(
+                "SELECT sql FROM live.sqlite_master "
+                "WHERE type IN ('index','trigger') AND tbl_name=? "
+                "AND sql IS NOT NULL AND name NOT LIKE 'sqlite_%'",
+                (live_name,),
+            ).fetchall():
+                try:
+                    conn.execute(idx_sql)
+                except sqlite3.Error:
+                    pass
+        conn.execute("DETACH DATABASE live")
+        conn.commit()
+        if preserved:
+            logger.info(
+                "Preserved %d table(s) from live materialien.db: %s",
+                len(preserved),
+                ", ".join(f"{t}({n})" for t, n in preserved),
+            )
+
     # ── Layer 1: Fedlex statute footnotes (AS/BBl refs) ──────────
     fedlex_count = 0
     if not skip_fedlex:
