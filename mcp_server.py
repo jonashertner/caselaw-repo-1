@@ -19668,6 +19668,50 @@ setInterval(load, 30000);
                     # pages and its SPA serves a page-not-found.
                     if _check_fedlex_uri_exists(ref_type, year, page):
                         return {"eli_uri": row[0], "url": row[0]}
+                    # Inner-page citation. Try to resolve to the
+                    # CONTAINING document's first-page via the
+                    # fedlex_first_pages index (built by
+                    # scripts/build_fedlex_first_pages_index.py). If the
+                    # index is present and has data for this year, we
+                    # find max(first_page) <= cited_page in the same
+                    # family.
+                    family = "fga" if ref_type in ("BBl", "FF") else "oc"
+                    ffp_path = os.path.join(_dir, "fedlex_first_pages.db")
+                    container = None
+                    if os.path.exists(ffp_path):
+                        try:
+                            ffp = sqlite3.connect(
+                                f"file:{ffp_path}?mode=ro&immutable=1",
+                                uri=True, timeout=1,
+                            )
+                            r2 = ffp.execute(
+                                "SELECT MAX(page) FROM fedlex_first_pages "
+                                "WHERE family=? AND year=? AND page<=?",
+                                (family, year, page),
+                            ).fetchone()
+                            ffp.close()
+                            if r2 and r2[0]:
+                                container = int(r2[0])
+                        except sqlite3.Error:
+                            container = None
+                    if container is not None and container != page:
+                        container_url = (
+                            f"https://www.fedlex.admin.ch/eli/"
+                            f"{family}/{year}/{container}"
+                        )
+                        return {
+                            "eli_uri": container_url,
+                            "url": container_url,
+                            "fedlex_status": "containing_document",
+                            "cited_page": page,
+                            "container_first_page": container,
+                            "note": (
+                                f"{ref_type} {year} {page} is an inner-page "
+                                f"citation; the linked URL points to the "
+                                f"containing publication, which starts at "
+                                f"{ref_type} {year} {container}."
+                            ),
+                        }
                     return {
                         "eli_uri": None,
                         "fedlex_status": "inner_page_no_direct_url",
