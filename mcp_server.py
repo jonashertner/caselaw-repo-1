@@ -19741,10 +19741,11 @@ setInterval(load, 30000);
                         "fedlex_status": "no_matching_publication",
                         "note": (
                             f"No Fedlex publication found whose historicalId "
-                            f"page range covers {ref_type} {year} {page}. The "
-                            f"reference may pre-date Fedlex's indexed coverage "
-                            f"(starts ~1999). Search at https://www.fedlex."
-                            f"admin.ch/de/search?text={ref_type}+{year}+{page}."
+                            f"page range covers {ref_type} {year} {page}. "
+                            f"Indexed coverage: FF/BBl 1999-2020, RO/AS "
+                            f"1948-2020 (Fedlex stopped emitting historicalId "
+                            f"after 2020). Search at https://www.fedlex.admin."
+                            f"ch/de/search?text={ref_type}+{year}+{page}."
                         ),
                     }
                 return {"eli_uri": None}
