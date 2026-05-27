@@ -19673,6 +19673,16 @@ setInterval(load, 30000);
                         # Fall back to legacy behavior if the index
                         # isn't built yet (graceful degradation).
                         return {"eli_uri": None}
+                    # Fedlex's historicalId predicate stores the
+                    # FRENCH-language abbreviation (FF / RO / RU). Swiss
+                    # statute footnotes use the LANGUAGE-NEUTRAL or
+                    # GERMAN form (BBl / AS) by convention. Normalize
+                    # so callers can query either form.
+                    _FFP_REF_TYPE = {
+                        "BBl": "FF",   # Bundesblatt = Feuille fédérale
+                        "AS":  "RO",   # Amtliche Sammlung = Recueil officiel
+                    }
+                    ffp_ref_type = _FFP_REF_TYPE.get(ref_type, ref_type)
                     try:
                         ffp = sqlite3.connect(
                             f"file:{ffp_path}?mode=ro&immutable=1",
@@ -19683,7 +19693,7 @@ setInterval(load, 30000);
                         exact = ffp.execute(
                             "SELECT uri FROM fedlex_first_pages "
                             "WHERE ref_type=? AND year=? AND page=?",
-                            (ref_type, year, page),
+                            (ffp_ref_type, year, page),
                         ).fetchone()
                         if exact and exact[0]:
                             ffp.close()
@@ -19694,7 +19704,7 @@ setInterval(load, 30000);
                             "SELECT page, uri FROM fedlex_first_pages "
                             "WHERE ref_type=? AND year=? AND page<=? "
                             "ORDER BY page DESC LIMIT 1",
-                            (ref_type, year, page),
+                            (ffp_ref_type, year, page),
                         ).fetchone()
                         ffp.close()
                     except sqlite3.Error:
