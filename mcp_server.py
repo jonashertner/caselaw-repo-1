@@ -19588,12 +19588,54 @@ setInterval(load, 30000);
             as_of=as_of,
         )
 
+    # In-process validity cache for /amendment-ref. Keyed by
+    # (ref_type, year, page). Avoids re-asking Fedlex SPARQL on every
+    # request. Per-worker; cleared on restart (acceptable; the SPARQL
+    # ASK is ~500ms and 1124 distinct refs warm the cache quickly).
+    _amendment_ref_validity: dict = {}
+
+    def _check_fedlex_uri_exists(ref_type: str, year: int, page: int) -> bool:
+        """SPARQL ASK whether the constructed ELI URI exists in Fedlex's
+        graph. Inner-page citations (e.g. BBl 2019 6697 is page 6697 of
+        a doc that starts at an earlier page) are NOT first-page works
+        and return False here — those URLs 404 in Fedlex's SPA.
+
+        Fail-open: on SPARQL outage we assume the URI is valid so we
+        don't withhold URLs during transient Fedlex problems.
+        Bug reported by Simon Betschmann, Gerichte ZH, 2026-05-27.
+        """
+        key = (ref_type, year, page)
+        if key in _amendment_ref_validity:
+            return _amendment_ref_validity[key]
+        scheme = "fga" if ref_type in ("BBl", "FF") else "oc"
+        uri = f"https://fedlex.data.admin.ch/eli/{scheme}/{year}/{page}"
+        try:
+            import urllib.request as _urlreq
+            import urllib.parse as _urlparse
+            q = f"ASK {{ <{uri}> ?p ?o }}"
+            req = _urlreq.Request(
+                "https://fedlex.data.admin.ch/sparqlendpoint",
+                data=_urlparse.urlencode({"query": q}).encode(),
+                headers={"Accept": "application/sparql-results+json"},
+            )
+            with _urlreq.urlopen(req, timeout=4) as r:
+                valid = bool(json.loads(r.read()).get("boolean", False))
+        except Exception as e:
+            logger.debug("Fedlex SPARQL ASK failed (%s/%d/%d): %s — failing open",
+                         ref_type, year, page, e)
+            valid = True
+        _amendment_ref_validity[key] = valid
+        return valid
+
     @rest_api.get("/amendment-ref", tags=["Statutes"],
                   summary="Resolve AS/BBl reference to Fedlex ELI URI",
                   description="Maps an AS or BBl page reference to its Fedlex ELI URI. "
                               "Backed by materialien.db.amendment_refs (83k+ resolved refs). "
-                              "BBl/FF refs resolve to eli/fga/{year}/{page}; AS/RO/RU to "
-                              "eli/oc/{year}/{page}.")
+                              "BBl/FF refs construct to eli/fga/{year}/{page}; AS/RO/RU to "
+                              "eli/oc/{year}/{page}. Each URL is validated against Fedlex's "
+                              "RDF graph via a SPARQL ASK — inner-page citations whose page "
+                              "number is not a first-page document return null with a "
+                              "fedlex_status='inner_page_no_direct_url' note.")
     async def api_amendment_ref(
         ref_type: str = Query(..., description="Reference type: AS, BBl, RO, RU, FF"),
         year: int = Query(..., description="Publication year"),
@@ -19619,8 +19661,24 @@ setInterval(load, 30000);
                 ).fetchone()
                 db.close()
                 if row and row[0]:
-                    # fedlex_url already includes the full https:// prefix
-                    return {"eli_uri": row[0], "url": row[0]}
+                    # Validate the constructed URL is a real first-page
+                    # publication in Fedlex's graph. Many footnote citations
+                    # like "BBl 2019 6697" point INSIDE a multi-page
+                    # publication; Fedlex has no direct URL for inner
+                    # pages and its SPA serves a page-not-found.
+                    if _check_fedlex_uri_exists(ref_type, year, page):
+                        return {"eli_uri": row[0], "url": row[0]}
+                    return {
+                        "eli_uri": None,
+                        "fedlex_status": "inner_page_no_direct_url",
+                        "note": (
+                            f"{ref_type} {year} {page} is an inner-page citation. "
+                            f"Fedlex has no direct URL for individual pages within "
+                            f"a publication; only first-page works are addressable. "
+                            f"Search at https://www.fedlex.admin.ch/de/search?text="
+                            f"{ref_type}+{year}+{page} to find the containing document."
+                        ),
+                    }
                 return {"eli_uri": None}
             except Exception as e:
                 logger.warning(
