@@ -220,7 +220,128 @@ SOURCES: list[ScholarshipSource] = [
         active=True,
     ),
 
-    # --- Two more big multi-faculty IRs (DSpace 7 at /server/oai/request) ---
+    # --- Big multi-faculty IRs (DSpace 7 at /server/oai/request) ---
+    ScholarshipSource(
+        key="edoc_unibas_law",
+        name="UniBas edoc — law content",
+        kind="oai_pmh",
+        base_url="https://edoc.unibas.ch/server/oai/request",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence", "Jura",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in edoc, the Open Access "
+            "Repository of the University of Basel (DSpace 7). License "
+            "per record. Persistent IDs: hdl.handle.net/20.500.14716/<id>."
+        ),
+        homepage="https://edoc.unibas.ch/",
+        notes="UniBas repository (DSpace 7, handle prefix 20.500.14716). "
+              "~162k total records; filtered to law-keyword subjects.",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="zhaw_digitalcollection",
+        name="ZHAW digitalcollection — law / regulatory content",
+        kind="oai_pmh",
+        base_url="https://digitalcollection.zhaw.ch/server/oai/request",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence", "Regulierung", "regulation", "compliance",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in ZHAW digitalcollection "
+            "(Zurich University of Applied Sciences, DSpace 7). License "
+            "per record."
+        ),
+        homepage="https://digitalcollection.zhaw.ch/",
+        notes="ZHAW UAS repository (DSpace 7). ~36k records; mostly applied "
+              "sciences; expect ~200-500 law-relevant records (legal-tech, "
+              "regulation, compliance research).",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="fhnw_irf",
+        name="FHNW IRF — law / business law content",
+        kind="oai_pmh",
+        base_url="https://irf.fhnw.ch/server/oai/request",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence", "Wirtschaftsrecht", "Compliance", "Regulierung",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in the Institutional Repository "
+            "FHNW (Fachhochschule Nordwestschweiz, DSpace 7). License per record."
+        ),
+        homepage="https://irf.fhnw.ch/",
+        notes="FHNW UAS repository (DSpace 7). ~34k records; mostly applied / "
+              "business; expect ~300-800 law/business-law records.",
+        active=True,
+    ),
+
+    # --- Pure-law OJS journals discovered via Zenodo DACHLI catalog ---
+    ScholarshipSource(
+        key="cognitio",
+        name="cognitio — Studentisches Forum für Recht und Gesellschaft",
+        kind="oai_pmh",
+        base_url="https://www.cognitio-zeitschrift.ch/index.php/index/oai",
+        set_spec="cognitio",
+        license_default="CC-BY-SA-4.0",
+        license_url_default="https://creativecommons.org/licenses/by-sa/4.0/",
+        attribution=(
+            "© respective authors. Published in cognitio — Studentisches "
+            "Forum für Recht und Gesellschaft (cognitio-zeitschrift.ch), "
+            "CC-BY-SA-4.0."
+        ),
+        homepage="https://www.cognitio-zeitschrift.ch/",
+        notes="Swiss student law journal, hosted on SOAP2 (Shared Open Access "
+              "Publishing Platform); set=cognitio.",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="cfs",
+        name="CFS — Criminologie, Forensique et Sécurité",
+        kind="oai_pmh",
+        base_url="https://www.cognitio-zeitschrift.ch/index.php/index/oai",
+        set_spec="cfs",
+        license_default="CC-BY-4.0",
+        license_url_default="https://creativecommons.org/licenses/by/4.0/",
+        attribution=(
+            "© respective authors. Published in CFS — Criminologie, "
+            "Forensique et Sécurité (Swiss French-language criminology + "
+            "forensic-science + security journal, peer-reviewed OA)."
+        ),
+        homepage="https://cfs-journal.ch/",
+        notes="Swiss criminology / forensic-science journal on SOAP2 OJS; "
+              "set=cfs.",
+        active=True,
+    ),
+    ScholarshipSource(
+        key="ex_ante",
+        name="ex/ante — Zeitschrift der juristischen Nachwuchsforschung",
+        kind="oai_pmh",
+        base_url="https://ex-ante.ch/index.php/index/oai",
+        set_spec="exante",
+        license_default="CC-BY-NC-ND-4.0",
+        license_url_default="https://creativecommons.org/licenses/by-nc-nd/4.0/",
+        attribution=(
+            "© respective authors. Published in ex/ante — Zeitschrift der "
+            "juristischen Nachwuchsforschung (ex-ante.ch), peer-reviewed OA, "
+            "CC-BY-NC-ND-4.0."
+        ),
+        homepage="https://ex-ante.ch/",
+        notes="Swiss junior legal research journal, OJS; set=exante; "
+              "sub-sets: PRE/ART/IND/THESE/THESELISTE.",
+        active=True,
+    ),
+
+    # --- Still-problematic big IRs ---
     ScholarshipSource(
         key="zora_law",
         name="UZH ZORA — law content",
@@ -239,8 +360,10 @@ SOURCES: list[ScholarshipSource] = [
         homepage="https://www.zora.uzh.ch/",
         notes="UZH repository (DSpace 7). ~215k total records; filtered to "
               "law-keyword subjects. UZH Faculty of Law is the largest in "
-              "Switzerland — expected highest single-IR yield.",
-        active=True,
+              "Switzerland — expected highest single-IR yield. OAI returns "
+              "504 server-side timeout (2026-05-27) — needs DSpace REST API "
+              "or per-collection harvest.",
+        active=False,
     ),
     ScholarshipSource(
         key="boris_law",
@@ -265,18 +388,12 @@ SOURCES: list[ScholarshipSource] = [
     ),
     ScholarshipSource(
         key="serval_law",
-        name="UNIL SERVAL — law faculty (endpoint TBD)",
+        name="UNIL SERVAL — migrated to IRIS, OAI URL TBD",
         kind="oai_pmh",
-        base_url="https://serval.unil.ch/oai2",
-        notes="OAI endpoint URL returns HTML, not XML. Needs research.",
-        active=False,
-    ),
-    ScholarshipSource(
-        key="edoc_unibas_law",
-        name="UniBas edoc — law faculty (endpoint TBD)",
-        kind="oai_pmh",
-        base_url="https://edoc.unibas.ch/cgi/oai2",
-        notes="Probe returned 404; needs research.",
+        base_url="https://iris.unil.ch/server/oai/request",
+        notes="UNIL migrated SERVAL to IRIS (iris.unil.ch); old /oaiprovider "
+              "returns 403, new /server/oai/request returns SPA HTML. Needs "
+              "outreach to UNIL library for current OAI URL.",
         active=False,
     ),
     ScholarshipSource(

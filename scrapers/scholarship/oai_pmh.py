@@ -47,6 +47,13 @@ _ISSN_RE = re.compile(r"^urn:issn:(.+)$", re.I)
 _URN_NBN_RE = re.compile(r"^urn:nbn:.+$", re.I)
 _HTTP_RE = re.compile(r"^https?://", re.I)
 
+# Strip XML 1.0-invalid control characters (everything 0x00-0x1F except
+# tab/LF/CR). Some OAI providers (e.g. ex-ante.ch) emit \x17 in
+# dc:description, which makes the response not well-formed.
+_STRIP_INVALID_XML = re.compile(
+    rb"[\x00-\x08\x0b\x0c\x0e-\x1f]",
+)
+
 # Map dc:language values onto ISO-639-1 short codes used elsewhere in the repo.
 _LANG_MAP = {
     "deu": "de", "ger": "de", "de": "de", "de-DE": "de", "de_DE": "de",
@@ -305,8 +312,22 @@ def harvest(
             try:
                 root = ET.fromstring(raw)
             except ET.ParseError as e:
-                log.error("OAI XML parse failed (%s, page %d): %s", source, pages, e)
-                break
+                # Some IRs (e.g. ex-ante.ch as of 2026-05-27) emit control
+                # characters in dc:description that make the document not
+                # well-formed under XML 1.0. Strip XML-invalid control
+                # chars and retry once before giving up on the page.
+                cleaned = _STRIP_INVALID_XML.sub(b"", raw)
+                try:
+                    root = ET.fromstring(cleaned)
+                    log.warning(
+                        "OAI XML had invalid control chars (%s, page %d) — "
+                        "stripped and retried",
+                        source, pages,
+                    )
+                except ET.ParseError as e2:
+                    log.error("OAI XML parse failed (%s, page %d): %s",
+                              source, pages, e2)
+                    break
 
             # OAI error?
             err = root.find(f"{{{OAI_NS}}}error")
