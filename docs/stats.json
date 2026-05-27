@@ -2273,7 +2273,7 @@
     "2026-04": 1855,
     "2026-05": 360
   },
-  "generated_at": "2026-05-27T14:29:02.071904+00:00",
+  "generated_at": "2026-05-27T17:28:33.303312+00:00",
   "scraper_health": {
     "run_at": "2026-05-27T02:30:48.514158+00:00",
     "run_duration_s": 5387.8,
@@ -3296,7 +3296,7 @@
         "note": "1720 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1485,
         "jsonl_size_mb": 88.7,
-        "jsonl_mtime": "2026-05-27T02:30:48.441520+00:00"
+        "jsonl_mtime": "2026-05-27T14:46:31.723802+00:00"
       }
     },
     "run_at_daily": "2026-05-27T02:30:48.514158+00:00",
@@ -3352,18 +3352,26 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "scholarship_publications": 840,
+    "scholarship_publications": 9060,
     "scholarship_by_source": {
+      "unige_law": 6447,
+      "eth_research_collection": 1760,
       "onlinekommentar": 368,
       "sui_generis": 288,
       "thegoodboard": 140,
-      "leoh": 44
+      "leoh": 44,
+      "alexandria_law": 13
     },
     "scholarship_by_type": {
+      "article": 3971,
+      "book": 2979,
+      "dissertation": 1190,
       "commentary": 398,
-      "article": 332,
+      "report": 219,
+      "working_paper": 190,
       "guidance": 70,
-      "reference_article": 40
+      "reference_article": 40,
+      "bachelor_thesis": 3
     },
     "citation_edges": 8672219,
     "statute_edges": 11284515
