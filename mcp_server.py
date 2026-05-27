@@ -13341,6 +13341,164 @@ def find_scholarship_citing_statute(
         conn.close()
 
 
+def get_scholarship_full_text(pub_id: str) -> dict:
+    """Fetch the full text of an OA publication, on demand if not cached.
+
+    Returns: {pub_id, text, source, length, cached: bool, ...} or {error}.
+
+    Strategy:
+      1. If publications.full_text is already populated, return it.
+      2. Else, license-check + resolve PDF URL + download + extract.
+      3. If extraction succeeded, persist into a separate cache DB so the
+         next call is instant. We don't write back to the main
+         legal_scholarship.db (immutable=1) to avoid breaking the live
+         read-only connection.
+    """
+    conn = _get_scholarship_conn()
+    if conn is None:
+        return {"error": "Legal scholarship database not available."}
+    try:
+        r = conn.execute(
+            "SELECT id, source, title, authors, year, url, pdf_url, "
+            "license, full_text, raw_metadata FROM publications "
+            "WHERE pub_id = ?",
+            (pub_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+    if not r:
+        return {"error": f"Publication not found: {pub_id}"}
+
+    # Hit 1: already-stored full_text on the main DB
+    if r["full_text"] and len(r["full_text"]) > 200:
+        return {
+            "pub_id": pub_id,
+            "source": r["source"],
+            "title": r["title"],
+            "authors": r["authors"],
+            "year": r["year"],
+            "url": r["url"],
+            "license": r["license"],
+            "length": len(r["full_text"]),
+            "text": r["full_text"],
+            "cached": True,
+            "fetched_now": False,
+        }
+
+    # Hit 2: cache DB for previously-fetched-on-demand content
+    cache_path = LEGAL_SCHOLARSHIP_DB_PATH.with_name(
+        "legal_scholarship_fulltext_cache.db"
+    )
+    if cache_path.exists():
+        try:
+            cc = sqlite3.connect(f"file:{cache_path}?mode=ro", uri=True)
+            cc.row_factory = sqlite3.Row
+            cached = cc.execute(
+                "SELECT text, fetched_at, license FROM fulltext_cache "
+                "WHERE pub_id = ?",
+                (pub_id,),
+            ).fetchone()
+            cc.close()
+            if cached and cached["text"]:
+                return {
+                    "pub_id": pub_id,
+                    "source": r["source"],
+                    "title": r["title"],
+                    "license": r["license"],
+                    "length": len(cached["text"]),
+                    "text": cached["text"],
+                    "cached": True,
+                    "fetched_now": False,
+                    "fetched_at": cached["fetched_at"],
+                }
+        except sqlite3.Error:
+            pass
+
+    # Hit 3: fetch + extract on demand
+    try:
+        from search_stack.fulltext_extractor import (
+            fetch_and_extract, is_permissive_license,
+        )
+    except ImportError:
+        return {
+            "pub_id": pub_id,
+            "error": "Full-text extractor unavailable on this server.",
+            "url": r["url"],
+        }
+
+    if not is_permissive_license(r["license"]):
+        return {
+            "pub_id": pub_id,
+            "title": r["title"],
+            "source": r["source"],
+            "license": r["license"],
+            "url": r["url"],
+            "error": (
+                f"Full-text serving not authorized: license '{r['license']}' "
+                "is not in the permissive whitelist. Use the upstream URL "
+                "directly to access the original publication."
+            ),
+        }
+
+    record_dict = dict(r)
+    result = fetch_and_extract(record_dict, rate_limit_secs=0.0)
+    if not result.get("ok"):
+        return {
+            "pub_id": pub_id,
+            "title": r["title"],
+            "source": r["source"],
+            "url": r["url"],
+            "license": r["license"],
+            "error": f"Fetch+extract failed: {result.get('reason')}",
+            "details": result,
+        }
+
+    # Persist to cache DB
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cc = sqlite3.connect(str(cache_path))
+        cc.execute(
+            "CREATE TABLE IF NOT EXISTS fulltext_cache ("
+            "  pub_id TEXT PRIMARY KEY, "
+            "  text TEXT, "
+            "  license TEXT, "
+            "  pdf_url TEXT, "
+            "  pdf_sha256 TEXT, "
+            "  pdf_bytes INTEGER, "
+            "  text_chars INTEGER, "
+            "  fetched_at TEXT NOT NULL"
+            ")"
+        )
+        cc.execute(
+            "INSERT OR REPLACE INTO fulltext_cache "
+            "(pub_id, text, license, pdf_url, pdf_sha256, pdf_bytes, "
+            "text_chars, fetched_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                pub_id, result["text"], r["license"],
+                result.get("pdf_url"), result.get("sha256"),
+                result.get("bytes"), result.get("text_chars"),
+                datetime.now(timezone.utc).isoformat(),
+            ),
+        )
+        cc.commit()
+        cc.close()
+    except sqlite3.Error as e:
+        logger.warning("fulltext cache write failed: %s", e)
+
+    return {
+        "pub_id": pub_id,
+        "source": r["source"],
+        "title": r["title"],
+        "license": r["license"],
+        "length": result["text_chars"],
+        "text": result["text"],
+        "pdf_url": result["pdf_url"],
+        "cached": False,
+        "fetched_now": True,
+    }
+
+
 def list_scholarship_sources() -> dict:
     """List the OA scholarship sources indexed, with counts per source/type
     and the per-source license attribution catalog.
@@ -17269,6 +17427,30 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            name="get_scholarship_full_text",
+            description=(
+                "Fetch the full text of an OA legal publication by pub_id, "
+                "on demand. Cached after first fetch so subsequent calls "
+                "are instant. License-gated: only records under CC-BY-* "
+                "(except CC-BY-ND), OA-Swiss-federal, or OA-author-permitted-"
+                "reuse are extracted. ND/all-rights-reserved records return "
+                "the upstream URL only. Use this when search_scholarship or "
+                "get_scholarship returns only abstract/title and you need "
+                "the article body to verify a claim or quote a passage."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "pub_id": {
+                        "type": "string",
+                        "description": "Canonical pub_id (from search_scholarship results).",
+                    },
+                },
+                "required": ["pub_id"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="get_materialien",
             description=(
                 "Look up Materialien for a Swiss federal law article: Botschaft (legislative "
@@ -18122,6 +18304,26 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
         elif name == "list_scholarship_sources":
             result = await asyncio.to_thread(list_scholarship_sources)
             return [TextContent(type="text", text=_format_list_scholarship_sources_response(result))]
+
+        elif name == "get_scholarship_full_text":
+            result = await asyncio.to_thread(
+                get_scholarship_full_text, pub_id=arguments["pub_id"],
+            )
+            # Compact rendering — full text is large; render header + text
+            if result.get("error"):
+                txt = result["error"]
+                if result.get("url"):
+                    txt += f"\nUpstream URL: {result['url']}"
+            else:
+                txt = (
+                    f"# {result.get('title','')}\n"
+                    f"Source: {result['source']} | License: {result.get('license')}\n"
+                    f"Length: {result['length']:,} chars | "
+                    f"Cached: {result.get('cached')} | "
+                    f"Fetched now: {result.get('fetched_now')}\n\n"
+                    f"{result['text']}"
+                )
+            return [TextContent(type="text", text=txt)]
 
         elif name == "get_materialien":
             result = await asyncio.to_thread(
@@ -20442,6 +20644,13 @@ setInterval(load, 30000);
             find_scholarship_citing_statute,
             sr_number=sr_number, article=article, limit=limit,
         )
+
+    @rest_api.get("/scholarship-fulltext", tags=["Scholarship"],
+                  summary="Get full text of an OA publication (on demand)")
+    async def api_get_scholarship_full_text(
+        pub_id: str = Query(..., description="Canonical pub_id"),
+    ):
+        return await asyncio.to_thread(get_scholarship_full_text, pub_id=pub_id)
 
     @rest_api.get("/scholarship/{pub_id:path}", tags=["Scholarship"],
                   summary="Get a single publication by pub_id")
