@@ -220,30 +220,48 @@ SOURCES: list[ScholarshipSource] = [
         active=True,
     ),
 
-    # --- IRs we couldn't reach via OAI-PMH from probe (left scaffolded) ---
+    # --- Two more big multi-faculty IRs (DSpace 7 at /server/oai/request) ---
     ScholarshipSource(
         key="zora_law",
-        name="UZH ZORA — law faculty (endpoint TBD)",
+        name="UZH ZORA — law content",
         kind="oai_pmh",
-        base_url="https://www.zora.uzh.ch/cgi/oai2",
+        base_url="https://www.zora.uzh.ch/server/oai/request",
         set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence", "Jura",
+        ),
+        rate_limit=1.0,
         attribution=(
-            "© respective authors. Deposited in the Zurich Open Repository and "
-            "Archive (ZORA), University of Zurich. License per record."
+            "© respective authors. Deposited in the Zurich Open Repository "
+            "and Archive (ZORA), University of Zurich. License per record."
         ),
         homepage="https://www.zora.uzh.ch/",
-        notes="UZH repository. OAI endpoint URL unverified — probe returned "
-              "404 from both local + VPS. May have migrated; needs research.",
-        active=False,
+        notes="UZH repository (DSpace 7). ~215k total records; filtered to "
+              "law-keyword subjects. UZH Faculty of Law is the largest in "
+              "Switzerland — expected highest single-IR yield.",
+        active=True,
     ),
     ScholarshipSource(
         key="boris_law",
-        name="UniBE BORIS — law faculty (endpoint TBD)",
+        name="UniBE BORIS Portal — law content",
         kind="oai_pmh",
-        base_url="https://boris.unibe.ch/cgi/oai2",
-        notes="UniBE migrated to BORIS Portal; OAI endpoint URL changed. "
-              "Probe returned 400/HTML; needs research.",
-        active=False,
+        base_url="https://boris-portal.unibe.ch/server/oai/request",
+        set_spec=None,
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in BORIS Portal, the Bern "
+            "Open Repository and Information System, University of Bern. "
+            "License per record."
+        ),
+        homepage="https://boris-portal.unibe.ch/",
+        notes="UniBE repository (DSpace 7, migrated from EPrints). ~167k "
+              "total records; filtered to law-keyword subjects.",
+        active=True,
     ),
     ScholarshipSource(
         key="serval_law",
