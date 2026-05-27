@@ -19697,7 +19697,15 @@ setInterval(load, 30000);
                         ).fetchone()
                         if exact and exact[0]:
                             ffp.close()
-                            return {"eli_uri": exact[0], "url": exact[0]}
+                            # Rewrite Fedlex DATA URL to user-browsable
+                            # WWW URL. fedlex.data.admin.ch serves the
+                            # raw RDF / 303-redirects; www.fedlex.admin.ch
+                            # is the human-facing portal.
+                            web_uri = exact[0].replace(
+                                "https://fedlex.data.admin.ch/",
+                                "https://www.fedlex.admin.ch/",
+                            )
+                            return {"eli_uri": web_uri, "url": web_uri}
                         # No exact match — find the publication that
                         # contains this page: largest first_page ≤ cited.
                         contains = ffp.execute(
@@ -19711,9 +19719,13 @@ setInterval(load, 30000);
                         contains = None
                     if contains and contains[1]:
                         container_first_page, container_url = contains
+                        web_container = container_url.replace(
+                            "https://fedlex.data.admin.ch/",
+                            "https://www.fedlex.admin.ch/",
+                        )
                         return {
-                            "eli_uri": container_url,
-                            "url": container_url,
+                            "eli_uri": web_container,
+                            "url": web_container,
                             "fedlex_status": "containing_document",
                             "cited_page": page,
                             "container_first_page": container_first_page,
