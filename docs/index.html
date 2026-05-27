@@ -2012,6 +2012,125 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   .scholarship-grid { grid-template-columns: 1fr; }
 }
 
+/* Author/reader search-box on scholarship section */
+.scholarship-search {
+  background: var(--surf);
+  border: 1px solid var(--brd);
+  border-radius: 10px;
+  padding: 22px 26px;
+  margin: 0 0 28px 0;
+}
+.scholarship-search-label {
+  display: block;
+  font-size: 14px;
+  color: var(--tx);
+  margin-bottom: 12px;
+  font-weight: 300;
+  line-height: 1.45;
+}
+.scholarship-search-label strong {
+  font-weight: 600;
+  color: var(--tx);
+}
+.scholarship-search-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.scholarship-search-input {
+  flex: 1 1 auto;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid var(--brd);
+  border-radius: 6px;
+  background: var(--bg2);
+  color: var(--tx);
+  outline: none;
+}
+.scholarship-search-input:focus {
+  border-color: var(--tx2);
+}
+.scholarship-search-btn {
+  padding: 10px 22px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--brd);
+  border-radius: 6px;
+  background: var(--bg2);
+  color: var(--tx);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.scholarship-search-btn:hover { background: var(--surf); }
+.scholarship-search-hint {
+  font-size: 12.5px;
+  color: var(--tx2);
+  font-weight: 300;
+  margin: 0;
+  line-height: 1.5;
+}
+.scholarship-search-hint code {
+  background: var(--bg2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.scholarship-results {
+  margin-top: 14px;
+}
+.scholarship-results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.scholarship-result-item {
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--brd);
+  border-radius: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--tx);
+}
+.scholarship-result-title {
+  font-weight: 500;
+  color: var(--tx);
+  display: block;
+  margin-bottom: 4px;
+}
+.scholarship-result-meta {
+  font-size: 12.5px;
+  color: var(--tx2);
+  font-weight: 300;
+}
+.scholarship-result-meta a {
+  color: var(--vb-fg);
+  text-decoration: none;
+}
+.scholarship-result-meta a:hover { text-decoration: underline; }
+.scholarship-result-license {
+  display: inline-block;
+  font-size: 11.5px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--surf);
+  color: var(--tx2);
+  margin-left: 6px;
+}
+.scholarship-results-empty {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--tx2);
+  font-style: italic;
+}
+.scholarship-results-status {
+  padding: 8px 0;
+  font-size: 12.5px;
+  color: var(--tx2);
+}
+
 /* Did you know section — number-forward editorial cards ───────────────── */
 #didyou {
   padding: clamp(48px, 6vw, 72px) 16px;
@@ -2475,6 +2594,27 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
     <p class="scholarship-intro">
       Beyond decisions and statutes: a unified, daily-rebuilt index of every Swiss legal publication that's licensed for free reuse — peer-reviewed journal articles, open commentaries, dissertations, and federal legal-policy reports. Every record carries explicit attribution + CC license, so LLMs grounded on this corpus respect the upstream authors' terms.
     </p>
+
+    <!-- ── Author / reader search: "is my publication in here?" ─────── -->
+    <div class="scholarship-search" role="search">
+      <label for="sch-q" class="scholarship-search-label">
+        <strong>Check if a publication is indexed</strong> — search by author name, title, DOI, or keyword:
+      </label>
+      <form id="sch-search-form" class="scholarship-search-form" autocomplete="off">
+        <input
+          id="sch-q"
+          type="search"
+          placeholder='e.g. "Häusermann" or "Tierversuch" or "10.21257/sg.288"'
+          aria-label="Search publications"
+          class="scholarship-search-input"
+        />
+        <button type="submit" class="scholarship-search-btn">Search</button>
+      </form>
+      <p class="scholarship-search-hint">
+        Searches title, authors, abstract, journal, keywords across all <span id="sch-search-total">…</span> indexed publications. Full API: <a href="https://mcp.opencaselaw.ch/api/scholarship/search?query=Tierversuch&amp;limit=5"><code>/api/scholarship/search</code></a>.
+      </p>
+      <div id="sch-results" class="scholarship-results" aria-live="polite"></div>
+    </div>
 
     <div class="scholarship-grid">
       <article class="scholarship-card">
@@ -5967,6 +6107,11 @@ function renderCorpusSnapshot(data) {
       unilu_law: 'UniLU (law)',
       eth_research_collection: 'ETH Research Collection (law-relevant subset)',
       infoscience_epfl: 'EPFL Infoscience (law-relevant subset)',
+      zhaw_digitalcollection: 'ZHAW digitalcollection (law-relevant subset)',
+      fhnw_irf: 'FHNW IRF (law-relevant subset)',
+      cognitio: 'cognitio — Studentisches Forum für Recht und Gesellschaft',
+      cfs: 'CFS — Criminologie, Forensique et Sécurité',
+      ex_ante: 'ex/ante — Zeitschrift der juristischen Nachwuchsforschung',
       e_periodica_law: 'e-periodica historical legal periodicals',
       e_helvetica_law: 'e-Helvetica (NB)',
       bj_studien: 'BJ studies',
@@ -6139,6 +6284,184 @@ init();
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') setOpen(false);
+  });
+})();
+
+// ── Scholarship search box ────────────────────────────────────────────
+// Calls the live MCP REST endpoint /api/scholarship/search and renders
+// results inline. Safe DOM construction (no innerHTML) — all text from
+// the API goes through textContent.
+(function () {
+  var form = document.getElementById('sch-search-form');
+  var input = document.getElementById('sch-q');
+  var resultsEl = document.getElementById('sch-results');
+  var totalEl = document.getElementById('sch-search-total');
+  if (!form || !input || !resultsEl) return;
+
+  // Source-name display map (mirrors SRC_NAMES above).
+  var SRC = {
+    sui_generis: 'sui generis',
+    onlinekommentar: 'OnlineKommentar.ch',
+    openlegalcommentary: 'OpenLegalCommentary.ch',
+    thegoodboard: 'The Good Board',
+    leoh: 'LEOH',
+    leges: 'LeGes',
+    justice: 'Justice-Justiz-Giustizia',
+    zora_law: 'UZH ZORA',
+    boris_law: 'UniBE BORIS',
+    serval_law: 'UNIL SERVAL',
+    unige_law: 'UNIGE Archive ouverte',
+    edoc_unibas_law: 'UniBas edoc',
+    folia_law: 'UniFR FOLIA',
+    alexandria_law: 'UniSG Alexandria',
+    libra_law: 'UniNE LIBRA',
+    unilu_law: 'UniLU',
+    eth_research_collection: 'ETH Research Collection',
+    infoscience_epfl: 'EPFL Infoscience',
+    zhaw_digitalcollection: 'ZHAW',
+    fhnw_irf: 'FHNW IRF',
+    cognitio: 'cognitio',
+    cfs: 'CFS',
+    ex_ante: 'ex/ante',
+  };
+
+  // Populate the total publication count from /stats.json (already loaded
+  // elsewhere; we just read it again here in case load() ran first).
+  fetch('https://opencaselaw.ch/stats.json?b=' + Date.now())
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      var n = d && d.corpus && d.corpus.scholarship_publications;
+      if (n && totalEl) totalEl.textContent = n.toLocaleString('en-US');
+    })
+    .catch(function () {});
+
+  function clearChildren(el) {
+    while (el.firstChild) el.removeChild(el.firstChild);
+  }
+
+  function renderStatus(text) {
+    clearChildren(resultsEl);
+    var div = document.createElement('div');
+    div.className = 'scholarship-results-status';
+    div.textContent = text;
+    resultsEl.appendChild(div);
+  }
+
+  function renderResults(query, data) {
+    clearChildren(resultsEl);
+    var rs = (data && data.results) || [];
+    if (rs.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'scholarship-results-empty';
+      empty.textContent = 'No results for "' + query + '". '
+        + 'The corpus only indexes open-access publications — paywalled '
+        + 'titles (AJP, ZSR new volumes, SJZ, forumpoenale, …) are not '
+        + 'included. Try a less specific query, or a different '
+        + 'spelling of an author name.';
+      resultsEl.appendChild(empty);
+      return;
+    }
+    // Summary
+    var head = document.createElement('div');
+    head.className = 'scholarship-results-status';
+    head.textContent = 'Found ' + data.count + ' result' + (data.count === 1 ? '' : 's')
+      + ' for "' + query + '". Top matches:';
+    resultsEl.appendChild(head);
+
+    var ul = document.createElement('ul');
+    ul.className = 'scholarship-results-list';
+    rs.forEach(function (r) {
+      var li = document.createElement('li');
+      li.className = 'scholarship-result-item';
+
+      // Title (linked if URL present)
+      var title = document.createElement('span');
+      title.className = 'scholarship-result-title';
+      if (r.url) {
+        var a = document.createElement('a');
+        a.href = r.url;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.textContent = r.title || '(untitled)';
+        title.appendChild(a);
+      } else {
+        title.textContent = r.title || '(untitled)';
+      }
+      li.appendChild(title);
+
+      // Meta line: authors · year · source · license
+      var meta = document.createElement('div');
+      meta.className = 'scholarship-result-meta';
+      var parts = [];
+      if (r.authors) parts.push(r.authors);
+      if (r.year) parts.push(String(r.year));
+      var srcName = SRC[r.source] || r.source;
+      if (srcName) parts.push(srcName);
+      meta.textContent = parts.join(' · ');
+      if (r.license) {
+        var lic = document.createElement('span');
+        lic.className = 'scholarship-result-license';
+        lic.textContent = r.license;
+        meta.appendChild(lic);
+      }
+      li.appendChild(meta);
+
+      // DOI line
+      if (r.doi) {
+        var doi = document.createElement('div');
+        doi.className = 'scholarship-result-meta';
+        var doiA = document.createElement('a');
+        doiA.href = 'https://doi.org/' + r.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//, '');
+        doiA.target = '_blank';
+        doiA.rel = 'noopener';
+        doiA.textContent = 'DOI: ' + r.doi;
+        doi.appendChild(doiA);
+        li.appendChild(doi);
+      }
+
+      ul.appendChild(li);
+    });
+    resultsEl.appendChild(ul);
+  }
+
+  var pending = 0;
+  function runSearch() {
+    var q = (input.value || '').trim();
+    if (!q || q.length < 2) {
+      clearChildren(resultsEl);
+      return;
+    }
+    pending += 1;
+    var mine = pending;
+    renderStatus('Searching for "' + q + '" …');
+    var url = 'https://mcp.opencaselaw.ch/api/scholarship/search?query='
+      + encodeURIComponent(q) + '&limit=15';
+    fetch(url, { mode: 'cors' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (d) {
+        if (mine !== pending) return;  // a newer search has started
+        renderResults(q, d);
+      })
+      .catch(function (e) {
+        if (mine !== pending) return;
+        renderStatus('Search failed: ' + (e.message || e)
+          + '. Try the API directly at /api/scholarship/search.');
+      });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    runSearch();
+  });
+
+  // Debounced live-search on input changes (300ms)
+  var debounce = null;
+  input.addEventListener('input', function () {
+    if (debounce) clearTimeout(debounce);
+    debounce = setTimeout(runSearch, 350);
   });
 })();
 </script>
