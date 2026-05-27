@@ -2273,7 +2273,7 @@
     "2026-04": 1855,
     "2026-05": 360
   },
-  "generated_at": "2026-05-27T19:20:14.694305+00:00",
+  "generated_at": "2026-05-27T19:25:32.362439+00:00",
   "scraper_health": {
     "run_at": "2026-05-27T02:30:48.514158+00:00",
     "run_duration_s": 5387.8,
@@ -3352,11 +3352,13 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "scholarship_publications": 20523,
+    "scholarship_publications": 25557,
     "scholarship_by_source": {
       "boris_law": 7319,
       "unige_law": 6447,
+      "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
+      "libra_unine": 1962,
       "eth_research_collection": 1760,
       "fhnw_irf": 496,
       "onlinekommentar": 368,
@@ -3367,13 +3369,14 @@
       "cognitio": 58,
       "cfs": 50,
       "leoh": 44,
+      "repositorium_ch": 31,
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 12401,
-      "book": 5696,
-      "dissertation": 1235,
-      "report": 486,
+      "article": 16651,
+      "book": 6454,
+      "dissertation": 1240,
+      "report": 507,
       "commentary": 398,
       "working_paper": 194,
       "guidance": 70,
