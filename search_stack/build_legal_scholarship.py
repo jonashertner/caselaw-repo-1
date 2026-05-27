@@ -180,11 +180,11 @@ def ingest_jsonl(conn: sqlite3.Connection, path: Path) -> int:
                     """INSERT OR IGNORE INTO publications
                        (pub_id, source, pub_type, title, authors, abstract,
                         language, publication_date, year, journal, publisher,
-                        doi, issn, url, license, license_url, keywords,
-                        subjects, ingested_at, source_record_id, raw_metadata,
-                        has_full_text, full_text)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-                               ?, ?, ?, ?, ?, ?, ?)""",
+                        doi, issn, url, pdf_url, license, license_url,
+                        keywords, subjects, ingested_at, source_record_id,
+                        raw_metadata, has_full_text, full_text)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                               ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                     (
                         pub_id,
                         source,
@@ -201,6 +201,7 @@ def ingest_jsonl(conn: sqlite3.Connection, path: Path) -> int:
                         d.get("doi"),
                         d.get("issn"),
                         d.get("url"),
+                        d.get("pdf_url"),
                         d.get("license"),
                         d.get("license_url"),
                         _join(d.get("subjects")),  # subjects are also our keywords source
