@@ -298,9 +298,9 @@ SOURCES: list[ScholarshipSource] = [
         ),
         homepage="https://www.bk.admin.ch/bk/de/home/dokumentation/zeitschrift--leges-.html",
         notes="Federal Chancellery's quarterly journal on legislation and "
-              "evaluation. Free PDFs on bk.admin.ch/leges. No OAI-PMH; needs "
-              "custom HTML+PDF scraper.",
-        active=False,
+              "evaluation. Hosted on leges.weblaw.ch; URL enumeration of "
+              "/legesissues/YEAR/N.html + per-article HTML scrape.",
+        active=True,
     ),
     ScholarshipSource(
         key="justice",
