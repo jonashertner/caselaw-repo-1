@@ -19590,7 +19590,10 @@ setInterval(load, 30000);
 
     @rest_api.get("/amendment-ref", tags=["Statutes"],
                   summary="Resolve AS/BBl reference to Fedlex ELI URI",
-                  description="Maps an AS or BBl page reference to its Fedlex ELI URI.")
+                  description="Maps an AS or BBl page reference to its Fedlex ELI URI. "
+                              "Backed by materialien.db.amendment_refs (83k+ resolved refs). "
+                              "BBl/FF refs resolve to eli/fga/{year}/{page}; AS/RO/RU to "
+                              "eli/oc/{year}/{page}.")
     async def api_amendment_ref(
         ref_type: str = Query(..., description="Reference type: AS, BBl, RO, RU, FF"),
         year: int = Query(..., description="Publication year"),
@@ -19598,19 +19601,32 @@ setInterval(load, 30000);
     ):
         def _lookup():
             import sqlite3
-            _dir = os.environ.get("SWISS_CASELAW_DIR", os.path.expanduser("~/.swiss-caselaw"))
-            db_path = os.path.join(_dir, "statutes.db")
+            _dir = os.environ.get(
+                "SWISS_CASELAW_DIR", os.path.expanduser("~/.swiss-caselaw"),
+            )
+            # The amendment-ref index lives in materialien.db (NOT statutes.db
+            # — that table was created with the wrong schema and never populated;
+            # bug reported by Simon Betschmann, Gerichte ZH, 2026-05-27).
+            db_path = os.path.join(_dir, "materialien.db")
             try:
-                db = sqlite3.connect(db_path)
+                db = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
                 row = db.execute(
-                    "SELECT eli_uri FROM amendment_refs WHERE ref_type=? AND year=? AND page_num=?",
+                    "SELECT fedlex_url FROM amendment_refs "
+                    "WHERE ref_type=? AND year=? AND page=? "
+                    "AND fedlex_url IS NOT NULL "
+                    "LIMIT 1",
                     (ref_type, year, page),
                 ).fetchone()
                 db.close()
-                if row:
-                    return {"eli_uri": row[0], "url": "https://www.fedlex.admin.ch/" + row[0]}
+                if row and row[0]:
+                    # fedlex_url already includes the full https:// prefix
+                    return {"eli_uri": row[0], "url": row[0]}
                 return {"eli_uri": None}
-            except Exception:
+            except Exception as e:
+                logger.warning(
+                    "amendment-ref lookup failed for %s/%d/%d: %s",
+                    ref_type, year, page, e,
+                )
                 return {"eli_uri": None}
         return await asyncio.to_thread(_lookup)
 
