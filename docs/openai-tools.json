@@ -29,7 +29,7 @@
       "type": "function",
       "function": {
         "name": "search_decisions",
-        "description": "Search 965,000+ Swiss court decisions by natural language, Boolean operators, docket numbers, or statute references.",
+        "description": "Search 973,000+ Swiss court decisions by natural language, Boolean operators, docket numbers, or statute references.",
         "parameters": {
           "type": "object",
           "properties": {
