@@ -1077,7 +1077,11 @@ def step_5c_quality_gate(dry_run: bool = False) -> bool:
         "--db", str(REPO_DIR / "output" / "decisions.db"),
         "--output", str(docs_quality_json),
     ]
-    ok = run_cmd(cmd, "QC gate", dry_run, timeout=1800)
+    # Bumped 1800→3600 after the 2026-05-28 publish failure where the gate
+    # timed out under disk-I/O contention from concurrent build_fts5 + graph
+    # rebuild steps. The checks themselves passed (8/8) when given time;
+    # the limit was wall-clock, not a real regression.
+    ok = run_cmd(cmd, "QC gate", dry_run, timeout=3600)
     if not ok:
         # Send a focused alert with the failing-check names so the
         # operator knows what triggered the block.
