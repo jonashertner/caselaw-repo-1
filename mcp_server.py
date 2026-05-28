@@ -13422,15 +13422,21 @@ def find_scholarship_citing_decision(
         return {"error": "Legal scholarship database not available."}
     limit = min(max(1, limit), 100)
     try:
+        # Expand id variants (space/underscore/BGE-prefix forms) so a caller
+        # passing a citation-string or non-canonical id still matches — the
+        # same normalization every graph tool applies. Without this the query
+        # silently returned 0 for any non-exact id form.
+        variants = _decision_id_variants(decision_id) or [decision_id]
+        placeholders = ",".join("?" for _ in variants)
         rows = conn.execute(
-            """SELECT p.pub_id, p.source, p.pub_type, p.title, p.authors,
+            f"""SELECT p.pub_id, p.source, p.pub_type, p.title, p.authors,
                       p.language, p.year, p.url, pcd.snippet
                FROM pub_citations_decisions pcd
                JOIN publications p ON p.id = pcd.pub_id
-               WHERE pcd.decision_id = ?
+               WHERE pcd.decision_id IN ({placeholders})
                ORDER BY p.year DESC NULLS LAST
                LIMIT ?""",
-            (decision_id, limit),
+            (*variants, limit),
         ).fetchall()
         return {
             "decision_id": decision_id,
@@ -13588,6 +13594,33 @@ def get_scholarship_full_text(pub_id: str) -> dict:
         cc.close()
     except sqlite3.Error as e:
         logger.warning("fulltext cache write failed: %s", e)
+
+    # Durable build-cache dual-write: also upsert into the SAME cache file +
+    # column that build_legal_scholarship.backfill_fulltext_from_cache() reads
+    # (output/scholarship_fulltext_cache.db, column full_text). Without this,
+    # on-demand fetched full-text lived only in the divergent rich cache above
+    # and never entered the searchable corpus on the next rebuild.
+    try:
+        _build_cache = LEGAL_SCHOLARSHIP_DB_PATH.with_name("scholarship_fulltext_cache.db")
+        bc = sqlite3.connect(str(_build_cache))
+        bc.execute(
+            "CREATE TABLE IF NOT EXISTS fulltext_cache ("
+            "pub_id TEXT PRIMARY KEY, full_text TEXT NOT NULL, "
+            "char_len INTEGER, source TEXT, fetched_at TEXT)"
+        )
+        bc.execute(
+            "INSERT INTO fulltext_cache (pub_id, full_text, char_len, source, fetched_at) "
+            "VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT(pub_id) DO UPDATE SET full_text=excluded.full_text, "
+            "char_len=excluded.char_len, source=excluded.source, fetched_at=excluded.fetched_at",
+            (pub_id, result["text"],
+             result.get("text_chars") or len(result["text"] or ""),
+             r["source"], datetime.now(timezone.utc).isoformat()),
+        )
+        bc.commit()
+        bc.close()
+    except sqlite3.Error as e:
+        logger.warning("durable build-cache dual-write failed: %s", e)
 
     return {
         "pub_id": pub_id,

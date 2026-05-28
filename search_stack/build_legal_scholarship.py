@@ -446,8 +446,33 @@ def build(
     conn.commit()
     conn.close()
 
+    # ── DURABILITY GUARD ──────────────────────────────────────────────
+    # Refuse the atomic swap if full-text collapses vs the prior live DB —
+    # the signature of the 2026-05-28 regression (9,168→1,258 when a rebuild
+    # ran without the durable cache populated). A legitimate build never loses
+    # >50% of its full-text; such a drop means a source/cache input went
+    # missing, and serving the degraded DB is worse than keeping yesterday's.
+    new_ft = sqlite3.connect(
+        f"file:{tmp_path}?mode=ro", uri=True
+    ).execute("SELECT COUNT(*) FROM publications WHERE has_full_text=1").fetchone()[0]
+    summary["has_full_text"] = new_ft
+    if db_path.exists():
+        try:
+            old_ft = sqlite3.connect(
+                f"file:{db_path}?mode=ro&immutable=1", uri=True
+            ).execute("SELECT COUNT(*) FROM publications WHERE has_full_text=1").fetchone()[0]
+        except Exception:
+            old_ft = 0
+        if old_ft >= 1000 and new_ft < old_ft * 0.5:
+            raise RuntimeError(
+                f"DURABILITY GUARD: full_text collapsed {old_ft}→{new_ft} (>50% drop) — "
+                f"refusing atomic swap, keeping prior DB. Likely the durable cache "
+                f"(scholarship_fulltext_cache.db) is empty/missing or a source dropped. "
+                f"Investigate before forcing a rebuild."
+            )
+
     os.replace(str(tmp_path), str(db_path))
-    log.info("DB built: %s rows=%d", db_path, total)
+    log.info("DB built: %s rows=%d has_full_text=%d", db_path, total, new_ft)
     return summary
 
 
