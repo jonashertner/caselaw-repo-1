@@ -478,7 +478,7 @@ LLM_EXPANSION_TIMEOUT = float(os.environ.get("LLM_EXPANSION_TIMEOUT", "2.0"))
 EXPANSION_SYSTEM_PROMPT = (
     "You are a Swiss legal search assistant. Given a user's search query about "
     "Swiss law, output 3-6 additional search terms that would help find relevant "
-    "court decisions in a full-text search index of 960K Swiss decisions.\n"
+    "court decisions in a full-text search index of 973K Swiss decisions.\n"
     "Include:\n"
     "- The precise Swiss legal doctrine name (Rechtsbegriff) in German\n"
     "- The key statute article (e.g. Art. 56 OR, Art. 28 ZGB)\n"
@@ -19210,8 +19210,9 @@ setInterval(load, 30000);
     rest_api = FastAPI(
         title="OpenCaseLaw API",
         description=(
-            "Swiss court decisions, statutes, commentaries, and citation graph. "
-            "962,272 published decisions from Swiss federal, cantonal, and regulatory bodies."
+            "Swiss court decisions, statutes, commentaries, scholarship, and citation graph. "
+            "973,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
+            "5,516 federal laws, 15,722 cantonal acts, 1,058 commentaries, 30,000+ OA scholarship records."
         ),
         version="1.0.0",
         docs_url="/docs",
