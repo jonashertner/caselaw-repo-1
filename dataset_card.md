@@ -171,7 +171,7 @@ This snapshot is intended for local MCP/server bootstrap tools that want to avoi
 | Verbatim Botschaft corpus | 459 documents / 76,210 FTS5-indexed paragraphs (Phase 2, scaling) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
 | Scholarly commentaries | 1,104 (OnlineKommentar.ch + OpenLegalCommentary.ch) |
-| MCP tools | 35 total (33 remote in public mode + 2 local-only) |
+| MCP tools | 40 total (38 remote in public mode + 2 local-only) |
 
 **Language distribution:**
 
@@ -329,7 +329,7 @@ See the governance policy for source withdrawals, re-anonymization, and verified
         5,516 federal laws, 15,722 cantonal laws,
         and legislative history (83,958 Botschaft amendment references; 459
         verbatim Botschaften, scaling).
-        Searchable via 35 MCP tools (33 remote in public mode + 2 local-only) from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. Updated daily.}
+        Searchable via 40 MCP tools (38 remote in public mode + 2 local-only) from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. Updated daily.}
 }
 ```
 
