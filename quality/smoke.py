@@ -63,7 +63,12 @@ def _probe(name: str, url: str, *, magic: bytes | None = None,
         })
         with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
             ct = resp.headers.get("content-type", "")
-            data = resp.read(min(64 * 1024, min_bytes + 4096))
+            # Read up to 64 KB. Previously read only min_bytes+4096 (=4096 for
+            # marker probes), so must_contain markers living past the first 4 KB
+            # of a page false-failed — e.g. 'decision-body' sits past the CSS/meta
+            # head in the ~52 KB /entscheid/ page, firing a bogus ntfy every 5 min
+            # (the 2026-05 alert-fatigue that drowned real alerts).
+            data = resp.read(64 * 1024)
             elapsed = (time.monotonic() - started) * 1000
             status = resp.status
             ok = status == 200
