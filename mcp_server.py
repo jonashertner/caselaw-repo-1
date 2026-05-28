@@ -95,7 +95,7 @@ from mcp.types import TextContent, Tool, ToolAnnotations
 # All tools are read-only (search/lookup, no mutations)
 _READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False)
 
-from fastapi import FastAPI, Query, Path as PathParam, HTTPException, Request
+from fastapi import FastAPI, Query, Path as PathParam, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -19307,6 +19307,64 @@ setInterval(load, 30000);
         redoc_url="/redoc",
     )
 
+    # ── Per-IP daily quota for expensive (LLM-backed) endpoints ────
+    # Defense against commercial-tool inner-loop integration costs (see
+    # docs/fair-use.html). Fail-open: if the sidecar DB is unavailable
+    # the request still goes through.
+    try:
+        from web_api import ocl_quota
+        _quota_available = True
+    except Exception as _e:
+        logger.warning("ocl_quota unavailable, endpoint quotas DISABLED: %s", _e)
+        _quota_available = False
+
+    def _client_ip(req: Request) -> str:
+        """Best-effort client IP behind nginx. X-Forwarded-For first hop wins."""
+        xff = req.headers.get("x-forwarded-for", "")
+        if xff:
+            return xff.split(",")[0].strip()
+        xri = req.headers.get("x-real-ip", "")
+        if xri:
+            return xri.strip()
+        return req.client.host if req.client else "0.0.0.0"
+
+    def _enforce_quota(endpoint_name: str):
+        """FastAPI dependency factory: increments + checks per-IP daily quota.
+        Raises HTTPException 429 when exceeded. No-op if quota module missing."""
+        async def _dep(request: Request):
+            if not _quota_available:
+                return None
+            ip = _client_ip(request)
+            api_key = request.headers.get("x-ocl-key", "").strip() or None
+            try:
+                result = ocl_quota.check_and_increment(
+                    ip=ip, endpoint=endpoint_name, api_key=api_key,
+                )
+            except Exception as e:
+                logger.error("quota check exception (fail-open): %s", e)
+                return None
+            if not result.allowed:
+                retry = ocl_quota._seconds_to_midnight_utc()
+                raise HTTPException(
+                    status_code=429,
+                    detail={
+                        "error": "daily_quota_exceeded",
+                        "endpoint": endpoint_name,
+                        "calls_today": result.calls,
+                        "limit": result.limit,
+                        "label": result.label,
+                        "retry_after_seconds": retry,
+                        "next_steps": (
+                            "Daily quota resets at 00:00 UTC. For commercial "
+                            "use at higher volume, email team@jonashertner.com "
+                            "to request an X-OCL-Key with a higher multiplier."
+                        ),
+                    },
+                    headers={"Retry-After": str(retry)},
+                )
+            return result
+        return _dep
+
     # Override the OpenAPI generator so our servers list is authoritative.
     # FastAPI's default get_openapi() otherwise keeps injecting its own
     # mount-path server entry ahead of anything we pass via servers=...
@@ -20416,6 +20474,7 @@ setInterval(load, 30000);
         court: str = Query(None, description="Court filter"),
         date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
         date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
+        _q=Depends(_enforce_quota("trends")),
     ):
         return await asyncio.to_thread(
             analyze_legal_trend, query=query, law_code=law_code, article=article,
@@ -20426,7 +20485,10 @@ setInterval(load, 30000);
                    summary="Draft a mock decision",
                    description="Build a research-only mock decision outline from user facts, "
                                "grounded in case law and statute references.")
-    async def api_mock_decision(req: MockDecisionRequest):
+    async def api_mock_decision(
+        req: MockDecisionRequest,
+        _q=Depends(_enforce_quota("mock_decision")),
+    ):
         return await asyncio.to_thread(
             draft_mock_decision, facts=req.facts, question=req.question,
             deciding_court=req.deciding_court, preferred_language=req.preferred_language,
@@ -20897,6 +20959,7 @@ setInterval(load, 30000);
                   description="Statute text + authority-ranked BGEs + doctrine timeline + commentary excerpt.")
     async def api_get_doctrine(
         query: str = Query(..., description="Legal topic, statute reference, or concept"),
+        _q=Depends(_enforce_quota("doctrine_llm")),
     ):
         return await asyncio.to_thread(_handle_get_doctrine, query=query)
 
@@ -20958,7 +21021,10 @@ setInterval(load, 30000);
                                "{ok, citations_found, citations_ok, issues_count, annotated_text, "
                                "issues}. CALL THIS before finalizing any LLM response containing ≥1 "
                                "case citation.")
-    async def api_attest(body: _AttestBody):
+    async def api_attest(
+        body: _AttestBody,
+        _q=Depends(_enforce_quota("attest")),
+    ):
         from quality.redact import is_likely_unredacted, redact as _server_redact
         # Resolve the input field — prefer the new name, fall back to legacy.
         text = body.redacted_text or body.draft_text or ""
@@ -21006,7 +21072,10 @@ setInterval(load, 30000);
                                "legal-RAG tools by Magesh et al., 'Hallucination-Free?', Stanford "
                                "RegLab, 2024 (cited authority exists but doesn't actually support "
                                "the proposition).")
-    async def api_verify_claim(body: _VerifyClaimBody):
+    async def api_verify_claim(
+        body: _VerifyClaimBody,
+        _q=Depends(_enforce_quota("verify_claim")),
+    ):
         return await asyncio.to_thread(
             _handle_check_claim_support,
             claim=body.claim, decision_id=body.decision_id, pinpoint=body.pinpoint,
@@ -21317,11 +21386,35 @@ setInterval(load, 30000);
     async def api_generate_exam_question(
         topic: str = Query(..., description="Legal topic (e.g., Vertragsrecht, Haftpflicht)"),
         exclude_ids: str = Query(None, description="Comma-separated decision IDs to exclude"),
+        _q=Depends(_enforce_quota("exam_question")),
     ):
         exclude_list = [x.strip() for x in exclude_ids.split(",")] if exclude_ids else None
         return await asyncio.to_thread(
             _handle_generate_exam_question, topic=topic, exclude_ids=exclude_list,
         )
+
+    # ── Quota monitoring (admin-gated, used by /coverage + alerting) ──
+    @rest_api.get("/quota/usage", tags=["Admin"],
+                  summary="Aggregate quota usage (admin-gated)",
+                  description=(
+                      "Returns 7-day call counts per endpoint, top IPs, "
+                      "and recent quota-exceeded alerts. Requires the "
+                      "ADMIN_TOKEN env var to be set on the server and "
+                      "passed as the X-Admin-Token header on the request."
+                  ))
+    async def api_quota_usage(
+        request: Request,
+        days: int = Query(7, ge=1, le=90, description="Days to summarize"),
+    ):
+        admin_token = os.environ.get("OCL_ADMIN_TOKEN")
+        if not admin_token:
+            raise HTTPException(503, "Admin endpoint disabled (OCL_ADMIN_TOKEN unset)")
+        provided = request.headers.get("x-admin-token", "")
+        if provided != admin_token:
+            raise HTTPException(403, "Invalid admin token")
+        if not _quota_available:
+            return {"error": "quota module not loaded"}
+        return await asyncio.to_thread(ocl_quota.usage_summary, days)
 
     # ── Billing endpoints (Stripe + Pro verify) ─────────────────
 

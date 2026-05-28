@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fair-use policy — OpenCaseLaw</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Fair-use guidance and quota policy for the public OpenCaseLaw MCP / REST API. Commercial integrators welcome — please coordinate volume.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://opencaselaw.ch/fair-use">
+<link rel="stylesheet" href="/static/css/design-system.css?v=22">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+  main.fairuse { max-width: 760px; padding: var(--s-6) var(--gutter-x) var(--s-7); margin: 0 auto; }
+  main.fairuse h1 { font-size: clamp(28px, 4vw, 36px); font-weight: 200; letter-spacing: -0.01em; margin: 0 0 var(--s-3); }
+  main.fairuse h2 { font-size: clamp(20px, 2.6vw, 24px); font-weight: 400; margin: var(--s-6) 0 var(--s-3); padding-bottom: var(--s-2); border-bottom: 1px solid var(--border); }
+  main.fairuse h3 { font-size: var(--t-lg); font-weight: 500; margin: var(--s-5) 0 var(--s-2); }
+  main.fairuse p, main.fairuse li { line-height: 1.62; color: var(--text); font-size: var(--t-base); max-width: 70ch; }
+  main.fairuse ul { padding-left: 1.4em; }
+  main.fairuse li { margin-bottom: 6px; }
+  main.fairuse code { background: var(--accent-subtle, #f1f6ff); padding: 1px 6px; border-radius: 3px; font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace); font-size: 0.92em; }
+  main.fairuse .lead { color: var(--text-2); font-size: var(--t-lg); margin-bottom: var(--s-5); }
+  main.fairuse .callout { background: var(--accent-subtle); border-left: 3px solid var(--accent); padding: var(--s-3) var(--s-4); margin: var(--s-4) 0; border-radius: 0 3px 3px 0; font-size: var(--t-base); }
+  main.fairuse table { width: 100%; max-width: 720px; border-collapse: collapse; margin: var(--s-3) 0; font-size: var(--t-sm); }
+  main.fairuse th, main.fairuse td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+  main.fairuse th { font-weight: 600; color: var(--text-2); }
+  main.fairuse td.n { text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="container row">
+    <a class="brand" href="/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
+    <nav id="primary-nav">
+      <a href="/search/">Search</a>
+      <a href="/courts/">Courts</a>
+      <a href="/laws/">Laws</a>
+      <a href="/coverage/">Coverage</a>
+      <a href="/methodology.html">Methodology</a>
+      <a href="/mcp/">MCP</a>
+      <a href="/ueber/">About</a>
+    </nav>
+  </div>
+</header>
+
+<main class="fairuse" id="main">
+
+<p class="eyebrow">Policy · API usage</p>
+<h1>Fair-use policy</h1>
+
+<p class="lead">
+  OpenCaseLaw is free public infrastructure for Swiss legal research. There
+  are no API keys, no sign-up, and no paywall. Researchers, journalists,
+  educators, individual lawyers and AI clients are welcome to use the
+  endpoints freely. This page documents the rate guidance for
+  <strong>commercial integrators</strong> whose volume could otherwise
+  destabilise the service.
+</p>
+
+<div class="callout">
+  <strong>Short version.</strong> Honest use needs no coordination. If your
+  product is going to fire one of the LLM-backed endpoints
+  (<code>/attest</code>, <code>/verify-claim</code>,
+  <code>/mock-decision</code>, <code>/exam-question</code>,
+  <code>/doctrine</code>, <code>/trends</code>) more than
+  <strong>~200 times per day per IP</strong>, please reach out at
+  <a href="mailto:team@jonashertner.com">team@jonashertner.com</a> so we can
+  give you a higher quota.
+</div>
+
+<h2>Why these endpoints have quotas</h2>
+
+<p>
+  A subset of the public tools fan out to Claude (Anthropic) under the
+  hood — typically Sonnet-4.6, which costs OpenCaseLaw on the order of
+  $0.05–$0.50 per call depending on document size. A commercial
+  integrator embedding one of these tools in an inner product loop can
+  easily generate tens of thousands of calls per day, costing the project
+  thousands of dollars per day with no awareness on their end. The quotas
+  exist so that this never happens by accident.
+</p>
+
+<p>
+  The non-LLM tools (full-text search, citation graph traversal, statute
+  lookup, scholarship retrieval, decision metadata, structured Erwägung
+  extraction, etc.) are <strong>not quota'd</strong>. They run against
+  local SQLite indices and cost ~nothing per call. Use freely.
+</p>
+
+<h2>Quota table (free / unauthenticated tier)</h2>
+
+<p>Per IP per day, resetting at 00:00 UTC:</p>
+
+<table>
+<thead><tr><th>Endpoint</th><th>Tool name</th><th class="n">Calls / day / IP</th></tr></thead>
+<tbody>
+<tr><td><code>/api/attest</code></td><td>attest_response</td><td class="n">200</td></tr>
+<tr><td><code>/api/verify-claim</code></td><td>check_claim_support</td><td class="n">200</td></tr>
+<tr><td><code>/api/mock-decision</code></td><td>draft_mock_decision</td><td class="n">50</td></tr>
+<tr><td><code>/api/exam-question</code></td><td>generate_exam_question</td><td class="n">50</td></tr>
+<tr><td><code>/api/trends</code></td><td>analyze_legal_trend</td><td class="n">100</td></tr>
+<tr><td><code>/api/doctrine</code></td><td>get_doctrine</td><td class="n">200</td></tr>
+</tbody>
+</table>
+
+<p>
+  When the daily quota is exceeded, the endpoint returns
+  <code>HTTP 429 Too Many Requests</code> with a JSON body documenting
+  the limit and the seconds remaining until reset. The
+  <code>Retry-After</code> response header carries the same value.
+</p>
+
+<p>
+  All other endpoints have only nginx rate limiting (30 req/s per IP on
+  <code>/api/*</code>, 10 req/s on <code>/sse</code>, burst 50).
+</p>
+
+<h2>Higher quotas for commercial use</h2>
+
+<p>
+  If your product or research project needs more headroom on the
+  LLM-backed endpoints, email
+  <a href="mailto:team@jonashertner.com">team@jonashertner.com</a> with:
+</p>
+
+<ul>
+<li>A short description of what you're building.</li>
+<li>Your expected daily volume per endpoint.</li>
+<li>The IPs or IP ranges from which requests will originate (so we can
+    confirm the right caller is using the issued key).</li>
+</ul>
+
+<p>
+  We mint an <code>X-OCL-Key</code> for you, which carries a quota
+  multiplier (typically 10× for organic integrations like
+  cantonal-government adopters, up to 100× for paid commercial use). Send
+  the key as the <code>X-OCL-Key</code> header on each request:
+</p>
+
+<pre><code>curl -H "X-OCL-Key: ocl_xxxxxxxx..." \
+     -H "Content-Type: application/json" \
+     -d '{"draft_text": "..."}' \
+     https://mcp.opencaselaw.ch/api/attest</code></pre>
+
+<p>
+  Paid commercial tiers are billed via Stripe at cost-recovery rates
+  that map roughly to our actual Anthropic API spend per call. There
+  is no margin layered on top — the project is non-profit.
+</p>
+
+<h2>Word add-in users</h2>
+
+<p>
+  The Pro tier of the <a href="/word/">OpenCaseLaw Word add-in</a>
+  (CHF 5/month) includes 25 AI-tool calls per day shared across the
+  four Pro features (Verify, Strengthen, Find Support, Reflect). That
+  quota is enforced inside the billing path and is independent of the
+  fair-use policy above; Pro users do not need an X-OCL-Key for the
+  Word add-in.
+</p>
+
+<h2>What we monitor</h2>
+
+<ul>
+<li>Aggregate Anthropic API spend, with daily alerts when burn is unusual.</li>
+<li>Per-IP quota counters (<code>output/quota.db</code>), with audit
+    trail of exceeded-quota events.</li>
+<li>Per-tool error rates and timing distributions.</li>
+</ul>
+
+<p>
+  We do <strong>not</strong> log raw queries or response bodies — see the
+  <a href="/datenschutz/">privacy policy</a> for the differential-privacy
+  rollup we publish in lieu of access logs.
+</p>
+
+<h2>If you hit a quota and you shouldn't have</h2>
+
+<p>
+  Honest mistakes happen — caches cold, retries amplified, a benchmark
+  run that escaped the dev box. Email
+  <a href="mailto:team@jonashertner.com">team@jonashertner.com</a> with
+  the timestamp + endpoint and we'll reset the counter and discuss what
+  your real volume looks like. We'd rather unblock you than have you
+  silently fail.
+</p>
+
+<p style="margin-top: var(--s-6); padding-top: var(--s-4); border-top: 1px solid var(--border); color: var(--text-2); font-size: var(--t-sm);">
+  This policy is intentionally lightweight and revisable. If you see a
+  way it's failing legitimate users, please tell us. The corpus stays
+  CC0; the code stays MIT; the API stays free for the use cases that
+  motivated this project (research, education, individual practice).
+</p>
+
+</main>
+
+<footer class="site">
+  <div class="container row">
+    <div>
+      <a class="brand" href="/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+        Open Swiss case law. CC0 corpus, MIT code, 4-layer quality framework.
+      </p>
+    </div>
+    <div>
+      <h4>Policy</h4>
+      <ul>
+        <li><a href="/datenschutz/">Privacy</a></li>
+        <li><a href="/fair-use">Fair use</a></li>
+        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
+    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC0 · Code MIT
+  </div>
+</footer>
+
+</body>
+</html>
