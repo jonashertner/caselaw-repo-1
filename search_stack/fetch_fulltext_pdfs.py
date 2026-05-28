@@ -44,6 +44,39 @@ log = logging.getLogger("fetch_fulltext_pdfs")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = REPO_ROOT / "output" / "legal_scholarship.db"
 DEFAULT_PDF_CACHE = REPO_ROOT / "output" / "scholarship_pdfs"
+# Durable full-text cache, keyed by the stable canonical pub_id. The live
+# legal_scholarship.db is rebuilt from JSONL on every publish, which discards
+# any full_text that was fetched into the DB but never written back to JSONL
+# (the 2026-05-28 regression). This cache decouples fetched full-text from the
+# rebuild cycle: fetch_fulltext_pdfs writes here, build_legal_scholarship
+# backfills from here — so full-text survives even a from-scratch rebuild.
+DEFAULT_CACHE_DB = REPO_ROOT / "output" / "scholarship_fulltext_cache.db"
+
+_CACHE_SCHEMA = """
+CREATE TABLE IF NOT EXISTS fulltext_cache (
+    pub_id    TEXT PRIMARY KEY,
+    full_text TEXT NOT NULL,
+    char_len  INTEGER,
+    source    TEXT,
+    fetched_at TEXT
+);
+"""
+
+
+def _open_cache(cache_db: Path | None):
+    """Open (creating if needed) the durable full-text cache DB. None disables."""
+    if cache_db is None:
+        return None
+    try:
+        cache_db.parent.mkdir(parents=True, exist_ok=True)
+        c = sqlite3.connect(str(cache_db))
+        c.execute("PRAGMA journal_mode=WAL")
+        c.executescript(_CACHE_SCHEMA)
+        c.commit()
+        return c
+    except sqlite3.Error as e:
+        log.warning("could not open full-text cache %s: %s", cache_db, e)
+        return None
 
 
 def fetch_pending(
@@ -53,6 +86,7 @@ def fetch_pending(
     source_filter: str | None = None,
     rate_limit: float = 1.0,
     pdf_cache_dir: Path | None = DEFAULT_PDF_CACHE,
+    cache_db: Path | None = DEFAULT_CACHE_DB,
 ) -> dict:
     if not db_path.exists():
         log.error("DB not found: %s", db_path)
@@ -61,6 +95,7 @@ def fetch_pending(
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
+    cache = _open_cache(cache_db)
 
     where = (
         "(full_text IS NULL OR LENGTH(full_text) < 200) "
@@ -131,6 +166,23 @@ def fetch_pending(
                     (r["id"],),
                 )
                 conn.commit()
+                # Durable cache write (keyed by canonical pub_id) so this
+                # full-text survives the next legal_scholarship.db rebuild.
+                if cache is not None:
+                    try:
+                        cache.execute(
+                            "INSERT INTO fulltext_cache "
+                            "(pub_id, full_text, char_len, source, fetched_at) "
+                            "VALUES (?, ?, ?, ?, ?) "
+                            "ON CONFLICT(pub_id) DO UPDATE SET "
+                            "full_text=excluded.full_text, char_len=excluded.char_len, "
+                            "source=excluded.source, fetched_at=excluded.fetched_at",
+                            (r["pub_id"], result["text"], len(result["text"] or ""),
+                             r["source"], time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())),
+                        )
+                        cache.commit()
+                    except sqlite3.Error as e:
+                        log.warning("cache write failed for %s: %s", r["pub_id"], e)
                 n_ok += 1
                 total_bytes += result.get("bytes") or 0
             except sqlite3.Error as e:
@@ -159,6 +211,13 @@ def fetch_pending(
     )
     conn.commit()
     conn.close()
+    if cache is not None:
+        try:
+            cached_total = cache.execute("SELECT COUNT(*) FROM fulltext_cache").fetchone()[0]
+            log.info("full-text cache now holds %d records (%s)", cached_total, cache_db)
+            cache.close()
+        except sqlite3.Error:
+            pass
 
     summary = {
         "candidates": len(rows),
@@ -185,6 +244,10 @@ def main() -> int:
     p.add_argument("--pdf-cache-dir", type=Path, default=DEFAULT_PDF_CACHE)
     p.add_argument("--no-cache", action="store_true",
                    help="Don't store PDFs on disk")
+    p.add_argument("--cache-db", type=Path, default=DEFAULT_CACHE_DB,
+                   help="Durable full-text cache DB (survives rebuilds)")
+    p.add_argument("--no-fulltext-cache", action="store_true",
+                   help="Don't write the durable full-text cache")
     args = p.parse_args()
     logging.basicConfig(
         level=logging.INFO,
@@ -196,6 +259,7 @@ def main() -> int:
         source_filter=args.source,
         rate_limit=args.rate_limit,
         pdf_cache_dir=None if args.no_cache else args.pdf_cache_dir,
+        cache_db=None if args.no_fulltext_cache else args.cache_db,
     )
     print(json.dumps(summary, indent=2))
     return 0

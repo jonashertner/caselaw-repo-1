@@ -45,6 +45,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = REPO_ROOT / "output" / "legal_scholarship.db"
 DEFAULT_JSONL_DIR = REPO_ROOT / "output" / "legal_scholarship"
 DEFAULT_OK_DB = REPO_ROOT / "output" / "ok_commentaries.db"
+# Durable full-text cache written by fetch_fulltext_pdfs.py. The live DB is
+# rebuilt from JSONL each publish, which lacks bulk-fetched full-text; we
+# re-apply it from this cache so full-text survives rebuilds (see the
+# 2026-05-28 regression where a rebuild dropped 9,168→1,258 full-text records).
+DEFAULT_FULLTEXT_CACHE = REPO_ROOT / "output" / "scholarship_fulltext_cache.db"
 
 SCHEMA_SQL = """
 CREATE TABLE IF NOT EXISTS publications (
@@ -293,6 +298,56 @@ def ingest_ok_commentaries(conn: sqlite3.Connection, ok_db_path: Path) -> int:
     return n
 
 
+def backfill_fulltext_from_cache(
+    conn: sqlite3.Connection, cache_path: Path = DEFAULT_FULLTEXT_CACHE
+) -> int:
+    """Re-apply bulk-fetched full-text from the durable cache to freshly
+    ingested publications. JSONL-native full_text (when present and usable)
+    wins; the cache only fills rows that the rebuild left empty/short. Updates
+    publications.full_text + has_full_text and refreshes the FTS5 row (there is
+    no AFTER UPDATE trigger on publications — FTS must be maintained manually).
+    Returns the number of publications restored.
+    """
+    if not Path(cache_path).exists():
+        log.info("no full-text cache at %s — skipping backfill", cache_path)
+        return 0
+    cache = sqlite3.connect(f"file:{cache_path}?mode=ro", uri=True)
+    cur = conn.cursor()
+    n = 0
+    try:
+        for pub_id, full_text in cache.execute(
+            "SELECT pub_id, full_text FROM fulltext_cache"
+        ):
+            if not full_text:
+                continue
+            row = cur.execute(
+                "SELECT id, full_text FROM publications WHERE pub_id=?", (pub_id,)
+            ).fetchone()
+            if not row:
+                continue
+            rid, existing = row[0], row[1]
+            if existing and len(existing) >= 200:
+                continue  # JSONL-native full_text already present — keep it
+            cur.execute(
+                "UPDATE publications SET full_text=?, has_full_text=1 WHERE id=?",
+                (full_text, rid),
+            )
+            cur.execute("DELETE FROM publications_fts WHERE rowid=?", (rid,))
+            cur.execute(
+                "INSERT INTO publications_fts(rowid, title, authors, abstract, "
+                "full_text, journal, keywords, subjects) "
+                "SELECT id, title, authors, abstract, full_text, journal, "
+                "keywords, subjects FROM publications WHERE id=?",
+                (rid,),
+            )
+            n += 1
+        conn.commit()
+    finally:
+        cache.close()
+    log.info("backfilled full-text from cache for %d publications", n)
+    return n
+
+
 def build(
     db_path: Path = DEFAULT_DB,
     jsonl_dir: Path = DEFAULT_JSONL_DIR,
@@ -332,6 +387,15 @@ def build(
     log.info("ingested %d commentaries from %s in %.1fs",
              n, ok_db_path, time.time() - t0)
     summary["by_source"]["onlinekommentar+openlegalcommentary"] = n
+
+    # 2a. Restore bulk-fetched full-text from the durable cache BEFORE citation
+    # extraction, so the extractor (and FTS5 search) see the full corpus, not
+    # just the JSONL-native full-text. Without this, every rebuild silently
+    # drops fetched full-text (the 2026-05-28 regression).
+    t0 = time.time()
+    n_bf = backfill_fulltext_from_cache(conn)
+    log.info("full-text cache backfill: %d rows in %.1fs", n_bf, time.time() - t0)
+    summary["fulltext_backfilled"] = n_bf
 
     # 2b. Extract citations from full_text → pub_citations_decisions + statutes.
     # Resolves Swiss case refs against decisions.db and statute abbreviations
