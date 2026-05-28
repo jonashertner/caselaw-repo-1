@@ -1,6 +1,11 @@
 {
-  "_comment": "OpenAI-compatible tool definitions for OpenCaseLaw.ch. Use with any LLM API that supports function calling (xAI/Grok, OpenAI, Ollama, etc.). The REST API base is https://mcp.opencaselaw.ch/api — map each function name to the corresponding endpoint.",
+  "_comment": "OpenAI-compatible tool definitions for OpenCaseLaw.ch. Use with any LLM API that supports function calling (xAI/Grok, OpenAI, Ollama, etc.). Auto-generated from _list_tools() in mcp_server.py — do not edit by hand. The REST API base is https://mcp.opencaselaw.ch/api — map each function name to the corresponding endpoint listed in _endpoint_mapping. Tools with endpoint = null are MCP-only and require a Streamable-HTTP / SSE MCP client.",
   "_api_base": "https://mcp.opencaselaw.ch/api",
+  "_tool_count": 38,
+  "_remote_mode_hidden": [
+    "check_update_status",
+    "update_database"
+  ],
   "_endpoint_mapping": {
     "search_decisions": "GET /decisions",
     "get_decision": "GET /decisions/{decision_id}",
@@ -22,49 +27,110 @@
     "get_materialien": "GET /materialien/{law_code}",
     "search_materialien": "GET /materialien",
     "generate_exam_question": "GET /exam-question",
-    "draft_mock_decision": "POST /mock-decision"
+    "draft_mock_decision": "POST /mock-decision",
+    "get_decision_structure": "GET /structure/{decision_id}",
+    "get_erwaegung": "GET /erwaegung/{decision_id}/{e_number}",
+    "find_relevant_erwaegung": "GET /relevant-erwaegung/{decision_id}",
+    "get_regeste": "GET /regeste/{decision_id}",
+    "get_article_purpose": "GET /article-purpose/{sr_number}/{article}",
+    "get_article_history": "GET /article-history/{sr_number}/{article}",
+    "search_botschaft": "GET /search-botschaft",
+    "cite": "GET /cite",
+    "attest_response": "POST /attest",
+    "check_claim_support": "POST /verify-claim",
+    "search_scholarship": "GET /scholarship/search",
+    "get_scholarship": "GET /scholarship/{pub_id}",
+    "list_scholarship_sources": "GET /scholarship/sources",
+    "find_scholarship_citing_statute": "GET /scholarship/cited-by-statute",
+    "get_scholarship_full_text": "GET /scholarship-fulltext",
+    "search_practice": null,
+    "get_practice": null
   },
   "tools": [
     {
       "type": "function",
       "function": {
         "name": "search_decisions",
-        "description": "Search 973,000+ Swiss court decisions by natural language, Boolean operators, docket numbers, or statute references.",
+        "description": "Search Swiss court decisions AND European Court of Human Rights decisions concerning Switzerland (~2,800 ECHR docs across bge_egmr, hudoc_ch, ecthr_chamber, ecthr_committee, ecthr_grand_chamber) using full-text search. Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), and prefix matching (word*). Filter by court, canton, language, date range, chamber, and decision type. Also handles docket number lookup (e.g., 6B_1234/2025) and column-scoped search (regeste:keyword, full_text:keyword). Returns relevance-ranked results enriched with:\n- court_name (human-readable), court_level, legal_area\n- statutes: relevant statute articles (e.g. Art. 41 OR)\n- citation_count: how many decisions cite this one\n- cited_by_results: how many other results cite this one\n- is_leading_case: true for highly-cited authoritative decisions\nUse offset for pagination through large result sets.\n\nTo find the MOST RECENT decisions: omit the query (or set it empty) and use sort='date_desc' with optional court/canton filters. Example: query='', court='bger', sort='date_desc', limit=5.",
         "parameters": {
           "type": "object",
           "properties": {
             "query": {
               "type": "string",
-              "description": "Search query (natural language, docket number, or statute reference)"
+              "description": "Search query. Examples:\n- Simple: Mietrecht Kündigung\n- Phrase: \"Treu und Glauben\"\n- Boolean: Arbeitsrecht AND Kündigung NOT Probezeit\n- Prefix: Verfassung*\n- By docket: 6B_1234/2025\n- By article: \"Art. 8 BV\"\n- Column: regeste:Mietrecht AND full_text:Kündigung"
             },
             "court": {
               "type": "string",
-              "description": "Filter by court code"
+              "description": "Filter by court code. Federal: bger, bge, bvger, bstger, bpatger, mkg. European Court of Human Rights (Switzerland): bge_egmr (BGE-published DE translations), hudoc_ch (HUDOC Switzerland-tagged), ecthr_chamber, ecthr_grand_chamber, ecthr_committee. Cantonal: zh_obergericht, be_verwaltungsgericht, etc."
             },
             "canton": {
               "type": "string",
-              "description": "Filter by canton (ZH, BE, GE, etc.)"
+              "description": "Filter by canton (CH for federal, ZH, BE, GE, etc.)"
             },
             "language": {
               "type": "string",
-              "description": "Filter by language: de, fr, it"
+              "description": "OPTIONAL filter. Restricts results to ONE language. Omit (recommended default) to search across all languages — Swiss federal decisions are issued in DE, FR, or IT depending on the case, so a language filter silently excludes valid hits in the other two. Set ONLY when the user explicitly asks for a single-language result; do NOT auto-apply based on the conversation's language.",
+              "enum": [
+                "de",
+                "fr",
+                "it",
+                "rm"
+              ]
             },
             "date_from": {
               "type": "string",
-              "description": "Earliest decision date (YYYY-MM-DD)"
+              "description": "Start date (YYYY-MM-DD)"
             },
             "date_to": {
               "type": "string",
-              "description": "Latest decision date (YYYY-MM-DD)"
+              "description": "End date (YYYY-MM-DD)"
+            },
+            "chamber": {
+              "type": "string",
+              "description": "Filter by chamber/division (substring match). Examples: 'Abteilung V' (BVGer asylum), 'Zivilrechtliche', 'CASSO', 'Strafrechtliche'"
+            },
+            "decision_type": {
+              "type": "string",
+              "description": "Filter by decision type (substring match). Examples: 'Urteil', 'Beschluss', 'Leitentscheid', 'BVGE', 'Verfügung', 'Endentscheid'"
+            },
+            "legal_area": {
+              "type": "string",
+              "description": "Filter by legal area/Rechtsgebiet (substring match). Examples: 'Strafrecht', 'Zivilrecht', 'Arbeitsrecht', 'Mietrecht', 'Familienrecht', 'Sozialversicherung', 'Schuldbetreibung', 'Ausländerrecht'"
             },
             "limit": {
               "type": "integer",
-              "description": "Max results (1-50, default 20)"
+              "description": "Max results to return (max 2000). Omit to use default of 50. Do not set low values like 5 or 10 unless the user explicitly asked for fewer results.",
+              "default": 50
+            },
+            "offset": {
+              "type": "integer",
+              "description": "Skip this many results (for pagination). Default 0.",
+              "default": 0
+            },
+            "sort": {
+              "type": "string",
+              "description": "Sort order: 'relevance' (default for FTS), 'date_desc', 'date_asc'.",
+              "enum": [
+                "relevance",
+                "date_desc",
+                "date_asc"
+              ]
+            },
+            "fields": {
+              "type": "string",
+              "description": "Response detail level: 'full' (default) includes snippet/regeste/URL, 'compact' returns only docket, date, court, language, decision_id.",
+              "enum": [
+                "full",
+                "compact"
+              ]
+            },
+            "include_pinpoint": {
+              "type": "boolean",
+              "description": "Attach a pinpoint Erwägung citation to the top results when a confident match exists (BM25 over the per-decision Erwägungen FTS5 index, gap-confidence ≥ medium). Defaults true; set false to skip the per-result lookup (saves ~30–150 ms on the top 5 results).",
+              "default": true
             }
           },
-          "required": [
-            "query"
-          ]
+          "required": []
         }
       }
     },
@@ -72,13 +138,18 @@
       "type": "function",
       "function": {
         "name": "get_decision",
-        "description": "Get a specific Swiss court decision by ID or docket number. Returns full text, metadata, citation count, statutes, and leading-case flag.",
+        "description": "Fetch a single court decision with full text. Look up by decision_id (e.g., bger_6B_1234_2025), docket number (e.g., 6B_1234/2025), or partial match. Full text is truncated at 200,000 characters for very long decisions. Set full_text=false to get only metadata and regeste.",
         "parameters": {
           "type": "object",
           "properties": {
             "decision_id": {
               "type": "string",
-              "description": "Decision ID or docket number (e.g., bge_BGE_125_III_70 or 4A_571/2008)"
+              "description": "Decision ID, docket number, or partial docket"
+            },
+            "full_text": {
+              "type": "boolean",
+              "description": "Include full text in response (default true). Set false to get only metadata and regeste.",
+              "default": true
             }
           },
           "required": [
@@ -90,27 +161,8 @@
     {
       "type": "function",
       "function": {
-        "name": "get_case_brief",
-        "description": "Structured case brief: regeste, key Erwägungen, cited statutes with text, authority ranking, related cases.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "case": {
-              "type": "string",
-              "description": "BGE reference, docket number, or decision ID"
-            }
-          },
-          "required": [
-            "case"
-          ]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
         "name": "list_courts",
-        "description": "List all 100+ Swiss courts in the dataset.",
+        "description": "List all available courts with decision counts, date ranges, and language coverage. Use this to discover what data is available.",
         "parameters": {
           "type": "object",
           "properties": {}
@@ -121,36 +173,21 @@
       "type": "function",
       "function": {
         "name": "get_statistics",
-        "description": "Aggregate statistics: total decisions, courts, cantons, language distribution, year trends.",
-        "parameters": {
-          "type": "object",
-          "properties": {}
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "find_leading_cases",
-        "description": "Find authoritative BGE decisions for a statute article, ranked by citation count.",
+        "description": "Get aggregate statistics about the dataset. Optionally filter by court, canton, or year.",
         "parameters": {
           "type": "object",
           "properties": {
-            "law_code": {
+            "court": {
               "type": "string",
-              "description": "Law abbreviation in uppercase (OR, STGB, ZGB, BV, STPO)"
+              "description": "Filter by court code"
             },
-            "article": {
+            "canton": {
               "type": "string",
-              "description": "Article number (e.g., 41, 8, 336)"
+              "description": "Filter by canton code"
             },
-            "query": {
-              "type": "string",
-              "description": "Alternative: natural language query instead of statute ref"
-            },
-            "limit": {
+            "year": {
               "type": "integer",
-              "description": "Max results (default 10)"
+              "description": "Filter by year"
             }
           }
         }
@@ -159,41 +196,34 @@
     {
       "type": "function",
       "function": {
-        "name": "get_doctrine",
-        "description": "Statute text + authority-ranked leading cases + doctrinal timeline + Materialien (Botschaft) for a provision.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "Statute reference (e.g., 'Art. 41 OR') or legal concept"
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
         "name": "find_citations",
-        "description": "Find incoming/outgoing citations for a decision in the 8.8M-edge citation graph.",
+        "description": "Given a decision_id, show what it cites and what cites it. Uses the reference graph database with 9.86M citation edges. Returns resolved citations with confidence scores and unresolved references.",
         "parameters": {
           "type": "object",
           "properties": {
             "decision_id": {
               "type": "string",
-              "description": "Decision ID"
+              "description": "Decision ID (e.g., bger_6B_1_2025)"
             },
             "direction": {
               "type": "string",
-              "description": "incoming, outgoing, or both (default: both)"
+              "description": "Citation direction: 'both' (default), 'outgoing', or 'incoming'",
+              "enum": [
+                "both",
+                "outgoing",
+                "incoming"
+              ],
+              "default": "both"
+            },
+            "min_confidence": {
+              "type": "number",
+              "description": "Minimum confidence score for resolved citations (0-1, default 0.3)",
+              "default": 0.3
             },
             "limit": {
               "type": "integer",
-              "description": "Max results (default 50)"
+              "description": "Max citations per direction (default 50, max 200)",
+              "default": 50
             }
           },
           "required": [
@@ -206,13 +236,18 @@
       "type": "function",
       "function": {
         "name": "find_appeal_chain",
-        "description": "Trace the procedural history (prior and subsequent instances) of a decision.",
+        "description": "Trace the appeal chain (Instanzenzug) for a decision. Shows prior instances (lower courts) and subsequent instances (appeals to higher courts). Reconstructs the full procedural path, e.g. Bezirksgericht → Obergericht → Bundesgericht. Uses the is_prior_instance flag from decision headers.",
         "parameters": {
           "type": "object",
           "properties": {
             "decision_id": {
               "type": "string",
-              "description": "Decision ID or docket number"
+              "description": "Decision ID (e.g., bger_6B_1_2025)"
+            },
+            "min_confidence": {
+              "type": "number",
+              "description": "Minimum confidence score (0-1, default 0.3)",
+              "default": 0.3
             }
           },
           "required": [
@@ -224,161 +259,80 @@
     {
       "type": "function",
       "function": {
+        "name": "find_leading_cases",
+        "description": "Find the most-cited decisions for a topic or statute. Authority ranking based on citation graph. Filter by statute (law_code + article), topic query, court, and date range. Top-3 results auto-attach a `pinpoint` field {e_number, matched_sentence, confidence, url, score, source} anchoring the most-relevant Erwägung — see system instructions U3 for how to surface it. Each result also carries citation_string_{de,fr,it} + canonical_url + is_leading_case + citation_count for ready-to-quote Swiss-format citations.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Optional text query to filter by topic (FTS search)"
+            },
+            "law_code": {
+              "type": "string",
+              "description": "Optional law code (e.g., BV, OR, ZGB, EMRK, StGB)"
+            },
+            "article": {
+              "type": "string",
+              "description": "Optional article number (requires law_code)"
+            },
+            "court": {
+              "type": "string",
+              "description": "Optional court filter (e.g., bger, bge, bvger)"
+            },
+            "date_from": {
+              "type": "string",
+              "description": "Optional start date (YYYY-MM-DD)"
+            },
+            "date_to": {
+              "type": "string",
+              "description": "Optional end date (YYYY-MM-DD)"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Max results (default 20, max 100)",
+              "default": 20
+            },
+            "include_pinpoint": {
+              "type": "boolean",
+              "description": "Attach a pinpoint Erwägung citation to the top 3 leading cases when a confident match exists. Defaults true.",
+              "default": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
         "name": "analyze_legal_trend",
-        "description": "Track how jurisprudence on a topic has evolved over time.",
+        "description": "Year-by-year decision counts showing jurisprudence evolution. Use with a statute reference (law_code + article), a text query, or both. Returns yearly counts with visual bar chart.",
         "parameters": {
           "type": "object",
           "properties": {
             "query": {
               "type": "string",
-              "description": "Legal topic or statute reference"
+              "description": "Optional text query (FTS search)"
             },
-            "language": {
+            "law_code": {
               "type": "string",
-              "description": "de, fr, or it"
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "get_law",
-        "description": "Look up a Swiss federal or cantonal law article. Returns current text + Botschaft reference.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "abbreviation": {
-              "type": "string",
-              "description": "Law abbreviation (OR, BV, ZGB, StGB) or SR number for cantonal"
+              "description": "Optional law code (e.g., BV, OR, EMRK). Requires article."
             },
             "article": {
               "type": "string",
-              "description": "Article number (e.g., 41, 8, 329g)"
+              "description": "Article number (requires law_code)"
             },
-            "language": {
+            "court": {
               "type": "string",
-              "description": "de, fr, or it (default: de)"
+              "description": "Optional court filter"
             },
-            "canton": {
+            "date_from": {
               "type": "string",
-              "description": "Canton code (CH=federal, ZH, BE, GE, etc.)"
-            }
-          },
-          "required": [
-            "abbreviation"
-          ]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "search_laws",
-        "description": "Full-text search across 5,000 federal + 26,000 cantonal law articles. Supports colloquial terms (Vaterschaftsurlaub) and cross-language search.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "Search query (natural language)"
+              "description": "Optional start date (YYYY-MM-DD)"
             },
-            "canton": {
+            "date_to": {
               "type": "string",
-              "description": "Filter by canton"
-            },
-            "language": {
-              "type": "string",
-              "description": "de, fr, or it"
-            },
-            "limit": {
-              "type": "integer",
-              "description": "Max results (default 10)"
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "search_legislation",
-        "description": "Search 33,000+ federal and cantonal legislative texts via LexFind.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "query": {
-              "type": "string",
-              "description": "Search query"
-            },
-            "canton": {
-              "type": "string",
-              "description": "Filter by canton"
-            },
-            "language": {
-              "type": "string",
-              "description": "de, fr, or it"
-            },
-            "limit": {
-              "type": "integer",
-              "description": "Max results"
-            },
-            "fetch_top_n_texts": {
-              "type": "integer",
-              "description": "Enrich top N results with full article text (0-3)"
-            }
-          },
-          "required": [
-            "query"
-          ]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "get_legislation",
-        "description": "Get a specific legislative text from LexFind by ID.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "lexfind_id": {
-              "type": "integer",
-              "description": "LexFind ID"
-            },
-            "language": {
-              "type": "string",
-              "description": "de, fr, or it"
-            }
-          },
-          "required": [
-            "lexfind_id"
-          ]
-        }
-      }
-    },
-    {
-      "type": "function",
-      "function": {
-        "name": "browse_legislation_changes",
-        "description": "Browse recent legislative changes for a canton or federal level.",
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "canton": {
-              "type": "string",
-              "description": "Canton code or CH"
-            },
-            "language": {
-              "type": "string",
-              "description": "de, fr, or it"
+              "description": "Optional end date (YYYY-MM-DD)"
             }
           }
         }
@@ -387,46 +341,249 @@
     {
       "type": "function",
       "function": {
-        "name": "get_commentary",
-        "description": "Scholarly commentary from OnlineKommentar.ch for a Swiss law article.",
+        "name": "draft_mock_decision",
+        "description": "Build a research-only mock decision outline from user facts. Combines relevant Swiss case law retrieval with statute references. If possible, enriches statutes with Fedlex text excerpts. IMPORTANT: The tool may return clarification questions (high/medium priority). High-priority clarifications must be answered (via the clarifications parameter) before the tool will provide a conclusion. Call again with clarifications to get the full analysis.",
         "parameters": {
           "type": "object",
           "properties": {
-            "abbreviation": {
+            "facts": {
               "type": "string",
-              "description": "Law abbreviation (OR, BV, ZGB, etc.)"
+              "description": "Detailed facts of the hypothetical or real case."
             },
-            "article": {
+            "question": {
               "type": "string",
-              "description": "Article number"
+              "description": "Optional legal question to decide."
             },
-            "language": {
+            "preferred_language": {
               "type": "string",
-              "description": "de, fr, it, en"
+              "description": "Output/analysis language preference.",
+              "enum": [
+                "de",
+                "fr",
+                "it",
+                "rm",
+                "en"
+              ]
+            },
+            "deciding_court": {
+              "type": "string",
+              "description": "Hypothetical deciding court (e.g., bger, bvger)."
+            },
+            "statute_references": {
+              "type": "array",
+              "description": "Optional explicit statute list. Each item: {law_code, article, paragraph?}.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "law_code": {
+                    "type": "string"
+                  },
+                  "article": {
+                    "type": "string"
+                  },
+                  "paragraph": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "law_code",
+                  "article"
+                ]
+              }
+            },
+            "fedlex_urls": {
+              "type": "array",
+              "description": "Optional Fedlex URLs used to fetch statute text. Useful when no built-in URL mapping is available.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "clarifications": {
+              "type": "array",
+              "description": "Optional answers to prior clarification questions. Each item: {id, answer}. The tool withholds conclusion until high-priority clarifications are answered.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "answer": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "answer"
+                ]
+              }
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Number of case-law exemplars (default 8, max 20).",
+              "default": 8
             }
-          }
+          },
+          "required": [
+            "facts"
+          ]
         }
       }
     },
     {
       "type": "function",
       "function": {
-        "name": "search_commentaries",
-        "description": "Full-text search across scholarly commentaries.",
+        "name": "get_case_brief",
+        "description": "Structured case brief: regeste, Sachverhalt, key Erwägungen (first 12 only — for orientation, NOT a pinpoint ranking), Dispositiv, statutes, citation authority, related cases. Accepts BGE ref, decision_id, or docket. To pinpoint which Erwägung supports a specific claim, use find_relevant_erwaegung — never guess from key_erwaegungen alone.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "case": {
+              "type": "string",
+              "description": "Any case reference: BGE ref ('BGE 133 III 121', '133 III 121'), decision_id ('bge_BGE_133_III_121'), or docket number."
+            }
+          },
+          "required": [
+            "case"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_decision_structure",
+        "description": "Structured decision fields: Sachverhalt (facts), Erwägungen as numbered paragraphs ('1', '1.1', '2.3'), Dispositiv (ruling), Regeste (BGE only). Federal decisions only; for cantonal use get_decision. Returns excerpts; for verbatim full text of one Erwägung, use get_erwaegung. PINPOINT POLICY: never guess. If user gave an e_number → verify with get_erwaegung. If user gave only a claim → use find_relevant_erwaegung (FTS5+BM25 with confidence labels). If neither is confident, report no_match — do NOT default to E. 3.1.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "decision_id": {
+              "type": "string",
+              "description": "decision_id ('bger_5A_42_2026', 'bge_140 III 86'), BGE reference, or docket number."
+            }
+          },
+          "required": [
+            "decision_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_erwaegung",
+        "description": "Verbatim text of ONE numbered Erwägung — the citable unit in Swiss practice (e.g. 'BGE 140 III 86 E. 2.3'). Use when the user already gave an e_number. If only a claim was given (no e_number): use find_relevant_erwaegung — never guess. Returns text + sibling Erwägung numbers. e_number: '1', '2.3', '5.2.1', …",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "decision_id": {
+              "type": "string",
+              "description": "decision_id, BGE reference, or docket number."
+            },
+            "e_number": {
+              "type": "string",
+              "description": "Erwägung number to retrieve (e.g. '2', '2.3', '5.2.1'). Leading 'E.' is stripped if present."
+            }
+          },
+          "required": [
+            "decision_id",
+            "e_number"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "find_relevant_erwaegung",
+        "description": "Find which Erwägung paragraph(s) match a legal claim. Server-side FTS5+BM25 over per-paragraph text; returns top-k with confidence labels (high/medium/low) and a highlighted_snippet wrapping the matched sentence in <mark>…</mark> (quote it verbatim). When no_match=true or confidence=low, do NOT cite any Erwägung — report no_match. Federal decisions only. Replaces the 'always-E.-3.1' guessing pattern.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "decision_id": {
+              "type": "string",
+              "description": "decision_id, BGE reference, or docket number. Must be a federal decision (structured Erwägungen)."
+            },
+            "claim": {
+              "type": "string",
+              "description": "Free-text legal claim or proposition the user wants to verify against the decision. The more specific, the higher the confidence."
+            },
+            "top_k": {
+              "type": "integer",
+              "description": "Number of top matches to return (default 3, max 10).",
+              "default": 3
+            }
+          },
+          "required": [
+            "decision_id",
+            "claim"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_article_purpose",
+        "description": "Return verbatim text from the Federal Council Botschaft (or Erläuterungsbericht) explaining the legislative purpose of a specific article. Joins the verbatim Botschaft corpus (post-2003 BBl publications, Akoma Ntoso XML where available, PDF fallback otherwise) with the article-Botschaft link table. Returns one entry per source — original Botschaft + any amendment Botschaften. All paragraphs are verbatim text the LLM can quote with `bbl_citation, S. {page}` references. USE THIS when the user asks 'what was the purpose of Art. X' or 'what did Parliament intend' or 'why does Art. X exist'. Coverage is rolling — empty `sources` means the verbatim corpus hasn't ingested that article's Botschaft yet; fall back to get_doctrine for the digest layer.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sr_number": {
+              "type": "string",
+              "description": "SR (Systematische Rechtssammlung) number of the law, e.g. '220' for OR (Obligationenrecht), '101' for BV, '311.0' for StGB."
+            },
+            "article": {
+              "type": "string",
+              "description": "Article number, e.g. '41' for Art. 41 OR. Letter-suffixed forms like '41a' supported."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ],
+              "default": "de",
+              "description": "Botschaft language (defaults to German)."
+            },
+            "max_paragraphs": {
+              "type": "integer",
+              "default": 8,
+              "description": "Maximum paragraphs per Botschaft (default 8, max 20)."
+            }
+          },
+          "required": [
+            "sr_number",
+            "article"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_botschaft",
+        "description": "Full-text search across the verbatim Federal Council Botschaft corpus. Where get_article_purpose answers 'why does Art. X exist?', this tool answers 'show me every Botschaft passage about TOPIC X'. Useful when the caller doesn't know which SR/article to ask for — e.g. starting from a concept like 'Vaterschaftsurlaub' or 'Klimaschutz'. Returns ranked passages (FTS5 BM25) with bbl_citation, page, section path, and an article anchor where the parser could identify one. Quote verbatim; every snippet has a stable Fedlex ELI URI.",
         "parameters": {
           "type": "object",
           "properties": {
             "query": {
               "type": "string",
-              "description": "Search query"
+              "description": "Search terms. FTS5 syntax supported — use quoted phrases for exact matches ('\"Vaterschaftsurlaub\"'), Boolean operators ('Klimaschutz AND Kanton'), and prefix queries ('Versicherungs*'). Stopwords are ignored."
             },
-            "abbreviation": {
+            "language": {
               "type": "string",
-              "description": "Filter by law"
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ],
+              "description": "OPTIONAL — only set when the user explicitly limits the search to one language. Leave unset to search the corpus the caller has (currently de only). Setting this without the user asking will hide all non-matching Botschaft passages."
             },
             "limit": {
               "type": "integer",
-              "description": "Max results"
+              "default": 20,
+              "description": "Max passages to return (default 20, max 50)."
             }
           },
           "required": [
@@ -438,22 +595,37 @@
     {
       "type": "function",
       "function": {
-        "name": "get_materialien",
-        "description": "Federal Council Botschaft data for a law article: legislative intent, key arguments, design choices, rejected alternatives, parliamentary modifications.",
+        "name": "get_article_history",
+        "description": "Chronological story of a single statute article: current text + every linked Botschaft (enacted + amendments) + leading court interpretations + doctrinal commentary, all ordered by date. Combines statutes.db, materialien.db, reference_graph.db, and ok_commentaries.db into one timeline. USE THIS when the user asks 'how did Art. X evolve' or 'what's the full picture on Art. X' — a single call returns the legislative + judicial + doctrinal arc.",
         "parameters": {
           "type": "object",
           "properties": {
-            "law_code": {
+            "sr_number": {
               "type": "string",
-              "description": "Law abbreviation (BV, OR, StGB, BGFA, etc.)"
+              "description": "SR number of the federal law, e.g. '220' for OR."
             },
             "article": {
               "type": "string",
-              "description": "Article number (omit for all articles)"
+              "description": "Article number, e.g. '41' for Art. 41 OR."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ],
+              "default": "de"
+            },
+            "leading_cases_limit": {
+              "type": "integer",
+              "default": 5,
+              "description": "Max leading cases (default 5, max 15)."
             }
           },
           "required": [
-            "law_code"
+            "sr_number",
+            "article"
           ]
         }
       }
@@ -461,22 +633,116 @@
     {
       "type": "function",
       "function": {
-        "name": "search_materialien",
-        "description": "Search across all Botschaft data and parliamentary debate transcripts.",
+        "name": "get_regeste",
+        "description": "Get the official Regeste (head-note) of a Swiss court decision. The Regeste is the court's own formulation of the legal rule established — for BGEs especially, this is the canonical citation target. Often references specific Erwägungen via '(E. 5.2.1)' which can then be retrieved verbatim with get_erwaegung. USE THIS when the user asks 'what does this case stand for' or 'what is the rule from this decision'. Available for ~54% of federal decisions (100% of BGE).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "decision_id": {
+              "type": "string",
+              "description": "decision_id, BGE reference, or docket number."
+            }
+          },
+          "required": [
+            "decision_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "check_claim_support",
+        "description": "Verify whether a Swiss court decision actually supports a legal claim. Uses an independent Sonnet judge to compare the claim against verbatim text from the decision (Erwägung if pinpoint given, else Regeste, else first portion of full text). Returns {supports: yes|partial|no|contradicts|unrelated, confidence, supporting_excerpt, qualifying_excerpt, reasoning}. CALL THIS for any claim where citing the wrong authority would mislead the user — especially when paraphrasing a decision or drawing a proposition from a complex Erwägung. If supports=no or contradicts, do NOT use the cited decision for that claim.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "claim": {
+              "type": "string",
+              "description": "The legal proposition you want to verify (e.g., 'A landlord is liable for fire-police violations under Art. 256 OR.')."
+            },
+            "decision_id": {
+              "type": "string",
+              "description": "Decision you intend to cite as authority."
+            },
+            "pinpoint": {
+              "type": "string",
+              "description": "Optional Erwägung number ('2.3'). If given, only that paragraph is judged; more precise verdict."
+            }
+          },
+          "required": [
+            "claim",
+            "decision_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "attest_response",
+        "description": "MANDATORY FINAL-STEP AUDIT covering up to FIVE hallucination classes: (1) case citations — verifies every BGE/BGer/BVGer/BStGer/BPatGer/MKGE/ATF/TF/TAF/TPF/TFB/ATMC/STMC reference exists in the corpus and any pinpoint (E. X.Y / consid. X.Y) resolves to a real Erwägung; (2) statute citations — verifies every Art. X LAW reference resolves in statutes.db (law abbreviation known, article number present); (3) direct quotations — verifies every \"…\"-quoted substring (≥30 chars) appears verbatim in a regeste / Erwägung / full text of one of the cited sources (decisions or statutes); (4) decision dates — verifies any 'vom DD.MM.YYYY' adjacent to a citation matches the stored decision date; (5) GROUNDING (opt-in via audit_grounding=true) — for each verified citation, the claim sentence immediately preceding it is sent to an independent Sonnet judge alongside the cited Erwägung / Regeste, which decides whether the source supports, contradicts, or is unrelated to the claim. Closes the 'reasoning error' class from Butler & Butler, 'Legal RAG Bench' (Isaacus, 2026): the citation is real and the source was retrieved, but the proposition is not actually supported. Costs one Sonnet call (~3 s) regardless of citation count.\n\nReturns the draft annotated with ✓ or ⚠️ per case citation plus a structured `issues` list with category labels and suggestions. CALL THIS BEFORE emitting your final answer whenever your response contains ≥1 case citation, statute reference, or direct quotation. SET audit_grounding=true for any answer with ≥2 citations or where a wrong proposition would mislead a Swiss lawyer. If ok=false, fix each flagged issue before sending; if ok=true, send `linked_text` verbatim to the user.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "draft_text": {
+              "type": "string",
+              "description": "Your draft response text."
+            },
+            "audit_grounding": {
+              "type": "boolean",
+              "description": "When true, additionally runs the LLM-judge grounding rail: for each verified case citation in the draft, the preceding claim sentence is checked against the cited Erwägung / Regeste / text by an independent Sonnet judge. Catches the 'reasoning error' class (real citation, unsupported proposition). Adds ~3 s and one Sonnet call (~$0.005). Set to true for any answer with ≥2 citations or where a wrong proposition would mislead a Swiss lawyer."
+            }
+          },
+          "required": [
+            "draft_text"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "cite",
+        "description": "Get the canonical Swiss citation string for a decision reference. CALL THIS BEFORE writing any case citation in your response. Returns ready-to-embed citation_string (DE/FR/IT variants plus a canonical URL) and a verbatim rule_statement. If the reference doesn't exist, returns exists=false plus close_matches for typo-correction — DO NOT guess or construct citations yourself; if you get exists=false, either re-query with a close match or skip the citation entirely. Accepts any Swiss reference form: decision_id (bger_4A_747_2012), BGE reference (BGE 140 III 86), or docket number (4A_747/2012). Optional pinpoint ('2.3') generates the Erwägung-anchored citation and URL.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "reference": {
+              "type": "string",
+              "description": "Any form of Swiss case reference: decision_id, BGE ref, or docket number. E.g. 'BGE 140 III 86', '4A_747/2012', 'bger_4A_747_2012', 'MKGE 16 Nr. 1'."
+            },
+            "pinpoint": {
+              "type": "string",
+              "description": "Optional Erwägung/consid. number ('2.3', '5.2.1'). Included in the citation and as a #e-2-3 URL anchor."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ],
+              "description": "Primary language for the citation_string field (all three variants always returned). Default: de."
+            }
+          },
+          "required": [
+            "reference"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_doctrine",
+        "description": "Get statute text + leading cases + doctrinal timeline + Federal Council Botschaft (legislative intent) + scholarly commentary for a Swiss law article or legal concept. ALWAYS USE THIS for questions about the purpose, intent, or ratio legis of a provision — it returns the Botschaft (Materialien) alongside the case law. Input: statute reference ('Art. 41 OR', 'Art. 8 BV') or legal concept. Returns: current statute text, top 5-8 BGEs ranked by citation authority with the rule each establishes, doctrine evolution timeline, Botschaft reference (legislative intent from the Federal Council's message), and scholarly commentary excerpt from OnlineKommentar.ch when available.",
         "parameters": {
           "type": "object",
           "properties": {
             "query": {
               "type": "string",
-              "description": "Search query"
-            },
-            "law_code": {
-              "type": "string",
-              "description": "Filter by law"
-            },
-            "limit": {
-              "type": "integer",
-              "description": "Max results"
+              "description": "Statute article ('Art. 41 OR', 'Art. 8 BV') or legal concept ('Tierhalterhaftung', 'culpa in contrahendo'). German preferred."
             }
           },
           "required": [
@@ -489,17 +755,20 @@
       "type": "function",
       "function": {
         "name": "generate_exam_question",
-        "description": "Generate a law exam question from a real BGE fact pattern.",
+        "description": "Generate a Swiss law exam practice question (Fallbearbeitung) based on a real BGE. Returns a fact pattern (Sachverhalt) from a real court decision and a hidden analysis (applicable statutes, leading case, legal test, correct outcome). Workflow: present the fact_pattern and hint to the student, wait for their analysis, then reveal the analysis field and compare. The student can then call get_case_brief(source_decision_id) to study the full case. Pass exclude_ids from previous calls to avoid repeating the same case.",
         "parameters": {
           "type": "object",
           "properties": {
             "topic": {
               "type": "string",
-              "description": "Legal topic (e.g., Kausalität Strafrecht)"
+              "description": "Legal area, statute, or concept. Examples: 'Haftpflichtrecht', 'Art. 41 OR', 'Mietrecht', 'Strafrecht', 'Vertragsrecht'."
             },
-            "language": {
-              "type": "string",
-              "description": "de, fr, or it"
+            "exclude_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "decision_ids already used in this session — avoids repetition."
             }
           },
           "required": [
@@ -511,22 +780,503 @@
     {
       "type": "function",
       "function": {
-        "name": "draft_mock_decision",
-        "description": "Research-only mock decision from facts + case law + statutes.",
+        "name": "get_law",
+        "description": "AUTHORITATIVE LOOKUP for the current text of any Swiss law article — federal OR cantonal. Served from two local mirrors:\n  • Federal (canton='CH', default): Fedlex mirror — core codes (OR, ZGB, StGB, StPO, ZPO, BV, SchKG, BGG/LTF, DBG, IPRG, AIG, BVG, KVG, AsylG, BGFA and dozens more), all three official languages (DE/FR/IT).\n  • Cantonal: LexFind mirror — every cantonal statute and ordinance from all 26 cantons (ZH, BE, LU, UR, SZ, OW, NW, GL, ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG, TI, VD, VS, NE, GE, JU), in each canton's publication language.\nBoth jurisdictions return the same shape (title, articles with heading + text, article_count, canton, level). Use this BEFORE relying on training-data recall — Swiss statute text changes frequently and LLMs routinely hallucinate article content. Examples: get_law(abbreviation='BV', article='8'); get_law(sr_number='220', article='41'); get_law(canton='ZH', sr_number='554.5', article='1') for Art. 1 of the Zurich Hundegesetz.",
         "parameters": {
           "type": "object",
           "properties": {
-            "facts": {
+            "sr_number": {
               "type": "string",
-              "description": "Fact pattern"
+              "description": "SR number (federal: '210'=ZGB, '220'=OR, '101'=BV; cantonal: as published by the canton, e.g. '554.5' for ZH Hundegesetz)."
             },
-            "legal_questions": {
+            "abbreviation": {
               "type": "string",
-              "description": "Legal questions to address"
+              "description": "Law abbreviation (federal only for now: 'BV', 'OR', 'ZGB', 'StGB', 'BGG', etc.). Cantonal laws rarely have canonical abbreviations — use sr_number or discover via search_laws first."
+            },
+            "article": {
+              "type": "string",
+              "description": "Article number to retrieve (e.g., '8', '41a', '1bis'). For cantonal § laws (ZH, SH, AI, AR, BS, BL, AG), pass the § number without the § sign. If omitted, returns the full article list."
+            },
+            "language": {
+              "type": "string",
+              "description": "Language for article text: de, fr, it. For cantonal laws, must match the canton's publication language (fr for FR/GE/JU/NE/VD, it for TI, de otherwise).",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ],
+              "default": "de"
+            },
+            "canton": {
+              "type": "string",
+              "description": "Two-letter canton code (ZH, BE, LU, …) or 'CH' for federal. Default 'CH' preserves backward compat.",
+              "default": "CH"
+            },
+            "as_of": {
+              "type": "string",
+              "description": "ISO date (e.g. '2020-01-01') to retrieve a HISTORICAL version of the law from Fedlex. Use this to see what a provision said before it was amended. XML versions available from ~2021; older versions may only have PDF. Federal laws only."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_laws",
+        "description": "UNIFIED full-text search across every Swiss statute article indexed locally — federal (Fedlex mirror) AND cantonal (LexFind mirror across all 26 cantons). BM25-ranked per corpus, merged by interleaving so each response surfaces both jurisdictions. Returns ranked snippets with article number, heading, law title, canton, and level ('federal' | 'cantonal'). Use this as the DEFAULT entry point when the user asks about any Swiss legal topic and you don't know which law or which jurisdiction applies. Filter with canton='ZH' (etc.) for cantonal-only, or jurisdiction='federal'/'cantonal' for explicit scoping. Examples: search_laws(query='Verjährung') — find statute-of-limitations provisions in federal + cantonal laws; search_laws(query='Hundehaltung', canton='ZH') — ZH dog-keeping rules; search_laws(query='Mietrecht', jurisdiction='federal') — federal-only tenancy law.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query (supports FTS5 syntax: quotes for phrases, OR/AND for boolean, wildcards with *)."
+            },
+            "sr_number": {
+              "type": "string",
+              "description": "Restrict search to a specific federal law by SR number. Implies jurisdiction='federal'."
+            },
+            "canton": {
+              "type": "string",
+              "description": "Two-letter canton code (ZH, BE, …) to restrict to one canton's statute corpus. 'CH' → federal only. Omit to search every jurisdiction."
+            },
+            "jurisdiction": {
+              "type": "string",
+              "description": "Explicit scope override: 'all' (default), 'federal', or 'cantonal'. Most callers should omit this and let sr_number/canton drive the scope.",
+              "enum": [
+                "all",
+                "federal",
+                "cantonal"
+              ],
+              "default": "all"
+            },
+            "language": {
+              "type": "string",
+              "description": "OPTIONAL filter. Restricts results to ONE language. Omit (recommended default) to search across all three official languages — most laws exist in DE/FR/IT and a filter silently hides valid hits in the others. Set ONLY when the user explicitly asks for one language.",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum merged results (1-50).",
+              "default": 10
             }
           },
           "required": [
-            "facts"
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_commentary",
+        "description": "Look up a scholarly legal commentary from OnlineKommentar.ch (CC-BY-4.0) for a Swiss federal law article. Without article: lists available commentaries for that law. With article: returns the full commentary text, authors, and citation. Covers 19 Swiss laws including BV, OR, ZGB, StGB, StPO, ZPO, DSG, SchKG, and more.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "abbreviation": {
+              "type": "string",
+              "description": "Law abbreviation (e.g., 'OR', 'BV', 'ZGB', 'StGB'). Preferred over sr_number."
+            },
+            "sr_number": {
+              "type": "string",
+              "description": "SR number of the law (e.g., '220' for OR). Use if abbreviation unknown."
+            },
+            "article": {
+              "type": "string",
+              "description": "Article number (e.g., '41', '8'). Omit to list available articles."
+            },
+            "language": {
+              "type": "string",
+              "description": "Preferred language (de, en, fr, it). Falls back to de if unavailable.",
+              "default": "de"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_commentaries",
+        "description": "Full-text search across all OnlineKommentar.ch legal commentaries. Searches commentary text, titles, and article numbers. Returns ranked results with snippets, authors, and links. Useful for finding doctrinal discussion of a legal concept across multiple laws.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query (supports FTS5 syntax: quotes for phrases, OR for alternatives)."
+            },
+            "abbreviation": {
+              "type": "string",
+              "description": "Filter by law abbreviation (e.g., 'OR', 'StGB')."
+            },
+            "language": {
+              "type": "string",
+              "description": "OPTIONAL filter (de/fr/it/en). Omit (recommended default) to search across all languages. Set ONLY when the user explicitly asks for one-language results; do NOT auto-apply based on conversation language."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum results (1-50, default 10).",
+              "default": 10
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_scholarship",
+        "description": "Full-text search across Swiss open-access legal scholarship: OA journal articles (sui generis et al.), OA legal commentaries (OnlineKommentar, OpenLegalCommentary), dissertations and theses from Swiss university repositories, and federal legal-policy reports. Returns ranked results with snippets, authors, DOI, and direct links. Filters by source, publication type, language, and year range.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives)."
+            },
+            "source": {
+              "type": "string",
+              "description": "Filter by source slug (e.g. 'sui_generis', 'onlinekommentar', 'openlegalcommentary', 'zora_law')."
+            },
+            "pub_type": {
+              "type": "string",
+              "description": "Filter by type: 'article', 'commentary', 'dissertation', 'book', 'chapter', 'master_thesis', 'working_paper', 'report'."
+            },
+            "language": {
+              "type": "string",
+              "description": "Filter by language (de/fr/it/en). Omit to search across all."
+            },
+            "year_min": {
+              "type": "integer",
+              "description": "Earliest publication year."
+            },
+            "year_max": {
+              "type": "integer",
+              "description": "Latest publication year."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum results (1-50, default 10).",
+              "default": 10
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_scholarship",
+        "description": "Fetch a single OA legal publication (article, dissertation, commentary, etc.) by its pub_id. Returns full metadata + abstract + full text if available + cross-citations to statutes and decisions.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pub_id": {
+              "type": "string",
+              "description": "Canonical pub_id, e.g. 'sui_generis:article-1382' or 'onlinekommentar:<uuid>'."
+            }
+          },
+          "required": [
+            "pub_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "find_scholarship_citing_statute",
+        "description": "Find OA legal scholarship that cites a given Swiss statute article. Sourced from re-exported article-anchored commentaries (OnlineKommentar / OpenLegalCommentary); will expand as citation extraction is applied to journal full-texts.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "sr_number": {
+              "type": "string",
+              "description": "Swiss SR number (e.g. '220' for OR, '210' for ZGB)."
+            },
+            "article": {
+              "type": "string",
+              "description": "Article number (e.g. '41'). Omit for all articles of the law."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum results (1-100, default 20).",
+              "default": 20
+            }
+          },
+          "required": [
+            "sr_number"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_scholarship_sources",
+        "description": "List the open-access legal scholarship sources currently indexed, with publication counts by source, type, and language. Use this to discover what corpora are available before searching.",
+        "parameters": {
+          "type": "object",
+          "properties": {}
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_scholarship_full_text",
+        "description": "Fetch the full text of an OA legal publication by pub_id, on demand. Cached after first fetch so subsequent calls are instant. License-gated: only records under CC-BY-* (except CC-BY-ND), OA-Swiss-federal, or OA-author-permitted-reuse are extracted. ND/all-rights-reserved records return the upstream URL only. Use this when search_scholarship or get_scholarship returns only abstract/title and you need the article body to verify a claim or quote a passage.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "pub_id": {
+              "type": "string",
+              "description": "Canonical pub_id (from search_scholarship results)."
+            }
+          },
+          "required": [
+            "pub_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_materialien",
+        "description": "Look up Materialien for a Swiss federal law article: Botschaft (legislative intent, key arguments, design choices, rejected alternatives) + parliamentary modifications. COVERAGE TODAY: per-article digests for BV (128 articles) and BGFA (39 articles) only; for every other law the response includes BBl/AS publication-locator refs (`amendment_refs` field) but `sources=[]`. Full per-article digested expansion to all federal laws is in active build — for now, treat empty `sources` as 'no digested Materialien yet' and surface the BBl reference to the user instead of claiming the law has no legislative history.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "law_code": {
+              "type": "string",
+              "description": "Law abbreviation (e.g., 'BV', 'BGFA', 'OR', 'StGB')."
+            },
+            "article": {
+              "type": "string",
+              "description": "Article number (e.g., '1', '8', '10a'). Omit to get all articles."
+            }
+          },
+          "required": [
+            "law_code"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_materialien",
+        "description": "Full-text search across digested Materialien (legislative intent, key arguments, design choices, general context). COVERAGE TODAY: BV + BGFA digests + BV parliamentary debate transcripts only. Full per-article digested expansion to every federal law is in active build.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query (natural language or FTS5 syntax)."
+            },
+            "law_code": {
+              "type": "string",
+              "description": "Filter by law abbreviation (e.g., 'BGFA')."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum results (1-50, default 10).",
+              "default": 10
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_legislation",
+        "description": "NATURAL-LANGUAGE SEARCH across all Swiss legislation — 33,000+ federal and cantonal legislative texts from LexFind.ch, covering all 26 cantons (ZH, BE, LU, UR, SZ, OW, NW, GL, ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG, TI, VD, VS, NE, GE, JU) and the federal level, in German/French/Italian. Use this as the ENTRY POINT whenever the user asks about cantonal laws, municipal regulations, or federal ordinances outside the core Fedlex mirror (e.g., 'Hundegesetz im Kanton Bern', 'loi sur les épidémies Vaud', 'Baugesetz Zürich'). SINGLE-CALL MODE: set fetch_top_n_texts=1..3 and the top results are returned with the parsed full text + article list of the law itself — no follow-up get_legislation call needed. Ideal for 'what does cantonal law X say about Y' questions. For core federal codes (OR, ZGB, StGB, BV, StPO, ZPO, SchKG, BGG, DBG, IPRG, AIG, BVG, KVG etc.), prefer get_law / search_laws — they are instant and cover all three languages.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query in natural language or keywords. Examples: 'Hundegesetz', 'loi sur l'énergie', 'Mietrecht Kanton Zürich', 'Baugesetz'."
+            },
+            "canton": {
+              "type": "string",
+              "description": "Two-letter canton code (ZH, BE, LU, UR, SZ, OW, NW, GL, ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG, TI, VD, VS, NE, GE, JU) or 'CH' for federal. Omit to search all 26 cantons + federal at once."
+            },
+            "active_only": {
+              "type": "boolean",
+              "description": "Only show laws currently in force (default true).",
+              "default": true
+            },
+            "search_in_content": {
+              "type": "boolean",
+              "description": "Also search inside the law text, not just titles and keywords (slower).",
+              "default": false
+            },
+            "language": {
+              "type": "string",
+              "description": "OPTIONAL filter. Restricts results to ONE language version. Omit (recommended default) to fan out across DE/FR/IT and merge results — LexFind's API is single-language per request, so omission triggers a 3-way parallel call with deduplication. Set ONLY when the user explicitly asks for one language. Hint when set: fr for FR/GE/JU/NE/VD, it for TI, de for the rest.",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Max results (1-60, default 20).",
+              "default": 20
+            },
+            "fetch_top_n_texts": {
+              "type": "integer",
+              "description": "If > 0, download + parse the full text of the top N results (max 10) and return each with full_text_preview, article_count, and sample_articles. Use 1-3 for natural-language questions so you can answer in a single tool call.",
+              "default": 0
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_legislation",
+        "description": "Retrieve the FULL TEXT and article list of a specific Swiss law, federal or cantonal, by LexFind ID or SR/systematic number. For federal laws in the Fedlex mirror this is instant (local SQLite). For cantonal laws, the law is downloaded from LexFind as PDF, parsed with PyMuPDF, and segmented into articles (cached 30 days). Returns: title, entity, articles (article_num, heading, text), full_text, article_count. Use search_legislation first to find the right lexfind_id or systematic_number; then pass it here. For the core federal codes, get_law is still the fastest path.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "lexfind_id": {
+              "type": "integer",
+              "description": "LexFind ID of the law (from search_legislation results)."
+            },
+            "systematic_number": {
+              "type": "string",
+              "description": "SR/systematic number (e.g., '220' for OR, '210' for ZGB). Used when lexfind_id not available."
+            },
+            "canton": {
+              "type": "string",
+              "description": "Canton for systematic number lookup (default CH). Required for cantonal laws.",
+              "default": "CH"
+            },
+            "include_versions": {
+              "type": "boolean",
+              "description": "Include full version history (default false).",
+              "default": false
+            },
+            "language": {
+              "type": "string",
+              "description": "Result language: de, fr, it.",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ],
+              "default": "de"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "browse_legislation_changes",
+        "description": "Browse recent legislation changes for a canton or federal level. Shows new laws, amendments, and abrogations with dates.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "canton": {
+              "type": "string",
+              "description": "Canton code (CH for federal, ZH, BE, etc.). Default: CH.",
+              "default": "CH"
+            },
+            "language": {
+              "type": "string",
+              "description": "OPTIONAL filter. Restricts results to ONE language version. Omit (recommended default) to fan out across DE/FR/IT and merge results — LexFind's API is single-language per request, so omission triggers a 3-way parallel call with deduplication. Set ONLY when the user explicitly asks for one language.",
+              "enum": [
+                "de",
+                "fr",
+                "it"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_practice",
+        "description": "Full-text search across Swiss FEDERAL administrative practice (Verwaltungspraxis): Kreisschreiben, Rundschreiben, Weisungen, Vollzugshilfen, Handbücher. These are NOT court decisions — they are the binding interpretive guidance issued by federal agencies (ESTV for tax, SEM for migration/asylum/citizenship, BAFU for environment, ARE for spatial planning, EPA for federal personnel law, SSK for inter-cantonal tax coordination). Returns ranked excerpts with the source authority, document number, date, and PDF URL. Essential complement to case-law search whenever the question involves administrative-law practice.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives, NEAR/N for proximity)."
+            },
+            "source": {
+              "type": "string",
+              "description": "Filter by source key: estv_ks, ssk_ks, sem_weisungen, bafu_vollzug, are_vollzug, epa_personalrecht."
+            },
+            "issuing_authority": {
+              "type": "string",
+              "description": "Filter by authority: ESTV, SSK, SEM, BAFU, ARE, EPA."
+            },
+            "doc_type": {
+              "type": "string",
+              "description": "Filter by document type: kreisschreiben, weisung, rundschreiben, vollzugshilfe, handbuch, merkblatt."
+            },
+            "language": {
+              "type": "string",
+              "description": "OPTIONAL filter (de/fr/it). Omit (recommended default) to search across all languages. Set ONLY when the user explicitly asks for one-language results."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum results (1-50, default 10).",
+              "default": 10
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_practice",
+        "description": "Retrieve a single federal administrative-practice document by its doc_id (e.g. 'estv_ks_ks_nr_28', 'sem_weisungen_weisungen-aug-d'). Returns full body text, title, date, issuing authority, and PDF URL. Use search_practice first to discover the doc_id.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "doc_id": {
+              "type": "string",
+              "description": "Document identifier returned by search_practice."
+            }
+          },
+          "required": [
+            "doc_id"
           ]
         }
       }
