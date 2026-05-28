@@ -1816,6 +1816,24 @@ def main():
         sys.exit(1)
     else:
         _clear_checkpoint()
+        # Durable full-publish-success marker. The 15-min bger poller keeps
+        # db_generation fresh even when the nightly fails, so db_generation is
+        # NOT a valid freshness signal — this marker is the authoritative
+        # "last fully-successful publish" timestamp that quality.smoke checks
+        # to detect a silently-failing pipeline (failures stay green otherwise
+        # because the atomic swap keeps serving the previous-good corpus).
+        try:
+            (REPO_DIR / "state").mkdir(exist_ok=True)
+            (REPO_DIR / "state" / "last_publish_success.json").write_text(
+                json.dumps({
+                    "ts": int(time.time()),
+                    "iso": datetime.now(timezone.utc).isoformat(),
+                    "total_minutes": round(total_elapsed / 60, 1),
+                    "non_fatal_failures": non_fatal_failures,
+                })
+            )
+        except Exception as e:
+            logger.warning("could not write last_publish_success marker: %s", e)
         if non_fatal_failures:
             logger.warning(
                 f"Publish OK (non-fatal failures: {', '.join(non_fatal_failures)})"

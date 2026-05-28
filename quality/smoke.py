@@ -28,6 +28,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Iterable
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
@@ -132,7 +133,50 @@ def run_smoke(base_url: str = DEFAULT_BASE_URL) -> list[ProbeResult]:
         ("export_pdf", f"{base}/api/decisions/{ANCHOR_DECISION}/export.pdf",
          {"min_bytes": 500, "expected_mtype_prefix": "application/"}),
     ]
-    return [_probe(n, u, **kw) for n, u, kw in probes]
+    results = [_probe(n, u, **kw) for n, u, kw in probes]
+    results.append(_probe_publish_freshness())
+    return results
+
+
+def _probe_publish_freshness(max_age_h: float = 28.0) -> ProbeResult:
+    """Detect a silently-failing nightly publish.
+
+    The atomic-swap design keeps serving the previous-good corpus when a
+    rebuild fails, and the 15-min bger poller keeps /health's db_generation
+    fresh — so liveness checks stay green through a broken pipeline (exactly
+    how this week's failures went unnoticed). Freshness must therefore key off
+    the full-publish success marker (state/last_publish_success.json, written
+    only after Step 6 completes). Missing marker = not-yet-seeded → PASS (the
+    check arms itself on the first successful publish); present and older than
+    max_age_h → FAIL → ntfy alert.
+    """
+    name = "publish_freshness"
+    marker = Path(__file__).resolve().parents[1] / "state" / "last_publish_success.json"
+    try:
+        if not marker.exists():
+            return ProbeResult(
+                name=name, url=str(marker), status=0, elapsed_ms=0.0,
+                content_type="", bytes_read=0, passed=True,
+                notes=["marker not seeded — arms on first successful publish"],
+            )
+        d = json.loads(marker.read_text())
+        ts = int(d.get("ts") or 0)
+        age_h = (time.time() - ts) / 3600.0 if ts else 1e9
+        ok = age_h <= max_age_h
+        notes = [] if ok else [
+            f"last successful publish {age_h:.1f}h ago (> {max_age_h}h) — nightly likely failing"
+        ]
+        return ProbeResult(
+            name=name, url=str(marker), status=200, elapsed_ms=0.0,
+            content_type="application/json", bytes_read=marker.stat().st_size,
+            passed=ok, notes=notes,
+        )
+    except Exception as e:
+        return ProbeResult(
+            name=name, url=str(marker), status=0, elapsed_ms=0.0,
+            content_type="", bytes_read=0, passed=False,
+            error=f"{type(e).__name__}: {e}",
+        )
 
 
 def summarise(results: Iterable[ProbeResult]) -> dict:
