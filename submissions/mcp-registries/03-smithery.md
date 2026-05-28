@@ -31,7 +31,7 @@ single submission for ChatGPT-side discovery.
 ## Long description (Markdown — for the listing page)
 
 ```md
-OpenCaseLaw is the public infrastructure project for Swiss caselaw and legislation. The MCP server serves the entire published Swiss federal and cantonal court corpus, the federal statute book (Fedlex mirror), 19 cantonal portals, scholarly commentary from OnlineKommentar.ch, and the full citation graph (9M edges) — through 31 specialised tools.
+OpenCaseLaw is the public infrastructure project for Swiss caselaw and legislation. The MCP server serves the entire published Swiss federal and cantonal court corpus, the federal statute book (Fedlex mirror), 19 cantonal portals, scholarly commentary from OnlineKommentar.ch, open-access Swiss legal scholarship (30,000+ records from 22 sources, 30 % with full-text), and the full citation graph (8.09M edges) — through 38 specialised tools.
 
 **What's inside**
 - 969,000+ decisions, 1875–today, all federal courts + 26 cantons

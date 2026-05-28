@@ -4,7 +4,7 @@
 
 **972,000+ court decisions · 5,516 federal laws · 15,722 cantonal laws · 8.09 M resolved citation edges · 11.26 M statute references · 83,958 Botschaft amendment references (459 verbatim Botschaften ingested, scaling) · daily RFC-6962 Merkle root + OpenTimestamps anchor (cryptographic provenance) · cli:ch + ECLI identifiers on every decision**
 
-Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct portal scraping for all 26 cantons** (LexWork: 18 cantons; SIL: NE + JU; ZH OpenData; TI RL — the same publishing systems the cantons operate themselves) with **LexFind PDF as fallback** supplementing 4 cantons for laws missing from their primary portals and as the discovery catalog for 33,000+ legislative texts. Includes **83,958 Botschaft amendment references across 9,139 BBl publications**, a **Phase 2 verbatim Botschaft corpus** (459 documents, 76K FTS5-indexed paragraphs as of 2026-05-11, scaling toward ~25K via Fedlex SPARQL discovery), per-article Botschaft digests for BV/BGFA, parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph**, and **35 MCP tools (33 remote in public mode + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
+Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct portal scraping for all 26 cantons** (LexWork: 18 cantons; SIL: NE + JU; ZH OpenData; TI RL — the same publishing systems the cantons operate themselves) with **LexFind PDF as fallback** supplementing 4 cantons for laws missing from their primary portals and as the discovery catalog for 33,000+ legislative texts. Includes **83,958 Botschaft amendment references across 9,139 BBl publications**, a **Phase 2 verbatim Botschaft corpus** (459 documents, 76K FTS5-indexed paragraphs as of 2026-05-11, scaling toward ~25K via Fedlex SPARQL discovery), per-article Botschaft digests for BV/BGFA, parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph**, and **40 MCP tools (38 remote in public mode + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
 [![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
@@ -18,7 +18,7 @@ Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal co
 
 Swiss legal research today is **fragmented across paywalls, inaccessible to language models, and prohibitively expensive** for the people who need it most — law students, independent researchers, and anyone outside the major firms. Commercial databases (Weblaw, Swisslex, Legalis) charge hundreds of francs per month and still don't expose a clean API. LLMs hallucinate statute text because they have no authoritative source. Small cantons publish decisions in PDF archives nobody indexes.
 
-OpenCaseLaw fixes this. **Every published Swiss court decision, every federal and cantonal law, the resolved citation graph between them, and 35 MCP tools (33 remote in public mode + 2 local-only) that let any modern LLM act as a Swiss legal research assistant — all free, all open, all refreshed automatically.**
+OpenCaseLaw fixes this. **Every published Swiss court decision, every federal and cantonal law, the resolved citation graph between them, and 40 MCP tools (38 remote in public mode + 2 local-only) that let any modern LLM act as a Swiss legal research assistant — all free, all open, all refreshed automatically.**
 
 ## What you get
 
@@ -45,7 +45,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Bidirectional lookup, appeal-chain resolution (Instanzenzug), leading-case ranking by citation authority
 - Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend` (top: BGE 125 V 351 with 85,108 incoming citations)
 
-**35 MCP tools (33 remote in public mode + 2 local-only)** — specialised research tools that run in your LLM of choice:
+**40 MCP tools (38 remote in public mode + 2 local-only)** — specialised research tools that run in your LLM of choice:
 - Natural-language decision search (BM25 + synonym expansion + Haiku reranking, **MRR@10 = 0.647** on a 100-query golden set)
 - Leading-case discovery, citation networks, appeal chains, jurisprudence evolution
 - Federal + cantonal law article lookup, full-text search across both — with **colloquial→legal vocabulary expansion** (searching "Vaterschaftsurlaub" finds the statute even though it says "Urlaub des andern Elternteils") and **cross-language cantonal search** (German query finds French/Italian cantonal laws)
@@ -62,13 +62,13 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 *For LLM users, researchers and developers — full 24-tool surface:*
 - Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client (Claude, ChatGPT, Cursor, Gemini, Windsurf)
 - [OpenAI-compatible tool definitions](docs/openai-tools.json) for Grok/xAI and any function-calling LLM API
-- Local MCP server — full offline capability, 35 tools (33 remote in public mode + 2 local-only), ~65 GB disk
+- Local MCP server — full offline capability, 40 tools (38 remote in public mode + 2 local-only), ~65 GB disk
 - 30-route REST API with [interactive documentation](https://mcp.opencaselaw.ch/api/docs) (Swagger UI + OpenAPI spec)
 - Bulk Parquet download via the [HuggingFace dataset](https://huggingface.co/datasets/voilaj/swiss-caselaw) (~7 GB)
 - Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
 
 *For legal practitioners drafting documents — curated practitioner surface:*
-- [**Word add-in**](https://word.opencaselaw.ch/install.html) — Search decisions and insert **correctly-formatted Swiss legal citations** directly in Word (no copy-paste). Click an Erwägung to insert it with the correct sub-citation; click a law § to insert that alinea. Free **Audit** scans the whole document for fabricated citations and bad pinpoints (deterministic, no LLM). **Pro tier** (Stripe-billed, CHF 5/month, 25 AI calls/day shared, structural PII redaction) adds four AI tools: **Verify** (single citation vs. full-text decision), **Strengthen** (paragraph x-ray with leading-case suggestions ranked by citation-graph centrality + commentary excerpts), **Find Support** (locate decisions that back an unsupported statement, scored 0–100), and **Reflect** (literary mirror on the whole document — one canonical work that frames the same human dilemma + one reflective question). Exposes ~8 of the 35 MCP tools (33 remote in public mode + 2 local-only) through the REST API, tuned for the write-your-brief workflow.
+- [**Word add-in**](https://word.opencaselaw.ch/install.html) — Search decisions and insert **correctly-formatted Swiss legal citations** directly in Word (no copy-paste). Click an Erwägung to insert it with the correct sub-citation; click a law § to insert that alinea. Free **Audit** scans the whole document for fabricated citations and bad pinpoints (deterministic, no LLM). **Pro tier** (Stripe-billed, CHF 5/month, 25 AI calls/day shared, structural PII redaction) adds four AI tools: **Verify** (single citation vs. full-text decision), **Strengthen** (paragraph x-ray with leading-case suggestions ranked by citation-graph centrality + commentary excerpts), **Find Support** (locate decisions that back an unsupported statement, scored 0–100), and **Reflect** (literary mirror on the whole document — one canonical work that frames the same human dilemma + one reflective question). Exposes ~8 of the 40 MCP tools (38 remote in public mode + 2 local-only) through the REST API, tuned for the write-your-brief workflow.
 
 **Performance you can defend in a paper**:
 
@@ -107,7 +107,7 @@ There are eight ways to use it, depending on what you need:
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose exact tool surface is deployment-dependent. Local deployments expose all 35 tools; remote mode omits the 2 local-only update tools (`update_database`, `check_update_status`) for 33 remote tools. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose exact tool surface is deployment-dependent. Local deployments expose all 40 tools; remote mode omits the 2 local-only update tools (`update_database`, `check_update_status`) for 38 remote tools. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
 ### Remote vs. local
 
@@ -115,7 +115,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose ex
 |---|---|---|
 | **Setup** | 30 seconds | 30–60 minutes |
 | **Disk** | None | ~65 GB |
-| **Tools** | 31 (no local update tools) | 33, including `update_database` and `check_update_status` |
+| **Tools** | 38 (no local update tools) | 40, including `update_database` and `check_update_status` |
 | **Freshness** | Nightly (automatic) | Manual |
 | **Offline** | No | Yes |
 | **Requires** | Claude, ChatGPT, or Gemini CLI (see plans below) | Any MCP client |

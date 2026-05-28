@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "ch.opencaselaw/swiss-caselaw",
   "title": "OpenCaseLaw — Swiss Caselaw, Statutes & Doctrine",
-  "description": "969,000+ published Swiss court decisions (federal + cantonal, 1875–today, DE/FR/IT), 5,500 federal + 15,700 cantonal statutes, 362 scholarly commentaries, 9M-edge citation graph. 31 specialised tools: full-text search with cross-language matching, citation graph + appeal-chain traversal, statute & commentary lookup, doctrinal timelines, leading-case discovery, verbatim Erwägung extraction. Built around a 6-layer verification architecture (cite/check_claim_support/attest_response) that catches AI hallucination of case references before answers ship. Daily refresh, CC0 data, MIT code, no API key, no registration.",
-  "version": "1.1.0",
+  "description": "973,000+ published Swiss court decisions (federal + cantonal, 1875–today, DE/FR/IT), 5,500 federal + 15,700 cantonal statutes, 1,058 scholarly commentaries, 30,000+ open-access scholarship records, 8.09M-edge citation graph. 38 specialised tools: full-text search with cross-language matching, citation graph + appeal-chain traversal, statute & commentary lookup, doctrinal timelines, leading-case discovery, verbatim Erwägung extraction, scholarship search. Built around a 6-layer verification architecture (cite/check_claim_support/attest_response) that catches AI hallucination of case references before answers ship. Daily refresh, CC0 data, MIT code, no API key, no registration.",
+  "version": "1.2.0",
   "websiteUrl": "https://opencaselaw.ch",
   "repository": {
     "url": "https://github.com/jonashertner/caselaw-repo-1",

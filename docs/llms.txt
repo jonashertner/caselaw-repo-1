@@ -28,7 +28,7 @@ authoritative source, and emit clickable verification links to the user.
 
 ## How to query the corpus
 
-- [Live MCP endpoint](https://mcp.opencaselaw.ch): single URL — paste into Claude / ChatGPT / Cursor / Gemini / Copilot Studio. 31 specialised tools cover full-text search, citation graph traversal, statute lookup, doctrinal timelines, leading-case discovery, scholarly commentary, legislative materials, exam-question generation.
+- [Live MCP endpoint](https://mcp.opencaselaw.ch): single URL — paste into Claude / ChatGPT / Cursor / Gemini / Copilot Studio. 38 specialised tools cover full-text search, citation graph traversal, statute lookup, doctrinal timelines, leading-case discovery, scholarly commentary, legislative materials, open-access scholarship search, exam-question generation.
 - [REST API (OpenAPI 3.0.3)](https://mcp.opencaselaw.ch/api/docs): every MCP capability also exposed as REST. Useful for languages without an MCP client library.
 - [How to connect](https://opencaselaw.ch/#connect): copy-paste setup instructions per AI client.
 
