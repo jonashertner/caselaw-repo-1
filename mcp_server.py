@@ -8198,13 +8198,75 @@ server = Server(
 # ── decision-structure helpers (Sachverhalt / Erwägungen / Dispositiv / Regeste) ────────
 
 
+# build_fts5 keys some decisions with a "_dYYYYMMDD" provenance suffix that
+# extract_decision_structure does NOT carry (it keyed the same decision under
+# the un-suffixed base docket). That divergence makes get_erwaegung /
+# get_decision_structure return empty for the canonical (suffixed) id even
+# though the structure exists under the base — the BVGer pinpoint-verification
+# gap reported by practitioners (2026-05-28). The proper fix is to re-key the
+# sidecar (builder change + rebuild); this is the read-path bridge until then.
+_DATE_SUFFIX_RE = re.compile(r"^(.*)_d\d{8}$")
+
+
+def _collision_safe_base_id(decision_id: str) -> str | None:
+    """If ``decision_id`` carries a ``_dYYYYMMDD`` provenance suffix AND its
+    base docket maps to exactly ONE decision in the corpus, return the base id
+    (under which the structure sidecar keyed it). Returns None when there is no
+    suffix, or when more than one dated decision shares the base docket — a
+    remand / same-docket-different-date case where the base-keyed structure
+    would be ambiguous and must NOT be served (would risk attributing one
+    judgment's Erwägungen to another, violating the citation contract).
+    """
+    m = _DATE_SUFFIX_RE.match(decision_id)
+    if not m:
+        return None
+    base = m.group(1)
+    try:
+        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro&immutable=1", uri=True, timeout=1.0)
+        try:
+            # GLOB (not LIKE) so the literal '_' in dockets isn't a wildcard;
+            # 'base_d*' is a prefix glob (index-friendly). Count all decisions
+            # for this docket (the suffixed id itself + any dated sibling +
+            # a bare base, if one exists). Exactly one ⇒ safe to alias.
+            n = conn.execute(
+                "SELECT COUNT(*) FROM decisions "
+                "WHERE decision_id = ? OR decision_id GLOB ?",
+                (base, base + "_d*"),
+            ).fetchone()[0]
+        finally:
+            conn.close()
+        return base if n == 1 else None
+    except Exception:
+        return None
+
+
+def _structure_id_candidates(decision_id: str) -> list[str]:
+    """Lookup keys for the structure sidecar: the standard id variants first
+    (exact / space / underscore / BGE forms — so an exact match always wins),
+    then, only when collision-safe, the ``_dYYYYMMDD``-stripped base id and its
+    space/underscore variants (lowest priority)."""
+    cands = list(_decision_id_variants(decision_id) or [decision_id])
+    base = _collision_safe_base_id(decision_id)
+    if base:
+        for v in (base,):
+            if v not in cands:
+                cands.append(v)
+        bparts = base.split("_", 1)
+        if len(bparts) == 2:
+            c, rest = bparts
+            for v in (f"{c}_{rest.replace('_', ' ')}", f"{c}_{rest.replace(' ', '_')}"):
+                if v not in cands:
+                    cands.append(v)
+    return cands
+
+
 def _fetch_structure_row(decision_id: str) -> dict | None:
     """Look up the structure-DB row for a decision_id, with id-variant fallback."""
     conn = _get_structure_conn()
     if not conn:
         return None
     try:
-        for did_variant in _decision_id_variants(decision_id) or [decision_id]:
+        for did_variant in _structure_id_candidates(decision_id) or [decision_id]:
             row = conn.execute(
                 "SELECT * FROM structure WHERE decision_id = ?",
                 (did_variant,),
@@ -8222,7 +8284,7 @@ def _fetch_structure_paragraphs(decision_id: str) -> list[dict]:
     if not conn:
         return []
     try:
-        for did_variant in _decision_id_variants(decision_id) or [decision_id]:
+        for did_variant in _structure_id_candidates(decision_id) or [decision_id]:
             rows = conn.execute(
                 "SELECT e_number, depth, parent, text FROM erwaegungen_paragraph "
                 "WHERE decision_id = ? ORDER BY depth, e_number",
