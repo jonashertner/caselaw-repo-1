@@ -158,9 +158,19 @@ Chamber/Grand-Chamber/Committee).
 Each decision is fetched from its primary source — the court's own
 publication portal where available (all 26 cantons direct-scraped
 via LexWork / SIL / ZH OpenData / TI RL, with LexFind PDF fallback
-supplementing 4 cantons for missing laws), entscheidsuche.ch shards
-for legacy fills, BGer's official search back-end for federal updates. The pipeline refreshes on three
-schedules:
+supplementing 4 cantons for missing laws), BGer's official search
+back-end for federal updates. <strong>40 of 51 entscheidsuche.ch
+shards are mirrored by our own direct scrapers</strong>; entscheidsuche
+data only wins dedup where we have no live equivalent. The remaining
+seven entscheidsuche-only shards (≈142,000 records: <code>vd_findinfo</code>,
+<code>vd_omni</code>, <code>ch_vb</code>, <code>sg_gerichte</code>,
+<code>be_bvd</code>, <code>be_weitere</code>, <code>be_steuerrekurs</code>)
+are <strong>frozen historical archives</strong> — their upstream
+portals have been retired, replaced, or temporarily disconnected.
+We re-ingest entscheidsuche weekly as a completeness backstop; the
+last six weekly runs added zero new decisions. See
+<a href="/coverage/#archives">coverage → supplementary archives</a>
+for the full breakdown. The pipeline refreshes on three schedules:
 </p>
 
 <ul>

@@ -229,6 +229,82 @@
     For institutional collaboration on coverage gaps, write to
     <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.
   </p>
+
+  <!-- ───────────────── Supplementary frozen archives ───────────────── -->
+  <section class="archives" style="margin-top: var(--s-7);">
+    <h2 style="font-size: var(--t-lg); font-weight: 400; margin: 0 0 var(--s-3);">
+      Supplementary frozen archives
+    </h2>
+    <p class="lead" style="margin-bottom: var(--s-4);">
+      Beyond the live scrapers above, the corpus also incorporates seven
+      <strong>frozen archives</strong> sourced via
+      <a href="https://entscheidsuche.ch/" rel="noopener">entscheidsuche.ch</a>
+      — an independent open-access aggregator that mirrors many Swiss
+      court portals. We re-ingest entscheidsuche's JSON archives once a
+      week (Sunday 22:00 UTC) as a completeness backstop; the last six
+      runs added <strong>zero new decisions</strong> because the upstream
+      portals these shards reflect are no longer producing new content
+      or have been replaced. The records are preserved as historical
+      snapshots inside our corpus.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Shard</th>
+            <th class="numeric">Records</th>
+            <th>Upstream status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>vd_findinfo</code></td>
+            <td class="numeric">74,866</td>
+            <td>Historical VD jurisprudence portal (<code>jurisprudence.findinfo.ch</code>) retired; current decisions covered by direct <code>vd_gerichte</code> scraper.</td>
+          </tr>
+          <tr>
+            <td><code>vd_omni</code></td>
+            <td class="numeric">28,033</td>
+            <td>Historical VD aggregation; superseded by current portals.</td>
+          </tr>
+          <tr>
+            <td><code>ch_vb</code></td>
+            <td class="numeric">23,055</td>
+            <td>Federal Bundesrat publications (<code>amtsdruckschriften.bar.admin.ch</code>) — Recueil officiel, Postulate, Botschaften. Mixed parliamentary/admin content, not court decisions in the strict sense.</td>
+          </tr>
+          <tr>
+            <td><code>sg_gerichte</code></td>
+            <td class="numeric">12,572</td>
+            <td>Predecessor of <code>sg_publikationen</code> (live, 12,690 records direct-scraped).</td>
+          </tr>
+          <tr>
+            <td><code>be_bvd</code></td>
+            <td class="numeric">2,094</td>
+            <td>BE Behörden-Verwaltungs-Direktion. Administrative tribunal; no live portal endpoint.</td>
+          </tr>
+          <tr>
+            <td><code>be_weitere</code></td>
+            <td class="numeric">840</td>
+            <td>BE miscellaneous administrative bodies.</td>
+          </tr>
+          <tr>
+            <td><code>be_steuerrekurs</code></td>
+            <td class="numeric">343</td>
+            <td>Steuerrekurskommission BE. Direct scraper exists; upstream portal database disconnected since February 2026, returns 0 results. We are tracking the issue with the canton.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="meta">
+      All other entscheidsuche shards (~40 of 51) are <strong>shadowed
+      by an independent direct scraper</strong> against the source
+      portal. Where both exist, dedup at build-time uses our direct
+      data as the source of record. Entscheidsuche.ch is acknowledged in
+      the dataset card as a contributing upstream for the
+      frozen-archive set; their re-aggregation work has CC&nbsp;BY-style
+      attribution.
+    </p>
+  </section>
 </main>
 
 <!-- Shared site footer — same across /, /word, /quality, /coverage. -->
