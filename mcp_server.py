@@ -13341,6 +13341,44 @@ def find_scholarship_citing_statute(
         conn.close()
 
 
+def find_scholarship_citing_decision(
+    decision_id: str, limit: int = 20,
+) -> dict:
+    """Find OA legal scholarship that cites a given Swiss court decision.
+
+    Reverse direction of the citation-graph bridge — given a decision_id
+    (e.g. 'bge_BGE_140_III_86' or 'bger_4A_571_2008'), return all
+    scholarship publications in our corpus that cite it. Citations are
+    extracted from publication full_text by the build pipeline; only
+    full-text records contribute (~9k of 30k pubs).
+    """
+    conn = _get_scholarship_conn()
+    if conn is None:
+        return {"error": "Legal scholarship database not available."}
+    limit = min(max(1, limit), 100)
+    try:
+        rows = conn.execute(
+            """SELECT p.pub_id, p.source, p.pub_type, p.title, p.authors,
+                      p.language, p.year, p.url, pcd.snippet
+               FROM pub_citations_decisions pcd
+               JOIN publications p ON p.id = pcd.pub_id
+               WHERE pcd.decision_id = ?
+               ORDER BY p.year DESC NULLS LAST
+               LIMIT ?""",
+            (decision_id, limit),
+        ).fetchall()
+        return {
+            "decision_id": decision_id,
+            "count": len(rows),
+            "results": [dict(r) for r in rows],
+        }
+    except sqlite3.Error as e:
+        logger.error("find_scholarship_citing_decision error: %s", e)
+        return {"error": f"Database error: {e}"}
+    finally:
+        conn.close()
+
+
 def get_scholarship_full_text(pub_id: str) -> dict:
     """Fetch the full text of an OA publication, on demand if not cached.
 
@@ -13651,6 +13689,24 @@ def _format_find_scholarship_citing_statute_response(result: dict) -> str:
             text += f"  *{r['authors']}*\n"
         if r.get("url"):
             text += f"  {r['url']}\n"
+    return text
+
+
+def _format_find_scholarship_citing_decision_response(result: dict) -> str:
+    if result.get("error"):
+        return result["error"]
+    text = f"# Scholarship citing {result['decision_id']}\n"
+    text += f"Found {result['count']} OA publication(s) citing this decision.\n\n"
+    for r in result.get("results", []):
+        text += f"- [{r['source']}/{r.get('year') or '?'}] **{r['title']}**\n"
+        if r.get("authors"):
+            text += f"  *{r['authors']}*\n"
+        if r.get("snippet"):
+            text += f"  > {r['snippet']}\n"
+        if r.get("url"):
+            text += f"  {r['url']}\n"
+    if result["count"] == 0:
+        text += "_No open-access scholarship in our corpus cites this decision._\n"
     return text
 
 
@@ -17395,9 +17451,10 @@ def _list_tools() -> list[Tool]:
             name="find_scholarship_citing_statute",
             description=(
                 "Find OA legal scholarship that cites a given Swiss statute article. "
-                "Sourced from re-exported article-anchored commentaries (OnlineKommentar / "
-                "OpenLegalCommentary); will expand as citation extraction is applied to "
-                "journal full-texts."
+                "Sourced from article-anchored commentaries (OnlineKommentar / "
+                "OpenLegalCommentary) PLUS full-text citation extraction across the "
+                "open-access journal corpus (~90k statute references resolved from "
+                "9k full-text records)."
             ),
             inputSchema={
                 "type": "object",
@@ -17413,6 +17470,29 @@ def _list_tools() -> list[Tool]:
                     "limit": {"type": "integer", "description": "Maximum results (1-100, default 20).", "default": 20},
                 },
                 "required": ["sr_number"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="find_scholarship_citing_decision",
+            description=(
+                "Find OA legal scholarship that cites a specific Swiss court decision. "
+                "Reverse direction of the scholarship↔caselaw bridge: given a decision_id "
+                "(e.g. 'bge_BGE_140_III_86' or 'bger_4A_571_2008'), return open-access "
+                "publications that cite it in their full text. Citations are extracted "
+                "deterministically by regex + lookup against the canonical decision corpus, "
+                "so resolved citations are always to decisions we hold."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_id": {
+                        "type": "string",
+                        "description": "Canonical decision_id (e.g. 'bge_BGE_140_III_86', 'bger_4A_571_2008').",
+                    },
+                    "limit": {"type": "integer", "description": "Maximum results (1-100, default 20).", "default": 20},
+                },
+                "required": ["decision_id"],
             },
         ),
         Tool(
@@ -18300,6 +18380,14 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=int(arguments.get("limit", 20)),
             )
             return [TextContent(type="text", text=_format_find_scholarship_citing_statute_response(result))]
+
+        elif name == "find_scholarship_citing_decision":
+            result = await asyncio.to_thread(
+                find_scholarship_citing_decision,
+                decision_id=arguments["decision_id"],
+                limit=int(arguments.get("limit", 20)),
+            )
+            return [TextContent(type="text", text=_format_find_scholarship_citing_decision_response(result))]
 
         elif name == "list_scholarship_sources":
             result = await asyncio.to_thread(list_scholarship_sources)
@@ -20644,6 +20732,17 @@ setInterval(load, 30000);
         return await asyncio.to_thread(
             find_scholarship_citing_statute,
             sr_number=sr_number, article=article, limit=limit,
+        )
+
+    @rest_api.get("/scholarship/cited-by-decision", tags=["Scholarship"],
+                  summary="Scholarship citing a court decision")
+    async def api_scholarship_cited_by_decision(
+        decision_id: str = Query(..., description="Decision id (e.g. 'bge_BGE_140_III_86')"),
+        limit: int = Query(20, ge=1, le=100),
+    ):
+        return await asyncio.to_thread(
+            find_scholarship_citing_decision,
+            decision_id=decision_id, limit=limit,
         )
 
     @rest_api.get("/scholarship-fulltext", tags=["Scholarship"],

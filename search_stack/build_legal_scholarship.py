@@ -333,6 +333,29 @@ def build(
              n, ok_db_path, time.time() - t0)
     summary["by_source"]["onlinekommentar+openlegalcommentary"] = n
 
+    # 2b. Extract citations from full_text → pub_citations_decisions + statutes.
+    # Resolves Swiss case refs against decisions.db and statute abbreviations
+    # against statutes.db. Drops unresolvable references silently — the dict
+    # lookups act as the filter against false-positive regex matches.
+    decisions_db = REPO_ROOT / "output" / "decisions.db"
+    statutes_db = REPO_ROOT / "output" / "statutes.db"
+    if decisions_db.exists() and statutes_db.exists():
+        try:
+            from search_stack.scholarship_citation_extractor import extract_all
+            t0 = time.time()
+            cit_summary = extract_all(conn, str(decisions_db), str(statutes_db))
+            log.info("citation extraction done in %.1fs: %s",
+                     time.time() - t0, cit_summary)
+            summary["citations"] = cit_summary
+        except Exception as e:
+            # Non-fatal — the build still produces a usable DB without citations.
+            log.warning("citation extraction failed: %s", e, exc_info=True)
+            summary["citations"] = {"error": str(e)}
+    else:
+        log.warning("decisions.db or statutes.db missing; "
+                    "skipping scholarship citation extraction")
+        summary["citations"] = {"skipped": "missing prerequisite DBs"}
+
     # 3. Stats + meta
     total = conn.execute("SELECT COUNT(*) FROM publications").fetchone()[0]
     by_type = dict(conn.execute(

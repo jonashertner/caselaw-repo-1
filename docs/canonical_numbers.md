@@ -77,13 +77,13 @@ update all listed consumers in the same commit.
 
 | Mode | Tools | Where used |
 |---|---:|---|
-| **Public / remote mode** (deployed at `mcp.opencaselaw.ch`) | **38** | public-facing dashboards, live API |
-| **Local mode** (running on operator's machine with `update_database` + `check_update_status`) | **40** | README internal docs, local dev guides |
+| **Public / remote mode** (deployed at `mcp.opencaselaw.ch`) | **39** | public-facing dashboards, live API |
+| **Local mode** (running on operator's machine with `update_database` + `check_update_status`) | **41** | README internal docs, local dev guides |
 | **Local-only delta** | 2 (`update_database`, `check_update_status`) | technical references |
 
-Standard phrasing: *"40 MCP tools (38 remote in public mode + 2 local-only)"* or simply *"38 tools"* when only the public surface matters.
+Standard phrasing: *"41 MCP tools (39 remote in public mode + 2 local-only)"* or simply *"39 tools"* when only the public surface matters.
 
-**Paper note**: paper v3 (snapshot 2026-05-13) cites 33 tools; that figure is frozen for the snapshot. Public surface has since grown by 5 scholarship tools (`search_scholarship`, `get_scholarship`, `find_scholarship_citing_statute`, `list_scholarship_sources`, `get_scholarship_full_text`) — bringing the live count to 38.
+**Paper note**: paper v3 (snapshot 2026-05-13) cites 33 tools; that figure is frozen for the snapshot. Public surface has since grown by 6 scholarship tools (`search_scholarship`, `get_scholarship`, `find_scholarship_citing_statute`, `find_scholarship_citing_decision`, `list_scholarship_sources`, `get_scholarship_full_text`) — bringing the live count to 39.
 
 ### Search-quality numbers
 

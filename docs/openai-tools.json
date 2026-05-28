@@ -1,7 +1,7 @@
 {
   "_comment": "OpenAI-compatible tool definitions for OpenCaseLaw.ch. Use with any LLM API that supports function calling (xAI/Grok, OpenAI, Ollama, etc.). Auto-generated from _list_tools() in mcp_server.py — do not edit by hand. The REST API base is https://mcp.opencaselaw.ch/api — map each function name to the corresponding endpoint listed in _endpoint_mapping. Tools with endpoint = null are MCP-only and require a Streamable-HTTP / SSE MCP client.",
   "_api_base": "https://mcp.opencaselaw.ch/api",
-  "_tool_count": 38,
+  "_tool_count": 39,
   "_remote_mode_hidden": [
     "check_update_status",
     "update_database"
@@ -42,6 +42,7 @@
     "get_scholarship": "GET /scholarship/{pub_id}",
     "list_scholarship_sources": "GET /scholarship/sources",
     "find_scholarship_citing_statute": "GET /scholarship/cited-by-statute",
+    "find_scholarship_citing_decision": "GET /scholarship/cited-by-decision",
     "get_scholarship_full_text": "GET /scholarship-fulltext",
     "search_practice": null,
     "get_practice": null
@@ -999,7 +1000,7 @@
       "type": "function",
       "function": {
         "name": "find_scholarship_citing_statute",
-        "description": "Find OA legal scholarship that cites a given Swiss statute article. Sourced from re-exported article-anchored commentaries (OnlineKommentar / OpenLegalCommentary); will expand as citation extraction is applied to journal full-texts.",
+        "description": "Find OA legal scholarship that cites a given Swiss statute article. Sourced from article-anchored commentaries (OnlineKommentar / OpenLegalCommentary) PLUS full-text citation extraction across the open-access journal corpus (~90k statute references resolved from 9k full-text records).",
         "parameters": {
           "type": "object",
           "properties": {
@@ -1019,6 +1020,30 @@
           },
           "required": [
             "sr_number"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "find_scholarship_citing_decision",
+        "description": "Find OA legal scholarship that cites a specific Swiss court decision. Reverse direction of the scholarship↔caselaw bridge: given a decision_id (e.g. 'bge_BGE_140_III_86' or 'bger_4A_571_2008'), return open-access publications that cite it in their full text. Citations are extracted deterministically by regex + lookup against the canonical decision corpus, so resolved citations are always to decisions we hold.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "decision_id": {
+              "type": "string",
+              "description": "Canonical decision_id (e.g. 'bge_BGE_140_III_86', 'bger_4A_571_2008')."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Maximum results (1-100, default 20).",
+              "default": 20
+            }
+          },
+          "required": [
+            "decision_id"
           ]
         }
       }
