@@ -385,7 +385,12 @@ def build_db(
     if tmp_path.exists():
         tmp_path.unlink()
 
-    conn = sqlite3.connect(str(tmp_path))
+    # uri=True so the live-DB ATTACH below can use a ?mode=ro URI (read-only,
+    # no writer lock). busy_timeout so any residual lock contention with the
+    # materialien.service botschaft writer waits instead of failing instantly
+    # ("database live is locked" — the recurring Step 2f failure, 2026-05).
+    conn = sqlite3.connect(f"file:{tmp_path}", uri=True)
+    conn.execute("PRAGMA busy_timeout=60000")
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.executescript(SCHEMA_SQL)
@@ -409,7 +414,11 @@ def build_db(
     # copy any tables that are NOT in our SCHEMA_SQL before swap.
     _real_path = Path(os.path.realpath(str(output_path)))
     if _real_path.exists() and _real_path.stat().st_size > 4096:
-        conn.execute(f"ATTACH DATABASE '{_real_path}' AS live")
+        # READ-ONLY attach (CLAUDE.md invariant #1): this is a pure copy-out of
+        # tables we don't own. mode=ro (NOT immutable — the live DB may be
+        # concurrently written by materialien.service) takes no writer lock, so
+        # it no longer collides with the 04:30 botschaft writer.
+        conn.execute(f"ATTACH DATABASE 'file:{_real_path}?mode=ro' AS live")
         # Tables OUR schema owns — never preserve these from live
         # (they're being rebuilt from authoritative source data).
         _OWN_TABLES = {

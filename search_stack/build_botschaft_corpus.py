@@ -868,6 +868,10 @@ def main() -> int:
         return 1
 
     conn = sqlite3.connect(db_path)
+    # Wait (don't instantly fail) if the publish Step 2f is reading materialien.db
+    # — pairs with the read-only ATTACH in build_materialien_db.py to end the
+    # recurring "database live is locked" cross-process race.
+    conn.execute("PRAGMA busy_timeout=60000")
     conn.execute("PRAGMA foreign_keys = ON")
 
     # ALWAYS ensure schema before any operation. The 2026-05-11 incident:
