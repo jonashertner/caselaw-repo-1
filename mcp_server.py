@@ -20722,6 +20722,54 @@ setInterval(load, 30000);
         from scrapers.scholarship.sources import licenses_catalog
         return {"catalog": licenses_catalog()}
 
+    @rest_api.get("/scholarship/citation-stats", tags=["Scholarship"],
+                  summary="Citation-bridge counts between scholarship and caselaw",
+                  description=(
+                      "Returns live counts of the resolved citations from "
+                      "scholarship full-text into the canonical decision + "
+                      "statute corpora. Populated nightly by Step 2b of "
+                      "build_legal_scholarship.py."
+                  ))
+    async def api_scholarship_citation_stats():
+        def _stats():
+            conn = _get_scholarship_conn()
+            if conn is None:
+                return {
+                    "decision_citations": 0,
+                    "statute_citations": 0,
+                    "pubs_with_citations": 0,
+                    "full_text_pubs": 0,
+                    "coverage_ratio": 0.0,
+                    "note": "scholarship DB unavailable",
+                }
+            try:
+                d = conn.execute(
+                    "SELECT COUNT(*) FROM pub_citations_decisions"
+                ).fetchone()[0]
+                s = conn.execute(
+                    "SELECT COUNT(*) FROM pub_citations_statutes"
+                ).fetchone()[0]
+                ft = conn.execute(
+                    "SELECT COUNT(*) FROM publications WHERE has_full_text=1"
+                ).fetchone()[0]
+                with_cit = conn.execute(
+                    "SELECT COUNT(DISTINCT pub_id) FROM ("
+                    "  SELECT pub_id FROM pub_citations_decisions"
+                    "  UNION"
+                    "  SELECT pub_id FROM pub_citations_statutes)"
+                ).fetchone()[0]
+                ratio = round(with_cit / ft, 3) if ft else 0.0
+                return {
+                    "decision_citations": d,
+                    "statute_citations": s,
+                    "pubs_with_citations": with_cit,
+                    "full_text_pubs": ft,
+                    "coverage_ratio": ratio,
+                }
+            finally:
+                conn.close()
+        return await asyncio.to_thread(_stats)
+
     @rest_api.get("/scholarship/cited-by-statute", tags=["Scholarship"],
                   summary="Scholarship citing a statute article")
     async def api_scholarship_cited_by_statute(

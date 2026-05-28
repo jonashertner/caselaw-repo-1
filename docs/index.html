@@ -2672,6 +2672,19 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
         <div class="scholarship-big-sub">publications across all sources</div>
       </article>
       <article class="scholarship-card">
+        <header><h3>Citation bridge</h3></header>
+        <div class="scholarship-big" id="sch-bridge-decisions"><span class="skel skel--big"></span></div>
+        <div class="scholarship-big-sub">
+          case citations resolved + <span id="sch-bridge-statutes">…</span> statute references<br>
+          <span style="color: var(--tx2); font-size: 12px;">
+            extracted from <span id="sch-bridge-ftpubs">…</span> full-text records
+            (<span id="sch-bridge-coverage">…</span>% bridge coverage).
+            Query both directions via <code>find_scholarship_citing_decision</code>
+            and <code>find_scholarship_citing_statute</code>.
+          </span>
+        </div>
+      </article>
+      <article class="scholarship-card">
         <header><h3>Sources live today</h3></header>
         <details class="scholarship-sources-details">
           <summary id="sch-sources-summary">
@@ -6244,6 +6257,29 @@ function renderCorpusSnapshot(data) {
       }
     }
   }
+
+  // Citation-bridge stats — fetched live (data populated by Step 2b of
+  // build_legal_scholarship.py on the nightly publish).
+  fetch('https://mcp.opencaselaw.ch/api/scholarship/citation-stats')
+    .then(r => r.ok ? r.json() : null)
+    .then(s => {
+      if (!s) return;
+      const dec = s.decision_citations || 0;
+      const stat = s.statute_citations || 0;
+      const ftp = s.full_text_pubs || 0;
+      const cov = Math.round((s.coverage_ratio || 0) * 100);
+      setText('sch-bridge-decisions', fmt(dec));
+      setText('sch-bridge-statutes', fmt(stat));
+      setText('sch-bridge-ftpubs', fmt(ftp));
+      setText('sch-bridge-coverage', cov.toString());
+      // If still zero (data populates tonight on first run), surface a hint
+      if (dec === 0 && stat === 0) {
+        const sub = document.querySelector('#sch-bridge-decisions + .scholarship-big-sub');
+        if (sub) sub.innerHTML = '<span style="color: var(--tx2); font-style: italic;">'
+          + 'populating on next nightly publish (Step 2b).</span>';
+      }
+    })
+    .catch(() => {});
 
   // Top movers — top 5 courts by 24h delta
   if (data.delta && data.delta.by_court) {
