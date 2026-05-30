@@ -2272,7 +2272,7 @@
     "2026-04": 1989,
     "2026-05": 556
   },
-  "generated_at": "2026-05-30T13:27:31.291452+00:00",
+  "generated_at": "2026-05-30T19:34:30.044616+00:00",
   "scraper_health": {
     "run_at": "2026-05-30T02:53:18.874677+00:00",
     "run_duration_s": 6738.4,
@@ -3278,7 +3278,7 @@
         "note": "1595 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1487,
         "jsonl_size_mb": 88.7,
-        "jsonl_mtime": "2026-05-30T02:35:49.825181+00:00"
+        "jsonl_mtime": "2026-05-30T14:48:42.473963+00:00"
       },
       "sg_publikationen": {
         "success": true,
@@ -3351,13 +3351,11 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "scholarship_publications": 23742,
+    "scholarship_publications": 17127,
     "scholarship_by_source": {
       "boris_law": 7319,
-      "unige_law": 3798,
-      "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
-      "libra_unine": 1975,
+      "unige_law": 1973,
       "eth_research_collection": 1760,
       "fhnw_irf": 496,
       "onlinekommentar": 368,
@@ -3365,6 +3363,7 @@
       "sui_generis": 289,
       "medialex": 267,
       "eizpublishing": 249,
+      "e_periodica_polsci": 226,
       "leges": 204,
       "ex_ante": 176,
       "thegoodboard": 140,
@@ -3376,29 +3375,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 16437,
-      "book": 5459,
-      "dissertation": 712,
-      "report": 449,
+      "article": 11591,
+      "book": 3785,
+      "dissertation": 652,
+      "report": 415,
       "commentary": 398,
-      "working_paper": 174,
+      "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 8749693,
-    "statute_edges": 11356039
+    "citation_edges": 8750592,
+    "statute_edges": 11357000
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 85845,
+      "citation_count": 85859,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 180418
+      "ref_count": 180429
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3410,20 +3409,20 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 973974
+      "total": 974036
     },
     "regeste_coverage": {
       "pct": 36.5,
-      "with_regeste": 355306,
-      "total": 973974
+      "with_regeste": 355318,
+      "total": 974036
     },
     "graph_size": {
-      "decision_edges": 8179840,
-      "statute_edges": 11356039,
-      "total": 19535879
+      "decision_edges": 8180520,
+      "statute_edges": 11357000,
+      "total": 19537520
     },
     "echr_switzerland": {
-      "total": 2803,
+      "total": 2804,
       "grand_chamber": 93,
       "in_2026": 99,
       "most_recent": {
@@ -3436,31 +3435,31 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 85845,
+        "citation_count": 85859,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 44921,
+        "citation_count": 44923,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37117,
+        "citation_count": 37122,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 130 V 343",
-        "citation_count": 29836,
+        "citation_count": 29839,
         "regeste_excerpt": "Regeste\n Art. 1 Abs. 1 IVG (in der seit 1. Januar 2003 geltenden Fassung) in Verbindung mit Art. 6, 7, 8 Abs. 1, Art. 16 und 17 ATSG; Art. 4 Abs. 1, Art. 28 Abs",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_130_V_343"
       },
       {
         "docket": "BGE 126 V 75",
-        "citation_count": 27932,
+        "citation_count": 27933,
         "regeste_excerpt": "Regeste\n Art. 28 Abs. 2 IVG: Kürzung von Tabellenlöhnen. - Für die Bestimmung des Invalideneinkommens ist primär von der beruflich-erwerblichen Situation auszug",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_126_V_75"
       }
@@ -3469,27 +3468,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 187830
+        "ref_count": 187841
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110722
+        "ref_count": 110724
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 105085
+        "ref_count": 105084
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92586
+        "ref_count": 92602
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59471
+        "ref_count": 59468
       }
     ],
     "materialien_coverage": {
@@ -3512,7 +3511,7 @@
         "earliest": "1875-01-01",
         "latest": "2026-01-01",
         "span_years": 151,
-        "decision_count": 35364
+        "decision_count": 35370
       },
       {
         "court": "ch_vb",
@@ -3533,7 +3532,7 @@
         "earliest": "1901-07-29",
         "latest": "2025-11-12",
         "span_years": 124,
-        "decision_count": 4447
+        "decision_count": 4448
       },
       {
         "court": "tg_gerichte",
@@ -4173,7 +4172,10 @@
       "LU": 1,
       "AI": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 899,
+      "statute_edges": 961
+    },
     "previous_generated_at": "2026-05-29T17:19:29.898296+00:00"
   }
 }
