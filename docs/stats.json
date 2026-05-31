@@ -2271,7 +2271,7 @@
     "2026-04": 1989,
     "2026-05": 556
   },
-  "generated_at": "2026-05-31T10:48:20.093323+00:00",
+  "generated_at": "2026-05-31T16:35:19.830858+00:00",
   "scraper_health": {
     "run_at": "2026-05-31T02:09:40.071160+00:00",
     "run_duration_s": 4119.6,
@@ -3277,7 +3277,7 @@
         "note": "1868 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1487,
         "jsonl_size_mb": 88.7,
-        "jsonl_mtime": "2026-05-31T01:58:06.395083+00:00"
+        "jsonl_mtime": "2026-05-31T14:47:04.859998+00:00"
       },
       "ti_gerichte": {
         "success": true,
@@ -3350,19 +3350,22 @@
       "ZH": 135
     },
     "commentaries": 1104,
-    "scholarship_publications": 17127,
+    "scholarship_publications": 25194,
     "scholarship_by_source": {
       "boris_law": 7319,
+      "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
-      "unige_law": 1973,
+      "e_periodica_polsci": 2957,
+      "libra_unine": 1975,
       "eth_research_collection": 1760,
+      "unige_law": 1437,
+      "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
       "onlinekommentar": 368,
       "edoc_unibas_law": 324,
-      "sui_generis": 289,
+      "sui_generis": 290,
       "medialex": 267,
       "eizpublishing": 249,
-      "e_periodica_polsci": 226,
       "leges": 204,
       "ex_ante": 176,
       "thegoodboard": 140,
@@ -3374,10 +3377,10 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 11591,
-      "book": 3785,
-      "dissertation": 652,
-      "report": 415,
+      "article": 19174,
+      "book": 4263,
+      "dissertation": 639,
+      "report": 434,
       "commentary": 398,
       "working_paper": 173,
       "guidance": 70,
