@@ -8,7 +8,8 @@ Architecture:
 - Uses Weblaw-hosted JSON API at bstger.weblaw.ch
 - POST JSON to /api/getDocuments (returns structured data)
 - Date-range windowing: start with 64-day ranges, halve if >100 results
-- PDF available via /api/getDocumentFile/{leid}
+- PDF/source available via /api/getDocumentContent/{leid} (the /cache web view and
+  /api/getDocumentFile were retired in the 2026 Weblaw portal migration to a Next.js SPA)
 - userID and sessionDuration randomized per request
 - Results contain: docket number, ruling date, publication date, content summary
 
@@ -45,6 +46,11 @@ logger = logging.getLogger(__name__)
 HOST = "https://bstger.weblaw.ch"
 DOCUMENTS_URL = f"{HOST}/api/getDocuments?withAggregations=false"
 PDF_URL = f"{HOST}/api/getDocumentFile/"
+# Public, auth-free document endpoint. The /cache?id= web view was retired when the
+# portal migrated to a Next.js SPA (now 404), and /api/getDocumentFile now 500s.
+# getDocumentContent still serves the official PDF by leid with no userID, so it is
+# used for BOTH source_url and pdf_url. (Same endpoint already used for full-text fetch.)
+CONTENT_URL = f"{HOST}/api/getDocumentContent/"
 
 # Starting date range (days) — halved adaptively if >100 results
 INITIAL_WINDOW_DAYS = 64
@@ -262,7 +268,7 @@ class BStGerScraper(BaseScraper):
 
             # PDF URL
             file_name = meta_kw.get("fileName", [""])[0]
-            pdf_url = f"{PDF_URL}{leid}?locale=de&userID={user_id}"
+            pdf_url = f"{CONTENT_URL}{leid}"
 
             return {
                 "docket_number": docket,
@@ -340,7 +346,7 @@ class BStGerScraper(BaseScraper):
                 full_text=self.clean_text(full_text) if full_text.strip() else "(metadata only — PDF available)",
                 decision_type=stub.get("decision_type"),
                 appeal_info=stub.get("decision_type"),
-                source_url=f"{HOST}/cache?id={leid}&guiLanguage={lang}" if leid else f"{HOST}/",
+                source_url=f"{CONTENT_URL}{leid}" if leid else f"{HOST}/",
                 pdf_url=stub.get("pdf_url"),
                 cited_decisions=extract_citations(full_text) if full_text else [],
                 scraped_at=datetime.now(timezone.utc),
