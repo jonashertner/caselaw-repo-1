@@ -5,9 +5,29 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 01 Jun 2026 12:25:28 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2026 13:42:09 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>fr_gerichte 605 2025 74 vom 2026-06-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202025%2074</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Augustinergasse 3, Postfach 630, 1701 Freiburg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+605 2025 74
+Urteil vom 19. Mai 2026
+I. Sozialversicherungsgerichtshof
+Besetzung
+Präsiden…</description>
+      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_605 2025 74</guid>
+      <category>fr_gerichte</category>
+    </item>
     <item>
       <title>fr_gerichte 102 2026 71 vom 2026-06-08</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2071</link>
@@ -43,6 +63,42 @@ In S…</description>
       <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">sz_gerichte_STK 2025 37</guid>
       <category>sz_gerichte</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2025 353 vom 2026-06-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20353</link>
+      <description>ALV 200 2025 353
+WIS/GET/SEE
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil der Einzelrichterin vom 18. Mai 2026
+Verwaltungsrichterin Wiedmer
+Gerichtsschreiber Germann
+A.________
+Beschwerdeführer
+gegen
+Amt für Arbe…</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2025 353</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>gr_gerichte ZR1 2025 173 vom 2026-06-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202025%20173</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Entscheid vom 19. Mai 2026
+mitgeteilt am 20. Mai 2026
+Referenz
+ZR1 25 173
+Instanz
+Erste zivilrechtliche Kammer
+Besetzung
+Cavegn, V…</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR1 2025 173</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>ai_gerichte V 18-2025 vom 2026-05-29</title>
@@ -302,6 +358,14 @@ Bas…</description>
       <category>bs_appellationsgericht</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-3434/2026 vom 2026-05-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3434_2026</link>
+      <description>Flughafenverfahren (Asyl und Wegweisung)</description>
+      <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3434.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-2782/2026 vom 2026-05-21</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2782_2026</link>
       <description>Asyl und Wegweisung</description>
@@ -446,6 +510,36 @@ vertreten…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>Bundesgericht 5A_16/2025 vom 2026-05-20</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_16_2025</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_16/2025
+
+Urteil vom 20. Mai 2026
+
+II. zivilrechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Bovey, Präsident,
+
+Bundesrichter Herrmann, Josi,
+
+Gerichtsschreiber Möckli.
+
+Verfahren…</description>
+      <pubDate>Wed, 20 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_16.2025</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesgericht 5A_449/2026 vom 2026-05-20</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_449_2026</link>
       <description>Bundesgericht
@@ -543,6 +637,83 @@ Bäder Federsp…</description>
       <pubDate>Wed, 20 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_ZR1 2026 57</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>ag_verwaltungsgericht WBE.2026.10 vom 2026-05-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_verwaltungsgericht_WBE.2026.10</link>
+      <description>Verwaltungsgericht
+1. Kammer
+WBE.2026.10 / sr / wm
+(B.2025.33)
+Art. 93
+Urteil vom 19. Mai 2026
+Besetzung Verwaltungsrichterin Schircks, Vorsitz
+Verwaltungsrichter Dommann
+Verwaltungsrichterin Bärtschi
+Gerichtsschreiberin Ruchti
+Beschwerde- A._____
+fü…</description>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_verwaltungsgericht_WBE.2026.10</guid>
+      <category>ag_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 2C_260/2026 vom 2026-05-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_260_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+2C_260/2026
+
+Urteil vom 19. Mai 2026
+
+II. öffentlich-rechtliche Abteilung
+
+Besetzung
+
+Bundesrichterin Aubry Girardin, Präsidentin,
+
+Gerichtsschreiberin Ivanov.
+
+Verfahrensbeteilig…</description>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_260.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_107/2026 vom 2026-05-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_107_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_107/2026
+
+Urteil vom 19. Mai 2026
+
+II. zivilrechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Bovey, Präsident,
+
+Bundesrichter Herrmann, Hartmann,
+
+Gerichtsschreiber Zingg.
+
+Verfa…</description>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_107.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesgericht 5A_414/2026 vom 2026-05-19</title>
@@ -679,6 +850,24 @@ Spiegelgasse 12, Postfach, 40…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>gr_gerichte ZR1 2025 176 vom 2026-05-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202025%20176</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Entscheid vom 19. Mai 2026
+mitgeteilt am 20. Mai 2026
+Referenz
+ZR1 25 175 / 176
+Instanz
+Erste zivilrechtliche Kammer
+Besetzung
+Cav…</description>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR1 2025 176</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>so_gerichte SCBES.2026.51 vom 2026-05-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.51</link>
       <description>Urteilvom19. Mai 2026
@@ -735,170 +924,6 @@ gege…</description>
       <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">so_gerichte_VWBES.2024.423</guid>
       <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>ubi b.1104 vom 2026-05-19</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ubi_b.1104</link>
-      <description>UBI-D-9B263501/1
-
-Unabhängige Beschwerdeinstanz für Radio und
-Fernsehen UBI
-
-
-b.1104
-
-
-
-Entscheid vom 19. Mai 2026
-
-Besetzung
-Mascha Santschi Kallay (Präsidentin),
-Edy Salmina (Vizepräsident),
-Flavia Buchli, Yaniv Benhamou, Philipp Eng,
-Delphine Gend…</description>
-      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ubi_b.1104</guid>
-      <category>ubi</category>
-      <category>Medienrecht</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 200 2025 811 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20811</link>
-      <description>IV 200 2025 811
-ISD/REL/SEE
-Verwaltungsgericht des Kantons Bern
-Sozialversicherungsrechtliche Abteilung
-Urteil vom 16. April 2026
-Verwaltungsrichter Isliker, Kammerpräsident
-Verwaltungsrichter Kölliker, Verwaltungsrichterin Frey
-Gerichtsschreiberin B…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_200 2025 811</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 2C_238/2026 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_238_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-2C_238/2026
-
-Urteil vom 18. Mai 2026
-
-II. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichterin Aubry Girardin, Präsidentin,
-
-Gerichtsschreiberin Ivanov.
-
-Verfahrensbeteilig…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_238.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 4A_173/2026 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_173_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-4A_173/2026
-
-Urteil vom 18. Mai 2026
-
-I. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Hurni, Präsident,
-
-Gerichtsschreiber Leemann.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Besc…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_173.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_426/2026 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_426_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_426/2026
-
-Urteil vom 18. Mai 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Zingg.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Besch…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_426.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesstrafgericht SK.2025.23 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bstger_SK.2025.23</link>
-      <description>Einstellung des Verfahrens</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BStGer:2026:SK.2025.23</guid>
-      <category>bstger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-214/2024 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-214_2024</link>
-      <description>Unerlaubte Tätigkeit (BankG, BEHG, KAG)</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-214.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-2232/2026 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-2232_2026</link>
-      <description>Arbeitsleistung im öffentlichen Interesse (Zivildienst)</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-2232.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-7033/2023 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-7033_2023</link>
-      <description>Unerlaubte Tätigkeit (BankG, BEHG, KAG)</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-7033.2023</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

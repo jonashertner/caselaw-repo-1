@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-06-01T12:39:55+00:00",
+  "run_at": "2026-06-02T14:35:09+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 865.49,
+  "duration_seconds": 3177.77,
   "summary": {
     "total": 52,
     "passed": 52,
@@ -93,17 +93,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 974038,
-        "distinct": 974038
+        "total": 974222,
+        "distinct": 974222
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 974038,
+      "metric_value": 974222,
       "threshold": 950000,
-      "message": "corpus total: 974,038",
+      "message": "corpus total: 974,222",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -113,9 +113,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 367642,
+      "metric_value": 367732,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 367,642 hits",
+      "message": "FTS5 'Beschwerde' query: 367,732 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -169,9 +169,9 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 451100,
-          "fr": 442109,
-          "it": 80829
+          "de": 451193,
+          "fr": 442194,
+          "it": 80835
         }
       }
     },
@@ -179,16 +179,16 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.31236153004298,
+      "metric_value": 46.31316065537424,
       "threshold": 30.0,
       "message": "DE 46.3% / FR 45.4% / IT 8.3% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 451100,
-        "fr": 442109,
-        "it": 80829
+        "de": 451193,
+        "fr": 442194,
+        "it": 80835
       }
     },
     {
@@ -435,9 +435,9 @@
       "name": "courts.federal_present.postcom",
       "severity": "critical",
       "passed": true,
-      "metric_value": 216,
+      "metric_value": 220,
       "threshold": 1,
-      "message": "postcom: 216 decisions",
+      "message": "postcom: 220 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "postcom",
@@ -459,9 +459,9 @@
       "name": "courts.federal_present.hudoc_ch",
       "severity": "critical",
       "passed": true,
-      "metric_value": 838,
+      "metric_value": 839,
       "threshold": 1,
-      "message": "hudoc_ch: 838 decisions",
+      "message": "hudoc_ch: 839 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "hudoc_ch",
@@ -567,9 +567,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 92523,
+      "metric_value": 92541,
       "threshold": 1,
-      "message": "bvger: 92,523 decisions",
+      "message": "bvger: 92,541 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",
@@ -579,9 +579,9 @@
       "name": "courts.federal_present.bstger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 11477,
+      "metric_value": 11482,
       "threshold": 1,
-      "message": "bstger: 11,477 decisions",
+      "message": "bstger: 11,482 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bstger",
@@ -603,9 +603,9 @@
       "name": "courts.federal_present.bger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 175873,
+      "metric_value": 175919,
       "threshold": 1,
-      "message": "bger: 175,873 decisions",
+      "message": "bger: 175,919 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bger",

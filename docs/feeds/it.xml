@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 01 Jun 2026 12:25:29 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2026 13:42:11 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -23,6 +23,36 @@
       <pubDate>Wed, 20 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3475.2026</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 8C_247/2026 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_247_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_247/2026
+
+Sentenza del 18 maggio 2026
+
+IV Corte di diritto pubblico
+
+Composizione
+
+Giudice federale Viscione, Presidente,
+
+Cancelliere Colombi.
+
+Partecipanti al procedimento
+
+A…</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_247.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>gr_gerichte ZR2 2024 105 vom 2026-05-18</title>
@@ -81,6 +111,34 @@ Richter-…</description>
       <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-7821.2025</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 6B_83/2026 vom 2026-05-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_6B_83_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+6B_83/2026
+
+Sentenza dell'8 maggio 2026
+
+I Corte di diritto penale
+
+Composizione
+
+Giudice federale von Felten, Giudice presidente,
+
+Cancelliera Ortolano Ribordy.
+
+Partecipanti al …</description>
+      <pubDate>Fri, 08 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_83.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesgericht 4A_135/2026 vom 2026-05-07</title>
@@ -943,42 +1001,6 @@ Seconda Camera di diritto delle assicurazi…</description>
       <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SV2 2025 25</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 2C_354/2025 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_354_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-2C_354/2025
-
-Sentenza del 21 aprile 2026
-
-II Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Aubry Girardin, Presidente,
-
-Donzallaz, Ryter,
-
-Cancelliera Ieronimo Perroud…</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_354.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-2745/2023 vom 2026-04-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-2745_2023</link>
-      <description>Assistenza amministrativa</description>
-      <pubDate>Tue, 21 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-2745.2023</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/bvger.xml</link>
     <description>Latest published Bundesverwaltungsgericht decisions.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 01 Jun 2026 12:25:26 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jun 2026 13:42:07 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/bvger.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -14,6 +14,14 @@
       <description>Asile et renvoi</description>
       <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-95.2023</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3434/2026 vom 2026-05-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3434_2026</link>
+      <description>Flughafenverfahren (Asyl und Wegweisung)</description>
+      <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3434.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -201,11 +209,27 @@
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-2665/2024 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2665_2024</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2665.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-4344/2025 vom 2026-05-18</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4344_2025</link>
       <description>Verweigerung vorübergehender Schutz</description>
       <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4344.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-4492/2025 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4492_2025</link>
+      <description>Verweigerung vorübergehender Schutz</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4492.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -382,30 +406,6 @@
       <description>Asile et renvoi</description>
       <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5960.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-9894/2025 vom 2026-05-13</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-9894_2025</link>
-      <description>Regroupement familial (asile)</description>
-      <pubDate>Wed, 13 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-9894.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-2022/2025 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-2022_2025</link>
-      <description>Öffentlichkeitsprinzip</description>
-      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-2022.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-2044/2025 vom 2026-05-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-2044_2025</link>
-      <description>Öffentlichkeitsprinzip</description>
-      <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-2044.2025</guid>
       <category>bvger</category>
     </item>
   </channel>
