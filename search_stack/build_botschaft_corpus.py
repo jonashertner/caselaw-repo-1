@@ -868,38 +868,12 @@ def main() -> int:
         return 1
 
     conn = sqlite3.connect(db_path)
-    # busy_timeout is a secondary guard; the PRIMARY serialization against publish
-    # Step 2f (build_materialien_db.py) is the shared advisory flock acquired below.
-    # busy_timeout alone (cf2adb2) could not outlast a writer transaction longer
-    # than 60s, which is why Step 2f kept failing with "database live is locked".
+    # busy_timeout: wait (don't instantly fail) on any transient contention with a
+    # concurrent reader. (The recurring Step 2f "database live is locked" turned out
+    # NOT to be cross-process — it was a DETACH-before-commit bug in
+    # build_materialien_db.py, fixed 2026-06-03. No flock needed here.)
     conn.execute("PRAGMA busy_timeout=60000")
     conn.execute("PRAGMA foreign_keys = ON")
-
-    # ── Serialize against publish Step 2f via the shared advisory flock ──
-    # Both this Botschaft ingest and Step 2f write materialien.db, and 2f's atomic
-    # swap would clobber this ingest's writes. Hold the lock for the whole run
-    # (the kernel releases it on process exit). If 2f holds it, wait bounded then
-    # abort (retry next run) rather than race.
-    import fcntl
-    import time as _time
-    try:
-        _bld_lock = open("/tmp/opencaselaw-materialien.lock", "w")
-    except OSError:
-        _bld_lock = None  # degrade to pre-flock behaviour if /tmp is unwritable
-    if _bld_lock is not None:
-        _bld_deadline = _time.monotonic() + 600.0
-        while True:
-            try:
-                fcntl.flock(_bld_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                break
-            except OSError:
-                if _time.monotonic() >= _bld_deadline:
-                    log.error(
-                        "publish Step 2f holds the materialien build lock >600s; "
-                        "aborting this ingest to avoid a write race (retry next run)."
-                    )
-                    return 4
-                _time.sleep(3)
 
     # ALWAYS ensure schema before any operation. The 2026-05-11 incident:
     # --ingest-all was run on a materialien.db that pre-dated the Phase 2

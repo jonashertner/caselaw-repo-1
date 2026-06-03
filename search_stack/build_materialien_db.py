@@ -470,8 +470,12 @@ def build_db(
                     conn.execute(idx_sql)
                 except sqlite3.Error:
                     pass
-        conn.execute("DETACH DATABASE live")
+        # Commit the preserve-loop INSERTs BEFORE detaching: an open write
+        # transaction on the attached DB makes DETACH fail with "database live is
+        # locked" (the recurring Step 2f failure since the 2026-05-27 preserve
+        # feature; long misdiagnosed as cross-process contention — cf2adb2/flock).
         conn.commit()
+        conn.execute("DETACH DATABASE live")
         if preserved:
             logger.info(
                 "Preserved %d table(s) from live materialien.db: %s",
@@ -610,43 +614,7 @@ def main() -> None:
         sys.exit(1)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-
-    # ── Serialize against opencaselaw-materialien.service (build_botschaft_corpus) ──
-    # Both this Fedlex-layer rebuild and the Botschaft bulk ingest write
-    # materialien.db, and this rebuild's atomic swap would clobber the service's
-    # in-flight botschaft_* writes. A shared advisory flock serializes them; if
-    # the service holds it (multi-hour bulk catch-up), skip this rebuild and keep
-    # the live DB — the Fedlex layer is slow-changing and the next publish picks
-    # it up. Replaces the busy_timeout-only approach (cf2adb2), which could not
-    # outlast a writer transaction longer than the 60s timeout (→ recurring 2f fail).
-    import fcntl
-    import time as _time
-    try:
-        _lock_fd = open("/tmp/opencaselaw-materialien.lock", "w")
-    except OSError:
-        _lock_fd = None  # degrade to pre-flock behaviour if /tmp is unwritable
-    if _lock_fd is not None:
-        _deadline = _time.monotonic() + 120.0
-        while True:
-            try:
-                fcntl.flock(_lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                break
-            except OSError:
-                if _time.monotonic() >= _deadline:
-                    logger.warning(
-                        "materialien.service holds the build lock (Botschaft bulk "
-                        "ingest in progress) — skipping this materialien rebuild; "
-                        "keeping the live DB. Fedlex layer refreshes next publish."
-                    )
-                    _lock_fd.close()
-                    return
-                _time.sleep(3)
-    try:
-        build_db(input_dir, args.output, skip_fedlex=args.skip_fedlex)
-    finally:
-        if _lock_fd is not None:
-            fcntl.flock(_lock_fd, fcntl.LOCK_UN)
-            _lock_fd.close()
+    build_db(input_dir, args.output, skip_fedlex=args.skip_fedlex)
 
 
 if __name__ == "__main__":
