@@ -477,10 +477,12 @@ def step_2c_build_reference_graph(dry_run: bool = False, full_rebuild: bool = Fa
          "--db", str(graph_db)],
         "Build reference graph",
         dry_run,
-        # Bumped from 7200→10800: 2026-05-01 nightly timed out at 99%
-        # (960k of 970k decisions processed at the 7200s mark). 3h gives
-        # ~25% headroom for the corpus growth between rebuilds.
-        timeout=10800,
+        # Bumped 7200→10800 (2026-05-01), then 10800→18000 (2026-06-03 STOPGAP):
+        # the full builder is ~78min solo but ran >3h and hit the 10800s cap on
+        # the 06-02 nightly under 4-way post-build I/O contention (see
+        # PARALLEL_MAX_WORKERS, now 2). 5h leaves margin until 2c moves to the
+        # incremental builder. Real fix: build_reference_graph_incremental.py.
+        timeout=18000,
     )
 
 
@@ -585,7 +587,9 @@ def step_2g_build_decision_structure(dry_run: bool = False, full_rebuild: bool =
          "--output", str(OUTPUT_DIR / "decision_structure.db")],
         f"Build decision_structure sidecar ({len(shard_names)} shards)",
         dry_run,
-        timeout=7200,  # full corpus build can take ~1h
+        timeout=14400,  # 2026-06-03 STOPGAP: full build now runs >2h (outgrew
+        # the "~1h" estimate) and hit the old 7200s cap on the 06-02 nightly
+        # under 4-way I/O contention. Real fix: extract_decision_structure_incremental.
         # The new FTS5 'rebuild' + 'optimize' phase added in commit
         # b8e4cf3 (find_relevant_erwaegung infra) emits no stdout while
         # SQLite rewrites the index over ~970K paragraph rows. On the
@@ -988,8 +992,9 @@ def _run_parallel_post_build(deferred: list, args, manual_step_mode: bool) -> di
     """Execute deferred parallel-safe steps concurrently.
 
     All steps in `deferred` are read-only of decisions.db; each opens its own
-    SQLite connection (WAL mode allows many concurrent readers) and writes to
-    its own output file. Uses a ThreadPoolExecutor — each step internally
+    SQLite connection and writes to its own output file. (The swapped
+    decisions.db is journal_mode=DELETE, not WAL, so concurrent readers contend
+    on disk I/O — see PARALLEL_MAX_WORKERS.) Uses a ThreadPoolExecutor — each step internally
     spawns a subprocess via run_cmd, so threads block on subprocess I/O while
     the OS schedules workloads across CPU cores. No pickling, no shared state.
 
@@ -1215,17 +1220,21 @@ def step_6b_health_check(dry_run: bool = False) -> bool:
 
 # Steps that READ decisions.db but write to separate output files. Safe to
 # run concurrently after Step 2d (Quality Enrichment) — the only step that
-# WRITES decisions.db. Each opens its own SQLite connection (WAL mode allows
-# many concurrent readers) and writes to its own output (reference_graph.db,
-# decision_structure.db, anwaltsrecht_tags.db, materialien.db, dataset/*.parquet,
-# output/quality_report.json).
+# WRITES decisions.db. NOTE: the swapped decisions.db is journal_mode=DELETE
+# (build_fts5 switches WAL→DELETE before os.replace), NOT WAL — so concurrent
+# readers contend on disk I/O (and a rollback journal); PARALLEL_MAX_WORKERS
+# (not a free-lunch fan-out) is therefore the real tuning knob. Each step writes
+# its own output (reference_graph.db, decision_structure.db,
+# anwaltsrecht_tags.db, materialien.db, dataset/*.parquet, quality_report.json).
 PARALLEL_POST_BUILD_STEPS = {"2e", "2b", "2c", "2f", "2g", 3}
 
-# Concurrency cap: 16-CPU ccx43 has plenty, but disk I/O on /mnt is the real
-# constraint when 2c (graph) + 2g (sidecar) + 3 (parquet) all read the 60 GB
-# decisions.db at once. 4 workers gives ~60 min savings (long pole becomes 2c
-# at 78 min) without saturating the volume.
-PARALLEL_MAX_WORKERS = 4
+# Concurrency cap: disk I/O on /mnt is the binding constraint — 2c (graph) +
+# 2g (sidecar) + 3 (parquet) all stream the 60 GB decisions.db at once. Reduced
+# 4→2 on 2026-06-03 (STOPGAP): 4-way contention thrashed the volume and pushed
+# 2c past its cap and 2g past its on the 06-02 nightly. 2 workers keeps the
+# heavy O(corpus) builders from co-saturating the disk. Revisit (→4) once 2c/2g
+# move to the incremental builders (minutes, not hours).
+PARALLEL_MAX_WORKERS = 2
 
 
 # ── DAG runner integration (Phase B v0.2) ─────────────────────────────
@@ -1597,7 +1606,14 @@ def main():
     # saw every step except 2g marked True, and skipped stats regeneration
     # entirely. Marking 2g non-fatal lets the checkpoint clear on
     # completion so the next daily timer starts clean.
-    NON_FATAL_STEPS = {"2e", "5d", "5e", "2g"}
+    # 2c (reference_graph) + 2g (decision_structure) build DERIVED sidecars; the
+    # served decisions.db swap already happened, so a sidecar-build miss must NOT
+    # sys.exit(1) and disarm state/last_publish_success.json (the freshness probe
+    # keys off it). "2c" added 2026-06-03. 2f (Materialien) stays FATAL until its
+    # materialien.db lock fix ships (stale get_materialien is a real degradation
+    # worth alarming). TODO: add a separate reference_graph/decision_structure
+    # staleness probe so a silently-stale sidecar is still detected.
+    NON_FATAL_STEPS = {"2e", "5d", "5e", "2g", "2c"}
     # Steps after the fast tier — skipped with --fast-only
     SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", "2g", 3, 4, 5, 6}
 
