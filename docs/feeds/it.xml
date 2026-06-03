@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 02 Jun 2026 13:42:11 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 03 Jun 2026 12:32:29 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -53,6 +53,14 @@ A…</description>
       <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_247.2026</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-4379/2023 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-4379_2023</link>
+      <description>Assicurazione per la vecchiaia e i superstiti (altro)</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4379.2023</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>gr_gerichte ZR2 2024 105 vom 2026-05-18</title>
@@ -830,6 +838,24 @@ Partecipanti a…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>gr_gerichte ZR2 2026 13 vom 2026-04-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR2%202026%2013</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 24 aprile 2026
+comunicata il 28 aprile 2026
+N. d'incarto
+ZR2 26 13
+Istanza
+Seconda Camera civile
+Composizione
+Richter…</description>
+      <pubDate>Fri, 24 Apr 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR2 2026 13</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>Bundesgericht 2D_29/2025 vom 2026-04-23</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_2D_29_2025</link>
       <description>Bundesgericht
@@ -977,30 +1003,6 @@ Partecipanti al …</description>
       <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_46.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-1473/2023 vom 2026-04-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-1473_2023</link>
-      <description>Provvedimenti d'integrazione</description>
-      <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-1473.2023</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SV2 2025 25 vom 2026-04-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202025%2025</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Sentenza del 22 aprile 2026
-comunicata il 29 aprile 2026
-N. d'incarto
-SV2 25 25
-Istanza
-Seconda Camera di diritto delle assicurazi…</description>
-      <pubDate>Wed, 22 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SV2 2025 25</guid>
-      <category>gr_gerichte</category>
     </item>
   </channel>
 </rss>

@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 02 Jun 2026 13:42:10 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 03 Jun 2026 12:32:29 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -558,6 +558,14 @@ Association A.…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-3013/2026 vom 2026-05-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3013_2026</link>
+      <description>Asile et renvoi (réexamen)</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3013.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-95/2023 vom 2026-05-22</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-95_2023</link>
       <description>Asile et renvoi</description>
@@ -766,6 +774,26 @@ P…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>fr_gerichte 105 2026 63 vom 2026-05-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_105%202026%2063</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+105 2026 63
+Arrêt du 19 mai 2026
+Chambre des poursuites et faillites
+Composition
+P…</description>
+      <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_105 2026 63</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
       <title>fr_gerichte 501 2025 174 vom 2026-05-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_501%202025%20174</link>
       <description>Tribunal cantonal TC
@@ -887,74 +915,20 @@ A.____…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht B-3993/2025 vom 2026-05-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-3993_2025</link>
+      <description>Examen professionnel</description>
+      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-3993.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-2548/2026 vom 2026-05-18</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2548_2026</link>
       <description>Protection des données</description>
       <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2548.2026</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 101 2024 453 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202024%20453</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-101 2024 453
-Arrêt du 18 mai 2026
-Ie Cour d’appel civil
-Composition
-Président :
-Jé…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_101 2024 453</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 102 2026 102 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%20102</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-102 2026 102
-102 2026 103
-Arrêt du 16 avril 2026
-IIe Cour d’appel civil
-Compositio…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_102 2026 102</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 102 2026 67 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2067</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-102 2026 67
-Arrêt du 15 mai 2026
-IIe Cour d’appel civil
-Composition
-Présidente :
-D…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_102 2026 67</guid>
-      <category>fr_gerichte</category>
     </item>
   </channel>
 </rss>

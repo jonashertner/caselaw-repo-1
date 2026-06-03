@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 02 Jun 2026 13:37:41 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 03 Jun 2026 12:28:59 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -330,6 +330,24 @@ In S…</description>
       <category>sz_gerichte</category>
     </item>
     <item>
+      <title>gr_gerichte VR2 2026 11 vom 2026-06-02</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR2%202026%2011</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Urteil vom 30. April 2026
+mitgeteilt am 6. Mai 2026
+Referenz
+VR2 26 11
+Instanz
+Zweite verwaltungsrechtliche Kammer
+Besetzung
+Righe…</description>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_VR2 2026 11</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>be_verwaltungsgericht 200 2025 353 vom 2026-06-01</title>
       <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20353</link>
       <description>ALV 200 2025 353
@@ -477,6 +495,35 @@ Beschwerdeführ…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>bs_appellationsgericht AUS.2026.46 vom 2026-05-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.46</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.46
+
+URTEIL
+
+vom29.
+Mai 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+Bas…</description>
+      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.46</guid>
+      <category>bs_appellationsgericht</category>
+    </item>
+    <item>
       <title>fr_gerichte 502 2025 190 vom 2026-05-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202025%20190</link>
       <description>Tribunal cantonal TC
@@ -579,6 +626,24 @@ Be…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>ag_strafgericht SST.2026.87 vom 2026-05-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_strafgericht_SST.2026.87</link>
+      <description>Obergericht
+Strafgericht, 1. Kammer
+SST.2026.87
+(STA.2025.7443)
+Beschluss vom 27. Mai 2026
+Besetzung Oberrichter Six, Präsident
+Oberrichter Fedier
+Oberrichterin Vasvary
+Gerichtsschreiberin i.V. Zwick
+Gesuchstellerin / A._____,
+Verurteilte geboren am …</description>
+      <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_strafgericht_SST.2026.87</guid>
+      <category>ag_strafgericht</category>
+    </item>
+    <item>
       <title>be_verwaltungsgericht 200 2026 112 vom 2026-05-27</title>
       <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%20112</link>
       <description>IV 200 2026 112
@@ -679,6 +744,21 @@ Caveg…</description>
       <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">sh_gerichte_Nr. 63_2025_20</guid>
       <category>sh_gerichte</category>
+    </item>
+    <item>
+      <title>ag_handelsgericht HSU.2026.25 vom 2026-05-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HSU.2026.25</link>
+      <description>Handelsgericht
+2. Kammer
+HSU.2026.25 / as / mv
+Entscheid vom 26. Mai 2026
+Besetzung Oberrichter Vetter, Präsident
+Gerichtsschreiberin-Stv. Meyer
+Gesuchsteller F._________, Inhaber Einzelfirma F._________
+vertreten durch lic. iur. Peter Krebs, Rechtsa…</description>
+      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_handelsgericht_HSU.2026.25</guid>
+      <category>ag_handelsgericht</category>
     </item>
     <item>
       <title>ecthr_chamber 12549/23_71/24_2023/24 vom 2026-05-26</title>
@@ -847,93 +927,12 @@ Association A.…</description>
       <category>bger</category>
     </item>
     <item>
-      <title>Bundesverwaltungsgericht E-95/2023 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-95_2023</link>
-      <description>Asile et renvoi</description>
+      <title>Bundesverwaltungsgericht E-2674/2025 vom 2026-05-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2674_2025</link>
+      <description>Asyl und Wegweisung</description>
       <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-95.2023</guid>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2674.2025</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 502 2026 66 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%2066</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-502 2026 66
-Arrêt du 8 avril 2026
-Chambre pénale
-Composition
-Président :
-Laurent S…</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_502 2026 66</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 601 2026 21 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_601%202026%2021</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Augustinergasse 3, Postfach 630, 1701 Freiburg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-601 2026 21
-601 2026 22
-Urteil vom 7. April 2026
-I. Verwaltungsgerichtshof
-Besetzung
-Prä…</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_601 2026 21</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>sh_gerichte Nr. 60/2026/21 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/sh_gerichte_Nr.%2060_2026_21</link>
-      <description>Einem Anzeiger in einem Disziplinarverfahren gegen einen Rechtsanwalt fehlt das Recht zur Beschwerdeerhebung gegen die infolge der Anzeige getroffene Entscheidung (E. 2.3).
-OGE 60/2026/21 vom 12. Mai 2026
-Keine Veröffentlichung im Amtsbericht</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">sh_gerichte_Nr. 60_2026_21</guid>
-      <category>sh_gerichte</category>
-    </item>
-    <item>
-      <title>bs_appellationsgericht AUS.2026.43 vom 2026-05-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.43</link>
-      <description>Appellationsgericht
-
-des Kantons Basel-Stadt
-
-als Verwaltungsgericht
-
-Einzelrichterfür Zwangsmassnahmen imAusländerrecht
-
-AUS.2026.43
-
-URTEIL
-
-vom22.
-Mai 2026
-
-Beteiligte
-
-Migrationsamt des Kantons
-Basel-Stadt,
-
-Spiegelgasse 12, Postfach, 4001
-Bas…</description>
-      <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.43</guid>
-      <category>bs_appellationsgericht</category>
     </item>
   </channel>
 </rss>
