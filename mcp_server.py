@@ -20306,7 +20306,10 @@ setInterval(load, 30000);
                   description="Full-text search across 956k Swiss court decisions. "
                               "Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), "
                               "and prefix matching (word*). Each result carries citation_string_{de,fr,it} "
-                              "+ canonical_url + rule_statement for copy-ready use in LLM responses.")
+                              "+ canonical_url + rule_statement for copy-ready use in LLM responses. "
+                              "Broad 'list all' queries return every matching case as compact citation "
+                              "entries; use `total`, `has_more` and `next_offset` to page with `offset` "
+                              "until has_more is false to retrieve the complete list.")
     async def api_search_decisions(
         query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT)"),
         court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
@@ -20327,12 +20330,33 @@ setInterval(load, 30000);
             chamber=chamber, decision_type=decision_type,
             limit=limit, offset=offset, sort=sort,
         )
+        # Bound the response so an enumeration ("list ALL cases on X") returns
+        # EVERY matching case (completeness is paramount) WITHOUT overflowing a
+        # token-limited connector (OpenAI/Copilot/Perplexity). Strategy: full
+        # detail only for small sets; large sets come back as lean compact
+        # (citation-level) entries — all of them — and very large totals page via
+        # has_more/next_offset. Fixes the OASA OpenAIMaxTokenLengthExceeded +
+        # 33.9s-timeout 500 on broad queries (2026-06-05); full at ~350 tok/result
+        # blew the limit at 398 results, compact (~70 tok/result) does not.
+        FULL_FIELDS_MAX = 50      # full records above this overflow connector token limits
+        COMPACT_PAGE_MAX = 800    # ~56k tokens of compact entries — safe per response
+        note = None
+        if fields != "compact" and len(results) > FULL_FIELDS_MAX:
+            fields = "compact"
+            note = (f"{total} matching decisions — returned as compact citation entries to stay "
+                    f"within connector response limits; fetch a specific decision "
+                    f"(GET /decisions/{{decision_id}}) for full text.")
         if fields == "compact":
             compact_keys = ("decision_id", "docket_number", "court", "language", "decision_date",
                             "citation_string_de", "canonical_url")
             # Enrich first so compact can expose the citation fields too.
             results = [_enrich_with_citation(r) for r in results]
             results = [{k: r[k] for k in compact_keys if k in r} for r in results]
+            if len(results) > COMPACT_PAGE_MAX:
+                results = results[:COMPACT_PAGE_MAX]
+                note = ((note + " ") if note else "") + (
+                    f"Showing {COMPACT_PAGE_MAX} per page — page with offset until has_more is "
+                    f"false to retrieve all {total} matching cases.")
         else:
             results = [_enrich_with_citation(r) for r in results]
             # Auto-pinpoint top-5 results so the JSON payload carries a
@@ -20340,7 +20364,17 @@ setInterval(load, 30000);
             await asyncio.to_thread(
                 _pinpoint_enrich_results, results, query or "", top_n=5
             )
-        return {"total": total, "results": results, "limit": limit, "offset": offset}
+        returned = len(results)
+        has_more = (offset + returned) < total
+        resp = {
+            "total": total, "returned": returned, "results": results,
+            "limit": limit, "offset": offset,
+            "has_more": has_more,
+            "next_offset": (offset + returned) if has_more else None,
+        }
+        if note:
+            resp["note"] = note
+        return resp
 
     @rest_api.get("/decisions/{decision_id}", tags=["Case Law"],
                   summary="Get a single decision",
