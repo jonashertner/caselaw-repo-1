@@ -1,0 +1,28 @@
+[Unit]
+Description=OpenCaseLaw weekly BGer deep AZA backfill (closes the 180-day late-upload horizon)
+# Why this exists:
+#   The nightly BGer scrape (Daily mode) re-sweeps the last DAILY_LOOKBACK_DAYS
+#   (180) of JUDGMENT dates against bger.ch's AZA index every night, which
+#   self-heals any decision uploaded up to 180 days after its judgment date.
+#   But BGer uploads some decisions to the free channel MORE than 180 days
+#   after the judgment date (anonymisation/redaction lag). Those land on the
+#   AZA index already below the nightly window, are not in the 14-day Neuheiten
+#   path, and the nightly never runs Backfill mode — so they are missed
+#   permanently. This weekly job re-sweeps a 730-day judgment-date window
+#   (Backfill mode, since-days > 180), pure-official (bger.ch AZA only, no
+#   entscheidsuche), docket-deduped/idempotent: it re-fetches ONLY genuinely
+#   new late-uploaded dockets and appends them to output/decisions/bger.jsonl.
+#   The next nightly publish folds them into the served DB.
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 run_scraper.py bger --since-days 730
+# ~730d / 4-day windows ≈ ~180 windows ≈ ~70 min of mostly-skip enumeration
+# (the nightly 180d/45-window pass is ~17 min). 6h cap = generous; a hang
+# (Imperva stall) trips TimeoutStartSec and the unit is marked failed, which
+# is the observability surface (systemctl status / journal) — no silent stall.
+TimeoutStartSec=21600
+StandardOutput=append:/opt/caselaw/repo/logs/bger_backfill.log
+StandardError=append:/opt/caselaw/repo/logs/bger_backfill.log

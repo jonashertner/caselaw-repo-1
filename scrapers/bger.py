@@ -547,11 +547,14 @@ class BgerScraper(BaseScraper):
         Also checks Neuheiten (recently added) to catch decisions published
         after the AZA search window has moved past their decision date.
 
-        Daily mode (since_date within last 60 days or None):
+        Daily mode (since_date within last DAILY_LOOKBACK_DAYS=180 days, or None):
             1. Neuheiten page (recently published, any decision date)
-            2. AZA search for the last 60 days
-        Backfill mode (since_date > 60 days ago):
-            AZA search in 4-day windows from since_date.
+            2. AZA search for the last 180 days
+        Backfill mode (since_date older than 180 days ago):
+            AZA search in 4-day windows from since_date. Used by the weekly
+            deep-backfill timer to recover decisions uploaded more than 180
+            days after their judgment date (which fall below the daily AZA
+            window and are not caught by the 14-day Neuheiten path).
         """
         if isinstance(since_date, str):
             since_date = date.fromisoformat(since_date)

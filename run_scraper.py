@@ -27,7 +27,7 @@ import sqlite3
 import sys
 import time
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 logger = logging.getLogger("run_scraper")
@@ -718,6 +718,18 @@ def main():
         help="List available scraper codes and exit",
     )
     parser.add_argument("--since", type=str, help="Only scrape since date (YYYY-MM-DD)")
+    parser.add_argument(
+        "--since-days",
+        type=int,
+        help=(
+            "Rolling alternative to --since: scrape since (today − N days), "
+            "computed at runtime so a scheduled job always sweeps a moving "
+            "window. Mutually exclusive with --since. For BGer a value > "
+            "DAILY_LOOKBACK_DAYS (180) drives Backfill mode — the weekly "
+            "deep-backfill timer uses this to recover decisions uploaded "
+            "more than 180 days after their judgment date."
+        ),
+    )
     parser.add_argument("--max", type=int, help="Max decisions to scrape")
     parser.add_argument("--output", type=str, default="output", help="Output directory")
     parser.add_argument("--state", type=str, default="state", help="State directory")
@@ -763,10 +775,20 @@ def main():
     for noisy in ("pdfminer", "pdfplumber", "urllib3", "chardet", "charset_normalizer"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
+    # Resolve --since-days into an absolute since_date (rolling window) so a
+    # scheduled job always backfills a moving window. For BGer a value > 180
+    # (DAILY_LOOKBACK_DAYS) drives Backfill mode — the weekly deep-backfill
+    # timer uses this to close the late-upload horizon beyond the nightly pass.
+    since_date = args.since
+    if args.since_days is not None:
+        if args.since is not None:
+            parser.error("--since and --since-days are mutually exclusive")
+        since_date = (date.today() - timedelta(days=args.since_days)).isoformat()
+
     try:
         exit_code = run_with_persistence(
             scraper_key=args.scraper,
-            since_date=args.since,
+            since_date=since_date,
             max_decisions=args.max,
             output_dir=Path(args.output),
             state_dir=Path(args.state),

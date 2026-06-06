@@ -1,0 +1,13 @@
+[Unit]
+Description=Weekly BGer deep AZA backfill (Saturday 20:00 UTC)
+
+[Timer]
+# Saturday 20:00 UTC — clear of the daily scrape (01:00), nightly publish
+# (03:00/03:30), and the weekly entscheidsuche run (Sun 22:00). Runs before
+# the Sunday cycle so any recovered late-uploads are in bger.jsonl for the
+# next nightly publish. Persistent=true catches up a missed run after downtime.
+OnCalendar=Sat *-*-* 20:00:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target
