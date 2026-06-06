@@ -287,12 +287,28 @@ _MONTH_NAMES = {
 }
 
 
+# Plausible decision-date bounds. The corpus contract (QC gate check
+# `dates.pre_1700`) forbids dates before 1700, and a source-side typo
+# (e.g. Tribuna returning "0206-04-21" for a 2026 docket) must never produce
+# a poison date that silently blocks the nightly publish QC gate / git push.
+# Years outside this band are treated as unparseable — the decision is still
+# ingested (just dateless) rather than poisoning the corpus.
+_MIN_PLAUSIBLE_YEAR = 1700
+_MAX_PLAUSIBLE_YEAR = 2100
+
+
+def _plausible(d: date) -> bool:
+    return _MIN_PLAUSIBLE_YEAR <= d.year <= _MAX_PLAUSIBLE_YEAR
+
+
 def parse_date(text: str) -> date | None:
     """
     Parse a date string in various Swiss formats.
 
     Supports: DD.MM.YYYY, YYYY-MM-DD, DD. Monat YYYY (de/fr/it), bare YYYY.
     Normalizes dates from various Swiss court formats (7 regex patterns).
+    Out-of-band years (< 1700 or > 2100) are rejected so a source-side date
+    typo cannot poison the corpus or trip the publish QC gate.
     """
     if not text:
         return None
@@ -303,9 +319,14 @@ def parse_date(text: str) -> date | None:
         m = pattern.search(text)
         if m and converter:
             try:
-                return converter(m)
+                d = converter(m)
             except (ValueError, IndexError):
                 continue
+            if _plausible(d):
+                return d
+            # Implausible year (e.g. a source typo "0206-04-21" for a 2026
+            # docket): treat as unparseable rather than emit a poison date.
+            continue
 
     # Try month name patterns (de/fr/it)
     for pattern, _ in _DATE_PATTERNS[2:5]:
@@ -317,9 +338,12 @@ def parse_date(text: str) -> date | None:
             month = _MONTH_NAMES.get(month_name)
             if month:
                 try:
-                    return date(year, month, day)
+                    d = date(year, month, day)
                 except ValueError:
                     continue
+                if _plausible(d):
+                    return d
+                continue
 
     # Try bare year (guard against year 0 or obviously invalid years)
     m = _DATE_PATTERNS[5][0].match(text)
