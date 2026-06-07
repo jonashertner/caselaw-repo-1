@@ -7806,17 +7806,16 @@ def update_from_huggingface() -> str:
 server = Server(
     "swiss-caselaw",
     instructions=(
-        "Swiss legal research platform: 973,000+ published decisions from "
+        "Swiss legal research platform: 974,000+ published decisions from "
         "federal + cantonal courts, ~2,800 European Court of Human Rights "
         "decisions concerning Switzerland (BGE-published EGMR translations, "
         "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
         "5,516 federal laws (Fedlex SPARQL), 15,722 cantonal laws (direct "
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,058 scholarly commentaries, a verbatim Federal Council Botschaft "
-        "corpus (Phase 2 ingestion in progress; 459 documents and 76K "
-        "FTS5-indexed paragraphs at 2026-05-11, scaling toward ~25K), "
-        "30,188 open-access scholarship records from 22 Swiss legal sources "
-        "(9,168 with full-text — see find_scholarship_citing_decision and "
+        "corpus (5,974 documents, ~407K FTS5-indexed paragraphs), "
+        "26,000+ open-access scholarship records from 23 Swiss legal sources "
+        "(thousands with full-text — see find_scholarship_citing_decision and "
         "find_scholarship_citing_statute for the bidirectional bridge), "
         "structured federal decisions (Sachverhalt/Erwägungen/Dispositiv), "
         "and the citation graph (8.09M resolved edges). Updated daily. "
@@ -17515,7 +17514,7 @@ def _list_tools() -> list[Tool]:
                     },
                     "language": {
                         "type": "string",
-                        "description": "Filter by language (de/fr/it/en). Omit to search across all.",
+                        "description": "OPTIONAL filter by language (de/fr/it/en). Omit to search across all languages (recommended — the corpus is trilingual).",
                     },
                     "year_min": {"type": "integer", "description": "Earliest publication year."},
                     "year_max": {"type": "integer", "description": "Latest publication year."},
@@ -19397,8 +19396,8 @@ setInterval(load, 30000);
         title="OpenCaseLaw API",
         description=(
             "Swiss court decisions, statutes, commentaries, scholarship, and citation graph. "
-            "973,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
-            "5,516 federal laws, 15,722 cantonal acts, 1,058 commentaries, 30,000+ OA scholarship records."
+            "974,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
+            "5,516 federal laws, 15,722 cantonal acts, 1,058 commentaries, 26,000+ OA scholarship records."
         ),
         version="1.0.0",
         docs_url="/docs",

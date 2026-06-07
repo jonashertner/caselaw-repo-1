@@ -336,13 +336,19 @@ def test_reflect_network_failure_returns_error(monkeypatch):
 
 
 def test_reflect_request_model_max_length():
-    """The Pydantic ReflectRequest should refuse >30KB payloads —
-    the lawyer's whole document, not a 10MB attachment."""
+    """The Pydantic ReflectRequest should refuse >60KB payloads —
+    the lawyer's whole document, not a 10MB attachment. (Cap was raised
+    30KB -> 60KB on 2026-05-16; mcp_server.ReflectRequest max_length=60000.)"""
     from pydantic import ValidationError
     with pytest.raises(ValidationError):
         mcp_server.ReflectRequest(
-            license_key="key", redacted_text="x" * 30_001, lang="de",
+            license_key="key", redacted_text="x" * 60_001, lang="de",
         )
+    # exactly at the cap must still be accepted
+    ok = mcp_server.ReflectRequest(
+        license_key="key", redacted_text="x" * 60_000, lang="de",
+    )
+    assert ok.lang == "de"
 
 
 def test_reflect_request_model_accepts_valid():
