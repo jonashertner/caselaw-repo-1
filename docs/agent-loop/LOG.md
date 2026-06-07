@@ -51,3 +51,25 @@ Outcome:
 - EVG recovery is not complete yet, but it is progressing in the isolated recovery directory and using official BGer AZA URLs.
 - No corpus writes, service restarts, commits, pushes, or deploys were performed.
 - Next check should wait until the service exits, then verify `output/decisions/bger_evg.jsonl` line count against the expected approximately `15,215` recovered decisions before the next nightly publish consumes it.
+
+## 2026-06-07 23:05 UTC
+
+Situation report:
+- User approved committing and deploying the `check_scraper_freshness.py` false-positive fix and test.
+
+Action:
+- Committed `scripts/check_scraper_freshness.py`, `tests/test_check_scraper_freshness.py`, and the initial agent-loop records as `6d59117 fix: prevent false scraper freshness alerts`.
+- Pushed `6d59117` to `origin/main`.
+- Fast-forwarded the production checkout at `/opt/caselaw/repo` from `8adeb63` to `6d59117`.
+- Did not restart MCP workers; the change affects only the scheduled/read-only freshness checker script.
+
+Evidence:
+- Pre-commit gates passed: `make verify-offline` and `make test` (`617 passed, 19 skipped in 37.46s`).
+- Prod deploy verification: `git rev-parse --short HEAD` returned `6d59117`.
+- Prod checker self-test passed: `2217` snapshot rows in `/opt/caselaw/repo/state/coverage.db`; `get_last_scraped('bs_gerichte')=2026-06-07`.
+- Prod no-notify checker run returned `All checks passed at 2026-06-07 23:05 UTC`, confirming the previous 33-alert false-positive set is gone without sending ntfy.
+- Public health remained OK: `curl -s https://mcp.opencaselaw.ch/health` returned `{"status":"ok","decisions":974834,"db_generation":1780826232}`.
+
+Outcome:
+- Freshness monitor false-positive fix is committed, pushed, and deployed.
+- Production alert path is now quieter for zero-new successful scrapes while preserving real failure and stale-health checks.
