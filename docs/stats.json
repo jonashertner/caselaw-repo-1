@@ -2271,7 +2271,7 @@
     "2026-05": 909,
     "2026-06": 21
   },
-  "generated_at": "2026-06-07T10:29:09.493092+00:00",
+  "generated_at": "2026-06-07T15:24:36.558087+00:00",
   "scraper_health": {
     "run_at": "2026-06-07T02:35:12.594286+00:00",
     "run_duration_s": 5651.4,
@@ -3175,7 +3175,7 @@
         "note": null,
         "state_count": 7570,
         "jsonl_size_mb": 187.2,
-        "jsonl_mtime": "2026-06-07T01:55:58.809121+00:00"
+        "jsonl_mtime": "2026-06-07T10:33:16.116368+00:00"
       },
       "lu_gerichte": {
         "success": true,
@@ -3277,7 +3277,7 @@
         "note": "1925 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1506,
         "jsonl_size_mb": 91.0,
-        "jsonl_mtime": "2026-06-07T02:33:25.470744+00:00"
+        "jsonl_mtime": "2026-06-07T14:47:21.191105+00:00"
       },
       "emark": {
         "success": true,
@@ -3350,13 +3350,13 @@
       "ZH": 135
     },
     "commentaries": 1131,
-    "scholarship_publications": 27105,
+    "scholarship_publications": 26684,
     "scholarship_by_source": {
       "boris_law": 7319,
-      "unige_law": 3329,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
       "e_periodica_polsci": 2957,
+      "unige_law": 2908,
       "libra_unine": 1978,
       "eth_research_collection": 1760,
       "e_periodica_pubadmin": 855,
@@ -3377,29 +3377,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 20074,
-      "book": 5222,
-      "dissertation": 674,
-      "report": 442,
+      "article": 19870,
+      "book": 5020,
+      "dissertation": 661,
+      "report": 440,
       "commentary": 407,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 8761188,
-    "statute_edges": 11368118
+    "citation_edges": 8762097,
+    "statute_edges": 11368944
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 85932,
+      "citation_count": 85936,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 180531
+      "ref_count": 180543
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3411,17 +3411,17 @@
       "de_pct": 46.3,
       "fr_pct": 45.4,
       "it_pct": 8.3,
-      "total": 974790
+      "total": 974834
     },
     "regeste_coverage": {
-      "pct": 36.5,
-      "with_regeste": 355427,
-      "total": 974790
+      "pct": 36.3,
+      "with_regeste": 353787,
+      "total": 974834
     },
     "graph_size": {
-      "decision_edges": 8190649,
-      "statute_edges": 11368118,
-      "total": 19558767
+      "decision_edges": 8191520,
+      "statute_edges": 11368944,
+      "total": 19560464
     },
     "echr_switzerland": {
       "total": 2826,
@@ -3437,19 +3437,19 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 85932,
+        "citation_count": 85936,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 44948,
+        "citation_count": 44951,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37163,
+        "citation_count": 37165,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3461,7 +3461,7 @@
       },
       {
         "docket": "BGE 126 V 75",
-        "citation_count": 27944,
+        "citation_count": 27945,
         "regeste_excerpt": "Regeste\n Art. 28 Abs. 2 IVG: Kürzung von Tabellenlöhnen. - Für die Bestimmung des Invalideneinkommens ist primär von der beruflich-erwerblichen Situation auszug",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_126_V_75"
       }
@@ -3470,22 +3470,22 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 187944
+        "ref_count": 187956
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110775
+        "ref_count": 110783
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 105144
+        "ref_count": 105147
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92730
+        "ref_count": 92736
       },
       {
         "law_code": "BGG",
@@ -4158,8 +4158,8 @@
       "JU": 7
     },
     "corpus": {
-      "citation_edges": 2361,
-      "statute_edges": 2065
+      "citation_edges": 3270,
+      "statute_edges": 2891
     },
     "previous_generated_at": "2026-06-06T10:23:16.858412+00:00"
   }
