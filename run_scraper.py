@@ -511,6 +511,8 @@ def run_with_persistence(
     state_dir: Path = Path("state"),
     auto_coverage_snapshot: bool = True,
     neuheiten_only: bool = False,
+    until: str | None = None,
+    evg_only: bool = False,
 ) -> int:
     """Run scraper and write each decision to JSONL incrementally.
 
@@ -555,6 +557,15 @@ def run_with_persistence(
             f"[{scraper_key}] --neuheiten-only requested but scraper has "
             "no such attribute; running normal discovery"
         )
+    # Recovery-mode knobs (bger): bound the backfill end + EVG-only filter.
+    if until and hasattr(scraper, "until_date"):
+        scraper.until_date = date.fromisoformat(until)
+        logger.info(f"[{scraper_key}] until_date={until} (backfill bounded)")
+    if evg_only and hasattr(scraper, "evg_only"):
+        scraper.evg_only = True
+        logger.info(f"[{scraper_key}] evg_only=True (EVG single-letter dockets only)")
+    elif evg_only:
+        logger.warning(f"[{scraper_key}] --evg-only ignored (scraper has no evg_only)")
     run_id = f"{scraper_key}:{datetime.now().isoformat(timespec='seconds')}"
     event_writer = _RunEventWriter(
         output_dir=output_dir,
@@ -730,6 +741,13 @@ def main():
             "more than 180 days after their judgment date."
         ),
     )
+    parser.add_argument("--until", type=str,
+                        help="Bound a backfill at this end date (YYYY-MM-DD); BGer only. "
+                             "With --since, walks [since, until] instead of [since, today].")
+    parser.add_argument("--evg-only", action="store_true",
+                        help="BGer recovery: fetch ONLY single-letter EVG chamber dockets "
+                             "(I/U/C/H/K/B/P/M), skipping regular dockets. Used for the "
+                             "pure-official pre-2007 EVG recovery backfill.")
     parser.add_argument("--max", type=int, help="Max decisions to scrape")
     parser.add_argument("--output", type=str, default="output", help="Output directory")
     parser.add_argument("--state", type=str, default="state", help="State directory")
@@ -794,6 +812,8 @@ def main():
             state_dir=Path(args.state),
             auto_coverage_snapshot=not args.no_coverage_snapshot,
             neuheiten_only=args.neuheiten_only,
+            until=args.until,
+            evg_only=args.evg_only,
         )
     except Exception:
         # Capture the traceback in the per-scraper log file (orchestrator

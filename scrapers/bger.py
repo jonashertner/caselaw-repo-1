@@ -379,6 +379,11 @@ class BgerScraper(BaseScraper):
         # session for tens of minutes. Neuheiten alone hits 14 URLs at
         # search.bger.ch and naturally caps the blast radius.
         self.neuheiten_only: bool = False
+        # Recovery-mode knobs (set by run_scraper via --until / --evg-only):
+        # bound the AZA backfill end date, and fetch ONLY single-letter EVG
+        # dockets (the pre-2007 social-insurance recovery — pure-official).
+        self.until_date: date | None = None
+        self.evg_only: bool = False
 
     @property
     def court_code(self) -> str:
@@ -758,7 +763,8 @@ class BgerScraper(BaseScraper):
         - Paginate up to 10 pages (10 results/page) per query
         """
         current = since_date
-        today = date.today()
+        # Bound the walk at --until (recovery mode) instead of today.
+        today = self.until_date or date.today()
 
         while current <= today:
             end = min(current + timedelta(days=self.WINDOW_DAYS - 1), today)
@@ -903,6 +909,11 @@ class BgerScraper(BaseScraper):
                 docket = self._extract_docket(meta_text) or self._extract_docket(href)
 
             if not docket:
+                continue
+            # --evg-only: recover only single-letter EVG chamber dockets
+            # (canonicalised to '<L>_<num>/<yyyy>'); skip the regular dockets,
+            # which are already in the corpus and fetch as truncated stubs.
+            if self.evg_only and not re.match(r"^[A-Za-z]_\d", docket):
                 continue
 
             decision_id = make_decision_id("bger", docket)
