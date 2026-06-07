@@ -251,3 +251,52 @@ def test_content_hash_matches_post_pass_formula() -> None:
         ((regeste or "") + (full_text or "")).encode("utf-8"),
     ).hexdigest()
     assert _compute_row_content_hash_inline(regeste, full_text) == expected
+
+
+# ── pre-1700 date clamp (2026-06-07; the 0206-04-21 freeze backstop) ──
+
+
+def test_date_pre_1700_returns_none() -> None:
+    """ISO-shaped source typos predating 1700 → None. The Schwyz '0206-04-21'
+    (year 2026 mangled) tripped the QC gate and froze publishing for 4 nights."""
+    assert _date_normalize_inline("0206-04-21") is None
+    assert _date_normalize_inline("1699-12-31") is None
+    # boundary + legitimate old dates kept
+    assert _date_normalize_inline("1700-01-01") == "1700-01-01"
+    assert _date_normalize_inline("1875-03-15") == "1875-03-15"
+    # a DD.MM.YYYY value must NOT be mis-clamped (the ISO-shape guard)
+    assert _date_normalize_inline("15.03.2024") == "15.03.2024"
+
+
+def test_normalize_dates_sql_postpass_clamps(tmp_path) -> None:
+    """The SQL post-pass safety net _normalize_dates(conn) NULLs year-0000 /
+    far-future / pre-1700, keeps valid + near-future + NULL, and returns
+    (n_zero, n_future, n_pre1700). This is the guaranteed build-time backstop."""
+    import sqlite3
+    from datetime import date as _d, timedelta as _td
+    from build_fts5 import _normalize_dates
+
+    far = (_d.today() + _td(days=400)).isoformat()
+    near = (_d.today() + _td(days=100)).isoformat()
+    conn = sqlite3.connect(str(tmp_path / "t.db"))
+    conn.execute("CREATE TABLE decisions (decision_id TEXT, decision_date TEXT)")
+    conn.executemany("INSERT INTO decisions VALUES (?, ?)", [
+        ("zero", "0000-01-01"), ("far", far), ("pre1700", "0206-04-21"),
+        ("pre1700b", "1699-12-31"), ("ok_old", "1875-03-15"),
+        ("ok_boundary", "1700-01-01"), ("ok_near", near), ("ok_null", None),
+        # DD.MM.YYYY (also length-10; '15.03.2024' sorts < '1700-01-01'): the
+        # GLOB shape guard must KEEP it, NOT silently NULL it (data-loss guard).
+        ("ddmmyyyy", "15.03.2024"),
+    ])
+    conn.commit()
+
+    n_zero, n_future, n_pre1700 = _normalize_dates(conn)
+    assert (n_zero, n_future, n_pre1700) == (1, 1, 2)  # ddmmyyyy NOT counted
+
+    got = dict(conn.execute("SELECT decision_id, decision_date FROM decisions").fetchall())
+    assert got["zero"] is None and got["far"] is None
+    assert got["pre1700"] is None and got["pre1700b"] is None
+    assert got["ok_old"] == "1875-03-15" and got["ok_boundary"] == "1700-01-01"
+    assert got["ok_near"] == near and got["ok_null"] is None
+    assert got["ddmmyyyy"] == "15.03.2024"  # NON-ISO not mis-NULLed by the clamp
+    conn.close()

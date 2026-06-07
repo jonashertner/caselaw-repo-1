@@ -18,18 +18,23 @@ def is_publish_safe(report: CheckRunReport) -> bool:
 
 
 def alerting_results(report: CheckRunReport) -> list[CheckResult]:
-    """All results that should fire ntfy alerts (CRITICAL + WARNING failures)."""
+    """All results that should fire ntfy alerts (CRITICAL + QUARANTINE + WARNING failures)."""
     return [r for r in report.results if r.is_alerting_failure]
 
 
 def format_alert_summary(report: CheckRunReport) -> str:
     """Compact 1-2 line summary suitable for an ntfy push notification."""
     n_crit = len(report.critical_failures)
+    n_quar = len(report.quarantine_failures)
     n_warn = len(report.warning_failures)
     if n_crit:
         names = ", ".join(r.name for r in report.critical_failures[:3])
         more = f" (+{n_crit - 3} more)" if n_crit > 3 else ""
         return f"BLOCKING: {n_crit} critical QC failures: {names}{more}"
+    if n_quar:
+        names = ", ".join(r.name for r in report.quarantine_failures[:3])
+        more = f" (+{n_quar - 3} more)" if n_quar > 3 else ""
+        return f"QUARANTINE (auto-NULLed, not blocking): {n_quar}: {names}{more}"
     if n_warn:
         names = ", ".join(r.name for r in report.warning_failures[:3])
         more = f" (+{n_warn - 3} more)" if n_warn > 3 else ""

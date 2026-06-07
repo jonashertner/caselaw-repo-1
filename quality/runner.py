@@ -155,7 +155,14 @@ def run(
             results.extend(_run_one(fn, db_path, ctx))
 
     if critical_only:
-        results = [r for r in results if r.severity is Severity.CRITICAL]
+        # Keep CRITICAL (gating) AND QUARANTINE (count-bounded, non-blocking but
+        # must still alert + render on the dashboard during the gate run); drop
+        # WARNING/INFO, which belong to the full QC run. report.passed stays
+        # critical-only, so QUARANTINE results are visible yet never block.
+        results = [
+            r for r in results
+            if r.severity in (Severity.CRITICAL, Severity.QUARANTINE)
+        ]
 
     duration = time.monotonic() - started
     report = CheckRunReport(

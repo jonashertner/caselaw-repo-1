@@ -38,7 +38,7 @@ def check_year_0000_dates(conn: sqlite3.Connection, **_) -> CheckResult:
     ).fetchone()[0]
     return CheckResult(
         name="dates.year_0000",
-        severity=Severity.CRITICAL,
+        severity=Severity.QUARANTINE,  # auto-NULLed by _normalize_dates; warn-not-block
         passed=(n == 0),
         metric_value=n,
         threshold=0,
@@ -57,7 +57,7 @@ def check_far_future_dates(conn: sqlite3.Connection, **_) -> CheckResult:
     ).fetchone()[0]
     return CheckResult(
         name="dates.far_future",
-        severity=Severity.CRITICAL,
+        severity=Severity.QUARANTINE,  # auto-NULLed by _normalize_dates; warn-not-block
         passed=(n == 0),
         metric_value=n,
         threshold=0,
@@ -86,7 +86,7 @@ def check_future_dates_window(conn: sqlite3.Connection, **_) -> CheckResult:
     ] if n else []
     return CheckResult(
         name="dates.future_window",
-        severity=Severity.CRITICAL,
+        severity=Severity.QUARANTINE,  # count-bounded (>50 = parser regression); warn-not-block
         passed=(n <= 50),
         metric_value=n,
         threshold=50,
@@ -113,7 +113,7 @@ def check_pre_1700_dates(conn: sqlite3.Connection, **_) -> CheckResult:
     ] if n else []
     return CheckResult(
         name="dates.pre_1700",
-        severity=Severity.CRITICAL,
+        severity=Severity.QUARANTINE,  # auto-NULLed by _normalize_dates; warn-not-block (froze publish 2026-06-03..06)
         passed=(n == 0),
         metric_value=n,
         threshold=0,

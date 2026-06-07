@@ -928,13 +928,20 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
     return len(updates)
 
 
-def _normalize_dates(conn: sqlite3.Connection) -> tuple[int, int]:
-    """König audit 2026-04-30: sanitise invalid decision_date values.
+def _normalize_dates(conn: sqlite3.Connection) -> tuple[int, int, int]:
+    """König audit 2026-04-30 + 2026-06-07: sanitise invalid decision_date.
 
     - year-0000 markers ("0000-..." pattern, mostly from gr_gerichte's scraper
       default when the date can't be extracted) → NULL. 796 rows in 2026-04-30.
     - obvious future typos (> today + 365d, e.g. zg_obergericht's "2026-11-01"
       Wahlausschreibung mis-dated) → NULL.
+    - pre-1700 dates (ISO-shaped poison like "0206-04-21" for a 2026 docket;
+      earliest legitimate decision is BGE 1875) → NULL. BUILD-TIME backstop
+      behind models.parse_date's _plausible guard (commit 51dbc48): a scraper
+      that writes decision_date WITHOUT going through parse_date (direct field
+      copy / JSONL passthrough / recovery heuristics) bypasses that guard, so
+      one source typo could otherwise reach the served DB and trip the QC gate
+      (which froze HF upload + git push for 4 nights, 2026-06-03..06).
 
     Soft tolerance for near-future dates (< 365d) preserves legitimate pending
     publications and hearing schedules.
@@ -952,9 +959,21 @@ def _normalize_dates(conn: sqlite3.Connection) -> tuple[int, int]:
     )
     n_future = cur2.rowcount
 
-    if n_zero or n_future:
+    # Pre-1700 clamp. The GLOB enforces ISO YYYY-MM-DD shape BEFORE the lexical
+    # compare, so a DD.MM.YYYY value (also length-10, and '15.03.2024' sorts
+    # < '1700-01-01' for days 01-16) is never mis-NULLed. This WRITE path must
+    # be stricter than the read-only dates.pre_1700 QC check, which omits the
+    # shape guard. '0206-04-21' GLOB-matches and is < '1700-01-01' → NULLed.
+    cur3 = conn.execute(
+        "UPDATE decisions SET decision_date = NULL "
+        "WHERE decision_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' "
+        "AND decision_date < '1700-01-01'"
+    )
+    n_pre1700 = cur3.rowcount
+
+    if n_zero or n_future or n_pre1700:
         conn.commit()
-    return n_zero, n_future
+    return n_zero, n_future, n_pre1700
 
 
 def _dedup_egmr_in_bge(conn: sqlite3.Connection) -> int:
@@ -1110,11 +1129,17 @@ def _source_url_normalize_inline(court, source_url):
 
 
 def _date_normalize_inline(date_str):
-    """year-0000 → None; obvious far-future typos (>today+365d) → None."""
+    """year-0000 → None; obvious far-future typos (>today+365d) → None;
+    pre-1700 ISO dates (source typos like '0206-04-21' for a 2026 docket) → None.
+    Mirrors the SQL post-pass _normalize_dates safety net per-value."""
     if not date_str:
         return date_str
     s = str(date_str).strip()
     if s.startswith("0000"):
+        return None
+    # Pre-1700 clamp — ISO-shaped only (s[4]/s[7] == '-'), so a DD.MM.YYYY
+    # value is never mis-NULLed by the lexical compare.
+    if len(s) >= 10 and s[4] == "-" and s[7] == "-" and s < "1700-01-01":
         return None
     try:
         from datetime import date as _date_cls, timedelta
@@ -1730,9 +1755,9 @@ def build_database(
             ws_fixed = _normalize_dockets(conn)
             if ws_fixed:
                 logger.info(f"  Trimmed whitespace from {ws_fixed} docket_numbers")
-            n_zero, n_future = _normalize_dates(conn)
-            if n_zero or n_future:
-                logger.info(f"  Cleared {n_zero} year-0000 dates + {n_future} far-future (>today+365d) dates → NULL")
+            n_zero, n_future, n_pre1700 = _normalize_dates(conn)
+            if n_zero or n_future or n_pre1700:
+                logger.info(f"  Cleared {n_zero} year-0000 + {n_future} far-future (>today+365d) + {n_pre1700} pre-1700 dates → NULL")
             recovered = _recover_decision_dates(conn)
             if recovered:
                 logger.info(f"  Recovered {recovered} decision_date values from full_text (zh_verwaltungsgericht/gr_gerichte/bl_gerichte)")

@@ -48,7 +48,16 @@ def test_critical_only_filter(temp_db):
         db_path=temp_db, record_history=False, critical_only=True,
         parallel=False,
     )
-    assert all(r.severity is types.Severity.CRITICAL for r in crit.results)
+    # critical_only keeps CRITICAL (gating) + QUARANTINE (non-blocking but must
+    # still alert/render); it drops the WARNING/INFO noise.
+    assert all(
+        r.severity in (types.Severity.CRITICAL, types.Severity.QUARANTINE)
+        for r in crit.results
+    )
+    assert not any(
+        r.severity in (types.Severity.WARNING, types.Severity.INFO)
+        for r in crit.results
+    )
     assert len(crit.results) <= len(full.results)
 
 

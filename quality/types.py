@@ -9,16 +9,22 @@ from typing import Any
 class Severity(enum.Enum):
     """A check's severity tier.
 
-    CRITICAL → blocks publish.py Step 6 (git push) on failure.
-    WARNING  → fires ntfy.sh alert, pipeline continues.
-    INFO     → recorded in report, no alerting.
+    CRITICAL   → blocks publish.py Step 6 (git push) on failure.
+    QUARANTINE → count-bounded data defects auto-neutralised at build time
+                 (build_fts5._normalize_dates); fires an ntfy alert but does
+                 NOT block the publish. A single cosmetic source typo must not
+                 freeze HF upload + git push (the 2026-06-03..06 lesson).
+    WARNING    → fires ntfy.sh alert, pipeline continues.
+    INFO       → recorded in report, no alerting.
     """
     CRITICAL = "critical"
+    QUARANTINE = "quarantine"
     WARNING = "warning"
     INFO = "info"
 
     def __lt__(self, other: "Severity") -> bool:
-        order = {Severity.INFO: 0, Severity.WARNING: 1, Severity.CRITICAL: 2}
+        order = {Severity.INFO: 0, Severity.WARNING: 1,
+                 Severity.QUARANTINE: 2, Severity.CRITICAL: 3}
         return order[self] < order[other]
 
 
@@ -93,8 +99,19 @@ class CheckRunReport:
         ]
 
     @property
+    def quarantine_failures(self) -> list[CheckResult]:
+        """Count-bounded data defects that alert but do NOT block the publish."""
+        return [
+            r for r in self.results
+            if (not r.passed) and r.severity is Severity.QUARANTINE
+        ]
+
+    @property
     def passed(self) -> bool:
-        """True iff no CRITICAL check failed (= safe to git push)."""
+        """True iff no CRITICAL check failed (= safe to git push).
+
+        QUARANTINE/WARNING failures alert but never block — only CRITICAL
+        cascades to skip HF upload + git push."""
         return not self.critical_failures
 
     def to_dict(self) -> dict[str, Any]:
@@ -106,6 +123,7 @@ class CheckRunReport:
                 "total": len(self.results),
                 "passed": sum(1 for r in self.results if r.passed),
                 "critical_failures": len(self.critical_failures),
+                "quarantine_failures": len(self.quarantine_failures),
                 "warning_failures": len(self.warning_failures),
                 "publish_safe": self.passed,
             },

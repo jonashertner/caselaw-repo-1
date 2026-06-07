@@ -48,12 +48,17 @@ def _cmd_run(args: argparse.Namespace) -> int:
           f"({len(report.results)} checks, "
           f"{sum(1 for r in report.results if r.passed)} passed, "
           f"{len(report.critical_failures)} CRIT, "
+          f"{len(report.quarantine_failures)} QUAR, "
           f"{len(report.warning_failures)} WARN)")
 
     if report.critical_failures:
         print("\n  Critical failures:")
         for r in report.critical_failures:
             print(f"    ✗ {r.name}: {r.message}")
+    if report.quarantine_failures:
+        print("\n  Quarantined (auto-NULLed at build, NOT blocking):")
+        for r in report.quarantine_failures:
+            print(f"    ⚑ {r.name}: {r.message}")
     if report.warning_failures:
         print("\n  Warnings:")
         for r in report.warning_failures:
