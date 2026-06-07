@@ -2,11 +2,11 @@
 """
 check_scraper_freshness.py — Alert on stale or failed scrapers.
 
-Reads scraper_health.json and the per-court last_scraped from the
-coverage snapshots, and writes warnings to logs/scraper_alerts.log
+Reads scraper_health.json and the per-court content-change snapshots from
+coverage.db, and writes warnings to logs/scraper_alerts.log
 when:
   - any scraper failed in today's run
-  - any court hasn't had a successful scrape in N days
+  - any court lacks recent evidence of a successful scrape
   - the entscheidsuche cron timer has been failing for >2 weeks
 
 Designed to run after the daily scrape (e.g. 03:00 UTC).
@@ -108,12 +108,16 @@ SILENT_SKIP_EXEMPT_SOURCES = {
 
 
 def get_last_scraped(court: str) -> str | None:
-    """Return ISO date of last successful scrape from the coverage store.
+    """Return ISO date of the last content snapshot from the coverage store.
 
     Reads source_snapshots from state/coverage.db (the live coverage DB
     since 2026-04-20). Opened mode=ro (NOT immutable=1) because coverage.db
     is written by scrapers concurrently — immutable would risk stale/torn
     reads. Override the path with OCL_COVERAGE_DB.
+
+    Note: run_scraper.py writes source_snapshots only for changed years (or
+    initial backfill), so this is not by itself proof of the last successful
+    scrape attempt. Fresh scraper_health success takes precedence below.
     """
     if not COVERAGE_DB.exists():
         return None
@@ -200,6 +204,26 @@ def _ascii_safe(s: str) -> str:
     encodes as latin-1 by default. Strip non-latin-1 chars so an em-dash
     in a translated court name doesn't raise UnicodeEncodeError."""
     return s.encode("ascii", errors="replace").decode("ascii")
+
+
+def _portal_count_confirms_caught_up(portal_n: object, our_n: int) -> bool:
+    """Return True when the portal count rules out a silent zero-new skip.
+
+    Some portals report a total that is a few rows below our corpus because
+    decisions were withdrawn, de-duplicated, or historically recovered. Treat
+    only small negative drift as caught-up; if the portal is ahead, missing, or
+    far below us, keep the warning.
+    """
+    if portal_n is None:
+        return False
+    try:
+        portal_i = int(portal_n)
+    except (TypeError, ValueError):
+        return False
+    if portal_i <= 0 or our_n <= 0 or portal_i > our_n:
+        return False
+    tolerated_negative_drift = max(5, int(our_n * 0.001))
+    return (our_n - portal_i) <= tolerated_negative_drift
 
 
 def post_ntfy(alerts: list[str], today: str, *, priority: str, title: str) -> bool:
@@ -303,7 +327,7 @@ def maybe_dispatch_ntfy(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-stale-days", type=int, default=14,
-                        help="Alert if a court hasn't been scraped in this many days")
+                        help="Alert if a court lacks recent scrape evidence for this many days")
     parser.add_argument("--max-es-stale-days", type=int, default=21,
                         help="Alert if an ES-only court is older than this")
     parser.add_argument("--health-file", type=str,
@@ -331,6 +355,8 @@ def main():
 
     # ── 1. Read scraper_health.json ──
     health_path = Path(args.health_file)
+    scrapers: dict[str, dict] = {}
+    health_run_dt: datetime | None = None
     if not health_path.exists():
         alerts.append(f"CRITICAL: scraper_health.json missing at {health_path}")
     else:
@@ -357,8 +383,8 @@ def main():
             # must be traversed.
             #
             # Exemptions:
-            #   - portal_count == our_count: scraper actively confirmed
-            #     we are caught up (genuine empty, not a silent skip).
+            #   - portal_count confirms caught-up or near caught-up:
+            #     genuine empty, not a silent skip.
             #   - SILENT_SKIP_EXEMPT_SOURCES: archival/small-chamber feeds
             #     where a fast no-new exit is the normal weekday outcome.
             for k, v in scrapers.items():
@@ -370,7 +396,7 @@ def main():
                         and v.get("duration_s", 0) < 30):
                     portal_n = v.get("portal_count")
                     our_n = v.get("our_count", 0)
-                    if portal_n is not None and portal_n == our_n:
+                    if _portal_count_confirms_caught_up(portal_n, our_n):
                         # Caught-up confirmation; not a silent skip.
                         continue
                     alerts.append(
@@ -383,6 +409,11 @@ def main():
             if run_at:
                 try:
                     run_dt = datetime.fromisoformat(run_at)
+                    if run_dt.tzinfo is None:
+                        run_dt = run_dt.replace(tzinfo=timezone.utc)
+                    else:
+                        run_dt = run_dt.astimezone(timezone.utc)
+                    health_run_dt = run_dt
                     age_h = (now - run_dt).total_seconds() / 3600
                     if age_h > 36:
                         alerts.append(f"WARN scrape_health.json is {age_h:.0f}h old (cron may be down)")
@@ -391,14 +422,23 @@ def main():
         except Exception as e:
             alerts.append(f"CRITICAL: cannot parse scraper_health.json: {e}")
 
-    # ── 2. Per-court freshness via coverage snapshots ──
+    # ── 2. Per-court freshness via health + coverage snapshots ──
     cutoff_normal = now - timedelta(days=args.max_stale_days)
     cutoff_es = now - timedelta(days=args.max_es_stale_days)
 
-    if health_path.exists():
-        scrapers = json.loads(health_path.read_text()).get("scrapers", {})
-        for court in scrapers:
+    if scrapers:
+        for court, scraper_state in scrapers.items():
             if court in KNOWN_DEAD_SOURCES:
+                continue
+            cutoff = cutoff_es if court in ENTSCHEIDSUCHE_ONLY else cutoff_normal
+            if (
+                health_run_dt is not None
+                and health_run_dt >= cutoff
+                and scraper_state.get("success")
+            ):
+                # A fresh successful run is scrape-attempt evidence. Coverage
+                # snapshots lag legitimately when the portal published nothing
+                # new, because run_scraper.py only snapshots changed years.
                 continue
             last = get_last_scraped(court)
             if not last:
@@ -407,7 +447,6 @@ def main():
                 last_dt = datetime.fromisoformat(last).replace(tzinfo=timezone.utc)
             except Exception:
                 continue
-            cutoff = cutoff_es if court in ENTSCHEIDSUCHE_ONLY else cutoff_normal
             if last_dt < cutoff:
                 age_d = (now - last_dt).days
                 tag = "ES-only" if court in ENTSCHEIDSUCHE_ONLY else "direct"
