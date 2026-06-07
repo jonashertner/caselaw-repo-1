@@ -1,0 +1,12 @@
+[Unit]
+Description=Output-freshness deadman — every 6h, independent of the publish unit
+
+[Timer]
+# Every 6h at :23 (off-minute). With a 36h budget this surfaces a silent
+# output freeze within ~6h of it crossing the threshold (≈ on the 2nd missed
+# daily publish), regardless of whether the publish unit ran at all.
+OnCalendar=*-*-* 02,08,14,20:23:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

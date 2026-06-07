@@ -1,0 +1,194 @@
+#!/usr/bin/env python3
+"""
+check_output_freshness.py — DEADMAN alarm on stale pipeline OUTPUTS.
+
+Independent of state/last_publish_success.json. That marker is written only
+on a fully-successful publish, so it DISARMS exactly when the pipeline fails:
+during the 2026-06-03..06 QC-gate freeze (a single bad date cascade-skipped
+HF upload + git push for 4 nights) the swap kept serving fresh data but the
+published OUTPUTS silently froze and NO ongoing alert fired. This deadman
+checks the outputs themselves and pages via ntfy if any is older than a
+budget — so a silent freeze surfaces within one timer interval.
+
+Three independent signals (each best-effort; a check that can't determine
+freshness is logged, not paged, to avoid transient-failure false alarms):
+  1. HuggingFace mirror lastModified  (voilaj/swiss-caselaw)         [Step 4]
+  2. last commit touching docs/quality.json  (the QC dashboard push)
+  3. last commit touching docs/stats.json    (the stats/feeds push)  [Step 6]
+
+Run on its OWN timer (e.g. every 6h), separate from the publish unit, so it
+fires even when the publish never runs. Best-effort, never raises.
+
+Usage:
+    python3 scripts/check_output_freshness.py
+    python3 scripts/check_output_freshness.py --max-age-hours 36 --no-ntfy
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import subprocess
+import sys
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+
+NTFY_URL = "https://ntfy.sh/opencaselaw-publish"  # same topic as publish failure alerts
+REPO = Path(__file__).resolve().parent.parent
+HF_API = "https://huggingface.co/api/datasets/voilaj/swiss-caselaw"
+
+
+def _now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _parse_iso(s: str | None) -> datetime | None:
+    try:
+        d = datetime.fromisoformat((s or "").strip().replace("Z", "+00:00"))
+        return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
+    except Exception:
+        return None
+
+
+def _age_h(dt: datetime, now: datetime) -> float:
+    return (now - dt).total_seconds() / 3600.0
+
+
+def check_hf(now: datetime, budget: float) -> str | None:
+    """HF mirror lastModified. None if fresh OR if the check itself failed
+    (transient — logged, not paged)."""
+    try:
+        req = urllib.request.Request(HF_API, headers={"User-Agent": "ocl-output-freshness/1"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            data = json.loads(r.read().decode("utf-8", errors="replace"))
+        lm = _parse_iso(data.get("lastModified"))
+        if lm is None:
+            print("hf: no lastModified field", file=sys.stderr)
+            return None
+        age = _age_h(lm, now)
+        if age > budget:
+            return f"STALE HF mirror: {age:.0f}h since last upload (lastModified {data.get('lastModified')})"
+    except Exception as e:  # noqa: BLE001 — best-effort
+        print(f"hf check skipped: {e}", file=sys.stderr)
+    return None
+
+
+def check_git_path(path_spec: str, label: str, now: datetime, budget: float) -> str | None:
+    """Age of the most recent LOCAL commit touching path_spec. The publish
+    commits these on its push step, which is skipped during a cascade freeze,
+    so a frozen output = an old commit. None if fresh or undeterminable."""
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(REPO), "log", "-1", "--format=%ct", "--", path_spec],
+            capture_output=True, text=True, timeout=15,
+        )
+        ts = out.stdout.strip()
+        if not ts:
+            print(f"git: no commit found for {path_spec}", file=sys.stderr)
+            return None
+        dt = datetime.fromtimestamp(int(ts), tz=timezone.utc)
+        age = _age_h(dt, now)
+        if age > budget:
+            return f"STALE {label}: {age:.0f}h since last automated commit ({path_spec})"
+    except Exception as e:  # noqa: BLE001
+        print(f"git check {path_spec} skipped: {e}", file=sys.stderr)
+    return None
+
+
+def post_ntfy(body: str, title: str, priority: str = "high") -> bool:
+    try:
+        req = urllib.request.Request(
+            NTFY_URL,
+            data=body.encode("utf-8", errors="replace"),
+            headers={
+                "Title": title.encode("ascii", errors="replace").decode("ascii"),
+                "Priority": priority,
+                "Tags": "rotating_light",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return 200 <= resp.status < 300
+    except Exception as e:  # noqa: BLE001
+        print(f"ntfy post failed: {e}", file=sys.stderr)
+        return False
+
+
+def _digest(alerts: list[str]) -> str:
+    return hashlib.sha256("\n".join(sorted(alerts)).encode("utf-8", errors="replace")).hexdigest()
+
+
+def maybe_dispatch(alerts: list[str], now: datetime, state_dir: Path, renag_hours: float) -> str:
+    """Dedup-on-change + daily re-nag while still stale; one all-clear on recovery."""
+    state_dir.mkdir(parents=True, exist_ok=True)
+    sf = state_dir / "output_freshness_last_dispatched.json"
+    prev: dict = {}
+    if sf.exists():
+        try:
+            prev = json.loads(sf.read_text())
+        except Exception:
+            prev = {}
+
+    if not alerts:
+        if prev.get("digest"):
+            post_ntfy("All pipeline outputs are fresh again.",
+                      "opencaselaw outputs recovered", priority="default")
+            try:
+                sf.unlink()
+            except OSError:
+                pass
+            return "all-clear"
+        return "ok"
+
+    digest = _digest(alerts)
+    last_dt = _parse_iso(prev.get("dispatched_at"))
+    renag = last_dt is not None and _age_h(last_dt, now) >= renag_hours
+    if digest == prev.get("digest") and not renag:
+        return "unchanged"
+    body = (f"{len(alerts)} stale OUTPUT signal(s) — the publish may be silently "
+            f"frozen (HF mirror / dashboard / git push not updated):\n\n" + "\n".join(alerts))
+    if not post_ntfy(body, f"opencaselaw OUTPUTS STALE ({len(alerts)})", priority="high"):
+        return "post-failed"
+    try:
+        sf.write_text(json.dumps({"digest": digest, "dispatched_at": now.isoformat(),
+                                  "alerts": alerts}, indent=2))
+    except OSError as e:
+        print(f"state write failed: {e}", file=sys.stderr)
+    return "posted"
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--max-age-hours", type=float, default=36.0,
+                    help="alert if an output is older than this (default 36h: tolerates one missed daily publish)")
+    ap.add_argument("--renag-hours", type=float, default=24.0,
+                    help="re-notify while still stale after this gap (default 24h)")
+    ap.add_argument("--state-dir", default=str(REPO / "state"))
+    ap.add_argument("--no-ntfy", action="store_true", help="skip ntfy (local debug)")
+    a = ap.parse_args()
+
+    now = _now()
+    alerts: list[str] = []
+    for sig in (
+        lambda: check_hf(now, a.max_age_hours),
+        lambda: check_git_path("docs/quality.json", "QC dashboard (quality.json)", now, a.max_age_hours),
+        lambda: check_git_path("docs/stats.json", "stats/feeds push (stats.json)", now, a.max_age_hours),
+    ):
+        r = sig()
+        if r:
+            alerts.append(r)
+
+    if alerts:
+        print(f"=== {len(alerts)} stale OUTPUT signal(s) at {now.isoformat()} ===")
+        for x in alerts:
+            print("  " + x)
+    else:
+        print(f"All pipeline outputs fresh (<{a.max_age_hours:.0f}h) at {now.isoformat()}")
+
+    if not a.no_ntfy:
+        print(f"ntfy: {maybe_dispatch(alerts, now, Path(a.state_dir), a.renag_hours)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenCaseLaw output-freshness deadman (pages if HF mirror / dashboard / git push goes stale)
+# Independent of state/last_publish_success.json — which disarms when the
+# publish fails. Catches silent output freezes like the 2026-06-03..06
+# QC-gate cascade (HF upload + git push skipped 4 nights while serving stayed
+# fresh, with no ongoing alert). Best-effort, never raises.
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 scripts/check_output_freshness.py
+TimeoutStartSec=120
+StandardOutput=append:/opt/caselaw/repo/logs/output_freshness.log
+StandardError=append:/opt/caselaw/repo/logs/output_freshness.log
