@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -45,6 +46,12 @@ from pathlib import Path
 NTFY_URL = "https://ntfy.sh/opencaselaw-scrapers"
 
 REPO = Path(__file__).resolve().parent.parent
+
+# Coverage snapshot store. Lives in state/coverage.db since the
+# 2026-04-20 migration; output/decisions.db's coverage tables have been
+# EMPTY since, so the old read here silently disabled per-court staleness
+# detection (false "all clear"). Override with OCL_COVERAGE_DB for tests.
+COVERAGE_DB = Path(os.environ.get("OCL_COVERAGE_DB", str(REPO / "state" / "coverage.db")))
 
 # Courts that are KNOWN-DEAD upstream — don't alert on them
 KNOWN_DEAD_SOURCES = {
@@ -101,12 +108,17 @@ SILENT_SKIP_EXEMPT_SOURCES = {
 
 
 def get_last_scraped(court: str) -> str | None:
-    """Return ISO date of last successful scrape from coverage_report DB."""
-    db_path = REPO / "output" / "decisions.db"
-    if not db_path.exists():
+    """Return ISO date of last successful scrape from the coverage store.
+
+    Reads source_snapshots from state/coverage.db (the live coverage DB
+    since 2026-04-20). Opened mode=ro (NOT immutable=1) because coverage.db
+    is written by scrapers concurrently — immutable would risk stale/torn
+    reads. Override the path with OCL_COVERAGE_DB.
+    """
+    if not COVERAGE_DB.exists():
         return None
     try:
-        conn = sqlite3.connect(f"file:{db_path}?immutable=1", uri=True, timeout=2)
+        conn = sqlite3.connect(f"file:{COVERAGE_DB}?mode=ro", uri=True, timeout=5)
         row = conn.execute(
             "SELECT MAX(snapshot_date) FROM source_snapshots WHERE source_key = ?",
             (court,),
@@ -115,6 +127,43 @@ def get_last_scraped(court: str) -> str | None:
         return row[0] if row and row[0] else None
     except Exception:
         return None
+
+
+def selftest() -> int:
+    """Assert the freshness monitor is wired to LIVE coverage data.
+
+    Guards against the 2026-04-20-class regression where get_last_scraped
+    silently read an empty DB and returned None for every court (a false
+    "all clear" — worse than no monitor). Exits 0 if the coverage store has
+    snapshots AND get_last_scraped returns a date for the most-recently
+    snapshotted source; non-zero otherwise.
+    """
+    if not COVERAGE_DB.exists():
+        print(f"SELF-TEST FAIL: coverage DB not found at {COVERAGE_DB}", file=sys.stderr)
+        return 1
+    try:
+        conn = sqlite3.connect(f"file:{COVERAGE_DB}?mode=ro", uri=True, timeout=5)
+        n = conn.execute("SELECT COUNT(*) FROM source_snapshots").fetchone()[0]
+        row = conn.execute(
+            "SELECT source_key, MAX(snapshot_date) AS d FROM source_snapshots "
+            "GROUP BY source_key ORDER BY d DESC LIMIT 1"
+        ).fetchone()
+        conn.close()
+    except Exception as e:
+        print(f"SELF-TEST FAIL: cannot read source_snapshots in {COVERAGE_DB}: {e}", file=sys.stderr)
+        return 1
+    if n == 0 or not row or not row[1]:
+        print(f"SELF-TEST FAIL: source_snapshots has {n} rows in {COVERAGE_DB} — "
+              f"freshness monitor is reading an empty/dead DB", file=sys.stderr)
+        return 1
+    sample = get_last_scraped(row[0])  # exercise the real code path
+    if sample is None:
+        print(f"SELF-TEST FAIL: get_last_scraped({row[0]!r}) returned None despite "
+              f"{n} snapshot rows", file=sys.stderr)
+        return 1
+    print(f"SELF-TEST PASS: {n} snapshot rows in {COVERAGE_DB}; "
+          f"get_last_scraped({row[0]!r})={sample}")
+    return 0
 
 
 def check_es_cron_health() -> tuple[bool, str]:
@@ -269,7 +318,12 @@ def main():
                         help="Skip ntfy dispatch (local debug).")
     parser.add_argument("--quiet", action="store_true",
                         help="Don't print to stdout, only write log")
+    parser.add_argument("--self-test", action="store_true",
+                        help="Assert the monitor reads live coverage data; exit non-zero if dead.")
     args = parser.parse_args()
+
+    if args.self_test:
+        sys.exit(selftest())
 
     alerts: list[str] = []
     now = datetime.now(timezone.utc)
