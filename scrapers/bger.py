@@ -896,7 +896,8 @@ class BgerScraper(BaseScraper):
                         pass
                     # Docket is everything after the date
                     docket_part = meta_text[10:].strip()
-                    docket = self._extract_docket(docket_part)
+                    docket = (self._extract_docket(docket_part)
+                              or self._extract_evg_docket(docket_part, decision_date))
 
             if not docket:
                 docket = self._extract_docket(meta_text) or self._extract_docket(href)
@@ -1294,10 +1295,18 @@ class BgerScraper(BaseScraper):
     DOCKET_RE = re.compile(r"\b(\d{1,2}[A-Z][_ ]\d+/\d{4})\b")
     # Old format (pre-BGG, before 2007): 6S.123/2005
     DOCKET_OLD_RE = re.compile(r"\b(\d[A-Z]\.\d+/\d{4})\b")
+    # EVG format (Eidg. Versicherungsgericht, the pre-2007 federal social-
+    # insurance court): single-letter chamber prefix + space + number +
+    # 2-digit (sometimes 4-digit) year, e.g. "I 594/01" == I 594/2001. These
+    # have NO leading digit, so DOCKET_RE/DOCKET_OLD_RE drop them — the cause of
+    # the ~15k genuine pre-2007 absences. The 2-digit year is expanded to 4
+    # digits against the judgment date in _extract_evg_docket. Recoverable
+    # directly from bger.ch AZA (pure-official, no entscheidsuche).
+    DOCKET_EVG_RE = re.compile(r"([A-Za-z])\s+(\d+)/(\d{2,4})(?!\d)")
 
     def _extract_docket(self, text: str) -> str | None:
         """Extract a BGer docket number from text or URL.
-        
+
         Normalizes space-separated dockets (from search results) to
         underscore format: '1C 372/2024' → '1C_372/2024'
         """
@@ -1307,6 +1316,27 @@ class BgerScraper(BaseScraper):
                 # Normalize spaces to underscores for consistent IDs
                 return m.group(1).replace(" ", "_")
         return None
+
+    def _extract_evg_docket(self, text: str, decision_date: date | None) -> str | None:
+        """Extract a pre-2007 EVG docket ('I 594/01') and canonicalise it to the
+        4-digit underscore form ('I_594/2001') — matching the corpus convention
+        and the official Num ('B_1/2000'). The 2-digit year is expanded against
+        the judgment year (20yy if <= judgment year, else 19yy). Returns None for
+        a 2-digit year when the judgment date is unknown (can't disambiguate)."""
+        if not text:
+            return None
+        m = self.DOCKET_EVG_RE.match(text.strip())
+        if not m:
+            return None
+        letter, num, yr = m.group(1).upper(), m.group(2), m.group(3)
+        if len(yr) == 4:
+            yyyy = int(yr)
+        elif decision_date is None:
+            return None
+        else:
+            cand = 2000 + int(yr)
+            yyyy = cand if cand <= decision_date.year else 1900 + int(yr)
+        return f"{letter}_{num}/{yyyy}"
 
     def _make_jump_url(self, stub: dict) -> str | None:
         """Build decision URL.
