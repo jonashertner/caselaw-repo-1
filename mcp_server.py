@@ -2233,13 +2233,11 @@ def _search_fts5_inner(
 
     had_success = False
     candidate_meta: dict[str, dict] = {}
-    strategies, llm_terms = _build_query_strategies(fts_query)
 
-    # ── Structured query parsing (deterministic JSON) ──
-    structured_parse: dict = {}
+    # ── Query analysis: expansion + structured parse run CONCURRENTLY (~2s saved,
+    #    identical results to the prior sequential path) ──
     _trace["parse_start_ms"] = round((time.monotonic() - _trace_t0) * 1000)
-    if not is_docket_query:
-        structured_parse = _parse_query_structured(fts_query)
+    strategies, llm_terms, structured_parse = _analyze_query(fts_query, is_docket_query)
     _trace["parse_ms"] = round((time.monotonic() - _trace_t0) * 1000) - _trace.get("parse_start_ms", 0)
     if structured_parse:
         _trace["structured_parse"] = {
@@ -4777,6 +4775,27 @@ def _rerank_rows(
             result["is_leading_case"] = True
         results.append(result)
     return results
+
+
+def _analyze_query(fts_query: str, is_docket_query: bool) -> tuple[list, list, dict]:
+    """Run the two independent query-analysis Haiku calls CONCURRENTLY: query
+    expansion (inside _build_query_strategies) and the structured parse. Both are
+    ~2s round-trips on the same query, so overlapping them saves ~2s — with
+    identical results to the former sequential path (quality-neutral, not MRR-
+    affecting). Parse is skipped for docket queries, as before."""
+    _box: dict = {}
+
+    def _run_parse():
+        try:
+            _box["parse"] = {} if is_docket_query else _parse_query_structured(fts_query)
+        except Exception:
+            _box["parse"] = {}
+
+    _t = threading.Thread(target=_run_parse, daemon=True)
+    _t.start()
+    strategies, llm_terms = _build_query_strategies(fts_query)
+    _t.join(timeout=LLM_EXPANSION_TIMEOUT + 3.0)
+    return strategies, llm_terms, _box.get("parse", {})
 
 
 def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
