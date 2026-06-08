@@ -16,6 +16,14 @@ state/
 *.DS_Store
 output/
 logs/
+# Scratch/recovery output dirs in the repo root: publish.py runs
+# `git stash --include-untracked` during finalization, which sweeps any
+# untracked dir here out of the working tree mid-run (it clobbered a live
+# EVG recovery on 2026-06-08). Gitignore them so they survive a concurrent
+# publish. (The live JSONL shards are safe only because output/ is a symlink
+# git won't traverse.) Better still: write recovery output under output/.
+recovery_evg/
+recovery_*/
 benchmarks/latest_search_benchmark.json
 !docs/
 !docs/**
