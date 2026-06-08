@@ -54,3 +54,19 @@ def test_changed_files_excludes_gitignored(tmp_path):
     (tmp_path / "secrets.env").write_text("KEY=1\n")  # gitignored → not a change to gate
     files = asd.changed_files(tmp_path)
     assert "secrets.env" not in files
+
+
+def test_load_policy_fails_closed_on_missing_file(tmp_path):
+    # A missing policy must NOT crash the guard — it must fail closed: under the
+    # returned minimal policy, a real source path is "unknown" -> disallowed.
+    policy = asd.load_policy(tmp_path / "does_not_exist.json")
+    result = asd.evaluate(["mcp_server.py"], policy)
+    assert result["allowed"] is False
+
+
+def test_load_policy_fails_closed_on_corrupt_file(tmp_path):
+    bad = tmp_path / "policy.json"
+    bad.write_text("{not valid json")
+    policy = asd.load_policy(bad)
+    result = asd.evaluate(["tests/test_agent_foo.py"], policy)
+    assert result["allowed"] is False

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "mission_priority": [
+    "completeness",
+    "accuracy",
+    "reliability",
+    "user_value"
+  ],
+  "required_verification": [
+    "make test",
+    "make verify-offline"
+  ],
+  "path_classes": [
+    {
+      "class": "always_human",
+      "reason": "secrets, credentials, live generated data, or non-source operational state",
+      "globs": [
+        ".env",
+        ".env.*",
+        "**/.env",
+        "**/.env.*",
+        "state/**",
+        "output/**",
+        "logs/**",
+        "**/*secret*",
+        "**/*token*",
+        "**/*credential*"
+      ]
+    },
+    {
+      "class": "proposal_only",
+      "reason": "nightly pipeline or corpus-build blast radius",
+      "globs": [
+        "publish.py",
+        "build_fts5.py",
+        "base_scraper.py",
+        "db_schema.py",
+        "models.py",
+        "run_scraper.py",
+        "run_all_scrapers.py",
+        "pipeline.py",
+        "scrapers/**",
+        "search_stack/build_reference_graph.py",
+        "search_stack/build_cantonal_laws_db.py",
+        "search_stack/build_statutes_db.py",
+        "search_stack/extract_decision_structure*.py",
+        "quality/**",
+        "systemd/**"
+      ]
+    },
+    {
+      "class": "proposal_only",
+      "reason": "automation control-plane changes can weaken autonomous guardrails",
+      "globs": [
+        "AGENTS.md",
+        ".agents/**",
+        ".codex/**",
+        "ops/autonomy-policy.json",
+        "schemas/agent_*.schema.json",
+        "scripts/agent_*.py",
+        "scripts/codex_maintenance_loop.sh"
+      ]
+    },
+    {
+      "class": "safe_candidate",
+      "reason": "maintenance automation, tests, and documentation with no direct corpus mutation",
+      "globs": [
+        "tests/test_agent_*.py",
+        "docs/agent-loop/**",
+        "docs/**/*.md"
+      ]
+    }
+  ],
+  "deploy": {
+    "autonomous_allowed_only_if_all_changed_paths_are_safe_candidates": true,
+    "allowed_without_restart_globs": [
+      "tests/test_agent_*.py",
+      "docs/agent-loop/**"
+    ],
+    "never_autonomous_categories": [
+      "secret_rotation",
+      "billing",
+      "paid_infrastructure",
+      "legal_privacy_takedown",
+      "production_worker_restart",
+      "backup_destination_choice",
+      "large_backfill_or_recovery",
+      "pipeline_gate_semantics"
+    ]
+  },
+  "production_read_policy": {
+    "served_sqlite_uri_required": "mode=ro&immutable=1",
+    "coverage_db_uri_allowed": "mode=ro",
+    "allowed_probe_types": [
+      "curl public health endpoints",
+      "systemctl status/show",
+      "tail logs",
+      "sqlite read-only SELECT",
+      "git status/log/rev-parse"
+    ],
+    "forbidden_probe_types": [
+      "crontab secret reads",
+      "environment file dumps",
+      "in-place DB writes",
+      "service restarts without explicit user approval"
+    ]
+  }
+}

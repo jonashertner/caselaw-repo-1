@@ -343,17 +343,6 @@ OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DI
 RECENT_OVERLAY_DB_PATH = Path(os.environ.get("SWISS_CASELAW_RECENT_OVERLAY_DB", str(DATA_DIR / "recent_overlay.db")))
 
 
-_BGER_DOCKET_RE = re.compile(
-    r"^\s*(\d{1,2}[A-Z]_\d+/\d{4}|\d[A-Z]\.\d+/\d{4}|[A-Za-z]_\d+/\d{4})\s*$"
-)
-
-
-def _looks_like_bger_docket(s: str | None) -> bool:
-    """True if s looks like a BGer docket (regular / old-dotted / EVG single-letter).
-    Gates the recent-overlay fallback so it never fires for garbage or canonical IDs."""
-    return bool(_BGER_DOCKET_RE.match(s or ""))
-
-
 def _overlay_enabled() -> bool:
     return os.environ.get("OCL_RECENT_OVERLAY") == "1"
 
@@ -18187,9 +18176,12 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             result = await asyncio.to_thread(get_decision_by_id, _did_arg)
             # Recent-publication fallback: a BGer ruling published in the last
             # days is captured by the poller but not yet ingested by the nightly
-            # publish. Serve it from the overlay on a corpus miss (gated).
+            # publish. Serve it from the overlay on a corpus miss. The overlay
+            # query self-filters by exact decision_id OR docket_number, so we try
+            # it for ANY id form (canonical "bger_7B_121_2026" or docket
+            # "7B_121/2026") — no shape gate, which previously excluded canonical IDs.
             _fresh_publication = False
-            if not result and _overlay_enabled() and _looks_like_bger_docket(_did_arg):
+            if not result and _overlay_enabled() and _did_arg:
                 _overlay_row = await asyncio.to_thread(_lookup_recent_overlay, _did_arg)
                 if _overlay_row:
                     result = _overlay_row
@@ -20467,7 +20459,7 @@ setInterval(load, 30000);
         # freshly-published BGer ruling from the overlay on a corpus miss, so the
         # public REST/Word path isn't left with the recency gap this feature closes.
         fresh_publication = False
-        if not result and _overlay_enabled() and _looks_like_bger_docket(decision_id):
+        if not result and _overlay_enabled() and decision_id:  # any id/docket form; overlay self-filters
             overlay = await asyncio.to_thread(_lookup_recent_overlay, decision_id)
             if overlay:
                 result = overlay

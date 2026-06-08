@@ -19,7 +19,18 @@ DEFAULT_POLICY = REPO / "ops" / "autonomy-policy.json"
 
 
 def load_policy(path: Path = DEFAULT_POLICY) -> dict[str, Any]:
-    return json.loads(path.read_text())
+    """Load the autonomy policy. FAIL CLOSED: a missing or invalid policy returns
+    a minimal policy under which every path classifies 'unknown' → disallowed
+    (allowed:false), rather than crashing the guard with FileNotFoundError (which
+    would happen on a clean checkout if the policy file isn't committed)."""
+    try:
+        return json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {
+            "path_classes": [],
+            "deploy": {"allowed_without_restart_globs": []},
+            "required_verification": [],
+        }
 
 
 def _matches(path: str, pattern: str) -> bool:
