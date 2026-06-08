@@ -336,6 +336,45 @@ GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "re
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 CANTONAL_LAWS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANTONAL_DB", str(DATA_DIR / "cantonal_laws.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
+# Recent-publication overlay: BGer rulings the poller captured (with a
+# publication_date) but the nightly publish hasn't ingested yet. get_decision
+# falls back to it on a corpus miss when OCL_RECENT_OVERLAY=1. Built by
+# search_stack/build_recent_overlay.py after each poller cycle.
+RECENT_OVERLAY_DB_PATH = Path(os.environ.get("SWISS_CASELAW_RECENT_OVERLAY_DB", str(DATA_DIR / "recent_overlay.db")))
+
+
+_BGER_DOCKET_RE = re.compile(
+    r"^\s*(\d{1,2}[A-Z]_\d+/\d{4}|\d[A-Z]\.\d+/\d{4}|[A-Za-z]_\d+/\d{4})\s*$"
+)
+
+
+def _looks_like_bger_docket(s: str | None) -> bool:
+    """True if s looks like a BGer docket (regular / old-dotted / EVG single-letter).
+    Gates the recent-overlay fallback so it never fires for garbage or canonical IDs."""
+    return bool(_BGER_DOCKET_RE.match(s or ""))
+
+
+def _overlay_enabled() -> bool:
+    return os.environ.get("OCL_RECENT_OVERLAY") == "1"
+
+
+def _lookup_recent_overlay(docket_or_id: str) -> dict | None:
+    """Look up a recently-published decision in recent_overlay.db (gated by
+    OCL_RECENT_OVERLAY). Returns a dict matching get_decision_by_id's row shape,
+    or None. Never raises — a miss/error simply falls through to 'not found'."""
+    if not _overlay_enabled() or not RECENT_OVERLAY_DB_PATH.exists():
+        return None
+    try:
+        conn = sqlite3.connect(f"file:{RECENT_OVERLAY_DB_PATH}?immutable=1", uri=True, timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        row = conn.execute(
+            "SELECT * FROM recent_decisions WHERE decision_id = ? OR docket_number = ? LIMIT 1",
+            (docket_or_id, docket_or_id),
+        ).fetchone()
+        conn.close()
+        return dict(row) if row else None
+    except sqlite3.Error:
+        return None
 LEXFIND_CACHE_DB_PATH = Path(os.environ.get("SWISS_CASELAW_LEXFIND_CACHE", str(DATA_DIR / "lexfind_cache.db")))
 MATERIALIEN_DB_PATH = Path(os.environ.get("SWISS_CASELAW_MATERIALIEN_DB", str(DATA_DIR / "materialien.db")))
 ANWALTSRECHT_TAGS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_ANWALTSRECHT_DB", str(DATA_DIR / "anwaltsrecht_tags.db")))
@@ -18125,11 +18164,21 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=text)]
 
         elif name == "get_decision":
-            result = await asyncio.to_thread(get_decision_by_id, arguments["decision_id"])
+            _did_arg = arguments["decision_id"]
+            result = await asyncio.to_thread(get_decision_by_id, _did_arg)
+            # Recent-publication fallback: a BGer ruling published in the last
+            # days is captured by the poller but not yet ingested by the nightly
+            # publish. Serve it from the overlay on a corpus miss (gated).
+            _fresh_publication = False
+            if not result and _overlay_enabled() and _looks_like_bger_docket(_did_arg):
+                _overlay_row = await asyncio.to_thread(_lookup_recent_overlay, _did_arg)
+                if _overlay_row:
+                    result = _overlay_row
+                    _fresh_publication = True
             if not result:
                 return [TextContent(
                     type="text",
-                    text=f"Decision not found: {arguments['decision_id']}",
+                    text=f"Decision not found: {_did_arg}",
                 )]
             include_full_text = arguments.get("full_text", True)
             # Build the canonical citation block FIRST — placed at the top of the
@@ -18153,6 +18202,14 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 f"- Markdown-link form (use this in your reply to the user): "
                 f"`[{citation['citation_string_de']}]({citation['canonical_url']})`\n"
             )
+            if _fresh_publication:
+                text += (
+                    f"\n> ⚠️ **Recently published — not yet in the indexed corpus.** "
+                    f"Published {result.get('publication_date') or '?'}, "
+                    f"ruled {result.get('decision_date') or '?'}. Served from the latest scrape; "
+                    f"citation-graph links, cross-references and structured Erwägungen "
+                    f"are not yet available for this decision.\n"
+                )
             if result.get("chamber"):
                 text += f"\n**Chamber:** {result['chamber']}\n"
             if result.get("title"):
