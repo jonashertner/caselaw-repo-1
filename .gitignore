@@ -11,6 +11,12 @@ build/
 data/
 state/
 .env
+# Secret env files (chmod-600). NOT covered by the `.env` line above, so without
+# this they're untracked-and-not-ignored → publish.py's `git stash -u` stashes +
+# restores them as 644 root:root every run, silently re-exposing STRIPE/ANTHROPIC/
+# HF secrets and breaking the mcp-user read. Gitignore so the lockdown persists.
+.env.*
+!.env.example
 .vscode/
 .idea/
 *.DS_Store
