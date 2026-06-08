@@ -1,11 +1,12 @@
 {
-  "run_at": "2026-06-07T10:44:06+00:00",
+  "run_at": "2026-06-08T12:26:52+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 315.57,
+  "duration_seconds": 2171.98,
   "summary": {
     "total": 52,
     "passed": 52,
     "critical_failures": 0,
+    "quarantine_failures": 0,
     "warning_failures": 0,
     "publish_safe": true
   },
@@ -264,30 +265,6 @@
       "extra": {}
     },
     {
-      "name": "dates.year_0000",
-      "severity": "critical",
-      "passed": true,
-      "metric_value": 0,
-      "threshold": 0,
-      "message": "no year-0000 placeholder dates",
-      "sample_rows": [],
-      "fix_advice": "build_fts5._normalize_dates() auto-converts to NULL; verify it ran on this build",
-      "court": null,
-      "extra": {}
-    },
-    {
-      "name": "dates.pre_1700",
-      "severity": "critical",
-      "passed": true,
-      "metric_value": 0,
-      "threshold": 0,
-      "message": "no pre-1700 dates",
-      "sample_rows": [],
-      "fix_advice": null,
-      "court": null,
-      "extra": {}
-    },
-    {
       "name": "dates.invalid_format",
       "severity": "critical",
       "passed": true,
@@ -296,30 +273,6 @@
       "message": "all dates are ISO 8601 format",
       "sample_rows": [],
       "fix_advice": null,
-      "court": null,
-      "extra": {}
-    },
-    {
-      "name": "dates.future_window",
-      "severity": "critical",
-      "passed": true,
-      "metric_value": 0,
-      "threshold": 50,
-      "message": "0 future-dated rows (within tolerance)",
-      "sample_rows": [],
-      "fix_advice": "if >50, expect a scraper date-parsing regression",
-      "court": null,
-      "extra": {}
-    },
-    {
-      "name": "dates.far_future",
-      "severity": "critical",
-      "passed": true,
-      "metric_value": 0,
-      "threshold": 0,
-      "message": "no far-future dates",
-      "sample_rows": [],
-      "fix_advice": "build_fts5._normalize_dates() auto-NULLs these; check scraper date-parsing for German/French month confusion",
       "court": null,
       "extra": {}
     },
@@ -648,6 +601,54 @@
       "extra": {
         "distinct_courts": 109
       }
+    },
+    {
+      "name": "dates.year_0000",
+      "severity": "quarantine",
+      "passed": true,
+      "metric_value": 0,
+      "threshold": 0,
+      "message": "no year-0000 placeholder dates",
+      "sample_rows": [],
+      "fix_advice": "build_fts5._normalize_dates() auto-converts to NULL; verify it ran on this build",
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "dates.pre_1700",
+      "severity": "quarantine",
+      "passed": true,
+      "metric_value": 0,
+      "threshold": 0,
+      "message": "no pre-1700 dates",
+      "sample_rows": [],
+      "fix_advice": null,
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "dates.future_window",
+      "severity": "quarantine",
+      "passed": true,
+      "metric_value": 0,
+      "threshold": 50,
+      "message": "0 future-dated rows (within tolerance)",
+      "sample_rows": [],
+      "fix_advice": "if >50, expect a scraper date-parsing regression",
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "dates.far_future",
+      "severity": "quarantine",
+      "passed": true,
+      "metric_value": 0,
+      "threshold": 0,
+      "message": "no far-future dates",
+      "sample_rows": [],
+      "fix_advice": "build_fts5._normalize_dates() auto-NULLs these; check scraper date-parsing for German/French month confusion",
+      "court": null,
+      "extra": {}
     }
   ]
 }
