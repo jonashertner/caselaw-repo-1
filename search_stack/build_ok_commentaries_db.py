@@ -29,6 +29,51 @@ log = logging.getLogger("build_ok_commentaries")
 
 INPUT_FILE = Path(os.environ.get("OK_INPUT", "output/onlinekommentar/commentaries.json"))
 OUTPUT_DB = Path(os.environ.get("OK_DB", "output/ok_commentaries.db"))
+STATUTES_DB = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", "output/statutes.db"))
+
+
+def load_abbr_index(statutes_conn: sqlite3.Connection) -> dict[str, tuple[str, str]]:
+    """Map every Fedlex law abbreviation (de/fr/it, uppercased) to
+    (sr_number, canonical_de_abbr).
+
+    Used to backfill commentaries whose scraped sr_number/abbr were empty
+    because the OnlineKommentar scraper only assigns them for a core ~18-law
+    set (GH #23). statutes.db is the comprehensive Fedlex abbreviation source.
+    """
+    idx: dict[str, tuple[str, str]] = {}
+    try:
+        rows = statutes_conn.execute(
+            "SELECT sr_number, abbr_de, abbr_fr, abbr_it FROM laws"
+        ).fetchall()
+    except sqlite3.Error:
+        return idx
+    for sr, de, fr, it in rows:
+        canonical = (de or fr or it or "").strip()
+        if not canonical:
+            continue
+        for ab in (de, fr, it):
+            ab = (ab or "").strip()
+            if ab:
+                idx.setdefault(ab.upper(), (sr, canonical))
+    return idx
+
+
+def resolve_law_from_title(
+    title: str | None, abbr_index: dict[str, tuple[str, str]]
+) -> tuple[str, str] | None:
+    """Derive (sr_number, canonical_abbr) from a commentary title whose last
+    token is the law abbreviation, e.g. 'Art. 13 StHG' -> ('642.14', 'StHG').
+
+    Returns None if the title is empty or its trailing token isn't a known
+    abbreviation (leave sr_number/abbr empty rather than guess).
+    """
+    if not title:
+        return None
+    tokens = title.strip().split()
+    if not tokens:
+        return None
+    token = tokens[-1].strip(".,;:()[]")
+    return abbr_index.get(token.upper())
 
 
 def create_schema(conn: sqlite3.Connection):
@@ -87,6 +132,28 @@ def build_db():
         commentaries = json.load(f)
 
     log.info("Loaded %d commentaries from %s", len(commentaries), INPUT_FILE)
+
+    # Backfill empty sr_number/abbr from the title via statutes.db (GH #23):
+    # the scraper only assigns sr/abbr for a core ~18-law set, leaving e.g.
+    # StHG/DBG/HMG commentaries unreachable by abbreviation. statutes.db is the
+    # comprehensive Fedlex abbreviation source.
+    abbr_index: dict[str, tuple[str, str]] = {}
+    if STATUTES_DB.exists():
+        sconn = sqlite3.connect(f"file:{STATUTES_DB}?mode=ro", uri=True)
+        abbr_index = load_abbr_index(sconn)
+        sconn.close()
+    else:
+        log.warning("statutes.db not found at %s — skipping sr/abbr backfill", STATUTES_DB)
+    backfilled = 0
+    if abbr_index:
+        for c in commentaries:
+            if (c.get("sr_number") or "").strip():
+                continue
+            resolved = resolve_law_from_title(c.get("title"), abbr_index)
+            if resolved:
+                c["sr_number"], c["abbr"] = resolved
+                backfilled += 1
+    log.info("Backfilled sr_number/abbr from title for %d commentaries", backfilled)
 
     # Prepare output
     tmp_db = OUTPUT_DB.with_suffix(".tmp")

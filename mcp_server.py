@@ -13007,12 +13007,13 @@ def get_commentary(
             # Fetch specific article commentary with language fallback
             rows = conn.execute(
                 """SELECT * FROM commentaries
-                   WHERE (sr_number = ? OR UPPER(abbr) = ?) AND article_num = ?
+                   WHERE ((? <> '' AND sr_number = ?)
+                          OR (? <> '' AND UPPER(abbr) = ?)) AND article_num = ?
                    ORDER BY CASE WHEN language = ? THEN 0
                                  WHEN language = 'de' THEN 1
                                  ELSE 2 END
                    LIMIT 1""",
-                (sr_filter, abbr_filter, article, language),
+                (sr_filter, sr_filter, abbr_filter, abbr_filter, article, language),
             ).fetchall()
 
             if not rows:
@@ -13048,9 +13049,10 @@ def get_commentary(
             rows = conn.execute(
                 """SELECT DISTINCT article_num, title, language, authors
                    FROM commentaries
-                   WHERE (sr_number = ? OR UPPER(abbr) = ?)
+                   WHERE ((? <> '' AND sr_number = ?)
+                          OR (? <> '' AND UPPER(abbr) = ?))
                    ORDER BY CAST(article_num AS INTEGER), article_num""",
-                (sr_filter, abbr_filter),
+                (sr_filter, sr_filter, abbr_filter, abbr_filter),
             ).fetchall()
 
             if not rows:
