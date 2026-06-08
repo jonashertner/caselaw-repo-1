@@ -84,6 +84,10 @@ def test_publish_sqlite_snapshot_can_run_without_delta_state(monkeypatch):
 
     monkeypatch.delenv("OCL_PUBLISH_DELTA", raising=False)
     monkeypatch.setenv("OCL_PUBLISH_SQLITE_SNAPSHOT", "1")
+    # Force the snapshot path regardless of weekday — this test exercises
+    # dispatch, not the Sunday cadence gate. Without this it silently passes
+    # only on Sundays (and never ran in CI while the file sat at repo root).
+    monkeypatch.setenv("OCL_PUBLISH_SQLITE_SNAPSHOT_WEEKDAY", "-1")
     monkeypatch.setattr(publish, "run_cmd", _fake_run_cmd)
 
     assert publish.step_7_publish_delta(dry_run=True) is True
