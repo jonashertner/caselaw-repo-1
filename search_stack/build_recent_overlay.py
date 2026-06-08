@@ -82,9 +82,7 @@ def build_overlay(input_jsonl: Path, output_db: Path, days: int = 14,
     conn.commit()
     conn.execute("PRAGMA journal_mode=DELETE")
     conn.close()
-    if output_db.exists():
-        output_db.unlink()
-    tmp.rename(output_db)
+    os.replace(tmp, output_db)  # atomic — no window where a served reader sees no file
     return n
 
 

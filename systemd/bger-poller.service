@@ -6,6 +6,10 @@ After=network.target
 Type=oneshot
 WorkingDirectory=/opt/caselaw/repo
 ExecStart=/usr/bin/python3 scripts/bger_poller.py
+# Rebuild the recent-publication overlay after each poll so get_decision's
+# OCL_RECENT_OVERLAY fallback sees freshly-captured rulings (search_stack/
+# build_recent_overlay.py). Non-fatal if it fails — the poller already succeeded.
+ExecStartPost=-/usr/bin/python3 -m search_stack.build_recent_overlay
 TimeoutStartSec=3900
 StandardOutput=append:/opt/caselaw/repo/logs/bger_poller.log
 StandardError=append:/opt/caselaw/repo/logs/bger_poller.log

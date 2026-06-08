@@ -365,7 +365,7 @@ def _lookup_recent_overlay(docket_or_id: str) -> dict | None:
     if not _overlay_enabled() or not RECENT_OVERLAY_DB_PATH.exists():
         return None
     try:
-        conn = sqlite3.connect(f"file:{RECENT_OVERLAY_DB_PATH}?immutable=1", uri=True, timeout=0.5)
+        conn = sqlite3.connect(f"file:{RECENT_OVERLAY_DB_PATH}?mode=ro&immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
         row = conn.execute(
             "SELECT * FROM recent_decisions WHERE decision_id = ? OR docket_number = ? LIMIT 1",
@@ -20463,11 +20463,26 @@ setInterval(load, 30000);
         full_text: bool = Query(True, description="Include full text in response"),
     ):
         result = await asyncio.to_thread(get_decision_by_id, decision_id)
+        # Recent-publication fallback (same as the MCP get_decision path): serve a
+        # freshly-published BGer ruling from the overlay on a corpus miss, so the
+        # public REST/Word path isn't left with the recency gap this feature closes.
+        fresh_publication = False
+        if not result and _overlay_enabled() and _looks_like_bger_docket(decision_id):
+            overlay = await asyncio.to_thread(_lookup_recent_overlay, decision_id)
+            if overlay:
+                result = overlay
+                fresh_publication = True
         if not result:
             raise HTTPException(status_code=404, detail=f"Decision not found: {decision_id}")
         if not full_text:
             result.pop("full_text", None)
         _enrich_with_citation(result)
+        if fresh_publication:
+            result["recency_note"] = (
+                "Recently published, not yet in the indexed corpus. "
+                f"Published {result.get('publication_date') or '?'}, ruled {result.get('decision_date') or '?'}. "
+                "Citation-graph links, cross-references and structured Erwägungen are not yet available."
+            )
         return result
 
     @rest_api.get("/courts", tags=["Case Law"],
