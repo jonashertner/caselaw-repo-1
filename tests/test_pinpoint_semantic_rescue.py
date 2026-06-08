@@ -10,8 +10,11 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-import numpy as np
 import pytest
+
+# numpy is an optional/heavy dep not in the CI requirements; skip this module
+# cleanly when it's absent instead of aborting collection (CI exit 2).
+np = pytest.importorskip("numpy")
 
 import mcp_server
 
