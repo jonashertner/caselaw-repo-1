@@ -799,7 +799,7 @@ class BgerScraper(BaseScraper):
                                 day_soup, "de", fallback_date=day
                             )
                             yield from self._follow_pagination(
-                                day_soup, "de", day
+                                day_soup, "de", day, day
                             )
                         except Exception as e:
                             logger.error(f"Daily search {day_str}: {e}")
@@ -810,7 +810,7 @@ class BgerScraper(BaseScraper):
                     yield from self._parse_search_results(
                         soup, "de", fallback_date=current
                     )
-                    yield from self._follow_pagination(soup, "de", current)
+                    yield from self._follow_pagination(soup, "de", current, end)
 
             except Exception as e:
                 logger.error(f"Search {von_str}-{bis_str}: {e}")
@@ -955,14 +955,21 @@ class BgerScraper(BaseScraper):
         return len(ranklist.find_all("li", recursive=False))
 
     def _follow_pagination(
-        self, soup: BeautifulSoup, lang: str, search_date: date
+        self, soup: BeautifulSoup, lang: str, von: date, bis: date
     ) -> Iterator[dict]:
         """
-        Follow pagination in search results.
+        Follow pagination in search results for the [von, bis] window.
 
         Handle pagination:
         Paginates if anfangsposition + len(urteile) < treffer.
         Max 10 pages (page 10 = results 91-100).
+
+        Pages 2+ MUST re-query the SAME [von, bis] range as page 1. The prior
+        version paginated a single day (the window start), so for any non-split
+        multi-day window it fetched pages of the start day instead of the range
+        — silently dropping every result on the window's later days. That was
+        the cause of the pre-2007 EVG under-recovery (~1/3 captured) and affects
+        every bger AZA backfill (nightly, weekly, recovery).
         """
         total = self._get_hit_count(soup)
         if total is None or total <= 10:
@@ -974,9 +981,10 @@ class BgerScraper(BaseScraper):
         for page in range(2, max_page + 1):
             # Always construct URL from known search template — never
             # extract from response HTML (PoW redirects produce garbage URLs)
-            von_str = search_date.strftime("%d.%m.%Y")
+            von_str = von.strftime("%d.%m.%Y")
+            bis_str = bis.strftime("%d.%m.%Y")
             page_url = (
-                AZA_SEARCH_URL.format(von=von_str, bis=von_str)
+                AZA_SEARCH_URL.format(von=von_str, bis=bis_str)
                 + f"&page={page}"
             )
 
@@ -997,7 +1005,7 @@ class BgerScraper(BaseScraper):
                     page_soup = BeautifulSoup(resp.text, "html.parser")
 
                 yield from self._parse_search_results(
-                    page_soup, lang, fallback_date=search_date
+                    page_soup, lang, fallback_date=von
                 )
             except Exception as e:
                 logger.error(f"Pagination page {page}: {e}")
