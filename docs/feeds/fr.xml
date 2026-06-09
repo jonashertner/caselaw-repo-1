@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 08 Jun 2026 11:50:40 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 09 Jun 2026 11:08:07 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -399,6 +399,14 @@ P…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-3285/2024 vom 2026-05-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3285_2024</link>
+      <description>Asile (sans excécution du renvoi) (demande multiple)</description>
+      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3285.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 502 2025 190 vom 2026-05-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202025%20190</link>
       <description>Tribunal cantonal TC
@@ -643,6 +651,14 @@ A.________,
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht A-365/2026 vom 2026-05-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-365_2026</link>
+      <description>Taxe sur la valeur ajoutée</description>
+      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-365.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht A-5389/2024 vom 2026-05-26</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-5389_2024</link>
       <description>Taxe sur la valeur ajoutée</description>
@@ -823,44 +839,6 @@ Association A.…</description>
       <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_298.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_460/2026 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_460_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_460/2026
-
-Arrêt du 22 mai 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-A.A.________et…</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_460.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-4739/2025 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-4739_2025</link>
-      <description>Droit à la rente</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4739.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

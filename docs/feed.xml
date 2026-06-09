@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 08 Jun 2026 11:47:12 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 09 Jun 2026 11:05:06 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -212,6 +212,21 @@ Présid…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>be_verwaltungsgericht 200 2025 648 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20648</link>
+      <description>EL 200 2025 648
+ACT/BON/SEE
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil vom 11. Mai 2026
+Verwaltungsrichter Ackermann, Kammerpräsident
+Verwaltungsrichter Knapp, Verwaltungsrichterin Frey
+Gerichtsschreiberin Bögl…</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2025 648</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2026 95 vom 2026-06-08</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2095</link>
       <description>Tribunal cantonal TC
@@ -274,6 +289,24 @@ Présidente…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>gr_gerichte VR3 2025 45 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR3%202025%2045</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Urteil vom 21. April 2026
+mitgeteilt am 4. Mai 2026
+Referenz
+VR3 25 45
+Instanz
+Dritte verwaltungsrechtliche Kammer
+Besetzung
+Seile…</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_VR3 2025 45</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>be_verwaltungsgericht 100 2024 353 vom 2026-06-05</title>
       <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202024%20353</link>
       <description>100.2024.353
@@ -331,6 +364,24 @@ Laurent…</description>
       <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_502 2025 438</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte ZR2 2026 22 vom 2026-06-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR2%202026%2022</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Decisione del 5 giugno 2026
+comunicata il 5 giugno 2026
+N. d'incarto
+ZR2 26 22
+Istanza
+Seconda Camera civile
+Composizione
+Richter-…</description>
+      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR2 2026 22</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 200 2026 20 vom 2026-06-04</title>
@@ -441,6 +492,24 @@ Einwohnergeme…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>gr_gerichte SR2 2025 87 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2087</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Ordinanza del 22 maggio 2026
+comunicata il 27 maggio 2026
+N. d'incarto
+SR2 25 87
+Istanza
+Seconda Camera penale
+Composizione
+Richte…</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SR2 2025 87</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>gr_gerichte SV1 2026 10 vom 2026-06-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV1%202026%2010</link>
       <description>Obergericht des Kantons Graubünden
@@ -545,6 +614,14 @@ Bas…</description>
       <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.45</guid>
       <category>bs_appellationsgericht</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-3712/2026 vom 2026-06-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3712_2026</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3712.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>fr_gerichte 105 2026 61 vom 2026-06-01</title>
@@ -734,6 +811,22 @@ Bas…</description>
       <category>bs_appellationsgericht</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-3285/2024 vom 2026-05-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3285_2024</link>
+      <description>Asile (sans excécution du renvoi) (demande multiple)</description>
+      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3285.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-1779/2026 vom 2026-05-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-1779_2026</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
+      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-1779.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 502 2025 190 vom 2026-05-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202025%20190</link>
       <description>Tribunal cantonal TC
@@ -866,113 +959,6 @@ Stadelmann et Parrino.
 Greffier : M. Berthou…</description>
       <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_246.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-5369/2021 vom 2026-05-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5369_2021</link>
-      <description>Regroupement familial (asile)</description>
-      <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5369.2021</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 21512/23 vom 2026-05-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_21512_23</link>
-      <description>Violation de l'article 10 - Liberté d'expression - {général} (Article 10-1 - Liberté d'expression); Violation: 10;10-1</description>
-      <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_21512_23</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_committee 27207/24_27804/24_30043/24_30045/24_32268/24_32270/24_34560/24 vom 2026-05-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_27207_24_27804_24_30043_24_30045_24_32268_24_32270_24_34560_24</link>
-      <description>Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure d'exécution;Article 6-1 - Accès à un tribunal;Délai raisonnable);Violation de l'article 1 du Protocole n° 1 - Protection de la propriété (Article 1 al. 1 du Protocole n° 1 - Respect des biens); Violation: 6;6-1;P1-1;P1-1-1</description>
-      <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_committee_27207_24_27804_24_30043_24_30045_24_32268_24_32270_24_34560_24</guid>
-      <category>ecthr_committee</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>gr_gerichte SBK 2026 56 vom 2026-05-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SBK%202026%2056</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Entscheid vom 18. Mai 2026
-mitgeteilt am 19. Mai 2026
-Referenz
-SBK 26 56
-Instanz
-Schuldbetreibungs- und Konkurskammer
-Besetzung
-Be…</description>
-      <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SBK 2026 56</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>ag_strafgericht SST.2026.87 vom 2026-05-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ag_strafgericht_SST.2026.87</link>
-      <description>Obergericht
-Strafgericht, 1. Kammer
-SST.2026.87
-(STA.2025.7443)
-Beschluss vom 27. Mai 2026
-Besetzung Oberrichter Six, Präsident
-Oberrichter Fedier
-Oberrichterin Vasvary
-Gerichtsschreiberin i.V. Zwick
-Gesuchstellerin / A._____,
-Verurteilte geboren am …</description>
-      <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ag_strafgericht_SST.2026.87</guid>
-      <category>ag_strafgericht</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 200 2026 112 vom 2026-05-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%20112</link>
-      <description>IV 200 2026 112
-JAP/IMD/SEE
-Verwaltungsgericht des Kantons Bern
-Sozialversicherungsrechtliche Abteilung
-Urteil vom 30. April 2026
-Verwaltungsrichter Jakob, Kammerpräsident
-Verwaltungsrichter Kölliker, Verwaltungsrichter Ackermann
-Gerichtsschreiber Im…</description>
-      <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_200 2026 112</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_401/2026 vom 2026-05-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_401_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_401/2026
-
-Ordonnance du 27 mai 2026
-
-IIe Cour de droit pénal
-
-Composition
-
-M. le Juge fédéral Abrecht, Président.
-
-Greffier : M. Valentino.
-
-Participants à la procédure
-
-A.____…</description>
-      <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_401.2026</guid>
       <category>bger</category>
     </item>
   </channel>
