@@ -8479,6 +8479,17 @@ def _md_link(label: str, url: str) -> str:
     return f"[{safe}]({url})"
 
 
+def _clean_docket(docket: str | None) -> str:
+    """Strip stray HTML from a docket (entscheidsuche feed artifacts, e.g. ch_vb's
+    '<td class="metadataCell">90000048</td>') so it can never leak into a
+    citation_string_* and breach R1. No-op for clean dockets (fast '<' guard)."""
+    if not docket:
+        return ""
+    if "<" in docket:
+        docket = re.sub(r"<[^>]+>", "", docket)
+    return docket.strip()
+
+
 def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict:
     """Return {citation_string_de/fr/it, canonical_url, pinpoint_anchor} for a decision.
 
@@ -8486,7 +8497,7 @@ def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict
     a safe "<court_upper> <docket>" form that is still valid Swiss legal shorthand.
     """
     court = (decision.get("court") or "").lower()
-    docket = (decision.get("docket_number") or "").strip()
+    docket = _clean_docket(decision.get("docket_number"))
     decision_id = decision.get("decision_id", "")
     decision_date = decision.get("decision_date") or ""
     pin = (pinpoint or "").strip().lstrip("E.").strip()
