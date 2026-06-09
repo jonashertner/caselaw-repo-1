@@ -2407,18 +2407,21 @@ def _search_fts5_inner(
             query=vector_query,
             language=language,
         )
-        # Merge chunk-level vector results (if vec_chunks table exists)
-        chunk_scores = _search_vectors_chunks(
-            query=vector_query,
-            language=language,
-        )
-        if chunk_scores:
-            for did, dist in chunk_scores.items():
-                if did not in vector_scores or dist < vector_scores[did]:
-                    vector_scores[did] = dist
+        # Merge chunk-level vector results (re-check the deadline: the dense
+        # vector search above may have crossed the budget mid-block).
+        if not _past_deadline(_deadline):
+            chunk_scores = _search_vectors_chunks(
+                query=vector_query,
+                language=language,
+            )
+            if chunk_scores:
+                for did, dist in chunk_scores.items():
+                    if did not in vector_scores or dist < vector_scores[did]:
+                        vector_scores[did] = dist
 
-        # Sparse search (if sparse_terms table exists)
-        sparse_scores = _search_sparse(query=fts_query)
+        # Sparse search (re-check the deadline before this sub-source too).
+        if not _past_deadline(_deadline):
+            sparse_scores = _search_sparse(query=fts_query)
 
         # Add vector-only candidates to the pool (only when VECTOR_WEIGHT > 0)
         if vector_scores:

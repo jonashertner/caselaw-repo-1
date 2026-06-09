@@ -79,3 +79,27 @@ def test_search_inner_skips_expensive_sources_past_deadline(monkeypatch):
     monkeypatch.setattr(mcp_server, "_past_deadline", lambda d: False)
     mcp_server._search_fts5_inner(conn, "Notwehr", None, None, None, None, None, None, None, None, 5)
     assert calls, "expensive sources were not consulted with no deadline (wiring broken)"
+
+
+def test_search_inner_rechecks_deadline_between_sub_sources(monkeypatch):
+    # The deadline is NOT past at block entry (vectors runs) but crosses right
+    # after — chunk-vector and sparse must then be skipped, not launched anyway.
+    conn = _fixture_conn()
+    monkeypatch.setattr(mcp_server, "_analyze_query",
+                        lambda q, d: ([{"query": "Notwehr", "name": "nl_and", "weight": 1.0}], [], {}))
+    monkeypatch.setattr(mcp_server, "_rerank_rows", lambda *a, **k: [])
+    monkeypatch.setattr(mcp_server, "_load_graph_signal_map", lambda *a, **k: {})
+    calls = []
+    for nm in ("_search_vectors", "_search_vectors_chunks", "_search_sparse", "_search_statute_graph"):
+        monkeypatch.setattr(mcp_server, nm, (lambda name: (lambda *a, **k: (calls.append(name), {})[1]))(nm))
+    state = {"n": 0}
+
+    def crossing(_d):
+        state["n"] += 1
+        return state["n"] > 1  # False on the 1st check (block entry) -> True after
+
+    monkeypatch.setattr(mcp_server, "_past_deadline", crossing)
+    mcp_server._search_fts5_inner(conn, "Notwehr", None, None, None, None, None, None, None, None, 5)
+    assert "_search_vectors" in calls
+    assert "_search_vectors_chunks" not in calls, f"chunk-vector ran after mid-block expiry: {calls}"
+    assert "_search_sparse" not in calls, f"sparse ran after mid-block expiry: {calls}"
