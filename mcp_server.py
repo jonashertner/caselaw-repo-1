@@ -2399,7 +2399,7 @@ def _search_fts5_inner(
     # Augment vector query with LLM expansion terms for better semantic recall
     vector_scores: dict[str, float] = {}
     sparse_scores: dict[str, float] = {}
-    if not is_docket_query and not has_explicit_syntax:
+    if not is_docket_query and not has_explicit_syntax and not _past_deadline(_deadline):
         vector_query = fts_query
         if llm_terms:
             vector_query = f"{fts_query} {' '.join(llm_terms)}"
@@ -2520,7 +2520,7 @@ def _search_fts5_inner(
             sg_weight = SCORING_CONFIG["sg_weight_with_keywords"] if has_keyword_context else SCORING_CONFIG["sg_weight_pure_statute"]
         else:
             sg_weight = SCORING_CONFIG["sg_weight_unstructured_with_keywords"] if has_keyword_context else STATUTE_GRAPH_RRF_WEIGHT
-        statute_graph_results = _search_statute_graph(query_statutes, limit=50 if has_structured_statutes else 30)
+        statute_graph_results = [] if _past_deadline(_deadline) else _search_statute_graph(query_statutes, limit=50 if has_structured_statutes else 30)
         if statute_graph_results:
             sg_only_ids = [
                 did for did, _sc in statute_graph_results
@@ -18239,7 +18239,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             citation = _build_citation_strings(result)
             # H1 is itself a Markdown link so the LLM propagates a clickable
             # citation when it cites this decision in its final answer.
-            h1 = _md_link(result['docket_number'], citation['canonical_url'])
+            h1 = _md_link(_clean_docket(result.get('docket_number')), citation['canonical_url'])
             text = (
                 f"# {h1}\n"
                 f"**Court:** {result['court']} | "
