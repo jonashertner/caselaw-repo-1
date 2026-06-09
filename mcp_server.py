@@ -502,6 +502,18 @@ LLM_EXPANSION_ENABLED = os.environ.get("LLM_EXPANSION_ENABLED", "true").lower() 
 }
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 LLM_EXPANSION_TIMEOUT = float(os.environ.get("LLM_EXPANSION_TIMEOUT", "2.0"))
+# Search soft-deadline: once a query's wall-clock crosses this budget, skip the
+# expensive rerank augmentation (cross-encoder + Haiku LLM-rerank) and stop
+# launching further FTS strategies — degrade to fast BM25/RRF results instead of a
+# >50s hard timeout that breaks token-limited connectors (the OASA 500). 0 = off.
+# Generous by default so only pathological/contended queries are ever degraded;
+# the no-contention MRR benchmark never trips it, so this is not MRR-affecting.
+SEARCH_DEADLINE_MS = int(os.environ.get("OCL_SEARCH_DEADLINE_MS", "20000"))
+
+
+def _past_deadline(deadline: float | None) -> bool:
+    """True if a monotonic-clock deadline has passed (None = no deadline set)."""
+    return deadline is not None and time.monotonic() > deadline
 
 EXPANSION_SYSTEM_PROMPT = (
     "You are a Swiss legal search assistant. Given a user's search query about "
@@ -2102,6 +2114,7 @@ def _search_fts5_inner(
 ) -> tuple[list[dict], int]:
     """Inner search logic. Returns (results, total_count). Caller closes conn."""
     _trace_t0 = time.monotonic()
+    _deadline = (_trace_t0 + SEARCH_DEADLINE_MS / 1000.0) if SEARCH_DEADLINE_MS > 0 else None
     _trace = {
         "query": query[:200],
         "language_filter": language,
@@ -2316,6 +2329,12 @@ def _search_fts5_inner(
     query_has_expandable_terms = _query_has_expandable_terms(fts_query)
 
     for idx, strategy in enumerate(strategies):
+        # Soft-deadline: stop launching more FTS strategies once the budget is
+        # spent (always run the first, the primary strategy), so a broad query
+        # degrades to fewer-strategy BM25 instead of a >50s pile-up.
+        if idx > 0 and _past_deadline(_deadline):
+            _trace["deadline_hit_strategy"] = idx
+            break
         match_query = strategy["query"]
         strategy_name = strategy.get("name", "")
         strategy_weight = float(strategy.get("weight", 1.0))
@@ -2612,6 +2631,7 @@ def _search_fts5_inner(
                 offset=0,
                 sort=sort,
                 is_docket_query=is_docket_query,
+                deadline=_deadline,
             )
             merged = _merge_priority_results(
                 primary=inline_docket_results,
@@ -2633,6 +2653,7 @@ def _search_fts5_inner(
             offset=offset,
             sort=sort,
             is_docket_query=is_docket_query,
+            deadline=_deadline,
         )
         reranked = _dedupe_results_by_decision_id(reranked)
         # Soft boost: if legal_area filter given, promote matching results
@@ -4506,6 +4527,7 @@ def _rerank_rows(
     offset: int = 0,
     sort: str | None = None,
     is_docket_query: bool = False,
+    deadline: float | None = None,
 ) -> list[dict]:
     """
     Re-rank lexical FTS candidates with lightweight query-intent signals.
@@ -4690,8 +4712,8 @@ def _rerank_rows(
 
         scored.append((final_score, bm25_score, idx, row))
 
-    scored = _apply_cross_encoder_boosts(scored, raw_query)
-    scored = _apply_llm_rerank(scored, raw_query, is_docket_query=is_docket_query)
+    scored = _apply_cross_encoder_boosts(scored, raw_query, deadline=deadline)
+    scored = _apply_llm_rerank(scored, raw_query, is_docket_query=is_docket_query, deadline=deadline)
     scored.sort(key=lambda x: (-x[0], x[1], x[2]))
 
     # Apply user-requested sort order (overrides relevance ranking)
@@ -5419,7 +5441,10 @@ def _row_get(row: sqlite3.Row | dict, key: str, default=None):
 def _apply_cross_encoder_boosts(
     scored: list[tuple[float, float, int, sqlite3.Row]],
     query: str,
+    deadline: float | None = None,
 ) -> list[tuple[float, float, int, sqlite3.Row]]:
+    if _past_deadline(deadline):
+        return scored
     if not CROSS_ENCODER_ENABLED or not scored:
         return scored
 
@@ -5524,14 +5549,18 @@ def _apply_llm_rerank(
     query: str,
     *,
     is_docket_query: bool = False,
+    deadline: float | None = None,
 ) -> list[tuple[float, float, int, sqlite3.Row]]:
     """Rerank top candidates using Haiku for legal relevance judgment.
 
     Gating rules:
+    - Skip if past the search soft-deadline (degrade to fast results)
     - Skip if disabled or no API key
     - Skip for docket queries (already exact match)
     - Skip if top result dominates (score >= gate * second)
     """
+    if _past_deadline(deadline):
+        return scored
     if not LLM_RERANK_ENABLED or not ANTHROPIC_API_KEY or not scored:
         return scored
     if is_docket_query:
