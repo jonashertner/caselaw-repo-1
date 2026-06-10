@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 09 Jun 2026 11:08:07 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 10 Jun 2026 11:03:40 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -192,6 +192,15 @@ Présid…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>ecthr_chamber 56007/21 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_56007_21</link>
+      <description>Violation de l'article 9 - Liberté de pensée, de conscience et de religion (Article 9-1 - Liberté de religion);Préjudice moral - constat de violation suffisant (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 9;9-1</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_56007_21</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2026 95 vom 2026-06-08</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2095</link>
       <description>Tribunal cantonal TC
@@ -319,6 +328,14 @@ Laurent…</description>
       <category>EMRK / Menschenrechte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-4349/2025 vom 2026-06-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4349_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4349.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 105 2026 61 vom 2026-06-01</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_105%202026%2061</link>
       <description>Tribunal cantonal TC
@@ -397,6 +414,38 @@ P…</description>
       <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_608 2025 127</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_459/2026 vom 2026-05-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_459_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_459/2026
+
+Arrêt du 29 mai 2026
+
+IIe Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Bovey, Président.
+
+Greffière : Mme Mairot.
+
+Participants à la procédure
+
+A.________,
+
+r…</description>
+      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_459.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht D-3285/2024 vom 2026-05-29</title>
@@ -651,6 +700,34 @@ A.________,
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesgericht 8C_219/2026 vom 2026-05-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_219_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_219/2026
+
+Arrêt du 26 mai 2026
+
+IVe Cour de droit public
+
+Composition
+
+M. le Juge fédéral Métral, en qualité de juge unique.
+
+Greffière : Mme Barman Ionta.
+
+Participants à la p…</description>
+      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_219.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht A-365/2026 vom 2026-05-26</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-365_2026</link>
       <description>Taxe sur la valeur ajoutée</description>
@@ -740,105 +817,6 @@ A.________,
       <guid isPermaLink="false">ecthr_committee_44240_18</guid>
       <category>ecthr_committee</category>
       <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>fr_gerichte 105 2026 45 vom 2026-05-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_105%202026%2045</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-105 2026 45
-Arrêt du 23 avril 2026
-Chambre des poursuites et faillites
-Composition…</description>
-      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_105 2026 45</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 602 2026 24 vom 2026-05-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_602%202026%2024</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-602 2026 24
-602 2026 25
-Arrêt du 20 avril 2026
-IIe Cour administrative
-Composition…</description>
-      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_602 2026 24</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_271/2026 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_271_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_271/2026
-
-Arrêt du 22 mai 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-A.________ SA …</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_271.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_298/2026 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_298_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_298/2026
-
-Arrêt du 22 mai 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-Association A.…</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_298.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>
