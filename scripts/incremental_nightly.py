@@ -248,6 +248,32 @@ def main() -> int:
     else:
         logger.info("[decision_structure] SKIPPED (--skip-structure)")
 
+    # ── Step 3b: drift check (shadow mode only) — compares the sibling
+    # incremental DBs against the live full-rebuilt ones. This is the
+    # 7-green-nights cutover gate from docs/incremental_nightly_runbook.md
+    # (row delta < 0.5%, top-30 cited identical). Drift is a VERDICT on
+    # the night, not a crash: the builders already succeeded, so the run
+    # keeps ok=true and the gate reads drift_ok from the summary jsonl.
+    if not args.in_place:
+        drift_script = REPO_ROOT / "scripts" / "publish_drift_check.py"
+        if drift_script.exists():
+            rec = _run_step(
+                "drift_check",
+                [sys.executable, "scripts/publish_drift_check.py",
+                 "--tolerance-pct", "0.5"],
+                args.dry_run,
+            )
+            run["steps"].append(rec)
+            run["drift_ok"] = rec["exit_code"] == 0
+            if rec["exit_code"] != 0:
+                logger.warning(
+                    "drift_check FAILED (exit=%d) — this shadow night does "
+                    "NOT count toward the 7-green-nights cutover gate",
+                    rec["exit_code"],
+                )
+        else:
+            logger.info("[drift_check] script missing — skipping")
+
     # ── Step 4: generate_stats (refreshes docs/stats.json)
     if not args.skip_stats:
         stats_script = REPO_ROOT / "generate_stats.py"

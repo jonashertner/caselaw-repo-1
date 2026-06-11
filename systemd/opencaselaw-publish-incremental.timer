@@ -1,16 +1,20 @@
 [Unit]
-Description=Incremental nightly publish — Mon-Sat 03:30 UTC
+Description=Incremental nightly publish — Mon-Sat 20:00 UTC (shadow validation)
 
 [Timer]
-# PHASE 1 (shadow validation): Mon-Sat at 12:00 UTC — well after the
-# legacy 03:30 UTC full rebuild has typically completed (today it took
-# 7h 22min, finishing at 10:52 UTC). Avoids any lock contention while
-# we validate the incremental builders' shadow outputs against the
-# freshly-rebuilt live DBs.
+# PHASE 1 (shadow validation): Mon-Sat at 20:00 UTC — after the legacy
+# 03:30 UTC full rebuild completes (~14 h baseline as of 2026-06,
+# finishing ~17:30-18:30 UTC). The .service file's
+# ConditionPathExists=!/tmp/opencaselaw-publish.lock skips the shadow
+# run if a late publish still holds its lock file at fire time.
+#
+# NOTE: the previous 12:00 UTC schedule here was based on a stale
+# 7h-publish assumption and would fire mid-publish-tail; the deployed
+# unit was already moved to 20:00 on-host — this file now matches it.
 #
 # PHASE 3 (cutover): move to 03:30 UTC Mon-Sat and shift the legacy
 # opencaselaw-publish.timer to Sunday-only.
-OnCalendar=Mon..Sat *-*-* 12:00:00 UTC
+OnCalendar=Mon..Sat *-*-* 20:00:00 UTC
 Persistent=true
 RandomizedDelaySec=120
 

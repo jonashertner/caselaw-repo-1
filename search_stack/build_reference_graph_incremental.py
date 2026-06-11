@@ -114,6 +114,53 @@ def _set_meta(conn: sqlite3.Connection, key: str, value: str) -> None:
     )
 
 
+def _peek_extractor_version(db_path: Path) -> str | None:
+    """Read meta.extractor_version from a candidate base DB, or None."""
+    if not db_path.exists():
+        return None
+    try:
+        peek = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
+    except sqlite3.Error:
+        return None
+    try:
+        try:
+            return _get_meta(peek, "extractor_version")
+        except sqlite3.OperationalError:
+            return None
+    finally:
+        peek.close()
+
+
+def _select_diff_base(live_db: Path, output_path: Path,
+                      force_full: bool) -> tuple[Path | None, str | None]:
+    """Pick the DB whose processed-state we diff against.
+
+    Prefer the PREVIOUS incremental output (the sibling): in shadow mode
+    the live DB is full-rebuilt nightly by the legacy pipeline WITHOUT
+    state tables, so peeking only at the live DB forced a full ~2.5 h
+    bootstrap every single night (bootstrap_reason "no_state" on every
+    shadow run through 2026-06-11) — the sibling written by the previous
+    incremental run is the one that carries processed_decisions state.
+    Falls back to the live DB (which is also the in-place path, where
+    output_path == live_db). Returns (base, bootstrap_reason); base is
+    None when a full bootstrap is required.
+    """
+    if force_full:
+        return None, "force_full"
+    candidates = ([output_path, live_db]
+                  if output_path != live_db else [live_db])
+    mismatches = []
+    for cand in candidates:
+        stored = _peek_extractor_version(cand)
+        if stored == str(EXTRACTOR_VERSION):
+            return cand, None
+        if stored is not None:
+            mismatches.append(f"{cand.name}:{stored}")
+    if mismatches:
+        return None, "version_mismatch:" + ",".join(mismatches)
+    return None, "no_state"
+
+
 def _iter_decision_rows(decisions_db: Path) -> Iterator[dict]:
     """Yield every row from decisions.db with the same dict shape the
     full builder consumes (so we can reuse the extraction code path
@@ -434,24 +481,11 @@ def build_graph_incremental(
         "extractor_version": EXTRACTOR_VERSION,
     }
 
-    needs_full = force_full or not graph_db.exists()
-    if not needs_full:
-        # Peek at extractor version on the live DB.
-        peek = sqlite3.connect(f"file:{graph_db}?mode=ro", uri=True)
-        try:
-            try:
-                stored = _get_meta(peek, "extractor_version")
-            except sqlite3.OperationalError:
-                stored = None
-        finally:
-            peek.close()
-        if stored is None or stored != str(EXTRACTOR_VERSION):
-            needs_full = True
-            stats["bootstrap_reason"] = (
-                "no_state" if stored is None else f"version_mismatch:{stored}"
-            )
+    base, bootstrap_reason = _select_diff_base(
+        graph_db, output_path, force_full)
 
-    if needs_full:
+    if base is None:
+        stats["bootstrap_reason"] = bootstrap_reason
         full_stats = _bootstrap_via_full_rebuild(
             decisions_db=decisions_db,
             output_path=output_path,
@@ -460,12 +494,13 @@ def build_graph_incremental(
         stats.update(full_stats)
         return stats
 
-    # Copy live → tmp; remove any sidecars that came along.
+    # Copy base → tmp; remove any sidecars that came along.
+    stats["diff_base"] = str(base)
     tmp_path = output_path.with_name(f".{output_path.name}.tmp")
     if tmp_path.exists():
         tmp_path.unlink()
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(graph_db, tmp_path)
+    shutil.copy2(base, tmp_path)
     _cleanup_sidecars(tmp_path)
 
     conn = sqlite3.connect(str(tmp_path))

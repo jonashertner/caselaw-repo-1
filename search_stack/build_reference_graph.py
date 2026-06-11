@@ -801,11 +801,18 @@ def _iter_rows_from_db(*, source_db: Path, courts: list[str] | None) -> Iterator
 
 
 def _open_sqlite_readonly(path: Path) -> sqlite3.Connection:
+    # immutable=1 (invariant #1): the fd pins the inode open at connect
+    # time, so an atomic os.replace() of the path mid-read (quick_publish
+    # swaps decisions.db intraday) can't yield "database disk image is
+    # malformed" — the exact failure that killed the incremental shadow
+    # graph builds on 2026-06-01/03/04 (~2 h into the corpus read). The
+    # structure builder's _open_decisions_ro has used immutable=1 all
+    # along and never hit it.
     last_error: Exception | None = None
     for _ in range(5):
         try:
             return sqlite3.connect(
-                f"file:{path}?mode=ro",
+                f"file:{path}?mode=ro&immutable=1",
                 uri=True,
                 timeout=1.0,
             )
