@@ -50,6 +50,22 @@ NEUHEITEN_URL = (
 
 DOCKET_RE = re.compile(r"\b\d[A-Z]_\d+/\d{4}\b")
 
+# quick_publish copies the full decisions.db before inserting (64 GB on
+# 2026-06-11, growing daily); that copy+insert took 10m19s under
+# publish-tail I/O contention. The old 900 s subprocess.run timeout left
+# no headroom — and on expiry subprocess.run SIGKILLs the child,
+# bypassing quick_publish's SIGTERM cleanup handler and orphaning the
+# multi-GB .quick copy (the 2026-05-04 ENOSPC pattern).
+QUICK_PUBLISH_TIMEOUT_S = 2700
+QUICK_PUBLISH_GRACE_S = 60
+
+# Escalate to ERROR when the same docket fails this many consecutive
+# polls — BGer's document service intermittently serves error pages for
+# freshly-listed dockets; one or two polls of lag is normal, three is a
+# persistent outage worth surfacing (2026-06-10: two dockets failed
+# 14:16/15:15/16:14 with only WARNING-level visibility).
+FAILING_STREAK_ALERT = 3
+
 logger = logging.getLogger("bger_poller")
 
 
@@ -117,12 +133,18 @@ def _load_state() -> dict:
     return {"date": "", "count": 0, "dockets": []}
 
 
-def _save_state(today: str, dockets: set[str]):
-    """Save current state."""
+def _save_state(today: str, dockets: set[str],
+                failing: dict[str, int] | None = None):
+    """Save current state.
+
+    ``failing`` maps docket → consecutive polls it has failed ingestion
+    (doc-service error pages). Dockets recover by dropping out of the dict.
+    """
     STATE_FILE.write_text(json.dumps({
         "date": today,
         "count": len(dockets),
         "dockets": sorted(dockets),
+        "failing": failing or {},
         "checked_at": datetime.now(timezone.utc).isoformat(),
     }))
 
@@ -186,6 +208,67 @@ def _recently_ingested_dockets(window_seconds: int = 3600) -> set[str]:
     return out
 
 
+def _parse_scraper_new_count(output: str) -> int:
+    """Extract N from run_scraper's ``[bger] Done. +N new, ...`` summary.
+
+    run_scraper logs via a bare logging.StreamHandler, which writes to
+    STDERR — callers must pass stdout and stderr combined. Scanning
+    stdout alone made the poller log "0 new decisions" on every run
+    while the scraper was genuinely ingesting (second regression of
+    this kind: the 2026-05-07 refactor broke the regex; the fix
+    corrected the regex but kept reading the wrong stream).
+    """
+    m = re.search(r"Done\.\s*\+(\d+)\s+new\b", output)
+    return int(m.group(1)) if m else 0
+
+
+def _parse_quick_publish_output(output: str) -> tuple[int, bool]:
+    """Return (inserted_count, skipped_due_to_lock) from quick_publish
+    output (stdout + stderr combined — quick_publish also logs via
+    StreamHandler → stderr)."""
+    inserted = 0
+    m = re.search(r"Inserted (\d+)/", output)
+    if m:
+        inserted = int(m.group(1))
+    # quick_publish exits rc=0 with this exact phrase when publish.py
+    # holds the exclusive lock.
+    skipped = ("skipping quick_publish" in output
+               or "Full publish.py is running" in output)
+    return inserted, skipped
+
+
+def _update_failing_streaks(prev_failing: dict[str, int],
+                            unsaved: set[str]) -> dict[str, int]:
+    """Consecutive-poll ingestion-failure count per docket.
+
+    Dockets still failing increment; dockets that recovered (or rotated
+    off the Neuheiten page) drop out.
+    """
+    return {d: int(prev_failing.get(d, 0)) + 1 for d in sorted(unsaved)}
+
+
+def _communicate_graceful(proc: subprocess.Popen, timeout_s: float,
+                          grace_s: float = 60.0):
+    """communicate() with SIGTERM-then-SIGKILL on timeout.
+
+    Returns (out, err, returncode, timed_out). SIGTERM first so the
+    child's cleanup handlers run — quick_publish removes its 60+ GB
+    .quick copy on SIGTERM; a bare SIGKILL (what subprocess.run's
+    timeout does) orphans it on disk.
+    """
+    try:
+        out, err = proc.communicate(timeout=timeout_s)
+        return out, err, proc.returncode, False
+    except subprocess.TimeoutExpired:
+        proc.terminate()
+        try:
+            out, err = proc.communicate(timeout=grace_s)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            out, err = proc.communicate()
+        return out, err, proc.returncode, True
+
+
 def _trigger_scraper():
     """Run the BGer scraper, then quick-publish new decisions into FTS5.
 
@@ -243,17 +326,11 @@ def _trigger_scraper():
         timed_out = True
 
     if rc == 0:
-        new_count = 0
-        for line in (out or "").splitlines():
-            # run_scraper actually emits "[bger] Done. +13 new, 92581, ..."
-            # (not "Done. New: 13"). The old regex never matched, so the
-            # poller has been logging "0 new decisions" since the
-            # 2026-05-07 run_scraper output-format refactor — misleading
-            # because the scraper genuinely DID get the dockets.
-            m = re.search(r"Done\.\s*\+(\d+)\s+new\b", line)
-            if m:
-                new_count = int(m.group(1))
-                break
+        # Combined streams: run_scraper's "Done. +N new" line goes to
+        # stderr (bare StreamHandler), not stdout — see
+        # _parse_scraper_new_count.
+        new_count = _parse_scraper_new_count(
+            (out or "") + "\n" + (err or ""))
         logger.info("BGer scraper completed: %d new decisions", new_count)
     elif timed_out:
         logger.warning(
@@ -267,43 +344,54 @@ def _trigger_scraper():
         # No `return` here — even on non-timeout failures, JSONL may
         # contain decisions worth publishing.
 
-    # Step 2: Quick-publish into FTS5 DB (so decisions are searchable immediately)
+    # Step 2: Quick-publish into FTS5 DB (so decisions are searchable
+    # immediately). Returns whether quick_publish COMPLETED — the caller
+    # must not mark dockets "seen" otherwise, or scraped-but-unpublished
+    # rows sit in JSONL until the nightly rebuild with nothing retrying
+    # them.
     quick_pub = REPO_DIR / "scripts" / "quick_publish.py"
     inserted_count = 0
+    qp_ok = False
     if quick_pub.exists():
         cmd = [sys.executable, str(quick_pub), "--courts", "bger"]
         logger.info("Quick-publishing: %s", " ".join(cmd))
-        result = subprocess.run(
+        qp_proc = subprocess.Popen(
             cmd,
             cwd=str(REPO_DIR),
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=900,
         )
-        if result.returncode == 0:
-            skipped_due_to_lock = False
-            for line in result.stdout.splitlines():
-                if "Inserted" in line:
-                    m = re.search(r"Inserted (\d+)/", line)
-                    if m:
-                        inserted_count = int(m.group(1))
-                if "Inserted" in line or "new decisions" in line:
-                    logger.info("Quick-publish: %s", line.split("INFO")[-1].strip() if "INFO" in line else line)
-                # quick_publish exits with rc=0 + this exact string when
-                # publish.py holds the lock. Surface it loudly so the
-                # operator can see that pending JSONL rows are waiting
-                # on the running full publish, not just "nothing new".
-                if "skipping quick_publish" in line or "Full publish.py is running" in line:
-                    skipped_due_to_lock = True
+        qp_out, qp_err, qp_rc, qp_timed_out = _communicate_graceful(
+            qp_proc, QUICK_PUBLISH_TIMEOUT_S, QUICK_PUBLISH_GRACE_S)
+        combined = (qp_out or "") + "\n" + (qp_err or "")
+        if qp_timed_out:
+            logger.error(
+                "Quick-publish exceeded %ds — sent SIGTERM (its cleanup "
+                "handler removes the .quick copy); dockets stay unmarked "
+                "and the next poll retries. Last output: %s",
+                QUICK_PUBLISH_TIMEOUT_S, combined[-300:].strip(),
+            )
+        elif qp_rc == 0:
+            inserted_count, skipped_due_to_lock = (
+                _parse_quick_publish_output(combined))
+            qp_ok = not skipped_due_to_lock
             if skipped_due_to_lock:
+                # Dockets stay unmarked (qp_ok=False), so the next poll
+                # re-detects them, re-runs the scraper (idempotent
+                # append: +0 new) and retries quick_publish.
                 logger.warning(
                     "Quick-publish SKIPPED: full publish.py holds the lock "
-                    "— freshly-scraped BGer dockets remain in bger.jsonl "
-                    "and will be inserted on the next poll once the lock "
-                    "releases (after Step 2 swap + integrity check)"
+                    "— freshly-scraped BGer dockets remain in bger.jsonl; "
+                    "the next poll retries once the lock releases (after "
+                    "the Step 2 swap)"
                 )
+            else:
+                logger.info("Quick-publish: inserted %d new decisions",
+                            inserted_count)
         else:
-            logger.error("Quick-publish failed (exit %d): %s", result.returncode, result.stderr[-300:])
+            logger.error("Quick-publish failed (exit %d): %s",
+                         qp_rc, (qp_err or "")[-300:])
 
     # Step 3: refresh dashboard stats.json (only if we actually inserted
     # decisions, since regen takes ~22 min). Without this, the
@@ -311,6 +399,7 @@ def _trigger_scraper():
     # until the next 03:00 UTC nightly publish — even though the
     # decisions are already searchable via /api and MCP.
     _maybe_update_stats(inserted_count)
+    return qp_ok
 
 
 def _maybe_update_stats(new_decisions: int) -> None:
@@ -447,10 +536,15 @@ def main():
     # Compare against last state
     state = _load_state()
     prev_dockets = set(state.get("dockets", []))
+    prev_failing: dict[str, int] = dict(state.get("failing", {}))
 
     if state.get("date") != today_iso:
-        # New day — start fresh (don't carry over yesterday's dockets)
+        # New day — start fresh (don't carry over yesterday's dockets;
+        # failing dockets rotate off the polled Neuheiten page with the
+        # date, so their streaks are stale too — the nightly full scrape
+        # is the backstop that still retries them via older date pages)
         prev_dockets = set()
+        prev_failing = {}
 
     new_dockets = current_dockets - prev_dockets
 
@@ -461,26 +555,60 @@ def main():
         )
         if args.dry_run:
             logger.info("[dry-run] Would trigger BGer scraper")
-            _save_state(today_iso, current_dockets)
+            _save_state(today_iso, current_dockets, failing=prev_failing)
         else:
-            _trigger_scraper()
+            qp_ok = _trigger_scraper()
             # Confirm which dockets ACTUALLY landed in JSONL (BGer's
             # document-service intermittently returns error pages for
             # freshly-Neuheiten'd dockets — those return None from the
             # scraper and never reach JSONL). Mark only the ingested
             # subset as "seen"; the rest stay un-seen so the next poll
             # retries them. Naturally bounded by Neuheiten rotation.
-            ingested_recent = _recently_ingested_dockets(window_seconds=3600)
+            #
+            # 3 h window (not 1 h): after a quick_publish failure the
+            # next poll re-confirms rows scraped by the PREVIOUS poll
+            # (>1 h old); presence in JSONL is what the seen-cache
+            # contract requires, so a wider window is strictly safer.
+            #
+            # If quick_publish did not complete, mark NOTHING — rows may
+            # be in JSONL but not in the live DB; the next poll re-runs
+            # the scraper (idempotent, +0 new) and retries quick_publish,
+            # which sweeps all pending JSONL-vs-DB rows.
+            ingested_recent = (
+                _recently_ingested_dockets(window_seconds=10800)
+                if qp_ok else set()
+            )
             seen_state = prev_dockets | (current_dockets & ingested_recent)
-            _save_state(today_iso, seen_state)
             unsaved = new_dockets - ingested_recent
-            if unsaved:
+            failing = (_update_failing_streaks(prev_failing, unsaved)
+                       if qp_ok else dict(prev_failing))
+            _save_state(today_iso, seen_state, failing=failing)
+            if unsaved and qp_ok:
                 logger.warning(
                     "%d/%d new dockets NOT in JSONL (likely BGer "
                     "doc-service error pages); will retry next poll. "
                     "First few: %s",
                     len(unsaved), len(new_dockets),
                     ", ".join(sorted(unsaved)[:5]),
+                )
+                persistent = {d: n for d, n in failing.items()
+                              if n >= FAILING_STREAK_ALERT}
+                if persistent:
+                    logger.error(
+                        "BGer doc-service failure persisting >=%d "
+                        "consecutive polls: %s — dockets are listed on "
+                        "Neuheiten but their documents keep returning "
+                        "error pages",
+                        FAILING_STREAK_ALERT,
+                        ", ".join(f"{d} (x{n})"
+                                  for d, n in sorted(persistent.items())),
+                    )
+            elif unsaved:
+                logger.warning(
+                    "quick_publish did not complete — %d scraped dockets "
+                    "left unmarked; next poll re-runs the scraper "
+                    "(idempotent) and retries quick_publish. First few: %s",
+                    len(unsaved), ", ".join(sorted(unsaved)[:5]),
                 )
     else:
         logger.info("No new decisions since last check")
