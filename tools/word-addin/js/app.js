@@ -3240,7 +3240,7 @@ function renderStrengthen() {
       html += '<div class="erwaegung-block">' +
         '<div><b>' + escHtml(cx.title || cx.law_abbreviation + ' Art. ' + cx.article_number) + '</b></div>' +
         (cx.authors ? '<div style="font-size:11px;color:var(--text-secondary);">' + escHtml(cx.authors) + '</div>' : '') +
-        (cx.snippet ? '<div style="font-size:11px;margin-top:4px;color:var(--text);">' + cx.snippet + '</div>' : '') +
+        (cx.snippet ? '<div style="font-size:11px;margin-top:4px;color:var(--text);">' + escHtml(cx.snippet) + '</div>' : '') +
         '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">' + escHtml(cx.source || '') + '</div>' +
       '</div>';
     }

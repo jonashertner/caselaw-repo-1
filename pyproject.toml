@@ -70,8 +70,20 @@ addopts = "-m \"not live and not manual\""
 # package (pytest only adds testpath dirs to sys.path by default).
 pythonpath = ["."]
 # scripts/ holds ad-hoc diagnostic scripts (some named *_test.py or test_*.py)
-# that aren't pytest tests. Real tests live in tests/.
-testpaths = ["tests"]
+# that aren't pytest tests. Real tests live in tests/, plus a set of
+# mission-critical OFFLINE suites historically parked at the repo root (dedup,
+# completeness guards, citation extraction, schema, publish-step ordering) that
+# testpaths=["tests"] had silently orphaned from `make test` and CI. The live_*
+# root suites are intentionally NOT listed (they require network).
+testpaths = [
+    "tests",
+    "test_build_fts5_quality.py",
+    "test_entscheidsuche_ingest_dedup.py",
+    "test_runtime_completeness_guards.py",
+    "test_reference_extraction.py",
+    "test_schema.py",
+    "test_publish_order.py",
+]
 norecursedirs = ["scripts", "web_ui", "artifacts", "benchmarks", ".claude", ".superpowers"]
 markers = [
     "live: requires live network/system interaction; excluded from default pytest runs",

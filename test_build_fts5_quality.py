@@ -189,17 +189,38 @@ def test_dedup_removes_shorter_duplicate(db):
     assert remaining[0][0] == "native_1"
 
 
-def test_dedup_prefers_regeste(db):
-    _insert_row(db, decision_id="no_regeste", court="bger", docket_number="1C_1/2025",
+def test_dedup_keeps_longest_content(db):
+    # Post-2026-04-25-audit policy: the row with the most full_text+regeste
+    # content survives. NOT "any regeste wins" — that older rule threw away
+    # ~9,300 rich GR full-PDF rows in favour of short metadata stubs that
+    # happened to carry a regeste. Here the long no-regeste row must win.
+    _insert_row(db, decision_id="long_no_regeste", court="bger", docket_number="1C_1/2025",
                 decision_date="2025-01-01", full_text="long " * 200, regeste=None)
-    _insert_row(db, decision_id="has_regeste", court="bger", docket_number="1C_1/2025",
+    _insert_row(db, decision_id="short_with_regeste", court="bger", docket_number="1C_1/2025",
                 decision_date="2025-01-01", full_text="shorter " * 50, regeste="A real regeste")
 
     deleted = _dedup_decisions(db)
     assert deleted == 1
 
     remaining = db.execute("SELECT decision_id FROM decisions").fetchall()
-    assert remaining[0][0] == "has_regeste"
+    assert len(remaining) == 1
+    assert remaining[0][0] == "long_no_regeste"
+
+
+def test_dedup_survivor_inherits_loser_regeste(db):
+    # When the longest-content survivor has no regeste of its own, it inherits
+    # one from a deleted duplicate so the merged record keeps the head-note.
+    _insert_row(db, decision_id="long_no_regeste", court="bger", docket_number="1C_2/2025",
+                decision_date="2025-01-01", full_text="long " * 300, regeste=None)
+    _insert_row(db, decision_id="short_with_regeste", court="bger", docket_number="1C_2/2025",
+                decision_date="2025-01-01", full_text="short", regeste="Inherited regeste")
+
+    deleted = _dedup_decisions(db)
+    assert deleted == 1
+
+    row = db.execute("SELECT decision_id, regeste FROM decisions").fetchone()
+    assert row[0] == "long_no_regeste"
+    assert row[1] == "Inherited regeste"
 
 
 def test_dedup_no_duplicates(db):

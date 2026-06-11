@@ -1586,6 +1586,26 @@ _ctx_client_ip = contextvars.ContextVar("client_ip", default="")
 _ctx_client_ua = contextvars.ContextVar("client_ua", default="")
 _ctx_session_id = contextvars.ContextVar("session_id", default="")
 
+
+def _trusted_client_ip(req) -> str:
+    """Client IP behind a single trusted nginx hop — spoofing-resistant.
+
+    nginx sets ``X-Real-IP`` to the real ``$remote_addr`` and appends it as the
+    LAST ``X-Forwarded-For`` hop, so those are the only trustworthy values.
+    Earlier XFF hops are entirely client-controlled; trusting the FIRST hop (the
+    historical bug) let a caller rotate a forged header to defeat the per-IP LLM
+    quota. Order: X-Real-IP → last XFF hop → socket peer.
+    """
+    xri = req.headers.get("x-real-ip", "")
+    if xri and xri.strip():
+        return xri.strip()
+    xff = req.headers.get("x-forwarded-for", "")
+    if xff:
+        hops = [h.strip() for h in xff.split(",") if h.strip()]
+        if hops:
+            return hops[-1]  # nginx-appended real peer; never the spoofable first hop
+    return req.client.host if getattr(req, "client", None) else "0.0.0.0"
+
 # ── Session → client mapping (for integrator detection) ──
 _session_clients: dict[str, dict] = {}  # session_id → {ip, ua, first_seen, tools: []}
 _SESSION_LOG_MAX = 2000  # cap to prevent memory growth
@@ -2432,14 +2452,17 @@ def _search_fts5_inner(
             )
             if vec_only_ids:
                 ph = ",".join("?" for _ in vec_only_ids)
+                # Apply the SAME user filters as the FTS pass ({where}+params);
+                # otherwise vector-only candidates bypass court/canton/date/
+                # chamber/type/language filters (mirrors sg_rows/bge_rows).
                 vec_rows = conn.execute(
                     f"""SELECT d.decision_id, d.court, d.canton, d.chamber,
                            d.docket_number, d.decision_date, d.language,
                            d.title, d.regeste, d.full_text AS full_text_raw,
                            '' as snippet, d.source_url, d.pdf_url,
                            0.0 as bm25_score
-                    FROM decisions d WHERE d.decision_id IN ({ph})""",
-                    list(vec_only_ids),
+                    FROM decisions d WHERE d.decision_id IN ({ph}){where}""",
+                    list(vec_only_ids) + params,
                 ).fetchall()
                 for row in vec_rows:
                     did = row["decision_id"]
@@ -2464,14 +2487,16 @@ def _search_fts5_inner(
             sparse_only_ids = set(sparse_scores.keys()) - set(candidate_meta.keys())
             if sparse_only_ids:
                 ph = ",".join("?" for _ in sparse_only_ids)
+                # Same user filters as the FTS pass (incl. language, which sparse
+                # retrieval is otherwise blind to).
                 sp_rows = conn.execute(
                     f"""SELECT d.decision_id, d.court, d.canton, d.chamber,
                            d.docket_number, d.decision_date, d.language,
                            d.title, d.regeste, d.full_text AS full_text_raw,
                            '' as snippet, d.source_url, d.pdf_url,
                            0.0 as bm25_score
-                    FROM decisions d WHERE d.decision_id IN ({ph})""",
-                    list(sparse_only_ids),
+                    FROM decisions d WHERE d.decision_id IN ({ph}){where}""",
+                    list(sparse_only_ids) + params,
                 ).fetchall()
                 for row in sp_rows:
                     did = row["decision_id"]
@@ -6032,8 +6057,9 @@ def _find_leading_cases(
             conn = None  # signal we closed it
             try:
                 fts_conn = get_db()
-                # Sanitize query for FTS5: remove periods and special chars
-                safe_q = re.sub(r"[.:/*(){}\[\]]+", " ", query).strip()
+                # Critical invariant #3: use the canonical sanitizer, not an
+                # ad-hoc regex (which misses hyphens, apostrophes, quotes, OR).
+                safe_q = _sanitize_fts5(query)
                 if not safe_q:
                     return {"results": [], "total": 0}
                 fts_sql = """
@@ -6120,24 +6146,38 @@ def _find_leading_cases(
     if not candidates:
         return {"results": [], "total": 0}
 
-    # If query provided, filter via FTS5
+    # If query provided, filter via FTS5. CRITICAL: never silently fall through
+    # to UNFILTERED statute-ranked candidates — that would present the most-cited
+    # cases as topical matches (silently-wrong in a citation-authority tool).
+    query_filter_applied = None
     if query:
         candidate_ids = [c[0] for c in candidates]
-        try:
-            fts_conn = get_db()
-            placeholders = ",".join("?" for _ in candidate_ids)
-            matched = fts_conn.execute(
-                f"""
-                SELECT decision_id FROM decisions_fts
-                WHERE decisions_fts MATCH ? AND decision_id IN ({placeholders})
-                """,
-                (query, *candidate_ids),
-            ).fetchall()
-            fts_conn.close()
-            matched_ids = {r["decision_id"] for r in matched}
-            candidates = [(did, cnt) for did, cnt in candidates if did in matched_ids]
-        except sqlite3.Error as e:
-            logger.debug("FTS filter for leading cases failed: %s", e)
+        safe_q = _sanitize_fts5(query)  # invariant #3 — was raw query
+        if not safe_q:
+            query_filter_applied = False
+        else:
+            fts_conn = None
+            try:
+                fts_conn = get_db()
+                placeholders = ",".join("?" for _ in candidate_ids)
+                matched = fts_conn.execute(
+                    f"""
+                    SELECT decision_id FROM decisions_fts
+                    WHERE decisions_fts MATCH ? AND decision_id IN ({placeholders})
+                    """,
+                    (safe_q, *candidate_ids),
+                ).fetchall()
+                matched_ids = {r["decision_id"] for r in matched}
+                candidates = [(did, cnt) for did, cnt in candidates if did in matched_ids]
+                query_filter_applied = True
+            except sqlite3.Error as e:
+                logger.warning(
+                    "FTS topical filter for leading cases failed; returning "
+                    "statute-ranked candidates UNFILTERED (flagged to caller): %s", e)
+                query_filter_applied = False
+            finally:
+                if fts_conn is not None:
+                    fts_conn.close()
 
     # Truncate to limit
     candidates = candidates[:limit]
@@ -6173,13 +6213,22 @@ def _find_leading_cases(
             "markdown_link": _md_link(docket, url),
         })
 
-    return {
+    out = {
         "results": results,
         "total": len(results),
         "law_code": law_code,
         "article": article,
         "query": original_query,
     }
+    # If a topical query was requested but could not be applied, say so loudly —
+    # the results are ranked by citation authority only, NOT filtered by topic.
+    if query and not query_filter_applied:
+        out["query_filter_applied"] = False
+        out["_warning"] = (
+            "Topical query could not be applied to the statute candidates; "
+            "results are ranked by citation authority only, not filtered by the query."
+        )
+    return out
 
 
 def analyze_legal_trend(
@@ -9773,6 +9822,13 @@ def _handle_search_botschaft(
         return {"error": "Provide a search query."}
     language = (language or "").lower().strip() or None
     limit = max(1, min(int(limit or 20), 50))
+    # Critical invariant #3: all FTS5 input must pass _sanitize_fts5. Without it,
+    # ordinary legislative-history queries ("Art. 64 StGB", hyphenated German
+    # compounds, French apostrophes) raise fts5 syntax errors / 500s.
+    fts_q = _sanitize_fts5(q)
+    if not fts_q:
+        return {"query": q, "language_filter": language, "total": 0, "results": [],
+                "_hint": "Query reduced to empty after FTS5 sanitisation; try different terms."}
 
     materialien_db = os.environ.get(
         "SWISS_CASELAW_MATERIALIEN_DB",
@@ -9820,13 +9876,19 @@ def _handle_search_botschaft(
               ON bd.botschaft_id = bp.botschaft_id
             WHERE botschaft_paragraphs_fts MATCH ?
         """
-        params: list = [q]
+        params: list = [fts_q]
         if language:
             sql += " AND bd.language = ? "
             params.append(language)
         sql += " ORDER BY rank LIMIT ? "
         params.append(limit)
-        rows = conn.execute(sql, params).fetchall()
+        try:
+            rows = conn.execute(sql, params).fetchall()
+        except sqlite3.OperationalError:
+            # Sanitised input should never reach here, but never 500 on a query:
+            # degrade to a structured no-results response.
+            return {"query": q, "language_filter": language, "total": 0,
+                    "results": [], "_hint": "Query could not be parsed as FTS5; try simpler terms."}
     finally:
         conn.close()
 
@@ -19529,14 +19591,8 @@ setInterval(load, 30000);
         _quota_available = False
 
     def _client_ip(req: Request) -> str:
-        """Best-effort client IP behind nginx. X-Forwarded-For first hop wins."""
-        xff = req.headers.get("x-forwarded-for", "")
-        if xff:
-            return xff.split(",")[0].strip()
-        xri = req.headers.get("x-real-ip", "")
-        if xri:
-            return xri.strip()
-        return req.client.host if req.client else "0.0.0.0"
+        """Spoofing-resistant client IP behind nginx (see _trusted_client_ip)."""
+        return _trusted_client_ip(req)
 
     def _enforce_quota(endpoint_name: str):
         """FastAPI dependency factory: increments + checks per-IP daily quota.
@@ -21926,6 +21982,28 @@ setInterval(load, 30000);
                                "and scores how well each supports the statement. Pro feature.")
     async def api_billing_find_support(req: FindSupportRequest):
         from stripe_billing import parse_legal_statement, score_supporting_results, log_pro_usage
+        from quality.redact import is_likely_unredacted, redact as _server_redact
+
+        # HARD GUARD: parity with verify/strengthen/reflect — refuse if the
+        # statement still contains structurally-identifiable PII before any LLM
+        # call. This endpoint forwards req.statement to parse_legal_statement.
+        guard = is_likely_unredacted(req.statement or "")
+        if not guard.clean:
+            return JSONResponse(
+                {
+                    "error": "client_redaction_incomplete",
+                    "message": (
+                        "Request rejected: text contains structurally-"
+                        "identifiable PII. The Word add-in must run "
+                        "js/redact.js before sending Pro requests."
+                    ),
+                    "patterns_detected": guard.patterns_found,
+                    "client_redactor_version": getattr(req, "client_redactor_version", None),
+                },
+                status_code=400,
+            )
+        # Defense-in-depth: scrub anything the guard missed before it reaches the LLM.
+        statement = _server_redact(req.statement).redacted
 
         # Validate license
         license_info = await asyncio.to_thread(validate_license, req.license_key)
@@ -21939,20 +22017,21 @@ setInterval(load, 30000);
         await asyncio.to_thread(log_pro_usage, req.license_key, "find_support")
 
         # Step 1: Parse statement → extract claim + generate search queries
-        parsed = await asyncio.to_thread(parse_legal_statement, req.statement)
+        # (use the server-redacted `statement`, never the raw req.statement)
+        parsed = await asyncio.to_thread(parse_legal_statement, statement)
         if "error" in parsed:
             return JSONResponse(parsed, status_code=500)
 
-        queries = parsed.get("queries", [req.statement])
+        queries = parsed.get("queries", [statement])
         legal_area = parsed.get("legal_area", "")
         statutes = parsed.get("statutes", [])
-        claim = parsed.get("claim", req.statement)
+        claim = parsed.get("claim", statement)
 
         # Step 2: Search with generated queries + dedup by normalized docket
         all_results = []
         seen_dockets = set()
-        # Always include the original statement as a search query (catches exact phrase matches)
-        all_queries = queries[:3] + [req.statement[:200]]
+        # Always include the (redacted) statement as a search query (catches exact phrase matches)
+        all_queries = queries[:3] + [statement[:200]]
         for q in all_queries:
             results, total = await asyncio.to_thread(
                 search_fts5, query=q, limit=15, offset=0,

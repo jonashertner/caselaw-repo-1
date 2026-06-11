@@ -60,7 +60,6 @@ web_ui/node_modules/
 .playwright-mcp/
 desktop_extension/
 search_stack/finetune_embeddings.py
-test_publish_order.py
 tools/word-addin/screenshots/
 
 # Coding-agent metadata (per-machine, ephemeral)
@@ -76,7 +75,6 @@ docs/paper/v3/paper.blg
 docs/paper/v3/paper.log
 docs/paper/v3/paper.out
 docs/paper/v3/.tectonic-cache/
-TECHNICAL_OVERVIEW.txt
 
 # Local platform-specific config (hard-coded user paths)
 scripts/ne-scraper-local.plist

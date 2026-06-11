@@ -15,12 +15,59 @@ handler, plus the same guard logic. Verifies that:
 """
 from __future__ import annotations
 
+import ast
+import pathlib
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from starlette.testclient import TestClient
 
 from quality.redact import is_likely_unredacted, redact as _server_redact
+
+
+# ────────────────────────────────────────────────────────────────────
+# Real-code wiring guard: every Pro endpoint that forwards user text to an
+# LLM MUST run is_likely_unredacted first. The mirror tests below validate
+# the guard *logic*; this test validates that the production handlers are
+# actually wired to it (the rest_api app is nested and can't be cheaply
+# instantiated, so we assert against the source AST). This FAILS if any
+# text-forwarding Pro endpoint is added or regresses without the guard.
+# ────────────────────────────────────────────────────────────────────
+_MCP_SERVER = pathlib.Path(__file__).resolve().parents[1] / "mcp_server.py"
+
+# Handlers that forward user-supplied legal text to a third-party LLM.
+_PRO_LLM_ENDPOINTS = [
+    "api_billing_verify",
+    "api_billing_strengthen",
+    "api_billing_reflect",
+    "api_billing_find_support",
+]
+
+
+def _function_bodies():
+    src = _MCP_SERVER.read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    return {
+        n.name: (ast.get_source_segment(src, n) or "")
+        for n in ast.walk(tree)
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+    }
+
+
+def test_all_pro_llm_endpoints_enforce_pii_guard():
+    bodies = _function_bodies()
+    found = [n for n in _PRO_LLM_ENDPOINTS if n in bodies]
+    assert found == _PRO_LLM_ENDPOINTS, (
+        f"expected Pro endpoints not found in mcp_server.py: "
+        f"{sorted(set(_PRO_LLM_ENDPOINTS) - set(found))}"
+    )
+    missing = [n for n in _PRO_LLM_ENDPOINTS
+               if "is_likely_unredacted" not in bodies[n]]
+    assert missing == [], (
+        f"Pro endpoint(s) forward text to the LLM WITHOUT the PII redaction "
+        f"guard (privacy contract breach): {missing}"
+    )
 
 
 # Mirror the production models — kept locally here so the test runs
